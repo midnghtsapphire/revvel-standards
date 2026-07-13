@@ -269,11 +269,6 @@ jobs:
             return identity;
 
       - name: Report SAML identity result
-        env:
-          IDENTITY: ${{ steps.saml-identity.outputs.identity }}
-          USERNAME: ${{ steps.resolve-user.outputs.username }}
-          PROVIDER_CONFIGURED: ${{ steps.saml-identity.outputs.provider_configured }}
-          OWNER: ${{ github.repository_owner }}
         run: |
           if [ -n "${{ steps.saml-identity.outputs.identity }}" ]; then
             echo "::notice::SAML identity linked: ${{ steps.saml-identity.outputs.identity }}"
@@ -302,15 +297,13 @@ jobs:
         if: steps.saml-identity.outputs.identity == ''
       - name: Comment on PR if SAML identity is missing
         if: |
-          github.event_name == 'pull_request' &&
-          steps.saml-identity.outputs.provider_configured == 'true' &&
-          steps.saml-identity.outputs.identity == ''
+          github.event_name == 'pull_request' && steps.saml-identity.outputs.identity == ''
         uses: actions/github-script@v9.0.0
-        env:
-          TARGET_USERNAME: ${{ steps.resolve-user.outputs.username }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const username = '${{ steps.resolve-user.outputs.username }}';
+            const org = '${{ github.repository_owner }}';
             const author = context.payload.pull_request.user.login;
             const org = context.repo.owner;
             const body = [

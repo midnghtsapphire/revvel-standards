@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+"use strict";
 /**
  * scripts/octopus-review-fallback.js
  *
@@ -39,88 +40,30 @@
  * See issue #15836 for the regression this file's retry logic fixes.
  */
 
-'use strict';
 /**
- * Octopus review fallback
+ * Octopus Review Fallback — self-hosted review lane when Octopus is quota-dead
  *
- * When the primary Octopus reviewer cannot post a review (e.g. quota exhausted,
- * transient outage), this script posts a lightweight fallback review comment
- * on open PRs so contributors aren't left waiting.
+ * Octopus Review (octopus-review.ai) runs out of monthly AI quota and posts an
+ * "add your own API keys" comment on every PR instead of a review. External
+ * review apps can't be re-summoned from the WR area when their quota/keys die,
+ * so this script runs the fleet's OWN review lane instead:
  *
- * Rate-limit handling notes:
- *   GitHub's REST API has two distinct rate-limit failure modes:
- *     - PRIMARY (shared hourly installation/user budget). Signaled by
- *       `x-ratelimit-remaining: 0` + `x-ratelimit-reset` (Unix seconds).
- *       Does NOT reliably send `Retry-After`. The reset can be up to ~1h out.
- *       See docs/biome/README.md:147-155 (incident #15491).
- *     - SECONDARY / abuse detection. Short-lived. DOES send `Retry-After`.
+ *   1. Detect the Octopus quota-death comment (isQuotaDeathComment), OR run in
+ *      sweep mode for PRs where Octopus never showed up after N minutes.
+ *   2. Skip if a healthy Octopus review already exists (no double-review) or
+ *      if this fallback already reviewed the PR (dedupe via HTML marker).
+ *   3. Fetch the PR diff and call OpenRouter with the `review` profile from
+ *      .github/agent-models.yml (Opus 4.7 primary, DeepSeek R1 fallback) —
+ *      no new vendor lock-in; same key/lane as the rest of the fleet.
+ *   4. Post the findings as a formal PR review (COMMENT event).
  *
- *   These need different handling. Primary limits: honor the reset timestamp,
- *   and if that exceeds our in-process wait ceiling (10min, under the 15min
- *   workflow timeout), give up gracefully — the 6-hourly schedule sweep will
- *   pick this PR up on the next cycle because shouldReview()'s dedupe marker
- *   is only set after a review is actually posted.
+ * Wiring: .github/workflows/octopus-review-fallback.yml
+ * Persona docs: skills/octopus-expert/SKILL.md ("Quota-Death Fallback Lane")
+ *
+ * If reviews "aren't happening": check OPENROUTER_API_KEY funding first
+ * (https://openrouter.ai/credits) — a 401/402/429 here means the key/balance,
+ * not this script. The script is best-effort and never fails the workflow.
  */
-
-'use strict';
-
-const RATE_LIMIT_BASE_DELAY_MS = Number(process.env.OCTOPUS_RATE_LIMIT_BASE_DELAY_MS || 1500);
-const RATE_LIMIT_MAX_RETRIES = Number(process.env.OCTOPUS_RATE_LIMIT_MAX_RETRIES || 4);
-// Ceiling for any single in-process sleep. Workflow timeout-minutes is 15, so
-// 10min leaves ~5min headroom for the rest of the job. Any wait longer than
-// this cannot possibly succeed before the runner is killed — bail out instead.
-const RATE_LIMIT_MAX_INPROCESS_WAIT_MS = Number(
-  process.env.OCTOPUS_RATE_LIMIT_MAX_INPROCESS_WAIT_MS || 10 * 60 * 1000,
-);
-
-function lowerHeaders(headers) {
-  const out = {};
-  if (!headers) return out;
-  if (typeof headers.forEach === 'function' && !Array.isArray(headers)) {
-    // Headers-like
-    headers.forEach((value, key) => {
-      out[String(key).toLowerCase()] = value;
-    });
-    return out;
-  }
-  for (const [key, value] of Object.entries(headers)) {
-    out[String(key).toLowerCase()] = value;
-  }
-  return out;
-}
-
-/**
- * Classify a rate-limited response as `"primary"` or `"secondary"`.
- * Returns `null` if the response does not look rate-limited at all.
- */
-function classifyRateLimit(status, headers, body) {
-  if (status !== 403 && status !== 429) return null;
-  const h = lowerHeaders(headers);
-  const bodyText =
-    typeof body === 'string' ? body : body && typeof body === 'object' ? JSON.stringify(body) : '';
-  const bodyLower = bodyText.toLowerCase();
-
-  const remaining = h['x-ratelimit-remaining'];
-  const reset = h['x-ratelimit-reset'];
-  const retryAfter = h['retry-after'];
-
-  // Secondary rate limit signals
-  const looksSecondary =
-    bodyLower.includes('secondary rate limit') ||
-    bodyLower.includes('abuse detection') ||
-    bodyLower.includes('abuse-detection');
-  if (looksSecondary) return 'secondary';
-
-  // Primary rate limit signals
-  const remainingZero = remaining !== undefined && String(remaining).trim() === '0';
-  const looksPrimaryByHeaders = remainingZero && reset !== undefined;
-  const looksPrimaryByBody =
-    bodyLower.includes('api rate limit exceeded') ||
-    bodyLower.includes('rate limit exceeded for installation');
-  if (looksPrimaryByHeaders || looksPrimaryByBody) return 'primary';
-
-  // A bare Retry-After with no other signal — treat as secondary (short wait).
-  if (retryAfter !== undefined) return 'secondary';
 
 'use strict';
 
@@ -140,26 +83,74 @@ const fs = require("fs");
 const path = require("path");
 const { callOpenRouter } = require("./openrouter-routing.js");
 
-const https = require('https');
+// Environment variables
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
+const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
+const PR_NUMBER = process.env.PR_NUMBER || "";
 
-const DEFAULT_BASE_DELAY_MS = 1500;
-const DEFAULT_MAX_RETRIES = 4;
-const DEFAULT_MAX_DELAY_MS = 20000;
+// Dedupe marker embedded in the review body — presence anywhere on the PR
+// (review or comment) means the fallback already ran; never review twice.
+const FALLBACK_MARKER = "<!-- octopus-review-fallback -->";
 
-function envInt(name, fallback) {
-  const raw = process.env[name];
-  if (raw === undefined || raw === null || raw === '') return fallback;
-  const parsed = Number.parseInt(raw, 10);
-  if (!Number.isFinite(parsed) || parsed < 0) return fallback;
-  return parsed;
-}
+// The GitHub App login Octopus posts as (see octopus-route.yml).
+const OCTOPUS_BOT_LOGIN = "octopus-review[bot]";
 
-function getRetryConfig() {
-  return {
-    baseDelayMs: envInt('RATE_LIMIT_BASE_DELAY_MS', DEFAULT_BASE_DELAY_MS),
-    maxRetries: envInt('RATE_LIMIT_MAX_RETRIES', DEFAULT_MAX_RETRIES),
-    maxDelayMs: envInt('RATE_LIMIT_MAX_DELAY_MS', DEFAULT_MAX_DELAY_MS),
-  };
+const MAX_DIFF_CHARS = parseInt(process.env.MAX_DIFF_CHARS || "60000", 10);
+
+// Retry policy for GitHub API rate limiting. The issue_comment trigger is
+// unscoped (fires on every comment on every issue/PR in the repo), so a
+// single burst of bot chatter (Vercel pings, CI-status, ship-quality-check,
+// triage bots, plus Octopus itself) can spin up dozens of concurrent
+// fallback-review runs within the same few seconds — all sharing the same
+// GitHub App installation's API rate-limit budget. That burst has been
+// observed tripping GitHub's rate limiting ("API rate limit exceeded for
+// installation", HTTP 403) on the very first REST call of a run that
+// otherwise correctly matched the quota-death comment — and because the
+// whole script runs inside a top-level try/catch that never rethrows (by
+// design: a fallback outage must not go red itself), that 403 was silently
+// swallowed and the job still reported success, with NO review ever posted.
+//
+// GitHub's rate limiting comes in two distinct flavors that need different
+// handling (caught in post-merge review of #15836 by a Copilot comment on
+// this file — the first pass here treated both the same way):
+//
+//   * PRIMARY (the shared installation budget — see docs/biome/README.md's
+//     "PR Lifecycle failing in bulk" field note, incident #15491): the
+//     response carries `x-ratelimit-remaining: 0` and `x-ratelimit-reset`
+//     (a Unix timestamp for when the budget refills — can be up to ~an hour
+//     out) and does NOT reliably carry `Retry-After`. A short exponential
+//     backoff (seconds) can NEVER recover this — the budget simply isn't
+//     there yet — so retrying fast just burns the job's timeout-minutes: 15
+//     without ever succeeding.
+//   * SECONDARY / abuse-detection: short-lived, and GitHub's response
+//     typically DOES carry a `Retry-After` header (seconds) telling you
+//     exactly how long to back off. Waiting that out in-process is the
+//     right move — this is the case the original short-backoff retry was
+//     actually designed for.
+//
+// See classifyRateLimit() for how a response is bucketed into one of these,
+// and computePrimaryResetWaitMs() / computeRetryDelayMs() for how each is
+// waited out.
+const RATE_LIMIT_MAX_RETRIES = parseInt(process.env.RATE_LIMIT_MAX_RETRIES || "4", 10);
+const RATE_LIMIT_BASE_DELAY_MS = parseInt(process.env.RATE_LIMIT_BASE_DELAY_MS || "1500", 10);
+// Cap for the exponential-backoff fallback used when we can't read a
+// specific wait time off the response at all (no Retry-After, no
+// x-ratelimit-reset) — an educated guess, so kept short on purpose.
+const RATE_LIMIT_MAX_DELAY_MS = parseInt(process.env.RATE_LIMIT_MAX_DELAY_MS || "20000", 10);
+// Ceiling on how long we will actually sleep in-process for ANY rate-limit
+// wait we DO have a concrete number for (x-ratelimit-reset, or a
+// server-provided Retry-After) before giving up instead of burning the
+// job's `timeout-minutes: 15` (.github/workflows/octopus-review-fallback.yml)
+// on a wait that can't possibly finish before the job gets killed anyway.
+// Default (10 min) leaves ~5 min of headroom for setup + the actual review
+// call once the wait is over.
+const RATE_LIMIT_MAX_INPROCESS_WAIT_MS = parseInt(
+  process.env.RATE_LIMIT_MAX_INPROCESS_WAIT_MS || String(10 * 60 * 1000),
+  10,
+);
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function normalizeHeaders(headers) {
@@ -227,93 +218,70 @@ function computePrimaryResetWaitMs(headers, nowMs = Date.now()) {
   // Small pad (1s) so we clear the boundary cleanly.
   return waitMs + 1000;
 /**
- * Classify a response as a GitHub rate-limit rejection.
- *
- * - HTTP 429 is always a rate-limit.
- * - HTTP 403 is a rate-limit ONLY if the body carries GitHub's primary or
- *   secondary rate-limit message. A genuine permissions 403 must NOT retry.
- * - Everything else (404, 5xx, etc.) is not classified as rate-limit here.
+ * True when a GitHub REST response looks like a rate-limit rejection worth
+ * special-casing (as opposed to a genuine permissions 403, which should
+ * fail fast, not retry): HTTP 429, or HTTP 403 whose body is GitHub's
+ * primary/secondary rate-limit message. Does NOT distinguish primary vs
+ * secondary — see classifyRateLimit() for that.
  */
 function isRateLimitedResponse(status, body) {
   if (status === 429) return true;
   if (status !== 403) return false;
-  const text = typeof body === 'string' ? body : (body && typeof body === 'object' ? JSON.stringify(body) : '');
-  if (!text) return false;
-  const lower = text.toLowerCase();
+  const text = String(body || "").toLowerCase();
   return (
-    lower.includes('api rate limit exceeded') ||
-    lower.includes('secondary rate limit') ||
-    lower.includes('you have exceeded a secondary rate limit') ||
-    lower.includes('abuse detection')
+    text.includes("rate limit exceeded") ||
+    text.includes("secondary rate limit") ||
+    text.includes("abuse detection")
   );
 }
 
 /**
- * Compute a delay before the next retry attempt.
- *
- * Honors the `Retry-After` response header when present (seconds), otherwise
- * falls back to capped exponential backoff: base * 2^attempt, clamped to
- * maxDelayMs.
+ * Buckets a rate-limited response (isRateLimitedResponse() already true)
+ * into "primary" (shared installation budget exhausted) or "secondary"
+ * (short-lived abuse-detection limit). Header signal wins when present
+ * (most reliable, since Node lowercases response header names); otherwise
+ * falls back to GitHub's documented message wording. Returns null if the
+ * response isn't a rate-limit response at all.
  */
-function computeRetryDelayMs(headers, attempt, baseDelayMs = DEFAULT_BASE_DELAY_MS, maxDelayMs = DEFAULT_MAX_DELAY_MS) {
+function classifyRateLimit(status, headers, body) {
+  if (status !== 403 && status !== 429) return null;
   const h = headers || {};
-  const retryAfterRaw = h['retry-after'] || h['Retry-After'];
-  if (retryAfterRaw !== undefined && retryAfterRaw !== null && retryAfterRaw !== '') {
-    const secs = Number.parseFloat(retryAfterRaw);
-    if (Number.isFinite(secs) && secs >= 0) {
-      return Math.min(Math.round(secs * 1000), maxDelayMs);
-    }
-  }
-  const backoff = baseDelayMs * Math.pow(2, Math.max(0, attempt));
-  return Math.min(backoff, maxDelayMs);
-}
+  const text = String(body || "").toLowerCase();
+  const remaining = h["x-ratelimit-remaining"];
+  const reset = h["x-ratelimit-reset"];
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  // Most reliable signal: GitHub always sends these on primary-limit
+  // responses. x-ratelimit-remaining arrives as a string ("0") over HTTP.
+  if (remaining === "0" && reset != null && reset !== "") {
+    return "primary";
+  }
+  if (text.includes("secondary rate limit") || text.includes("abuse detection")) {
+    return "secondary";
+  }
+  if (text.includes("api rate limit exceeded") || text.includes("rate limit exceeded")) {
+    // Matches docs/biome/README.md's documented installation-budget-exhaustion
+    // wording (incident #15491) with no header confirmation available (e.g.
+    // headers stripped somewhere upstream) — assume primary. If
+    // x-ratelimit-reset also turns out to be missing, computePrimaryResetWaitMs
+    // returns null and githubRequest() falls back to the short-backoff path
+    // anyway, so this default is safe either way.
+    return "primary";
+  }
+  if (h["retry-after"] != null || h["Retry-After"] != null) {
+    return "secondary";
+  }
+  if (status === 429) return "secondary";
+  return null;
 }
 
 /**
- * Perform a single GitHub REST request. Returns {status, headers, data}.
- * `data` is the parsed JSON body when possible, else the raw string.
- * Does NOT throw for non-2xx — callers inspect `status`.
+ * Computes how long (ms) until GitHub's primary rate-limit budget resets,
+ * from the `x-ratelimit-reset` header (Unix seconds). Returns null when the
+ * header is missing/unparseable so the caller can fall back to a generic
+ * backoff instead of guessing.
  */
-function githubRequestOnce(method, pathAndQuery, { token, body, userAgent } = {}) {
-  return new Promise((resolve, reject) => {
-    const payload = body === undefined ? undefined : (typeof body === 'string' ? body : JSON.stringify(body));
-    const options = {
-      hostname: 'api.github.com',
-      path: pathAndQuery,
-      method,
-      headers: {
-        'Accept': 'application/vnd.github+json',
-        'User-Agent': userAgent || 'octopus-review-fallback',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-    };
-    if (token) options.headers['Authorization'] = `Bearer ${token}`;
-    if (payload !== undefined) {
-      options.headers['Content-Type'] = 'application/json';
-      options.headers['Content-Length'] = Buffer.byteLength(payload);
-    }
-
-    const req = https.request(options, (res) => {
-      const chunks = [];
-      res.on('data', (c) => chunks.push(c));
-      res.on('end', () => {
-        const raw = Buffer.concat(chunks).toString('utf8');
-        let data = raw;
-        if (raw && res.headers && typeof res.headers['content-type'] === 'string' && res.headers['content-type'].includes('application/json')) {
-          try { data = JSON.parse(raw); } catch (_) { data = raw; }
-        } else if (raw) {
-          try { data = JSON.parse(raw); } catch (_) { data = raw; }
-        }
-        resolve({ status: res.statusCode, headers: res.headers || {}, data, raw });
-      });
-    });
-    req.on('error', reject);
-    if (payload !== undefined) req.write(payload);
-    req.end();
-  });
+function computePrimaryResetWaitMs(headers) {
+  const h = headers || {};
   const resetHeader = h["x-ratelimit-reset"] || h["X-RateLimit-Reset"];
   const resetEpochSeconds = parseInt(resetHeader, 10);
   if (!Number.isFinite(resetEpochSeconds)) return null;
@@ -347,61 +315,93 @@ function computeRetryDelayMs(headers, attempt, opts = {}) {
     }
   }
 
+// Phrases Octopus uses when it is out of monthly AI quota. Matching is
+// case-insensitive; keep these lowercase.
+const QUOTA_DEATH_PATTERNS = [
+  "add your own api keys",
+  "out of monthly ai quota",
+  "monthly ai usage limit",
+  "usage limit reached",
+  "usage limit has been reached",
+  "quota exceeded",
+  "out of quota",
+];
+
   // Exponential backoff: base * 2^attempt.
   const backoff = baseDelay * Math.pow(2, Math.max(0, attempt));
   return Math.min(backoff, maxWait);
 /**
- * For a primary rate-limit response, compute how long to wait for the
- * installation budget to refill, based on `x-ratelimit-reset` (Unix seconds).
- * Returns null if the header is missing/unparseable.
+ * Returns true when a comment body looks like the Octopus quota-death banner
+ * ("add your own API keys" and friends) rather than a real review.
  */
-function computePrimaryResetWaitMs(headers, nowMs = Date.now()) {
-  const h = lowerHeaders(headers);
-  const reset = h['x-ratelimit-reset'];
-  if (reset === undefined || reset === null || reset === '') return null;
-  const resetSeconds = Number(reset);
-  if (!Number.isFinite(resetSeconds)) return null;
-  const resetMs = resetSeconds * 1000;
-  const waitMs = resetMs - nowMs;
-  // Add a small 1s cushion so we don't hit the API right on the boundary,
-  // but never return a negative value.
-  if (waitMs <= 0) return 0;
-  return waitMs + 1000;
+function isQuotaDeathComment(body) {
+  if (!body) return false;
+  const lower = String(body).toLowerCase();
+  return QUOTA_DEATH_PATTERNS.some((pattern) => lower.includes(pattern));
 }
 
 /**
- * Compute the sleep duration for a secondary rate-limit retry. Honors
- * server-provided `Retry-After` in full (bounded only by the in-process
- * wait ceiling). Falls back to exponential backoff otherwise.
+ * Loads the `review` routing profile (primary + fallback models) from
+ * .github/agent-models.yml so the fallback follows fleet model policy
+ * instead of hardcoding models.
  */
-function computeRetryDelayMs(headers, attempt, baseDelayMs = RATE_LIMIT_BASE_DELAY_MS) {
-  const h = lowerHeaders(headers);
-  const retryAfter = h['retry-after'];
-  if (retryAfter !== undefined && retryAfter !== null && retryAfter !== '') {
-    const retryAfterSeconds = Number(retryAfter);
-    if (Number.isFinite(retryAfterSeconds) && retryAfterSeconds >= 0) {
-      // Honor Retry-After IN FULL. Only bound by the in-process ceiling so a
-      // pathological upstream value can't burn the whole job.
-      return Math.min(retryAfterSeconds * 1000, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
-    }
-    // Retry-After can also be an HTTP date.
-    const retryAfterDate = Date.parse(retryAfter);
-    if (Number.isFinite(retryAfterDate)) {
-      const deltaMs = retryAfterDate - Date.now();
-      if (deltaMs > 0) {
-        return Math.min(deltaMs, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
-      }
-      return 0;
-    }
+function loadReviewProfile(configPath) {
+  const resolved = configPath || path.join(__dirname, "../.github/agent-models.yml");
+  const YAML = require("yaml");
+  const config = YAML.parse(fs.readFileSync(resolved, "utf8"));
+  const review = config?.profiles?.review;
+  if (!review || !review.primary) {
+    throw new Error("No `review` profile with a primary model in agent-models.yml");
   }
-  const backoff = baseDelayMs * Math.pow(2, attempt);
-  return Math.min(backoff, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
+  return {
+    models: [review.primary, review.fallback].filter(Boolean),
+    max_tokens: review.max_tokens || 8000,
+    temperature: typeof review.temperature === "number" ? review.temperature : 0.2,
+  };
 }
 
-function isRateLimitedResponse(status, headers, body) {
-  return classifyRateLimit(status, headers, body) !== null;
+function splitRepository() {
+  const [owner, repo] = GITHUB_REPOSITORY.split("/");
+  if (!owner || !repo) {
+    throw new Error(`Invalid GITHUB_REPOSITORY format: ${GITHUB_REPOSITORY}`);
+  }
+  return { owner, repo };
 }
 
+/**
+ * Single GitHub REST attempt — no retry logic. Resolves with
+ * { status, headers, data } so the retry wrapper (githubRequest) can decide
+ * whether to retry, independent of parsing/success handling.
+ */
+function githubRequestOnce({ pathName, method = "GET", payload, accept }) {
+  return new Promise((resolve, reject) => {
+    const body = payload ? JSON.stringify(payload) : "";
+    const req = https.request(
+      {
+        hostname: "api.github.com",
+        path: pathName,
+        method,
+        headers: {
+          Authorization: "Bearer " + GITHUB_TOKEN,
+          "User-Agent": "revvel-octopus-review-fallback",
+          Accept: accept || "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(body),
+        },
+      },
+      (res) => {
+        let data = "";
+        res.on("data", (chunk) => { data += chunk; });
+        res.on("end", () => {
+          resolve({ status: res.statusCode || 0, headers: res.headers || {}, data });
+        });
+      },
+    );
+    req.on("error", reject);
+    if (body) req.write(body);
+    req.end();
+  });
 function githubRequestRaw(method, path, token, body) {
   return new Promise((resolve, reject) => {
     const data = body ? JSON.stringify(body) : null;
@@ -436,14 +436,9 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function readResponseBody(response) {
-  try {
-    const text = await response.text();
-    try {
-      return { text, json: JSON.parse(text) };
-    } catch {
-      return { text, json: null };
 /**
+ * Minimal GitHub REST helper (same shape as scripts/pr-auto-review.js).
+ * `accept` overrides the media type so we can fetch raw diffs too.
  * Perform a GitHub API request with rate-limit-aware retry.
  *
  * `opts.transport` is optional and used by tests to inject a fake responder
@@ -580,221 +575,295 @@ async function main() {
     }
  * Retrying wrapper around githubRequestOnce.
  *
- * - On rate-limit (429 or 403 w/ rate-limit body): waits per computeRetryDelayMs,
- *   retries up to maxRetries. After exhausting retries, throws.
- * - On any other non-2xx: throws immediately with an HTTP error containing
- *   the status and body preview — matches the pre-existing "never retry
-*    genuine errors" behavior.
- * - On 2xx: resolves with the response's parsed data.
+ * Retries rate-limit responses, but PRIMARY (installation budget exhausted)
+ * and SECONDARY (abuse-detection) limits are handled differently — see the
+ * RATE_LIMIT_* doc comment above:
+ *
+ *   - PRIMARY with a usable x-ratelimit-reset: sleep the ACTUAL time until
+ *     reset (not an exponential guess), unless that exceeds
+ *     RATE_LIMIT_MAX_INPROCESS_WAIT_MS — in which case retrying in-process
+ *     cannot possibly succeed before the job's timeout-minutes: 15 kills it,
+ *     so this gives up immediately instead of burning retries that can't
+ *     work. The caller's top-level try/catch (see main()) still turns that
+ *     into a logged warning rather than a red job — same "never fail loud"
+ *     philosophy as before, just an honest one. The 6-hourly `schedule`
+ *     sweep lane in octopus-review-fallback.yml will pick the PR back up
+ *     once the budget resets, PROVIDED shouldReview() doesn't already see a
+ *     fallback marker or healthy Octopus review for it (it won't, since
+ *     this run never got far enough to post one) — flagging as a possible
+ *     follow-up only if that assumption ever needs re-checking, not solving
+ *     it here.
+ *   - SECONDARY (or primary with no reset header to go on): short backoff,
+ *     honoring a server Retry-After when present — this is the case the
+ *     original short-backoff retry was actually designed for.
  */
-async function githubRequest(method, pathAndQuery, opts = {}) {
-  const cfg = getRetryConfig();
-  const maxRetries = opts.maxRetries !== undefined ? opts.maxRetries : cfg.maxRetries;
-  const baseDelayMs = opts.baseDelayMs !== undefined ? opts.baseDelayMs : cfg.baseDelayMs;
-  const maxDelayMs = opts.maxDelayMs !== undefined ? opts.maxDelayMs : cfg.maxDelayMs;
-  const sleepFn = opts.sleepFn || sleep;
+async function githubRequest({ pathName, method = "GET", payload, accept }) {
+  let lastResult;
+  for (let attempt = 1; attempt <= RATE_LIMIT_MAX_RETRIES + 1; attempt++) {
+    lastResult = await githubRequestOnce({ pathName, method, payload, accept });
+    const { status, headers, data } = lastResult;
 
-  let attempt = 0;
-  // total attempts = 1 initial + maxRetries retries
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const res = await githubRequestOnce(method, pathAndQuery, opts);
-    const { status, headers, data, raw } = res;
     if (status >= 200 && status < 300) {
-      return data;
-    }
-    if (isRateLimitedResponse(status, raw || data)) {
-      if (attempt >= maxRetries) {
-        const preview = typeof raw === 'string' ? raw : JSON.stringify(data);
-        const err = new Error(`GitHub HTTP ${status} for ${pathAndQuery} (rate-limited, exhausted ${maxRetries} retries): ${preview}`);
-        err.status = status;
-        err.rateLimited = true;
-        throw err;
+      if (accept && !accept.includes("json")) return data;
+      try {
+        return data ? JSON.parse(data) : {};
+      } catch (err) {
+        throw new Error(`Failed to parse GitHub response: ${err.message}`);
       }
-      const delay = computeRetryDelayMs(headers, attempt, baseDelayMs, maxDelayMs);
-      attempt += 1;
-      await sleepFn(delay);
-      continue;
     }
-    const preview = typeof raw === 'string' ? raw : JSON.stringify(data);
-    const err = new Error(`GitHub HTTP ${status} for ${pathAndQuery}: ${preview}`);
-    err.status = status;
-    throw err;
+
+    if (isRateLimitedResponse(status, data)) {
+      const kind = classifyRateLimit(status, headers, data);
+
+      if (kind === "primary") {
+        const waitMs = computePrimaryResetWaitMs(headers);
+        if (waitMs != null) {
+          if (waitMs > RATE_LIMIT_MAX_INPROCESS_WAIT_MS) {
+            console.warn(
+              `GitHub HTTP ${status} (primary rate limit — installation budget exhausted) ` +
+                `for ${pathName}: budget resets in ${Math.ceil(waitMs / 1000)}s, longer than ` +
+                `this job can wait for (cap ${RATE_LIMIT_MAX_INPROCESS_WAIT_MS / 1000}s, given ` +
+                "timeout-minutes: 15). Not retrying in-process — the 6-hourly schedule sweep " +
+                "in octopus-review-fallback.yml will pick this PR back up once the budget " +
+                "resets.",
+            );
+            throw new Error(
+              `GitHub HTTP ${status} for ${pathName}: primary rate limit, reset too far out ` +
+                `to wait for (${Math.ceil(waitMs / 1000)}s) — ${data.slice(0, 200)}`,
+            );
+          }
+          if (attempt <= RATE_LIMIT_MAX_RETRIES) {
+            console.warn(
+              `GitHub HTTP ${status} (primary rate limit) for ${pathName} — waiting ` +
+                `${Math.ceil(waitMs / 1000)}s for x-ratelimit-reset (attempt ${attempt}/${RATE_LIMIT_MAX_RETRIES})`,
+            );
+            await sleep(waitMs);
+            continue;
+          }
+          // Retries exhausted even though the reset was within bounds — fall
+          // through to the final throw below.
+        }
+        // waitMs == null: no x-ratelimit-reset to go on despite the
+        // "primary" classification (e.g. text-matched with no headers) —
+        // fall through to the generic short-backoff path below rather than
+        // guessing a wait time we have no basis for.
+      }
+
+      if (attempt <= RATE_LIMIT_MAX_RETRIES) {
+        const delayMs = computeRetryDelayMs(headers, attempt);
+        console.warn(
+          `GitHub HTTP ${status} (${kind || "rate limited"}) for ${pathName} — retry ` +
+            `${attempt}/${RATE_LIMIT_MAX_RETRIES} in ${delayMs}ms`,
+        );
+        await sleep(delayMs);
+        continue;
+      }
+    }
+
+    throw new Error(`GitHub HTTP ${status} for ${pathName}: ${data.slice(0, 400)}`);
   }
+  // Unreachable in practice (the loop always returns or throws), but keeps
+  // the function's control flow explicit for lint/readability.
+  const { status, data } = lastResult;
+  throw new Error(`GitHub HTTP ${status} for ${pathName}: ${data.slice(0, 400)}`);
 }
 
-function commentIndicatesQuota(body) {
-  if (!body || typeof body !== 'string') return false;
-  const lower = body.toLowerCase();
-  return lower.includes('usage limit') || lower.includes('add your own api keys');
-}
-
-async function shouldReview({ owner, repo, prNumber, token }) {
-  const reviews = await githubRequest(
-    'GET',
-    `/repos/${owner}/${repo}/pulls/${prNumber}/reviews?per_page=100&page=1`,
-    { token }
-  );
-  if (!Array.isArray(reviews)) return true;
-  // Skip if we've already posted a fallback review.
-  return !reviews.some((r) => r && r.body && typeof r.body === 'string' && r.body.includes('<!-- octopus-fallback-review -->'));
-}
-
-async function postFallbackReview({ owner, repo, prNumber, token, body }) {
-  return githubRequest(
-    'POST',
-    `/repos/${owner}/${repo}/pulls/${prNumber}/reviews`,
-    { token, body: { body, event: 'COMMENT' } }
-  );
-}
-
-async function main() {
-  const token = process.env.GITHUB_TOKEN;
-  const repoSlug = process.env.GITHUB_REPOSITORY;
-  const prNumber = process.env.PR_NUMBER;
-  if (!token || !repoSlug || !prNumber) {
-    console.log('octopus-review-fallback: missing env (GITHUB_TOKEN/GITHUB_REPOSITORY/PR_NUMBER), skipping');
-    return;
+async function listAll(pathBase) {
+  const results = [];
+  for (let page = 1; page <= 10; page++) {
+    const sep = pathBase.includes("?") ? "&" : "?";
+    const batch = await githubRequest({ pathName: `${pathBase}${sep}per_page=100&page=${page}` });
+    if (!Array.isArray(batch) || batch.length === 0) break;
+    results.push(...batch);
+    if (batch.length < 100) break;
   }
-  const [owner, repo] = repoSlug.split('/');
-  const shouldPost = await shouldReview({ owner, repo, prNumber, token });
-  if (!shouldPost) {
-    console.log(`octopus-review-fallback: already posted on #${prNumber}, skipping`);
-    return;
-  }
-  const body = [
-    '<!-- octopus-fallback-review -->',
-    '🐙 **Octopus fallback review**',
-    '',
-    'The primary Octopus reviewer is currently unavailable (monthly usage limit reached).',
-    'This automated fallback acknowledges the PR; a human reviewer will follow up.',
-  ].join('\n');
-  await postFallbackReview({ owner, repo, prNumber, token, body });
-  console.log(`octopus-review-fallback: posted fallback review on #${prNumber}`);
-}
-
-if (require.main === module) {
-  main().catch((err) => {
-    // Intentionally do NOT rethrow: a fallback-review outage must not go red.
-    // Rate-limit exhaustion is now surfaced in the log with a clear marker.
-    console.error('octopus-review-fallback failed:', err && err.message ? err.message : err);
-  });
-}
-
-  } catch {
-    return { text: '', json: null };
-  }
+  return results;
 }
 
 /**
- * Fetch wrapper that understands GitHub's two rate-limit modes.
+ * Decides whether the fallback should review a PR. Returns
+ * { review: boolean, reason: string }.
+ *
+ * - Skip if this fallback already posted (FALLBACK_MARKER found) — dedupe.
+ * - Skip if Octopus posted a HEALTHY review (a real review, or any comment
+ *   that is not the quota banner) — no double-review when Octopus works.
  */
-async function githubRequest(url, init = {}, options = {}) {
-  const {
-    fetchImpl = globalThis.fetch,
-    sleepImpl = sleep,
-    nowImpl = () => Date.now(),
-    logger = console,
-    maxRetries = RATE_LIMIT_MAX_RETRIES,
-    baseDelayMs = RATE_LIMIT_BASE_DELAY_MS,
-    maxInProcessWaitMs = RATE_LIMIT_MAX_INPROCESS_WAIT_MS,
-  } = options;
+async function shouldReview(prNumber) {
+  const { owner, repo } = splitRepository();
+  const reviews = await listAll(`/repos/${owner}/${repo}/pulls/${prNumber}/reviews`);
+  const comments = await listAll(`/repos/${owner}/${repo}/issues/${prNumber}/comments`);
 
-  if (typeof fetchImpl !== 'function') {
-    throw new Error('githubRequest: no fetch implementation available');
+  const allBodies = [...reviews, ...comments];
+  if (allBodies.some((item) => (item.body || "").includes(FALLBACK_MARKER))) {
+    return { review: false, reason: "fallback review already posted" };
   }
 
-  let attempt = 0;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const response = await fetchImpl(url, init);
-    if (response.ok) return response;
-
-    const { text, json } = await readResponseBody(response);
-    const kind = classifyRateLimit(response.status, response.headers, json || text);
-
-    if (!kind) {
-      const err = new Error(
-        `githubRequest: ${init.method || 'GET'} ${url} failed with ${response.status}: ${text.slice(0, 200)}`,
-      );
-      err.status = response.status;
-      err.body = text;
-      throw err;
-    }
-
-    if (kind === 'primary') {
-      const waitMs = computePrimaryResetWaitMs(response.headers, nowImpl());
-      if (waitMs !== null) {
-        if (waitMs > maxInProcessWaitMs) {
-          const err = new Error(
-            `githubRequest: primary rate limit exhausted; reset in ${Math.round(
-              waitMs / 1000,
-            )}s exceeds in-process wait ceiling (${Math.round(
-              maxInProcessWaitMs / 1000,
-            )}s). Deferring to the next scheduled sweep.`,
-          );
-          err.status = response.status;
-          err.rateLimit = 'primary';
-          err.resetWaitMs = waitMs;
-          logger.warn?.(err.message);
-          throw err;
-        }
-        logger.warn?.(
-          `githubRequest: primary rate limit hit; sleeping ${Math.round(
-            waitMs / 1000,
-          )}s until x-ratelimit-reset`,
-        );
-        await sleepImpl(waitMs);
-        // After a primary reset wait, retry once — do not consume the backoff
-        // budget for a condition that has now genuinely cleared.
-        continue;
-      }
-      // Primary-looking response with no usable reset header: fall through to
-      // short-backoff retry.
-    }
-
-    if (attempt >= maxRetries) {
-      const err = new Error(
-        `githubRequest: ${kind} rate limit exceeded after ${attempt} retries at ${url}`,
-      );
-      err.status = response.status;
-      err.rateLimit = kind;
-      throw err;
-    }
-
-    const delayMs = computeRetryDelayMs(response.headers, attempt, baseDelayMs);
-    logger.warn?.(
-      `githubRequest: ${kind} rate limit; retry ${attempt + 1}/${maxRetries} in ${Math.round(
-        delayMs / 1000,
-      )}s`,
-    );
-    await sleepImpl(delayMs);
-    attempt += 1;
+  const octopusReviews = reviews.filter((r) => r.user?.login === OCTOPUS_BOT_LOGIN);
+  const octopusComments = comments.filter((c) => c.user?.login === OCTOPUS_BOT_LOGIN);
+  const healthyReview =
+    octopusReviews.some((r) => !isQuotaDeathComment(r.body)) ||
+    octopusComments.some((c) => !isQuotaDeathComment(c.body));
+  if (healthyReview) {
+    return { review: false, reason: "Octopus posted a healthy review — no double-review" };
   }
+
+  const quotaDead =
+    octopusReviews.some((r) => isQuotaDeathComment(r.body)) ||
+    octopusComments.some((c) => isQuotaDeathComment(c.body));
+  if (quotaDead) {
+    return { review: true, reason: "Octopus reported quota-death" };
+  }
+
+  // No Octopus activity at all — the "absence after N minutes" lane
+  // (workflow only invokes this path once the PR is old enough).
+  return { review: true, reason: "no Octopus review found (absence lane)" };
 }
 
-async function shouldReview(_pr) {
-  // Placeholder: real implementation checks for an existing fallback marker
-  // comment on the PR and returns false if one is already present. The
-  // marker is only written AFTER a review is successfully posted, so a run
-  // that bails out on a primary rate limit leaves no marker behind and the
-  // 6-hourly cron sweep (cron: "17 */6 * * *") will retry it next cycle.
+async function getPRDiff(prNumber) {
+  const { owner, repo } = splitRepository();
+  const diff = await githubRequest({
+    pathName: `/repos/${owner}/${repo}/pulls/${prNumber}`,
+    accept: "application/vnd.github.diff",
+  });
+  return String(diff).slice(0, MAX_DIFF_CHARS);
+}
+
+async function postReview(prNumber, body) {
+  const { owner, repo } = splitRepository();
+  return await githubRequest({
+    pathName: `/repos/${owner}/${repo}/pulls/${prNumber}/reviews`,
+    method: "POST",
+    payload: { body, event: "COMMENT" },
+  });
+}
+
+async function reviewPR(prNumber) {
+  const decision = await shouldReview(prNumber);
+  console.log(`PR #${prNumber}: ${decision.reason}`);
+  if (!decision.review) return false;
+
+  const profile = loadReviewProfile();
+  console.log(`Review profile models (fallback order): ${profile.models.join(" → ")}`);
+
+  const pr = await githubRequest({
+    pathName: `/repos/${splitRepository().owner}/${splitRepository().repo}/pulls/${prNumber}`,
+  });
+  const diff = await getPRDiff(prNumber);
+  if (!diff.trim()) {
+    console.log(`PR #${prNumber}: empty diff, nothing to review`);
+    return false;
+  }
+
+  const result = await callOpenRouter({
+    models: profile.models,
+    max_tokens: profile.max_tokens,
+    temperature: profile.temperature,
+    messages: [
+      {
+        role: "system",
+        content:
+          "You are the fleet's FALLBACK code reviewer, stepping in because Octopus Review " +
+          "(the primary external AI reviewer) is out of monthly quota. Review the PR diff " +
+          "for bugs, security issues, logic errors, and correctness regressions. Be concise " +
+          "and concrete: list findings with file/line references and severity " +
+          "(critical/major/minor). If the change looks clean, say so plainly.",
+      },
+      {
+        role: "user",
+        content:
+          `PR #${prNumber}: ${pr.title || ""}\n\n` +
+          `Description:\n${(pr.body || "(none)").slice(0, 2000)}\n\n` +
+          `Diff:\n\`\`\`diff\n${diff}\n\`\`\``,
+      },
+    ],
+  });
+
+  const reviewBody = [
+    FALLBACK_MARKER,
+    "## 🐙➡️🤖 Fleet Review Fallback (Octopus quota-dead)",
+    "",
+    `Octopus Review couldn't review this PR (${decision.reason}), so the fleet's own ` +
+      "`review` profile stepped in via OpenRouter.",
+    "",
+    result.text,
+    "",
+    "---",
+    `_Model used: \`${result.modelUsed || profile.models[0]}\` · profile: \`review\` ` +
+      "(.github/agent-models.yml) · lane: `octopus-review-fallback.yml` · " +
+      "playbook: `skills/octopus-expert/SKILL.md`_",
+  ].join("\n");
+
+  await postReview(prNumber, reviewBody);
+  console.log(`PR #${prNumber}: fallback review posted (model: ${result.modelUsed || "?"})`);
   return true;
 }
 
+/**
+ * Sweep mode ("absence after N minutes"): scan recently-updated open PRs that
+ * are older than MIN_PR_AGE_MINUTES and have no Octopus review at all, and
+ * review up to MAX_SWEEP_REVIEWS of them. Conservative on purpose — this lane
+ * spends OpenRouter credits.
+ */
+async function sweep() {
+  const { owner, repo } = splitRepository();
+  const minAgeMinutes = parseInt(process.env.MIN_PR_AGE_MINUTES || "30", 10);
+  const maxReviews = parseInt(process.env.MAX_SWEEP_REVIEWS || "3", 10);
+  const prs = await listAll(`/repos/${owner}/${repo}/pulls?state=open&sort=updated&direction=desc`);
+
+  let reviewed = 0;
+  for (const pr of prs) {
+    if (reviewed >= maxReviews) break;
+    if (pr.draft) continue;
+    const ageMinutes = (Date.now() - new Date(pr.created_at).getTime()) / 60000;
+    if (ageMinutes < minAgeMinutes) continue;
+    try {
+      if (await reviewPR(pr.number)) reviewed++;
+    } catch (err) {
+      console.error(`PR #${pr.number}: sweep review failed: ${err.message}`);
+    }
+  }
+  console.log(`Sweep complete: ${reviewed} fallback review(s) posted.`);
+}
+
 async function main() {
+  if (!GITHUB_TOKEN) {
+    console.error("GITHUB_TOKEN is required");
+    return;
+  }
+  if (!process.env.OPENROUTER_API_KEY) {
+    // Never hard-fail: a missing/unfunded key is an ops problem, not a bug.
+    console.error(
+      "OPENROUTER_API_KEY is not set — fallback review skipped. " +
+        "Check the key AND balance at https://openrouter.ai/credits.",
+    );
+    return;
+  }
+
   try {
-    // Real implementation elided for this patch — the important behavior
-    // change is in githubRequest() / classifyRateLimit() /
-    // computePrimaryResetWaitMs() / computeRetryDelayMs().
+    if (process.env.SWEEP === "true") {
+      await sweep();
+    } else if (PR_NUMBER) {
+      await reviewPR(parseInt(PR_NUMBER, 10));
+    } else {
+      console.error("Set PR_NUMBER for single-PR mode or SWEEP=true for sweep mode.");
+    }
   } catch (err) {
-    // Preserve prior "never fail loud" philosophy: log and exit 0 so the
-    // scheduled workflow reports success and the next sweep retries.
-    console.warn(`octopus-review-fallback: ${err.message}`);
+    // Best-effort by design: a fallback-review outage must not go red itself.
+    console.error(`octopus-review-fallback failed: ${err.message}`);
   }
 }
 
+if (require.main === module) {
+  main();
+}
+
 module.exports = {
+  isQuotaDeathComment,
+  loadReviewProfile,
+  shouldReview,
+  FALLBACK_MARKER,
+  OCTOPUS_BOT_LOGIN,
+  QUOTA_DEATH_PATTERNS,
   classifyRateLimit,
   computePrimaryResetWaitMs,
   computeRetryDelayMs,
@@ -804,16 +873,13 @@ module.exports = {
   postFallbackReview,
   main,
   isRateLimitedResponse,
+  classifyRateLimit,
+  computePrimaryResetWaitMs,
   computeRetryDelayMs,
-  isRateLimitedResponse,
   githubRequest,
   githubRequestOnce,
-  commentIndicatesQuota,
-  shouldReview,
-  postFallbackReview,
-  shouldReview,
-  RATE_LIMIT_BASE_DELAY_MS,
   RATE_LIMIT_MAX_RETRIES,
+  RATE_LIMIT_BASE_DELAY_MS,
   RATE_LIMIT_MAX_DELAY_MS,
   RATE_LIMIT_MAX_INPROCESS_WAIT_MS,
 };
