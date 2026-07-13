@@ -34,6 +34,22 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 
 ---
 
+**Date/Time:** 2026-07-13T17:15:00Z
+
+**Task Attempted:** CodeQL workflow `Analyze (actions)` matrix job failed with GitHub API rate limit exceeded during SARIF upload and telemetry gathering (run 29263568406, job 86862858087)
+
+**Outcome:** Success — mitigated via `max-parallel: 1` and a retry-with-backoff step in `codeql.yml`.
+
+**Root Cause of Failure (If any):** Three CodeQL matrix jobs (`actions`, `javascript-typescript`, `python`) ran in parallel, each making API calls during SARIF fingerprinting/upload and telemetry reporting. The combined API load exceeded the GitHub App installation's rate limit (shared across all concurrent workflows in the repo). The `actions` language job hit HTTP 403 "API rate limit exceeded for installation" at the SARIF upload phase and again during telemetry — the latter is internal to `github/codeql-action` and not retryable by user code. Error: `request ID 4C50:33198C:73D136F:18A32DE5:6A5509FD, timestamp 2026-07-13 15:53:33 UTC`.
+
+**Self-Healing Fix / Learned Lesson:** (1) Added `max-parallel: 1` to the CodeQL matrix strategy — serializes the three language scans so their API-heavy upload phases don't overlap, drastically reducing peak API demand. (2) Added a retry step: if the first SARIF upload fails, wait 60s (rate-limit reset window) then retry once. The analyze step already had `continue-on-error: true`, so PR gating is unaffected, but the retry improves the odds of findings actually reaching the Security tab. Lesson: any workflow with a fan-out matrix that touches the GitHub REST API during post-processing (upload, telemetry, status checks) should either serialize via `max-parallel` or add exponential-backoff retry — the installation rate limit is shared across ALL concurrent runs in the repo, not per-workflow.
+
+**Tools Used:** GitHub Actions job logs (`get_job_logs`), CodeQL action v4, `github/codeql-action/upload-sarif@v4`, `max-parallel` strategy key, `wait-for-processing` input.
+
+**Next Action:** Monitor the next CodeQL run on main to confirm all three language scans upload SARIF successfully without rate-limit errors.
+
+---
+
 **Date/Time:** 2026-07-10T00:30:00Z
 
 **Task Attempted:** Stop the changed-Markdown lint gate from failing nearly every PR (recurring `MD012`/`MD025`/`MD003`/`MD004`/… findings on generated `wr/issues/*.md`)
@@ -558,3 +574,22 @@ This file tracks autonomous executions, failures, root causes, and locked-in sol
 **Self-Healing Fix / Learned Lesson:** `removeLabel` is not idempotent on the API side, so make it idempotent at the call site: wrap every `github.rest.issues.removeLabel` in a catch that swallows only `err.status === 404` (the desired end state — label gone — is already true) and rethrows anything else, because a 401/403 is a real auth/permission failure that must still surface. This is a fleet-wide pattern, not a one-off: any workflow that removes labels in a multi-workflow label ecosystem WILL race eventually. When auditing or writing new label-touching workflows, grep for bare `removeLabel` calls and apply the same guard. (Companion rule already learned: label toggles that need to re-fire downstream `labeled` events must be REMOVE-then-ADD.)
 
 **Next Action:** Merge the branch. Opportunistic follow-up for a future sweep: audit the other 180+ workflows for unguarded `removeLabel` calls and file a `[SELF-HEAL]` issue if any are found.
+
+**Date/Time:** 2026-07-13T15:45:00Z
+
+**Task Attempted:** Full-repo audit-and-fix session spanning the whole automation fleet: (1) a scoped bug sweep of `.github/workflows/*.yml` and `scripts/*` against the recurring-gotcha categories in this file's own header + `CLAUDE.md`; (2) recon of past WR/PR "follow-up" commitments that were made and never completed; (3) a new checkbox-triggered WR-generation feature plus a shared audit/self-healing playbook; (4) a four-fleet "is it actually wired in" audit (WR pipeline, self-healing/monitoring, review/persona roster, secrets+deployment) that surfaced components built but never connected to a live trigger; (5) closing out one of those orphaned WRs (#15797/#15800) end to end.
+
+**Outcome:** Success — 16 tracked tasks completed, 15 draft PRs opened (all with real verification: `npm test`, YAML/`py_compile` validation, or an honest "cannot be verified live from this sandbox" caveat where genuinely untestable), 2 new WR issues filed for still-open security gaps, 1 PR merged (the fleet-wide broken SAML check), 1 orphaned WR/PR pair closed with a documented reason. No auto-merges, no unreviewed code shipped — every fix went through the same draft-PR path the fleet already uses for human/agent review.
+
+**Root Cause of Failure (If any):** N/A — this entry documents a successful session's method and tooling, not a failure. (Individual findings within the session each got their own root-cause writeup in their PR body per this file's/`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`'s methodology, rather than being duplicated here.)
+
+**Self-Healing Fix / Learned Lesson:** Tools and skills actually used, for whoever runs the next one of these:
+- **Orchestration:** the `Agent` tool, spawned in parallel batches (single message, multiple calls) — read-only research agents (`Explore`/`general-purpose` type, no `isolation`) for investigation-only passes, and `general-purpose` agents with `isolation: "worktree"` for anything that writes code, so N agents editing different files never race on the same working tree. Each agent got a self-contained prompt with full context (file paths, line numbers, exact repo conventions to follow) rather than a vague instruction — agents have no memory of this conversation.
+- **Progress tracking:** `TaskCreate`/`TaskUpdate` for every distinct fix/feature, kept in sync with actual PR state (`in_progress` on dispatch, `completed` only once a real PR/issue existed) — not a formality; this is what let a long session with 20+ background agents stay coherent.
+- **GitHub interaction:** exclusively the `mcp__github__*` MCP tool family, never the `gh` CLI (unavailable in this environment) — `search_issues`/`list_issues` for recon, `pull_request_read` (`get`/`get_status`/`get_reviews`/`get_comments`/`get_check_runs`) and `get_check_run`/`get_job_logs`/`actions_list` for diagnosing CI failures from raw logs instead of guessing, `create_pull_request`/`update_pull_request`/`merge_pull_request` for the actual PR lifecycle, `issue_write`/`add_issue_comment` for closing out the orphaned WR.
+- **Direct verification over trust:** every "is this actually wired in" claim was grep/read-verified against the live tree, not inferred from docs or comments — docs and code comments in this repo have already drifted from reality more than once (stale `AUTOMATION_AUDIT.md`, stale `OAUDREY_DEPLOYMENT_STANDARD.md`, a reviewer-roster comment advertising bots that silently no-op). Several bugs were confirmed by literally executing the broken code path (`python3 -m py_compile` on an extracted heredoc payload; reproducing a merge conflict in a temp git repo to trigger a false-success exit code) rather than reading it and assuming.
+- **Own-turn tools used sparingly and only for small, low-risk edits:** `Read`/`Edit`/`Bash`/`Grep` directly (not via a subagent) for things a subagent had already finished and only needed a one-line follow-up fix (a misplaced `nosemgrep` suppression comment) or a PR-metadata change (adding a `docs-freshness: <reason>` silencing line to a PR body) — reserved for cases confident and small enough not to warrant spinning up a whole agent.
+- **User-facing tools:** `AskUserQuestion` for the few genuinely ambiguous forks (fix-ownership model, audit scope) — note it failed twice with a transport error mid-session and a third call later succeeded; when a tool fails, state the assumption being made instead of blocking indefinitely on a broken tool. `mcp__Claude_Code_Remote__send_later` for scheduled PR check-ins so CI/mergeability got re-checked without polling.
+- **No `Skill`-tool skills were invoked this session** — everything above was direct tool orchestration, not a packaged skill/slash-command. If a recurring version of this audit becomes common, it may be worth packaging the "diagnose → scope a fix → isolated-worktree agent → verify → draft PR" loop as an actual Skill so it's invocable in one step instead of hand-assembled each time.
+
+**Next Action:** See `standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md` for the reusable methodology and the growing fix-pattern catalog. Open items from this session still needing a priority call before more PRs get dispatched: `scripts/security-fleet.js` has zero trigger (the fleet's prompt-injection/secret-exfil/permission-drift detector never runs), `credential-autonomy-agent.yml` runs hourly and can structurally never report failure, and `self-heal-pr.yml`/`reset-self-heal-issue.yml` (CLAUDE.md's own documented loop steps 4 and 6) are 100% manual despite being described as automatic.

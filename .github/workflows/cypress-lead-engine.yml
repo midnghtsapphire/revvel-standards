@@ -4,7 +4,7 @@ name: Cypress E2E — life-insurance-lead-engine
 # Triggers only when files inside that app change (per docs/TESTING_STACK.md:
 # Cypress is per-app, not repo-wide).
 #
-# Uses cypress-io/github-action@v6 which handles system deps (Xvfb, etc.) +
+# Uses cypress-io/github-action@v7 which handles system deps (Xvfb, etc.) +
 # caching natively.
 #
 # Applitools (visual regression) was deliberately deferred to a follow-on PR
@@ -37,7 +37,7 @@ jobs:
           node-version: "22"
       - name: Cypress run (build + start + test)
         continue-on-error: true  # informational while we iterate on first-run stability
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         with:
           working-directory: products/life-insurance-lead-engine/build
           install-command: npm install --no-audit --no-fund --legacy-peer-deps
