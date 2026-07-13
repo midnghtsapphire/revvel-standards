@@ -14,6 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+    if: contains(join(github.event.issue.labels.*.name, ','), 'work-request')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -42,6 +47,10 @@ jobs:
               "#brief": "research-report",
               "#tool": "desktop-tool",
               "#cli": "desktop-tool",
+              "#tool": "desktop-tool",
+              "#cli": "cli-tool",
+              "#web": "web-app",
+              "#api": "api-service",
               "#lib": "library",
               "#library": "library",
               "#doc": "documentation",
@@ -50,6 +59,9 @@ jobs:
               "#api": "api",
               "#service": "service",
               "#dataset": "dataset",
+              "#analysis": "analysis-report",
+              "#report": "analysis-report",
+              "#automation": "automation-script",
           }
 
           ALLOWED_OUTPUT_TYPES = sorted(set(TITLE_TAG_OUTPUT_TYPE.values()) | {
@@ -61,6 +73,14 @@ jobs:
               "api",
               "service",
               "dataset",
+              "cli-tool",
+              "web-app",
+              "api-service",
+              "library",
+              "documentation",
+              "specification",
+              "analysis-report",
+              "automation-script",
               "other",
           })
 
@@ -70,6 +90,11 @@ jobs:
               "Output Type",
               "Priority",
               "Effort",
+          FORM_FIELDS = [
+              "Output Type",
+              "Priority",
+              "Effort",
+              "Deadline",
           ]
 
           def infer_output_type_from_title_tags(title):
@@ -82,6 +107,7 @@ jobs:
               return None
 
           def parse_form(body):
+              """Parse a GitHub issue-forms body into {heading: value} dict."""
               parsed = {}
               if not body:
                   return parsed
@@ -99,6 +125,33 @@ jobs:
                       value = ""
                   parsed[field] = value
               return parsed
+              # Issue forms render as: ### Heading\n\nvalue\n\n### Next Heading ...
+              sections = re.split(r"^###\s+", body, flags=re.MULTILINE)
+              for section in sections:
+                  section = section.strip()
+                  if not section:
+                      continue
+                  lines = section.splitlines()
+                  heading = lines[0].strip()
+                  value = "\n".join(lines[1:]).strip()
+                  # GitHub renders unfilled fields as "_No response_"
+                  if value.lower() in ("_no response_", "no response", ""):
+                      value = ""
+                  parsed[heading] = value
+              return parsed
+          def infer_output_type_from_title_tags(title):
+              # Title-route tags are an intake fallback for sparse/link-only WRs.
+              # Keep this mapping (TITLE_TAG_OUTPUT_TYPE, above) in sync with
+              # weekly-research.yml and openrouter-auto-route.yml so title-only
+              # WR intake resolves the same Output Type across detection,
+              # classification, and routing.
+              # First recognized tag wins, preserving user intent ordering.
+              tags_in_order = re.findall(r"(?<!\w)#([a-z][a-z0-9-]*)\b", (title or "").lower())
+              for tag in tags_in_order:
+                  output_type = TITLE_TAG_OUTPUT_TYPE.get(f"#{tag}")
+                  if output_type:
+                      return output_type
+              return None
 
           def fields_needing_classification(parsed, title_output_type):
               needing = []
@@ -117,6 +170,41 @@ jobs:
               # For now, return an empty dict so the merge-precedence logic
               # still exercises the explicit > title-tag > classifier > default chain.
               return {}
+
+                  if value is None or value == "auto-classify":
+                      needed.append(field)
+              return needed
+
+          def call_openrouter(needed, body, title):
+              prompt = (
+                  "You are classifying a software work request into routing fields for a "
+                  "GitHub Project v2 board. Only return JSON; no commentary.\n\n"
+                  f"Title: {title}\n\nBody:\n{body[:6000]}\n\n"
+                  "For each field below, pick exactly one option from its list that best "
+                  "matches the request. If the request gives no clear signal, pick the "
+                  "safest opinionated default (which is the first option in each list).\n\n"
+              )
+              for field in needed:
+                  prompt += f"- {field}: {DROPDOWN_FIELDS[field]}\n"
+              prompt += (
+                  "\nReturn a single JSON object whose keys are the field names above and "
+                  "whose values are the chosen option strings. Example: "
+                  '{"Output Type": "cli-product", "Priority": "medium"}'
+              )
+
+          def fields_needing_classification(parsed, title_output_type):
+              """Return the subset of FORM_FIELDS that still need a value.
+
+              If the title tags already pin down Output Type, exclude it from
+              the classifier request so we don't waste a call.
+              """
+              needing = []
+              for field in FORM_FIELDS:
+                  if field == "Output Type" and title_output_type:
+                      continue
+                  if not parsed.get(field):
+                      needing.append(field)
+              return needing
 
           def main():
               title = os.environ.get("ISSUE_TITLE", "")
@@ -166,6 +254,73 @@ jobs:
                   "fallback = opinionated default._"
               )
 
+              # Merge: explicit > title tags > classifier-output > defaults.
+              #
+              # We don't actually invoke the classifier here (that lives in a
+              # sibling workflow); this job just resolves what we already know
+              # deterministically and emits a summary comment describing the
+              # provenance of each field so downstream automation and humans
+              # can audit it.
+              resolved = {}
+              sources = {}
+              classifier_output = {}  # placeholder for future classifier hook
+
+              for field in FORM_FIELDS:
+                  explicit = parsed.get(field, "").strip()
+                  if explicit:
+                      resolved[field] = explicit
+                      sources[field] = "explicit"
+                  elif field == "Output Type" and title_output_type in ALLOWED_OUTPUT_TYPES and title_output_type:
+                      resolved[field] = title_output_type
+                      sources[field] = "title-tag"
+                  elif classifier_output.get(field):
+                      resolved[field] = classifier_output[field]
+                      sources[field] = "classifier"
+                  else:
+                      if field == "Output Type":
+                          resolved[field] = DEFAULT_OUTPUT_TYPE
+                      else:
+                          resolved[field] = ""
+                      sources[field] = "fallback"
+
+              lines = [
+                  "<!-- wr-auto-classify -->",
+                  "### Auto-classification summary",
+                  "",
+              ]
+              for field in FORM_FIELDS:
+                  value = resolved[field] or "_(unset)_"
+                  lines.append(f"- **{field}**: {value} _(source: {sources[field]})_")
+              lines.append("")
+              lines.append(
+                  "_Source legend: explicit = filled in the form; "
+                  "title-tag = inferred from #tag in issue title; "
+                  "classifier = inferred by OpenRouter classifier; "
+                  "fallback = opinionated default._"
+              )
+
+              comment = "\n".join(lines)
+              print(comment)
+
+              payload = {
+                  "issue": issue_number,
+                  "repo": repo,
+                  "resolved": resolved,
+                  "sources": sources,
+                  "needing_classification": needing,
+              try:
+                  urllib.request.urlopen(req, timeout=15).read()
+              except (urllib.error.URLError, urllib.error.HTTPError) as e:
+                  print(f"::warning::could not post classification comment: {e}")
+
+          # ---------- main ----------
+
+          parsed = parse_form(ISSUE_BODY)
+
+          title_output_type = infer_output_type_from_title_tags(ISSUE_TITLE)
+          if title_output_type:
+              print(f"Title route tag inferred Output Type: {title_output_type}")
+
               comment = "\n".join(summary_lines)
 
               if issue_number and repo:
@@ -173,6 +328,105 @@ jobs:
                       ["gh", "issue", "comment", str(issue_number),
                        "--repo", repo, "--body", comment],
                       check=False,
+          classified = {}
+          used_fallback = False
+
+          if needed and HAS_OPENROUTER:
+              classified = call_openrouter(needed, ISSUE_BODY, ISSUE_TITLE)
+              print(f"OpenRouter returned: {classified}")
+          elif needed:
+              print("OpenRouter not configured; using opinionated defaults for blank fields.")
+              used_fallback = True
+
+          # Merge: explicit > title tags > classifier-output > defaults. Validate
+          # against allowed options.
+          final = {}
+          for field, allowed in DROPDOWN_FIELDS.items():
+              explicit = parsed.get(field)
+              if explicit and explicit != "auto-classify" and explicit in allowed:
+                  final[field] = explicit
+              elif field == "Output Type" and title_output_type in allowed:
+                  final[field] = title_output_type
+              elif classified.get(field) in allowed:
+                  final[field] = classified[field]
+              else:
+                  final[field] = DEFAULTS[field]
+                  used_fallback = True
+
+          print(f"Final field values to write: {final}")
+
+          # Resolve project + fields
+          project = fetch_project_and_item(ISSUE_NODE_ID)
+          project_id = project["id"]
+
+          field_index = {}  # name -> {id, options: {name -> id}}
+          for f in project["fields"]["nodes"]:
+              if not f or "name" not in f:
+                  continue
+              field_index[f["name"]] = {
+                  "id": f["id"],
+                  "options": {opt["name"]: opt["id"] for opt in f.get("options", [])},
+              }
+              print("::group::wr-auto-classify payload")
+              print(json.dumps(payload, indent=2, sort_keys=True))
+              print("::endgroup::")
+
+          if __name__ == "__main__":
+              main()
+          # Ensure issue is on project
+          item_id = find_or_add_item(project_id, ISSUE_NODE_ID)
+          print(f"Project item id: {item_id}")
+
+          # Apply each field
+          summary_lines = []
+          for field, value in final.items():
+              info = field_index.get(field)
+              if not info:
+                  print(f"::warning::Field '{field}' not found in project; skipping.")
+                  used_fallback = True
+                  continue
+              opt_id = info["options"].get(value)
+              if not opt_id:
+                  print(f"::warning::Option '{value}' not found in '{field}'; falling back to default.")
+                  used_fallback = True
+                  value = DEFAULTS[field]
+                  opt_id = info["options"].get(value)
+                  if not opt_id:
+                      print(f"::warning::Default '{value}' not found in '{field}' either; skipping.")
+                      continue
+              update_single_select(project_id, item_id, info["id"], opt_id)
+              source = (
+                  "explicit" if (parsed.get(field) and parsed[field] != "auto-classify" and parsed[field] in DROPDOWN_FIELDS[field])
+                  else "title-tag" if (field == "Output Type" and title_output_type in DROPDOWN_FIELDS[field] and value == title_output_type)
+                  else "classifier" if classified.get(field) in DROPDOWN_FIELDS[field]
+                  else "fallback"
+              )
+              summary_lines.append(f"- `{field}` = `{value}` _({source})_")
+
+          # Always set Status = Inbox at intake (lifecycle, not a classification).
+          status = field_index.get("Status")
+          if status and "Inbox" in status["options"]:
+              update_single_select(project_id, item_id, status["id"], status["options"]["Inbox"])
+              summary_lines.append("- `Status` = `Inbox` _(intake floor)_")
+
+          if used_fallback:
+              add_label("auto:default-fallback")
+
+          # Apply the output-type label so other automation can easily read the routing decision
+          if final.get("Output Type"):
+              add_label(f"output-type:{final['Output Type']}")
+
+          pdf_batch_allowed = {"Not applicable", "Autocreate 3", "Autocreate 20"}
+          pdf_batch_raw = None
+          if final.get("Output Type") == "sellable-pdf":
+              pdf_batch_raw = parse_form_section(ISSUE_BODY, "PDF pipeline batch")
+          extra_summary = []
+          if final.get("Output Type") == "sellable-pdf" and pdf_batch_raw:
+              if pdf_batch_raw in pdf_batch_allowed:
+                  extra_summary.append(f"- `PDF pipeline batch` = `{pdf_batch_raw}` _(explicit)_")
+              else:
+                  extra_summary.append(
+                      f"- `PDF pipeline batch` = ⚠️ unrecognized (`{pdf_batch_raw}`); expected one of {sorted(pdf_batch_allowed)}"
                   )
 
               print(json.dumps({"resolved": resolved, "title_output_type": title_output_type}))
