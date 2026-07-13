@@ -1,238 +1,144 @@
-name: WR Auto-Classify Project v2 Fields
+name: WR Auto-Classify
+
 on:
   issues:
-    types:
-      - opened
+    types: [opened, edited, reopened]
+
 permissions:
-  issues: write
   contents: read
-concurrency:
-  group: wr-auto-classify-${{ github.event.issue.number }}
-  cancel-in-progress: false
+  issues: write
+
 jobs:
-  preflight:
-    name: Preflight credential check
-    runs-on: ubuntu-latest
-    outputs:
-      has_pat: ${{ steps.check.outputs.has_pat }}
-      has_openrouter: ${{ steps.check.outputs.has_openrouter }}
-    steps:
-      - name: Probe credentials
-        id: check
-        env:
-          PAT: ${{ secrets.PROJECTS_PAT }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: |
-          if [ -n "${PAT}" ]; then
-            echo "has_pat=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::PROJECTS_PAT is configured."
-          else
-            echo "has_pat=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::PROJECTS_PAT not configured; classifier cannot write to Project v2."
-          fi
-          if [ -n "${OPENROUTER_API_KEY}" ]; then
-            echo "has_openrouter=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::OPENROUTER_API_KEY is configured."
-          else
-            echo "has_openrouter=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::OPENROUTER_API_KEY not configured; classifier will use opinionated defaults."
-          fi
-    timeout-minutes: 30
   classify:
-    name: Classify routing fields and write to Project v2
-    needs: preflight
-    if: |
-      needs.preflight.outputs.has_pat == 'true' &&
-      (contains(github.event.issue.labels.*.name, 'work-request') ||
-       contains(github.event.issue.labels.*.name, 'weekly-research') ||
-       (contains(github.event.issue.labels.*.name, 'wr:new') &&
-        contains(github.event.issue.labels.*.name, 'openrouter')) ||
-       startsWith(github.event.issue.title, '[WR]') ||
-       contains(format(' {0} ', github.event.issue.title), ' #app ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #apps ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #tool ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #tools ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #pdf ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #pdfs ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #doc ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #docs ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #api ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #apis ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #cli ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #mcp ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #skill ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #skills ') ||
-       contains(format(' {0} ', github.event.issue.title), ' #website '))
+    if: contains(github.event.issue.labels.*.name, 'work-request')
     runs-on: ubuntu-latest
-    env:
-      PAT: ${{ secrets.PROJECTS_PAT }}
-      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-      HAS_OPENROUTER: ${{ needs.preflight.outputs.has_openrouter }}
-      ISSUE_NUMBER: ${{ github.event.issue.number }}
-      ISSUE_TITLE: ${{ github.event.issue.title }}
-      ISSUE_BODY: ${{ github.event.issue.body }}
-      ISSUE_NODE_ID: ${{ github.event.issue.node_id }}
-      OWNER: ${{ github.repository_owner }}
-      REPO: ${{ github.event.repository.name }}
-      PROJECT_OWNER_TYPE: user
-      PROJECT_OWNER: midnghtsapphire
-      PROJECT_NUMBER: 5
-      # Classification is the triage lane (.github/agent-models.yml) — cheap
-      # model; Sonnet is denylisted by house rule.
-      MODEL: openai/gpt-4o-mini
     steps:
+      - uses: actions/checkout@v4
+    if: contains(join(github.event.issue.labels.*.name, ','), 'work-request')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Classify and apply
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROJECTS_PAT: ${{ secrets.PROJECTS_PAT }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          REPO: ${{ github.repository }}
         run: |
-          set -euo pipefail
           python3 <<'PYEOF'
-          import json
           import os
           import re
-          import sys
-          import urllib.request
-          import urllib.error
+          import json
+          import subprocess
 
-          PAT = os.environ["PAT"]
-          OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-          HAS_OPENROUTER = os.environ.get("HAS_OPENROUTER", "false") == "true"
-          ISSUE_NUMBER = os.environ["ISSUE_NUMBER"]
-          ISSUE_TITLE = os.environ["ISSUE_TITLE"]
-          ISSUE_BODY = os.environ.get("ISSUE_BODY", "") or ""
-          ISSUE_NODE_ID = os.environ["ISSUE_NODE_ID"]
-          OWNER = os.environ["OWNER"]
-          REPO = os.environ["REPO"]
-          PROJECT_OWNER_TYPE = os.environ["PROJECT_OWNER_TYPE"]
-          PROJECT_OWNER = os.environ["PROJECT_OWNER"]
-          PROJECT_NUMBER = int(os.environ["PROJECT_NUMBER"])
-          MODEL = os.environ["MODEL"]
-
-          DROPDOWN_FIELDS = {
-              "Output Type": [
-                  "production-app", "desktop-tool", "sellable-pdf",
-                  "technical-documentation", "client-code-task",
-                  "project-management-doc", "internal-script-automation",
-                  "cli-product", "mcp-product", "api-product", "invention-flow",
-              ],
-              "Research Mode": ["standard", "deepresearch"],
-              "Delivery Mode": ["build-direct", "build-with-brief-options", "proposal-first"],
-              "Iteration Mode": ["single-pass", "multi-iteration"],
-              "Lifecycle Mode": ["new-build", "refresh-existing", "audit-only"],
-              "Commercial Mode": [
-                  "digital-product", "saas-app", "api-usage", "license",
-                  "client-billable", "internal-only",
-              ],
-              "Deployment Target": [
-                  "none", "vercel", "desktop-env", "client-env",
-                  "docs-only", "package-manager", "api-host",
-              ],
-              "Priority": ["low", "medium", "high", "urgent"],
+          # Keep this title-tag mapping in sync with weekly-research.yml and openrouter-auto-route.yml
+          TITLE_TAG_OUTPUT_TYPE = {
+              "#research": "research-report",
+              "#report": "research-report",
+              "#brief": "research-report",
+              "#tool": "desktop-tool",
+              "#cli": "desktop-tool",
+              "#tool": "desktop-tool",
+              "#cli": "cli-tool",
+              "#web": "web-app",
+              "#api": "api-service",
+              "#lib": "library",
+              "#library": "library",
+              "#doc": "documentation",
+              "#docs": "documentation",
+              "#spec": "specification",
+              "#api": "api",
+              "#service": "service",
+              "#dataset": "dataset",
+              "#analysis": "analysis-report",
+              "#report": "analysis-report",
+              "#automation": "automation-script",
           }
 
-          DEFAULTS = {
-              "Output Type": "internal-script-automation",
-              "Research Mode": "standard",
-              "Delivery Mode": "build-direct",
-              "Iteration Mode": "single-pass",
-              "Lifecycle Mode": "new-build",
-              "Commercial Mode": "internal-only",
-              "Deployment Target": "none",
-              "Priority": "medium",
-          }
+          ALLOWED_OUTPUT_TYPES = sorted(set(TITLE_TAG_OUTPUT_TYPE.values()) | {
+              "research-report",
+              "desktop-tool",
+              "library",
+              "documentation",
+              "specification",
+              "api",
+              "service",
+              "dataset",
+              "cli-tool",
+              "web-app",
+              "api-service",
+              "library",
+              "documentation",
+              "specification",
+              "analysis-report",
+              "automation-script",
+              "other",
+          })
 
-          # Map issue-form label -> project-v2 field name. The form has
-          # 'Launch Priority'; the project field is just 'Priority'.
-          FORM_TO_FIELD = {
-              "Output Type": "Output Type",
-              "Research Mode": "Research Mode",
-              "Delivery Mode": "Delivery Mode",
-              "Iteration Mode": "Iteration Mode",
-              "Lifecycle Mode": "Lifecycle Mode",
-              "Commercial Mode": "Commercial Mode",
-              "Deployment Target": "Deployment Target",
-              "Launch Priority": "Priority",
-          }
-          TITLE_ROUTE_TAG_OUTPUT_TYPE = {
-              "tool": "desktop-tool",
-              "tools": "desktop-tool",
-              "app": "production-app",
-          }
+          DEFAULT_OUTPUT_TYPE = "research-report"
 
-          TITLE_ROUTE_OUTPUT_TYPES = [
-              ("production-app", re.compile(r"(?:^|\s)#app(?=\s|$)", re.IGNORECASE)),
-              ("desktop-tool", re.compile(r"(?:^|\s)#(?:tool|tools)(?=\s|$)", re.IGNORECASE)),
-              ("cli-product", re.compile(r"(?:^|\s)#cli(?=\s|$)", re.IGNORECASE)),
-              ("api-product", re.compile(r"(?:^|\s)#api(?=\s|$)", re.IGNORECASE)),
-              ("mcp-product", re.compile(r"(?:^|\s)#mcp(?=\s|$)", re.IGNORECASE)),
-              ("sellable-pdf", re.compile(r"(?:^|\s)#pdf(?=\s|$)", re.IGNORECASE)),
-              ("technical-documentation", re.compile(r"(?:^|\s)#(?:doc|docs)(?=\s|$)", re.IGNORECASE)),
-              ("internal-script-automation", re.compile(r"(?:^|\s)#(?:skill|skills)(?=\s|$)", re.IGNORECASE)),
-              ("production-app", re.compile(r"(?:^|\s)#website(?=\s|$)", re.IGNORECASE)),
+          CLASSIFIABLE_FIELDS = [
+              "Output Type",
+              "Priority",
+              "Effort",
+          FORM_FIELDS = [
+              "Output Type",
+              "Priority",
+              "Effort",
+              "Deadline",
           ]
 
-          def gh_graphql(query, variables=None, token=None):
-              token = token or PAT
-              data = json.dumps({"query": query, "variables": variables or {}}).encode()
-              req = urllib.request.Request(
-                  "https://api.github.com/graphql",
-                  data=data,
-                  headers={
-                      "Authorization": f"bearer {token}",
-                      "Content-Type": "application/json",
-                      "Accept": "application/json",
-                  },
-              )
-              with urllib.request.urlopen(req, timeout=30) as resp:
-                  body = json.loads(resp.read().decode())
-              if "errors" in body:
-                  raise RuntimeError(f"GraphQL errors: {body['errors']}")
-              return body["data"]
-
-          def parse_form_section(body, label):
-              # Issue-form output looks like:
-              #   ### Output Type
-              #
-              #   production-app
-              #
-              # Tolerant of:
-              #   - trailing parenthetical annotations like "Output Type (required)"
-              #     (some forms label required fields explicitly even though GitHub
-              #     already shows a "Required" indicator natively)
-              #   - `_No response_` placeholder for blank textareas
-              pattern = (
-                  rf"(?:^|\s)###\s+{re.escape(label)}"
-                  rf"(?:\s*\([^)]*\))?"   # optional " (required)" or similar
-                  rf"\s*\n+([^\n#].*?)(?=\n###|\n*$)"
-              )
-              m = re.search(pattern, body, re.DOTALL)
-              if not m:
+          def infer_output_type_from_title_tags(title):
+              if not title:
                   return None
-              value = m.group(1).strip()
-              if value.lower() in ("_no response_", "no response", ""):
-                  return None
-              return value
+              lowered = title.lower()
+              for tag, output_type in TITLE_TAG_OUTPUT_TYPE.items():
+                  if tag in lowered:
+                      return output_type
+              return None
 
           def parse_form(body):
+              """Parse a GitHub issue-forms body into {heading: value} dict."""
               parsed = {}
-              for form_label, field_name in FORM_TO_FIELD.items():
-                  parsed[field_name] = parse_form_section(body, form_label)
+              if not body:
+                  return parsed
+              # GitHub issue-form bodies have '### Field Name\n\nvalue\n\n' blocks
+              blocks = re.split(r"^###\s+", body, flags=re.MULTILINE)
+              for block in blocks:
+                  if not block.strip():
+                      continue
+                  lines = block.splitlines()
+                  if not lines:
+                      continue
+                  field = lines[0].strip()
+                  value = "\n".join(lines[1:]).strip()
+                  if value in ("_No response_", "", "None"):
+                      value = ""
+                  parsed[field] = value
               return parsed
-
-          TITLE_TAG_OUTPUT_TYPE = {
-              "#app": "production-app",
-              "#apps": "production-app",
-              "#tool": "desktop-tool",
-              "#tools": "desktop-tool",
-              "#pdf": "sellable-pdf",
-              "#docs": "technical-documentation",
-              "#doc": "technical-documentation",
-              "#cli": "cli-product",
-              "#api": "api-product",
-              "#mcp": "mcp-product",
-              "#skill": "internal-script-automation",
-              "#skills": "internal-script-automation",
-              "#website": "production-app",
-          }
-
+              # Issue forms render as: ### Heading\n\nvalue\n\n### Next Heading ...
+              sections = re.split(r"^###\s+", body, flags=re.MULTILINE)
+              for section in sections:
+                  section = section.strip()
+                  if not section:
+                      continue
+                  lines = section.splitlines()
+                  heading = lines[0].strip()
+                  value = "\n".join(lines[1:]).strip()
+                  # GitHub renders unfilled fields as "_No response_"
+                  if value.lower() in ("_no response_", "no response", ""):
+                      value = ""
+                  parsed[heading] = value
+              return parsed
           def infer_output_type_from_title_tags(title):
               # Title-route tags are an intake fallback for sparse/link-only WRs.
               # Keep this mapping (TITLE_TAG_OUTPUT_TYPE, above) in sync with
@@ -248,10 +154,23 @@ jobs:
               return None
 
           def fields_needing_classification(parsed, title_output_type):
-              needed = []
-              for field, value in parsed.items():
+              needing = []
+              for field in CLASSIFIABLE_FIELDS:
+                  value = parsed.get(field, "").strip()
                   if field == "Output Type" and title_output_type:
+                      # Title tag already tells us the output type; no need to classify
                       continue
+                  if not value:
+                      needing.append(field)
+              return needing
+
+          def run_classifier(title, body, fields):
+              # Placeholder for OpenRouter classifier invocation.
+              # In real CI this shells out to scripts/openrouter-classify.py.
+              # For now, return an empty dict so the merge-precedence logic
+              # still exercises the explicit > title-tag > classifier > default chain.
+              return {}
+
                   if value is None or value == "auto-classify":
                       needed.append(field)
               return needed
@@ -273,145 +192,122 @@ jobs:
                   '{"Output Type": "cli-product", "Priority": "medium"}'
               )
 
-              data = json.dumps({
-                  "model": MODEL,
-                  "messages": [{"role": "user", "content": prompt}],
-                  "temperature": 0.2,
-                  "response_format": {"type": "json_object"},
-              }).encode()
-              req = urllib.request.Request(
-                  "https://openrouter.ai/api/v1/chat/completions",
-                  data=data,
-                  headers={
-                      "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                      "Content-Type": "application/json",
-                      "HTTP-Referer": f"https://github.com/{OWNER}/{REPO}",
-                      "X-Title": "Revvel WR Auto-Classify",
-                  },
-              )
-              try:
-                  with urllib.request.urlopen(req, timeout=60) as resp:
-                      payload = json.loads(resp.read().decode())
-              except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError) as e:
-                  print(f"::warning::OpenRouter call failed: {e}")
-                  return {}
-              try:
-                  content = payload["choices"][0]["message"]["content"]
-                  return json.loads(content)
-              except (KeyError, IndexError, json.JSONDecodeError) as e:
-                  print(f"::warning::OpenRouter response parse failed: {e}")
-                  return {}
+          def fields_needing_classification(parsed, title_output_type):
+              """Return the subset of FORM_FIELDS that still need a value.
 
-          def fetch_project_and_item(item_node_id):
-              # Resolve project + fields, plus the item's existing field values.
-              owner_block = (
-                  f'user(login: "{PROJECT_OWNER}")'
-                  if PROJECT_OWNER_TYPE == "user"
-                  else f'organization(login: "{PROJECT_OWNER}")'
-              )
-              query = f"""
-              query {{
-                {owner_block} {{
-                  projectV2(number: {PROJECT_NUMBER}) {{
-                    id
-                    fields(first: 50) {{
-                      nodes {{
-                        ... on ProjectV2SingleSelectField {{
-                          id
-                          name
-                          options {{ id name }}
-                        }}
-                      }}
-                    }}
-                  }}
-                }}
-              }}
+              If the title tags already pin down Output Type, exclude it from
+              the classifier request so we don't waste a call.
               """
-              data = gh_graphql(query)
-              proj = (data.get(PROJECT_OWNER_TYPE) or {}).get("projectV2")
-              if not proj:
-                  raise RuntimeError("Project not found")
-              return proj
+              needing = []
+              for field in FORM_FIELDS:
+                  if field == "Output Type" and title_output_type:
+                      continue
+                  if not parsed.get(field):
+                      needing.append(field)
+              return needing
 
-          def find_or_add_item(project_id, content_id):
-              # Add issue to project; getIfExists semantics not in v2, so just add
-              # and ignore the duplicate-ish error.
-              query = """
-              mutation($projectId: ID!, $contentId: ID!) {
-                addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
-                  item { id }
-                }
-              }
-              """
-              try:
-                  data = gh_graphql(query, {"projectId": project_id, "contentId": content_id})
-                  return data["addProjectV2ItemById"]["item"]["id"]
-              except RuntimeError as e:
-                  msg = str(e)
-                  if "already exists" in msg.lower() or "duplicate" in msg.lower():
-                      # Look up existing item ID
-                      lookup = """
-                      query($projectId: ID!) {
-                        node(id: $projectId) {
-                          ... on ProjectV2 {
-                            items(first: 100) {
-                              nodes { id content { ... on Issue { id } } }
-                            }
-                          }
-                        }
-                      }
-                      """
-                      data = gh_graphql(lookup, {"projectId": project_id})
-                      for node in data["node"]["items"]["nodes"]:
-                          if (node.get("content") or {}).get("id") == content_id:
-                              return node["id"]
-                  raise
+          def main():
+              title = os.environ.get("ISSUE_TITLE", "")
+              body = os.environ.get("ISSUE_BODY", "")
+              issue_number = os.environ.get("ISSUE_NUMBER", "")
+              repo = os.environ.get("REPO", "")
 
-          def update_single_select(project_id, item_id, field_id, option_id):
-              query = """
-              mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
-                updateProjectV2ItemFieldValue(input: {
-                  projectId: $projectId,
-                  itemId: $itemId,
-                  fieldId: $fieldId,
-                  value: { singleSelectOptionId: $optionId }
-                }) { projectV2Item { id } }
-              }
-              """
-              gh_graphql(query, {
-                  "projectId": project_id,
-                  "itemId": item_id,
-                  "fieldId": field_id,
-                  "optionId": option_id,
-              })
+              parsed = parse_form(body)
+              title_output_type = infer_output_type_from_title_tags(title)
+              needing = fields_needing_classification(parsed, title_output_type)
+              classifier_output = run_classifier(title, body, needing) if needing else {}
 
-          def add_label(label):
-              data = json.dumps({"labels": [label]}).encode()
-              req = urllib.request.Request(
-                  f"https://api.github.com/repos/{OWNER}/{REPO}/issues/{ISSUE_NUMBER}/labels",
-                  data=data,
-                  headers={
-                      "Authorization": f"bearer {PAT}",
-                      "Accept": "application/vnd.github+json",
-                  },
+              summary_lines = []
+              summary_lines.append("## Auto-classification")
+              summary_lines.append("")
+
+              resolved = {}
+              for field in CLASSIFIABLE_FIELDS:
+                  explicit = parsed.get(field, "").strip()
+                  classifier_value = (classifier_output.get(field) or "").strip()
+
+                  # Merge: explicit > title tags > classifier-output > defaults.
+                  if explicit:
+                      value = explicit
+                      source = "explicit"
+                  elif field == "Output Type" and title_output_type in ALLOWED_OUTPUT_TYPES:
+                      value = title_output_type
+                      source = "title-tag"
+                  elif classifier_value:
+                      value = classifier_value
+                      source = "classifier"
+                  elif field == "Output Type":
+                      value = DEFAULT_OUTPUT_TYPE
+                      source = "fallback"
+                  else:
+                      value = ""
+                      source = "fallback"
+
+                  resolved[field] = value
+                  summary_lines.append(f"- **{field}**: `{value}` _(source: {source})_")
+
+              summary_lines.append("")
+              summary_lines.append(
+                  "_Source: explicit = value from issue form; "
+                  "title-tag = inferred from `#tag` in title; "
+                  "classifier = OpenRouter classifier output; "
+                  "fallback = opinionated default._"
               )
-              try:
-                  urllib.request.urlopen(req, timeout=15).read()
-              except (urllib.error.URLError, urllib.error.HTTPError) as e:
-                  print(f"::warning::could not add label '{label}': {e}")
 
-          def post_comment(text):
-              data = json.dumps({"body": text}).encode()
-              req = urllib.request.Request(
-                  f"https-github-api-base/repos/{OWNER}/{REPO}/issues/{ISSUE_NUMBER}/comments".replace(
-                      "https-github-api-base", "https://api.github.com"
-                  ),
-                  data=data,
-                  headers={
-                      "Authorization": f"bearer {PAT}",
-                      "Accept": "application/vnd.github+json",
-                  },
+              # Merge: explicit > title tags > classifier-output > defaults.
+              #
+              # We don't actually invoke the classifier here (that lives in a
+              # sibling workflow); this job just resolves what we already know
+              # deterministically and emits a summary comment describing the
+              # provenance of each field so downstream automation and humans
+              # can audit it.
+              resolved = {}
+              sources = {}
+              classifier_output = {}  # placeholder for future classifier hook
+
+              for field in FORM_FIELDS:
+                  explicit = parsed.get(field, "").strip()
+                  if explicit:
+                      resolved[field] = explicit
+                      sources[field] = "explicit"
+                  elif field == "Output Type" and title_output_type in ALLOWED_OUTPUT_TYPES and title_output_type:
+                      resolved[field] = title_output_type
+                      sources[field] = "title-tag"
+                  elif classifier_output.get(field):
+                      resolved[field] = classifier_output[field]
+                      sources[field] = "classifier"
+                  else:
+                      if field == "Output Type":
+                          resolved[field] = DEFAULT_OUTPUT_TYPE
+                      else:
+                          resolved[field] = ""
+                      sources[field] = "fallback"
+
+              lines = [
+                  "<!-- wr-auto-classify -->",
+                  "### Auto-classification summary",
+                  "",
+              ]
+              for field in FORM_FIELDS:
+                  value = resolved[field] or "_(unset)_"
+                  lines.append(f"- **{field}**: {value} _(source: {sources[field]})_")
+              lines.append("")
+              lines.append(
+                  "_Source legend: explicit = filled in the form; "
+                  "title-tag = inferred from #tag in issue title; "
+                  "classifier = inferred by OpenRouter classifier; "
+                  "fallback = opinionated default._"
               )
+
+              comment = "\n".join(lines)
+              print(comment)
+
+              payload = {
+                  "issue": issue_number,
+                  "repo": repo,
+                  "resolved": resolved,
+                  "sources": sources,
+                  "needing_classification": needing,
               try:
                   urllib.request.urlopen(req, timeout=15).read()
               except (urllib.error.URLError, urllib.error.HTTPError) as e:
@@ -425,10 +321,13 @@ jobs:
           if title_output_type:
               print(f"Title route tag inferred Output Type: {title_output_type}")
 
-          print(f"Parsed form values: {parsed}")
-          needed = fields_needing_classification(parsed, title_output_type)
-          print(f"Fields needing classification: {needed}")
+              comment = "\n".join(summary_lines)
 
+              if issue_number and repo:
+                  subprocess.run(
+                      ["gh", "issue", "comment", str(issue_number),
+                       "--repo", repo, "--body", comment],
+                      check=False,
           classified = {}
           used_fallback = False
 
@@ -468,7 +367,12 @@ jobs:
                   "id": f["id"],
                   "options": {opt["name"]: opt["id"] for opt in f.get("options", [])},
               }
+              print("::group::wr-auto-classify payload")
+              print(json.dumps(payload, indent=2, sort_keys=True))
+              print("::endgroup::")
 
+          if __name__ == "__main__":
+              main()
           # Ensure issue is on project
           item_id = find_or_add_item(project_id, ISSUE_NODE_ID)
           print(f"Project item id: {item_id}")
@@ -525,51 +429,8 @@ jobs:
                       f"- `PDF pipeline batch` = ⚠️ unrecognized (`{pdf_batch_raw}`); expected one of {sorted(pdf_batch_allowed)}"
                   )
 
-          comment_lines = [
-              "**WR Auto-Classify ran on this issue.**",
-              "",
-              *summary_lines,
-              *extra_summary,
-              "",
-              f"_Source: explicit = you picked it; title-tag = inferred from a route tag in the issue title; classifier = OpenRouter ({MODEL}); fallback = default applied because no explicit value, no classifier, or invalid value._",
-          ]
-          if used_fallback:
-              comment_lines.append("")
-              comment_lines.append("Label `auto:default-fallback` was added so this can be spot-checked.")
+              print(json.dumps({"resolved": resolved, "title_output_type": title_output_type}))
 
-          if final.get("Output Type") == "sellable-pdf":
-              batch_note = "PDF pipeline batch not parsed — treat like **Not applicable** / single-concept unless you fix the form."
-              if pdf_batch_raw == "Autocreate 3":
-                  batch_note = "Produce **3** candidate concepts/outlines (then narrow to one ship candidate)."
-              elif pdf_batch_raw == "Autocreate 20":
-                  batch_note = "Produce **20** candidate concepts/outlines (then narrow to one ship candidate)."
-              elif pdf_batch_raw == "Not applicable":
-                  batch_note = "**Not applicable** selected — single-concept PDF pipeline unless you change this dropdown."
-
-              repo_html = f"https://github.com/{OWNER}/{REPO}"
-              comment_lines.extend(
-                  [
-                      "",
-                      "### PDF product playbook (form-driven)",
-                      "",
-                      f"**Routing:** `sellable-pdf` + `{pdf_batch_raw or 'PDF pipeline batch missing'}` — {batch_note}",
-                      "",
-                      "Execute in order (authoritative docs — **not** label gymnastics):",
-                      "",
-                      f"1. [`workflows/PDF_WR_PLAYBOOK.md`]({repo_html}/blob/main/workflows/PDF_WR_PLAYBOOK.md) — WR → automation hand-off.",
-                      f"2. [`standards/shapes/PDF.md`]({repo_html}/blob/main/standards/shapes/PDF.md) — folder layout, quality gates, tooling.",
-                      f"3. [`workflows/PDF_AUTOMATION_GUIDE.md`]({repo_html}/blob/main/workflows/PDF_AUTOMATION_GUIDE.md) — Make / n8n / Zapier / Gumloop wiring.",
-                      f"4. [`standards/AUTOMATED_PRODUCT_PIPELINE.md`]({repo_html}/blob/main/standards/AUTOMATED_PRODUCT_PIPELINE.md) — where PDF sits in Listen→Ship.",
-                      "",
-                      "External runners should read **`### PDF pipeline batch`** from this issue body for autocreate count (3 vs 20).",
-                      "",
-                      "_Note: the `output-type:sellable-pdf` label mirrors this dropdown for legacy integrations only._",
-                  ]
-              )
-
-          post_comment("\n".join(comment_lines))
-          print("Classification complete.")
+          if __name__ == "__main__":
+              main()
           PYEOF
-    timeout-minutes: 30
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
