@@ -79,44 +79,44 @@ These are **separate** and must be treated separately. Neither can substitute fo
 **Controls (mandatory before launch):**
 
 1. **Consent architecture**
- - Separate, opt-in consent for each category of health data
- - Withdrawable, granular, timestamped, versioned
- - Meets WA MHMDA "valid authorization" bar (which is stricter than HIPAA authorization)
+- Separate, opt-in consent for each category of health data
+- Withdrawable, granular, timestamped, versioned
+- Meets WA MHMDA "valid authorization" bar (which is stricter than HIPAA authorization)
 
-2. **Data minimization**
- - Collect only fields with a documented product purpose
- - Default retention: 90 days after last use; user-triggered deletion within 30 days
+1. **Data minimization**
+- Collect only fields with a documented product purpose
+- Default retention: 90 days after last use; user-triggered deletion within 30 days
 
-3. **Third-party processor controls**
- - Every vendor touching health data signs a Data Processing Agreement (DPA)
- - If a vendor is *also* a HIPAA BA for other clients, execute a BAA as belt-and-suspenders even though we are not a Covered Entity
- - Vendor inventory maintained in `compliance/vendors.md`
+1. **Third-party processor controls**
+- Every vendor touching health data signs a Data Processing Agreement (DPA)
+- If a vendor is *also* a HIPAA BA for other clients, execute a BAA as belt-and-suspenders even though we are not a Covered Entity
+- Vendor inventory maintained in `compliance/vendors.md`
 
-4. **Security controls**
- - Encryption at rest (AES-256) and in transit (TLS 1.2+)
- - Access controls: role-based, least privilege, MFA for all admin access
- - Audit logging: immutable log of every read/write of health data fields, retained 6 years
- - Key management via managed KMS, not application-embedded
+1. **Security controls**
+- Encryption at rest (AES-256) and in transit (TLS 1.2+)
+- Access controls: role-based, least privilege, MFA for all admin access
+- Audit logging: immutable log of every read/write of health data fields, retained 6 years
+- Key management via managed KMS, not application-embedded
 
-5. **Breach response**
- - Documented playbook: detection → containment → assessment → notification
- - FTC Health Breach Notification Rule: notify affected users and FTC within 60 days
- - State AG notifications as required (varies)
- - Tabletop exercise before launch and annually
+1. **Breach response**
+- Documented playbook: detection → containment → assessment → notification
+- FTC Health Breach Notification Rule: notify affected users and FTC within 60 days
+- State AG notifications as required (varies)
+- Tabletop exercise before launch and annually
 
-6. **Workforce training**
- - Privacy and security training on hire and annually
- - Signed acknowledgment retained
- - Contractor access gated on completion
+1. **Workforce training**
+- Privacy and security training on hire and annually
+- Signed acknowledgment retained
+- Contractor access gated on completion
 
-7. **User rights**
- - Access, correction, deletion, portability endpoints
- - Response SLA: 30 days
+1. **User rights**
+- Access, correction, deletion, portability endpoints
+- Response SLA: 30 days
 
-8. **Governance**
- - Named Privacy Lead (documented in `compliance/roles.md`)
- - Privacy Impact Assessment (PIA) completed and reviewed by counsel before launch
- - Annual PIA refresh; ad-hoc PIA on any new health data field
+1. **Governance**
+- Named Privacy Lead (documented in `compliance/roles.md`)
+- Privacy Impact Assessment (PIA) completed and reviewed by counsel before launch
+- Annual PIA refresh; ad-hoc PIA on any new health data field
 
 ---
 
