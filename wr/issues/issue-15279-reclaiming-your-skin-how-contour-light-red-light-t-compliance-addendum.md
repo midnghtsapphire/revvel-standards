@@ -2,7 +2,7 @@
 
 **Related Issue:** #16058
 **Parent WR:** `wr/issues/issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md`
-**Status:** Corrective addendum — supersedes prior HIPAA framing on line 190 of parent WR.
+**Status:** Corrective addendum — supersedes prior HIPAA framing at lines 163, 208, and 220 of parent WR (Non-Functional Requirements §HIPAA-adjacent privacy, Recommendations §6 HIPAA posture, and Risks §1 Regulatory risk).
 
 ---
 
