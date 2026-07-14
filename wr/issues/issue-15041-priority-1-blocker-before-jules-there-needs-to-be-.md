@@ -1,353 +1,106 @@
-# WR: [WR] Priority 1 Blocker - Before Jules there needs to be an image to text parser and an LLM or copilot to take what exists in the WR and make it something that has all the requirements Jules needs to rewrite the WR and PR
+# Issue #15041: Priority 1 Blocker - WR Enrichment Parser and LLM Integration (Before Jules)
 
-**Issue:** #15041  
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Research Date:** 2026-07-03  
-**Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
+## Priority
+**P1 - Blocker**
 
----
+## Summary
+Before Jules can proceed with WR enrichment validation, we need a working image-to-text parser and LLM/copilot integration pipeline. This issue tracks the implementation and acceptance criteria for that foundational work.
 
+## Context
+The WR (Work Request) enrichment pipeline requires:
+1. An image-to-text parser capable of extracting structured data from source images.
+2. An LLM/copilot integration that can enrich the extracted text with contextual metadata.
+3. A validation loop with Jules to confirm the enrichment meets downstream requirements.
 
-<!-- revvel-research-findings -->
-## Research Findings
+Without these components, downstream automation (including the $10k/month → $10M revenue pipeline dependencies on OSINT and automated product tooling) cannot advance.
 
-Source packet: `docs/research-engine/run-28679865486.md`
+## Scope
+- Implement image-to-text parser module.
+- Wire parser output into LLM/copilot enrichment step.
+- Produce structured WR enrichment records.
+- Provide validation harness for Jules to sign off.
 
-## WR-Ready Research Packet: Image-to-Text Parser & LLM Pipeline for Jules
+## Out of Scope
+- Full production deployment (tracked separately).
+- Downstream consumer refactors beyond the enrichment contract.
 
-## 1. Executive Decision
+## Dependencies
+- Access to source image corpus.
+- LLM/copilot API credentials.
+- Jules availability for enrichment validation review.
 
-**PROCEED WITH CAUTION**: Build a two-stage preprocessing pipeline using **OpenAI GPT-4o** (multimodal) or **EasyOCR + GPT-4** for image-to-text extraction and LLM-based requirement structuring. However, **BLOCK IMPLEMENTATION** until Jules' input requirements are documented.
-
-**Critical Path**:
-1. Document Jules' exact input schema (Week 1)
-2. Run proof-of-concept with 10-20 sample WRs (Week 1-2)
-3. Build MVP pipeline with usage tracking (Week 3-4)
-4. Launch internal beta with metrics collection (Month 2)
-
-**Investment Required**: $5,000-$10,000 for 3-month pilot (API costs + development)
-
-## 2. Audience We Are Going After and Why
-
-**Primary Target**: Development teams using Work Request (WR) systems with visual/unstructured requirements
-- **Urgent Pain**: Manual transcription of screenshots, diagrams, and poorly formatted requirements blocks automation
-- **Market Size**: $2.8B OCR market + enterprise workflow automation
-- **Why Now**: AI copilot adoption (GitHub Copilot 37,000+ organizations) shows readiness for automated requirements processing
-
-**Secondary Markets**:
-- Product management teams needing requirements extraction
-- QA teams processing visual bug reports
-- Enterprise documentation teams
-
-## 3. Marketing and SEO Plan
-
-**Positioning**: "Visual-to-Executable Requirements Pipeline"
-
-**SEO Target Keywords**:
-- Primary: "automated requirements extraction" (1,200 searches/mo)
-- Secondary: "OCR API integration", "LLM document processing"
-- Long-tail: "convert screenshots to structured requirements"
-
-**Content Strategy**:
-1. Technical guide: "Building an OCR + LLM Pipeline for Requirements"
-2. Comparison: "OCR Services vs AI Vision Models for Text Extraction"
-3. Case study: "Automating Work Request Enhancement with AI"
-
-**Landing Page**: `/solutions/visual-requirements-automation`
-- Title: "Automate Product Requirements: Image-to-Text & AI Copilot Solutions"
-- Meta: "Transform screenshots and documents into structured requirements with OCR and AI. Streamline your WR/PR workflow."
-
-## 4. Competitor and GitHub Star Intelligence
-
-**Open Source Leaders**:
-- **LangChain** (93.4k stars) - Dominant LLM orchestration framework
-- **Tesseract** (61.8k stars) - Mature OCR, but basic functionality
-- **EasyOCR** (24.1k stars) - Python-friendly, 80+ languages
-- **Unstructured** (8.8k stars) - Document parsing specialist
-
-**Commercial Solutions**:
-- **OpenAI GPT-4o**: $5/1M input tokens (multimodal, recommended)
-- **Google Cloud Vision**: $1.50/1000 images
-- **AWS Textract**: $0.0015/page
-- **Azure Document Intelligence**: $0.001/page
-
-**Competitive Gap**: No integrated WR-specific preprocessing solution exists
-
-## 5. Chatter and Demand Signals
-
-**User Language**:
-- "Priority 1 Blocker" - Critical urgency signal
-- "make it something that has all the requirements Jules needs"
-- Empty WR fields indicate process failure
-
-**Unmet Needs**:
-- Automated extraction from visual requirements
-- Structured output for downstream AI agents
-- Reduction of manual preprocessing work
-
-**Market Validation Needed**:
-- Survey teams using visual requirements (target: 50 responses)
-- Measure current manual processing time (baseline metric)
-
-## 6. Factual Validation and Evidence Gaps
-
-**CRITICAL GAPS**:
-- Jules system requirements - **COMPLETELY UNDEFINED**
-- Image format specifications - **NOT PROVIDED**
-- Accuracy requirements - **NOT SPECIFIED**
-- Performance/latency requirements - **MISSING**
-
-**Cannot Verify**:
-- Market size for WR enhancement tools
-- Current WR processing volumes
-- Jules API specifications
-
-**Required Before Implementation**:
-- Jules input schema documentation
-- Sample WRs with images
-- Success criteria definition
-
-## 7. Build Requirements and Acceptance Gates
-
-### Technical Architecture
-```
-[Image Upload] → [OCR/Vision API] → [Text Extraction] → [LLM Processing] → [Jules-Ready JSON]
-```
-
-### Acceptance Criteria
-1. **OCR Accuracy**: ≥95% on clean documents, ≥85% on screenshots
-2. **LLM Completeness**: ≥90% required fields populated
-3. **Processing Time**: <30 seconds end-to-end
-4. **Error Handling**: Graceful degradation with user notification
-
-### Implementation Stack
-- **Option A (Recommended)**: OpenAI GPT-4o (single API, multimodal)
-- **Option B**: EasyOCR + GPT-4 (more control, higher complexity)
-- **Queue System**: Redis/RabbitMQ for batch processing
-- **Storage**: S3-compatible for image handling
-
-## 8. Code Review Agent Packet
-
-### Bito AI Comments
-```
-// SECURITY: Implement input validation for uploaded images
-// TODO: Add file type validation (PNG, JPG, PDF only)
-// PERFORMANCE: Consider image compression before OCR processing
-```
-
-### OpenRouter Review
-```
-// ARCHITECTURE: Decouple OCR and LLM stages for better error handling
-// SUGGESTION: Implement retry logic with exponential backoff for API calls
-```
-
-### Coderabbit Comments
-```
-// MISSING: Error handling for malformed Jules responses
-// REQUIRED: Add logging for each pipeline stage
-// OPTIMIZE: Cache OCR results to avoid reprocessing
-```
-
-### Ralph Loop Comments
-```
-// TESTING: Add integration tests for each supported image format
-// MONITORING: Implement metrics for OCR accuracy tracking
-// DOCUMENTATION: Add API examples for Jules integration
-```
-
-## 9. Automatic Fix and Commit Queue
-
-### Fix 1: Add WR Validation
-```yaml
-# .github/workflows/wr-validation.yml
-name: Validate WR Completeness
-on: [issues]
-jobs:
-  validate:
-    steps:
-      - name: Check required fields
-        run: |
-          # Validate Definition of Done exists
-          # Validate Jules requirements documented
-```
-**Commit**: `feat: add WR validation workflow for required fields`
-
-### Fix 2: Create Jules Integration Docs
-```markdown
-# docs/jules-integration.md
-## Required Input Schema
-## API Endpoints
-## Error Codes
-```
-**Commit**: `docs: add Jules integration requirements template`
-
-### Fix 3: Implement Usage Tracking
-```python
-# src/metrics/usage_tracker.py
-def track_processing_event(user_id, doc_type, success):
-    # Log to analytics
-    # Update usage quotas
-```
-**Commit**: `feat: add usage tracking for billing and analytics`
-
-## 10. Labels to Apply
-
-### Priority Labels
-- `priority-1-blocker` - As stated in title
-- `needs-requirements` - Jules specs missing
-- `technical-debt` - Incomplete WR
-
-### Risk Labels
-- `risk:integration` - Unknown Jules requirements
-- `risk:cost` - Unestimated API usage
-- `risk:accuracy` - No defined thresholds
-
-### Process Labels
-- `needs-clarification` - Multiple empty fields
-- `poc-required` - Technical validation needed
-- `market-validation-needed` - User research required
-
-### Technical Labels
-- `ocr-integration` - Image processing component
-- `llm-integration` - AI processing component
-- `workflow-automation` - Pipeline category
+## Related
+- PR #15045
+- Tracking issue #16062
 
 ---
 
-**IMMEDIATE ACTIONS REQUIRED**:
-1. Document Jules input requirements
-2. Define image format specifications
-3. Set accuracy and performance thresholds
-4. Complete Definition of Done
-5. Estimate API costs based on volume
+## Definition of Done
 
-**BLOCKING ISSUES**: Cannot proceed without Jules documentation. Apply `status:blocked` label until requirements are provided.
----
+This section defines the explicit, measurable acceptance criteria required to close issue #15041. All items MUST be satisfied and evidenced (linked PRs, test runs, screenshots, or reviewer sign-off) before the issue is marked complete.
 
-**WR Status:** 🟡 In Progress  
+### 1. Functional Requirements
 
-## Issue Context
+#### 1.1 Image-to-Text Parser
+- [ ] Parser accepts supported input formats: PNG, JPEG, PDF (single- and multi-page), and WebP.
+- [ ] Parser produces structured text output conforming to the documented schema (`schemas/wr-parser-output.json`).
+- [ ] Character-level accuracy ≥ **97%** on the curated validation set (see `tests/fixtures/wr-parser/`).
+- [ ] Field-level extraction accuracy ≥ **95%** for required WR fields (title, identifier, timestamp, body, attachments metadata).
+- [ ] Parser handles rotated (90°/180°/270°) and moderately skewed (±15°) images without accuracy dropping below 90%.
+- [ ] Graceful failure: unsupported or corrupt inputs return a structured error rather than crashing.
 
-### Output Type (required)
+#### 1.2 LLM / Copilot Enrichment
+- [ ] Enrichment step consumes parser output and emits an enriched WR record conforming to `schemas/wr-enriched.json`.
+- [ ] Enrichment includes: entity extraction, category/tag assignment, summary (≤ 280 chars), and confidence scores per field.
+- [ ] LLM output is deterministic given fixed seed/temperature settings used in tests (temperature ≤ 0.2 for validation runs).
+- [ ] Hallucination guard: any field not supported by source text is flagged with `confidence < 0.5` and `source_span = null`.
+- [ ] Rate limiting, retry with exponential backoff, and API error handling are implemented.
 
-production-app
+### 2. Integration Criteria
 
-### PDF pipeline batch
+- [ ] End-to-end pipeline (image → parser → LLM enrichment → WR record) runs via a single CLI entry point: `wr-enrich <input>`.
+- [ ] Jules has reviewed at least **25 sampled enriched records** and signed off in writing (comment on this issue or PR #15045).
+- [ ] Enrichment output validates against the WR consumer contract (schema validation passes in CI).
+- [ ] Feature flag / config toggle allows enabling the new pipeline without breaking existing WR flows.
 
-None
+### 3. Testing Requirements
 
-### Research Mode
+#### 3.1 Unit Tests
+- [ ] ≥ **85%** line coverage across parser and enrichment modules.
+- [ ] All public functions have at least one positive and one negative test case.
+- [ ] Schema validation tests for both parser output and enriched records.
 
-None
+#### 3.2 Integration Tests
+- [ ] End-to-end test suite exercises the full pipeline on the fixture corpus.
+- [ ] Mocked LLM tests confirm prompt construction, retry logic, and error propagation.
+- [ ] Live LLM smoke test (gated behind an env flag) runs in nightly CI.
 
-### Delivery Mode
+#### 3.3 Acceptance Tests
+- [ ] Jules-approved acceptance checklist executed against the release candidate.
+- [ ] Regression suite compares outputs against a golden fixture set; diffs must be reviewed and approved.
+- [ ] Performance acceptance: parser + enrichment completes within **10 seconds per single-page image** on the reference runner.
 
-None
+### 4. Documentation and Code Review
 
-### Lifecycle Mode
+- [ ] `README.md` in the parser/enrichment module documents: setup, configuration, CLI usage, supported formats, and troubleshooting.
+- [ ] Architecture diagram added to `docs/wr-enrichment-architecture.md`.
+- [ ] Prompt templates and versioning strategy documented in `docs/wr-enrichment-prompts.md`.
+- [ ] CHANGELOG updated.
+- [ ] PR #15045 (and any follow-ups) reviewed and approved by at least **two** maintainers, one of whom is Jules or a Jules-designated reviewer.
+- [ ] All CI checks pass on the merge commit.
 
-None
+### 5. Performance and Quality Metrics
 
-### Commercial Mode
+- [ ] Throughput: pipeline sustains ≥ **6 images/minute** on the reference runner.
+- [ ] p95 latency per image ≤ **12 seconds** (parser + enrichment combined).
+- [ ] Error rate on the validation corpus ≤ **2%** (hard failures) and ≤ **5%** (low-confidence outputs).
+- [ ] Cost per enriched record tracked and reported; must be within the budget documented in `docs/wr-enrichment-cost-model.md`.
+- [ ] Observability: structured logs, metrics (counts, latency, error rates), and traces emitted for each pipeline stage.
 
-None
+### 6. Sign-off
 
-### Summary
+- [ ] Engineering lead sign-off.
+- [ ] Jules sign-off on enrichment quality.
+- [ ] Product/stakeholder sign-off on the acceptance demo.
 
-_No response_
-
-### Objective
-
-deep research best solution plan build and impelment
-
-### Required Bundle
-
-_No response_
-
-### Definition of Done
-
-_No response_
-
-### Do Not Under-Scope
-
-_No response_
-
-### Explicit Exclusions
-
-_No response_
-
-### Delivery Shape
-
-None
-
-### Expected Scope
-
-_No response_
-
-### Validation Expectations
-
-_No response_
-
-### Blocker Rule
-
-_No response_
-
-### Acknowledgements
-
-- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [x] Explicitly requested secondary items should not be silently deferred.
-- [x] If the PR is partial, the blocker must be documented.
-- [x] The PR should reflect the WR's required bundle and definition of done.
-
-## Repository Metadata
-
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
-
-## Research Checklist
-### Definition of Done
-
-- [ ] Jules input schema is documented and approved
-- [ ] OCR/Vision API selected and cost model validated
-- [ ] End-to-end pipeline processes 20 sample WRs with ≥95% accuracy
-- [ ] All required WR fields are populated by LLM stage
-- [ ] Processing latency is <30 seconds per document
-- [ ] Error handling covers 10+ failure modes
-- [ ] Metrics dashboard tracks accuracy and cost per run
-- [ ] Documentation includes API examples for Jules integration
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis
-- [ ] Domain strategy
-- [ ] Monetization
-
-## Executive Summary
-
-N/A — pending Jules refinement
-
-## Step 1A — Product/Output Selections
-
-N/A — pending Jules refinement
-
-## Step 2 — Deep Web Research
-
-N/A — pending Jules refinement
-
-## Step 3 — Requirements
-
-N/A — pending Jules refinement
-
-## Recommendations
-
-N/A — pending Jules refinement
-
-## Risks
-
-N/A — pending Jules refinement
+Only when every checkbox above is checked (or explicitly waived with written justification linked in this issue) may issue #15041 be closed.
