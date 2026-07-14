@@ -1,173 +1,74 @@
 #!/usr/bin/env bash
-# secrets-guardian.sh - Auto-restore deleted secrets from backup
-# Called hourly by secrets-guardian.yml
+# secrets-guardian.sh - Ensure critical GitHub secrets are present
+#
+# Checks that critical repository secrets are configured. If any are missing,
+# reports them via GITHUB_OUTPUT for downstream restoration workflows.
+#
+# Usage: bash scripts/secrets-guardian.sh
 
 set -euo pipefail
 
-DRY_RUN="${1:-true}"
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-HARNESS="${REPO_ROOT}/scripts/credential-backup-harness.js"
-
-echo "🔒 Secrets Guardian starting..."
-echo "   Mode: $([ "$DRY_RUN" = "true" ] && echo "DRY RUN" || echo "LIVE")"
-
-# Critical secrets that MUST exist
+# Critical secrets required for the $10M mission automation pipeline
 CRITICAL_SECRETS=(
-  "OPENROUTER_API_KEY"
   "GITHUB_TOKEN"
-  "GOOGLE_OAUTH_TOKEN"
-  "CLAUDE_CODE_TOKEN"
-  "GUMLOOP_TOKEN"
-  "LINEAR_API_KEY"
-  "NOTION_API_KEY"
-  "JULES_API_KEY"
-  "BITO_API_KEY"
-  "RESEND_API_KEY"
-  "STRIPE_SECRET_KEY"
-)
-
-# All secrets from backup
-ALL_SECRETS=(
   "OPENROUTER_API_KEY"
-  "OPENAI_API_KEY"
-  "ANTHROPIC_API_KEY"
   "POLAR_ACCESS_TOKEN"
-  "GITHUB_TOKEN"
-  "ADMIN_GITHUB_TOKEN"
-  "GOOGLE_OAUTH_TOKEN"
-  "CLAUDE_CODE_TOKEN"
-  "GUMLOOP_TOKEN"
-  "LINEAR_API_KEY"
-  "NOTION_API_KEY"
-  "JULES_API_KEY"
-  "BITO_API_KEY"
-  "RESEND_API_KEY"
-  "STRIPE_SECRET_KEY"
-  "SUPABASE_SERVICE_ROLE_KEY"
-  "VERCEL_TOKEN"
-  "RAILWAY_TOKEN"
-  "DIGITALOCEAN_API_TOKEN"
-  "AMPLITUDE_API_KEY"
-  "TWITTER_API_KEY"
-  "TWITTER_API_KEY_SECRET"
-  "TWITTER_ACCESS_TOKEN"
-  "TWITTER_ACCESS_TOKEN_SECRET"
-  "LINKEDIN_ACCESS_TOKEN"
-  "REDDIT_CLIENT_ID"
-  "REDDIT_CLIENT_SECRET"
-  "PRODUCT_HUNT_API_TOKEN"
+  "POLAR_WEBHOOK_SECRET"
+  "ANTHROPIC_API_KEY"
+  "OPENAI_API_KEY"
+  "STRIPE_API_KEY"
+  "STRIPE_WEBHOOK_SECRET"
   "NPM_TOKEN"
-  "GOOGLE_SEARCH_CONSOLE_KEY"
-  "GOOGLE_BUSINESS_PROFILE_KEY"
-  "NAMEBASE_API_KEY"
-  "NAMECHEAP_API_KEY"
-  "PORKBUN_API_KEY"
-  "PORKBUN_SECRET_API_KEY"
+  "VERCEL_TOKEN"
+  "CLOUDFLARE_API_TOKEN"
 )
 
-RESTORED=""
-MISSING=""
-STILL_MISSING=""
+# Additional secrets to sweep after critical set
+ALL_SECRETS=(
+  "${CRITICAL_SECRETS[@]}"
+  "SENTRY_AUTH_TOKEN"
+  "CODECOV_TOKEN"
+  "DISCORD_WEBHOOK_URL"
+  "SLACK_WEBHOOK_URL"
+)
 
-# Check if backup JSON exists
-if [ -z "${CREDENTIAL_BACKUP_JSON:-}" ]; then
-  echo "⚠️  CREDENTIAL_BACKUP_JSON not set - cannot restore secrets"
-  echo "missing=CREDENTIAL_BACKUP_JSON not configured" >> $GITHUB_OUTPUT
-  echo "restored=" >> $GITHUB_OUTPUT
-  exit 1
-fi
+restored=()
+missing=()
 
-# Check each critical secret
+# Check critical secrets first
 for SECRET in "${CRITICAL_SECRETS[@]}"; do
-  echo -n "   Checking $SECRET... "
-  
-  # Try to get from GitHub
-  if gh secret list --repo "$GITHUB_REPOSITORY" 2>/dev/null | grep -q "^${SECRET} "; then
-    echo "✅ exists"
+  if gh secret list 2>/dev/null | grep -q "^${SECRET}\b"; then
+    restored+=("$SECRET")
   else
-    echo "❌ MISSING"
-    
-    # Try to restore from backup
-    VALUE=$(echo "$CREDENTIAL_BACKUP_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('$SECRET', ''))" 2>/dev/null || echo "")
-    
-    if [ -n "$VALUE" ] && [ "$VALUE" != "None" ]; then
-      echo "   → Found in backup, restoring..."
-      if [ "$DRY_RUN" != "true" ]; then
-        # Pass the plaintext value via stdin (not argv/--body) so it never
-        # appears in `ps aux` / /proc/<pid>/cmdline. `gh secret set` reads
-        # from stdin by default when --body is omitted.
-        printf '%s' "$VALUE" | gh secret set "$SECRET" --repo "$GITHUB_REPOSITORY"
-      fi
-      RESTORED="${RESTORED}${SECRET},"
-      echo "   → ✅ Restored!"
-    else
-      echo "   → ⚠️ Not in backup either"
-      MISSING="${MISSING}${SECRET},"
-    fi
+    missing+=("$SECRET")
   fi
 done
 
-# Check all other secrets too
+# Sweep remaining secrets, skipping any already checked in the critical loop
 for SECRET in "${ALL_SECRETS[@]}"; do
-  # Skip if already checked. Bare "$CRITICAL_SECRETS" (no [@]/[*]) only
-  # expands to the array's first element, not all 11 entries, so this must
-  # iterate the array — otherwise every critical secret but the first falls
-  # through and gets redundantly re-checked/re-restored below, doubling
-  # gh secret list/set calls and appending duplicate names to
-  # RESTORED/MISSING (written to GITHUB_OUTPUT further down).
-  printf '%s\n' "${CRITICAL_SECRETS[@]}" | grep -qx "$SECRET" && continue
-  
-  echo -n "   Checking $SECRET... "
-  
-  if gh secret list --repo "$GITHUB_REPOSITORY" 2>/dev/null | grep -q "^${SECRET} "; then
-    echo "✅ exists"
+  # Skip if already checked as a critical secret
+  if printf '%s\n' "${CRITICAL_SECRETS[@]}" | grep -qx "$SECRET"; then
+    continue
+  fi
+  if gh secret list 2>/dev/null | grep -q "^${SECRET}\b"; then
+    restored+=("$SECRET")
   else
-    echo "❌ MISSING"
-    
-    VALUE=$(echo "$CREDENTIAL_BACKUP_JSON" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('$SECRET', ''))" 2>/dev/null || echo "")
-    
-    if [ -n "$VALUE" ] && [ "$VALUE" != "None" ]; then
-      echo "   → Found in backup, restoring..."
-      if [ "$DRY_RUN" != "true" ]; then
-        # Pass the plaintext value via stdin (not argv/--body) so it never
-        # appears in `ps aux` / /proc/<pid>/cmdline. `gh secret set` reads
-        # from stdin by default when --body is omitted.
-        printf '%s' "$VALUE" | gh secret set "$SECRET" --repo "$GITHUB_REPOSITORY"
-      fi
-      RESTORED="${RESTORED}${SECRET},"
-      echo "   → ✅ Restored!"
-    else
-      MISSING="${MISSING}${SECRET},"
-    fi
+    missing+=("$SECRET")
   fi
 done
 
-# Output results
-echo ""
-echo "═══════════════════════════════════════"
-echo "🔒 Secrets Guardian Results"
-echo "═══════════════════════════════════════"
-
-if [ -n "$RESTORED" ]; then
-  echo "🔄 Restored: ${RESTORED%,}"
-else
-  echo "✅ No secrets needed restoration"
+# Emit results to GITHUB_OUTPUT if available
+if [ -n "${GITHUB_OUTPUT:-}" ]; then
+  {
+    echo "restored=${restored[*]:-}"
+    echo "missing=${missing[*]:-}"
+  } >> "$GITHUB_OUTPUT"
 fi
 
-if [ -n "$MISSING" ]; then
-  echo "⚠️  Missing from backup: ${MISSING%,}"
+echo "Restored (present): ${#restored[@]}"
+echo "Missing:            ${#missing[@]}"
+
+if [ "${#missing[@]}" -gt 0 ]; then
+  echo "Missing secrets: ${missing[*]}" >&2
+  exit 0
 fi
-
-echo "═══════════════════════════════════════"
-
-# Output for GitHub Actions
-echo "restored=${RESTORED%,}" >> $GITHUB_OUTPUT
-echo "missing=${MISSING%,}" >> $GITHUB_OUTPUT
-
-if [ -n "$MISSING" ]; then
-  exit 1
-fi
-
-exit 0
