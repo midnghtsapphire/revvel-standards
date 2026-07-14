@@ -66,7 +66,6 @@ Even if HIPAA does not apply, the following regimes independently apply and must
 | Regime | Trigger | Requirement Summary |
 |---|---|---|
 | **FTC Health Breach Notification Rule (HBNR)** | Vendors of personal health records (PHRs), PHR-related entities, and third-party service providers — applies if the app stores PHR-identifiable health information and is not already covered by HIPAA | Breach notification to users and FTC; media notice required if ≥500 residents of an affected state or jurisdiction are impacted |
-| **FTC Health Breach Notification Rule (HBNR)** | Vendors of personal health records (PHRs), PHR-related entities, and third-party service providers to such entities — applicability must be confirmed before treating this as a requirement | Breach notification to users and FTC; media notice if >500 residents of one state or jurisdiction are affected |
 | **FTC Act Section 5** | All consumer apps | No deceptive privacy claims; honor stated policies |
 | **State laws (CCPA/CPRA, WA My Health My Data, CT, NV, TX)** | Consumers in those states | Consent, deletion rights, sensitive-data protections; WA MHMDA requires explicit consent for health data |
 | **GDPR / UK GDPR** | EU/UK users | Article 9 special-category health data requires a lawful processing condition (explicit consent is one option; others include vital interests, legitimate public-health purposes, and research); Article 35 DPIA required when processing is *likely to result in high risk* — not automatically for every app with EU/UK users |

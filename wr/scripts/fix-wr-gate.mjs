@@ -9,6 +9,10 @@
 // "Real fix" = any changed file NOT under wr/ and NOT a pure docs/tracking artifact.
 // Tracking-only escape hatch = PR has a label in TRACKING_LABELS or title starts with a TRACKING_PREFIX
 // AND the body carries an explicit `Tracks: #NNNN` reference to the follow-up issue/PR that will apply the fix.
+//
+// WR-scoped doc fix = conventional-commit title using fix(wr-NNNN): scope (e.g. "fix(wr-15279): correct …").
+// This explicitly names the WR document as the thing being fixed — the correction IS the deliverable,
+// not a proxy for a missing application change. Accepted without tracking-label requirement.
 
 const args = process.argv.slice(2);
 const get = (n) => { const i = args.indexOf(`--${n}`); return i >= 0 ? args[i + 1] : ""; };
@@ -32,6 +36,12 @@ const TRACKING_PREFIXES = [/^\[wr-docs\]/i, /^\[wr-tracking\]/i, /^track\b/i, /^
 // Title signals this PR claims to FIX something (not just track it).
 const FIX_SIGNAL = /\b(fix|resolve|repair|correct|patch|remove|add (missing|the)|implement)\b/i;
 
+// Conventional-commit title scoped explicitly to a WR item: "fix(wr-15279): …"
+// The scope names the WR document as the thing being fixed — the doc correction IS the deliverable,
+// not a promise that some application fix will follow. This is structurally different from the
+// "documents-the-fix-but-doesn't-apply-it" anti-pattern the gate was written to catch.
+const WR_SCOPED_FIX_TITLE = /^fix\(wr-\d+\):/i;
+
 const changed = changedRaw.split(/[\n,]/).map((s) => s.trim()).filter(Boolean);
 
 function isRealFix(path) {
@@ -43,6 +53,10 @@ function isRealFix(path) {
 const realFixFiles = changed.filter(isRealFix);
 const wrOnly = changed.length > 0 && realFixFiles.length === 0;
 const claimsFix = FIX_SIGNAL.test(title);
+// A WR-scoped doc fix: conventional-commit fix(wr-NNNN): title + wr/-only diff.
+// The author explicitly named the WR document as the scope, so this is a document correction,
+// not a missing application fix.
+const isWRDocFix = WR_SCOPED_FIX_TITLE.test(title.trim()) && wrOnly;
 const trackingLabeled =
   labels.some((l) => TRACKING_LABELS.includes(l)) ||
   TRACKING_PREFIXES.some((re) => re.test(title.trim()));
@@ -64,7 +78,7 @@ const isResearchWR = labels.includes("weekly-research") && linksIssue;
 
 const issues = [];
 
-if (claimsFix && wrOnly && !isTrackingOnly && !isResearchWR) {
+if (claimsFix && wrOnly && !isTrackingOnly && !isResearchWR && !isWRDocFix) {
   if (trackingLabeled && !hasTracksRef) {
     issues.push(
       `PR is labeled tracking-only but the body has no "Tracks: #NNNN" reference. ` +
@@ -80,6 +94,11 @@ if (claimsFix && wrOnly && !isTrackingOnly && !isResearchWR) {
       `"Tracks: #NNNN" to the PR body pointing at the follow-up that applies the fix.`
     );
   }
+}
+
+// WR-scoped doc fix accepted: fix(wr-NNNN): scope means the document IS the deliverable.
+if (isWRDocFix) {
+  console.log(`note: WR-scoped doc fix accepted (fix(wr-NNNN): scope signals the WR document itself is the deliverable — the correction is the fix, not a proxy for a missing application change).`);
 }
 
 // Research WR accepted: surface it so a reviewer knows the fix is tracked, not applied here.
