@@ -30,7 +30,7 @@ Medical disclaimers and "educational use only" framing may reduce **FDA SaMD (So
 
 ## Corrected Compliance Framework
 
-### Decision Tree: Does the App Handle PHI?
+### Decision Tree: Does the App Handle PHI
 
 ```
 Does the app collect health-related data? ─── YES
@@ -98,8 +98,8 @@ Separately from HIPAA, mitigate FDA SaMD classification:
 ## References
 
 - 45 CFR §160, §162, §164 (HIPAA Privacy, Security, Breach Notification Rules)
-- HHS Guidance on De-Identification: https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/
-- FDA SaMD Guidance: https://www.fda.gov/medical-devices/digital-health-center-excellence/software-medical-device-samd
+- HHS Guidance on De-Identification: <https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/>
+- FDA SaMD Guidance: <https://www.fda.gov/medical-devices/digital-health-center-excellence/software-medical-device-samd>
 - FTC Health Breach Notification Rule (applies even outside HIPAA for non-covered health apps)
 
 ## Revenue Impact
