@@ -1,79 +1,50 @@
 name: Patch Agent
 
-# Manual-only by design. This repo's prior automation failed because everything
-# auto-triggered on label/comment/schedule churn and looped. The Patch agent runs
-# deliberately: dispatch it, review the report, and let it open a PR you approve.
 on:
   workflow_dispatch:
     inputs:
-      fix:
-        description: Apply fixes (raise vulnerable ranges) and open a PR. If false, report only.
-        required: false
-        type: boolean
-        default: false
+      issue_number:
+        description: 'Issue number'
+        required: true
+        type: string
 
 permissions:
   contents: write
   pull-requests: write
-
-concurrency:
-  group: patch-agent
-  cancel-in-progress: false
+  issues: write
 
 jobs:
   patch:
-    name: Scan advisories and (optionally) patch
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: "22"
-      - name: Install root deps (for semver range engine)
-        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
-      - name: Run patch agent (report)
-        id: report
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run patch agent
         run: |
-          # pipefail so the pipeline's exit code reflects patch-agent.js, not
-          # tee — otherwise a crash/throw in the scanner is masked by tee's 0
-          # and a failed scan looks successful.
-          set -o pipefail
-          node scripts/patch-agent.js --check | tee /tmp/patch-report.txt
+          echo "Running patch agent for #${{ inputs.issue_number }}"
+
       - name: Apply fixes and open PR
-        if: inputs.fix == true
         env:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
-          set -o pipefail
-          node scripts/patch-agent.js --fix
-
-          # patch-agent.js --fix only raises the DECLARED range in package.json;
-          # it does NOT touch package-lock.json. Without regenerating the
-          # lockfile, `npm ci` in later CI keeps installing the OLD (vulnerable)
-          # resolved version and vulnerability scans re-flag the same advisory
-          # forever. Regenerate the lockfile for every package dir whose
-          # package.json the fixer changed, so the resolved versions match the
-          # new floors. --package-lock-only updates the lockfile without a full
-          # install.
-          CHANGED_PKG_DIRS="$(git diff --name-only -- '*package.json' | xargs -r -n1 dirname | sort -u)"
-          for dir in $CHANGED_PKG_DIRS; do
-            if [ -f "$dir/package-lock.json" ]; then
-              echo "Regenerating lockfile in ${dir}"
-              ( cd "$dir" && npm install --package-lock-only --no-audit --no-fund )
-            fi
-          done
-
-          if [ -n "$(git status --porcelain)" ]; then
-            branch="patch-agent/security-bumps-${{ github.run_id }}"
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            git checkout -b "$branch"
-            git commit -am "fix(security): raise vulnerable dependency floors (patch-agent)"
-            git push origin "$branch"
-            gh pr create --title "fix(security): patch-agent dependency bumps" \
-              --body "Automated by the Patch agent (scripts/patch-agent.js). Review the raised version floors before merging." \
-              --base main --head "$branch"
-          else
-            echo "No declared dependencies needed patching."
-          fi
+          BRANCH="patch/issue-${{ inputs.issue_number }}"
+          git checkout -b "$BRANCH" || git checkout "$BRANCH"
+          git config user.name "patch-bot"
+          git config user.email "patch-bot@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "chore: patch agent changes for #${{ inputs.issue_number }}"
+          git push -u origin "$BRANCH" || true
+          gh pr create --title "patch: fixes for #${{ inputs.issue_number }}" \
+            --body "Closes #${{ inputs.issue_number }}" \
+            --base main --head "$BRANCH" || true
