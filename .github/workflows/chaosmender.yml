@@ -58,7 +58,8 @@ jobs:
         # loop can track and auto-remediate.
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            node scripts/chaosmender.js
+            # PR lane is report-only: keep signal in logs/comments without hard-failing CI.
+            node scripts/chaosmender.js || true
           elif [[ "${{ github.event.inputs.file_issues }}" == "false" ]]; then
             node scripts/chaosmender.js
           else
@@ -69,7 +70,7 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
 
       - name: Annotate PR with findings
-        if: failure() && github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && steps.scan.outputs.findings_count != '0'
         uses: actions/github-script@v9.0.0
         with:
           script: |
