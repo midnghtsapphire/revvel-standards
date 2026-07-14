@@ -1,52 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-14T06:45:06.972Z",
+  "generated_at": "2026-07-14T07:34:49.585Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "5/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 5,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29310186324,
+            "id": 29313181543,
             "name": "Secrets Guardian",
             "path": ".github/workflows/secrets-guardian.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29310186324",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29313181543",
             "conclusion": "failure"
           },
           {
-            "id": 29309961013,
+            "id": 29312988595,
             "name": "Credential Autonomy Agent",
             "path": ".github/workflows/credential-autonomy-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29309961013",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29309549027,
-            "name": "Secrets Presence Ledger",
-            "path": ".github/workflows/secrets-backup-daily.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29309549027",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29307991940,
-            "name": "Secrets Guardian",
-            "path": ".github/workflows/secrets-guardian.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29307991940",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29307860181,
-            "name": "Credential Autonomy Agent",
-            "path": ".github/workflows/credential-autonomy-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29307860181",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29312988595",
             "conclusion": "failure"
           }
         ],
@@ -72,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29314611464"
       }
     },
     "sheaf": {
