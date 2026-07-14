@@ -1,45 +1,24 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-14T22:20:50.841Z",
+  "generated_at": "2026-07-14T23:18:41.385Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29370178357,
-            "name": "Secrets Guardian",
-            "path": ".github/workflows/secrets-guardian.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29370178357",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29369933596,
-            "name": "Credential Autonomy Agent",
-            "path": ".github/workflows/credential-autonomy-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29369933596",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29366644300,
-            "name": "Secrets Guardian",
-            "path": ".github/workflows/secrets-guardian.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29366644300",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29366381253,
-            "name": "Credential Autonomy Agent",
-            "path": ".github/workflows/credential-autonomy-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29366381253",
+            "id": 29375703240,
+            "name": "Daily WR & PR Summary",
+            "path": ".github/workflows/daily-wr-summary.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29375703240",
             "conclusion": "failure"
           }
         ],
