@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-07-14T16:47:17.755Z",
+  "updated_at": "2026-07-14T17:17:52.622Z",
   "workflows": {
     ".github/workflows/agent-fallback.yml": {
       "count": 1,
