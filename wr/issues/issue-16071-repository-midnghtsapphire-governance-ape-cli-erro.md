@@ -1,4 +1,4 @@
-# WR: [WR] Repository 'midnghtsapphire/Governance-ape-cli-errors' appears to be empty: there are no files to index
+# WR: Repository 'midnghtsapphire/Governance-ape-cli-errors' appears to be empty: there are no files to index
 
 **Issue:** #16071  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -11,7 +11,7 @@
 
 <!-- who: Jules (Google) + OpenRouter -->
 <!-- date: 2026-07-14 -->
-<!-- description: [WR] Repository 'midnghtsapphire/Governance-ape-cli-errors' appears to be empty: there are no files to index -->
+<!-- description: Repository 'midnghtsapphire/Governance-ape-cli-errors' appears to be empty: there are no files to index -->
 <!-- **Issue:** #16071         -->
 <!-- **Repository:** midnghtsapphire/revvel-standards         -->
 <!-- **Created:** 2026-07-14            -->
@@ -70,7 +70,7 @@ Indexing failed: Repository is empty: no files to index. Push some code and retr
 
 ### Required Bundle
 
-fix file for indexting-develop process or script for this going forward
+fix file for indexing-develop process or script for this going forward
 
 ### Definition of Done
 
@@ -161,10 +161,10 @@ Source packet: `docs/research-engine/run-29341050118.md`
 **Primary Audience**: Developers using GitHub-based CI/CD workflows with automated indexing
 - **Pain Point**: Repository indexing failures blocking development velocity
 - **Urgent Need**: Seamless handling of empty repositories during initial setup
-- **Market Size**: 73M+ GitHub users, with empty repository scenarios affecting ~15% of new projects (internal estimate)
+- **Market Size (internal estimate)**: ~60M-80M GitHub users and ~10-20% empty-repository scenarios in new projects
 
 **Why This Matters**: 
-- 67% of developers abandon tools that fail on first use (industry standard)
+- ~60-70% of developers may abandon tools that fail on first use (internal estimate)
 - Empty repository handling is a critical first-touch experience
 - Poor error handling creates immediate churn risk during onboarding
 
@@ -189,12 +189,14 @@ Source packet: `docs/research-engine/run-29341050118.md`
 
 ### Competitive Analysis
 
-| Tool | Stars | Pricing | Empty Repo Handling | Differentiation |
+| Tool | Stars | Pricing [1] | Empty Repo Handling | Differentiation |
 |------|-------|---------|-------------------|-----------------|
-| GitHub Codespaces | Native | $0.18/hr-$0.72/hr | Graceful skip | Native GitHub integration |
-| Sourcegraph | 9.8k+ | $49-299/user/month | Silent skip | Enterprise code intelligence |
-| GitLab CI/CD | 23k+ | $0-99/user/month | Conditional logic | Integrated DevOps platform |
-| JetBrains Space | N/A | $8-25/user/month | Built-in handling | All-in-one collaboration |
+| GitHub Codespaces | Native | [1] | Graceful skip | Native GitHub integration |
+| Sourcegraph | 9.8k+ | [1] | Silent skip | Enterprise code intelligence |
+| GitLab CI/CD | 23k+ | [1] | Conditional logic | Integrated DevOps platform |
+| JetBrains Space | N/A | [1] | Built-in handling | All-in-one collaboration |
+
+[1] Pricing data pending — competitive benchmark research required.
 
 **Key Gap**: Competitors handle empty repositories gracefully while our system fails completely.
 
@@ -383,7 +385,7 @@ N/A — no additional details are available in the source issue
 
 <!-- Competitor analysis MUST include actual prices (e.g., "Mergify: $99-299/month depending on rules"), not vague labels like "Paid tiers" or "Paid". If a competitor's price is unknown, write "Pricing data pending — competitive benchmark research required." Do NOT ship incomplete competitive intelligence. -->
 <!-- This pricing rule is mirrored in scripts/research-engine.js (buildSynthesisPrompt); parity is
-     enforced by tests/research-engine.test.js. Update both files together if the wording changes. -->
+     enforced by tests/research-engine.test.js. Update both files together if the wording changes.-->
 <!-- CITATION RULE — applies to every claim in this section:
      - Every statistic, percentage, growth rate, or market-size claim MUST include a direct source link.
      - If a number is not sourced, omit it or label it an estimate (e.g. "internal estimate", "unverified").
