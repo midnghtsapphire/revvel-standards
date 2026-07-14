@@ -1,121 +1,79 @@
-# CLAUDE.md — Agent memory for `revvel-standards`
+# CLAUDE.md — Operating Notes for Automated Agents
 
-This repo is an automation fleet: **166+ GitHub Actions workflows** plus Node/shell
-scripts that triage issues, route work to coding agents, open/review/merge PRs, and
-**self-heal** when things break. Most "logic" lives in `.github/workflows/*.yml` and
-`scripts/`. When you change automation, keep the loop able to run unattended.
+This file is the entry point for AI coding agents (Claude, OpenRouter,
+OpenHands, etc.) working in this repository. It is intentionally short and
+points at the durable references in `standards/` and `learnings.md`.
 
-## The self-healing loop (how it's supposed to run on its own)
+## Prime Directive
 
-1. **Detect** — `self-healing.yml` (every 4h) and `agent-monitor.yml` scan recent
-   workflow runs, stuck issues, and agent health.
-2. **File work** — failures become issues/WRs (e.g. `[AGENT-FAILURE]`,
-   `[SELF-HEAL]`) with labels like `auto-fix`, `ralph-loop`, `scorecard`.
-3. **Assign** — `openrouter-assignee.yml` / routers pick up labeled issues.
-4. **Fix & PR** — `wr-pr-creation.yml` and coding-agent workflows open PRs.
-5. **Review/merge** — AI review + `auto-merge` / `auto-approve-clean-prs`.
-6. **Reset** — `reset-self-heal-issue.yml` re-labels + re-triggers a stuck item.
+Grow revenue from **$10k/month → $10M total by year 3**, in phases:
 
-`repo-self-healer.yml` (daily 3 AM) runs `scripts/self-heal-repo.js` for cleanup
-(close stale, dedupe). The gate that protects all of this is CircleCI +
-`wr-lint` / `fix-wr-gate`.
+1. **Phase 1 — $10k/month** (Month 1–6)
+2. **Phase 2 — $30k/month** (Month 6–18)
+3. **Phase 3 — $100k/month** (Month 18–30)
+4. **Phase 4 — $10M total** (Month 30–36)
 
-## Recurring gotchas (these are what actually break the fleet)
+Focus areas: Polar.sh (GitHub funding), OSINT tools, automated product
+pipeline. Every PR should either move a metric or protect a metric.
 
-### 1. `gh` needs a repo target when there's no checkout
-Jobs that call the `gh` CLI but have **no `actions/checkout` step** fail with
-`failed to run git: fatal: not a git repository ... exit 1`, because `gh` infers
-the repo from the local git remote. Fix by setting at job/workflow `env:`:
-```yaml
-env:
-  GH_REPO: ${{ github.repository }}
-```
-(Or pass `--repo ${{ github.repository }}` on every `gh` call.) `gh api repos/OWNER/REPO/...`
-with a full literal path is exempt, but `gh issue create/comment/list` and
-`gh workflow run` are not. **Fixed so far:** `agent-monitor.yml`, `self-healing.yml`.
+## Green Main Standard
 
-### 2. `gh` must be authenticated
-A job using `gh` with **no `GH_TOKEN`/`GITHUB_TOKEN` env** runs unauthenticated and
-fails (or hits anonymous rate limits). Use the repo-standard token-with-fallback so
-healing actions can cascade to downstream workflows (the default `GITHUB_TOKEN`
-cannot trigger other workflows; the PAT can):
-```yaml
-env:
-  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-```
+`main` must stay green. See `standards/GREEN_MAIN_STANDARD.md`.
+If your change would break `main`, split it or gate it behind a flag.
 
-### 3. Permissions must match what the job does
-Default `permissions: contents: read` is not enough for jobs that label issues
-(`issues: write`), re-run workflows (`actions: write`), or touch PRs
-(`pull-requests: write`). Grant the narrowest set the job actually needs.
+## How to audit and self-heal
 
-### 4. Don't interpolate untrusted `${{ ... }}` into `run:` shells
-`${{ github.event.* }}` / issue / PR / comment bodies interpolated directly into a
-`run:` script is a command-injection vector. Pass them through `env:` and reference
-`"$VAR"` inside the script instead. Internal computed outputs (counts, statuses)
-are lower risk but the env pattern is still preferred.
+Before filing bug-fix PRs in bulk, read
+`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`. It documents:
 
-### 5. A red gate on main is a stop sign — and watch for interleaved merges
-Never build on a red `npm test` (see `standards/GREEN_MAIN_STANDARD.md`; incident
-entries in `learnings.md`). On 2026-07-08, six red test files on main turned out
-to hide a dead `wr/scripts/generate-wr.sh`, a broken `wr-auto-classify.yml`
-trigger, and two non-compiling github-script blocks in `wr-pr-creation.yml` — all
-caused by **parallel agents pasting competing fixes of the same block on top of
-each other** while the gates that would have caught it were already red. Before
-fixing anything: check whether a fix already landed and reconcile (one
-implementation per behavior, delete the losers). The interleave signature:
-redeclared `const`, repeated `return`, stacked comments citing different issues.
-Make count/list assertions drift-proof (derive from the registry, never hardcode).
+- the parallel-read-only audit method (with file:line citations),
+- the triage step (not every finding is an immediate PR),
+- the isolated-worktree fix protocol with regression tests, and
+- an eight-entry fix-pattern catalog for the most recurrent bugs.
 
-### 6. Exit codes must reflect true resolution state, not a proxy metric
-A script that counts one specific case (e.g. "ambiguous conflicts found") and
-exits 0 whenever that counter is zero can report a **false success** if a
-different failure path never increments the same counter — e.g. a file with
-zero detected conflict markers still isn't resolved. Fix: gate the exit code on
-an explicit "was everything actually fully resolved?" check, not a metric that
-can read zero for the wrong reason. Found in a merge-conflict auto-resolver
-whose caller trusted exit 0 to mean "safe to push" (PR #15826).
+When a fresh incident matches a catalog entry, apply the catalogued fix
+directly — do not re-derive it.
 
-### 7. `nosemgrep` suppression comments must stay physically adjacent
-Semgrep's inline suppression only applies when the `// nosemgrep: <rule-id>`
-comment is immediately above (or on) the flagged line. Inserting a new
-explanatory comment **between** the directive and the code it covers silently
-breaks the suppression, so a previously clean file starts failing CI with no
-behavior change. Fix: when adding comments near a `nosemgrep`-suppressed line,
-keep the directive as the last comment line immediately before the code
-(PR #15825).
+## Recurring gotchas
 
-See `standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md` for the full audit
-methodology and a fast-lookup catalog of these and other established fix
-patterns — read it before running a new audit pass.
+These are the patterns that bite repeatedly. Each has a fuller writeup in
+the audit playbook or in `learnings.md`.
 
-## Verifying changes locally (mirror the CircleCI gate)
+1. **`removeLabel` races** — `github.rest.issues.removeLabel` throws on
+   404. Wrap it and swallow only `error.status === 404`. Do not
+   blanket-catch.
+2. **`allowError` on internal helpers** — internal API wrappers must
+   expose `allowError` / `expectedStatuses` so callers can distinguish
+   "expected miss" from "real failure." Pass it explicitly at the call
+   site with a comment naming the expected condition.
+3. **Default `GITHUB_TOKEN` on agent PRs** — the default token cannot
+   trigger downstream `on: pull_request` runs. Agent-authored PRs must
+   use a bot PAT or GitHub App installation token, or their CI will hang
+   pending forever.
+4. **Secrets on argv** — passing secrets as CLI arguments leaks them to
+   `ps auxww` and to any `set -x` trace. Pass on stdin
+   (`printenv SECRET | tool --stdin`) or via a file descriptor.
+5. **Bash bare array variables** — `"$ARR"` expands only `${ARR[0]}`.
+   Use `"${ARR[@]}"`. Keep shellcheck in CI to catch this.
+6. **Exit codes are not resolution state** — `exit 0` from a subcommand
+   only means the tool did not crash. After the action, **assert the
+   desired post-condition explicitly** (re-query the API, verify the
+   label is gone, confirm the file exists) and exit non-zero if the
+   post-condition is not met. See catalog entry #6 in the audit playbook
+   (PR #15826).
+7. **`nosemgrep` suppression adjacency** — the suppression comment must
+   be on the **same line** as, or the line **immediately preceding**, the
+   offending code. No blank line, no unrelated comment, no formatter
+   reordering in between, or Semgrep will still fire the rule. Prefer
+   same-line placement. See catalog entry #7 in the audit playbook
+   (PR #15825).
 
-CircleCI (`.circleci/config.yml`) runs two **real** gates — replicate them before pushing:
-```bash
-npm ci
-npm test          # node --test 'tests/**/*.test.js' + bash tests/social_post_formatter.test.sh
-# changed-Markdown lint (same scope as CI):
-BASE="$(git merge-base origin/main HEAD)"
-FILES="$(git diff --name-only --diff-filter=d "$BASE" HEAD -- '*.md')"
-[ -n "$FILES" ] && npx markdownlint-cli2 $FILES || echo "no changed md"
-```
-`npm run lint` lints the whole repo (has a large pre-existing backlog); CI only
-gates **changed** Markdown on purpose. Always `python3 -c "import yaml; yaml.safe_load(open(F))"`
-a workflow after editing it.
+## Where the memory lives
 
-If changed-Markdown lint is red, don't hand-fix: run
-`npm run markdown:heal -- <files>` (`scripts/heal-markdown.js`). It fixes the
-non-`--fix`-able structural rules too (MD025 extra H1s → demoted to H2, MD003
-setext → ATX) and then runs `markdownlint-cli2 --fix`. The same healer runs
-automatically on every same-repo PR touching Markdown
-(`markdown-lint-auto-heal.yml`, pushes a `[md-auto-heal]` commit) and at WR
-generation time (`wr-pr-creation.yml`). The gates themselves stay real.
-
-## Working conventions
-
-- Develop on the assigned feature branch; commit + push there. Open PRs as **draft**.
-- Don't add new always-green `|| echo`-style shims to test/lint steps — the gates
-  are intentionally real.
-- Repo: `midnghtsapphire/revvel-standards`. Many `gh api` calls hardcode this path;
-  prefer `${{ github.repository }}` in new code.
+- `learnings.md` — chronological per-incident notes. Write here first
+  when something new breaks.
+- `standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md` — audit methodology
+  and the recurrent-pattern fix catalog.
+- `standards/GREEN_MAIN_STANDARD.md` — the invariant that `main` stays
+  green.
+- `CLAUDE.md` (this file) — fast-path index into the above.
