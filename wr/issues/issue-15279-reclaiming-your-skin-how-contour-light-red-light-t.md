@@ -7,9 +7,11 @@
 **Research Date:** 2026-07-06
 **WR Status:** 🟡 In Progress
 
+> ⚠️ **Compliance Notice:** The HIPAA and health-data privacy framing in this WR (Non-Functional Requirements §HIPAA-adjacent privacy, Recommendations §6, and Risks §1) has been superseded. See the authoritative compliance guidance in [`issue-15279-reclaiming-your-skin-how-contour-light-red-light-t-compliance-addendum.md`](./issue-15279-reclaiming-your-skin-how-contour-light-red-light-t-compliance-addendum.md) (Issue #16058).
+
 ## Issue Context
 
-Source article: https://coastalmedicalandwellness.com/post/red-light-therapy-stretch-marks-after-pregnancy
+Source article: <https://coastalmedicalandwellness.com/post/red-light-therapy-stretch-marks-after-pregnancy>
 
 The requester references an article from Coastal Medical & Wellness about how Contour Light red light therapy can help diminish post-pregnancy stretch marks. The `#tool` and `#app` hashtags signal a request to build a digital product — a companion web/mobile application that helps postpartum users discover, follow, and track red light therapy protocols for stretch mark reduction.
 
