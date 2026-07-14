@@ -1,19 +1,33 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-14T09:35:05.960Z",
+  "generated_at": "2026-07-14T10:33:11.013Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "3/100 recent runs failed; 0 stuck item(s)",
+      "summary": "5/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 29323689980,
+            "name": "Secrets Guardian",
+            "path": ".github/workflows/secrets-guardian.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29323689980",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29323306021,
+            "name": "Credential Autonomy Agent",
+            "path": ".github/workflows/credential-autonomy-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29323306021",
+            "conclusion": "failure"
+          },
           {
             "id": 29320120109,
             "name": "Secrets Guardian",
