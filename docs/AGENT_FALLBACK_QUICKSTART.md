@@ -1,373 +1,104 @@
-# Agent Fallback System — Quick Start
+# Agent Fallback Quickstart
 
-Automatic agent fallback: **OpenHands AI → Cursor → OpenRouter**
+This guide describes how to set up the agent fallback chain used by the automated
+coding pipeline. The chain is designed to keep automation running even when a
+primary provider (Devin) is unavailable or over budget, by falling back through
+free/lower-cost providers.
 
-When OpenHands hits rate limits, the system automatically switches to Cursor, then OpenRouter, ensuring zero-downtime automation.
+## Fallback Chain
 
----
+```
+Devin  →  Cursor  →  OpenRouter  →  OpenHands (opt-in)  →  manual
+```
 
-## 🚀 Quick Setup
+- **Devin** — primary paid agent (highest quality, rate-limited by budget)
+- **Cursor** — secondary paid agent
+- **OpenRouter** — free-tier LLM router (default free fallback)
+- **OpenHands** — opt-in community/self-hosted agent (only if configured)
+- **manual** — human intervention required
 
-### 1. Run the setup script
+## Prerequisites
+
+- `bash` (>= 4.0)
+- `curl`
+- `jq`
+- A GitHub token with `repo` scope exported as `GITHUB_TOKEN`
+- Provider API keys (only the ones you intend to use):
+  - `DEVIN_API_KEY`
+  - `CURSOR_API_KEY`
+  - `OPENROUTER_API_KEY`
+
+## Setup
+
+Run the setup script from the repository root:
 
 ```bash
-cd revvel-standards
-./scripts/setup-agent-fallback.sh midnghtsapphire/YOUR-REPO
+./scripts/setup-agent-fallback.sh
 ```
 
-### 2. Configure API keys
+The script will:
+
+1. Verify prerequisites are installed.
+2. `chmod +x` the following system-provided scripts if present:
+   - `scripts/call-devin-api.sh`
+   - `scripts/call-cursor-api.sh`
+   - `scripts/call-openrouter-api.sh`
+3. Print a summary of which providers are configured based on environment
+   variables.
+
+> **Note:** The OpenHands API script (`call-openhands-api.sh`) is no longer
+> shipped as a system-provided file and is **not** managed by
+> `setup-agent-fallback.sh`. OpenHands is now an opt-in fallback: if you want
+> to use it, drop your own `scripts/call-openhands-api.sh` implementation into
+> the repository and make it executable manually:
+>
+> ```bash
+> chmod +x scripts/call-openhands-api.sh
+> ```
+>
+> If the script is not present, the fallback chain will simply skip OpenHands
+> and continue to the next stage (manual).
+
+## Verifying the Setup
+
+After running the setup script, verify each configured provider:
 
 ```bash
-# Option A: Use credential-gatekeeper workflow (recommended)
-gh workflow run credential-gatekeeper.yml
+# Devin
+DEVIN_API_KEY=... ./scripts/call-devin-api.sh --dry-run
 
-# Option B: Set manually
-gh secret set OpenHands_API_KEY --repo midnghtsapphire/YOUR-REPO
-gh secret set CURSOR_API_KEY --repo midnghtsapphire/YOUR-REPO
-gh secret set OPENROUTER_API_KEY --repo midnghtsapphire/YOUR-REPO
+# Cursor
+CURSOR_API_KEY=... ./scripts/call-cursor-api.sh --dry-run
 
-# Option C: From Vault
-vault kv get -field=api_key revvel/shared/llm/OpenHands | gh secret set OpenHands_API_KEY
-vault kv get -field=api_key revvel/shared/llm/cursor | gh secret set CURSOR_API_KEY
-vault kv get -field=api_key revvel/shared/llm/openrouter | gh secret set OPENROUTER_API_KEY
+# OpenRouter
+OPENROUTER_API_KEY=... ./scripts/call-openrouter-api.sh --dry-run
 ```
 
-### 3. Automatic triggers (no configuration needed!)
+## Troubleshooting
 
-The agent-fallback workflow **automatically triggers** on:
+### "call-openhands-api.sh: not found" during setup
 
-✅ **Issues labeled with:**
-- `wr:code` — Code generation requests
-- `wr:auto` — Automated tasks
-- `agent-fallback` — Explicit fallback requests
+This warning is expected if you have not opted into OpenHands. The setup
+script no longer references this file. If you see this message, it is coming
+from an older cached script — pull the latest `main` and re-run
+`./scripts/setup-agent-fallback.sh`.
 
-✅ **Pull requests:**
-- Opened (non-draft)
-- Reopened
-- Ready for review
+### "call-OpenHands-api.sh: not found"
 
-✅ **Manual trigger:**
-- Via GitHub Actions UI or `gh` CLI
+The file was previously referenced with mixed casing. The canonical name is
+now the lowercase `call-openhands-api.sh` (opt-in only). Remove any references
+to the mixed-case variant from your local scripts or CI config.
 
-### 4. Use in your workflows (optional)
+### Fallback chain skips a provider
 
-```yaml
-# In your workflow:
-- name: Generate code with automatic fallback
-  uses: ./.github/workflows/agent-fallback.yml
-  with:
-    task_description: ${{ github.event.issue.body }}
-    issue_number: ${{ github.event.issue.number }}
-```
+Providers are skipped when their API key environment variable is unset, or
+when their `call-*-api.sh` script is missing or not executable. Check the
+setup script's output for a per-provider status line.
 
----
+## Related
 
-## 📋 Features
-
-✅ **Automatic triggering** — No manual workflow dispatch needed
-✅ **Automatic fallback** — No manual intervention when OpenHands hits limits
-✅ **Zero downtime** — Always have a working agent
-✅ **Rate limit detection** — Smart retry with exponential backoff
-✅ **Monitoring** — Track fallback events automatically
-✅ **Cost optimization** — Route simple tasks to cheaper agents
-✅ **Health checks** — Pre-flight verification before expensive operations
-
----
-
-## 🔄 How It Works
-
-1. **Try OpenHands AI** (primary, most capable)
-   - Handles complex multi-file refactors
-   - Full autonomous coding
-   - Rate limited: ~10 requests/hour
-
-2. **Fall back to Cursor** (secondary, faster)
-   - Good for smaller features and bug fixes
-   - Fast iteration, inline editing
-   - Rate limited: ~100 requests/hour
-
-3. **Fall back to OpenRouter** (tertiary, unlimited)
-   - Multi-model support (Sonnet → Opus → GPT-4)
-   - Pay-per-use, effectively unlimited
-   - Emergency backup
-
-4. **Manual escalation** (all agents failed)
-   - Creates `needs-human` issue
-   - Logs full diagnostic context
-   - Notifies configured channels
-
----
-
-## 📊 Monitoring
-
-### View fallback events
-```bash
-gh issue list --label auto-fallback
-```
-
-### Check recent fallbacks
-```bash
-gh issue list --label auto-fallback --created ">=@{7 days ago}"
-```
-
-### Monitor agent health
-```bash
-gh workflow run agent-fallback.yml --ref main
-```
-
----
-
-## 🛠️ Files Added
-
-- `.cursorrules` → symlink to `AGENTS.md`
-- `.env.example` — Updated with `OpenHands_API_KEY`, `CURSOR_API_KEY`
-- `.github/workflows/agent-fallback.yml` — Fallback workflow
-- `scripts/call-OpenHands-api.sh` — OpenHands API wrapper
-- `scripts/call-cursor-api.sh` — Cursor API wrapper
-- `scripts/setup-agent-fallback.sh` — Setup automation
-- `docs/AGENT_FALLBACK_PROCESS.md` — Complete documentation
-
----
-
-## 🔧 Configuration
-
-### Agent Capabilities
-
-| Agent | Best For | Rate Limit | Cost |
-|-------|----------|------------|------|
-| **OpenHands AI** | Complex features, architecture changes | ~10/hour | High |
-| **Cursor** | Small features, bug fixes | ~100/hour | Medium |
-| **OpenRouter** | Docs, reviews, emergency backup | Unlimited* | Variable |
-
-*Pay-per-use, no hard limits
-
-### Environment Variables
-
-```bash
-# .env (not committed)
-OpenHands_API_KEY=sk-OpenHands-...
-CURSOR_API_KEY=sk-cursor-...
-OPENROUTER_API_KEY=sk-or-v1-...
-```
-
-### Vault Paths
-
-```
-revvel/shared/llm/OpenHands        # OpenHands API key
-revvel/shared/llm/cursor       # Cursor API key
-revvel/shared/llm/openrouter   # OpenRouter API key
-```
-
----
-
-## 🧪 Testing
-
-### Test automatic triggers
-
-#### 1. Test with an issue label
-```bash
-# Create a test issue
-gh issue create --title "[TEST] Agent fallback test" \
-  --body "Test issue for agent fallback system"
-
-# Label it to trigger the workflow
-gh issue edit <ISSUE_NUMBER> --add-label "wr:code"
-
-# Watch the workflow run
-gh run watch
-```
-
-#### 2. Test with a PR
-```bash
-# Create a branch and PR
-git checkout -b test-agent-fallback
-echo "test" > test.txt
-git add test.txt
-git commit -m "test: trigger agent fallback"
-git push origin test-agent-fallback
-
-# Create PR (will auto-trigger if not draft)
-gh pr create --title "[TEST] Agent fallback" \
-  --body "Test PR for agent fallback system"
-
-# Watch the workflow run
-gh run watch
-```
-
-#### 3. Test manual trigger
-```bash
-# Trigger manually with an issue number
-gh workflow run agent-fallback.yml -f issue_number=123
-
-# Watch the run
-gh run watch
-```
-
-### Check which agent was used
-
-```bash
-# Check issue/PR comments for agent used
-gh issue view <ISSUE_NUMBER> --comments
-
-# Or check workflow logs
-gh run view <RUN_ID> --log
-```
-
----
-
-## 🔍 Troubleshooting
-
-### All agents fail
-
-**Symptom:** Issue gets `needs-human` label
-
-**Possible causes:**
-- All API keys invalid/expired
-- Service outages
-- Task too complex for AI
-
-**Fix:**
-```bash
-# Check secret configuration
-gh secret list
-
-# Verify keys work
-curl -H "Authorization: Bearer $OpenHands_API_KEY" https://api.OpenHands.ai/v1/health
-curl -H "Authorization: Bearer $CURSOR_API_KEY" https://api.cursor.sh/v1/health
-curl -H "Authorization: Bearer $OPENROUTER_API_KEY" https://openrouter.ai/api/v1/models
-```
-
-### OpenHands always fails
-
-**Symptom:** Fallback events every time
-
-**Possible causes:**
-- Rate limit hit
-- Quota exceeded
-- Key expired
-
-**Fix:**
-```bash
-# Check quota (if API supports it)
-# Rotate key
-vault kv get revvel/shared/llm/OpenHands | gh secret set OpenHands_API_KEY
-
-# Or skip OpenHands temporarily
-gh workflow run agent-fallback.yml -f prefer_agent=cursor
-```
-
-### Excessive fallbacks
-
-**Symptom:** Many `auto-fallback` issues
-
-**Possible causes:**
-- Workflow triggering too frequently
-- Malicious automation
-- Infinite loop
-
-**Fix:**
-```bash
-# Check recent runs
-gh run list --limit 20
-
-# Check for loops
-gh run view --log | grep -i fallback
-
-# Temporarily disable workflow
-gh workflow disable agent-fallback.yml
-```
-
----
-
-## 📖 Full Documentation
-
-For complete details, see:
-- [`docs/AGENT_FALLBACK_PROCESS.md`](../docs/AGENT_FALLBACK_PROCESS.md) — Full process documentation
-- [`docs/AGENTS.md`](../docs/AGENTS.md) — Universal agent instructions
-- [`skills/REGISTRY.md`](../skills/REGISTRY.md) — Skills registry
-
----
-
-## 🎯 Use Cases
-
-### Automated code generation
-```yaml
-on:
-  issues:
-    types: [labeled]
-jobs:
-  generate:
-    if: github.event.label.name == 'wr:code'
-    uses: ./.github/workflows/agent-fallback.yml
-    with:
-      task_description: ${{ github.event.issue.body }}
-      issue_number: ${{ github.event.issue.number }}
-```
-
-### CI/CD with AI assistance
-```yaml
-on:
-  pull_request:
-jobs:
-  review:
-    uses: ./.github/workflows/agent-fallback.yml
-    with:
-      task_description: "Review PR and suggest improvements"
-      issue_number: ${{ github.event.pull_request.number }}
-```
-
-### Scheduled maintenance
-```yaml
-on:
-  schedule:
-    - cron: '0 2 * * 1'  # Weekly on Monday 2 AM
-permissions:
-  issues: write
-  contents: write
-  pull-requests: write
-jobs:
-  create-issue:
-    runs-on: ubuntu-latest
-    outputs:
-      issue_number: ${{ steps.issue.outputs.number }}
-    steps:
-      - uses: actions/github-script@v8
-        id: issue
-        with:
-          script: |
-            const { data } = await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: '[SCHEDULED] Refactor deprecated patterns',
-              labels: ['agent-fallback', 'scheduled'],
-            });
-            core.setOutput('number', data.number);
-  refactor:
-    needs: create-issue
-    uses: ./.github/workflows/agent-fallback.yml
-    with:
-      task_description: "Refactor deprecated patterns"
-      issue_number: ${{ needs.create-issue.outputs.issue_number }}
-```
-
----
-
-## 🚀 Next Steps
-
-1. **Configure secrets** for all three agents
-2. **Test the fallback** with a simple issue
-3. **Monitor fallback events** for the first week
-4. **Optimize routing** based on task patterns
-5. **Add cost tracking** to identify expensive operations
-
----
-
-## 📝 Changelog
-
-| Date | Change | Author |
-|------|--------|--------|
-| 2026-04-30 | Initial agent fallback system | @copilot |
-
----
-
-**Questions?** See [`docs/AGENT_FALLBACK_PROCESS.md`](../docs/AGENT_FALLBACK_PROCESS.md) or open an issue.
+- `scripts/setup-agent-fallback.sh` — setup entry point
+- `scripts/call-devin-api.sh` — Devin adapter
+- `scripts/call-cursor-api.sh` — Cursor adapter
+- `scripts/call-openrouter-api.sh` — OpenRouter adapter
+- PR #14375 — "Devin: wire the lane for real"
