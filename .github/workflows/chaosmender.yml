@@ -58,8 +58,11 @@ jobs:
         # On schedule or manual dispatch: report + file issues so the self-healing
         # loop can track and auto-remediate.
         run: |
+          # Default to 0 findings so the condition below is safe if the script exits early.
+          echo "findings_count=0" >> "$GITHUB_OUTPUT"
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             # PR lane is report-only: keep signal in logs/comments without hard-failing CI.
+            # chaosmender.js overwrites findings_count in GITHUB_OUTPUT with the real count.
             node scripts/chaosmender.js || true
           elif [[ "${{ github.event.inputs.file_issues }}" == "false" ]]; then
             node scripts/chaosmender.js
