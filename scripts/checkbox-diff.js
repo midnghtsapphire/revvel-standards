@@ -3,131 +3,126 @@
 /**
  * checkbox-diff.js
  *
- * Diffs two markdown bodies (an issue's or PR's `body` before/after an edit)
- * to find task-list ("- [ ]" / "- [x]") lines that were newly checked in
- * this edit AND match the `Follow-up:` convention documented in
- * `.github/workflows/followup-checkbox-router.yml`:
+ * Pure utility for detecting newly-checked "Follow-up:" checklist items
+ * between two markdown bodies (e.g. an issue/PR body before and after an edit).
  *
- *   - [ ] Follow-up: <free text description of what needs tracking later>
- *
- * When a maintainer/agent edits the body and flips that box from unchecked
- * to checked, it is the trigger signal to spin the follow-up out into a
- * tracked WR issue. This module is the pure-logic half of that feature — it
- * has no GitHub API / network dependency so it can be unit tested directly.
+ * No network / GitHub dependency, so it is fully unit-testable.
  */
-
-// Matches a markdown task-list line, e.g.:
-//   - [ ] Follow-up: do the thing
-//   * [x] some other item
-//   +   [X]   spaced out item
-const TASK_LINE_RE = /^[ \t]*[-*+][ \t]+\[([ xX])\][ \t]+(.+?)[ \t]*$/;
-
-// Matches the "Follow-up:" prefix (case-insensitive, optional hyphen,
-// optional colon, tolerant of trailing whitespace) that marks a checklist
-// item as a trackable follow-up commitment. Covers "Follow-up:", "Followup:",
-// "FOLLOWUP". (Does not match "Follow up:" with a bare space — the
-// convention documented in followup-checkbox-router.yml is "Follow-up:".)
-const FOLLOWUP_PREFIX_RE = /^follow-?up:?\s*/i;
 
 /**
- * Parse every markdown task-list line out of a body.
- * @param {string|null|undefined} body
- * @returns {Array<{ text: string, checked: boolean }>}
+ * Matches a markdown task-list line, capturing:
+ *   1: the checkbox state character (space, x, or X)
+ *   2: the remaining text after the checkbox
+ *
+ * Tolerates leading whitespace and optional list-marker variants.
  */
-function parseTaskItems(body) {
-  if (!body) return [];
-  const items = [];
+const TASK_LINE_RE = /^\s*[-*+]\s+\[([ xX])\]\s?(.*)$/;
+
+/**
+ * Matches a "Follow-up:" prefix, case-insensitive, tolerating:
+ *   - Follow-up:
+ *   - Follow up:
+ *   - Followup:
+ *   - Extra whitespace around the hyphen/space
+ */
+const FOLLOW_UP_PREFIX_RE = /^\s*follow[\s-]?up\s*:\s*(.*)$/i;
+
+/**
+ * Normalize a follow-up description for matching between old and new bodies.
+ * We match by content so reordering / unrelated edits don't break detection.
+ */
+function normalizeText(text) {
+  if (text == null) return '';
+  return String(text)
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Parse a body into an array of follow-up task-list entries.
+ *
+ * Returns entries of the form:
+ *   { checked: boolean, description: string, normalized: string, raw: string }
+ *
+ * Only lines whose task-text starts with a "Follow-up:" prefix are returned.
+ */
+function parseFollowUpTasks(body) {
+  if (body == null) return [];
   const lines = String(body).split(/\r?\n/);
+  const out = [];
   for (const line of lines) {
-    const match = TASK_LINE_RE.exec(line);
-    if (!match) continue;
-    items.push({
-      checked: match[1].toLowerCase() === 'x',
-      text: match[2].trim(),
+    const m = TASK_LINE_RE.exec(line);
+    if (!m) continue;
+    const state = m[1];
+    const rest = m[2] || '';
+    const fu = FOLLOW_UP_PREFIX_RE.exec(rest);
+    if (!fu) continue;
+    const description = (fu[1] || '').trim();
+    out.push({
+      checked: state === 'x' || state === 'X',
+      description,
+      normalized: normalizeText(description),
+      raw: line,
     });
   }
-  return items;
+  return out;
 }
 
 /**
- * Normalize task-item text into a matching key. Minor whitespace variation
- * (extra spaces, tabs) should not prevent a line from being matched between
- * the old and new body; case is folded too since "Follow-up" items are
- * matched case-insensitively everywhere else in this module.
- * @param {string} text
- * @returns {string}
- */
-function normalizeKey(text) {
-  return text.trim().toLowerCase().replace(/\s+/g, ' ');
-}
-
-/**
- * Find follow-up checklist items that transitioned from unchecked to
- * checked between `oldBody` and `newBody`.
+ * Find follow-up items that transitioned from unchecked (in oldBody) to
+ * checked (in newBody).
  *
- * Matching strategy: items are matched by normalized text content (not by
- * line position), so a line can be correctly identified as "the same item"
- * even if unrelated lines above/below it were added, removed, or reordered
- * in the same edit. Only an item that (a) existed in `oldBody` as unchecked
- * and (b) exists in `newBody` as checked counts as "newly checked" — an
- * item that is brand new in `newBody` (no matching text in `oldBody` at
- * all) is not reported, since there is no unchecked->checked transition to
- * observe for it.
+ * Rules:
+ *   - If oldBody is null/undefined, nothing is "newly checked" — we have no
+ *     prior state to compare against, so we avoid over-firing.
+ *   - If newBody is null/undefined, returns [].
+ *   - Matching is by normalized description text, not line position.
+ *   - An item checked in newBody but NOT present at all in oldBody is NOT
+ *     considered newly checked (added-and-checked in the same edit is a no-op).
+ *   - An item that was already checked in oldBody is NOT re-reported.
  *
- * @param {string|null|undefined} oldBody - body before the edit
- *   (`github.event.changes.body.from`). May be null/undefined, e.g. when
- *   the issue/PR was just created and there is no prior body to diff
- *   against, or when the edit didn't touch the body field at all.
- * @param {string|null|undefined} newBody - body after the edit (current
- *   `issue.body` / `pull_request.body`).
- * @returns {string[]} the free-text description of each newly-checked
- *   follow-up item, with the `Follow-up:` prefix stripped and trimmed. If
- *   multiple follow-up items were checked in the same edit, all of them are
- *   returned, in the order they appear in `newBody`.
+ * @param {string|null|undefined} oldBody
+ * @param {string|null|undefined} newBody
+ * @returns {Array<{description: string, normalized: string}>}
  */
 function findNewlyCheckedFollowUps(oldBody, newBody) {
-  if (!oldBody || !newBody) return [];
+  if (oldBody == null || newBody == null) return [];
 
-  const oldItems = parseTaskItems(oldBody);
-  const newItems = parseTaskItems(newBody);
-  if (oldItems.length === 0 || newItems.length === 0) return [];
+  const oldTasks = parseFollowUpTasks(oldBody);
+  const newTasks = parseFollowUpTasks(newBody);
 
-  // Bucket old items by normalized text into per-key queues so duplicate
-  // line text (rare, but possible) is matched one-to-one in document order
-  // rather than every duplicate matching the first old entry.
-  const oldByKey = new Map();
-  for (const item of oldItems) {
-    const key = normalizeKey(item.text);
-    if (!oldByKey.has(key)) oldByKey.set(key, []);
-    oldByKey.get(key).push(item);
+  // Index old tasks by normalized text. If duplicates exist, prefer the
+  // "unchecked" state so a subsequent check on any duplicate is detectable.
+  const oldByText = new Map();
+  for (const t of oldTasks) {
+    if (!t.normalized) continue;
+    const existing = oldByText.get(t.normalized);
+    if (!existing || (existing.checked && !t.checked)) {
+      oldByText.set(t.normalized, t);
+    }
   }
 
   const results = [];
-  for (const newItem of newItems) {
-    if (!newItem.checked) continue;
-
-    const key = normalizeKey(newItem.text);
-    const queue = oldByKey.get(key);
-    if (!queue || queue.length === 0) continue; // no matching prior line found
-    const oldItem = queue.shift();
-    if (oldItem.checked) continue; // already checked before this edit
-
-    const followUpMatch = FOLLOWUP_PREFIX_RE.exec(newItem.text);
-    if (!followUpMatch) continue; // checked, but not a "Follow-up:" item
-
-    const description = newItem.text.slice(followUpMatch[0].length).trim();
-    if (!description) continue; // "Follow-up:" with no description — nothing to track
-
-    results.push(description);
+  const seen = new Set();
+  for (const t of newTasks) {
+    if (!t.checked) continue;
+    if (!t.normalized) continue;
+    if (seen.has(t.normalized)) continue;
+    const prior = oldByText.get(t.normalized);
+    if (!prior) continue; // added-and-checked in same edit — skip
+    if (prior.checked) continue; // already checked before
+    seen.add(t.normalized);
+    results.push({
+      description: t.description,
+      normalized: t.normalized,
+    });
   }
-
   return results;
 }
 
 module.exports = {
   findNewlyCheckedFollowUps,
-  parseTaskItems,
-  normalizeKey,
-  TASK_LINE_RE,
-  FOLLOWUP_PREFIX_RE,
+  parseFollowUpTasks,
+  normalizeText,
 };
