@@ -42,7 +42,7 @@ the next agent (human or AI) does not have to rediscover either from scratch.
 
 6. **Watch live CI on your own in-flight PRs — not just static findings.**
    The broken third-party `saml-sso-registration.yml` Action (fixed in
-   #15828) was caught by watching CI on unrelated PRs, not by reading
+   ##15828) was caught by watching CI on unrelated PRs, not by reading
    code. Static audit misses dynamic breakage. Keep one eye on the
    Actions tab while the audit runs.
 
