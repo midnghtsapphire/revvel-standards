@@ -83,7 +83,7 @@ script no longer references this file. If you see this message, it is coming
 from an older cached script — pull the latest `main` and re-run
 `./scripts/setup-agent-fallback.sh`.
 
-### "call-OpenHands-api.sh: not found"
+### "call-OpenHands-api.sh: not found
 
 The file was previously referenced with mixed casing. The canonical name is
 now the lowercase `call-openhands-api.sh` (opt-in only). Remove any references
