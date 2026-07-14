@@ -6,19 +6,26 @@
 # This script restores it and appends the audit entry atomically, per the log's own write rules.
 set -euo pipefail
 
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
 BLOB="58bb597a417c3b8afe594ee7af3b07e7bd0e2e65"
 ENTRY_FILE="wr/memory/learnings-append-2026-07-14.md"
 TARGET="learnings.md"
-TMP="learnings.tmp"
+TMP="$(mktemp "${TARGET}.tmp.XXXXXX")"
+cleanup() { rm -f "$TMP"; }
+trap cleanup EXIT
 
 # 1. Restore full pre-edit content from the content-addressed blob
 git cat-file -p "$BLOB" > "$TMP"
 
 # 2. Append the audit entry (atomic: write temp, then move — per the log's header rules)
-if [ -f "$ENTRY_FILE" ]; then
-  printf '\n' >> "$TMP"
-  cat "$ENTRY_FILE" >> "$TMP"
+if [ ! -f "$ENTRY_FILE" ]; then
+  echo "Missing required entry file: $ENTRY_FILE" >&2
+  exit 1
 fi
+printf '\n' >> "$TMP"
+cat "$ENTRY_FILE" >> "$TMP"
 
 # 3. Sanity: header + history must be present before we overwrite anything
 grep -q '^# Goap Agent Memory' "$TMP"
