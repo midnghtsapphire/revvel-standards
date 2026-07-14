@@ -19,7 +19,7 @@ Three specific defects in the prior approach:
 
 ---
 
-## 2. Decision Framework — Are We a HIPAA-Regulated Entity?
+## 2. Decision Framework — Are We a HIPAA-Regulated Entity
 
 HIPAA applies only if we are a **Covered Entity** (healthcare provider, plan, clearinghouse) OR a **Business Associate** (contracted to handle PHI on behalf of one).
 
