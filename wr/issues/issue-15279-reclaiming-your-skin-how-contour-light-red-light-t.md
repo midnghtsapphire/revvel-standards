@@ -7,6 +7,8 @@
 **Research Date:** 2026-07-06
 **WR Status:** 🟡 In Progress
 
+> ⚠️ **Compliance Notice:** The HIPAA and health-data privacy framing in this WR (Non-Functional Requirements §HIPAA-adjacent privacy, Recommendations §6, and Risks §1) has been superseded. See the authoritative compliance guidance in [`issue-15279-reclaiming-your-skin-how-contour-light-red-light-t-compliance-addendum.md`](./issue-15279-reclaiming-your-skin-how-contour-light-red-light-t-compliance-addendum.md) (Issue #16058).
+
 ## Issue Context
 
 Source article: https://coastalmedicalandwellness.com/post/red-light-therapy-stretch-marks-after-pregnancy
