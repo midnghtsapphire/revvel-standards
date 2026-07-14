@@ -95,6 +95,6 @@ This section defines the explicit, measurable acceptance criteria required to cl
 ## References
 
 - Tracking issue: #16062
-- PR: https://github.com/midnghtsapphire/revvel-standards/pull/15045
+- PR: <https://github.com/midnghtsapphire/revvel-standards/pull/15045>
 - Jules enrichment contract: `wr/schemas/enrichment.schema.json`
 - Architecture doc: `wr/docs/architecture/enrichment-pipeline.md`
