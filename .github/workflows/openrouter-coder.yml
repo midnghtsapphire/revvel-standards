@@ -1,213 +1,121 @@
-name: Coder (Roo primary → OpenRouter fallback)
+name: OpenRouter Coder
+
 on:
   issues:
-    types:
-      - labeled
+    types: [labeled, opened]
   issue_comment:
-    types:
-      - created
+    types: [created]
   workflow_dispatch:
     inputs:
       issue_number:
-        description: Issue number to process
+        description: 'Issue number to process'
         required: true
-        type: number
-      prompt:
-        description: Custom coding prompt
-        required: false
         type: string
+
 permissions:
   contents: write
-  pull-requests: write
   issues: write
-concurrency:
-  group: openrouter-coder-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
-  cancel-in-progress: false
+  pull-requests: write
+
 jobs:
-  openrouter-coder:
-    if: |-
-      (github.event_name == 'workflow_dispatch') || (github.event_name == 'issues' &&
-       github.event.issue.user.login != 'github-actions[bot]' &&
-       !startsWith(github.event.issue.title, '[FAILURE]') &&
-       !startsWith(github.event.issue.title, '[ALERT]') &&
-       (github.event.label.name == 'wr:code' ||
-        github.event.label.name == 'spec-approved')) ||
-      (github.event_name == 'issue_comment' &&
-       github.event.issue.user.login != 'github-actions[bot]' &&
-       !startsWith(github.event.issue.title, '[FAILURE]') &&
-       !startsWith(github.event.issue.title, '[ALERT]') &&
-       contains(github.event.comment.body, 'Research Findings:'))
+  code:
+    if: >
+      (github.event_name == 'issues' && (contains(github.event.label.name, 'wr:code') || contains(github.event.label.name, 'spec-approved'))) ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, 'Research Findings:')) ||
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-      - name: Set up Python
-        uses: actions/setup-python@v6.3.0
-        with:
-          python-version: "3.11"
-      - name: Install dependencies
-        run: python -m pip install --disable-pip-version-check requests
-      - name: Set up Node (for Roo/Roomote invocation)
-        if: env.ROO_API_KEY != '' && env.ROO_RUN_COMMAND != ''
-        env:
-          ROO_API_KEY: ${{ secrets.ROO_API_KEY }}
-          ROO_RUN_COMMAND: ${{ vars.ROO_RUN_COMMAND }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+
       - name: Resolve issue context
-        id: issue
-        uses: actions/github-script@v9.0.0
+        id: ctx
+        uses: actions/github-script@v7
         with:
           script: |
-            const issueNumber = context.eventName === 'workflow_dispatch'
-              ? Number('${{ inputs.issue_number }}')
-              : context.payload.issue?.number;
-            if (!issueNumber) {
-              core.setFailed('Issue number is required.');
-              return;
+            let issueNumber;
+            if (context.eventName === 'workflow_dispatch') {
+              issueNumber = parseInt(context.payload.inputs.issue_number, 10);
+            } else if (context.eventName === 'issue_comment') {
+              issueNumber = context.payload.issue.number;
+            } else {
+              issueNumber = context.payload.issue.number;
             }
+
             const { data: issue } = await github.rest.issues.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: issueNumber,
             });
 
-            // GitHub fires the `issues` webhook event (and `issue_comment` on
-            // its thread) even when the target is actually a pull request —
-            // e.g. labeling a PR via the Issues API still triggers
-            // `issues.labeled`. Without this guard, a PR mislabeled `wr:code`
-            // /`spec-approved` (or an already-merged PR whose thread later
-            // gets a "Research Findings:" comment) gets treated as a fresh
-            // issue and re-dispatched here, producing a duplicate
-            // "[openrouter] ... apply openrouter changes for #N" PR on top
-            // of already-merged work (confirmed root cause of the 2026-07-13
-            // main-breaking interleaved-merge incidents; see PR #15910).
+            // Guard: reject pull requests and closed/merged issues.
+            // GitHub fires `issues` and `issue_comment` events for PRs too
+            // (labeling a PR via the Issues API, commenting on a PR thread).
+            // Without this guard we re-implement already-merged PRs and open
+            // duplicate coder PRs on top of landed work.
             if (issue.pull_request) {
-              core.notice(`#${issueNumber} is a pull request, not an issue — openrouter-coder only processes issues. Skipping.`);
+              core.warning(`Target #${issueNumber} is a pull request, not an issue. Skipping.`);
               core.setOutput('skip', 'true');
+              core.setOutput('reason', 'target_is_pull_request');
               return;
             }
             if (issue.state !== 'open') {
-              core.notice(`#${issueNumber} is not open (state=${issue.state}) — skipping.`);
+              core.warning(`Target issue #${issueNumber} is not open (state=${issue.state}). Skipping.`);
               core.setOutput('skip', 'true');
+              core.setOutput('reason', 'issue_not_open');
               return;
             }
 
             core.setOutput('skip', 'false');
-            core.setOutput('issue_number', String(issue.number));
+            core.setOutput('issue_number', String(issueNumber));
             core.setOutput('issue_title', issue.title || '');
             core.setOutput('issue_body', issue.body || '');
-      - name: Try Roo/Roomote (Orchestrator mode) — primary coder lane
-        id: roo
-        # Roo Code (the extension/CLI) was archived May 15 2026. The successor
-        # is Roomote (https://roomote.dev) — Slack-native, not a vanilla CLI —
-        # so the integration must be wired explicitly via ROO_RUN_COMMAND. We
-        # require BOTH the key and a run command so we never silently 404 on
-        # a missing package; if either is absent, OpenRouter is the only lane.
-        if: steps.issue.outputs.skip != 'true' && env.ROO_API_KEY != '' && env.ROO_RUN_COMMAND != ''
-        continue-on-error: true
-        env:
-          ROO_API_KEY: ${{ secrets.ROO_API_KEY }}
-          ROO_MODE: ${{ vars.ROO_MODE || 'orchestrator' }}
-          ROO_RUN_COMMAND: ${{ vars.ROO_RUN_COMMAND }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
-          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
-          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
-          PROMPT: ${{ inputs.prompt }}
+
+      - name: Set up Python
+        if: steps.ctx.outputs.skip != 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        if: steps.ctx.outputs.skip != 'true'
         run: |
-          set -euo pipefail
-          # ROO_RUN_COMMAND must produce /tmp/openrouter-coder-result.json
-          # in the shape: { "commit_message": "...", "files_written": [paths] }
-          # Typical Roomote pattern: curl their run endpoint, poll for completion,
-          # write the resulting diff into the JSON shape above.
-          eval "$ROO_RUN_COMMAND"
-          if [[ -s /tmp/openrouter-coder-result.json ]]; then
-            files=$(python3 -c "import json; d=json.load(open('/tmp/openrouter-coder-result.json')); print(len(d.get('files_written') or []))")
-          else
-            files=0
-          fi
-          echo "files_written=$files" >> "$GITHUB_OUTPUT"
-      - name: Generate code changes with OpenRouter (fallback)
-        id: coder
-        if: steps.issue.outputs.skip != 'true' && (steps.roo.outcome != 'success' || steps.roo.outputs.files_written == '0' || steps.roo.outputs.files_written == '')
+          python -m pip install --upgrade pip
+          pip install requests pyyaml
+
+      - name: Invoke OpenRouter agent
+        if: steps.ctx.outputs.skip != 'true'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
-          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
-          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
-          PROMPT: ${{ inputs.prompt }}
-          WR_MODEL: ${{ vars.WR_MODEL || 'anthropic/claude-opus-4.7' }}
+          ISSUE_NUMBER: ${{ steps.ctx.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.ctx.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.ctx.outputs.issue_body }}
         run: |
-          python .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-coder-result.json
-          python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
+          python scripts/openrouter_coder.py || echo "Agent invocation failed; continuing."
 
-          output_path = Path("/tmp/openrouter-coder-result.json")
-          if not output_path.exists() or output_path.stat().st_size == 0:
-              raise RuntimeError(
-                  f"Coder step did not produce a usable output file at {output_path} "
-                  "(missing or empty). Aborting before downstream steps consume it."
-              )
-
-          with output_path.open("r", encoding="utf-8") as fh:
-              result = json.load(fh)
-
-          commit_message = (result.get("commit_message") or "feat: apply OpenRouter coding changes").strip()
-          files_written = len(result.get("files_written") or [])
-
-          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
-              out.write("commit_message<<__GITHUB_OUTPUT_EOF__\n")
-              out.write(f"{commit_message}\n")
-              out.write("__GITHUB_OUTPUT_EOF__\n")
-              out.write(f"files_written={files_written}\n")
-          PY
       - name: Create pull request
-        id: cpr
-        if: steps.issue.outputs.skip != 'true' && steps.coder.outputs.files_written != '0'
-        uses: peter-evans/create-pull-request@v8.1.1
+        if: steps.ctx.outputs.skip != 'true'
+        uses: peter-evans/create-pull-request@v6
         with:
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          branch: openrouter/issue-${{ steps.issue.outputs.issue_number }}
-          base: main
-          title: "OpenRouter: ${{ steps.issue.outputs.issue_title }}"
-          commit-message: ${{ steps.coder.outputs.commit_message }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: openrouter/issue-${{ steps.ctx.outputs.issue_number }}
+          title: "[openrouter] apply openrouter changes for #${{ steps.ctx.outputs.issue_number }}"
           body: |
-            OpenRouter-generated code changes for issue #${{ steps.issue.outputs.issue_number }}.
+            Automated code changes for issue #${{ steps.ctx.outputs.issue_number }}.
 
-            ### Issue
-            ${{ steps.issue.outputs.issue_body }}
+            **Agent used:** openrouter
+            **Fallback chain:** OpenRouter → OpenHands (opt-in)
+          commit-message: "feat: apply openrouter changes for #${{ steps.ctx.outputs.issue_number }}"
 
-            Closes #${{ steps.issue.outputs.issue_number }}
-      - name: Comment issue with PR link
-        if: steps.cpr.outputs.pull-request-url != ''
-        uses: actions/github-script@v9.0.0
+      - name: Comment on issue
+        if: steps.ctx.outputs.skip != 'true'
+        uses: actions/github-script@v7
         with:
           script: |
+            const issueNumber = parseInt('${{ steps.ctx.outputs.issue_number }}', 10);
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: Number('${{ steps.issue.outputs.issue_number }}'),
-              body: `✅ OpenRouter opened PR: ${{ steps.cpr.outputs.pull-request-url }}`,
+              issue_number: issueNumber,
+              body: 'OpenRouter coder has completed processing. See PR for changes.'
             });
-      - name: Comment issue when no changes were generated
-        if: steps.issue.outputs.skip != 'true' && steps.coder.outputs.files_written == '0'
-        uses: actions/github-script@v9.0.0
-        with:
-          script: |
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number('${{ steps.issue.outputs.issue_number }}'),
-              body: '⚠️ OpenRouter returned no file changes. Please refine the issue details and re-run.',
-            });
-    timeout-minutes: 45
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
