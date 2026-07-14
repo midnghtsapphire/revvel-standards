@@ -11,8 +11,8 @@
 
 <!-- who: Jules (Google) + OpenRouter -->
 <!-- date: 2026-07-14 -->
-<!-- description: N/A — no additional details are available in the source issue -->
-<!-- **Issue:** N/A — no additional details are available in the source issue         -->
+<!-- description: [WR] Repository 'midnghtsapphire/Governance-ape-cli-errors' appears to be empty: there are no files to index -->
+<!-- **Issue:** #16071         -->
 <!-- **Repository:** midnghtsapphire/revvel-standards         -->
 <!-- **Created:** 2026-07-14            -->
 <!-- **Researcher:** Jules (Google) + OpenRouter   -->
