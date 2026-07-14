@@ -1,45 +1,38 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-14T08:45:03.157Z",
+  "generated_at": "2026-07-14T09:35:05.960Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29319086216,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29319086216",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29316431735,
+            "id": 29320120109,
             "name": "Secrets Guardian",
             "path": ".github/workflows/secrets-guardian.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29316431735",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29320120109",
             "conclusion": "failure"
           },
           {
-            "id": 29316048594,
+            "id": 29319793416,
             "name": "Credential Autonomy Agent",
             "path": ".github/workflows/credential-autonomy-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29316048594",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29319793416",
             "conclusion": "failure"
           },
           {
-            "id": 29313181543,
-            "name": "Secrets Guardian",
-            "path": ".github/workflows/secrets-guardian.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29313181543",
+            "id": 29319488888,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29319488888",
             "conclusion": "failure"
           }
         ],
@@ -65,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29314611464"
+        "last_run": null
       }
     },
     "sheaf": {
