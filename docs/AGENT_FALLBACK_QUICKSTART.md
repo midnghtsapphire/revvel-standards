@@ -44,7 +44,7 @@ The following agents are currently wired into the fallback lane:
 
 ## Troubleshooting
 
-### "call-openhands-api.sh: not found"
+### "call-openhands-api.sh: not found
 
 This warning indicates you (or a downstream script) are referencing the retired OpenHands script. Remove the reference or replace it with one of the currently supported scripts (`call-devin-api.sh` or `call-cursor-api.sh`).
 
