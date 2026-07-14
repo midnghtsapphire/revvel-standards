@@ -1,26 +1,36 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-14T15:54:27.913Z",
+  "generated_at": "2026-07-14T16:25:08.686Z",
   "stop": [
     {
-      "id": 29342914838,
-      "name": "Agent Fallback Handler",
-      "reason": "running 60m ≥ 60m budget"
+      "id": 29347168729,
+      "name": "Create Issue Branch",
+      "reason": "no progress for 15m ≥ 15m"
+    },
+    {
+      "id": 29346988550,
+      "name": "Create Issue Branch",
+      "reason": "no progress for 19m ≥ 15m"
+    },
+    {
+      "id": 29343372948,
+      "name": "CodeQL",
+      "reason": "running 85m ≥ 60m budget"
     },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 1460m ≥ 60m budget"
+      "reason": "running 1490m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 1530m ≥ 60m budget"
+      "reason": "running 1561m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 1601m ≥ 60m budget"
+      "reason": "running 1632m ≥ 60m budget"
     }
   ]
 }
