@@ -1,31 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-14T07:34:49.585Z",
+  "generated_at": "2026-07-14T08:45:03.157Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
+            "id": 29319086216,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29319086216",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29316431735,
+            "name": "Secrets Guardian",
+            "path": ".github/workflows/secrets-guardian.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29316431735",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29316048594,
+            "name": "Credential Autonomy Agent",
+            "path": ".github/workflows/credential-autonomy-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29316048594",
+            "conclusion": "failure"
+          },
+          {
             "id": 29313181543,
             "name": "Secrets Guardian",
             "path": ".github/workflows/secrets-guardian.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29313181543",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29312988595,
-            "name": "Credential Autonomy Agent",
-            "path": ".github/workflows/credential-autonomy-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29312988595",
             "conclusion": "failure"
           }
         ],
