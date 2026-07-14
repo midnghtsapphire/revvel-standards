@@ -34,6 +34,7 @@ on:
 permissions:
   contents: read
   issues: write
+  pull-requests: write
 
 env:
   GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
@@ -73,6 +74,7 @@ jobs:
         if: github.event_name == 'pull_request' && steps.scan.outputs.findings_count != '0'
         uses: actions/github-script@v9.0.0
         with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             await github.rest.issues.createComment({
               owner: context.repo.owner,
