@@ -29,7 +29,7 @@ It incorrectly asserted that:
 
 Before any launch, product + legal MUST answer these in writing:
 
-### Step 1 — Are we a Covered Entity or Business Associate?
+### Step 1 — Are we a Covered Entity or Business Associate
 
 - **Covered Entity:** health plan, healthcare clearinghouse, or healthcare provider that transmits health info electronically in connection with a HIPAA transaction.
 - **Business Associate:** performs functions/services on behalf of a covered entity involving PHI.
@@ -38,7 +38,7 @@ If **NO to both** → HIPAA does not directly apply. State privacy laws (CCPA/CP
 
 If **YES** → full HIPAA Privacy + Security + Breach Notification Rules apply. Proceed to Step 2.
 
-### Step 2 — Is the collected data PHI?
+### Step 2 — Is the collected data PHI
 
 Data is PHI when it is **individually identifiable health information** created/received by a covered entity or business associate. Examples in this app that likely qualify **if** Step 1 = YES:
 
