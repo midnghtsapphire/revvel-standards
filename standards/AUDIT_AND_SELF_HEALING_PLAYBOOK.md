@@ -2,7 +2,7 @@
 
 **Status:** Active reference (2026-07-13)
 **Case evidence:** Formalizes the audit-and-fix session that produced PRs
-#15821, #15823, #15824, #15825, #15826, #15827, and #15828.
+## 15821, #15823, #15824, #15825, #15826, #15827, and #15828.
 
 This playbook exists so the next agent (human or AI) does not have to
 rediscover the audit methodology or the fix-pattern catalog from scratch.
