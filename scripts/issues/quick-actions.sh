@@ -165,7 +165,7 @@ issue_batch_close() {
     label_text="duplicate"
   fi
 
-  echo -e "${YELLOW}⚠️  About to close ${#@} issue(s) as '$label_text' in $REPO_OWNER/$REPO_NAME${NC}"
+  echo -e "${YELLOW}⚠️  About to close $# issue(s) as '$label_text' in $REPO_OWNER/$REPO_NAME${NC}"
   echo -e "${YELLOW}   Issues: $*${NC}"
   read -r -p "Proceed? (y/N) " confirm
   if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
@@ -242,12 +242,9 @@ issue_close_all_assigned() {
     return 0
   fi
 
-  local numbers
-  numbers=$(echo "$issues" | cut -f1)
-
   local closed=0
   local failed=0
-  for num in $numbers; do
+  while read -r num; do
     if gh issue close "$num" \
       --repo "$REPO_OWNER/$REPO_NAME" \
       --reason "$reason" 2>/dev/null; then
@@ -257,7 +254,7 @@ issue_close_all_assigned() {
       echo -e "${RED}  ✗ Failed to close #$num${NC}"
       failed=$((failed + 1))
     fi
-  done
+  done < <(echo "$issues" | cut -f1)
 
   echo ""
   echo -e "${GREEN}Done: $closed closed${NC}$([ "$failed" -gt 0 ] && echo -e ", ${RED}$failed failed${NC}")"
