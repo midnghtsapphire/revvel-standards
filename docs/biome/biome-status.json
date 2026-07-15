@@ -1,19 +1,76 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-15T16:32:11.653Z",
+  "generated_at": "2026-07-15T17:29:12.867Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "8/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 8,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 29436682340,
+            "name": ".github/workflows/jules-coding-agent.yml",
+            "path": ".github/workflows/jules-coding-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436682340",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29436681757,
+            "name": ".github/workflows/patch-agent.yml",
+            "path": ".github/workflows/patch-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436681757",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29436681183,
+            "name": ".github/workflows/devin-code-review.yml",
+            "path": ".github/workflows/devin-code-review.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436681183",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29436680657,
+            "name": ".github/workflows/credential-label-router.yml",
+            "path": ".github/workflows/credential-label-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436680657",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29436680010,
+            "name": ".github/workflows/agent-fallback.yml",
+            "path": ".github/workflows/agent-fallback.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436680010",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29436679417,
+            "name": ".github/workflows/secrets-guardian.yml",
+            "path": ".github/workflows/secrets-guardian.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436679417",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29436678609,
+            "name": ".github/workflows/openrouter-coder.yml",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436678609",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29436677910,
+            "name": ".github/workflows/proposal-prosecution.yml",
+            "path": ".github/workflows/proposal-prosecution.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436677910",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
