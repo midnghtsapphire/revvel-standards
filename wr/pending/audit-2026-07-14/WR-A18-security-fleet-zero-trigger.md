@@ -6,7 +6,7 @@
 ## Description
 **Problem (found by parallel Claude Code session, 2026-07-14; verify against live HEAD before fixing — audits decay).** `scripts/security-fleet.js` — the fleet's prompt-injection / secret-exfiltration / permission-drift detector — has no workflow, cron, or hook invoking it anywhere. The fleet's security immune system exists but is never executed.
 
-**Fix.** (1) Confirm zero triggers on live HEAD (`grep -rn "security-fleet" .github/workflows/ scripts/ package.json`). (2) Add invocation: weekly cron (fold into the WR-A8 consolidated dispatcher — do NOT add a 79th standalone cron) + on pull_request touching .github/workflows/** or scripts/**. (3) Findings post as labeled issues (`security`, severity label), deduped by marker per WR-A12 pattern. (4) npm script `security:fleet` registered so it runs in `npm test` smoke form.
+**Fix.** (1) Confirm zero triggers on live HEAD (`grep -rn "security-fleet" .github/workflows/ scripts/ package.json`). (2) Add invocation: weekly cron (fold into the WR-A8 consolidated dispatcher — do NOT add a 79th standalone cron) + on pull_request touching .github/workflows/**or scripts/**. (3) Findings post as labeled issues (`security`, severity label), deduped by marker per WR-A12 pattern. (4) npm script `security:fleet` registered so it runs in `npm test` smoke form.
 
 **Acceptance.** Detector runs green on schedule and on workflow-touching PRs; a seeded test finding produces exactly one labeled deduped issue; invocation visible in automation-doctor inventory.
 

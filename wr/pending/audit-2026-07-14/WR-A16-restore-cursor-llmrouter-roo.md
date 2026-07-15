@@ -13,7 +13,7 @@
 - templates/cicd/llm-router.yml — recovered byte-identical from bd3c4687^ with fleet-action header (push lane lacks workflow scope; see file header).
 
 **Fleet actions:**
-1. Set/verify `CURSOR_API_KEY` repo secret; verify endpoint https://api.cursor.com/v1/agents against the current Cursor API (retirement commit claimed the old endpoint was a placeholder — owner has real connections; wire them). Smoke-test the tier via workflow_dispatch on agent-fallback with prefer_agent=cursor.
+1. Set/verify `CURSOR_API_KEY` repo secret; verify endpoint <https://api.cursor.com/v1/agents> against the current Cursor API (retirement commit claimed the old endpoint was a placeholder — owner has real connections; wire them). Smoke-test the tier via workflow_dispatch on agent-fallback with prefer_agent=cursor.
 2. Move templates/cicd/llm-router.yml → .github/workflows/llm-router.yml (agent with push access or owner via UI). Verify OPENROUTER_API_KEY + model policy vs SSOT, then re-enable callers that used the workflow_call interface.
 3. **Roo liveness check:** the Cursor retirement justified itself with "already covered by free Roo + OpenRouter", but issue-13587 records Roo Code shutting down. Verify whether any Roo execution path is live (skills/roo-cline/SKILL.md exists; is anything calling it?). If Roo is dead upstream, record it in learnings.md and let the restored Cursor tier absorb its slot — with a REVVEL-DISABLED marker on Roo wiring, not deletion.
 4. **Devin: no action** — confirmed healthy (devin-code-review.yml SHA-pinned, devinci-debug.yml, Reminders Action #15733). Do not touch.
