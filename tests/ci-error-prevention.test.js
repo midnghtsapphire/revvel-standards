@@ -15,6 +15,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const yaml = require('yaml');
 
 let passed = 0;
 let failed = 0;
@@ -391,6 +392,34 @@ test('issue-state-machine.yml must detect and close URL-only issue titles', () =
   );
 
   console.log('   ✓ issue-state-machine.yml has URL-only title guard');
+});
+
+test('issue-state-machine.yml must only swallow removeLabel 404 races', () => {
+  const wfFile = '.github/workflows/issue-state-machine.yml';
+  if (!fs.existsSync(wfFile)) {
+    console.log('   ⚠ issue-state-machine.yml not found, skipping');
+    return;
+  }
+
+  const workflow = yaml.parse(fs.readFileSync(wfFile, 'utf8'));
+  const scripts = Object.values(workflow.jobs || {})
+    .flatMap(job => (job.steps || []).map(step => step.with?.script).filter(Boolean));
+  const scriptsWithRemoveLabel = scripts.filter(script => script.includes('removeLabel('));
+  const unguardedScripts = scriptsWithRemoveLabel.filter(
+    script => !script.includes('if (err.status !== 404) throw err;')
+  );
+
+  assert.ok(
+    scriptsWithRemoveLabel.length >= 2,
+    'issue-state-machine.yml must still contain the expected removeLabel workflow scripts'
+  );
+  assert.deepStrictEqual(
+    unguardedScripts,
+    [],
+    'issue-state-machine.yml must guard every removeLabel call with a 404-only catch'
+  );
+
+  console.log('   ✓ issue-state-machine.yml guards removeLabel 404 races');
 });
 
 // ============================================================
