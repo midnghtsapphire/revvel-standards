@@ -1,13 +1,5 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-07-14T15:54:27.913Z",
-  "workflows": {
-    ".github/workflows/agent-fallback.yml": {
-      "count": 1,
-      "tried": [
-        "anthropic/claude-opus-4.8"
-      ],
-      "last_cut_at": "2026-07-14T15:54:27.913Z"
-    }
-  }
+  "updated_at": "2026-07-15T14:50:03.811Z",
+  "workflows": {}
 }

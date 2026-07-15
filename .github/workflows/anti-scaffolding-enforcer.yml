@@ -15,6 +15,16 @@
 
 name: Anti-Scaffolding Enforcer
 
+# ═══════════════════════════════════════════════════════════════════════
+# FALSE POSITIVE EXCLUSIONS (permanent list - update this when new ones found)
+# - placeholder= (HTML form attributes)
+# - ::placeholder (CSS pseudo-element)
+# - placeholder values/attributes
+# - alt="placeholder" (image alt text)
+# - Search projects (UI placeholder text)
+# - workflow name exclusion (prevents self-check)
+# ═══════════════════════════════════════════════════════════════════════
+
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
@@ -300,16 +310,6 @@ jobs:
             }
             
             console.log('✅ PR passes anti-scaffolding checks');
-
-# ═══════════════════════════════════════════════════════════════════════
-# FALSE POSITIVE EXCLUSIONS (permanent list - update this when new ones found)
-# - placeholder= (HTML form attributes)
-# - ::placeholder (CSS pseudo-element)
-# - placeholder values/attributes
-# - alt="placeholder" (image alt text)
-# - Search projects (UI placeholder text)
-# - workflow name exclusion (prevents self-check)
-# ═══════════════════════════════════════════════════════════════════════
 
 # FALLBACK ON FAILURE:
 # If check fails unexpectedly, it will warn instead of block
