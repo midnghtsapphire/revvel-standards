@@ -15,6 +15,7 @@
 const assert = require('assert');
 const fs = require('fs');
 const path = require('path');
+const yaml = require('yaml');
 
 let passed = 0;
 let failed = 0;
@@ -400,11 +401,21 @@ test('issue-state-machine.yml must only swallow removeLabel 404 races', () => {
     return;
   }
 
-  const content = fs.readFileSync(wfFile, 'utf8');
-  const matches = content.match(/removeLabel\([\s\S]*?\.catch\(err => \{\s*if \(err\.status !== 404\) throw err;/g) || [];
+  const workflow = yaml.parse(fs.readFileSync(wfFile, 'utf8'));
+  const scripts = Object.values(workflow.jobs || {})
+    .flatMap(job => (job.steps || []).map(step => step.with?.script).filter(Boolean));
+  const scriptsWithRemoveLabel = scripts.filter(script => script.includes('removeLabel('));
+  const unguardedScripts = scriptsWithRemoveLabel.filter(
+    script => !script.includes('if (err.status !== 404) throw err;')
+  );
 
   assert.ok(
-    matches.length >= 2,
+    scriptsWithRemoveLabel.length >= 2,
+    'issue-state-machine.yml must still contain the expected removeLabel workflow scripts'
+  );
+  assert.deepStrictEqual(
+    unguardedScripts,
+    [],
     'issue-state-machine.yml must guard every removeLabel call with a 404-only catch'
   );
 
