@@ -1,240 +1,168 @@
 name: Follow-up Checkbox Router
-# Checkbox convention: a PR or issue body (including WR issues) may contain a
-# checklist line like:
-#
-#   - [ ] Follow-up: <free text description of what needs tracking later>
-#
-# When a maintainer/agent EDITS the body and CHECKS that box (transitions
-# "- [ ]" -> "- [x]"/"- [X]" for a line whose text starts with "Follow-up:",
-# case-insensitively, allowing minor whitespace variation), that's the
-# trigger signal: "yes, spin this out into a tracked WR." This workflow
-# detects that transition and files the tracked WR automatically, so
-# follow-up commitments stop getting silently dropped (motivating case:
-# recon on #13978 found several of its 8 tracked follow-up items were never
-# actually followed up on).
-#
-# The diff/parse logic lives in scripts/checkbox-diff.js (unit tested in
-# tests/checkbox-diff.test.js) so it's testable without a live GitHub event.
+
 on:
   pull_request:
     types: [edited]
   issues:
     types: [edited]
+
 permissions:
   contents: read
   issues: write
   pull-requests: write
-concurrency:
-  group: followup-checkbox-router-${{ github.event.pull_request.number || github.event.issue.number }}-${{ github.event.pull_request.updated_at || github.event.issue.updated_at }}
-  cancel-in-progress: false
+
 jobs:
-  route:
-    name: Detect newly-checked Follow-up items and file tracked WRs
+  route-followups:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Only run if the body actually changed (skip title-only edits, etc.).
+    if: ${{ github.event.changes.body != null }}
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-      - name: Detect newly-checked follow-ups and create WR issues
-        uses: actions/github-script@v9.0.0
+
+      - name: Route newly-checked follow-ups to WR issues
+        uses: actions/github-script@v7
+        env:
+          ADMIN_GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const path = require('path');
-            const { findNewlyCheckedFollowUps } = require(process.env.GITHUB_WORKSPACE + '/scripts/checkbox-diff.js');
+            const { findNewlyCheckedFollowUps } = require(
+              process.env.GITHUB_WORKSPACE + '/scripts/checkbox-diff.js'
+            );
 
-            // `changes.body.from` is only present on an `edited` event when the
-            // body field is what actually changed (e.g. a title-only edit has
-            // no `changes.body` at all). Guard for that explicitly.
+            const isPR = !!context.payload.pull_request;
+            const source = isPR ? context.payload.pull_request : context.payload.issue;
+            if (!source) {
+              core.info('No pull_request/issue payload; nothing to do.');
+              return;
+            }
+
             const oldBody = context.payload.changes && context.payload.changes.body
               ? context.payload.changes.body.from
-              : undefined;
+              : null;
+            const newBody = source.body || '';
 
-            const isPR = Boolean(context.payload.pull_request);
-            const source = context.payload.pull_request || context.payload.issue;
-            const newBody = source && source.body;
-            const sourceNumber = source && source.number;
-
-            if (!oldBody) {
-              core.info('No prior body to diff (changes.body.from missing) — this edit did not change the body. Skipping.');
+            const newlyChecked = findNewlyCheckedFollowUps(oldBody, newBody);
+            if (!newlyChecked.length) {
+              core.info('No newly-checked follow-up items detected.');
               return;
             }
-            if (!source || !sourceNumber) {
-              core.info('No source PR/issue in payload — skipping.');
-              return;
-            }
+            core.info(`Detected ${newlyChecked.length} newly-checked follow-up(s).`);
 
-            const followUps = findNewlyCheckedFollowUps(oldBody, newBody);
-            if (followUps.length === 0) {
-              core.info('No newly-checked "Follow-up:" items found in this edit.');
-              return;
-            }
-
-            core.info(`Found ${followUps.length} newly-checked follow-up item(s) on ${isPR ? 'PR' : 'issue'} #${sourceNumber}.`);
-
+            const sourceNumber = source.number;
+            const sourceUrl = source.html_url;
             const sourceKind = isPR ? 'PR' : 'issue';
-            const sourceUrl = source.html_url || `https://github.com/${context.repo.owner}/${context.repo.repo}/${isPR ? 'pull' : 'issues'}/${sourceNumber}`;
-            const sourceTitle = source.title || `#${sourceNumber}`;
-            const repoFull = `${context.repo.owner}/${context.repo.repo}`;
-            const repoUrl = `https://github.com/${repoFull}`;
-            const today = new Date().toISOString().slice(0, 10);
 
-            // If the SOURCE body itself was previously auto-generated by this
-            // same workflow (i.e. it carries our "sourced from <kind> #N" marker),
-            // this is a chained follow-up. Keep this detection simple for v1 —
-            // just surface the earlier reference, don't walk the whole chain.
-            const chainMatch = /sourced from (?:issue|PR) #(\d+)/i.exec(newBody || '');
+            // Detect chained ancestry: does the source body contain "sourced from #N"?
+            const chainMatch = /sourced from #(\d+)/i.exec(newBody);
+            const chainedFrom = chainMatch ? chainMatch[1] : null;
 
-            // Mirrors the BASIC-vs-FULL classification spirit of
-            // .github/workflows/wr-pr-creation.yml: a short one-line follow-up
-            // is a BASIC (no market-research surface) WR by default. Only
-            // promote to FULL when the description reads as a substantial,
-            // multi-clause ask.
-            function classifyTemplate(description) {
-              const isLong = description.length > 180;
-              const isMultiClause = /[.;:]\s+\S/.test(description) || /\bthen\b|\balso\b/i.test(description);
-              return (isLong || isMultiClause) ? 'wr/WR_TEMPLATE_FULL.md' : 'wr/WR_TEMPLATE_BASIC.md';
+            // Load WR templates from the repo.
+            const wrDir = path.join(process.env.GITHUB_WORKSPACE, 'wr');
+            let tmplBasic = '';
+            let tmplFull = '';
+            try {
+              tmplBasic = fs.readFileSync(path.join(wrDir, 'WR_TEMPLATE_BASIC.md'), 'utf8');
+            } catch (e) {
+              core.warning('WR_TEMPLATE_BASIC.md not found; using fallback.');
+              tmplBasic = '# [WR] {TITLE}\n\n## Issue Context\n{ISSUE_CONTEXT}\n\n## Learnings — What & Why\n{LEARNINGS}\n';
+            }
+            try {
+              tmplFull = fs.readFileSync(path.join(wrDir, 'WR_TEMPLATE_FULL.md'), 'utf8');
+            } catch (e) {
+              core.warning('WR_TEMPLATE_FULL.md not found; using fallback.');
+              tmplFull = '# [WR] {TITLE}\n\n## Issue Context\n{ISSUE_CONTEXT}\n\n## Learnings — What & Why\n{LEARNINGS}\n';
             }
 
-            // Guidance text as it ships in both templates verbatim (see
-            // wr/WR_TEMPLATE_BASIC.md / wr/WR_TEMPLATE_FULL.md). Follow-up
-            // generated WRs replace it with the concrete "what & why" instead
-            // of leaving the generic placeholder.
-            const LEARNINGS_PLACEHOLDER =
-              '_Why this WR exists, and what the assigned agent should know before starting. ' +
-              'Populated automatically for follow-up-generated WRs; agents completing other WR ' +
-              'types should fill this in themselves once done, summarizing what they did and why, ' +
-              'for future audits._';
+            // Classify BASIC vs FULL: length > 180 chars or multi-clause phrasing => FULL.
+            function classify(desc) {
+              if (!desc) return 'BASIC';
+              if (desc.length > 180) return 'FULL';
+              if (/[;:]\s/.test(desc)) return 'FULL';
+              if (/\b(then|also)\b/i.test(desc)) return 'FULL';
+              return 'BASIC';
+            }
 
-            // Generic, gate-safe filler for template tokens this router does not
-            // have real content for. Deliberately avoids strings that trip
-            // wr-lint's deferral-placeholder rule (no "TBD"/"TODO"/"N/A — pending ...").
-            const GENERIC_FILLER = 'To be completed by the assigned agent.';
+            function renderTemplate(tmpl, tokens) {
+              let out = tmpl;
+              for (const [k, v] of Object.entries(tokens)) {
+                out = out.split('{' + k + '}').join(v);
+              }
+              return out;
+            }
 
-            const TOKEN_DEFAULTS = {
-              STARS: 'N/A',
-              OPEN_ISSUES: 'N/A',
-              IS_PRIVATE: 'No',
-              IS_ARCHIVED: 'No',
-              DEPENDS_ON: 'none',
-              BLOCKED_BY: 'none',
-              BLOCKS: 'none',
-              SUPERSEDES: 'None',
-              SUPERSESSION_REASON: 'N/A — new work, no prior implementation.',
-              ARCHIVAL_STATUS: 'NOT-APPLICABLE (no code was removed).',
-            };
+            function truncateTitle(s, max = 72) {
+              const oneLine = String(s).replace(/\s+/g, ' ').trim();
+              if (oneLine.length <= max) return oneLine;
+              return oneLine.slice(0, max - 1).trimEnd() + '…';
+            }
 
-            const createdIssues = [];
-
-            for (const description of followUps) {
-              const rawTitle = `Follow-up: ${description}`;
-              const title = `[WR] ${rawTitle}`.slice(0, 250);
-
-              const templateRelPath = classifyTemplate(description);
-              const templatePath = path.join(process.env.GITHUB_WORKSPACE, templateRelPath);
-              let body = fs.readFileSync(templatePath, 'utf8');
+            const created = [];
+            for (const item of newlyChecked) {
+              const kind = classify(item.description);
+              const tmpl = kind === 'FULL' ? tmplFull : tmplBasic;
+              const title = `[WR] Follow-up from #${sourceNumber}: ${truncateTitle(item.description)}`;
 
               const issueContext = [
-                `Auto-generated from a checked \`Follow-up:\` checklist item on ${sourceKind} ` +
-                `[#${sourceNumber} — ${sourceTitle}](${sourceUrl}).`,
+                `This work request was auto-generated from a checked follow-up checklist item on ${sourceKind} #${sourceNumber}.`,
                 '',
-                `**Follow-up:** ${description}`,
+                `**Source:** ${sourceUrl}`,
+                '',
+                `**Follow-up description:**`,
+                '',
+                `> ${item.description}`,
               ].join('\n');
 
-              const learnings = [
-                `**Why this WR exists:** ${description}`,
+              const learningsLines = [
+                `Auto-generated from a follow-up commitment on ${sourceKind} #${sourceNumber} (${sourceUrl}).`,
                 '',
-                `**Source:** sourced from ${sourceKind} #${sourceNumber} (${sourceUrl})`,
+                `Original follow-up text: "${item.description}"`,
               ];
-              if (chainMatch) {
-                learnings.push(
-                  '',
-                  `**Chain:** the source ${sourceKind} #${sourceNumber} was itself sourced from #${chainMatch[1]}, ` +
-                  'so this is a chained follow-up commitment — see that issue for the earlier context.'
-                );
+              if (chainedFrom) {
+                learningsLines.push('');
+                learningsLines.push(`Note: this is a chained follow-up — the source ${sourceKind} itself was sourced from #${chainedFrom}.`);
               }
+              const learnings = learningsLines.join('\n');
 
-              body = body.split('{ISSUE_BODY}').join(issueContext);
-              body = body.split('{ISSUE_REF}').join(`#${sourceNumber}`);
-              body = body.split('{TITLE}').join(rawTitle);
-              body = body.split('{SUMMARY}').join(
-                `This WR tracks a follow-up commitment checked off on ${sourceKind} #${sourceNumber}: "${description}"`
-              );
-              body = body.split('{OBJECTIVE}').join(
-                'Investigate and resolve the follow-up item described above; scope concrete deliverables during triage.'
-              );
-              body = body.split('{REQUIRED_BUNDLE}').join(GENERIC_FILLER);
-              body = body.split('{DEFINITION_OF_DONE}').join(
-                'The follow-up described above is resolved and the outcome is documented in this WR (or a linked PR).'
-              );
-              body = body.split('{VALIDATION}').join(
-                'To be determined once scope is confirmed; document the verification approach here before closing.'
-              );
-              body = body.split('{BLOCKERS}').join('None known at creation time.');
-              body = body.split('{RESEARCH_FINDINGS}').join(GENERIC_FILLER);
-              body = body.split('{EXECUTIVE_SUMMARY}').join(
-                `Follow-up tracking WR generated from ${sourceKind} #${sourceNumber}. ${description}`
-              );
-              body = body.split('{PRODUCT_SELECTIONS}').join(GENERIC_FILLER);
-              body = body.split('{DEEP_WEB_RESEARCH}').join(GENERIC_FILLER);
-              body = body.split('{REQUIREMENTS}').join(GENERIC_FILLER);
-              body = body.split('{RECOMMENDATIONS}').join(GENERIC_FILLER);
-              body = body.split('{DEPENDENCIES}').join(GENERIC_FILLER);
-              body = body.split('{RISKS}').join(GENERIC_FILLER);
-              body = body.split('{REPO_NAME}').join(repoFull);
-              body = body.split('{REPO_URL}').join(repoUrl);
-              body = body.split('{REPO}').join(repoFull);
-              body = body.split('{CREATED_DATE}').join(today);
-              body = body.split('{UPDATED_DATE}').join(today);
-              body = body.split('{DATE}').join(today);
-              body = body.split('{RESEARCH_DATE}').join(today);
-              body = body.split('{PRIMARY_LANGUAGE}').join('JavaScript');
-              body = body.split('{LANGUAGE}').join('JavaScript');
-              body = body.split('{RESEARCHER}').join('followup-checkbox-router.yml (automated)');
-              body = body.split('{STATUS}').join('🟡 In Progress');
-
-              for (const [token, value] of Object.entries(TOKEN_DEFAULTS)) {
-                body = body.split(`{${token}}`).join(value);
-              }
-
-              // Populate the Learnings section with the concrete what/why
-              // instead of the generic guidance placeholder.
-              body = body.split(LEARNINGS_PLACEHOLDER).join(learnings.join('\n'));
-
-              // Catch-all: any {TOKEN} this router doesn't know about yet
-              // becomes safe generic filler rather than shipping raw.
-              body = body.replace(/\{[A-Z_]+\}/g, GENERIC_FILLER);
-
-              const { data: newIssue } = await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title,
-                body,
-                labels: ['work-request', 'auto-generated-followup'],
-                assignees: ['oaudrey'],
+              const body = renderTemplate(tmpl, {
+                TITLE: title.replace(/^\[WR\]\s*/, ''),
+                ISSUE_CONTEXT: issueContext,
+                LEARNINGS: learnings,
               });
 
-              core.info(`Created WR issue #${newIssue.number}: ${newIssue.html_url}`);
-              createdIssues.push(newIssue);
-
-              const commentBody = [
-                '🔗 **Follow-up tracked**',
-                '',
-                `Checking this box created a tracked WR: #${newIssue.number} — ${newIssue.html_url}`,
-                '',
-                `> Follow-up: ${description}`,
-                '',
-                '_Automated by `.github/workflows/followup-checkbox-router.yml`_',
-              ].join('\n');
-
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: sourceNumber,
-                body: commentBody,
-              });
+              try {
+                const { data: created_issue } = await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                  labels: ['work-request', 'auto-generated-followup'],
+                  assignees: ['oaudrey'],
+                });
+                created.push(created_issue);
+                core.info(`Created WR issue #${created_issue.number} for follow-up: ${item.description}`);
+              } catch (err) {
+                core.warning(`Failed to create WR issue for "${item.description}": ${err.message}`);
+              }
             }
 
-            core.setOutput('created_count', String(createdIssues.length));
-            core.setOutput('created_issue_numbers', createdIssues.map(i => i.number).join(','));
+            if (created.length) {
+              const lines = [
+                `🤖 The following follow-up item${created.length === 1 ? ' was' : 's were'} routed to tracked WR issue${created.length === 1 ? '' : 's'}:`,
+                '',
+                ...created.map((c) => `- #${c.number} — ${c.title}`),
+              ];
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: sourceNumber,
+                  body: lines.join('\n'),
+                });
+              } catch (err) {
+                core.warning(`Failed to post back-link comment on #${sourceNumber}: ${err.message}`);
+              }
+            }
