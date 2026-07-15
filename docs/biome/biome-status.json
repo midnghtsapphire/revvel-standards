@@ -1,19 +1,41 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-15T09:38:32.555Z",
+  "generated_at": "2026-07-15T10:34:31.911Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 29408400578,
+            "name": "Stuck Label Detection & Auto-Progression",
+            "path": ".github/workflows/stuck-label-automation.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29408400578",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29406543379,
+            "name": "Secrets Guardian",
+            "path": ".github/workflows/secrets-guardian.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29406543379",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29406140170,
+            "name": "Credential Autonomy Agent",
+            "path": ".github/workflows/credential-autonomy-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29406140170",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
