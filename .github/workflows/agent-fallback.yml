@@ -24,7 +24,20 @@ on:
         required: true
         type: string
       issue_title:
+name: Agent Fallback (OpenRouter → Devin)
+name: Agent Fallback Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to process'
+        required: true
+        type: string
+      prefer_agent:
+        description: 'Preferred agent (OpenRouter, Devin, manual)'
         required: false
+        default: 'OpenRouter'
         type: string
         default: ''
       issue_body:
@@ -52,7 +65,67 @@ jobs:
         run: echo "openrouter_ok=true" >> $GITHUB_OUTPUT
 
   execute:
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  health_check:
+        description: 'Preferred agent (OpenRouter or Devin)'
+        description: 'Preferred agent (OpenRouter, Devin, manual)'
+        required: false
+        default: 'OpenRouter'
+        type: choice
+        options:
+          - OpenRouter
+          - Devin
+  issue_comment:
+    types: [created]
+          - manual
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    outputs:
+      openrouter_available: ${{ steps.check.outputs.openrouter_available }}
+      devin_available: ${{ steps.check.outputs.devin_available }}
+    steps:
+      - name: Check agent availability
+        id: check
+        run: |
+          if [ -n "${{ secrets.OPENROUTER_API_KEY }}" ]; then
+        run: |
+          if [ -n "${{ secrets.OPENROUTER_API_KEY }}" ]; then
+            echo "openrouter_available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "openrouter_available=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -n "${{ secrets.DEVIN_API_KEY }}" ]; then
+            echo "devin_available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "devin_available=false" >> "$GITHUB_OUTPUT"
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+        run: |
+          if [ -n "$OPENROUTER_API_KEY" ]; then
+            echo "openrouter_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "openrouter_available=false" >> $GITHUB_OUTPUT
+          fi
+          if [ -n "${{ secrets.DEVIN_API_KEY }}" ]; then
+          if [ -n "$DEVIN_API_KEY" ]; then
+            echo "devin_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "devin_available=false" >> $GITHUB_OUTPUT
+          fi
+
+  openrouter_agent:
+    needs: health_check
+    if: needs.health_check.outputs.openrouter_available == 'true'
+  openrouter-agent:
     needs: health-check
+    if: needs.health-check.outputs.openrouter_available == 'true' && (github.event.inputs.prefer_agent == 'OpenRouter' || github.event.inputs.prefer_agent == '')
+    if: needs.health-check.outputs.openrouter_available == 'true' && (inputs.prefer_agent == 'OpenRouter' || inputs.prefer_agent == '')
     runs-on: ubuntu-latest
     steps:
       - name: Resolve issue context
@@ -172,3 +245,75 @@ jobs:
               issue_number: parseInt('${{ steps.issue.outputs.number }}', 10),
               labels: ['needs-human'],
             });
+      - uses: actions/checkout@v4
+      - name: Run OpenRouter agent
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ISSUE_NUMBER: ${{ inputs.issue_number || github.event.issue.number }}
+        run: |
+          if [ -f scripts/call-openrouter-api.sh ]; then
+            bash scripts/call-openrouter-api.sh
+          else
+            echo "OpenRouter script not present; skipping."
+          fi
+
+  devin_agent:
+    needs: [health_check, openrouter_agent]
+    if: |
+      always() &&
+      needs.health_check.outputs.devin_available == 'true' &&
+      (needs.openrouter_agent.result == 'failure' || inputs.prefer_agent == 'Devin')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Devin agent (fallback)
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_NUMBER: ${{ inputs.issue_number || github.event.issue.number }}
+        run: |
+          if [ -f scripts/call-devin-api.sh ]; then
+            bash scripts/call-devin-api.sh
+          else
+            echo "Devin script not present; skipping."
+          fi
+
+  manual_fallback:
+    needs: [openrouter_agent, devin_agent]
+    if: |
+      always() &&
+      needs.openrouter_agent.result != 'success' &&
+      needs.devin_agent.result != 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify manual intervention required
+        run: |
+          echo "All automated agents failed or unavailable. Manual intervention required for issue #${{ inputs.issue_number || github.event.issue.number }}"
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f scripts/call-openrouter-agent.sh ]; then
+            bash scripts/call-openrouter-agent.sh
+          else
+            echo "OpenRouter agent script not present; skipping."
+          fi
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+        run: |
+          bash scripts/call-openrouter-api.sh
+
+  devin-agent:
+    needs: health-check
+    if: needs.health-check.outputs.devin_available == 'true' && inputs.prefer_agent == 'Devin'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Devin API script
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Devin agent
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+        run: |
+          bash scripts/call-devin-api.sh
