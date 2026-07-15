@@ -1,3 +1,4 @@
+name: Agent Fallback (OpenRouter → Devin)
 name: Agent Fallback Workflow
 
 on:
@@ -8,6 +9,7 @@ on:
         required: true
         type: string
       prefer_agent:
+        description: 'Preferred agent (OpenRouter or Devin)'
         description: 'Preferred agent (OpenRouter, Devin, manual)'
         required: false
         default: 'OpenRouter'
@@ -15,6 +17,8 @@ on:
         options:
           - OpenRouter
           - Devin
+  issue_comment:
+    types: [created]
           - manual
 
 jobs:
@@ -26,6 +30,16 @@ jobs:
     steps:
       - name: Check agent availability
         id: check
+        run: |
+          if [ -n "${{ secrets.OPENROUTER_API_KEY }}" ]; then
+            echo "openrouter_available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "openrouter_available=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -n "${{ secrets.DEVIN_API_KEY }}" ]; then
+            echo "devin_available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "devin_available=false" >> "$GITHUB_OUTPUT"
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
@@ -43,6 +57,7 @@ jobs:
 
   openrouter-agent:
     needs: health-check
+    if: needs.health-check.outputs.openrouter_available == 'true' && (github.event.inputs.prefer_agent == 'OpenRouter' || github.event.inputs.prefer_agent == '')
     if: needs.health-check.outputs.openrouter_available == 'true' && (inputs.prefer_agent == 'OpenRouter' || inputs.prefer_agent == '')
     runs-on: ubuntu-latest
     steps:
@@ -50,6 +65,14 @@ jobs:
       - name: Run OpenRouter agent
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f scripts/call-openrouter-agent.sh ]; then
+            bash scripts/call-openrouter-agent.sh
+          else
+            echo "OpenRouter agent script not present; skipping."
+          fi
           ISSUE_NUMBER: ${{ inputs.issue_number }}
         run: |
           bash scripts/call-openrouter-api.sh
@@ -60,6 +83,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Run Devin API script
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Devin agent
         env:
           DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
