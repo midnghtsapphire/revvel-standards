@@ -93,15 +93,15 @@
 
 | Resource | URL |
 |----------|-----|
-| SAM.gov | https://sam.gov |
-| Grants.gov | https://grants.gov |
-| DLA CAGE Portal | https://cage.dla.mil |
-| DLA Contact Center (email) | dlacontactcenter@dla.mil |
+| SAM.gov | <https://sam.gov> |
+| Grants.gov | <https://grants.gov> |
+| DLA CAGE Portal | <https://cage.dla.mil> |
+| DLA Contact Center (email) | <dlacontactcenter@dla.mil> |
 | DLA Contact Center (phone) | 1-877-352-2255 |
-| Federal Service Desk | https://www.fsd.gov |
-| Colorado SOS | https://coloradosos.gov |
-| DUNS (Free) | https://dnb.com/d-uns-number |
-| UEI (SAM) | https://sam.gov/entity |
+| Federal Service Desk | <https://www.fsd.gov> |
+| Colorado SOS | <https://coloradosos.gov> |
+| DUNS (Free) | <https://dnb.com/d-uns-number> |
+| UEI (SAM) | <https://sam.gov/entity> |
 
 ---
 

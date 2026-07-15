@@ -27,10 +27,10 @@ For direct assistance with expired CAGE codes, contact the **Defense Logistics A
 |---------|---------|
 | Phone (toll-free) | **1-877-352-2255** (1-877-DLA-CALL) |
 | Commercial phone | 269-704-7921 |
-| Email | **dlacontactcenter@dla.mil** |
-| CAGE portal | https://cage.dla.mil |
-| SAM.gov (renew here) | https://sam.gov |
-| Federal Service Desk | https://www.fsd.gov |
+| Email | **<dlacontactcenter@dla.mil>** |
+| CAGE portal | <https://cage.dla.mil> |
+| SAM.gov (renew here) | <https://sam.gov> |
+| Federal Service Desk | <https://www.fsd.gov> |
 
 **Renewal steps (no fee):**
 1. Log in to [SAM.gov](https://sam.gov) with your login.gov account

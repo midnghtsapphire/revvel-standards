@@ -14,6 +14,6 @@ The compliance watcher is always-on and is the only cron allowed to bypass Quiet
 
 DLA Customer Interaction Center (24/7):
 - Phone: 1-877-352-2255 (1-877-DLA-CALL)
-- Email: dlacontactcenter@dla.mil
-- CAGE portal: https://cage.dla.mil
-- Renew at: https://sam.gov
+- Email: <dlacontactcenter@dla.mil>
+- CAGE portal: <https://cage.dla.mil>
+- Renew at: <https://sam.gov>

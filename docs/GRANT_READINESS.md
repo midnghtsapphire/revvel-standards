@@ -15,7 +15,7 @@
 | DUNS Number | ASAP | ⚠️ Missing |
 | UEI Registration | ASAP | ⚠️ Missing |
 
-**DLA Contact for CAGE renewal:** 1-877-352-2255 · dlacontactcenter@dla.mil · https://cage.dla.mil
+**DLA Contact for CAGE renewal:** 1-877-352-2255 · <dlacontactcenter@dla.mil> · <https://cage.dla.mil>
 
 ---
 
@@ -37,9 +37,9 @@
 
 **DLA CAGE Renewal Contact:**
 - Phone: **1-877-352-2255** (1-877-DLA-CALL, 24/7)
-- Email: **dlacontactcenter@dla.mil**
-- Portal: https://cage.dla.mil
-- Renew at: https://sam.gov
+- Email: **<dlacontactcenter@dla.mil>**
+- Portal: <https://cage.dla.mil>
+- Renew at: <https://sam.gov>
 
 **Action:**
 - [ ] Log into sam.gov
@@ -121,13 +121,13 @@
 
 ## Monthly Grant Scan Routine
 
-### First Monday of Month:
+### First Monday of Month
 1. Check grants.gov new opportunities
 2. Filter by: Legal, Business, Colorado
 3. Save matches to tracker
 4. Note deadlines
 
-### Weekly:
+### Weekly
 1. Check agency-specific listings
 2. Review state opportunities
 3. Update tracking spreadsheet
@@ -136,7 +136,7 @@
 
 ## Grant Application Checklist
 
-### Required for ALL federal grants:
+### Required for ALL federal grants
 - [ ] UEI (from SAM.gov)
 - [ ] TIN/EIN
 - [ ] Bank account (for direct deposit)
@@ -145,7 +145,7 @@
 - [ ] Budget (SF-424A)
 - [ ] Timeline/Logic model
 
-### Additional for Fidelity Trust:
+### Additional for Fidelity Trust
 - [ ] Proof of CLE certification
 - [ ] Organizational chart
 - [ ] Board list (if non-profit)
