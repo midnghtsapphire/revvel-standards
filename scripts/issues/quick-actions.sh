@@ -143,7 +143,7 @@ issue_today() {
 # Example: issue_batch_close not_planned 100 101 102
 issue_batch_close() {
   if [ $# -lt 2 ]; then
-    echo -e "${RED}Usage: issue_batch_close <not_planned> <issue>...${NC}"
+    echo -e "${RED}Usage: issue_batch_close <reason> <issue>...${NC}"
     echo -e "  not_planned  — Close as 'not needed right now'"
     return 1
   fi
@@ -156,9 +156,9 @@ issue_batch_close() {
     return 1
   fi
 
-  local label_text="not planned"
+  local reason_text="not planned"
 
-  echo -e "${YELLOW}⚠️  About to close $# issue(s) as '$label_text' in $REPO_OWNER/$REPO_NAME${NC}"
+  echo -e "${YELLOW}⚠️  About to close $# issue(s) as '$reason_text' in $REPO_OWNER/$REPO_NAME${NC}"
   echo -e "${YELLOW}   Issues: $*${NC}"
   read -r -p "Proceed? (y/N) " confirm
   if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
@@ -171,8 +171,8 @@ issue_batch_close() {
   for issue in "$@"; do
     if gh issue close "$issue" \
       --repo "$REPO_OWNER/$REPO_NAME" \
-      --reason "$label_text" 2>/dev/null; then
-      echo -e "${GREEN}  ✓ Closed #$issue ($label_text)${NC}"
+      --reason "$reason_text" 2>/dev/null; then
+      echo -e "${GREEN}  ✓ Closed #$issue ($reason_text)${NC}"
       closed=$((closed + 1))
     else
       echo -e "${RED}  ✗ Failed to close #$issue${NC}"
@@ -236,10 +236,10 @@ issue_close_all_assigned() {
     echo -e "  #$num: $title"
   done
 
-  local label_text="not planned"
+  local reason_text="not planned"
 
   echo ""
-  echo -e "${YELLOW}⚠️  This will close ALL $count issue(s) as '$label_text'.${NC}"
+  echo -e "${YELLOW}⚠️  This will close ALL $count issue(s) as '$reason_text'.${NC}"
   read -r -p "Proceed? (y/N) " confirm
   if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
     echo -e "${CYAN}Cancelled.${NC}"
@@ -251,8 +251,8 @@ issue_close_all_assigned() {
   while read -r num; do
     if gh issue close "$num" \
       --repo "$REPO_OWNER/$REPO_NAME" \
-      --reason "$label_text" 2>/dev/null; then
-      echo -e "${GREEN}  ✓ Closed #$num ($label_text)${NC}"
+      --reason "$reason_text" 2>/dev/null; then
+      echo -e "${GREEN}  ✓ Closed #$num ($reason_text)${NC}"
       closed=$((closed + 1))
     else
       echo -e "${RED}  ✗ Failed to close #$num${NC}"
