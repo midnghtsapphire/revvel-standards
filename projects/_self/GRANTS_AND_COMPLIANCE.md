@@ -38,7 +38,7 @@ For direct assistance with expired CAGE codes, contact the **Defense Logistics A
 3. Click "Renew Registration" / "Update/Renew Entity"
 4. Review and update business information (address, NAICS, contacts)
 5. Certify and submit — SAM forwards data to DLA for CAGE revalidation
-6. Watch email for confirmation (typically a few business days)
+6. Monitor email and SAM.gov status — processing can take up to 10 business days and may take longer if additional validation or documentation is required
 
 ## 🟢 Active
 
