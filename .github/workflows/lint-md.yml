@@ -34,6 +34,8 @@ jobs:
           PUSH_HEAD_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+          trap 'echo "::error::Failed to determine changed Markdown files."' ERR
+          ZERO_SHA="0000000000000000000000000000000000000000"
 
           if [[ "$EVENT_NAME" == "pull_request" ]]; then
             BASE_SHA="$PR_BASE_SHA"
@@ -43,20 +45,20 @@ jobs:
             HEAD_SHA="$PUSH_HEAD_SHA"
           fi
 
-          if [[ -z "$BASE_SHA" || "$BASE_SHA" == "0000000000000000000000000000000000000000" ]]; then
-            CHANGED_MARKDOWN_FILES="$(git show --name-only --pretty='' "$HEAD_SHA" -- '*.md' | tr '\n' ' ' | xargs)"
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" == "$ZERO_SHA" ]]; then
+            CHANGED_MARKDOWN_FILES="$(git diff-tree --no-commit-id --name-only -r "$HEAD_SHA" -- '*.md' | tr '\n' ' ')"
           else
-            CHANGED_MARKDOWN_FILES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- '*.md' | tr '\n' ' ' | xargs)"
+            CHANGED_MARKDOWN_FILES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- '*.md' | tr '\n' ' ')"
           fi
 
           echo "files=$CHANGED_MARKDOWN_FILES" >> "$GITHUB_OUTPUT"
 
       - name: Skip when no Markdown files changed
-        if: steps.changed-markdown.outputs.files == ''
-        run: echo "No Markdown changes detected."
+        if: steps.changed-markdown.outcome == 'success' && steps.changed-markdown.outputs.files == ''
+        run: echo "::notice::No Markdown changes detected."
 
       - name: Lint Markdown
-        if: steps.changed-markdown.outputs.files != ''
+        if: steps.changed-markdown.outcome == 'success' && steps.changed-markdown.outputs.files != ''
         uses: lint-md/github-action@v0.2.0
         with:
           files: ${{ steps.changed-markdown.outputs.files }}
