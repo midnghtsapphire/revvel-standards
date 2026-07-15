@@ -3,7 +3,8 @@
     "**/node_modules/**",
     "**/.git/**",
     "**/dist/**",
-    "wr/issues/**"
+    "wr/issues/**",
+    "docs/agents/claude/transcripts/**"
   ],
   "rules": {
     "space-around-alphabet": 1,
