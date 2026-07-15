@@ -1,45 +1,52 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-15T03:03:12.176Z",
+  "generated_at": "2026-07-15T08:47:42.830Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "summary": "5/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29385337922,
+            "id": 29402017096,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29402017096",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29401784823,
             "name": "Stuck Label Detection & Auto-Progression",
             "path": ".github/workflows/stuck-label-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29385337922",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29401784823",
             "conclusion": "failure"
           },
           {
-            "id": 29383001891,
+            "id": 29399240198,
             "name": "Secrets Guardian",
             "path": ".github/workflows/secrets-guardian.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29383001891",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29399240198",
             "conclusion": "failure"
           },
           {
-            "id": 29382714753,
+            "id": 29398837524,
             "name": "Credential Autonomy Agent",
             "path": ".github/workflows/credential-autonomy-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29382714753",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29398837524",
             "conclusion": "failure"
           },
           {
-            "id": 29382277263,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29382277263",
+            "id": 29396073338,
+            "name": "Secrets Guardian",
+            "path": ".github/workflows/secrets-guardian.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29396073338",
             "conclusion": "failure"
           }
         ],
@@ -68,7 +75,7 @@
       "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29381372809"
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29397594376"
       }
     },
     "sheaf": {
