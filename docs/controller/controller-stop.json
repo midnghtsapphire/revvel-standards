@@ -1,46 +1,81 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-15T20:54:00.596Z",
+  "generated_at": "2026-07-15T21:14:31.239Z",
   "stop": [
     {
-      "id": 29448420326,
+      "id": 29449809951,
       "name": "Perplexity Research Agent",
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "no progress for 16m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29448420146,
+      "id": 29449805872,
       "name": "Perplexity Research Agent",
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29448419696,
+      "id": 29449774210,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29449671641,
       "name": "Perplexity Research Agent",
       "reason": "no progress for 18m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29448418911,
+      "id": 29448877589,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 18m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448801396,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 18m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448798913,
       "name": "Perplexity Research Agent",
       "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29448416516,
+      "id": 29448791058,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448775005,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448771064,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448756884,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 20m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448752253,
       "name": "Perplexity Research Agent",
       "reason": "no progress for 20m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 3199m ≥ 60m budget"
+      "reason": "running 3220m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 3270m ≥ 60m budget"
+      "reason": "running 3290m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 3340m ≥ 60m budget"
+      "reason": "running 3361m ≥ 60m budget"
     }
   ]
 }
