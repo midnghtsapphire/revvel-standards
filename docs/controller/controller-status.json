@@ -1,48 +1,132 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-07-15T17:18:11.310Z",
+  "generated_at": "2026-07-15T17:48:56.558Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 5,
+    "running": 12,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 12,
-    "running": 5,
-    "queued": 7,
+    "total": 18,
+    "running": 12,
+    "queued": 6,
     "done": 0,
     "healthy": 2,
-    "stalled": 0,
+    "stalled": 7,
     "runaway": 3,
     "protected": 1,
-    "occupancy": 5,
+    "occupancy": 12,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 29435922200,
+      "id": 29438020194,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29435922200",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29438020194",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 7310,
-      "since_update_ms": 3310,
+      "age_ms": 9558,
+      "since_update_ms": 4558,
       "reason": "running within budget",
       "protected": true
     },
     {
-      "id": 29435441582,
-      "name": "CodeQL",
-      "path": ".github/workflows/codeql.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29435441582",
+      "id": 29437025503,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29437025503",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 435310,
-      "since_update_ms": 132310,
+      "age_ms": 895558,
+      "since_update_ms": 891558,
       "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 29436991483,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436991483",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 925558,
+      "since_update_ms": 906558,
+      "reason": "no progress for 15m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 29436991220,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436991220",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 925558,
+      "since_update_ms": 903558,
+      "reason": "no progress for 15m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 29436945260,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436945260",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 964558,
+      "since_update_ms": 938558,
+      "reason": "no progress for 16m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 29436943550,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436943550",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 965558,
+      "since_update_ms": 939558,
+      "reason": "no progress for 16m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 29436602520,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436602520",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 1254558,
+      "since_update_ms": 1192558,
+      "reason": "no progress for 20m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 29436569053,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436569053",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 1283558,
+      "since_update_ms": 1212558,
+      "reason": "no progress for 20m ≥ 15m",
+      "protected": false
+    },
+    {
+      "id": 29436569205,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29436569205",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 1283558,
+      "since_update_ms": 1202558,
+      "reason": "no progress for 20m ≥ 15m",
       "protected": false
     },
     {
@@ -52,9 +136,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29262820826",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 179003310,
-      "since_update_ms": 178734310,
-      "reason": "running 2983m ≥ 60m budget",
+      "age_ms": 180848558,
+      "since_update_ms": 180579558,
+      "reason": "running 3014m ≥ 60m budget",
       "protected": false
     },
     {
@@ -64,9 +148,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 183241310,
-      "since_update_ms": 183153310,
-      "reason": "running 3054m ≥ 60m budget",
+      "age_ms": 185086558,
+      "since_update_ms": 184998558,
+      "reason": "running 3085m ≥ 60m budget",
       "protected": false
     },
     {
@@ -76,21 +160,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 187480310,
-      "since_update_ms": 186226310,
-      "reason": "running 3125m ≥ 60m budget",
-      "protected": false
-    },
-    {
-      "id": 29435428739,
-      "name": "CodeQL",
-      "path": ".github/workflows/codeql.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29435428739",
-      "status": "queued",
-      "health": "queued",
-      "age_ms": null,
-      "since_update_ms": null,
-      "reason": "awaiting a runner (trigger)",
+      "age_ms": 189325558,
+      "since_update_ms": 188071558,
+      "reason": "running 3155m ≥ 60m budget",
       "protected": false
     },
     {
@@ -168,11 +240,130 @@
   ],
   "preemptions": [
     {
+      "id": 29436991483,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "health": "stalled",
+      "reason": "no progress for 15m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.7",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "cut": "spared(step-progress)",
+      "reassign_outcome": "pending",
+      "error": null
+    },
+    {
+      "id": 29436991220,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "health": "stalled",
+      "reason": "no progress for 15m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.7",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "cut": "spared(step-progress)",
+      "reassign_outcome": "pending",
+      "error": null
+    },
+    {
+      "id": 29436945260,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "health": "stalled",
+      "reason": "no progress for 16m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.7",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "cut": "cancelled",
+      "reassign_outcome": "reassigned(no-model-input)",
+      "error": null
+    },
+    {
+      "id": 29436943550,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "health": "stalled",
+      "reason": "no progress for 16m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.7",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "cut": "cancelled",
+      "reassign_outcome": "reassigned(no-model-input)",
+      "error": null
+    },
+    {
+      "id": 29436602520,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "health": "stalled",
+      "reason": "no progress for 20m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.7",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "cut": "cancelled",
+      "reassign_outcome": "reassigned(no-model-input)",
+      "error": null
+    },
+    {
+      "id": 29436569053,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "health": "stalled",
+      "reason": "no progress for 20m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.7",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "cut": "spared(step-progress)",
+      "reassign_outcome": "pending",
+      "error": null
+    },
+    {
+      "id": 29436569205,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "health": "stalled",
+      "reason": "no progress for 20m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.7",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "cut": "cancelled",
+      "reassign_outcome": "reassigned(no-model-input)",
+      "error": null
+    },
+    {
       "id": 29262820826,
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
-      "reason": "running 2983m ≥ 60m budget",
+      "reason": "running 3014m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -188,7 +379,7 @@
       "name": "No-Destroy Guard",
       "path": ".github/workflows/no-destroy-guard.yml",
       "health": "runaway",
-      "reason": "running 3054m ≥ 60m budget",
+      "reason": "running 3085m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -204,7 +395,7 @@
       "name": "Project Board Sync",
       "path": ".github/workflows/project-board-sync.yml",
       "health": "runaway",
-      "reason": "running 3125m ≥ 60m budget",
+      "reason": "running 3155m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
