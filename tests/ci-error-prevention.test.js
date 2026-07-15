@@ -393,6 +393,24 @@ test('issue-state-machine.yml must detect and close URL-only issue titles', () =
   console.log('   ✓ issue-state-machine.yml has URL-only title guard');
 });
 
+test('issue-state-machine.yml must only swallow removeLabel 404 races', () => {
+  const wfFile = '.github/workflows/issue-state-machine.yml';
+  if (!fs.existsSync(wfFile)) {
+    console.log('   ⚠ issue-state-machine.yml not found, skipping');
+    return;
+  }
+
+  const content = fs.readFileSync(wfFile, 'utf8');
+  const matches = content.match(/removeLabel\([\s\S]*?\.catch\(err => \{\s*if \(err\.status !== 404\) throw err;/g) || [];
+
+  assert.ok(
+    matches.length >= 2,
+    'issue-state-machine.yml must guard every removeLabel call with a 404-only catch'
+  );
+
+  console.log('   ✓ issue-state-machine.yml guards removeLabel 404 races');
+});
+
 // ============================================================
 // Test 13: email_error_intake.py must not create URL-only issue titles
 // ============================================================
