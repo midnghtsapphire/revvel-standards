@@ -290,6 +290,8 @@ function lintFile(path) {
     if (inFence[i]) return;
     // Strip inline code span content before testing so that backtick-wrapped
     // terms like `TODO` or `TBD` used as code references are not flagged.
+    // Handles single-backtick spans; escaped backticks within spans are not
+    // supported (not needed for realistic WR content).
     const stripped = l.replace(/`[^`\n]*`/g, "``");
     for (const { re, label } of DEFERRAL_PLACEHOLDERS) {
       if (re.test(stripped)) {
