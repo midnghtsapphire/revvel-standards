@@ -1,66 +1,21 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-15T18:42:59.738Z",
+  "generated_at": "2026-07-15T19:47:07.423Z",
   "stop": [
-    {
-      "id": 29440407219,
-      "name": "Perplexity Research Agent",
-      "reason": "no progress for 18m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    },
-    {
-      "id": 29440399577,
-      "name": "Perplexity Research Agent",
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    },
-    {
-      "id": 29440399365,
-      "name": "Perplexity Research Agent",
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    },
-    {
-      "id": 29440398403,
-      "name": "Perplexity Research Agent",
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    },
-    {
-      "id": 29440392916,
-      "name": "Perplexity Research Agent",
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    },
-    {
-      "id": 29440392616,
-      "name": "Perplexity Research Agent",
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    },
-    {
-      "id": 29440388711,
-      "name": "Perplexity Research Agent",
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    },
-    {
-      "id": 29440385603,
-      "name": "Perplexity Research Agent",
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    },
-    {
-      "id": 29440381089,
-      "name": "Perplexity Research Agent",
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 3068m ≥ 60m budget"
+      "reason": "running 3132m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 3139m ≥ 60m budget"
+      "reason": "running 3203m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 3209m ≥ 60m budget"
+      "reason": "running 3274m ≥ 60m budget"
     }
   ]
 }
