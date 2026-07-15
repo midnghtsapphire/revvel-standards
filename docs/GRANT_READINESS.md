@@ -6,13 +6,16 @@
 
 ---
 
-## ⚠️ URGENT: May 2026 Deadlines
+## ⛔ EXPIRED: May 2026 Deadlines (Past Due)
 
 | Item | Due | Status |
 |------|-----|--------|
-| SAM.gov CAGE Code Renewal | **May 2026** | 🔴 CRITICAL |
+| SAM.gov CAGE Code Renewal (90SN0 — Freedom Angel Corp) | **2026-05-14** | ⛔ EXPIRED |
+| SAM.gov CAGE Code Renewal (8ZRW3 — XI Website Solutions) | **2026-05-05** | ⛔ EXPIRED |
 | DUNS Number | ASAP | ⚠️ Missing |
 | UEI Registration | ASAP | ⚠️ Missing |
+
+**DLA Contact for CAGE renewal:** 1-877-352-2255 · <dlacontactcenter@dla.mil> · <https://cage.dla.mil>
 
 ---
 
@@ -29,12 +32,19 @@
 - 5-character identifier
 - Required for government contracts
 - **RENEW EVERY 5 YEARS**
-- Audrey's: _____________ (NEEDS TO BE FILLED)
+- Freedom Angel Corp: **90SN0** (EXPIRED 2026-05-14)
+- XI Website Solutions: **8ZRW3** (EXPIRED 2026-05-05)
+
+**DLA CAGE Renewal Contact:**
+- Phone: **1-877-352-2255** (1-877-DLA-CALL, 24/7)
+- Email: **<dlacontactcenter@dla.mil>**
+- Portal: <https://cage.dla.mil>
+- Renew at: <https://sam.gov>
 
 **Action:**
 - [ ] Log into sam.gov
 - [ ] Verify CAGE code status
-- [ ] Renew if expiring May 2026
+- [ ] Submit renewal for both CAGE codes
 - [ ] Update entity information
 
 ### 2. UEI (Unique Entity ID)
@@ -111,13 +121,13 @@
 
 ## Monthly Grant Scan Routine
 
-### First Monday of Month:
+### First Monday of Month
 1. Check grants.gov new opportunities
 2. Filter by: Legal, Business, Colorado
 3. Save matches to tracker
 4. Note deadlines
 
-### Weekly:
+### Weekly
 1. Check agency-specific listings
 2. Review state opportunities
 3. Update tracking spreadsheet
@@ -126,7 +136,7 @@
 
 ## Grant Application Checklist
 
-### Required for ALL federal grants:
+### Required for ALL federal grants
 - [ ] UEI (from SAM.gov)
 - [ ] TIN/EIN
 - [ ] Bank account (for direct deposit)
@@ -135,7 +145,7 @@
 - [ ] Budget (SF-424A)
 - [ ] Timeline/Logic model
 
-### Additional for Fidelity Trust:
+### Additional for Fidelity Trust
 - [ ] Proof of CLE certification
 - [ ] Organizational chart
 - [ ] Board list (if non-profit)
