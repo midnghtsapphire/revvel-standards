@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       issue_number:
+        description: 'Issue number to process'
+        required: true
+        type: string
+  issues:
+    types: [labeled]
         description: 'Issue number to work on'
         required: true
         type: string
@@ -20,6 +25,7 @@ env:
 
 jobs:
   jules-agent:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.label.name, 'jules')
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/jules'))
     runs-on: ubuntu-latest
     steps:
@@ -34,6 +40,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Determine issue number
+        id: issue
+        run: |
       - name: Install dependencies
         run: npm ci
 
@@ -64,6 +73,28 @@ jobs:
             echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
           fi
 
+      - name: Create branch and apply changes
+        run: |
+          ISSUE_NUM="${{ steps.issue.outputs.number }}"
+          BRANCH="jules/issue-${ISSUE_NUM}"
+          git config user.name "jules-coding-agent[bot]"
+          git config user.email "jules-agent@users.noreply.github.com"
+          git checkout -b "$BRANCH" || git checkout "$BRANCH"
+          echo "Agent scaffolding for issue #${ISSUE_NUM}" >> .jules-agent-log
+          git add -A
+          git commit -m "chore(jules): scaffold changes for #${ISSUE_NUM}" || echo "No changes"
+          git push -u origin "$BRANCH" || true
+
+      - name: Open PR
+        run: |
+          ISSUE_NUM="${{ steps.issue.outputs.number }}"
+          BRANCH="jules/issue-${ISSUE_NUM}"
+          gh pr create \
+            --title "fix: automated changes for #${ISSUE_NUM}" \
+            --body "Closes #${ISSUE_NUM}" \
+            --base main \
+            --head "$BRANCH" || echo "PR may already exist"
+          gh issue edit "$ISSUE_NUM" --add-label "wr:pr-open" || true
       - name: Create branch and stub commit
         id: branch
         run: |
