@@ -5,11 +5,12 @@
 
 ---
 
-## ⚠️ URGENT: May 2026 Renewals
+## ⛔ EXPIRED: May 2026 Renewals (Past Due)
 
 | Item | Due | Status | Action Required |
 |------|-----|--------|-----------------|
-| SAM.gov CAGE Code | May 2026 | 🔴 URGENT | Renew NOW |
+| SAM.gov CAGE Code (90SN0 — Freedom Angel Corp) | 2026-05-14 | ⛔ EXPIRED | Renew NOW — call DLA 1-877-352-2255 |
+| SAM.gov CAGE Code (8ZRW3 — XI Website Solutions) | 2026-05-05 | ⛔ EXPIRED | Renew NOW — call DLA 1-877-352-2255 |
 | DUNS Number | - | ⚠️ MISSING | Get ASAP |
 | UEI (Unique Entity ID) | - | ⚠️ MISSING | Get for grants |
 
@@ -92,11 +93,15 @@
 
 | Resource | URL |
 |----------|-----|
-| SAM.gov | sam.gov |
-| Grants.gov | grants.gov |
-| Colorado SOS | coloradosos.gov |
-| DUNS (Free) | dnb.com/d-uns-number |
-| UEI (SAM) | sam.gov/entity |
+| SAM.gov | https://sam.gov |
+| Grants.gov | https://grants.gov |
+| DLA CAGE Portal | https://cage.dla.mil |
+| DLA Contact Center (email) | dlacontactcenter@dla.mil |
+| DLA Contact Center (phone) | 1-877-352-2255 |
+| Federal Service Desk | https://www.fsd.gov |
+| Colorado SOS | https://coloradosos.gov |
+| DUNS (Free) | https://dnb.com/d-uns-number |
+| UEI (SAM) | https://sam.gov/entity |
 
 ---
 
