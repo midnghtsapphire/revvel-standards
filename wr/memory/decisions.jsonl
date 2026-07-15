@@ -1,3 +1,15 @@
+{"ts":"2026-06-28T03:50:00Z","topic":"prime_directive","decision":"scale $10k/month to $10M in 3 years via Polar.sh, OSINT tools, automated product pipeline","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:10Z","topic":"phase_1","decision":"reach $10k/month by month 6","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:20Z","topic":"phase_2","decision":"reach $30k/month by month 18","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:30Z","topic":"phase_3","decision":"reach $100k/month by month 30","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:40Z","topic":"phase_4","decision":"reach $10M total by month 36","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:45Z","topic":"focus_polar","decision":"prioritize Polar.sh GitHub funding integration","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:50Z","topic":"focus_osint","decision":"build OSINT tools as revenue vertical","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:52Z","topic":"focus_pipeline","decision":"automated product pipeline for scale","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:53Z","topic":"agent_dispatch","decision":"agents must accept custom prompts via dispatch","locked_by":"engineering"}
+{"ts":"2026-06-28T03:50:54Z","topic":"jsonl_schema","decision":"decisions.jsonl entries must match {ts,topic,decision,locked_by} schema","locked_by":"engineering"}
+{"ts":"2026-06-28T03:50:55Z","topic":"jsonl_validation","decision":"enforce JSONL validation via pre-commit hook to prevent malformed entries","locked_by":"engineering"}
+{"ts":"2026-06-28T03:50:56Z","topic":"jsonl_repair","decision":"repaired malformed lines 11-12 to conform to canonical schema","locked_by":"engineering"}
 {"ts":"2026-06-27T10:00:00Z","topic":"revenue_priority","decision":"Focus on Polar.sh GitHub funding integration as primary revenue channel for Phase 1 ($10k/month)","locked_by":"prime_directive"}
 {"ts":"2026-06-27T10:05:00Z","topic":"product_pipeline","decision":"Automate OSINT tools productization with tiered pricing on Polar.sh","locked_by":"prime_directive"}
 {"ts":"2026-06-27T10:10:00Z","topic":"fallback_chain","decision":"Standardize agent fallback: OpenRouter -> OpenHands -> manual (all free-tier)","locked_by":"ops"}
