@@ -1,52 +1,24 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-15T19:28:26.530Z",
+  "generated_at": "2026-07-15T22:20:55.850Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "5/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 5,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29444615166,
-            "name": "Follow-up Checkbox Router",
-            "path": ".github/workflows/followup-checkbox-router.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444615166",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29444604766,
-            "name": "Follow-up Checkbox Router",
-            "path": ".github/workflows/followup-checkbox-router.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444604766",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29444594446,
-            "name": "Follow-up Checkbox Router",
-            "path": ".github/workflows/followup-checkbox-router.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444594446",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29444594325,
-            "name": "Intelligent Code Quality Scanner",
-            "path": ".github/workflows/ship-quality.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444594325",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29444594085,
-            "name": "Octopus Review Fallback",
-            "path": ".github/workflows/octopus-review-fallback.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444594085",
+            "id": 29452328023,
+            "name": "Credential Autonomy Agent",
+            "path": ".github/workflows/credential-autonomy-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29452328023",
             "conclusion": "failure"
           }
         ],

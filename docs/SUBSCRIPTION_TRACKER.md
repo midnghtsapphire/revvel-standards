@@ -18,7 +18,7 @@ data/subscriptions.yml            ← single source of truth (you edit this)
 scripts/subscription-tracker.js   ← pure verdict engine (trial-expiry / renewal)
         │
         ▼
-.github/workflows/                ← daily sweep, upserts ONE tracking issue
+.github/workflows/                ← weekly sweep, upserts ONE tracking issue
   subscription-tracker.yml
 ```
 
@@ -31,7 +31,7 @@ scripts/subscription-tracker.js   ← pure verdict engine (trial-expiry / renewa
   `renewal_date`) and a verdict: `ok`, `due_soon`, `expired`, `unknown`, or
   `cancelled`. All logic is pure and clock-injectable, and is unit-tested in
   `tests/subscription-tracker.test.js`.
-- **`.github/workflows/subscription-tracker.yml`** — runs daily (13:00 UTC) and
+- **`.github/workflows/subscription-tracker.yml`** — runs weekly (Monday 13:00 UTC) and
   on demand. It renders the report and **upserts a single issue** titled
   `📅 Subscription & Trial Tracker` (label: `subscriptions`), editing the same
   issue in place so trackers never pile up. Anything expiring or renewing inside
