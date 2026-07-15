@@ -1,4 +1,4 @@
-# Issue #15041: Priority 1 Blocker - Before Jules, There Needs To Be...
+# Issue #15041: Priority 1 Blocker - Before Jules, There Needs To Be
 
 ## Priority
 **P1 - Blocker**
