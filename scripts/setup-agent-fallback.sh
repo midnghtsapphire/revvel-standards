@@ -1,182 +1,125 @@
-#!/bin/bash
-# Setup Agent Fallback System
-# NOTE: This setup script still contains legacy Devin/Cursor checks.
-# Current fallback workflow is OpenRouter → OpenHands (opt-in) → manual.
-# See .github/workflows/agent-fallback.yml for the authoritative chain.
-# The .cursorrules step below is Cursor *IDE* config (symlinks AGENTS.md).
-# Usage: ./setup-agent-fallback.sh [OWNER/REPO]
+#!/usr/bin/env bash
+#
+# setup-agent-fallback.sh
+#
+# Prepares the agent fallback chain:
+#   Devin → Cursor → OpenRouter → OpenHands (opt-in) → manual
+#
+# This script:
+#   1. Verifies required tools (bash, curl, jq) are installed.
+#   2. Marks the system-provided call-*-api.sh scripts as executable.
+#   3. Reports which providers are configured via environment variables.
+#
+# OpenHands is opt-in: if scripts/call-openhands-api.sh exists locally, it
+# will be made executable, but its absence is not an error.
+#
+set -euo pipefail
 
-set -e
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCRIPTS_DIR="${REPO_ROOT}/scripts"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-echo -e "${BLUE}🔧 Setting up Agent Fallback System${NC}"
-echo ""
-
-# Parse arguments
-TARGET_REPO="${1:-}"
-if [ -z "${TARGET_REPO}" ]; then
-  # Try to detect current repo
-  if git rev-parse --git-dir > /dev/null 2>&1; then
-    TARGET_REPO=$(git config --get remote.origin.url | sed 's/.*[:/]\([^/]*\/[^/.]*\).*/\1/')
-    echo -e "${YELLOW}Detected repository: ${TARGET_REPO}${NC}"
+color() {
+  # $1 = color code, $2 = message
+  if [ -t 1 ]; then
+    printf '\033[%sm%s\033[0m\n' "$1" "$2"
   else
-    echo -e "${RED}ERROR: Not in a git repository and no --repo specified${NC}"
-    echo "Usage: $0 OWNER/REPO"
-    exit 1
-  fi
-fi
-
-echo ""
-echo "Target repository: ${TARGET_REPO}"
-echo ""
-
-# Step 1: Check if .cursorrules exists
-echo -e "${BLUE}Step 1: Checking Cursor configuration...${NC}"
-if [ -f "${REPO_ROOT}/.cursorrules" ] || [ -L "${REPO_ROOT}/.cursorrules" ]; then
-  echo -e "${GREEN}✅ .cursorrules already exists${NC}"
-else
-  echo -e "${YELLOW}Creating .cursorrules symlink...${NC}"
-  cd "${REPO_ROOT}"
-  ln -sf docs/AGENTS.md .cursorrules
-  echo -e "${GREEN}✅ Created .cursorrules → docs/AGENTS.md${NC}"
-fi
-
-# Step 2: Check .env.example
-echo ""
-echo -e "${BLUE}Step 2: Checking environment variable configuration...${NC}"
-if grep -q "CURSOR_API_KEY" "${REPO_ROOT}/.env.example" 2>/dev/null; then
-  echo -e "${GREEN}✅ CURSOR_API_KEY already in .env.example${NC}"
-else
-  echo -e "${YELLOW}⚠️  CURSOR_API_KEY not found in .env.example${NC}"
-  echo "Please add it manually or re-copy from revvel-standards"
-fi
-
-if grep -q "DEVIN_API_KEY" "${REPO_ROOT}/.env.example" 2>/dev/null; then
-  echo -e "${GREEN}✅ DEVIN_API_KEY already in .env.example${NC}"
-else
-  echo -e "${YELLOW}⚠️  DEVIN_API_KEY not found in .env.example${NC}"
-  echo "Please add it manually or re-copy from revvel-standards"
-fi
-
-# Step 3: Check for workflow file
-echo ""
-echo -e "${BLUE}Step 3: Checking workflow files...${NC}"
-WORKFLOW_FILE="${REPO_ROOT}/.github/workflows/agent-fallback.yml"
-if [ -f "${WORKFLOW_FILE}" ]; then
-  echo -e "${GREEN}✅ agent-fallback.yml workflow exists${NC}"
-else
-  echo -e "${YELLOW}Creating workflow file...${NC}"
-  mkdir -p "${REPO_ROOT}/.github/workflows"
-  # In production, this would copy from revvel-standards
-  echo -e "${YELLOW}⚠️  Please copy agent-fallback.yml from revvel-standards${NC}"
-fi
-
-# Step 4: Check for scripts
-echo ""
-echo -e "${BLUE}Step 4: Checking helper scripts...${NC}"
-for script in call-devin-api.sh call-cursor-api.sh; do
-  if [ -f "${REPO_ROOT}/scripts/${script}" ]; then
-    echo -e "${GREEN}✅ scripts/${script} exists${NC}"
-    chmod +x "${REPO_ROOT}/scripts/${script}"
-  else
-    echo -e "${YELLOW}⚠️  scripts/${script} not found${NC}"
-    echo "Please copy from revvel-standards/scripts/"
-  fi
-done
-
-# Step 5: Check GitHub secrets
-echo ""
-echo -e "${BLUE}Step 5: Checking GitHub secrets...${NC}"
-echo "Verifying secrets for ${TARGET_REPO}..."
-
-check_secret() {
-  local secret_name=$1
-  if gh secret list --repo "${TARGET_REPO}" 2>/dev/null | grep -q "^${secret_name}"; then
-    echo -e "${GREEN}✅ ${secret_name} configured${NC}"
-    return 0
-  else
-    echo -e "${YELLOW}⚠️  ${secret_name} NOT configured${NC}"
-    return 1
+    printf '%s\n' "$2"
   fi
 }
 
-DEVIN_OK=false
-CURSOR_OK=false
-OPENROUTER_OK=false
+info()  { color "1;34" "[info]  $*"; }
+ok()    { color "1;32" "[ ok ]  $*"; }
+warn()  { color "1;33" "[warn]  $*"; }
+error() { color "1;31" "[fail]  $*" >&2; }
 
-check_secret "DEVIN_API_KEY" && DEVIN_OK=true
-check_secret "CURSOR_API_KEY" && CURSOR_OK=true
-check_secret "OPENROUTER_API_KEY" && OPENROUTER_OK=true
-
-# Step 6: Provide instructions for missing secrets
-echo ""
-if [ "${DEVIN_OK}" = false ] || [ "${CURSOR_OK}" = false ] || [ "${OPENROUTER_OK}" = false ]; then
-  echo -e "${YELLOW}⚠️  Some secrets are missing. To configure:${NC}"
-  echo ""
-
-  if [ "${DEVIN_OK}" = false ]; then
-    echo "  # Devin API Key"
-    echo "  gh secret set DEVIN_API_KEY --repo ${TARGET_REPO}"
-    echo "  # Or retrieve from Vault:"
-    echo "  vault kv get -field=api_key revvel/shared/llm/devin | gh secret set DEVIN_API_KEY --repo ${TARGET_REPO}"
-    echo ""
+# ---------------------------------------------------------------------------
+# 1. Verify prerequisites
+# ---------------------------------------------------------------------------
+info "Checking prerequisites..."
+missing=0
+for tool in bash curl jq; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    error "Required tool not found: $tool"
+    missing=1
   fi
-
-  if [ "${CURSOR_OK}" = false ]; then
-    echo "  # Cursor API Key"
-    echo "  gh secret set CURSOR_API_KEY --repo ${TARGET_REPO}"
-    echo "  # Or retrieve from Vault:"
-    echo "  vault kv get -field=api_key revvel/shared/llm/cursor | gh secret set CURSOR_API_KEY --repo ${TARGET_REPO}"
-    echo ""
-  fi
-
-  if [ "${OPENROUTER_OK}" = false ]; then
-    echo "  # OpenRouter API Key"
-    echo "  gh secret set OPENROUTER_API_KEY --repo ${TARGET_REPO}"
-    echo "  # Or retrieve from Vault:"
-    echo "  vault kv get -field=api_key revvel/shared/llm/openrouter | gh secret set OPENROUTER_API_KEY --repo ${TARGET_REPO}"
-    echo ""
-  fi
-
-  echo -e "${YELLOW}Or use the credential-gatekeeper workflow (recommended):${NC}"
-  echo "  gh workflow run credential-gatekeeper.yml --repo ${TARGET_REPO}"
-else
-  echo -e "${GREEN}✅ All required secrets are configured${NC}"
+done
+if [ "$missing" -ne 0 ]; then
+  error "Please install the missing tools and re-run this script."
+  exit 1
 fi
+ok "All prerequisites present."
 
-# Step 7: Test workflow (optional)
-echo ""
-echo -e "${BLUE}Step 7: Testing setup (optional)...${NC}"
-echo "To test the fallback system, create a test issue:"
-echo ""
-echo "  gh issue create --repo ${TARGET_REPO} \\"
-echo "    --title \"[TEST] Agent fallback test\" \\"
-echo "    --body \"Test issue for agent fallback system. Please close after testing.\""
-echo ""
-echo "Then trigger the workflow:"
-echo "  gh workflow run agent-fallback.yml --repo ${TARGET_REPO} -f issue_number=<ISSUE_NUMBER>"
-echo ""
+# ---------------------------------------------------------------------------
+# 2. chmod +x the system-provided adapter scripts
+# ---------------------------------------------------------------------------
+# System-provided (shipped in-repo) adapters — must exist.
+SYSTEM_SCRIPTS=(
+  "call-devin-api.sh"
+  "call-cursor-api.sh"
+  "call-openrouter-api.sh"
+)
 
-# Summary
-echo ""
-echo -e "${BLUE}════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}✅ Agent Fallback Setup Complete!${NC}"
-echo -e "${BLUE}════════════════════════════════════════════════${NC}"
-echo ""
-echo "Next steps:"
-echo "  1. Configure any missing GitHub secrets (see above)"
-echo "  2. Test the fallback system with a test issue"
-echo "  3. Monitor fallback events with: gh issue list --label auto-fallback"
-echo "  4. Read the full documentation: docs/AGENT_FALLBACK_PROCESS.md"
-echo ""
-echo "Fallback chain: Devin → Cursor → OpenRouter → Manual"
-echo ""
+# Opt-in adapters — chmod if present, skip silently if not.
+OPTIN_SCRIPTS=(
+  "call-openhands-api.sh"
+)
+
+info "Marking system-provided adapter scripts executable..."
+for s in "${SYSTEM_SCRIPTS[@]}"; do
+  path="${SCRIPTS_DIR}/${s}"
+  if [ -f "$path" ]; then
+    chmod +x "$path"
+    ok "chmod +x scripts/${s}"
+  else
+    warn "Expected system script missing: scripts/${s}"
+  fi
+done
+
+info "Checking opt-in adapter scripts..."
+for s in "${OPTIN_SCRIPTS[@]}"; do
+  path="${SCRIPTS_DIR}/${s}"
+  if [ -f "$path" ]; then
+    chmod +x "$path"
+    ok "chmod +x scripts/${s} (opt-in)"
+  else
+    info "Opt-in script not present (this is fine): scripts/${s}"
+  fi
+done
+
+# ---------------------------------------------------------------------------
+# 3. Report configured providers
+# ---------------------------------------------------------------------------
+info "Provider configuration:"
+
+report_provider() {
+  local name="$1"
+  local env_var="$2"
+  local script="$3"
+  local required="$4" # "system" or "optin"
+
+  local script_path="${SCRIPTS_DIR}/${script}"
+  local has_key="no"
+  local has_script="no"
+
+  if [ -n "${!env_var:-}" ]; then has_key="yes"; fi
+  if [ -x "$script_path" ]; then has_script="yes"; fi
+
+  if [ "$has_key" = "yes" ] && [ "$has_script" = "yes" ]; then
+    ok "${name}: enabled  (env ${env_var} set, ${script} executable)"
+  elif [ "$required" = "optin" ] && [ "$has_script" = "no" ]; then
+    info "${name}: not installed (opt-in; skipped in fallback chain)"
+  elif [ "$has_key" = "no" ]; then
+    warn "${name}: disabled (env ${env_var} not set)"
+  else
+    warn "${name}: disabled (${script} missing or not executable)"
+  fi
+}
+
+report_provider "Devin"      "DEVIN_API_KEY"      "call-devin-api.sh"      "system"
+report_provider "Cursor"     "CURSOR_API_KEY"     "call-cursor-api.sh"     "system"
+report_provider "OpenRouter" "OPENROUTER_API_KEY" "call-openrouter-api.sh" "system"
+report_provider "OpenHands"  "OPENHANDS_API_KEY"  "call-openhands-api.sh"  "optin"
+
+echo
+ok "Agent fallback setup complete."
+info "See docs/AGENT_FALLBACK_QUICKSTART.md for usage details."
