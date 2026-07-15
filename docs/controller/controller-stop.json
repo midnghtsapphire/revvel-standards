@@ -1,21 +1,41 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-15T17:18:11.310Z",
+  "generated_at": "2026-07-15T17:48:56.558Z",
   "stop": [
+    {
+      "id": 29436945260,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 16m ≥ 15m"
+    },
+    {
+      "id": 29436943550,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 16m ≥ 15m"
+    },
+    {
+      "id": 29436602520,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 20m ≥ 15m"
+    },
+    {
+      "id": 29436569205,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 20m ≥ 15m"
+    },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 2983m ≥ 60m budget"
+      "reason": "running 3014m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 3054m ≥ 60m budget"
+      "reason": "running 3085m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 3125m ≥ 60m budget"
+      "reason": "running 3155m ≥ 60m budget"
     }
   ]
 }
