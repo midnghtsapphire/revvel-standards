@@ -2,6 +2,7 @@ name: OpenRouter Coder
 
 on:
   issues:
+    types: [labeled, opened]
     types: [labeled]
   issue_comment:
     types: [created]
@@ -24,6 +25,10 @@ jobs:
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, 'Research Findings:')) ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'issues' && (contains(github.event.issue.labels.*.name, 'wr:code') || contains(github.event.issue.labels.*.name, 'spec-approved'))) ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, 'Research Findings:')) ||
+      github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,6 +40,14 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            let issueNumber;
+            if (context.eventName === 'workflow_dispatch') {
+              issueNumber = parseInt(context.payload.inputs.issue_number, 10);
+            } else if (context.eventName === 'issue_comment' || context.eventName === 'issues') {
+              issueNumber = context.payload.issue.number;
+            } else {
+              core.setFailed(`Unsupported event: ${context.eventName}`);
+              return;
             let number;
             if (context.eventName === 'workflow_dispatch') {
               number = parseInt(context.payload.inputs.issue_number, 10);
@@ -43,11 +56,21 @@ jobs:
             } else {
               number = context.payload.issue.number;
             }
+
             const { data: issue } = await github.rest.issues.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: number,
             });
+
+            // Guard: reject pull requests and non-open issues.
+            // GitHub fires `issues.labeled` and `issue_comment.created` for PRs
+            // as well as issues; without this guard a mislabeled/commented-on
+            // (already-merged) PR would dispatch the coding agent and produce
+            // a duplicate PR re-implementing already-landed work.
+            // See: root-cause writeup for the 2026-07-13 duplicate-PR incident.
+            if (issue.pull_request) {
+              core.info(`Target #${issueNumber} is a pull request, not an issue. Skipping.`);
             // Guard: reject PRs (GitHub fires issues/issue_comment events for PRs too)
             // and reject closed/merged issues to prevent duplicate work on already-landed changes.
             if (issue.pull_request) {
@@ -57,12 +80,24 @@ jobs:
               return;
             }
             if (issue.state !== 'open') {
+              core.info(`Target issue #${issueNumber} is not open (state=${issue.state}). Skipping.`);
               core.warning(`Target issue #${number} is not open (state=${issue.state}). Skipping.`);
               core.setOutput('skip', 'true');
               core.setOutput('skip_reason', `issue state is ${issue.state}`);
               return;
             }
             core.setOutput('skip', 'false');
+            core.setOutput('issue_number', String(issueNumber));
+            core.setOutput('issue_title', issue.title || '');
+            core.setOutput('issue_body', issue.body || '');
+
+      - name: Setup Node
+        if: steps.ctx.outputs.skip != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
             core.setOutput('issue_number', String(number));
             core.setOutput('issue_title', issue.title || '');
             core.setOutput('issue_body', issue.body || '');
@@ -79,10 +114,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests pyyaml
 
+      - name: Run OpenRouter coding agent
+        id: agent
       - name: Run OpenRouter coder
         if: steps.ctx.outputs.skip != 'true'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ISSUE_NUMBER: ${{ steps.ctx.outputs.issue_number }}
+          ISSUE_TITLE: ${{ steps.ctx.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.ctx.outputs.issue_body }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ steps.ctx.outputs.issue_number }}
           ISSUE_TITLE: ${{ steps.ctx.outputs.issue_title }}
@@ -91,6 +131,16 @@ jobs:
           if [ -f scripts/openrouter_coder.py ]; then
             python scripts/openrouter_coder.py
           else
+            echo "scripts/openrouter_coder.py not found; skipping agent invocation."
+            echo "applied=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request
+        if: steps.ctx.outputs.skip != 'true' && steps.agent.outputs.applied == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: openrouter/issue-${{ steps.ctx.outputs.issue_number }}
             echo "No openrouter_coder.py script found; skipping."
           fi
 
@@ -105,6 +155,13 @@ jobs:
             Automated code changes for issue #${{ steps.ctx.outputs.issue_number }}.
 
             **Agent used:** openrouter
+          commit-message: |
+            chore(openrouter): apply changes for #${{ steps.ctx.outputs.issue_number }}
+
+      - name: Report skip
+        if: steps.ctx.outputs.skip == 'true'
+        run: |
+          echo "::notice::Skipped OpenRouter coder for #${{ steps.ctx.outputs.issue_number || github.event.issue.number }}: ${{ steps.ctx.outputs.skip_reason }}"
             **Fallback chain:** OpenRouter → OpenHands (opt-in)
           branch: openrouter/issue-${{ steps.ctx.outputs.issue_number }}
           delete-branch: true
