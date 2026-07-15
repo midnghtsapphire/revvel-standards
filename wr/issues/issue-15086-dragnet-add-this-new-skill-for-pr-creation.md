@@ -1,486 +1,168 @@
-# WR: [WR] /Dragnet add this new skill for PR creation
+# Dragnet Skill: PR Creation
 
-**Issue:** #15086  
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Research Date:** 2026-07-03  
-**Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
+## Overview
+This skill enables automated pull request creation with proper reviewer assignment based on CODEOWNERS configuration.
 
----
+## Reviewer Assignment
 
+Reviewers are assigned dynamically based on the repository's `CODEOWNERS` file. This ensures:
+- Proper load distribution across the team
+- No single point of failure
+- Automatic rotation based on file ownership
+- Compliance with repository governance
 
-<!-- revvel-research-findings -->
-## Research Findings
+### Implementation
 
-Source packet: `docs/research-engine/run-28685420571.md`
+The skill reads the `CODEOWNERS` file from one of these standard locations:
+- `.github/CODEOWNERS`
+- `CODEOWNERS`
+- `docs/CODEOWNERS`
 
-## Executive Decision
+For each changed file in the PR, the skill:
+1. Matches the file path against CODEOWNERS patterns
+2. Collects all matching owners (users and teams)
+3. Deduplicates the reviewer list
+4. Assigns reviewers via the GitHub API
 
-**PROCEED WITH IMPLEMENTATION** - The PR Accelerator Skill addresses a critical operational need for automating agent-to-human handoff workflows. Despite missing market validation data, the internal efficiency gains justify immediate development.
+### Example CODEOWNERS Pattern Matching
 
-**Key Decisions:**
-1. Build as internal tool first, with path to external productization
-2. Replace hardcoded reviewer with team-based assignment using CODEOWNERS
-3. Implement comprehensive error handling and monitoring
-4. Create modular architecture to support future skill marketplace
+# Skill: Dragnet PR Creation
 
-**Priority Actions:**
-1. Verify `github-mcp-server` existence and capabilities
-2. Implement reviewer rotation to prevent bottlenecks
-3. Add telemetry for usage tracking and revenue metrics
-4. Create landing page targeting "GitHub PR automation" keywords
+## Overview
+This skill defines the automated process for creating pull requests via the Dragnet system. It ensures consistent PR metadata, proper reviewer assignment, and compliance with repository standards.
 
-## Audience We Are Going After and Why
+## Purpose
+Standardize PR creation across the organization while respecting per-repository governance rules (CODEOWNERS, branch protections, labels).
 
-**Primary Audience:** Engineering teams using AI agents for development tasks
-- **Pain Point:** Manual PR creation kills velocity gains from AI automation
-- **Urgent Need:** Estimated 15–30 minutes lost per agent task on packaging outputs (internal estimate; not externally validated)
-- **Switching Barrier:** Low - drop-in skill for existing agent systems
+## Reviewer Assignment Policy
 
-**Secondary Audience:** DevOps teams managing agent fleets
-- **Pain Point:** Inconsistent PR formatting and review assignment
-- **Value Prop:** Standardized SOPs for agent workflows
-- **Growth Path:** Expand from PR creation to full CI/CD automation
+**Authoritative source:** The `CODEOWNERS` file at the repository root (or `.github/CODEOWNERS`) is the single source of truth for reviewer assignment. The skill MUST NOT hardcode individual reviewer usernames.
 
-**Why This Audience:**
-- Growing adoption of AI coding assistants (anecdotal observation; YoY growth figure unverified)
-- High willingness to pay for developer productivity tools ($10-25/user/month)
-- Network effects through team adoption and skill sharing
+### Resolution Algorithm
+1. Load `CODEOWNERS` from the target repository's default branch.
+2. For each file path in the PR diff, match against CODEOWNERS patterns (last matching pattern wins, per GitHub semantics).
+3. Collect the union of owners (users and teams) across all changed files.
+4. Request review from the resolved set via the GitHub API (`POST /repos/{owner}/{repo}/pulls/{pull_number}/requested_reviewers`).
+5. If no CODEOWNERS entry matches, fall back to the repository's default review team defined in repository settings — NOT a hardcoded username.
+6. Respect team-level round-robin / load-balancing configured in the team's review settings.
 
-## Marketing and SEO Plan
+### Prohibited
+- Hardcoding any specific GitHub username (e.g., `midnghtsapphire`) as a reviewer in skill logic.
+- Bypassing CODEOWNERS by injecting a static reviewer list at PR creation time.
 
-## Landing Page Strategy
-**Primary URL:** `/github-pr-automation-mcp`
-**Title:** "Automate GitHub Pull Requests with MCP Agents | Complete Setup Guide"
-**Meta Description:** "Learn how to set up agent-driven PR automation using GitHub MCP server. Includes code examples, workflow templates, and best practices for 2024."
+## Skill Instructions
 
-## Content Hub Development
-1. **Pillar Page:** "GitHub Automation Hub" (8,100/mo searches)
-2. **Supporting Content:**
-   - "MCP Server Setup Tutorial"
-   - "PR Automation Workflow Templates"
-   - "Agent Skills Configuration Guide"
-   - "How We Eliminated Manual PR Creation with AI Agents" (case study)
+### Inputs
+- `repo`: target repository (owner/name)
+- `base_branch`: base branch for the PR
+- `head_branch`: source branch for the PR
+- `title`: PR title
+- `body`: PR body (markdown)
+- `labels`: optional list of labels
 
-## SEO Target Keywords
-- "automated PR creation tools" (2,400/mo)
-- "GitHub PR automation workflow" (1,800/mo)
-- "agent-generated pull requests" (890/mo)
-- "how to automate pull request creation" (4,500/mo)
+### Steps
 
-## Distribution Channels
-- Developer Twitter with hook: "Stop losing 20 minutes every time your AI agent finishes a task"
-- Engineering team Slack communities
-- GitHub Discussions and relevant subreddits
-- Technical blog posts on dev.to and Medium
+1. **Validate branches** — Ensure `head_branch` exists and has commits ahead of `base_branch`.
+2. **Create the PR** via GitHub API.
+3. **Apply labels** if provided.
+4. **Resolve reviewers from CODEOWNERS** (see Reviewer Assignment Policy above).
+   - Fetch CODEOWNERS from `base_branch`.
+   - Compute owners for the changed file set.
+   - Request reviews from the resolved owners.
+5. **Post PR link** back to the initiating context.
 
-## Competitor and GitHub Star Intelligence
+### Pseudocode
 
-## Direct Competitors
-| Name | Type | Stars | Pricing | Key Differentiator |
-|------|------|-------|---------|-------------------|
-| **pr-agent** (Codium-ai) | OSS | 4.8k | Free | General PR automation |
-| **GitHub Copilot Workspace** | Proprietary | N/A | $19/mo | Native GitHub integration |
-| **Mergify** | SaaS | N/A | Paid tiers | Rules engine for PR management |
-| **auto-pr** (Microsoft) | OSS | 1.2k | Free | Microsoft-backed but declining |
+```python
+def create_pr(repo, base_branch, head_branch, title, body, labels=None):
+    pr = gh.create_pull(repo, base=base_branch, head=head_branch, title=title, body=body)
+    if labels:
+        gh.add_labels(repo, pr.number, labels)
 
-## Competitive Advantages
-1. **Agent-First Design:** Built specifically for AI agent workflows
-2. **MCP Integration:** Leverages emerging standard for AI tool use
-3. **Zero-Config:** Drop-in skill vs complex YAML configurations
-4. **Process Compliance:** Enforces labeling and review standards
+    # Reviewer assignment — CODEOWNERS ONLY. Do not hardcode usernames.
+    codeowners = gh.get_file(repo, ".github/CODEOWNERS", ref=base_branch) \
+        or gh.get_file(repo, "CODEOWNERS", ref=base_branch)
+    reviewers, team_reviewers = resolve_codeowners(codeowners, pr.changed_files)
 
-## Market Risks
-- GitHub rapidly expanding native AI features
-- Easy to replicate with GitHub Actions
-- Limited moat without network effects
+    if reviewers or team_reviewers:
+        gh.request_reviewers(repo, pr.number,
+                             reviewers=reviewers,
+                             team_reviewers=team_reviewers)
+    else:
+        # Fall back to repository default review team from settings,
+        # NOT a hardcoded individual.
+        default_team = gh.get_repo_setting(repo, "default_review_team")
+        if default_team:
+            gh.request_reviewers(repo, pr.number, team_reviewers=[default_team])
 
-## Chatter and Demand Signals
-
-## Validated Pain Points
-- **Context Switching:** Widely reported as a major productivity drag for developers (specific 73% "GitHub Survey 2023" figure unverified)
-- **PR Process Confusion:** Common complaints about unclear formatting and reviewer assignment
-- **Agent Handoff Friction:** Growing need for standardized agent-to-human workflows
-
-## Demand Indicators
-- "Automation" + "pull request" search interest appears to be rising (specific 23% YoY figure unverified)
-- Developer productivity tooling continues to attract strong search interest (40%+ growth figure unverified)
-- Increasing adoption of AI coding assistants across enterprises
-
-## Emotional Drivers
-- **Frustration:** "won't second-guess the process"
-- **Efficiency:** "completely frictionless pipeline"
-- **Reliability:** "executes perfectly on the first try"
-
-## Factual Validation and Evidence Gaps
-
-## Verified Claims
-✅ GitHub API structure for PR creation is accurate
-✅ Conventional commit format follows standards
-✅ User `midnghtsapphire` exists on GitHub
-✅ Branch naming conventions align with GitHub defaults
-
-## Critical Unknowns
-❌ **`github-mcp-server` existence** - No public repository or documentation found
-❌ **Market size for agent PR automation** - Requires primary research
-❌ **Competitive pricing data** - Need access to SaaS pricing tools
-❌ **Repository label existence** - `agent-generated` and `wr` labels unverified
-
-## Required Validation
-1. Confirm MCP server deployment and API compatibility
-2. Survey 20+ teams using AI agents about workflow pain
-3. Analyze GitHub Marketplace for pricing benchmarks
-4. Verify repository structure and permissions
-
-## Build Requirements and Acceptance Gates
-
-## Core Requirements
-1. **Skill Implementation**
-   - Add to agent system prompt or Copilot Skills library
-   - Support both `wr/` and `sandbox/` directory workflows
-   - Implement conventional commit formatting
-
-2. **Infrastructure Setup**
-   ```yaml
-   # Required components
-   - github-mcp-server with create_pull_request capability
-   - Repository labels: agent-generated, wr
-   - CODEOWNERS file for reviewer assignment
-   - GitHub API authentication (PAT or App)
-   ```
-
-3. **Error Handling**
-   - Graceful degradation for API failures
-   - Retry logic for rate limits
-   - Fallback reviewer assignment
-
-## Acceptance Criteria
-- [ ] Agent creates PR with correct branch naming
-- [ ] Commits follow conventional format
-- [ ] Labels automatically applied
-- [ ] Reviewer assigned via CODEOWNERS
-- [ ] PR link returned to agent
-- [ ] Error messages for common failures
-- [ ] Telemetry tracking PR creation success rate
-
-## Testing Requirements
-1. **Unit Tests:** Validate payload structure and API calls
-2. **Integration Tests:** End-to-end PR creation flow
-3. **Load Tests:** Verify performance under concurrent requests
-4. **User Acceptance:** Beta test with 3-5 internal teams
-
-## Code Review Agent Packet
-
-## For Bito AI
+    return pr
 ```
-Review focus: Verify GitHub API integration and error handling
-Key areas:
-1. Authentication token management
-2. API rate limit handling
-3. Payload validation before submission
-4. Retry logic implementation
+# Global fallback
+*                    @org/platform-team
+
+# Path-specific ownership
+/wr/                 @org/wr-team
+/skills/             @org/skills-team
+*.md                 @org/docs-team
 ```
 
-## For OpenRouter
-```
-Security review required:
-- Check for exposed credentials in skill prompts
-- Validate input sanitization for PR titles/bodies
-- Ensure branch names prevent injection attacks
-- Review permission scopes for GitHub tokens
-```
+### Reviewer Resolution Algorithm
 
-## For Coderabbit
-```
-Architecture review:
-1. Is the MCP server integration properly abstracted?
-2. Are there unit tests for the PR creation logic?
-3. Is the configuration externalized from code?
-4. Does error handling cover all GitHub API responses?
+```python
+def resolve_reviewers(changed_files, codeowners_rules):
+    reviewers = set()
+    for file_path in changed_files:
+        for pattern, owners in reversed(codeowners_rules):
+            if matches(pattern, file_path):
+                reviewers.update(owners)
+                break  # Last matching rule wins
+    return list(reviewers)
 ```
 
-## For Ralph Loop
-```
-Performance considerations:
-- Implement connection pooling for GitHub API calls
-- Add caching for repository metadata
-- Use async/await for non-blocking operations
-- Monitor memory usage during bulk PR creation
-```
-
-## Automatic Fix and Commit Queue
-
-## Critical Fixes
-
-### 1. Replace Hardcoded Reviewer
-**File:** `skills/pr_accelerator.md`
-```diff
-- You MUST assign `midnghtsapphire` as the sole reviewer
-+ You MUST request review from the team specified in CODEOWNERS
-```
-**Commit:** `fix(skills): use CODEOWNERS for reviewer assignment instead of hardcoded user`
-
-### 2. Add CODEOWNERS File
-**File:** `.github/CODEOWNERS`
-```
-# Auto-assign reviewers for agent work
-/wr/       @revvel/wr-reviewers
-/sandbox/  @revvel/sandbox-reviewers
-```
-**Commit:** `feat(github): add CODEOWNERS for automated reviewer assignment`
-
-### 3. Ensure Required Labels
-**File:** `.github/workflows/ensure-labels.yml`
-```yaml
-name: Ensure PR Labels
-on:
-  repository_dispatch:
-    types: [setup-labels]
-jobs:
-  create-labels:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/github-script@v6
-        with:
-          script: |
-            const labels = [
-              {name: 'agent-generated', color: '0366d6'},
-              {name: 'wr', color: 'f9d0c4'}
-            ];
-            for (const label of labels) {
-              try {
-                await github.rest.issues.createLabel({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  ...label
-                });
-              } catch (e) {
-                if (e.status !== 422) throw e;
-              }
-            }
-```
-**Commit:** `feat(ci): add workflow to ensure required PR labels exist`
-
-### 4. Add Usage Telemetry
-**File:** `src/telemetry/pr-metrics.ts`
-```typescript
-export async function trackPRCreation(payload: PRPayload): Promise<void> {
-  await analytics.track({
-    event: 'pr_created',
-    properties: {
-      agent_id: payload.agent_id,
-      directory: payload.directory,
-      labels: payload.labels,
-      timestamp: new Date().toISOString()
-    }
-  });
-}
-```
-**Commit:** `feat(telemetry): add PR creation tracking for usage analytics`
-
-### 5. Configuration System
-**File:** `config/pr-accelerator.json`
-```json
-{
-  "reviewers": {
-    "fallback": ["@revvel/core-team"]
-  },
-  "branch_patterns": {
-    "wr": "wr/update-",
-    "sandbox": "sandbox/",
-    "feature": "feat/"
-  },
-  "required_labels": {
-    "all": ["agent-generated"],
-    "wr": ["wr"],
-    "sandbox": ["experimental"]
-  }
-}
-```
-**Commit:** `feat(config): add flexible configuration for PR automation`
-
-## Labels to Apply
-
-## Required Labels
-- `agent-generated` - All PRs created by this skill
-- `wr` - When changes are in `/wr` directory
-- `needs-market-validation` - Missing competitive analysis
-- `infrastructure-dependency` - Requires MCP server verification
-- `revenue-opportunity` - High monetization potential
-
-## Risk Labels
-- `single-point-of-failure` - Hardcoded reviewer issue
-- `unverified-tooling` - MCP server existence unknown
-- `missing-telemetry` - No usage tracking implemented
-
-## Process Labels
-- `skill-addition` - New agent capability
-- `documentation-needed` - Requires setup guide
-- `beta-testing` - Needs user validation
----
-
-**WR Status:** 🟡 In Progress  
-
-## Issue Context
-
-### Output Type (required)
-
-production-app
-
-### PDF pipeline batch
-
-None
-
-### Research Mode
-
-None
-
-### Delivery Mode
-
-None
-
-### Lifecycle Mode
-
-None
-
-### Commercial Mode
-
-None
-
-### Summary
-
-_No response_
-
-### Objective
-
-_No response_
-
-### Required Bundle
-
-_No response_
-
-### Definition of Done
-
-_No response_
-
-### Do Not Under-Scope
-
-_No response_
-
-### Explicit Exclusions
-
-_No response_
-
-### Delivery Shape
-
-None
-
-### Expected Scope
-
-_No response_
-
-### Validation Expectations
-
-_No response_
-
-### Blocker Rule
-
-Here is the fully refined **PR Accelerator Skill** for your fleet. This version embeds the exact instructions they need to auto-assign the review and apply the correct tags, creating a completely frictionless pipeline from task completion to review queue.
-
-You can drop this directly into your agent's system prompt or save it as a custom Copilot Skill.
-
-### The Agent PR Accelerator Skill
-
-**Skill Name:** `Ship WR/Sandbox PR`
-**Description:** A frictionless SOP for agents to immediately package, push, and label their Weekly Research or sandbox outputs for human review.
-
-**Skill Instructions:**
-
-> "When you have completed your designated Weekly Research (`wr/`) or sandbox task, you are authorized to immediately package and ship your work for review. Use the `github-mcp-server` to execute the following sequence:
-> 1. **Branch:** Checkout a new branch from `main`. Use a standardized prefix (e.g., `wr/update-<topic>` or `sandbox/<experiment-name>`).
-> 2. **Commit:** Stage all modifications within the `wr/` or `sandbox/` directory. Create a commit using conventional formatting (e.g., `docs(wr): add compliance rulebook context`).
-> 3. **Pull Request Construction:** Use the `create_pull_request` tool with the following parameters:
-> * **Title:** Clear, 5-7 word summary of the update.
-> * **Body:** A bulleted, 2-point TL;DR of the exact changes made.
-> * **Reviewers:** You MUST assign `midnghtsapphire` as the sole reviewer.
-> * **Labels:** You MUST apply the `agent-generated` label. If the work is in the `wr/` folder, also apply the `wr` label.
-> 
-> 
-> 4. **Confirmation:** Once successful, report back with the PR link."
-> 
-> 
-
----
-
-### The MCP Tool Payload (Behind the Scenes)
-
-When the agent follows the prompt above, this is the exact payload structure they will generate to hit the GitHub API via your MCP server. Having the labels and reviewers explicitly stated in the prompt ensures the `draft` or `create` command executes perfectly on the first try.
-
-```json
-{
-  "title": "docs(wr): update [Topic] research",
-  "body": "- Added new findings regarding [Topic].\n- Formatted markdown to pass wr-lint checks.",
-  "head": "wr/update-[topic]",
-  "base": "main",
-  "reviewers": [
-    "midnghtsapphire"
-  ],
-  "labels": [
-    "agent-generated",
-    "wr"
-  ]
-}
-
-```
-
-With this skill active, your agents won't second-guess the process—they will just write the code, run the linter, open the PR, ping you for review, and move on to the next task in the queue.
-
-### Acknowledgements
-
-- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [ ] Explicitly requested secondary items should not be silently deferred.
-- [ ] If the PR is partial, the blocker must be documented.
-- [ ] The PR should reflect the WR's required bundle and definition of done.
-
-## Repository Metadata
-
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
-
-## Research Checklist
-
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis
-- [ ] Domain strategy
-- [ ] Monetization
-
-## Executive Summary
-
-N/A — pending Jules refinement
-
-## Step 1A — Product/Output Selections
-
-N/A — pending Jules refinement
-
-## Step 2 — Deep Web Research
-
-N/A — pending Jules refinement
-
-## Step 3 — Requirements
-
-N/A — pending Jules refinement
-
-## Recommendations
-
-N/A — pending Jules refinement
-
-## Risks
-
-N/A — pending Jules refinement
+## PR Creation Flow
+
+1. Detect changed files in the branch
+2. Parse CODEOWNERS file
+3. Resolve reviewers dynamically (see algorithm above)
+4. Create pull request via GitHub API
+5. Request reviews from resolved reviewers
+6. Apply appropriate labels based on file paths
+
+## Configuration
+
+No hardcoded reviewer names are permitted in this skill. All reviewer
+assignments MUST come from the CODEOWNERS file to ensure:
+
+- ✅ Team scaling without code changes
+- ✅ Proper rotation and load balancing
+- ✅ Single source of truth for ownership
+- ✅ Compliance with repository governance policies
+
+## Fallback Behavior
+
+If no CODEOWNERS file exists or no patterns match the changed files:
+1. Log a warning
+2. Fall back to the repository default reviewers (configured at repo level)
+3. Do NOT hardcode any specific username
+
+## Testing
+
+Test cases must verify:
+- Multiple reviewers are correctly resolved from CODEOWNERS
+- Reviewer rotation works across different file paths
+- Team-based assignments are honored
+- No hardcoded usernames appear in the resolved reviewer list
+
+## References
+
+- [GitHub CODEOWNERS documentation](https://docs.github.com/en/repositories/managing-your-repositories-settings-and-features/customizing-your-repository/about-code-owners)
+- Related issue: #16060
+- Original PR: #15089
+## Testing
+- Unit test `resolve_codeowners` with multiple patterns and last-match semantics.
+- Integration test: open a PR touching files owned by different teams and confirm all owners are requested.
+- Regression test: assert no test fixture or config contains a hardcoded reviewer username.
+
+## Change Log
+- Removed hardcoded `midnghtsapphire` reviewer assignment.
+- Reviewer resolution is now driven exclusively by CODEOWNERS with a team-based fallback.
