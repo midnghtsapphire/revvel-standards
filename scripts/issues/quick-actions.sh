@@ -137,6 +137,132 @@ issue_today() {
     --jq ".[] | select(.createdAt | startswith(\"$today\")) | \"#\(.number): \(.title)\""
 }
 
+# Batch close issues with a reason
+# Usage: issue_batch_close <reason> <issue>...
+#   reason: "not_planned" (not needed right now) or "duplicate"
+# Example: issue_batch_close not_planned 100 101 102
+#          issue_batch_close duplicate 200 201
+issue_batch_close() {
+  local reason="$1"
+  shift
+
+  if [ -z "$reason" ] || [ $# -eq 0 ]; then
+    echo -e "${RED}Usage: issue_batch_close <not_planned|duplicate> <issue>...${NC}"
+    echo -e "  not_planned  — Close as 'not needed right now'"
+    echo -e "  duplicate    — Close as duplicate"
+    return 1
+  fi
+
+  if [ "$reason" != "not_planned" ] && [ "$reason" != "duplicate" ]; then
+    echo -e "${RED}Invalid reason '$reason'. Use 'not_planned' or 'duplicate'.${NC}"
+    return 1
+  fi
+
+  local label_text
+  if [ "$reason" = "not_planned" ]; then
+    label_text="not planned"
+  else
+    label_text="duplicate"
+  fi
+
+  echo -e "${YELLOW}⚠️  About to close ${#@} issue(s) as '$label_text' in $REPO_OWNER/$REPO_NAME${NC}"
+  echo -e "${YELLOW}   Issues: $*${NC}"
+  read -r -p "Proceed? (y/N) " confirm
+  if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
+    echo -e "${CYAN}Cancelled.${NC}"
+    return 0
+  fi
+
+  local closed=0
+  local failed=0
+  for issue in "$@"; do
+    if gh issue close "$issue" \
+      --repo "$REPO_OWNER/$REPO_NAME" \
+      --reason "$reason" 2>/dev/null; then
+      echo -e "${GREEN}  ✓ Closed #$issue ($label_text)${NC}"
+      closed=$((closed + 1))
+    else
+      echo -e "${RED}  ✗ Failed to close #$issue${NC}"
+      failed=$((failed + 1))
+    fi
+  done
+
+  echo ""
+  echo -e "${GREEN}Done: $closed closed${NC}$([ "$failed" -gt 0 ] && echo -e ", ${RED}$failed failed${NC}")"
+}
+
+# Select all assigned open issues and batch close them
+# Usage: issue_close_all_assigned <reason>
+#   reason: "not_planned" or "duplicate"
+# Lists your assigned open issues, confirms, then closes them all.
+issue_close_all_assigned() {
+  local reason="${1:-not_planned}"
+
+  if [ "$reason" != "not_planned" ] && [ "$reason" != "duplicate" ]; then
+    echo -e "${RED}Invalid reason '$reason'. Use 'not_planned' or 'duplicate'.${NC}"
+    return 1
+  fi
+
+  echo -e "${CYAN}Fetching your assigned open issues from $REPO_OWNER/$REPO_NAME...${NC}"
+
+  local issues
+  issues=$(gh issue list \
+    --repo "$REPO_OWNER/$REPO_NAME" \
+    --assignee "@me" \
+    --state open \
+    --limit 500 \
+    --json number,title \
+    --jq '.[] | "\(.number)\t\(.title)"')
+
+  if [ -z "$issues" ]; then
+    echo -e "${GREEN}No open assigned issues found. Nothing to do.${NC}"
+    return 0
+  fi
+
+  local count
+  count=$(echo "$issues" | wc -l)
+
+  echo -e "${BLUE}Found $count open assigned issue(s):${NC}"
+  echo "$issues" | while IFS=$'\t' read -r num title; do
+    echo -e "  #$num: $title"
+  done
+
+  local label_text
+  if [ "$reason" = "not_planned" ]; then
+    label_text="not planned"
+  else
+    label_text="duplicate"
+  fi
+
+  echo ""
+  echo -e "${YELLOW}⚠️  This will close ALL $count issue(s) as '$label_text'.${NC}"
+  read -r -p "Proceed? (y/N) " confirm
+  if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
+    echo -e "${CYAN}Cancelled.${NC}"
+    return 0
+  fi
+
+  local numbers
+  numbers=$(echo "$issues" | cut -f1)
+
+  local closed=0
+  local failed=0
+  for num in $numbers; do
+    if gh issue close "$num" \
+      --repo "$REPO_OWNER/$REPO_NAME" \
+      --reason "$reason" 2>/dev/null; then
+      echo -e "${GREEN}  ✓ Closed #$num ($label_text)${NC}"
+      closed=$((closed + 1))
+    else
+      echo -e "${RED}  ✗ Failed to close #$num${NC}"
+      failed=$((failed + 1))
+    fi
+  done
+
+  echo ""
+  echo -e "${GREEN}Done: $closed closed${NC}$([ "$failed" -gt 0 ] && echo -e ", ${RED}$failed failed${NC}")"
+}
+
 # Bulk label bugs
 issue_label_bugs() {
   echo -e "${RED}Auto-labeling bug-related issues...${NC}"
@@ -199,6 +325,8 @@ Usage:
   issue_create_with_pr <title> <body>       - Create issue + branch
   issue_search <query>                      - Search issues
   issue_batch_label <label> <issue>...      - Apply label to multiple issues
+  issue_batch_close <reason> <issue>...     - Batch close issues (not_planned | duplicate)
+  issue_close_all_assigned [reason]         - Select all assigned issues and close them
   issue_metrics                             - Show statistics
   issue_by_label <label>                    - Find issues by label
   issue_my                                  - Show my assigned issues
@@ -211,6 +339,10 @@ Examples:
   issue_create_quick "Bug" "API errors" "The /api/users endpoint returns 500"
   issue_search "authentication"
   issue_batch_label "priority:high" 123 456 789
+  issue_batch_close not_planned 100 101 102   # Close as "not needed right now"
+  issue_batch_close duplicate 200 201         # Close as duplicate
+  issue_close_all_assigned not_planned        # Select all assigned, close as not planned
+  issue_close_all_assigned duplicate          # Select all assigned, close as duplicate
   issue_metrics
   issue_export issues-2026-04-30.csv
 

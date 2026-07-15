@@ -1093,3 +1093,62 @@ BRANCH="issue-$ISSUE-$(echo "$title" | tr '[:upper:]' '[:lower:]' | tr -cd '[:al
 If the pattern changes, update all three locations to maintain consistency.
 
 ---
+
+## 9. Batch Close Operations
+
+Bulk-close functionality for the GitHub Issues assigned view (`https://github.com/issues/assigned`).
+Two CLI functions in `scripts/issues/quick-actions.sh` support "select all → close" workflows:
+
+### 9.1. `issue_batch_close` — Close Specific Issues
+
+Close a list of issue numbers with a chosen reason.
+
+```bash
+# Close as "not needed right now"
+issue_batch_close not_planned 100 101 102
+
+# Close as "duplicate"
+issue_batch_close duplicate 200 201
+```
+
+**Supported reasons:**
+| Reason | GitHub state_reason | When to use |
+|--------|-------------------|-------------|
+| `not_planned` | not_planned | Issue is not needed right now |
+| `duplicate` | duplicate | Issue is a duplicate of another |
+
+A confirmation prompt is shown before any issues are closed.
+
+### 9.2. `issue_close_all_assigned` — Select All Assigned Issues and Close
+
+Fetches all open issues assigned to you, displays them, and closes them
+after confirmation.
+
+```bash
+# Close all assigned issues as "not needed right now"
+issue_close_all_assigned not_planned
+
+# Close all assigned issues as "duplicate"
+issue_close_all_assigned duplicate
+```
+
+### 9.3. Step-by-Step: Batch Close from the Assigned View
+
+1. **Open your terminal.**
+2. **Source the quick-actions script** (or add to your shell profile):
+   ```bash
+   source scripts/issues/quick-actions.sh
+   ```
+3. **To close specific issues** — run `issue_batch_close` with the reason and
+   issue numbers:
+   ```bash
+   issue_batch_close not_planned 16100 16101 16102
+   ```
+4. **To select all and close** — run `issue_close_all_assigned`:
+   ```bash
+   issue_close_all_assigned not_planned
+   ```
+5. **Confirm** when prompted — type `y` and press Enter.
+6. **Check results** — each closed issue prints a ✓ or ✗ status line.
+
+---
