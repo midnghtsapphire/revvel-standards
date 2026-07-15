@@ -1,38 +1,51 @@
 {
   "schema": "fleet-controller-ingestion/v1",
-  "generated_at": "2026-07-15T20:54:00.596Z",
+  "generated_at": "2026-07-15T21:14:31.239Z",
   "needs_healing": [
     {
-      "id": 29448420326,
+      "id": 29449809951,
       "name": "Perplexity Research Agent",
       "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448420326",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29449809951",
       "health": "stalled",
       "reassign_count": 2,
       "tried_models": [
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "no progress for 16m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29448420146,
+      "id": 29449805872,
       "name": "Perplexity Research Agent",
       "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448420146",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29449805872",
       "health": "stalled",
       "reassign_count": 2,
       "tried_models": [
         "anthropic/claude-opus-4.8",
         "anthropic/claude-opus-4.7"
       ],
-      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29448419696,
+      "id": 29449774210,
       "name": "Perplexity Research Agent",
       "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448419696",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29449774210",
+      "health": "stalled",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "no progress for 17m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29449671641,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29449671641",
       "health": "stalled",
       "reassign_count": 2,
       "tried_models": [
@@ -42,10 +55,36 @@
       "reason": "no progress for 18m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29448418911,
+      "id": 29448877589,
       "name": "Perplexity Research Agent",
       "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448418911",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448877589",
+      "health": "stalled",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "no progress for 18m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448801396,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448801396",
+      "health": "stalled",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "no progress for 18m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448798913,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448798913",
       "health": "stalled",
       "reassign_count": 2,
       "tried_models": [
@@ -55,10 +94,62 @@
       "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
     },
     {
-      "id": 29448416516,
+      "id": 29448791058,
       "name": "Perplexity Research Agent",
       "path": ".github/workflows/perplexity-research-agent.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448416516",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448791058",
+      "health": "stalled",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448775005,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448775005",
+      "health": "stalled",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448771064,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448771064",
+      "health": "stalled",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448756884,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448756884",
+      "health": "stalled",
+      "reassign_count": 2,
+      "tried_models": [
+        "anthropic/claude-opus-4.8",
+        "anthropic/claude-opus-4.7"
+      ],
+      "reason": "no progress for 20m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448752253,
+      "name": "Perplexity Research Agent",
+      "path": ".github/workflows/perplexity-research-agent.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29448752253",
       "health": "stalled",
       "reassign_count": 2,
       "tried_models": [
