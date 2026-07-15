@@ -1,224 +1,198 @@
-# WR: Reclaiming Your Skin: How Contour Light Red Light Therapy Can Diminish Post-Pregnancy Stretch Marks #tool #app
+# WR: Reclaiming Your Skin — How Contour Light / Red Light Therapy Can Help With Stretch Marks
 
 **Issue:** #15279
-**Repository:** midnghtsapphire/revvel-standards
-**Created:** 2026-07-06
-**Researcher:** Copilot
-**Research Date:** 2026-07-06
-**WR Status:** 🟡 In Progress
+**Status:** Draft — Compliance Review Required
+**Owner:** Product / Legal
+**Last Updated:** 2025
 
-## Issue Context
+---
 
-Source article: https://coastalmedicalandwellness.com/post/red-light-therapy-stretch-marks-after-pregnancy
+## 1. Opportunity Summary
 
-The requester references an article from Coastal Medical & Wellness about how Contour Light red light therapy can help diminish post-pregnancy stretch marks. The `#tool` and `#app` hashtags signal a request to build a digital product — a companion web/mobile application that helps postpartum users discover, follow, and track red light therapy protocols for stretch mark reduction.
+Postpartum and body-conscious consumers are actively seeking non-invasive, at-home solutions for stretch marks. Red light therapy (RLT) and contour light devices are a growing wellness category with strong search demand, high AOV affiliate products, and a receptive audience willing to pay for educational content, tracking tools, and curated product recommendations.
 
-## Repository Metadata
+**Revenue vectors:**
+- Affiliate commissions on RLT devices ($200–$2,000 AOV)
+- Sponsored content from device manufacturers
+- Premium subscription (progress tracking, protocol guides)
+- Digital products (e-books, protocol PDFs)
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+**Target:** Contribute $2k–$5k/month toward the Phase 1 $10k/month goal within 90 days.
 
-## Research Checklist
+---
 
-- [x] Deep market research
-- [x] BOM
-- [x] Community chatter
-- [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
-- [x] Domain strategy
-- [x] Monetization
-- [x] Every statistic/percentage cited with a source link or labeled as an estimate
+## 2. Product Concept
 
-## Executive Summary
+A content-first web property + companion progress tracking tool that helps users:
+- Understand what stretch marks are and why RLT may help
+- Compare devices (wavelength, irradiance, coverage, price)
+- Log sessions and track visual progress over time
+- Access educational protocols (frequency, duration, adjuncts)
 
-Post-pregnancy stretch marks affect an estimated 50–90% of pregnant women ([NCBI, 2017](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5325738/)), making this one of the largest underserved cosmetic concerns in the postpartum wellness space. Red light therapy (RLT) — particularly devices like the Contour Light system — is clinically supported for collagen stimulation and skin rejuvenation, positioning it as a compelling non-invasive option for stretch mark reduction.
+---
 
-The global red light therapy market was valued at USD 533.8 million in 2025 and is projected to reach USD 1.13 billion by 2033 at a CAGR of 9.8% ([Research and Markets, 2025](https://www.researchandmarkets.com/reports/6241239/red-light-therapy-market-size-share-and-trends)). The stretch marks treatment market sits at USD 2.51 billion in 2024, expected to reach USD 3.57 billion by 2031 at a CAGR of approximately 4.5% ([Verified Market Research, 2024](https://www.verifiedmarketresearch.com/product/stretch-marks-treatment-market/)).
+## 3. Content Pillars
 
-The proposed product is a **postpartum red light therapy companion app** — a freemium web and mobile tool that provides:
+1. Science explainers (photobiomodulation basics, wavelengths, mechanisms)
+2. Product reviews and comparisons
+3. Protocols and routines (educational, non-prescriptive)
+4. Postpartum recovery context (lifestyle, not medical advice)
+5. Progress case studies (user-submitted, consented)
 
-- Protocol guides based on Contour Light / RLT session parameters
-- Session tracking and progress logging
-- Before/after photo journaling
-- Affiliate-linked device and skincare product recommendations
-- Educational content on postpartum skin recovery
+---
 
-This is a well-differentiated niche in the crowded wellness app space, with strong affiliate monetization potential (Joovv, Mito Red, CurrentBody) and clear SEO keyword targets in the postpartum health vertical.
+## 4. Traffic Strategy
 
-## Step 1A — Product/Output Selections
+- SEO: long-tail keywords ("red light therapy for stretch marks postpartum", "contour light vs joovv", etc.)
+- Pinterest: high-visual before/after and infographic pins
+- YouTube shorts + TikTok: 30–60s explainers
+- Email list from lead magnet (protocol PDF)
 
-**Output Type:** Web + mobile-optimized app (Next.js PWA or React Native)
+---
 
-**Delivery Shape:** Freemium SaaS with affiliate revenue layer
+## 5. Monetization Stack
 
-**Primary Persona:** Postpartum women (0–18 months postpartum) seeking non-invasive stretch mark reduction at home
+| Channel | Est. Month 3 | Est. Month 6 |
+|---|---|---|
+| Affiliate (devices) | $1,500 | $4,000 |
+| Affiliate (adjuncts: oils, creams) | $300 | $800 |
+| Sponsored posts | $0 | $1,500 |
+| Digital products | $200 | $700 |
+| **Total** | **$2,000** | **$7,000** |
 
-**Secondary Persona:** Wellness clinics and med-spas offering Contour Light sessions who want a patient-facing tracking tool
+---
 
-**MVP Features:**
+## 6. Tech Stack
 
-1. Session timer and protocol wizard (frequency, duration, wavelength guidance for 630–850 nm)
-2. Progress journal with photo upload and timestamping
-3. Symptom/skin condition tracker
-4. Curated resource library (articles, clinical summaries)
-5. Affiliate product recommendations (devices, skincare serums)
-6. Email/push reminders for session scheduling
+- Next.js + MDX for content
+- Vercel hosting
+- Convertkit / Beehiiv for email
+- Polar.sh for digital product checkout (aligns with $10M funding strategy)
+- Optional: lightweight progress tracker (see §7)
 
-**Phase 2 Features:**
+---
 
-- AI-powered skin analysis from uploaded photos
-- Telehealth consultation booking (upsell to dermatologists/clinicians)
-- Community forum for postpartum women
-- Subscription tier unlocking advanced analytics and personalized protocols
+## 7. Progress Tracker (Optional Feature)
 
-## Step 2 — Deep Web Research
+A lightweight tool where users can log sessions and upload photos to visualize change over time.
 
-### Market Size
+**Original design (rejected):** client-side-only storage + medical disclaimers, framed as "not subject to HIPAA."
 
-| Market | 2024/2025 Value | Forecast | CAGR | Source |
-| --- | --- | --- | --- | --- |
-| Global Red Light Therapy (devices + services) | USD 533.8M (2025) | USD 1.13B by 2033 | 9.8% | [Research and Markets, 2025](https://www.researchandmarkets.com/reports/6241239/red-light-therapy-market-size-share-and-trends) |
-| Stretch Marks Treatment (all modalities) | USD 2.51B (2024) | USD 3.57B by 2031 | ~4.5% | [Verified Market Research, 2024](https://www.verifiedmarketresearch.com/product/stretch-marks-treatment-market/) |
-| Postpartum Wellness Apps (broader segment) | USD 315M (2024) | Growing at ~9% YoY (estimate) | ~9% | Estimate — needs postpartum-wellness-app market source (current link is for stretch marks market) |
+**Why rejected — see §8.**
 
-### Competitor Analysis
+---
 
-| Competitor | Type | Pricing | Key Features | Gap |
-| --- | --- | --- | --- | --- |
-| **Joovv App** | Device companion (iOS/Android) | Free with Joovv device purchase ($1,099–$1,695+ per panel) | Session timer, recovery+ pulsed mode, usage logs | Locked to Joovv hardware; no postpartum-specific protocols |
-| **Mito Red Light App** | Device companion (higher-end models only) | Free with MitoPRO X device ($449+) | Touchscreen/app session control | No standalone app, no stretch mark guidance |
-| **LightpathLED** | Device brand (no dedicated companion app) | $300–$1,000+ per device | Wavelength customization | No app; no postpartum content |
-| **Joanna Vargas Skincare (skin tracking apps)** | Standalone skin tracker | ~$9.99/month (estimate) | Photo journaling, skincare routine logs | Not RLT-focused, no stretch mark protocols |
-| **Glow Nurture / Ovia Pregnancy** | Postpartum tracking | Free / $4.99/month | Health journaling, milestone tracking | No red light / photobiomodulation integration |
-| **Contour Light (manufacturer)** | B2B clinic device | Commercial licensing (clinic-grade hardware, price on request) | Professional 635 nm + 880 nm panels, FDA-cleared | No consumer-facing companion app; gap in direct-to-consumer |
+## 8. Regulatory & Compliance Framework
 
-**Key Opportunity:** No standalone, device-agnostic red light therapy companion app exists for the postpartum stretch mark use case. Joovv and Mito Red lock apps to their own hardware. A device-agnostic tracker with postpartum protocol content fills a clear whitespace.
+> **Status: BLOCKING.** Tracker feature and any collection of user health inputs are on hold pending completion of the actions in §8.5. Content-only publishing (no user data collection) may proceed.
 
-### SEO Keyword Targets
+Earlier drafts of this WR conflated three separate regulatory concerns and attempted to use disclaimers and client-side storage as a substitute for compliance. That approach is legally insufficient and has been removed. The correct framing separates each regime and treats them as **independent** obligations.
 
-| Keyword | Est. Monthly Searches | Commercial Intent | Notes |
-| --- | --- | --- | --- |
-| red light therapy stretch marks | 1K–10K | High | Core target; strong affiliate conversion |
-| postpartum stretch mark treatment | 1K–10K | High | Postpartum niche |
-| red light therapy app | 100–1K | Medium | App store + web discovery |
-| does red light therapy help stretch marks | 1K–10K | Informational → High | Blog entry point |
-| at-home red light therapy for stretch marks | 100–1K | High | Device affiliate |
-| best red light therapy for postpartum skin | 100–1K | High | Review content |
-| stretch mark removal app | 100–1K | Medium-High | Direct competitor keyword |
+### 8.1 Three Independent Regulatory Regimes
 
-*Search volume estimates based on keyword category benchmarks; precise volumes require SEMrush or Google Keyword Planner verification.*
+| Regime | Triggered By | Mitigated By |
+|---|---|---|
+| **HIPAA** | Handling Protected Health Information (PHI) as a Covered Entity or Business Associate | Full administrative, physical, and technical safeguards — **not** disclaimers, **not** storage location |
+| **FDA SaMD** | Software that diagnoses, treats, cures, mitigates, or prevents disease | Scoping the product as wellness/educational; disclaimers; avoiding diagnostic claims |
+| **State privacy laws** (CCPA/CPRA, WA My Health My Data, etc.) | Collecting personal or consumer health data, even outside HIPAA | Privacy notices, consent, deletion rights, data minimization |
 
-### Domain Strategy
+These must be evaluated **separately**. Reducing FDA SaMD risk via disclaimers does **not** reduce HIPAA exposure. Client-side storage does **not** remove HIPAA applicability if PHI is being handled.
 
-- **Preferred domain:** `stretchmarklight.app` or `glowback.app` or `photontrack.app`
-- **Fallback:** `redlightstretchmarks.com` (exact-match SEO advantage)
-- **Registration cost:** ~$12–15/year (.com) or ~$20/year (.app)
-- **Vercel deployment:** Yes — Next.js PWA on Vercel, standard Revvel deployment pipeline
+### 8.2 PHI Classification — Honest Assessment
 
-### Community Chatter and Demand Signals
+The following inputs contemplated by the tracker are health data and, when linked to an identifiable individual, may constitute PHI or state-regulated consumer health data:
 
-- Reddit `r/postpartum`, `r/Mommit`, and `r/NewParents` regularly feature threads about stretch mark treatment; RLT is mentioned as an emerging at-home option alongside Bio-Oil and tretinoin (internal search audit, July 2026; representative thread: [r/postpartum "What helped your stretch marks?"](https://www.reddit.com/r/postpartum/))
-- Google Trends shows sustained search interest in "red light therapy stretch marks" over the past 12 months (internal estimate — verified via Google Trends UI, July 2026; exact volume requires Google Keyword Planner export for precision)
-- TikTok `#redlighttherapy` accumulates high engagement in the wellness category (exact view count unverified; TikTok Creative Center indicates "Beauty & Skincare" hashtags in the 500M–1B+ range as of mid-2026)
-- Med-spas offering Contour Light sessions report stretch marks as a leading indication for booking (sourced from the Coastal Medical & Wellness reference article linked in the issue; independent verification pending due to site access restriction)
+- Postpartum week / pregnancy status
+- Stretch mark severity ratings
+- Symptom notes
+- Body photographs
+- Session logs tied to a health goal
 
-## Step 3 — Requirements
+HIPAA applicability depends on whether we act as a **Covered Entity** or **Business Associate**. A direct-to-consumer wellness app is typically **not** a Covered Entity — but:
 
-### Functional Requirements
+- Any integration with a healthcare provider, insurer, or clearinghouse can pull us in as a Business Associate.
+- Even outside HIPAA, Washington's **My Health My Data Act**, CCPA/CPRA "sensitive personal information" rules, and similar state laws apply and carry private rights of action.
+- Encryption and client-side storage do **not** change classification. They are controls, not exemptions.
 
-1. **User Onboarding**
-   - Intake: weeks postpartum, current stretch mark severity (self-reported 1–5), device owned (yes/no, brand)
-   - Generates a personalized 8–12 week protocol plan
+### 8.3 What Disclaimers Can and Cannot Do
 
-2. **Session Tracker**
-   - Timer with configurable duration (5–20 min) and area targeting (abdomen, hips, thighs, breasts)
-   - Logs timestamp, duration, area, device used
-   - Streak tracking and milestone celebrations
+**Disclaimers CAN:**
+- Support scoping the product as general wellness/educational for FDA SaMD purposes
+- Set user expectations about non-medical intent
+- Support consent and informed use
 
-3. **Progress Journal**
-   - Photo upload with body zone overlay guides
-   - Side-by-side comparison view (week 1 vs. week 8)
-   - Skin condition notes (redness, dryness, itching)
+**Disclaimers CANNOT:**
+- Exempt the app from HIPAA if PHI is handled
+- Exempt the app from state consumer health privacy laws
+- Substitute for BAAs, audit logging, access controls, or breach procedures
+- Reclassify PHI as non-PHI
 
-4. **Protocol Library**
-   - Pre-built protocols by device type (Contour Light 635+880nm, Joovv 660+850nm, generic)
-   - Evidence-based session frequency recommendations (3–5x/week)
-   - Plain-language science cards explaining photobiomodulation mechanism
+### 8.4 If HIPAA Applies — Minimum Required Program
 
-5. **Affiliate Store Integration**
-   - Curated product listings: at-home RLT panels, collagen serums, body oils
-   - Deep-linked affiliate URLs (Joovv, Mito Red, CurrentBody, Amazon Associates)
+If compliance review concludes HIPAA applies, the following must be in place **before** collecting any user health data:
 
-6. **Notifications**
-   - Push/email reminders for scheduled sessions
-   - Weekly progress summary email
+1. **Business Associate Agreements (BAAs)** with every downstream processor (hosting, storage, analytics, email, backups, AI/ML providers).
+2. **Administrative safeguards:** designated Privacy Officer and Security Officer, workforce privacy and security training, sanction policy, documented policies and procedures.
+3. **Technical safeguards:** access controls with unique user IDs, automatic logoff, encryption at rest and in transit, integrity controls, transmission security.
+4. **Audit controls:** comprehensive, tamper-evident audit logging of PHI access, modification, export, and deletion, with retention aligned to HIPAA requirements (minimum 6 years for related documentation).
+5. **Breach notification procedures:** documented process meeting HHS timelines (individuals within 60 days, HHS notification, media notification for breaches >500 individuals).
+6. **Risk analysis and risk management** documented and periodically updated.
+7. **Contingency plan:** backup, disaster recovery, emergency mode operation.
+8. **Physical safeguards** for any workstations or media handling PHI.
 
-### Non-Functional Requirements
+Encryption alone is not compliance. Storage location alone is not compliance.
 
-- Mobile-first responsive design (target audience primarily accesses wellness content on mobile devices)
-- WCAG 2.1 AA accessibility
-- HIPAA-adjacent privacy (no PHI collected; health data stored client-side or encrypted at rest)
-- Page load < 2s on mobile (Core Web Vitals compliant)
-- Photo upload size limit: 10 MB per image, EXIF stripped on upload
+### 8.5 Required Actions Before Tracker Launch
 
-### Tech Stack
+- [ ] **Formal Privacy Impact Assessment (PIA)** with legal/compliance covering HIPAA, FDA SaMD, CCPA/CPRA, WA MHMDA, GDPR (if EU traffic), and applicable state laws.
+- [ ] **Data classification review:** document, per data element, whether it is PHI, consumer health data, sensitive PI, or non-sensitive, and cite the legal basis for that classification.
+- [ ] **Regulatory scoping memo** signed by counsel stating whether HIPAA applies and why/why not.
+- [ ] **If HIPAA applies:** complete the §8.4 program *before* the tracker collects any user input.
+- [ ] **If HIPAA does not apply:** document the reasoning explicitly (e.g., "data is not linked to a Covered Entity relationship; we are a direct-to-consumer wellness publisher"), and implement the applicable state-law consumer health privacy program (notice, consent, DSAR handling, deletion, minimization, security).
+- [ ] **Separate FDA SaMD analysis:** confirm that content, features, and marketing claims stay within wellness/educational scope. Track any feature that could imply diagnosis, treatment, mitigation, prevention, or cure of disease and route to legal review.
+- [ ] **Vendor review:** identify every third party touching user inputs and confirm the correct contractual instruments are in place (BAA if HIPAA; DPA / CCPA service provider addendum otherwise).
+- [ ] **Incident response runbook** documented and tested.
 
-| Layer | Choice | Rationale |
-| --- | --- | --- |
-| Framework | Next.js 14+ (App Router) | Revvel standard stack |
-| Styling | Tailwind CSS | Revvel standard |
-| Database | Supabase (Postgres + Storage) | Auth, file storage, row-level security |
-| Auth | Supabase Auth | Email + magic link; no OAuth required for MVP |
-| Hosting | Vercel | Revvel standard |
-| Photo storage | Supabase Storage (S3-compatible) | EXIF stripping middleware |
-| Analytics | Plausible | Privacy-first, GDPR-safe |
-| Payments (Phase 2) | Stripe | Subscription billing |
+### 8.6 Interim Posture
 
-### Bill of Materials (BOM)
+Until §8.5 is complete:
 
-Estimated monthly recurring costs for a live MVP (low-traffic, < 1,000 active users):
+- Content publishing (articles, reviews, comparisons) may proceed.
+- Affiliate links may proceed.
+- Email capture may proceed **only** with a plain-language privacy notice, no collection of health inputs on signup, and standard marketing consent.
+- **The progress tracker, photo upload, symptom logging, and any health-data intake are on hold.**
+- Marketing copy must not make diagnostic, treatment, or medical-outcome claims.
 
-| Service | Tier | Est. Monthly Cost | Notes |
-| --- | --- | --- | --- |
-| Vercel (hosting) | Hobby → Pro | $0–$20/month | Pro required once team collaboration needed |
-| Supabase (DB + Auth + Storage) | Free → Pro | $0–$25/month | Free tier: 500 MB DB, 1 GB storage; Pro at scale |
-| Domain (.app or .com) | Annual | ~$1.50/month amortized | ~$12–20/year |
-| Plausible Analytics | Starter | $9/month | Privacy-first; GDPR-safe |
-| **MVP Total** | | **~$10–$55/month** | Scales with user growth |
+### 8.7 Documentation Trail
 
-Phase 2 additions (> 1,000 users, subscription billing active):
+All compliance decisions — including a decision that HIPAA does *not* apply — must be documented, dated, and signed off. "We used disclaimers" and "we stored it client-side" are not acceptable entries in that record.
 
-| Service | Est. Monthly Cost |
-| --- | --- |
-| Stripe (payment processing) | 2.9% + $0.30 per transaction |
-| Supabase Pro | $25/month |
-| Vercel Pro | $20/month |
-| **Phase 2 Total** | ~$45–$60/month base + transaction fees |
+---
 
-## Recommendations
+## 9. Risks
 
-1. **Build MVP in 2–3 sprints**: Session tracker + protocol library + photo journal. Affiliate store can be static markdown in Sprint 1.
-2. **Launch on Product Hunt in the postpartum wellness category**: Strong community overlap with target persona.
-3. **SEO-first content strategy**: Publish 3–5 long-form articles targeting "does red light therapy help stretch marks" before launch to build organic traffic.
-4. **Affiliate partnership priority**: Apply to Joovv, Mito Red, and CurrentBody affiliate programs before launch. Combined commission rates estimated at 5–15% per device sale ($55–$250 per conversion).
-5. **Validate with Contour Light clinics**: Offer a free clinic-tier dashboard for med-spas using Contour Light hardware — creates B2B distribution channel and social proof.
-6. **HIPAA posture**: Avoid collecting clinical health data; frame the app as a wellness tracker, not a medical device, to stay out of FDA SaMD regulatory scope.
+| Risk | Likelihood | Impact | Mitigation |
+|---|---|---|---|
+| Regulatory action (HIPAA / state health privacy) | Medium | High | Complete §8.5 before any health data collection |
+| FDA SaMD reclassification | Low–Medium | High | Strict wellness/educational scoping; legal review of claims |
+| Affiliate program changes | Medium | Medium | Diversify across 3+ affiliate networks |
+| SEO algorithm shifts | Medium | Medium | Multi-channel traffic (Pinterest, YouTube, email) |
+| Content liability (medical claims) | Medium | High | Editorial review checklist; no outcome guarantees |
 
-## Dependencies
+---
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+## 10. Timeline
 
-## Risks
+- **Week 1–2:** Content architecture, first 10 pillar articles, legal scoping memo kickoff
+- **Week 3–4:** Launch site, affiliate integrations, email capture
+- **Week 5–8:** Scale content to 30 articles, Pinterest/YouTube distribution
+- **Week 9–12:** Evaluate whether to build tracker — **gated on §8.5 completion**
+- **Month 4–6:** Sponsored content outreach, digital product launch
 
-1. **Regulatory risk (low–medium):** If AI skin analysis feature (Phase 2) makes diagnostic claims, it may trigger FDA SaMD classification. Mitigation: frame all analysis as informational/educational; include medical disclaimer on every screen.
-2. **Content accuracy risk (medium):** Protocol guides must be evidence-based. Citing published photobiomodulation research (LLLT studies) and linking to peer-reviewed sources mitigates liability.
-3. **Affiliate dependency risk (low):** If Joovv or Mito Red change affiliate program terms, revenue impact is limited if multiple programs are enrolled. Mitigation: diversify to 4+ affiliate partners.
-4. **Photo privacy risk (medium):** Users uploading body photos require clear privacy policy, encrypted storage, and explicit consent UI. EXIF stripping on upload is mandatory.
-5. **Market timing risk (low):** RLT market is growing at 9.8% CAGR; postpartum wellness is trending. Risk is low, but monitor for new direct competitors quarterly.
+---
+
+## 11. Success Metrics
+
+- Month 3: $2k MRR, 15k monthly visitors, 2k email subscribers
+- Month 6: $7k MRR, 60k monthly visitors, 8k email subscribers
+- Month 12: $15k+ MRR contribution to Phase 2 goal
