@@ -143,15 +143,15 @@ issue_today() {
 # Example: issue_batch_close not_planned 100 101 102
 #          issue_batch_close duplicate 200 201
 issue_batch_close() {
-  local reason="$1"
-  shift
-
-  if [ -z "$reason" ] || [ $# -eq 0 ]; then
+  if [ $# -lt 2 ]; then
     echo -e "${RED}Usage: issue_batch_close <not_planned|duplicate> <issue>...${NC}"
     echo -e "  not_planned  — Close as 'not needed right now'"
     echo -e "  duplicate    — Close as duplicate"
     return 1
   fi
+
+  local reason="$1"
+  shift
 
   if [ "$reason" != "not_planned" ] && [ "$reason" != "duplicate" ]; then
     echo -e "${RED}Invalid reason '$reason'. Use 'not_planned' or 'duplicate'.${NC}"
