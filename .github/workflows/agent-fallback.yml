@@ -1,433 +1,150 @@
-name: Agent Fallback Handler
+name: Agent Fallback (OpenRouter → Devin)
+name: Agent Fallback Workflow
+
 on:
-  issues:
-    types:
-      - opened
-      - labeled
-  pull_request_target:
-    types:
-      - opened
-      - reopened
-      - ready_for_review
-      - labeled
-  workflow_call:
-    inputs:
-      task_description:
-        description: Description of the task to execute
-        required: false
-        type: string
-        default: ""
-      issue_number:
-        description: GitHub issue number
-        required: true
-        type: number
-      prefer_agent:
-        description: Preferred agent (openrouter, OpenHands, auto)
-        required: false
-        type: string
-        default: openrouter
-    outputs:
-      agent_used:
-        description: Which agent completed the task
-        value: ${{ jobs.execute.outputs.agent_used }}
-      success:
-        description: Whether the task completed successfully
-        value: ${{ jobs.execute.outputs.success }}
-      pr_url:
-        description: Pull request URL if created
-        value: ${{ jobs.execute.outputs.pr_url }}
   workflow_dispatch:
     inputs:
       issue_number:
-        description: Issue number to process
+        description: 'Issue number to process'
         required: true
-        type: number
-      prefer_agent:
-        description: Preferred agent (openrouter, OpenHands, auto)
-        required: false
         type: string
-        default: openrouter
-concurrency:
-  group: agent-fallback-${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number || github.run_id }}
-  cancel-in-progress: false
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
+      prefer_agent:
+        description: 'Preferred agent (OpenRouter, Devin, manual)'
+        required: false
+        default: 'OpenRouter'
+        type: string
+  issues:
+    types: [opened, labeled]
+
+jobs:
+  health_check:
+        description: 'Preferred agent (OpenRouter or Devin)'
+        description: 'Preferred agent (OpenRouter, Devin, manual)'
+        required: false
+        default: 'OpenRouter'
+        type: choice
+        options:
+          - OpenRouter
+          - Devin
+  issue_comment:
+    types: [created]
+          - manual
+
 jobs:
   health-check:
-    name: Check agent availability
     runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'workflow_dispatch' ||
-      inputs.issue_number ||
-      (github.event_name == 'issues' &&
-       github.event.issue.pull_request == null &&
-       ((github.event.action == 'opened' &&
-         (contains(github.event.issue.labels.*.name, 'agent-fallback') ||
-          contains(github.event.issue.labels.*.name, 'wr:code') ||
-          contains(github.event.issue.labels.*.name, 'wr:auto'))) ||
-        (github.event.action == 'labeled' &&
-         (github.event.label.name == 'agent-fallback' ||
-          github.event.label.name == 'wr:code' ||
-          github.event.label.name == 'wr:auto')))) ||
-      (github.event_name == 'pull_request_target' &&
-       github.event.pull_request.draft == false &&
-       (github.event.pull_request.author_association == 'MEMBER' ||
-        github.event.pull_request.author_association == 'OWNER' ||
-        github.event.pull_request.author_association == 'COLLABORATOR') &&
-       (github.event.action == 'opened' ||
-        github.event.action == 'reopened' ||
-        github.event.action == 'ready_for_review' ||
-        (github.event.action == 'labeled' && github.event.label.name == 'agent-fallback')))
     outputs:
-      OpenHands_available: ${{ steps.check.outputs.OpenHands_available }}
       openrouter_available: ${{ steps.check.outputs.openrouter_available }}
-      recommended_agent: ${{ steps.check.outputs.recommended_agent }}
+      devin_available: ${{ steps.check.outputs.devin_available }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
       - name: Check agent availability
         id: check
-        env:
-          OPENHANDS_API_KEY: ${{ secrets.OPENHANDS_API_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
-          # Check which agents are configured
-          OpenHands_AVAILABLE="false"
-          OPENROUTER_AVAILABLE="false"
-
-          if [ -n "${OPENHANDS_API_KEY}" ]; then
-            OpenHands_AVAILABLE="true"
-            echo "✅ OpenHands API key configured"
+          if [ -n "${{ secrets.OPENROUTER_API_KEY }}" ]; then
+        run: |
+          if [ -n "${{ secrets.OPENROUTER_API_KEY }}" ]; then
+            echo "openrouter_available=true" >> "$GITHUB_OUTPUT"
           else
-            echo "⚠️  OpenHands API key not configured"
+            echo "openrouter_available=false" >> "$GITHUB_OUTPUT"
           fi
-
-          if [ -n "${OPENROUTER_API_KEY}" ]; then
-            OPENROUTER_AVAILABLE="true"
-            echo "✅ OpenRouter API key configured"
+          if [ -n "${{ secrets.DEVIN_API_KEY }}" ]; then
+            echo "devin_available=true" >> "$GITHUB_OUTPUT"
           else
-            echo "⚠️  OpenRouter API key not configured"
+            echo "devin_available=false" >> "$GITHUB_OUTPUT"
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+        run: |
+          if [ -n "$OPENROUTER_API_KEY" ]; then
+            echo "openrouter_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "openrouter_available=false" >> $GITHUB_OUTPUT
+          fi
+          if [ -n "${{ secrets.DEVIN_API_KEY }}" ]; then
+          if [ -n "$DEVIN_API_KEY" ]; then
+            echo "devin_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "devin_available=false" >> $GITHUB_OUTPUT
           fi
 
-          # Determine recommended agent based on availability and preference
-          # POLICY: OpenRouter is primary. OpenHands (free quota — the pre-paywall
-          # Devin-class agent) is the automatic fallback when OpenRouter is down or
-          # fails. Both are free-tier; chain is OpenRouter → OpenHands → manual.
-          RECOMMENDED="openrouter"  # Default to primary
-          if [ "$OPENROUTER_AVAILABLE" = "true" ]; then
-            RECOMMENDED="openrouter"
-          elif [ "$OpenHands_AVAILABLE" = "true" ]; then
-            RECOMMENDED="OpenHands"
-          elif [ "$CURSOR_AVAILABLE" = "true" ]; then
-            RECOMMENDED="cursor"
-          fi
-
-          echo "OpenHands_available=${OpenHands_AVAILABLE}" >> $GITHUB_OUTPUT
-          echo "openrouter_available=${OPENROUTER_AVAILABLE}" >> $GITHUB_OUTPUT
-          echo "recommended_agent=${RECOMMENDED}" >> $GITHUB_OUTPUT
-
-          echo ""
-          echo "📊 Recommended agent: ${RECOMMENDED}"
-    timeout-minutes: 30
-  execute:
-    name: Execute task with fallback
+  openrouter_agent:
+    needs: health_check
+    if: needs.health_check.outputs.openrouter_available == 'true'
+  openrouter-agent:
     needs: health-check
+    if: needs.health-check.outputs.openrouter_available == 'true' && (github.event.inputs.prefer_agent == 'OpenRouter' || github.event.inputs.prefer_agent == '')
+    if: needs.health-check.outputs.openrouter_available == 'true' && (inputs.prefer_agent == 'OpenRouter' || inputs.prefer_agent == '')
     runs-on: ubuntu-latest
-    outputs:
-      agent_used: ${{ steps.result.outputs.agent }}
-      success: ${{ steps.result.outputs.success }}
-      pr_url: ${{ steps.pr-url.outputs.pr_url }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          persist-credentials: false
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-      - name: Resolve issue context
-        id: issue
-        uses: actions/github-script@v9.0.0
-        env:
-          INPUT_TASK_DESCRIPTION: ${{ inputs.task_description }}
-          INPUT_ISSUE_NUMBER: ${{ inputs.issue_number }}
-        with:
-          script: |
-            let issueNumber;
-            let issueTitle = '';
-            let issueBody = '';
-            const taskDescription = process.env.INPUT_TASK_DESCRIPTION || '';
-
-            // Determine issue number — explicit input takes priority
-            const raw = process.env.INPUT_ISSUE_NUMBER || '';
-            if (raw) {
-              issueNumber = Number(raw);
-            }
-
-            // Fill in title/body from event payload when available
-            if (context.eventName === 'issues') {
-              if (!issueNumber) issueNumber = context.payload.issue.number;
-              issueTitle = context.payload.issue.title || '';
-              issueBody = context.payload.issue.body || '';
-            } else if (context.eventName === 'pull_request_target') {
-              if (!issueNumber) issueNumber = context.payload.pull_request.number;
-              issueTitle = context.payload.pull_request.title || '';
-              issueBody = context.payload.pull_request.body || '';
-            }
-
-            if (issueNumber === undefined || issueNumber === null) {
-              core.setFailed('Could not determine issue/PR number');
-              return;
-            }
-
-            // Always fetch the CURRENT state — never trust the triggering event's
-            // payload alone for this check. The workflow_call/workflow_dispatch
-            // paths accept an explicit issue_number with no upstream guarantee the
-            // target is still open, and even the issues/pull_request_target event
-            // payloads can be stale by the time this job actually runs. Dispatching
-            // a coding agent against an already-merged PR or closed issue produces
-            // a duplicate PR re-implementing already-landed work on top of it —
-            // the confirmed root cause of the 2026-07-13 main-breaking interleaved-
-            // merge incidents (see PR #15914's fix for the sibling openrouter-coder.yml
-            // dispatcher, and the duplicate closed in PR #15939).
-            let currentState;
-            try {
-              const { data: current } = await github.rest.issues.get({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: issueNumber,
-              });
-              currentState = current;
-            } catch (error) {
-              core.setFailed(`Could not fetch current state for #${issueNumber}: ${error.message}`);
-              return;
-            }
-
-            if (currentState.state !== 'open') {
-              core.notice(`#${issueNumber} is not open (state=${currentState.state}) — skipping agent dispatch.`);
-              core.setOutput('skip', 'true');
-              return;
-            }
-
-            if (!issueTitle) issueTitle = currentState.title || '';
-            if (!issueBody) issueBody = currentState.body || '';
-
-            // Use task_description as fallback for body
-            if (!issueBody && taskDescription) {
-              issueBody = taskDescription;
-            }
-
-            core.setOutput('skip', 'false');
-            core.setOutput('issue_number', String(issueNumber));
-            core.setOutput('issue_title', issueTitle);
-            core.setOutput('issue_body', issueBody);
-      - name: Try OpenRouter (Primary)
-        if: steps.issue.outputs.skip != 'true' && needs.health-check.outputs.openrouter_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'openrouter' || inputs.prefer_agent == '')
-        id: openrouter
-        continue-on-error: true
+      - uses: actions/checkout@v4
+      - name: Run OpenRouter agent
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ISSUE_NUMBER: ${{ inputs.issue_number || github.event.issue.number }}
+        run: |
+          if [ -f scripts/call-openrouter-api.sh ]; then
+            bash scripts/call-openrouter-api.sh
+          else
+            echo "OpenRouter script not present; skipping."
+          fi
+
+  devin_agent:
+    needs: [health_check, openrouter_agent]
+    if: |
+      always() &&
+      needs.health_check.outputs.devin_available == 'true' &&
+      (needs.openrouter_agent.result == 'failure' || inputs.prefer_agent == 'Devin')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Devin agent (fallback)
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_NUMBER: ${{ inputs.issue_number || github.event.issue.number }}
+        run: |
+          if [ -f scripts/call-devin-api.sh ]; then
+            bash scripts/call-devin-api.sh
+          else
+            echo "Devin script not present; skipping."
+          fi
+
+  manual_fallback:
+    needs: [openrouter_agent, devin_agent]
+    if: |
+      always() &&
+      needs.openrouter_agent.result != 'success' &&
+      needs.devin_agent.result != 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify manual intervention required
+        run: |
+          echo "All automated agents failed or unavailable. Manual intervention required for issue #${{ inputs.issue_number || github.event.issue.number }}"
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
-          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
-          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
-          MODEL: anthropic/claude-sonnet-4
         run: |
-          echo "🌐 Attempting to use OpenRouter (preferred free/affordable agent)..."
-
-          # OpenRouter is already implemented in the repository
-          # Use the existing openrouter-coder workflow logic
-
-          if [ ! -f ".github/scripts/openrouter_coder.py" ]; then
-            echo "⚠️  OpenRouter coder script not found"
-            echo "Using simple OpenRouter triage instead..."
-
-            # Fallback to basic OpenRouter call
-            if [ -f "scripts/openrouter-triage.js" ]; then
-              node scripts/openrouter-triage.js
-            else
-              echo "❌ No OpenRouter scripts available"
-              exit 1
-            fi
+          if [ -f scripts/call-openrouter-agent.sh ]; then
+            bash scripts/call-openrouter-agent.sh
           else
-            # Use the full OpenRouter coder
-            python3 -m pip install --disable-pip-version-check requests
-            python3 .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-result.json || exit 1
-
-            # Check if files were written
-            if [ -f "/tmp/openrouter-result.json" ]; then
-              echo "✅ OpenRouter completed successfully"
-            else
-              echo "❌ OpenRouter did not produce output"
-              exit 1
-            fi
+            echo "OpenRouter agent script not present; skipping."
           fi
-      - name: Fallback to Cursor
-        if: steps.issue.outputs.skip != 'true' && (steps.openrouter.outcome == 'failure' || steps.openrouter.outcome == 'skipped') && needs.health-check.outputs.cursor_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'cursor' || inputs.prefer_agent == '')
-        id: cursor
-        continue-on-error: true
-        env:
-          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
-          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
-          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
         run: |
-          echo "🔧 Attempting to use Cursor..."
-          bash scripts/call-cursor-api.sh
-      - name: Try OpenHands AI (free-quota fallback)
-        # OpenHands runs automatically when OpenRouter does not succeed — it is a
-        # free-tier agent (pre-paywall Devin-class), so it is a real fallback, not
-        # an opt-in last resort. Explicit prefer_agent=OpenHands also routes here.
-        if: steps.issue.outputs.skip != 'true' && steps.openrouter.outcome != 'success' && (steps.cursor.outcome == 'failure' || steps.cursor.outcome == 'skipped') && needs.health-check.outputs.OpenHands_available == 'true' && (inputs.prefer_agent == 'auto' || inputs.prefer_agent == 'openrouter' || inputs.prefer_agent == 'OpenHands' || inputs.prefer_agent == '')
-        id: OpenHands
-        continue-on-error: true
+          bash scripts/call-openrouter-api.sh
+
+  devin-agent:
+    needs: health-check
+    if: needs.health-check.outputs.devin_available == 'true' && inputs.prefer_agent == 'Devin'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Devin API script
         env:
-          OPENHANDS_API_KEY: ${{ secrets.OPENHANDS_API_KEY }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.issue_number }}
-          ISSUE_TITLE: ${{ steps.issue.outputs.issue_title }}
-          ISSUE_BODY: ${{ steps.issue.outputs.issue_body }}
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Devin agent
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
         run: |
-          echo "🤖 Using OpenHands AI (free-quota fallback)..."
-          bash scripts/call-openhands-api.sh
-      - name: Determine result
-        if: always() && steps.issue.outputs.skip != 'true'
-        id: result
-        run: |
-          if [ "${{ steps.openrouter.outcome }}" = "success" ]; then
-            echo "agent=openrouter" >> $GITHUB_OUTPUT
-            echo "success=true" >> $GITHUB_OUTPUT
-            echo "✅ Task completed by OpenRouter"
-          elif [ "${{ steps.OpenHands.outcome }}" = "success" ]; then
-            echo "agent=OpenHands" >> $GITHUB_OUTPUT
-            echo "success=true" >> $GITHUB_OUTPUT
-            echo "✅ Task completed by OpenHands AI (free-quota fallback)"
-          else
-            echo "agent=none" >> $GITHUB_OUTPUT
-            echo "success=false" >> $GITHUB_OUTPUT
-            echo "❌ All agents failed"
-          fi
-      - name: Create pull request (if changes were made)
-        id: cpr
-        if: steps.result.outputs.success == 'true'
-        uses: peter-evans/create-pull-request@v8.1.1
-        with:
-          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-          branch: agent-fallback/issue-${{ steps.issue.outputs.issue_number }}
-          base: main
-          title: "[${{ steps.result.outputs.agent }}] ${{ steps.issue.outputs.issue_title }}"
-          commit-message: "feat: apply ${{ steps.result.outputs.agent }} changes for #${{ steps.issue.outputs.issue_number }}"
-          body: |
-            Automated code changes for
-            issue #${{ steps.issue.outputs.issue_number }}.
-
-            **Agent used:** ${{ steps.result.outputs.agent }}
-            **Fallback chain:** OpenRouter → OpenHands (opt-in)
-            **Fallback chain:** OpenRouter → OpenHands → manual (all free-tier)
-
-            ### Issue
-            ${{ steps.issue.outputs.issue_body }}
-
-            Closes #${{ steps.issue.outputs.issue_number }}
-      - name: Capture PR URL
-        id: pr-url
-        if: steps.cpr.outputs.pull-request-url != ''
-        run: |
-          echo "pr_url=${{ steps.cpr.outputs.pull-request-url }}" >> $GITHUB_OUTPUT
-      - name: Comment on issue with success
-        if: steps.result.outputs.success == 'true'
-        uses: actions/github-script@v9.0.0
-        env:
-          AGENT: ${{ steps.result.outputs.agent }}
-          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
-          ISSUE_NUM: ${{ steps.issue.outputs.issue_number }}
-        with:
-          script: |
-            const agent = process.env.AGENT;
-            const prUrl = process.env.PR_URL || '';
-
-            let agentIcon = '🤖';
-            if (agent === 'openrouter') agentIcon = '🌐';
-
-            const body = prUrl
-              ? `${agentIcon} **${agent}** opened PR: ${prUrl}`
-              : `${agentIcon} **${agent}** completed the task successfully.`;
-
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number(process.env.ISSUE_NUM),
-              body: body
-            });
-      - name: Create fallback event issue
-        if: steps.result.outputs.agent != 'openrouter' && steps.result.outputs.agent != 'none'
-        uses: actions/github-script@v9.0.0
-        env:
-          AGENT: ${{ steps.result.outputs.agent }}
-          ORIGINAL_ISSUE: ${{ steps.issue.outputs.issue_number }}
-          TASK_SUCCESS: ${{ steps.result.outputs.success }}
-        with:
-          script: |
-            const agent = process.env.AGENT;
-            const originalIssue = process.env.ORIGINAL_ISSUE;
-            const success = process.env.TASK_SUCCESS;
-
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `[AUTO-FALLBACK] OpenRouter → ${agent.charAt(0).toUpperCase() + agent.slice(1)} (#${originalIssue})`,
-              labels: ['auto-fallback', 'agent-monitoring', 'openrouter-fallback'],
-              body: `OpenRouter was unavailable or failed. Automatically failed over to ${agent}.
-
-              **Original task:** #${originalIssue}
-              **Timestamp:** ${new Date().toISOString()}
-              **Agent used:** ${agent}
-              **Success:** ${success}
-
-              No action required — fallback is working as designed. This issue is for monitoring purposes only.`
-            });
-      - name: Comment on issue with failure
-        if: steps.result.outputs.success == 'false'
-        uses: actions/github-script@v9.0.0
-        env:
-          ISSUE_NUM: ${{ steps.issue.outputs.issue_number }}
-          OpenHands_OUTCOME: ${{ steps.OpenHands.outcome }}
-          OPENROUTER_OUTCOME: ${{ steps.openrouter.outcome }}
-        with:
-          script: |
-            const issueNum = Number(process.env.ISSUE_NUM);
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNum,
-              body: `❌ All agents failed to complete this task.
-
-              **Attempted:**
-              - OpenHands AI: ${process.env.OpenHands_OUTCOME}
-              - OpenRouter: ${process.env.OPENROUTER_OUTCOME}
-
-              **Next steps:**
-              1. Check agent status pages
-              2. Verify API keys are configured correctly
-              3. Review task complexity (may require human intervention)
-              4. See [Agent Fallback Process](docs/AGENT_FALLBACK_PROCESS.md) for troubleshooting
-
-              Adding \`needs-human\` label for manual review.`
-            });
-
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: issueNum,
-              labels: ['needs-human']
-            });
-    timeout-minutes: 30
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+          bash scripts/call-devin-api.sh
