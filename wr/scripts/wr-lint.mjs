@@ -283,12 +283,16 @@ function lintFile(path) {
   // "N/A — pending Jules refinement", "pending human review", "pending refinement",
   // "TBD", "TODO", "_No response_" all signal that an agent stopped instead of
   // researching. Fill the section or open a [WR-BLOCKER] issue with the specific gap.
-  // Skips fenced code blocks (examples/snippets are OK).
+  // Skips fenced code blocks (examples/snippets are OK) and inline code spans
+  // (e.g. `TODO`/`FIXME` used as code-term examples, not as actual deferral markers).
   // Policy: wr/lint-rules/no-pending-placeholders.md
   lines.forEach((l, i) => {
     if (inFence[i]) return;
+    // Strip inline code span content before testing so that backtick-wrapped
+    // terms like `TODO` or `TBD` used as code references are not flagged.
+    const stripped = l.replace(/`[^`\n]*`/g, "``");
     for (const { re, label } of DEFERRAL_PLACEHOLDERS) {
-      if (re.test(l)) {
+      if (re.test(stripped)) {
         issues.push(`line ${i + 1}: deferral placeholder "${label}" — fill the section or open a [WR-BLOCKER] issue; see wr/lint-rules/no-pending-placeholders.md`);
         break; // one issue per line keeps output readable; first matched pattern is reported
       }
