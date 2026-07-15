@@ -21,6 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+        with:
           fetch-depth: 0
 
       - name: Setup Node
@@ -47,6 +48,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
+          ISSUE_NUM="${{ inputs.issue_number }}"
+          BRANCH="patch-agent/issue-${ISSUE_NUM}"
+          git config user.name "patch-agent[bot]"
+          git config user.email "patch-agent@users.noreply.github.com"
+          git checkout -b "$BRANCH" || git checkout "$BRANCH"
+          echo "Patch scaffold for #${ISSUE_NUM}" >> .patch-agent-log
+          git add -A
+          git commit -m "chore(patch): scaffold changes for #${ISSUE_NUM}" || echo "No changes"
+          git push -u origin "$BRANCH" || true
+          gh pr create \
+            --title "fix: patch-agent changes for #${ISSUE_NUM}" \
+            --body "Closes #${ISSUE_NUM}" \
+            --base main \
+            --head "$BRANCH" || echo "PR may already exist"
           BRANCH="patch/issue-${{ inputs.issue_number }}"
           git checkout -b "$BRANCH" || git checkout "$BRANCH"
           git config user.name "patch-bot"
