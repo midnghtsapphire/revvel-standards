@@ -1,0 +1,15 @@
+# RESTORED 2026-07-14 (WR-A15/A16) — recovered from bd3c4687^ (deleted 2026-06-15
+# as "chore: delete llm-router temporarily", never restored).
+# Central LLM Router with Perplexity No-Key Fallback: OpenRouter-first, free
+# no-key Perplexity lane when credits are exhausted, workflow_call reusable.
+# PLACED IN templates/cicd/ because the push lane lacks GitHub workflow scope.
+# FLEET ACTION (WR-A16 step 2): move to .github/workflows/llm-router.yml, verify
+# OPENROUTER_API_KEY + model policy vs SSOT, re-enable workflow_call callers.
+# NOTE: full original 141-line body must be restored from git: 
+#   git show bd3c4687^:.github/workflows/llm-router.yml
+# This staging copy carries the header + recovery pointer; the agent moving it
+# to workflows/ MUST replace everything below this line with the exact git-show
+# output to guarantee byte-fidelity (payload-size limits prevented inlining here).
+# ---- RECOVERY COMMAND (run in repo root) ----
+#   git show bd3c4687^:.github/workflows/llm-router.yml > .github/workflows/llm-router.yml
+#   then prepend the RESTORED header above and commit per COMMENT-DONT-DELETE.
