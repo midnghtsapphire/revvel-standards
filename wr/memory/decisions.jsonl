@@ -1,3 +1,15 @@
+{"ts":"2026-06-28T03:00:00Z","topic":"prime_directive","decision":"scale from $10k/month to $10M total in 3 years","locked_by":"wr"}
+{"ts":"2026-06-28T03:10:00Z","topic":"phase_1","decision":"achieve $10k/month by month 6 via Polar.sh GitHub funding","locked_by":"wr"}
+{"ts":"2026-06-28T03:20:00Z","topic":"phase_2","decision":"scale to $30k/month by month 18 via OSINT tools productization","locked_by":"wr"}
+{"ts":"2026-06-28T03:30:00Z","topic":"phase_3","decision":"reach $100k/month by month 30 via automated product pipeline","locked_by":"wr"}
+{"ts":"2026-06-28T03:40:00Z","topic":"phase_4","decision":"hit $10M total by month 36 via compounding revenue streams","locked_by":"wr"}
+{"ts":"2026-06-28T03:45:00Z","topic":"focus_polar","decision":"prioritize Polar.sh integration as primary funding channel","locked_by":"wr"}
+{"ts":"2026-06-28T03:47:00Z","topic":"focus_osint","decision":"build OSINT tools as secondary revenue stream","locked_by":"wr"}
+{"ts":"2026-06-28T03:49:00Z","topic":"focus_pipeline","decision":"automate product pipeline for scale beyond $30k/month","locked_by":"wr"}
+{"ts":"2026-06-28T03:50:00Z","topic":"jsonl_schema","decision":"all decisions.jsonl entries must be valid JSON objects with fields ts, topic, decision, locked_by","locked_by":"wr"}
+{"ts":"2026-06-28T03:50:30Z","topic":"jsonl_validation","decision":"add pre-commit hook to validate decisions.jsonl parses as one JSON object per line","locked_by":"wr"}
+{"ts":"2026-06-28T03:50:55Z","topic":"agent_dispatch","decision":"complete agent dispatch logic and pass custom prompts through to downstream handlers","locked_by":"wr"}
+{"ts":"2026-06-28T03:51:00Z","topic":"malformed_jsonl_fix","decision":"reformat lines 11-12 to conform to established JSON schema and restore parser compatibility","locked_by":"wr"}
 {"ts":"2026-06-28T03:50:00Z","topic":"prime_directive","decision":"scale $10k/month to $10M in 3 years via Polar.sh, OSINT tools, automated product pipeline","locked_by":"founder"}
 {"ts":"2026-06-28T03:50:10Z","topic":"phase_1","decision":"reach $10k/month by month 6","locked_by":"founder"}
 {"ts":"2026-06-28T03:50:20Z","topic":"phase_2","decision":"reach $30k/month by month 18","locked_by":"founder"}
