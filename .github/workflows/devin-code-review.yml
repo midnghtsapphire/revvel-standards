@@ -50,6 +50,7 @@ on:
     types:
       - created
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     types:
       - labeled
   workflow_dispatch:
@@ -100,6 +101,36 @@ jobs:
         startsWith(github.event.comment.body, '/devin')
       )
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.draft == false }}
+    steps:
+      - name: Check for Devin credentials
+        id: check-creds
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+        run: |
+          if [ -z "${DEVIN_API_KEY}" ]; then
+            echo "has_creds=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::DEVIN_API_KEY not configured; skipping Devin review (soft-skip)."
+          else
+            echo "has_creds=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.check-creds.outputs.has_creds == 'true'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run Devin review
+        if: steps.check-creds.outputs.has_creds == 'true'
+        uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
+        with:
+          api-key: ${{ secrets.DEVIN_API_KEY }}
+
+      - name: Fallback (no creds)
+        if: steps.check-creds.outputs.has_creds != 'true'
+        uses: aaronsteers/devin-action@6836af14bc904e8eff8e4f2b35eac4c428fc5f34 # v1
+        continue-on-error: true
+        with:
+          api-key: ''
     timeout-minutes: 30
 
     steps:
