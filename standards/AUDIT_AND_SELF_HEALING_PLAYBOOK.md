@@ -1,338 +1,445 @@
 # Audit and Self-Healing Playbook
 
-**Status:** Active reference — captures the repeatable audit methodology and
-fix-pattern catalog derived from the 2026-07-13 audit-and-fix session.
+**Status:** Active reference — extracted from the 2026-07-13 audit-and-fix
+session per an explicit user request: "can everybody save memory and learnings
+in revvel-standards — how to perform audit — how to correct for self healing."
 
 **Case evidence:** PRs #15821, #15823, #15824, #15825, #15826, #15827, #15828.
+Each fix in the catalog below cites the PR where the pattern was actually
+applied so the next agent can see a real diff, not a hypothetical.
 
-**Purpose:** `learnings.md` records incidents after the fact. This document
-captures the piece that was missing — *how to perform an audit* and *how to
-correct for self-healing* — so the next agent (human or AI) doesn't have to
-rediscover either from scratch.
-
----
-
-## How to Run an Audit
-
-1. **Scope into parallel read-only research agents by category.**
-   Split the surface area (workflows, scripts, security posture, CI health,
-   stale commitments, secrets handling, etc.) across independent read-only
-   subagents. Each returns findings with **file:line citations** — no fixes,
-   no writes. Parallelism is the point: serial audits miss recurrence.
-
-2. **Demand file:line citations for every finding.**
-   A finding without `path/to/file.ext:LINE` is a rumor. Reject it and
-   re-scope. Citations make triage, deduplication, and later fix-PR
-   authorship mechanical.
-
-3. **Cross-reference `learnings.md` for recurrence.**
-   Before treating a finding as novel, grep `learnings.md` for the symptom
-   and root cause. Recurrence is a stronger signal than severity — repeat
-   offenders get promoted in the triage queue and get catalog entries here.
-
-4. **Triage before fixing.**
-   Not every finding becomes an immediate PR. Bucket findings into: (a) fix
-   now, (b) file issue for later, (c) accept and document, (d) false
-   positive. Skipping triage floods reviewers and buries the high-signal
-   fixes.
-
-5. **One fix per isolated worktree subagent.**
-   Each accepted finding gets its own git worktree and its own fix subagent.
-   The subagent runs `npm ci && npm test` and adds a regression test that
-   would have caught the original bug. No batching — batched fix PRs hide
-   regressions and stall on unrelated review comments.
-
-6. **Watch live CI on your own in-flight PRs — don't just audit static
-   findings.**
-   The broken third-party Action in `saml-sso-registration.yml` (fixed in
-   #15828) was **not** discoverable from static scanning; it was caught by
-   noticing that every in-flight PR from the audit itself was failing the
-   same required check. Live CI on your own audit PRs is a second-order
-   audit surface. Watch it.
-
-7. **Targeted search — not enumeration — for stale follow-up commitments.**
-   Search issue/PR history for the specific phrases that mark unfinished
-   work (`Next Action`, `follow-up`, `TODO(owner)`, `will address in`, etc.).
-   Do **not** enumerate every open issue; the signal-to-noise ratio is too
-   low. Targeted phrase search is how #15826 surfaced.
-
----
-
-## Self-Healing Correction Pattern Catalog
-
-Each entry: **Symptom → Root cause → Fix**, with the PR that implemented it.
-
-### 1. Unguarded `removeLabel` race
-
-- **Symptom:** Workflow fails intermittently with `HttpError: Label does not
-  exist` when removing a label that another concurrent run already removed.
-- **Root cause:** `github.rest.issues.removeLabel` throws on 404; no guard
-  around the call.
-- **Fix:** Wrap in `try/catch` and swallow `error.status === 404`. Treat
-  "label already absent" as success — it's the desired end state.
-- **Reference:** #15821.
-
-### 2. Missing `allowError` on internal API helpers
-
-- **Symptom:** Helper functions that call the GitHub API abort the whole
-  workflow on transient 5xx or expected 404s.
-- **Root cause:** Internal helpers hard-coded `throw` on any non-2xx instead
-  of accepting an `allowError` / `allowedStatuses` option.
-- **Fix:** Add an `allowError` (or `allowedStatuses: number[]`) parameter to
-  every internal API helper. Callers that expect a 404 pass it explicitly;
-  everyone else keeps the strict default.
-- **Reference:** #15824.
-
-### 3. Default `GITHUB_TOKEN` on agent-created PRs
-
-- **Symptom:** Agent-authored PRs don't trigger downstream workflows
-  (required checks never run, auto-merge never fires).
-- **Root cause:** PRs created by the default `GITHUB_TOKEN` intentionally do
-  **not** trigger `pull_request` workflows — a GitHub anti-recursion
-  guardrail.
-- **Fix:** Create agent PRs with a PAT or GitHub App token, not the default
-  `GITHUB_TOKEN`. Store as a repo/org secret and pass explicitly.
-- **Reference:** #15823.
-
-### 4. Secrets via argv vs. stdin
-
-- **Symptom:** Secret values appear in `ps`, in shell history, in process
-  listings, and (worst) in workflow logs when `set -x` is on.
-- **Root cause:** Secret passed as a CLI argument (`tool --token $SECRET`)
-  instead of over stdin or an env var.
-- **Fix:** Pipe secrets over stdin (`echo "$SECRET" | tool --token-stdin`)
-  or read from env inside the tool. Never argv.
-- **Reference:** #15825.
-
-### 5. Bash bare-array-variable bug
-
-- **Symptom:** Only the first element of a bash array is used; loop body
-  silently runs once.
-- **Root cause:** `"$arr"` (bare) expands to `${arr[0]}`. Must be
-  `"${arr[@]}"` to expand to all elements.
-- **Fix:** Always `"${arr[@]}"` when iterating or passing an array.
-  `shellcheck` catches this — run it in CI.
-- **Reference:** #15827.
-
-### 6. Exit codes as proxy metrics vs. true resolution state
-
-- **Symptom:** A job "succeeds" (exit 0) but the underlying condition it was
-  supposed to resolve is still broken. Dashboards look green; reality isn't.
-- **Root cause:** The script exits 0 on "I ran to completion" rather than
-  on "the target state is achieved." Exit code became a proxy for
-  "finished" instead of "resolved."
-- **Fix:** After the work, **re-check the target state** and exit non-zero
-  if it isn't achieved. Exit codes must reflect true resolution, not mere
-  completion.
-- **Reference:** #15826.
-
-### 7. `nosemgrep` suppression comment adjacency
-
-- **Symptom:** Semgrep still flags a line that has a `# nosemgrep` comment
-  "nearby."
-- **Root cause:** `nosemgrep` only suppresses the **immediately adjacent**
-  line (same line, or the line directly above with no blank line between).
-  A blank line or an intervening comment breaks the association.
-- **Fix:** Put `# nosemgrep: rule-id` on the exact line being suppressed,
-  or on the line **immediately** above with no gap. Always name the rule
-  ID — bare `# nosemgrep` is over-broad.
-- **Reference:** #15825.
-
-### 8. Broken third-party GitHub Action failing every PR
-
-- **Symptom:** A required check fails on every PR with an error from a
-  third-party Action (deleted repo, yanked tag, breaking change on a
-  floating `@v1` ref).
-- **Root cause:** Third-party Action pinned to a moving ref (`@main`,
-  `@v1`) or to a repo that disappeared. No pin to a commit SHA.
-- **Fix:** Pin every third-party Action to a full commit SHA with a
-  version comment (`uses: owner/action@<sha> # v1.2.3`). Add a scheduled
-  workflow that alerts when pins go stale. If the upstream is dead, fork
-  and pin to the fork.
-- **Reference:** #15828.
-
----
-
-## Where the memory lives
-
-- **`learnings.md`** — incident log, one entry per event, written after the
-  fact.
-- **`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`** (this file) — the
-  *method* for finding recurrence and the *catalog* of known fix patterns.
-- **`standards/GREEN_MAIN_STANDARD.md`** — the invariant this playbook
-  defends: `main` stays green.
-- **`CLAUDE.md`** — the fast-path "recurring gotchas" list that points here.
-
-If a fix pattern recurs, promote it from `learnings.md` into the catalog
-above and cite the PR. If the audit method itself gains a new step, add it
-to "How to Run an Audit" — do not let the method live only in chat history.
-# Audit and Self-Healing Playbook — method + pattern catalog
-
+**Why this doc exists:** `learnings.md` captures individual incidents *after*
+they happen. What was missing was the piece *before* — a repeatable method for
+running the audit in the first place, and a fast-lookup catalog of
+symptom → root cause → fix so the next agent (human or AI) doesn't rediscover
+either from scratch.
 **Status:** Active
-**Case evidence:** 2026-07-13 audit session — 8 patterns fixed across PRs
-#15821, #15823, #15824, #15825, #15826, #15827, #15828.
-**Owner:** Shared standard — every agent (human or AI) should reference this
-before starting an audit or applying a self-healing fix.
+**Case evidence:** 2026-07-13 audit-and-fix session (PRs #15821–#15828)
+**Audience:** Human maintainers and AI coding agents working in this repo
 
-This playbook formalizes the *method* of auditing and correcting recurring
-failure modes in this repository. `learnings.md` captures individual incidents
-after the fact; this document captures the **repeatable process** for
-discovering and fixing them, plus a fast-lookup catalog of known
-symptom→root-cause→fix mappings.
+This playbook formalizes the reusable audit methodology and fix-pattern
+catalog derived from a real multi-PR self-healing session. `learnings.md`
+captures individual incidents *after the fact*; this file captures the
+repeatable **method** for finding and correcting them, so the next agent
+(human or AI) does not have to rediscover it from scratch.
+**Status:** Active reference (2026-07-13)
+**Case evidence:** Formalizes the audit-and-fix session that produced PRs
+## 15821, #15823, #15824, #15825, #15826, #15827, and #15828.
+
+This playbook exists so the next agent (human or AI) does not have to
+rediscover the audit methodology or the fix-pattern catalog from scratch.
+`learnings.md` captures individual incidents after the fact; this document
+captures the *method* used to find them and the *shape* of the fixes.
 
 ---
 
 ## How to Run an Audit
 
-1. **Scope into parallel, read-only research agents by category.**
-   Do not try to audit "everything" in one pass. Split by concern —
-   workflows, scripts, security, tests, docs — and dispatch each as an
-   independent read-only agent. This keeps context windows small and lets
-   you cross-reference findings later.
+This is the method actually used on 2026-07-13, not a theoretical one.
 
-2. **Demand file:line citations for every finding.**
-   A finding without a `path/to/file.ext:NN` citation is a rumor. Reject it
-   and re-run the sub-audit. Citations are what make triage and fix-PRs
-   auditable.
+1. **Scope into parallel read-only research agents by category.** Do not send
+   one agent to "audit the repo." Send N agents, each with a narrow category
+   (e.g. "workflow token scoping," "shell quoting in `.github/scripts/**`,"
+   "secret handling in argv," "exit-code semantics in dispatcher scripts").
+   Read-only means they produce a report, not a branch.
+
+2. **Demand file:line citations.** Every finding must include
+   `path/to/file.ext:LINE` (or a line range). A finding without a citation is a
+   guess and must be re-run or dropped. This is non-negotiable — it is the
+   single biggest quality gate on agent output.
+
+3. **Cross-reference `learnings.md` for recurrence.** Before triaging a
+   finding as new, grep `learnings.md` for the same symptom. If it recurs, the
+   fix belongs in a *standard* (this doc, `CLAUDE.md`, or
+   `standards/GREEN_MAIN_STANDARD.md`), not just in a one-off PR — otherwise
+   the next agent hits it again.
+
+4. **Triage before fixing.** Not every finding becomes an immediate PR. Sort
+   into: (a) actively breaking CI or prod → fix now; (b) latent footgun with a
+   plausible trigger → fix this session; (c) style/nit → log and defer.
+   Batching (c) into a PR wastes review budget.
+
+5. **One fix per isolated worktree subagent.** Each accepted finding gets its
+   own `git worktree` and its own subagent. The subagent's contract is:
+   `npm ci && npm test` passes, a regression test is added where feasible, and
+   the PR body cites the audit finding (file:line) it closes. Do not batch
+   unrelated fixes — it makes bisection and revert impossible.
+
+6. **Watch live CI on your own in-flight PRs.** Static findings are not the
+   whole picture. The broken third-party Action in `saml-sso-registration.yml`
+   (fixed in #15828) was caught only because the auditor watched CI on the
+   audit-generated PRs themselves and noticed *every* PR was red on the same
+   check for an unrelated reason. Static analysis would not have found it.
+
+7. **Targeted search, not enumeration, for stale follow-ups.** To find dropped
+   commitments, don't enumerate every closed issue. Grep issue/PR history for
+   specific stale-commitment phrases: `"follow-up"`, `"follow up"`,
+   `"Next Action"`, `"TODO(next)"`, `"will address in a follow"`. Filter to
+   items >30 days old with no linked PR. This is ~10x faster than enumeration
+   and catches the actual signal.
+
+8. **Close the loop in `learnings.md`.** After each fix merges, append a
+   dated entry with symptom, root cause, and the PR link. This is what makes
+   step 3 work next time.
+1. **Scope into parallel read-only research agents by category.**
+   Do not run one monolithic "audit everything" pass. Spawn several
+   read-only subagents, each with a narrow category (e.g. "CI workflows",
+   "secret handling", "label/state races", "shell scripts", "third-party
+   Actions"). Read-only means: they may `grep`, `cat`, `gh api`, but they
+   **must not** edit files or open PRs.
+
+2. **Demand file:line citations.**
+   Every finding must include `path/to/file.ext:LN` or a PR/issue URL.
+   Findings without citations are rumors and must be re-verified before
+   triage.
 
 3. **Cross-reference `learnings.md` for recurrence.**
-   Before opening a new fix PR, grep `learnings.md` for the symptom. If it
-   has happened before, the fix pattern is likely already documented — reuse
-   it rather than reinventing. If it is *new*, the fix PR must add a
-   `learnings.md` entry.
+   Before treating a finding as novel, grep `learnings.md` and prior PR
+   titles. A recurring pattern deserves a catalog entry here, not just a
+   one-off fix.
 
 4. **Triage before fixing.**
-   Not every finding becomes an immediate PR. Rank by (a) blast radius —
-   does this break `main` or leak secrets? — (b) recurrence — has it bitten
-   us before? — (c) fix cost. Low-blast-radius, low-recurrence items go on
-   a backlog issue, not a PR.
+   Not every finding becomes an immediate PR. Categorize each as:
+   - **Fix now** — user-visible, security, or actively-breaking CI.
+   - **Fix next** — real bug, not on fire, tracked as an issue.
+   - **Document only** — intentional trade-off; add to `learnings.md`.
+   - **Reject** — false positive; record *why* so the next audit skips it.
 
 5. **One fix per isolated worktree subagent.**
-   Each accepted finding gets its own `git worktree` and its own subagent.
-   The subagent runs `npm ci && npm test`, adds a regression test where
-   feasible, and opens exactly one PR. This keeps blame, revert, and review
-   surface minimal.
+   Each fix runs in its own `git worktree` with its own branch. The
+   subagent must run `npm ci && npm test` and add a regression test
+   before opening the PR. This prevents fix-A from masking or reverting
+   fix-B.
 
 6. **Watch live CI on your own in-flight PRs.**
-   Static findings are only half the audit. The other half is opening the
-   Actions tab on the PRs *you just filed* and watching them run. This is
-   how the broken third-party Action in `saml-sso-registration.yml` was
-   actually caught (#15828) — it was green in isolation and red only under
-   the PR-triggered matrix.
+   Static findings are not enough. Poll `gh pr checks` on the PRs *this
+   audit is opening*. The broken `saml-sso-registration.yml` third-party
+   Action (fixed in #15828) was only caught because a fix-PR's CI failed
+   for an unrelated reason and someone actually looked.
 
-7. **Use targeted search, not enumeration, for stale commitments.**
-   To find un-kept "follow-up" / "Next Action" / "TODO(owner)" promises in
-   issue and PR history, `gh search issues` and `gh search prs` with the
-   exact phrase — do not page through every issue. Enumeration wastes
-   context; targeted search hits the actual debt.
+7. **Targeted search for stale commitments — do not enumerate.**
+   Search issue/PR history for phrases like `Next Action`, `follow-up`,
+   `TODO`, `will address in a follow-up`. Do not try to read every open
+   issue. Stale commitments become new findings; close them or convert
+   them to tracked issues.
+1. **Scope into parallel read-only research agents by category.** Do not run
+   a single monolithic "audit everything" pass. Split by concern (CI/CD,
+   secret handling, shell scripts, third-party Actions, label lifecycle,
+   exit-code semantics, follow-up debt) and dispatch each as an independent
+   read-only subagent. Parallel scoping is what surfaces cross-cutting
+   patterns instead of one-off bugs.
+2. **Demand file:line citations for every finding.** A finding without
+   `path/to/file.ext:LINE` is not actionable and is not accepted. Citations
+   also make cross-referencing `learnings.md` mechanical instead of
+   subjective.
+3. **Cross-reference `learnings.md` for recurrence.** Before triaging a
+   finding as novel, grep `learnings.md` and the standards directory for the
+   same symptom. Recurrence changes the priority: a second occurrence is a
+   process failure, not a bug.
+4. **Triage before fixing.** Not every finding becomes an immediate PR. Sort
+   into: (a) fix now in an isolated worktree, (b) file an issue with
+   citation, (c) fold into the next relevant PR, (d) explicitly defer with a
+   reason. Fixing everything at once defeats bisect and review.
+5. **One fix per isolated worktree subagent.** Each fix runs `npm ci &&
+   npm test` plus a targeted regression test in its own worktree. No
+   fix ships without a regression test that would have caught the original
+   symptom.
+6. **Watch live CI on your own in-flight PRs.** Static findings are only
+   half the audit. The broken third-party Action in
+   `saml-sso-registration.yml` (#15828) was not caught by reading code — it
+   was caught by watching an unrelated PR fail CI and reading the log. Keep
+   a browser tab or `gh run watch` on active PRs during the audit window.
+7. **Targeted search, not enumeration, for stale follow-up commitments.**
+   `gh search issues "Next Action" OR "follow-up" is:open` beats scrolling.
+   Stale "we'll fix this next PR" comments are a rich seam of real bugs
+   whose original context has evaporated.
 
 ---
 
 ## Self-Healing Correction Pattern Catalog
 
-Each entry: **Symptom** → **Root cause** → **Fix** → **Reference PR**.
+Eight patterns, each observed and fixed in the cited PR. Format:
+**Symptom** → **Root cause** → **Fix**.
 
-### 1. Unguarded `removeLabel` race
+### 1. Unguarded `removeLabel` race (PR #15821)
+
+- **Symptom:** Workflow step fails with `HttpError: Label does not exist on
+  this issue` when two workflows race to remove the same label.
+- **Root cause:** `octokit.rest.issues.removeLabel` throws 404 if the label is
+  already gone. No idempotency guard.
+- **Fix:** Wrap in `try { ... } catch (e) { if (e.status !== 404) throw e; }`,
+  or use the internal `removeLabelIfPresent` helper. Never call `removeLabel`
+  bare in a workflow that can race.
+
+### 2. Missing `allowError` on internal API helpers (PR #15824)
+
+- **Symptom:** A helper that is *meant* to be best-effort (e.g. "comment on
+  issue if possible") aborts the entire workflow on transient 5xx.
+- **Root cause:** The helper called the API client directly without an
+  `allowError: true` (or equivalent try/catch) escape hatch. Callers had no
+  way to say "this is advisory."
+- **Fix:** Add an `allowError` option (default `false` to preserve strict
+  callers). When `true`, log-and-continue on non-2xx. Audit every call site
+  to set it explicitly.
+
+### 3. Default `GITHUB_TOKEN` on agent-created PRs (PR #15823)
+
+- **Symptom:** Agent-created PR triggers workflows but downstream jobs cannot
+  push labels/comments/reviews; the token has read-only scopes on PRs from
+  forks or from GITHUB_TOKEN-authored refs.
+- **Root cause:** The workflow relied on the default `GITHUB_TOKEN`, which is
+  intentionally minimal for security. Agent PRs need elevated but scoped
+  credentials.
+- **Fix:** Use a scoped bot PAT (or GitHub App installation token) stored as a
+  secret, and pass it explicitly to the steps that need write. Never widen the
+  default token's `permissions:` block globally as a shortcut.
+
+### 4. Secrets via argv vs. stdin (PR #15825)
+
+- **Symptom:** Secret value appears in `ps auxf` output on the runner and in
+  any process-listing debug step.
+- **Root cause:** Secret passed as a positional CLI argument
+  (`mycli --token=$SECRET`) instead of via stdin or an env var.
+- **Fix:** Pipe via stdin (`printf '%s' "$SECRET" | mycli --token-stdin`) or
+  pass via environment (`MYCLI_TOKEN="$SECRET" mycli`). Never argv.
+
+### 5. Bash bare-array-variable bug (PR #15827)
+
+- **Symptom:** Loop over an array only processes the first element, or
+  `set -u` reports "unbound variable" on a defined array.
+- **Root cause:** `$arr` in bash expands to `${arr[0]}`, not the whole array.
+  Must be `"${arr[@]}"`.
+- **Fix:** Always quote and index: `for x in "${arr[@]}"; do ... done`. Enable
+  `shellcheck` in CI for `.github/scripts/**/*.sh` to catch this class.
+
+### 6. Exit codes as proxy metrics vs. true resolution state (PR #15826)
+
+- **Symptom:** A dispatcher script exits `0` because "the agent ran," even
+  though the agent produced no PR / left the issue unresolved. Downstream
+  metrics report success; the issue silently rots.
+- **Root cause:** The script conflated "the subprocess did not crash" with
+  "the work is done." Exit code was a proxy for process health, not for
+  resolution.
+- **Fix:** Exit code must reflect **true resolution state**. If the agent
+  ran-but-produced-nothing, exit non-zero (or a distinct code, e.g. `2` for
+  "ran, no output") so the caller can distinguish. Document the code table in
+  the script header.
+
+### 7. `nosemgrep` suppression comment adjacency (PR #15825)
+
+- **Symptom:** Semgrep still flags a line that has a `# nosemgrep: rule-id`
+  comment "nearby."
+- **Root cause:** `nosemgrep` must be on the *same line* as the finding, or
+  on the immediately preceding line — not two lines up, not after a blank
+  line, not on the closing brace.
+- **Fix:** Place `# nosemgrep: <rule-id>` on the exact offending line (end of
+  line) or the line immediately above with no blank line between. Always cite
+  the specific rule id; never bare `# nosemgrep`.
+
+### 8. Broken third-party GitHub Action failing every PR (PR #15828)
+
+- **Symptom:** Every PR in the repo shows a red check from the same
+  third-party Action (e.g. a SAML-SSO registration Action pinned to a tag
+  that was force-moved or deleted upstream).
+- **Root cause:** Third-party Action pinned by mutable tag (`@v1`) rather than
+  by commit SHA. Upstream changed the tag; every workflow run now fetches a
+  broken ref.
+- **Fix:** Pin third-party Actions by full commit SHA with the tag as a
+  trailing comment: `uses: owner/action@<sha> # v1.2.3`. Add a Dependabot
+  entry so bumps are reviewed. If the Action is not essential, remove it.
+Each entry: **Symptom → Root Cause → Fix**, with the PR that established
+the pattern.
+Each entry is Symptom / Root Cause / Fix and cites the PR that shipped the
+correction. Use this catalog as a lookup table before opening a new
+investigation.
+
+### 1. Unguarded `removeLabel` race (PR #15821)
 
 - **Symptom:** Workflow fails with `HttpError: Label does not exist` when
-  removing a label that another concurrent run already removed.
-- **Root cause:** `octokit.rest.issues.removeLabel` throws on 404; no
-  concurrency guard on the workflow.
-- **Fix:** Wrap the call in `try/catch` and swallow 404, *and* add
-  `concurrency:` to the workflow so only one run mutates labels at a time.
-- **Reference:** PR #15821.
+  two jobs both try to remove the same label.
+- **Root cause:** `octokit.rest.issues.removeLabel` throws on 404; a
+  concurrent job already removed it.
+- **Fix:** Wrap in `try { ... } catch (e) { if (e.status !== 404) throw; }`,
+  or use `github-script` with an explicit 404 swallow.
 
-### 2. Missing `allowError` on internal API helpers
+### 2. Missing `allowError` on internal API helpers (PR #15824)
 
-- **Symptom:** A single 4xx from an internal helper aborts the entire
-  workflow step, even when the caller expected to branch on failure.
-- **Root cause:** Helper defaulted to `throwOnError: true`; callers assumed
+- **Symptom:** Non-fatal internal API call aborts the whole workflow.
+- **Root cause:** Helper defaulted `allowError: false`; callers assumed
   the opposite.
-- **Fix:** Add an explicit `allowError` option (default `false` for
-  backward-compat) and thread it through call sites that branch on
-  failure.
-- **Reference:** PR #15824.
+- **Fix:** Callers that tolerate failure must pass `allowError: true`
+  explicitly. Helper documents the default at the top of the file.
 
-### 3. Default `GITHUB_TOKEN` on agent-created PRs
+### 3. Default `GITHUB_TOKEN` on agent-created PRs (PR #15823)
 
-- **Symptom:** PRs opened by an agent workflow do not trigger downstream
-  `on: pull_request` workflows (CI never runs).
-- **Root cause:** GitHub deliberately suppresses recursive workflow
-  triggers when the actor is `GITHUB_TOKEN`.
-- **Fix:** Use a dedicated PAT (or GitHub App token) with `pull_requests:
-  write` when opening the PR. Store as a repo secret, not in argv.
-- **Reference:** PR #15823.
+- **Symptom:** CI jobs on agent-authored PRs cannot trigger downstream
+  workflows.
+- **Root cause:** The default `GITHUB_TOKEN` on a PR opened by a bot
+  does not have `workflow: write` and does not re-trigger `on: push`
+  workflows.
+- **Fix:** Use a scoped PAT (or GitHub App token) stored as a secret
+  for agent PRs; keep the default token for human PRs.
 
-### 4. Secrets via argv vs. stdin
+### 4. Secrets via argv vs. stdin (PR #15825)
 
-- **Symptom:** Secrets appear in `ps auxf`, in workflow logs on failure,
-  or in shell history.
-- **Root cause:** Passing `--token=$SECRET` on the command line — argv is
-  world-readable on the host and often echoed by set -x.
-- **Fix:** Pipe secrets on stdin (`echo "$SECRET" | tool --token-stdin`)
-  or read from an env var the tool consumes directly. Never argv.
-- **Reference:** PR #15825.
+- **Symptom:** Secret leaks into `ps auxf` and CI logs.
+- **Root cause:** Passing tokens as CLI arguments (`--token $X`) exposes
+  them to any process on the runner.
+- **Fix:** Pipe secrets on stdin (`echo "$X" | tool --token-stdin`) or
+  read from an env var the tool consumes directly.
 
-### 5. Bash bare-array-variable bug
+### 5. Bash bare-array-variable bug (PR #15827)
 
-- **Symptom:** Loop iterates once over a joined string instead of N times
-  over N elements; or `"${arr}"` silently drops elements 2..N.
-- **Root cause:** `"$arr"` expands to element 0 only. You want
-  `"${arr[@]}"`.
-- **Fix:** Always `"${arr[@]}"` for iteration, and `set -u` at the top of
-  every script so unset arrays fail loud.
-- **Reference:** PR #15827.
+- **Symptom:** Only the first element of an array is passed to a
+  command; the rest are silently dropped.
+- **Root cause:** `$arr` in bash expands to `${arr[0]}`, not all
+  elements.
+- **Fix:** Always use `"${arr[@]}"` when passing an array to a
+  command. Add `shellcheck` to CI.
 
-### 6. Exit codes as proxy metrics vs. true resolution state
+### 6. Exit codes as proxy metrics vs. true resolution state (PR #15826)
 
-- **Symptom:** A job reports success (exit 0) even though the underlying
-  work (e.g., "issue resolved") did not actually happen — because the
-  script only checked whether the *tool* ran, not whether the *outcome*
-  was achieved.
-- **Root cause:** Conflating "command completed without error" with
-  "business outcome achieved."
-- **Fix:** After the tool runs, re-query the source of truth (issue
-  state, PR merge status, label presence) and exit non-zero if the
-  desired end state is not observed. Exit codes must reflect *true
-  resolution state*, not just tool liveness.
-- **Reference:** PR #15826.
+- **Symptom:** A script exits 0 and CI is green, but the underlying
+  problem is unresolved (e.g. "0 issues found" because the query
+  errored, not because the repo is clean).
+- **Root cause:** Exit code was being used as a proxy for "success"
+  when it only meant "the script ran to completion".
+- **Fix:** Emit an explicit machine-readable resolution state
+  (`{ "status": "clean" | "dirty" | "errored", ... }`) and gate on
+  *that*, not on exit code alone. Fail loudly on `errored`.
 
-### 7. `nosemgrep` suppression comment adjacency
+### 7. `nosemgrep` suppression comment adjacency (PR #15825)
 
-- **Symptom:** Semgrep still flags a line that has a `# nosemgrep` comment
-  "nearby."
-- **Root cause:** Semgrep requires the suppression comment to be on the
-  *same line* as the finding, or on the immediately preceding line — a
-  blank line or an intervening comment breaks the association.
-- **Fix:** Place `# nosemgrep: rule-id` directly on the offending line
-  (preferred) or on the line immediately above with no blank line between.
-  Always include the specific rule id, never a bare `# nosemgrep`.
-- **Reference:** PR #15825.
+- **Symptom:** Semgrep still flags the line the suppression was meant
+  to cover.
+- **Root cause:** `# nosemgrep: rule-id` must be on the same line as
+  the finding, or on the line immediately above with no blank line
+  between. A blank line, a comment, or a line-continuation breaks the
+  adjacency and the suppression silently no-ops.
+- **Fix:** Place `# nosemgrep: <rule-id>` on the exact offending line,
+  or the line directly above with no gap. Include the rule id — a bare
+  `# nosemgrep` is over-broad and will be rejected by review.
 
-### 8. Broken third-party GitHub Action failing every PR
+### 8. Broken third-party GitHub Action failing every PR (PR #15828)
 
-- **Symptom:** A required check (e.g., `saml-sso-registration.yml`) fails
-  on every PR with an error originating inside a third-party Action —
-  not in our code.
-- **Root cause:** The upstream Action shipped a breaking change under a
-  floating tag (`@v2` moved), or was archived/removed. Our workflow pinned
-  by tag, not by SHA.
-- **Fix:** (a) Immediate — pin to a known-good commit SHA. (b) Follow-up —
-  either replace the Action or vendor its logic. Add the Action to the
-  Dependabot config so future upstream moves surface as PRs, not outages.
-- **Reference:** PR #15828.
+- **Symptom:** Every PR's CI shows a red check from a workflow no one
+  recognizes (`saml-sso-registration.yml`), blocking merges.
+- **Root cause:** A third-party Action pinned by tag was updated
+  upstream in a breaking way; our workflow inherited the break.
+- **Fix:** Pin third-party Actions by full commit SHA, not by tag or
+  branch. When an Action is genuinely abandoned, remove the workflow
+  and record the removal in `learnings.md`.
+- **Root cause:** `removeLabel` is not idempotent; second caller 404s.
+- **Fix:** Wrap in a `try`/`catch` that swallows 404, or check
+  `listLabelsOnIssue` first. Never call `removeLabel` without a guard.
+
+### 2. Missing `allowError` on internal API helpers (PR #15824)
+
+- **Symptom:** A helper that is documented as "best-effort" aborts the
+  entire job on a transient 5xx.
+- **Root cause:** Helper forwards the raw Octokit call without the
+  `allowError` / retry wrapper used elsewhere in the codebase.
+- **Fix:** Route all internal Octokit calls through the shared
+  `withRetry({ allowError: [404, 5xx] })` helper. Bare `octokit.rest.*`
+  calls in workflow scripts are a smell.
+
+### 3. Default `GITHUB_TOKEN` on agent-created PRs (PR #15823)
+
+- **Symptom:** Agent-authored PR cannot trigger downstream workflows;
+  status checks never start.
+- **Root cause:** The default `GITHUB_TOKEN` intentionally does not trigger
+  further workflow runs. Agent PRs need a PAT or a GitHub App token.
+- **Fix:** Use a dedicated app-installation token (or a fine-scoped PAT
+  stored in `secrets.AGENT_PR_TOKEN`) when the agent opens the PR. Document
+  the token's scopes in `standards/`.
+
+### 4. Secrets via argv vs. stdin (PR #15825)
+
+- **Symptom:** Secret value appears in `ps auxf` output and in the runner
+  process list, and is captured by any subprocess that reads `/proc`.
+- **Root cause:** Secret passed as a command-line argument
+  (`tool --token $SECRET`) instead of via stdin or an env var.
+- **Fix:** Pipe secrets through stdin (`echo "$SECRET" | tool --token-stdin`)
+  or `--token-file /dev/stdin`. Never interpolate a secret into argv.
+
+### 5. Bash bare-array-variable bug (PR #15827)
+
+- **Symptom:** Script silently processes only the first element of an
+  array; loop appears to run but does the wrong thing.
+- **Root cause:** `for x in $ARR` instead of `for x in "${ARR[@]}"`. Bare
+  `$ARR` in bash expands to the first element only.
+- **Fix:** Always `"${ARR[@]}"` with quotes and brackets. Add a
+  `shellcheck` pre-commit hook — SC2128 catches this exact bug.
+
+### 6. Exit codes as proxy metrics vs. true resolution state (PR #15826)
+
+- **Symptom:** A workflow reports success (exit 0) while the underlying
+  issue is still unresolved, because the script's exit code reflects
+  "the tool ran" rather than "the problem is fixed."
+- **Root cause:** Conflating process-completion with outcome. `exit 0`
+  meant "analyzer finished," not "no findings."
+- **Fix:** Exit codes MUST reflect true resolution state. Wrap the tool
+  and re-exit non-zero when the postcondition (empty findings, closed
+  issue, green diff) is not met. Add an assertion, not a comment.
+
+### 7. `nosemgrep` suppression comment adjacency (PR #15825)
+
+- **Symptom:** Semgrep continues to flag a line that appears to have a
+  `# nosemgrep` suppression.
+- **Root cause:** The suppression comment must be on the *same line* as
+  the flagged expression, or on the immediately preceding line with no
+  blank line between. Any other placement is silently ignored.
+- **Fix:** Place `# nosemgrep: rule-id` on the exact flagged line, or on
+  the line immediately above with no gap. Include the rule-id so the
+  suppression is narrow and auditable.
+
+### 8. Broken third-party GitHub Action failing every PR (PR #15828)
+
+- **Symptom:** Every PR shows a red check from a workflow no one recently
+  touched; the failing step is inside a third-party Action.
+- **Root cause:** Upstream Action pushed a breaking change to its
+  floating tag (`@v3`, `@main`), or was archived/deleted.
+- **Fix:** Pin every third-party Action to a full commit SHA, not a tag.
+  Add Dependabot for `github-actions` ecosystem so pins get updated with
+  review. When a pinned Action goes stale, replace or fork; do not
+  unpin.
 
 ---
 
 ## Where the memory lives
 
-- **This file (`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`)** — the
-  *method* and the *fix-pattern catalog*. Update when a new recurring
-  pattern is identified (≥2 incidents).
-- **`learnings.md`** — the *incident log*. Every fix PR appends an entry;
-  entries here feed step 3 of the audit method above.
-- **`CLAUDE.md` "Recurring gotchas"** — the *hot list* for agents. Only
-  the top ~10 gotchas live there; anything longer belongs in this
-  playbook.
+- **This file** — audit methodology + fix-pattern catalog (the *before* and
+  the *lookup*).
+- **`learnings.md`** — dated per-incident postmortems (the *after*).
+- **`CLAUDE.md` "Recurring gotchas"** — short inline reminders for the agent
+  loop, with a pointer here for depth.
+- **`standards/GREEN_MAIN_STANDARD.md`** — the rule that main stays green;
+  this playbook is how we keep it green when it drifts.
+
+If you fix a pattern that isn't in the catalog above, add it here in the same
+Symptom / Root cause / Fix format and cite the PR. That is how self-healing
+compounds.
+- **`learnings.md`** — chronological incident log; one entry per
+  learned lesson, dated.
+- **`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`** (this file) —
+  the *method* (how to audit) and the *catalog* (recurring patterns).
 - **`standards/GREEN_MAIN_STANDARD.md`** — the invariant this playbook
-  ultimately protects: `main` stays green.
+  exists to defend: `main` stays green.
+- **`CLAUDE.md`** — day-to-day gotcha list for the next agent; points
+  here for the deeper method.
+
+When you learn something new in an audit: add the incident to
+`learnings.md`, and if the pattern is likely to recur, add a numbered
+entry to the catalog above with its originating PR.
+- **This file (`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md`)** — the
+  method and the fix-pattern catalog. Update the catalog when a new
+  recurring pattern is fixed.
+- **`learnings.md`** — individual incident write-ups, one per event.
+  Continue to append here; do not fold incidents into this playbook until
+  they recur.
+- **`CLAUDE.md` "Recurring gotchas"** — the short-form checklist the
+  agent reads on every task. New gotchas belong there once a pattern has
+  bitten twice.
+- **`standards/GREEN_MAIN_STANDARD.md`** — the outcome contract this
+  playbook serves. If the playbook and the standard disagree, the
+  standard wins and this file gets updated.
