@@ -1,34 +1,19 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-15T05:00:51.965Z",
+  "generated_at": "2026-07-15T06:46:11.093Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "summary": "0/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 0,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [
-          {
-            "id": 29390336744,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29390336744",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29390207297,
-            "name": "Stuck Label Detection & Auto-Progression",
-            "path": ".github/workflows/stuck-label-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29390207297",
-            "conclusion": "failure"
-          }
-        ],
+        "recent_failures": [],
         "stuck": []
       }
     },
