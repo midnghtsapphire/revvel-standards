@@ -1,43 +1,27 @@
-# WR: {TITLE}
-
-<!-- who: {ISSUE_REF} -->
-<!-- date: {DATE} -->
-<!-- description: {ISSUE_REF} -->
-<!-- **Issue:** {ISSUE_REF}   -->
-<!-- **Repository:** {REPO}   -->
-<!-- **Created:** {DATE}      -->
-<!-- **WR Status:** {STATUS}  -->
+# [WR] {TITLE}
 
 ## Issue Context
 
-{ISSUE_BODY}
+{ISSUE_CONTEXT}
 
-## Summary
+## Scope
 
-{SUMMARY}
+<!-- Concise scope statement. What's in, what's out. -->
 
-## Objective
+## Acceptance Criteria
 
-{OBJECTIVE}
-
-## Required Bundle
-
-{REQUIRED_BUNDLE}
-
-## Definition of Done
-
-{DEFINITION_OF_DONE}
-
-## Validation
-
-{VALIDATION}
-
-## Blockers
-
-{BLOCKERS}
+- [ ] Change delivers the described behavior
+- [ ] Tests updated / added where applicable
+- [ ] Docs updated where applicable
 
 ## Learnings — What & Why
 
-_Why this WR exists, and what the assigned agent should know before starting. Populated automatically for follow-up-generated WRs; agents completing other WR types should fill this in themselves once done, summarizing what they did and why, for future audits._
+{LEARNINGS}
 
-<!-- Market research, BOM, SEO, monetization sections are intentionally absent: BASIC template is for bug/chore/docs/refactor WRs with no product/market surface. Use WR_TEMPLATE_FULL.md only for new products or sellable assets. -->
+<!--
+Guidance: agents completing other WR types should fill this in themselves once
+done — capture what was learned and *why* it matters, not just what changed.
+For follow-up-generated WRs this section is populated automatically by the
+Follow-up Checkbox Router with the original follow-up text and a link to the
+source PR/issue.
+-->

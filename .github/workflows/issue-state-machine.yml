@@ -18,6 +18,36 @@ jobs:
     permissions:
       issues: write
     steps:
+      - name: Transition issue state
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = parseInt('${{ inputs.issue_number }}', 10);
+            const targetState = '${{ inputs.target_state }}';
+
+            // Lifecycle labels that are mutually exclusive
+            const lifecycleLabels = [
+              'state:triage',
+              'state:ready',
+              'state:in-progress',
+              'state:blocked',
+              'state:review',
+              'state:done',
+            ];
+
+            // Remove conflicting labels
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+
+            const currentLabels = issue.labels.map(l => (typeof l === 'string' ? l : l.name));
+            const toRemove = currentLabels.filter(
+              name => lifecycleLabels.includes(name) && name !== targetState
+            );
+
+            console.log('Conflicts found:', conflicts);
       - name: Remove conflicting labels
         uses: actions/github-script@v7
         with:
@@ -34,6 +64,23 @@ jobs:
 
             for (const label of lifecycleLabels) {
               if (label === targetState) continue;
+            const conflicts = JSON.parse('${{ steps.check_labels.outputs.conflicts }}');
+            const issueNumber = context.payload.issue.number;
+            for (const label of conflicts) {
+              let removed = true;
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                name: label
+              }).catch(err => {
+                if (err.status !== 404) throw err;
+                removed = false;
+                console.log('Label already absent:', label);
+              });
+              if (removed) {
+                console.log('Removed label:', label);
+            for (const name of toRemove) {
               try {
                 await github.rest.issues.removeLabel({
                   owner: context.repo.owner,
@@ -43,6 +90,10 @@ jobs:
                 });
               } catch (e) {
                 console.log(`Skipping removal of ${label}: ${e.message}`);
+                  name,
+                });
+              } catch (e) {
+                console.log(`removeLabel(${name}) failed (likely 404 race): ${e.message}`);
               }
             }
 
@@ -52,6 +103,104 @@ jobs:
           script: |
             const issueNumber = parseInt('${{ inputs.issue_number }}', 10);
             const targetState = '${{ inputs.target_state }}';
+            const labels = context.payload.issue.labels.map(l => l.name);
+            if (!labels.some(l => l.startsWith('wr:'))) {
+              try {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.issue.number,
+                  labels: ['wr:new']
+                });
+                console.log('Added wr:new label');
+              } catch (e) {
+                const rateLimited = e?.status === 403 && /rate limit/i.test(e?.message || '');
+                core.warning(`addLabels(wr:new) for issue #${context.payload.issue.number} failed${rateLimited ? ' (API rate limit exceeded — degrading gracefully)' : ''}: ${e.message}`);
+              }
+            } else {
+              console.log('Issue already has wr:* label:', labels.filter(l => l.startsWith('wr:')));
+            }
+    timeout-minutes: 15
+  transition-state:
+    runs-on: ubuntu-latest
+    env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.target_state
+    steps:
+      - name: Transition state
+        id: transition
+        uses: actions/github-script@v9.0.0
+        with:
+          script: >
+            const targetState = '${{ github.event.inputs.target_state }}';
+
+            const issueNumber = ${{ github.event.inputs.issue_number || 0 }};
+
+
+            // Map target state to label
+
+            const stateLabels = {
+              'new': 'wr:new',
+              'research': 'wr:research',
+              'code': 'wr:code',
+              'pr-open': 'wr:pr-open',
+              'checking': 'wr:checking',
+              'review': 'wr:review',
+              'merge-ready': 'wr:merge-ready',
+              'done': 'wr:done'
+            };
+
+
+            const newLabel = stateLabels[targetState];
+
+            if (!newLabel) {
+              core.setFailed('Invalid target state: ' + targetState);
+              return;
+            }
+
+
+            const issue = issueNumber > 0 ? issueNumber :
+            context.payload.issue?.number;
+
+            if (!issue) {
+              core.setFailed('No issue number provided');
+              return;
+            }
+
+
+            // Remove all lifecycle labels first
+
+            const allLifecycleLabels = Object.values(stateLabels);
+
+            const { data: issueData } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue
+            });
+
+
+            for (const label of issueData.labels) {
+              if (allLifecycleLabels.includes(label.name)) {
+                let removed = true;
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue,
+                  name: label.name
+                }).catch(err => {
+                  if (err.status !== 404) throw err;
+                  removed = false;
+                  console.log('Label already absent:', label.name);
+                });
+                if (removed) {
+                  console.log('Removed label:', label.name);
+                }
+              }
+            }
+
+
+            // Add new label
+
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -83,3 +232,16 @@ jobs:
                 console.log(`Skipping removal of ${label}: ${e.message}`);
               }
             }
+            // Add wr:done label
+            try {
+            // Add target state label
+            if (!currentLabels.includes(targetState)) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: [targetState],
+              });
+            }
+
+            console.log(`Transitioned issue #${issueNumber} to ${targetState}`);
