@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-15T22:20:55.850Z",
+  "generated_at": "2026-07-15T23:20:33.130Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,10 +15,10 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 29452328023,
-            "name": "Credential Autonomy Agent",
-            "path": ".github/workflows/credential-autonomy-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29452328023",
+            "id": 29458198182,
+            "name": "Daily WR & PR Summary",
+            "path": ".github/workflows/daily-wr-summary.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29458198182",
             "conclusion": "failure"
           }
         ],
