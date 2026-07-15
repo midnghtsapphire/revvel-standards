@@ -1,119 +1,51 @@
-# Markdown Lint Auto-Heal
-#
-# WHY: nearly every PR that touches Markdown (especially generated
-# wr/issues/*.md research packets) goes red on the changed-Markdown lint gate
-# (CircleCI lint-changed-markdown.sh / wr-lint) for mechanical findings:
-# multiple blank lines, asterisk bullets, setext headings, a second H1 from
-# the WR header prepend, trailing heading punctuation, …
-#
-# This workflow closes the loop: when a same-repo PR touches Markdown, it runs
-# scripts/heal-markdown.js on the changed files (custom structural fixes for
-# MD025/MD003 + markdownlint-cli2 --fix for the rest) and pushes the result
-# back to the PR branch. The lint gates themselves stay real and untouched —
-# this fixes files BEFORE the gate judges them, it never weakens the gate.
-#
-# Loop safety (three layers):
-#   1. the healer is idempotent — a second run produces no diff, so no push;
-#   2. we only push when `git diff` is non-empty;
-#   3. runs whose head commit is already an auto-heal commit are skipped.
-#
-# Credential safety (per Copilot review): the checkout does NOT persist
-# credentials, and no secret is in the environment while PR-controlled code
-# (npm ci lifecycle scripts, the healer itself) executes. The push token is
-# injected only in the final step, which runs nothing but git.
-name: Markdown Lint Auto-Heal
+name: Markdown Lint Advisory
 
+# Formatting must never push surprise commits into a contributor's branch.
+# This workflow is now manual and read-only. It reports what would change;
+# maintainers may then run `npm run lint:fix` deliberately in a dedicated PR.
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths: ["**.md"]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: md-auto-heal-${{ github.event.pull_request.number }}
+  group: markdown-lint-advisory
   cancel-in-progress: true
 
 jobs:
-  heal:
-    # Fork PRs: no write access to the head branch, so skip (the gate still
-    # reports; a maintainer can run `npm run markdown:heal -- <files>`).
-    if: github.event.pull_request.head.repo.full_name == github.repository
+  check:
+    name: Check Markdown without mutation
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
-          # No token persisted: PR-controlled code runs in the steps below and
-          # must never see a credential. The push step injects its own token.
           persist-credentials: false
 
       - uses: actions/setup-node@v4
-        with: { node-version: "22" }
+        with:
+          node-version: "22"
+          cache: npm
 
-      - name: Install dependencies (local markdownlint-cli2)
+      - name: Install dependencies
         run: npm ci
 
-      - name: Heal changed Markdown
-        id: heal_step
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      - name: Run Markdown lint
+        run: npm run lint
+
+      - name: Explain remediation
+        if: failure()
         run: |
-          set -o pipefail
-
-          # Layer-3 loop guard: if the head commit is already ours, stop here.
-          if git log -1 --format=%s "$HEAD_SHA" | grep -qF '[md-auto-heal]'; then
-            echo "Head commit is an auto-heal commit; nothing to do."
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # NUL-delimited so paths with spaces/quoting survive intact.
-          mapfile -d '' -t FILES < <(git diff -z --name-only --diff-filter=d "$BASE_SHA" "$HEAD_SHA" -- '*.md')
-          if [ "${#FILES[@]}" -eq 0 ]; then
-            echo "No changed Markdown files."
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "Healing changed Markdown:"
-          printf '%s\n' "${FILES[@]}"
-          node scripts/heal-markdown.js "${FILES[@]}" | tee heal-output.txt
-
           {
-            echo "## Markdown auto-heal"
-            echo '```'
-            cat heal-output.txt
+            echo "## Markdown lint findings"
+            echo
+            echo "This workflow is advisory and does not rewrite branches."
+            echo "Create a dedicated formatting PR and run:"
+            echo
+            echo '```bash'
+            echo 'npm ci'
+            echo 'npm run lint:fix'
+            echo 'npm run verify'
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          rm -f heal-output.txt
-
-          if git diff --quiet; then
-            echo "Already lint-clean (or nothing auto-fixable); no push needed."
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Commit and push healing
-        if: steps.heal_step.outputs.changed == 'true'
-        env:
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
-          # PAT fallback so the healing commit re-triggers the lint gates
-          # (pushes made with the default GITHUB_TOKEN cannot start other
-          # workflows — the PR would sit with stale red checks). Injected only
-          # here: this step runs nothing but git, never PR-controlled code.
-          PUSH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -- '*.md'
-          git commit -m "style(md): auto-heal markdown lint findings [md-auto-heal]
-
-          Mechanical fixes only (markdownlint-cli2 --fix + setext→ATX +
-          extra-H1 demotion via scripts/heal-markdown.js). No content changes."
-          git push "https://x-access-token:${PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${HEAD_REF}"
