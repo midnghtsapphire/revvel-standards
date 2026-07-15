@@ -5,11 +5,6 @@
 // (see wr/pending/07-review-fallback-when-octopus-quota-dead.md).
 
 const test = require('node:test');
-const {
-  classifyRateLimit,
-  computePrimaryResetWaitMs,
-
-const {
 const assert = require('node:assert');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -40,75 +35,13 @@ const {
   computePrimaryResetWaitMs,
   computeRetryDelayMs,
   githubRequest,
+  RATE_LIMIT_MAX_INPROCESS_WAIT_MS,
 } = require('../scripts/octopus-review-fallback.js');
 
 test('isQuotaDeathComment matches known Octopus quota banners (case-insensitive)', () => {
   assert.strictEqual(isQuotaDeathComment('Please Add Your Own API Keys to continue reviews'), true);
   assert.strictEqual(isQuotaDeathComment('Your monthly AI usage limit was hit.'), true);
   assert.strictEqual(isQuotaDeathComment('quota exceeded for this billing period'), true);
-test('classifyRateLimit returns null for non-rate-limit statuses', () => {
-  assert.equal(classifyRateLimit(200, {}, ''), null);
-  assert.equal(classifyRateLimit(404, {}, ''), null);
-  assert.equal(classifyRateLimit(500, {}, ''), null);
-});
-
-test('classifyRateLimit returns null for genuine permission 403 (no rate-limit signals)', () => {
-  const result = classifyRateLimit(
-    403,
-    { 'content-type': 'application/json' },
-    JSON.stringify({ message: 'Resource not accessible by integration' }),
-  );
-  assert.equal(result, null);
-});
-
-test('classifyRateLimit detects primary limit via headers', () => {
-  const result = classifyRateLimit(
-    403,
-    { 'x-ratelimit-remaining': '0', 'x-ratelimit-reset': String(Math.floor(Date.now() / 1000) + 600) },
-    JSON.stringify({ message: 'API rate limit exceeded for installation ID 12345' }),
-  );
-  assert.equal(result, 'primary');
-});
-
-test('classifyRateLimit detects primary limit via body fallback', () => {
-  const result = classifyRateLimit(
-    403,
-    {},
-    JSON.stringify({ message: 'API rate limit exceeded for installation ID 12345' }),
-  );
-  assert.equal(result, 'primary');
-});
-
-test('classifyRateLimit detects secondary limit via Retry-After', () => {
-  const result = classifyRateLimit(
-    429,
-    { 'retry-after': '30' },
-    JSON.stringify({ message: 'Please slow down' }),
-  );
-  assert.equal(result, 'secondary');
-});
-
-test('classifyRateLimit detects secondary limit via explicit wording', () => {
-  const result = classifyRateLimit(
-    403,
-    {},
-    JSON.stringify({ message: 'You have exceeded a secondary rate limit' }),
-  );
-  assert.equal(result, 'secondary');
-});
-
-test('classifyRateLimit distinguishes abuse detection as secondary', () => {
-  const result = classifyRateLimit(
-    403,
-    {},
-    JSON.stringify({ message: 'You have triggered an abuse detection mechanism' }),
-// -----------------------------------------------------------------------------
-// isRateLimitedResponse
-// -----------------------------------------------------------------------------
-
-test('isRateLimitedResponse: 429 is always rate-limited', () => {
-  assert.equal(isRateLimitedResponse(429, ''), true);
-  assert.equal(isRateLimitedResponse(429, 'anything'), true);
 });
 
 test('isQuotaDeathComment does NOT match healthy reviews or empty bodies', () => {
@@ -273,27 +206,43 @@ test('classifyRateLimit distinguishes PRIMARY (installation budget) from SECONDA
     classifyRateLimit(403, {}, JSON.stringify({ message: 'Resource not accessible by integration' })),
     null
   );
-  assert.equal(result, 'secondary');
 });
 
-test('computePrimaryResetWaitMs returns milliseconds until reset', () => {
-  const now = Date.now();
-  const resetSec = Math.floor(now / 1000) + 300; // 5 minutes out
-  const waitMs = computePrimaryResetWaitMs({ 'x-ratelimit-reset': String(resetSec) }, now);
-  // Expect ~5 minutes plus 1s pad.
-  assert.ok(waitMs >= 300 * 1000, `expected >= 300000ms, got ${waitMs}`);
-  assert.ok(waitMs <= 302 * 1000, `expected <= 302000ms, got ${waitMs}`);
+test('computePrimaryResetWaitMs reads x-ratelimit-reset as a Unix-seconds timestamp', () => {
+  const futureSeconds = Math.floor(Date.now() / 1000) + 120;
+  const waitMs = computePrimaryResetWaitMs({ 'x-ratelimit-reset': String(futureSeconds) });
+  assert.ok(waitMs > 110000 && waitMs <= 121000, `expected ~120s wait, got ${waitMs}ms`);
+  assert.strictEqual(computePrimaryResetWaitMs({}), null, 'missing header must not be guessed at');
+  assert.strictEqual(computePrimaryResetWaitMs({ 'x-ratelimit-reset': 'not-a-number' }), null);
 });
 
-test('computePrimaryResetWaitMs returns null when header missing', () => {
-  assert.equal(computePrimaryResetWaitMs({}), null);
-  assert.equal(computePrimaryResetWaitMs({ 'x-ratelimit-reset': '' }), null);
-  assert.equal(computePrimaryResetWaitMs({ 'x-ratelimit-reset': 'not-a-number' }), null);
+test('computeRetryDelayMs honors Retry-After in full (bounded only by the shared wait ceiling), falls back to short capped exponential backoff', () => {
+  assert.strictEqual(computeRetryDelayMs({ 'retry-after': '2' }, 1, 1000), 2000);
+  assert.strictEqual(computeRetryDelayMs({}, 1, 1000), 1000);
+  assert.strictEqual(computeRetryDelayMs({}, 2, 1000), 2000);
+  assert.strictEqual(computeRetryDelayMs({}, 3, 1000), 4000);
+  // A server-provided Retry-After is now honored close to fully — bounded
+  // only by RATE_LIMIT_MAX_INPROCESS_WAIT_MS (the shared in-process wait
+  // ceiling), NOT clamped down to a few seconds. Clamping a real
+  // Retry-After to 20s (the pre-fix behavior) meant retrying BEFORE
+  // GitHub's requested delay — exactly the bug flagged in Copilot's
+  // post-merge review of #15836.
+  // Assert against the module's own exported constant rather than re-parsing
+  // the env var (which is fragile — NaN if unset before this line runs).
+  assert.strictEqual(computeRetryDelayMs({ 'retry-after': '9999' }, 1, 1000), RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
+  // No header at all still falls back to the short exponential guess,
+  // capped at RATE_LIMIT_MAX_DELAY_MS (unrelated, deliberately small cap —
+  // it's a guess, not a real number from GitHub).
+  assert.strictEqual(computeRetryDelayMs({}, 10, 1000), 20000);
 });
 
-test('computePrimaryResetWaitMs returns 0 when reset is already in the past', () => {
-  const past = Math.floor(Date.now() / 1000) - 60;
-  assert.equal(computePrimaryResetWaitMs({ 'x-ratelimit-reset': String(past) }), 0);
+test('computeRetryDelayMs honors an explicit Retry-After: 0 as "retry immediately", not "missing"', () => {
+  // Retry-After: 0 is a valid HTTP value meaning "no wait" — it must not be
+  // treated the same as a missing header (which falls back to exponential
+  // backoff instead of retrying right away).
+  assert.strictEqual(computeRetryDelayMs({ 'retry-after': '0' }, 1, 1000), 0);
+});
+
 test('githubRequest falls back to short backoff for a primary-worded 403 with NO rate-limit headers to read a reset from', async () => {
   // No x-ratelimit-* headers at all (e.g. stripped upstream) — classifies
   // "primary" by text, but computePrimaryResetWaitMs has nothing to read,
@@ -317,139 +266,23 @@ test('githubRequest falls back to short backoff for a primary-worded 403 with NO
   }
 });
 
-test('computeRetryDelayMs honors server-provided Retry-After in full (not capped at 20s)', () => {
-  // Retry-After: 120 seconds. Under a generous maxWait, we must honor all 120s
-  // — the old code clamped at 20s, which is what this test guards against.
-  const delay = computeRetryDelayMs({ 'retry-after': '120' }, 0, { maxWait: 10 * 60 * 1000 });
-  assert.equal(delay, 120 * 1000);
+test('githubRequest gives up after exhausting retries on a persistent header-less rate limit', async () => {
+  const mock = mockHttpsResponses([
+    { status: 403, data: JSON.stringify({ message: 'API rate limit exceeded for installation.' }) },
+  ]);
+  try {
+    await assert.rejects(
+      () => githubRequest({ pathName: '/repos/midnghtsapphire/revvel-standards/pulls/1/reviews' }),
+      /GitHub HTTP 403/
+    );
+    // RATE_LIMIT_MAX_RETRIES retries + the initial attempt.
+    const maxRetries = parseInt(process.env.RATE_LIMIT_MAX_RETRIES, 10);
+    assert.strictEqual(mock.callCount(), maxRetries + 1);
+  } finally {
+    mock.restore();
+  }
 });
 
-test('computeRetryDelayMs bounds Retry-After by maxWait ceiling', () => {
-  const delay = computeRetryDelayMs({ 'retry-after': '99999' }, 0, { maxWait: 60 * 1000 });
-  assert.equal(delay, 60 * 1000);
-});
-
-test('computeRetryDelayMs falls back to exponential backoff without Retry-After', () => {
-  const d0 = computeRetryDelayMs({}, 0, { baseDelay: 1500, maxWait: 10 * 60 * 1000 });
-  const d1 = computeRetryDelayMs({}, 1, { baseDelay: 1500, maxWait: 10 * 60 * 1000 });
-  const d2 = computeRetryDelayMs({}, 2, { baseDelay: 1500, maxWait: 10 * 60 * 1000 });
-  assert.equal(d0, 1500);
-  assert.equal(d1, 3000);
-  assert.equal(d2, 6000);
-});
-
-test('isRateLimitedResponse remains true for both primary and secondary', () => {
-  assert.equal(isRateLimitedResponse(429, { 'retry-after': '5' }, ''), true);
-  assert.equal(
-    isRateLimitedResponse(403, { 'x-ratelimit-remaining': '0', 'x-ratelimit-reset': '9999999999' }, ''),
-    true,
-  );
-  assert.equal(isRateLimitedResponse(200, {}, ''), false);
-});
-
-test('githubRequest waits real x-ratelimit-reset time for primary limit (not exponential guess)', async () => {
-  const nowSec = Math.floor(Date.now() / 1000);
-  const resetSec = nowSec + 4; // ~4 seconds out
-  let calls = 0;
-  const sleeps = [];
-  const transport = async () => {
-    calls += 1;
-    if (calls === 1) {
-      return {
-        status: 403,
-        headers: {
-          'x-ratelimit-remaining': '0',
-          'x-ratelimit-reset': String(resetSec),
-        },
-        body: JSON.stringify({ message: 'API rate limit exceeded for installation' }),
-      };
-    }
-    return { status: 200, headers: {}, body: '{}' };
-  };
-  const fakeSleep = async (ms) => {
-    sleeps.push(ms);
-  };
-  const res = await githubRequest('GET', '/x', 'token', null, {
-    transport,
-    sleep: fakeSleep,
-    maxWait: 10 * 60 * 1000,
-  });
-  assert.equal(res.status, 200);
-  assert.equal(sleeps.length, 1);
-  // Must be within a couple of seconds of the real reset delta (>= 3s, well
-  // above the 1.5s exponential-backoff first step that the old code used).
-  assert.ok(sleeps[0] >= 3 * 1000, `expected >= 3000ms wait, got ${sleeps[0]}`);
-  assert.ok(sleeps[0] <= 6 * 1000, `expected <= 6000ms wait, got ${sleeps[0]}`);
-});
-
-test('githubRequest defers (throws RATE_LIMIT_DEFERRED) when primary reset exceeds ceiling', async () => {
-  const farFutureSec = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hour
-  const transport = async () => ({
-    status: 403,
-    headers: {
-      'x-ratelimit-remaining': '0',
-      'x-ratelimit-reset': String(farFutureSec),
-    },
-    body: JSON.stringify({ message: 'API rate limit exceeded for installation' }),
-  });
-  const sleeps = [];
-  const fakeSleep = async (ms) => sleeps.push(ms);
-  await assert.rejects(
-    githubRequest('GET', '/x', 'token', null, {
-      transport,
-      sleep: fakeSleep,
-      maxWait: 10 * 60 * 1000, // 10 min ceiling; 1h reset exceeds it
-    }),
-    (err) => err && err.code === 'RATE_LIMIT_DEFERRED',
-  );
-  // Must NOT have slept — we gave up immediately rather than burning retries.
-  assert.equal(sleeps.length, 0);
-});
-
-test('githubRequest retries secondary limit with short backoff honoring Retry-After', async () => {
-  let calls = 0;
-  const sleeps = [];
-  const transport = async () => {
-    calls += 1;
-    if (calls === 1) {
-      return {
-        status: 429,
-        headers: { 'retry-after': '2' },
-        body: JSON.stringify({ message: 'Please slow down' }),
-      };
-    }
-    return { status: 200, headers: {}, body: '{}' };
-  };
-  const fakeSleep = async (ms) => sleeps.push(ms);
-  const res = await githubRequest('GET', '/x', 'token', null, {
-    transport,
-    sleep: fakeSleep,
-    maxWait: 10 * 60 * 1000,
-  });
-  assert.equal(res.status, 200);
-  assert.equal(sleeps.length, 1);
-  assert.equal(sleeps[0], 2000); // full Retry-After honored
-});
-
-test('githubRequest returns genuine permission 403 without retrying', async () => {
-  let calls = 0;
-  const transport = async () => {
-    calls += 1;
-    return {
-      status: 403,
-      headers: {},
-      body: JSON.stringify({ message: 'Resource not accessible by integration' }),
-    };
-  };
-  const sleeps = [];
-  const fakeSleep = async (ms) => sleeps.push(ms);
-  const res = await githubRequest('GET', '/x', 'token', null, {
-    transport,
-    sleep: fakeSleep,
-  });
-  assert.equal(res.status, 403);
-  assert.equal(calls, 1);
-  assert.equal(sleeps.length, 0);
 test('githubRequest waits out the ACTUAL x-ratelimit-reset time for a real PRIMARY limit within the wait ceiling', async () => {
   const resetInSeconds = 2; // within the test override of RATE_LIMIT_MAX_INPROCESS_WAIT_MS (3000ms)
   const resetEpoch = Math.floor(Date.now() / 1000) + resetInSeconds;
@@ -525,6 +358,35 @@ test('githubRequest retries a SECONDARY (abuse-detection) limit with short backo
     // this fix — this is the case the original short-backoff retry was
     // actually designed for and must keep working.
     assert.ok(elapsedMs >= 800, `expected to honor Retry-After (~1s), only waited ${elapsedMs}ms`);
+  } finally {
+    mock.restore();
+  }
+});
+
+test('githubRequest gives up immediately when a SECONDARY Retry-After exceeds the in-process wait ceiling (no truncate-and-retry-early)', async () => {
+  // Retry-After of 9999s is far beyond the 3s test ceiling. Truncating it to
+  // the ceiling and retrying would fire long before GitHub's real window and,
+  // across attempts, burn the job's timeout — so githubRequest must give up
+  // cleanly on the FIRST response instead (cubic finding on #15932).
+  const mock = mockHttpsResponses([
+    {
+      status: 403,
+      headers: { 'retry-after': '9999' },
+      data: JSON.stringify({
+        message: 'You have exceeded a secondary rate limit. Please retry your request again later.',
+      }),
+    },
+    { status: 200, data: JSON.stringify([{ id: 9 }]) },
+  ]);
+  const start = Date.now();
+  try {
+    await assert.rejects(
+      () => githubRequest({ pathName: '/repos/midnghtsapphire/revvel-standards/pulls/6/reviews' }),
+      /exceeds the in-process wait budget/
+    );
+    const elapsedMs = Date.now() - start;
+    assert.strictEqual(mock.callCount(), 1, 'must not retry a Retry-After it cannot honor before timeout');
+    assert.ok(elapsedMs < 500, `expected an immediate give-up, took ${elapsedMs}ms`);
   } finally {
     mock.restore();
   }
