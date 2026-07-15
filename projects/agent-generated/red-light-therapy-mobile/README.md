@@ -25,4 +25,4 @@ Concept prompt references: [Smartphone-Driven Low-Power Light-Emitting Device (P
 
 ## Safety
 
-This tool is for educational planning and workflow support only. It is not medical advice.
+This tool is for general wellness and informational purposes only. It is not a medical device and does not diagnose, treat, cure, or prevent any condition.
