@@ -1,24 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-15T00:25:31.941Z",
+  "generated_at": "2026-07-15T13:32:29.913Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29378970267,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29378970267",
+            "id": 29416547675,
+            "name": "Secrets Guardian",
+            "path": ".github/workflows/secrets-guardian.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29416547675",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29416328994,
+            "name": "Credential Autonomy Agent",
+            "path": ".github/workflows/credential-autonomy-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29416328994",
             "conclusion": "failure"
           }
         ],
@@ -44,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29418718972"
       }
     },
     "sheaf": {
