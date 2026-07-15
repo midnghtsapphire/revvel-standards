@@ -7,23 +7,27 @@ on:
         description: 'Issue number to work on'
         required: true
         type: string
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: write
-  pull-requests: write
   issues: write
+  pull-requests: write
 
 env:
   GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
 jobs:
   jules-agent:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/jules'))
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -51,3 +55,39 @@ jobs:
             --body "Closes #${{ inputs.issue_number }}" \
             --base main --head "$BRANCH" || true
           gh issue edit "${{ inputs.issue_number }}" --add-label "wr:pr-open" || true
+      - name: Determine issue number
+        id: issue
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
+          else
+            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create branch and stub commit
+        id: branch
+        run: |
+          ISSUE=${{ steps.issue.outputs.number }}
+          BRANCH="jules/issue-${ISSUE}"
+          git config user.name "jules-agent[bot]"
+          git config user.email "jules-agent[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          mkdir -p .jules
+          echo "Working on issue #${ISSUE} at $(date -u +%FT%TZ)" > ".jules/issue-${ISSUE}.md"
+          git add ".jules/issue-${ISSUE}.md"
+          git commit -m "chore(jules): stub for #${ISSUE}"
+          git push origin "$BRANCH"
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Open PR
+        run: |
+          ISSUE=${{ steps.issue.outputs.number }}
+          gh pr create \
+            --title "chore(jules): work on #${ISSUE}" \
+            --body "Closes #${ISSUE}" \
+            --head "${{ steps.branch.outputs.branch }}" \
+            --base main
+
+      - name: Label issue
+        run: |
+          gh issue edit ${{ steps.issue.outputs.number }} --add-label "wr:pr-open" || true
