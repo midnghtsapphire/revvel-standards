@@ -62,175 +62,175 @@ Note: This doesn't follow the SemVer parameters to increase a version (breaking 
 Usage
 - uses: nerdtronik/auto-versioning@v2
   with:
-  # Commit to compare changes against (usually branch merging to or pr target)
-  # This uses the commit id/sha
-  #
-  # Default: "${{ github.event.pull_request.base.sha || github.event.before }}
+  ## Commit to compare changes against (usually branch merging to or pr target)
+  ## This uses the commit id/sha
+  ##
+  ## Default: "${{ github.event.pull_request.base.sha || github.event.before }}
     target-commit: ${{ github.event.pull_request.base.sha || github.event.before }}
 
-  # Commit to compare changes to target-commit (usually pr branch to merge)
-  # This uses the commit id/sha
-  #
-  # Default: "${{ github.event.pull_request.head.sha || github.event.after }}
+  ## Commit to compare changes to target-commit (usually pr branch to merge)
+  ## This uses the commit id/sha
+  ##
+  ## Default: "${{ github.event.pull_request.head.sha || github.event.after }}
     source-commit: ${{ github.event.pull_request.head.sha || github.event.after }}
 
-  # Top limit to increase the patch version vA.B.(C+1)
-  # If the changes are under this limit (0 < change % <= patch-limit)
-  # it will only increase the patch version
-  #
-  # Default: 10
+  ## Top limit to increase the patch version vA.B.(C+1)
+  ## If the changes are under this limit (0 < change % <= patch-limit)
+  ## it will only increase the patch version
+  ##
+  ## Default: 10
     patch-limit: 10
 
-  # Top limit to increase the minor version vA.(B+1).C
-  # If the changes are under this limit and over the patch-limit (patch-limit < change % <= minor-limit)
-  # it will only increase the minor version and set patch version to 0
-  #
-  # Default: 75
+  ## Top limit to increase the minor version vA.(B+1).C
+  ## If the changes are under this limit and over the patch-limit (patch-limit < change % <= minor-limit)
+  ## it will only increase the minor version and set patch version to 0
+  ##
+  ## Default: 75
     minor-limit: 75
 
-  # Base directory to check the changes, the script will cd to this dir and check the changes there
-  #
-  # Default:
+  ## Base directory to check the changes, the script will cd to this dir and check the changes there
+  ##
+  ## Default
     directory: "."
 
-  # List of files, paths, patterns (./_path_) to exclude from changes checking
-  # (comma separated)
-  #
-  # Default:
+  ## List of files, paths, patterns (./_path_) to exclude from changes checking
+  ## (comma separated)
+  ##
+  ## Default
     exclude: ""
 
-  # List of files, paths, patterns (./_path_) to include only for changes checking
-  # (comma separated)
-  # This will avoid any file that doesn't match the list
-  #
-  # Default:
+  ## List of files, paths, patterns (./_path_) to include only for changes checking
+  ## (comma separated)
+  ## This will avoid any file that doesn't match the list
+  ##
+  ## Default
     include: ""
 
-  # Exclude files included in the .gitigore file
-  #
-  # Default: true
+  ## Exclude files included in the .gitigore file
+  ##
+  ## Default: true
     exclude-gitignore: true
 
-  # Include the 'v' prefix in the version tag -> vX.Y.Z
-  #
-  # Default: true
+  ## Include the 'v' prefix in the version tag -> vX.Y.Z
+  ##
+  ## Default: true
     v-prefix: true
 
-  # Mark this version as an alpha version
-  # This will add the suffix '-alpha' to the version and will increase only
-  # the minor and major versions, also, handles multiple subversions
-  # with '-alpha.X' every time following alpha versions are published without big changes
-  #
-  # Default: false
+  ## Mark this version as an alpha version
+  ## This will add the suffix '-alpha' to the version and will increase only
+  ## the minor and major versions, also, handles multiple subversions
+  ## with '-alpha.X' every time following alpha versions are published without big changes
+  ##
+  ## Default: false
     is-alpha: false
 
-  # Mark this version as a beta version
-  # This will add the suffix '-beta' to the version and will increase only
-  # the minor and major versions, also, handles multiple subversions
-  # with '-beta.X' every time following beta versions are published without big changes
-  #
-  # Default: false
+  ## Mark this version as a beta version
+  ## This will add the suffix '-beta' to the version and will increase only
+  ## the minor and major versions, also, handles multiple subversions
+  ## with '-beta.X' every time following beta versions are published without big changes
+  ##
+  ## Default: false
     is-beta: false
 
-  # Mark this version as a release candidate version
-  # This will add the suffix '-rc' to the version and will increase only
-  # the minor and major versions, also, handles multiple subversions
-  # with '-rc.X' every time following release candidate versions
-  # are published without big changes
-  #
-  # Default: false
+  ## Mark this version as a release candidate version
+  ## This will add the suffix '-rc' to the version and will increase only
+  ## the minor and major versions, also, handles multiple subversions
+  ## with '-rc.X' every time following release candidate versions
+  ## are published without big changes
+  ##
+  ## Default: false
     is-rc: false
 
-  # Key to use when version is Alpha version
-  # For example, if this value is 'a', the version will be 'vA.B.C-a'
-  # instead of 'vA.B.C-alpha'
-  #
-  # Default: "alpha
+  ## Key to use when version is Alpha version
+  ## For example, if this value is 'a', the version will be 'vA.B.C-a'
+  ## instead of 'vA.B.C-alpha'
+  ##
+  ## Default: "alpha
     alpha-key: alpha
 
-  # Key to use when version is Beta version
-  # For example, if this value is 'b', the version will be 'vA.B.C-b'
-  # instead of 'vA.B.C-beta'
-  #
-  # Default: "beta
+  ## Key to use when version is Beta version
+  ## For example, if this value is 'b', the version will be 'vA.B.C-b'
+  ## instead of 'vA.B.C-beta'
+  ##
+  ## Default: "beta
     beta-key: beta
 
-  # Key to use when version is Rc version
-  # For example, if this value is 'r', the version will be 'vA.B.C-r'
-  # instead of 'vA.B.C-rc'
-  #
-  # Default: "rc
+  ## Key to use when version is Rc version
+  ## For example, if this value is 'r', the version will be 'vA.B.C-r'
+  ## instead of 'vA.B.C-rc'
+  ##
+  ## Default: "rc
     rc-key: rc
 
-  # Mark this version as a draft
-  #
-  # Default: false
+  ## Mark this version as a draft
+  ##
+  ## Default: false
     is-draft: false
 
-  # Mark this version as a prerelease
-  #
-  # Default: false
+  ## Mark this version as a prerelease
+  ##
+  ## Default: false
     is-prerelease: false
 
-  # Show debug messages
-  #
-  # Default: false
+  ## Show debug messages
+  ##
+  ## Default: false
     debug: false
 
-  # Create GitHub release tag on finish
-  #
-  # Default: true
+  ## Create GitHub release tag on finish
+  ##
+  ## Default: true
     create-tag: true
 
-  # Create GitHub release tag on finish with only the major version (vA)
-  #
-  # Default: true
+  ## Create GitHub release tag on finish with only the major version (vA)
+  ##
+  ## Default: true
     create-major-tag: true
 
-  # Create GitHub release tag on finish with only the major and minor version (vA.B)
-  #
-  # Default: true
+  ## Create GitHub release tag on finish with only the major and minor version (vA.B)
+  ##
+  ## Default: true
     create-minor-tag: true
 
-  # Create GitHub latest release tag on finish
-  #
-  # Default: true
+  ## Create GitHub latest release tag on finish
+  ##
+  ## Default: true
     create-latest-tag: true
 
-  # Prerelease info to add at the end of the version tag
-  # This is added as a suffix as '-prerelease-tag'
-  #
-  # Default:
+  ## Prerelease info to add at the end of the version tag
+  ## This is added as a suffix as '-prerelease-tag'
+  ##
+  ## Default
     prerelease-tag: ""
 
-  # Build metadata to add at the end of the version tag
-  # This is added as a suffix as '+build-metadata'
-  #
-  # Default:
+  ## Build metadata to add at the end of the version tag
+  ## This is added as a suffix as '+build-metadata'
+  ##
+  ## Default
     build-metadata: ""
 
-  # Separator to use with the prerelease tag (alpha,beta,rc)
-  # For example: 'vA.B.C<sep>alpha'
-  #
-  # Default: "-
+  ## Separator to use with the prerelease tag (alpha,beta,rc)
+  ## For example: 'vA.B.C<sep>alpha'
+  ##
+  ## Default: "-
     prerelease-separator: "-"
 
-  # Separator to use with the build-metadata tag
-  # For example: 'vA.B.C<sep><build-metadata>>'
-  #
-  # Default: "+
+  ## Separator to use with the build-metadata tag
+  ## For example: 'vA.B.C<sep><build-metadata>>'
+  ##
+  ## Default: "+
     build-separator: "+"
 
-  # Separator tu use in between the version string (vA<sep>B<sep>C)
-  # Example: with this defined as '_' the version will be 'vA_B_C'
-  #
-  # Default:
+  ## Separator tu use in between the version string (vA<sep>B<sep>C)
+  ## Example: with this defined as '_' the version will be 'vA_B_C'
+  ##
+  ## Default
     version-separator: "."
 
-  # Github Token to create the tag at the end of the process
-  # (required if want to create tag at the end)
-  #
-  # Default: ${{ github.token }}
+  ## Github Token to create the tag at the end of the process
+  ## (required if want to create tag at the end)
+  ##
+  ## Default: ${{ github.token }}
     github-token: ${{ github.token }}
 Scenarios
 Pull Request
