@@ -442,6 +442,10 @@ test('issue-state-machine.yml keeps numeric dispatch input and github-script v9'
     'issue-state-machine.yml must keep workflow_dispatch.issue_number as a number input'
   );
   assert.ok(
+    steps.length > 0,
+    'issue-state-machine.yml must still include github-script workflow steps'
+  );
+  assert.ok(
     steps.every(step => step.uses === 'actions/github-script@v9.0.0'),
     'issue-state-machine.yml must keep github-script steps on v9.0.0'
   );
@@ -449,6 +453,14 @@ test('issue-state-machine.yml keeps numeric dispatch input and github-script v9'
     transitionSteps.length,
     1,
     'issue-state-machine.yml should keep transition-state input handling centralized in one step'
+  );
+  assert.ok(
+    String(transitionSteps[0]?.with?.script || '').includes('github.event.inputs.target_state'),
+    'issue-state-machine.yml transition-state step must still read the dispatch target_state input'
+  );
+  assert.ok(
+    String(transitionSteps[0]?.with?.script || '').includes('github.event.inputs.issue_number'),
+    'issue-state-machine.yml transition-state step must still read the dispatch issue_number input'
   );
 
   console.log('   ✓ issue-state-machine.yml keeps numeric input handling and v9 github-script');
