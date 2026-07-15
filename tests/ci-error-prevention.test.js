@@ -422,6 +422,38 @@ test('issue-state-machine.yml must only swallow removeLabel 404 races', () => {
   console.log('   ✓ issue-state-machine.yml guards removeLabel 404 races');
 });
 
+test('issue-state-machine.yml keeps numeric dispatch input and github-script v9', () => {
+  const wfFile = '.github/workflows/issue-state-machine.yml';
+  if (!fs.existsSync(wfFile)) {
+    console.log('   ⚠ issue-state-machine.yml not found, skipping');
+    return;
+  }
+
+  const workflow = yaml.parse(fs.readFileSync(wfFile, 'utf8'));
+  const inputs = workflow.on?.workflow_dispatch?.inputs || {};
+  const steps = Object.values(workflow.jobs || {})
+    .flatMap(job => job.steps || [])
+    .filter(step => step.uses?.startsWith('actions/github-script@'));
+  const transitionSteps = workflow.jobs?.['transition-state']?.steps || [];
+
+  assert.strictEqual(
+    inputs.issue_number?.type,
+    'number',
+    'issue-state-machine.yml must keep workflow_dispatch.issue_number as a number input'
+  );
+  assert.ok(
+    steps.every(step => step.uses === 'actions/github-script@v9.0.0'),
+    'issue-state-machine.yml must keep github-script steps on v9.0.0'
+  );
+  assert.strictEqual(
+    transitionSteps.length,
+    1,
+    'issue-state-machine.yml should keep transition-state input handling centralized in one step'
+  );
+
+  console.log('   ✓ issue-state-machine.yml keeps numeric input handling and v9 github-script');
+});
+
 // ============================================================
 // Test 13: email_error_intake.py must not create URL-only issue titles
 // ============================================================
