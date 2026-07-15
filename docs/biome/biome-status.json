@@ -1,38 +1,52 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-15T18:25:23.177Z",
+  "generated_at": "2026-07-15T19:28:26.530Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "3/100 recent runs failed; 0 stuck item(s)",
+      "summary": "5/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29440398605,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29440398605",
+            "id": 29444615166,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444615166",
             "conclusion": "failure"
           },
           {
-            "id": 29440397744,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29440397744",
+            "id": 29444604766,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444604766",
             "conclusion": "failure"
           },
           {
-            "id": 29440387580,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29440387580",
+            "id": 29444594446,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444594446",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29444594325,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444594325",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29444594085,
+            "name": "Octopus Review Fallback",
+            "path": ".github/workflows/octopus-review-fallback.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444594085",
             "conclusion": "failure"
           }
         ],
