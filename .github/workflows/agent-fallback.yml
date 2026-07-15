@@ -1,4 +1,5 @@
 name: Agent Fallback (OpenRouter → Devin)
+name: Agent Fallback Workflow
 
 on:
   workflow_dispatch:
@@ -9,6 +10,7 @@ on:
         type: string
       prefer_agent:
         description: 'Preferred agent (OpenRouter or Devin)'
+        description: 'Preferred agent (OpenRouter, Devin, manual)'
         required: false
         default: 'OpenRouter'
         type: choice
@@ -17,6 +19,7 @@ on:
           - Devin
   issue_comment:
     types: [created]
+          - manual
 
 jobs:
   health-check:
@@ -37,11 +40,25 @@ jobs:
             echo "devin_available=true" >> "$GITHUB_OUTPUT"
           else
             echo "devin_available=false" >> "$GITHUB_OUTPUT"
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+        run: |
+          if [ -n "$OPENROUTER_API_KEY" ]; then
+            echo "openrouter_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "openrouter_available=false" >> $GITHUB_OUTPUT
+          fi
+          if [ -n "$DEVIN_API_KEY" ]; then
+            echo "devin_available=true" >> $GITHUB_OUTPUT
+          else
+            echo "devin_available=false" >> $GITHUB_OUTPUT
           fi
 
   openrouter-agent:
     needs: health-check
     if: needs.health-check.outputs.openrouter_available == 'true' && (github.event.inputs.prefer_agent == 'OpenRouter' || github.event.inputs.prefer_agent == '')
+    if: needs.health-check.outputs.openrouter_available == 'true' && (inputs.prefer_agent == 'OpenRouter' || inputs.prefer_agent == '')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +73,9 @@ jobs:
           else
             echo "OpenRouter agent script not present; skipping."
           fi
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+        run: |
+          bash scripts/call-openrouter-api.sh
 
   devin-agent:
     needs: health-check
@@ -68,5 +88,9 @@ jobs:
           DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
           ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Devin agent
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
         run: |
           bash scripts/call-devin-api.sh
