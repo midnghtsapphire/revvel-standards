@@ -1106,16 +1106,12 @@ Close a list of issue numbers with a chosen reason.
 ```bash
 # Close as "not needed right now"
 issue_batch_close not_planned 100 101 102
-
-# Close as "duplicate"
-issue_batch_close duplicate 200 201
 ```
 
 **Supported reasons:**
 | Reason | GitHub state_reason | When to use |
 |--------|-------------------|-------------|
 | `not_planned` | not_planned | Issue is not needed right now |
-| `duplicate` | duplicate | Issue is a duplicate of another |
 
 A confirmation prompt is shown before any issues are closed.
 
@@ -1127,9 +1123,6 @@ after confirmation.
 ```bash
 # Close all assigned issues as "not needed right now"
 issue_close_all_assigned not_planned
-
-# Close all assigned issues as "duplicate"
-issue_close_all_assigned duplicate
 ```
 
 ### 9.3. Step-by-Step: Batch Close from the Assigned View
