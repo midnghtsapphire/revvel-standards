@@ -178,7 +178,7 @@ issue_batch_close() {
   for issue in "$@"; do
     if gh issue close "$issue" \
       --repo "$REPO_OWNER/$REPO_NAME" \
-      --reason "$reason" 2>/dev/null; then
+      --reason "$label_text" 2>/dev/null; then
       echo -e "${GREEN}  ✓ Closed #$issue ($label_text)${NC}"
       closed=$((closed + 1))
     else
