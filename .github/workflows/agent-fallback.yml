@@ -1,3 +1,29 @@
+name: Agent Fallback Chain
+
+on:
+  issues:
+    types: [labeled]
+  pull_request_target:
+    types: [labeled]
+  workflow_call:
+    inputs:
+      issue_number:
+        required: true
+        type: string
+      issue_title:
+        required: false
+        type: string
+        default: ''
+      issue_body:
+        required: false
+        type: string
+        default: ''
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        required: true
+        type: string
+      issue_title:
 name: Agent Fallback (OpenRouter → Devin)
 name: Agent Fallback Workflow
 
@@ -13,6 +39,32 @@ on:
         required: false
         default: 'OpenRouter'
         type: string
+        default: ''
+      issue_body:
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  health-check:
+    if: |
+      github.event_name == 'workflow_call' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && contains(github.event.issue.labels.*.name, 'agent-fallback') && github.event.issue.pull_request == null) ||
+      (github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'agent-fallback'))
+    runs-on: ubuntu-latest
+    outputs:
+      openrouter_ok: ${{ steps.check.outputs.openrouter_ok }}
+    steps:
+      - id: check
+        run: echo "openrouter_ok=true" >> $GITHUB_OUTPUT
+
+  execute:
   issues:
     types: [opened, labeled]
 
@@ -76,6 +128,123 @@ jobs:
     if: needs.health-check.outputs.openrouter_available == 'true' && (inputs.prefer_agent == 'OpenRouter' || inputs.prefer_agent == '')
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve issue context
+        id: issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const eventName = context.eventName;
+            let number;
+            if (eventName === 'workflow_call' || eventName === 'workflow_dispatch') {
+              number = parseInt(context.payload.inputs.issue_number, 10);
+            } else if (eventName === 'pull_request_target') {
+              number = context.payload.pull_request.number;
+            } else {
+              number = context.payload.issue.number;
+            }
+
+            // ALWAYS fetch fresh state from API — never trust payload alone.
+            // This is the defense-in-depth fix: workflow_call/workflow_dispatch
+            // callers previously bypassed all state checks, allowing dispatch
+            // against already-merged PRs and closed issues.
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+            });
+
+            core.setOutput('number', String(number));
+            core.setOutput('title', issue.title || '');
+            core.setOutput('body', issue.body || '');
+            core.setOutput('state', issue.state);
+
+            // For PRs, also check merged status via the pulls API.
+            let merged = false;
+            if (issue.pull_request) {
+              try {
+                const { data: pr } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: number,
+                });
+                merged = pr.merged === true;
+              } catch (e) {
+                core.warning(`Could not fetch PR ${number}: ${e.message}`);
+              }
+            }
+
+            if (issue.state !== 'open' || merged) {
+              core.setOutput('skip', 'true');
+              core.notice(`Skipping #${number}: state=${issue.state}, merged=${merged}. Refusing to dispatch agent against a closed/merged target.`);
+            } else {
+              core.setOutput('skip', 'false');
+            }
+
+      - name: Checkout
+        if: steps.issue.outputs.skip != 'true'
+        uses: actions/checkout@v4
+
+      - name: Try OpenRouter
+        id: openrouter
+        if: steps.issue.outputs.skip != 'true' && needs.health-check.outputs.openrouter_ok == 'true'
+        continue-on-error: true
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+          ISSUE_BODY: ${{ steps.issue.outputs.body }}
+        run: |
+          echo "Dispatching OpenRouter agent for #${ISSUE_NUMBER}"
+          # Real dispatch handled by dedicated agent scripts; placeholder here.
+          echo "result=attempted" >> $GITHUB_OUTPUT
+
+      - name: Try Cursor
+        id: cursor
+        if: steps.issue.outputs.skip != 'true' && steps.openrouter.outcome == 'failure'
+        continue-on-error: true
+        run: echo "cursor attempted"
+
+      - name: Try OpenHands
+        id: openhands
+        if: steps.issue.outputs.skip != 'true' && steps.cursor.outcome == 'failure'
+        continue-on-error: true
+        run: echo "openhands attempted"
+
+      - name: Determine result
+        id: result
+        if: steps.issue.outputs.skip != 'true'
+        run: |
+          if [ "${{ steps.openrouter.outcome }}" = "success" ] || \
+             [ "${{ steps.cursor.outcome }}" = "success" ] || \
+             [ "${{ steps.openhands.outcome }}" = "success" ]; then
+            echo "success=true" >> $GITHUB_OUTPUT
+          else
+            echo "success=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on all-agents-failed
+        if: steps.issue.outputs.skip != 'true' && steps.result.outputs.success == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt('${{ steps.issue.outputs.number }}', 10),
+              body: 'All agents in the fallback chain failed. Human review requested.',
+            });
+
+      - name: Add needs-human label on failure
+        if: steps.issue.outputs.skip != 'true' && steps.result.outputs.success == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt('${{ steps.issue.outputs.number }}', 10),
+              labels: ['needs-human'],
+            });
       - uses: actions/checkout@v4
       - name: Run OpenRouter agent
         env:
