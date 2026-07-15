@@ -1,21 +1,46 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-07-15T20:17:48.579Z",
+  "generated_at": "2026-07-15T20:54:00.596Z",
   "stop": [
+    {
+      "id": 29448420326,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448420146,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448419696,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 18m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448418911,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 19m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
+    {
+      "id": 29448416516,
+      "name": "Perplexity Research Agent",
+      "reason": "no progress for 20m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
+    },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 3163m ≥ 60m budget"
+      "reason": "running 3199m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 3234m ≥ 60m budget"
+      "reason": "running 3270m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 3304m ≥ 60m budget"
+      "reason": "running 3340m ≥ 60m budget"
     }
   ]
 }
