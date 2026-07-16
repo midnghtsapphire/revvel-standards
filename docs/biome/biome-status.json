@@ -1,31 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-16T13:33:09.187Z",
+  "generated_at": "2026-07-16T14:40:42.734Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29500925562,
-            "name": "Super-Linter",
-            "path": ".github/workflows/super-linter.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29500925562",
+            "id": 29507087000,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29507087000",
             "conclusion": "failure"
           },
           {
-            "id": 29500925314,
-            "name": "No-Destroy Guard",
-            "path": ".github/workflows/no-destroy-guard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29500925314",
+            "id": 29503996176,
+            "name": "Credential Autonomy Agent",
+            "path": ".github/workflows/credential-autonomy-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29503996176",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29503277426,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29503277426",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29503272088,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29503272088",
             "conclusion": "failure"
           }
         ],
