@@ -2,7 +2,7 @@
 
 > **Your 24/7 autonomous ADA compliance specialist that learns, audits, and fixes accessibility issues automatically.**
 
-## What Does This Do?
+## What Does This Do
 
 The ADA Compliance Agent is like having an accessibility expert on your team who:
 
@@ -13,7 +13,7 @@ The ADA Compliance Agent is like having an accessibility expert on your team who
 - 🚨 **Alerts you** when new accessibility rules come out
 - 🎓 **Tracks certifications** and keeps learning about ADA compliance
 
-## Why Do I Need This?
+## Why Do I Need This
 
 Making your website accessible isn't just nice—it's the law! The ADA (Americans with Disabilities Act) requires websites to work for everyone, including:
 
@@ -25,7 +25,7 @@ Making your website accessible isn't just nice—it's the law! The ADA (American
 
 **Plus:** Accessible websites work better for everyone! They're easier to use on mobile phones, better for SEO (Google loves them), and reach more customers.
 
-## How Does It Work?
+## How Does It Work
 
 ### 1. **Automatic Scans** 🔍
 
@@ -64,7 +64,7 @@ You get regular reports showing:
 - What needs a human to review
 - New courses and certifications completed
 
-## How Do I Use It?
+## How Do I Use It
 
 ### Option 1: Run It Once (On-Demand)
 
@@ -99,7 +99,7 @@ For serious compliance needs, run it non-stop via OpenRouter. It will:
 - Alert you immediately when issues appear
 - Take courses and improve its knowledge constantly
 
-## What Certifications Does It Track?
+## What Certifications Does It Track
 
 ### Free Certifications 🆓
 
@@ -119,7 +119,7 @@ For advanced certification, the agent also tracks:
 - **IAAP WAS** ($425) - Web accessibility specialist
 - **Deque University** ($299-$799) - Complete accessibility curriculum
 
-## What Can't It Fix Automatically?
+## What Can't It Fix Automatically
 
 Some things need a human to review:
 
@@ -147,7 +147,7 @@ The agent tracks:
 
 ## Quick Start Guide
 
-### For Developers:
+### For Developers
 
 1. **Add to your project:**
 
@@ -165,7 +165,7 @@ The agent tracks:
 3. **Review the report:**
    Check `/docs/ada-compliance-report-{date}.md` for results
 
-### For Non-Developers:
+### For Non-Developers
 
 1. **Ask your developer** to set up the agent
 2. **Check the reports** in the `/docs/` folder regularly
@@ -192,7 +192,7 @@ A: You can revert any automated fix. The agent documents what it changed and why
 **Q: Is this instead of hiring an accessibility consultant?**  
 A: No—this is a tool to help you, not a replacement for expert humans. For legal compliance review or complex accessibility challenges, still consult with accessibility professionals.
 
-## Need Help?
+## Need Help
 
 - 📖 **Full docs:** See `SKILL.md` in this folder
 - 🐛 **Found a bug:** Open a GitHub issue with label `ada-compliance-agent`

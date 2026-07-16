@@ -308,14 +308,14 @@ These items require human decision before implementation:
 
 ## 10. Sources
 
-- GitHub Apps documentation: https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps
-- GitHub Enterprise Cloud: https://docs.github.com/en/enterprise-cloud@latest/admin/overview/about-github-enterprise-cloud
-- GitHub Enterprise Managed Users: https://docs.github.com/en/enterprise-cloud@latest/admin/identity-and-access-management/understanding-iam-for-enterprises/about-enterprise-managed-users
-- GitHub App installation access tokens: https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation
-- GitHub Enterprise pricing: https://github.com/pricing
-- Octokit App SDK: https://github.com/octokit/app.js
-- actions/create-github-app-token: https://github.com/actions/create-github-app-token
-- GitHub Actions GITHUB_TOKEN permissions: https://docs.github.com/en/actions/security-guides/automatic-token-authentication
+- GitHub Apps documentation: <https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/about-creating-github-apps>
+- GitHub Enterprise Cloud: <https://docs.github.com/en/enterprise-cloud@latest/admin/overview/about-github-enterprise-cloud>
+- GitHub Enterprise Managed Users: <https://docs.github.com/en/enterprise-cloud@latest/admin/identity-and-access-management/understanding-iam-for-enterprises/about-enterprise-managed-users>
+- GitHub App installation access tokens: <https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation>
+- GitHub Enterprise pricing: <https://github.com/pricing>
+- Octokit App SDK: <https://github.com/octokit/app.js>
+- actions/create-github-app-token: <https://github.com/actions/create-github-app-token>
+- GitHub Actions GITHUB_TOKEN permissions: <https://docs.github.com/en/actions/security-guides/automatic-token-authentication>
 
 ---
 

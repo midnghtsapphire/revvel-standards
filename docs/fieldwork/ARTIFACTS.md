@@ -8,7 +8,7 @@
 
 | Requirement                 | Status | Notes                                                         |
 | --------------------------- | :----: | ------------------------------------------------------------- |
-| Live deployment URL         |   ✅   | https://revvel-standards.vercel.app/docs/fieldwork/           |
+| Live deployment URL         |   ✅   | <https://revvel-standards.vercel.app/docs/fieldwork/>           |
 | README `## Live Deployment` |   ✅   | present                                                       |
 | Live web test interface     |   ✅   | web app detected                                              |
 | .mcp.json at root           |   ❌   | missing                                                       |

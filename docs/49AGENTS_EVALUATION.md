@@ -15,7 +15,7 @@
 
 ---
 
-## What is 49Agents?
+## What is 49Agents
 
 49Agents is an open-source platform (<https://github.com/49Agents/49Agents>) that positions itself as the "first 2D agentic IDE" with the following core capabilities:
 

@@ -1,6 +1,6 @@
 # The Evaluator Agent & Skill Loading (Explained for a 10-Year-Old)
 
-## What is an Evaluator Agent?
+## What is an Evaluator Agent
 
 Imagine you are baking a cake for the first time. You follow the recipe, put it in the oven, and take it out. It looks like a cake.
 
@@ -74,7 +74,7 @@ _Note: We stop after 3 tries so the computer doesn't get stuck in a loop forever
 
 ---
 
-## What is "Skill Loading"?
+## What is "Skill Loading
 
 Imagine you are playing a video game. Your character is a normal person. But then, you find a glowing book on the ground. You read the book, and suddenly, your character knows how to cast a fire spell!
 

@@ -67,7 +67,7 @@ product with a landing page**, not a PDF — and give it its own repo. Create a
 separate `pdf-products` monorepo for the PDF catalogue when the first title
 is ready to ship. Do not conflate the two.
 
-### 2.2 Pricing research — is "$29 single / $99 for 10" fair?
+### 2.2 Pricing research — is "$29 single / $99 for 10" fair
 
 Market comparables for PDF-with-code products aimed at working professionals
 (pragmatic, not reference-book scope):

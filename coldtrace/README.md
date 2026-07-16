@@ -4,7 +4,7 @@
 
 ▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/coldtrace/)**
 
-## What Is This?
+## What Is This
 
 **ColdTrace** is an open-source temporal GIS platform for cold case
 investigations. Given a **date range**, a **last known location**, and an
@@ -112,9 +112,9 @@ docker compose up --build
 
 | Service            | Purpose           | Free Tier     | Register                     |
 | ------------------ | ----------------- | ------------- | ---------------------------- |
-| **OpenTopography** | LiDAR + DEM fetch | 2,500 req/day | https://opentopography.org   |
-| **Sentinel Hub**   | Satellite NDVI    | 30k units/mo  | https://www.sentinel-hub.com |
-| **USGS EarthData** | Landsat + archive | Free          | https://urs.earthrs.gov      |
+| **OpenTopography** | LiDAR + DEM fetch | 2,500 req/day | <https://opentopography.org>   |
+| **Sentinel Hub**   | Satellite NDVI    | 30k units/mo  | <https://www.sentinel-hub.com> |
+| **USGS EarthData** | Landsat + archive | Free          | <https://urs.earthrs.gov>      |
 
 Set `DEMO_MODE=false` and add keys to `.env` to activate real data.
 
@@ -239,9 +239,9 @@ Giving Pledge: % of Pro/Agency/Enterprise revenue to Freedom Angel Fighters
 - Koester, R.J. (2008). _Lost Person Behavior._ dbS Productions.
 - Carter, D.O. et al. (2010). Cadaver decomposition in terrestrial ecosystems. _Naturwissenschaften_, 94(1).
 - USGS OFR 2016-1113 — LiDAR for forensic grave detection.
-- WhiteboxTools documentation: https://jblindsay.github.io/ghrg/WhiteboxTools/
-- OpenTopography API: https://opentopography.org/developers
-- Sentinel Hub Process API: https://docs.sentinel-hub.com/api/latest/
+- WhiteboxTools documentation: <https://jblindsay.github.io/ghrg/WhiteboxTools/>
+- OpenTopography API: <https://opentopography.org/developers>
+- Sentinel Hub Process API: <https://docs.sentinel-hub.com/api/latest/>
 
 ---
 

@@ -92,18 +92,18 @@ Every new Revvel application must include:
 
 ### References
 
-[1] Galileo AI: AI Agent Testing & Behavioral Validation - https://galileo.ai/learn/ai-observability/ai-agent-testing-behavioral-validation
-[2] LinkedIn: Writing Acceptance Criteria for AI Products - https://www.linkedin.com/pulse/writing-acceptance-criteria-ai-products-product-managers-aruna-singh-iw7uc
-[3] Leantime: ADHD and Project Management Techniques - https://leantime.io/adhd-and-project-management-techniques-for-focus-and-organization/
-[4] Google Mail: AI Persona Prompts Context 1 - https://mail.google.com/mail/?extsrc=sync&client=h&plid=ACUX6DOd_INzwQmMqFUqactZ-iDD-Sq0CsgwA_Y
-[5] Google Mail: AI Persona Prompts Context 2 - https://mail.google.com/mail/?extsrc=sync&client=h&plid=ACUX6DPVQOS0ip2RFXYi1LCZDQLTICtWPdgWiA0
-[6] Reddit: ADHD and Project Management - https://www.reddit.com/r/projectmanagement/comments/1n0j00d/adhd_and_project_management/
-[7] LinkedIn: Evaluating AI Activity - https://www.linkedin.com/posts/tyllenbicakcic_heres-a-test-for-any-bank-evaluating-ai-activity-7431382283112103936-J9lf
-[8] Interaction Design Foundation: Wizard of Oz Prototypes - https://ixdf.org/literature/topics/wizard-of-oz-prototypes
-[9] Reddit: Acceptance Criteria for Gen AI Features - https://www.reddit.com/r/ProductManagement/comments/1egz6bg/acceptance_criteria_for_gen_ai_features/
-[10] Nielsen Norman Group: Wizard of Oz - https://www.nngroup.com/articles/wizard-of-oz/
-[11] Google Mail: Preferred Channel Context - https://mail.google.com/mail/?extsrc=sync&client=h&plid=ACUX6DMqryl8NatiKHnhFs3Q0_oUEz6m03mmKJU
-[12] Plaid: AI Enhanced Transaction Categorization - https://plaid.com/blog/ai-enhanced-transaction-categorization/
+[1] Galileo AI: AI Agent Testing & Behavioral Validation - <https://galileo.ai/learn/ai-observability/ai-agent-testing-behavioral-validation>
+[2] LinkedIn: Writing Acceptance Criteria for AI Products - <https://www.linkedin.com/pulse/writing-acceptance-criteria-ai-products-product-managers-aruna-singh-iw7uc>
+[3] Leantime: ADHD and Project Management Techniques - <https://leantime.io/adhd-and-project-management-techniques-for-focus-and-organization/>
+[4] Google Mail: AI Persona Prompts Context 1 - <https://mail.google.com/mail/?extsrc=sync&client=h&plid=ACUX6DOd_INzwQmMqFUqactZ-iDD-Sq0CsgwA_Y>
+[5] Google Mail: AI Persona Prompts Context 2 - <https://mail.google.com/mail/?extsrc=sync&client=h&plid=ACUX6DPVQOS0ip2RFXYi1LCZDQLTICtWPdgWiA0>
+[6] Reddit: ADHD and Project Management - <https://www.reddit.com/r/projectmanagement/comments/1n0j00d/adhd_and_project_management/>
+[7] LinkedIn: Evaluating AI Activity - <https://www.linkedin.com/posts/tyllenbicakcic_heres-a-test-for-any-bank-evaluating-ai-activity-7431382283112103936-J9lf>
+[8] Interaction Design Foundation: Wizard of Oz Prototypes - <https://ixdf.org/literature/topics/wizard-of-oz-prototypes>
+[9] Reddit: Acceptance Criteria for Gen AI Features - <https://www.reddit.com/r/ProductManagement/comments/1egz6bg/acceptance_criteria_for_gen_ai_features/>
+[10] Nielsen Norman Group: Wizard of Oz - <https://www.nngroup.com/articles/wizard-of-oz/>
+[11] Google Mail: Preferred Channel Context - <https://mail.google.com/mail/?extsrc=sync&client=h&plid=ACUX6DMqryl8NatiKHnhFs3Q0_oUEz6m03mmKJU>
+[12] Plaid: AI Enhanced Transaction Categorization - <https://plaid.com/blog/ai-enhanced-transaction-categorization/>
 [13] accessiBe: How to Design Digital Environments for People with Neuro-Divergency
 [14] Galileo AI: AI Agent Testing & Behavioral Validation
 [15] Toloka: AI Agent Evaluation Methodologies

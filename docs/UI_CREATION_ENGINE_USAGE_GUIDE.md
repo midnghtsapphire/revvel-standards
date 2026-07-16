@@ -57,8 +57,8 @@ Services: catering, Sunday dinner, meal prep
 Platform: website
 ```
 
-2. Add the `ui-creation` label to the issue
-3. The workflow will automatically run and post results as a comment
+1. Add the `ui-creation` label to the issue
+2. The workflow will automatically run and post results as a comment
 
 #### Option B: Comment-Based Trigger
 
@@ -265,7 +265,7 @@ Estimated cost per run:
 
 ## Troubleshooting
 
-### Issue: "OPENROUTER_API_KEY environment variable is required"
+### Issue: "OPENROUTER_API_KEY environment variable is required
 
 **Solution**: Set your OpenRouter API key:
 

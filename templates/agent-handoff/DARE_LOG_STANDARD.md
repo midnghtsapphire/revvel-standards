@@ -39,10 +39,10 @@ When assigning tasks to agents, hitting "0 errors" is not enough if the actual f
 
 ### References
 
-[1] Study.com: The DARE Decision Making Model - https://study.com/academy/lesson/the-dare-decision-making-model.html
-[2] Wikipedia: Extreme Programming - https://en.wikipedia.org/wiki/Extreme_programming
-[3] Monday.com Blog: Full Project Management Glossary - https://monday.com/blog/project-management/project-management-glossary/
-[4] YouTube: How To Change Board Terminology In Monday.com - https://www.youtube.com/watch?v=xxxxxxxxxxx
-[5] Reddit: Struggling to make my AI agents more reliable - https://www.reddit.com/r/MachineLearning/comments/xxxxxx/struggling_to_make_my_ai_agents_more_reliable/
-[6] Reddit: Agent Handoff Failures - https://www.reddit.com/r/MachineLearning/comments/xxxxxx/struggling_to_make_my_ai_agents_more_reliable/comment1
-[7] Reddit: Human-in-the-Loop for AI Agents - https://www.reddit.com/r/MachineLearning/comments/xxxxxx/struggling_to_make_my_ai_agents_more_reliable/comment2
+[1] Study.com: The DARE Decision Making Model - <https://study.com/academy/lesson/the-dare-decision-making-model.html>
+[2] Wikipedia: Extreme Programming - <https://en.wikipedia.org/wiki/Extreme_programming>
+[3] Monday.com Blog: Full Project Management Glossary - <https://monday.com/blog/project-management/project-management-glossary/>
+[4] YouTube: How To Change Board Terminology In Monday.com - <https://www.youtube.com/watch?v=xxxxxxxxxxx>
+[5] Reddit: Struggling to make my AI agents more reliable - <https://www.reddit.com/r/MachineLearning/comments/xxxxxx/struggling_to_make_my_ai_agents_more_reliable/>
+[6] Reddit: Agent Handoff Failures - <https://www.reddit.com/r/MachineLearning/comments/xxxxxx/struggling_to_make_my_ai_agents_more_reliable/comment1>
+[7] Reddit: Human-in-the-Loop for AI Agents - <https://www.reddit.com/r/MachineLearning/comments/xxxxxx/struggling_to_make_my_ai_agents_more_reliable/comment2>

@@ -402,7 +402,7 @@ Always leave a comment explaining why it was closed.
 
 ## 8. Troubleshooting
 
-### 8.1. "Dependency review is not supported on this repository"
+### 8.1. "Dependency review is not supported on this repository
 
 **Cause:** `actions/dependency-review-action` requires GitHub Advanced Security and Dependency Graph.
 

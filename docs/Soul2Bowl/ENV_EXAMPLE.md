@@ -1,8 +1,8 @@
 # Soul2Bowl — Environment Variables Reference
 
-# Copy to .env and fill in all values before running locally.
+# Copy to .env and fill in all values before running locally
 
-# DO NOT commit .env — only .env.example is committed.
+# DO NOT commit .env — only .env.example is committed
 
 # =============================================================================
 
@@ -49,7 +49,7 @@ DATABASE_URL=postgresql://username:password@host:5432/soul2bowl_prod
 # =============================================================================
 
 RESEND_API_KEY=
-RESEND_FROM_EMAIL=orders@soul2bowl.com
+RESEND_FROM_EMAIL=<orders@soul2bowl.com>
 RESEND_FROM_NAME=Soul2Bowl
 
 # =============================================================================
@@ -62,7 +62,7 @@ DO_SPACES_KEY=
 DO_SPACES_SECRET=
 DO_SPACES_ENDPOINT=nyc3.digitaloceanspaces.com
 DO_SPACES_BUCKET=soul2bowl-media
-DO_SPACES_CDN_URL=https://soul2bowl-media.nyc3.cdn.digitaloceanspaces.com
+DO_SPACES_CDN_URL=<https://soul2bowl-media.nyc3.cdn.digitaloceanspaces.com>
 
 # =============================================================================
 
@@ -70,12 +70,12 @@ DO_SPACES_CDN_URL=https://soul2bowl-media.nyc3.cdn.digitaloceanspaces.com
 
 # =============================================================================
 
-NEXT_PUBLIC_APP_URL=https://soul2bowl.com
+NEXT_PUBLIC_APP_URL=<https://soul2bowl.com>
 NODE_ENV=development
 
 # Admin email — auto-elevated to admin role on first login
 
-ADMIN_EMAIL=angelreporters@gmail.com
+ADMIN_EMAIL=<angelreporters@gmail.com>
 
 # =============================================================================
 

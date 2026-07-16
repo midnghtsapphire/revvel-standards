@@ -1,6 +1,6 @@
 # MIDNGHTSAPPHIRE Repos (from user screenshots)
 
-## Visible repos with "revvel" in name:
+## Visible repos with "revvel" in name
 
 - revvel-template-library (Private, Python)
 - revvel-email-organizer (Public, TypeScript)
@@ -12,7 +12,7 @@
 - revvel-skill-runner (Private, TypeScript)
 - revvel-music-studio (Private, Python) - "Revvel Music Studio - Professional music prod..."
 
-## Other repos visible:
+## Other repos visible
 
 - dishantagnihotri/revvel (Public)
 - Revvelx/Revvelx (Public) - "Config files for my GitHub profile"

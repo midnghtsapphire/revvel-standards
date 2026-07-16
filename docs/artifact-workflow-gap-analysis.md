@@ -186,22 +186,22 @@ Handles proposal review workflow.
 
 ### Short-term (Next Sprint)
 
-4. **Add tests for `research-engine.yml`**
+1. **Add tests for `research-engine.yml`**
    - Core WR processing workflow
    - Test research scope detection
 
-5. **Add tests for `self-healing.yml`**
+2. **Add tests for `self-healing.yml`**
    - System resilience workflow
    - Test error pattern detection
 
 ### Medium-term
 
-6. **Create test infrastructure for workflow testing**
+1. **Create test infrastructure for workflow testing**
    - Mock GitHub API responses
    - Workflow execution sandbox
    - Integration test suite
 
-7. **Add CI check for test coverage**
+2. **Add CI check for test coverage**
    - Require tests for new artifact-creating workflows
    - Track coverage over time
 

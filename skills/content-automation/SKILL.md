@@ -8,7 +8,7 @@
 
 ---
 
-## What is Content Automation?
+## What is Content Automation
 
 Content Automation is an end-to-end AI-powered content creation pipeline that handles everything from topic ideation through production-ready content. It automates the complete content creation workflow outlined in the problem statement:
 
@@ -397,25 +397,25 @@ Content Automation works alongside:
 
 ## Troubleshooting
 
-### "Content is too generic"
+### "Content is too generic
 
 - Add more specific context in the brief
 - Include target keywords explicitly
 - Run a second refinement pass with brand voice guidelines
 
-### "Facts are incorrect"
+### "Facts are incorrect
 
 - Enable fact-checking gate
 - Add authoritative sources to brief
 - Use GPT-5.4 for verification pass
 
-### "SEO score is low"
+### "SEO score is low
 
 - Run keyword research before generation
 - Specify primary and secondary keywords
 - Use SEO-focused templates
 
-### "Tone doesn't match brand"
+### "Tone doesn't match brand
 
 - Update `CONTENT_BRAND_VOICE` variable
 - Include example content in brief

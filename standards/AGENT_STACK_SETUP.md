@@ -39,7 +39,7 @@ When you open a WR issue:
 
 ### 5. Augment Code GitHub App (manual install)
 
-👉 https://app.augmentcode.com/settings/code-review
+👉 <https://app.augmentcode.com/settings/code-review>
 
 - Click Install GitHub App
 - Select this repo

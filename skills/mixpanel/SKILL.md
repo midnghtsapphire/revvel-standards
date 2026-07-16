@@ -33,7 +33,7 @@ Revvel app (browser / Node / mobile)
 ## Setup Checklist (New Project)
 
 1. **Create a Mixpanel project:**
-   Visit https://mixpanel.com → sign up → create a project. Pick the EU residency region only if user data must stay in the EU (otherwise leave default US).
+   Visit <https://mixpanel.com> → sign up → create a project. Pick the EU residency region only if user data must stay in the EU (otherwise leave default US).
 
 2. **Retrieve credentials from Mixpanel:**
    - `MIXPANEL_TOKEN` — Project Settings → Access Keys → Project Token (safe to expose in client bundles).
@@ -146,7 +146,7 @@ For shipped Revvel products the default is **Mixpanel for product events + Umami
 ## Cost & Pricing
 
 - **Free plan:** Up to 1M events/month, unlimited reports — sufficient for pre-PMF products.
-- **Growth plan:** Paid — visit https://mixpanel.com/pricing for current rates.
+- **Growth plan:** Paid — visit <https://mixpanel.com/pricing> for current rates.
 - **ROI:** Even one funnel insight that lifts conversion 1% on a $5k/mo product offsets the subscription many times over.
 
 ## Session Checklist

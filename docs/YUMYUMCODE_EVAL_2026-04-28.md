@@ -4,7 +4,7 @@
 **Status:** Evaluation (decision: **Adopt — relaunch yumyumcode.com as a neurodivergent-friendly AI code-review utility ("NomNom Review") on top of the existing static GitHub Pages site**, with a public free tier routed through OpenRouter per the repo's automation policy)
 **Scope:** Review the public state of **yumyumcode.com** today, identify the highest-leverage "cutting edge" concept the site can ship in 2026 without abandoning the existing brand or infra, and lock the recommendation into the standards repo so the implementing PR (against `MIDNGHTSAPPHIRE/yumyumcode`) has a single source of truth to point at.
 **Related:** [`./REVVEL_MASTER_STANDARDS.md`](./REVVEL_MASTER_STANDARDS.md) · [`./BRAND_ARCHITECTURE.md`](./BRAND_ARCHITECTURE.md) · [`./REPO_CATALOG.md`](./REPO_CATALOG.md) · [`./SPRINT_STATE.md`](./SPRINT_STATE.md) · [`./Master_Inventory/INFRASTRUCTURE_MAP.md`](./Master_Inventory/INFRASTRUCTURE_MAP.md) · [`./REPO_TODO_LIST.md`](./REPO_TODO_LIST.md) · [`./OPENROUTER_TRIAGE_PROCESS.md`](./OPENROUTER_TRIAGE_PROCESS.md) · [`./JULES_AUTO_REVIEW_ROUTING.md`](./JULES_AUTO_REVIEW_ROUTING.md)
-**Working link (existing live site):** https://yumyumcode.com (CNAME → GitHub Pages on `MIDNGHTSAPPHIRE/yumyumcode`, fallback URL https://midnghtsapphire.github.io/yumyumcode/)
+**Working link (existing live site):** <https://yumyumcode.com> (CNAME → GitHub Pages on `MIDNGHTSAPPHIRE/yumyumcode`, fallback URL <https://midnghtsapphire.github.io/yumyumcode/>)
 
 ---
 
@@ -14,7 +14,7 @@
 - **Replace the "consulting brochure" framing with a free public utility.** Brochures don't convert in 2026; tools do. The site should lead with **a working tool** that users land on, paste code into, and get value from in under 10 seconds — and _then_ meet the consulting/Neurooz pitch on the way out.
 - **Best concept (recommended): "NomNom Review" — a neurodivergent-friendly AI code-review widget.** A single static page at `https://yumyumcode.com/review/` where a visitor pastes a snippet (or a public Gist URL) and receives a calm, plain-language, dyslexia-friendly review: one-line summary → top 3 issues → suggested rewrite → optional "explain like I'm tired" mode. This is the highest-leverage 2026 concept because it (a) is genuinely cutting-edge utility, (b) is on-brand for _both_ "YumYumCode" (developer tools/coding) and "Neurooz" (accessibility, ADHD-aware), (c) ships as a static SPA on the same GitHub Pages host, and (d) honors this repo's automation routing policy by calling the LLM through **OpenRouter** (`OPENROUTER_API_KEY`), not a paid Copilot endpoint, per the [`../.github/copilot-instructions.md`](../.github/copilot-instructions.md) "Automation Routing Policy (OpenRouter)" rule.
 - **Net new infra cost: $0 baseline.** GitHub Pages is unchanged. The only variable cost is OpenRouter token spend, which is gated by a free-tier rate limit (see §5) and a server-side proxy (for example, a Cloudflare Worker or — if Workers are not desired — a one-file Vercel Edge Function on the free hobby tier).
-- **Working link, today:** the live site at https://yumyumcode.com remains the public link until the relaunch lands. The relaunch ships as a PR to `MIDNGHTSAPPHIRE/yumyumcode` (see §6) and the same URL will serve the new experience the moment GitHub Pages publishes the build — no domain/CNAME changes needed.
+- **Working link, today:** the live site at <https://yumyumcode.com> remains the public link until the relaunch lands. The relaunch ships as a PR to `MIDNGHTSAPPHIRE/yumyumcode` (see §6) and the same URL will serve the new experience the moment GitHub Pages publishes the build — no domain/CNAME changes needed.
 - **Out of scope here:** the actual code commit lives in `MIDNGHTSAPPHIRE/yumyumcode`, not in this standards repo. This document is the standards-level decision record that the implementing PR points at.
 
 ---
@@ -62,7 +62,7 @@ Legend: Fit = ⭐ (poor) … ⭐⭐⭐⭐ (excellent), scored _for the YumYumCod
 
 ---
 
-## 3. Recommended concept — "NomNom Review"
+## 3. Recommended concept — "NomNom Review
 
 ### 3.1 What the user sees
 
@@ -160,4 +160,4 @@ This standards-repo PR is complete when:
 
 ## 9. Working link
 
-The live site is, and continues to be, **https://yumyumcode.com** (GitHub Pages fallback: https://midnghtsapphire.github.io/yumyumcode/). The relaunch lands at the same URL via a PR to `MIDNGHTSAPPHIRE/yumyumcode` scoped per §6 — no DNS change, no domain change, no host change.
+The live site is, and continues to be, **<https://yumyumcode.com>** (GitHub Pages fallback: <https://midnghtsapphire.github.io/yumyumcode/>). The relaunch lands at the same URL via a PR to `MIDNGHTSAPPHIRE/yumyumcode` scoped per §6 — no DNS change, no domain change, no host change.

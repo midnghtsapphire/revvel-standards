@@ -17,7 +17,7 @@
 
 ---
 
-## Context: What Are "OpenHands's Comment Prompts"?
+## Context: What Are "OpenHands's Comment Prompts
 
 Based on research, this refers to:
 
@@ -101,9 +101,9 @@ The question is: **which agent platform should pick up and execute these prompts
 
 **Key Repositories:**
 
-- https://github.com/marco-altran/Roo-Cline
-- https://github.com/OSL-Ai/Roo-Cline
-- Parent: https://github.com/RooCodeInc/Roo-Code
+- <https://github.com/marco-altran/Roo-Cline>
+- <https://github.com/OSL-Ai/Roo-Cline>
+- Parent: <https://github.com/RooCodeInc/Roo-Code>
 
 **Evaluation:**
 

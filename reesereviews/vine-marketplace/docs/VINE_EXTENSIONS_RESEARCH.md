@@ -17,7 +17,7 @@ data-combination strategies to inform enhancements to the `vine-marketplace` too
 
 ### 1.1 Vine Helper
 
-- **URL:** https://vinehelper.ovh / https://chromewebstore.google.com (search "Vine Helper")
+- **URL:** <https://vinehelper.ovh> / <https://chromewebstore.google.com> (search "Vine Helper")
 - **Maintainer:** Community open-source
 - **Key features:**
   - Hides ETV-zero ("free-free") items from the RFY/AFA/AI queues
@@ -134,7 +134,7 @@ from the browser extension), then upload to `/api/rfy/import-csv` (future endpoi
 
 ## References
 
-- Amazon Vine program: https://www.amazon.com/vine/about
-- Vine Helper extension: https://vinehelper.ovh
-- r/AmazonVine subreddit: https://reddit.com/r/AmazonVine
-- steel-white repo: https://github.com/MIDNGHTSAPPHIRE/steel-white
+- Amazon Vine program: <https://www.amazon.com/vine/about>
+- Vine Helper extension: <https://vinehelper.ovh>
+- r/AmazonVine subreddit: <https://reddit.com/r/AmazonVine>
+- steel-white repo: <https://github.com/MIDNGHTSAPPHIRE/steel-white>

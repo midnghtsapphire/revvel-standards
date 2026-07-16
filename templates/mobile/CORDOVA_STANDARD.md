@@ -57,7 +57,7 @@ cordova --version
 | Requirement    | Version                     | Install                                                  |
 | -------------- | --------------------------- | -------------------------------------------------------- |
 | Java JDK       | 17 (LTS)                    | `brew install openjdk@17` / `apt install openjdk-17-jdk` |
-| Android Studio | Latest                      | https://developer.android.com/studio                     |
+| Android Studio | Latest                      | <https://developer.android.com/studio>                     |
 | Android SDK    | API 33+                     | Via Android Studio SDK Manager                           |
 | Gradle         | Bundled with Android Studio | —                                                        |
 
@@ -349,7 +349,7 @@ vault kv put revvel/apps/cordova/android/prod \
 
 ### 8.3 Play Console Setup (One-Time)
 
-1. Create app at https://play.google.com/console
+1. Create app at <https://play.google.com/console>
 2. Go to **Setup → API access → Link to Google Cloud project**
 3. Create a Service Account with **Release Manager** role
 4. Download the JSON key → store content in `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` secret
@@ -368,7 +368,7 @@ vault kv put revvel/apps/cordova/android/prod \
 
 ### 9.2 App Store Connect Setup (One-Time)
 
-1. Go to https://appstoreconnect.apple.com → Users and Access → Keys
+1. Go to <https://appstoreconnect.apple.com> → Users and Access → Keys
 2. Click **+** to generate an API key with **App Manager** role
 3. Download the `.p8` file (only downloadable once)
 4. Store content in `APP_STORE_CONNECT_API_KEY_CONTENT` secret
@@ -413,8 +413,8 @@ on:
 
 | Account                 | Purpose                           | Cost         | Where to Get                           |
 | ----------------------- | --------------------------------- | ------------ | -------------------------------------- |
-| Google Play Developer   | Android store deployment          | $25 one-time | https://play.google.com/console/signup |
-| Apple Developer Program | iOS store deployment + TestFlight | $99/year     | https://developer.apple.com/programs/  |
+| Google Play Developer   | Android store deployment          | $25 one-time | <https://play.google.com/console/signup> |
+| Apple Developer Program | iOS store deployment + TestFlight | $99/year     | <https://developer.apple.com/programs/>  |
 
 ---
 
@@ -495,7 +495,7 @@ Before releasing a Cordova app to any store, verify:
 
 ## 14. Troubleshooting
 
-### "ANDROID_HOME not found"
+### "ANDROID_HOME not found
 
 ```bash
 export ANDROID_HOME=$HOME/Library/Android/sdk   # macOS

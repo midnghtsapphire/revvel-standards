@@ -20,7 +20,7 @@ This directory contains n8n workflow templates for automation.
 **Import Instructions**:
 
 1. Install n8n (Docker or npm)
-2. Open n8n at http://localhost:5678
+2. Open n8n at <http://localhost:5678>
 3. Go to Workflows → Import from File
 4. Select `pdf-product-creation.json`
 5. Configure credentials (Claude AI, Canva, Shopify)
@@ -70,7 +70,7 @@ npm install n8n -g
 n8n start
 ```
 
-Access n8n at http://localhost:5678
+Access n8n at <http://localhost:5678>
 
 ---
 

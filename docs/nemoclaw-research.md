@@ -103,7 +103,7 @@ exposed.
 
 ---
 
-## 4. Can It Create an Agent Team?
+## 4. Can It Create an Agent Team
 
 Yes. NemoClaw inherits OpenClaw's multi-agent orchestration, so an agent
 team is expressible as:

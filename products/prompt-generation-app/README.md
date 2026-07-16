@@ -76,7 +76,7 @@ npm install
 npm run dev
 ```
 
-Opens at http://localhost:3006.
+Opens at <http://localhost:3006>.
 
 ## Build (Static Export)
 
@@ -131,8 +131,8 @@ Open `http://localhost:3006`.
 
 | Feature                         | Status                                | URL                           |
 | ------------------------------- | ------------------------------------- | ----------------------------- |
-| Local prompt generator UI       | Verified by build and generator tests | http://localhost:3006         |
-| Static Vercel deployment target | Ready for Vercel import               | https://promptforge.revvel.co |
+| Local prompt generator UI       | Verified by build and generator tests | <http://localhost:3006>         |
+| Static Vercel deployment target | Ready for Vercel import               | <https://promptforge.revvel.co> |
 
 ## Deployment
 

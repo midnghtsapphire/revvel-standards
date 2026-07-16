@@ -107,7 +107,7 @@ If we improve [A], then [B] worsens...
 
 [Revolutionary changes on the horizon]
 
-### Pivot Opportunity?
+### Pivot Opportunity
 
 [Should we abandon the original idea?]
 

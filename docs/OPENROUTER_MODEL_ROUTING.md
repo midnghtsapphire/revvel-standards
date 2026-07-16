@@ -384,7 +384,7 @@ const result = await routedChat({
 
 ## Troubleshooting
 
-### Issue: "OPENROUTER_API_KEY is required"
+### Issue: "OPENROUTER_API_KEY is required
 
 **Solution:** Set the environment variable:
 
@@ -392,7 +392,7 @@ const result = await routedChat({
 export OPENROUTER_API_KEY='sk-or-v1-...'
 ```
 
-### Issue: "All models in fallback chain failed"
+### Issue: "All models in fallback chain failed
 
 **Possible causes:**
 

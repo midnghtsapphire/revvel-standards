@@ -14,7 +14,7 @@ All three revenue apps now have **real, working Blue Ocean features** that diffe
 
 ## 1. TheAltText (thealttext repo)
 
-**Repository:** https://github.com/MIDNGHTSAPPHIRE/thealttext  
+**Repository:** <https://github.com/MIDNGHTSAPPHIRE/thealttext>  
 **Status:** ✅ Deployed with Blue Ocean features
 
 ### Blue Ocean Features Delivered
@@ -119,7 +119,7 @@ All modes implemented in `/frontend/src/contexts/AccessibilityContext.tsx` and `
 
 ## 2. InTheWild (in-the-wild repo)
 
-**Repository:** https://github.com/MIDNGHTSAPPHIRE/in-the-wild  
+**Repository:** <https://github.com/MIDNGHTSAPPHIRE/in-the-wild>  
 **Status:** ✅ Deployed with Blue Ocean features
 
 ### Blue Ocean Features Delivered
@@ -245,7 +245,7 @@ All modes implemented in `/client/src/contexts/AccessibilityContext.tsx` and `/c
 
 ## 3. Forensic Studio (revvel-forensic-studio repo)
 
-**Repository:** https://github.com/MIDNGHTSAPPHIRE/revvel-forensic-studio  
+**Repository:** <https://github.com/MIDNGHTSAPPHIRE/revvel-forensic-studio>  
 **Status:** ✅ Deployed with Blue Ocean features
 
 ### Blue Ocean Features Delivered

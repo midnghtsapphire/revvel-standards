@@ -253,7 +253,7 @@ gh secret set {SECRET_NAME} --body "$SECRET_VALUE" --repo {OWNER}/{REPO}
 
 When the Vault Agent fails to provision a credential (network error, service outage, 2FA block, quota exceeded, etc.), it must NOT silently fail. It triggers the **Ralph Loop**:
 
-### What Is the Ralph Loop?
+### What Is the Ralph Loop
 
 The Ralph Loop is a self-healing CI/error retry mechanism that:
 

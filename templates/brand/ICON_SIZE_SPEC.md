@@ -118,8 +118,8 @@ iconutil -c icns MyApp.iconset
 | ------------------------ | ------------------------------- | -------------------------------- |
 | **Sharp** (Node.js)      | Batch resizing from 1024 source | `npm i sharp`                    |
 | **ImageMagick**          | ICO generation + macOS .icns    | `brew install imagemagick`       |
-| **Squoosh**              | Manual per-file compression     | https://squoosh.app              |
-| **RealFaviconGenerator** | Complete favicon set generation | https://realfavicongenerator.net |
+| **Squoosh**              | Manual per-file compression     | <https://squoosh.app>              |
+| **RealFaviconGenerator** | Complete favicon set generation | <https://realfavicongenerator.net> |
 
 ---
 

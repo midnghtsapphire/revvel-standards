@@ -8,7 +8,7 @@
 
 | Requirement                 | Status | Notes                                                         |
 | --------------------------- | :----: | ------------------------------------------------------------- |
-| Live deployment URL         |   ✅   | https://revvel-standards.vercel.app/docs/oaudrey/             |
+| Live deployment URL         |   ✅   | <https://revvel-standards.vercel.app/docs/oaudrey/>             |
 | README `## Live Deployment` |   ✅   | present                                                       |
 | Live web test interface     |   ✅   | web app detected                                              |
 | .mcp.json at root           |   ❌   | missing                                                       |

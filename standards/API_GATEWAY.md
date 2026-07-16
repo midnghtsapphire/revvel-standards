@@ -460,7 +460,7 @@ curl -s -X DELETE "http://localhost:8001/consumers/agent-OpenHands/key-auth/$OLD
 
 ## 13. Migration Path
 
-### From bare nginx/PM2 to Kong:
+### From bare nginx/PM2 to Kong
 
 1. Install Kong via Docker Compose (`install/kong/docker-compose.yml`)
 2. Run `bootstrap.sh` to register existing services
@@ -469,7 +469,7 @@ curl -s -X DELETE "http://localhost:8001/consumers/agent-OpenHands/key-auth/$OLD
 5. Enable plugins incrementally (rate limiting first, then auth, then logging)
 6. Remove redundant nginx proxy rules once Kong handles routing
 
-### Timeline:
+### Timeline
 
 - **Phase 1 (Day 1):** Kong installed, services registered, traffic routing through Kong
 - **Phase 2 (Day 2-3):** Rate limiting + CORS + logging enabled

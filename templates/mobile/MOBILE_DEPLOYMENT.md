@@ -55,7 +55,7 @@ bundle exec fastlane android internal
 
 ### Play Console Setup (one-time)
 
-1. Go to https://play.google.com/console
+1. Go to <https://play.google.com/console>
 2. Create new app → "App" (not game) → Free
 3. Fill in store listing (description, screenshots, icon)
 4. Upload APK to "Internal testing" track first
@@ -108,7 +108,7 @@ npx cap open ios
 
 ### App Store Connect Setup (one-time)
 
-1. Go to https://appstoreconnect.apple.com
+1. Go to <https://appstoreconnect.apple.com>
 2. Create new app → iOS → Bundle ID (create in developer.apple.com first)
 3. Fill in app metadata (description, screenshots, keywords)
 4. Upload build from Xcode → Submit for review
@@ -190,9 +190,9 @@ See **`templates/mobile/CORDOVA_STANDARD.md`** for:
 
 | Account                 | Purpose                           | Cost         | Where to Buy                           |
 | ----------------------- | --------------------------------- | ------------ | -------------------------------------- |
-| Google Play Developer   | Android store deployment          | $25 one-time | https://play.google.com/console/signup |
-| Apple Developer Program | iOS store deployment + TestFlight | $99/year     | https://developer.apple.com/programs/  |
-| Fastlane (optional)     | Automated store publishing        | Free         | https://fastlane.tools                 |
+| Google Play Developer   | Android store deployment          | $25 one-time | <https://play.google.com/console/signup> |
+| Apple Developer Program | iOS store deployment + TestFlight | $99/year     | <https://developer.apple.com/programs/>  |
+| Fastlane (optional)     | Automated store publishing        | Free         | <https://fastlane.tools>                 |
 
 ---
 

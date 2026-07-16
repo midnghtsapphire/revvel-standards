@@ -2,7 +2,7 @@
 
 Maintain SYSTEM_STATE.md as the single source of truth for production status, reading it at session start and updating it at session end.
 
-## What Is SYSTEM_STATE.md?
+## What Is SYSTEM_STATE.md
 
 The "brain handoff" document between sessions. Reflects **what is actually working in production** — not wishlist, not backlog, not spec. Agents are stateless; this file provides continuity.
 

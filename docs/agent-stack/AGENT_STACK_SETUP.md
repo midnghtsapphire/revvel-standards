@@ -74,13 +74,13 @@ Add these in **Settings → Secrets and variables → Actions** (or via the
 
 | Secret               | Used by              | Why                                             | Where to get it                          |
 | -------------------- | -------------------- | ----------------------------------------------- | ---------------------------------------- |
-| `OPENROUTER_API_KEY` | OpenHands, SWE-Agent | Cheapest path — one key for both agents         | https://openrouter.ai/settings/keys      |
-| `OPENHANDS_API_KEY`  | OpenHands            | Direct OpenHands SaaS account (alternative)     | https://app.all-hands.dev/settings       |
+| `OPENROUTER_API_KEY` | OpenHands, SWE-Agent | Cheapest path — one key for both agents         | <https://openrouter.ai/settings/keys>      |
+| `OPENHANDS_API_KEY`  | OpenHands            | Direct OpenHands SaaS account (alternative)     | <https://app.all-hands.dev/settings>       |
 | `SWE_AGENT_API_KEY`  | SWE-Agent            | Direct provider key (Anthropic / OpenAI / etc.) | Provider's API console                   |
-| `BITO_ACCESS_KEY`    | BITO-AI              | Persistent-memory code review                   | https://bito.ai → Settings → Access Keys |
-| `GIT_ACCESS_TOKEN`   | BITO-AI              | Classic GitHub PAT, `repo` scope                | https://github.com/settings/tokens       |
-| `NOIMOSAI_API_KEY`   | NoimosAI             | Marketing-content generator                     | https://noimosai.com → Settings → API    |
-| `JULES_API_KEY`      | Jules WR Research    | Deep-research and PR rewrites                   | https://jules.google.com/settings        |
+| `BITO_ACCESS_KEY`    | BITO-AI              | Persistent-memory code review                   | <https://bito.ai> → Settings → Access Keys |
+| `GIT_ACCESS_TOKEN`   | BITO-AI              | Classic GitHub PAT, `repo` scope                | <https://github.com/settings/tokens>       |
+| `NOIMOSAI_API_KEY`   | NoimosAI             | Marketing-content generator                     | <https://noimosai.com> → Settings → API    |
+| `JULES_API_KEY`      | Jules WR Research    | Deep-research and PR rewrites                   | <https://jules.google.com/settings>        |
 
 The recommended minimum to get autonomous code resolution working is just
 `OPENROUTER_API_KEY` — it powers both OpenHands and SWE-Agent.
@@ -121,7 +121,7 @@ Code GitHub App is installed on this repo, the workflow detects it and
 does nothing. If it isn't, the workflow posts ONE comment per PR with
 the install link.
 
-To install: https://github.com/apps/augment-code → Install → select
+To install: <https://github.com/apps/augment-code> → Install → select
 `${{ github.repository_owner }}` → enable for this repo.
 
 To disable the reminder entirely: delete `.github/workflows/augment-check.yml`.

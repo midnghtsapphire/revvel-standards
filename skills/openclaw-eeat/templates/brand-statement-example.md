@@ -58,9 +58,9 @@ Intelligence • Geospatial • Software • SAR
 
 ## Primary URLs
 
-- **GitHub:** https://github.com/midnghtsapphire
+- **GitHub:** <https://github.com/midnghtsapphire>
 - **ORCID:** [To be added after ORCID setup]
-- **Portfolio/Website:** https://growlingeyes.com
+- **Portfolio/Website:** <https://growlingeyes.com>
 - **Wikidata:** [To be added after entity creation]
 
 ---
@@ -80,7 +80,7 @@ Intelligence • Geospatial • Software • SAR
 
 **Category:** OSINT & Threat Intelligence  
 **Status:** Active Development  
-**URL:** https://github.com/midnghtsapphire/growlingeyes
+**URL:** <https://github.com/midnghtsapphire/growlingeyes>
 
 **Description:** Open-source intelligence and threat intelligence platform for automated data collection, analysis, and reporting. Integrates with MISP, OSINT frameworks, and threat feeds.
 
@@ -100,7 +100,7 @@ Intelligence • Geospatial • Software • SAR
 
 **Category:** AI & Health Tech  
 **Status:** Beta  
-**URL:** https://github.com/midnghtsapphire/neurooz
+**URL:** <https://github.com/midnghtsapphire/neurooz>
 
 **Description:** AI-powered brain health tracking and cognitive wellness platform. Gamified brain training exercises with longitudinal tracking and predictive analytics.
 
@@ -120,7 +120,7 @@ Intelligence • Geospatial • Software • SAR
 
 **Category:** AI Agent Systems  
 **Status:** Active  
-**URL:** https://github.com/midnghtsapphire/revvel-standards
+**URL:** <https://github.com/midnghtsapphire/revvel-standards>
 
 **Description:** Universal operating standards for AI agents, including multi-agent orchestration, autonomous workflows, skill libraries, and self-healing systems architecture.
 
@@ -189,7 +189,7 @@ _(To be added after Archive.org upload)_
 
 ## References & Verification
 
-- **GitHub Profile:** https://github.com/midnghtsapphire
+- **GitHub Profile:** <https://github.com/midnghtsapphire>
 - **ORCID:** [Pending setup]
 - **Wikidata Entity:** [Pending creation]
 - **ResearchGate:** [Pending setup]

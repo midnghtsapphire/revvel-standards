@@ -16,7 +16,7 @@ same Work Request pipeline:
 Both templates apply the `work-request` and `weekly-research` labels so the
 auto-classifier and downstream automation (`wr-pr-creation.yml`,
 `jules-invoke.yml`, the Project v2 board sync) treat them identically. Both
-use the `[WR] ` title prefix, and WR workflows also accept the BASIC WR issue
+use the `[WR]` title prefix, and WR workflows also accept the BASIC WR issue
 type if GitHub issue-type selection arrives before labels are present.
 
 This directory is the **canonical, portable copy** of both templates. Drop
@@ -135,7 +135,7 @@ the differences.
 
 ## Troubleshooting
 
-### "The scope checkboxes aren't pre-filled when I create an issue"
+### "The scope checkboxes aren't pre-filled when I create an issue
 
 **This is almost certainly a GitHub template cache issue.** The template IS
 configured to auto-fill the "Scope for the deep-research pass" section with
@@ -164,7 +164,7 @@ If none of these work, check:
 - Run `git log .github/ISSUE_TEMPLATE/issue.yml` — when was it last
   updated? Template changes committed recently might still be propagating.
 
-### "The template works in revvel-standards but not in my other repo"
+### "The template works in revvel-standards but not in my other repo
 
 You need to **copy the template files** into that repo. See the "Install in
 a new repo" section above. The template lives in two places:

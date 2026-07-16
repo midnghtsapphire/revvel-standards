@@ -6,7 +6,7 @@ This document defines the protocols that enable agents to operate with **driven 
 
 ## GOAP (Goal-Oriented Action Planning)
 
-### What is GOAP?
+### What is GOAP
 
 Goal-Oriented Action Planning is an AI planning system where agents:
 
@@ -113,7 +113,7 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
 
 ## Swarm Coordination
 
-### What is Swarm Coordination?
+### What is Swarm Coordination
 
 Swarm coordination enables multiple agents to work on parallel, independent subtasks while sharing context and synchronizing results.
 

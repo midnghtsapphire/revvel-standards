@@ -64,9 +64,9 @@ Each row above is a **suite**. The harness wires them together.
 
 Same six criteria as the parent [`TEST_HARNESS_RESEARCH.md`](./TEST_HARNESS_RESEARCH.md) §4.1, plus three mobile-specific ones:
 
-7. **No local native toolchain required** — must runnable from CI without forcing every developer to install Xcode (≈ 12 GB) or Android Studio (≈ 8 GB) locally. Matches AGENTS.md "EAS Build handles App Store / Play Store builds in the cloud — no Xcode or Android Studio required."
-8. **Works with Expo managed workflow** — does not force ejecting to bare React Native, since Expo managed is the documented default.
-9. **Cross-platform parity** — the same test (or trivially-shared YAML) runs on both iOS and Android with one assertion model, not two.
+1. **No local native toolchain required** — must runnable from CI without forcing every developer to install Xcode (≈ 12 GB) or Android Studio (≈ 8 GB) locally. Matches AGENTS.md "EAS Build handles App Store / Play Store builds in the cloud — no Xcode or Android Studio required."
+2. **Works with Expo managed workflow** — does not force ejecting to bare React Native, since Expo managed is the documented default.
+3. **Cross-platform parity** — the same test (or trivially-shared YAML) runs on both iOS and Android with one assertion model, not two.
 
 ### 4.2. Recommended tools
 

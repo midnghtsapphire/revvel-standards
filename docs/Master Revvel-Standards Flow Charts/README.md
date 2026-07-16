@@ -8,7 +8,7 @@
 
 ---
 
-## What Is This Folder?
+## What Is This Folder
 
 This folder contains the **official, always-up-to-date visual and textual maps** of how everything in the Revvel ecosystem works — from the moment you have an idea all the way to a deployed, documented feature.
 

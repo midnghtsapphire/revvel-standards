@@ -96,7 +96,7 @@ Current palette (teal/red/gold/off-white) is bright; the actual hero screenshots
 | **T3.** _"Truth has teeth."_                                                               |
 | **T4.** _"We see in the dark."_                                                            |
 
-### 3.5 — Scope of "every page and sub-page"
+### 3.5 — Scope of "every page and sub-page
 
 Confirm: _"Every page" = every route in `midnghtsapphire/growlingeyes` (the app) **plus** every doc surface in this repo (`midnghtsapphire/revvel-standards`)._ Anything else (e.g. Odoo customer portal, Manus pipeline UI) is **out of scope** unless explicitly added.
 

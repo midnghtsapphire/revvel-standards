@@ -268,7 +268,7 @@ The campaign auto-posting Make.com scenario must:
 
 ## 6. Landing Page / Funnel Structure
 
-### 6.1. What Is a Funnel?
+### 6.1. What Is a Funnel
 
 A funnel is the path a stranger takes to become a paying customer. Every Revvel app has at minimum a 3-stage funnel:
 

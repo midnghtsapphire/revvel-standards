@@ -106,7 +106,7 @@ Set in repository Settings → Secrets and variables → Actions:
 OPENROUTER_API_KEY=sk-or-v1-...
 ```
 
-Get your API key: https://openrouter.ai/keys
+Get your API key: <https://openrouter.ai/keys>
 
 ### 2. Optional Secrets (for validation)
 

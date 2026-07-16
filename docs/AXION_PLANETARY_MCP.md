@@ -25,7 +25,7 @@ images, enabling **cloud-free Earth observation** anywhere on the planet.
 
 ---
 
-## Why SAR-to-Optical?
+## Why SAR-to-Optical
 
 | Problem                                 | SAR Solution                                   |
 | --------------------------------------- | ---------------------------------------------- |

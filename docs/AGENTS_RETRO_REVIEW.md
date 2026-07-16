@@ -22,7 +22,7 @@ The `oAudrey retro — 2026-04-30` issue (and every identical retro issue before
 
 ---
 
-## Root Cause Analysis — Why "It Never Gets Fixed"
+## Root Cause Analysis — Why "It Never Gets Fixed
 
 ### The actual blocker is infrastructure, not code
 
@@ -56,7 +56,7 @@ The retro workflow runs on a **weekly cron** regardless of whether last week's i
 
 ## Current AGENTS.md — Gap Analysis
 
-### Gap 1 — No distinction between "code blockers" and "infrastructure blockers"
+### Gap 1 — No distinction between "code blockers" and "infrastructure blockers
 
 **Current text (Autonomy Mandate, rule #1):**
 
@@ -231,7 +231,7 @@ When recurring infrastructure blockers are identified, add a learnings.md entry 
 
 ---
 
-## Why These Changes Will Be "120% Successful"
+## Why These Changes Will Be "120% Successful
 
 The changes target the **four structural failure modes** in the current loop:
 

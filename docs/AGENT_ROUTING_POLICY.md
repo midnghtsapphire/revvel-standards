@@ -136,15 +136,15 @@ All workflows must log:
 
 Monitor via:
 
-- OpenRouter dashboard: https://openrouter.ai/usage
-- CircleCI insights: https://app.circleci.com/
+- OpenRouter dashboard: <https://openrouter.ai/usage>
+- CircleCI insights: <https://app.circleci.com/>
 - GitHub Actions usage: Settings → Billing
 
 ---
 
 ## CircleCI Integration
 
-### Why CircleCI for PR Reviews?
+### Why CircleCI for PR Reviews
 
 1. **Direct PR integration** - Comments appear inline with "Commit" button
 2. **Free tier** - 6,000 build minutes/month free
@@ -173,7 +173,7 @@ workflows:
 ### Setup Instructions
 
 1. **Enable CircleCI:**
-   - Go to https://app.circleci.com/
+   - Go to <https://app.circleci.com/>
    - Connect midnghtsapphire/revvel-standards repository
    - Confirm webhook is active
 

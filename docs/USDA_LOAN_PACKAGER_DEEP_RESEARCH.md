@@ -52,7 +52,7 @@ This research covers the complete USDA Rural Development loan ecosystem, includi
 - Property must be in USDA-eligible rural area
 - Property must be "modest" (no luxury features like inground pools in most states)
 
-**Check Eligibility:** https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do
+**Check Eligibility:** <https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do>
 
 ### 1.2 Section 502 Direct Loan
 
@@ -161,7 +161,7 @@ Income limits are set annually by USDA and vary by state, county, and household 
 | **California** | Sacramento County     | $126,000             | $166,300             | USDA RD   |
 | **California** | San Bernardino County | $118,500             | $156,400             | USDA RD   |
 
-**Official Source:** https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility
+**Official Source:** <https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility>
 
 ### 3.2 Income Calculation Rules
 
@@ -229,7 +229,7 @@ Income limits are set annually by USDA and vary by state, county, and household 
 
 ## 4. Loan Packagers — The Hidden Industry
 
-### 4.1 What is a Loan Packager?
+### 4.1 What is a Loan Packager
 
 A **loan packager** is a third-party professional who prepares and submits USDA loan applications on behalf of borrowers. Packagers:
 
@@ -347,7 +347,7 @@ A **loan packager** is a third-party professional who prepares and submits USDA 
 
 ## 5. Automated USDA Eligibility Tool — Tech Stack & Opportunities
 
-### 5.1 Product Vision: "TurboTax for USDA Loans"
+### 5.1 Product Vision: "TurboTax for USDA Loans
 
 **Core Features:**
 
@@ -627,7 +627,7 @@ Instead of creating a law enforcement entity, focus on **legal entities with reg
 
 **Immediate Actions:**
 
-1. **Check eligibility:** Use USDA Eligibility Map (https://eligibility.sc.egov.usda.gov/eligibility)
+1. **Check eligibility:** Use USDA Eligibility Map (<https://eligibility.sc.egov.usda.gov/eligibility>)
 2. **Calculate income:** Add up all household gross income → compare to county limit
 3. **Find USDA-approved lender:** Contact local credit unions or rural banks (often best rates)
 4. **Gather documents:** 2 years tax returns, 2 months pay stubs, 2 months bank statements, credit report
@@ -685,26 +685,26 @@ Instead of creating a law enforcement entity, focus on **legal entities with reg
 
 ### 8.1 Official USDA Resources
 
-- **USDA Rural Development:** https://www.rd.usda.gov/
-- **Eligibility Map:** https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do
-- **Income Limits (2026):** https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility
-- **Form RD 410-4 (Application):** https://www.rd.usda.gov/sites/default/files/RD410-4.pdf
+- **USDA Rural Development:** <https://www.rd.usda.gov/>
+- **Eligibility Map:** <https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do>
+- **Income Limits (2026):** <https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility>
+- **Form RD 410-4 (Application):** <https://www.rd.usda.gov/sites/default/files/RD410-4.pdf>
 - **USDA Lender Locator:** Contact local USDA Rural Development office
 
 ### 8.2 HUD Housing Counseling (Free Packaging Alternative)
 
-- **HUD Counseling Search:** https://www.hud.gov/counseling
+- **HUD Counseling Search:** <https://www.hud.gov/counseling>
 - **HUD-Approved Agencies:** Nonprofit organizations offering free loan packaging services
 
 ### 8.3 State Licensing Resources
 
-- **NMLS (Nationwide Licensing):** https://mortgage.nationwidelicensingsystem.org/
+- **NMLS (Nationwide Licensing):** <https://mortgage.nationwidelicensingsystem.org/>
 - **SAFE Act Course Providers:** 360Training, Kaplan, CE Shop ($100-300)
 - **State DFI Directory:** Search "[state name] Division of Financial Institutions"
 
 ### 8.4 Legal Research
 
-- **RESPA (12 USC §2607):** https://www.law.cornell.edu/uscode/text/12/2607
+- **RESPA (12 USC §2607):** <https://www.law.cornell.edu/uscode/text/12/2607>
 - **California AB 1484 (2019):** Special district formation restrictions
 - **California Government Code §50000-57550:** Special districts
 - **California Penal Code §830.33:** Special district peace officers
@@ -716,7 +716,7 @@ Instead of creating a law enforcement entity, focus on **legal entities with reg
 - **Document OCR:** Ocrolus, AWS Textract, Google Document AI
 - **Income Verification:** Plaid, Truework
 - **Credit Reports:** Experian, Equifax, TransUnion
-- **n8n Workflow Automation:** https://n8n.io/
+- **n8n Workflow Automation:** <https://n8n.io/>
 
 ---
 

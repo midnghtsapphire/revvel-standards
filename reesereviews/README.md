@@ -98,21 +98,21 @@ git clone https://github.com/midnghtsapphire/revvel-standards.git
 cd revvel-standards/reesereviews
 ```
 
-2. Set up environment variables:
+1. Set up environment variables:
 
 ```bash
 cp .env.example .env
 # Edit .env with your API keys
 ```
 
-3. Install dependencies:
+1. Install dependencies:
 
 ```bash
 npm install  # For frontend build tools
 pip install -r requirements.txt  # For backend API
 ```
 
-4. Run development server:
+1. Run development server:
 
 ```bash
 # Simple HTTP server for frontend
@@ -122,7 +122,7 @@ python -m http.server 8080
 npx live-server --port=8080
 ```
 
-5. Access at `http://localhost:8080`
+1. Access at `http://localhost:8080`
 
 ### Production Deployment
 
@@ -162,21 +162,21 @@ If automation fails, follow these steps:
 
 #### Judge.me
 
-1. Sign up at https://judge.me
+1. Sign up at <https://judge.me>
 2. Navigate to Settings → API
 3. Generate API token
 4. Add to `.env`: `JUDGEME_API_KEY=your_key_here`
 
 #### Amazon Product Advertising API
 
-1. Apply at https://affiliate-program.amazon.com/signup
+1. Apply at <https://affiliate-program.amazon.com/signup>
 2. Request API access
 3. Generate keys in Associates Central
 4. Add to `.env`: `AMAZON_API_KEY=your_key_here`
 
 #### Google My Business API
 
-1. Create project at https://console.cloud.google.com
+1. Create project at <https://console.cloud.google.com>
 2. Enable Google My Business API
 3. Create OAuth2 credentials
 4. Add to `.env`: `GOOGLE_API_KEY=your_key_here`
@@ -236,7 +236,7 @@ Dashboard planned for v1.2.
 
 This is a private project within the Revvel ecosystem. For questions or suggestions:
 
-- Email: angelreporters@gmail.com
+- Email: <angelreporters@gmail.com>
 - Issues: Create in revvel-standards repo
 
 ## License
@@ -259,8 +259,8 @@ See [CHANGELOG.md](../CHANGELOG.md) for version history.
 
 For support or questions about Reese Reviews:
 
-- **Email:** support@reesereviews.com
-- **Website:** https://reesereviews.com
+- **Email:** <support@reesereviews.com>
+- **Website:** <https://reesereviews.com>
 - **Parent Org:** MIDNGHTSAPPHIRE / Revvel
 
 ---

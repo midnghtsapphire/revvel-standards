@@ -14,11 +14,11 @@ This guide is the mandatory starting point for any new team member or AI agent j
 
 To get started, you must read the following documents from the `MIDNGHTSAPPHIRE/revvel-standards` repository in this specific order:
 
-1.  **`ONBOARDING.md`** (This file)
-2.  **`DEFAULT_APP_TEMPLATE.md`** - The master template for all new applications.
-3.  **`DEPLOYMENT_GUIDE.md`** - How to deploy applications to our infrastructure.
-4.  **`INFRASTRUCTURE_COMPLETE.md`** - The complete map of our digital assets.
-5.  **`PROJECT_CATALOG.md`** - A catalog of our existing projects.
+1. **`ONBOARDING.md`** (This file)
+2. **`DEFAULT_APP_TEMPLATE.md`** - The master template for all new applications.
+3. **`DEPLOYMENT_GUIDE.md`** - How to deploy applications to our infrastructure.
+4. **`INFRASTRUCTURE_COMPLETE.md`** - The complete map of our digital assets.
+5. **`PROJECT_CATALOG.md`** - A catalog of our existing projects.
 
 Understanding these documents is not optional. They are the foundation of our development methodology.
 
@@ -35,8 +35,8 @@ Our development process is guided by a few simple, non-negotiable rules.
 
 To manage costs and maximize efficiency, we use a tiered, "free-first" approach to Large Language Model (LLM) routing via OpenRouter.
 
-1.  **Tier 1 (Free):** `MiMo-V2-Flash`, `Trinity`, `Venice`, `Llama 3.3`, `DeepSeek V3.2`
-2.  **Tier 2 (Premium):** Paid models are to be used **only when necessary** to achieve a specific task that the free models cannot handle.
+1. **Tier 1 (Free):** `MiMo-V2-Flash`, `Trinity`, `Venice`, `Llama 3.3`, `DeepSeek V3.2`
+2. **Tier 2 (Premium):** Paid models are to be used **only when necessary** to achieve a specific task that the free models cannot handle.
 
 This stack is designed to handle the vast majority of tasks using free models, reserving premium models for specialized, high-value work.
 

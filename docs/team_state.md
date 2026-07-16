@@ -2,9 +2,9 @@
 
 # Updated: Feb 16, 2026 16:49 MST
 
-# PURPOSE: Every team reads this on startup, writes to it as they work.
+# PURPOSE: Every team reads this on startup, writes to it as they work
 
-# New teams pick up exactly where the last one stopped.
+# New teams pick up exactly where the last one stopped
 
 ---
 
@@ -12,12 +12,12 @@
 
 ### Team B — 6 Standalone Apps (DONE)
 
-- meetaudreyevans-dashboard — LIVE at http://147.182.211.246
-- datascope-standalone — LIVE at http://68.183.29.25
-- marketing-automation — LIVE at http://159.65.231.36
-- project-face-standalone — LIVE at http://192.241.141.186
-- data-router-standalone — LIVE at http://24.199.90.253
-- ai-benchmarking-standalone — LIVE at http://198.211.98.52
+- meetaudreyevans-dashboard — LIVE at <http://147.182.211.246>
+- datascope-standalone — LIVE at <http://68.183.29.25>
+- marketing-automation — LIVE at <http://159.65.231.36>
+- project-face-standalone — LIVE at <http://192.241.141.186>
+- data-router-standalone — LIVE at <http://24.199.90.253>
+- ai-benchmarking-standalone — LIVE at <http://198.211.98.52>
 - All have dual-mode Stripe, Tailwind v4 fixed, pushed to GitHub
 
 ### Auto-Deploy Pipeline (DONE)
@@ -40,12 +40,12 @@
 
 ### Revenue Apps Deployment — LIVE ✅
 
-- Deployment Hub: https://80-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/
-- Ordain.Church: https://8001-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/ ✅
-- Instant Certificates: https://8002-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/ ✅
-- InTheWild: https://3000-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/ ✅ (fixing env vars)
-- TheAltText: https://3001-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/ ✅
-- Forensic Studio: https://8004-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/docs ✅
+- Deployment Hub: <https://80-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/>
+- Ordain.Church: <https://8001-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/> ✅
+- Instant Certificates: <https://8002-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/> ✅
+- InTheWild: <https://3000-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/> ✅ (fixing env vars)
+- TheAltText: <https://3001-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/> ✅
+- Forensic Studio: <https://8004-iv830kdszt1i912djvcqi-ae25626c.us2.manus.computer/docs> ✅
 - NOW BUILDING: Blue Ocean features for TheAltText, InTheWild, Forensic Studio
 
 ### Repo Audit — DONE ✅
@@ -105,7 +105,7 @@
 
 ### Admin Account (ALL APPS)
 
-- Email: angelreporters@gmail.com
+- Email: <angelreporters@gmail.com>
 - Auto-authenticated, no password, full admin access
 - DO NOT ASK FOR THESE AGAIN — THEY ARE RIGHT HERE
 
@@ -166,7 +166,7 @@ Every project MUST have the following documentation pushed to its GitHub repo:
 - EVERY app MUST have login (Google OAuth + Apple Sign-In + email/password)
 - EVERY app MUST have subscription + token billing via Stripe
 - NO app ships without these. Period.
-- Admin account: angelreporters@gmail.com — auto-authenticated, no password, full admin
+- Admin account: <angelreporters@gmail.com> — auto-authenticated, no password, full admin
 - Each app MUST have its OWN unique color identity — do NOT make every app the same color
 - Colors must survive blue light filters (avoid pure blues, use warm tones, ambers, teals)
 - Glassmorphism is the design language but palette varies per app

@@ -24,7 +24,7 @@
 
 ## 1. Overview
 
-### 1.1. What is a Trigger?
+### 1.1. What is a Trigger
 
 A **trigger** in the context of GrowlingEyes OSINT is a detectable pattern, event, or data point from intelligence sources that indicates a significant change, threat, or event requiring attention. Triggers are the core mechanism for converting raw OSINT data into actionable intelligence.
 
@@ -1296,12 +1296,12 @@ jq '.triggers[] | select(.score >= 90)' /tmp/triggers.json
 ## References
 
 1. **OSINT Frameworks**
-   - OSINT Framework: https://osintframework.com
-   - IntelTechniques: https://inteltechniques.com
+   - OSINT Framework: <https://osintframework.com>
+   - IntelTechniques: <https://inteltechniques.com>
 
 2. **Threat Intelligence Standards**
-   - STIX/TAXII: https://oasis-open.github.io/cti-documentation/
-   - MITRE ATT&CK: https://attack.mitre.org
+   - STIX/TAXII: <https://oasis-open.github.io/cti-documentation/>
+   - MITRE ATT&CK: <https://attack.mitre.org>
 
 3. **Pattern Recognition Research**
    - NLP for Threat Intelligence: Various academic papers

@@ -8,7 +8,7 @@
 
 | Requirement                 | Status | Notes                                                         |
 | --------------------------- | :----: | ------------------------------------------------------------- |
-| Live deployment URL         |   ✅   | https://revvel-standards.vercel.app/docs/music-video-creator/ |
+| Live deployment URL         |   ✅   | <https://revvel-standards.vercel.app/docs/music-video-creator/> |
 | README `## Live Deployment` |   ✅   | present                                                       |
 | Live web test interface     |   ✅   | web app detected                                              |
 | .mcp.json at root           |   ❌   | missing                                                       |

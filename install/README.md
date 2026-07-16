@@ -5,7 +5,7 @@
 
 ---
 
-## 🤔 What Is GBrain?
+## 🤔 What Is GBrain
 
 Imagine you had an assistant who forgot everything you told them at the end of every day. Every morning you'd have to remind them: who your clients are, what projects are happening, what you talked about last week. Exhausting, right?
 
@@ -60,7 +60,7 @@ Mac might block the file the first time. Here's how to fix that:
 
 The installer walks you through everything. When it asks a question, type **y** for yes or **n** for no, then press **Enter**.
 
-### Step 4 — Done!
+### Step 4 — Done
 
 Open a new Terminal window and test it:
 
@@ -92,7 +92,7 @@ Windows Defender SmartScreen might pop up. Here's what to do:
 
 The installer walks you through everything. When it asks a question, type **y** or **n** and press **Enter**.
 
-### Step 4 — Done!
+### Step 4 — Done
 
 Open a new Command Prompt and test it:
 
@@ -214,7 +214,7 @@ Once GBrain is installed, here are the most useful things you can type in Termin
 
 ## ❓ Troubleshooting
 
-### "gbrain: command not found"
+### "gbrain: command not found
 
 Open a new Terminal/Command Prompt window. The PATH was updated during install but old windows don't see it yet.
 

@@ -377,9 +377,9 @@ To fully validate, reviewers should:
 
 ## Links
 
-- **OpenRouter Fallback Docs**: https://openrouter.ai/docs/guides/routing/model-fallbacks
-- **OpenRouter API Docs**: https://openrouter.ai/docs
-- **OpenRouter Model List**: https://openrouter.ai/docs/models
+- **OpenRouter Fallback Docs**: <https://openrouter.ai/docs/guides/routing/model-fallbacks>
+- **OpenRouter API Docs**: <https://openrouter.ai/docs>
+- **OpenRouter Model List**: <https://openrouter.ai/docs/models>
 
 ## Author Notes
 

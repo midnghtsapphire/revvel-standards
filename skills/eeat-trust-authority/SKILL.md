@@ -9,7 +9,7 @@
 
 ---
 
-## What Is This?
+## What Is This
 
 **TrustForge** is the dedicated agent responsible for automatically generating, updating, and maintaining Google E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) signals across all MIDNGHTSAPPHIRE properties. This is real, actionable SEO that moves the needle.
 
@@ -107,7 +107,7 @@ Use this canonical identity across all properties:
 **Professional Title:** Systems builder. Legal-tech operator. Intelligence researcher.  
 **Location:** Northern Colorado  
 **Organization:** MIDNGHTSAPPHIRE  
-**Email:** angelreporters@gmail.com  
+**Email:** <angelreporters@gmail.com>  
 **ORCID:** [0009-0005-0663-7832](https://orcid.org/0009-0005-0663-7832)  
 **Previous ORCID:** 0009-0004-9108-3995 (still has papers)  
 **Entity:** Freedom Angel Corp (Founded 2010, EIN: 86-1209156)
@@ -559,7 +559,7 @@ TrustForge uses `templates/brand/BRAND_IDENTITY_TEMPLATE.md` as the source of tr
 
 TrustForge respects the Quiet Mode gate used by all cron jobs.
 
-### To Enable TrustForge:
+### To Enable TrustForge
 
 Create an issue titled exactly: `exit-quiet-mode`
 
@@ -567,7 +567,7 @@ Create an issue titled exactly: `exit-quiet-mode`
 gh issue create --title "exit-quiet-mode" --body "Enabling TrustForge E-E-A-T automation"
 ```
 
-### To Disable TrustForge:
+### To Disable TrustForge
 
 Close or delete the `exit-quiet-mode` issue.
 
@@ -575,7 +575,7 @@ Close or delete the `exit-quiet-mode` issue.
 gh issue close <issue-number>
 ```
 
-### Manual Run (Bypass Quiet Mode):
+### Manual Run (Bypass Quiet Mode)
 
 ```bash
 gh workflow run eeat-trust-cron.yml

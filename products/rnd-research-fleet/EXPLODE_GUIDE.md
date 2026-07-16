@@ -149,11 +149,11 @@ node auto-github-join.js
 
 You will need:
 
-- A **free GitHub account** — create one at https://github.com/join
+- A **free GitHub account** — create one at <https://github.com/join>
 - A **GitHub personal access token** (classic) with the `repo` and
   `workflow` scopes (add `admin:org` only if you fork into an
   organization rather than your personal account):
-  1. Go to https://github.com/settings/tokens/new
+  1. Go to <https://github.com/settings/tokens/new>
   2. Note: any name (e.g. `rnd-fleet`)
   3. Scopes: check `repo` and `workflow` (and `admin:org` for org forks)
   4. Click **Generate token** and copy it
@@ -205,11 +205,11 @@ LCA + BNAT frameworks before giving you an answer.
 
 ## Troubleshooting
 
-### "Node.js not found"
+### "Node.js not found
 
-Install Node.js 18+ from https://nodejs.org (choose **LTS**).
+Install Node.js 18+ from <https://nodejs.org> (choose **LTS**).
 
-### "Permission denied"
+### "Permission denied
 
 ```bash
 chmod +x install.sh
@@ -223,7 +223,7 @@ pip3 install --user "perplexity-api @ git+https://github.com/helallao/perplexity
 
 Then re-run `./install.sh`.
 
-### Deep Search Router returns "API key missing"
+### Deep Search Router returns "API key missing
 
 The router falls back to the free Perplexity lane automatically. To
 unlock the full Sonnet 3.5 + Fusion chain, add your OpenRouter key:
@@ -232,7 +232,7 @@ unlock the full Sonnet 3.5 + Fusion chain, add your OpenRouter key:
 echo "OPENROUTER_API_KEY=sk-or-v1-YOUR_KEY_HERE" >> .env
 ```
 
-Get a key (free tier available) at https://openrouter.ai/keys.
+Get a key (free tier available) at <https://openrouter.ai/keys>.
 
 ---
 
@@ -240,11 +240,11 @@ Get a key (free tier available) at https://openrouter.ai/keys.
 
 | Tool           | Minimum version | Where to get it                            |
 | -------------- | --------------- | ------------------------------------------ |
-| Node.js        | 18.x LTS        | https://nodejs.org                         |
-| Git            | 2.x             | https://git-scm.com                        |
-| Python 3       | 3.8+            | https://python.org (for Perplexity bridge) |
-| GitHub account | —               | https://github.com/join (free)             |
-| OpenRouter key | —               | https://openrouter.ai/keys (optional)      |
+| Node.js        | 18.x LTS        | <https://nodejs.org>                         |
+| Git            | 2.x             | <https://git-scm.com>                        |
+| Python 3       | 3.8+            | <https://python.org> (for Perplexity bridge) |
+| GitHub account | —               | <https://github.com/join> (free)             |
+| OpenRouter key | —               | <https://openrouter.ai/keys> (optional)      |
 
 ---
 
@@ -264,7 +264,7 @@ Get a key (free tier available) at https://openrouter.ai/keys.
 
 ## Support
 
-- Email: support@freedomangelcorp.com
-- GitHub: https://github.com/midnghtsapphire/revvel-standards/discussions
+- Email: <support@freedomangelcorp.com>
+- GitHub: <https://github.com/midnghtsapphire/revvel-standards/discussions>
 
 **Built by Audrey Evans / MIDNGHTSAPPHIRE**

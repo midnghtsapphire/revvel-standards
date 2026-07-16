@@ -45,7 +45,7 @@ GitHub events ── amplitude-events.yml ──▶ Amplitude
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------- |
 | `AMPLITUDE_API_KEY`            | Amplitude project API key. _Settings → Projects → \[project\] → API Key._                                                                  | `revvel/shared/analytics/amplitude` |
 | `AMPLITUDE_SECRET_KEY`         | Amplitude project **secret** key. The Dashboard REST API uses HTTP Basic auth (`api_key:secret_key`).                                      | `revvel/shared/analytics/amplitude` |
-| `NOTION_API_KEY`               | Notion internal-integration token (`secret_…`). Create at https://www.notion.so/my-integrations.                                           | `revvel/shared/notion/standards`    |
+| `NOTION_API_KEY`               | Notion internal-integration token (`secret_…`). Create at <https://www.notion.so/my-integrations>.                                           | `revvel/shared/notion/standards`    |
 | `NOTION_AMPLITUDE_DATABASE_ID` | The 32-char database ID of the target Notion database. **Share the integration with the database** in Notion (▼ menu → _Add connections_). | `revvel/shared/notion/standards`    |
 
 ### 3.2 Repo variables (Settings → Variables → Actions)

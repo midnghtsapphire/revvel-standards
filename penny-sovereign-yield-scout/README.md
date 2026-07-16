@@ -7,7 +7,7 @@
 
 ---
 
-## What Is This?
+## What Is This
 
 **penny-sovereign-yield-scout** is an AI-assisted DeFi yield intelligence tool that:
 

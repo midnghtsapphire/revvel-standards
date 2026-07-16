@@ -2,7 +2,7 @@
 
 Track decisions, risks, and issues using the DARE framework (Define, Assess, Respond, Evaluate) as a modern alternative to RAID logs.
 
-## Why DARE Over RAID?
+## Why DARE Over RAID
 
 RAID (Risks, Assumptions, Issues, Dependencies) is passive — it identifies problems. DARE is active — it forces resolution. DARE is better suited for AI agent workflows and modern agile development.
 

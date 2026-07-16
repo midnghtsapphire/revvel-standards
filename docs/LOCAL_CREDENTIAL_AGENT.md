@@ -149,7 +149,7 @@ Create a task to run `auto-fetch-credentials.ps1 sync` every 4 hours.
 
 ## Troubleshooting
 
-### "gh CLI not found"
+### "gh CLI not found
 
 ```bash
 # Install gh CLI
@@ -158,7 +158,7 @@ Create a task to run `auto-fetch-credentials.ps1 sync` every 4 hours.
 # Windows: winget install GitHub.cli
 ```
 
-### "Not logged in to GitHub"
+### "Not logged in to GitHub
 
 ```bash
 gh auth login

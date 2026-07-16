@@ -1,4 +1,4 @@
-# Conflict Resolution Standard — don't make the owner pick "current / incoming / both"
+# Conflict Resolution Standard — don't make the owner pick "current / incoming / both
 
 The owner kept hitting merge conflicts where they didn't know whether to take
 the current change, the incoming change, or both. For mechanical cases that
@@ -55,7 +55,7 @@ recognizable additive shape:
 
 - Markdown table row: `|` … `|`
 - Markdown table separator: `| --- | --- |`
-- Markdown bullet: `-` / `*` / `+ ` followed by content
+- Markdown bullet: `-` / `*` / `+` followed by content
 - Markdown numbered: `1.` etc.
 
 And no single line appears on both sides (no duplicate row). When the

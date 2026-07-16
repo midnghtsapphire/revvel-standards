@@ -33,7 +33,7 @@ GrowlingEyes is a massive 18-domain OSINT threat intelligence platform with **75
 
 The platform is transitioning from **"OSINT Watch"** to **"GrowlingEyes"** but the change is **incomplete**:
 
-### Already Branded "GrowlingEyes"
+### Already Branded "GrowlingEyes
 
 - Landing page (`Landing.tsx`) — uses GrowlingEyes logos, CDN assets, hero banners
 - `OsintLayout.tsx` — sidebar header says "GrowlingEyes — The Watcher"
@@ -41,7 +41,7 @@ The platform is transitioning from **"OSINT Watch"** to **"GrowlingEyes"** but t
 - `.do/app.yaml` — app name is `growlingeyes`
 - All marketing assets on CloudFront CDN
 
-### Still References "OSINT Watch"
+### Still References "OSINT Watch
 
 | File                             | What's Outdated                               |
 | -------------------------------- | --------------------------------------------- |
@@ -209,7 +209,7 @@ GrowlingEyes references **53 environment variables** in server code. Only **9** 
 | `REST_API_KEY`              | **NOT in DO** | Custom API key for REST API v1 auth         |
 | `OWNER_OPEN_ID`             | **NOT in DO** | Owner's OpenID for admin access             |
 | `APP_ID`                    | **NOT in DO** | Application identifier                      |
-| `PRODUCTION_URL`            | **NOT in DO** | e.g., https://growlingeyes.com              |
+| `PRODUCTION_URL`            | **NOT in DO** | e.g., <https://growlingeyes.com>              |
 
 ### Summary Scorecard
 

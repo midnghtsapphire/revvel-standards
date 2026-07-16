@@ -8,7 +8,7 @@
 
 | Requirement                 | Status | Notes                                                            |
 | --------------------------- | :----: | ---------------------------------------------------------------- |
-| Live deployment URL         |   ✅   | https://revvel-standards.vercel.app/docs/creator-payout-tracker/ |
+| Live deployment URL         |   ✅   | <https://revvel-standards.vercel.app/docs/creator-payout-tracker/> |
 | README `## Live Deployment` |   ✅   | present                                                          |
 | Live web test interface     |   ✅   | web app detected                                                 |
 | .mcp.json at root           |   ❌   | missing                                                          |

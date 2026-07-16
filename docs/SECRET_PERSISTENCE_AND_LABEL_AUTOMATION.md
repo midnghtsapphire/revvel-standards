@@ -13,7 +13,7 @@ The user reported two critical issues:
 
 ## Root Cause Analysis
 
-### Secrets "Disappearing"
+### Secrets "Disappearing
 
 After comprehensive investigation:
 
@@ -22,7 +22,7 @@ After comprehensive investigation:
 - ✅ **Secret rotation schedule** rotates but never deletes
 - ❌ **Actual issue**: Secrets were likely manually deleted OR never properly synced from Doppler
 
-### Labels "Stuck"
+### Labels "Stuck
 
 - ⚠️ **No automatic progression** — Labels like `triage:in-progress`, `wr:in-progress`, `credentials-missing` had no time-based auto-progression
 - ⚠️ **No stuck detection** — No monitoring for labels that exceed reasonable time thresholds

@@ -39,7 +39,7 @@ gh workflow run eeat-trust-cron.yml
 
 ---
 
-## What Is E-E-A-T?
+## What Is E-E-A-T
 
 Google's quality framework:
 

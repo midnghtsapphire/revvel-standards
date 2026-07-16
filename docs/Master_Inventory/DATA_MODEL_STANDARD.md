@@ -11,7 +11,7 @@
 
 Consistent data modeling prevents the silent bugs, migration nightmares, and broken queries that come from every developer making different schema decisions. This standard defines the exact conventions every Revvel application must follow when designing database schemas using Drizzle ORM.
 
-**ORM:** Drizzle ORM (https://orm.drizzle.team) — mandatory for all PostgreSQL and SQLite projects  
+**ORM:** Drizzle ORM (<https://orm.drizzle.team>) — mandatory for all PostgreSQL and SQLite projects  
 **Primary DB:** PostgreSQL (via Drizzle + pg or postgres.js)  
 **Lightweight DB:** SQLite (via Drizzle + better-sqlite3) — permitted for single-tenant tools only
 

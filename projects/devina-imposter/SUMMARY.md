@@ -97,8 +97,8 @@ Aligns with WR North Star (Revenue First):
 - **Spec**: `projects/devina-imposter/SPEC.md`
 - **Handoff**: `projects/devina-imposter/HANDOFF.md`
 - **Templates**: `projects/devina-imposter/*-template.md`
-- **awesome-devins**: https://github.com/e2b-dev/awesome-devins
-- **SWE-bench**: https://www.swebench.com/
+- **awesome-devins**: <https://github.com/e2b-dev/awesome-devins>
+- **SWE-bench**: <https://www.swebench.com/>
 
 ## Related Work
 

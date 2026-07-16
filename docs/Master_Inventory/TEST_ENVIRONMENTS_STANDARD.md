@@ -336,7 +336,7 @@ As applications mature, migrate the repository ownership from `midnghtsapphire` 
 
 ## 7. The S.H.I.F.T. Test Harness
 
-### What Is S.H.I.F.T.?
+### What Is S.H.I.F.T
 
 **S.H.I.F.T.** stands for **Self-Healing Intent-Focused Tasks**. It is the Revvel test framework that goes beyond binary pass/fail checks to validate that software:
 
@@ -369,7 +369,7 @@ A sixth **Synthesizer** agent aggregates all five reports into a single S.H.I.F.
 | `FAIL`             | One or more P0/P1 findings       | Fix before graduating  |
 | `BLOCKED`          | Unreachable URL or build failure | Fix deployment first   |
 
-### When to Run S.H.I.F.T.
+### When to Run S.H.I.F.T
 
 | Stage      | Automated?                              | Manual?                  |
 | ---------- | --------------------------------------- | ------------------------ |

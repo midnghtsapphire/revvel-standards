@@ -40,7 +40,7 @@ If CI + RecurseML pass → merge
 ## Setup Checklist (New Project)
 
 1. **Install RecurseML GitHub App:**
-   Visit https://app.recurse.ml/integrations/github and install for the target repo.
+   Visit <https://app.recurse.ml/integrations/github> and install for the target repo.
 
 2. **Add API key secret:**
    Repository → Settings → Secrets and variables → Actions → New secret:

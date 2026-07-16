@@ -320,21 +320,21 @@ Use caching and batching to stay within limits.
 
 ## Troubleshooting
 
-### "API key invalid"
+### "API key invalid
 
 - Verify key is correctly copied
 - Check for whitespace/newlines
 - Try regenerating key
 - Ensure account is active
 
-### "Rate limit exceeded"
+### "Rate limit exceeded
 
 - Enable caching layer
 - Reduce polling frequency
 - Upgrade to paid tier
 - Use mock mode temporarily
 
-### "Account approval pending"
+### "Account approval pending
 
 - Amazon PA API takes 1-3 business days
 - Use mock mode while waiting
@@ -356,7 +356,7 @@ For API setup issues:
 - Check logs: `tail -f logs/api-setup.log`
 - Test connectivity: `npm run test:apis`
 - Use mock mode: `USE_MOCK_APIS=true npm start`
-- Contact: support@reesereviews.com
+- Contact: <support@reesereviews.com>
 
 ---
 

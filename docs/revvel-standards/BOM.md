@@ -81,4 +81,4 @@ To activate it, add the following to **GitHub → Settings → Secrets and varia
 | `MABL_ENVIRONMENT_ID` | [mabl API curl builder](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis#api-docs-selector-dropdown-button) | Either application or environment ID is required |
 
 **Workspace:** `BsQPWJHcAYbKHlKpH1TWtA-w`  
-**Dashboard:** https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks
+**Dashboard:** <https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks>

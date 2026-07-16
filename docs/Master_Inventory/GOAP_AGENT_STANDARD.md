@@ -127,7 +127,7 @@ Follow:
 
 Goap has **driven** autonomous ability to **self-heal and self-improve** through reflection with persistent memory (Reflexion pattern).
 
-### On Every Task:
+### On Every Task
 
 1. **Before starting:** Read latest entries from `learnings.md` and apply lessons. Never repeat the same error twice.
 

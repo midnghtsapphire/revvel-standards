@@ -151,6 +151,6 @@ Expand GrowlingEyes from 47 to 90+ live data sources, add LiDAR temporal change 
 - All user stories marked ✅
 - Zero `unusual_blast` records in distress_signals
 - All 18 DB tables have > 0 rows
-- Site live at https://growlingeyes.com
+- Site live at <https://growlingeyes.com>
 - All code committed to `midnghtsapphire/growlingeyes` main branch
 - GROWLINGEYES_MASTER_SPEC v3.0.0 committed to `midnghtsapphire/revvel-standards`

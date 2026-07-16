@@ -2,13 +2,13 @@
 
 #
 
-# This file defines custom code quality rules enforced by RecurseML on every PR.
+# This file defines custom code quality rules enforced by RecurseML on every PR
 
-# RecurseML reads this file and flags any patterns listed below as violations.
+# RecurseML reads this file and flags any patterns listed below as violations
 
 #
 
-# Rule format:
+# Rule format
 
 # ## Rule Name
 
@@ -20,14 +20,14 @@
 
 #
 
-# Reference: https://docs.recurse.ml/recurse-rules
+# Reference: <https://docs.recurse.ml/recurse-rules>
 
 ---
 
 ## No Hardcoded Secrets or API Keys
 
 **Pattern:** Any string literal that looks like an API key, token, password, connection string,
-or secret (e.g. matches patterns like `sk-`, `ghp_`, `Bearer `, `password =`, `api_key =`,
+or secret (e.g. matches patterns like `sk-`, `ghp_`, `Bearer`, `password =`, `api_key =`,
 base64 blobs of 40+ chars in assignment positions).
 
 **Why:** Secrets committed to source code become public and are immediately exploited by bots.

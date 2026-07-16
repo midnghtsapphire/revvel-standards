@@ -4,7 +4,7 @@
 
 ▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/fieldwork/)**
 
-## What Is This?
+## What Is This
 
 **FieldWork** is a high-utility documentation tool for architects and contractors.
 It turns messy site photos, voice notes, and scribbled sketches into perfectly
@@ -21,7 +21,7 @@ trafficking survivors for reskilling, recovery, and restoration.
 
 ---
 
-## Plausibility — Yes.
+## Plausibility — Yes
 
 See [`docs/BLUEPRINT.md`](docs/BLUEPRINT.md) for the full analysis. Short
 version: the niche is real (AEC-tech documentation workflows are painful and

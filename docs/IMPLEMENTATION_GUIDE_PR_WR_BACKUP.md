@@ -210,7 +210,7 @@ concurrency:
 
 #### Step 1: Enable CircleCI
 
-1. Go to https://app.circleci.com/
+1. Go to <https://app.circleci.com/>
 2. Click "Add Projects"
 3. Find `midnghtsapphire/revvel-standards`
 4. Click "Set Up Project"
@@ -521,7 +521,7 @@ gh workflow enable workflow-monitor.yml
 - **Concurrency Audit:** `docs/WORKFLOW_CONCURRENCY_AUDIT.md`
 - **Workflow Monitor:** `.github/workflows/workflow-monitor.yml`
 - **Retry Script:** `scripts/workflow-retry.js`
-- **GitHub Actions Docs:** https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency
+- **GitHub Actions Docs:** <https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#concurrency>
 
 ---
 

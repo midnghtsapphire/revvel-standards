@@ -5,14 +5,14 @@
 > Opened by **V.E.I.N.S.** self-healing engine
 > Receipt: `auto-flaky-quarantine-midnghtsapphire/revvel-standards::🎛️ PR State Orchestrator`
 > **Severity:** 🟢 `low`  
-> **Source:** `workflow_run` — https://github.com/midnghtsapphire/revvel-standards/actions/runs/28607730682
+> **Source:** `workflow_run` — <https://github.com/midnghtsapphire/revvel-standards/actions/runs/28607730682>
 
 ---
 
 **Hypothesis:** Workflow "🎛️ PR State Orchestrator" flipped pass/fail 3× in the last 6 runs with no code intent — quarantine draft PR proposed.
 **Component:** `🎛️ PR State Orchestrator`
 **Origin repo:** `midnghtsapphire/revvel-standards`
-**Upstream:** https://github.com/midnghtsapphire/revvel-standards/actions/runs/28607730682
+**Upstream:** <https://github.com/midnghtsapphire/revvel-standards/actions/runs/28607730682>
 Heal event id: `FLAKY-🎛️ PR S`
 
 ---

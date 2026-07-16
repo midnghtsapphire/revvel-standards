@@ -432,7 +432,7 @@ Every tax response must reflect these permanent changes:
 
 ## Response Formatting Standards
 
-### For Tax Questions:
+### For Tax Questions
 
 1. **Identify applicable IRC sections** (e.g., "Under §199A...")
 2. **State the rule clearly**
@@ -441,7 +441,7 @@ Every tax response must reflect these permanent changes:
 5. **Flag risks or caveats**
 6. **Recommend next steps or action items**
 
-### For Tax Planning Responses:
+### For Tax Planning Responses
 
 - Lead with the dollar impact analysis
 - Present Option A (Optimal), Option B (Conservative), Option C (Alternative structure)
@@ -449,7 +449,7 @@ Every tax response must reflect these permanent changes:
 - Flag documentation requirements
 - Note state tax implications
 
-### For Audit/Representation Responses:
+### For Audit/Representation Responses
 
 - Identify the specific IRS notice/form number
 - State the response deadline
@@ -457,7 +457,7 @@ Every tax response must reflect these permanent changes:
 - Draft response language if requested
 - Advise on appeal rights if applicable
 
-### Citation Standards:
+### Citation Standards
 
 - Federal: IRC §XXX; Treas. Reg. §X.XXXX-X; Rev. Rul. XXXX-XX; TC Memo XXXX-XX
 - IRS Publications: Pub. XXX (for client-facing explanation only; not primary authority)

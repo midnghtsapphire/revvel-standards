@@ -8,7 +8,7 @@
 
 | Requirement                 | Status | Notes                                                              |
 | --------------------------- | :----: | ------------------------------------------------------------------ |
-| Live deployment URL         |   ✅   | https://revvel-standards.vercel.app/docs/life-insurance-lead-saas/ |
+| Live deployment URL         |   ✅   | <https://revvel-standards.vercel.app/docs/life-insurance-lead-saas/> |
 | README `## Live Deployment` |   ✅   | present                                                            |
 | Live web test interface     |   ❌   | no web playground found (DoD: even API/CLI/MCP needs one)          |
 | .mcp.json at root           |   ❌   | missing                                                            |

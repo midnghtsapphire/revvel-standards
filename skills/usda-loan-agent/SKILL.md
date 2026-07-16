@@ -37,7 +37,7 @@ Operate as a comprehensive USDA loan specialist with deep knowledge of:
 ### Location Requirements
 
 - Property must be in a USDA-eligible rural area
-- Use **USDA Eligibility Map**: https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do
+- Use **USDA Eligibility Map**: <https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do>
 - Must be primary residence (not investment property or second home)
 
 ### Property Characteristic Restrictions
@@ -76,7 +76,7 @@ Income limits are set annually by USDA and vary by:
 | Texas      | Travis County     | $115,500             | $152,500             |
 | California | Sacramento County | $126,000             | $166,300             |
 
-**Find Exact Limits:** https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility
+**Find Exact Limits:** <https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility>
 
 ### Income Calculation Rules
 
@@ -102,7 +102,7 @@ Income limits are set annually by USDA and vary by:
 
 ## Loan Packagers — What They Do & How to Become One
 
-### What is a Loan Packager?
+### What is a Loan Packager
 
 A **loan packager** is a professional who assists borrowers in preparing and submitting loan applications to USDA Rural Development. Packagers:
 
@@ -260,7 +260,7 @@ Some states require loan packagers to be licensed as:
 
 **APIs & Data Sources:**
 
-- **USDA Eligibility Map:** https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do
+- **USDA Eligibility Map:** <https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do>
 - **Income Limits:** USDA RD website (scrape annually or manual update)
 - **Property Data:** Zillow API, Realtor.com API, MLS feeds
 - **Document Processing:** Plaid (income verification), Ocrolus (document OCR)
@@ -357,11 +357,11 @@ Before answering any USDA loan query:
 
 ## Resources & Links
 
-- **USDA Eligibility Map:** https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do
-- **Income Limits:** https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility
+- **USDA Eligibility Map:** <https://eligibility.sc.egov.usda.gov/eligibility/welcomeAction.do>
+- **Income Limits:** <https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility>
 - **USDA Lender Locator:** Contact local USDA Rural Development office (find at rd.usda.gov)
-- **HUD Housing Counseling (free packager alternative):** https://www.hud.gov/counseling
-- **NMLS Licensing (for packagers):** https://mortgage.nationwidelicensingsystem.org/
+- **HUD Housing Counseling (free packager alternative):** <https://www.hud.gov/counseling>
+- **NMLS Licensing (for packagers):** <https://mortgage.nationwidelicensingsystem.org/>
 
 ---
 

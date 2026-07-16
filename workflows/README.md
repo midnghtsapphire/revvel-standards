@@ -49,7 +49,7 @@ This n8n workflow automates the USDA loan eligibility checking process. It valid
 
 ### Required Services
 
-1. **n8n** (self-hosted or cloud) — https://n8n.io/
+1. **n8n** (self-hosted or cloud) — <https://n8n.io/>
 2. **Google Maps API** — For geocoding addresses (get state/county)
 3. **PostgreSQL Database** — To store USDA income limit data
 4. **Google Sheets** — For lead storage
@@ -94,7 +94,7 @@ CREATE INDEX idx_income_limits_lookup ON usda_income_limits(year, state, county)
 ### 3. Populate Income Limit Data
 
 **Data Source:** USDA Rural Development website (updated annually)
-**URL:** https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility
+**URL:** <https://www.rd.usda.gov/programs-services/single-family-housing-programs/single-family-housing-guaranteed-loan-program/eligibility>
 
 **Example Data (2026):**
 
@@ -382,8 +382,8 @@ VALUES (2027, 'Colorado', 'El Paso', 106500.00, 140600.00);
 
 ## Support
 
-- **USDA RD Website:** https://www.rd.usda.gov/
-- **n8n Documentation:** https://docs.n8n.io/
+- **USDA RD Website:** <https://www.rd.usda.gov/>
+- **n8n Documentation:** <https://docs.n8n.io/>
 - **USDA Skill:** `skills/usda-loan-agent/SKILL.md` (in this repo)
 
 ## License

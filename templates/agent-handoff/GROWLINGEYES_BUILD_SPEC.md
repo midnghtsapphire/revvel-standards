@@ -66,7 +66,7 @@ The app already has OSINT fetchers. You are adding NEW data sources to those fet
 
 ## 2. YOUR MISSION
 
-### Add all 18 domains with 95 data sources to the live platform.
+### Add all 18 domains with 95 data sources to the live platform
 
 Every domain needs:
 
@@ -822,41 +822,41 @@ Do these in order. Each one should be fully wired (fetcher → DB → tRPC → f
 
 ### Sprint 2: Free APIs (Days 2-3)
 
-6. USGS Earthquake fetcher
-7. GDACS Disaster fetcher
-8. CISA Cyber fetcher
-9. FRA Rail Accident fetcher
-10. NOAA Space Weather fetcher
-11. US Drought Monitor fetcher
-12. openFDA Drug Recall fetcher
-13. UNHCR Refugee Data fetcher
-14. NOAA Weather Alerts fetcher
-15. ReliefWeb fetcher
+1. USGS Earthquake fetcher
+2. GDACS Disaster fetcher
+3. CISA Cyber fetcher
+4. FRA Rail Accident fetcher
+5. NOAA Space Weather fetcher
+6. US Drought Monitor fetcher
+7. openFDA Drug Recall fetcher
+8. UNHCR Refugee Data fetcher
+9. NOAA Weather Alerts fetcher
+10. ReliefWeb fetcher
 
 ### Sprint 3: Keyed APIs (Days 4-5)
 
-16. AISstream.io WebSocket (vessel tracking — huge feature)
-17. Space-Track.org (satellite near-misses)
-18. ACLED (structured conflict data)
-19. Wire remaining GDELT queries for all 18 domains
-20. Telegram RSS bridge for 8 channels
+1. AISstream.io WebSocket (vessel tracking — huge feature)
+2. Space-Track.org (satellite near-misses)
+3. ACLED (structured conflict data)
+4. Wire remaining GDELT queries for all 18 domains
+5. Telegram RSS bridge for 8 channels
 
 ### Sprint 4: Knowledge Bases + UI (Days 6-7)
 
-21. Bake in chokepoint database
-22. Bake in GPS jamming zones
-23. Bake in China mineral dependency data
-24. Bake in pharma dependency data
-25. Consumer impact chain cards on frontend
-26. Map overlays (Leaflet.js with submarine cables, rail, chokepoints)
+1. Bake in chokepoint database
+2. Bake in GPS jamming zones
+3. Bake in China mineral dependency data
+4. Bake in pharma dependency data
+5. Consumer impact chain cards on frontend
+6. Map overlays (Leaflet.js with submarine cables, rail, chokepoints)
 
 ### Sprint 5: Polish + Deploy Script (Day 8)
 
-27. Add `deploy.sh` to repo
-28. Add basic tests
-29. Verify all 18 domains have data flowing
-30. Performance check — ensure polling doesn't overload droplet
-31. Final deploy
+1. Add `deploy.sh` to repo
+2. Add basic tests
+3. Verify all 18 domains have data flowing
+4. Performance check — ensure polling doesn't overload droplet
+5. Final deploy
 
 ---
 

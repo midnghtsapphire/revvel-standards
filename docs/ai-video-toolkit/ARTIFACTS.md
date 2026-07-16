@@ -8,7 +8,7 @@
 
 | Requirement                 | Status | Notes                                                         |
 | --------------------------- | :----: | ------------------------------------------------------------- |
-| Live deployment URL         |   ✅   | https://revvel-standards.vercel.app/docs/ai-video-toolkit/    |
+| Live deployment URL         |   ✅   | <https://revvel-standards.vercel.app/docs/ai-video-toolkit/>    |
 | README `## Live Deployment` |   ✅   | present                                                       |
 | Live web test interface     |   ✅   | web app detected                                              |
 | .mcp.json at root           |   ❌   | missing                                                       |

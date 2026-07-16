@@ -6,7 +6,7 @@
 
 ---
 
-## What is Roo-Cline?
+## What is Roo-Cline
 
 **Roo-Cline** is an autonomous AI coding agent that runs directly in Visual Studio Code. It's a feature-rich fork of **Cline** (formerly Claude Dev), designed to help developers write, refactor, debug, and test code with AI assistance while maintaining human oversight.
 

@@ -21,7 +21,7 @@ Tracked in [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md) §1.11 and [`_MASTER
 
 ## 1. What the action actually does
 
-**Marketplace / repo:** https://github.com/LieberLieber/setup-LemonTree.Automation
+**Marketplace / repo:** <https://github.com/LieberLieber/setup-LemonTree.Automation>
 **Bundled tool:** [LemonTree.Automation](https://help.lieberlieber.com/LemonTree/LemonTree-Automation.html) — a Windows-first CLI shipped by [LieberLieber](https://www.lieberlieber.com/lemontree/).
 **License:** Commercial. Annual single-user _or_ floating (RLM-server) license; quote-only — no public price list. No free tier; a time-limited evaluation key is granted on request via `welcome@lieberlieber.com`.
 **Hosting:** Runs inside a GitHub Actions job. Per the action's README it targets Windows runners; LemonTree.Automation itself is a .NET Framework / .NET CLI distributed as a Windows installer.

@@ -46,10 +46,10 @@ If an agent task fails functionally (even if the code ran without errors), the s
 
 ### References
 
-[1] Galileo AI: The AI Agent Behavioral Validation Testing Playbook - https://www.galileo.ai/learn/ai-observability/ai-agent-testing-behavioral-validation
-[2] LinkedIn: Writing Acceptance Criteria for AI Products - https://www.linkedin.com/pulse/writing-acceptance-criteria-ai-products-product-managers-aruna-singh-iw7uc
-[3] Leantime: Adapting Project Management Techniques - https://leantime.io/adhd-and-project-management-techniques-for-focus-and-organization/
-[4] IxDF: Wizard of Oz Prototyping - https://www.interaction-design.org/literature/topics/wizard-of-oz-prototypes
-[5] Reddit: Acceptance Criteria for Gen AI features - https://www.reddit.com/r/ProductManagement/comments/1egz6bg/acceptance_criteria_for_gen_ai_features/
-[6] Optimizely: Designing for Neurodiversity - https://www.optimizely.com/insights/blog/designing-for-neurodiversity/
-[7] Product School: How to Create an AI Agent - https://productschool.com/blog/product-management-2/how-to-build-ai-agent
+[1] Galileo AI: The AI Agent Behavioral Validation Testing Playbook - <https://www.galileo.ai/learn/ai-observability/ai-agent-testing-behavioral-validation>
+[2] LinkedIn: Writing Acceptance Criteria for AI Products - <https://www.linkedin.com/pulse/writing-acceptance-criteria-ai-products-product-managers-aruna-singh-iw7uc>
+[3] Leantime: Adapting Project Management Techniques - <https://leantime.io/adhd-and-project-management-techniques-for-focus-and-organization/>
+[4] IxDF: Wizard of Oz Prototyping - <https://www.interaction-design.org/literature/topics/wizard-of-oz-prototypes>
+[5] Reddit: Acceptance Criteria for Gen AI features - <https://www.reddit.com/r/ProductManagement/comments/1egz6bg/acceptance_criteria_for_gen_ai_features/>
+[6] Optimizely: Designing for Neurodiversity - <https://www.optimizely.com/insights/blog/designing-for-neurodiversity/>
+[7] Product School: How to Create an AI Agent - <https://productschool.com/blog/product-management-2/how-to-build-ai-agent>

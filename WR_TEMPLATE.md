@@ -28,7 +28,7 @@ cp WR_TEMPLATE_FULL.md wr/WR-XXX.md
 
 ---
 
-## Which to use?
+## Which to use
 
 | Situation                            | Template  |
 | ------------------------------------ | --------- |

@@ -74,15 +74,15 @@ Based on the Reddit research and repository analysis, the following gaps were fo
 
 ### Medium Priority Gaps
 
-5. **No visual regression testing** - Standards exist for unit/E2E but not visual diffs
-6. **No automated dependency updates** - No Dependabot or Renovate configuration
-7. **No performance monitoring** - No automated Lighthouse CI or bundle size checks
-8. **No API contract testing** - No OpenAPI validation or schema enforcement
+1. **No visual regression testing** - Standards exist for unit/E2E but not visual diffs
+2. **No automated dependency updates** - No Dependabot or Renovate configuration
+3. **No performance monitoring** - No automated Lighthouse CI or bundle size checks
+4. **No API contract testing** - No OpenAPI validation or schema enforcement
 
 ### Lower Priority Gaps
 
-9. **No automated changelog generation** - Manual CHANGELOG.md maintenance
-10. **No stale issue management** - Old issues/PRs accumulate without automation
+1. **No automated changelog generation** - Manual CHANGELOG.md maintenance
+2. **No stale issue management** - Old issues/PRs accumulate without automation
 
 ---
 
@@ -277,7 +277,7 @@ The new standards integrate seamlessly with existing Revvel documentation:
 
 The new standards align with established industry practices:
 
-### Recursion Guidelines Match:
+### Recursion Guidelines Match
 
 - ✅ **Google Style Guides** - Allow recursion with depth limits
 - ✅ **OWASP** - Warn against recursion on untrusted input
@@ -285,7 +285,7 @@ The new standards align with established industry practices:
 - ⚠️ **Differs from:** MISRA C, JPL (which ban recursion entirely)
   - **Justification:** Revvel targets web/mobile, not embedded systems
 
-### Automation Practices Match:
+### Automation Practices Match
 
 - ✅ **DORA Metrics** - Deployment frequency, MTTR, change failure rate
 - ✅ **Google SRE** - Automated testing, canary deployments, monitoring
@@ -306,16 +306,16 @@ The new standards align with established industry practices:
 
 ### Short-Term (Next 2 Weeks)
 
-6. 🔲 **Audit Existing Code** - Scan for unguarded recursion in current projects
-7. 🔲 **Add ESLint Rules** - Configure linters to detect unsafe recursion
-8. 🔲 **Create Test Templates** - Vitest templates for recursion depth tests
-9. 🔲 **Start Automation Phase 1** - Set up Dependabot/Renovate
+1. 🔲 **Audit Existing Code** - Scan for unguarded recursion in current projects
+2. 🔲 **Add ESLint Rules** - Configure linters to detect unsafe recursion
+3. 🔲 **Create Test Templates** - Vitest templates for recursion depth tests
+4. 🔲 **Start Automation Phase 1** - Set up Dependabot/Renovate
 
 ### Medium-Term (Next 1-2 Months)
 
-10. 🔲 **Implement Automation Phases 2-4** - Testing, security, deployment
-11. 🔲 **Track Metrics** - Begin measuring automation KPIs
-12. 🔲 **Refine Standards** - Incorporate team feedback and real-world usage
+1. 🔲 **Implement Automation Phases 2-4** - Testing, security, deployment
+2. 🔲 **Track Metrics** - Begin measuring automation KPIs
+3. 🔲 **Refine Standards** - Incorporate team feedback and real-world usage
 
 ---
 

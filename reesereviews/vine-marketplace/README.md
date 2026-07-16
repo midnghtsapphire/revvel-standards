@@ -96,7 +96,7 @@ npm install
 npm start
 ```
 
-Open **http://localhost:3030**
+Open **<http://localhost:3030>**
 
 1. **Import CSV** (your Order History.csv)
 2. **Next product**
@@ -128,7 +128,7 @@ Entry: `api/index.js` + `vercel.json`. Inventory on serverless uses `/tmp` (ephe
 
 ## Gmail Setup (App Password)
 
-1. Sign in to your Google Account (angelreporters@gmail.com)
+1. Sign in to your Google Account (<angelreporters@gmail.com>)
 2. Go to **Security → 2-Step Verification** → ensure it's ON
 3. Go to **Security → App passwords**
 4. Create: App = **Mail**, Device = **Other** → name = `vine-marketplace`

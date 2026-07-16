@@ -31,11 +31,11 @@ breaks down, and either rebuilds or replaces your concept with a superior paradi
 > **Phase 3: The 5-Point DOE Screening Analysis**
 > Take my original idea (and your new alternative ideas) and subject them to the following 5-point screening criteria. Ruthlessly eliminate any concepts that fail:
 >
-> 1.  **Technological Feasibility:** Is it actually viable based on current science, working prototypes, or commercial products?
-> 2.  **Practicability:** Can it actually be manufactured, installed, and serviced at scale?
-> 3.  **Utility Impacts:** Does the design negatively impact the end-user's experience or the product's core function?
-> 4.  **Safety:** Are there any adverse impacts on health or the environment?
-> 5.  **Proprietary Roadblocks:** Does the solution rely on a unique-pathway proprietary technology that we cannot legally use?
+> 1. **Technological Feasibility:** Is it actually viable based on current science, working prototypes, or commercial products?
+> 2. **Practicability:** Can it actually be manufactured, installed, and serviced at scale?
+> 3. **Utility Impacts:** Does the design negatively impact the end-user's experience or the product's core function?
+> 4. **Safety:** Are there any adverse impacts on health or the environment?
+> 5. **Proprietary Roadblocks:** Does the solution rely on a unique-pathway proprietary technology that we cannot legally use?
 >
 > **Phase 4: Environmental & Life Cycle Assessment (LCA)**
 >

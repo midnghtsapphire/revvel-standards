@@ -18,7 +18,7 @@ Bito AI is the primary reviewer for all code before it is pushed to the `main` b
 
 **Setup:**
 
-- Enable via GitHub Marketplace: https://github.com/marketplace/bito-ai-code-reviewer
+- Enable via GitHub Marketplace: <https://github.com/marketplace/bito-ai-code-reviewer>
 - Or use the `openrouter-assignee.yml` workflow
 
 ### 2.2. Fallback Reviewers
@@ -37,7 +37,7 @@ All pull requests (PRs) must integrate with Coderabbit for automated line-by-lin
 
 **Setup:**
 
-1. Enable via GitHub Marketplace: https://github.com/marketplace/coderabbit-ai
+1. Enable via GitHub Marketplace: <https://github.com/marketplace/coderabbit-ai>
 2. Or add `.coderabbit.yaml` to repository root
 
 ### 2.4. Skill/LLM Testing (PromptFoo)
@@ -65,7 +65,7 @@ providers:
     temperature: 0
 ```
 
-**GitHub Action:** https://github.com/promptfoo/promptfoo-action
+**GitHub Action:** <https://github.com/promptfoo/promptfoo-action>
 
 ### 2.5. MCP Code Review Server (Optional)
 
@@ -97,9 +97,9 @@ The official software development lifecycle for Revvel applications mandates a s
 
 ### 3.1. The Official Dev → Test → Live Pipeline
 
-1.  **Development (Dev):** Local or sandbox environments where initial coding and unit testing occur. Code is frequently changing and unstable.
-2.  **Testing (Test / Staging):** A staging environment that mirrors production as closely as possible. Integration tests, end-to-end tests (via Playwright), and final QA are performed here.
-3.  **Production (Live):** The live, user-facing environment. Code reaches this stage only after passing all reviews and tests.
+1. **Development (Dev):** Local or sandbox environments where initial coding and unit testing occur. Code is frequently changing and unstable.
+2. **Testing (Test / Staging):** A staging environment that mirrors production as closely as possible. Integration tests, end-to-end tests (via Playwright), and final QA are performed here.
+3. **Production (Live):** The live, user-facing environment. Code reaches this stage only after passing all reviews and tests.
 
 ### 3.2. Current Operational Exception: Live-First Deployment
 
@@ -162,7 +162,7 @@ All Revvel and MIDNGHTSAPPHIRE repositories are monitored by the **Waydev GitHub
 
 ### 7.2. Dashboard Access
 
-- **URL:** https://app.waydev.co
+- **URL:** <https://app.waydev.co>
 - **Login:** Use GitHub SSO (same account as `midnghtsapphire`)
 - **Repositories covered:** All active Revvel application repos
 

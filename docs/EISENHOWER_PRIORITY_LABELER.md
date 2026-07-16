@@ -8,7 +8,7 @@
 
 ---
 
-## 1. What Is It?
+## 1. What Is It
 
 The **Eisenhower Priority Labeler** is a GitHub Action published by [Geek.Zone (GeekZoneHQ)](https://github.com/GeekZoneHQ) — with credit to [Jacob Tomlinson](https://jacobtomlinson.dev/posts/2019/creating-github-actions-in-python/) — that reads the `Impact` and `Urgency` fields on a GitHub Issue body and automatically assigns a `P1`–`P4` priority label based on the classic Eisenhower Matrix.
 
@@ -16,7 +16,7 @@ It is a **deterministic, template-driven** classifier: the priority is derived f
 
 ---
 
-## 2. Why Use It in Revvel?
+## 2. Why Use It in Revvel
 
 | Need                                                                                                            | How Eisenhower Labeler Solves It                                                                                       |
 | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |

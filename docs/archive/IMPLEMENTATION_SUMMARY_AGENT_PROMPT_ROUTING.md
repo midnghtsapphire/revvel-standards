@@ -187,9 +187,9 @@ function processDataB(data) {
 
 **Repositories:**
 
-- https://github.com/marco-altran/Roo-Cline
-- https://github.com/OSL-Ai/Roo-Cline
-- Parent: https://github.com/RooCodeInc/Roo-Code
+- <https://github.com/marco-altran/Roo-Cline>
+- <https://github.com/OSL-Ai/Roo-Cline>
+- Parent: <https://github.com/RooCodeInc/Roo-Code>
 
 **When to use:**
 

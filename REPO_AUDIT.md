@@ -174,4 +174,4 @@ Per revvel-standards, all repos need:
 
 ### Vercel URLs (Your Action)
 
-Deploy repos at: https://vercel.com/dashboard/new?import=true
+Deploy repos at: <https://vercel.com/dashboard/new?import=true>

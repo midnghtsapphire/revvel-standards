@@ -98,14 +98,14 @@ When any automation, workflow, or process fails:
 
 OpenRouter failures are **not acceptable blockers**:
 
-### First attempt fails?
+### First attempt fails
 
 - Check API key is present and valid
 - Verify endpoint URL is correct
 - Check rate limits and quotas
 - **Retry with exponential backoff (3 attempts minimum)**
 
-### Still failing?
+### Still failing
 
 - Check OpenRouter status page
 - Try alternative models (Sonnet → Opus → GPT-4 → Claude 3.5)
@@ -114,7 +114,7 @@ OpenRouter failures are **not acceptable blockers**:
 - Modify prompts to reduce token usage
 - Split requests into smaller chunks
 
-### OpenRouter completely down?
+### OpenRouter completely down
 
 - Switch to Anthropic API directly
 - Switch to OpenAI API directly

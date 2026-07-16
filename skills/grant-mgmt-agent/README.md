@@ -245,10 +245,10 @@ const section = await generateProposalSection({
 ## Support & Resources
 
 - **Skill Documentation:** [SKILL.md](./SKILL.md)
-- **Grants.gov API:** https://developer.grants.gov/
-- **SAM.gov API:** https://open.gsa.gov/api/sam/
-- **OpenRouter API:** https://openrouter.ai/docs
-- **n8n Docs:** https://docs.n8n.io/
+- **Grants.gov API:** <https://developer.grants.gov/>
+- **SAM.gov API:** <https://open.gsa.gov/api/sam/>
+- **OpenRouter API:** <https://openrouter.ai/docs>
+- **n8n Docs:** <https://docs.n8n.io/>
 
 ## License
 

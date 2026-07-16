@@ -12,7 +12,7 @@ You want to generate a blog post about "Best Budget Headphones 2026"
 
 ### Steps
 
-1. Go to the repository: https://github.com/midnghtsapphire/revvel-standards
+1. Go to the repository: <https://github.com/midnghtsapphire/revvel-standards>
 2. Click **Issues** → **New Issue**
 3. Set the title:
    ```

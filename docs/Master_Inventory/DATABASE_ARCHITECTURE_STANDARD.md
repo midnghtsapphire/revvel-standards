@@ -7,7 +7,7 @@
 
 ---
 
-## 1. Decision: PostgreSQL. Not MySQL.
+## 1. Decision: PostgreSQL. Not MySQL
 
 Every Revvel application uses **PostgreSQL** as its database engine. This is not a per-project decision — it is a platform-wide standard. MySQL is not used.
 

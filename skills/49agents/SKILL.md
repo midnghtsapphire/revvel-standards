@@ -7,7 +7,7 @@
 
 ---
 
-## What Is This?
+## What Is This
 
 This skill enables AI agents to integrate with **49Agents**, an open-source "agentic IDE" that provides a unified 2D canvas interface for managing multiple AI agents, terminals, projects, and machines. Load this skill when working with 49Agents integration, visual agent monitoring, or parallel multi-agent research coordination.
 
@@ -30,9 +30,9 @@ Load this skill when:
 
 ## Core Concepts
 
-### What is 49Agents?
+### What is 49Agents
 
-49Agents (https://github.com/49Agents/49Agents) is an agentic IDE that provides:
+49Agents (<https://github.com/49Agents/49Agents>) is an agentic IDE that provides:
 
 1. **Unified 2D Canvas** — All agents, terminals, and projects on one zoomable workspace
 2. **Multi-Agent Coordination** — Multiple AI agents working in parallel with visual status

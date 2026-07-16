@@ -22,10 +22,10 @@ This DigitalOcean droplet is the primary server for hosting all Node.js, Python,
 
 ### 3.1. Node.js Applications (Express, etc.)
 
-1.  **Clone Repository:** Clone the application's GitHub repository into the `/var/www/` directory.
-2.  **Install Dependencies:** Navigate into the project directory and run `pnpm install`.
-3.  **Build Application:** Run `pnpm build` to compile any necessary assets (e.g., TypeScript).
-4.  **Configure systemd:**
+1. **Clone Repository:** Clone the application's GitHub repository into the `/var/www/` directory.
+2. **Install Dependencies:** Navigate into the project directory and run `pnpm install`.
+3. **Build Application:** Run `pnpm build` to compile any necessary assets (e.g., TypeScript).
+4. **Configure systemd:**
     - Create a new service file: `sudo nano /etc/systemd/system/your-app-name.service`
     - Add the following configuration, replacing `your-app-name` and paths as needed:
       ```ini
@@ -42,20 +42,20 @@ This DigitalOcean droplet is the primary server for hosting all Node.js, Python,
       [Install]
       WantedBy=multi-user.target
       ```
-5.  **Enable and Start Service:**
+5. **Enable and Start Service:**
     - `sudo systemctl daemon-reload`
     - `sudo systemctl enable your-app-name`
     - `sudo systemctl start your-app-name`
-6.  **Configure Nginx:** See Section 4.
+6. **Configure Nginx:** See Section 4.
 
 ### 3.2. Python Applications (FastAPI, Flask)
 
-1.  **Clone Repository:** Clone the application's GitHub repository into `/var/www/`.
-2.  **Create Virtual Environment:**
+1. **Clone Repository:** Clone the application's GitHub repository into `/var/www/`.
+2. **Create Virtual Environment:**
     - `python3 -m venv venv`
     - `source venv/bin/activate`
-3.  **Install Dependencies:** `pip install -r requirements.txt`.
-4.  **Configure systemd:**
+3. **Install Dependencies:** `pip install -r requirements.txt`.
+4. **Configure systemd:**
     - Create a new service file: `sudo nano /etc/systemd/system/your-app-name.service`
     - Add the following configuration:
       ```ini
@@ -73,11 +73,11 @@ This DigitalOcean droplet is the primary server for hosting all Node.js, Python,
       WantedBy=multi-user.target
       ```
       _Replace `main:app` and `PORT` as appropriate._
-5.  **Enable and Start Service:**
+5. **Enable and Start Service:**
     - `sudo systemctl daemon-reload`
     - `sudo systemctl enable your-app-name`
     - `sudo systemctl start your-app-name`
-6.  **Configure Nginx:** See Section 4.
+6. **Configure Nginx:** See Section 4.
 
 ### 3.3. Vite Applications (React)
 
@@ -99,8 +99,8 @@ Deployment then follows the standard Node.js process, with Nginx routing to the 
 
 Nginx is used to route traffic from port 80 to the correct application service based on the URL path.
 
-1.  **Edit Nginx Config:** `sudo nano /etc/nginx/sites-available/default`
-2.  **Add a new `location` block** for your application:
+1. **Edit Nginx Config:** `sudo nano /etc/nginx/sites-available/default`
+2. **Add a new `location` block** for your application:
 
     ```nginx
     location /appname/ {
@@ -115,7 +115,7 @@ Nginx is used to route traffic from port 80 to the correct application service b
 
     _Replace `/appname/` with the desired subpath and `PORT` with the application's assigned port._
 
-3.  **Test and Reload Nginx:**
+3. **Test and Reload Nginx:**
     - `sudo nginx -t`
     - `sudo systemctl reload nginx`
 
@@ -136,16 +136,16 @@ The following ports are assigned to specific applications. Do not use these for 
 
 While `systemd` is the primary method, Docker is a viable alternative. If using Docker:
 
-1.  Ensure your repository contains a working `Dockerfile`.
-2.  Build the image: `docker build -t your-app-name .`
-3.  Run the container, mapping the appropriate port: `docker run -d -p PORT:CONTAINER_PORT your-app-name`
-4.  Configure Nginx to proxy to the mapped host `PORT`.
+1. Ensure your repository contains a working `Dockerfile`.
+2. Build the image: `docker build -t your-app-name .`
+3. Run the container, mapping the appropriate port: `docker run -d -p PORT:CONTAINER_PORT your-app-name`
+4. Configure Nginx to proxy to the mapped host `PORT`.
 
 ## 7. Updating the meetaudreyevans.com Hub
 
 Every new application **must** be added to the central hub.
 
-1.  **Clone the `rvvel` repo:** `gh repo clone MIDNGHTSAPPHIRE/rvvel`
-2.  **Edit `Portfolio.tsx`:** Add a new card for your application, including its name, description, icon, and a link to its deployed URL (`http://164.90.148.7/appname/`).
-3.  **Push changes:** Commit and push your changes to the `main` branch. The site will auto-deploy via GitHub Pages.
-4.  **Update Droplet App Registry:** SSH into the droplet and edit `/var/www/meetaudreyevans-dashboard/src/AppsRepository.jsx` to include the new application. This ensures it appears in the droplet-hosted dashboard as well.
+1. **Clone the `rvvel` repo:** `gh repo clone MIDNGHTSAPPHIRE/rvvel`
+2. **Edit `Portfolio.tsx`:** Add a new card for your application, including its name, description, icon, and a link to its deployed URL (`http://164.90.148.7/appname/`).
+3. **Push changes:** Commit and push your changes to the `main` branch. The site will auto-deploy via GitHub Pages.
+4. **Update Droplet App Registry:** SSH into the droplet and edit `/var/www/meetaudreyevans-dashboard/src/AppsRepository.jsx` to include the new application. This ensures it appears in the droplet-hosted dashboard as well.

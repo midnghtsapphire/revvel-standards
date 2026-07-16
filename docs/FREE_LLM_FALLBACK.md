@@ -247,7 +247,7 @@ FALLBACK_4=nousresearch/hermes-3-llama-3.1-405b:free  # 30 rpm
 
 **This is the preferred free option!** Uses `helallao/perplexity-ai` fork - no API key needed.
 
-### How it works:
+### How it works
 
 ```bash
 # Install the no-key fork
@@ -257,7 +257,7 @@ pip install "perplexity-api[mcp] @ git+https://github.com/helallao/perplexity-ai
 python scripts/perplexity-research-issue.js --issue 12345
 ```
 
-### Workflow Integration:
+### Workflow Integration
 
 ```yaml
 - name: Perplexity Research (no key)
@@ -266,7 +266,7 @@ python scripts/perplexity-research-issue.js --issue 12345
     node scripts/perplexity-research-issue.js --issue ${{ github.event.issue.number }}
 ```
 
-### Available Models via Perplexity No-Key:
+### Available Models via Perplexity No-Key
 
 | Model                 | Description        | Best For               |
 | --------------------- | ------------------ | ---------------------- |
@@ -274,7 +274,7 @@ python scripts/perplexity-research-issue.js --issue 12345
 | `sonar-pro`           | Better quality     | Detailed analysis      |
 | `sonar-deep-research` | Deep research mode | Comprehensive research |
 
-### Reference Docs:
+### Reference Docs
 
 - [`docs/PERPLEXITY_NO_KEY_INTEGRATION.md`](./PERPLEXITY_NO_KEY_INTEGRATION.md)
 - [`scripts/perplexity-research-issue.js`](../scripts/perplexity-research-issue.js)

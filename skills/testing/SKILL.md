@@ -117,7 +117,7 @@ tests/
 
 Every Revvel skill should have PromptFoo tests in `tests/skills/promptfoo.yml`.
 
-### Why PromptFoo?
+### Why PromptFoo
 
 - Tests the actual skill output, not just implementation
 - Validates LLM behavior across different inputs

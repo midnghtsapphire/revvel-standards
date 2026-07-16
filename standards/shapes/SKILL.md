@@ -82,7 +82,7 @@ One sentence: what this skill enables an agent to do.
 
 Expected output: ...
 
-2. **Step Name** — Description
+1. **Step Name** — Description
    ...
 
 ## Verification

@@ -93,10 +93,10 @@ This repository is a monorepo containing multiple distinct applications. These m
 
 **Action Required:**
 
-1.  Create four new repositories: `project-face`, `the-alt-text`, `data-router`, and `ai-benchmark`.
-2.  Migrate the respective codebases from `audrey-evans-official` to the new repositories.
-3.  Replicate any shared dependencies or configurations into each new repository to ensure they are self-contained.
-4.  Archive the `audrey-evans-official` repository to prevent confusion.
+1. Create four new repositories: `project-face`, `the-alt-text`, `data-router`, and `ai-benchmark`.
+2. Migrate the respective codebases from `audrey-evans-official` to the new repositories.
+3. Replicate any shared dependencies or configurations into each new repository to ensure they are self-contained.
+4. Archive the `audrey-evans-official` repository to prevent confusion.
 
 ### 2.2. Hub Separation: `meetaudreyevans` & `meetaudreyevans-archive`
 
@@ -109,10 +109,10 @@ These repositories contain the code for the main hub website (`meetaudreyevans.c
 
 **Action Required:**
 
-1.  Create two new repositories: `datascope` and `marketing-automator`.
-2.  Migrate the respective codebases from `meetaudreyevans` to the new repositories.
-3.  Ensure the `meetaudreyevans` repository only contains the code for the hub website.
-4.  Archive the `meetaudreyevans-archive` repository.
+1. Create two new repositories: `datascope` and `marketing-automator`.
+2. Migrate the respective codebases from `meetaudreyevans` to the new repositories.
+3. Ensure the `meetaudreyevans` repository only contains the code for the hub website.
+4. Archive the `meetaudreyevans-archive` repository.
 
 ### 2.3. Skill Granularity: `revvel-expert-skills`
 
@@ -136,9 +136,9 @@ This repository contains a suite of forensic tools that should be separated into
 
 **Action Required:**
 
-1.  Create three new repositories: `forensic-cli`, `forensic-api`, and `forensic-mcp`.
-2.  Separate the codebase into the respective repositories.
-3.  Replicate any shared code or dependencies.
+1. Create three new repositories: `forensic-cli`, `forensic-api`, and `forensic-mcp`.
+2. Separate the codebase into the respective repositories.
+3. Replicate any shared code or dependencies.
 
 ### 2.5. Frontend/Backend Separation: `thealttext` & `universal-data-router`
 
@@ -160,9 +160,9 @@ These repositories each contain both a frontend and a backend that should be in 
 
 **Action Required:**
 
-1.  Create new repositories for the UI and API of each application.
-2.  Split the codebases accordingly.
-3.  Ensure each component can be deployed and run independently.
+1. Create new repositories for the UI and API of each application.
+2. Split the codebases accordingly.
+3. Ensure each component can be deployed and run independently.
 
 ## 3. InTheWild Analysis: AI Website Generator
 
@@ -176,15 +176,15 @@ One of the key objectives of this audit was to locate and assess **InTheWild**, 
 
 ### 3.2. Recommended Action Plan for InTheWild
 
-1.  **Rename and Rebrand:** The current repository name is confusing. It should be renamed to reflect its purpose.
+1. **Rename and Rebrand:** The current repository name is confusing. It should be renamed to reflect its purpose.
     - **Recommended Repo Name:** `in-the-wild`
     - **Recommended Domain:** `inthewild.yumyumcode.com`
-2.  **Standalone Repository:** Create a new, dedicated repository named `in-the-wild` and migrate the codebase from `survivor-soul-songs`.
-3.  **Complete Development:** The application needs to be finished. This includes:
+2. **Standalone Repository:** Create a new, dedicated repository named `in-the-wild` and migrate the codebase from `survivor-soul-songs`.
+3. **Complete Development:** The application needs to be finished. This includes:
     - Implementing the parallel LLM processing.
     - Building out the website verification and deployment pipeline.
     - Creating a user interface for inputting prompts and managing generated sites.
-4.  **Deployment:** Deploy the completed application to Vercel or a similar platform.
+4. **Deployment:** Deploy the completed application to Vercel or a similar platform.
 
 ## 4. Blue Ocean Strategy: Unlocking Revenue Potential
 
@@ -235,9 +235,9 @@ As per the user's directive, **no repositories will be merged.** The primary str
 
 The applications with the most significant and immediate revenue potential are:
 
-1.  **InTheWild (AI Website Generator):** With a clear SaaS subscription model and a unique focus on generating functional micro-apps, this project has the highest ceiling for monthly recurring revenue (MRR). It directly targets the creator and small business market.
-2.  **TheAltText:** By targeting the e-commerce and accessibility compliance niche, this app can generate revenue through a freemium model with a paid tier for businesses. Its direct application to the Amazon review business makes it a high-value internal tool that can be externalized.
-3.  **Revvel Email Organizer:** While in a competitive market, its potential to be tailored for specific professional workflows (musicians, authors) creates a strong niche market opportunity for a subscription-based product.
+1. **InTheWild (AI Website Generator):** With a clear SaaS subscription model and a unique focus on generating functional micro-apps, this project has the highest ceiling for monthly recurring revenue (MRR). It directly targets the creator and small business market.
+2. **TheAltText:** By targeting the e-commerce and accessibility compliance niche, this app can generate revenue through a freemium model with a paid tier for businesses. Its direct application to the Amazon review business makes it a high-value internal tool that can be externalized.
+3. **Revvel Email Organizer:** While in a competitive market, its potential to be tailored for specific professional workflows (musicians, authors) creates a strong niche market opportunity for a subscription-based product.
 
 ### 5.3. Priority Development Roadmap
 
@@ -245,18 +245,18 @@ The development focus should be prioritized based on the potential for revenue a
 
 **Phase 1: Foundational Separation (Immediate Priority)**
 
-1.  **Separate All Combined Repositories:** Execute the separation plans outlined in Section 2 for `audrey-evans-official`, `meetaudreyevans`, `revvel-expert-skills`, `revvel-forensic-studio`, `thealttext`, and `universal-data-router`. This is a critical first step to enable parallel development.
-2.  **Establish `in-the-wild` Repository:** Rename `survivor-soul-songs` to `in-the-wild` and establish it as the single source of truth for the AI website generator project.
+1. **Separate All Combined Repositories:** Execute the separation plans outlined in Section 2 for `audrey-evans-official`, `meetaudreyevans`, `revvel-expert-skills`, `revvel-forensic-studio`, `thealttext`, and `universal-data-router`. This is a critical first step to enable parallel development.
+2. **Establish `in-the-wild` Repository:** Rename `survivor-soul-songs` to `in-the-wild` and establish it as the single source of truth for the AI website generator project.
 
 **Phase 2: High-Revenue App Development (1-3 Months)**
 
-1.  **Complete InTheWild MVP:** Focus all available development resources on completing the Minimum Viable Product (MVP) for InTheWild. The goal is to launch a functional version with the core micro-app generation feature within three months.
-2.  **Develop TheAltText E-commerce Features:** Concurrently, develop the e-commerce and bulk-processing features for TheAltText. This will provide immediate value to the internal Amazon review business and prepare it for a public launch.
+1. **Complete InTheWild MVP:** Focus all available development resources on completing the Minimum Viable Product (MVP) for InTheWild. The goal is to launch a functional version with the core micro-app generation feature within three months.
+2. **Develop TheAltText E-commerce Features:** Concurrently, develop the e-commerce and bulk-processing features for TheAltText. This will provide immediate value to the internal Amazon review business and prepare it for a public launch.
 
 **Phase 3: Ecosystem Expansion (3-6 Months)**
 
-1.  **Launch Revvel Email Organizer:** Begin development of the workflow-specific features for the Revvel Email Organizer.
-2.  **Develop Other Standalone Apps:** Prioritize the development of the other separated applications (DataScope, Project Face, etc.) based on market demand and available resources.
+1. **Launch Revvel Email Organizer:** Begin development of the workflow-specific features for the Revvel Email Organizer.
+2. **Develop Other Standalone Apps:** Prioritize the development of the other separated applications (DataScope, Project Face, etc.) based on market demand and available resources.
 
 ### 5.4. Most Valuable Features
 

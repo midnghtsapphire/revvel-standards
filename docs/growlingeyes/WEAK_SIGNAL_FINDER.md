@@ -10,7 +10,7 @@
 
 The **Weak Signal Finder** is an NLP-based intelligence tool that detects emerging themes and patterns from RSS news feeds. It's been integrated into GrowlingEyes to provide early warning of emerging threats, trends, and intelligence gaps across multiple OSINT domains.
 
-### What Are Weak Signals?
+### What Are Weak Signals
 
 **Weak signals** are early indicators of emerging trends, threats, or changes that are not yet mainstream but may become significant. In intelligence contexts, these include:
 
@@ -423,7 +423,7 @@ The GrowlingEyes implementation differs from the original in several ways:
 
 ## References
 
-- **Original WeakSignalFinder:** https://github.com/LittleViewer/WeakSignalFinder
+- **Original WeakSignalFinder:** <https://github.com/LittleViewer/WeakSignalFinder>
 - **GrowlingEyes Master Spec:** `docs/GROWLINGEYES_MASTER_SPEC.md`
 - **GrowlingEyes Tools README:** `growlingeyes/README.md`
 - **Axion Planetary MCP Spec:** `docs/AXION_PLANETARY_MCP.md`

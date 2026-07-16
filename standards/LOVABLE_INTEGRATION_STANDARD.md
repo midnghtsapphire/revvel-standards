@@ -158,7 +158,7 @@ jobs:
 **Recommended approach:**
 
 1. Copy the issue description and requirements
-2. Go to https://lovable.dev
+2. Go to <https://lovable.dev>
 3. Create new project with prompt:
    ```
    Create a live-type dashboard that repurposes data from https://github.com/elder-plinius/CL4R1T4S
@@ -186,7 +186,7 @@ jobs:
 
 ## Quick Start
 
-1. **Create Lovable account** at https://lovable.dev
+1. **Create Lovable account** at <https://lovable.dev>
 2. **Connect GitHub** at Connectors → Chat connectors → GitHub
 3. **Create project** by describing what you want to build
 4. **Iterate** with feedback until satisfied
