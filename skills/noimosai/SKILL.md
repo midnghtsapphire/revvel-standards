@@ -9,7 +9,7 @@
 
 ---
 
-## What is NoimosAI?
+## What is NoimosAI
 
 NoimosAI is an autonomous AI marketing team platform. You define high-level goals — SEO rankings, content calendars, social media presence, affiliate revenue — and NoimosAI's agents carry them out continuously without manual intervention.
 

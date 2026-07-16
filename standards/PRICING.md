@@ -194,4 +194,3 @@ contract = {
 - Estimates valid for 30 days
 - 50% deposit required to start
 - Net-30 payment terms
-

@@ -6,7 +6,7 @@
 
 ---
 
-## What Is a Skill?
+## What Is a Skill
 
 Imagine you had a friend who is an expert at something — like a really amazing code reviewer, or a security expert, or a writing coach. Every time you needed help with that thing, you could just ask your friend.
 
@@ -270,7 +270,7 @@ Your skill is ready! Now you can:
 
 ---
 
-## Checklist: Is Your Skill Ready?
+## Checklist: Is Your Skill Ready
 
 Before publishing, go through this checklist:
 

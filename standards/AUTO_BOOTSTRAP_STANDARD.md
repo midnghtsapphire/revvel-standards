@@ -115,7 +115,7 @@ Every new project with a web frontend should have Vercel deployment automated:
 
 ### Popular Actions to Search First
 
-> Search https://github.com/marketplace when starting any new automation:
+> Search <https://github.com/marketplace> when starting any new automation:
 > - Use verified actions with 100+ stars
 > - Check last commit date (should be < 6 months ago)
 > - Prefer actions with `vX` tags (stable versions)

@@ -539,7 +539,7 @@ A WR task is successful if:
 
 **Solutions:**
 1. Check `OPENROUTER_API_KEY` is configured
-2. Verify OpenRouter API status: https://openrouter.ai/status
+2. Verify OpenRouter API status: <https://openrouter.ai/status>
 3. Review triage script logs in workflow run
 4. Check for API rate limiting
 

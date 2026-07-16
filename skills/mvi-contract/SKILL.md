@@ -2,7 +2,7 @@
 
 Fill out the 7-section MVI Contract before every coding session to define scope, dependencies, acceptance gates, and rollback plan.
 
-## What Is an MVI?
+## What Is an MVI
 
 **MVI = Minimum Viable Increment** — the fundamental unit of work. One coding session, one complete user-observable feature, fully wired end-to-end.
 

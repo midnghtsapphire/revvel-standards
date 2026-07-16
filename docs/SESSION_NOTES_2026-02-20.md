@@ -68,7 +68,7 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 - **Testing plan**: Use the massive email dataset to establish the best filter rules
 - **If there are timeouts or issues, figure them out** — that's the point of testing with real data
 - **Drive app is done** but email app needs testing
-- **Gmail**: angelreporters@gmail.com
+- **Gmail**: <angelreporters@gmail.com>
 
 ### TimelineTracker
 - **Created during COVID** when Revvel was going through a hard time

@@ -6,7 +6,7 @@
 
 ---
 
-## 1. Plausibility — "Yes or No?"
+## 1. Plausibility — "Yes or No
 
 **Verdict: YES.**
 

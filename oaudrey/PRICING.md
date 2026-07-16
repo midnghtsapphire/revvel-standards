@@ -68,4 +68,4 @@ capable. You pay for **hosting, integrations, the vertical agents, and support.*
 *Licensing: the Mālama engine is AGPLv3-licensed (open source) and free forever —
 anyone hosting a modified version must publish their source. oAudrey hosted plans
 and vertical agents are proprietary to Freedom Angel Corp.*
-*Contact: angelreporters@gmail.com*
+*Contact: <angelreporters@gmail.com>*

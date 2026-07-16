@@ -32,8 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Updated References section to add 
   `GOAP.md`, `GOAL.md`, and `learnings.md` as labeled SSOT entries at the top of the list.
 
-
-
 ### Added
 - `docs/Master_Inventory/GOAP_AGENT_STANDARD.md` — Goap Agent Standard: 
   goal-oriented action planner (Goap) specialized autonomous agent under 
@@ -90,7 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Recommends **`jest-expo` + `@testing-library/react-native` + Maestro** as the
   default stack with **Detox** as an opt-in alternate tier and **Appium**
   explicitly excluded. Wires native execution to **EAS Build `--profile preview`**
-  + **GitHub Actions `macos-14` (iOS sim)** + **`ubuntu-latest` +
+  - **GitHub Actions `macos-14` (iOS sim)** + **`ubuntu-latest` +
   `reactivecircus/android-emulator-runner` (Android emu)** so no developer
   needs Xcode or Android Studio installed locally — matching the
   `docs/AGENTS.md` Expo / EAS mandate. Includes RFC-2119 requirements
@@ -254,8 +252,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DATABASE_ARCHITECTURE_STANDARD.md` — Section 7 expanded with subsection 7.1 linking to the new `UI_FIELD_TESTING_DBA_STANDARD.md` module. Field mapping section now includes the DBA testing requirement alongside the existing field map document references.
 - `TESTING_STANDARD.md` — Section 10 expanded with subsection 10.5 documenting the UI-to-database field test requirement and linking to `UI_FIELD_TESTING_DBA_STANDARD.md` and the UI field testing BOM.
 - `docs/Universal-BOM_List/README.md` — Added `UI_FIELD_TESTING_BOM.md` to the Files table.
-
-
 
 ### Added
 - `SYNTAX_ERROR_PREVENTION_STANDARD.md` — mandatory four-layer standard for preventing syntax errors before they reach CI or become issues/PRs. Covers Git pre-commit hooks, pre-commit framework, Husky + lint-staged, and GitHub Actions CI checks.

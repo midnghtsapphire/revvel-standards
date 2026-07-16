@@ -344,7 +344,7 @@ gh pr edit <PR_NUMBER> --add-label "no-triage"
 **Issue:** Label shows `review-fix:failed`
 
 **Solutions:**
-1. Check OpenRouter API status: https://openrouter.ai/status
+1. Check OpenRouter API status: <https://openrouter.ai/status>
 2. Verify API key is valid and has credits
 3. Check workflow run logs for error details
 4. Check if PR diff is too large (>10KB truncated automatically)

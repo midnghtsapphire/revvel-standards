@@ -1,6 +1,6 @@
 # GBrain Skill
 
-## What Is GBrain?
+## What Is GBrain
 
 GBrain is your AI agent's **personal memory**. Without it, your AI starts every conversation with amnesia — it doesn't know the people you've talked to, the deals you're working on, the ideas you've captured, or anything from past sessions.
 

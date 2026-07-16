@@ -22,7 +22,7 @@
 
 ---
 
-## 1. What Is GBrain?
+## 1. What Is GBrain
 
 GBrain is a **personal knowledge base CLI and MCP server** that gives an AI agent a permanent, searchable, compounding memory. It is the foundational memory layer for production AI agents.
 
@@ -316,7 +316,7 @@ cd ~/gbrain && git pull origin main && bun install
 
 ## 8. MCP Integration
 
-### What Is MCP?
+### What Is MCP
 
 MCP (Model Context Protocol) is Anthropic's open standard for connecting AI agents to external tools. GBrain implements MCP, making it compatible with Claude Code, Cursor, Windsurf, and any other MCP-compatible AI tool.
 

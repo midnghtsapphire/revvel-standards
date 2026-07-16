@@ -108,4 +108,3 @@ Rollback risk: low
   machine-readable `v0_1_0_trade_offs` field on
   `data://wr-control-plane/architecture`. Acts as the canonical follow-up to
   this MVI.
-

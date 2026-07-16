@@ -37,7 +37,7 @@ Revvel app (browser / Node / mobile)
 ## Setup Checklist (New Project)
 
 1. **Create a PostHog project:**
-   Visit https://posthog.com → sign up → create a project. Pick the EU region only if user data must stay in the EU (otherwise leave default US).
+   Visit <https://posthog.com> → sign up → create a project. Pick the EU region only if user data must stay in the EU (otherwise leave default US).
 
 2. **Retrieve credentials from PostHog:**
    - `POSTHOG_API_KEY` — Project Settings → API Keys → Project API Key (safe to expose in client bundles).
@@ -108,7 +108,7 @@ Every Revvel app **must** emit these baseline events (server-side or client-side
 | `app_loaded` | First mount of the root component | `app_version`, `platform` |
 | `user_signed_up` | Server confirms new account | `signup_method`, `referrer_source` |
 | `user_logged_in` | Server confirms session | `login_method` |
-| `user_logged_out` | User-initiated sign out | _(none)_ |
+| `user_logged_out` | User-initiated sign out | *(none)* |
 | `feature_used` | Any non-nav user action worth tracking | `feature_name`, `surface` |
 | `purchase_completed` | Stripe webhook `checkout.session.completed` | `product_slug`, `amount_cents`, `currency` |
 | `error_surfaced` | User saw a non-fatal error toast / page | `error_code`, `surface` |
@@ -264,13 +264,13 @@ Before deploying, verify:
 - **Paid tier**: $0.000025/event after 1M (about $25 for 2M events), $0.005/replay after 5K.
 - **Self-hosted**: Free forever, but you manage infrastructure.
 
-See https://posthog.com/pricing for current pricing.
+See <https://posthog.com/pricing> for current pricing.
 
 ## References
 
-- PostHog Docs: https://posthog.com/docs
-- PostHog GitHub: https://github.com/PostHog/posthog
-- PostHog GitHub Actions: https://github.com/marketplace?query=posthog
+- PostHog Docs: <https://posthog.com/docs>
+- PostHog GitHub: <https://github.com/PostHog/posthog>
+- PostHog GitHub Actions: <https://github.com/marketplace?query=posthog>
 - Revvel PostHog Integration Standard: `docs/POSTHOG_INTEGRATION.md`
 - Revvel PostHog Events Standard: `templates/standards/posthog-events.md`
 - Revvel PostHog Init Template: `templates/standards/posthog-init.ts`

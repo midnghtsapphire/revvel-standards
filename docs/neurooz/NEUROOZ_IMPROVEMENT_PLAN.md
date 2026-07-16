@@ -297,30 +297,30 @@ These changes reduce energy consumption and improve performance:
 5. Create privacy policy
 
 ### Phase 2: Foundation (Week 2) — Structural Changes
-6. Refactor into modular monolith structure (move files, don't delete)
-7. Add Vitest + Playwright configurations
-8. Add database schema migrations
-9. Add `helmet.js`, CORS, rate limiting
+1. Refactor into modular monolith structure (move files, don't delete)
+2. Add Vitest + Playwright configurations
+3. Add database schema migrations
+4. Add `helmet.js`, CORS, rate limiting
 
 ### Phase 3: Core Features (Weeks 3-5) — Feature Development
-10. Implement authentication (Clerk)
-11. Implement Stripe subscriptions
-12. Enhance Plaid integration with impulse detection
-13. Build all 7 accessibility modes
-14. Implement Urban Oz theme
+1. Implement authentication (Clerk)
+2. Implement Stripe subscriptions
+3. Enhance Plaid integration with impulse detection
+4. Build all 7 accessibility modes
+5. Implement Urban Oz theme
 
 ### Phase 4: Growth Features (Week 6) — Marketing & SEO
-15. Build blog + FAQ systems
-16. Implement affiliate auto-linker
-17. Build email subscriber system
-18. Add About section pages
+1. Build blog + FAQ systems
+2. Implement affiliate auto-linker
+3. Build email subscriber system
+4. Add About section pages
 
 ### Phase 5: Polish & Launch (Week 7) — Production Readiness
-19. Full test suite (unit + E2E + security + performance)
-20. Security audit
-21. Performance audit (Lighthouse 90+)
-22. Deploy to production
-23. Update INFRASTRUCTURE_MAP.md
+1. Full test suite (unit + E2E + security + performance)
+2. Security audit
+3. Performance audit (Lighthouse 90+)
+4. Deploy to production
+5. Update INFRASTRUCTURE_MAP.md
 
 ---
 

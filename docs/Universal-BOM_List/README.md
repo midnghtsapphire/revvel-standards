@@ -7,7 +7,7 @@
 
 ---
 
-## What Is This Folder?
+## What Is This Folder
 
 The **Universal BOM List** is the single source of truth for every tool, API, service, framework, and resource that the Revvel ecosystem uses or should evaluate. It lives here — not scattered across project BOMs — so the coding agent, Audrey, and every team member can find the complete picture at a glance.
 

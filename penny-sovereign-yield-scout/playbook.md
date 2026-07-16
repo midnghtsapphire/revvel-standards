@@ -39,7 +39,7 @@ The **penny-sovereign-yield-scout** targets the **blue ocean** at the intersecti
 - **Sovereign yield** (real revenue, not inflationary emissions)
 - **Under-watched protocols** (TVL $500k–$50M — too small for whales, too big to be rugs)
 
-### Why Pennies?
+### Why Pennies
 
 Penny-priced assets offer **asymmetric upside** when combined with yield:
 
@@ -247,7 +247,7 @@ Blended APY: ~41% | Expected IL-adjusted return: ~35%
 
 ## 6. Impermanent Loss Mitigation
 
-### 6.1 What is IL in This Context?
+### 6.1 What is IL in This Context
 
 Impermanent Loss (IL) occurs when the price ratio of tokens in a liquidity pool changes from the ratio at entry. The further prices diverge, the greater the loss relative to simply holding.
 

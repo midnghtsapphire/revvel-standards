@@ -24,7 +24,7 @@ intended to be enforced). For a ship-to-market (S2M) repo the fix is to
 
 ---
 
-## How was it working without it?
+## How was it working without it
 
 It was working because the finding is a **false negative on form, true on substance**:
 

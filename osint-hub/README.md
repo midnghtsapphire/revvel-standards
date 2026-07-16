@@ -203,7 +203,7 @@ This is part of the **MIDNGHTSAPPHIRE / Revvel Standards** ecosystem. To contrib
 **All Rights Reserved — Freedom Angel Corp**
 
 EIN: 86-1209156  
-Contact: support@freedomangel.com
+Contact: <support@freedomangel.com>
 
 ## 🌟 Acknowledgments
 

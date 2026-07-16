@@ -212,14 +212,14 @@ README.md                                     (updated with 30-day section)
 
 ## Example Use Cases
 
-### Use the 30-Day Blueprint When:
+### Use the 30-Day Blueprint When
 1. **Validating a new product idea** quickly before investing in full automation
 2. **Testing market demand** for a product concept
 3. **Learning what works** before scaling to full pipeline
 4. **Shipping Priority 1 projects** from PROJECTS_TO_SHIP.md
 5. **Hitting monthly revenue targets** ($3k/mo goal requires multiple products)
 
-### Use the Full Pipeline When:
+### Use the Full Pipeline When
 1. **Scaling validated products** that need automation
 2. **Running multiple products** simultaneously
 3. **Automating long-term operations** for established products
@@ -371,7 +371,7 @@ vim research/brief.md
 
 ## Validation
 
-### Changes Are Trivial?
+### Changes Are Trivial
 
 **CodeQL Assessment:**
 - **isTrivial:** false

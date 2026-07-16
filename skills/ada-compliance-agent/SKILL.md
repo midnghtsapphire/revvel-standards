@@ -152,7 +152,7 @@ Activate this skill when encountering:
 
 ## Operating Protocol
 
-### When triggered for an audit:
+### When triggered for an audit
 
 1. **Pre-Audit Analysis**
    - Identify all user-facing components (pages, forms, modals, widgets)
@@ -196,7 +196,7 @@ Activate this skill when encountering:
    - Open issues for manual intervention items
    - Update team via GitHub Discussions
 
-### When triggered for certification research:
+### When triggered for certification research
 
 1. **Scan Primary Sources**
    - ADA National Network courses ([adata.org/courses](https://adata.org/courses))
@@ -218,7 +218,7 @@ Activate this skill when encountering:
    - Update `SKILL.md` certification table
    - Set calendar reminders for course completion
 
-### When running continuously (24/7 mode):
+### When running continuously (24/7 mode)
 
 1. **Daily Tasks**
    - Monitor W3C WAI updates feed

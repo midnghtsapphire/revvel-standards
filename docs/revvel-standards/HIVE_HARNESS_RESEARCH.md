@@ -1,4 +1,4 @@
-# `aden-hive/hive` Evaluation — Is it worth adopting for Revvel?
+# `aden-hive/hive` Evaluation — Is it worth adopting for Revvel
 
 **Version:** 1.0.0
 **Date:** April 20, 2026
@@ -21,7 +21,7 @@
 
 ---
 
-## 2. Why the issue conflates two different "harnesses"
+## 2. Why the issue conflates two different "harnesses
 
 The issue asks whether Hive is useful for "our test harness." That question rests on a terminology collision worth resolving up-front:
 
@@ -44,7 +44,7 @@ There is **zero overlap** between Hive and the test-harness design captured in [
 
 ## 3. What Hive actually is
 
-- **Repo:** https://github.com/aden-hive/hive
+- **Repo:** <https://github.com/aden-hive/hive>
 - **Company:** Aden ([adenhq.com](https://adenhq.com)) — Y Combinator–backed.
 - **License:** Apache-2.0 (OSI-approved ✅).
 - **Language:** Python 3.11+, `uv` workspace layout; PowerShell/Bash quickstarts. (Not installable via `pip install -e .`.)
@@ -154,7 +154,7 @@ These are design-ideas captured here for posterity; none of them require us to i
 
 ## 9. Sources
 
-- `aden-hive/hive` README — https://github.com/aden-hive/hive (fetched 2026-04-20).
+- `aden-hive/hive` README — <https://github.com/aden-hive/hive> (fetched 2026-04-20).
 - `aden-hive/hive` LICENSE — Apache-2.0.
-- Aden company page — https://adenhq.com.
+- Aden company page — <https://adenhq.com>.
 - Internal: [`TEST_HARNESS_RESEARCH.md`](./TEST_HARNESS_RESEARCH.md), [`../STARRED_REPOS_EVAL_2026-04-20.md`](../STARRED_REPOS_EVAL_2026-04-20.md), [`../openclaw-blue-ocean-research.md`](../openclaw-blue-ocean-research.md), [`../SECRETS_MANAGEMENT.md`](../SECRETS_MANAGEMENT.md).

@@ -6,7 +6,7 @@
 
 ---
 
-## What Is a Skill?
+## What Is a Skill
 
 A **skill** is a focused set of AI instructions that teaches an agent how to perform a specific task domain. Loading a skill is like handing an expert their playbook — the agent instantly knows the rules, workflow, and requirements for that domain.
 
@@ -134,8 +134,8 @@ Load these at the **start** of every agent session:
 
 Load these at the **end** of every session:
 
-5. **`wrap-up`** — Ship, Remember, Review, Publish
-6. **`memory-pruning`** — Prune session logs
+1. **`wrap-up`** — Ship, Remember, Review, Publish
+2. **`memory-pruning`** — Prune session logs
 
 ---
 
@@ -163,7 +163,7 @@ Load these at the **end** of every session:
 
 ---
 
-## Where Does Code Go Inside a Skill Folder?
+## Where Does Code Go Inside a Skill Folder
 
 Skills are primarily **instruction files for AI agents** (markdown + YAML). However, some skills include supporting code:
 

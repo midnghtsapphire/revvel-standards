@@ -25,7 +25,7 @@ A **citable package** of your brand statement and project documentation that can
 
 Create a folder: `archive-upload-{{DATE}}/`
 
-#### Files to Include:
+#### Files to Include
 
 ```
 archive-upload-{{DATE}}/
@@ -161,7 +161,7 @@ Create `metadata.json`:
 
 ### 2. Create Internet Archive Account
 
-1. Go to https://archive.org/account/signup
+1. Go to <https://archive.org/account/signup>
 2. Sign up with email
 3. Verify email address
 4. Complete profile with real name
@@ -170,7 +170,7 @@ Create `metadata.json`:
 
 #### Option A: Web Upload (Small Packages < 500MB)
 
-1. Go to https://archive.org/upload/
+1. Go to <https://archive.org/upload/>
 2. Click "Choose Files"
 3. Select all files from `archive-upload-{{DATE}}/`
 4. Fill in metadata form:
@@ -230,7 +230,7 @@ English
 opensource
 ```
 
-5. Click "Upload and Create Your Item"
+1. Click "Upload and Create Your Item"
 
 #### Option B: Command Line Upload (Large Packages)
 
@@ -261,7 +261,7 @@ ia upload {{IDENTIFIER_SLUG}} \
 
 ### 4. After Upload
 
-1. **Note Item URL:** https://archive.org/details/{{IDENTIFIER_SLUG}}
+1. **Note Item URL:** <https://archive.org/details/{{IDENTIFIER_SLUG}}>
 2. **Update Brand Statement:** Add Archive.org URL
 3. **Update state.json:**
    ```json
@@ -311,7 +311,7 @@ Before uploading:
 
 ---
 
-## Why Internet Archive for E-E-A-T?
+## Why Internet Archive for E-E-A-T
 
 **Benefits:**
 1. **Permanent URLs** — Never expires, can be cited forever
@@ -348,10 +348,10 @@ Before uploading:
 
 ## Resources
 
-- **Upload Guide:** https://help.archive.org/help/uploading-a-basic-guide/
-- **Metadata Guidelines:** https://help.archive.org/help/metadata/
-- **CLI Tool:** https://archive.org/services/docs/api/internetarchive/
-- **License Info:** https://creativecommons.org/licenses/
+- **Upload Guide:** <https://help.archive.org/help/uploading-a-basic-guide/>
+- **Metadata Guidelines:** <https://help.archive.org/help/metadata/>
+- **CLI Tool:** <https://archive.org/services/docs/api/internetarchive/>
+- **License Info:** <https://creativecommons.org/licenses/>
 
 ---
 

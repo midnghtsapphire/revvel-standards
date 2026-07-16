@@ -653,6 +653,6 @@ reports/
 - `templates/cicd/security.yml` — base security workflow template
 - `templates/cicd/auto-fix.yml` — automated fix PR workflow
 - `templates/cicd/ralph-loop.yml` — self-healing CI loop
-- Semgrep: https://semgrep.dev/docs
-- OSV Scanner: https://google.github.io/osv-scanner
-- Lighthouse CI: https://github.com/GoogleChrome/lighthouse-ci
+- Semgrep: <https://semgrep.dev/docs>
+- OSV Scanner: <https://google.github.io/osv-scanner>
+- Lighthouse CI: <https://github.com/GoogleChrome/lighthouse-ci>

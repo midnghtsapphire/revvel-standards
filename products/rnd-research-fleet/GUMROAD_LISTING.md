@@ -100,9 +100,9 @@ Download, unzip, run `install.sh`. Done in 60 seconds.
 
 ---
 
-## Questions?
+## Questions
 
-support@freedomangelcorp.com
+<support@freedomangelcorp.com>
 
 ---
 

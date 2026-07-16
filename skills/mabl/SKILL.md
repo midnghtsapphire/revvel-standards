@@ -42,7 +42,7 @@ If fail → Ralph Loop triggers @copilot for fix + re-run
 ## Setup Checklist (New Project)
 
 1. **Create a Mabl account:**
-   Visit https://app.mabl.com and sign up (free trial available).
+   Visit <https://app.mabl.com> and sign up (free trial available).
 
 2. **Create an application in Mabl:**
    Mabl Dashboard → Applications → New Application → enter app URL.
@@ -130,8 +130,8 @@ When a Mabl test fails in CI:
 
 ## Cost & Pricing
 
-- **Free trial:** Available — check https://www.mabl.com/pricing for current offer.
-- **Pro plan:** Paid — visit https://www.mabl.com/pricing for current rates.
+- **Free trial:** Available — check <https://www.mabl.com/pricing> for current offer.
+- **Pro plan:** Paid — visit <https://www.mabl.com/pricing> for current rates.
 - **ROI:** A single avoided production regression (broken checkout, failed auth) easily offsets the subscription cost.
 
 ## Session Checklist

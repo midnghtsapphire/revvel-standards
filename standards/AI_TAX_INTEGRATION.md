@@ -130,4 +130,3 @@ Building a tax LLM requires:
 2. **TaxCalc** for actual calculations
 3. **Validation layer** for accuracy
 4. **Human review** for liability
-

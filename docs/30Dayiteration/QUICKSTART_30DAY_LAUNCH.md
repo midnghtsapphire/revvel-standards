@@ -277,22 +277,22 @@ Before Day 22, ensure:
 
 ## 🔧 Troubleshooting
 
-### "I don't know what to build"
+### "I don't know what to build
 → Start with: `research/brief.md` — research pain points first  
 → Browse Reddit, Twitter, forums for complaints  
 → Look for repeated frustrations in your niche
 
-### "30 days seems too fast"
+### "30 days seems too fast
 → That's the point! Ship fast, iterate faster  
 → Start with MVP — one feature done well  
 → Perfect is the enemy of shipped
 
-### "I'm not a developer"
+### "I'm not a developer
 → Use no-code tools (Carrd, Webflow, Gumroad)  
 → Start with PDF shape (easiest)  
 → Hire help for technical parts (Fiverr, Upwork)
 
-### "No one is signing up"
+### "No one is signing up
 → Check: Is the pain point real?  
 → Test: Different messaging, different channels  
 → Pivot: Try a related problem or different audience
@@ -317,7 +317,7 @@ Before Day 22, ensure:
 
 ---
 
-## 🚢 Ready to Ship?
+## 🚢 Ready to Ship
 
 ```bash
 # Let's go!
@@ -344,7 +344,7 @@ cat NEXT_STEPS.md
 
 ---
 
-## 🆘 Need Help?
+## 🆘 Need Help
 
 - **Issues:** Create issue on [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards/issues)
 - **Examples:** Check `projects/agent-generated/_examples/`

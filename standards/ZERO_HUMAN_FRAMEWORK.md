@@ -178,4 +178,3 @@ This wires:
 | Invoice processing | 30 min | 0 min | 100% |
 | Code review | 1 hr | 10 min | 83% |
 | Lead follow-up | 1 hr | 0 min | 100% |
-

@@ -480,20 +480,20 @@ curl -X POST $N8N_WEBHOOK_URL -d '{"test": true}'
 - **[README.md](README.md)** — Quick start guide
 
 ### API Documentation
-- **Grants.gov API**: https://developer.grants.gov/
-- **SAM.gov API**: https://open.gsa.gov/api/sam/
-- **OpenRouter API**: https://openrouter.ai/docs
-- **DocSpring API**: https://docspring.com/docs
+- **Grants.gov API**: <https://developer.grants.gov/>
+- **SAM.gov API**: <https://open.gsa.gov/api/sam/>
+- **OpenRouter API**: <https://openrouter.ai/docs>
+- **DocSpring API**: <https://docspring.com/docs>
 
 ### Tools & Platforms
-- **n8n**: https://docs.n8n.io/
-- **Supabase**: https://supabase.com/docs
-- **Instrumentl**: https://www.instrumentl.com/
+- **n8n**: <https://docs.n8n.io/>
+- **Supabase**: <https://supabase.com/docs>
+- **Instrumentl**: <https://www.instrumentl.com/>
 
 ### Learning Resources
-- **Federal Grant Writing**: https://www.grants.gov/learn-grants/grant-writing
-- **Foundation Grants**: https://candid.org/learn/knowledge-base/resources/grantwriting
-- **AI-Assisted Writing**: https://www.anthropic.com/index/prompting-long-form-content
+- **Federal Grant Writing**: <https://www.grants.gov/learn-grants/grant-writing>
+- **Foundation Grants**: <https://candid.org/learn/knowledge-base/resources/grantwriting>
+- **AI-Assisted Writing**: <https://www.anthropic.com/index/prompting-long-form-content>
 
 ---
 

@@ -69,7 +69,7 @@ gh repo list midnghtsapphire --visibility public --json name --limit 200 \
 
 ## 3. Code Provenance Audit
 
-### 3.1. What Is a Code Provenance Audit?
+### 3.1. What Is a Code Provenance Audit
 
 A code provenance audit inspects the full git history of every repository to identify:
 
@@ -161,7 +161,7 @@ git push origin --force --tags
 
 ## 4. Migration: midnghtsapphire → Freedom Angel Corps
 
-### 4.1. Why Migrate?
+### 4.1. Why Migrate
 
 | Concern | Personal Account | Freedom Angel Corps (FAC) |
 |---|---|---|

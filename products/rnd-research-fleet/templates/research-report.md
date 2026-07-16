@@ -92,7 +92,7 @@ If we improve [A], then [B] worsens...
 ### Paradigm Shifts Identified
 [Revolutionary changes on the horizon]
 
-### Pivot Opportunity?
+### Pivot Opportunity
 [Should we abandon the original idea?]
 
 ---

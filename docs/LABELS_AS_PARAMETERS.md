@@ -7,7 +7,7 @@
 
 ---
 
-## 1. What Is It?
+## 1. What Is It
 
 `labels-as-parameters` is a GitHub Action that reads the labels on a Pull Request and converts any label that follows a `key:value` naming convention into a named step output. Downstream workflow steps can then read those outputs as if they were regular workflow inputs — no manual `workflow_dispatch` form required.
 
@@ -15,7 +15,7 @@ This allows non-technical stakeholders (or developers who prefer clicking over t
 
 ---
 
-## 2. Why Use It?
+## 2. Why Use It
 
 | Problem | Without labels-as-parameters | With labels-as-parameters |
 |---|---|---|

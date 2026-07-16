@@ -268,7 +268,7 @@ A known/expected filename in a manifest is **not proof** that an MP4 exists.
 
 ---
 
-## 14) Minimum verification checklist before "complete"
+## 14) Minimum verification checklist before "complete
 
 - [ ] Required output artifact exists and is accessible.
 - [ ] Required backend/API wiring is connected and functioning.

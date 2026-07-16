@@ -17,7 +17,7 @@ Every commit pushed to any application repository is subject to a multi-tiered A
 Bito AI is the primary reviewer for all code before it is pushed to the `main` branch.
 
 **Setup:**
-- Enable via GitHub Marketplace: https://github.com/marketplace/bito-ai-code-reviewer
+- Enable via GitHub Marketplace: <https://github.com/marketplace/bito-ai-code-reviewer>
 - Or use the `openrouter-assignee.yml` workflow
 
 ### 2.2. Fallback Reviewers
@@ -35,7 +35,7 @@ If Bito AI is unavailable, encounters an error, or flags code that requires a se
 All pull requests (PRs) must integrate with Coderabbit for automated line-by-line review. Coderabbit provides immediate feedback on syntax, style, and common anti-patterns directly within the GitHub PR interface. Developers must address all Coderabbit comments before a PR can be merged.
 
 **Setup:**
-1. Enable via GitHub Marketplace: https://github.com/marketplace/coderabbit-ai
+1. Enable via GitHub Marketplace: <https://github.com/marketplace/coderabbit-ai>
 2. Or add `.coderabbit.yaml` to repository root
 
 ### 2.4. Skill/LLM Testing (PromptFoo)
@@ -61,7 +61,7 @@ providers:
       temperature: 0
 ```
 
-**GitHub Action:** https://github.com/promptfoo/promptfoo-action
+**GitHub Action:** <https://github.com/promptfoo/promptfoo-action>
 
 ### 2.5. MCP Code Review Server (Optional)
 
@@ -92,9 +92,9 @@ The official software development lifecycle for Revvel applications mandates a s
 
 ### 3.1. The Official Dev → Test → Live Pipeline
 
-1.  **Development (Dev):** Local or sandbox environments where initial coding and unit testing occur. Code is frequently changing and unstable.
-2.  **Testing (Test / Staging):** A staging environment that mirrors production as closely as possible. Integration tests, end-to-end tests (via Playwright), and final QA are performed here.
-3.  **Production (Live):** The live, user-facing environment. Code reaches this stage only after passing all reviews and tests.
+1. **Development (Dev):** Local or sandbox environments where initial coding and unit testing occur. Code is frequently changing and unstable.
+2. **Testing (Test / Staging):** A staging environment that mirrors production as closely as possible. Integration tests, end-to-end tests (via Playwright), and final QA are performed here.
+3. **Production (Live):** The live, user-facing environment. Code reaches this stage only after passing all reviews and tests.
 
 ### 3.2. Current Operational Exception: Live-First Deployment
 
@@ -136,9 +136,9 @@ See [`CONCURRENT_DEVELOPMENT_STANDARD.md`](./CONCURRENT_DEVELOPMENT_STANDARD.md)
 ## 6. Security Gates
 
 During the CI/CD process, several security gates are enforced:
--   **Secret Management:** All secrets must be injected via HashiCorp Vault (AppRole + OIDC auth) or GitHub Actions Secrets. Hardcoded credentials will cause an immediate pipeline failure.
--   **Dependency Scanning:** Automated checks for known vulnerabilities in npm/pip packages.
--   **Static Analysis:** Code is scanned for common vulnerabilities (e.g., SQL injection, XSS) before deployment.
+- **Secret Management:** All secrets must be injected via HashiCorp Vault (AppRole + OIDC auth) or GitHub Actions Secrets. Hardcoded credentials will cause an immediate pipeline failure.
+- **Dependency Scanning:** Automated checks for known vulnerabilities in npm/pip packages.
+- **Static Analysis:** Code is scanned for common vulnerabilities (e.g., SQL injection, XSS) before deployment.
 
 ## 7. Developer Productivity Analytics (Waydev)
 
@@ -156,7 +156,7 @@ All Revvel and MIDNGHTSAPPHIRE repositories are monitored by the **Waydev GitHub
 
 ### 7.2. Dashboard Access
 
-- **URL:** https://app.waydev.co
+- **URL:** <https://app.waydev.co>
 - **Login:** Use GitHub SSO (same account as `midnghtsapphire`)
 - **Repositories covered:** All active Revvel application repos
 

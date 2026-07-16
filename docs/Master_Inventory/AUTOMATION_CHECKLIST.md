@@ -112,8 +112,8 @@ echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitl
   - Flag visual changes for review
 
 **Tools:**
-- Percy (https://percy.io) - Visual testing for web apps
-- Chromatic (https://chromatic.com) - Storybook visual testing
+- Percy (<https://percy.io>) - Visual testing for web apps
+- Chromatic (<https://chromatic.com>) - Storybook visual testing
 - BackstopJS (open source alternative)
 
 #### 3.5. Accessibility Testing CI
@@ -148,9 +148,9 @@ jobs:
   - Detect breaking API changes
 
 **Tools:**
-- Spectral (https://stoplight.io/spectral) - OpenAPI linter
-- Dredd (https://dredd.org) - API contract testing
-- Pact (https://pact.io) - Consumer-driven contract testing
+- Spectral (<https://stoplight.io/spectral>) - OpenAPI linter
+- Dredd (<https://dredd.org>) - API contract testing
+- Pact (<https://pact.io>) - Consumer-driven contract testing
 
 #### 3.7. Load Testing Automation
 - [ ] Add **k6** or **Artillery** performance tests
@@ -286,7 +286,7 @@ jobs:
   - Auto-rollback if metrics degrade >10%
 
 **Tools:**
-- Flagger (https://flagger.app) - Progressive delivery for Kubernetes
+- Flagger (<https://flagger.app>) - Progressive delivery for Kubernetes
 - LaunchDarkly - Feature flags with gradual rollouts
 - Split.io - Feature experimentation platform
 
@@ -396,9 +396,9 @@ Sentry.init({
   - Track historical uptime %
 
 **Tools:**
-- UptimeRobot (https://uptimerobot.com) - Free for 50 monitors
-- Better Uptime (https://betteruptime.com) - Developer-friendly monitoring
-- Checkly (https://checklr.io) - Monitoring as code with Playwright
+- UptimeRobot (<https://uptimerobot.com>) - Free for 50 monitors
+- Better Uptime (<https://betteruptime.com>) - Developer-friendly monitoring
+- Checkly (<https://checklr.io>) - Monitoring as code with Playwright
 
 ---
 
@@ -411,9 +411,9 @@ Sentry.init({
   - Update on every merge to main
 
 **Tools:**
-- TypeDoc (https://typedoc.org) - TypeScript documentation generator
-- Redoc (https://redocly.com) - OpenAPI documentation
-- Docusaurus (https://docusaurus.io) - Documentation sites
+- TypeDoc (<https://typedoc.org>) - TypeScript documentation generator
+- Redoc (<https://redocly.com>) - OpenAPI documentation
+- Docusaurus (<https://docusaurus.io>) - Documentation sites
 
 #### 3.18. Changelog Automation
 - [ ] Auto-generate **CHANGELOG.md** from commits
@@ -422,9 +422,9 @@ Sentry.init({
   - Create on every release
 
 **Tools:**
-- Release Please (https://github.com/googleapis/release-please) - Automated releases
-- Standard Version (https://github.com/conventional-changelog/standard-version)
-- Semantic Release (https://github.com/semantic-release/semantic-release)
+- Release Please (<https://github.com/googleapis/release-please>) - Automated releases
+- Standard Version (<https://github.com/conventional-changelog/standard-version>)
+- Semantic Release (<https://github.com/semantic-release/semantic-release>)
 
 #### 3.19. Stale Issue/PR Management
 - [ ] Add **automated stale bot**
@@ -555,18 +555,18 @@ Track automation effectiveness with these KPIs:
 5. 🔴 Lighthouse CI performance budgets
 
 ### 🟡 Medium Priority (Do Next)
-6. 🟡 axe-core accessibility testing
-7. 🟡 Trivy container scanning
-8. 🟡 k6 load testing
-9. 🟡 Sentry error tracking
-10. 🟡 API contract testing
+1. 🟡 axe-core accessibility testing
+2. 🟡 Trivy container scanning
+3. 🟡 k6 load testing
+4. 🟡 Sentry error tracking
+5. 🟡 API contract testing
 
 ### 🟢 Low Priority (Nice to Have)
-11. 🟢 Visual regression testing
-12. 🟢 Automated changelog generation
-13. 🟢 Stale bot for issues/PRs
-14. 🟢 Bundle size monitoring
-15. 🟢 Automated refactoring suggestions
+1. 🟢 Visual regression testing
+2. 🟢 Automated changelog generation
+3. 🟢 Stale bot for issues/PRs
+4. 🟢 Bundle size monitoring
+5. 🟢 Automated refactoring suggestions
 
 ---
 

@@ -67,7 +67,7 @@ npm run dashboard open         # Open HTML in browser
 
 ## Answers to Your Questions
 
-### 1. "Confused at oaudrey and freedom angel?"
+### 1. "Confused at oaudrey and freedom angel
 
 **Dashboard Shows:**
 - **oaudrey.com** - Active (Freedom Angel Hub, main automation hub)
@@ -86,7 +86,7 @@ npm run dashboard open         # Open HTML in browser
 npm run dashboard search oaudrey
 ```
 
-### 2. "Need actual implementations to domain name for trust and sam.gov and grants.gov"
+### 2. "Need actual implementations to domain name for trust and sam.gov and grants.gov
 
 **Dashboard Tracks:**
 - **sam.gov** - External (Gov Registration - Federal contracting)
@@ -97,14 +97,14 @@ npm run dashboard search oaudrey
 - soup2bowl.com (In Development)
 - revvel.co (Active)
 
-### 3. "Android playstore checks your domain and need to get it up on real domain"
+### 3. "Android playstore checks your domain and need to get it up on real domain
 
 **Dashboard shows domain status:**
 - Real domains with status (Active/In Development/Research)
 - Test URLs with deployment links
 - Quick search to find any domain: `npm run dashboard domains`
 
-### 4. "Simple site for friend soup2bowl can't seem to see anything for couple weeks"
+### 4. "Simple site for friend soup2bowl can't seem to see anything for couple weeks
 
 **Now You Can See:**
 
@@ -113,11 +113,11 @@ Run: `npm run dashboard search soup2bowl`
 **Dashboard will show:**
 - Project: Soul2Bowl (In Development)
 - Description: Premium online ordering and catering platform
-- Link: https://github.com/MIDNGHTSAPPHIRE/Soul2Bowl
+- Link: <https://github.com/MIDNGHTSAPPHIRE/Soul2Bowl>
 - Domain: soup2bowl.com (In Development)
 - Any test URLs associated with it
 
-### 5. "Test URL links should all be in an app that is easily accessible"
+### 5. "Test URL links should all be in an app that is easily accessible
 
 **Solution Delivered:**
 

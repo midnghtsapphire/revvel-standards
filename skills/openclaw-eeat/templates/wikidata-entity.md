@@ -10,7 +10,7 @@
 
 ### 1. Create New Item
 
-1. Go to https://www.wikidata.org/
+1. Go to <https://www.wikidata.org/>
 2. Click "Create a new item" (requires Wikidata account)
 3. Set label: `{{PERSON_NAME}}`
 4. Set description: `{{SHORT_DESCRIPTION}}`
@@ -46,11 +46,11 @@
 
 #### ORCID iD (P496)
 - **Value:** `{{ORCID_ID}}` (format: 0000-0000-0000-0000)
-- **Reference URL:** https://orcid.org/{{ORCID_ID}}
+- **Reference URL:** <https://orcid.org/{{ORCID_ID}}>
 
 #### GitHub username (P2037)
 - **Value:** `{{GITHUB_USERNAME}}`
-- **Reference URL:** https://github.com/{{GITHUB_USERNAME}}
+- **Reference URL:** <https://github.com/{{GITHUB_USERNAME}}>
 
 ### 4. External Links
 
@@ -121,14 +121,14 @@
 
 For EVERY claim above, add references:
 
-#### Reference types:
+#### Reference types
 1. **Reference URL (P854):** Link to source
 2. **Retrieved (P813):** Date you accessed the source
 3. **Language of work or name (P407):** English (Q1860)
 
-#### High-quality reference sources:
-- ORCID profile (https://orcid.org/{{ORCID_ID}})
-- GitHub profile (https://github.com/{{GITHUB_USERNAME}})
+#### High-quality reference sources
+- ORCID profile (<https://orcid.org/{{ORCID_ID}}>)
+- GitHub profile (<https://github.com/{{GITHUB_USERNAME}}>)
 - Official website ({{PRIMARY_URL}})
 - Published works, papers, or documentation
 - News articles or press releases
@@ -197,11 +197,11 @@ Before submitting:
 
 ## Resources
 
-- **Wikidata Help:** https://www.wikidata.org/wiki/Wikidata:Introduction
-- **Property Search:** https://www.wikidata.org/wiki/Special:Search
-- **Q-code Search:** https://www.wikidata.org/wiki/Special:Search
-- **Wikidata Tours:** https://www.wikidata.org/wiki/Wikidata:Tours
-- **Community Portal:** https://www.wikidata.org/wiki/Wikidata:Community_portal
+- **Wikidata Help:** <https://www.wikidata.org/wiki/Wikidata:Introduction>
+- **Property Search:** <https://www.wikidata.org/wiki/Special:Search>
+- **Q-code Search:** <https://www.wikidata.org/wiki/Special:Search>
+- **Wikidata Tours:** <https://www.wikidata.org/wiki/Wikidata:Tours>
+- **Community Portal:** <https://www.wikidata.org/wiki/Wikidata:Community_portal>
 
 ---
 

@@ -173,9 +173,9 @@ function processDataB(data) { /* ... */ }
 - Open source (Apache 2.0)
 
 **Repositories:**
-- https://github.com/marco-altran/Roo-Cline
-- https://github.com/OSL-Ai/Roo-Cline
-- Parent: https://github.com/RooCodeInc/Roo-Code
+- <https://github.com/marco-altran/Roo-Cline>
+- <https://github.com/OSL-Ai/Roo-Cline>
+- Parent: <https://github.com/RooCodeInc/Roo-Code>
 
 **When to use:**
 - Local multi-file refactoring

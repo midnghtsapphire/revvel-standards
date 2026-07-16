@@ -253,4 +253,3 @@ revenue/YYYY-MM-DD_HH-MM_product-name.md
 - [`docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`](docs/Master_Inventory/AGENT_FACTORY_STANDARD.md)
 - [`docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md`](docs/Master_Inventory/AUDREY_AUTONOMOUS_AGENT_STANDARD.md)
 - [`ui/freedom-angel-repo-manager/MASTER_PROMPT.md`](ui/freedom-angel-repo-manager/MASTER_PROMPT.md) — Similar pattern for EXRUP agents
-

@@ -214,7 +214,7 @@ gcloud services enable \
 
 ## 5. SCIM Provisioning
 
-### 5.1. What is SCIM?
+### 5.1. What is SCIM
 
 SCIM (System for Cross-domain Identity Management) is an open standard for automating user and group provisioning between identity systems.
 

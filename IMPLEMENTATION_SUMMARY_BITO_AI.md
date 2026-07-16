@@ -147,7 +147,7 @@ All substantive feedback addressed:
 ```
 
 ### Manual Setup
-1. Get API key from https://bito.ai → Settings → API Keys
+1. Get API key from <https://bito.ai> → Settings → API Keys
 2. Add as GitHub Actions secret: `BITO_API_KEY`
 3. (Optional) Store in Vault: `./scripts/bito-api-helper.sh store`
 

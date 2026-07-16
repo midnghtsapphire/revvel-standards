@@ -60,9 +60,9 @@ Score 1–5:
 - Build leverage:
 - Strategic fit:
 
-### Total:
+### Total
 
-### Decision:
+### Decision
 
 - BUILD
 - HOLD

@@ -155,8 +155,8 @@ Import: `@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:
 
 ### Logo Variants
 - [ ] logo-full.svg (bowl icon + "Soul2Bowl" wordmark, horizontal)
-- [ ] logo-full@2x.png
-- [ ] logo-full@3x.png
+- [ ] <logo-full@2x.png>
+- [ ] <logo-full@3x.png>
 - [ ] logo-mark.svg (steaming bowl icon only)
 - [ ] logo-mark-192x192.png
 - [ ] logo-mark-512x512.png

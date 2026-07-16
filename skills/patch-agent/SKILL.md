@@ -7,7 +7,7 @@ description: Deterministic dependency-vulnerability patcher. Use when you need t
 
 Delivers WR #14579 — *"Need n8n or gumloop applies patches or agent called Patch."*
 
-## The research: what's the best way to "apply patches"?
+## The research: what's the best way to "apply patches
 
 The request offered three shapes — **n8n**, **gumloop**, or **a dedicated agent/fleet**.
 For *patching code dependencies*, here is the honest comparison and the pick.

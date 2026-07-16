@@ -78,7 +78,7 @@ You DON'T materially participate if:
 - Your participation isn't continuous
 - You don't make management decisions
 
-### For Audrey:
+### For Audrey
 
 ```
 Audrey's involvement = PICK PRODUCTS
@@ -112,14 +112,14 @@ Income to BUSINESS, not to AUDREY
 
 ## Action Protocol
 
-### If 🟡 WARNING:
+### If 🟡 WARNING
 
 1. Verify all businesses show losses
 2. Accelerate any charitable donations
 3. Check for missed deductions
 4. Review asset contributions
 
-### If 🔴 DANGER:
+### If 🔴 DANGER
 
 1. **STOP** all business payments to Audrey
 2. Accelerate donations to max allowable

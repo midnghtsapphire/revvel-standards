@@ -11,7 +11,7 @@ projects/
   README.md       # This file
 ```
 
-## Where Does Project Tracking Live?
+## Where Does Project Tracking Live
 
 Project tracking in the Revvel ecosystem is **distributed** — each repo is its
 own project. This directory is reserved for **cross-cutting** strategy documents

@@ -185,7 +185,7 @@ schedule:
 
 ## Troubleshooting
 
-### Workflow Fails with "No changes to commit"
+### Workflow Fails with "No changes to commit
 This is normal when there are no new issues or PRs. The workflow will exit successfully with an info message.
 
 ### GitHub API Rate Limiting

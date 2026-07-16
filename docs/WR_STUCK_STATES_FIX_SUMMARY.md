@@ -290,7 +290,6 @@ Both changes are covered by regression tests in
 `tests/workflow-yaml-validation.test.js` so the clearance paths cannot silently
 regress.
 
-
 ---
 
 **Resolution Date:** 2026-05-03 (original), 2026-06-14 (self-healing follow-up)  

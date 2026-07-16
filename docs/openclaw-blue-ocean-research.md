@@ -20,65 +20,65 @@ The AI agent market is rapidly shifting from "building agents" to "managing and 
 ---
 
 ## 3. Agent Owner Pain Points
-*   **The "Black Box" Problem:** Agents do things overnight, and owners don't know *why* or *how* decisions were made.
-*   **Cost Management:** No clear way to set hard dollar limits per task across multiple LLM providers.
-*   **Integration Friction:** Connecting agents to legacy systems (ERP, local databases) remains a manual, coding-heavy task.
-*   **Deployment Fatigue:** Managing agents running on different VPS (DigitalOcean, AWS) without a unified dashboard.
+* **The "Black Box" Problem:** Agents do things overnight, and owners don't know *why* or *how* decisions were made.
+* **Cost Management:** No clear way to set hard dollar limits per task across multiple LLM providers.
+* **Integration Friction:** Connecting agents to legacy systems (ERP, local databases) remains a manual, coding-heavy task.
+* **Deployment Fatigue:** Managing agents running on different VPS (DigitalOcean, AWS) without a unified dashboard.
 
 ---
 
 ## 4. Security Gaps: The "OpenClaw Incident" Lesson
 The compromise of 1,000 OpenClaw agents highlights a critical failure in current agent architecture.
-*   **Missing Features:** No "Agent Firewall," lack of sandboxed execution for untrusted skills, and no cross-agent reputation tracking.
-*   **Prevention:** The platform must implement **Prompt Injection Defenses** at the router level and **Behavioral Anomalies Detection** (e.g., if an agent suddenly requests access to a sensitive API it never used before).
+* **Missing Features:** No "Agent Firewall," lack of sandboxed execution for untrusted skills, and no cross-agent reputation tracking.
+* **Prevention:** The platform must implement **Prompt Injection Defenses** at the router level and **Behavioral Anomalies Detection** (e.g., if an agent suddenly requests access to a sensitive API it never used before).
 
 ---
 
 ## 5. Monetization Innovation
 Beyond monthly tiers, OpenClaw can pioneer:
-*   **Agent-to-Agent Service Fees:** Micro-payments when one user's agent hires another user's specialized agent.
-*   **Skill Store Commissions:** A marketplace for "Skills" (MCP servers, Python scripts) with a built-in "Malicious Skill Scanner."
-*   **Token Arbitrage:** Providing a unified credit system that optimizes costs across OpenRouter, Anthropic, and OpenAI.
+* **Agent-to-Agent Service Fees:** Micro-payments when one user's agent hires another user's specialized agent.
+* **Skill Store Commissions:** A marketplace for "Skills" (MCP servers, Python scripts) with a built-in "Malicious Skill Scanner."
+* **Token Arbitrage:** Providing a unified credit system that optimizes costs across OpenRouter, Anthropic, and OpenAI.
 
 ---
 
 ## 6. Emergent Agent Behavior & Social Networks
-*   **Agent Social Graph:** Monitoring how agents interact on platforms like **Moltbook**.
-*   **Personality Tracking:** Tracking an agent's "drift" over time. Does it become more aggressive or passive based on its history?
-*   **Framework Evolution:** Allowing agents to suggest or build their own orchestration improvements (with human-in-the-loop approval).
+* **Agent Social Graph:** Monitoring how agents interact on platforms like **Moltbook**.
+* **Personality Tracking:** Tracking an agent's "drift" over time. Does it become more aggressive or passive based on its history?
+* **Framework Evolution:** Allowing agents to suggest or build their own orchestration improvements (with human-in-the-loop approval).
 
 ---
 
 ## 7. Accessibility: The Invisible Gap
 Current platforms are built by devs, for devs.
-*   **The Opportunity:** Voice-first management interfaces, high-contrast/screen-reader optimized dashboards, and "Simplified Mode" for non-technical business owners (e.g., "Reese's Mode").
+* **The Opportunity:** Voice-first management interfaces, high-contrast/screen-reader optimized dashboards, and "Simplified Mode" for non-technical business owners (e.g., "Reese's Mode").
 
 ---
 
 ## 8. Multi-Agent Orchestration & Connector Gaps
-*   **Parallel Workers:** Spawning 10 workers to scrape 1000 pages simultaneously, then merging results.
-*   **Missing Connectors:** Local file system bridges, legacy Windows app automation (via RPA), and specialized industry APIs (Dental/Legal/Insurance).
+* **Parallel Workers:** Spawning 10 workers to scrape 1000 pages simultaneously, then merging results.
+* **Missing Connectors:** Local file system bridges, legacy Windows app automation (via RPA), and specialized industry APIs (Dental/Legal/Insurance).
 
 ---
 
 ## 9. Skill Marketplace & Antivirus
-*   **The "Agent App Store":** Users buy/sell "Skills" (e.g., "Starbucks Recipe Extractor").
-*   **Skill Guard:** A mandatory security scan for all marketplace items to prevent backdoors and data exfiltration.
+* **The "Agent App Store":** Users buy/sell "Skills" (e.g., "Starbucks Recipe Extractor").
+* **Skill Guard:** A mandatory security scan for all marketplace items to prevent backdoors and data exfiltration.
 
 ---
 
 ## 10. Agent Rental Marketplace (Pure Blue Ocean)
 A "Temp Agency" for AI agents.
-*   **Concept:** Pre-configured, industry-specific agents (Dental Receptionist, Legal Researcher, Retail Inventory) available for **hourly rent**.
-*   **Use Case:** A dental office rents a "Phone Answering Agent" for 2 hours during a staff meeting.
-*   **Implementation:** Dockerized agents on DigitalOcean that "spin up" on-demand and "spin down" after the shift, delivering a PDF summary of work done.
+* **Concept:** Pre-configured, industry-specific agents (Dental Receptionist, Legal Researcher, Retail Inventory) available for **hourly rent**.
+* **Use Case:** A dental office rents a "Phone Answering Agent" for 2 hours during a staff meeting.
+* **Implementation:** Dockerized agents on DigitalOcean that "spin up" on-demand and "spin down" after the shift, delivering a PDF summary of work done.
 
 ---
 
 ## 11. Novel Ideas (Nobody is doing this)
-*   **Agent Reputation System:** Public "Credit Score" for agents based on task success and security compliance.
-*   **Agent Insurance/SLA:** A fund that pays out if an agent makes a critical error (e.g., booking a wrong flight).
-*   **Cross-Platform Collaboration:** OpenClaw agents talking to Manus agents via a standardized "Agent Protocol."
+* **Agent Reputation System:** Public "Credit Score" for agents based on task success and security compliance.
+* **Agent Insurance/SLA:** A fund that pays out if an agent makes a critical error (e.g., booking a wrong flight).
+* **Cross-Platform Collaboration:** OpenClaw agents talking to Manus agents via a standardized "Agent Protocol."
 
 ---
 

@@ -115,7 +115,7 @@ Verified with 5 test cases including the original failure case. All now produce 
 
 - Original issue: #381
 - PR with fix: #[ACTUAL-PR-NUMBER] (replace with actual PR number when creating real issues)
-- Git ref format docs: https://git-scm.com/docs/git-check-ref-format
+- Git ref format docs: <https://git-scm.com/docs/git-check-ref-format>
 - Related workflow: `.github/workflows/create-issue-branch.yml`
 
 ## Tags

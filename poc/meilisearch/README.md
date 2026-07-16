@@ -15,7 +15,7 @@ cd poc/meilisearch
 docker compose up -d
 ```
 
-MeiliSearch will be available at **http://localhost:7700**.  
+MeiliSearch will be available at **<http://localhost:7700>**.  
 Default master key: `masterKey` (override with `MEILI_KEY` env var).
 
 ### 2. Seed data and run benchmarks
@@ -88,7 +88,7 @@ Each query runs **10 iterations**; p50 and p95 latencies are reported.
 
 Once the POC validates the approach:
 
-1. Provision **MeiliSearch Cloud** at https://www.meilisearch.com/cloud
+1. Provision **MeiliSearch Cloud** at <https://www.meilisearch.com/cloud>
 2. Store credentials in Vault: `revvel/shared/search/meilisearch`
 3. Add to your project `.env`:
    ```

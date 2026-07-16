@@ -267,7 +267,7 @@ Syncs:
 ## Getting Started with Notion
 
 ### 1. Create Notion Integration
-1. Go to https://www.notion.so/my-integrations
+1. Go to <https://www.notion.so/my-integrations>
 2. Click **New integration**
 3. Name it (e.g., "Revvel Standards")
 4. Select workspace

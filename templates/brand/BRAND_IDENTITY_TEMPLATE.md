@@ -75,8 +75,8 @@
 
 ### Logo Variants
 - [ ] logo-full.svg (icon + wordmark, horizontal)
-- [ ] logo-full@2x.png
-- [ ] logo-full@3x.png
+- [ ] <logo-full@2x.png>
+- [ ] <logo-full@3x.png>
 - [ ] logo-mark.svg (icon only)
 - [ ] logo-mark-192x192.png
 - [ ] logo-mark-512x512.png

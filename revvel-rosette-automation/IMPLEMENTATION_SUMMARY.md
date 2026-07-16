@@ -316,26 +316,26 @@ python3 src/selfheal.py --check    # One-time check
 
 ## Technical Decisions
 
-### Why Python + Node.js?
+### Why Python + Node.js
 - **Python:** Rich ecosystem for automation (schedule, hvac, rich CLI)
 - **Node.js:** Already used in parent repo, easy testing
 
-### Why File-Based Queue?
+### Why File-Based Queue
 - **Simplicity:** No external dependencies (Redis optional)
 - **Reliability:** Queue survives process restarts
 - **Transparency:** Human-readable, easy to debug
 
-### Why YAML for Config?
+### Why YAML for Config
 - **Readability:** Better than JSON for humans
 - **Comments:** Can document configuration inline
 - **Standard:** Used throughout revvel-standards
 
-### Why Rich Library?
+### Why Rich Library
 - **Better UX:** Colored output, progress bars, tables
 - **Logging:** Better than plain print statements
 - **Formatting:** JSON pretty-printing built-in
 
-### Why No External Test Framework?
+### Why No External Test Framework
 - **Simplicity:** Vanilla Node.js sufficient for 15 tests
 - **Zero deps:** No jest/mocha/vitest needed
 - **Fast:** Runs in <1 second

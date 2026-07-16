@@ -84,7 +84,7 @@ hybrid = {
 
 ## Local Business Sales Strategy
 
-### Problem: "They do festivals/holidays and don't advertise"
+### Problem: "They do festivals/holidays and don't advertise
 
 **Solution:** Automated outreach tool
 
@@ -300,4 +300,3 @@ requirements = {
 - Focus on conversion, not features
 - Build once, sell multiple times
 - Automate everything possible
-

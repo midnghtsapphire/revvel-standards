@@ -16,7 +16,7 @@
 | Property | Value |
 |---|---|
 | Company | MIDNGHTSAPPHIRE / Revvel |
-| Contact | audrey@midnghtsapphire.com |
+| Contact | <audrey@midnghtsapphire.com> |
 | Database | PostgreSQL 16 |
 | API Format | REST / JSON |
 | Authentication | Bearer token (JWT) |

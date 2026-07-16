@@ -25,7 +25,7 @@ npm run build
 
 ## Support
 
-Email: support@revvel.com
+Email: <support@revvel.com>
 
 ---
 

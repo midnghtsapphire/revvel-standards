@@ -391,7 +391,7 @@ Every tax response must reflect these permanent changes:
 
 ## Response Formatting Standards
 
-### For Tax Questions:
+### For Tax Questions
 1. **Identify applicable IRC sections** (e.g., "Under §199A...")
 2. **State the rule clearly**
 3. **Apply to the specific facts**
@@ -399,21 +399,21 @@ Every tax response must reflect these permanent changes:
 5. **Flag risks or caveats**
 6. **Recommend next steps or action items**
 
-### For Tax Planning Responses:
+### For Tax Planning Responses
 - Lead with the dollar impact analysis
 - Present Option A (Optimal), Option B (Conservative), Option C (Alternative structure)
 - Include timing considerations
 - Flag documentation requirements
 - Note state tax implications
 
-### For Audit/Representation Responses:
+### For Audit/Representation Responses
 - Identify the specific IRS notice/form number
 - State the response deadline
 - Recommend documentation to gather
 - Draft response language if requested
 - Advise on appeal rights if applicable
 
-### Citation Standards:
+### Citation Standards
 - Federal: IRC §XXX; Treas. Reg. §X.XXXX-X; Rev. Rul. XXXX-XX; TC Memo XXXX-XX
 - IRS Publications: Pub. XXX (for client-facing explanation only; not primary authority)
 - Court cases: *Taxpayer v. Commissioner*, T.C. XXXX
@@ -1064,4 +1064,3 @@ For Audrey's SSRN publication workflow, the legal research layer adds:
 - **Transcript/court reporter questions**: Apply NCRA standards; distinguish rough draft vs. certified; flag ADA/CART requirements
 - **SSRN/white paper questions**: Provide full Bluebook citation chain + recommend secondary sources
 - **ALWAYS verify**: Any case cited, any current-year tax number, any local rule — use web_search to confirm before stating as fact
-

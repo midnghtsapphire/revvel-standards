@@ -8,7 +8,7 @@
 
 | Requirement | Status | Notes |
 | --- | :---: | --- |
-| Live deployment URL | ✅ | https://revvel-standards.vercel.app/docs/graphify-evaluator/ |
+| Live deployment URL | ✅ | <https://revvel-standards.vercel.app/docs/graphify-evaluator/> |
 | README `## Live Deployment` | ✅ | present |
 | Live web test interface | ✅ | web app detected |
 | .mcp.json at root | ❌ | missing |

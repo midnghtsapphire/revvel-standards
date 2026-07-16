@@ -302,19 +302,19 @@ Metaphors are supplementary, not primary documentation.
 
 When reviewing operational control documentation:
 
-### For Technical Accuracy:
+### For Technical Accuracy
 - [ ] Code examples match actual repository files
 - [ ] Edge cases are documented
 - [ ] No promised features that don't exist
 - [ ] API behavior is correctly described
 
-### For Clarity:
+### For Clarity
 - [ ] First-time reader can understand immediately
 - [ ] No jargon without explanation
 - [ ] Positive framing throughout
 - [ ] Step-by-step procedures are actionable
 
-### For Agent Safety:
+### For Agent Safety
 - [ ] Examples are safe to copy literally
 - [ ] Exact requirements are specified
 - [ ] Error conditions are documented
@@ -324,11 +324,11 @@ When reviewing operational control documentation:
 
 ## 10. Reference Examples
 
-### Excellent:
+### Excellent
 - `wr/specs/01-quiet-mode.md` (after revision)
 - `.github/ISSUE_TEMPLATE/exit-quiet-mode.md` (after revision)
 
-### Needs Improvement:
+### Needs Improvement
 - Documents that rely on FAQs for critical information
 - Templates with vague "see spec" references
 - Specs with negative framing

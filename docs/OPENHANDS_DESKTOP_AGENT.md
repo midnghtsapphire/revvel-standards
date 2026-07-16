@@ -259,7 +259,7 @@ Get-Content "$env:USERPROFILE\.local\openhands-agent\logs\agent-$(Get-Date -Form
 
 ## Troubleshooting
 
-### "openhands not found"
+### "openhands not found
 ```powershell
 pip install openhands
 ```

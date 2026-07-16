@@ -24,7 +24,7 @@
 - **Intents Enabled**: Message Content Intent, Server Members Intent
 - **OAuth2 Scopes**: bot, applications.commands
 - **Bot Permissions**: Send Messages, Read Message History, Embed Links, Attach Files, Use Slash Commands
-- **Invite URL**: https://discord.com/oauth2/authorize?client_id=1490049282525630464&permissions=274877991936&scope=bot+applications.commands
+- **Invite URL**: <https://discord.com/oauth2/authorize?client_id=1490049282525630464&permissions=274877991936&scope=bot+applications.commands>
 - **Created**: 2026-04-04
 
 ## DigitalOcean API
@@ -49,7 +49,7 @@
 ## Namecheap (Domain Registrar)
 - **Username**: uprisinghope
 - **Password**: [REDACTED — stored in vault]
-- **Login URL**: https://www.namecheap.com/myaccount/login/
+- **Login URL**: <https://www.namecheap.com/myaccount/login/>
 - **Note**: Account requires email 2FA verification on new device logins
 - **Domains Managed**:
   - `mind-mappr.com` — MindMappr app (ACTIVE, expires Feb 26, 2027)

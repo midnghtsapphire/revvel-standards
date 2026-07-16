@@ -271,7 +271,7 @@ alerts:
 
 ## Usage Instructions
 
-### For This Repository:
+### For This Repository
 ```bash
 # Activate the skill
 Load ada-compliance-agent
@@ -283,7 +283,7 @@ Run full ADA compliance audit on this repository
 Research and list all free ADA certification courses
 ```
 
-### For Other Repositories:
+### For Other Repositories
 1. Copy `skills/ada-compliance-agent/.github/workflows/ada-compliance-check.yml` to `.github/workflows/`
 2. Install dependencies: `npm install --save-dev @axe-core/cli pa11y-ci @lhci/cli`
 3. Configure URLs and schedule in workflow

@@ -154,7 +154,7 @@ Every page must pass these before launch:
 |---|---|---|
 | Language declared | Screen reader reads in right language | `<html lang="en">` (or "es" for Spanish) |
 | Error identification | Form errors are specific | "Email is required" not "Error in field 3" |
-| Error suggestion | Tell them how to fix it | "Enter a valid email like name@example.com" |
+| Error suggestion | Tell them how to fix it | "Enter a valid email like <name@example.com>" |
 | Labels on all inputs | Every form field has a label | `<label for="email">Email</label>` — never rely on placeholder alone |
 | Consistent navigation | Nav looks the same on every page | Same component, same order |
 | No jargon | Plain language | Replace "EIN" with "EIN (your business tax ID number)" |

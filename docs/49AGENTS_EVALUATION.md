@@ -15,7 +15,7 @@
 
 ---
 
-## What is 49Agents?
+## What is 49Agents
 
 49Agents is an open-source platform (<https://github.com/49Agents/49Agents>) that positions itself as the "first 2D agentic IDE" with the following core capabilities:
 
@@ -209,7 +209,6 @@
 49Agents can call OpenRouter API directly for LLM access:
 
 > **For illustration only.** Do **not** paste this example into a CI workflow where stdout/stderr is logged. Always call OpenRouter via `scripts/openrouter-routing.js` (or another wrapper) so the key never appears in user-controlled contexts. — Octopus audit 2026-05-28
-
 
 See the illustration-only caveat in [OPENROUTER_API_KEY_VERIFICATION_STANDARD.md](./OPENROUTER_API_KEY_VERIFICATION_STANDARD.md) before using any code examples below.
 

@@ -314,14 +314,14 @@ This folder is created by `scripts/init-product.sh <slug>` (which copies from `t
 | 8 Certify | event-driven on build green | GitHub Actions |
 | 9 Monetize | event-driven on certify green | GitHub Actions |
 | 10 Deploy | event-driven on monetize green | GitHub Actions |
-| 11 Market | event-driven on deploy green + daily 0 12 * * * for budget review | n8n + GitHub Actions |
+| 11 Market | event-driven on deploy green + daily 0 12 ** * for budget review | n8n + GitHub Actions |
 | 12 Measure | `0 * * * *` (hourly snapshot) + `0 6 * * *` (daily roll-up) | n8n |
 
 All cron jobs comply with [`CRON_REQUIREMENTS.md`](CRON_REQUIREMENTS.md) and [`CRON_SYSTEM.md`](CRON_SYSTEM.md): they emit heartbeats, fail loudly, and self-heal on the next tick.
 
 ---
 
-## Acceptance Criteria for "The Pipeline Is Live"
+## Acceptance Criteria for "The Pipeline Is Live
 
 - [ ] `skills/product-pipeline/` is registered in `skills/REGISTRY.md` and `skills/SKILLS_INDEX.yml`.
 - [ ] `templates/agent-generated-product/` exists with the canonical layout above.

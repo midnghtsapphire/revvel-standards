@@ -12,7 +12,6 @@ Closes #<!-- issue number -->
 
 <!-- One paragraph: how do you know this works? Link runs/screenshots/preview URLs. -->
 
-
 ## Checklist
 
 <!-- These four are pre-checked because they apply to almost every PR. Uncheck any that this PR genuinely violates and explain in the Summary or Validation section above. -->

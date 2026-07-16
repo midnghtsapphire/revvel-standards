@@ -143,10 +143,10 @@ Track these as separate issues; this playbook is the contract they implement aga
 
 ## 9. References
 
-- Polar.sh docs: https://docs.polar.sh
-- Pandoc user guide: https://pandoc.org/MANUAL.html
-- Typst: https://typst.app/docs
-- WeasyPrint: https://weasyprint.org
+- Polar.sh docs: <https://docs.polar.sh>
+- Pandoc user guide: <https://pandoc.org/MANUAL.html>
+- Typst: <https://typst.app/docs>
+- WeasyPrint: <https://weasyprint.org>
 
 ---
 

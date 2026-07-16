@@ -57,7 +57,7 @@ GitHub repository creation **cannot** be automated via GitHub Copilot Coding Age
 Choose one option from `HANDOFF.md`:
 
 **Option A: GitHub Web UI** (Recommended)
-1. Go to https://github.com/new
+1. Go to <https://github.com/new>
 2. Name: `devina-imposter`
 3. Public, MIT license
 4. Don't initialize with README
@@ -146,7 +146,7 @@ inventory/github-orgs.md    (Added planned repo tracking)
 ## Related Documentation
 
 - Issue: [WR] Create this in a repository for me call it devina-imposter
-- Reference: https://github.com/e2b-dev/awesome-devins
+- Reference: <https://github.com/e2b-dev/awesome-devins>
 - Analysis: `docs/neurooz/AGENT_SHIPPING_FAILURE_ANALYSIS.md`
 - Standards: `docs/AGENTS.md`, `wr/NORTH_STAR.md`
 

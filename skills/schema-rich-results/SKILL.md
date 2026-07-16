@@ -23,11 +23,11 @@ Load this skill when:
 
 | Tool | Best For | URL |
 |------|----------|-----|
-| **Google Rich Results Test** | Verify rich snippet eligibility (FAQ, Product, Article, Recipe, etc.) | https://search.google.com/test/rich-results |
-| **Schema Markup Validator** | Official schema.org spec compliance for JSON-LD, Microdata, RDFa | https://validator.schema.org/ |
-| **Bing Webmaster — Structured Data** | Bing-specific structured data analysis | https://www.bing.com/webmasters/markup-validator |
-| **Merkle Schema Markup Tester** | Technical SEO validation of code snippets | https://technicalseo.com/tools/schema-markup-generator/ |
-| **SEO Site Checkup** | Audit and competitor comparison | https://seositecheckup.com/tools/structured-data-test |
+| **Google Rich Results Test** | Verify rich snippet eligibility (FAQ, Product, Article, Recipe, etc.) | <https://search.google.com/test/rich-results> |
+| **Schema Markup Validator** | Official schema.org spec compliance for JSON-LD, Microdata, RDFa | <https://validator.schema.org/> |
+| **Bing Webmaster — Structured Data** | Bing-specific structured data analysis | <https://www.bing.com/webmasters/markup-validator> |
+| **Merkle Schema Markup Tester** | Technical SEO validation of code snippets | <https://technicalseo.com/tools/schema-markup-generator/> |
+| **SEO Site Checkup** | Audit and competitor comparison | <https://seositecheckup.com/tools/structured-data-test> |
 
 ---
 

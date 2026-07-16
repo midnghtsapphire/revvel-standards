@@ -90,9 +90,9 @@ git push origin main
 
    The deploy agent monitors the deployment pipeline to confirm it completes successfully. This includes:
 
-   - Checking the deployment platform status (e.g., via API or dashboard)
-   - Waiting for the build and deploy steps to reach SUCCESS status
-   - Verifying the live URL returns the expected HTML and renders correctly
+- Checking the deployment platform status (e.g., via API or dashboard)
+- Waiting for the build and deploy steps to reach SUCCESS status
+- Verifying the live URL returns the expected HTML and renders correctly
 
 ```bash
 curl -sL https://<live-url> | head -20
@@ -102,10 +102,10 @@ curl -sL https://<live-url> | head -20
 
    The deploy agent performs a final verification of the live site:
 
-   - Confirms the page loads (not blank)
-   - Checks that the React app mounts and renders content
-   - Verifies key routes are accessible
-   - Documents the verification in the deploy report
+- Confirms the page loads (not blank)
+- Checks that the React app mounts and renders content
+- Verifies key routes are accessible
+- Documents the verification in the deploy report
 
 ---
 
@@ -128,10 +128,10 @@ curl -sL https://<live-url> | head -20
 
    In multi-team environments, individual teams often have incomplete context about what other teams have merged. Deploying from a single team's perspective risks:
 
-   - Deploying code that conflicts with another team's changes
-   - Missing environment variable configurations
-   - Shipping broken builds because one team's changes break another team's features
-   - Inconsistent deployment configurations across team members
+- Deploying code that conflicts with another team's changes
+- Missing environment variable configurations
+- Shipping broken builds because one team's changes break another team's features
+- Inconsistent deployment configurations across team members
 
    The deploy agent model eliminates these risks by centralizing the deployment decision and verification process.
 
@@ -141,14 +141,14 @@ curl -sL https://<live-url> | head -20
 
    This standard works in conjunction with:
 
-   - **CODE_REVIEW_STANDARD.md** — All PRs must pass CodeRabbit review before merge
-   - **CONCURRENT_DEVELOPMENT_STANDARD.md** — Teams work on feature branches and merge to main via PR
-   - **AUTO_DOCUMENTATION_STANDARD.md** — Deploy reports and changelogs are generated for every deployment
+- **CODE_REVIEW_STANDARD.md** — All PRs must pass CodeRabbit review before merge
+- **CONCURRENT_DEVELOPMENT_STANDARD.md** — Teams work on feature branches and merge to main via PR
+- **AUTO_DOCUMENTATION_STANDARD.md** — Deploy reports and changelogs are generated for every deployment
 
 ---
 
 ## References
 
-   - [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-   - [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
-   - [DigitalOcean App Platform Docs](https://docs.digitalocean.com/products/app-platform/)
+- [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+- [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+- [DigitalOcean App Platform Docs](https://docs.digitalocean.com/products/app-platform/)
