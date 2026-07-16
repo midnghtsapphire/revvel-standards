@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-16T08:47:16.541Z",
+  "generated_at": "2026-07-16T09:41:27.694Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
@@ -15,38 +15,38 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 29484689038,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29484689038",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29484099370,
+            "id": 29487615086,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29484099370",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29487615086",
             "conclusion": "failure"
           },
           {
-            "id": 29481489949,
+            "id": 29485837391,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29485837391",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29485521665,
             "name": "Credential Autonomy Agent",
             "path": ".github/workflows/credential-autonomy-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29481489949",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29485521665",
             "conclusion": "failure"
           },
           {
-            "id": 29481153890,
+            "id": 29485221694,
             "name": "Stuck Check Watchdog",
             "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29481153890",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29485221694",
             "conclusion": "failure"
           },
           {
-            "id": 29481150896,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29481150896",
+            "id": 29485132812,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29485132812",
             "conclusion": "failure"
           }
         ],
@@ -72,10 +72,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29480365312"
+        "last_run": null
       }
     },
     "sheaf": {
