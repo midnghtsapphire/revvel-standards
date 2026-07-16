@@ -135,6 +135,45 @@ function semverCmp(a, b) {
   return 0;
 }
 
+function pickNewerRef(a, b) {
+  const isSha40 = (s) => /^[a-f0-9]{40}$/.test(String(s));
+  const isSemver = (s) => /^\d+(\.\d+)?(\.\d+)?$/.test(String(s).replace(/^v/, ''));
+  const aIsSha = isSha40(a);
+  const bIsSha = isSha40(b);
+  if (aIsSha && bIsSha) return null;
+  if (aIsSha) return a;
+  if (bIsSha) return b;
+  if (isSemver(a) && isSemver(b)) {
+    const cmp = semverCmp(a, b);
+    return cmp >= 0 ? a : b;
+  }
+  return null;
+}
+
+function tryVersionBump(ours, theirs) {
+  const usesRe = /^(\s*)([-]?\s*uses:\s*)([^\s@]+)@(\S+)\s*$/;
+  const om = String(ours).match(usesRe);
+  const tm = String(theirs).match(usesRe);
+  if (!om || !tm) return null;
+  if (om[3] !== tm[3]) return null;
+  const newer = pickNewerRef(om[4], tm[4]);
+  if (newer === null) return null;
+  return `${om[1]}${om[2]}${om[3]}@${newer}\n`;
+}
+
+function tryAdditive(ours, theirs) {
+  const oLines = ours.split('\n').filter(Boolean);
+  const tLines = theirs.split('\n').filter(Boolean);
+  if (oLines.length === 0 && tLines.length === 0) return null;
+  const oSet = new Set(oLines);
+  const tSet = new Set(tLines);
+  for (const line of oSet) {
+    if (tSet.has(line)) return null;
+  }
+  const merged = [...oLines, ...tLines];
+  return merged.length > 0 ? merged.join('\n') : null;
+}
+
 /**
  * Attempt to resolve all hunks in one file. Returns { ok, ambiguous } counts.
  */
@@ -228,4 +267,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { iterHunks, tryResolveHunk, resolveFile, semverCmp };
+module.exports = { iterHunks, tryResolveHunk, resolveFile, semverCmp, pickNewerRef, tryVersionBump, tryAdditive };
