@@ -36,5 +36,5 @@ jobs:
             !vendor/**
             !wr/issues/**
             !docs/agents/claude/transcripts/**
-          config: .markdownlint.yaml
+          config: .markdownlint.jsonc
           fix: false
