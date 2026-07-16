@@ -54,26 +54,6 @@ const https = require('https');
 const GITHUB_API_HOST = 'api.github.com';
 const USER_AGENT = 'octopus-review-fallback';
 
-// Retry tuning.
-const RATE_LIMIT_MAX_RETRIES = 4;
-const RATE_LIMIT_BASE_DELAY_MS = 1500;
-// Hard ceiling on any single in-process wait. The workflow has
-// timeout-minutes: 15, so we keep ~5 min headroom.
-const RATE_LIMIT_MAX_INPROCESS_WAIT_MS = 10 * 60 * 1000;
-
-// Legacy knob kept for callers that still reference it; only used as a
-// floor sanity for backoff, not as a cap on server-provided delays.
-const RATE_LIMIT_MAX_BACKOFF_MS = 20 * 1000;
-const https = require("https");
-const fs = require("fs");
-const path = require("path");
-const { callOpenRouter } = require("./openrouter-routing.js");
-
-// Environment variables
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
-const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
-const PR_NUMBER = process.env.PR_NUMBER || "";
-
 // Dedupe marker embedded in the review body — presence anywhere on the PR
 // (review or comment) means the fallback already ran; never review twice.
 const FALLBACK_MARKER = "<!-- octopus-review-fallback -->";
@@ -491,6 +471,12 @@ async function githubRequest({ method, path, token, body, _now = Date.now, _slee
     if (kind === 'secondary') {
       if (attempt < RATE_LIMIT_MAX_RETRIES) {
         await _sleep(computeRetryDelayMs(attempt, res.headers));
+      }
+    }
+  }
+}
+
+/**
  * Minimal GitHub REST helper (same shape as scripts/pr-auto-review.js).
  * `accept` overrides the media type so we can fetch raw diffs too.
  *
