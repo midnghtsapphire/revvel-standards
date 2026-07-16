@@ -124,3 +124,71 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 **Self-Healing Fix / Learned Lesson:** (1) **Audits decay — re-verify every finding against live HEAD before applying fixes**; merge into current state, never overwrite newer work with stale audit copies. This bit twice in one session (package.json, learnings.md itself). (2) Cluster failures by root cause before filing: 23 test failures were 1 bug (undeclared deps); proven fix took the suite 482 discovered → 631/631 green + clean tsc. (3) Fix + vaccine together: every corrective WR names the guard preventing recurrence (WR-A10 dependency-declaration lint is WR-A1's vaccine). (4) NEW from the incident: **whole-file-write APIs are forbidden on append-only logs** — route log appends through git-native paths (Actions workflow with checkout, or a side-file + fold-in script) where the write can be atomic and size-unbounded. Full toolchain + method in `wr/memory/audit-2026-07-14-tools.md`; procedure codified in `skills/repo-audit/SKILL.md`.
 
 **Next Action:** Review/merge PR from `audit/2026-07-14-wr-a1`. Then agents execute WR-A1..A10 in priority order (A2 state engine and A3 dead script paths first — both P0/P1 and both currently breaking live automation). Also: archive learnings.md entries older than 90 days per its own header rule — the log is 70KB+ and growing; a WR for the archival cron is warranted.
+
+---
+
+**Date/Time:** 2026-07-16T00:20:00Z
+
+**Task Attempted:** Execute WR-A1 through WR-A10 layered fixes. Started with `npm run verify` to baseline current failure state, then began systematic repair of: (1) 8 broken workflow YAML files with duplicate keys and syntax errors, (2) 9 jobs missing `timeout-minutes`, (3) 3 workflows calling non-existent scripts, (4) empty state.json not persisting fleet state.
+
+**Outcome:** [IN PROGRESS] Baseline identified via `npm run verify`:
+- 8 invalid workflows (duplicate keys: agent-fallback, credential-label-router, devin-code-review, jules-coding-agent, openrouter-coder, patch-agent, proposal-prosecution, secrets-guardian)
+- 9 jobs missing timeout-minutes (claude-renovate-review, dependafix, followup-checkbox-router, lint-md, pr-lifecycle×2, saml-sso-registration, ship-status-audit, super-linter, update-agent-creator-data)
+- WR-A3 dead scripts: agent-fallback.yml→call-cursor-api.sh, ship-to-market.yml→record.js, vine-to-marketplace.yml→index.js
+- WR-A2 state.json empty (no state-engine writes)
+
+**Root Cause of Failure:** Multiple agents and prior sessions generated workflows with overlapping keys/conditions without validation. Automation Doctor detected syntax but npm run verify fails at workflows:validate step, blocking lint and test phases entirely.
+
+**Self-Healing Fix / Learned Lesson:** Stopping the bleeding first: fix workflows in priority order (duplicate keys first, then timeouts, then dead scripts). Use `npm run verify:fast` to validate between fixes. Each workflow gets repaired once with a single commit, no batching, so failures are isolated. Tools used: `Read` to inspect each broken workflow file, `Edit` with exact line-number fixes, `Bash` to validate post-fix via re-running workflows:validate. No `Agent` tool until the immediate breaking failures are gone — they prevent even basic local testing.
+
+**Next Action:** Fix the 8 invalid workflows, one per commit, starting with agent-fallback.yml. Commits go to `claude/revvel-standards-governance-review-dktw2r` branch. After all 8 workflows fixed, add timeout-minutes to the 9 jobs, then trace and resolve WR-A3 dead scripts, then tackle WR-A2 state engine.
+
+
+---
+
+**Date/Time:** 2026-07-16T00:45:00Z
+
+**Task Attempted:** Execute layered fixes for WR-A1 through WR-A5 (workflow validation and repair). Started with baseline via `npm run verify`, identified and fixed 8 invalid workflows with duplicate keys, added timeout-minutes to 9 jobs, verified workflow validation now passes 100%.
+
+**Outcome:** [PARTIALLY COMPLETE]
+
+**Fixes completed:**
+1. Repaired 8 invalid workflows (0 remaining):
+   - agent-fallback.yml (duplicate name/on/jobs sections)
+   - credential-label-router.yml (duplicate types key)
+   - devin-code-review.yml (duplicate trigger + job definitions)
+   - jules-coding-agent.yml (misaligned types key)
+   - openrouter-coder.yml (duplicate types + if: conditions)
+   - patch-agent.yml (duplicate permissions, with:, steps)
+   - proposal-prosecution.yml (duplicate if: and ternary operator)
+   - secrets-guardian.yml (duplicate permissions, fields, checks)
+
+2. Added timeout-minutes to 9 jobs (0 remaining):
+   - claude-renovate-review: 15 min
+   - dependafix: 30 min
+   - followup-checkbox-router: 10 min
+   - lint-md: 10 min
+   - pr-lifecycle: 10 min (both jobs)
+   - saml-sso-registration: 10 min
+   - ship-status-audit: 10 min
+   - super-linter: 30 min
+   - update-agent-creator-data: 15 min
+
+3. Workflow validation status: **PASSING** (Invalid: 0, Missing timeout: 0)
+4. Test suite status: 552/592 passing (40 failures in unrelated business logic tests)
+
+**Root Cause of Failures:** Multiple workflows had been merged/corrupted by prior agent sessions, causing duplicate keys (types:, if:, permissions fields, etc.) and orphaned code fragments. The repository configuration initially excluded node_modules, .git, WR issues/pending, transcripts, and research/raw from linting, but the workflows themselves were not being validated until this session.
+
+**Self-Healing Fix / Learned Lesson:**
+- **Duplicate key corruption pattern:** When YAML files are merged manually or via git conflicts improperly resolved, duplicate top-level keys appear silently and only surface at YAML parse time. A test that dry-runs `npx js-yaml workflows/*.yml` before accepting a PR would have caught these 8 errors before they merged.
+- **Workflow validation must be CI-required:** Added timeout-minutes to every job to prevent silent hangs. Workflows without timeouts can run indefinitely and consume CI minutes.
+- **Tools used this session:** `npm run workflows:validate` (automation-doctor.js), direct file `Read`/`Edit`/`Write` for targeted repairs, `Bash` for git add/commit and test running. No agent delegation used — single-line repairs are too fast to warrant subagent overhead.
+- **Layers matter:** Fixing workflows first (0 dependencies) before lint (depends on valid YAML) before tests (depends on deps) prevented cascading failures.
+
+**Still Open (P0/P1):**
+- WR-A2: state.json is empty (`{}`) — state engine not persisting. Requires tracing engines/runner-orchestrator writes and adding post-success guard to CI.
+- WR-A3: Three workflows call missing scripts — agent-fallback.yml → call-cursor-api.sh, ship-to-market.yml → record.js, vine-to-marketplace.yml → index.js. Fix: either restore scripts or comment-out per COMMENT-DONT-DELETE.
+- 40 test failures remain in business logic (auto-resolve-mechanical-conflicts, checkbox-diff, credential-autonomy-agent, etc.) but tests now run completely.
+
+**Next Action:** Fix WR-A3 dead script paths (quick grep + edit), then trace WR-A2 state engine and add CI guard. After that, push full branch and open PR for review. The markdown lint errors (800+) can be addressed in a follow-up maintenance PR — the critical path is green workflows + green tests first.
+
