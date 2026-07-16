@@ -25,3 +25,63 @@ labels:
     color: 0366d6
     description: Issue auto-diagnosed by the daily-diagnostic-audit cron.
     axis: diagnostic
+
+  - name: bito-ai
+    color: 6f42c1
+    description: Issue or PR related to Bito AI integration.
+
+  - name: bito-ai:review
+    color: 6f42c1
+    description: Bito AI review in progress or completed.
+
+  - name: bito-ai:changes-needed
+    color: d73a49
+    description: Bito AI review flagged changes needed.
+
+  - name: weekly-research
+    color: 0366d6
+    description: Weekly research task or tracking.
+
+  - name: wr:in-progress
+    color: 0e8a16
+    description: Work request in progress.
+
+  - name: deep-research
+    color: fbca04
+    description: Deep research work request.
+
+  - name: openrouter
+    color: 6f42c1
+    description: OpenRouter integration or task.
+
+  - name: role:orchestrator
+    color: a2eeef
+    description: Orchestrator role assignment.
+
+  - name: quick
+    color: cccccc
+    description: Quick work request variant.
+
+  - name: OpenHands
+    color: cccccc
+    description: OpenHands system work request.
+
+  - name: wr:retrigger-attempts-1
+    color: fbca04
+    description: WR auto-retry flag (1st attempt).
+
+  - name: wr:retrigger-attempts-2
+    color: fbca04
+    description: WR auto-retry flag (2nd attempt).
+
+  - name: wr:retrigger-attempts-3
+    color: d73a49
+    description: WR auto-retry flag (3rd attempt, escalated).
+
+  - name: wr-stuck
+    color: d73a49
+    description: WR processing stuck, needs intervention.
+
+  - name: wr:reset
+    color: fbca04
+    description: Force WR PR creation (bypass existing PR guard).

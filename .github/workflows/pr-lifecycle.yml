@@ -81,7 +81,7 @@ on:
       - "Lint Markdown (lint-md)"
       - "No Root Junk"
       - "No-Destroy Guard"
-      - "SAML SSO Registration"
+      - "SAML SSO Registration Check"
       - "Secrets Map"
       - "Semgrep SAST"
       - "SEO + A11y Guard"

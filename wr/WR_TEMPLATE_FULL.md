@@ -16,6 +16,13 @@
 
 <!-- Proposed approach / design sketch. Alternatives considered. -->
 
+## Competitor & Pricing Intelligence (if applicable)
+
+For work involving competitor research and pricing analysis:
+- List actual prices in formats like "$99-299/month", not vague labels like "Paid tiers"
+- If a competitor's price is unknown, write "Pricing data pending — competitive benchmark research required."
+- Do not ship incomplete competitive intelligence
+
 ## Acceptance Criteria
 
 - [ ] Change delivers the described behavior end-to-end
