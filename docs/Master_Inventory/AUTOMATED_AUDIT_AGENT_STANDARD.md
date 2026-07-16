@@ -27,16 +27,16 @@ This standard defines the architecture, toolchain, workflows, and behavioral con
 
 ## 3. Agent Taxonomy
 
-| Agent | Trigger | Primary Role |
-|-------|---------|--------------|
-| **Security Scanner** | Push, PR, schedule | SAST, secret scanning, dependency CVEs |
-| **Code Quality Agent** | Push, PR | Lint, complexity, dead code, style drift |
-| **Dependency Watcher** | Schedule (daily) | New CVEs, outdated packages, license drift |
-| **Config Drift Detector** | Push, schedule | Env var drift, IaC diff, config schema violations |
-| **Compliance Auditor** | Schedule (weekly) | OWASP, CWE, HIPAA, SOC2 mapping |
-| **Performance Regression Detector** | Push, PR | Bundle size, Lighthouse, DB query cost |
-| **Remediation Bot** | Alert from any agent | Auto-fix PRs, dependency bumps |
-| **Incident Responder** | P0/P1 alert | Rollback, quarantine, stakeholder notify |
+| Agent                               | Trigger              | Primary Role                                      |
+| ----------------------------------- | -------------------- | ------------------------------------------------- |
+| **Security Scanner**                | Push, PR, schedule   | SAST, secret scanning, dependency CVEs            |
+| **Code Quality Agent**              | Push, PR             | Lint, complexity, dead code, style drift          |
+| **Dependency Watcher**              | Schedule (daily)     | New CVEs, outdated packages, license drift        |
+| **Config Drift Detector**           | Push, schedule       | Env var drift, IaC diff, config schema violations |
+| **Compliance Auditor**              | Schedule (weekly)    | OWASP, CWE, HIPAA, SOC2 mapping                   |
+| **Performance Regression Detector** | Push, PR             | Bundle size, Lighthouse, DB query cost            |
+| **Remediation Bot**                 | Alert from any agent | Auto-fix PRs, dependency bumps                    |
+| **Incident Responder**              | P0/P1 alert          | Rollback, quarantine, stakeholder notify          |
 
 ---
 
@@ -53,11 +53,11 @@ on:
     branches: ["**"]
   pull_request:
   schedule:
-    - cron: "0 */4 * * *"    # full scan every 4 hours
+    - cron: "0 */4 * * *" # full scan every 4 hours
 
 concurrency:
   group: audit-${{ github.ref }}
-  cancel-in-progress: false  # never cancel security scans
+  cancel-in-progress: false # never cancel security scans
 
 jobs:
   sast:
@@ -147,17 +147,17 @@ jobs:
 
 Every Revvel application must enable the following Semgrep rule packs:
 
-| Rule Pack | Coverage |
-|-----------|---------|
-| `p/owasp-top-ten` | OWASP A01–A10 |
-| `p/nodejs` | Node.js-specific vulnerabilities |
-| `p/typescript` | TypeScript type safety and injection |
-| `p/secrets` | Hardcoded credentials and tokens |
-| `p/jwt` | JWT misconfiguration |
-| `p/sql-injection` | SQL injection patterns |
-| `p/xss` | Cross-site scripting |
-| `p/command-injection` | Shell injection |
-| `p/prototype-pollution` | Prototype pollution |
+| Rule Pack               | Coverage                             |
+| ----------------------- | ------------------------------------ |
+| `p/owasp-top-ten`       | OWASP A01–A10                        |
+| `p/nodejs`              | Node.js-specific vulnerabilities     |
+| `p/typescript`          | TypeScript type safety and injection |
+| `p/secrets`             | Hardcoded credentials and tokens     |
+| `p/jwt`                 | JWT misconfiguration                 |
+| `p/sql-injection`       | SQL injection patterns               |
+| `p/xss`                 | Cross-site scripting                 |
+| `p/command-injection`   | Shell injection                      |
+| `p/prototype-pollution` | Prototype pollution                  |
 
 ---
 
@@ -169,16 +169,16 @@ Every Revvel application must enable the following Semgrep rule packs:
 # .quality-gate.yml — checked by the quality agent
 thresholds:
   complexity:
-    max_cyclomatic: 15          # Per-function cyclomatic complexity
-    max_cognitive: 20           # Cognitive complexity (sonar method)
+    max_cyclomatic: 15 # Per-function cyclomatic complexity
+    max_cognitive: 20 # Cognitive complexity (sonar method)
   coverage:
-    min_line_coverage: 80       # %
-    min_branch_coverage: 70     # %
+    min_line_coverage: 80 # %
+    min_branch_coverage: 70 # %
   duplication:
-    max_duplicated_blocks: 3    # Per-file duplicate blocks
+    max_duplicated_blocks: 3 # Per-file duplicate blocks
   bundle_size:
-    max_js_kb: 500              # Total JS bundle (gzipped)
-    max_increase_kb: 20         # Max increase per PR
+    max_js_kb: 500 # Total JS bundle (gzipped)
+    max_increase_kb: 20 # Max increase per PR
   debt:
     max_new_issues_per_pr: 5
 ```
@@ -187,33 +187,33 @@ thresholds:
 
 ```yaml
 # Runs on every PR
-  quality-gate:
-    name: Code Quality Gate
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+quality-gate:
+  name: Code Quality Gate
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-      - name: ESLint with quality rules
-        run: |
-          pnpm dlx eslint . \
-            --max-warnings 0 \
-            --format json \
-            --output-file eslint-report.json || true
+    - name: ESLint with quality rules
+      run: |
+        pnpm dlx eslint . \
+          --max-warnings 0 \
+          --format json \
+          --output-file eslint-report.json || true
 
-      - name: Complexity analysis
-        run: |
-          npx complexity-report \
-            --format json \
-            --output complexity-report.json \
-            src/
+    - name: Complexity analysis
+      run: |
+        npx complexity-report \
+          --format json \
+          --output complexity-report.json \
+          src/
 
-      - name: Evaluate quality gate
-        run: python scripts/audit/quality_gate.py \
-          --eslint eslint-report.json \
-          --complexity complexity-report.json \
-          --config .quality-gate.yml
+    - name: Evaluate quality gate
+      run: python scripts/audit/quality_gate.py \
+        --eslint eslint-report.json \
+        --complexity complexity-report.json \
+        --config .quality-gate.yml
 ```
 
 ---
@@ -228,7 +228,7 @@ name: Dependency Vulnerability Watch
 
 on:
   schedule:
-    - cron: "0 8 * * *"      # daily at 8am UTC
+    - cron: "0 8 * * *" # daily at 8am UTC
   workflow_dispatch:
 
 jobs:
@@ -299,14 +299,14 @@ Required in reports: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC.
 
 ### 7.1. What Drift Detection Covers
 
-| Category | What is Monitored |
-|----------|-------------------|
+| Category              | What is Monitored                                           |
+| --------------------- | ----------------------------------------------------------- |
 | Environment variables | New `.env.example` keys without corresponding GitHub Secret |
-| IaC (Terraform) | Planned changes vs. applied state (`terraform plan` diff) |
-| Docker images | Base image versions, added `RUN` layers |
-| GitHub Actions | Pinned action SHA vs. latest published SHA |
-| Security headers | Helmet.js config vs. `SECURITY_STANDARD.md` requirements |
-| Dependency lock file | Unexpected changes to `pnpm-lock.yaml` |
+| IaC (Terraform)       | Planned changes vs. applied state (`terraform plan` diff)   |
+| Docker images         | Base image versions, added `RUN` layers                     |
+| GitHub Actions        | Pinned action SHA vs. latest published SHA                  |
+| Security headers      | Helmet.js config vs. `SECURITY_STANDARD.md` requirements    |
+| Dependency lock file  | Unexpected changes to `pnpm-lock.yaml`                      |
 
 ### 7.2. Drift Detection Workflow
 
@@ -358,7 +358,7 @@ All GitHub Actions must be pinned to a full commit SHA, not a mutable tag:
 - uses: actions/checkout@v4
 
 # CORRECT
-- uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+- uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 ```
 
 The drift detector will fail CI on any action reference using a mutable tag (`v4`, `latest`, `main`, etc.).
@@ -371,38 +371,38 @@ The drift detector will fail CI on any action reference using a mutable tag (`v4
 
 The compliance auditor maps every finding to OWASP and CWE identifiers:
 
-| OWASP ID | Title | Agent | Rule Set |
-|----------|-------|-------|---------|
-| A01:2021 | Broken Access Control | Security Scanner | `p/owasp-top-ten` |
-| A02:2021 | Cryptographic Failures | Security Scanner | Semgrep crypto rules |
-| A03:2021 | Injection | Security Scanner | `p/sql-injection`, `p/xss` |
-| A04:2021 | Insecure Design | Quality Agent | Architecture review |
-| A05:2021 | Security Misconfiguration | Config Drift | Header/CORS audit |
-| A06:2021 | Vulnerable Components | Dependency Watcher | OSV, pnpm audit |
-| A07:2021 | Auth Failures | Security Scanner | `p/jwt`, auth rules |
-| A08:2021 | Software Integrity Failures | Config Drift | Action SHA pins |
-| A09:2021 | Logging Failures | Compliance Auditor | Log presence check |
-| A10:2021 | SSRF | Security Scanner | Semgrep SSRF rules |
+| OWASP ID | Title                       | Agent              | Rule Set                   |
+| -------- | --------------------------- | ------------------ | -------------------------- |
+| A01:2021 | Broken Access Control       | Security Scanner   | `p/owasp-top-ten`          |
+| A02:2021 | Cryptographic Failures      | Security Scanner   | Semgrep crypto rules       |
+| A03:2021 | Injection                   | Security Scanner   | `p/sql-injection`, `p/xss` |
+| A04:2021 | Insecure Design             | Quality Agent      | Architecture review        |
+| A05:2021 | Security Misconfiguration   | Config Drift       | Header/CORS audit          |
+| A06:2021 | Vulnerable Components       | Dependency Watcher | OSV, pnpm audit            |
+| A07:2021 | Auth Failures               | Security Scanner   | `p/jwt`, auth rules        |
+| A08:2021 | Software Integrity Failures | Config Drift       | Action SHA pins            |
+| A09:2021 | Logging Failures            | Compliance Auditor | Log presence check         |
+| A10:2021 | SSRF                        | Security Scanner   | Semgrep SSRF rules         |
 
 ### 8.2. Compliance Report Generation
 
 ```yaml
 # Weekly compliance report
-  compliance-report:
-    name: Weekly Compliance Report
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+compliance-report:
+  name: Weekly Compliance Report
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
 
-      - name: Generate OWASP compliance matrix
-        run: python scripts/audit/compliance_report.py \
-          --sarif-dir .sarif/ \
-          --output reports/compliance-$(date +%Y-W%V).md
+    - name: Generate OWASP compliance matrix
+      run: python scripts/audit/compliance_report.py \
+        --sarif-dir .sarif/ \
+        --output reports/compliance-$(date +%Y-W%V).md
 
-      - name: Post summary to PR/Slack
-        run: python scripts/audit/notify.py \
-          --report reports/compliance-$(date +%Y-W%V).md \
-          --channel osint-alerts
+    - name: Post summary to PR/Slack
+      run: python scripts/audit/notify.py \
+        --report reports/compliance-$(date +%Y-W%V).md \
+        --channel osint-alerts
 ```
 
 ---
@@ -411,33 +411,33 @@ The compliance auditor maps every finding to OWASP and CWE identifiers:
 
 ### 9.1. Monitored Metrics
 
-| Metric | Tool | Threshold |
-|--------|------|-----------|
-| JS bundle size | `size-limit` | Max +20 KB per PR |
-| Lighthouse Performance | `lhci` | Min score 85 |
-| Lighthouse Accessibility | `lhci` | Min score 90 |
-| Core Web Vitals (LCP) | `lhci` | Max 2.5s |
-| DB query cost | `EXPLAIN ANALYZE` | Max +20% per query |
-| API response time | k6 / autocannon | Max p95 500ms |
+| Metric                   | Tool              | Threshold          |
+| ------------------------ | ----------------- | ------------------ |
+| JS bundle size           | `size-limit`      | Max +20 KB per PR  |
+| Lighthouse Performance   | `lhci`            | Min score 85       |
+| Lighthouse Accessibility | `lhci`            | Min score 90       |
+| Core Web Vitals (LCP)    | `lhci`            | Max 2.5s           |
+| DB query cost            | `EXPLAIN ANALYZE` | Max +20% per query |
+| API response time        | k6 / autocannon   | Max p95 500ms      |
 
 ```yaml
 # In CI workflow
-  perf-check:
-    name: Performance Regression Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+perf-check:
+  name: Performance Regression Check
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm build
 
-      - name: Check bundle size
-        run: pnpm exec size-limit --json > reports/bundle-size.json
+    - name: Check bundle size
+      run: pnpm exec size-limit --json > reports/bundle-size.json
 
-      - name: Lighthouse CI
-        run: |
-          pnpm dlx @lhci/cli autorun \
-            --config=lighthouserc.json \
-            --upload.target=temporary-public-storage
+    - name: Lighthouse CI
+      run: |
+        pnpm dlx @lhci/cli autorun \
+          --config=lighthouserc.json \
+          --upload.target=temporary-public-storage
 ```
 
 ---
@@ -523,13 +523,13 @@ Dependabot handles routine dependency bumps (see `DEPENDABOT_STANDARD.md`). The 
 
 ### 11.1. Alert Routing
 
-| Severity | Channel | SLA |
-|----------|---------|-----|
-| P0 Critical | PagerDuty + Slack `#security-p0` | Immediate (< 5 min) |
-| P1 High | Slack `#security-alerts` + GitHub Issue | < 1 hour |
-| P2 Medium | GitHub Issue | < 24 hours |
-| P3 Low | Weekly digest email | Weekly |
-| Compliance | `#compliance-reports` Slack | Weekly |
+| Severity    | Channel                                 | SLA                 |
+| ----------- | --------------------------------------- | ------------------- |
+| P0 Critical | PagerDuty + Slack `#security-p0`        | Immediate (< 5 min) |
+| P1 High     | Slack `#security-alerts` + GitHub Issue | < 1 hour            |
+| P2 Medium   | GitHub Issue                            | < 24 hours          |
+| P3 Low      | Weekly digest email                     | Weekly              |
+| Compliance  | `#compliance-reports` Slack             | Weekly              |
 
 ### 11.2. Alert Schema
 
@@ -583,26 +583,26 @@ The **Ralph Loop** (`templates/cicd/ralph-loop.yml`) is the CI implementation of
 
 ```yaml
 # In any audit job — standardized failure handler
-  on-failure:
-    if: failure()
-    needs: [sast, secret-scan, dependency-audit]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/github-script@v8
-        with:
-          script: |
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `[RALPH] Audit failure in run #${context.runId}`,
-              labels: ['ralph-loop', 'auto-fix', 'copilot'],
-              assignees: ['copilot'],
-              body: `## Audit Agent Failure\n\n` +
-                    `**Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n` +
-                    `**Commit:** ${context.sha}\n` +
-                    `**Branch:** ${context.ref}\n\n` +
-                    `## Reproduction\n\`\`\`bash\ngit checkout ${context.sha}\npnpm install\nnpx semgrep --config p/owasp-top-ten src/\n\`\`\``
-            });
+on-failure:
+  if: failure()
+  needs: [sast, secret-scan, dependency-audit]
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/github-script@v8
+      with:
+        script: |
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `[RALPH] Audit failure in run #${context.runId}`,
+            labels: ['ralph-loop', 'auto-fix', 'copilot'],
+            assignees: ['copilot'],
+            body: `## Audit Agent Failure\n\n` +
+                  `**Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}\n` +
+                  `**Commit:** ${context.sha}\n` +
+                  `**Branch:** ${context.ref}\n\n` +
+                  `## Reproduction\n\`\`\`bash\ngit checkout ${context.sha}\npnpm install\nnpx semgrep --config p/owasp-top-ten src/\n\`\`\``
+          });
 ```
 
 ---
@@ -635,12 +635,12 @@ reports/
 
 ## 14. Required GitHub Secrets
 
-| Secret Name | Purpose |
-|-------------|---------|
-| `SECURITY_SLACK_WEBHOOK` | Security alert channel |
-| `PAGERDUTY_INTEGRATION_KEY` | P0 critical escalation |
-| `GITHUB_TOKEN` | Auto-fix PR creation (built-in) |
-| `SEMGREP_APP_TOKEN` | Semgrep Cloud dashboard (optional) |
+| Secret Name                 | Purpose                            |
+| --------------------------- | ---------------------------------- |
+| `SECURITY_SLACK_WEBHOOK`    | Security alert channel             |
+| `PAGERDUTY_INTEGRATION_KEY` | P0 critical escalation             |
+| `GITHUB_TOKEN`              | Auto-fix PR creation (built-in)    |
+| `SEMGREP_APP_TOKEN`         | Semgrep Cloud dashboard (optional) |
 
 ---
 

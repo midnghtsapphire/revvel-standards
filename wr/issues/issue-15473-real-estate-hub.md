@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-07  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-07  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -105,18 +104,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -128,6 +128,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28862675013.md`
 
 # WR-Ready Research Packet: Real Estate Hub
@@ -139,6 +140,7 @@ Source packet: `docs/research-engine/run-28862675013.md`
 Build a **niche-focused real estate investment hub** targeting individual real estate investors with a freemium SaaS model. Start with manual property data entry to avoid costly MLS integrations, then expand to automated data feeds once product-market fit is validated.
 
 **Key Decisions:**
+
 - **Target Market**: Individual real estate investors managing 1-10 properties
 - **MVP Features**: Property portfolio tracking, basic ROI calculations, manual data entry
 - **Monetization**: Freemium model - Free for 1 property, $29/month for unlimited
@@ -148,26 +150,31 @@ Build a **niche-focused real estate investment hub** targeting individual real e
 ## 2. Audience We Are Going After and Why
 
 **Primary Target**: Individual real estate investors (1-10 properties)
+
 - **Market Size**: US real estate software market growing at 9.7% CAGR through 2030 ([Grand View Research](https://www.grandviewresearch.com/industry-analysis/real-estate-software-market))
-- **Pain Points**: 
+- **Pain Points**:
   - Fragmented tools across spreadsheets, property sites, and financial apps
   - Manual tracking of property values, equity, and ROI
   - Lack of integrated investment analysis tools
 - **Why This Segment**: Lower regulatory barriers than agent-focused tools, clearer monetization path
 
 **Secondary Target**: Small property management companies (10-50 units)
+
 - Future expansion opportunity after MVP validation
 
 ## 3. Marketing and SEO Plan
 
 ### SEO Strategy
+
 **Primary Keywords** (Est. 1,000-10,000 monthly searches):
+
 - "real estate investment tracker"
 - "property portfolio management software"
 - "rental property calculator"
 - "real estate ROI calculator"
 
 **Content Hub Strategy**:
+
 1. **Educational Content**:
    - "How to Calculate ROI on Rental Properties"
    - "Real Estate Investment Metrics Every Investor Should Track"
@@ -182,6 +189,7 @@ Build a **niche-focused real estate investment hub** targeting individual real e
    - Meta: "Free property portfolio tracker for real estate investors. Monitor values, equity, and returns. Start with 1 property free."
 
 ### Marketing Channels
+
 - **Content Marketing**: SEO-optimized blog targeting investment keywords
 - **LinkedIn Ads**: Target real estate investor groups
 - **BiggerPockets Community**: Engage in forums, sponsor content
@@ -191,20 +199,20 @@ Build a **niche-focused real estate investment hub** targeting individual real e
 
 ### Direct Competitors
 
-| Platform | Pricing | Key Features | Weakness |
-|----------|---------|--------------|----------|
-| **Stessa** | Free tier, Pro $20/mo | Automated bookkeeping, tax reports | Limited portfolio analytics |
-| **Buildium** | $52-$460/mo | Full property management | Overkill for small investors |
-| **PropertyRadar** | $99/mo | Lead generation focus | Not investment-focused |
-| **Rentec Direct** | $35-$75/mo | Tenant management | Complex for investors |
+| Platform          | Pricing               | Key Features                       | Weakness                     |
+| ----------------- | --------------------- | ---------------------------------- | ---------------------------- |
+| **Stessa**        | Free tier, Pro $20/mo | Automated bookkeeping, tax reports | Limited portfolio analytics  |
+| **Buildium**      | $52-$460/mo           | Full property management           | Overkill for small investors |
+| **PropertyRadar** | $99/mo                | Lead generation focus              | Not investment-focused       |
+| **Rentec Direct** | $35-$75/mo            | Tenant management                  | Complex for investors        |
 
 ### Open Source Alternatives
 
-| Repository | Stars | Last Update | License | Viability |
-|------------|-------|-------------|---------|-----------|
-| [PropertyWebBuilder](https://github.com/etewiah/property_web_builder) | ~500 | 2023 | MIT | Low - Rails-based, limited features |
-| [OpenRealEstate](https://github.com/open-real-estate/openrealestate) | 1.1k | 2023 | GPL v3 | Medium - PHP, dated UI |
-| [Estatery](https://github.com/harshgoel05/Estatery) | 200+ | 2024 | MIT | Low - Basic listing only |
+| Repository                                                            | Stars | Last Update | License | Viability                           |
+| --------------------------------------------------------------------- | ----- | ----------- | ------- | ----------------------------------- |
+| [PropertyWebBuilder](https://github.com/etewiah/property_web_builder) | ~500  | 2023        | MIT     | Low - Rails-based, limited features |
+| [OpenRealEstate](https://github.com/open-real-estate/openrealestate)  | 1.1k  | 2023        | GPL v3  | Medium - PHP, dated UI              |
+| [Estatery](https://github.com/harshgoel05/Estatery)                   | 200+  | 2024        | MIT     | Low - Basic listing only            |
 
 **Moat Opportunity**: No strong open-source investment-focused solution exists. Commercial competitors either too expensive or feature-bloated for individual investors.
 
@@ -213,15 +221,19 @@ Build a **niche-focused real estate investment hub** targeting individual real e
 ### Key Pain Points from Communities
 
 **Reddit r/RealEstate**:
+
 > "Listings are often outdated or duplicated across sites. It's hard to know what's real."
 
 **BiggerPockets Forums**:
+
 > "Why can't I just do everything in one place—search, apply, sign, and pay?"
 
 **App Store Reviews (Zillow)**:
+
 > "The app crashes or lags when I try to filter by price or location."
 
 ### Demand Signals
+
 - Fragmented data and trust issues with existing platforms
 - Desire for end-to-end investment workflow
 - Poor mobile experiences in current solutions
@@ -230,11 +242,13 @@ Build a **niche-focused real estate investment hub** targeting individual real e
 ## 6. Factual Validation and Evidence Gaps
 
 ### Verified Facts
+
 - US real estate software market growing 9.7% CAGR ([Grand View Research](https://www.grandviewresearch.com/industry-analysis/real-estate-software-market))
 - 87% of agents use 3+ separate tools daily ([NAR Technology Survey 2023](https://www.nar.realtor/research-and-statistics/research-reports/real-estate-in-a-digital-age))
 - Stessa pricing confirmed at $20/month for Pro tier ([Stessa.com](https://www.stessa.com/pricing/))
 
 ### Critical Evidence Gaps
+
 - **MLS Integration Costs**: Cannot verify without direct vendor contact
 - **User Willingness to Pay**: Requires A/B testing or user interviews
 - **Conversion Rates**: Need live product data
@@ -243,6 +257,7 @@ Build a **niche-focused real estate investment hub** targeting individual real e
 ## 7. Build Requirements and Acceptance Gates
 
 ### MVP Requirements
+
 1. **Core Features**:
    - User authentication and profile management
    - Manual property data entry (address, purchase price, current value)
@@ -259,6 +274,7 @@ Build a **niche-focused real estate investment hub** targeting individual real e
    - Hosting: Vercel (frontend) + Railway/Render (backend)
 
 ### Acceptance Gates
+
 - [ ] User can create account and add first property
 - [ ] Dashboard correctly calculates total portfolio value
 - [ ] Free tier limits enforced (1 property max)
@@ -270,6 +286,7 @@ Build a **niche-focused real estate investment hub** targeting individual real e
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 Review focus: Security and data validation
 - Verify all user inputs are sanitized before database storage
@@ -279,6 +296,7 @@ Review focus: Security and data validation
 ```
 
 ### For OpenRouter
+
 ```
 Performance review priorities:
 - Database queries should use indexes for user_id and property_id
@@ -288,6 +306,7 @@ Performance review priorities:
 ```
 
 ### For Coderabbit
+
 ```
 Code quality checklist:
 - All API endpoints have error handling and return proper status codes
@@ -297,6 +316,7 @@ Code quality checklist:
 ```
 
 ### For Ralph Loop
+
 ```
 Architecture review:
 - Verify separation of concerns between API and business logic layers
@@ -308,6 +328,7 @@ Architecture review:
 ### Blocking Findings and Automatic Fixes
 
 **Finding 1: Missing input validation**
+
 ```javascript
 // Automatic fix
 // File: api/properties/create.js
@@ -316,39 +337,43 @@ const { address, purchasePrice } = req.body;
 
 // After:
 const { address, purchasePrice } = req.body;
-if (!address || typeof address !== 'string' || address.length < 5) {
-  return res.status(400).json({ error: 'Valid address required' });
+if (!address || typeof address !== "string" || address.length < 5) {
+  return res.status(400).json({ error: "Valid address required" });
 }
 if (!purchasePrice || purchasePrice < 0 || purchasePrice > 100000000) {
-  return res.status(400).json({ error: 'Valid purchase price required' });
+  return res.status(400).json({ error: "Valid purchase price required" });
 }
 ```
+
 **Commit message**: `fix: add input validation for property creation endpoint`
 
 **Finding 2: Missing authentication check**
+
 ```javascript
 // Automatic fix
 // File: api/properties/[id]/delete.js
 // Add at beginning of handler:
 if (!req.user || !req.user.id) {
-  return res.status(401).json({ error: 'Authentication required' });
+  return res.status(401).json({ error: "Authentication required" });
 }
 
 const property = await db.property.findUnique({ where: { id: req.params.id } });
 if (property.userId !== req.user.id) {
-  return res.status(403).json({ error: 'Unauthorized' });
+  return res.status(403).json({ error: "Unauthorized" });
 }
 ```
+
 **Commit message**: `fix: add authentication and ownership validation for property deletion`
 
 ## 9. Automatic Fix and Commit Queue
 
 ### Priority 1: Security Fixes
+
 ```bash
 git add api/properties/create.js
 git commit -m "fix: add input validation for property creation endpoint"
 
-git add api/properties/[id]/delete.js  
+git add api/properties/[id]/delete.js
 git commit -m "fix: add authentication and ownership validation for property deletion"
 
 git add middleware/auth.js
@@ -356,6 +381,7 @@ git commit -m "fix: implement rate limiting on authentication endpoints"
 ```
 
 ### Priority 2: Performance Optimizations
+
 ```bash
 git add db/migrations/add_indexes.sql
 git commit -m "perf: add database indexes for user_id and property_id lookups"
@@ -368,6 +394,7 @@ git commit -m "perf: add Redis caching for portfolio calculations"
 ```
 
 ### Priority 3: Feature Completeness
+
 ```bash
 git add components/PaymentModal.jsx
 git commit -m "feat: implement Stripe payment flow for Pro upgrades"
@@ -382,6 +409,7 @@ git commit -m "feat: add ROI calculator with cash flow analysis"
 ## 10. Labels to Apply
 
 ### Required Labels
+
 - `needs-legal-review` - MLS and data compliance requirements
 - `needs-technical-spec` - Detailed architecture documentation required
 - `high-competition-risk` - Saturated market with established players
@@ -389,12 +417,14 @@ git commit -m "feat: add ROI calculator with cash flow analysis"
 - `market-research-incomplete` - User interviews needed
 
 ### Risk Labels
+
 - `risk:market-fit` - Unvalidated user willingness to pay
 - `risk:data-freshness` - Manual data entry may limit value
 - `risk:switching-cost` - High barriers to user acquisition
 - `risk:scope-creep` - Feature requests could expand rapidly
 
 ### Process Labels
+
 - `blocked-incomplete-wr` - Core WR fields need completion
 - `needs-audience-research` - Target persona validation required
 - `seo-competitive-keyword` - High competition for primary keywords
@@ -431,6 +461,7 @@ Given the analysis, building a custom solution is recommended over forking exist
 ### Overall Confidence: 72/100
 
 **Lane Confidence Scores:**
+
 - Market Positioning (Echo): 75/100
 - SEO Demand (Noimos): 70/100
 - Competitor Intelligence (Iris): 80/100
@@ -443,12 +474,14 @@ Given the analysis, building a custom solution is recommended over forking exist
 ### Best-Scoring Idea: Niche Investment Tracker
 
 **Rationale**: The highest confidence comes from focusing on individual real estate investors rather than competing broadly with Zillow/Redfin. This segment has:
+
 - Clear pain points (fragmented tools)
 - Validated willingness to pay (Stessa at $20/mo)
 - Lower regulatory barriers than agent tools
 - Achievable differentiation through investment focus
 
 **Key Success Factors**:
+
 1. Start with manual data entry to avoid MLS costs
 2. Focus on investment metrics competitors ignore
 3. Price below Buildium but above Stessa
@@ -497,11 +530,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -517,11 +550,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

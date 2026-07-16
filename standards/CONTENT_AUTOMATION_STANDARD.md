@@ -110,25 +110,25 @@ Every repository implementing content automation must have:
 
 Set these in repository settings → Secrets and variables → Actions:
 
-| Secret | Purpose | Where to Get It |
-|---|---|---|
+| Secret               | Purpose               | Where to Get It                                  |
+| -------------------- | --------------------- | ------------------------------------------------ |
 | `OPENROUTER_API_KEY` | AI content generation | [openrouter.ai/keys](https://openrouter.ai/keys) |
 
 ### 5.2. Optional Secrets
 
-| Secret | Purpose |
-|---|---|
+| Secret              | Purpose                  |
+| ------------------- | ------------------------ |
 | `TUBEBUDDY_API_KEY` | YouTube keyword research |
-| `VIDIQ_API_KEY` | Video SEO validation |
+| `VIDIQ_API_KEY`     | Video SEO validation     |
 
 ### 5.3. Repository Variables
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `CONTENT_TARGET_AUDIENCE` | "general audience" | Who the content is for |
-| `CONTENT_BRAND_VOICE` | "professional yet approachable" | Tone guidelines |
-| `CONTENT_PRIMARY_KEYWORDS` | "" | Core SEO keywords |
-| `CONTENT_AUTO_PUBLISH` | "false" | Skip human review |
+| Variable                   | Default                         | Purpose                |
+| -------------------------- | ------------------------------- | ---------------------- |
+| `CONTENT_TARGET_AUDIENCE`  | "general audience"              | Who the content is for |
+| `CONTENT_BRAND_VOICE`      | "professional yet approachable" | Tone guidelines        |
+| `CONTENT_PRIMARY_KEYWORDS` | ""                              | Core SEO keywords      |
+| `CONTENT_AUTO_PUBLISH`     | "false"                         | Skip human review      |
 
 ---
 
@@ -136,12 +136,12 @@ Set these in repository settings → Secrets and variables → Actions:
 
 Content automation uses OpenRouter with model selection optimized per task:
 
-| Task | Model | Rationale | Cost/1k tokens |
-|---|---|---|---|
-| Topic ideation & research | `anthropic/claude-opus-4` | Best reasoning, research capability | $15 |
-| Content generation (draft) | `deepseek/deepseek-chat` | Cost-effective, good quality | $0.14 |
-| Editing & refinement | `anthropic/claude-sonnet-4.6` | Excellent editing, tone control | $3 |
-| Fact-checking | `openai/gpt-5.4` | Strong verification | $2.50 |
+| Task                       | Model                         | Rationale                           | Cost/1k tokens |
+| -------------------------- | ----------------------------- | ----------------------------------- | -------------- |
+| Topic ideation & research  | `anthropic/claude-opus-4`     | Best reasoning, research capability | $15            |
+| Content generation (draft) | `deepseek/deepseek-chat`      | Cost-effective, good quality        | $0.14          |
+| Editing & refinement       | `anthropic/claude-sonnet-4.6` | Excellent editing, tone control     | $3             |
+| Fact-checking              | `openai/gpt-5.4`              | Strong verification                 | $2.50          |
 
 **Cost Example:** A 1500-word blog post uses ~10k tokens total = ~$0.30 per post
 
@@ -240,6 +240,7 @@ content-automation-output/
 ### 9.3. Weekly Content Calendar (Scheduled)
 
 Every Sunday 09:00 UTC:
+
 - Workflow runs automatically
 - Generates 2-4 blog post ideas
 - Creates content calendar for next week
@@ -251,13 +252,13 @@ Every Sunday 09:00 UTC:
 
 Content Automation integrates with:
 
-| Skill | Integration Point |
-|---|---|
-| **noimosai** | Marketing strategy, distribution planning |
-| **seo-metadata** | Technical SEO implementation |
-| **eeat-trust-authority** | Author credibility, schema markup |
-| **product-pipeline** | Auto-generate product docs |
-| **openclaw-eeat** | Content distribution, authority building |
+| Skill                    | Integration Point                         |
+| ------------------------ | ----------------------------------------- |
+| **noimosai**             | Marketing strategy, distribution planning |
+| **seo-metadata**         | Technical SEO implementation              |
+| **eeat-trust-authority** | Author credibility, schema markup         |
+| **product-pipeline**     | Auto-generate product docs                |
+| **openclaw-eeat**        | Content distribution, authority building  |
 
 ---
 
@@ -292,18 +293,23 @@ Content Automation integrates with:
 ## 12. Troubleshooting
 
 ### Content is too generic
+
 **Solution:** Add more context in brief, specify keywords explicitly, run second refinement pass
 
 ### Facts are incorrect
+
 **Solution:** Enable fact-checking gate, add authoritative sources, use GPT-5.4 for verification
 
 ### SEO score is low
+
 **Solution:** Run keyword research first, specify primary/secondary keywords, use SEO templates
 
 ### Tone doesn't match brand
+
 **Solution:** Update `CONTENT_BRAND_VOICE` variable, include example content in brief
 
 ### API rate limit exceeded
+
 **Solution:** Implement exponential backoff, queue requests, use lower-tier models
 
 ---
@@ -314,12 +320,12 @@ Content Automation integrates with:
 
 Assuming 20 blog posts + 40 social posts + 4 newsletters per month:
 
-| Item | Cost |
-|---|---|
-| OpenRouter API | $10-15 |
-| TubeBuddy (optional) | $0-9 |
-| VidIQ (optional) | $0-7.50 |
-| **Total** | **$10-32/month** |
+| Item                 | Cost             |
+| -------------------- | ---------------- |
+| OpenRouter API       | $10-15           |
+| TubeBuddy (optional) | $0-9             |
+| VidIQ (optional)     | $0-7.50          |
+| **Total**            | **$10-32/month** |
 
 **ROI:** Saves 80-100 hours of manual writing per month (~$2,000-4,000 value at $25/hr)
 
@@ -337,31 +343,34 @@ Assuming 20 blog posts + 40 social posts + 4 newsletters per month:
 
 Track these metrics to measure content automation effectiveness:
 
-| Metric | Target | How to Measure |
-|---|---|---|
-| Generation time | < 15 min/piece | Workflow duration |
-| Cost per piece | < $0.50 | OpenRouter API costs |
-| Quality score | > 70/100 | Internal rubric |
-| SEO pass rate | 100% | Automated checks |
-| Edit time saved | > 80% | Before/after comparison |
-| Publish rate | 10+ pieces/week | GitHub commits |
-| Content ROI | > 10x cost | Traffic × value |
+| Metric          | Target          | How to Measure          |
+| --------------- | --------------- | ----------------------- |
+| Generation time | < 15 min/piece  | Workflow duration       |
+| Cost per piece  | < $0.50         | OpenRouter API costs    |
+| Quality score   | > 70/100        | Internal rubric         |
+| SEO pass rate   | 100%            | Automated checks        |
+| Edit time saved | > 80%           | Before/after comparison |
+| Publish rate    | 10+ pieces/week | GitHub commits          |
+| Content ROI     | > 10x cost      | Traffic × value         |
 
 ---
 
 ## 15. Maintenance
 
 ### Weekly
+
 - Review generated content quality
 - Update templates based on performance
 - Refresh keyword lists
 
 ### Monthly
+
 - Audit model selection (cost vs quality)
 - Update brand voice guidelines
 - Review automation rules
 
 ### Quarterly
+
 - Analyze content performance (traffic, engagement)
 - Optimize prompts and templates
 - Update OpenRouter model selections
@@ -411,4 +420,4 @@ Before deploying content automation:
 
 ---
 
-*This standard was created to implement the content creation automation requirements outlined in issue [WR] Add to revvel-standards to create automation. It provides a complete, production-ready system for AI-powered content generation while maintaining quality through automated gates and human review processes.*
+_This standard was created to implement the content creation automation requirements outlined in issue [WR] Add to revvel-standards to create automation. It provides a complete, production-ready system for AI-powered content generation while maintaining quality through automated gates and human review processes._

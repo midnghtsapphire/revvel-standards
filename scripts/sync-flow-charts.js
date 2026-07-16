@@ -32,7 +32,11 @@ const path = require("path");
 
 const REPO_ROOT = process.env.REPO_ROOT || process.cwd();
 const DRY_RUN = process.env.DRY_RUN === "true";
-const FLOW_CHARTS_DIR = path.join(REPO_ROOT, "docs", "Master Revvel-Standards Flow Charts");
+const FLOW_CHARTS_DIR = path.join(
+  REPO_ROOT,
+  "docs",
+  "Master Revvel-Standards Flow Charts",
+);
 const DOCS_DIR = path.join(REPO_ROOT, "docs");
 
 const TODAY = new Date().toISOString().split("T")[0];
@@ -75,7 +79,7 @@ async function walk(dir, filter) {
   try {
     entries = await fs.promises.readdir(dir, { withFileTypes: true });
   } catch (err) {
-    if (err.code === 'ENOENT' || err.code === 'ENOTDIR') return [];
+    if (err.code === "ENOENT" || err.code === "ENOTDIR") return [];
     throw err;
   }
 
@@ -118,7 +122,9 @@ function readFile(filePath) {
  */
 function writeFile(filePath, content) {
   if (DRY_RUN) {
-    console.log(`  [DRY_RUN] Would write: ${path.relative(REPO_ROOT, filePath)}`);
+    console.log(
+      `  [DRY_RUN] Would write: ${path.relative(REPO_ROOT, filePath)}`,
+    );
     return;
   }
   fs.writeFileSync(filePath, content, "utf8");
@@ -134,7 +140,9 @@ async function scanDocs() {
   const flowChartsPrefix = FLOW_CHARTS_DIR + path.sep;
   const docsMd = allMd.filter((f) => !f.startsWith(flowChartsPrefix));
   const relPaths = docsMd.map((f) => path.relative(REPO_ROOT, f));
-  console.log(`📂 Found ${relPaths.length} .md files in repo (excluding flow charts folder)`);
+  console.log(
+    `📂 Found ${relPaths.length} .md files in repo (excluding flow charts folder)`,
+  );
   return relPaths;
 }
 
@@ -192,7 +200,10 @@ function updateMetaBlock(filePath, docCount, toolCount) {
   if (startIdx === -1 || endIdx === -1) return false;
 
   const newBlock = buildMetaBlock(docCount, toolCount);
-  const updated = original.slice(0, startIdx) + newBlock + original.slice(endIdx + META_END.length);
+  const updated =
+    original.slice(0, startIdx) +
+    newBlock +
+    original.slice(endIdx + META_END.length);
 
   if (updated === original) return false;
 
@@ -213,7 +224,10 @@ function updateSyncFooter(filePath) {
 
   if (!footerPattern.test(original)) return false;
 
-  const updated = original.replace(/\*Last auto-sync: \d{4}-\d{2}-\d{2}\*/g, newFooter);
+  const updated = original.replace(
+    /\*Last auto-sync: \d{4}-\d{2}-\d{2}\*/g,
+    newFooter,
+  );
   if (updated === original) return false;
 
   writeFile(filePath, updated);
@@ -268,7 +282,10 @@ function patchBrokenRefs(filePath, basenameMap) {
 
     // Security: ensure the resolved path stays within the repository root
     const repoRootNormalized = path.resolve(REPO_ROOT) + path.sep;
-    if (!resolvedPath.startsWith(repoRootNormalized) && resolvedPath !== path.resolve(REPO_ROOT)) {
+    if (
+      !resolvedPath.startsWith(repoRootNormalized) &&
+      resolvedPath !== path.resolve(REPO_ROOT)
+    ) {
       console.warn(`  ⚠️  Skipping link outside repo root: ${linkHref}`);
       continue;
     }
@@ -303,7 +320,7 @@ function updateCsvSync() {
   const csvPath = path.join(FLOW_CHARTS_DIR, "TOOLS_CATALOG.csv");
   if (!fs.existsSync(csvPath)) return false;
 
-  let content = readFile(csvPath);
+  const content = readFile(csvPath);
   // The pattern to look for: any date in the header or metadata row
   // We just update a comment line at the top if present, otherwise skip
   const datePattern = /^(#\s*Last sync:\s*)\d{4}-\d{2}-\d{2}/m;

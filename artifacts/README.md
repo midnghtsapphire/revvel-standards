@@ -27,6 +27,7 @@ Output Artifacts + Distribution + Monetization
 ## Artifact Types
 
 ### 1. Website
+
 - Landing page for the content
 - Video hosting integration
 - Lead capture forms
@@ -36,6 +37,7 @@ Output Artifacts + Distribution + Monetization
 **Output:** `artifacts/output/website/`
 
 ### 2. CLI Tool
+
 - Command-line interface for content generation
 - Script generation
 - Batch processing
@@ -44,6 +46,7 @@ Output Artifacts + Distribution + Monetization
 **Output:** `artifacts/output/cli/`
 
 ### 3. MCP Server
+
 - Model Context Protocol integration
 - AI agent tool access
 - Content generation via AI
@@ -52,6 +55,7 @@ Output Artifacts + Distribution + Monetization
 **Output:** `artifacts/output/mcp/`
 
 ### 4. API
+
 - REST API for content generation
 - Webhook integrations
 - Third-party integrations
@@ -60,6 +64,7 @@ Output Artifacts + Distribution + Monetization
 **Output:** `artifacts/output/api/`
 
 ### 5. Booklets
+
 - PDF booklets generated from content
 - Study guides
 - Quick reference cards
@@ -68,6 +73,7 @@ Output Artifacts + Distribution + Monetization
 **Output:** `artifacts/output/booklets/`
 
 ### 6. Chrome Extension
+
 - Browser extension for content
 - Quick access tools
 - Productivity features
@@ -76,6 +82,7 @@ Output Artifacts + Distribution + Monetization
 **Output:** `artifacts/output/chrome-extension/`
 
 ### 7. PDF
+
 - Formatted documents
 - Reports
 - Guides
@@ -84,6 +91,7 @@ Output Artifacts + Distribution + Monetization
 **Output:** `artifacts/output/pdf/`
 
 ### 8. Merchandise
+
 - T-shirts, mugs, etc.
 - Print-on-demand integration
 - Custom designs
@@ -140,6 +148,7 @@ See `docs/bom/SECRETS_BOM.md` for full list of required secrets.
 ## Configuration
 
 Edit `scripts/video-production/config.sh` to configure:
+
 - Output directories
 - API keys (from environment)
 - Platform-specific settings

@@ -1,6 +1,6 @@
 # Goap Agent Memory & Self-Healing Log
 
-*This file tracks autonomous executions, failures, root causes, and locked-in solutions so mistakes are never repeated.*
+_This file tracks autonomous executions, failures, root causes, and locked-in solutions so mistakes are never repeated._
 
 Agents (and the Gatekeeper recovery agent) read and append to this file to get smarter over time. Every autonomous run that fails — and every recovered run — should leave an entry below using the template.
 
@@ -12,6 +12,7 @@ Agents (and the Gatekeeper recovery agent) read and append to this file to get s
 4. If a fix has been validated, mark it "locked-in" so future agents trust and reuse it without re-deriving the solution.
 
 ## [Template Entry - Do not delete]
+
 **Date/Time:**
 **Task Attempted:** [e.g., n8n email parse for name@example.com]
 **Outcome:** [Success / Failed]

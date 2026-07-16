@@ -5,6 +5,7 @@ This document describes how to set up the PDF Product Creation Pipeline in Zapie
 ## Overview
 
 This Zap automates the 6-step process for creating and marketing PDF products:
+
 1. Identify profitable emotional problems
 2. Generate catchy titles with AI
 3. Create PDF content with AI
@@ -25,6 +26,7 @@ This Zap automates the 6-step process for creating and marketing PDF products:
 ### Zap Configuration
 
 #### Trigger: Webhooks by Zapier
+
 - **Event**: Catch Hook
 - **Webhook URL**: (Zapier will provide this - use it to trigger the workflow)
 - **Expected Data**:
@@ -36,15 +38,16 @@ This Zap automates the 6-step process for creating and marketing PDF products:
   ```
 
 #### Step 1: Code by Zapier - Identify Problem
+
 - **Action**: Run Python
 - **Code**:
   ```python
   from datetime import datetime
-  
+
   # Prepare research data
   niche = input_data.get('niche', 'parenting')
   keywords = input_data.get('keywords', [])
-  
+
   output = {
       'niche': niche,
       'keywords': keywords,
@@ -54,6 +57,7 @@ This Zap automates the 6-step process for creating and marketing PDF products:
   ```
 
 #### Step 2: OpenAI / Claude - Generate Title
+
 - **Action**: Send Prompt (via Anthropic or OpenRouter integration)
 - **Model**: claude-sonnet-4
 - **Prompt**:
@@ -76,16 +80,17 @@ This Zap automates the 6-step process for creating and marketing PDF products:
 - **Output**: Parse JSON response
 
 #### Step 3: Code by Zapier - Parse Title JSON
+
 - **Action**: Run Python
 - **Code**:
-  ```python
+  ````python
   import json
-  
+
   response = input_data.get('response', '{}')
-  
+
   # Clean up potential markdown code fences from Claude
   response = response.replace('```json', '').replace('```', '').strip()
-  
+
   try:
       parsed = json.loads(response)
       output = {
@@ -98,9 +103,10 @@ This Zap automates the 6-step process for creating and marketing PDF products:
       # We do not assign `output` here because Zapier ignores it once an
       # exception is raised — failed steps return only the exception message.
       raise Exception(f'Failed to parse Claude response as JSON. Error: {str(e)}. Response preview: {response[:200]}')
-  ```
+  ````
 
 #### Step 4: OpenAI / Claude - Generate PDF Content
+
 - **Action**: Send Prompt
 - **Model**: claude-sonnet-4
 - **Prompt**:
@@ -133,6 +139,7 @@ This Zap automates the 6-step process for creating and marketing PDF products:
   ```
 
 #### Step 5: Canva - Create Design
+
 - **Action**: Create Design (if Canva integration available)
 - **Alternative**: Webhooks by Zapier - POST to Canva API
   - **URL**: `https://api.canva.com/v1/designs`
@@ -152,6 +159,7 @@ This Zap automates the 6-step process for creating and marketing PDF products:
     ```
 
 #### Step 6: Shopify - Create Product
+
 - **Action**: Create Product
 - **Product Details**:
   - **Title**: `{{Step 3: title}}`
@@ -163,6 +171,7 @@ This Zap automates the 6-step process for creating and marketing PDF products:
   - **SKU**: `PDF-{{zap_meta_timestamp}}`
 
 #### Step 7: Code by Zapier - Prepare Influencer Campaign
+
 - **Action**: Run Python
 - **Code**:
   ```python
@@ -179,6 +188,7 @@ This Zap automates the 6-step process for creating and marketing PDF products:
   ```
 
 #### Step 8: Webhook by Zapier - Log Completion
+
 - **Action**: POST (to your tracking system)
 - **URL**: Your analytics/tracking endpoint
 - **Body**: All data from previous steps
@@ -201,6 +211,7 @@ curl -X POST https://hooks.zapier.com/hooks/catch/YOUR_WEBHOOK_ID/ \
 ### Expected Output
 
 The workflow will:
+
 1. ✅ Research and validate the niche
 2. ✅ Generate an emotional, compelling title
 3. ✅ Create 15-20 pages of actionable content
@@ -211,6 +222,7 @@ The workflow will:
 ### Next Manual Steps
 
 After the Zap completes:
+
 1. **Review the AI-generated content** - Ensure it flows well and makes sense
 2. **Complete the Canva design** - Format text, add images from Unsplash, create cover
 3. **Export PDF from Canva** - Upload to Shopify as digital download
@@ -220,6 +232,7 @@ After the Zap completes:
 ## Cost Estimate
 
 Per workflow execution:
+
 - Claude AI API calls: ~$0.20 (2 calls with Sonnet)
 - Canva API: Free (design creation)
 - Shopify API: Free (included in plan)
@@ -261,6 +274,7 @@ Consider adding Zapier Tables to track all products created:
 Add a parallel path after Step 4 to also list on Gumroad:
 
 **Step 6b: HTTP Request - Create Gumroad Product**
+
 - **URL**: `https://api.gumroad.com/v2/products`
 - **Method**: POST
 - **Body**:

@@ -57,16 +57,16 @@ Response use:
 
 Source: [`skills/openrouter-swarms/SKILL.md`](../skills/openrouter-swarms/SKILL.md)
 
-| Task Type | Recommended Model | OpenRouter ID |
-|---|---|---|
-| Code generation / debugging | Claude Sonnet 4 | `anthropic/claude-sonnet-4` |
-| Deep reasoning / architecture | Claude Opus 4 | `anthropic/claude-opus-4` |
-| Fast / cheap tasks | Claude Haiku 4.5 | `anthropic/claude-haiku-4-5` |
-| Code + physics problems | GitHub GPT-5 Nano | `github/gpt-5-nano` |
-| Cell sequencing / biology | GitHub o1 | `github/o1-cell-sequencing` |
-| General research | GPT-5 | `openai/gpt-5` |
-| Long documents | Gemini 2.5 Pro | `google/gemini-2.5-pro` |
-| Code completion (fast) | Codex 5.1 | `openai/codex-5.1` |
+| Task Type                     | Recommended Model | OpenRouter ID                |
+| ----------------------------- | ----------------- | ---------------------------- |
+| Code generation / debugging   | Claude Sonnet 4   | `anthropic/claude-sonnet-4`  |
+| Deep reasoning / architecture | Claude Opus 4     | `anthropic/claude-opus-4`    |
+| Fast / cheap tasks            | Claude Haiku 4.5  | `anthropic/claude-haiku-4-5` |
+| Code + physics problems       | GitHub GPT-5 Nano | `github/gpt-5-nano`          |
+| Cell sequencing / biology     | GitHub o1         | `github/o1-cell-sequencing`  |
+| General research              | GPT-5             | `openai/gpt-5`               |
+| Long documents                | Gemini 2.5 Pro    | `google/gemini-2.5-pro`      |
+| Code completion (fast)        | Codex 5.1         | `openai/codex-5.1`           |
 
 ## Cost guardrails
 
@@ -83,11 +83,11 @@ script [always leaves a visible signal on the item itself](../scripts/openrouter
 when it can't complete — you no longer have to dig through Actions logs to
 notice that nothing is moving.
 
-| Condition | Comment posted on item | Labels applied |
-|---|---|---|
-| `OPENROUTER_API_KEY` missing | ⚠️ "OpenRouter triage skipped — key not configured" with operator action | `openrouter:needs-key`, `needs-human` |
-| OpenRouter API / network error | ❌ "OpenRouter triage failed" with captured HTTP/error body (truncated to 600 chars) | `openrouter:triage-failed`, `needs-human` |
-| Successful re-run after a failure | 🤖 normal triage comment | Failure labels (`openrouter:triage-failed`, `openrouter:needs-key`) are automatically removed |
+| Condition                         | Comment posted on item                                                               | Labels applied                                                                                |
+| --------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `OPENROUTER_API_KEY` missing      | ⚠️ "OpenRouter triage skipped — key not configured" with operator action             | `openrouter:needs-key`, `needs-human`                                                         |
+| OpenRouter API / network error    | ❌ "OpenRouter triage failed" with captured HTTP/error body (truncated to 600 chars) | `openrouter:triage-failed`, `needs-human`                                                     |
+| Successful re-run after a failure | 🤖 normal triage comment                                                             | Failure labels (`openrouter:triage-failed`, `openrouter:needs-key`) are automatically removed |
 
 The workflow run itself still goes red for genuine API failures (so the
 Actions UI reflects the problem), while the `needs-key` path exits 0

@@ -5,18 +5,22 @@ Templates for creating music videos with HeyGen avatars and voice clones.
 ## Video Types
 
 ### Lyric Video
+
 **Duration:** Song length (3-5 minutes typical)
 **Best for:** Audio release, streaming platforms
 
 ### Narrative Video
+
 **Duration:** 3-5 minutes
 **Best for:** Storytelling, emotional connection
 
 ### Performance Video
+
 **Duration:** 3-5 minutes
 **Best for:** Artist showcase, music streaming
 
 ### Visualizer
+
 **Duration:** Song length
 **Best for:** Audio platforms, Spotify Canvas
 
@@ -134,6 +138,7 @@ POST-CREDITS
 ## Music Video Specs
 
 ### Technical Requirements
+
 - **Resolution:** 4K (3840x2160)
 - **Frame Rate:** 24fps (cinematic) or 30fps
 - **Format:** ProRes or H.264
@@ -141,15 +146,16 @@ POST-CREDITS
 
 ### Platform Requirements
 
-| Platform | Duration | Resolution | Format |
-|----------|----------|------------|--------|
-| YouTube | 3-5 min | 4K | MP4 |
-| Spotify Canvas | 8-30 sec | 1080x1920 | MP4 |
-| Apple Music | 3-5 min | 4K | MP4 |
-| Instagram Reels | 15-60 sec | 1080x1920 | MP4 |
-| TikTok | 15-60 sec | 1080x1920 | MP4 |
+| Platform        | Duration  | Resolution | Format |
+| --------------- | --------- | ---------- | ------ |
+| YouTube         | 3-5 min   | 4K         | MP4    |
+| Spotify Canvas  | 8-30 sec  | 1080x1920  | MP4    |
+| Apple Music     | 3-5 min   | 4K         | MP4    |
+| Instagram Reels | 15-60 sec | 1080x1920  | MP4    |
+| TikTok          | 15-60 sec | 1080x1920  | MP4    |
 
 ### Streaming Platform Checklist
+
 - [ ] YouTube verified artist channel
 - [ ] Spotify for Artists
 - [ ] Apple Music for Artists
@@ -161,12 +167,14 @@ POST-CREDITS
 ## Copyright & Royalties
 
 ### Required Clearances
+
 - [ ] Song composition (BMI/ASCAP)
 - [ ] Sound recording (SoundExchange)
 - [ ] Any samples used
 - [ ] Visual assets (stock footage, images)
 
 ### Monetization
+
 - YouTube Content ID
 - Spotify streams
 - Apple Music streams

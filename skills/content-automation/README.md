@@ -62,26 +62,32 @@ Output (production-ready content)
 ## Features
 
 ### Automated Quality Gates
+
 - ✅ **SEO**: Title length, keyword density, meta descriptions, headings
 - ✅ **Readability**: Flesch score, sentence length, active voice
 - ✅ **Structure**: Clear intro/conclusion, logical flow, word count
 - ✅ **Technical**: No broken links, valid markup, no spelling errors
 
 ### Multi-Format Output
+
 Every piece of content is automatically exported in:
+
 - **Blog HTML** - Ready-to-publish with schema.org markup
 - **Video Script** - Timestamped with presenter notes
 - **Social Threads** - Twitter/X, LinkedIn formats
 - **Email Newsletter** - HTML newsletter template
 
 ### AI Model Selection
+
 Smart model routing based on task requirements:
+
 - **Research**: Claude Opus 4 (best reasoning)
 - **Generation**: DeepSeek (cost-effective)
 - **Editing**: Claude Sonnet 4.6 (excellent tone control)
 - **Fact-checking**: GPT-5.4 (strong verification)
 
 ### Security & Compliance
+
 - Input sanitization (prevents code injection)
 - API keys in GitHub Secrets
 - Avoid sending PII in topics/prompts (PII filtering is not automatically enforced)
@@ -113,12 +119,12 @@ VIDIQ_API_KEY=...          # Video SEO validation
 
 Set in Settings → Secrets and variables → Actions → Variables:
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `CONTENT_TARGET_AUDIENCE` | "general audience" | Who the content is for |
-| `CONTENT_BRAND_VOICE` | "professional yet approachable" | Tone guidelines |
-| `CONTENT_PRIMARY_KEYWORDS` | "" | Core SEO keywords |
-| `CONTENT_AUTO_PUBLISH` | "false" | Skip human review |
+| Variable                   | Default                         | Purpose                |
+| -------------------------- | ------------------------------- | ---------------------- |
+| `CONTENT_TARGET_AUDIENCE`  | "general audience"              | Who the content is for |
+| `CONTENT_BRAND_VOICE`      | "professional yet approachable" | Tone guidelines        |
+| `CONTENT_PRIMARY_KEYWORDS` | ""                              | Core SEO keywords      |
+| `CONTENT_AUTO_PUBLISH`     | "false"                         | Skip human review      |
 
 ---
 
@@ -140,6 +146,7 @@ Set in Settings → Secrets and variables → Actions → Variables:
 5. Submit
 
 **What happens:**
+
 - Bot comments with progress tracker
 - Pipeline runs for 10-15 minutes
 - Bot posts completion comment with results
@@ -262,34 +269,37 @@ CONTENT_AUTO_PUBLISH: "true"
 
 ## Troubleshooting
 
-| Issue | Solution |
-|---|---|
-| **Content is too generic** | Add more specific context, keywords, and examples in issue description |
-| **Facts are incorrect** | Run fact-checking pass, add authoritative sources to brief |
-| **SEO score is low** | Research keywords first, specify primary/secondary keywords explicitly |
-| **Generation takes too long** | Normal 10-15 min. Check workflow logs if longer. |
-| **Cost is too high** | Use DeepSeek for drafts, reduce word counts, batch requests |
-| **Workflow fails** | Check `OPENROUTER_API_KEY`, verify API rate limits, simplify topic |
+| Issue                         | Solution                                                               |
+| ----------------------------- | ---------------------------------------------------------------------- |
+| **Content is too generic**    | Add more specific context, keywords, and examples in issue description |
+| **Facts are incorrect**       | Run fact-checking pass, add authoritative sources to brief             |
+| **SEO score is low**          | Research keywords first, specify primary/secondary keywords explicitly |
+| **Generation takes too long** | Normal 10-15 min. Check workflow logs if longer.                       |
+| **Cost is too high**          | Use DeepSeek for drafts, reduce word counts, batch requests            |
+| **Workflow fails**            | Check `OPENROUTER_API_KEY`, verify API rate limits, simplify topic     |
 
 ---
 
 ## Cost Analysis
 
 ### Per Content Piece
-| Type | Tokens | Model | Cost | Time |
-|---|---|---|---|---|
-| Blog post (1500 words) | ~10k | Claude Opus 4 | $0.30 | 10-15 min |
-| Video script (10 min) | ~5k | DeepSeek | $0.05 | 5-8 min |
-| Social thread (10 tweets) | ~2k | Claude Sonnet 4.6 | $0.02 | 2-3 min |
-| Email newsletter | ~4k | DeepSeek | $0.03 | 5 min |
+
+| Type                      | Tokens | Model             | Cost  | Time      |
+| ------------------------- | ------ | ----------------- | ----- | --------- |
+| Blog post (1500 words)    | ~10k   | Claude Opus 4     | $0.30 | 10-15 min |
+| Video script (10 min)     | ~5k    | DeepSeek          | $0.05 | 5-8 min   |
+| Social thread (10 tweets) | ~2k    | Claude Sonnet 4.6 | $0.02 | 2-3 min   |
+| Email newsletter          | ~4k    | DeepSeek          | $0.03 | 5 min     |
 
 ### Monthly Estimates
+
 - **20 blog posts**: $6-10
 - **40 social posts**: $0.80
 - **4 newsletters**: $0.12
 - **Total**: **$10-15/month**
 
 ### ROI Comparison
+
 - **Automated**: $10-15/month
 - **Manual** (at $25/hr): $2,500-4,000/month
 - **Savings**: 99%
@@ -301,13 +311,13 @@ CONTENT_AUTO_PUBLISH: "true"
 
 ### With Other Skills
 
-| Skill | Integration Point |
-|---|---|
-| **noimosai** | Marketing distribution, social posting |
-| **seo-metadata** | Technical SEO, schema markup |
-| **eeat-trust-authority** | Author credibility, citations |
-| **product-pipeline** | Auto-generate product docs |
-| **openclaw-eeat** | Content distribution, authority building |
+| Skill                    | Integration Point                        |
+| ------------------------ | ---------------------------------------- |
+| **noimosai**             | Marketing distribution, social posting   |
+| **seo-metadata**         | Technical SEO, schema markup             |
+| **eeat-trust-authority** | Author credibility, citations            |
+| **product-pipeline**     | Auto-generate product docs               |
+| **openclaw-eeat**        | Content distribution, authority building |
 
 ### With External Tools
 
@@ -348,7 +358,7 @@ skills/content-automation/
 
 ```
 .github/workflows/content-automation.yml    # Workflow automation
-scripts/content-automation.js               # Pipeline implementation  
+scripts/content-automation.js               # Pipeline implementation
 standards/CONTENT_AUTOMATION_STANDARD.md    # Standard documentation
 tests/content-automation.test.js            # Test suite (15 tests)
 ```
@@ -368,14 +378,14 @@ tests/content-automation.test.js            # Test suite (15 tests)
 
 Track these KPIs to measure effectiveness:
 
-| Metric | Target | How to Measure |
-|---|---|---|
-| Generation time | < 15 min | Workflow duration |
-| Cost per piece | < $0.50 | OpenRouter API costs |
-| Quality score | > 70/100 | Internal rubric |
-| SEO pass rate | 100% | Automated checks |
-| Edit time saved | > 80% | Before/after comparison |
-| Publish rate | 10+ pieces/week | GitHub commits |
+| Metric          | Target          | How to Measure          |
+| --------------- | --------------- | ----------------------- |
+| Generation time | < 15 min        | Workflow duration       |
+| Cost per piece  | < $0.50         | OpenRouter API costs    |
+| Quality score   | > 70/100        | Internal rubric         |
+| SEO pass rate   | 100%            | Automated checks        |
+| Edit time saved | > 80%           | Before/after comparison |
+| Publish rate    | 10+ pieces/week | GitHub commits          |
 
 ---
 
@@ -386,4 +396,4 @@ Track these KPIs to measure effectiveness:
 
 ---
 
-*This skill solves the content creation bottleneck by automating the complete pipeline from ideation to publication, reducing time by 95% and cost by 99% while maintaining quality through automated gates and human review.*
+_This skill solves the content creation bottleneck by automating the complete pipeline from ideation to publication, reducing time by 95% and cost by 99% while maintaining quality through automated gates and human review._

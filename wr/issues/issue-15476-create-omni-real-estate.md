@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-07  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-07  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -112,18 +111,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -135,6 +135,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28862995243.md`
 
 # WR-Ready Research Packet: Omni Real Estate
@@ -144,6 +145,7 @@ Source packet: `docs/research-engine/run-28862995243.md`
 **DO NOT PROCEED** with development as specified. This work request is critically incomplete and represents a high-risk project in an oversaturated market.
 
 **Critical Blockers:**
+
 - No technical requirements provided (only UI mockups)
 - All required WR fields marked as "None" or "_No response_"
 - No data source strategy for property listings
@@ -157,11 +159,13 @@ Source packet: `docs/research-engine/run-28862995243.md`
 **Cannot determine target audience** from images alone. Based on UI patterns, potential segments include:
 
 **Primary Segments (Unverified):**
+
 - Real estate agents seeking lead generation tools
 - Property buyers/renters searching for listings
 - Property managers tracking portfolios
 
 **Market Reality:**
+
 - Consumer real estate portals are dominated by Zillow (200M+ monthly visits)
 - Customer acquisition costs: $100-500 per user
 - Agent lead costs: $50-500 per qualified lead
@@ -171,17 +175,20 @@ Source packet: `docs/research-engine/run-28862995243.md`
 ## 3. Marketing and SEO Plan
 
 **SEO Challenges:**
+
 - "Omni Real Estate" has numerous existing businesses using this name
 - Primary keywords ("homes for sale", "real estate") dominated by billion-dollar competitors
 - No unique value proposition identified
 
 **If Proceeding (Not Recommended):**
+
 - Focus on hyper-local, long-tail keywords: "[city] real estate market trends"
 - Build programmatic pages for every zip code
 - Create educational content hub for first-time buyers
 - Estimated organic traffic timeline: 12-18 months to meaningful traction
 
 **Landing Page Structure:**
+
 - Title: "Omni Real Estate - [City] Property Search & Market Analytics"
 - Meta: "Find homes, connect with agents, and analyze market trends..."
 - Core sections: Property search, home valuation tool, market insights
@@ -189,18 +196,20 @@ Source packet: `docs/research-engine/run-28862995243.md`
 ## 4. Competitor and GitHub Star Intelligence
 
 ### Market Leaders
-| Competitor | Pricing | Moat | Market Share |
-|------------|---------|------|--------------|
-| Zillow | Free (consumers), $20-60/week (agents) | 200M+ monthly visits, Zestimate algorithm | ~36% of online real estate traffic |
-| Redfin | Free + 1-1.5% listing fee | Tech-enabled brokerage model | ~2% of US home sales |
-| Realtor.com | Free, $25-50/week (agents) | Official NAR partnership, MLS access | ~20% of online traffic |
+
+| Competitor  | Pricing                                | Moat                                      | Market Share                       |
+| ----------- | -------------------------------------- | ----------------------------------------- | ---------------------------------- |
+| Zillow      | Free (consumers), $20-60/week (agents) | 200M+ monthly visits, Zestimate algorithm | ~36% of online real estate traffic |
+| Redfin      | Free + 1-1.5% listing fee              | Tech-enabled brokerage model              | ~2% of US home sales               |
+| Realtor.com | Free, $25-50/week (agents)             | Official NAR partnership, MLS access      | ~20% of online traffic             |
 
 ### Open Source Solutions
-| Repository | Stars | Last Update | Viability |
-|------------|-------|-------------|-----------|
-| PropertyWebBuilder | ~500 | 2023 | Ruby-based, active |
-| Real-Estate-CRM | ~300 | 2023 | PHP, moderate activity |
-| OpenRealEstate | ~150 | 2023 | Limited features |
+
+| Repository         | Stars | Last Update | Viability              |
+| ------------------ | ----- | ----------- | ---------------------- |
+| PropertyWebBuilder | ~500  | 2023        | Ruby-based, active     |
+| Real-Estate-CRM    | ~300  | 2023        | PHP, moderate activity |
+| OpenRealEstate     | ~150  | 2023        | Limited features       |
 
 **Key Finding:** No open source solution provides production-ready MLS integration or competitive features.
 
@@ -209,12 +218,14 @@ Source packet: `docs/research-engine/run-28862995243.md`
 **Cannot analyze** - No social media channels or community references provided.
 
 **Industry Pain Points (General):**
+
 - Outdated/inaccurate listings
 - Slow, buggy mobile apps
 - Lack of transparency in agent interactions
 - High agent advertising costs
 
 **Communities to Monitor:**
+
 - Reddit: r/RealEstate, r/realtors
 - BiggerPockets forums
 - Real estate Facebook groups
@@ -222,6 +233,7 @@ Source packet: `docs/research-engine/run-28862995243.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Critical Validation Failures:**
+
 - Cannot verify any claims (images only, no text)
 - No technical specifications provided
 - No market research data
@@ -235,6 +247,7 @@ Source packet: `docs/research-engine/run-28862995243.md`
 **BLOCKED - Cannot Define Requirements**
 
 **Missing Critical Information:**
+
 - Platform targets (iOS/Android/Web)
 - Technical architecture
 - Data source strategy (MLS integration costs $500-2000/month)
@@ -243,6 +256,7 @@ Source packet: `docs/research-engine/run-28862995243.md`
 - Compliance framework
 
 **Minimum Viable Requirements (If Proceeding):**
+
 1. Complete technical specification document
 2. MLS data licensing agreements
 3. Map service selection (Google Maps: $2-7 per 1K requests)
@@ -252,6 +266,7 @@ Source packet: `docs/research-engine/run-28862995243.md`
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 BLOCK: No code can be reviewed without technical specifications.
 Required before code review:
@@ -262,6 +277,7 @@ Required before code review:
 ```
 
 ### For OpenRouter
+
 ```
 FINDING: Missing architecture documentation
 SEVERITY: Blocking
@@ -274,6 +290,7 @@ COMMIT: "docs: add initial architecture documentation for real estate platform"
 ```
 
 ### For Coderabbit
+
 ```
 CRITICAL: No test strategy defined
 ACTION: Before any PR approval, require:
@@ -284,6 +301,7 @@ ACTION: Before any PR approval, require:
 ```
 
 ### For Ralph Loop
+
 ```
 SECURITY REVIEW REQUIRED:
 - PII handling for user data
@@ -298,12 +316,14 @@ FIX: Implement security-first architecture before any feature development
 ### Immediate Fixes Required
 
 1. **WR Completion**
+
 ```bash
 gh issue comment $ISSUE_NUMBER --body "⚠️ BLOCKED: Work request incomplete. Required: technical specs, data strategy, compliance plan"
 gh issue edit $ISSUE_NUMBER --add-label "blocked-incomplete-wr,needs-requirements"
 ```
 
 2. **Architecture Documentation**
+
 ```bash
 mkdir -p docs/architecture
 echo "# Omni Real Estate Architecture\n\n## Status: UNDEFINED\n\nTechnical specifications required before development." > docs/architecture/README.md
@@ -312,6 +332,7 @@ git commit -m "docs: add placeholder architecture documentation"
 ```
 
 3. **Compliance Checklist**
+
 ```bash
 cat > docs/compliance/real-estate-checklist.md << EOF
 # Real Estate Compliance Checklist
@@ -330,6 +351,7 @@ git commit -m "docs: add real estate compliance checklist"
 ## 10. Labels to Apply
 
 **Immediate Labels:**
+
 - `blocked-incomplete-wr`
 - `needs-requirements`
 - `needs-technical-spec`
@@ -339,6 +361,7 @@ git commit -m "docs: add real estate compliance checklist"
 - `data-source-missing`
 
 **Risk Labels:**
+
 - `risk:market-saturation`
 - `risk:weak-moat`
 - `risk:high-competition`
@@ -349,21 +372,27 @@ git commit -m "docs: add real estate compliance checklist"
 **No Repository Provided** - Cannot review non-existent code.
 
 ### Best Open Source Alternative
+
 **PropertyWebBuilder** (Ruby on Rails)
+
 - 500+ stars, active development
 - Basic property listing functionality
 - Requires significant customization
 - Missing: MLS integration, mobile apps, advanced search
 
 ### Recommended Commercial Alternative
+
 **WordPress + RealHomes Theme**
+
 - $59 one-time license
 - Extensive customization options
 - Active community support
 - Still requires MLS integration
 
 ### Build vs Buy Recommendation
+
 **DO NOT BUILD** - The real estate portal market is oversaturated. If proceeding despite warnings:
+
 1. License a white-label solution
 2. Focus on a specific niche (commercial properties, vacation rentals)
 3. Partner with existing MLS providers rather than competing
@@ -373,6 +402,7 @@ git commit -m "docs: add real estate compliance checklist"
 ### Overall Confidence: 15/100
 
 **Lane Confidence Scores:**
+
 - Market Positioning (Echo): 20/100 - Saturated market, no differentiation
 - SEO Demand (Noimos): 25/100 - Dominated by incumbents
 - Competitor Intelligence (Iris): 85/100 - Clear market leader dominance
@@ -383,7 +413,8 @@ git commit -m "docs: add real estate compliance checklist"
 
 **Selected Path:** None recommended. The combination of incomplete requirements, market saturation, and lack of differentiation makes this project non-viable as specified.
 
-**Final Recommendation:** 
+**Final Recommendation:**
+
 1. **Immediate:** Apply blocking labels and request complete specifications
 2. **Strategic:** Pivot to B2B SaaS for real estate professionals or abandon project
 3. **Alternative:** If stakeholders insist, start with a WordPress-based MVP using RealHomes theme to test market viability before custom development
@@ -428,11 +459,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -448,11 +479,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

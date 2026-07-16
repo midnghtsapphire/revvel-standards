@@ -24,10 +24,11 @@
 **Recommended Priority:** P1
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -40,10 +41,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -56,10 +58,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -72,10 +75,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -88,10 +92,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -104,10 +109,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -120,10 +126,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -136,10 +143,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -152,10 +160,11 @@ concurrency:
 **Recommended Priority:** P0
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -168,10 +177,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -184,10 +194,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -200,10 +211,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -216,10 +228,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -232,10 +245,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -248,10 +262,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -264,10 +279,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -280,10 +296,11 @@ concurrency:
 **Recommended Priority:** P1
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -296,10 +313,11 @@ concurrency:
 **Recommended Priority:** P1
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -312,10 +330,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -328,10 +347,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -344,10 +364,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -360,10 +381,11 @@ concurrency:
 **Recommended Priority:** P1
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -376,10 +398,11 @@ concurrency:
 **Recommended Priority:** P0
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -392,10 +415,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -408,10 +432,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -424,10 +449,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -440,10 +466,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -456,10 +483,11 @@ concurrency:
 **Recommended Priority:** P1
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -472,10 +500,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -488,10 +517,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -504,10 +534,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -520,10 +551,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -536,10 +568,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -552,10 +585,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -568,10 +602,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -584,10 +619,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -600,10 +636,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -616,10 +653,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -632,10 +670,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -648,10 +687,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -664,10 +704,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -680,10 +721,11 @@ concurrency:
 **Recommended Priority:** P1
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -696,10 +738,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -712,10 +755,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -728,10 +772,11 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
@@ -744,14 +789,14 @@ concurrency:
 **Recommended Priority:** P2
 
 **Recommended Fix:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true  # or false for P0 workflows
+  cancel-in-progress: true # or false for P0 workflows
 ```
 
 ---
-
 
 ## Workflows WITH Concurrency Control ✅
 
@@ -971,17 +1016,18 @@ concurrency:
 
 ---
 
-
 ## Recommendations
 
 ### 1. Add Concurrency to PR-Triggered Workflows (High Priority)
 
 All workflows triggered by PR events should have concurrency controls to prevent:
+
 - Multiple runs for the same PR (e.g., rapid commits)
 - Resource exhaustion
 - API rate limiting
 
 **Standard pattern for PR workflows:**
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -991,16 +1037,19 @@ concurrency:
 ### 2. Priority-Based Concurrency Strategy
 
 #### P0 Workflows (Critical - Must Complete)
+
 - **cancel-in-progress: false** (let existing run finish)
 - Security checks, credential validation, compliance
 - Examples: `credential-gatekeeper.yml`, `secret-persistence-guard.yml`
 
 #### P1 Workflows (Important - Can Cancel)
+
 - **cancel-in-progress: true** (cancel old, run new)
 - AI reviews, label management, triage
 - Examples: `ai-pr-review-openrouter.yml`, `bito-ai.yml`
 
 #### P2 Workflows (Optional - Async)
+
 - **cancel-in-progress: true** (always use latest)
 - Analytics, reporting, monitoring
 - Examples: `amplitude-events.yml`, `panda-ops.yml`
@@ -1008,19 +1057,21 @@ concurrency:
 ### 3. Scheduled Workflows
 
 For cron-triggered workflows:
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}
-  cancel-in-progress: false  # let runs complete
+  cancel-in-progress: false # let runs complete
 ```
 
 ### 4. Singleton Workflows
 
 For workflows that should only have one instance running at a time:
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}
-  cancel-in-progress: true  # ensure only latest runs
+  cancel-in-progress: true # ensure only latest runs
 ```
 
 ---

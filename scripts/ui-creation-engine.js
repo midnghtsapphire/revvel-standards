@@ -2,17 +2,17 @@
 
 /**
  * UI Creation Engine
- * 
+ *
  * Comprehensive engine for creating cutting-edge websites and mobile apps
  * that compete with top vendors in the USA.
- * 
+ *
  * Features:
  * - Competitive research using OpenRouter swarms
  * - Image optimization with SEO filenames and alt text
  * - Comprehensive SEO metadata generation
  * - UI/UX pattern analysis and recommendations
  * - Complete scaffolding generation
- * 
+ *
  * Usage:
  *   node scripts/ui-creation-engine.js \
  *     --business="Soul2Bowl" \
@@ -75,7 +75,9 @@ function parseArgs() {
 function callOpenRouter(model, systemPrompt, userPrompt) {
   return new Promise((resolve, reject) => {
     if (!OPENROUTER_API_KEY) {
-      return reject(new Error("OPENROUTER_API_KEY environment variable is required."));
+      return reject(
+        new Error("OPENROUTER_API_KEY environment variable is required."),
+      );
     }
 
     const payload = JSON.stringify({
@@ -94,7 +96,7 @@ function callOpenRouter(model, systemPrompt, userPrompt) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         "HTTP-Referer": "https://github.com/midnghtsapphire/revvel-standards",
         "X-Title": "Revvel UI Creation Engine",
       },
@@ -107,7 +109,9 @@ function callOpenRouter(model, systemPrompt, userPrompt) {
       });
       res.on("end", () => {
         if (res.statusCode !== 200) {
-          return reject(new Error(`OpenRouter API error: ${res.statusCode} ${data}`));
+          return reject(
+            new Error(`OpenRouter API error: ${res.statusCode} ${data}`),
+          );
         }
         try {
           const json = JSON.parse(data);
@@ -117,7 +121,9 @@ function callOpenRouter(model, systemPrompt, userPrompt) {
           }
           resolve(content);
         } catch (err) {
-          reject(new Error(`Failed to parse OpenRouter response: ${err.message}`));
+          reject(
+            new Error(`Failed to parse OpenRouter response: ${err.message}`),
+          );
         }
       });
     });
@@ -134,7 +140,7 @@ function callOpenRouter(model, systemPrompt, userPrompt) {
 
 async function runCompetitiveResearchSwarm(args) {
   console.log("\n🔬 Phase 1: Competitive Research Swarm");
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
 
   const scouts = [
     {
@@ -222,12 +228,20 @@ Recommend the best technology stack for a new ${args.platform}.`,
   const scoutPromises = scouts.map(async (scout) => {
     console.log(`  → [${scout.name}] Starting...`);
     try {
-      const content = await callOpenRouter(MODELS.scout, scout.systemPrompt, scout.userPrompt);
+      const content = await callOpenRouter(
+        MODELS.scout,
+        scout.systemPrompt,
+        scout.userPrompt,
+      );
       console.log(`  ✅ [${scout.name}] Complete`);
       return { name: scout.name, content };
     } catch (err) {
       console.warn(`  ⚠️  [${scout.name}] Failed: ${err.message}`);
-      return { name: scout.name, content: `Error: ${err.message}`, error: true };
+      return {
+        name: scout.name,
+        content: `Error: ${err.message}`,
+        error: true,
+      };
     }
   });
 
@@ -246,7 +260,7 @@ Recommend the best technology stack for a new ${args.platform}.`,
 
 async function synthesizeCompetitiveAnalysis(scoutResults, args) {
   console.log("\n📊 Phase 2: Synthesizing Competitive Analysis");
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
 
   const systemPrompt = `You are Sage, the Revvel Research Synthesizer. Your job is to take findings from multiple Scout agents and create a comprehensive competitive analysis report.
 
@@ -256,9 +270,7 @@ Format the report with clear sections, actionable insights, and specific recomme
 
 Scout Research Findings:
 
-${scoutResults
-  .map((r) => `\n## ${r.name}\n\n${r.content}`)
-  .join("\n\n---\n\n")}
+${scoutResults.map((r) => `\n## ${r.name}\n\n${r.content}`).join("\n\n---\n\n")}
 
 Create a report with these sections:
 
@@ -301,7 +313,11 @@ Create a report with these sections:
 Make the report actionable, specific, and data-driven.`;
 
   console.log("  → [Sage: Synthesizer] Analyzing findings...");
-  const synthesis = await callOpenRouter(MODELS.synthesizer, systemPrompt, userPrompt);
+  const synthesis = await callOpenRouter(
+    MODELS.synthesizer,
+    systemPrompt,
+    userPrompt,
+  );
   console.log("  ✅ [Sage: Synthesizer] Complete");
 
   return synthesis;
@@ -313,7 +329,7 @@ Make the report actionable, specific, and data-driven.`;
 
 async function generateImageOptimizationPlan(synthesis, args) {
   console.log("\n🖼️  Phase 3: Image Optimization Plan");
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
 
   const systemPrompt = `You are Pixel, the UI/Image specialist. Your job is to create an image optimization plan including SEO filenames and descriptive alt text.`;
 
@@ -335,7 +351,7 @@ Format:
   "images": [
     {
       "name": "hero-image",
-      "filename": "${args.business.toLowerCase().replace(/\s+/g, '-')}-[descriptive-name]-hero-1920x1080.webp",
+      "filename": "${args.business.toLowerCase().replace(/\s+/g, "-")}-[descriptive-name]-hero-1920x1080.webp",
       "alt": "[5-15 word descriptive alt text with keywords]",
       "size": "1920x1080",
       "maxFileSize": "300KB",
@@ -360,7 +376,7 @@ Ensure every filename follows: [business]-[subject]-[context]-[size].webp`;
 
 async function generateSEOMetadata(synthesis, args) {
   console.log("\n🔍 Phase 4: SEO Metadata Generation");
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
 
   const systemPrompt = `You are Sage, the SEO metadata specialist. Your job is to generate comprehensive, high-quality metadata that achieves Lighthouse scores of 95+.`;
 
@@ -417,7 +433,11 @@ Also provide JSON-LD schemas for:
 Use actual keywords from the competitive analysis.`;
 
   console.log("  → [Sage: SEO Generator] Creating metadata...");
-  const metadata = await callOpenRouter(MODELS.metadata, systemPrompt, userPrompt);
+  const metadata = await callOpenRouter(
+    MODELS.metadata,
+    systemPrompt,
+    userPrompt,
+  );
   console.log("  ✅ [Sage: SEO Generator] Complete");
 
   return metadata;
@@ -507,25 +527,33 @@ function truncatePromptSection(text, maxLength) {
 
 async function generateUIRecommendations(synthesis, args) {
   console.log("\n🎨 Phase 5: UI Design Recommendations");
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
 
   const systemPrompt = `You are Pixel, the UI/UX design specialist. Your job is to create specific design recommendations that match or exceed top competitors.`;
   const hasMcpPromptPack = shouldIncludeMCPPromptPack(args);
   const boundedSynthesis = truncatePromptSection(
     synthesis,
-    hasMcpPromptPack ? 12000 : 24000
+    hasMcpPromptPack ? 12000 : 24000,
   );
 
-  if (hasMcpPromptPack && typeof synthesis === "string" && synthesis.length > 12000) {
+  if (
+    hasMcpPromptPack &&
+    typeof synthesis === "string" &&
+    synthesis.length > 12000
+  ) {
     console.warn(
-      `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`
+      `  ⚠️  Synthesis truncated from ${synthesis.length} to 12000 chars to fit MCP prompt budget.`,
     );
   }
 
   const userPrompt = buildUIRecommendationsUserPrompt(boundedSynthesis, args);
 
   console.log("  → [Pixel: UI Designer] Generating recommendations...");
-  const uiDesign = await callOpenRouter(MODELS.design, systemPrompt, userPrompt);
+  const uiDesign = await callOpenRouter(
+    MODELS.design,
+    systemPrompt,
+    userPrompt,
+  );
   console.log("  ✅ [Pixel: UI Designer] Complete");
 
   return uiDesign;
@@ -537,10 +565,10 @@ async function generateUIRecommendations(synthesis, args) {
 
 function generateOutputFiles(results, args) {
   console.log("\n📝 Phase 6: Generating Output Files");
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
 
   const outputDir = args.output;
-  
+
   // Create output directory structure
   const dirs = [
     outputDir,
@@ -561,7 +589,7 @@ function generateOutputFiles(results, args) {
   fs.writeFileSync(
     path.join(outputDir, "research", "competitive-analysis.md"),
     results.synthesis,
-    "utf8"
+    "utf8",
   );
   console.log(`  ✅ Written: research/competitive-analysis.md`);
 
@@ -571,7 +599,7 @@ function generateOutputFiles(results, args) {
     fs.writeFileSync(
       path.join(outputDir, "research", filename),
       `# ${scout.name}\n\n${scout.content}`,
-      "utf8"
+      "utf8",
     );
   });
   console.log(`  ✅ Written: ${results.scoutResults.length} scout reports`);
@@ -580,7 +608,7 @@ function generateOutputFiles(results, args) {
   fs.writeFileSync(
     path.join(outputDir, "images", "optimization-plan.md"),
     results.imageOptimization,
-    "utf8"
+    "utf8",
   );
   console.log(`  ✅ Written: images/optimization-plan.md`);
 
@@ -588,7 +616,7 @@ function generateOutputFiles(results, args) {
   fs.writeFileSync(
     path.join(outputDir, "seo", "metadata.md"),
     results.seoMetadata,
-    "utf8"
+    "utf8",
   );
   console.log(`  ✅ Written: seo/metadata.md`);
 
@@ -596,7 +624,7 @@ function generateOutputFiles(results, args) {
   fs.writeFileSync(
     path.join(outputDir, "design", "ui-recommendations.md"),
     results.uiDesign,
-    "utf8"
+    "utf8",
   );
   console.log(`  ✅ Written: design/ui-recommendations.md`);
 
@@ -669,7 +697,7 @@ async function main() {
     console.log('    --services="optional services list" \\');
     console.log('    --output="./output-directory"');
     console.log("\nExample:");
-    console.log('  node scripts/ui-creation-engine.js \\');
+    console.log("  node scripts/ui-creation-engine.js \\");
     console.log('    --business="Soul2Bowl" \\');
     console.log('    --industry="catering, meal prep" \\');
     console.log('    --location="St. Louis, MO" \\');
@@ -678,13 +706,13 @@ async function main() {
   }
 
   console.log("\n🎨 Revvel UI Creation Engine");
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
   console.log(`Business: ${args.business}`);
   console.log(`Industry: ${args.industry}`);
   console.log(`Location: ${args.location}`);
   console.log(`Platform: ${args.platform}`);
   console.log(`Output: ${args.output}`);
-  console.log("=" .repeat(60));
+  console.log("=".repeat(60));
 
   const startTime = Date.now();
 
@@ -696,7 +724,10 @@ async function main() {
     const synthesis = await synthesizeCompetitiveAnalysis(scoutResults, args);
 
     // Phase 3: Image Optimization
-    const imageOptimization = await generateImageOptimizationPlan(synthesis, args);
+    const imageOptimization = await generateImageOptimizationPlan(
+      synthesis,
+      args,
+    );
 
     // Phase 4: SEO Metadata
     const seoMetadata = await generateSEOMetadata(synthesis, args);
@@ -713,16 +744,15 @@ async function main() {
         seoMetadata,
         uiDesign,
       },
-      args
+      args,
     );
 
     const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log("\n" + "=" .repeat(60));
+    console.log("\n" + "=".repeat(60));
     console.log(`✅ UI Creation Engine Complete in ${totalDuration}s`);
     console.log(`📁 Output directory: ${args.output}`);
-    console.log("=" .repeat(60));
+    console.log("=".repeat(60));
     console.log("\n🎨 Pixel signing off. UI creation complete!");
-
   } catch (err) {
     console.error("\n❌ Fatal Error:", err.message);
     console.error(err.stack);
@@ -738,4 +768,8 @@ if (require.main === module) {
   });
 }
 
-module.exports = { main, shouldIncludeMCPPromptPack, buildUIRecommendationsUserPrompt };
+module.exports = {
+  main,
+  shouldIncludeMCPPromptPack,
+  buildUIRecommendationsUserPrompt,
+};

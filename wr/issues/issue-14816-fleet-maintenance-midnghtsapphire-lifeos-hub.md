@@ -8,7 +8,7 @@
 
 ---
 
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -22,6 +22,7 @@ The resulting PR must pass the **full code review** — OpenRouter
 revvel-standards change.
 
 ## Tasks
+
 - [ ] Update / refresh the docs (README, overview, contributing).
 - [ ] Research concrete improvements (deps, security, tests, DX, performance).
 - [ ] Ensure the target repo has the standard review workflows (OpenRouter code
@@ -32,16 +33,17 @@ revvel-standards change.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter

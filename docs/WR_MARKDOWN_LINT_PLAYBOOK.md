@@ -10,12 +10,12 @@ automated fix, and what to do when the gate still goes red.
 
 ## The recurring error classes (what not to do)
 
-| Rule | Finding | Root cause in generated WRs | Automated fix |
-| --- | --- | --- | --- |
-| MD012 | Multiple consecutive blank lines | Header/findings blocks are concatenated with `echo ""` padding, and pasted issue bodies keep their own blank runs | Collapse runs of 2+ blank lines to one |
-| MD025 | Multiple top-level headings | Imported research packets ship their own `# WR-Ready Research Packet: ...` H1 below the WR's `# WR: <title>` H1 | Demote every H1 after the first to an H2 |
+| Rule  | Finding                                            | Root cause in generated WRs                                                                                                                          | Automated fix                                                                |
+| ----- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| MD012 | Multiple consecutive blank lines                   | Header/findings blocks are concatenated with `echo ""` padding, and pasted issue bodies keep their own blank runs                                    | Collapse runs of 2+ blank lines to one                                       |
+| MD025 | Multiple top-level headings                        | Imported research packets ship their own `# WR-Ready Research Packet: ...` H1 below the WR's `# WR: <title>` H1                                      | Demote every H1 after the first to an H2                                     |
 | MD049 | Emphasis style (expected underscore, got asterisk) | WR templates establish underscore emphasis first (`_No response_`), then pasted packet text uses `*asterisks*` — MD049 enforces per-file consistency | Rewrite single-asterisk emphasis to underscore (strong `**bold**` untouched) |
-| MD047 | File must end with a single newline | Concatenation leaves trailing blank padding | Trim to exactly one trailing newline |
+| MD047 | File must end with a single newline                | Concatenation leaves trailing blank padding                                                                                                          | Trim to exactly one trailing newline                                         |
 
 ## Requirements (the standing rules)
 
@@ -29,9 +29,9 @@ automated fix, and what to do when the gate still goes red.
      after "Generate WR document" and before validation/commit.
    - `wr/scripts/generate-wr.sh` — runs right before its `wr-lint.mjs` hard
      gate.
-   If you add a new workflow or script that writes WR markdown, wire the
-   sanitizer in the same way.
-3. **The sanitizer must stay conservative.** It only rewrites prose *outside*
+     If you add a new workflow or script that writes WR markdown, wire the
+     sanitizer in the same way.
+3. **The sanitizer must stay conservative.** It only rewrites prose _outside_
    fenced code blocks and inline code spans. Pasted logs, YAML, and source
    packets belong in fenced code blocks (see the existing wr-lint rule for
    bracket placeholders) — fence them, don't fight the linter.
@@ -55,6 +55,7 @@ automated fix, and what to do when the gate still goes red.
    Then find out **why** the sanitizer didn't run in the pipeline that produced
    the file (missing step, new writer path) and wire it in — that's the actual
    fix.
+
 3. If the finding is another rule (e.g. MD032 lists, MD040 fence language),
    auto-fix the changed file:
 
@@ -75,18 +76,18 @@ automated fix, and what to do when the gate still goes red.
 ## Roadmap
 
 - [x] **Phase 1 — stop the daily failure at the source.** Ship
-  `wr/scripts/sanitize-wr-markdown.mjs` and wire it into `wr-pr-creation.yml`
-  and `generate-wr.sh` (this playbook's companion change).
+      `wr/scripts/sanitize-wr-markdown.mjs` and wire it into `wr-pr-creation.yml`
+      and `generate-wr.sh` (this playbook's companion change).
 - [ ] **Phase 2 — cover remaining writers.** Audit any other workflow/script
-  that commits `wr/issues/*.md` (e.g. batch generators, research importers) and
-  route them through the sanitizer.
+      that commits `wr/issues/*.md` (e.g. batch generators, research importers) and
+      route them through the sanitizer.
 - [ ] **Phase 3 — self-heal integration.** Teach the self-heal loop
-  (`self-healing.yml` / `repo-self-healer.yml`) to recognize
-  `MD012|MD025|MD047|MD049` findings on `wr/issues/*.md` in failed runs and
-  auto-run the sanitizer + push the fix instead of filing a manual issue.
+      (`self-healing.yml` / `repo-self-healer.yml`) to recognize
+      `MD012|MD025|MD047|MD049` findings on `wr/issues/*.md` in failed runs and
+      auto-run the sanitizer + push the fix instead of filing a manual issue.
 - [ ] **Phase 4 — shrink the backlog.** Use `scripts/fix-markdown-backlog.js`
-  sweeps so the whole-repo `npm run lint` backlog trends toward zero and the
-  changed-file scoping becomes unnecessary.
+      sweeps so the whole-repo `npm run lint` backlog trends toward zero and the
+      changed-file scoping becomes unnecessary.
 
 ## References
 

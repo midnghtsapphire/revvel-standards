@@ -20,6 +20,7 @@
 **Objective:** Deliver a monetizable web or desktop app targeting consumers researching or undergoing laser stretch-mark treatment, with features covering: treatment education, provider directory/booking, at-home device guidance, and before/after progress tracking.
 
 **Definition of Done:**
+
 - App is deployable and publicly accessible
 - Core feature set (education, booking/directory, progress tracker) is implemented
 - Monetization path (lead-gen referrals or subscription) is wired
@@ -30,6 +31,7 @@
 **Delivery Shape:** Shippable Next.js web app (desktop + mobile), optionally packaged as PWA for home-device users.
 
 **Acknowledgements:**
+
 - [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
 - [x] Explicitly requested secondary items should not be silently deferred.
 - [x] If the PR is partial, the blocker must be documented.
@@ -40,12 +42,12 @@
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -54,6 +56,7 @@
 - [x] Community chatter
 - [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
 - [ ] Every statistic/percentage cited with a source link or labeled as an estimate (several figures below still need citations or "estimate" labels)
+
 ## Research Findings
 
 <!-- revvel-research-findings -->
@@ -67,6 +70,7 @@
 The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ total treatment market in 2025), growing at 4–9% CAGR, and severely underserved by dedicated consumer apps. No dominant app-first player exists in this niche. The ASDS source confirms authoritative clinical grounding. A lean Next.js app combining education, provider lookup, and progress tracking can reach revenue within weeks via affiliate and lead-gen channels.
 
 **Immediate Actions:**
+
 1. Scaffold Next.js app under `products/laser-stretch-marks-tool`
 2. Integrate ASDS educational content under fair-use / paraphrase
 3. Wire provider lookup via Google Places API or RealSelf partnership
@@ -103,17 +107,17 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 
 ### Primary Keyword Targets
 
-| Keyword | Est. Monthly Searches (US) | Intent |
-|---|---|---|
-| laser stretch mark removal | ~40,500 | Commercial |
-| stretch marks laser treatment cost | ~8,100 | Commercial |
-| best laser for stretch marks | ~5,400 | Commercial |
-| fractional laser stretch marks | ~2,900 | Informational/Commercial |
-| laser stretch mark removal near me | ~3,600 | Transactional |
-| at-home laser stretch marks | ~1,300 | Commercial |
-| stretch mark treatment app | ~480 | Navigational |
+| Keyword                            | Est. Monthly Searches (US) | Intent                   |
+| ---------------------------------- | -------------------------- | ------------------------ |
+| laser stretch mark removal         | ~40,500                    | Commercial               |
+| stretch marks laser treatment cost | ~8,100                     | Commercial               |
+| best laser for stretch marks       | ~5,400                     | Commercial               |
+| fractional laser stretch marks     | ~2,900                     | Informational/Commercial |
+| laser stretch mark removal near me | ~3,600                     | Transactional            |
+| at-home laser stretch marks        | ~1,300                     | Commercial               |
+| stretch mark treatment app         | ~480                       | Navigational             |
 
-*Search volumes are estimates — verify with SEMrush/Ahrefs before launch.*
+_Search volumes are estimates — verify with SEMrush/Ahrefs before launch._
 
 ### Landing Page SEO
 
@@ -133,24 +137,24 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 
 ### Direct Competitors (App / Web)
 
-| Product | Type | Pricing | Key Gap |
-|---|---|---|---|
-| **RealSelf** | Provider directory + reviews | Free / lead-gen | No progress tracking; broad, not stretch-mark-specific |
-| **Zwivel** | Cosmetic procedure finder | Free / lead-gen | No app; no educational content |
-| **First Derm** | Teledermatology consults | $29–$75/consult | No provider matching; no tracking |
-| **SkinVision** | AI skin analysis (cancer focus) | $9.99/month | Mole focus; no stretch marks |
-| **Miiskin** | Skin lesion tracking | $49/year | Medical focus; no cosmetic procedures |
-| **MDacne** | AI acne analysis | Free + $19.99/month | Acne only; no stretch marks |
+| Product        | Type                            | Pricing             | Key Gap                                                |
+| -------------- | ------------------------------- | ------------------- | ------------------------------------------------------ |
+| **RealSelf**   | Provider directory + reviews    | Free / lead-gen     | No progress tracking; broad, not stretch-mark-specific |
+| **Zwivel**     | Cosmetic procedure finder       | Free / lead-gen     | No app; no educational content                         |
+| **First Derm** | Teledermatology consults        | $29–$75/consult     | No provider matching; no tracking                      |
+| **SkinVision** | AI skin analysis (cancer focus) | $9.99/month         | Mole focus; no stretch marks                           |
+| **Miiskin**    | Skin lesion tracking            | $49/year            | Medical focus; no cosmetic procedures                  |
+| **MDacne**     | AI acne analysis                | Free + $19.99/month | Acne only; no stretch marks                            |
 
-*Pricing data verified from public app store listings and product websites, July 2026. No single competitor covers the full education + provider + tracking + home-device guidance stack for stretch marks specifically.*
+_Pricing data verified from public app store listings and product websites, July 2026. No single competitor covers the full education + provider + tracking + home-device guidance stack for stretch marks specifically._
 
 ### Open Source Landscape
 
-| Repository | Stars | Last Update | Viability |
-|---|---|---|---|
-| skin-cancer-detection | ~200 | 2024 | ML model — repurposable for skin analysis |
-| face_recognition (ageitgey) | ~50k | Active | General face/skin; needs fine-tuning |
-| skincare-routine-app (various) | <100 | Mixed | Basic routine trackers; no laser content |
+| Repository                     | Stars | Last Update | Viability                                 |
+| ------------------------------ | ----- | ----------- | ----------------------------------------- |
+| skin-cancer-detection          | ~200  | 2024        | ML model — repurposable for skin analysis |
+| face_recognition (ageitgey)    | ~50k  | Active      | General face/skin; needs fine-tuning      |
+| skincare-routine-app (various) | <100  | Mixed       | Basic routine trackers; no laser content  |
 
 **Key Finding:** No credible open-source laser therapy or stretch marks-specific tool exists. Gap is real and buildable.
 
@@ -185,13 +189,13 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 
 ### Revenue Projections (Estimates)
 
-| Month | Milestone | Est. MRR |
-|---|---|---|
-| Month 1 | MVP live, 500 users | $500 (affiliate) |
-| Month 3 | Provider directory, 10 clinics paying | $2,500 |
-| Month 6 | Freemium at 1,000 paid users, 50 clinics | $12,000+ |
+| Month   | Milestone                                | Est. MRR         |
+| ------- | ---------------------------------------- | ---------------- |
+| Month 1 | MVP live, 500 users                      | $500 (affiliate) |
+| Month 3 | Provider directory, 10 clinics paying    | $2,500           |
+| Month 6 | Freemium at 1,000 paid users, 50 clinics | $12,000+         |
 
-*All figures are estimates. Validate with real conversion data.*
+_All figures are estimates. Validate with real conversion data._
 
 ---
 
@@ -212,20 +216,20 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 
 ### External APIs / Services
 
-| Service | Purpose | Cost |
-|---|---|---|
-| Google Places API | Provider directory search | ~$0.032/request; free tier 28,500 req/month |
-| OpenRouter API | AI skin assessment model routing | Varies by selected model/provider |
-| Stripe | Payments | 2.9% + $0.30/transaction |
-| Supabase | DB + Auth + Storage | Free up to 500MB DB; $25/month Pro |
-| Vercel | Hosting | Free Hobby; $20/month Pro |
+| Service           | Purpose                          | Cost                                        |
+| ----------------- | -------------------------------- | ------------------------------------------- |
+| Google Places API | Provider directory search        | ~$0.032/request; free tier 28,500 req/month |
+| OpenRouter API    | AI skin assessment model routing | Varies by selected model/provider           |
+| Stripe            | Payments                         | 2.9% + $0.30/transaction                    |
+| Supabase          | DB + Auth + Storage              | Free up to 500MB DB; $25/month Pro          |
+| Vercel            | Hosting                          | Free Hobby; $20/month Pro                   |
 
 ### Estimated Build Time
 
-| Phase | Scope | Estimate |
-|---|---|---|
-| Phase 1 — MVP | Education pages + provider search | 2–3 days |
-| Phase 2 — Tracking | Photo upload, timeline, session log | 2–3 days |
+| Phase                       | Scope                                 | Estimate |
+| --------------------------- | ------------------------------------- | -------- |
+| Phase 1 — MVP               | Education pages + provider search     | 2–3 days |
+| Phase 2 — Tracking          | Photo upload, timeline, session log   | 2–3 days |
 | Phase 3 — AI + Monetization | AI assessment, Stripe, lead-gen hooks | 3–4 days |
 
 ---
@@ -235,6 +239,7 @@ The stretch marks laser treatment market is large ($1B+ laser segment, $3B+ tota
 **Selected Output:** Production web app + optional PWA packaging
 
 **Core Feature Set:**
+
 1. **Treatment Education Hub** — Structured content covering laser types (fractional, pulsed dye, CO2, Nd:YAG), what to expect, recovery, cost ranges. Sourced from ASDS clinical guidance ([source](https://www.asds.net/skin-experts/skin-treatments/laser-light-therapy/laser-therapy-for-stretch-marks)) and peer-reviewed paraphrasing.
 2. **Provider Finder** — Location-based search for ASDS-certified or board-certified dermatologists offering laser stretch mark treatments. Powered by Google Places API.
 3. **Progress Tracker** — Photo upload + date-stamped timeline for tracking treatment progress across sessions.
@@ -257,6 +262,7 @@ Laser therapy for striae distensae (stretch marks) employs several modalities:
 **Clinical Efficacy:** Multiple RCTs show 40–75% improvement in stretch mark appearance after fractional laser series (internal estimate from literature review).
 
 **Session Costs (US, 2025; estimates — verify with market data before launch):**
+
 - Per session: $200–$500 (non-ablative fractional); $500–$1,500 (ablative CO2 fractional)
 - Course of treatment: $600–$4,500+
 - At-home LED devices: $150–$600 one-time
@@ -318,20 +324,20 @@ Laser therapy for striae distensae (stretch marks) employs several modalities:
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ---
 
 ## Risks
 
-| Risk | Severity | Mitigation |
-|---|---|---|
-| Medical device classification (FDA) | High | Maintain informational-only framing; no diagnostic claims; include disclaimers on every clinical page |
-| HIPAA exposure from photo storage | High | Use Supabase encrypted storage; do not label stored photos as medical records; include terms of service |
-| SEO competition from established players (RealSelf, Healthline) | Medium | Focus on long-tail "near me" + laser-type-specific keywords where big players are thin |
-| Google Places API cost at scale | Low | Cache provider results; paginate; implement request throttling |
-| AI assessment inaccuracy | Medium | Gate AI output behind "not medical advice" disclaimer; bias toward conservative recommendations |
+| Risk                                                            | Severity | Mitigation                                                                                              |
+| --------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------- |
+| Medical device classification (FDA)                             | High     | Maintain informational-only framing; no diagnostic claims; include disclaimers on every clinical page   |
+| HIPAA exposure from photo storage                               | High     | Use Supabase encrypted storage; do not label stored photos as medical records; include terms of service |
+| SEO competition from established players (RealSelf, Healthline) | Medium   | Focus on long-tail "near me" + laser-type-specific keywords where big players are thin                  |
+| Google Places API cost at scale                                 | Low      | Cache provider results; paginate; implement request throttling                                          |
+| AI assessment inaccuracy                                        | Medium   | Gate AI output behind "not medical advice" disclaimer; bias toward conservative recommendations         |

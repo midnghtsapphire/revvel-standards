@@ -46,7 +46,7 @@ test("Research swarm has 5 Scout agents with distinct roles", () => {
     "Scout-4: Feature Analysis",
     "Scout-5: Technology Stack",
   ];
-  
+
   assert.equal(expectedScouts.length, 5, "Should have 5 Scout agents");
   assert.ok(true, "Scout agent roles verified");
 });
@@ -58,7 +58,7 @@ test("Research swarm has 5 Scout agents with distinct roles", () => {
 test("Image naming convention follows [business]-[subject]-[context]-[size].webp", () => {
   const validFilename = "soul2bowl-bbq-fusion-bowl-hero-1920x1080.webp";
   const pattern = /^[a-z0-9-]+-[a-z0-9-]+-[a-z0-9-]+-[0-9x]+\.webp$/;
-  
+
   assert.ok(pattern.test(validFilename), "Valid filename should match pattern");
 });
 
@@ -69,7 +69,7 @@ test("Image sizes follow standard dimensions", () => {
     product: { width: 1080, height: 1080, maxSize: "150KB" },
     thumbnail: { width: 400, height: 300, maxSize: "50KB" },
   };
-  
+
   assert.equal(standardSizes.hero.width, 1920, "Hero width should be 1920px");
   assert.equal(standardSizes.og.width, 1200, "OG width should be 1200px");
 });
@@ -79,14 +79,21 @@ test("Image sizes follow standard dimensions", () => {
 // ---------------------------------------------------------------------------
 
 test("Alt text must be 5-15 words and descriptive", () => {
-  const validAlt = "Soul2Bowl chef preparing BBQ fusion bowl in commercial kitchen"; // 10 words
+  const validAlt =
+    "Soul2Bowl chef preparing BBQ fusion bowl in commercial kitchen"; // 10 words
   const invalidAlt1 = "Image of food"; // Too generic
   const invalidAlt2 = "soul2bowl.jpg"; // Filename, not description
-  
+
   const wordCount = validAlt.split(" ").length;
   assert.ok(wordCount >= 5 && wordCount <= 15, "Alt text should be 5-15 words");
-  assert.ok(!validAlt.startsWith("Image of"), "Should not start with 'Image of'");
-  assert.ok(!validAlt.startsWith("Picture of"), "Should not start with 'Picture of'");
+  assert.ok(
+    !validAlt.startsWith("Image of"),
+    "Should not start with 'Image of'",
+  );
+  assert.ok(
+    !validAlt.startsWith("Picture of"),
+    "Should not start with 'Picture of'",
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -105,21 +112,32 @@ test("Metadata includes all required fields", () => {
     "twitter.card",
     "twitter.images.alt",
   ];
-  
-  assert.equal(requiredFields.length, 9, "Should have 9 required metadata fields");
+
+  assert.equal(
+    requiredFields.length,
+    9,
+    "Should have 9 required metadata fields",
+  );
 });
 
 test("Title max length is 60 characters", () => {
   const maxTitleLength = 60;
   const testTitle = "Soul2Bowl — St. Louis Fusion Catering & Meal Prep"; // 50 chars
-  
-  assert.ok(testTitle.length <= maxTitleLength, "Title should be ≤60 characters");
+
+  assert.ok(
+    testTitle.length <= maxTitleLength,
+    "Title should be ≤60 characters",
+  );
 });
 
 test("Description is 150-160 characters", () => {
-  const testDescription = "Order individual meals, weekly meal prep, Sunday dinner, and catering from St. Louis's premier fusion soul food chef. BBQ, Asian-Hawaiian, keto, vegan."; // 156 chars
-  
-  assert.ok(testDescription.length >= 150 && testDescription.length <= 160, "Description should be 150-160 chars");
+  const testDescription =
+    "Order individual meals, weekly meal prep, Sunday dinner, and catering from St. Louis's premier fusion soul food chef. BBQ, Asian-Hawaiian, keto, vegan."; // 156 chars
+
+  assert.ok(
+    testDescription.length >= 150 && testDescription.length <= 160,
+    "Description should be 150-160 chars",
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -132,10 +150,14 @@ test("Quality gates include Lighthouse score requirements", () => {
     performance: 90,
     accessibility: 90,
   };
-  
+
   assert.equal(minScores.seo, 95, "SEO score should be ≥95");
   assert.equal(minScores.performance, 90, "Performance score should be ≥90");
-  assert.equal(minScores.accessibility, 90, "Accessibility score should be ≥90");
+  assert.equal(
+    minScores.accessibility,
+    90,
+    "Accessibility score should be ≥90",
+  );
 });
 
 test("Competitive analysis requires at least 10 competitors", () => {
@@ -145,7 +167,11 @@ test("Competitive analysis requires at least 10 competitors", () => {
 
 test("Differentiation strategy requires at least 3 unique angles", () => {
   const minDifferentiators = 3;
-  assert.equal(minDifferentiators, 3, "Should have at least 3 differentiation strategies");
+  assert.equal(
+    minDifferentiators,
+    3,
+    "Should have at least 3 differentiation strategies",
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -154,9 +180,12 @@ test("Differentiation strategy requires at least 3 unique angles", () => {
 
 test("Output directory structure includes all required subdirectories", () => {
   const requiredDirs = ["research", "design", "seo", "images"];
-  
+
   assert.equal(requiredDirs.length, 4, "Should have 4 output subdirectories");
-  assert.ok(requiredDirs.includes("research"), "Should include research directory");
+  assert.ok(
+    requiredDirs.includes("research"),
+    "Should include research directory",
+  );
   assert.ok(requiredDirs.includes("design"), "Should include design directory");
   assert.ok(requiredDirs.includes("seo"), "Should include seo directory");
   assert.ok(requiredDirs.includes("images"), "Should include images directory");
@@ -171,8 +200,11 @@ test("Research output includes competitive analysis and scout reports", () => {
     "scout-4-feature-analysis.md",
     "scout-5-technology-stack.md",
   ];
-  
-  assert.ok(expectedFiles.length >= 6, "Should generate at least 6 research files");
+
+  assert.ok(
+    expectedFiles.length >= 6,
+    "Should generate at least 6 research files",
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -187,10 +219,22 @@ test("Models are correctly selected for each phase", () => {
     metadata: "anthropic/claude-sonnet-4",
     altText: "anthropic/claude-haiku-4-5",
   };
-  
-  assert.equal(models.scout, "anthropic/claude-sonnet-4", "Scout should use Sonnet");
-  assert.equal(models.synthesizer, "anthropic/claude-opus-4", "Synthesizer should use Opus");
-  assert.equal(models.altText, "anthropic/claude-haiku-4-5", "Alt text should use Haiku (fast/cheap)");
+
+  assert.equal(
+    models.scout,
+    "anthropic/claude-sonnet-4",
+    "Scout should use Sonnet",
+  );
+  assert.equal(
+    models.synthesizer,
+    "anthropic/claude-opus-4",
+    "Synthesizer should use Opus",
+  );
+  assert.equal(
+    models.altText,
+    "anthropic/claude-haiku-4-5",
+    "Alt text should use Haiku (fast/cheap)",
+  );
 });
 
 // ---------------------------------------------------------------------------
@@ -200,8 +244,11 @@ test("Models are correctly selected for each phase", () => {
 test("Estimated cost per project is within budget", () => {
   const estimatedCost = 10; // dollars
   const maxBudget = 15;
-  
-  assert.ok(estimatedCost <= maxBudget, "Estimated cost should be within budget");
+
+  assert.ok(
+    estimatedCost <= maxBudget,
+    "Estimated cost should be within budget",
+  );
 });
 
 test("MCP projects inject the MCP landing page prompt pack into UI recommendations", () => {
@@ -221,19 +268,19 @@ Strong demand for MCP integrations in developer workflows.`;
       industry: "AI tools",
       services: "",
     }),
-    "UI engine should detect MCP context from business/industry/services fields, including hyphenated terms."
+    "UI engine should detect MCP context from business/industry/services fields, including hyphenated terms.",
   );
   assert.ok(
     prompt.includes("## 6. MCP Landing Page Visual Prompt Pack"),
-    "UI engine should include MCP landing page visual prompt section"
+    "UI engine should include MCP landing page visual prompt section",
   );
   assert.ok(
     prompt.includes("Prompt 1: The MCP Server Node & Context Stream"),
-    "UI engine should include MCP Prompt 1"
+    "UI engine should include MCP Prompt 1",
   );
   assert.ok(
     prompt.includes("Prompt 2: The MCP Host Hub & File/Tool Execution"),
-    "UI engine should include MCP Prompt 2"
+    "UI engine should include MCP Prompt 2",
   );
 });
 
@@ -254,11 +301,11 @@ Strong local catering demand in target market.`;
       industry: "Catering",
       services: "Meal prep",
     }),
-    "MCP detector should be false for non-MCP context"
+    "MCP detector should be false for non-MCP context",
   );
   assert.ok(
     !prompt.includes("## 6. MCP Landing Page Visual Prompt Pack"),
-    "UI engine should not add MCP prompt pack for non-MCP contexts"
+    "UI engine should not add MCP prompt pack for non-MCP contexts",
   );
 });
 

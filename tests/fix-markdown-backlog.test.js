@@ -5,7 +5,10 @@
 
 const { test } = require("node:test");
 const assert = require("assert");
-const { countLintErrors, parseArgs } = require("../scripts/fix-markdown-backlog");
+const {
+  countLintErrors,
+  parseArgs,
+} = require("../scripts/fix-markdown-backlog");
 
 test("countLintErrors counts only lines containing ' error '", () => {
   const out = [
@@ -23,7 +26,11 @@ test("countLintErrors handles empty / null", () => {
 });
 
 test("parseArgs defaults to fix mode", () => {
-  assert.deepStrictEqual(parseArgs([]), { check: false, quiet: false, threshold: 0 });
+  assert.deepStrictEqual(parseArgs([]), {
+    check: false,
+    quiet: false,
+    threshold: 0,
+  });
 });
 
 test("parseArgs parses --check, --quiet and --threshold", () => {

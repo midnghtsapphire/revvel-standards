@@ -13,19 +13,20 @@ S.H.I.F.T. validates **behavioral intent**, not just code execution — especial
 
 Evaluate every core agent/system test on these five dimensions:
 
-| Dimension | Question |
-|---|---|
-| **Memory** | Did it remember critical context from past interactions? |
-| **Reflection** | Did the agent identify the true priority (not just the obvious task)? |
-| **Planning** | Are multi-step workflows broken down logically and achievably? |
-| **Action** | Was the action executed per the user's actual intent, without hidden side effects? |
-| **System Reliability** | Did the agent handle external API data correctly without hallucinating values? |
+| Dimension              | Question                                                                           |
+| ---------------------- | ---------------------------------------------------------------------------------- |
+| **Memory**             | Did it remember critical context from past interactions?                           |
+| **Reflection**         | Did the agent identify the true priority (not just the obvious task)?              |
+| **Planning**           | Are multi-step workflows broken down logically and achievably?                     |
+| **Action**             | Was the action executed per the user's actual intent, without hidden side effects? |
+| **System Reliability** | Did the agent handle external API data correctly without hallucinating values?     |
 
 ## Humanistic Acceptance Tests
 
 Use actual external data and real priorities to validate agent intent.
 
 ### Example Structure
+
 ```
 Given: [Real context data — e.g., Plaid shows $61.15 bill overdue 8 days + work deadline approaching]
 When: [User asks agent to plan next 48 hours]
@@ -38,6 +39,7 @@ Then:
 ## Wizard of Oz (WoZ) Pre-Implementation Testing
 
 For solo developers before writing code:
+
 1. **Roleplay the Agent** — manually type how you wish the agent would respond
 2. **Analyze** — does the response feel supportive or stressful? What's most helpful?
 3. **Refine Prompt** — use your manual responses as few-shot examples in the agent's system prompt
@@ -45,16 +47,19 @@ For solo developers before writing code:
 ## Playwright E2E Testing Rules
 
 ### Neuro-Inclusive UI Validation
+
 Every Playwright test must assert:
+
 - **Predictability**: Navigation elements remain in fixed DOM locations
 - **Sensory Control**: If animations exist, there must be a tested toggle to disable them
 - **Contrast**: Critical text does not use pure `#000000` on pure `#FFFFFF`
 - **Calm Microcopy**: Error states use reassuring language ("We couldn't reach the server right now, try again later" — not "FATAL ERROR 500")
 
 ### "Bad Day" Simulation Tests
+
 ```ts
 // Block external APIs to test graceful degradation
-await page.route('**/api/plaid/**', route => route.abort());
+await page.route("**/api/plaid/**", (route) => route.abort());
 
 // Throttle network to test loading states
 // Use Playwright's network conditions API
@@ -68,8 +73,8 @@ await page.route('**/api/plaid/**', route => route.abort());
 2. **Evaluate** — if test fails, capture DOM state, console logs, network requests
 3. **Diagnose (Agentic)** — LLM analyzes: did UI change? API format change?
 4. **Heal**:
-   - *Soft failures*: auto-flip feature flag to hide broken component with calm placeholder
-   - *Hard failures*: auto-generate a persona-driven bug report with exact reproduction steps
+   - _Soft failures_: auto-flip feature flag to hide broken component with calm placeholder
+   - _Hard failures_: auto-generate a persona-driven bug report with exact reproduction steps
 
 ## Required Files (Every New Revvel App)
 

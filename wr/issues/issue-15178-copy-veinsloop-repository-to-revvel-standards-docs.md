@@ -9,8 +9,8 @@
 
 ---
 
-
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-28759164848.md`
@@ -22,12 +22,14 @@ Source packet: `docs/research-engine/run-28759164848.md`
 **BLOCKED - DO NOT PROCEED**
 
 This work request cannot be executed due to critical missing information:
+
 - Source repository location unknown (no URL for "veinsloop")
 - No definition of done or acceptance criteria
 - All required WR fields are empty despite being marked as required
 - Misclassified as "production-app" when it's a documentation task
 
 **Required Before Proceeding:**
+
 1. Complete all WR template fields (Summary, Objective, Definition of Done)
 2. Provide full URL/path to source veinsloop repository
 3. Clarify copy method (git submodule, file copy, or sync workflow)
@@ -36,10 +38,12 @@ This work request cannot be executed due to critical missing information:
 ## 2. Audience We Are Going After and Why
 
 **Primary Audience:** VANET/V2X simulation engineers and academic researchers
+
 - **Pain Point:** High complexity and setup time for vehicular network simulations
 - **Value Prop:** "Hello, world" quickstart for VANET simulation
 
 **Secondary Audience:** Internal Revvel developers
+
 - **Pain Point:** Scattered documentation and standards
 - **Value Prop:** Centralized documentation repository
 
@@ -50,8 +54,9 @@ This work request cannot be executed due to critical missing information:
 **SEO Reality:** "veinsloop" has zero search volume - it's an internal project name
 
 **Recommended Actions:**
+
 1. **Rename for Discovery:** Use descriptive names like "Veins Scenario Manager" or "V2X Simulation Looper"
-2. **Target Keywords:** 
+2. **Target Keywords:**
    - "veins tutorial"
    - "omnet++ sumo example"
    - "v2x simulation open source"
@@ -66,16 +71,17 @@ This work request cannot be executed due to critical missing information:
 
 **Direct Competitors (if this is a VANET tool):**
 
-| Competitor | Stars | Pricing | Moat |
-|------------|-------|---------|------|
-| Boost.Asio | 2.7k | Free (FOSS) | Industry standard, feature-rich |
-| libuv | 22.9k | Free (FOSS) | Powers Node.js, battle-tested |
-| libevent | N/A | Free (FOSS) | Mature event notification |
-| veinsloop | 59 | Free (FOSS) | Extreme simplicity |
+| Competitor | Stars | Pricing     | Moat                            |
+| ---------- | ----- | ----------- | ------------------------------- |
+| Boost.Asio | 2.7k  | Free (FOSS) | Industry standard, feature-rich |
+| libuv      | 22.9k | Free (FOSS) | Powers Node.js, battle-tested   |
+| libevent   | N/A   | Free (FOSS) | Mature event notification       |
+| veinsloop  | 59    | Free (FOSS) | Extreme simplicity              |
 
 **Critical Gap:** Cannot verify veinsloop repository existence or purpose without URL
 
 **Risks:**
+
 - Low bus factor (single maintainer)
 - Not battle-tested like alternatives
 - Maintenance burden if copied vs. submoduled
@@ -83,6 +89,7 @@ This work request cannot be executed due to critical missing information:
 ## 5. Chatter and Demand Signals
 
 **Findings:** Zero public chatter about "veinsloop"
+
 - No GitHub discussions found
 - No Stack Overflow questions
 - No Reddit mentions
@@ -95,16 +102,19 @@ This work request cannot be executed due to critical missing information:
 ## 6. Factual Validation and Evidence Gaps
 
 **Cannot Verify:**
+
 - veinsloop repository existence (no URL provided)
 - Target path validity (revvel-standards/docs/veinsloops/)
 - Repository contents, size, or dependencies
 - License compatibility
 
 **Contradictions:**
+
 - All WR fields marked "_No response_" despite acknowledgment checkboxes checked
 - Output Type "production-app" inconsistent with documentation task
 
 **Required Verification:**
+
 - GitHub API check for repository existence
 - Access permissions for both repositories
 - License compatibility review
@@ -112,12 +122,14 @@ This work request cannot be executed due to critical missing information:
 ## 7. Build Requirements and Acceptance Gates
 
 **Blocking Requirements:**
+
 1. Source repository URL identification
 2. Access verification (read source, write target)
 3. Copy method specification (submodule vs. file copy)
 4. Definition of done
 
 **Acceptance Gates:**
+
 - [ ] Source repository successfully accessed
 - [ ] Target directory created at revvel-standards/docs/veinsloops/
 - [ ] All relevant files copied (scope TBD)
@@ -126,6 +138,7 @@ This work request cannot be executed due to critical missing information:
 - [ ] Original repository archived or deprecated notice added
 
 **Implementation Options:**
+
 ```bash
 # Option 1: Git Submodule (Recommended)
 git submodule add https://github.com/[org]/veinsloop.git revvel-standards/docs/veinsloops
@@ -138,21 +151,25 @@ rsync -av --delete temp_veinsloop/ revvel-standards/docs/veinsloops/ --exclude "
 ## 8. Code Review Agent Packet
 
 ### Bito AI Review Points
+
 - Check for sensitive data or secrets in copied files
 - Verify no hardcoded paths that would break after migration
 - Ensure documentation links are relative, not absolute
 
 ### OpenRouter Review Points
+
 - Validate markdown syntax in all .md files
 - Check for broken image references
 - Verify code examples still work in new location
 
 ### Coderabbit Review Points
+
 - Ensure consistent file naming conventions
 - Check for duplicate content with existing docs
 - Validate directory structure follows standards
 
 ### Ralph Loop Review Points
+
 - Verify no circular dependencies created
 - Check impact on existing documentation navigation
 - Ensure proper git history preservation (if required)
@@ -160,6 +177,7 @@ rsync -av --delete temp_veinsloop/ revvel-standards/docs/veinsloops/ --exclude "
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: WR Validation Workflow
+
 ```yaml
 name: WR Template Validation
 on:
@@ -177,17 +195,21 @@ jobs:
             exit 1
           fi
 ```
+
 **Commit Message:** "ci: add WR template validation workflow"
 
 ### Fix 2: Repository Discovery Script
+
 ```bash
 #!/bin/bash
 # scripts/discover-veinsloop.sh
 gh repo list revvel --search veinsloop --json name,url,description
 ```
+
 **Commit Message:** "feat: add veinsloop repository discovery script"
 
 ### Fix 3: Pre-flight Validation
+
 ```bash
 #!/bin/bash
 SOURCE_REPO="$1"
@@ -199,28 +221,33 @@ if [ -d "$TARGET_PATH" ]; then
     exit 1
 fi
 ```
+
 **Commit Message:** "feat: add pre-flight validation for repository copy"
 
 ## 10. Labels to Apply
 
 **Immediate (Blocking):**
+
 - `blocked-incomplete-wr`
 - `needs-source-verification`
 - `needs-clarification`
 - `type/documentation` (should replace production-app)
 
 **Risk Labels:**
+
 - `risk/ambiguous-requirements`
 - `risk/stale-content`
 - `risk/integration`
 - `risk/scope-creep`
 
 **Process Labels:**
+
 - `repository-operation`
 - `documentation-migration`
 - `needs-definition-of-done`
 
 **Revenue Labels (if applicable):**
+
 - `needs-monetization-spec`
 - `revenue-framework-missing`
 

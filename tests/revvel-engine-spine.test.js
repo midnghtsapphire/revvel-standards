@@ -70,7 +70,10 @@ test("markdown/frontmatter parsing: TEMPLATE.revvel.md has extended fields", () 
 });
 
 test("canonical TEMPLATE.md is preserved (not replaced)", () => {
-  assert.ok(fs.existsSync(path.join(REPO_ROOT, "docs/inbox/TEMPLATE.md")), "TEMPLATE.md must still exist");
+  assert.ok(
+    fs.existsSync(path.join(REPO_ROOT, "docs/inbox/TEMPLATE.md")),
+    "TEMPLATE.md must still exist",
+  );
 });
 
 test("ENGINE_INVENTORY.md maps the suggested engine categories", () => {
@@ -86,7 +89,10 @@ test("ENGINE_INVENTORY.md maps the suggested engine categories", () => {
     "goal-score",
     "learning/archive",
   ]) {
-    assert.ok(doc.includes(cat), `ENGINE_INVENTORY.md missing category: ${cat}`);
+    assert.ok(
+      doc.includes(cat),
+      `ENGINE_INVENTORY.md missing category: ${cat}`,
+    );
   }
 });
 
@@ -95,18 +101,37 @@ test("BOM.revvel.md is additive and preserves goals + cites vendor URLs", () => 
   const doc = read(bomPath);
   // Original BOM.md preserved alongside.
   assert.ok(
-    fs.existsSync(path.join(REPO_ROOT, "docs/projects/life-insurance-lead-saas/BOM.md")),
-    "original BOM.md must be preserved"
+    fs.existsSync(
+      path.join(REPO_ROOT, "docs/projects/life-insurance-lead-saas/BOM.md"),
+    ),
+    "original BOM.md must be preserved",
   );
   // Goal preserved by reference (not overwritten) — $10k phase-1 anchor.
-  assert.ok(doc.includes("revenue_target_monthly_usd: 10000"), "must preserve $10k goal reference");
+  assert.ok(
+    doc.includes("revenue_target_monthly_usd: 10000"),
+    "must preserve $10k goal reference",
+  );
   assert.ok(/GOAL\.md/.test(doc), "must reference GOAL.md as source of truth");
   // Required vendor source URLs.
-  for (const url of ["compulife", "trustedform", "scrublock", "jornaya", "batchdata", "openrouter.ai", "zapier.com"]) {
-    assert.ok(doc.toLowerCase().includes(url), `BOM.revvel.md missing source for: ${url}`);
+  for (const url of [
+    "compulife",
+    "trustedform",
+    "scrublock",
+    "jornaya",
+    "batchdata",
+    "openrouter.ai",
+    "zapier.com",
+  ]) {
+    assert.ok(
+      doc.toLowerCase().includes(url),
+      `BOM.revvel.md missing source for: ${url}`,
+    );
   }
   // Compliance gates present.
-  assert.ok(/TCPA/i.test(doc) && /DNC/i.test(doc), "compliance gates (TCPA/DNC) must be listed");
+  assert.ok(
+    /TCPA/i.test(doc) && /DNC/i.test(doc),
+    "compliance gates (TCPA/DNC) must be listed",
+  );
 });
 
 test("PRESERVE_GOALS_AND_HISTORY standard states goals are sacred + no-delete", () => {
@@ -125,7 +150,11 @@ test("intake state generation preserves the revenue goal exactly", () => {
     output_type: "api-product",
   };
   const state = buildState(intake);
-  assert.strictEqual(state.revenue_target_monthly_usd, 7777, "goal must pass through untouched");
+  assert.strictEqual(
+    state.revenue_target_monthly_usd,
+    7777,
+    "goal must pass through untouched",
+  );
   assert.strictEqual(state.goal_phase, 2);
   assert.ok(validateState(state).valid, "generated state must be schema-valid");
 });
@@ -146,7 +175,10 @@ test("BOM generation halts with procurement BOM when credentials missing", () =>
   });
   const { status, bomPath } = runEngineLoop(state, { env: {}, bomDir: tmp });
   assert.strictEqual(status, "needs_procurement");
-  assert.ok(bomPath && fs.existsSync(bomPath), "a BOM.md must be emitted on missing creds");
+  assert.ok(
+    bomPath && fs.existsSync(bomPath),
+    "a BOM.md must be emitted on missing creds",
+  );
   fs.rmSync(tmp, { recursive: true, force: true });
 });
 

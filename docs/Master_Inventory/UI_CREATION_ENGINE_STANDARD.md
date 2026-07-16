@@ -11,7 +11,7 @@
 
 This standard defines the **UI Creation Engine** — a comprehensive, autonomous system for creating cutting-edge website and mobile app interfaces that compete with top vendors in the USA. Every digital product created must meet or exceed the quality, features, and SEO performance of industry leaders.
 
-**Core Principle**: *"Every digital product should compete with the top vendors in the USA."*
+**Core Principle**: _"Every digital product should compete with the top vendors in the USA."_
 
 This engine integrates:
 
@@ -33,7 +33,7 @@ Invoke the UI Creation Engine whenever:
 - Optimizing existing UIs for SEO and conversion
 - Generating comprehensive design systems and component libraries
 
-**Universal Website Requirement:** From now on, *every product will need a website*. This includes CLI, MCP, API, and skills. When a product is approved, the engine must generate the website for it.
+**Universal Website Requirement:** From now on, _every product will need a website_. This includes CLI, MCP, API, and skills. When a product is approved, the engine must generate the website for it.
 
 **Do NOT** skip the UI Creation Engine for:
 
@@ -105,18 +105,18 @@ For skills (which are highly layered and intricate), a dedicated **Test Harness*
 When generating websites and mobile apps, use these master image generation prompts tailored specifically for glassmorphic, hyper-realistic designs. They provide a premium, 3D glossy tech aesthetic.
 
 ### Prompt 1: The Dark Mode Analytics Dashboard (Moody & Premium)
->
+
 > A medium-long cinematic shot of an ultra-modern, hyper-realistic website interface featuring a glassmorphic analytics dashboard. Floating 3D translucent glass modules with softly blurred backgrounds display glowing neon blue and vibrant magenta data visualization charts. Thick, realistic atmospheric fog and low haze drift subtly behind the UI layers, catching faint beams of cool ambient light. The entire interface has a glossy, frosted finish with crisp, refracting light edges and realistic depth of field. Photorealistic, 8k resolution, elegant 3D realism, studio lighting, smooth glass textures, octane render style.
 
 ### Prompt 2: The Agent Command Center (Sleek, Clean & High-Tech)
->
+
 > A close-up cinematic tracking shot of a stunning, futuristic homepage for an advanced AI agent platform. The UI features layers of semi-transparent, thick-cut frosted glass panels hovering over a dark, minimalist background. A central glassmorphic profile card showcases sharp, metallic typography and glowing amber accent borders. Delicate light leaks and sharp caustics ripple across the glossy, reflective surfaces. Micro-textures on the glass catch the studio rim lighting, creating a perfect balance of transparency and depth. Hyper-realistic, 8k, ultra-detailed, photorealistic glass textures, 3D glossy realism, elegant and premium layout.
 
 ### Prompt 3: The Interactive Agent Canvas (Light & Atmospheric)
->
+
 > A cinematic, angled hero shot of a fluid, interactive web application featuring glassmorphic design elements. Multiple layered, translucent glass cards with high-blur backdrops float dynamically over a soft, shifting gradient background of deep violet and warm coral. The edges of the glass panels are brilliantly crisp, catching a glossy rim light that gives them a tangible, 3D physical presence. Soft shadows fall realistically between the floating UI layers, creating an immersive sense of space and high-end digital craftsmanship. Photorealistic, 8k resolution, ray-traced reflections, premium UX/UI visualization.
 
-*💡 Tips for Fine-Tuning the Vibe:*
+_💡 Tips for Fine-Tuning the Vibe:_
 
 - **Color Palette:** Replace terms like "cool blue and warm amber" or "neon blue and vibrant magenta" with specific brand colors.
 - **Transparency:** If the background bleeds through too much, change "semi-transparent" to "heavy frosted glass" or "thick, low-transparency translucent panels".
@@ -153,4 +153,4 @@ See [`skills/ui-creation-engine/SKILL.md`](../../skills/ui-creation-engine/SKILL
 
 ---
 
-*See [`skills/ui-creation-engine/SKILL.md`](../../skills/ui-creation-engine/SKILL.md) for full standard.*
+_See [`skills/ui-creation-engine/SKILL.md`](../../skills/ui-creation-engine/SKILL.md) for full standard._

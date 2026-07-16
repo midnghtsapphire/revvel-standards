@@ -28,20 +28,20 @@ move a product candidate forward by one or more steps.
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
-| **Listen** | Run / read the daily social-listening intake and write `projects/agent-generated/_intake/<date>.jsonl`. |
-| **Triage** | Cluster complaints, score them by volume × payability × blue-ocean / age. |
-| **Brief** | Run competitor + review scan; write `<product>/research/brief.md`. |
-| **ROI Gate** | Compute build cost vs. 90-day revenue; auto-approve cheap reversible shapes; otherwise notify Audrey. |
-| **Route** | Pick the cheapest viable solution shape and the build standard for it. |
-| **BOM** | Emit a `BOM.md`; hand to the BOM gatekeeper; do not build until `bom_ready: true`. |
-| **Build** | Scaffold from `templates/agent-generated-product/build/<shape>/`; obey lint/test/coverage gates. |
-| **Certify** | Run code-review, security, a11y, store-policy, tax/legal gates. |
-| **Monetize** | Idempotently create Stripe Product + Price + Payment Link keyed on `product_slug`. |
-| **Deploy** | Publish to the highest-volume store(s) for that shape. |
-| **Market** | SEO + SEM + paid social, with the `min($20, est_daily_revenue / 5)` budget rule. |
-| **Measure** | Roll up Stripe / store / analytics into `<product>/sales/`. |
+| Task         | Description                                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------------------- |
+| **Listen**   | Run / read the daily social-listening intake and write `projects/agent-generated/_intake/<date>.jsonl`. |
+| **Triage**   | Cluster complaints, score them by volume × payability × blue-ocean / age.                               |
+| **Brief**    | Run competitor + review scan; write `<product>/research/brief.md`.                                      |
+| **ROI Gate** | Compute build cost vs. 90-day revenue; auto-approve cheap reversible shapes; otherwise notify Audrey.   |
+| **Route**    | Pick the cheapest viable solution shape and the build standard for it.                                  |
+| **BOM**      | Emit a `BOM.md`; hand to the BOM gatekeeper; do not build until `bom_ready: true`.                      |
+| **Build**    | Scaffold from `templates/agent-generated-product/build/<shape>/`; obey lint/test/coverage gates.        |
+| **Certify**  | Run code-review, security, a11y, store-policy, tax/legal gates.                                         |
+| **Monetize** | Idempotently create Stripe Product + Price + Payment Link keyed on `product_slug`.                      |
+| **Deploy**   | Publish to the highest-volume store(s) for that shape.                                                  |
+| **Market**   | SEO + SEM + paid social, with the `min($20, est_daily_revenue / 5)` budget rule.                        |
+| **Measure**  | Roll up Stripe / store / analytics into `<product>/sales/`.                                             |
 
 ---
 
@@ -74,16 +74,16 @@ stripe product, paid social budget, product-slug, agent-generated product
 
 Pick the cheapest shape that genuinely solves the problem. In tie cases, prefer the shape that compounds (PDF/MCP/CLI ship costs near-zero per copy).
 
-| Score | Shape |
-|---|---|
-| problem is one-shot reference, SEO-discoverable | **PDF / booklet** |
-| problem is a single deterministic action with output | **one-button app** (web first, mobile if behavior is on-the-go) |
-| problem is fixing a vendor's web UI behavior | **browser extension** |
-| problem is hands-free in a household | **Alexa / Google skill** |
-| problem is "developers want to call this" | **API** |
-| problem is "developers want to script this locally" | **CLI** |
-| problem is "an LLM agent needs this tool" | **MCP server** |
-| anything bigger, only after ROI gate strongly justifies | **full app** |
+| Score                                                   | Shape                                                           |
+| ------------------------------------------------------- | --------------------------------------------------------------- |
+| problem is one-shot reference, SEO-discoverable         | **PDF / booklet**                                               |
+| problem is a single deterministic action with output    | **one-button app** (web first, mobile if behavior is on-the-go) |
+| problem is fixing a vendor's web UI behavior            | **browser extension**                                           |
+| problem is hands-free in a household                    | **Alexa / Google skill**                                        |
+| problem is "developers want to call this"               | **API**                                                         |
+| problem is "developers want to script this locally"     | **CLI**                                                         |
+| problem is "an LLM agent needs this tool"               | **MCP server**                                                  |
+| anything bigger, only after ROI gate strongly justifies | **full app**                                                    |
 
 ---
 
@@ -131,11 +131,13 @@ Rules:
 ### Example 1: Daily listen completes, two candidates emerge
 
 **Input:**
+
 ```
 Run the pipeline. State: no candidates today, fresh listen.
 ```
 
 **Output:**
+
 ```
 Step 1 (Listen): 1,432 complaints captured across 6 sources.
 Step 2 (Triage): top candidates →
@@ -148,11 +150,13 @@ Pipeline step 2 complete. State written. Next step: 3.
 ### Example 2: ROI gate triggers human approval
 
 **Input:**
+
 ```
 Move cpap-mask-leak forward.
 ```
 
 **Output:**
+
 ```
 Step 4 (ROI): build cost $4,800 (one-button app), 90d revenue $5,200 → ratio 1.08x.
 Below auto-approve threshold (5x) and shape is not in {PDF, MCP, CLI, skill}.
@@ -164,18 +168,18 @@ Pipeline paused for cpap-mask-leak. State written. Next step: 4 (awaiting human)
 
 ## Dependencies
 
-| Dependency | Required? | Purpose | Install |
-|---|---|---|---|
-| n8n | ✅ Required | Cron + listening + ad budget loop | self-host on DigitalOcean |
-| GitHub Actions | ✅ Required | Build / certify / deploy events | included in repo |
-| Stripe | ✅ Required | Monetize step | `npm i stripe` |
-| `vault-agent` skill | ✅ Required | API key provisioning for BOM | already in repo |
-| `code-review` MCP | ✅ Required | Certify step | already in repo |
-| `seo-metadata` skill | ✅ Required | Market step | already in repo |
-| `error-reporting` skill | ✅ Required | Cron heartbeats | already in repo |
-| `tax-legal-agent` skill | ✅ Required | Tax + legal cert | already in repo |
-| `rvvel-affiliate-links` MCP | ⭕ Optional | Cross-promotion | already in repo |
-| Tavily / Brave Search MCP | ⭕ Optional | Listening fallback | per project `.mcp.json` |
+| Dependency                  | Required?   | Purpose                           | Install                   |
+| --------------------------- | ----------- | --------------------------------- | ------------------------- |
+| n8n                         | ✅ Required | Cron + listening + ad budget loop | self-host on DigitalOcean |
+| GitHub Actions              | ✅ Required | Build / certify / deploy events   | included in repo          |
+| Stripe                      | ✅ Required | Monetize step                     | `npm i stripe`            |
+| `vault-agent` skill         | ✅ Required | API key provisioning for BOM      | already in repo           |
+| `code-review` MCP           | ✅ Required | Certify step                      | already in repo           |
+| `seo-metadata` skill        | ✅ Required | Market step                       | already in repo           |
+| `error-reporting` skill     | ✅ Required | Cron heartbeats                   | already in repo           |
+| `tax-legal-agent` skill     | ✅ Required | Tax + legal cert                  | already in repo           |
+| `rvvel-affiliate-links` MCP | ⭕ Optional | Cross-promotion                   | already in repo           |
+| Tavily / Brave Search MCP   | ⭕ Optional | Listening fallback                | per project `.mcp.json`   |
 
 ---
 

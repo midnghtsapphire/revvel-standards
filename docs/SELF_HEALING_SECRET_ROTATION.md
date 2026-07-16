@@ -45,6 +45,7 @@ Secrets are tracked in `wr/memory/secret-rotations.md`:
 Last Updated: 2026-04-30T16:52:45Z
 
 ## OPENROUTER_API_KEY
+
 - **Last Rotated:** 2026-04-15T10:30:00Z
 - **Next Rotation:** 2026-06-14T10:30:00Z (60 days)
 - **Rotation Count:** 3
@@ -55,6 +56,7 @@ Last Updated: 2026-04-30T16:52:45Z
   - 2026-01-05: Initial creation
 
 ## STRIPE_SECRET_KEY
+
 - **Last Rotated:** 2026-04-28T14:20:00Z
 - **Next Rotation:** 2026-06-27T14:20:00Z (60 days)
 - **Rotation Count:** 1
@@ -91,7 +93,7 @@ jobs:
       secrets_to_rotate: ${{ steps.check.outputs.secrets }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Check rotation metadata
         id: check
         run: |
@@ -99,7 +101,7 @@ jobs:
             --metadata-file wr/memory/secret-rotations.md \
             --days-threshold 60 \
             --output secrets.json
-          
+
           if [ -s secrets.json ]; then
             echo "secrets=$(cat secrets.json)" >> "$GITHUB_OUTPUT"
           else
@@ -117,12 +119,12 @@ jobs:
         secret: ${{ fromJson(needs.check-rotation-needed.outputs.secrets_to_rotate) }}
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Install gatekeeper-cli
         run: |
           cd gatekeeper-cli
           pip install -e .
-      
+
       - name: Rotate secret with retry
         id: rotate
         env:
@@ -132,7 +134,7 @@ jobs:
           MAX_RETRIES=3
           RETRY_COUNT=0
           DELAY=300  # Start with 5 minutes
-          
+
           while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
             if python -m gatekeeper_cli.main secrets rotate "${{ matrix.secret }}"; then
               echo "status=success" >> "$GITHUB_OUTPUT"
@@ -147,11 +149,11 @@ jobs:
               fi
             fi
           done
-          
+
           echo "status=failed" >> "$GITHUB_OUTPUT"
           echo "::error::Failed to rotate ${{ matrix.secret }} after $MAX_RETRIES attempts"
           exit 1
-      
+
       - name: Update rotation metadata
         if: steps.rotate.outputs.status == 'success'
         run: |
@@ -159,13 +161,13 @@ jobs:
             --secret "${{ matrix.secret }}" \
             --status success \
             --metadata-file wr/memory/secret-rotations.md
-          
+
           git config user.name "gatekeeper-bot"
           git config user.email "gatekeeper-bot@revvel.dev"
           git add wr/memory/secret-rotations.md
           git commit -m "chore: update rotation metadata for ${{ matrix.secret }}"
           git push
-      
+
       - name: Escalate to GOAP
         if: steps.rotate.outputs.status == 'failed'
         env:
@@ -177,31 +179,31 @@ jobs:
           **Secret:** \`${{ matrix.secret }}\`
           **Project:** revvel-standards
           **Workflow:** [Secret Rotation Schedule](https://github.com/\${{ github.repository }}/actions/runs/\${{ github.run_id }})
-          
+
           ### Failure Details
-          
+
           The automated secret rotation failed after 3 attempts with exponential backoff:
           - Attempt 1: Failed (5min delay)
           - Attempt 2: Failed (15min delay)
           - Attempt 3: Failed (45min delay)
-          
+
           ### Required Action
-          
+
           1. Investigate why rotation failed (check Doppler API status, permissions)
           2. Manually rotate the secret if needed
           3. Update the rotation metadata in \`wr/memory/secret-rotations.md\`
           4. Close this issue once resolved
-          
+
           ### Next Steps
-          
+
           The system will retry this rotation on the next scheduled run (next Monday).
           If this is a critical secret, rotate it manually ASAP.
-          
+
           ---
           _Auto-escalated by Secret Rotation Schedule at $(date -u +%Y-%m-%dT%H:%M:%SZ)_
           EOF
           )
-          
+
           gh issue create \
             --repo "${{ github.repository }}" \
             --title "🚨 Secret Rotation Failed: ${{ matrix.secret }}" \
@@ -228,25 +230,25 @@ from pathlib import Path
 def parse_metadata(file_path: Path) -> dict:
     """Parse rotation metadata file."""
     secrets = {}
-    
+
     if not file_path.exists():
         return secrets
-    
+
     content = file_path.read_text()
     current_secret = None
-    
+
     for line in content.split("\n"):
         # Match secret header
         if line.startswith("## ") and not line.startswith("## "):
             current_secret = line[3:].strip()
             secrets[current_secret] = {}
-        
+
         # Match last rotated date
         elif current_secret and "Last Rotated:" in line:
             match = re.search(r"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z)", line)
             if match:
                 secrets[current_secret]["last_rotated"] = match.group(1)
-    
+
     return secrets
 
 
@@ -254,21 +256,21 @@ def check_rotation_needed(secrets: dict, days_threshold: int) -> list:
     """Return list of secrets that need rotation."""
     now = datetime.utcnow()
     needs_rotation = []
-    
+
     for secret_name, metadata in secrets.items():
         if "last_rotated" not in metadata:
             # Never rotated - needs rotation
             needs_rotation.append(secret_name)
             continue
-        
+
         last_rotated = datetime.fromisoformat(
             metadata["last_rotated"].replace("Z", "+00:00")
         )
         days_since_rotation = (now - last_rotated).days
-        
+
         if days_since_rotation >= days_threshold:
             needs_rotation.append(secret_name)
-    
+
     return needs_rotation
 
 
@@ -277,16 +279,16 @@ def main():
     parser.add_argument("--metadata-file", required=True, help="Path to metadata file")
     parser.add_argument("--days-threshold", type=int, default=60, help="Days threshold")
     parser.add_argument("--output", required=True, help="Output JSON file")
-    
+
     args = parser.parse_args()
-    
+
     metadata_path = Path(args.metadata_file)
     secrets = parse_metadata(metadata_path)
     needs_rotation = check_rotation_needed(secrets, args.days_threshold)
-    
+
     output_path = Path(args.output)
     output_path.write_text(json.dumps(needs_rotation))
-    
+
     print(f"Found {len(needs_rotation)} secrets needing rotation:")
     for secret in needs_rotation:
         print(f"  - {secret}")
@@ -313,28 +315,28 @@ def update_metadata(file_path: Path, secret_name: str, status: str):
     """Update rotation metadata for a secret."""
     now = datetime.utcnow()
     next_rotation = now + timedelta(days=60)
-    
+
     if not file_path.exists():
         file_path.parent.mkdir(parents=True, exist_ok=True)
         content = f"# Secret Rotation Log\n\nLast Updated: {now.isoformat()}Z\n\n"
     else:
         content = file_path.read_text()
-    
+
     # Update last updated timestamp
     content = content.replace(
         "Last Updated:",
         f"Last Updated: {now.isoformat()}Z (previous: Last Updated:"
     ).split("(previous: ")[0] + "\n"
-    
+
     # Find or create secret section
     secret_marker = f"## {secret_name}"
-    
+
     if secret_marker in content:
         # Update existing section
         lines = content.split("\n")
         in_section = False
         new_lines = []
-        
+
         for line in lines:
             if line == secret_marker:
                 in_section = True
@@ -349,9 +351,9 @@ def update_metadata(file_path: Path, secret_name: str, status: str):
                 continue
             elif in_section and line.startswith("- **Next Rotation:**"):
                 continue
-            
+
             new_lines.append(line)
-        
+
         content = "\n".join(new_lines)
     else:
         # Add new section
@@ -362,7 +364,7 @@ def update_metadata(file_path: Path, secret_name: str, status: str):
         content += f"- **Last Status:** {status}\n"
         content += f"- **History:**\n"
         content += f"  - {now.strftime('%Y-%m-%d')}: Automatic rotation\n"
-    
+
     file_path.write_text(content)
     print(f"✓ Updated metadata for {secret_name}")
 
@@ -372,9 +374,9 @@ def main():
     parser.add_argument("--secret", required=True, help="Secret name")
     parser.add_argument("--status", required=True, help="Rotation status")
     parser.add_argument("--metadata-file", required=True, help="Path to metadata file")
-    
+
     args = parser.parse_args()
-    
+
     metadata_path = Path(args.metadata_file)
     update_metadata(metadata_path, args.secret, args.status)
 
@@ -402,6 +404,7 @@ The system runs automatically every Monday at 02:00 UTC. Secrets older than 60 d
 ### Escalation
 
 If a rotation fails after 3 retries, an issue is created with:
+
 - Label: `goap-escalation`, `security`, `urgent`
 - Assignee: @midnghtsapphire
 - Full failure context and logs
@@ -415,7 +418,7 @@ Default: 60 days
 To change, edit `.github/workflows/secret-rotation-schedule.yml`:
 
 ```yaml
---days-threshold 60  # Change to desired number of days
+--days-threshold 60 # Change to desired number of days
 ```
 
 ### Retry Policy

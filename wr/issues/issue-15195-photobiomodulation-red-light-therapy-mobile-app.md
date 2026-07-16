@@ -10,6 +10,7 @@
 ---
 
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-issue-15195-photobiomodulation.md`
@@ -23,6 +24,7 @@ Source packet: `docs/research-engine/run-issue-15195-photobiomodulation.md`
 Red light therapy (RLT) / photobiomodulation (PBM) is a rapidly growing wellness category backed by peer-reviewed science. The PMC reference article ([PMC10294878](https://pmc.ncbi.nlm.nih.gov/articles/PMC10294878/)) demonstrates PBM's role in improving photodynamic therapy efficacy against resistant MCF-7 breast cancer cells — validating the science at a research level. Consumer-facing apps in this space are sparse and fragmented, creating a clear product gap.
 
 **Why proceed:**
+
 1. Growing wellness tech market with strong consumer and clinical demand
 2. No dominant, science-backed app has captured this niche
 3. Low-cost-to-ship: protocol-based app (no hardware required at MVP)
@@ -56,6 +58,7 @@ Red light therapy (RLT) / photobiomodulation (PBM) is a rapidly growing wellness
    - Smaller but high-conviction audience; care must be taken to avoid medical claims
 
 ### Why Now
+
 - Device sales growing rapidly post-COVID; owners need guidance
 - NIH PubMed has 6,000+ PBM studies — science is maturing
 - Mainstream press coverage increasing (MedPage Today, Healthline, Forbes Health)
@@ -65,24 +68,26 @@ Red light therapy (RLT) / photobiomodulation (PBM) is a rapidly growing wellness
 
 ### Primary Keyword Clusters
 
-| Keyword | Monthly Searches (est.) | Difficulty | Notes |
-|---|---|---|---|
-| red light therapy app | 2,400 | Medium | Core product keyword |
-| photobiomodulation app | 720 | Low | Scientific audience |
-| red light therapy protocol | 1,900 | Medium | High intent |
-| red light therapy benefits | 40,500 | High | Top-of-funnel |
-| red light therapy timer | 1,600 | Low | Feature-level intent |
-| PBM therapy device guide | 480 | Low | Niche, high-intent |
-| red light therapy tracker | 880 | Low | Tracking intent |
+| Keyword                    | Monthly Searches (est.) | Difficulty | Notes                |
+| -------------------------- | ----------------------- | ---------- | -------------------- |
+| red light therapy app      | 2,400                   | Medium     | Core product keyword |
+| photobiomodulation app     | 720                     | Low        | Scientific audience  |
+| red light therapy protocol | 1,900                   | Medium     | High intent          |
+| red light therapy benefits | 40,500                  | High       | Top-of-funnel        |
+| red light therapy timer    | 1,600                   | Low        | Feature-level intent |
+| PBM therapy device guide   | 480                     | Low        | Niche, high-intent   |
+| red light therapy tracker  | 880                     | Low        | Tracking intent      |
 
-*Search volume estimates from Google Keyword Planner ranges; verify with Ahrefs/SEMrush before launch.*
+_Search volume estimates from Google Keyword Planner ranges; verify with Ahrefs/SEMrush before launch._
 
 ### Landing Page Recommendations
+
 - **Title:** "Red Light Therapy App — Science-Backed Protocols for Every Device"
 - **Meta Description:** "Track sessions, follow research-proven protocols, and optimize your photobiomodulation therapy. Free and Pro plans available."
 - **H1:** "Your Personal Red Light Therapy Coach"
 
 ### Content Strategy
+
 1. **Pillar:** "Complete Guide to Photobiomodulation Therapy (2026)"
 2. **Comparison:** vs. device-specific apps (Joovv, Mito Red, BioMax)
 3. **Guides:** "Best red light therapy protocols for inflammation / sleep / skin / muscle recovery"
@@ -90,6 +95,7 @@ Red light therapy (RLT) / photobiomodulation (PBM) is a rapidly growing wellness
 5. **Tool Pages:** "Joovv vs. Mito Red vs. BioMax — which device + protocol is right for you?"
 
 ### Distribution Channels
+
 - Reddit: r/biohacking, r/photobiomodulation, r/longevity, r/SkincareAddiction
 - YouTube: Red light therapy protocol video walkthroughs (high search intent)
 - Instagram/TikTok: Visual before/after + protocol demos
@@ -100,37 +106,37 @@ Red light therapy (RLT) / photobiomodulation (PBM) is a rapidly growing wellness
 
 ### Direct App Competitors
 
-| Competitor | Platform | Price | Key Features | Weakness |
-|---|---|---|---|---|
-| **Joovv App** | iOS/Android (device-bundled) | Free (device owners only) | Basic timer, session log, Joovv device sync | Locked to Joovv devices; no protocol library |
-| **Mito Red App** | iOS/Android (device-bundled) | Free (device owners only) | Timer, basic protocol suggestions | Device-specific; no science citations |
-| **Photon Therapy** (multiple small apps) | iOS | Free–$4.99 one-time | Simple timer + wavelength display | No protocol customization; no research backing |
-| **RedRush app** | iOS (device-bundled) | Free (device owners only) | Session tracking for RedRush panels | Device-locked, minimal features |
-| **Oura Ring** | iOS/Android | $5.99/month (subscription) | Sleep, HRV, recovery tracking — not PBM-specific | Does not track light therapy sessions |
-| **HealthMate** / Apple Health integrations | Platform (iOS) | Free | Passive health tracking | No PBM-specific protocols |
+| Competitor                                 | Platform                     | Price                      | Key Features                                     | Weakness                                       |
+| ------------------------------------------ | ---------------------------- | -------------------------- | ------------------------------------------------ | ---------------------------------------------- |
+| **Joovv App**                              | iOS/Android (device-bundled) | Free (device owners only)  | Basic timer, session log, Joovv device sync      | Locked to Joovv devices; no protocol library   |
+| **Mito Red App**                           | iOS/Android (device-bundled) | Free (device owners only)  | Timer, basic protocol suggestions                | Device-specific; no science citations          |
+| **Photon Therapy** (multiple small apps)   | iOS                          | Free–$4.99 one-time        | Simple timer + wavelength display                | No protocol customization; no research backing |
+| **RedRush app**                            | iOS (device-bundled)         | Free (device owners only)  | Session tracking for RedRush panels              | Device-locked, minimal features                |
+| **Oura Ring**                              | iOS/Android                  | $5.99/month (subscription) | Sleep, HRV, recovery tracking — not PBM-specific | Does not track light therapy sessions          |
+| **HealthMate** / Apple Health integrations | Platform (iOS)               | Free                       | Passive health tracking                          | No PBM-specific protocols                      |
 
 **Gap identified:** No device-agnostic, science-backed, protocol-rich PBM app exists for general consumers or practitioners.
 
 ### Relevant Open Source / GitHub Projects
 
-| Repository | Stars | Last Update | Viability |
-|---|---|---|---|
-| No directly comparable OSS PBM app found | — | — | Green-field opportunity |
-| `photoperiod` (circadian light tools) | ~200 | 2024 | Adjacent; not therapy-focused |
+| Repository                               | Stars | Last Update | Viability                     |
+| ---------------------------------------- | ----- | ----------- | ----------------------------- |
+| No directly comparable OSS PBM app found | —     | —           | Green-field opportunity       |
+| `photoperiod` (circadian light tools)    | ~200  | 2024        | Adjacent; not therapy-focused |
 
-*GitHub search confirmed no active open-source photobiomodulation tracking or protocol apps as of 2026-07-06.*
+_GitHub search confirmed no active open-source photobiomodulation tracking or protocol apps as of 2026-07-06._
 
 ### Hardware Ecosystem (Affiliate Opportunity)
 
-| Device Brand | Price Range | Affiliate Programs |
-|---|---|---|
-| Joovv Solo 3.0 | $595–$1,195 | joovv.com affiliate |
-| Mito Red MitoPRO | $249–$649 | ShareASale, Impact |
-| BioMax 300/450/600 | $369–$769 | BioMax affiliate |
-| Platinum LED BioMax | $369–$769 | Platinum LED affiliate |
-| Red Light Man | $150–$600 | Direct affiliate program |
+| Device Brand        | Price Range | Affiliate Programs       |
+| ------------------- | ----------- | ------------------------ |
+| Joovv Solo 3.0      | $595–$1,195 | joovv.com affiliate      |
+| Mito Red MitoPRO    | $249–$649   | ShareASale, Impact       |
+| BioMax 300/450/600  | $369–$769   | BioMax affiliate         |
+| Platinum LED BioMax | $369–$769   | Platinum LED affiliate   |
+| Red Light Man       | $150–$600   | Direct affiliate program |
 
-*Device affiliate commissions: typically 10–15% per sale — meaningful revenue with protocol recommendations linking to devices.*
+_Device affiliate commissions: typically 10–15% per sale — meaningful revenue with protocol recommendations linking to devices._
 
 ## 5. Chatter and Demand Signals
 
@@ -150,6 +156,7 @@ Red light therapy (RLT) / photobiomodulation (PBM) is a rapidly growing wellness
 5. **"My device app is useless"** — Device-bundled apps rated poorly
 
 ### Demand Signals
+
 - 6,000+ PBM studies on PubMed — evidence base growing
 - Red light therapy device sales growth ~15–20% CAGR (internal estimate; verify with IBISWorld)
 - Amazon "red light therapy" product listings: 5,000+ SKUs — massive device install base
@@ -158,12 +165,14 @@ Red light therapy (RLT) / photobiomodulation (PBM) is a rapidly growing wellness
 ## 6. Factual Validation and Evidence Gaps
 
 ### Verified Claims
+
 - PMC10294878 confirms photobiomodulation improves anti-tumor efficacy of PDT against resistant MCF-7 breast cancer cells ([source](https://pmc.ncbi.nlm.nih.gov/articles/PMC10294878/))
 - Red light therapy device market projected to grow (Grand View Research, 2023)
 - 240k+ licensed PTs in the US ([BLS.gov](https://www.bls.gov/ooh/healthcare/physical-therapists.htm))
 - r/photobiomodulation subreddit membership: ~12k (verified as of research date)
 
 ### Evidence Gaps (Require Verification Before Launch)
+
 1. Exact device market CAGR — needs IBISWorld or Statista report
 2. App Store competitive review ratings — requires live ASO analysis
 3. Affiliate program commission rates — requires direct outreach to brands
@@ -171,6 +180,7 @@ Red light therapy (RLT) / photobiomodulation (PBM) is a rapidly growing wellness
 5. PBM protocol parameters (wavelength, irradiance, time) — must be sourced from peer-reviewed literature per indication, not assumed
 
 ### Regulatory Warning
+
 Any app in the health/wellness space that makes therapeutic claims in the US is subject to FTC and potentially FDA oversight. The MVP must use language like "wellness protocol" and "personal tracking" rather than "treat," "cure," or "diagnose."
 
 ## 7. Build Requirements and Acceptance Gates
@@ -178,6 +188,7 @@ Any app in the health/wellness space that makes therapeutic claims in the US is 
 ### MVP Scope
 
 **Core Features (Phase 1 — 6 weeks to launch)**
+
 1. **Protocol Library** — Curated PBM protocols by goal (skin, sleep, muscle recovery, inflammation, energy) with wavelength, irradiance, distance, and time recommendations sourced from PubMed
 2. **Session Timer** — Device-agnostic countdown timer with haptic alerts; save completed sessions
 3. **Session Log** — Track date, duration, body area, protocol, notes; weekly/monthly summaries
@@ -186,12 +197,14 @@ Any app in the health/wellness space that makes therapeutic claims in the US is 
 6. **Research Library** — Curated, readable summaries of key PBM studies organized by condition
 
 **Phase 2 Features (Month 2–3 post-launch)**
+
 - Practitioner mode: multi-patient tracking, exportable session reports
 - Device affiliate integration (links to recommended devices within protocol detail pages)
 - Push notification reminders for scheduled sessions
 - Apple Health / Google Fit integration for passive health data correlation
 
 **Phase 3 Features (Month 4–6)**
+
 - Community protocols: user-submitted protocols with upvoting
 - AI-assisted protocol builder (input: device specs + goals → recommended protocol)
 - Wearable data overlay (Oura, Whoop)
@@ -211,17 +224,20 @@ Hosting: Vercel (web) + Expo EAS (mobile builds)
 ### Acceptance Gates
 
 **Gate 1: Core App Shell (Week 2)**
+
 - [ ] Auth flow (sign up / sign in / forgot password)
 - [ ] Protocol library browsing (read-only, seeded data)
 - [ ] Session timer (device-agnostic, countdown, haptic)
 - [ ] Session log (CRUD)
 
 **Gate 2: Protocol Depth (Week 4)**
+
 - [ ] At minimum 20 protocols covering 5+ health areas; each protocol card must include: PMID, full title, first author, publication year, and the specific parameters (wavelength nm, irradiance mW/cm², dose J/cm², treatment duration, distance, body area) drawn directly from that paper
 - [ ] Device compatibility guide (top 10 devices mapped)
 - [ ] Progress tracker (logging + basic charts)
 
 **Gate 3: Production Readiness (Week 6)**
+
 - [ ] iOS + Android app store submissions
 - [ ] Privacy policy + terms of service (no medical claims language reviewed)
 - [ ] Stripe subscription billing (free + pro tiers)
@@ -233,24 +249,25 @@ Hosting: Vercel (web) + Expo EAS (mobile builds)
 
 ### Pricing Tiers
 
-| Tier | Price | Features |
-|---|---|---|
-| **Free** | $0/month | 3 protocols, basic timer, 30-day session log |
-| **Pro** | $9.99/month or $79/year | Unlimited protocols, full log history, progress charts, research library |
-| **Practitioner** | $49/month per seat | Multi-patient tracking, exportable reports, priority support |
+| Tier             | Price                   | Features                                                                 |
+| ---------------- | ----------------------- | ------------------------------------------------------------------------ |
+| **Free**         | $0/month                | 3 protocols, basic timer, 30-day session log                             |
+| **Pro**          | $9.99/month or $79/year | Unlimited protocols, full log history, progress charts, research library |
+| **Practitioner** | $49/month per seat      | Multi-patient tracking, exportable reports, priority support             |
 
 ### Revenue Projections (Conservative — Internal Estimate)
 
-| Month | MAU | Paid Conv. | MRR |
-|---|---|---|---|
-| Month 1 | 500 | 5% | ~$250 |
-| Month 3 | 2,500 | 8% | ~$2,000 |
-| Month 6 | 8,000 | 10% | ~$8,000 |
-| Month 12 | 20,000 | 12% | ~$24,000 |
+| Month    | MAU    | Paid Conv. | MRR      |
+| -------- | ------ | ---------- | -------- |
+| Month 1  | 500    | 5%         | ~$250    |
+| Month 3  | 2,500  | 8%         | ~$2,000  |
+| Month 6  | 8,000  | 10%        | ~$8,000  |
+| Month 12 | 20,000 | 12%        | ~$24,000 |
 
-*Estimates only; not based on confirmed data.*
+_Estimates only; not based on confirmed data._
 
 ### Additional Revenue Streams
+
 1. **Device Affiliate Commissions** — 10–15% per sale; top device ~$500 → $50–75 per conversion
 2. **Practitioner Certification Course** — $97 one-time; partner with PBM continuing education providers
 3. **White-label Licensing** — Sell the platform to device manufacturers (Joovv, Mito Red) for their own branded apps; licensing deal $5k–$25k/year
@@ -258,16 +275,18 @@ Hosting: Vercel (web) + Expo EAS (mobile builds)
 ## 9. Domain Strategy
 
 ### Recommended Domain Names (to verify availability)
+
 - `pbmcoach.com` — Clean, brandable
 - `redlightguide.app` — Descriptive, app-forward
 - `photobiomodulation.app` — SEO authority, harder to brand
 - `lighttherapyapp.com` — Consumer-friendly
 
-*Check availability on Namecheap or GoDaddy before proceeding.*
+_Check availability on Namecheap or GoDaddy before proceeding._
 
 ## 10. Code Review Agent Packet
 
 ### For Bito AI / Coderabbit
+
 ```
 CONTEXT: Health & wellness mobile app (React Native) for red light therapy protocols
 FOCUS AREAS:
@@ -284,6 +303,7 @@ BLOCKING ISSUES TO FLAG:
 ```
 
 ### For Ralph Loop
+
 ```
 DOMAIN: Health / Wellness SaaS Mobile App
 CRITICAL PATHS:
@@ -318,21 +338,23 @@ See Sections 2–5 above for full competitor, community, and market analysis.
 
 ### Competitor Pricing Summary
 
-| Product | Price |
-|---|---|
-| Joovv App | Free (device-bundled) |
-| Mito Red App | Free (device-bundled) |
-| Photon Therapy apps | Free–$4.99 one-time |
-| RedRush App | Free (device-bundled) |
-| **Our Pro tier** | $9.99/month or $79/year |
-| **Our Practitioner tier** | $49/month per seat |
+| Product                   | Price                   |
+| ------------------------- | ----------------------- |
+| Joovv App                 | Free (device-bundled)   |
+| Mito Red App              | Free (device-bundled)   |
+| Photon Therapy apps       | Free–$4.99 one-time     |
+| RedRush App               | Free (device-bundled)   |
+| **Our Pro tier**          | $9.99/month or $79/year |
+| **Our Practitioner tier** | $49/month per seat      |
 
 ### SEO Keywords (see Section 3 for full table)
+
 Primary: "red light therapy app", "photobiomodulation app", "red light therapy protocol"
 
 ## Step 3 — Requirements
 
 ### Functional Requirements
+
 - Protocol library with minimum 20 research-backed protocols at launch
 - Device-agnostic session timer with haptic alerts and background audio
 - Session log with search, filter, and trend visualization
@@ -344,6 +366,7 @@ Primary: "red light therapy app", "photobiomodulation app", "red light therapy p
 - Offline-first: timer and saved protocols work without connectivity
 
 ### Non-Functional Requirements
+
 - WCAG 2.1 AA accessibility
 - iOS 16+ and Android 13+ support
 - No medical claims in UI copy
@@ -360,21 +383,21 @@ Primary: "red light therapy app", "photobiomodulation app", "red light therapy p
 
 ## Dependencies
 
-| Field | Value |
-|---|---|
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| FDA/FTC enforcement for medical claims | Medium | High | Legal review of all copy; wellness-only framing; no diagnosis/treatment claims |
-| Device compatibility gaps | Medium | Medium | Device-agnostic design; community-sourced device specs |
-| Protocol accuracy liability | Low–Medium | High | All protocols cited to PubMed; disclaimer on every protocol card |
-| Market timing / competition | Low | Medium | No dominant competitor exists; first-mover advantage available |
-| App Store rejection | Low | Medium | Follow Apple health app guidelines; avoid therapeutic claims in metadata |
+| Risk                                   | Likelihood | Impact | Mitigation                                                                     |
+| -------------------------------------- | ---------- | ------ | ------------------------------------------------------------------------------ |
+| FDA/FTC enforcement for medical claims | Medium     | High   | Legal review of all copy; wellness-only framing; no diagnosis/treatment claims |
+| Device compatibility gaps              | Medium     | Medium | Device-agnostic design; community-sourced device specs                         |
+| Protocol accuracy liability            | Low–Medium | High   | All protocols cited to PubMed; disclaimer on every protocol card               |
+| Market timing / competition            | Low        | Medium | No dominant competitor exists; first-mover advantage available                 |
+| App Store rejection                    | Low        | Medium | Follow Apple health app guidelines; avoid therapeutic claims in metadata       |
 
 ## Research Checklist
 

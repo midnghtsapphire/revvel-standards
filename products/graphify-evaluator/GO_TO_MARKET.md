@@ -12,11 +12,11 @@ Graphify Evaluator is positioned for engineering teams that need fast architectu
 
 ## Pricing Strategy
 
-| Tier | Price | Value |
-| ---- | ----- | ----- |
-| Free | $0 | Public evaluator and recommendation framework |
-| Pro | $29/mo | Saved evaluations, shared reports, expanded comparison templates |
-| Team | $99/mo | Team workspaces, decision history, export and review workflows |
+| Tier | Price  | Value                                                            |
+| ---- | ------ | ---------------------------------------------------------------- |
+| Free | $0     | Public evaluator and recommendation framework                    |
+| Pro  | $29/mo | Saved evaluations, shared reports, expanded comparison templates |
+| Team | $99/mo | Team workspaces, decision history, export and review workflows   |
 
 ## Distribution Plan
 

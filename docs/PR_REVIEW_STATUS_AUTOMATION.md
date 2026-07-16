@@ -41,26 +41,26 @@ healed quietly so the queue is not spammed with one-off noise every hour.
 
 Current watchdog-routed states:
 
-| Watchdog finding | Immediate repair | Escalation / agent follow-up |
-|---|---|---|
-| `awaiting-review` + `approved` (first time on a head SHA) | Remove `awaiting-review` + synonyms, restore approval | **None — silent self-heal** (hidden per-SHA marker recorded) |
-| `awaiting-review` + `approved` (recurs on same head SHA) | Same safe repair | Add `lifecycle:stuck` + open repair issue: inspect review/auto-approve/synchronize paths re-adding review state after approval |
-| `approved` + `needs-action` | Remove `needs-action` | Verify no stale changes-requested path reintroduced action-needed state |
-| `checks-passing` + `checks-failing` | Query live CI and remove the stale check label | Patch check-suite/check-run race or stale-label path |
-| `ready-to-merge` without `approved` | Remove `ready-to-merge` | Ensure merge-ready promotion always requires approval |
-| `awaiting-review` for 24+ hours | Add `lifecycle:stuck` | Assign an agent to review/request reviewer action or fix missing review automation |
-| `checks-failing` for 12+ hours | Add `lifecycle:stuck` | Assign an agent to read logs and patch the PR/workflow |
+| Watchdog finding                                          | Immediate repair                                      | Escalation / agent follow-up                                                                                                   |
+| --------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `awaiting-review` + `approved` (first time on a head SHA) | Remove `awaiting-review` + synonyms, restore approval | **None — silent self-heal** (hidden per-SHA marker recorded)                                                                   |
+| `awaiting-review` + `approved` (recurs on same head SHA)  | Same safe repair                                      | Add `lifecycle:stuck` + open repair issue: inspect review/auto-approve/synchronize paths re-adding review state after approval |
+| `approved` + `needs-action`                               | Remove `needs-action`                                 | Verify no stale changes-requested path reintroduced action-needed state                                                        |
+| `checks-passing` + `checks-failing`                       | Query live CI and remove the stale check label        | Patch check-suite/check-run race or stale-label path                                                                           |
+| `ready-to-merge` without `approved`                       | Remove `ready-to-merge`                               | Ensure merge-ready promotion always requires approval                                                                          |
+| `awaiting-review` for 24+ hours                           | Add `lifecycle:stuck`                                 | Assign an agent to review/request reviewer action or fix missing review automation                                             |
+| `checks-failing` for 12+ hours                            | Add `lifecycle:stuck`                                 | Assign an agent to read logs and patch the PR/workflow                                                                         |
 
 ## Review Status Labels
 
 The system uses four primary labels to track PR review state:
 
-| Label | Color | Meaning | Applied When |
-|-------|-------|---------|--------------|
-| `awaiting-approval` | ![#fbca04](https://via.placeholder.com/15/fbca04/fbca04.png) Yellow | PR needs review | PR opened or all reviews dismissed |
-| `review-started` | ![#0075ca](https://via.placeholder.com/15/0075ca/0075ca.png) Blue | Review in progress | First review comment submitted |
-| `changes-requested` | ![#d93f0b](https://via.placeholder.com/15/d93f0b/d93f0b.png) Red | Reviewer requested changes | Any reviewer requests changes |
-| `approved` | ![#0e8a16](https://via.placeholder.com/15/0e8a16/0e8a16.png) Green | PR approved | All active reviews are approvals |
+| Label               | Color                                                               | Meaning                    | Applied When                       |
+| ------------------- | ------------------------------------------------------------------- | -------------------------- | ---------------------------------- |
+| `awaiting-approval` | ![#fbca04](https://via.placeholder.com/15/fbca04/fbca04.png) Yellow | PR needs review            | PR opened or all reviews dismissed |
+| `review-started`    | ![#0075ca](https://via.placeholder.com/15/0075ca/0075ca.png) Blue   | Review in progress         | First review comment submitted     |
+| `changes-requested` | ![#d93f0b](https://via.placeholder.com/15/d93f0b/d93f0b.png) Red    | Reviewer requested changes | Any reviewer requests changes      |
+| `approved`          | ![#0e8a16](https://via.placeholder.com/15/0e8a16/0e8a16.png) Green  | PR approved                | All active reviews are approvals   |
 
 ### Label Precedence
 
@@ -115,6 +115,7 @@ A comment is automatically posted/updated on each PR showing:
 💬 **@reviewer3** — Commented
 
 ---
+
 _This status is updated automatically by the PR Review Status Automation workflow._
 ```
 
@@ -270,6 +271,7 @@ statusBadge = '![Status](https://img.shields.io/badge/status-approved-green?styl
 To add new states (e.g., `needs-design-review`):
 
 1. Create the label:
+
    ```bash
    gh label create "needs-design-review" \
      --color "7057ff" \
@@ -279,9 +281,9 @@ To add new states (e.g., `needs-design-review`):
 2. Update the workflow logic in `pr-review-status.yml`:
    ```javascript
    // Add to reviewLabels array
-   const reviewLabels = ['awaiting-approval', 'changes-requested', 'approved', 
+   const reviewLabels = ['awaiting-approval', 'changes-requested', 'approved',
                          'review-started', 'needs-design-review'];
-   
+
    // Add custom logic to determine when to apply
    if (/* your condition */) {
      targetLabel = 'needs-design-review';
@@ -313,6 +315,7 @@ Add notification steps to send alerts to your team chat:
 **Issue:** Labels don't change when reviews are submitted
 
 **Solutions:**
+
 1. Check workflow permissions: Settings → Actions → Workflow permissions → Read and write
 2. Verify the workflow file is on the default branch (`main`)
 3. Check Actions tab for workflow run errors
@@ -323,6 +326,7 @@ Add notification steps to send alerts to your team chat:
 **Issue:** The status badge comment doesn't appear on PRs
 
 **Solutions:**
+
 1. Check if bot has permission to comment: Settings → Actions → Workflow permissions
 2. Look for the workflow run in Actions tab and check for errors
 3. Ensure `pull-requests: write` permission is granted in workflow file
@@ -333,6 +337,7 @@ Add notification steps to send alerts to your team chat:
 **Issue:** The label doesn't match the actual review state
 
 **Solutions:**
+
 1. Manually dismiss stale reviews: PR page → Reviews section → Dismiss
 2. Re-request review from reviewers
 3. Manually remove incorrect label and trigger workflow by pushing a commit
@@ -343,6 +348,7 @@ Add notification steps to send alerts to your team chat:
 **Issue:** Workflow doesn't run when PRs are opened or reviewed
 
 **Solutions:**
+
 1. Ensure workflow file is in `.github/workflows/` directory
 2. Check the default branch has the workflow file
 3. Verify triggers are correct: `pull_request`, `pull_request_review`, etc.
@@ -370,12 +376,14 @@ A: Yes! The workflow tracks all reviews regardless of whether they're from code 
 **Q: What if I want different approval thresholds?**
 
 A: Modify the workflow logic to check the number of approvals:
+
 ```javascript
-const approvalCount = Array.from(reviewerStates.values())
-  .filter(r => r.state === 'APPROVED').length;
+const approvalCount = Array.from(reviewerStates.values()).filter(
+  (r) => r.state === "APPROVED",
+).length;
 
 if (approvalCount >= 2) {
-  targetLabel = 'approved';
+  targetLabel = "approved";
 }
 ```
 
@@ -404,6 +412,7 @@ A: The workflow relies on GitHub's native review system. External tools that cre
 ### PR Auto Review Integration
 
 When a PR needs review (has `awaiting-approval` label), the `pr-auto-review.yml` workflow automatically:
+
 1. Analyzes PR diff and files changed
 2. Uses OpenRouter AI to perform code review
 3. Submits a formal GitHub review with inline comments
@@ -415,6 +424,7 @@ See [PR_AUTO_REVIEW_AUTOMATION.md](PR_AUTO_REVIEW_AUTOMATION.md) for complete do
 ### PR Review Request Handler Integration
 
 When a reviewer requests changes, the `pr-review-request-handler.yml` workflow automatically:
+
 1. Analyzes all review feedback and PR diff
 2. Uses OpenRouter AI to generate fix recommendations
 3. Posts detailed implementation plan with code snippets

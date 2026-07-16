@@ -2,7 +2,7 @@
 
 > ⚡ **Busy / lost in folders?** Open **[START_HERE_CALL_CHAIN.md](./START_HERE_CALL_CHAIN.md)** first — which workflow starts and what runs next.
 
-This is the activity-based companion to the topic-based [`README.md` Reference Materials table](./README.md#-reference-materials). Same content, different access pattern: this file is sorted by *what you're trying to do right now*, not by *where the doc lives in the repo*.
+This is the activity-based companion to the topic-based [`README.md` Reference Materials table](./README.md#-reference-materials). Same content, different access pattern: this file is sorted by _what you're trying to do right now_, not by _where the doc lives in the repo_.
 
 When you're about to start something new, grep this file with the verb of your activity (e.g., `provision`, `wire`, `file`, `evaluate`, `refresh`).
 
@@ -79,7 +79,7 @@ Older templates are archived under `templates/issue-template-archive/`.
 
 - [`templates/invention-flow-template.md`](./templates/invention-flow-template.md) — the 11-section invention evaluation flow
 
-**Why before:** invention-flow runs *before* viability scoring for `OUTPUT_TYPE=invention-flow` requests. It catches "smart recombination" vs "true invention" classification errors that would otherwise propagate into the Project board as commercial misreads.
+**Why before:** invention-flow runs _before_ viability scoring for `OUTPUT_TYPE=invention-flow` requests. It catches "smart recombination" vs "true invention" classification errors that would otherwise propagate into the Project board as commercial misreads.
 
 ---
 
@@ -89,7 +89,7 @@ Older templates are archived under `templates/issue-template-archive/`.
 
 - [`templates/legacy-refresh-checklist.md`](./templates/legacy-refresh-checklist.md) — current-state audit, market recheck, monetization recheck, viability rescore, refresh decision, launch decision
 
-**Why before:** `LIFECYCLE_MODE=refresh-existing` requires an audit of the current repo/assets *before* proposing rebuilds. Skipping the audit leads to rebuilding what already works.
+**Why before:** `LIFECYCLE_MODE=refresh-existing` requires an audit of the current repo/assets _before_ proposing rebuilds. Skipping the audit leads to rebuilding what already works.
 
 ---
 
@@ -121,7 +121,7 @@ Older templates are archived under `templates/issue-template-archive/`.
 
 ## Editing this file
 
-- New activity? Add a heading. Sort alphabetically *only* if you genuinely can't pick a "natural" reading order; otherwise group by user journey.
+- New activity? Add a heading. Sort alphabetically _only_ if you genuinely can't pick a "natural" reading order; otherwise group by user journey.
 - Each section should be ~5–10 lines. If a section grows beyond that, the underlying doc should grow instead.
 - Every link should resolve from repo root. No external links unless absolutely necessary — those go in the README Reference Materials table.
-- When you commit a new reference doc to `docs/reference/`, add it to *both* this file and the README table in the same PR.
+- When you commit a new reference doc to `docs/reference/`, add it to _both_ this file and the README table in the same PR.

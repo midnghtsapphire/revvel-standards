@@ -25,18 +25,18 @@
  *   OPENROUTER_API_KEY  - Optional backup lane (perplexity/sonar-pro)
  */
 
-const fs = require('fs');
-const { execFileSync } = require('child_process');
+const fs = require("fs");
+const { execFileSync } = require("child_process");
 
 // Configuration
 const CONFIG = {
-  model: 'sonar',                          // LabsClient model for the no-key bridge
-  fallbackMode: 'auto',                    // Client.search mode inside the bridge
+  model: "sonar", // LabsClient model for the no-key bridge
+  fallbackMode: "auto", // Client.search mode inside the bridge
   // 2026-06-23: Use deep_search profile (Sonnet 3.5 + Fusion) for all research
-  openrouterModel: 'deep_search',          // Uses deep_search profile in openrouter-routing.js
+  openrouterModel: "deep_search", // Uses deep_search profile in openrouter-routing.js
   maxTokens: 4000,
   temperature: 0.3,
-  outputFile: '/tmp/perplexity-research.md',
+  outputFile: "/tmp/perplexity-research.md",
 };
 
 const NO_KEY_INSTALL_HINT =
@@ -117,10 +117,10 @@ async function main() {
   const openrouterKey = process.env.OPENROUTER_API_KEY;
 
   if (!issueNumber) {
-    throw new Error('Missing ISSUE_NUMBER');
+    throw new Error("Missing ISSUE_NUMBER");
   }
   if (!repo) {
-    throw new Error('Missing REPO (format: owner/repo)');
+    throw new Error("Missing REPO (format: owner/repo)");
   }
 
   console.log(`🔍 Researching issue #${issueNumber} in ${repo}...`);
@@ -134,28 +134,32 @@ async function main() {
   // Primary: free no-key bridge. Backup: OpenRouter perplexity/sonar-pro.
   let research;
   try {
-    console.log('🤔 Asking Perplexity via the no-key bridge (primary, free)...');
+    console.log(
+      "🤔 Asking Perplexity via the no-key bridge (primary, free)...",
+    );
     research = await callPerplexityNoKey(prompt);
   } catch (bridgeError) {
     console.warn(`⚠️ No-key bridge unavailable: ${bridgeError.message}`);
     if (!openrouterKey) {
       throw new Error(
-        'No-key Perplexity bridge failed and no OPENROUTER_API_KEY backup is set. ' +
-        `Install the bridge with: ${NO_KEY_INSTALL_HINT}`
+        "No-key Perplexity bridge failed and no OPENROUTER_API_KEY backup is set. " +
+          `Install the bridge with: ${NO_KEY_INSTALL_HINT}`,
       );
     }
-    console.log('↩️ Falling back to OpenRouter perplexity/sonar-pro (backup)...');
+    console.log(
+      "↩️ Falling back to OpenRouter perplexity/sonar-pro (backup)...",
+    );
     research = await callPerplexityViaOpenRouter(openrouterKey, prompt);
   }
 
   // Write research to file
   fs.writeFileSync(CONFIG.outputFile, research);
-  console.log('✅ Research saved to', CONFIG.outputFile);
+  console.log("✅ Research saved to", CONFIG.outputFile);
 
   // Post research comment to issue
   await postResearchComment(repo, issueNumber, research);
 
-  console.log('✅ Research complete for issue #' + issueNumber);
+  console.log("✅ Research complete for issue #" + issueNumber);
 }
 
 function buildResearchPrompt(issue) {
@@ -173,12 +177,12 @@ Research this GitHub issue and produce:
 8. Source URLs for any claims
 
 Issue #${issue.number}: ${issue.title}
-${issue.labels.length > 0 ? 'Labels: ' + issue.labels.join(', ') : ''}
+${issue.labels.length > 0 ? "Labels: " + issue.labels.join(", ") : ""}
 
 Body:
-${issue.body || '(No body)'}
+${issue.body || "(No body)"}
 
-${issue.comments.length > 0 ? 'Recent comments:\n' + issue.comments.map(c => `- ${c.author.login}: ${c.body.substring(0, 500)}`).join('\n\n') : ''}
+${issue.comments.length > 0 ? "Recent comments:\n" + issue.comments.map((c) => `- ${c.author.login}: ${c.body.substring(0, 500)}`).join("\n\n") : ""}
 
 Return your response in this format:
 ## Diagnosis
@@ -214,17 +218,24 @@ Return your response in this format:
  */
 async function callPerplexityNoKey(prompt, execFileSyncImpl = execFileSync) {
   const output = execFileSyncImpl(
-    'python3',
-    ['-c', NO_KEY_BRIDGE, prompt, CONFIG.model, CONFIG.fallbackMode, NO_KEY_INSTALL_HINT],
+    "python3",
+    [
+      "-c",
+      NO_KEY_BRIDGE,
+      prompt,
+      CONFIG.model,
+      CONFIG.fallbackMode,
+      NO_KEY_INSTALL_HINT,
+    ],
     {
-      encoding: 'utf8',
+      encoding: "utf8",
       maxBuffer: 10 * 1024 * 1024,
-    }
+    },
   );
 
   const text = output.trim();
   if (!text) {
-    throw new Error('No response returned from no-key Perplexity bridge.');
+    throw new Error("No response returned from no-key Perplexity bridge.");
   }
   return text;
 }
@@ -234,21 +245,24 @@ async function callPerplexityNoKey(prompt, execFileSyncImpl = execFileSync) {
  * Used when the no-key bridge fails but OPENROUTER_API_KEY is present.
  */
 // 2026-06-23: Use deep_search profile for all OpenRouter research
-const { callOpenRouter, ROUTING_PROFILES } = require('./openrouter-routing');
+const { callOpenRouter, ROUTING_PROFILES } = require("./openrouter-routing");
 
 async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
   // Get deep_search profile models (Sonnet 3.5 + Fusion)
-  const profile = ROUTING_PROFILES.deep_search || { models: ['anthropic/claude-3.5-sonnet', 'openrouter/fusion'] };
-  
+  const profile = ROUTING_PROFILES.deep_search || {
+    models: ["anthropic/claude-3.5-sonnet", "openrouter/fusion"],
+  };
+
   const messages = [
     {
-      role: 'system',
-      content: 'You are a source-grounded software automation research agent. Include source URLs when available. Be specific and actionable.'
+      role: "system",
+      content:
+        "You are a source-grounded software automation research agent. Include source URLs when available. Be specific and actionable.",
     },
     {
-      role: 'user',
-      content: prompt
-    }
+      role: "user",
+      content: prompt,
+    },
   ];
 
   try {
@@ -256,7 +270,7 @@ async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
       models: profile.models,
       messages: messages,
       max_tokens: CONFIG.maxTokens,
-      temperature: CONFIG.temperature
+      temperature: CONFIG.temperature,
     });
     return result.text;
   } catch (err) {
@@ -268,17 +282,27 @@ async function fetchGitHubIssue(repo, issueNumber) {
   // Get issue details
   const issueData = JSON.parse(
     execFileSync(
-      'gh',
-      ['issue', 'view', String(issueNumber), '--repo', repo, '--json', 'title,body,labels,comments'],
-      { encoding: 'utf8' }
-    )
+      "gh",
+      [
+        "issue",
+        "view",
+        String(issueNumber),
+        "--repo",
+        repo,
+        "--json",
+        "title,body,labels,comments",
+      ],
+      { encoding: "utf8" },
+    ),
   );
 
   // Get recent commits that might be related
   let commits = [];
   try {
-    const commitsData = execFileSync('git', ['log', '--oneline', '-10'], { encoding: 'utf8' });
-    commits = commitsData.trim().split('\n').slice(0, 5);
+    const commitsData = execFileSync("git", ["log", "--oneline", "-10"], {
+      encoding: "utf8",
+    });
+    commits = commitsData.trim().split("\n").slice(0, 5);
   } catch (e) {
     // No commits available
   }
@@ -287,9 +311,9 @@ async function fetchGitHubIssue(repo, issueNumber) {
     number: parseInt(issueNumber),
     title: issueData.title,
     body: issueData.body,
-    labels: issueData.labels.map(l => l.name),
+    labels: issueData.labels.map((l) => l.name),
     comments: issueData.comments || [],
-    recentCommits: commits
+    recentCommits: commits,
   };
 }
 
@@ -303,20 +327,28 @@ _Next: Label with \`wr:jules\` or \`wr:code\` to proceed_
 `;
 
   // Write to temp file for gh CLI
-  const tmpFile = '/tmp/perplexity-comment.md';
+  const tmpFile = "/tmp/perplexity-comment.md";
   fs.writeFileSync(tmpFile, body);
 
   execFileSync(
-    'gh',
-    ['issue', 'comment', String(issueNumber), '--repo', repo, '--body-file', tmpFile],
-    { encoding: 'utf8' }
+    "gh",
+    [
+      "issue",
+      "comment",
+      String(issueNumber),
+      "--repo",
+      repo,
+      "--body-file",
+      tmpFile,
+    ],
+    { encoding: "utf8" },
   );
 }
 
 // Run if executed directly
 if (require.main === module) {
-  main().catch(e => {
-    console.error('Error:', e.message);
+  main().catch((e) => {
+    console.error("Error:", e.message);
     process.exit(1);
   });
 }

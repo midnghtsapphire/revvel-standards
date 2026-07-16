@@ -14,9 +14,7 @@
     {
       "event": "post-command",
       "match": "exit_code != 0",
-      "commands": [
-        "bash agent-factory/hooks/on-failure-append-learning.sh"
-      ],
+      "commands": ["bash agent-factory/hooks/on-failure-append-learning.sh"],
       "env": {
         "AGENT_NAME": "$AGENT_NAME",
         "TASK_ATTEMPTED": "$TASK_ATTEMPTED",

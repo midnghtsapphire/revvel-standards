@@ -22,29 +22,29 @@ This standard defines how to build and sell single-purpose SaaS products that so
 
 ### Category 1: PDF Generators (One-time)
 
-| Product | Use Case | Price | Delivery |
-|---------|----------|-------|----------|
-| **FieldworkPDF** | Field workers submit reports | $29-99 | Standalone web app |
-| **InvoicePDF** | Generate professional invoices | $19-49 | Web app |
-| **ContractPDF** | Legal contracts from templates | $49-149 | Web app |
-| **ReportPDF** | Auto-generate reports | $39-99 | Web app |
+| Product          | Use Case                       | Price   | Delivery           |
+| ---------------- | ------------------------------ | ------- | ------------------ |
+| **FieldworkPDF** | Field workers submit reports   | $29-99  | Standalone web app |
+| **InvoicePDF**   | Generate professional invoices | $19-49  | Web app            |
+| **ContractPDF**  | Legal contracts from templates | $49-149 | Web app            |
+| **ReportPDF**    | Auto-generate reports          | $39-99  | Web app            |
 
 ### Category 2: One-Trick Apps
 
-| Product | Use Case | Price | Delivery |
-|---------|----------|-------|----------|
-| **AltTextPro** | Generate alt text for images | $29/mo | Web app + API |
-| **ImageCompress** | Compress images instantly | $9/mo | Web app |
-| **QRGenerator** | Create QR codes | $5/mo | Web app |
-| **ScreenshotEdit** | Annotate screenshots | $9/mo | Web app |
+| Product            | Use Case                     | Price  | Delivery      |
+| ------------------ | ---------------------------- | ------ | ------------- |
+| **AltTextPro**     | Generate alt text for images | $29/mo | Web app + API |
+| **ImageCompress**  | Compress images instantly    | $9/mo  | Web app       |
+| **QRGenerator**    | Create QR codes              | $5/mo  | Web app       |
+| **ScreenshotEdit** | Annotate screenshots         | $9/mo  | Web app       |
 
 ### Category 3: Local Business Tools
 
-| Product | Use Case | Price | Delivery |
-|---------|----------|-------|----------|
-| **HVACCalc** | HVAC load calculations | $199 | Desktop/web |
-| **FestivalPoster** | Festival event posters | $49 | Web app |
-| **LocalLeads** | Find local business leads | $99/mo | Web app |
+| Product            | Use Case                  | Price  | Delivery    |
+| ------------------ | ------------------------- | ------ | ----------- |
+| **HVACCalc**       | HVAC load calculations    | $199   | Desktop/web |
+| **FestivalPoster** | Festival event posters    | $49    | Web app     |
+| **LocalLeads**     | Find local business leads | $99/mo | Web app     |
 
 ---
 
@@ -156,11 +156,11 @@ local_business_outreach = {
 
 ### Pricing
 
-| Tier | Price | Features |
-|------|-------|----------|
-| Solo | $49/mo | 50 leads, basic analysis |
-| Pro | $99/mo | 200 leads, full analysis, proposals |
-| Agency | $299/mo | Unlimited, white-label, API |
+| Tier   | Price   | Features                            |
+| ------ | ------- | ----------------------------------- |
+| Solo   | $49/mo  | 50 leads, basic analysis            |
+| Pro    | $99/mo  | 200 leads, full analysis, proposals |
+| Agency | $299/mo | Unlimited, white-label, API         |
 
 ---
 
@@ -190,12 +190,12 @@ local_business_outreach = {
 
 ### Pricing
 
-| Tier | Price/mo | Credits |
-|------|----------|---------|
-| Free | $0 | 10/month |
-| Starter | $9 | 100/month |
-| Pro | $29 | 500/month |
-| Business | $99 | Unlimited |
+| Tier     | Price/mo | Credits   |
+| -------- | -------- | --------- |
+| Free     | $0       | 10/month  |
+| Starter  | $9       | 100/month |
+| Pro      | $29      | 500/month |
+| Business | $99      | Unlimited |
 
 ---
 
@@ -221,11 +221,11 @@ local_business_outreach = {
 
 ### Pricing
 
-| Tier | Price | Includes |
-|------|-------|----------|
-| Single | $49 | 1 template, unlimited forms |
-| Pro | $149 | 5 templates, API access |
-| Agency | $399 | Unlimited, white-label |
+| Tier   | Price | Includes                    |
+| ------ | ----- | --------------------------- |
+| Single | $49   | 1 template, unlimited forms |
+| Pro    | $149  | 5 templates, API access     |
+| Agency | $399  | Unlimited, white-label      |
 
 ---
 
@@ -263,6 +263,7 @@ requirements = {
 ## Launch Checklist
 
 ### Pre-Launch
+
 - [ ] Domain purchased
 - [ ] Hosting configured
 - [ ] Payment gateway connected
@@ -270,12 +271,14 @@ requirements = {
 - [ ] Terms of service written
 
 ### Launch Day
+
 - [ ] Announce on social
 - [ ] Post on ProductHunt (if applicable)
 - [ ] Email existing contacts
 - [ ] Submit to directories
 
 ### Post-Launch
+
 - [ ] Monitor errors
 - [ ] Collect feedback
 - [ ] Iterate weekly
@@ -285,11 +288,11 @@ requirements = {
 
 ## Revenue Targets
 
-| Product | Target | Timeline | Notes |
-|---------|--------|----------|-------|
-| AltTextPro | $1,000 MRR | 6 months | B2C focus |
-| LocalLeads | $500 MRR | 6 months | Local B2B |
-| FieldworkPDF | $300 MRR | 3 months | Niche B2B |
+| Product      | Target     | Timeline | Notes     |
+| ------------ | ---------- | -------- | --------- |
+| AltTextPro   | $1,000 MRR | 6 months | B2C focus |
+| LocalLeads   | $500 MRR   | 6 months | Local B2B |
+| FieldworkPDF | $300 MRR   | 3 months | Niche B2B |
 
 ---
 
@@ -300,4 +303,3 @@ requirements = {
 - Focus on conversion, not features
 - Build once, sell multiple times
 - Automate everything possible
-

@@ -19,10 +19,12 @@ promptfoo view
 ## Test Coverage
 
 ### Tier 1 - Platform Content Generation
+
 - [ ] ORCID Works XML generation
 - [ ] GitHub profile update generation
 
 ### Tier 2 - High-Value Platform Drafts
+
 - [ ] Wikidata entity creation guide
 - [ ] ResearchGate profile draft
 - [ ] Internet Archive submission package
@@ -30,12 +32,14 @@ promptfoo view
 - [ ] OpenCorporates claim instructions
 
 ### Tier 3 - OSINT Platform Drafts
+
 - [ ] MISP profile JSON
 - [ ] Bellingcat community profile
 - [ ] IntelligenceX registration
 - [ ] Maltego entity definition
 
 ### Schema Validation
+
 - [ ] JSON-LD Organization schema
 - [ ] JSON-LD Person schema
 - [ ] JSON-LD ResearchProject schema
@@ -43,12 +47,14 @@ promptfoo view
 - [ ] Wikidata claims validation
 
 ### Brand Statement Processing
+
 - [ ] Parse YAML brand statement
 - [ ] Extract expertise areas
 - [ ] Validate required fields
 - [ ] Generate platform-specific content
 
 ### State Tracking
+
 - [ ] Initialize state.json
 - [ ] Update platform status
 - [ ] Track last_updated timestamps
@@ -57,6 +63,7 @@ promptfoo view
 ## Future Tests
 
 Tests will be added in a follow-up PR to validate:
+
 - Template rendering with real data
 - URL liveness checking
 - Credential availability checking (via vault-agent)

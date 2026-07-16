@@ -6,12 +6,12 @@ Any Revvel workflow that ranks, filters, routes, or qualifies records must use a
 
 ## Merge-Issue Categorization
 
-| Category | Definition | Required Action |
-|---|---|---|
-| Product compliance | App or README claims a compliance behavior exists. | Implement the behavior or narrow the claim before merge. |
-| Decision correctness | A scorer, eligibility check, or router can misclassify records. | Define status, score, factors, thresholds, explanations, and audit events. |
-| Async workflow safety | A decision function emits logs, routes reviews, writes records, or calls services. | Treat it as async and never call it directly inside synchronous `Array.prototype.filter`. |
-| Enterprise governance | The decision affects clients, company projects, pricing, compliance, or database design. | Route through the scoring model registry and approval team gates. |
+| Category              | Definition                                                                               | Required Action                                                                           |
+| --------------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Product compliance    | App or README claims a compliance behavior exists.                                       | Implement the behavior or narrow the claim before merge.                                  |
+| Decision correctness  | A scorer, eligibility check, or router can misclassify records.                          | Define status, score, factors, thresholds, explanations, and audit events.                |
+| Async workflow safety | A decision function emits logs, routes reviews, writes records, or calls services.       | Treat it as async and never call it directly inside synchronous `Array.prototype.filter`. |
+| Enterprise governance | The decision affects clients, company projects, pricing, compliance, or database design. | Route through the scoring model registry and approval team gates.                         |
 
 ## Required Model Shape
 
@@ -40,16 +40,18 @@ Use `for...of` or `Promise.all` plus a second filtering pass when eligibility wr
 ```ts
 type EligibilityDecision<T> = {
   record: T;
-  status: 'eligible' | 'manual_review' | 'blocked';
+  status: "eligible" | "manual_review" | "blocked";
   score: number;
   reasons: string[];
 };
 
-async function evaluateLeadContactability(lead: Lead): Promise<EligibilityDecision<Lead>> {
+async function evaluateLeadContactability(
+  lead: Lead,
+): Promise<EligibilityDecision<Lead>> {
   const decision = await scoreContactability(lead);
   await writeDecisionAudit(decision);
 
-  if (decision.status === 'manual_review') {
+  if (decision.status === "manual_review") {
     await routeToManualReview(decision);
   }
 
@@ -58,7 +60,7 @@ async function evaluateLeadContactability(lead: Lead): Promise<EligibilityDecisi
 
 const decisions = await Promise.all(leads.map(evaluateLeadContactability));
 const eligibleLeads = decisions
-  .filter((decision) => decision.status === 'eligible')
+  .filter((decision) => decision.status === "eligible")
   .map((decision) => decision.record);
 ```
 
@@ -68,16 +70,16 @@ Scoring data must preserve separation between Audrey-owned enterprise projects a
 
 Minimum lookup-table shape:
 
-| Table | Purpose |
-|---|---|
-| `organizations` | Company, client, or partner boundary. |
-| `projects` | Workstream under an organization. |
-| `score_models` | Versioned scoring model metadata. |
-| `score_factors` | Weighted factor registry per model version. |
-| `score_thresholds` | Score bands mapped to statuses. |
-| `score_events` | Immutable decision audit trail. |
-| `manual_reviews` | Human or agent-team approval queue. |
-| `rate_cards` | B2B/B2C/client pricing and work-rate lookup tables. |
+| Table              | Purpose                                             |
+| ------------------ | --------------------------------------------------- |
+| `organizations`    | Company, client, or partner boundary.               |
+| `projects`         | Workstream under an organization.                   |
+| `score_models`     | Versioned scoring model metadata.                   |
+| `score_factors`    | Weighted factor registry per model version.         |
+| `score_thresholds` | Score bands mapped to statuses.                     |
+| `score_events`     | Immutable decision audit trail.                     |
+| `manual_reviews`   | Human or agent-team approval queue.                 |
+| `rate_cards`       | B2B/B2C/client pricing and work-rate lookup tables. |
 
 Each row that belongs to a client or company project must carry `organization_id`, `project_id`, and `data_domain` so reports, exports, and automations cannot mix client work with Revvel-owned products.
 

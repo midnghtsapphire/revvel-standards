@@ -1,7 +1,7 @@
 # Soul2Bowl — Master Blueprint & Product Specification
 
 **Organization:** Freedom Angel Corp (EIN: 86-1209156)  
-**Product:** Soul2Bowl — *St. Louis Fusion Cuisine, Delivered to Your Door*  
+**Product:** Soul2Bowl — _St. Louis Fusion Cuisine, Delivered to Your Door_  
 **Website:** [www.Soul2Bowl.com](https://www.soul2bowl.com)  
 **Status:** SINGLE SOURCE OF TRUTH (SSOT)  
 **Version:** 1.0.0 (April 2026)  
@@ -18,41 +18,45 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 
 ## 2. Business Overview
 
-| Field | Value |
-|---|---|
-| **Business Name** | Soul2Bowl |
-| **Domain** | `soul2bowl.com` |
-| **Owner/Chef** | Audrey Evans (MIDNGHTSAPPHIRE ecosystem) |
-| **Origin** | St. Louis, MO native |
-| **Culinary Training** | Graduate of an upscale St. Louis culinary school |
-| **Cuisine Style** | Fusion BBQ · Asian-Hawaiian flare · Southern Soul Food |
-| **Specialties** | Homemade sweet potato pie · Banana pudding · Flourless chocolate cake |
-| **Dietary Options** | Keto · Vegan · Gluten-Free · Custom requests welcome |
-| **Packaging** | LIFEMADE 160 Count 16 oz Bowls — TUV OK compost HOME + BPI® Certified · Biodegradable · Compostable · BPA-Free · Eco-Friendly |
-| **Philosophy** | *"I cater to you."* — Clean, good ingredients. Casual with fine culinary precision. |
+| Field                 | Value                                                                                                                         |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Business Name**     | Soul2Bowl                                                                                                                     |
+| **Domain**            | `soul2bowl.com`                                                                                                               |
+| **Owner/Chef**        | Audrey Evans (MIDNGHTSAPPHIRE ecosystem)                                                                                      |
+| **Origin**            | St. Louis, MO native                                                                                                          |
+| **Culinary Training** | Graduate of an upscale St. Louis culinary school                                                                              |
+| **Cuisine Style**     | Fusion BBQ · Asian-Hawaiian flare · Southern Soul Food                                                                        |
+| **Specialties**       | Homemade sweet potato pie · Banana pudding · Flourless chocolate cake                                                         |
+| **Dietary Options**   | Keto · Vegan · Gluten-Free · Custom requests welcome                                                                          |
+| **Packaging**         | LIFEMADE 160 Count 16 oz Bowls — TUV OK compost HOME + BPI® Certified · Biodegradable · Compostable · BPA-Free · Eco-Friendly |
+| **Philosophy**        | _"I cater to you."_ — Clean, good ingredients. Casual with fine culinary precision.                                           |
 
 ---
 
 ## 3. Services
 
 ### 3.1. Individual Meals
+
 - Single-serving bowls priced individually
 - Available daily or by scheduled pickup/delivery
 - Orderable through the online calendar
 
 ### 3.2. Meal Prep × 7
+
 - 7-day meal prep packs for one person
 - Pre-scheduled weekly delivery
 - Configurable dietary preferences (keto, vegan, gluten-free)
 - Discounted bundle pricing
 
 ### 3.3. Sunday Dinner (Saturday & Sunday)
+
 - Full Sunday dinner package — entrée + 2 sides + dessert
 - Available Sat–Sun only
 - Calendar-driven ordering window (closes Friday 5 PM)
 - Family pack options (serves 2, 4, 6)
 
 ### 3.4. Catering
+
 - Full-service catering for events, corporate lunches, parties, celebrations
 - Custom quote via booking calendar
 - Minimum headcount: 10 guests
@@ -60,6 +64,7 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 - Deposit required at booking (via Stripe)
 
 ### 3.5. By the Pound
+
 - **Chicken Salad** — sold by the pound
 - **Sides** — sweet potato pie, banana pudding, coleslaw, mac & cheese, collard greens, fried rice, etc.
 - Quantity selector (0.5 lb increments)
@@ -70,48 +75,54 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 ## 4. Menu (Short Menu — Current Pricing)
 
 ### Entrées
-| Item | Description | Price |
-|---|---|---|
-| Soul Bowl | Smoked BBQ chicken, rice, pickled cabbage, gochujang glaze | $14 |
-| Island Bowl | Teriyaki pork, coconut jasmine rice, pineapple slaw | $14 |
-| Keto Bowl | Grilled chicken thigh, cauliflower rice, avocado, low-carb sauce | $13 |
-| Vegan Garden Bowl | Glazed tofu, brown rice, roasted vegetables, miso dressing | $12 |
-| GF Fusion Bowl | Gluten-free smoked brisket, jasmine rice, charred corn, chimichurri | $15 |
+
+| Item              | Description                                                         | Price |
+| ----------------- | ------------------------------------------------------------------- | ----- |
+| Soul Bowl         | Smoked BBQ chicken, rice, pickled cabbage, gochujang glaze          | $14   |
+| Island Bowl       | Teriyaki pork, coconut jasmine rice, pineapple slaw                 | $14   |
+| Keto Bowl         | Grilled chicken thigh, cauliflower rice, avocado, low-carb sauce    | $13   |
+| Vegan Garden Bowl | Glazed tofu, brown rice, roasted vegetables, miso dressing          | $12   |
+| GF Fusion Bowl    | Gluten-free smoked brisket, jasmine rice, charred corn, chimichurri | $15   |
 
 ### Sides (By the Pound / Per Order)
-| Item | Per Serving | By the Pound |
-|---|---|---|
-| Mac & Cheese | $4 | $16/lb |
-| Collard Greens | $4 | $14/lb |
-| Fried Rice | $4 | $14/lb |
-| Coleslaw | $3 | $10/lb |
-| Sweet Potato Mash | $4 | $15/lb |
+
+| Item              | Per Serving | By the Pound |
+| ----------------- | ----------- | ------------ |
+| Mac & Cheese      | $4          | $16/lb       |
+| Collard Greens    | $4          | $14/lb       |
+| Fried Rice        | $4          | $14/lb       |
+| Coleslaw          | $3          | $10/lb       |
+| Sweet Potato Mash | $4          | $15/lb       |
 
 ### By the Pound
-| Item | Price |
-|---|---|
+
+| Item          | Price  |
+| ------------- | ------ |
 | Chicken Salad | $18/lb |
 
 ### Desserts
-| Item | Price |
-|---|---|
-| Homemade Sweet Potato Pie (slice) | $5 |
-| Banana Pudding (cup) | $5 |
-| Flourless Chocolate Cake (slice) | $6 |
+
+| Item                              | Price |
+| --------------------------------- | ----- |
+| Homemade Sweet Potato Pie (slice) | $5    |
+| Banana Pudding (cup)              | $5    |
+| Flourless Chocolate Cake (slice)  | $6    |
 
 ### Bundles
-| Bundle | Description | Price |
-|---|---|---|
-| Meal Prep × 7 | 7 entrée bowls of your choice | $88 |
-| Sunday Dinner for 2 | 2 entrées + 2 sides + 2 desserts | $42 |
-| Sunday Dinner for 4 | 4 entrées + 4 sides + 4 desserts | $80 |
-| Catering Package | Custom quote — starts at $18/person (min 10) | Custom |
+
+| Bundle              | Description                                  | Price  |
+| ------------------- | -------------------------------------------- | ------ |
+| Meal Prep × 7       | 7 entrée bowls of your choice                | $88    |
+| Sunday Dinner for 2 | 2 entrées + 2 sides + 2 desserts             | $42    |
+| Sunday Dinner for 4 | 4 entrées + 4 sides + 4 desserts             | $80    |
+| Catering Package    | Custom quote — starts at $18/person (min 10) | Custom |
 
 ---
 
 ## 5. Website Pages
 
 ### 5.1. Homepage (`/`)
+
 - **Hero Section:** Full-viewport animated glassmorphic background, steaming food bowl animation, tagline, CTA button "Order Now" / "Book Catering"
 - **About Snippet:** Brief chef intro with photo, St. Louis origin story, culinary school background
 - **Services Section:** Cards for each service (Individual, Meal Prep, Sunday Dinner, Catering, By the Pound)
@@ -123,6 +134,7 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 - **Footer:** Social links, contact, eco badges, newsletter signup
 
 ### 5.2. Menu (`/menu`)
+
 - Full menu organized by category (Entrées, Sides, By the Pound, Desserts, Bundles)
 - Dietary filter tags (Keto, Vegan, GF, Spicy, Fan Fave)
 - Photo-driven layout — each item has an image
@@ -130,6 +142,7 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 - "Add to Order" CTA on each item (links to calendar/order flow)
 
 ### 5.3. Order / Calendar (`/order`)
+
 - Interactive calendar (FullCalendar.js or custom) showing available dates and time slots
 - Service type selector: Individual Meal · Meal Prep × 7 · Sunday Dinner · By the Pound
 - Item selector with quantity
@@ -140,6 +153,7 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 - Order confirmation email (via Resend)
 
 ### 5.4. Catering (`/catering`)
+
 - Service overview with hero photo
 - What's included (custom menu, setup, serving, eco packaging)
 - Gallery of past events (animated slide show)
@@ -150,6 +164,7 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 - FAQ accordion
 
 ### 5.5. About (`/about`)
+
 - Chef bio: St. Louis native, culinary school journey, philosophy
 - Short owner video embed (YouTube/Vimeo)
 - Behind-the-scenes food photos
@@ -158,11 +173,13 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 - Timeline / story of Soul2Bowl
 
 ### 5.6. Blog (`/blog`)
+
 - SEO-driven content: recipes, food tips, St. Louis food culture, meal prep guides
 - Structured for Google Discover
 - Category tags: Recipes · Meal Prep · Catering Tips · Sustainability · St. Louis
 
 ### 5.7. Contact (`/contact`)
+
 - Contact form (name, email, phone, message)
 - Link to catering inquiry form
 - Social media links
@@ -170,6 +187,7 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 - Business hours
 
 ### 5.8. Account (`/account`)
+
 - Order history
 - Saved dietary preferences
 - Upcoming scheduled orders
@@ -177,6 +195,7 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 - Billing / payment methods
 
 ### 5.9. Admin Panel (`/admin`)
+
 - See Section 12 — Admin Panel Spec
 
 ---
@@ -185,22 +204,22 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 
 Per [Revvel Master App Template](../Master_Inventory/MASTER_APP_TEMPLATE.md):
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | Next.js 14+ (App Router) |
-| **Styling** | Tailwind CSS + custom glassmorphism utilities |
-| **Animation** | Framer Motion (food steam, parallax, page transitions) |
-| **Backend** | Node.js / tRPC or Next.js Route Handlers |
-| **Database** | PostgreSQL (Drizzle ORM) |
-| **Authentication** | Clerk (Google OAuth + Apple Sign-In + Email/Password) |
-| **Payments** | Stripe (one-time + recurring subscriptions) |
-| **Email** | Resend (order confirmations, newsletters) |
-| **Calendar** | FullCalendar.js or custom React calendar |
-| **Media CDN** | DigitalOcean Spaces CDN |
-| **Deployment** | DigitalOcean App Platform or Droplet |
-| **CI/CD** | GitHub Actions → DigitalOcean |
-| **Analytics** | Plausible (privacy-respecting) |
-| **Error Tracking** | Sentry |
+| Layer              | Technology                                             |
+| ------------------ | ------------------------------------------------------ |
+| **Frontend**       | Next.js 14+ (App Router)                               |
+| **Styling**        | Tailwind CSS + custom glassmorphism utilities          |
+| **Animation**      | Framer Motion (food steam, parallax, page transitions) |
+| **Backend**        | Node.js / tRPC or Next.js Route Handlers               |
+| **Database**       | PostgreSQL (Drizzle ORM)                               |
+| **Authentication** | Clerk (Google OAuth + Apple Sign-In + Email/Password)  |
+| **Payments**       | Stripe (one-time + recurring subscriptions)            |
+| **Email**          | Resend (order confirmations, newsletters)              |
+| **Calendar**       | FullCalendar.js or custom React calendar               |
+| **Media CDN**      | DigitalOcean Spaces CDN                                |
+| **Deployment**     | DigitalOcean App Platform or Droplet                   |
+| **CI/CD**          | GitHub Actions → DigitalOcean                          |
+| **Analytics**      | Plausible (privacy-respecting)                         |
+| **Error Tracking** | Sentry                                                 |
 
 ---
 
@@ -218,14 +237,16 @@ Per [Revvel Master App Template](../Master_Inventory/MASTER_APP_TEMPLATE.md):
 ## 8. Stripe Integration
 
 ### Payment Types
-| Type | Use Case |
-|---|---|
-| **One-Time Payment** | Individual meals, by-the-pound orders, Sunday dinner, catering deposits |
-| **Subscription** | Weekly meal prep × 7 (recurring weekly billing) |
-| **Stripe Checkout** | Hosted checkout for individual and bundle orders |
-| **Stripe Customer Portal** | Manage/cancel meal prep subscription |
+
+| Type                       | Use Case                                                                |
+| -------------------------- | ----------------------------------------------------------------------- |
+| **One-Time Payment**       | Individual meals, by-the-pound orders, Sunday dinner, catering deposits |
+| **Subscription**           | Weekly meal prep × 7 (recurring weekly billing)                         |
+| **Stripe Checkout**        | Hosted checkout for individual and bundle orders                        |
+| **Stripe Customer Portal** | Manage/cancel meal prep subscription                                    |
 
 ### Webhook Events to Handle
+
 - `checkout.session.completed` → create order, send confirmation email
 - `invoice.paid` → renew meal prep subscription
 - `invoice.payment_failed` → send dunning email, retry logic
@@ -236,6 +257,7 @@ Per [Revvel Master App Template](../Master_Inventory/MASTER_APP_TEMPLATE.md):
 ## 9. Calendar & Ordering System
 
 ### Calendar Features
+
 - View available days (admin controls blackout dates)
 - Select service type
 - See available time slots for pickup or delivery windows
@@ -243,6 +265,7 @@ Per [Revvel Master App Template](../Master_Inventory/MASTER_APP_TEMPLATE.md):
 - Color-coded by service: Individual (blue), Sunday Dinner (gold), Meal Prep (green), Catering (purple), By the Pound (teal)
 
 ### Order States
+
 `draft` → `pending_payment` → `confirmed` → `preparing` → `ready` → `completed` | `cancelled`
 
 ---
@@ -250,6 +273,7 @@ Per [Revvel Master App Template](../Master_Inventory/MASTER_APP_TEMPLATE.md):
 ## 10. Animation & Visual Design
 
 ### Animation Targets
+
 - **Hero section:** Food bowl with rising steam particles (CSS/Framer Motion)
 - **Menu cards:** Hover lift + shimmer glassmorphic glow
 - **Page transitions:** Smooth slide-in with Framer Motion
@@ -259,18 +283,19 @@ Per [Revvel Master App Template](../Master_Inventory/MASTER_APP_TEMPLATE.md):
 - **Loading states:** Animated SVG bowls / chopsticks spinner
 
 ### Design System
-| Token | Value |
-|---|---|
-| **Primary** | From logo (see `BRAND.md`) |
-| **Secondary** | From logo |
-| **Accent** | From logo |
-| **Background** | Deep dark glass: `rgba(5, 5, 15, 0.95)` |
-| **Glass Surface** | `rgba(255,255,255,0.06)` + `backdrop-filter: blur(20px)` |
-| **Glass Border** | `rgba(255,255,255,0.15)` |
-| **Text Primary** | `#F8F8F8` |
-| **Text Secondary** | `rgba(248,248,248,0.65)` |
-| **Corner Radius** | `16px` (cards), `24px` (modals), `8px` (buttons) |
-| **Shadow** | `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)` |
+
+| Token              | Value                                                             |
+| ------------------ | ----------------------------------------------------------------- |
+| **Primary**        | From logo (see `BRAND.md`)                                        |
+| **Secondary**      | From logo                                                         |
+| **Accent**         | From logo                                                         |
+| **Background**     | Deep dark glass: `rgba(5, 5, 15, 0.95)`                           |
+| **Glass Surface**  | `rgba(255,255,255,0.06)` + `backdrop-filter: blur(20px)`          |
+| **Glass Border**   | `rgba(255,255,255,0.15)`                                          |
+| **Text Primary**   | `#F8F8F8`                                                         |
+| **Text Secondary** | `rgba(248,248,248,0.65)`                                          |
+| **Corner Radius**  | `16px` (cards), `24px` (modals), `8px` (buttons)                  |
+| **Shadow**         | `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)` |
 
 ---
 
@@ -287,7 +312,7 @@ Per [Revvel Master App Template](../Master_Inventory/MASTER_APP_TEMPLATE.md):
   - Menu page (below food images)
   - Order confirmation page
   - Footer
-- Copy: *"Every Soul2Bowl order arrives in a LIFEMADE bowl — home and commercially compostable, BPA-free, and certified biodegradable. Good food. Good conscience."*
+- Copy: _"Every Soul2Bowl order arrives in a LIFEMADE bowl — home and commercially compostable, BPA-free, and certified biodegradable. Good food. Good conscience."_
 
 ---
 
@@ -296,6 +321,7 @@ Per [Revvel Master App Template](../Master_Inventory/MASTER_APP_TEMPLATE.md):
 See: [`ADMIN_PANEL_SPEC.md`](./ADMIN_PANEL_SPEC.md)
 
 Key capabilities:
+
 - Edit all page text and images (no code required)
 - Manage menu items (add, edit, archive, price changes)
 - Control calendar availability and blackout dates
@@ -312,6 +338,7 @@ Key capabilities:
 See: [`SEO_STRATEGY.md`](./SEO_STRATEGY.md)
 
 Key targets:
+
 - Primary: `catering St. Louis`, `meal prep St. Louis`, `Sunday dinner catering St. Louis`
 - Secondary: `BBQ fusion delivery St. Louis`, `healthy meal prep St. Louis MO`, `gluten-free catering St. Louis`
 - Schema.org: `Restaurant`, `FoodEstablishment`, `LocalBusiness`, `Menu`, `MenuItem`
@@ -355,6 +382,7 @@ Per [Revvel Compliance Rubric](../Master_Inventory/COMPLIANCE_RUBRIC.md):
 The About page (`/about`) shall include a **short video feature** with the owner/chef:
 
 ### Video Content Outline
+
 1. **Intro (0:00–0:15):** Chef introduces herself — St. Louis native, culinary school journey
 2. **Kitchen Scene (0:15–0:45):** Preparing signature dishes, plating with eco bowls
 3. **Philosophy (0:45–1:00):** "I cater to you" — clean ingredients, custom requests, conscious packaging
@@ -362,6 +390,7 @@ The About page (`/about`) shall include a **short video feature** with the owner
 5. **CTA (1:20–1:30):** "Order yours at Soul2Bowl.com"
 
 ### Video Specs
+
 - Format: MP4 (H.264), 1080p
 - Max length: 90 seconds
 - Hosting: YouTube (unlisted or public) / Vimeo — embedded on About page
@@ -373,26 +402,26 @@ The About page (`/about`) shall include a **short video feature** with the owner
 
 Top sites studied during design research:
 
-| Site | What to Borrow |
-|---|---|
-| [24 Carrots Catering](https://www.24carrots.com) | Full-bleed hero photos, event gallery, catering inquiry flow |
-| [Proof of the Pudding](https://proofpudding.com) | Clean typography, food photography, trust-building |
-| [Chowgirls Catering](https://chowgirlscatering.com) | Service pages, sustainability messaging |
-| [Graze](https://usegraze.com) | Interactive menu, subscription flow, 2026 trends |
-| [Time for Dinner STL](https://www.timefordinner.com) | Local St. Louis meal prep competitor |
-| DesignRush Food Awards 2026 | Glassmorphic + animation inspiration |
+| Site                                                 | What to Borrow                                               |
+| ---------------------------------------------------- | ------------------------------------------------------------ |
+| [24 Carrots Catering](https://www.24carrots.com)     | Full-bleed hero photos, event gallery, catering inquiry flow |
+| [Proof of the Pudding](https://proofpudding.com)     | Clean typography, food photography, trust-building           |
+| [Chowgirls Catering](https://chowgirlscatering.com)  | Service pages, sustainability messaging                      |
+| [Graze](https://usegraze.com)                        | Interactive menu, subscription flow, 2026 trends             |
+| [Time for Dinner STL](https://www.timefordinner.com) | Local St. Louis meal prep competitor                         |
+| DesignRush Food Awards 2026                          | Glassmorphic + animation inspiration                         |
 
 ---
 
 ## 18. Project Lifecycle (EXRUP)
 
-| Phase | Status | Description |
-|---|---|---|
-| 1. Deep Research | ✅ Complete | Competitor analysis, SEO research, design references |
-| 2. Specification | ✅ Complete | This document |
-| 3. Rollout Plan | ✅ Complete | See `ROADMAP.md` |
-| 4. Scrum Docs | ✅ Complete | See `SPRINT_LOG.md` |
-| 5. D.A.R.E. Log | ✅ Complete | See `DARE_LOG.md` |
-| 6. R.A.I.D. Log | ✅ Complete | See `RAID_LOG.md` |
-| 7. Implementation | 🔲 Pending | Build `midnghtsapphire/Soul2Bowl` repo |
-| 8. Release | 🔲 Pending | Deploy to `soul2bowl.com` |
+| Phase             | Status      | Description                                          |
+| ----------------- | ----------- | ---------------------------------------------------- |
+| 1. Deep Research  | ✅ Complete | Competitor analysis, SEO research, design references |
+| 2. Specification  | ✅ Complete | This document                                        |
+| 3. Rollout Plan   | ✅ Complete | See `ROADMAP.md`                                     |
+| 4. Scrum Docs     | ✅ Complete | See `SPRINT_LOG.md`                                  |
+| 5. D.A.R.E. Log   | ✅ Complete | See `DARE_LOG.md`                                    |
+| 6. R.A.I.D. Log   | ✅ Complete | See `RAID_LOG.md`                                    |
+| 7. Implementation | 🔲 Pending  | Build `midnghtsapphire/Soul2Bowl` repo               |
+| 8. Release        | 🔲 Pending  | Deploy to `soul2bowl.com`                            |

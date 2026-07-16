@@ -19,14 +19,14 @@ Standards must self-heal. Every time we fix a problem, update a workflow, or dis
 
 For ANY change to a `.yml` workflow or `.md` standard file:
 
-| Field | Required | Example |
-| ------- | ---------- | --------- |
-| **Who** | ✅ | Audrey Evans (midnghtsapphire) |
-| **When** | ✅ | 2026-05-06 |
-| **Why** | ✅ | Removed false positive check for torrents/pirate bay - legitimate content in docs |
-| **What** | ✅ | Removed only torrent/pirate bay check, preserving all other checks |
-| **What Worked** | If applicable | Check passed after removal |
-| **Notes** | Optional | Any follow-up needed |
+| Field           | Required      | Example                                                                           |
+| --------------- | ------------- | --------------------------------------------------------------------------------- |
+| **Who**         | ✅            | Audrey Evans (midnghtsapphire)                                                    |
+| **When**        | ✅            | 2026-05-06                                                                        |
+| **Why**         | ✅            | Removed false positive check for torrents/pirate bay - legitimate content in docs |
+| **What**        | ✅            | Removed only torrent/pirate bay check, preserving all other checks                |
+| **What Worked** | If applicable | Check passed after removal                                                        |
+| **Notes**       | Optional      | Any follow-up needed                                                              |
 
 ### 2.2 Document in the File Header
 
@@ -114,14 +114,14 @@ fix(workflow-name): [one-line summary]
 
 ## 5. Standards to Always Keep Updated
 
-| Standard | When to Update |
-| ---------- | ---------------- |
-| `.github/workflows/*.yml` | Any workflow change |
-| `AGENTS.md` | New skills, tools, or processes |
-| `CODE_REVIEW_STANDARD.md` | New code review tools |
-| `CREDENTIAL_AUDIT_SYSTEM.md` | New credentials or rotation |
-| `AUTOMATED_PRODUCT_PIPELINE.md` | New output types or deployment |
-| `standards/*.md` | Any integration or process change |
+| Standard                        | When to Update                    |
+| ------------------------------- | --------------------------------- |
+| `.github/workflows/*.yml`       | Any workflow change               |
+| `AGENTS.md`                     | New skills, tools, or processes   |
+| `CODE_REVIEW_STANDARD.md`       | New code review tools             |
+| `CREDENTIAL_AUDIT_SYSTEM.md`    | New credentials or rotation       |
+| `AUTOMATED_PRODUCT_PIPELINE.md` | New output types or deployment    |
+| `standards/*.md`                | Any integration or process change |
 
 ---
 
@@ -147,12 +147,12 @@ The system auto-updates when:
 
 When a workflow, automation, or process **fails but shouldn't block**:
 
-| Scenario | Action | Notification |
-| ---------- | -------- | -------------- |
-| Non-critical check fails | Continue anyway | Notify in PR comment |
+| Scenario                    | Action                 | Notification                |
+| --------------------------- | ---------------------- | --------------------------- |
+| Non-critical check fails    | Continue anyway        | Notify in PR comment        |
 | Required credential missing | Continue with fallback | Label `credentials-missing` |
-| Optional workflow fails | Skip, don't block | Log failure, proceed |
-| Automation timeout | Retry with backoff | Alert to channel |
+| Optional workflow fails     | Skip, don't block      | Log failure, proceed        |
+| Automation timeout          | Retry with backoff     | Alert to channel            |
 
 ### 7A.2 Notification Rules
 
@@ -208,13 +208,13 @@ When disabling a workflow or check:
 
 ## 7B. Notification Channels
 
-| Failure Type | Channel | Priority |
-| -------------- | --------- | ---------- |
-| Credential missing | PR comment + `credentials-missing` label | Medium |
-| Workflow timeout | PR comment + retry | Low |
-| Required check fails | PR comment + block | High |
-| Optional check fails | PR comment only | Low |
-| Security issue | All channels + `security` label | Critical |
+| Failure Type         | Channel                                  | Priority |
+| -------------------- | ---------------------------------------- | -------- |
+| Credential missing   | PR comment + `credentials-missing` label | Medium   |
+| Workflow timeout     | PR comment + retry                       | Low      |
+| Required check fails | PR comment + block                       | High     |
+| Optional check fails | PR comment only                          | Low      |
+| Security issue       | All channels + `security` label          | Critical |
 
 ---
 
@@ -254,7 +254,7 @@ All changes should:
 
 ### 10.1 Invalid workflow YAML breaks repo-wide `Workflow Lint`
 
-- **Symptom:** `Workflow Lint` (and CircleCI lint) fail on *every* PR, often
+- **Symptom:** `Workflow Lint` (and CircleCI lint) fail on _every_ PR, often
   pointing at a file the PR never touched. Root cause is almost always a
   `github-script` body whose multi-line template literal was written
   **flush-left (column 1)**, terminating the `script: |` block scalar.
@@ -267,11 +267,7 @@ All changes should:
   strings as an indented array joined with `\n`:
 
   ```js
-  body: [
-    `## Title`,
-    ``,
-    `**Field:** ${value}`,
-  ].join('\n')
+  body: [`## Title`, ``, `**Field:** ${value}`].join("\n");
   ```
 
   Never write template-literal continuation lines at column 0.
@@ -311,12 +307,12 @@ All changes should:
   child_process from a function argument `X`".
 - **Why it triggers:** the rule flags **any** `child_process` call whose argument
   is not a string literal — even shell-free `execFileSync`/`spawnSync` with argv
-  arrays. So it fires on both genuinely-unsafe shell interpolation *and* already-safe
+  arrays. So it fires on both genuinely-unsafe shell interpolation _and_ already-safe
   calls.
 - **Fix (remove the real risk first):**
   1. Never build a shell command by interpolating variables
-     (`execSync(\`curl "${url}"\`)`). Use`execFileSync`/`spawnSync` with an
-     **argv array** and no shell: `execFileSync('curl', ['-sL', url, '--max-time', '30'])`.
+     (`execSync(\`curl "${url}"\`)`). Use`execFileSync`/`spawnSync`with an
+**argv array** and no shell:`execFileSync('curl', ['-sL', url, '--max-time', '30'])`.
   2. Pass secrets via **stdin** (`{ input: value }`), never `echo "$value" | …`,
      so they never appear on a command line.
   3. **Validate** any value used as an argument name/identifier
@@ -477,15 +473,17 @@ All changes should:
   surface:
 
   ```javascript
-  await github.rest.issues.removeLabel({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    issue_number: issueNumber,
-    name: 'wr:checking',
-  }).catch(err => {
-    if (err.status !== 404) throw err;
-    console.log('label already removed (404) — continuing');
-  });
+  await github.rest.issues
+    .removeLabel({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      issue_number: issueNumber,
+      name: "wr:checking",
+    })
+    .catch((err) => {
+      if (err.status !== 404) throw err;
+      console.log("label already removed (404) — continuing");
+    });
   ```
 
   Acceptable alternative: a `removeLabelSafe(issueNumber, label)` wrapper

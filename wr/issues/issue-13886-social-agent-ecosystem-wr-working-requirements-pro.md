@@ -8,7 +8,6 @@
 
 ---
 
-
 # Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended)
 
 #
@@ -60,29 +59,29 @@ on:
   workflow_dispatch:
     inputs:
       deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
+        description: "Run full deep market research (keywords, BOM, chatter, domain)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
+        description: "Generate Bill of Materials (API/tool comparison table)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
+        description: "Research Reddit/forums/TrustPilot for buyer complaints"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
+        description: "Full competitor pricing + gap analysis"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       research_depth:
-        description: 'Research depth level'
+        description: "Research depth level"
         type: choice
         options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
+        default: deep # ← default to deep, not standard
 ```
 
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a _starting point_ — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
 
 ---
 
@@ -96,15 +95,15 @@ on:
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-25 |
-| Last Updated | 2026-05-25 |
-| Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | ### Output Type (required)
+| Property         | Value                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created          | 2026-05-25                                                                              |
+| Last Updated     | 2026-05-25                                                                              |
+| Primary Language | JavaScript                                                                              |
+| Stars            | {STARS}                                                                                 |
+| Open Issues      | {OPEN_ISSUES}                                                                           |
+| Description      | ### Output Type (required)                                                              |
 
 production-app
 
@@ -228,18 +227,13 @@ The system operates using the following reasoning architecture:
 
 1. UNDERSTAND
 
-
 2. ANALYZE
-
 
 3. REASON
 
-
 4. SYNTHESIZE
 
-
 5. CONCLUDE
-
 
 6. SELF-HEAL
 
@@ -453,7 +447,6 @@ TypeScript
 
 Framer Motion
 
-
 Deploy:
 
 Vercel
@@ -496,7 +489,6 @@ Azure SQL
 
 SQL Server
 
-
 Reason: Existing SQL knowledge and enterprise reporting compatibility.
 
 ---
@@ -531,7 +523,6 @@ Claude Sonnet
 
 Gemini Pro
 
-
 Critics / Red-team
 
 DeepSeek
@@ -539,7 +530,6 @@ DeepSeek
 Qwen
 
 Kimi
-
 
 Coding / repo automation
 
@@ -653,9 +643,7 @@ Messenger Webhooks
 
 FastAPI endpoints
 
-
 Workflow: Message → webhook → agent router → AI response → reply
-
 
 ---
 
@@ -672,7 +660,6 @@ excellent bot support
 stable APIs
 
 low friction
-
 
 Use:
 
@@ -709,7 +696,6 @@ aggressive automation
 spam commenting
 
 high-frequency scraping
-
 
 Preferred:
 
@@ -768,9 +754,9 @@ Repo Strategy
 
 Recommended:
 
-main      = stable
-develop   = active development
-labs      = autonomous/experimental agents
+main = stable
+develop = active development
+labs = autonomous/experimental agents
 
 ---
 
@@ -822,9 +808,7 @@ preview deployments
 
 rollback orchestration
 
-
 GitHub Actions should remain lightweight.
-
 
 ---
 
@@ -908,7 +892,6 @@ enterprise orchestration,
 
 and autonomous multi-agent collaboration frameworks.
 
-
 The platform should eventually function as:
 
 an emergency intelligence layer,
@@ -935,7 +918,6 @@ build simple agent router
 
 add Supabase auth/database
 
-
 Week 2
 
 add image upload analysis
@@ -948,7 +930,6 @@ add GitHub issue generation
 
 add workflow generation
 
-
 Week 3
 
 add Discord integration
@@ -958,7 +939,6 @@ add Facebook Messenger integration
 add MCP tools
 
 add environmental modules
-
 
 Week 4+
 
@@ -973,8 +953,6 @@ add enterprise reporting
 add CircleCI
 
 add Azure SQL migration layer
-
-
 
 ---
 
@@ -995,7 +973,6 @@ source-verified,
 correction-first,
 
 and progressively scalable.
-
 
 The goal is not one giant omniscient AI.
 
@@ -1039,7 +1016,6 @@ UX philosophy
 
 long-term autonomous ecosystem vision
 
-
 It’s structured so you can hand it to:
 
 developers,
@@ -1056,7 +1032,7 @@ GitHub Copilot,
 
 contractors,
 
-or future teammates without them immediately getting lost in the haunted forest 
+or future teammates without them immediately getting lost in the haunted forest
 
 selfheal analyze incident.json
 selfheal generate-report
@@ -1064,9 +1040,9 @@ selfheal route-question
 selfheal create-prd
 selfheal summarize-chat
 selfheal verify-sources
-main      = stable
-develop   = active development
-labs      = autonomous/experimental agents
+main = stable
+develop = active development
+labs = autonomous/experimental agents
 
 ### Required Bundle
 
@@ -1106,8 +1082,8 @@ _No response_
 - [x] Explicitly requested secondary items should not be silently deferred.
 - [x] If the PR is partial, the blocker must be documented.
 - [x] The PR should reflect the WR's required bundle and definition of done. |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+      | Private | {IS_PRIVATE} |
+      | Archived | {IS_ARCHIVED} |
 
 ### Current Status
 
@@ -1136,18 +1112,18 @@ _No response_
 
 ## Step 1A: Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-|--------------|-----------|-----------------|---------------------------|-------|
-| Website / app UI | [Yes/No] | [site/app] | [engine] | [notes] |
-| API | [Yes/No] | [REST/GraphQL/etc.] | [engine] | [notes] |
-| CLI | [Yes/No] | [binary/package] | [engine] | [notes] |
-| MCP | [Yes/No] | [server/router/tool manifest] | [engine] | [notes] |
-| Skill | [Yes/No] | [skill type] | [engine] | [notes] |
-| PDF | [Yes/No] | [report/guide/etc.] | [engine] | [notes] |
-| PowerPoint / deck | [Yes/No] | [sales/training/review deck] | [engine] | [notes] |
-| Video | [Yes/No] | [demo/training/review/YouTube + target length] | [engine] | [notes] |
-| Docs | [Yes/No] | [site/spec/readme] | [engine] | [notes] |
-| Agent automation | [Yes/No] | [workflow/agent/service] | [engine] | [notes] |
+| Output shape      | In scope? | Format / length                                | Primary engine / standard | Notes   |
+| ----------------- | --------- | ---------------------------------------------- | ------------------------- | ------- |
+| Website / app UI  | [Yes/No]  | [site/app]                                     | [engine]                  | [notes] |
+| API               | [Yes/No]  | [REST/GraphQL/etc.]                            | [engine]                  | [notes] |
+| CLI               | [Yes/No]  | [binary/package]                               | [engine]                  | [notes] |
+| MCP               | [Yes/No]  | [server/router/tool manifest]                  | [engine]                  | [notes] |
+| Skill             | [Yes/No]  | [skill type]                                   | [engine]                  | [notes] |
+| PDF               | [Yes/No]  | [report/guide/etc.]                            | [engine]                  | [notes] |
+| PowerPoint / deck | [Yes/No]  | [sales/training/review deck]                   | [engine]                  | [notes] |
+| Video             | [Yes/No]  | [demo/training/review/YouTube + target length] | [engine]                  | [notes] |
+| Docs              | [Yes/No]  | [site/spec/readme]                             | [engine]                  | [notes] |
+| Agent automation  | [Yes/No]  | [workflow/agent/service]                       | [engine]                  | [notes] |
 
 ### Platform Defaults & Website Requirements
 
@@ -1184,18 +1160,18 @@ _No response_
 [Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
 
 | Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
-| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
+| ---------------- | ------------- | ------------ | ---------------- |
+| [Segment 1]      | [Trigger]     | High/Med/Low | [Size]           |
+| [Segment 2]      | [Trigger]     | High/Med/Low | [Size]           |
 
 #### SEO & Keyword Research
 
 **This section is REQUIRED for any product with a web/content component.**
 
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| Keyword             | Monthly Volume (US) | Avg CPC | Competition  | Intent                      |
+| ------------------- | ------------------- | ------- | ------------ | --------------------------- |
+| [primary keyword 1] | [volume]            | [$CPC]  | High/Med/Low | Transactional/Informational |
+| [primary keyword 2] | [volume]            | [$CPC]  | High/Med/Low | Transactional/Informational |
 
 **Long-tail / trigger-specific keywords:**
 
@@ -1210,30 +1186,30 @@ _No response_
 
 **Category: [Primary Data Source]**
 
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
-| [Option 2] | [$] | [Coverage] | [Use case] | |
+| API / Tool | Cost | Coverage   | Best For   | Verdict                                   |
+| ---------- | ---- | ---------- | ---------- | ----------------------------------------- |
+| [Option 1] | [$]  | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
+| [Option 2] | [$]  | [Coverage] | [Use case] |                                           |
 
 **Category: [Compliance / Validation]**
 
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
+| API / Tool | Cost | Features   | Best For   | Verdict |
+| ---------- | ---- | ---------- | ---------- | ------- |
+| [Option 1] | [$]  | [Features] | [Use case] |         |
 
 **Category: [Delivery / Storefront]**
 
-| Platform | Rev Share | Best For | Verdict |
-|----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
+| Platform   | Rev Share | Best For   | Verdict |
+| ---------- | --------- | ---------- | ------- |
+| [Option 1] | [%]       | [Use case] |         |
 
 **BOM Cost Summary:**
 
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
+| Category                 | Recommended Tool | Est. Monthly Cost |
+| ------------------------ | ---------------- | ----------------- |
+| [Category 1]             | [Tool]           | $[X]              |
+| [Category 2]             | [Tool]           | $[X]              |
+| **Total Infrastructure** |                  | **$[Total]/mo**   |
 
 > **ROI Check:** [How many units/sales cover infrastructure cost?]
 
@@ -1244,20 +1220,20 @@ _No response_
 **Shared vs. Exclusive / Tiered pricing:**
 
 | Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-|--------------|-------------|------|----------------|------------------------|
-| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+| ------------- | ------------ | ---- | --------------- | ----------------------- |
+| [Type 1]      | [Mechanics]  | [$]  | [Rate]          | [Value drivers]         |
+| [Type 2]      | [Mechanics]  | [$]  | [Rate]          | [Value drivers]         |
 
 **Why some [units] are worth more than others:**
 [Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
 
 #### Competitors & Alternatives
 
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
+| Competitor      | Type   | Cost      | Conversion/Quality | Gap / What They Don't Do |
+| --------------- | ------ | --------- | ------------------ | ------------------------ |
+| [Name 1]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| [Name 2]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| **This Engine** | [Type] | [Pricing] | [Expected]         | [Our advantage]          |
 
 #### API / Data Source BOM (REQUIRED)
 
@@ -1265,10 +1241,10 @@ _No response_
 
 If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
 
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| Provider/API | Best For         | Data/Capability | Cost Model | Strengths  | Weaknesses/Risks | Compliance Notes  |
+| ------------ | ---------------- | --------------- | ---------- | ---------- | ---------------- | ----------------- |
+| [Provider 1] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
+| [Provider 2] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
 
 **BOM Decision:**
 
@@ -1299,8 +1275,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **High-value domain patterns for this niche:**
 
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
+| Pattern     | Examples   | Rationale      |
+| ----------- | ---------- | -------------- |
 | [Pattern 1] | [Examples] | [Why it works] |
 | [Pattern 2] | [Examples] | [Why it works] |
 
@@ -1326,8 +1302,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **This section is REQUIRED. Research current marketing strategies in this niche.**
 
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
+| Strategy     | What Works Now                 | How This WR Improves It     |
+| ------------ | ------------------------------ | --------------------------- |
 | [Strategy 1] | [Current best practice + data] | [How our product is better] |
 | [Strategy 2] | [Current best practice + data] | [How our product is better] |
 
@@ -1441,17 +1417,17 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Weighted Factors:**
 
-| Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| [factor] | [0.00] | [input/source] | [reason] |
+| Factor   | Weight | Source         | Why it matters |
+| -------- | -----: | -------------- | -------------- |
+| [factor] | [0.00] | [input/source] | [reason]       |
 
 **Threshold Bands:**
 
-| Score Range | Status | Action |
-|---|---|---|
-| 80-100 | eligible | [export/route/approve] |
-| 50-79 | manual_review | [review queue] |
-| 0-49 | blocked | [suppress/reject] |
+| Score Range | Status        | Action                 |
+| ----------- | ------------- | ---------------------- |
+| 80-100      | eligible      | [export/route/approve] |
+| 50-79       | manual_review | [review queue]         |
+| 0-49        | blocked       | [suppress/reject]      |
 
 **Audit Trail Required:**
 
@@ -1590,9 +1566,9 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Links to Add:**
 
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
+| Product/Service | Affiliate Program | Commission | Location       |
+| --------------- | ----------------- | ---------- | -------------- |
+| [Name]          | [Program]         | [Rate]     | [Where to add] |
 
 #### Payment Integration
 
@@ -1687,11 +1663,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
+| Feature   | Status     | URL                                       |
+| --------- | ---------- | ----------------------------------------- |
+| Homepage  | ✅ Working | https://{repo-name}.vercel.app            |
+| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard  |
+| API       | ✅ Working | https://{repo-name}.vercel.app/api/health |
 ```
 
 **Action Required:** [None / Add section / Update URLs]
@@ -1783,8 +1759,8 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
+| Risk     | Severity     | Probability  | Mitigation        |
+| -------- | ------------ | ------------ | ----------------- |
 | [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
 | [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
 

@@ -15,6 +15,7 @@ patterns/
 ## Pattern Types
 
 ### Keywords
+
 Simple string matching for trigger detection.
 
 ```yaml
@@ -25,6 +26,7 @@ keywords:
 ```
 
 ### Regex Patterns
+
 Advanced pattern matching with scoring.
 
 ```yaml
@@ -35,6 +37,7 @@ regex:
 ```
 
 ### Thresholds
+
 Numeric value-based triggers.
 
 ```yaml

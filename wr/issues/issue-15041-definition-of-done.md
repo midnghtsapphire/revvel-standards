@@ -11,6 +11,7 @@
 ## 1. Functional Requirements
 
 ### 1.1 Image-to-Text Parser
+
 - [ ] Parser accepts PNG, JPG/JPEG, WEBP, and PDF inputs.
 - [ ] Parser returns structured JSON: `{ text, blocks[], confidence, source_meta }`.
 - [ ] OCR/vision accuracy ≥ **95%** character-level on the WR golden fixture set
@@ -20,6 +21,7 @@
       uncaught exceptions to the caller.
 
 ### 1.2 LLM / Copilot Integration
+
 - [ ] LLM call is behind a provider-agnostic interface (OpenRouter primary,
       OpenHands fallback, manual queue as final fallback).
 - [ ] Prompt templates are versioned in `wr/prompts/` with a `version` field.
@@ -27,6 +29,7 @@
 - [ ] Token/cost budget enforced per call; overflow → truncation + warning log.
 
 ### 1.3 WR Enrichment Pipeline
+
 - [ ] Enrichment writes to WR via the existing WR client (no direct DB writes).
 - [ ] Idempotent: re-running on the same input produces no duplicate records.
 - [ ] Emits structured events: `wr.enrich.started`, `wr.enrich.completed`,
@@ -47,14 +50,17 @@
 ## 3. Testing Requirements
 
 ### 3.1 Unit Tests
+
 - [ ] ≥ **85%** line coverage on parser and enrichment modules.
 - [ ] Every public function has at least one happy-path and one error-path test.
 
 ### 3.2 Integration Tests
+
 - [ ] Parser → LLM → WR client round trip exercised with mocked LLM.
 - [ ] Provider failover path tested (OpenRouter down → OpenHands used).
 
 ### 3.3 Acceptance Tests
+
 - [ ] Golden fixture suite passes in CI.
 - [ ] Jules' sample batch passes with zero P1/P2 defects.
 - [ ] Performance test: p95 end-to-end latency ≤ **8s** per image.
@@ -74,14 +80,14 @@
 
 ## 5. Quality & Performance Metrics
 
-| Metric                              | Target        | Measured In              |
-|-------------------------------------|---------------|--------------------------|
-| OCR character accuracy              | ≥ 95%         | Golden fixture eval      |
-| LLM JSON-schema validity rate       | ≥ 99%         | Production sample (24h)  |
-| End-to-end p95 latency              | ≤ 8s / image  | Load test + prod metrics |
-| Enrichment failure rate             | ≤ 1%          | Prod metrics (7d window) |
-| Cost per 1k enrichments             | ≤ $2.00       | Provider billing export  |
-| Duplicate WR entries introduced     | 0             | WR audit query           |
+| Metric                          | Target       | Measured In              |
+| ------------------------------- | ------------ | ------------------------ |
+| OCR character accuracy          | ≥ 95%        | Golden fixture eval      |
+| LLM JSON-schema validity rate   | ≥ 99%        | Production sample (24h)  |
+| End-to-end p95 latency          | ≤ 8s / image | Load test + prod metrics |
+| Enrichment failure rate         | ≤ 1%         | Prod metrics (7d window) |
+| Cost per 1k enrichments         | ≤ $2.00      | Provider billing export  |
+| Duplicate WR entries introduced | 0            | WR audit query           |
 
 ---
 

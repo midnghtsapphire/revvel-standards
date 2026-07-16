@@ -49,7 +49,11 @@
           "description": "Smoke-hits the deployed lead-engine. Set `{{leadEngineUrl}}` to your Vercel deployment URL.",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{leadEngineUrl}}/", "host": ["{{leadEngineUrl}}"], "path": [""] }
+            "url": {
+              "raw": "{{leadEngineUrl}}/",
+              "host": ["{{leadEngineUrl}}"],
+              "path": [""]
+            }
           },
           "event": [
             {

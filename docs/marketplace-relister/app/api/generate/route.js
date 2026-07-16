@@ -2,7 +2,7 @@
  * One product → N lifestyle images (called repeatedly by the batch runner).
  * Secrets stay on Vercel: OPENROUTER_API_KEY
  */
-export const runtime = 'nodejs';
+export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const PROMPTS = [
@@ -19,52 +19,62 @@ const PROMPTS = [
 ];
 
 async function openRouterImage(prompt, apiKey, model) {
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
-      'X-Title': 'family-marketplace-relister',
+      "Content-Type": "application/json",
+      "HTTP-Referer": "https://github.com/midnghtsapphire/revvel-standards",
+      "X-Title": "family-marketplace-relister",
     },
     body: JSON.stringify({
       model,
       // modalities must include 'image' so that Gemini/image-capable models
       // return image content instead of text-only output.
-      modalities: ['text', 'image'],
-      messages: [{ role: 'user', content: prompt }],
+      modalities: ["text", "image"],
+      messages: [{ role: "user", content: prompt }],
     }),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data.error?.message || data.message || `OpenRouter ${res.status}`);
+    throw new Error(
+      data.error?.message || data.message || `OpenRouter ${res.status}`,
+    );
   }
   const msg = data.choices?.[0]?.message;
   if (msg?.images?.[0]?.image_url?.url) return msg.images[0].image_url.url;
   if (Array.isArray(msg?.content)) {
     for (const p of msg.content) {
-      if (p.type === 'image_url' && p.image_url?.url) return p.image_url.url;
-      if (p.inline_data?.data) return `data:image/jpeg;base64,${p.inline_data.data}`;
+      if (p.type === "image_url" && p.image_url?.url) return p.image_url.url;
+      if (p.inline_data?.data)
+        return `data:image/jpeg;base64,${p.inline_data.data}`;
     }
   }
-  if (typeof msg?.content === 'string') {
-    const m = msg.content.match(/data:image\/[a-zA-Z0-9+.-]+;base64,[A-Za-z0-9+/=]+/);
+  if (typeof msg?.content === "string") {
+    const m = msg.content.match(
+      /data:image\/[a-zA-Z0-9+.-]+;base64,[A-Za-z0-9+/=]+/,
+    );
     if (m) return m[0];
   }
   // Surface a preview in server logs (but don't send raw provider output back to clients)
   const preview = JSON.stringify(data).slice(0, 300);
-  console.error('OpenRouter no-image response preview:', preview);
-  throw new Error('No image in response — check OPENROUTER_IMAGE_MODEL is an image-capable model.');
+  console.error("OpenRouter no-image response preview:", preview);
+  throw new Error(
+    "No image in response — check OPENROUTER_IMAGE_MODEL is an image-capable model.",
+  );
 }
 
 export async function POST(request) {
   try {
     const body = await request.json();
-    const title = String(body.title || '').trim();
-    const asin = body.asin ? String(body.asin).trim().toUpperCase() : '';
-    const count = Math.min(5, Math.max(1, parseInt(body.count || '3', 10) || 3));
+    const title = String(body.title || "").trim();
+    const asin = body.asin ? String(body.asin).trim().toUpperCase() : "";
+    const count = Math.min(
+      5,
+      Math.max(1, parseInt(body.count || "3", 10) || 3),
+    );
     if (!title && !asin) {
-      return Response.json({ error: 'Need title or ASIN' }, { status: 400 });
+      return Response.json({ error: "Need title or ASIN" }, { status: 400 });
     }
 
     const apiKey = process.env.OPENROUTER_API_KEY;
@@ -72,24 +82,28 @@ export async function POST(request) {
       return Response.json(
         {
           error:
-            'Server missing OPENROUTER_API_KEY. Add it in Vercel → Project → Settings → Environment Variables, then Redeploy.',
+            "Server missing OPENROUTER_API_KEY. Add it in Vercel → Project → Settings → Environment Variables, then Redeploy.",
           setup: true,
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
     // Use the GA model (not the -preview slug) — preview endpoints go offline
     // without notice and return "No endpoints found". The stable slug is always served.
     const model =
-      process.env.OPENROUTER_IMAGE_MODEL || 'google/gemini-2.5-flash-image';
+      process.env.OPENROUTER_IMAGE_MODEL || "google/gemini-2.5-flash-image";
     const label = title || `Amazon product ${asin}`;
     const images = [];
     const errors = [];
 
     for (let i = 0; i < count; i++) {
       try {
-        const url = await openRouterImage(PROMPTS[i % PROMPTS.length](label), apiKey, model);
+        const url = await openRouterImage(
+          PROMPTS[i % PROMPTS.length](label),
+          apiKey,
+          model,
+        );
         images.push({ index: i + 1, url });
       } catch (err) {
         errors.push({ index: i + 1, message: err.message || String(err) });
@@ -105,16 +119,19 @@ export async function POST(request) {
       errors,
       listing: [
         label,
-        '',
-        asin ? `ASIN: ${asin}` : '',
-        asin ? `https://www.amazon.com/dp/${asin}` : '',
-        '',
-        'From our orders. Message with questions. Local pickup / shipping as agreed.',
+        "",
+        asin ? `ASIN: ${asin}` : "",
+        asin ? `https://www.amazon.com/dp/${asin}` : "",
+        "",
+        "From our orders. Message with questions. Local pickup / shipping as agreed.",
       ]
         .filter(Boolean)
-        .join('\n'),
+        .join("\n"),
     });
   } catch (err) {
-    return Response.json({ error: err.message || 'Server error' }, { status: 500 });
+    return Response.json(
+      { error: err.message || "Server error" },
+      { status: 500 },
+    );
   }
 }

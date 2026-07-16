@@ -7,6 +7,7 @@ Independent life insurance agents waste 60-80% of their time prospecting low-qua
 ## Solution
 
 Automated tool that:
+
 1. Pulls verified medical professional contact data from the public NPPES NPI Registry.
 2. Scores leads by specialty income tier (A/B/C).
 3. Generates context-aware pitch scripts addressing the specific financial pain points of each specialty.

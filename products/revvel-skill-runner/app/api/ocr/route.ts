@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 /**
  * OCR Document Parser API
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   if (!imageUrl && !imageBase64) {
     return NextResponse.json(
       { error: "Provide imageUrl (public URL) or imageBase64 (data URI)." },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
           "```",
         ].join("\n"),
       },
-      { status: 200 }
+      { status: 200 },
     );
   }
 
@@ -54,17 +54,16 @@ export async function POST(req: NextRequest) {
       "If the image contains a table, render it as a Markdown table. " +
       "Do not add commentary — output only the extracted content.";
 
-  const imageContent =
-    imageUrl
-      ? { type: "image_url", image_url: { url: imageUrl } }
-      : {
-          type: "image_url",
-          image_url: {
-            url: imageBase64!.startsWith("data:")
-              ? imageBase64!
-              : `data:image/png;base64,${imageBase64}`,
-          },
-        };
+  const imageContent = imageUrl
+    ? { type: "image_url", image_url: { url: imageUrl } }
+    : {
+        type: "image_url",
+        image_url: {
+          url: imageBase64!.startsWith("data:")
+            ? imageBase64!
+            : `data:image/png;base64,${imageBase64}`,
+        },
+      };
 
   const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
@@ -79,10 +78,7 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "user",
-          content: [
-            { type: "text", text: instruction },
-            imageContent,
-          ],
+          content: [{ type: "text", text: instruction }, imageContent],
         },
       ],
       max_tokens: 4096,
@@ -93,13 +89,15 @@ export async function POST(req: NextRequest) {
     const err = await res.text();
     return NextResponse.json(
       { error: `OpenRouter error: ${res.status} — ${err}` },
-      { status: 502 }
+      { status: 502 },
     );
   }
 
   const data = await res.json();
-  const output =
-    data.choices?.[0]?.message?.content ?? "No content extracted.";
+  const output = data.choices?.[0]?.message?.content ?? "No content extracted.";
 
-  return NextResponse.json({ output, model: data.model ?? "claude-3.7-sonnet" });
+  return NextResponse.json({
+    output,
+    model: data.model ?? "claude-3.7-sonnet",
+  });
 }

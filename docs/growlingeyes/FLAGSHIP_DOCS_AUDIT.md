@@ -14,7 +14,7 @@ The `midnghtsapphire/growlingeyes` repository predates `midnghtsapphire/revvel-s
 
 This audit:
 
-1. Enumerates what a *complete* flagship folder looks like, using `Soul2Bowl/` as the reference.
+1. Enumerates what a _complete_ flagship folder looks like, using `Soul2Bowl/` as the reference.
 2. Lists what `docs/growlingeyes/` currently contains.
 3. Flags the gap so the missing docs can be copied over and adapted (with brand/path rewrites) in follow-up PRs.
 
@@ -26,43 +26,44 @@ It is **documentation only** — no files are moved, copied, or rewritten by thi
 
 Treat this as the canonical "complete" shape for any Revvel product folder inside `revvel-standards/docs/<project>/`:
 
-| # | Document | Purpose |
-|---|---|---|
-| 1 | `README.md` | Landing page + pointers to every other doc in the folder |
-| 2 | `BLUEPRINT.md` | Architecture, stack, and top-level system design |
-| 3 | `ROADMAP.md` | Quarter-by-quarter feature/sprint roadmap |
-| 4 | `BOM.md` | Bill of Materials — services, costs, status |
-| 5 | `BRAND.md` | Brand voice, colors, typography, logo rules |
-| 6 | `DATA_MODEL.md` | Tables, fields, relationships |
-| 7 | `API_SPEC.md` | REST/tRPC/GraphQL endpoint contracts |
-| 8 | `ADMIN_PANEL_SPEC.md` | Admin UI pages, permissions, workflows |
-| 9 | `ENV_EXAMPLE.md` | Documented `.env` variables |
-| 10 | `DARE_LOG.md` | Decisions / Assumptions / Risks / Escalations |
-| 11 | `RAID_LOG.md` | Risks / Actions / Issues / Dependencies |
-| 12 | `SEO_STRATEGY.md` | SEO plan, keywords, metadata |
-| 13 | `SPRINT_LOG.md` | Sprint history index |
+| #   | Document              | Purpose                                                  |
+| --- | --------------------- | -------------------------------------------------------- |
+| 1   | `README.md`           | Landing page + pointers to every other doc in the folder |
+| 2   | `BLUEPRINT.md`        | Architecture, stack, and top-level system design         |
+| 3   | `ROADMAP.md`          | Quarter-by-quarter feature/sprint roadmap                |
+| 4   | `BOM.md`              | Bill of Materials — services, costs, status              |
+| 5   | `BRAND.md`            | Brand voice, colors, typography, logo rules              |
+| 6   | `DATA_MODEL.md`       | Tables, fields, relationships                            |
+| 7   | `API_SPEC.md`         | REST/tRPC/GraphQL endpoint contracts                     |
+| 8   | `ADMIN_PANEL_SPEC.md` | Admin UI pages, permissions, workflows                   |
+| 9   | `ENV_EXAMPLE.md`      | Documented `.env` variables                              |
+| 10  | `DARE_LOG.md`         | Decisions / Assumptions / Risks / Escalations            |
+| 11  | `RAID_LOG.md`         | Risks / Actions / Issues / Dependencies                  |
+| 12  | `SEO_STRATEGY.md`     | SEO plan, keywords, metadata                             |
+| 13  | `SPRINT_LOG.md`       | Sprint history index                                     |
 
 ---
 
 ## 3. Current state of `docs/growlingeyes/`
 
-| # | Document | Present? | File |
-|---|---|---|---|
-| 1 | `README.md` | ❌ Missing | — |
-| 2 | `BLUEPRINT.md` | ❌ Missing | — |
-| 3 | `ROADMAP.md` | ❌ Missing | — |
-| 4 | `BOM.md` | ✅ Present | [`BOM.md`](./BOM.md) |
-| 5 | `BRAND.md` | ✅ Present | [`BRAND.md`](./BRAND.md) |
-| 6 | `DATA_MODEL.md` | ❌ Missing | — |
-| 7 | `API_SPEC.md` | ❌ Missing | — |
-| 8 | `ADMIN_PANEL_SPEC.md` | ❌ Missing | — |
-| 9 | `ENV_EXAMPLE.md` | ❌ Missing | — |
-| 10 | `DARE_LOG.md` | ❌ Missing | — |
-| 11 | `RAID_LOG.md` | ❌ Missing | — |
-| 12 | `SEO_STRATEGY.md` | ❌ Missing | — |
-| 13 | `SPRINT_LOG.md` | ✅ Present | [`SPRINT_LOG.md`](./SPRINT_LOG.md) |
+| #   | Document              | Present?   | File                               |
+| --- | --------------------- | ---------- | ---------------------------------- |
+| 1   | `README.md`           | ❌ Missing | —                                  |
+| 2   | `BLUEPRINT.md`        | ❌ Missing | —                                  |
+| 3   | `ROADMAP.md`          | ❌ Missing | —                                  |
+| 4   | `BOM.md`              | ✅ Present | [`BOM.md`](./BOM.md)               |
+| 5   | `BRAND.md`            | ✅ Present | [`BRAND.md`](./BRAND.md)           |
+| 6   | `DATA_MODEL.md`       | ❌ Missing | —                                  |
+| 7   | `API_SPEC.md`         | ❌ Missing | —                                  |
+| 8   | `ADMIN_PANEL_SPEC.md` | ❌ Missing | —                                  |
+| 9   | `ENV_EXAMPLE.md`      | ❌ Missing | —                                  |
+| 10  | `DARE_LOG.md`         | ❌ Missing | —                                  |
+| 11  | `RAID_LOG.md`         | ❌ Missing | —                                  |
+| 12  | `SEO_STRATEGY.md`     | ❌ Missing | —                                  |
+| 13  | `SPRINT_LOG.md`       | ✅ Present | [`SPRINT_LOG.md`](./SPRINT_LOG.md) |
 
-> **Note:** The top-level `docs/` folder *does* contain related GrowlingEyes documents that are not duplicated inside `docs/growlingeyes/`:
+> **Note:** The top-level `docs/` folder _does_ contain related GrowlingEyes documents that are not duplicated inside `docs/growlingeyes/`:
+>
 > - [`docs/GROWLINGEYES_MASTER_SPEC.md`](../GROWLINGEYES_MASTER_SPEC.md) — partial SSOT (branding + CI/CD + precog QA)
 > - [`docs/SPRINT_2026_04_GROWLINGEYES.md`](../SPRINT_2026_04_GROWLINGEYES.md) — active sprint
 >

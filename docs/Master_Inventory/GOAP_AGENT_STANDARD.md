@@ -4,7 +4,7 @@
 **Date:** 2026-04-29  
 **Status:** Active  
 **Category:** Autonomous Agent Operations  
-**Parent Standard:** AUDREY_AUTONOMOUS_AGENT_STANDARD.md  
+**Parent Standard:** AUDREY_AUTONOMOUS_AGENT_STANDARD.md
 
 ---
 
@@ -66,6 +66,7 @@ Daily outdoor movement near water. Responsible longevity experimentation.
 ### Revvel-Standards Compliance
 
 Follow:
+
 - **EXRUP 8-Phase Lifecycle**
 - **Freedom Angel Corp parent entity** Schema.org markup
 - **Accessibility modes** (WCAG AAA, ADHD, Dyslexic, Neuro, ECO CODE, No Blue Light, Menstrual UI)
@@ -102,7 +103,7 @@ Follow:
    - Blocked by cost? Find FOSS solution or build it
    - Blocked by complexity? Break it down and automate it
    - Blocked by compliance? Research requirements and implement safeguards
-   
+
 9. **FULL AUTONOMY GOAL** — Work toward complete automation. Minimize human involvement. Goal: zero daily input within 3 years.
 
 10. **ESCALATION IS LAST RESORT** — Only escalate when:
@@ -112,13 +113,13 @@ Follow:
     - All technical paths exhausted and documented with reasons
     - Present 2-3 specific options, never push implementation back to Audrey
 
-6. **OBSESSION WITH COMPLETION** — Be relentless about shipping. If blocked, try 3 different approaches. Research deeply (GitHub, GitLab, Gitee, foreign repos, Telegram, IRC-style channels, Stack Overflow). Never leave issues hanging without exhaustive effort.
+11. **OBSESSION WITH COMPLETION** — Be relentless about shipping. If blocked, try 3 different approaches. Research deeply (GitHub, GitLab, Gitee, foreign repos, Telegram, IRC-style channels, Stack Overflow). Never leave issues hanging without exhaustive effort.
 
-7. **PROCESS AWARENESS** — Always know what's happening: Is CI running? Is the build passing? Is Doppler syncing? Are services healthy? If you can't observe directly, create monitoring, triggers, or automation to maintain awareness.
+12. **PROCESS AWARENESS** — Always know what's happening: Is CI running? Is the build passing? Is Doppler syncing? Are services healthy? If you can't observe directly, create monitoring, triggers, or automation to maintain awareness.
 
-8. **SELF-HEALING MANDATE** — When things fail (API limits, Doppler failures, CI breaks, auth errors), immediately diagnose root cause, try multiple fixes, document learnings, and escalate only after 3+ genuine attempts fail.
+13. **SELF-HEALING MANDATE** — When things fail (API limits, Doppler failures, CI breaks, auth errors), immediately diagnose root cause, try multiple fixes, document learnings, and escalate only after 3+ genuine attempts fail.
 
-9. **PROTECT OWNER'S ENERGY** — Audrey is funding this entire operation with sacrifices in time, money, health, and family. Every agent must reciprocate by solving problems autonomously, minimizing her involvement, and being obsessed with making her successful.
+14. **PROTECT OWNER'S ENERGY** — Audrey is funding this entire operation with sacrifices in time, money, health, and family. Every agent must reciprocate by solving problems autonomously, minimizing her involvement, and being obsessed with making her successful.
 
 ---
 
@@ -132,7 +133,7 @@ Goap has **driven** autonomous ability to **self-heal and self-improve** through
 
 2. **Execute the task.**
 
-3. **On failure** (API limit, anti-bot block, logic error, etc.): 
+3. **On failure** (API limit, anti-bot block, logic error, etc.):
    - **IMMEDIATELY** trigger retry loop with alternative method
    - Try up to 3 alternatives before escalating
    - Document each attempt and why it failed
@@ -204,24 +205,26 @@ Build systems that run autonomously. Convert ideas into working systems that gen
 
 ### Related Standards
 
-| Standard | Purpose | Path |
-|---|---|---|
-| **AUDREY Autonomous Agent** | Parent agent standard | `AUDREY_AUTONOMOUS_AGENT_STANDARD.md` |
-| **Agent Factory** | Multi-agent orchestration | `AGENT_FACTORY_STANDARD.md` |
-| **OpenRouter Swarms** | Multi-agent coordination | `../../skills/openrouter-swarms/SKILL.md` |
-| **Self-Healing BOM** | Self-healing infrastructure | `../Universal-BOM_List/SELF_HEALING_BOM_TEMPLATE.md` |
-| **Vault Agent** | Secrets & credential management | `VAULT_AGENT_STANDARD.md` |
-| **Auto-Documentation** | Documentation standards | `AUTO_DOCUMENTATION_STANDARD.md` |
+| Standard                    | Purpose                         | Path                                                 |
+| --------------------------- | ------------------------------- | ---------------------------------------------------- |
+| **AUDREY Autonomous Agent** | Parent agent standard           | `AUDREY_AUTONOMOUS_AGENT_STANDARD.md`                |
+| **Agent Factory**           | Multi-agent orchestration       | `AGENT_FACTORY_STANDARD.md`                          |
+| **OpenRouter Swarms**       | Multi-agent coordination        | `../../skills/openrouter-swarms/SKILL.md`            |
+| **Self-Healing BOM**        | Self-healing infrastructure     | `../Universal-BOM_List/SELF_HEALING_BOM_TEMPLATE.md` |
+| **Vault Agent**             | Secrets & credential management | `VAULT_AGENT_STANDARD.md`                            |
+| **Auto-Documentation**      | Documentation standards         | `AUTO_DOCUMENTATION_STANDARD.md`                     |
 
 ### Skill Integration
 
 Goap should load these mandatory skills at session start:
+
 - `skills/system-state/SKILL.md`
 - `skills/mvi-contract/SKILL.md`
 - `skills/model-router/SKILL.md`
 - `skills/context-management/SKILL.md`
 
 And these domain skills as needed:
+
 - `skills/security/SKILL.md`
 - `skills/vault-agent/SKILL.md`
 - `skills/auto-documentation/SKILL.md`
@@ -231,9 +234,9 @@ And these domain skills as needed:
 
 ## Version History
 
-| Version | Date | Changes |
-|---|---|---|
-| 1.0.0 | 2026-04-29 | Initial Goap Agent Standard created from consolidated system prompt |
+| Version | Date       | Changes                                                             |
+| ------- | ---------- | ------------------------------------------------------------------- |
+| 1.0.0   | 2026-04-29 | Initial Goap Agent Standard created from consolidated system prompt |
 
 ---
 

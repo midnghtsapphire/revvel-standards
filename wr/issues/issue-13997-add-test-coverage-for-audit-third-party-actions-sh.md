@@ -8,7 +8,6 @@
 
 ---
 
-
 # Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended)
 
 #
@@ -60,29 +59,29 @@ on:
   workflow_dispatch:
     inputs:
       deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
+        description: "Run full deep market research (keywords, BOM, chatter, domain)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
+        description: "Generate Bill of Materials (API/tool comparison table)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
+        description: "Research Reddit/forums/TrustPilot for buyer complaints"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
+        description: "Full competitor pricing + gap analysis"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       research_depth:
-        description: 'Research depth level'
+        description: "Research depth level"
         type: choice
         options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
+        default: deep # ← default to deep, not standard
 ```
 
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a _starting point_ — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
 
 ---
 
@@ -96,33 +95,36 @@ on:
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-30 |
-| Last Updated | 2026-05-30 |
-| Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | ## Summary
-The audit-third-party-actions.sh script introduced in PR #13993 contains non-trivial branching logic across several functions (classify_owner, days_since, and tier routing) but has no corresponding tests in the repository's test suite. Without automated tests, regressions in owner classification or staleness detection could silently produce incorrect audit results or wrong exit codes.
+| Property                                                                                                                                                                                                                                                                                                                                                                                            | Value                                                                                   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Repository                                                                                                                                                                                                                                                                                                                                                                                          | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created                                                                                                                                                                                                                                                                                                                                                                                             | 2026-05-30                                                                              |
+| Last Updated                                                                                                                                                                                                                                                                                                                                                                                        | 2026-05-30                                                                              |
+| Primary Language                                                                                                                                                                                                                                                                                                                                                                                    | JavaScript                                                                              |
+| Stars                                                                                                                                                                                                                                                                                                                                                                                               | {STARS}                                                                                 |
+| Open Issues                                                                                                                                                                                                                                                                                                                                                                                         | {OPEN_ISSUES}                                                                           |
+| Description                                                                                                                                                                                                                                                                                                                                                                                         | ## Summary                                                                              |
+| The audit-third-party-actions.sh script introduced in PR #13993 contains non-trivial branching logic across several functions (classify_owner, days_since, and tier routing) but has no corresponding tests in the repository's test suite. Without automated tests, regressions in owner classification or staleness detection could silently produce incorrect audit results or wrong exit codes. |
 
 ## Details
+
 The repository maintains a healthy test suite under tests/, including JavaScript-based workflow validation (tests/workflow-yaml-validation.test.js) and shell-level tests (tests/social_post_formatter.test.sh). The audit script's logic has multiple code paths that are testable and important to validate: trusted owners should never be flagged, a stale single-author action should cause the script to exit with code 1, and a fresh single-author action should exit with code 0. The absence of even a minimal smoke test means that future changes to thresholds, owner lists, or tier routing logic carry no safety net. Given that this script is intended to run as a quarterly automated scan and trigger write-requests on stale actions, incorrect behavior could have downstream consequences on workflow governance.
 
 ## Location
+
 File: scripts/audit-third-party-actions.sh, line 1
 Pull Request: Third-party action freshness audit — quarterly scan + auto-WR on stale single-author actions
 PR URL: https://github.com/midnghtsapphire/revvel-standards/pull/13993
 
 ## Suggested Action
+
 1. Create a new test file at tests/audit_third_party_actions.test.sh using BATS or a plain bash test harness consistent with existing shell tests in the repository.
 2. Add a test case that invokes the script (or sources relevant functions) with a mocked trusted owner and asserts no flag is raised and the exit code is 0.
 3. Add a test case that simulates a stale single-author action (last commit date beyond the staleness threshold) and asserts the script exits with code 1.
 4. Add a test case that simulates a fresh single-author action (last commit date within the allowed window) and asserts the script exits with code 0.
 5. Integrate the new test file into the existing CI pipeline so it runs alongside the rest of the test suite on each pull request. |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+   | Private | {IS_PRIVATE} |
+   | Archived | {IS_ARCHIVED} |
 
 ### Current Status
 
@@ -151,18 +153,18 @@ PR URL: https://github.com/midnghtsapphire/revvel-standards/pull/13993
 
 ## Step 1A: Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-|--------------|-----------|-----------------|---------------------------|-------|
-| Website / app UI | [Yes/No] | [site/app] | [engine] | [notes] |
-| API | [Yes/No] | [REST/GraphQL/etc.] | [engine] | [notes] |
-| CLI | [Yes/No] | [binary/package] | [engine] | [notes] |
-| MCP | [Yes/No] | [server/router/tool manifest] | [engine] | [notes] |
-| Skill | [Yes/No] | [skill type] | [engine] | [notes] |
-| PDF | [Yes/No] | [report/guide/etc.] | [engine] | [notes] |
-| PowerPoint / deck | [Yes/No] | [sales/training/review deck] | [engine] | [notes] |
-| Video | [Yes/No] | [demo/training/review/YouTube + target length] | [engine] | [notes] |
-| Docs | [Yes/No] | [site/spec/readme] | [engine] | [notes] |
-| Agent automation | [Yes/No] | [workflow/agent/service] | [engine] | [notes] |
+| Output shape      | In scope? | Format / length                                | Primary engine / standard | Notes   |
+| ----------------- | --------- | ---------------------------------------------- | ------------------------- | ------- |
+| Website / app UI  | [Yes/No]  | [site/app]                                     | [engine]                  | [notes] |
+| API               | [Yes/No]  | [REST/GraphQL/etc.]                            | [engine]                  | [notes] |
+| CLI               | [Yes/No]  | [binary/package]                               | [engine]                  | [notes] |
+| MCP               | [Yes/No]  | [server/router/tool manifest]                  | [engine]                  | [notes] |
+| Skill             | [Yes/No]  | [skill type]                                   | [engine]                  | [notes] |
+| PDF               | [Yes/No]  | [report/guide/etc.]                            | [engine]                  | [notes] |
+| PowerPoint / deck | [Yes/No]  | [sales/training/review deck]                   | [engine]                  | [notes] |
+| Video             | [Yes/No]  | [demo/training/review/YouTube + target length] | [engine]                  | [notes] |
+| Docs              | [Yes/No]  | [site/spec/readme]                             | [engine]                  | [notes] |
+| Agent automation  | [Yes/No]  | [workflow/agent/service]                       | [engine]                  | [notes] |
 
 ### Platform Defaults & Website Requirements
 
@@ -199,18 +201,18 @@ PR URL: https://github.com/midnghtsapphire/revvel-standards/pull/13993
 [Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
 
 | Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
-| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
+| ---------------- | ------------- | ------------ | ---------------- |
+| [Segment 1]      | [Trigger]     | High/Med/Low | [Size]           |
+| [Segment 2]      | [Trigger]     | High/Med/Low | [Size]           |
 
 #### SEO & Keyword Research
 
 **This section is REQUIRED for any product with a web/content component.**
 
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| Keyword             | Monthly Volume (US) | Avg CPC | Competition  | Intent                      |
+| ------------------- | ------------------- | ------- | ------------ | --------------------------- |
+| [primary keyword 1] | [volume]            | [$CPC]  | High/Med/Low | Transactional/Informational |
+| [primary keyword 2] | [volume]            | [$CPC]  | High/Med/Low | Transactional/Informational |
 
 **Long-tail / trigger-specific keywords:**
 
@@ -225,30 +227,30 @@ PR URL: https://github.com/midnghtsapphire/revvel-standards/pull/13993
 
 **Category: [Primary Data Source]**
 
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
-| [Option 2] | [$] | [Coverage] | [Use case] | |
+| API / Tool | Cost | Coverage   | Best For   | Verdict                                   |
+| ---------- | ---- | ---------- | ---------- | ----------------------------------------- |
+| [Option 1] | [$]  | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
+| [Option 2] | [$]  | [Coverage] | [Use case] |                                           |
 
 **Category: [Compliance / Validation]**
 
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
+| API / Tool | Cost | Features   | Best For   | Verdict |
+| ---------- | ---- | ---------- | ---------- | ------- |
+| [Option 1] | [$]  | [Features] | [Use case] |         |
 
 **Category: [Delivery / Storefront]**
 
-| Platform | Rev Share | Best For | Verdict |
-|----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
+| Platform   | Rev Share | Best For   | Verdict |
+| ---------- | --------- | ---------- | ------- |
+| [Option 1] | [%]       | [Use case] |         |
 
 **BOM Cost Summary:**
 
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
+| Category                 | Recommended Tool | Est. Monthly Cost |
+| ------------------------ | ---------------- | ----------------- |
+| [Category 1]             | [Tool]           | $[X]              |
+| [Category 2]             | [Tool]           | $[X]              |
+| **Total Infrastructure** |                  | **$[Total]/mo**   |
 
 > **ROI Check:** [How many units/sales cover infrastructure cost?]
 
@@ -259,20 +261,20 @@ PR URL: https://github.com/midnghtsapphire/revvel-standards/pull/13993
 **Shared vs. Exclusive / Tiered pricing:**
 
 | Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-|--------------|-------------|------|----------------|------------------------|
-| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+| ------------- | ------------ | ---- | --------------- | ----------------------- |
+| [Type 1]      | [Mechanics]  | [$]  | [Rate]          | [Value drivers]         |
+| [Type 2]      | [Mechanics]  | [$]  | [Rate]          | [Value drivers]         |
 
 **Why some [units] are worth more than others:**
 [Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
 
 #### Competitors & Alternatives
 
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
+| Competitor      | Type   | Cost      | Conversion/Quality | Gap / What They Don't Do |
+| --------------- | ------ | --------- | ------------------ | ------------------------ |
+| [Name 1]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| [Name 2]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| **This Engine** | [Type] | [Pricing] | [Expected]         | [Our advantage]          |
 
 #### API / Data Source BOM (REQUIRED)
 
@@ -280,10 +282,10 @@ PR URL: https://github.com/midnghtsapphire/revvel-standards/pull/13993
 
 If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
 
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| Provider/API | Best For         | Data/Capability | Cost Model | Strengths  | Weaknesses/Risks | Compliance Notes  |
+| ------------ | ---------------- | --------------- | ---------- | ---------- | ---------------- | ----------------- |
+| [Provider 1] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
+| [Provider 2] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
 
 **BOM Decision:**
 
@@ -314,8 +316,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **High-value domain patterns for this niche:**
 
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
+| Pattern     | Examples   | Rationale      |
+| ----------- | ---------- | -------------- |
 | [Pattern 1] | [Examples] | [Why it works] |
 | [Pattern 2] | [Examples] | [Why it works] |
 
@@ -341,8 +343,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **This section is REQUIRED. Research current marketing strategies in this niche.**
 
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
+| Strategy     | What Works Now                 | How This WR Improves It     |
+| ------------ | ------------------------------ | --------------------------- |
 | [Strategy 1] | [Current best practice + data] | [How our product is better] |
 | [Strategy 2] | [Current best practice + data] | [How our product is better] |
 
@@ -456,17 +458,17 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Weighted Factors:**
 
-| Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| [factor] | [0.00] | [input/source] | [reason] |
+| Factor   | Weight | Source         | Why it matters |
+| -------- | -----: | -------------- | -------------- |
+| [factor] | [0.00] | [input/source] | [reason]       |
 
 **Threshold Bands:**
 
-| Score Range | Status | Action |
-|---|---|---|
-| 80-100 | eligible | [export/route/approve] |
-| 50-79 | manual_review | [review queue] |
-| 0-49 | blocked | [suppress/reject] |
+| Score Range | Status        | Action                 |
+| ----------- | ------------- | ---------------------- |
+| 80-100      | eligible      | [export/route/approve] |
+| 50-79       | manual_review | [review queue]         |
+| 0-49        | blocked       | [suppress/reject]      |
 
 **Audit Trail Required:**
 
@@ -605,9 +607,9 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Links to Add:**
 
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
+| Product/Service | Affiliate Program | Commission | Location       |
+| --------------- | ----------------- | ---------- | -------------- |
+| [Name]          | [Program]         | [Rate]     | [Where to add] |
 
 #### Payment Integration
 
@@ -702,11 +704,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
+| Feature   | Status     | URL                                       |
+| --------- | ---------- | ----------------------------------------- |
+| Homepage  | ✅ Working | https://{repo-name}.vercel.app            |
+| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard  |
+| API       | ✅ Working | https://{repo-name}.vercel.app/api/health |
 ```
 
 **Action Required:** [None / Add section / Update URLs]
@@ -798,8 +800,8 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
+| Risk     | Severity     | Probability  | Mitigation        |
+| -------- | ------------ | ------------ | ----------------- |
 | [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
 | [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
 

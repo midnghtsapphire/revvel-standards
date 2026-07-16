@@ -46,17 +46,17 @@ things that matter commercially:
 
 ### Source Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Repository | `midnghtsapphire/Claude-Skills-Governance-Risk-and-Compliance` |
-| GitHub stars | 3 |
-| License | MIT |
-| Release badge in README | `v0.3.0` |
-| Primary shape today | Static website + installable skills + eval artifacts |
-| Frameworks covered | 9 |
-| Benchmark claim | `94% ± 10%` across 18 tests |
-| Current strengths | Expert prompt packs, framework depth, public credibility |
-| Current gap | Not yet productized as SaaS/API/CLI/MCP/PDF suite |
+| Property                | Value                                                          |
+| ----------------------- | -------------------------------------------------------------- |
+| Repository              | `midnghtsapphire/Claude-Skills-Governance-Risk-and-Compliance` |
+| GitHub stars            | 3                                                              |
+| License                 | MIT                                                            |
+| Release badge in README | `v0.3.0`                                                       |
+| Primary shape today     | Static website + installable skills + eval artifacts           |
+| Frameworks covered      | 9                                                              |
+| Benchmark claim         | `94% ± 10%` across 18 tests                                    |
+| Current strengths       | Expert prompt packs, framework depth, public credibility       |
+| Current gap             | Not yet productized as SaaS/API/CLI/MCP/PDF suite              |
 
 The low star count does not change the recommendation. This is a niche compliance asset,
 not a mass-market front-end library, and its value comes from specialized framework depth,
@@ -144,14 +144,14 @@ MCP, skills, and PDF surfaces.
 
 ### Revenue model
 
-| Offer | Price point | Buyer | Why it works |
-| --- | ---: | --- | --- |
-| Self-serve SaaS Starter | $149/mo | startups, consultants | low-friction entry for one framework |
-| Pro multi-framework | $499/mo | scaling vendors | evidence reuse across frameworks |
-| Government contractor tier | $1,500/mo | fed/gov teams | FedRAMP/NIST-heavy workflows |
-| PDF / policy bundle add-on | $299 one-time or bundled | consultants, legal, ops | direct monetization of exports |
-| Done-for-you acceleration sprint | $12k-$35k | teams under deadline | service layer over same engine |
-| FedRAMP package / advisory lane | $25k-$75k | enterprise/gov vendors | premium wedge with highest urgency |
+| Offer                            |              Price point | Buyer                   | Why it works                         |
+| -------------------------------- | -----------------------: | ----------------------- | ------------------------------------ |
+| Self-serve SaaS Starter          |                  $149/mo | startups, consultants   | low-friction entry for one framework |
+| Pro multi-framework              |                  $499/mo | scaling vendors         | evidence reuse across frameworks     |
+| Government contractor tier       |                $1,500/mo | fed/gov teams           | FedRAMP/NIST-heavy workflows         |
+| PDF / policy bundle add-on       | $299 one-time or bundled | consultants, legal, ops | direct monetization of exports       |
+| Done-for-you acceleration sprint |                $12k-$35k | teams under deadline    | service layer over same engine       |
+| FedRAMP package / advisory lane  |                $25k-$75k | enterprise/gov vendors  | premium wedge with highest urgency   |
 
 ### Domain strategy
 
@@ -167,18 +167,18 @@ acquisition wedge, with broader product branding kept under `AuthorityPilot Gov`
 
 ## Step 1B: Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-| --- | --- | --- | --- | --- |
-| Website / app UI | Yes | multi-page web app | `skills/ui-creation-engine/SKILL.md` | required customer-facing product |
-| API | Yes | REST + webhook endpoints | `standards/API_GATEWAY.md` | framework mapping, evidence, exports |
-| CLI | Yes | npm / Python CLI | `standards/CLI_MCP_AUTOMATION.md` | local-first engineering workflows |
-| MCP | Yes | MCP server + tool manifest | `standards/CLI_MCP_AUTOMATION.md` | agent-facing compliance tools |
-| Skill | Yes | upgraded skill marketplace | `skills/grc-compliance/SKILL.md` | reuse source repo knowledge asset |
-| PDF | Yes | audit packet / executive report | `skills/figma-pdf/SKILL.md` + export workflow | monetizeable compliance outputs |
-| PowerPoint / deck | No | — | — | not the first revenue wedge |
-| Video | No | — | — | can follow after launch |
-| Docs | Yes | README, API docs, implementation docs | revvel standards baseline | required for ship-to-market |
-| Agent automation | Yes | workflow + scheduled jobs | `standards/CLI_MCP_AUTOMATION.md` | recurring evidence refresh |
+| Output shape      | In scope? | Format / length                       | Primary engine / standard                     | Notes                                |
+| ----------------- | --------- | ------------------------------------- | --------------------------------------------- | ------------------------------------ |
+| Website / app UI  | Yes       | multi-page web app                    | `skills/ui-creation-engine/SKILL.md`          | required customer-facing product     |
+| API               | Yes       | REST + webhook endpoints              | `standards/API_GATEWAY.md`                    | framework mapping, evidence, exports |
+| CLI               | Yes       | npm / Python CLI                      | `standards/CLI_MCP_AUTOMATION.md`             | local-first engineering workflows    |
+| MCP               | Yes       | MCP server + tool manifest            | `standards/CLI_MCP_AUTOMATION.md`             | agent-facing compliance tools        |
+| Skill             | Yes       | upgraded skill marketplace            | `skills/grc-compliance/SKILL.md`              | reuse source repo knowledge asset    |
+| PDF               | Yes       | audit packet / executive report       | `skills/figma-pdf/SKILL.md` + export workflow | monetizeable compliance outputs      |
+| PowerPoint / deck | No        | —                                     | —                                             | not the first revenue wedge          |
+| Video             | No        | —                                     | —                                             | can follow after launch              |
+| Docs              | Yes       | README, API docs, implementation docs | revvel standards baseline                     | required for ship-to-market          |
+| Agent automation  | Yes       | workflow + scheduled jobs             | `standards/CLI_MCP_AUTOMATION.md`             | recurring evidence refresh           |
 
 ### Platform defaults & website requirements
 
@@ -218,13 +218,13 @@ framework-specific skill depth with exportable operational workflows.
 
 These are the commercial-intent keywords the product should target first.
 
-| Keyword | Intent | Est. CPC signal | Why it matters |
-| --- | --- | --- | --- |
-| FedRAMP automation software | very high | $15-$40 | strongest government wedge |
-| AI compliance automation software | high | $12-$25 | broad category capture |
-| NIST compliance automation | high | $10-$30 | strong buyer intent for public-sector adjacent teams |
-| SOC 2 compliance automation | very high | $20-$40 | adjacent upsell and easier entry market |
-| HIPAA compliance automation | very high | $15-$35 | regulated-healthcare expansion lane |
+| Keyword                           | Intent    | Est. CPC signal | Why it matters                                       |
+| --------------------------------- | --------- | --------------- | ---------------------------------------------------- |
+| FedRAMP automation software       | very high | $15-$40         | strongest government wedge                           |
+| AI compliance automation software | high      | $12-$25         | broad category capture                               |
+| NIST compliance automation        | high      | $10-$30         | strong buyer intent for public-sector adjacent teams |
+| SOC 2 compliance automation       | very high | $20-$40         | adjacent upsell and easier entry market              |
+| HIPAA compliance automation       | very high | $15-$35         | regulated-healthcare expansion lane                  |
 
 ### Long-tail keywords
 
@@ -239,12 +239,12 @@ These are the commercial-intent keywords the product should target first.
 Public pricing discussions and buyer comparisons place mainstream compliance automation
 platforms roughly in these bands:
 
-| Competitor | Common pricing discussion range | Market signal |
-| --- | ---: | --- |
-| Vanta | $10k-$55k+/year | market leader, expensive renewals |
-| Drata | $7.5k-$25k+/year | strong automation narrative |
-| Secureframe | $7.5k-$32k+/year | guided onboarding strength |
-| Hyperproof | $25k-$75k+/year | broader enterprise GRC platform |
+| Competitor  | Common pricing discussion range | Market signal                     |
+| ----------- | ------------------------------: | --------------------------------- |
+| Vanta       |                 $10k-$55k+/year | market leader, expensive renewals |
+| Drata       |                $7.5k-$25k+/year | strong automation narrative       |
+| Secureframe |                $7.5k-$32k+/year | guided onboarding strength        |
+| Hyperproof  |                 $25k-$75k+/year | broader enterprise GRC platform   |
 
 This matters because the recommended product does **not** need a mass-market price to be
 viable. One government-tier customer or one service sprint can cover infrastructure and
@@ -278,16 +278,16 @@ create immediate revenue.
 
 ## Step 2B: Bill of Materials (BOM)
 
-| Category | Recommended tool | Monthly cost | Why it wins |
-| --- | --- | ---: | --- |
-| Website UI | Vercel Pro | $20 | fastest website-in-test delivery |
-| App runtime | DigitalOcean App Platform or Droplet | $24-$48 | default revvel runtime for backend work |
-| Database | DigitalOcean Managed PostgreSQL | $15+ | managed relational store for evidence and exports |
-| API gateway | Kong OSS | $0 | free gateway aligned to repo standard |
-| Auth | Auth.js + OAuth providers | $0 software cost | supports Apple/Google/GitHub without extra SaaS lock-in |
-| PDF export | Playwright / Chromium PDF | $0 | reliable server-side export path |
-| Payments | Stripe + Polar.sh | transaction-based | aligns with developer-tool monetization |
-| Monitoring | basic logs + Sentry starter | $0-$26 | enough for first production pass |
+| Category    | Recommended tool                     |      Monthly cost | Why it wins                                             |
+| ----------- | ------------------------------------ | ----------------: | ------------------------------------------------------- |
+| Website UI  | Vercel Pro                           |               $20 | fastest website-in-test delivery                        |
+| App runtime | DigitalOcean App Platform or Droplet |           $24-$48 | default revvel runtime for backend work                 |
+| Database    | DigitalOcean Managed PostgreSQL      |              $15+ | managed relational store for evidence and exports       |
+| API gateway | Kong OSS                             |                $0 | free gateway aligned to repo standard                   |
+| Auth        | Auth.js + OAuth providers            |  $0 software cost | supports Apple/Google/GitHub without extra SaaS lock-in |
+| PDF export  | Playwright / Chromium PDF            |                $0 | reliable server-side export path                        |
+| Payments    | Stripe + Polar.sh                    | transaction-based | aligns with developer-tool monetization                 |
+| Monitoring  | basic logs + Sentry starter          |            $0-$26 | enough for first production pass                        |
 
 ### BOM verdict
 
@@ -332,12 +332,12 @@ recurring, government-facing software and services offer.
 
 ## Step 4: Risks and Decisions
 
-| Risk | Severity | Mitigation |
-| --- | --- | --- |
-| Over-claiming legal/compliance certainty | High | require UI and PDF disclaimers that outputs are drafts, add ToS language that the product is not legal advice, and force a human-review step before any external submission |
-| Sensitive customer evidence handling | High | RBAC, audit logs, encryption, least privilege |
-| FedRAMP marketing without process rigor | High | keep claims scoped to readiness and workflow acceleration |
-| Multi-framework sprawl at launch | Medium | launch FedRAMP/NIST-first, upsell others after core works |
+| Risk                                     | Severity | Mitigation                                                                                                                                                                  |
+| ---------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Over-claiming legal/compliance certainty | High     | require UI and PDF disclaimers that outputs are drafts, add ToS language that the product is not legal advice, and force a human-review step before any external submission |
+| Sensitive customer evidence handling     | High     | RBAC, audit logs, encryption, least privilege                                                                                                                               |
+| FedRAMP marketing without process rigor  | High     | keep claims scoped to readiness and workflow acceleration                                                                                                                   |
+| Multi-framework sprawl at launch         | Medium   | launch FedRAMP/NIST-first, upsell others after core works                                                                                                                   |
 
 ### Decision
 
@@ -377,18 +377,18 @@ recurring, government-facing software and services offer.
 
 ## Artifact Engine Map
 
-| Artifact shape | Existing engine / standard | Status | Required action |
-| --- | --- | --- | --- |
-| Website / UI | `skills/ui-creation-engine/SKILL.md` | exists | use it to generate the customer-facing app |
-| API | `standards/API_GATEWAY.md` | exists | front the app API with Kong OSS |
-| CLI | `standards/CLI_MCP_AUTOMATION.md` | exists | create a repo scanner + export CLI |
-| MCP | `standards/CLI_MCP_AUTOMATION.md` | exists | expose control mapping and export tools via MCP |
-| Skill | `skills/grc-compliance/SKILL.md` | exists | keep the nine-framework skill base and refresh branding |
-| PDF | `skills/figma-pdf/SKILL.md` | partial | adapt pipeline for compliance report exports |
-| PowerPoint / deck | no selected engine | not in scope | skip for first launch |
-| Video | no selected engine | not in scope | skip for first launch |
-| Docs | revvel standards baseline docs | exists | require README, changelog, deployment, GTM, security |
-| Agent automation | `standards/CLI_MCP_AUTOMATION.md` | exists | add scheduled evidence refresh and export jobs |
+| Artifact shape    | Existing engine / standard           | Status       | Required action                                         |
+| ----------------- | ------------------------------------ | ------------ | ------------------------------------------------------- |
+| Website / UI      | `skills/ui-creation-engine/SKILL.md` | exists       | use it to generate the customer-facing app              |
+| API               | `standards/API_GATEWAY.md`           | exists       | front the app API with Kong OSS                         |
+| CLI               | `standards/CLI_MCP_AUTOMATION.md`    | exists       | create a repo scanner + export CLI                      |
+| MCP               | `standards/CLI_MCP_AUTOMATION.md`    | exists       | expose control mapping and export tools via MCP         |
+| Skill             | `skills/grc-compliance/SKILL.md`     | exists       | keep the nine-framework skill base and refresh branding |
+| PDF               | `skills/figma-pdf/SKILL.md`          | partial      | adapt pipeline for compliance report exports            |
+| PowerPoint / deck | no selected engine                   | not in scope | skip for first launch                                   |
+| Video             | no selected engine                   | not in scope | skip for first launch                                   |
+| Docs              | revvel standards baseline docs       | exists       | require README, changelog, deployment, GTM, security    |
+| Agent automation  | `standards/CLI_MCP_AUTOMATION.md`    | exists       | add scheduled evidence refresh and export jobs          |
 
 ---
 

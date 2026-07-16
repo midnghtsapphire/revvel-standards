@@ -7,7 +7,8 @@ const path = require("path");
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
-const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
+const GITHUB_REPOSITORY =
+  process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
 const ISSUE_NUMBER = process.env.ISSUE_NUMBER || "";
 const ISSUE_TITLE = process.env.ISSUE_TITLE || "";
 const ISSUE_BODY = process.env.ISSUE_BODY || "";
@@ -85,7 +86,9 @@ function parseLabelNamesFromYaml(labelsFilePath) {
     const raw = fs.readFileSync(labelsFilePath, "utf8");
     const matches = raw.match(/^\s*-\s+name:\s+"?([^"\n]+)"?\s*$/gm) || [];
     return matches
-      .map((line) => line.replace(/^\s*-\s+name:\s+"?/, "").replace(/"?\s*$/, ""))
+      .map((line) =>
+        line.replace(/^\s*-\s+name:\s+"?/, "").replace(/"?\s*$/, ""),
+      )
       .filter(Boolean);
   } catch {
     return [];
@@ -93,7 +96,8 @@ function parseLabelNamesFromYaml(labelsFilePath) {
 }
 
 function buildSystemPrompt(labelNames) {
-  const labelList = labelNames.length > 0 ? labelNames.join(", ") : "(label list unavailable)";
+  const labelList =
+    labelNames.length > 0 ? labelNames.join(", ") : "(label list unavailable)";
   return [
     "You are the first-line triage assistant for the Revvel Standards repository.",
     "Classify the incoming item, suggest labels from the approved label set, recommend immediate next actions, and clearly flag whether human attention is required.",
@@ -132,16 +136,28 @@ function buildSystemPrompt(labelNames) {
   ].join("\n");
 }
 
-function buildUserPrompt({ eventKind, issueNumber, title, body, comments = [] }) {
+function buildUserPrompt({
+  eventKind,
+  issueNumber,
+  title,
+  body,
+  comments = [],
+}) {
   const promptComments = comments.slice(0, MAX_PROMPT_COMMENTS);
-  const urlContext = collectUrlContext([title, body, ...promptComments.map((comment) => comment.body || "")]);
+  const urlContext = collectUrlContext([
+    title,
+    body,
+    ...promptComments.map((comment) => comment.body || ""),
+  ]);
   const commentContext =
     promptComments.length > 0
       ? promptComments
           .map((comment, index) => {
             const author = comment.author || "unknown";
             const raw = String(comment.body || "").trim();
-            const compact = raw.replace(/\s+/g, " ").slice(0, MAX_COMMENT_PREVIEW_CHARS);
+            const compact = raw
+              .replace(/\s+/g, " ")
+              .slice(0, MAX_COMMENT_PREVIEW_CHARS);
             return `Comment ${index + 1} (${author}): ${compact || "(empty comment)"}`;
           })
           .join("\n")
@@ -165,7 +181,9 @@ function buildUserPrompt({ eventKind, issueNumber, title, body, comments = [] })
 
 function normalizeUrl(rawUrl) {
   if (!rawUrl) return "";
-  const trimmed = String(rawUrl).trim().replace(/[),.;!?]+$/g, "");
+  const trimmed = String(rawUrl)
+    .trim()
+    .replace(/[),.;!?]+$/g, "");
   let parsed;
   try {
     parsed = new URL(trimmed);
@@ -175,9 +193,12 @@ function normalizeUrl(rawUrl) {
 
   const host = parsed.hostname.toLowerCase();
   const path = parsed.pathname.toLowerCase();
-  const isLinkedInHost = host === "linkedin.com" || host.endsWith(".linkedin.com");
+  const isLinkedInHost =
+    host === "linkedin.com" || host.endsWith(".linkedin.com");
   if (isLinkedInHost && path.startsWith("/safety/go")) {
-    const embeddedEntry = [...parsed.searchParams.entries()].find(([key]) => key.toLowerCase() === "url");
+    const embeddedEntry = [...parsed.searchParams.entries()].find(
+      ([key]) => key.toLowerCase() === "url",
+    );
     const embedded = embeddedEntry?.[1];
     if (embedded) {
       let unwrapped = embedded;
@@ -198,7 +219,11 @@ function normalizeUrl(rawUrl) {
 function extractUrls(text) {
   if (!text) return [];
   const matches = String(text).match(/https?:\/\/[^\s<>"')]+/gi) || [];
-  return [...new Set(matches.map((candidate) => normalizeUrl(candidate)).filter(Boolean))];
+  return [
+    ...new Set(
+      matches.map((candidate) => normalizeUrl(candidate)).filter(Boolean),
+    ),
+  ];
 }
 
 function collectUrlContext(chunks) {
@@ -234,11 +259,19 @@ function requestJson({ hostname, pathName, method, headers, payload }) {
           try {
             parsed = data ? JSON.parse(data) : {};
           } catch (error) {
-            reject(new Error(`Failed to parse response JSON (${status}): ${error.message}`));
+            reject(
+              new Error(
+                `Failed to parse response JSON (${status}): ${error.message}`,
+              ),
+            );
             return;
           }
           if (status < 200 || status >= 300) {
-            const message = parsed?.error?.message || parsed?.message || data || "unknown error";
+            const message =
+              parsed?.error?.message ||
+              parsed?.message ||
+              data ||
+              "unknown error";
             reject(new Error(`HTTP ${status}: ${message}`));
             return;
           }
@@ -258,12 +291,14 @@ function requestJson({ hostname, pathName, method, headers, payload }) {
 // heavily rate-limited; treat this lane as "may work" rather than guaranteed.
 // Override via OR_FREE_MODELS env var (comma-separated) for operator flexibility.
 const OR_FREE_MODELS = process.env.OR_FREE_MODELS
-  ? process.env.OR_FREE_MODELS.split(",").map((m) => m.trim()).filter(Boolean)
+  ? process.env.OR_FREE_MODELS.split(",")
+      .map((m) => m.trim())
+      .filter(Boolean)
   : [
-    "deepseek/deepseek-r1:free",
-    "google/gemma-3-27b-it:free",
-    "mistralai/mistral-small-3.2-24b-instruct:free",
-  ];
+      "deepseek/deepseek-r1:free",
+      "google/gemma-3-27b-it:free",
+      "mistralai/mistral-small-3.2-24b-instruct:free",
+    ];
 // Last verified: 2025-01-15 at https://openrouter.ai/docs#models
 // IMPORTANT — OpenRouter "free" is not actually keyless/free-for-all:
 // OpenRouter requires an API key tied to a FUNDED/verified account. Even the
@@ -299,7 +334,10 @@ async function callOpenRouter(systemPrompt, userPrompt) {
 
   // Let ANY failure (402/credits, 401 bad key, 429 rate-limit, 5xx, network)
   // propagate to triageWithFallback(), which cascades to the next lane.
-  return response?.choices?.[0]?.message?.content || "No triage output returned by model.";
+  return (
+    response?.choices?.[0]?.message?.content ||
+    "No triage output returned by model."
+  );
 }
 
 // Lane 2: OpenRouter free-tier models — OR_FREE_MODELS don't consume credits,
@@ -327,7 +365,8 @@ async function callOpenRouterFreeModels(systemPrompt, userPrompt) {
     },
   });
   const text = response?.choices?.[0]?.message?.content;
-  if (!text) throw new Error("No triage output from OpenRouter free-tier models.");
+  if (!text)
+    throw new Error("No triage output from OpenRouter free-tier models.");
   return text;
 }
 
@@ -346,7 +385,11 @@ async function callOpenRouterFusion(systemPrompt, userPrompt) {
       "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage (fusion)`,
     },
     payload: {
-      models: ["openrouter/fusion", "anthropic/claude-haiku-4.5:beta", "deepseek/deepseek-v3:free"],
+      models: [
+        "openrouter/fusion",
+        "anthropic/claude-haiku-4.5:beta",
+        "deepseek/deepseek-v3:free",
+      ],
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
@@ -394,22 +437,26 @@ function callStaticFallback(systemPrompt, userPrompt) {
   try {
     const text = (userPrompt || "").toLowerCase();
     const labels = [];
-    if (/\bbug\b|error|fail|crash|broken|exception|traceback/.test(text)) labels.push("bug");
-    if (/feature|request|add|new|implement|support/.test(text)) labels.push("enhancement");
-    if (/doc|readme|wiki|typo|spelling/.test(text)) labels.push("documentation");
-    if (/question|\bhow\b|\bwhy\b|\bwhat\b|help/.test(text)) labels.push("triage:needs-info");
-    if (/security|vuln|cve|exploit|injection/.test(text)) labels.push("security");
+    if (/\bbug\b|error|fail|crash|broken|exception|traceback/.test(text))
+      labels.push("bug");
+    if (/feature|request|add|new|implement|support/.test(text))
+      labels.push("enhancement");
+    if (/doc|readme|wiki|typo|spelling/.test(text))
+      labels.push("documentation");
+    if (/question|\bhow\b|\bwhy\b|\bwhat\b|help/.test(text))
+      labels.push("triage:needs-info");
+    if (/security|vuln|cve|exploit|injection/.test(text))
+      labels.push("security");
     if (/perf|slow|latency|timeout|speed/.test(text)) labels.push("bug");
-    if (/ci|workflow|action|pipeline|deploy/.test(text)) labels.push("workflow-failure");
+    if (/ci|workflow|action|pipeline|deploy/.test(text))
+      labels.push("workflow-failure");
     const classification = labels.length ? labels.join(", ") : "triage";
     return [
       "## 1) Classification",
       `${classification} (rule-based — all AI lanes unavailable)`,
       "",
       "## 2) Suggested Labels",
-      labels.length
-        ? labels.map((l) => `- \`${l}\``).join("\n")
-        : "- `triage`",
+      labels.length ? labels.map((l) => `- \`${l}\``).join("\n") : "- `triage`",
       "## 3) Next Actions",
       "- Human review required — all AI triage lanes were unavailable.",
       "- Check OpenRouter account balance at <https://openrouter.ai/credits>,",
@@ -429,7 +476,8 @@ function callStaticFallback(systemPrompt, userPrompt) {
 async function callPerplexityNoKey(systemPrompt, userPrompt) {
   // Use the Perplexity No-Key Python bridge
   const { execSync, execFileSync } = require("child_process");
-  const installHint = 'python3 -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"';
+  const installHint =
+    'python3 -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"';
   const pythonScript = buildPerplexityTriageScript(installHint);
 
   // Passed as argv (not through a shell) below, so no shell-escaping is needed.
@@ -437,22 +485,25 @@ async function callPerplexityNoKey(systemPrompt, userPrompt) {
 
   const scriptPath = "/tmp/perplexity_triage.py";
   require("fs").writeFileSync(scriptPath, pythonScript);
-  
+
   try {
     // Install if needed
     execSync(`${installHint} 2>/dev/null || true`, { stdio: "pipe" });
-    
+
     // No shell: pass the script path and prompt as argv so prompt content
     // cannot be interpreted by a shell (no quoting/escaping required).
     // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); scriptPath is a fixed constant; prompt passed as argv
     const result = execFileSync("python3", [scriptPath, combinedPrompt], {
       maxBuffer: 10 * 1024 * 1024,
       timeout: 120000,
-    }).toString().trim();
-    
+    })
+      .toString()
+      .trim();
+
     return result || "Perplexity returned empty response.";
   } catch (err) {
-    const errorOutput = err.stdout?.toString() || err.stderr?.toString() || err.message;
+    const errorOutput =
+      err.stdout?.toString() || err.stderr?.toString() || err.message;
     throw new Error(`Perplexity No-Key fallback failed: ${errorOutput}`);
   }
 }
@@ -536,7 +587,9 @@ async function addGitHubLabels(labels) {
         payload: { labels: [label] },
       });
     } catch (err) {
-      console.log(`::warning::Could not add label "${label}" to #${ISSUE_NUMBER}: ${err.message}`);
+      console.log(
+        `::warning::Could not add label "${label}" to #${ISSUE_NUMBER}: ${err.message}`,
+      );
     }
   }
 }
@@ -560,7 +613,9 @@ async function removeGitHubLabels(labels) {
     } catch (err) {
       // 404 is expected when the label wasn't set; swallow quietly.
       if (!/HTTP 404/.test(err.message)) {
-        console.log(`::warning::Could not remove label "${label}" from #${ISSUE_NUMBER}: ${err.message}`);
+        console.log(
+          `::warning::Could not remove label "${label}" from #${ISSUE_NUMBER}: ${err.message}`,
+        );
       }
     }
   }
@@ -589,21 +644,30 @@ async function fetchIssueComments() {
       body: String(comment?.body || ""),
     }));
   } catch (err) {
-    console.log(`::warning::Could not fetch comments for #${ISSUE_NUMBER}: ${err.message}`);
+    console.log(
+      `::warning::Could not fetch comments for #${ISSUE_NUMBER}: ${err.message}`,
+    );
     return [];
   }
 }
 
-async function triggerAutoErrorWorkflow({ errorType, errorMessage, errorContext, attemptedFixes }) {
+async function triggerAutoErrorWorkflow({
+  errorType,
+  errorMessage,
+  errorContext,
+  attemptedFixes,
+}) {
   // Trigger the auto-error-handler workflow to create an issue and attempt recovery
   // This implements the obsessive self-healing protocol from AGENTS.md
-  
+
   const [owner, repo] = GITHUB_REPOSITORY.split("/");
   if (!owner || !repo || !GITHUB_TOKEN) {
-    console.log("::warning::Cannot trigger auto-error workflow - missing GITHUB_TOKEN or GITHUB_REPOSITORY");
+    console.log(
+      "::warning::Cannot trigger auto-error workflow - missing GITHUB_TOKEN or GITHUB_REPOSITORY",
+    );
     return;
   }
-  
+
   try {
     const payload = {
       ref: "main", // or process.env.GITHUB_REF
@@ -615,7 +679,7 @@ async function triggerAutoErrorWorkflow({ errorType, errorMessage, errorContext,
         workflow_run_id: process.env.GITHUB_RUN_ID || "",
       },
     };
-    
+
     await requestJson({
       hostname: "api.github.com",
       pathName: `/repos/${owner}/${repo}/actions/workflows/auto-error-handler.yml/dispatches`,
@@ -628,10 +692,14 @@ async function triggerAutoErrorWorkflow({ errorType, errorMessage, errorContext,
       },
       payload: payload,
     });
-    
-    console.log("::notice::Auto-error workflow triggered for automatic recovery");
+
+    console.log(
+      "::notice::Auto-error workflow triggered for automatic recovery",
+    );
   } catch (err) {
-    console.log(`::warning::Could not trigger auto-error workflow: ${err.message}`);
+    console.log(
+      `::warning::Could not trigger auto-error workflow: ${err.message}`,
+    );
   }
 }
 
@@ -640,10 +708,14 @@ async function reportTriageFailure({ kind, detail }) {
   // waiting on a manual "@github agent" assignment when OpenRouter is down or
   // the key is missing. See docs/OPENROUTER_TRIAGE_PROCESS.md.
   const failureLabel =
-    kind === "needs-key" ? FAILURE_LABELS.NEEDS_KEY : FAILURE_LABELS.TRIAGE_FAILED;
+    kind === "needs-key"
+      ? FAILURE_LABELS.NEEDS_KEY
+      : FAILURE_LABELS.TRIAGE_FAILED;
 
   if (!GITHUB_TOKEN || !ISSUE_NUMBER) {
-    console.log("::warning::Cannot post triage failure signal — missing GITHUB_TOKEN or ISSUE_NUMBER.");
+    console.log(
+      "::warning::Cannot post triage failure signal — missing GITHUB_TOKEN or ISSUE_NUMBER.",
+    );
     return;
   }
 
@@ -658,16 +730,19 @@ async function reportTriageFailure({ kind, detail }) {
   try {
     await postGitHubComment(body);
   } catch (err) {
-    console.log(`::warning::Could not post triage failure comment to #${ISSUE_NUMBER}: ${err.message}`);
+    console.log(
+      `::warning::Could not post triage failure comment to #${ISSUE_NUMBER}: ${err.message}`,
+    );
   }
   await addGitHubLabels([failureLabel, FAILURE_LABELS.NEEDS_HUMAN]);
-  
+
   // Trigger auto-error workflow for automatic recovery attempts
   await triggerAutoErrorWorkflow({
     errorType: "openrouter",
-    errorMessage: kind === "needs-key" 
-      ? "OPENROUTER_API_KEY not configured"
-      : `OpenRouter triage failed: ${detail}`,
+    errorMessage:
+      kind === "needs-key"
+        ? "OPENROUTER_API_KEY not configured"
+        : `OpenRouter triage failed: ${detail}`,
     errorContext: detail,
     attemptedFixes: [],
   });
@@ -694,7 +769,9 @@ async function triageWithFallback(systemPrompt, userPrompt) {
       return { text, lane: "OpenRouter", model: MODEL };
     } catch (err) {
       // 401/402/403/429 almost always means the account is not funded/verified.
-      console.log(`::warning::Lane 1 (OpenRouter) failed (${err.message}). Trying lane 2.`);
+      console.log(
+        `::warning::Lane 1 (OpenRouter) failed (${err.message}). Trying lane 2.`,
+      );
     }
 
     // Lane 2: OpenRouter free-tier models
@@ -702,10 +779,14 @@ async function triageWithFallback(systemPrompt, userPrompt) {
       const text = await callOpenRouterFreeModels(systemPrompt, userPrompt);
       return { text, lane: "OpenRouter free-tier", model: OR_FREE_MODELS[0] };
     } catch (err) {
-      console.log(`::warning::Lane 2 (OpenRouter free-tier) failed (${err.message}). Trying lane 3.`);
+      console.log(
+        `::warning::Lane 2 (OpenRouter free-tier) failed (${err.message}). Trying lane 3.`,
+      );
     }
   } else {
-    console.log("::warning::OPENROUTER_API_KEY not configured — skipping lanes 1 & 2.");
+    console.log(
+      "::warning::OPENROUTER_API_KEY not configured — skipping lanes 1 & 2.",
+    );
   }
 
   // Lane 3: Keyless Perplexity bridge
@@ -713,7 +794,9 @@ async function triageWithFallback(systemPrompt, userPrompt) {
     const text = await callPerplexityNoKey(systemPrompt, userPrompt);
     return { text, lane: "Perplexity (keyless)", model: "perplexity/sonar" };
   } catch (err) {
-    console.log(`::warning::Lane 3 (Perplexity keyless) failed (${err.message}). Trying lane 4.`);
+    console.log(
+      `::warning::Lane 3 (Perplexity keyless) failed (${err.message}). Trying lane 4.`,
+    );
   }
 
   // Lane 4: OpenRouter fusion
@@ -722,7 +805,9 @@ async function triageWithFallback(systemPrompt, userPrompt) {
       const text = await callOpenRouterFusion(systemPrompt, userPrompt);
       return { text, lane: "OpenRouter fusion", model: "openrouter/fusion" };
     } catch (err) {
-      console.log(`::warning::Lane 4 (OpenRouter fusion) failed (${err.message}). Trying lane 5.`);
+      console.log(
+        `::warning::Lane 4 (OpenRouter fusion) failed (${err.message}). Trying lane 5.`,
+      );
     }
   }
 
@@ -731,7 +816,9 @@ async function triageWithFallback(systemPrompt, userPrompt) {
     const text = await callGitHubModels(systemPrompt, userPrompt);
     return { text, lane: "GitHub Models", model: "gpt-4o-mini" };
   } catch (err) {
-    console.log(`::warning::Lane 5 (GitHub Models) failed (${err.message}). Falling back to lane 6.`);
+    console.log(
+      `::warning::Lane 5 (GitHub Models) failed (${err.message}). Falling back to lane 6.`,
+    );
   }
 
   // Lane 6: Static rule-based fallback — never throws
@@ -749,7 +836,9 @@ async function main() {
     process.exit(1);
   }
 
-  const labelNames = parseLabelNamesFromYaml(path.resolve(process.cwd(), ".github/labels.yml"));
+  const labelNames = parseLabelNamesFromYaml(
+    path.resolve(process.cwd(), ".github/labels.yml"),
+  );
   const comments = await fetchIssueComments();
   const systemPrompt = buildSystemPrompt(labelNames);
   const userPrompt = buildUserPrompt({
@@ -794,7 +883,11 @@ async function main() {
   // stuck-label monitors (auto-reset-stuck-issues, stuck-label-automation)
   // from treating a successfully-triaged item as stuck, and stops the hourly
   // sweep from picking it up as a fresh candidate again.
-  await removeGitHubLabels([FAILURE_LABELS.TRIAGE_FAILED, FAILURE_LABELS.NEEDS_KEY, "triage:new"]);
+  await removeGitHubLabels([
+    FAILURE_LABELS.TRIAGE_FAILED,
+    FAILURE_LABELS.NEEDS_KEY,
+    "triage:new",
+  ]);
   console.log(`Posted triage comment to #${ISSUE_NUMBER}.`);
 }
 

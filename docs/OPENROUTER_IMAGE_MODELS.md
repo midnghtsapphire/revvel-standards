@@ -11,10 +11,10 @@
 The fleet's image-generation lane is the `image_gen` profile in
 `.github/agent-models.yml`:
 
-| Role | Model | Why |
-| --- | --- | --- |
-| Primary | `google/gemini-2.5-flash-image` | Cheap (≈$0.039/image), strong image-to-image editing — required for "casual photo staged from the REAL product photos" |
-| Fallback | `openai/gpt-image-1` | High-quality text-to-image + editing; absorbs a bad primary |
+| Role     | Model                           | Why                                                                                                                    |
+| -------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Primary  | `google/gemini-2.5-flash-image` | Cheap (≈$0.039/image), strong image-to-image editing — required for "casual photo staged from the REAL product photos" |
+| Fallback | `openai/gpt-image-1`            | High-quality text-to-image + editing; absorbs a bad primary                                                            |
 
 Per-batch spend cap: `profiles.image_gen.batch_spend_cap_usd` (default $1.00,
 env override `IMAGE_GEN_BATCH_SPEND_CAP_USD`). Pipelines must stop requesting
@@ -28,17 +28,17 @@ generated images come back as base64 data URLs in
 `choices[0].message.images[].image_url.url`. Image-to-image = attach source
 images as `image_url` content parts.
 
-| Model id | Vendor | ≈ Price | Strengths / notes |
-| --- | --- | --- | --- |
-| `google/gemini-2.5-flash-image` | Google | $0.039/image | "Nano banana." Fast, cheap, excellent image-to-image editing and multi-image conditioning. Fleet primary. |
-| `openai/gpt-image-1` | OpenAI | $0.011–$0.25/image (quality-tiered) | Strong prompt adherence, text rendering, editing. Fleet fallback. |
-| `recraft/recraft-v4.1` | Recraft | $0.035/image | High fidelity/detail density, purposeful lighting, 3D rendering, soft gradients. |
-| `recraft/recraft-v4.1-utility` | Recraft | $0.035/image | General-purpose; simple controlled scenes, front-facing composition. |
-| `recraft/recraft-v4.1-pro` | Recraft | $0.21/image | Higher fidelity and detail density, more natural photographic sensibility. |
-| `recraft/recraft-v4-pro-vector` | Recraft | $0.30/image | SVG (vector) output variant — logos, icons, scalable art. |
-| `black-forest-labs/flux-1.1-pro` | BFL | ≈$0.04/image | Photorealism workhorse; good for product-style shots. |
-| `black-forest-labs/flux-kontext-pro` | BFL | ≈$0.04/image | In-context editing — modify a supplied image with a text instruction. |
-| `stability-ai/sdxl` family | Stability | cheap | Commodity generation; style LoRA ecosystem. |
+| Model id                             | Vendor    | ≈ Price                             | Strengths / notes                                                                                         |
+| ------------------------------------ | --------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `google/gemini-2.5-flash-image`      | Google    | $0.039/image                        | "Nano banana." Fast, cheap, excellent image-to-image editing and multi-image conditioning. Fleet primary. |
+| `openai/gpt-image-1`                 | OpenAI    | $0.011–$0.25/image (quality-tiered) | Strong prompt adherence, text rendering, editing. Fleet fallback.                                         |
+| `recraft/recraft-v4.1`               | Recraft   | $0.035/image                        | High fidelity/detail density, purposeful lighting, 3D rendering, soft gradients.                          |
+| `recraft/recraft-v4.1-utility`       | Recraft   | $0.035/image                        | General-purpose; simple controlled scenes, front-facing composition.                                      |
+| `recraft/recraft-v4.1-pro`           | Recraft   | $0.21/image                         | Higher fidelity and detail density, more natural photographic sensibility.                                |
+| `recraft/recraft-v4-pro-vector`      | Recraft   | $0.30/image                         | SVG (vector) output variant — logos, icons, scalable art.                                                 |
+| `black-forest-labs/flux-1.1-pro`     | BFL       | ≈$0.04/image                        | Photorealism workhorse; good for product-style shots.                                                     |
+| `black-forest-labs/flux-kontext-pro` | BFL       | ≈$0.04/image                        | In-context editing — modify a supplied image with a text instruction.                                     |
+| `stability-ai/sdxl` family           | Stability | cheap                               | Commodity generation; style LoRA ecosystem.                                                               |
 
 Screenshots in the WR thread also list additional vendor variants (Recraft
 tiers, etc.); when a new lane is needed, pick from the live catalog page

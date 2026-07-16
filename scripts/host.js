@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
 /**
  * Host — decomposes a Work Request (Grid) into an agent-contract of Blocks and
@@ -46,17 +46,17 @@
  *   }
  */
 
-const fs = require('fs');
-const path = require('path');
-const yaml = require('yaml');
-const Ajv2020 = require('ajv/dist/2020');
-const addFormats = require('ajv-formats');
+const fs = require("fs");
+const path = require("path");
+const yaml = require("yaml");
+const Ajv2020 = require("ajv/dist/2020");
+const addFormats = require("ajv-formats");
 
-const REPO_ROOT = path.resolve(__dirname, '..');
-const SCHEMA_PATH = path.join(REPO_ROOT, 'schemas/agent-contract.schema.json');
-const DEVICE_TREE_PATH = path.join(REPO_ROOT, 'config/device-tree.yml');
+const REPO_ROOT = path.resolve(__dirname, "..");
+const SCHEMA_PATH = path.join(REPO_ROOT, "schemas/agent-contract.schema.json");
+const DEVICE_TREE_PATH = path.join(REPO_ROOT, "config/device-tree.yml");
 
-const CONTRACT_VERSION = '1.0.0';
+const CONTRACT_VERSION = "1.0.0";
 
 let ajvInstance = null;
 let validatorInstance = null;
@@ -65,13 +65,13 @@ function getValidator() {
   if (validatorInstance) return validatorInstance;
   ajvInstance = new Ajv2020({ allErrors: true, strict: false });
   addFormats(ajvInstance);
-  const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, 'utf8'));
+  const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, "utf8"));
   validatorInstance = ajvInstance.compile(schema);
   return validatorInstance;
 }
 
 function loadDeviceTree() {
-  const raw = fs.readFileSync(DEVICE_TREE_PATH, 'utf8');
+  const raw = fs.readFileSync(DEVICE_TREE_PATH, "utf8");
   return yaml.parse(raw);
 }
 
@@ -87,7 +87,8 @@ function extractBlockHints(body) {
   const hints = [];
 
   let inSection = false;
-  const blockPattern = /^\s*[-*]\s*(?:\*\*)?Block\s+(\d+)(?:\s*(?:of|\/)\s*\d+)?(?:\*\*)?\s*[:\-]\s*(.+?)\s*$/i;
+  const blockPattern =
+    /^\s*[-*]\s*(?:\*\*)?Block\s+(\d+)(?:\s*(?:of|\/)\s*\d+)?(?:\*\*)?\s*[:-]\s*(.+?)\s*$/i;
 
   for (const line of lines) {
     if (/^\s*##+\s*Blocks\s*$/i.test(line)) {
@@ -116,26 +117,34 @@ function extractBlockHints(body) {
  */
 function classifyBlockName(name) {
   const n = name.toLowerCase();
-  if (/(research|survey|investigate)/.test(n)) return { role: 'research', kind: 'researcher' };
+  if (/(research|survey|investigate)/.test(n))
+    return { role: "research", kind: "researcher" };
   // Review before testing: "Verifier" / "Watchdog" are review-lane concepts
   // even though "verify" alone (as a verb) is a testing concept. Ordering
   // matters here: the more specific review nouns must win.
-  if (/(watchdog|verifier|review|audit|inspect)/.test(n)) return { role: 'review', kind: 'reviewer' };
-  if (/(\btest\b|testing|qa\b|verify\b)/.test(n)) return { role: 'testing', kind: 'tester' };
-  if (/(deploy|ship|release)/.test(n)) return { role: 'deploy', kind: 'deployer' };
-  if (/(doc|readme|guide|write.?up)/.test(n)) return { role: 'docs', kind: 'doc-writer' };
-  if (/(workflow|action|\bci\b|\bcd\b|pipeline)/.test(n)) return { role: 'build', kind: 'builder-workflow' };
-  if (/(standard|schema|rule|policy|contract)/.test(n)) return { role: 'build', kind: 'builder-standards' };
-  return { role: 'build', kind: 'builder' };
+  if (/(watchdog|verifier|review|audit|inspect)/.test(n))
+    return { role: "review", kind: "reviewer" };
+  if (/(\btest\b|testing|qa\b|verify\b)/.test(n))
+    return { role: "testing", kind: "tester" };
+  if (/(deploy|ship|release)/.test(n))
+    return { role: "deploy", kind: "deployer" };
+  if (/(doc|readme|guide|write.?up)/.test(n))
+    return { role: "docs", kind: "doc-writer" };
+  if (/(workflow|action|\bci\b|\bcd\b|pipeline)/.test(n))
+    return { role: "build", kind: "builder-workflow" };
+  if (/(standard|schema|rule|policy|contract)/.test(n))
+    return { role: "build", kind: "builder-standards" };
+  return { role: "build", kind: "builder" };
 }
 
 /** Build a single Thread from a Block hint. */
 function threadFor(kind, wrTitle, blockName, deviceTree) {
   const spec = (deviceTree.kinds || []).find((k) => k.name === kind);
-  const timeout = spec && spec.default_timeout_minutes ? spec.default_timeout_minutes : 30;
-  const agent = spec && spec.default_agent ? spec.default_agent : 'openrouter';
+  const timeout =
+    spec && spec.default_timeout_minutes ? spec.default_timeout_minutes : 30;
+  const agent = spec && spec.default_agent ? spec.default_agent : "openrouter";
   return {
-    id: 'thread-1',
+    id: "thread-1",
     kind,
     prompt: `WR: ${wrTitle}\nBlock: ${blockName}\n\nImplement this Block completely - no scaffolding, no TODO stubs, no phased language. Follow docs/AGENTS.md and docs/DEFINITION_OF_DONE.md exactly.`,
     workspace: null,
@@ -147,49 +156,58 @@ function threadFor(kind, wrTitle, blockName, deviceTree) {
 /** Default acceptance gates that every Block PR must clear. */
 function defaultAcceptance() {
   return [
-    'tests: npm test passes 100%',
-    'workflows: npm run workflows:validate passes with 0 invalid',
-    'scaffolding: anti-scaffolding-enforcer.yml passes',
-    'conventional-commits: PR title matches type(scope): description',
+    "tests: npm test passes 100%",
+    "workflows: npm run workflows:validate passes with 0 invalid",
+    "scaffolding: anti-scaffolding-enforcer.yml passes",
+    "conventional-commits: PR title matches type(scope): description",
   ];
 }
 
 function decompose(input) {
-  if (!input || typeof input !== 'object') {
-    throw new Error('decompose(input): input must be an object');
+  if (!input || typeof input !== "object") {
+    throw new Error("decompose(input): input must be an object");
   }
   if (!Number.isInteger(input.wr_number) || input.wr_number < 1) {
-    throw new Error('decompose(input): input.wr_number must be a positive integer');
+    throw new Error(
+      "decompose(input): input.wr_number must be a positive integer",
+    );
   }
-  if (!input.wr_title || typeof input.wr_title !== 'string') {
-    throw new Error('decompose(input): input.wr_title must be a non-empty string');
+  if (!input.wr_title || typeof input.wr_title !== "string") {
+    throw new Error(
+      "decompose(input): input.wr_title must be a non-empty string",
+    );
   }
 
   const deviceTree = loadDeviceTree();
   const validKinds = new Set((deviceTree.kinds || []).map((k) => k.name));
 
   const labels = Array.isArray(input.labels) ? input.labels : [];
-  const checkpointGated = labels.includes('checkpoint-gated')
-    || labels.includes('high-stakes')
-    || labels.includes('owner-review-per-block');
+  const checkpointGated =
+    labels.includes("checkpoint-gated") ||
+    labels.includes("high-stakes") ||
+    labels.includes("owner-review-per-block");
 
-  const goalPhaseLabel = labels.find((l) => l.startsWith('phase:'));
-  const goalPhase = goalPhaseLabel ? goalPhaseLabel.slice('phase:'.length) : null;
+  const goalPhaseLabel = labels.find((l) => l.startsWith("phase:"));
+  const goalPhase = goalPhaseLabel
+    ? goalPhaseLabel.slice("phase:".length)
+    : null;
 
-  const hints = extractBlockHints(input.body || '');
+  const hints = extractBlockHints(input.body || "");
 
   const blocks = [];
   if (hints.length === 0) {
     // Single-Block fallback: whole WR is one build Block.
-    const cls = { role: 'build', kind: 'builder' };
+    const cls = { role: "build", kind: "builder" };
     blocks.push({
-      id: 'block-1',
+      id: "block-1",
       name: input.wr_title,
       role: cls.role,
       depends_on: [],
-      status: 'pending',
+      status: "pending",
       pr_number: null,
-      threads: [ threadFor(cls.kind, input.wr_title, input.wr_title, deviceTree) ],
+      threads: [
+        threadFor(cls.kind, input.wr_title, input.wr_title, deviceTree),
+      ],
       acceptance: defaultAcceptance(),
     });
   } else {
@@ -201,7 +219,9 @@ function decompose(input) {
       counter += 1;
       const cls = classifyBlockName(h.name);
       if (!validKinds.has(cls.kind)) {
-        throw new Error(`decompose: chosen kind "${cls.kind}" is not in device-tree.yml (add it before shipping)`);
+        throw new Error(
+          `decompose: chosen kind "${cls.kind}" is not in device-tree.yml (add it before shipping)`,
+        );
       }
       const id = `block-${counter}`;
       const dependsOn = previousId && checkpointGated ? [previousId] : [];
@@ -210,9 +230,9 @@ function decompose(input) {
         name: h.name,
         role: cls.role,
         depends_on: dependsOn,
-        status: 'pending',
+        status: "pending",
         pr_number: null,
-        threads: [ threadFor(cls.kind, input.wr_title, h.name, deviceTree) ],
+        threads: [threadFor(cls.kind, input.wr_title, h.name, deviceTree)],
         acceptance: defaultAcceptance(),
       });
       previousId = id;
@@ -222,7 +242,7 @@ function decompose(input) {
   return {
     contract_version: CONTRACT_VERSION,
     generated_at: input.generated_at || new Date().toISOString(),
-    generated_by: input.generated_by || 'scripts/host.js',
+    generated_by: input.generated_by || "scripts/host.js",
     grid: {
       wr_number: input.wr_number,
       wr_title: input.wr_title,
@@ -237,7 +257,7 @@ function decompose(input) {
 function validate(contract) {
   const v = getValidator();
   const valid = v(contract);
-  return { valid: !!valid, errors: valid ? [] : (v.errors || []) };
+  return { valid: !!valid, errors: valid ? [] : v.errors || [] };
 }
 
 // ── CLI ──────────────────────────────────────────────────────────────────────
@@ -246,25 +266,34 @@ function parseArgs(argv) {
   const out = { wrFile: null, out: null };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
-    if (a === '--wr-file' && argv[i + 1]) { out.wrFile = argv[++i]; continue; }
-    if (a === '--out' && argv[i + 1]) { out.out = argv[++i]; continue; }
+    if (a === "--wr-file" && argv[i + 1]) {
+      out.wrFile = argv[++i];
+      continue;
+    }
+    if (a === "--out" && argv[i + 1]) {
+      out.out = argv[++i];
+    }
   }
   return out;
 }
 
 function readStdinSync() {
   try {
-    return fs.readFileSync(0, 'utf8');
+    return fs.readFileSync(0, "utf8");
   } catch (_e) {
-    return '';
+    return "";
   }
 }
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const raw = args.wrFile ? fs.readFileSync(args.wrFile, 'utf8') : readStdinSync();
+  const raw = args.wrFile
+    ? fs.readFileSync(args.wrFile, "utf8")
+    : readStdinSync();
   if (!raw.trim()) {
-    process.stderr.write('host: no WR input on stdin and no --wr-file provided\n');
+    process.stderr.write(
+      "host: no WR input on stdin and no --wr-file provided\n",
+    );
     process.exit(2);
   }
   let input;
@@ -283,17 +312,19 @@ function main() {
   }
   const check = validate(contract);
   if (!check.valid) {
-    process.stderr.write('host: generated contract does not validate against schema:\n');
+    process.stderr.write(
+      "host: generated contract does not validate against schema:\n",
+    );
     for (const err of check.errors) {
-      process.stderr.write(`  ${err.instancePath || '/'} ${err.message}\n`);
+      process.stderr.write(`  ${err.instancePath || "/"} ${err.message}\n`);
     }
     process.exit(1);
   }
   const rendered = JSON.stringify(contract, null, 2);
   if (args.out) {
-    fs.writeFileSync(args.out, rendered + '\n');
+    fs.writeFileSync(args.out, rendered + "\n");
   } else {
-    process.stdout.write(rendered + '\n');
+    process.stdout.write(rendered + "\n");
   }
 }
 

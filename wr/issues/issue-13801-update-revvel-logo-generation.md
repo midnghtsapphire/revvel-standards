@@ -80,10 +80,10 @@ We should map this prompt into the existing EXRUP pipeline by proposing a "Brand
 
 ### Risks & Considerations
 
-| Risk | Severity | Mitigation |
-| --- | --- | --- |
-| Prompt drift across models | Medium | Version the prompt and validate output against reference images. |
-| API costs for image generation | Low | Monitor usage and implement rate limiting on the API side. |
+| Risk                           | Severity | Mitigation                                                       |
+| ------------------------------ | -------- | ---------------------------------------------------------------- |
+| Prompt drift across models     | Medium   | Version the prompt and validate output against reference images. |
+| API costs for image generation | Low      | Monitor usage and implement rate limiting on the API side.       |
 
 ---
 
@@ -106,18 +106,18 @@ We should map this prompt into the existing EXRUP pipeline by proposing a "Brand
 
 ### Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-| --- | --- | --- | --- | --- |
-| Website / app UI | yes | SaaS Brand Generator | `scripts/ui-creation-engine.js` | UI to take brand inputs and display the 4x grid |
-| API | yes | REST Endpoint | `standards/shapes/API.md` | Endpoint wrapping the image generation |
-| CLI | no | N/A | N/A | N/A |
-| MCP | yes | Server | `standards/shapes/MCP.md` | Tool for agents to request logos |
-| Skill | yes | Execution | `products/revvel-skill-runner/` | Skill to execute the prompt |
-| PDF | no | N/A | N/A | N/A |
-| PowerPoint / deck | no | N/A | N/A | N/A |
-| Video | no | N/A | N/A | N/A |
-| Docs | yes | Standard update | revvel-standards docs | Update `REVVEL_EMBLEM_STANDARD.md` |
-| Agent automation | yes | Workflow | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Automated brand package generation |
+| Output shape      | In scope? | Format / length      | Primary engine / standard                 | Notes                                           |
+| ----------------- | --------- | -------------------- | ----------------------------------------- | ----------------------------------------------- |
+| Website / app UI  | yes       | SaaS Brand Generator | `scripts/ui-creation-engine.js`           | UI to take brand inputs and display the 4x grid |
+| API               | yes       | REST Endpoint        | `standards/shapes/API.md`                 | Endpoint wrapping the image generation          |
+| CLI               | no        | N/A                  | N/A                                       | N/A                                             |
+| MCP               | yes       | Server               | `standards/shapes/MCP.md`                 | Tool for agents to request logos                |
+| Skill             | yes       | Execution            | `products/revvel-skill-runner/`           | Skill to execute the prompt                     |
+| PDF               | no        | N/A                  | N/A                                       | N/A                                             |
+| PowerPoint / deck | no        | N/A                  | N/A                                       | N/A                                             |
+| Video             | no        | N/A                  | N/A                                       | N/A                                             |
+| Docs              | yes       | Standard update      | revvel-standards docs                     | Update `REVVEL_EMBLEM_STANDARD.md`              |
+| Agent automation  | yes       | Workflow             | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Automated brand package generation              |
 
 ---
 
@@ -130,18 +130,18 @@ We should map this prompt into the existing EXRUP pipeline by proposing a "Brand
 
 ### Artifact Engine Map
 
-| Artifact Shape | Existing engine / standard | Status | Required action |
-| --- | --- | --- | --- |
-| Website / UI | `standards/shapes/APP.md` | Gap | Build Brand Generator UI |
-| API | `standards/shapes/API.md` | Gap | Build generation API wrapper |
-| CLI | `standards/CLI_MCP_AUTOMATION.md` | Gap | N/A |
-| MCP | `standards/shapes/MCP.md` | Gap | Build generation MCP tool |
-| Skill | `products/revvel-skill-runner/` | Gap | Add logo generation skill |
-| PDF | `docs/playbooks/pdf-wr-playbook.md` | Exists | N/A |
-| PowerPoint / deck | N/A | Exists | N/A |
-| Video | N/A | Exists | N/A |
-| Docs | revvel-standards baseline | Exists | Append Master Prompt to Standard |
-| Agent automation | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Gap | Scaffold brand pipeline |
+| Artifact Shape    | Existing engine / standard                | Status | Required action                  |
+| ----------------- | ----------------------------------------- | ------ | -------------------------------- |
+| Website / UI      | `standards/shapes/APP.md`                 | Gap    | Build Brand Generator UI         |
+| API               | `standards/shapes/API.md`                 | Gap    | Build generation API wrapper     |
+| CLI               | `standards/CLI_MCP_AUTOMATION.md`         | Gap    | N/A                              |
+| MCP               | `standards/shapes/MCP.md`                 | Gap    | Build generation MCP tool        |
+| Skill             | `products/revvel-skill-runner/`           | Gap    | Add logo generation skill        |
+| PDF               | `docs/playbooks/pdf-wr-playbook.md`       | Exists | N/A                              |
+| PowerPoint / deck | N/A                                       | Exists | N/A                              |
+| Video             | N/A                                       | Exists | N/A                              |
+| Docs              | revvel-standards baseline                 | Exists | Append Master Prompt to Standard |
+| Agent automation  | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Gap    | Scaffold brand pipeline          |
 
 ---
 

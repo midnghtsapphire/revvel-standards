@@ -47,27 +47,44 @@
 
 const fs = require("fs");
 const { execFileSync } = require("child_process");
-const { instantiate, getPersonas, getEmoticonBank } = require("./openrouter-personas");
+const {
+  instantiate,
+  getPersonas,
+  getEmoticonBank,
+} = require("./openrouter-personas");
 
 // Verbs that mean "do the thing" rather than "tell me about it".
 // "do" is included so "/dragnet do a perm fix" and "/dragnet please do a fix"
 // enter EXECUTION mode without requiring a more explicit verb.
-const ACTION_VERBS = ["build", "implement", "create", "fix", "ship", "make", "add", "do"];
-const EMOTICON_BANK_REQUEST = /\b(emoji|emojis|emoticon|emoticons|emoticonbank|emoji\s*bank)\b/i;
+const ACTION_VERBS = [
+  "build",
+  "implement",
+  "create",
+  "fix",
+  "ship",
+  "make",
+  "add",
+  "do",
+];
+const EMOTICON_BANK_REQUEST =
+  /\b(emoji|emojis|emoticon|emoticons|emoticonbank|emoji\s*bank)\b/i;
 
 // Politeness/filler prefixes users naturally type before the real verb
 // ("/dragnet please do a fix", "/dragnet can you research ..."). Root cause of
 // issue #15480: detectAction anchored at ^ so "please research ..." parsed as
 // NO action and fell into one-shot ADVISORY chat — the search loop never ran
 // and the WR fields were never filled. Strip these before verb detection.
-const POLITENESS_PREFIX = /^\s*(?:(?:please|pls|plz|kindly|can|could|would|will|you)\s+)+/i;
+const POLITENESS_PREFIX =
+  /^\s*(?:(?:please|pls|plz|kindly|can|could|would|will|you)\s+)+/i;
 
 function stripPoliteness(task) {
   return String(task || "").replace(POLITENESS_PREFIX, "");
 }
 
 function detectAction(task) {
-  const m = stripPoliteness(task).match(/^\s*(build|implement|create|fix|ship|make|add|do)\b/i);
+  const m = stripPoliteness(task).match(
+    /^\s*(build|implement|create|fix|ship|make|add|do)\b/i,
+  );
   return m ? m[1].toLowerCase() : null;
 }
 
@@ -79,7 +96,9 @@ function detectAction(task) {
 // See standards/DRAGNET_FRAMEWORK.md → "Search Loop Continuation".
 function isResearchRequest(task) {
   const t = stripPoliteness(task);
-  return /^\s*(?:deep[- ]?)?research\b/i.test(t) || /\bsearch\s+loop\b/i.test(t);
+  return (
+    /^\s*(?:deep[- ]?)?research\b/i.test(t) || /\bsearch\s+loop\b/i.test(t)
+  );
 }
 
 function escapeRegExp(input) {
@@ -103,7 +122,7 @@ function renderEmoticonBankMarkdown() {
   }
   lines.push(
     "",
-    "_Tip: ask `/dragnet use status + action icons for this request` and include your picks._"
+    "_Tip: ask `/dragnet use status + action icons for this request` and include your picks._",
   );
   return lines.join("\n");
 }
@@ -150,7 +169,10 @@ function parsePersonaCommand(body) {
   // GitHub user — `@triager` would notify whoever owns that username; the
   // slash form notifies no one.
   for (const trigger of triggers) {
-    const shortcut = new RegExp(`(?:^|\\s)/${escapeRegExp(trigger)}(?=\\s|$)`, "i");
+    const shortcut = new RegExp(
+      `(?:^|\\s)/${escapeRegExp(trigger)}(?=\\s|$)`,
+      "i",
+    );
     if (shortcut.test(body)) {
       const rest = body.replace(shortcut, " ").trim();
       return {
@@ -180,8 +202,16 @@ function postComment(repo, issueNumber, markdown) {
   fs.writeFileSync(tmpFile, sanitizeMentions(markdown));
   execFileSync(
     "gh",
-    ["issue", "comment", String(issueNumber), "--repo", repo, "--body-file", tmpFile],
-    { encoding: "utf8" }
+    [
+      "issue",
+      "comment",
+      String(issueNumber),
+      "--repo",
+      repo,
+      "--body-file",
+      tmpFile,
+    ],
+    { encoding: "utf8" },
   );
 }
 
@@ -271,7 +301,9 @@ function gatherContext(repo, issueNumber) {
       "```",
       "",
       "### Failing checks (latest)",
-      failingChecks ? "```json\n" + failingChecks + "\n```" : "_(none failing)_",
+      failingChecks
+        ? "```json\n" + failingChecks + "\n```"
+        : "_(none failing)_",
       "",
       "### Diff head",
       diffHead ? "```diff\n" + diffHead + "\n```" : "_(no diff captured)_",
@@ -321,8 +353,19 @@ function gatherContext(repo, issueNumber) {
 // Common low-signal words to strip before building a duplicate-search query.
 // Kept at module level for clarity; extend as needed.
 const DEDUP_STOPWORDS = new Set([
-  "please", "that", "this", "with", "from", "perm", "including",
-  "checking", "there", "already", "error", "issue", "problem",
+  "please",
+  "that",
+  "this",
+  "with",
+  "from",
+  "perm",
+  "including",
+  "checking",
+  "there",
+  "already",
+  "error",
+  "issue",
+  "problem",
 ]);
 
 // GitHub issue titles are capped at 256 chars by the API; we use 120 to keep
@@ -368,7 +411,9 @@ function findExistingWrOrPr(repo, kws) {
     // No usable keywords extracted — skip duplicate check rather than running
     // a vacuous search that would return arbitrary results. A new WR will be
     // created; this is the safe default when the error description is too short.
-    console.log("DRAGNET: no keywords extracted from error — skipping duplicate search.");
+    console.log(
+      "DRAGNET: no keywords extracted from error — skipping duplicate search.",
+    );
     return null;
   }
   const query = kws.join(" ");
@@ -377,12 +422,15 @@ function findExistingWrOrPr(repo, kws) {
     const issueOut = execFileSync(
       "gh",
       [
-        "search", "issues",
+        "search",
+        "issues",
         `${query} repo:${repo} label:work-request is:issue is:open`,
-        "--json", "number,title,url",
-        "--limit", "5",
+        "--json",
+        "number,title,url",
+        "--limit",
+        "5",
       ],
-      { encoding: "utf8" }
+      { encoding: "utf8" },
     );
     const issues = JSON.parse(issueOut || "[]");
     if (issues.length > 0) {
@@ -396,12 +444,15 @@ function findExistingWrOrPr(repo, kws) {
     const prOut = execFileSync(
       "gh",
       [
-        "search", "prs",
+        "search",
+        "prs",
         `${query} repo:${repo} is:pr is:open`,
-        "--json", "number,title,url",
-        "--limit", "5",
+        "--json",
+        "number,title,url",
+        "--limit",
+        "5",
       ],
-      { encoding: "utf8" }
+      { encoding: "utf8" },
     );
     const prs = JSON.parse(prOut || "[]");
     if (prs.length > 0) {
@@ -473,20 +524,35 @@ function dragnetFixRequest({ repo, task, requestedOn }) {
   const out = execFileSync(
     "gh",
     [
-      "issue", "create",
-      "--repo", repo,
-      "--title", title,
-      "--body-file", tmpFile,
-      "--label", "work-request",
-      "--label", "openrouter",
-      "--label", "wr:code",
-      "--label", "perm-fix",
+      "issue",
+      "create",
+      "--repo",
+      repo,
+      "--title",
+      title,
+      "--body-file",
+      tmpFile,
+      "--label",
+      "work-request",
+      "--label",
+      "openrouter",
+      "--label",
+      "wr:code",
+      "--label",
+      "perm-fix",
     ],
-    { encoding: "utf8" }
+    { encoding: "utf8" },
   );
   const m = out.match(/\/issues\/(\d+)/);
   const num = m ? m[1] : out.trim();
-  return { action: "created", ref: `#${num}`, url: out.trim().split(/\s+/).find((t) => t.startsWith("http")) };
+  return {
+    action: "created",
+    ref: `#${num}`,
+    url: out
+      .trim()
+      .split(/\s+/)
+      .find((t) => t.startsWith("http")),
+  };
 }
 
 /**
@@ -509,18 +575,25 @@ function dispatchResearchEngine(repo, issueNumber) {
     execFileSync(
       "gh",
       [
-        "workflow", "run", "research-engine.yml",
-        "--repo", repo,
-        "-f", `issue_number=${issueNumber}`,
-        "-f", "research_depth=deep_search",
+        "workflow",
+        "run",
+        "research-engine.yml",
+        "--repo",
+        repo,
+        "-f",
+        `issue_number=${issueNumber}`,
+        "-f",
+        "research_depth=deep_search",
       ],
-      { encoding: "utf8" }
+      { encoding: "utf8" },
     );
     return true;
   } catch (err) {
     // Soft-fail (missing `actions: write`, network, etc.) — the caller falls
     // back to ADVISORY mode so the user still gets a diagnosis instead of silence.
-    console.log(`::warning::DRAGNET could not dispatch research-engine.yml: ${err.message}`);
+    console.log(
+      `::warning::DRAGNET could not dispatch research-engine.yml: ${err.message}`,
+    );
     return false;
   }
 }
@@ -545,9 +618,23 @@ function openWorkRequest({ repo, handle, action, task, requestedOn }) {
   fs.writeFileSync(tmpFile, body);
   const out = execFileSync(
     "gh",
-    ["issue", "create", "--repo", repo, "--title", title, "--body-file", tmpFile,
-     "--label", "work-request", "--label", "openrouter", "--label", "wr:code"],
-    { encoding: "utf8" }
+    [
+      "issue",
+      "create",
+      "--repo",
+      repo,
+      "--title",
+      title,
+      "--body-file",
+      tmpFile,
+      "--label",
+      "work-request",
+      "--label",
+      "openrouter",
+      "--label",
+      "wr:code",
+    ],
+    { encoding: "utf8" },
   );
   const m = out.match(/\/issues\/(\d+)/);
   return m ? m[1] : out.trim();
@@ -580,7 +667,11 @@ async function main() {
   // cannot do that (issue #15480). Guarded on !command.action so an EXECUTION
   // request like "/dragnet fix the search loop bug" still files a perm-fix WR.
   // Falls through to ADVISORY on dispatch failure.
-  if (command.handle === "dragnet" && !command.action && isResearchRequest(command.task)) {
+  if (
+    command.handle === "dragnet" &&
+    !command.action &&
+    isResearchRequest(command.task)
+  ) {
     if (dispatchResearchEngine(repo, issueNumber)) {
       postComment(
         repo,
@@ -590,12 +681,16 @@ async function main() {
           `filled with sourced detail (or the iteration cap is hit, in which case ` +
           `the packet lists exactly which fields are still missing and why).\n\n` +
           `_Per \`standards/DRAGNET_FRAMEWORK.md\` → Search Loop Continuation: the ` +
-          `loop never stops silently with empty fields._`
+          `loop never stops silently with empty fields._`,
       );
-      console.log(`🕵️ DRAGNET dispatched research-engine.yml for issue #${issueNumber}`);
+      console.log(
+        `🕵️ DRAGNET dispatched research-engine.yml for issue #${issueNumber}`,
+      );
       return;
     }
-    console.log("🕵️ DRAGNET research dispatch failed — falling back to advisory diagnosis.");
+    console.log(
+      "🕵️ DRAGNET research dispatch failed — falling back to advisory diagnosis.",
+    );
   }
 
   // EXECUTION mode: an action verb means "do it", so file real work instead of replying.
@@ -615,9 +710,11 @@ async function main() {
             `**Duplicate:** ${result.ref} — _${result.title}_\n` +
             (result.url ? `${result.url}\n\n` : "\n") +
             `No new WR created. Track progress in the existing ${result.type} above.\n\n` +
-            `_Duplicate check performed with keywords from the error description._`
+            `_Duplicate check performed with keywords from the error description._`,
         );
-        console.log(`🕵️ DRAGNET found duplicate ${result.type} ${result.ref} — no new WR filed.`);
+        console.log(
+          `🕵️ DRAGNET found duplicate ${result.type} ${result.ref} — no new WR filed.`,
+        );
       } else {
         postComment(
           repo,
@@ -626,9 +723,11 @@ async function main() {
             `permanent-fix Work Request ${result.ref}.\n\n` +
             (result.url ? `${result.url}\n\n` : "") +
             `The build pipeline (\`wr:code\` → openrouter-coder) will implement the fix and open a PR.\n\n` +
-            `_This is a permanent fix request — no workarounds, root cause required._`
+            `_This is a permanent fix request — no workarounds, root cause required._`,
         );
-        console.log(`🕵️ DRAGNET filed perm-fix Work Request ${result.ref} for issue #${issueNumber}`);
+        console.log(
+          `🕵️ DRAGNET filed perm-fix Work Request ${result.ref} for issue #${issueNumber}`,
+        );
       }
       return;
     }
@@ -645,17 +744,23 @@ async function main() {
       issueNumber,
       `🛠️ **${command.handle}** filed this as Work Request #${num} and triggered the build pipeline ` +
         `(\`wr:code\` → openrouter-coder), which will open an implementation PR. ` +
-        `This is real work, not a comment.\n\n_Action: \`${command.action}\`._`
+        `This is real work, not a comment.\n\n_Action: \`${command.action}\`._`,
     );
-    console.log(`✅ ${command.handle} filed Work Request #${num} for issue #${issueNumber}`);
+    console.log(
+      `✅ ${command.handle} filed Work Request #${num} for issue #${issueNumber}`,
+    );
     return;
   }
 
   // ADVISORY mode for DRAGNET (no action verb): gather context and diagnose.
   // For DRAGNET advisory, always inject context so it can run the PLATO→JUDGE
   // pipeline against the live issue/PR state even without an explicit task.
-  if (command.handle === "dragnet" && (!command.task || command.task.trim() === "")) {
-    command.task = "Diagnose the error in this thread, check for an existing WR or PR, and recommend the permanent fix.";
+  if (
+    command.handle === "dragnet" &&
+    (!command.task || command.task.trim() === "")
+  ) {
+    command.task =
+      "Diagnose the error in this thread, check for an existing WR or PR, and recommend the permanent fix.";
   }
 
   const task =
@@ -671,8 +776,14 @@ async function main() {
     ? `${context}\nUser request:\n${task}\n\nNote: you already have the repo, the PR/issue, the labels, the failing checks, and the diff above. Do NOT ask the user to share these again — diagnose from the context.`
     : task;
 
-  console.log(`🫆 Summoning ${command.handle} (eager) for issue #${issueNumber}...`);
-  const result = await instantiate(command.handle, { mode: "eager", task: augmentedTask, silent: true });
+  console.log(
+    `🫆 Summoning ${command.handle} (eager) for issue #${issueNumber}...`,
+  );
+  const result = await instantiate(command.handle, {
+    mode: "eager",
+    task: augmentedTask,
+    silent: true,
+  });
 
   const reply = `## ${result.name} ${result.role ? `— ${result.role}` : ""}\n\n${result.text}\n\n---\n_Summoned via comment trigger · model: ${result.modelUsed || "unknown"}_`;
   postComment(repo, issueNumber, reply);

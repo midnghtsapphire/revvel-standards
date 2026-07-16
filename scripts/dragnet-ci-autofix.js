@@ -48,7 +48,8 @@ const { routedChat } = require("./openrouter-routing.js");
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || "";
 const GH_DISPATCH_TOKEN = process.env.GH_TOKEN || GITHUB_TOKEN;
-const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
+const GITHUB_REPOSITORY =
+  process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
 const PR_NUMBER = parseInt(process.env.PR_NUMBER || "0", 10);
 const CHECK_SUITE_URL = process.env.CHECK_SUITE_URL || "";
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
@@ -56,9 +57,9 @@ const DEFAULT_BRANCH = process.env.DEFAULT_BRANCH || "main";
 
 // ─── Tuning ──────────────────────────────────────────────────────────────────
 
-const MAX_LOG_CHARS = 8000;   // per-job log snippet sent to the model
+const MAX_LOG_CHARS = 8000; // per-job log snippet sent to the model
 const MAX_DIFF_CHARS = 15000; // PR diff sent to the model
-const MAX_FAILED_JOBS = 3;    // only look at the first N failed jobs for brevity
+const MAX_FAILED_JOBS = 3; // only look at the first N failed jobs for brevity
 
 // Dedupe marker — if this appears anywhere in PR comments, a previous run
 // already dispatched a fix for the same PR; skip silently.
@@ -100,11 +101,17 @@ function requestJson({ hostname, pathName, method, headers = {}, payload }) {
       },
       (res) => {
         let data = "";
-        res.on("data", (chunk) => { data += chunk; });
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
         res.on("end", () => {
           const status = res.statusCode || 0;
           let parsed = {};
-          try { parsed = data ? JSON.parse(data) : {}; } catch (_) { /* ok */ }
+          try {
+            parsed = data ? JSON.parse(data) : {};
+          } catch (_) {
+            /* ok */
+          }
           if (status < 200 || status >= 300) {
             const msg = parsed?.message || data || "unknown error";
             reject(new Error(`GitHub API HTTP ${status}: ${msg}`));
@@ -132,12 +139,19 @@ function requestText({ hostname, pathName, headers = {} }) {
         // GitHub log downloads redirect to a presigned S3 URL.
         if (res.statusCode === 302 && res.headers.location) {
           const loc = new URL(res.headers.location);
-          requestText({ hostname: loc.hostname, pathName: loc.pathname + loc.search, headers: {} })
-            .then(resolve).catch(reject);
+          requestText({
+            hostname: loc.hostname,
+            pathName: loc.pathname + loc.search,
+            headers: {},
+          })
+            .then(resolve)
+            .catch(reject);
           return;
         }
         let data = "";
-        res.on("data", (chunk) => { data += chunk; });
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
         res.on("end", () => {
           if ((res.statusCode || 0) >= 400) {
             reject(new Error(`HTTP ${res.statusCode} fetching log`));
@@ -179,7 +193,9 @@ async function getPRDiff(prNumber) {
       },
       (res) => {
         let data = "";
-        res.on("data", (chunk) => { data += chunk; });
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
         res.on("end", () => resolve(data));
       },
     );
@@ -227,7 +243,9 @@ async function getJobLog(jobId) {
           } else if (res.statusCode === 200) {
             // Some installations return the log directly.
             let buf = "";
-            res.on("data", (c) => { buf += c; });
+            res.on("data", (c) => {
+              buf += c;
+            });
             res.on("end", () => resolve(`data:${buf}`));
           } else {
             res.resume(); // drain
@@ -251,7 +269,10 @@ async function getJobLog(jobId) {
     }
     // Return the TAIL — failures are at the end of the log.
     if (raw.length > MAX_LOG_CHARS) {
-      return `…(truncated — showing last ${MAX_LOG_CHARS} chars)\n` + raw.slice(-MAX_LOG_CHARS);
+      return (
+        `…(truncated — showing last ${MAX_LOG_CHARS} chars)\n` +
+        raw.slice(-MAX_LOG_CHARS)
+      );
     }
     return raw;
   } catch (err) {
@@ -298,7 +319,13 @@ async function updateComment(commentId, body) {
  * Requires GH_DISPATCH_TOKEN to have repo:write scope so the dispatch fires
  * downstream workflows (GITHUB_TOKEN cannot do this — see CLAUDE.md §3).
  */
-async function dispatchSelfHealPR({ fixDescription, fixType, patchContent, branchSuffix, issueNumber }) {
+async function dispatchSelfHealPR({
+  fixDescription,
+  fixType,
+  patchContent,
+  branchSuffix,
+  issueNumber,
+}) {
   const { owner, repo } = splitRepository();
   return requestJson({
     hostname: GITHUB_HOST,
@@ -327,12 +354,16 @@ async function dispatchSelfHealPR({ fixDescription, fixType, patchContent, branc
  */
 async function analyzeFailure({ prTitle, prDiff, failedJobs }) {
   const jobSummaries = failedJobs
-    .map((j) => `### Job: ${j.name}\nConclusion: ${j.conclusion}\n\n\`\`\`\n${j.log}\n\`\`\``)
+    .map(
+      (j) =>
+        `### Job: ${j.name}\nConclusion: ${j.conclusion}\n\n\`\`\`\n${j.log}\n\`\`\``,
+    )
     .join("\n\n");
 
-  const trimmedDiff = prDiff.length > MAX_DIFF_CHARS
-    ? prDiff.slice(0, MAX_DIFF_CHARS) + "\n…(diff truncated)"
-    : prDiff;
+  const trimmedDiff =
+    prDiff.length > MAX_DIFF_CHARS
+      ? prDiff.slice(0, MAX_DIFF_CHARS) + "\n…(diff truncated)"
+      : prDiff;
 
   const systemPrompt = [
     "You are the Dragnet CI Autofix agent for the revvel-standards monorepo.",
@@ -383,11 +414,15 @@ async function analyzeFailure({ prTitle, prDiff, failedJobs }) {
     httpReferer: `https://github.com/${GITHUB_REPOSITORY}`,
   });
 
-  const rootCauseMatch = response.match(/##\s*Root Cause\s*\n([\s\S]*?)(?=##\s*Fix|$)/i);
+  const rootCauseMatch = response.match(
+    /##\s*Root Cause\s*\n([\s\S]*?)(?=##\s*Fix|$)/i,
+  );
   const patchMatch = response.match(/```diff\s*\n([\s\S]*?)```/i);
 
   return {
-    rootCause: rootCauseMatch ? rootCauseMatch[1].trim() : response.slice(0, 600).trim(),
+    rootCause: rootCauseMatch
+      ? rootCauseMatch[1].trim()
+      : response.slice(0, 600).trim(),
     patch: patchMatch ? patchMatch[1].trim() : "",
     fullResponse: response,
   };
@@ -406,7 +441,9 @@ async function main() {
     process.exit(1);
   }
 
-  console.log(`\n🔍 Dragnet CI Autofix — PR #${PR_NUMBER} in ${GITHUB_REPOSITORY}`);
+  console.log(
+    `\n🔍 Dragnet CI Autofix — PR #${PR_NUMBER} in ${GITHUB_REPOSITORY}`,
+  );
 
   // ── Fetch PR metadata ──────────────────────────────────────────────────────
   let pr;
@@ -436,23 +473,29 @@ async function main() {
   let existingCommentId = null;
   try {
     const comments = await listPRComments(PR_NUMBER);
-    const existing = comments.find((c) => c.body && c.body.includes(AUTOFIX_MARKER));
+    const existing = comments.find(
+      (c) => c.body && c.body.includes(AUTOFIX_MARKER),
+    );
     if (existing) {
       // Update the existing comment to reflect the latest run rather than
       // posting a duplicate. Store the id for the update step below.
       existingCommentId = existing.id;
-      console.log(`Existing autofix comment found (id: ${existingCommentId}) — will update in place.`);
+      console.log(
+        `Existing autofix comment found (id: ${existingCommentId}) — will update in place.`,
+      );
     }
   } catch (err) {
     console.warn(`Could not list PR comments: ${err.message}`);
   }
 
   // ── Collect failing check runs ─────────────────────────────────────────────
-  let failedJobs = [];
+  const failedJobs = [];
   try {
     const checkRuns = await getCheckRunsForPR(PR_NUMBER);
     const failed = checkRuns
-      .filter((cr) => cr.conclusion === "failure" || cr.conclusion === "timed_out")
+      .filter(
+        (cr) => cr.conclusion === "failure" || cr.conclusion === "timed_out",
+      )
       .slice(0, MAX_FAILED_JOBS);
 
     console.log(`Found ${failed.length} failed check run(s).`);
@@ -491,7 +534,9 @@ async function main() {
     CHECK_SUITE_URL ? `**Check suite:** ${CHECK_SUITE_URL}` : "",
     "",
     "_Analysis in progress — this comment will be updated with the root cause and fix._",
-  ].filter(Boolean).join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   try {
     if (existingCommentId) {
@@ -506,7 +551,9 @@ async function main() {
 
   // ── AI analysis ─────────────────────────────────────────────────────────────
   if (!OPENROUTER_API_KEY) {
-    console.warn("OPENROUTER_API_KEY not set — skipping AI analysis; posting fallback comment.");
+    console.warn(
+      "OPENROUTER_API_KEY not set — skipping AI analysis; posting fallback comment.",
+    );
     const fallbackBody = [
       AUTOFIX_MARKER,
       "## ❌ CI Checks Failed",
@@ -516,11 +563,16 @@ async function main() {
       CHECK_SUITE_URL ? `**Logs:** ${CHECK_SUITE_URL}` : "",
       "",
       "_AI analysis unavailable (OPENROUTER_API_KEY not configured). Review the logs above manually._",
-    ].filter(Boolean).join("\n");
+    ]
+      .filter(Boolean)
+      .join("\n");
     try {
-      if (existingCommentId) await updateComment(existingCommentId, fallbackBody);
+      if (existingCommentId)
+        await updateComment(existingCommentId, fallbackBody);
       else await postComment(PR_NUMBER, fallbackBody);
-    } catch (_) { /* best-effort */ }
+    } catch (_) {
+      /* best-effort */
+    }
     process.exit(0);
   }
 
@@ -528,7 +580,9 @@ async function main() {
   try {
     analysis = await analyzeFailure({ prTitle, prDiff, failedJobs });
     console.log(`\n📋 Root cause identified:\n${analysis.rootCause}\n`);
-    console.log(`\n🔧 Patch produced: ${analysis.patch ? `${analysis.patch.split("\n").length} lines` : "(none)"}`);
+    console.log(
+      `\n🔧 Patch produced: ${analysis.patch ? `${analysis.patch.split("\n").length} lines` : "(none)"}`,
+    );
   } catch (err) {
     console.error(`AI analysis failed: ${err.message}`);
     const errorBody = [
@@ -541,11 +595,15 @@ async function main() {
       `_AI analysis encountered an error: ${err.message}_`,
       "_Please review the failing check logs manually._",
       CHECK_SUITE_URL ? `\n**Logs:** ${CHECK_SUITE_URL}` : "",
-    ].filter(Boolean).join("\n");
+    ]
+      .filter(Boolean)
+      .join("\n");
     try {
       if (existingCommentId) await updateComment(existingCommentId, errorBody);
       else await postComment(PR_NUMBER, errorBody);
-    } catch (_) { /* best-effort */ }
+    } catch (_) {
+      /* best-effort */
+    }
     process.exit(0); // non-fatal so the workflow stays green
   }
 
@@ -587,7 +645,9 @@ async function main() {
         ].join("\n"),
     "",
     "_Automated by [Dragnet CI Autofix](.github/workflows/dragnet-ci-autofix.yml)_",
-  ].filter((l) => l !== null && l !== undefined).join("\n");
+  ]
+    .filter((l) => l !== null && l !== undefined)
+    .join("\n");
 
   try {
     if (existingCommentId) {
@@ -620,7 +680,9 @@ async function main() {
     // Log but don't exit non-zero — the analysis comment is already posted and
     // dispatch failure is transient (token scope issue, rate-limit, etc.).
     console.error(`Could not dispatch self-heal-pr.yml: ${err.message}`);
-    console.error("Check that GH_TOKEN has repo:write scope (ADMIN_GITHUB_TOKEN).");
+    console.error(
+      "Check that GH_TOKEN has repo:write scope (ADMIN_GITHUB_TOKEN).",
+    );
   }
 
   console.log("\n✅ Dragnet CI Autofix complete.");

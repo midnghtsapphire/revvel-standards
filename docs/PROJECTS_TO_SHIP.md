@@ -10,20 +10,20 @@
 
 ### Primary Targets
 
-| Target | Person | Amount | Timeline | Notes |
-|--------|--------|--------|----------|-------|
+| Target       | Person  | Amount     | Timeline  | Notes      |
+| ------------ | ------- | ---------- | --------- | ---------- |
 | Austin Evans | Child 1 | $2,000,000 | 24 months | 2028-04-25 |
-| Chase Evans | Child 2 | $2,000,000 | 24 months | 2028-04-25 |
-| Audrey Evans | Self | $1,000,000 | 12 months | 2027-04-25 |
+| Chase Evans  | Child 2 | $2,000,000 | 24 months | 2028-04-25 |
+| Audrey Evans | Self    | $1,000,000 | 12 months | 2027-04-25 |
 
 ### Secondary Targets
 
-| Target | Amount | Purpose |
-|--------|--------|---------|
-| Home upgrade | $150,000 | Better living conditions |
-| Self-care fund | $50,000 | Massage, acupuncture, gym |
-| Animal welfare | $25,000 | Veterinary, supplies |
-| Freedom Angel operations | $100,000 | Trafficking initiative |
+| Target                   | Amount   | Purpose                   |
+| ------------------------ | -------- | ------------------------- |
+| Home upgrade             | $150,000 | Better living conditions  |
+| Self-care fund           | $50,000  | Massage, acupuncture, gym |
+| Animal welfare           | $25,000  | Veterinary, supplies      |
+| Freedom Angel operations | $100,000 | Trafficking initiative    |
 
 ---
 
@@ -31,17 +31,17 @@
 
 ### Existing Tools & Credentials
 
-| Tool | Need | Have | Status | Action |
-|------|------|------|--------|--------|
-| GitHub | Yes | midnghtsapphire org | ✅ Active | Maintain |
-| OpenRouter | Yes | API key | ✅ Active | Monitor usage |
-| Tavily | Yes | Free tier | ✅ Active | Stay free |
-| Odoo | Need | No | ❌ Missing | Evaluate |
-| Notion | Maybe | No | ❌ Missing | Consider |
-| Perplexity | Maybe | No | ❌ Missing | Try free first |
-| n8n | Evaluate | No | ❌ Missing | Test FOSS |
-| Claude | Evaluate | No | ❌ Missing | Free tier? |
-| ChatGPT | Evaluate | No | ❌ Missing | Free tier? |
+| Tool       | Need     | Have                | Status     | Action         |
+| ---------- | -------- | ------------------- | ---------- | -------------- |
+| GitHub     | Yes      | midnghtsapphire org | ✅ Active  | Maintain       |
+| OpenRouter | Yes      | API key             | ✅ Active  | Monitor usage  |
+| Tavily     | Yes      | Free tier           | ✅ Active  | Stay free      |
+| Odoo       | Need     | No                  | ❌ Missing | Evaluate       |
+| Notion     | Maybe    | No                  | ❌ Missing | Consider       |
+| Perplexity | Maybe    | No                  | ❌ Missing | Try free first |
+| n8n        | Evaluate | No                  | ❌ Missing | Test FOSS      |
+| Claude     | Evaluate | No                  | ❌ Missing | Free tier?     |
+| ChatGPT    | Evaluate | No                  | ❌ Missing | Free tier?     |
 
 ### Process: Credentials Audit
 
@@ -68,13 +68,13 @@
 
 ### What We Actually Need
 
-| System | Original | Simplified | Tool |
-|--------|----------|------------|------|
-| PLATO | Deep research | Research | Perplexity / Tavily |
-| JUDGE | Decisions | Tracking | Google Sheets |
-| COUNTER | Stress test | Quarterly CPA | CPA |
-| MEDUSA | Edge cases | Manual research | Web search |
-| DARWIN | Validation | Human check | Team |
+| System  | Original      | Simplified      | Tool                |
+| ------- | ------------- | --------------- | ------------------- |
+| PLATO   | Deep research | Research        | Perplexity / Tavily |
+| JUDGE   | Decisions     | Tracking        | Google Sheets       |
+| COUNTER | Stress test   | Quarterly CPA   | CPA                 |
+| MEDUSA  | Edge cases    | Manual research | Web search          |
+| DARWIN  | Validation    | Human check     | Team                |
 
 ### Simplified Process
 
@@ -91,28 +91,28 @@ Input → Google Sheets check → CPA review → Execute
 
 ### Priority 1: Income Generators (Next 30 Days)
 
-| Project | Type | Revenue Target | Status |
-|---------|------|-------------|--------|
-| Vine review optimization | Existing | $5K/month | Expand |
-| Product rental | New | $2K/month | Launch |
-| Overflow sales | Existing | $3K/month | Scale |
-| Consulting | New | $5K/month | Offer |
+| Project                  | Type     | Revenue Target | Status |
+| ------------------------ | -------- | -------------- | ------ |
+| Vine review optimization | Existing | $5K/month      | Expand |
+| Product rental           | New      | $2K/month      | Launch |
+| Overflow sales           | Existing | $3K/month      | Scale  |
+| Consulting               | New      | $5K/month      | Offer  |
 
 ### Priority 2: Automation (30-60 Days)
 
-| Project | Type | Savings Target | Status |
-|--------|------|--------------|--------|
-| Expense tracker | Google Sheets | 2hr/week | Build |
-| Invoice automation | CLI/API | 5hr/week | Build |
-| Compliance automations | GitHub Actions | 3hr/week | Build |
+| Project                | Type           | Savings Target | Status |
+| ---------------------- | -------------- | -------------- | ------ |
+| Expense tracker        | Google Sheets  | 2hr/week       | Build  |
+| Invoice automation     | CLI/API        | 5hr/week       | Build  |
+| Compliance automations | GitHub Actions | 3hr/week       | Build  |
 
 ### Priority 3: Products (60-180 Days)
 
-| Project | Type | Revenue Target | Status |
-|--------|------|-------------|--------|
-| Tax Navigator Agent | MCP/Tool | $500/mo | Build |
-| Compliance tracker | App | $200/mo | Build |
-| Business dashboard | API | $300/mo | Build |
+| Project             | Type     | Revenue Target | Status |
+| ------------------- | -------- | -------------- | ------ |
+| Tax Navigator Agent | MCP/Tool | $500/mo        | Build  |
+| Compliance tracker  | App      | $200/mo        | Build  |
+| Business dashboard  | API      | $300/mo        | Build  |
 
 ### Priority 4: Freedom Initiative
 
@@ -128,12 +128,12 @@ Input → Google Sheets check → CPA review → Execute
 
 ### For Each Project
 
-| Field | Value |
-|-------|-------|
-| What was good | What worked |
-| What was bad | What failed |
-| How to fix | Iterate or dump |
-| Revenue/savings | Actual numbers |
+| Field           | Value           |
+| --------------- | --------------- |
+| What was good   | What worked     |
+| What was bad    | What failed     |
+| How to fix      | Iterate or dump |
+| Revenue/savings | Actual numbers  |
 
 ### Learning Loop
 
@@ -162,12 +162,12 @@ Input → Google Sheets check → CPA review → Execute
 
 ### Trafficking Freedom Goals
 
-| Goal | Target | Timeline |
-|------|--------|----------|
-| Legal non-profit | 501(c)(3) | Q3 2026 |
-| Resource database | 1000+ resources | Q4 2026 |
-| API for detection | MVP | Q1 2027 |
-| Outreach network | 10 partners | Q2 2027 |
+| Goal              | Target          | Timeline |
+| ----------------- | --------------- | -------- |
+| Legal non-profit  | 501(c)(3)       | Q3 2026  |
+| Resource database | 1000+ resources | Q4 2026  |
+| API for detection | MVP             | Q1 2027  |
+| Outreach network  | 10 partners     | Q2 2027  |
 
 ### Current Initiative Paths
 
@@ -208,27 +208,27 @@ Input → Google Sheets check → CPA review → Execute
 
 ## ✅ ACTIVE PROJECTS
 
-| Project | Status | Revenue | Notes |
-|---------|--------|---------|-------|
-| Reese Reviews | $K/mo | Expand |
-| Rental Co | Setup | Q2 launch |
-| Overflow LLC | Setup | Q2 launch |
-| Compliance tracker | In progress | Passive |
-| Tax Navigator | Planning | Q3 |
+| Project            | Status      | Revenue   | Notes |
+| ------------------ | ----------- | --------- | ----- |
+| Reese Reviews      | $K/mo       | Expand    |
+| Rental Co          | Setup       | Q2 launch |
+| Overflow LLC       | Setup       | Q2 launch |
+| Compliance tracker | In progress | Passive   |
+| Tax Navigator      | Planning    | Q3        |
 
 ---
 
 ## 🔗 INTEGRATION POINTS
 
-| Need | Tool | Status |
-|------|------|--------|
-| Research | Tavily + Perplexity | Active |
-| Tracking | Google Sheets | Build |
-| Automation | GitHub Actions | Active |
-| Knowledge | Obsidian | Consider |
-| CPA | Human | Maintain |
+| Need       | Tool                | Status   |
+| ---------- | ------------------- | -------- |
+| Research   | Tavily + Perplexity | Active   |
+| Tracking   | Google Sheets       | Build    |
+| Automation | GitHub Actions      | Active   |
+| Knowledge  | Obsidian            | Consider |
+| CPA        | Human               | Maintain |
 
 ---
 
-*Projects to Ship for Freedom Angel Corp*
-*Last updated: 2026-04-25*
+_Projects to Ship for Freedom Angel Corp_
+_Last updated: 2026-04-25_

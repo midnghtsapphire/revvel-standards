@@ -54,18 +54,18 @@
       <section class="card" aria-labelledby="auth-heading">
         <h2 id="auth-heading">1. Connect to GitHub</h2>
         <p>
-          Public repositories can be audited with <strong>no token</strong>.
-          For private repositories or higher rate limits, create a
+          Public repositories can be audited with <strong>no token</strong>. For
+          private repositories or higher rate limits, create a
           <a
             href="https://github.com/settings/tokens?type=beta"
             rel="noopener noreferrer"
             target="_blank"
             >fine-grained personal access token</a
           >
-          with <em>read-only</em> access to the repositories you want to
-          audit, then paste it below. The token is stored only in your
-          browser (<code>localStorage</code>) and is never sent anywhere
-          except to <code>api.github.com</code>.
+          with <em>read-only</em> access to the repositories you want to audit,
+          then paste it below. The token is stored only in your browser
+          (<code>localStorage</code>) and is never sent anywhere except to
+          <code>api.github.com</code>.
         </p>
 
         <form id="auth-form" class="form-row" novalidate>
@@ -172,9 +172,7 @@
         <h2 id="about-heading">About this audit</h2>
         <p>
           This dashboard audits each repository against the
-          <a
-            href="../../docs/Master_Inventory/"
-            rel="noopener"
+          <a href="../../docs/Master_Inventory/" rel="noopener"
             >Revvel Standards Master Inventory</a
           >. Checks include:
         </p>
@@ -182,25 +180,25 @@
           <li><code>README.md</code> present</li>
           <li><code>LICENSE</code> present</li>
           <li><code>CHANGELOG.md</code> present (auto-documentation)</li>
-          <li>
-            <code>.github/workflows/</code> present (CI / CD automation)
-          </li>
+          <li><code>.github/workflows/</code> present (CI / CD automation)</li>
           <li>
             <code>SECURITY.md</code> or <code>security.yml</code> workflow
           </li>
-          <li>Standard labels (<code>enhancement</code>, <code>bug</code>,
+          <li>
+            Standard labels (<code>enhancement</code>, <code>bug</code>,
             <code>security</code>, <code>documentation</code>)
           </li>
-          <li>Accessibility reference (<code>accessibility</code> word
-            appears in README)
+          <li>
+            Accessibility reference (<code>accessibility</code> word appears in
+            README)
           </li>
           <li>
             Mentions <code>revvel-standards</code> (inheritance from SSOT)
           </li>
         </ul>
         <p class="hint">
-          Results are read-only — nothing is written to GitHub. All data
-          stays in your browser.
+          Results are read-only — nothing is written to GitHub. All data stays
+          in your browser.
         </p>
       </section>
     </main>

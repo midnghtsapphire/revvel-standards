@@ -53,38 +53,38 @@ python -m doppemcp.server
 
 ### Secrets Management
 
-| Tool | Description |
-|------|-------------|
-| `doppler_secrets_list` | List all secrets in a config |
-| `doppler_secrets_get` | Get a specific secret |
-| `doppler_secrets_set` | Set or update a secret |
-| `doppler_secrets_delete` | Delete a secret |
-| `doppler_secrets_clone` | Clone secrets between configs |
+| Tool                     | Description                   |
+| ------------------------ | ----------------------------- |
+| `doppler_secrets_list`   | List all secrets in a config  |
+| `doppler_secrets_get`    | Get a specific secret         |
+| `doppler_secrets_set`    | Set or update a secret        |
+| `doppler_secrets_delete` | Delete a secret               |
+| `doppler_secrets_clone`  | Clone secrets between configs |
 
 ### Project Management
 
-| Tool | Description |
-|------|-------------|
-| `doppler_projects_list` | List all projects |
-| `doppler_projects_get` | Get project details |
-| `doppler_configs_list` | List configs in a project |
-| `doppler_environments_list` | List environments |
+| Tool                        | Description               |
+| --------------------------- | ------------------------- |
+| `doppler_projects_list`     | List all projects         |
+| `doppler_projects_get`      | Get project details       |
+| `doppler_configs_list`      | List configs in a project |
+| `doppler_environments_list` | List environments         |
 
 ### Service Tokens
 
-| Tool | Description |
-|------|-------------|
-| `doppler_tokens_list` | List service tokens |
+| Tool                    | Description          |
+| ----------------------- | -------------------- |
+| `doppler_tokens_list`   | List service tokens  |
 | `doppler_tokens_create` | Create service token |
 | `doppler_tokens_revoke` | Revoke service token |
 | `doppler_tokens_rotate` | Rotate service token |
 
 ### Health & Info
 
-| Tool | Description |
-|------|-------------|
+| Tool             | Description      |
+| ---------------- | ---------------- |
 | `doppler_health` | Check API health |
-| `doppler_me` | Get current user |
+| `doppler_me`     | Get current user |
 | `doppler_whoami` | Get account info |
 
 ---

@@ -23,6 +23,7 @@ Interactive web-based dashboard for enhanced GitHub Issues UI management.
 ### GitHub Pages Deployment
 
 The dashboard is automatically deployed to:
+
 ```
 https://midnghtsapphire.github.io/revvel-standards/ui/issues-board/
 ```
@@ -32,8 +33,8 @@ https://midnghtsapphire.github.io/revvel-standards/ui/issues-board/
 Edit the constants at the top of the `<script>` section:
 
 ```javascript
-const REPO_OWNER = 'midnghtsapphire';
-const REPO_NAME = 'revvel-standards';
+const REPO_OWNER = "midnghtsapphire";
+const REPO_NAME = "revvel-standards";
 ```
 
 ## Features in Detail
@@ -41,7 +42,7 @@ const REPO_NAME = 'revvel-standards';
 ### Statistics Cards
 
 - **Open**: Count of open issues
-- **Closed**: Count of closed issues  
+- **Closed**: Count of closed issues
 - **In Progress**: Issues labeled with `in-progress` or `wip`
 - **Needs Triage**: Issues labeled with `needs-triage` or `triage`
 - **Jules Assigned**: Issues labeled with `jules`
@@ -63,6 +64,7 @@ const REPO_NAME = 'revvel-standards';
 ### Issue Cards
 
 Each issue card displays:
+
 - Issue number and state (🟢 open / 🟣 closed)
 - Title
 - Labels (color-coded)
@@ -83,11 +85,13 @@ Click any card to open the issue in GitHub.
 ### API Rate Limits
 
 The dashboard uses the GitHub REST API without authentication, which is subject to rate limits:
+
 - 60 requests per hour for unauthenticated requests
 - Auto-refresh is set to 60 seconds (60 requests per hour)
 - This respects GitHub's rate limit without requiring authentication
 
 To further reduce API calls:
+
 1. Increase the refresh interval in `index.html` to 120 seconds or more
 2. Add GitHub authentication (requires backend service or browser extension)
 3. Implement exponential backoff when rate limits are hit

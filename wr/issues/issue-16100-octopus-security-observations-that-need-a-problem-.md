@@ -121,18 +121,19 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -144,6 +145,7 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29345041939.md`
 
 ## WR-Ready Research Packet: Octopus Security Observations
@@ -159,6 +161,7 @@ Source packet: `docs/research-engine/run-29345041939.md`
 **Primary Target**: DevSecOps teams and security-conscious engineering organizations using GitHub Actions at scale (100-1000 developers)
 
 **Urgent Pain Points**:
+
 - CI/CD security vulnerabilities creating supply chain attack vectors
 - Workflow expression injection enabling arbitrary code execution
 - Credential exposure through unmasked secrets in job environments
@@ -169,11 +172,14 @@ Source packet: `docs/research-engine/run-29345041939.md`
 ## 3. Marketing and SEO Plan
 
 ### Content Strategy
+
 **Primary Landing Page**: `/security/github-actions-vulnerabilities`
+
 - Title: "GitHub Actions Security: Fixing Critical Workflow Vulnerabilities"
 - Meta: "Learn how to prevent expression injection, secure supply chains, and protect secrets in GitHub Actions workflows. Complete security guide with real fixes."
 
 ### Target Keywords
+
 - "GitHub Actions security vulnerabilities" (2,400/mo est.)
 - "workflow expression injection prevention" (890/mo est.)
 - "CI/CD supply chain security" (1,200/mo est.)
@@ -181,35 +187,39 @@ Source packet: `docs/research-engine/run-29345041939.md`
 - "pin github actions dependency" (solution-seeking)
 
 ### Content Angles
+
 1. "How We Fixed Critical GitHub Actions Security Vulnerabilities" (case study)
 2. "3 Security Mistakes That Could Compromise Your CI/CD Pipeline" (problem-aware)
 3. "Complete Guide to Securing GitHub Actions Workflows" (comprehensive guide)
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Stars | Pricing | Moat/Gap |
-|------------|-------|---------|----------|
-| GitHub Advanced Security | N/A | $49/user/month | Native integration, but no workflow-specific runtime fixes |
-| Semgrep | 9.8k | Free + $22/dev/month | Strong rule engine, less workflow-aware |
-| Snyk | 4.6k | Free + $25/dev/month | General security, not workflow-focused |
-| actionlint | 2.4k | Free/OSS | Lints workflows but no runtime secrets/injection |
-| TruffleHog | 14.2k | Free/OSS | Secret scanning only |
+| Competitor               | Stars | Pricing              | Moat/Gap                                                   |
+| ------------------------ | ----- | -------------------- | ---------------------------------------------------------- |
+| GitHub Advanced Security | N/A   | $49/user/month       | Native integration, but no workflow-specific runtime fixes |
+| Semgrep                  | 9.8k  | Free + $22/dev/month | Strong rule engine, less workflow-aware                    |
+| Snyk                     | 4.6k  | Free + $25/dev/month | General security, not workflow-focused                     |
+| actionlint               | 2.4k  | Free/OSS             | Lints workflows but no runtime secrets/injection           |
+| TruffleHog               | 14.2k | Free/OSS             | Secret scanning only                                       |
 
 **Market Gap**: No tool provides context-aware, automated remediation that maintains workflow functionality while fixing security issues.
 
 ## 5. Chatter and Demand Signals
 
 ### Developer Pain Points (from forums/communities)
+
 - "Why are we still seeing string interpolation in workflows? This is a known injection vector."
 - "Mutable dependencies in CI are a supply chain disaster waiting to happen."
 - "Vault tokens in job envs are a nightmare if not masked—one log leak and you're done."
 
 ### Buying Triggers
+
 - "We need to pass a security audit—can you guarantee no workflow injection?"
 - "Our compliance team flagged unmasked secrets in CI logs"
 - "We want to automate pinning and secret masking across all workflows"
 
 ### Emotional Urgency
+
 - High anxiety around public breaches (CircleCI, SolarWinds)
 - Fear of being the next security headline
 - Frustration with "security theater" fixes
@@ -217,11 +227,13 @@ Source packet: `docs/research-engine/run-29345041939.md`
 ## 6. Factual Validation and Evidence Gaps
 
 ### Verified Security Patterns
+
 ✅ Workflow expression injection is documented attack vector ([GitHub Security Lab](https://securitylab.github.com/research/github-actions-untrusted-input/))
 ✅ Mutable dependencies create supply chain risks ([OWASP guidance](https://owasp.org/www-project-top-ten/2017/A9_2017-Using_Components_with_Known_Vulnerabilities))
 ✅ Unmasked secrets can leak in logs ([GitHub documentation](https://docs.github.com/en/actions/security-guides/encrypted-secrets#masking-secrets-in-logs))
 
 ### Evidence Gaps
+
 ❌ Cannot verify specific file contents without repository access
 ❌ Referenced audit documents (wr/issues/issue-15831-*.md) unverified
 ❌ Security scanner output unavailable
@@ -231,10 +243,11 @@ Source packet: `docs/research-engine/run-29345041939.md`
 ### Required Fixes
 
 1. **Workflow Expression Injection** (ship-to-market.yml)
+
    ```yaml
    # Before (vulnerable)
    const result = '${{ steps.publish.outputs.result }}';
-   
+
    # After (secure)
    env:
      PUBLISH_RESULT: ${{ steps.publish.outputs.result }}
@@ -243,10 +256,11 @@ Source packet: `docs/research-engine/run-29345041939.md`
    ```
 
 2. **Supply Chain Pinning** (perplexity-research-agent.yml)
+
    ```yaml
    # Before (vulnerable)
    pip install git+https://github.com/helallao/perplexity-ai.git@main
-   
+
    # After (secure)
    pip install git+https://github.com/helallao/perplexity-ai.git@<commit-sha>
    ```
@@ -255,13 +269,14 @@ Source packet: `docs/research-engine/run-29345041939.md`
    ```yaml
    # Before (vulnerable)
    echo "VAULT_TOKEN=$VAULT_TOKEN" >> "$GITHUB_ENV"
-   
+
    # After (secure)
    echo "::add-mask::$VAULT_TOKEN"
    echo "VAULT_TOKEN=$VAULT_TOKEN" >> "$GITHUB_ENV"
    ```
 
 ### Acceptance Gates
+
 - [ ] Security scanner confirms no expression injection patterns
 - [ ] All CI dependencies use immutable references
 - [ ] Vault tokens masked in all workflow logs
@@ -271,6 +286,7 @@ Source packet: `docs/research-engine/run-29345041939.md`
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 Review focus: GitHub Actions security patterns
 Check for: Direct interpolation of ${{ }} in scripts, mutable git refs (@main), unmasked secrets
@@ -278,6 +294,7 @@ Severity: Critical - these enable RCE and credential theft
 ```
 
 ### For OpenRouter
+
 ```
 Analyze workflow files for:
 1. Expression injection via string interpolation
@@ -287,6 +304,7 @@ Reference: GitHub Actions security best practices
 ```
 
 ### For Coderabbit
+
 ```
 Security review required:
 - Pattern: const result = '${{ ... }}' (injection risk)
@@ -295,6 +313,7 @@ Security review required:
 ```
 
 ### For Ralph Loop
+
 ```
 Blocking findings:
 1. Workflow injection in ship-to-market.yml line with '${{ }}'
@@ -306,8 +325,10 @@ Each needs immediate fix per security policy
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Expression Injection
+
 **File**: `.github/workflows/ship-to-market.yml`
 **Commit**: `fix: prevent workflow expression injection via environment variables`
+
 ```yaml
 - name: Process result
   env:
@@ -319,16 +340,20 @@ Each needs immediate fix per security policy
 ```
 
 ### Fix 2: Dependency Pinning
+
 **File**: `.github/workflows/perplexity-research-agent.yml`
 **Commit**: `fix: pin perplexity-ai to commit SHA for supply chain security`
+
 ```bash
 # Get latest SHA: git ls-remote https://github.com/helallao/perplexity-ai.git main
 pip install git+https://github.com/helallao/perplexity-ai.git@<SHA>
 ```
 
 ### Fix 3: Secret Masking
+
 **File**: `templates/cicd/vault-provisioning.yml`
 **Commit**: `fix: mask Vault token before persisting to environment`
+
 ```yaml
 - name: Mask and export token
   run: |
@@ -347,7 +372,9 @@ pip install git+https://github.com/helallao/perplexity-ai.git@<SHA>
 ## 11. Repository Review and Best Alternative
 
 ### Primary Repository Status
+
 **Cannot verify** - No repository URL provided. Files referenced:
+
 - `.github/workflows/ship-to-market.yml`
 - `.github/workflows/perplexity-research-agent.yml`
 - `templates/cicd/vault-provisioning.yml`
@@ -372,6 +399,7 @@ pip install git+https://github.com/helallao/perplexity-ai.git@<SHA>
 ## 12. Confidence Score Summary
 
 ### Per-Lane Confidence Scores
+
 - **Market Positioning (Echo)**: 70% - Strong security patterns but needs market validation
 - **SEO Demand (Noimos)**: 75% - Clear keyword opportunities, unverified search volumes
 - **Competitor Intelligence (Iris)**: 85% - Well-documented competitive landscape
@@ -426,11 +454,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -446,11 +474,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

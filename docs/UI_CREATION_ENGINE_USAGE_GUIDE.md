@@ -9,7 +9,7 @@
 
 The UI Creation Engine is a comprehensive system for creating cutting-edge website and mobile app interfaces that compete with top vendors in the USA. It combines competitive research, image optimization, SEO metadata generation, and OpenRouter swarm orchestration.
 
-**Core Principle**: *"Every digital product should compete with the top vendors in the USA."*
+**Core Principle**: _"Every digital product should compete with the top vendors in the USA."_
 
 ---
 
@@ -100,6 +100,7 @@ Spawns 5 parallel Scout agents:
 ### Phase 2: Synthesis (10 minutes)
 
 **Sage** agent aggregates findings into:
+
 - Comprehensive competitive analysis
 - Industry patterns and trends
 - SEO keyword recommendations (top 20)
@@ -110,6 +111,7 @@ Spawns 5 parallel Scout agents:
 ### Phase 3: Image Optimization (5 minutes)
 
 **Pixel** agent creates:
+
 - Image list with required sizes
 - SEO-friendly filenames (`business-subject-context-size.webp`)
 - Descriptive alt text (5-15 words per image)
@@ -118,6 +120,7 @@ Spawns 5 parallel Scout agents:
 ### Phase 4: SEO Metadata (10 minutes)
 
 **Sage** agent generates:
+
 - Complete metadata for all pages (title, description, keywords)
 - OpenGraph tags for social sharing
 - Twitter Card tags
@@ -126,6 +129,7 @@ Spawns 5 parallel Scout agents:
 ### Phase 5: UI Design Recommendations (15 minutes)
 
 **Pixel** agent creates:
+
 - Design system (colors, typography, spacing)
 - Component library specifications
 - Page layout wireframes
@@ -161,6 +165,7 @@ output-directory/
 ### Competitive Analysis Report
 
 Includes:
+
 - **Executive Summary**: 2-3 paragraph landscape overview
 - **Top 10 Competitors**: Scored (0-100) with strengths/weaknesses
 - **Industry Patterns**: Common features, design trends, tech choices
@@ -175,6 +180,7 @@ Includes:
 ### UI Recommendations
 
 Includes:
+
 - **Design System**: Colors, typography, spacing, shadows, borders
 - **Component Library**: All components with props and usage
 - **Page Layouts**: Wireframes for homepage, services, order, about, contact
@@ -184,6 +190,7 @@ Includes:
 ### SEO Metadata
 
 Includes:
+
 - **Page Metadata**: Complete TypeScript exports for all pages
 - **JSON-LD Schemas**: Organization, LocalBusiness, BreadcrumbList, etc.
 - **Keyword List**: Top 20 keywords with search volumes
@@ -193,6 +200,7 @@ Includes:
 ### Image Optimization Plan
 
 Includes:
+
 - **Image List**: All required images with details
 - **SEO Filenames**: Format: `business-subject-context-size.webp`
 - **Alt Text**: 5-15 word descriptions with keywords
@@ -224,14 +232,14 @@ Before considering UI creation complete, verify:
 
 Estimated cost per run:
 
-| Phase | Agents | Tokens | Cost |
-|---|---|---|---|
-| Research Swarm | 5 Scouts | ~10,000 | $2-3 |
-| Synthesis | 1 Sage | ~4,000 | $1-2 |
-| Image Optimization | 1 Pixel | ~5,000 | $1-2 |
-| SEO Metadata | 1 Sage | ~5,000 | $1-2 |
-| UI Design | 1 Pixel | ~8,000 | $2-4 |
-| **Total** | 9 agents | ~32,000 | **$7-13** |
+| Phase              | Agents   | Tokens  | Cost      |
+| ------------------ | -------- | ------- | --------- |
+| Research Swarm     | 5 Scouts | ~10,000 | $2-3      |
+| Synthesis          | 1 Sage   | ~4,000  | $1-2      |
+| Image Optimization | 1 Pixel  | ~5,000  | $1-2      |
+| SEO Metadata       | 1 Sage   | ~5,000  | $1-2      |
+| UI Design          | 1 Pixel  | ~8,000  | $2-4      |
+| **Total**          | 9 agents | ~32,000 | **$7-13** |
 
 **Budget Control**: Set `OPENROUTER_BUDGET_MAX=15.00` in environment to cap spending.
 
@@ -270,11 +278,13 @@ export OPENROUTER_API_KEY="sk-or-v1-..."
 **Symptoms**: One or more Scout agents return errors in the output.
 
 **Causes**:
+
 - Rate limiting from OpenRouter
 - Network connectivity issues
 - Invalid API key
 
 **Solutions**:
+
 1. Check API key is valid at [openrouter.ai/keys](https://openrouter.ai/keys)
 2. Wait a few minutes and retry (rate limit reset)
 3. Check OpenRouter status page for outages
@@ -284,6 +294,7 @@ export OPENROUTER_API_KEY="sk-or-v1-..."
 **Symptoms**: No output files generated.
 
 **Solutions**:
+
 1. Check write permissions on output directory
 2. Run with explicit output path:
    ```bash
@@ -295,6 +306,7 @@ export OPENROUTER_API_KEY="sk-or-v1-..."
 **Symptoms**: Competitive analysis has fewer than 10 competitors.
 
 **Solutions**:
+
 - This may be expected for very niche industries
 - Re-run with broader industry terms
 - Manually supplement with known competitors
@@ -306,6 +318,7 @@ export OPENROUTER_API_KEY="sk-or-v1-..."
 ### 1. Review Research (Priority 1)
 
 Read `research/competitive-analysis.md`:
+
 - Validate competitor list (are these the right ones?)
 - Review gaps and opportunities
 - Confirm differentiation strategy
@@ -313,6 +326,7 @@ Read `research/competitive-analysis.md`:
 ### 2. Implement Design System (Priority 2)
 
 Follow `design/ui-recommendations.md`:
+
 - Set up Tailwind config with color palette
 - Create design tokens file
 - Build component library
@@ -320,6 +334,7 @@ Follow `design/ui-recommendations.md`:
 ### 3. Apply SEO Metadata (Priority 3)
 
 Use `seo/metadata.md`:
+
 - Copy metadata exports to each page
 - Add JSON-LD schemas to layout
 - Create robots.txt and sitemap.xml
@@ -327,6 +342,7 @@ Use `seo/metadata.md`:
 ### 4. Optimize Images (Priority 4)
 
 Follow `images/optimization-plan.md`:
+
 - Rename images to SEO-friendly filenames
 - Convert to WebP format (use `sharp` npm package)
 - Add alt text to all images
@@ -341,6 +357,7 @@ npx lighthouse https://your-site.com \
 ```
 
 Ensure:
+
 - SEO score ≥ 95
 - Performance ≥ 90
 - Accessibility ≥ 90
@@ -361,6 +378,7 @@ npm run ui-engine -- \
 ```
 
 **Output**:
+
 - 15 competitors analyzed (St. Louis + national)
 - Top keywords: "catering St. Louis", "meal prep St. Louis", "Sunday dinner catering"
 - Differentiation: Fusion BBQ + Asian-Hawaiian + eco-friendly packaging
@@ -379,6 +397,7 @@ npm run ui-engine -- \
 ```
 
 **Output**:
+
 - 12 competitors (Asana, Monday.com, ClickUp, Trello, etc.)
 - Top keywords: "project management software", "team collaboration tools"
 - Differentiation: AI-powered task prioritization, Gantt + Kanban hybrid
@@ -397,6 +416,7 @@ npm run ui-engine -- \
 ```
 
 **Output**:
+
 - 10 competitors (MyFitnessPal, Lose It, Noom, etc.)
 - Top keywords: "calorie counter app", "fitness tracker", "weight loss app"
 - Differentiation: Social challenges, macro tracking, AI meal suggestions
@@ -423,5 +443,5 @@ npm run ui-engine -- \
 
 ---
 
-*"Every digital product should compete with the top vendors in the USA."*  
-*— MIDNGHTSAPPHIRE*
+_"Every digital product should compete with the top vendors in the USA."_  
+_— MIDNGHTSAPPHIRE_

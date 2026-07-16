@@ -14,12 +14,12 @@ This standard defines the framework for multi-entity tax optimization for small 
 
 ## Domain Classification
 
-| Category | Value |
-|----------|-------|
-| **Domain** | Tax Strategy |
-| **Sub-domain** | Multi-Entity Optimization |
-| **Use Case** | Small Business + Medicaid Protection |
-| **Complexity** | High |
+| Category       | Value                                |
+| -------------- | ------------------------------------ |
+| **Domain**     | Tax Strategy                         |
+| **Sub-domain** | Multi-Entity Optimization            |
+| **Use Case**   | Small Business + Medicaid Protection |
+| **Complexity** | High                                 |
 
 ---
 
@@ -28,31 +28,33 @@ This standard defines the framework for multi-entity tax optimization for small 
 ### 1. Multi-Member LLC Tax Treatment
 
 Per IRS regulations, multi-member LLCs are taxed as partnerships by default:
+
 - Each member receives K-1 for their share of income/losses
 - Losses flow through to personal returns
 - Subject to basis limitations (at-risk, passive activity)
 
 ### 2. S-Corp vs Partnership Trade-offs
 
-| Factor | Partnership/LLC | S-Corp |
-|--------|-----------------|---------|
-| Self-employment tax | SE tax on ALL profits | Only on salary |
-| Distributions | No SE tax | No SE tax |
-| Reasonable salary | N/A | Required |
-| QBI deduction | Yes | Yes (with limits) |
-| Complexity | Low | Medium |
+| Factor              | Partnership/LLC       | S-Corp            |
+| ------------------- | --------------------- | ----------------- |
+| Self-employment tax | SE tax on ALL profits | Only on salary    |
+| Distributions       | No SE tax             | No SE tax         |
+| Reasonable salary   | N/A                   | Required          |
+| QBI deduction       | Yes                   | Yes (with limits) |
+| Complexity          | Low                   | Medium            |
 
 ### 3. Medicaid Income Limits (Colorado 2026)
 
-| Program | Income Limit | Notes |
-|---------|-------------|-------|
-| Health First Colorado | ~$1,574/month | Elderly/disabled |
-| Medicare | N/A | Based on work credits |
-| SSI | $794/month | Supplemental |
+| Program               | Income Limit  | Notes                 |
+| --------------------- | ------------- | --------------------- |
+| Health First Colorado | ~$1,574/month | Elderly/disabled      |
+| Medicare              | N/A           | Based on work credits |
+| SSI                   | $794/month    | Supplemental          |
 
 ### 4. Passive Income Classification (IRS Pub 925)
 
 **Material Participation Tests:**
+
 1. 500+ hours in activity
 2. Substantially all participation
 3. Participation > anyone else
@@ -92,6 +94,7 @@ Per IRS regulations, multi-member LLCs are taxed as partnerships by default:
 ### 1. Operating Agreements
 
 Each LLC must have:
+
 - [ ] Clear ownership percentages
 - [ ] Management responsibilities defined
 - [ ] Profit/loss allocation provisions
@@ -99,12 +102,12 @@ Each LLC must have:
 
 ### 2. Documentation
 
-| Document | Purpose | Location |
-|----------|---------|----------|
-| Operating Agreement | Legal structure | CPA files |
-| K-1s | Annual flow-through | Tax return |
-| Donation receipts | FMV tracking | Audit folder |
-| Medicaid correspondence | Eligibility proof | Healthcare file |
+| Document                | Purpose             | Location        |
+| ----------------------- | ------------------- | --------------- |
+| Operating Agreement     | Legal structure     | CPA files       |
+| K-1s                    | Annual flow-through | Tax return      |
+| Donation receipts       | FMV tracking        | Audit folder    |
+| Medicaid correspondence | Eligibility proof   | Healthcare file |
 
 ### 3. Tax Filing Checklist
 
@@ -119,12 +122,14 @@ Each LLC must have:
 ## Compliance Requirements
 
 ### Annual
+
 - [ ] Colorado Secretary of State annual report
 - [ ] Federal tax filings (K-1s, 1065s)
 - [ ] Medicaid redetermination
 - [ ] SAM.gov CAGE code renewal (if applicable)
 
 ### Monthly
+
 - [ ] Income tracking
 - [ ] Medicaid limit monitoring
 - [ ] Donation logging
@@ -133,22 +138,22 @@ Each LLC must have:
 
 ## Risk Factors
 
-| Risk | Level | Mitigation |
-|------|-------|-----------|
-| Medicaid disqualification | CRITICAL | Zero taxable income strategy |
-| IRS audit (passive classification) | MEDIUM | Document Caresse's participation |
-| SE tax on distributions | LOW | S-corp election if income >$80K |
-| State compliance | MEDIUM | Annual CO filings |
+| Risk                               | Level    | Mitigation                       |
+| ---------------------------------- | -------- | -------------------------------- |
+| Medicaid disqualification          | CRITICAL | Zero taxable income strategy     |
+| IRS audit (passive classification) | MEDIUM   | Document Caresse's participation |
+| SE tax on distributions            | LOW      | S-corp election if income >$80K  |
+| State compliance                   | MEDIUM   | Annual CO filings                |
 
 ---
 
 ## Integration Points
 
-| System | Integration |
-|---------|------------|
-| Odoo | Business data sync |
-| QuickBooks | Expense tracking |
-| TaxCalc | Calculations |
+| System          | Integration            |
+| --------------- | ---------------------- |
+| Odoo            | Business data sync     |
+| QuickBooks      | Expense tracking       |
+| TaxCalc         | Calculations           |
 | Medicaid portal | Eligibility monitoring |
 
 ---
@@ -161,5 +166,5 @@ Each LLC must have:
 
 ---
 
-*Standard maintained by revvel-standards*
-*Last updated: 2026-04-25*
+_Standard maintained by revvel-standards_
+_Last updated: 2026-04-25_

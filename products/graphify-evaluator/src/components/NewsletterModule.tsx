@@ -1,10 +1,14 @@
-import React from 'react';
+import React from "react";
 
 export const NewsletterModule = () => {
   return (
     <div className="bg-gray-100 p-6 rounded-lg my-6">
-      <h3 className="text-xl font-bold mb-2">Subscribe to our Developer Newsletter</h3>
-      <p className="text-gray-600 mb-4">Get weekly insights on codebase management and architecture.</p>
+      <h3 className="text-xl font-bold mb-2">
+        Subscribe to our Developer Newsletter
+      </h3>
+      <p className="text-gray-600 mb-4">
+        Get weekly insights on codebase management and architecture.
+      </p>
       <form className="flex gap-2">
         <input
           type="email"

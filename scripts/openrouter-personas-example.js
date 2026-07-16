@@ -24,7 +24,11 @@
  *   node scripts/openrouter-personas-example.js --list
  */
 
-const { instantiate, getPersonas, INSTANTIATION_MODES } = require("./openrouter-personas");
+const {
+  instantiate,
+  getPersonas,
+  INSTANTIATION_MODES,
+} = require("./openrouter-personas");
 
 async function main() {
   const args = process.argv.slice(2);
@@ -43,7 +47,9 @@ async function main() {
   const task = taskParts.join(" ").trim() || undefined;
 
   if (!process.env.OPENROUTER_API_KEY) {
-    console.error("❌ Error: OPENROUTER_API_KEY environment variable is not set");
+    console.error(
+      "❌ Error: OPENROUTER_API_KEY environment variable is not set",
+    );
     console.error("\nSet it by running:");
     console.error("  export OPENROUTER_API_KEY='your-key-here'\n");
     process.exit(1);
@@ -62,7 +68,9 @@ async function main() {
       console.log();
       console.log(`Registered ${result.name} on assignment. Awaiting a task.`);
       console.log("Provide a task argument to run it now, e.g.:");
-      console.log(`  node scripts/openrouter-personas-example.js ${persona} "on assignment" "your task here"`);
+      console.log(
+        `  node scripts/openrouter-personas-example.js ${persona} "on assignment" "your task here"`,
+      );
       console.log();
       return;
     }
@@ -93,11 +101,17 @@ async function main() {
 }
 
 function showUsage() {
-  console.log("Usage: node scripts/openrouter-personas-example.js <persona> <mode> [task...]");
+  console.log(
+    "Usage: node scripts/openrouter-personas-example.js <persona> <mode> [task...]",
+  );
   console.log();
   console.log("Modes:");
-  console.log('  "right away"      Instantiate eagerly — persona reports online now');
-  console.log('  "on assignment"   Register now; runs only when a task is assigned');
+  console.log(
+    '  "right away"      Instantiate eagerly — persona reports online now',
+  );
+  console.log(
+    '  "on assignment"   Register now; runs only when a task is assigned',
+  );
   console.log();
   console.log("Options:");
   console.log("  -h, --help   Show this help message");
@@ -107,9 +121,15 @@ function showUsage() {
   console.log("  OPENROUTER_API_KEY   Required. Your OpenRouter API key");
   console.log();
   console.log("Examples:");
-  console.log('  node scripts/openrouter-personas-example.js oaudrey "right away"');
-  console.log('  node scripts/openrouter-personas-example.js professor "right away" "TAM for self-hosted AI chat?"');
-  console.log('  node scripts/openrouter-personas-example.js mindmappr "on assignment" "Outline a MindMappr launch plan"');
+  console.log(
+    '  node scripts/openrouter-personas-example.js oaudrey "right away"',
+  );
+  console.log(
+    '  node scripts/openrouter-personas-example.js professor "right away" "TAM for self-hosted AI chat?"',
+  );
+  console.log(
+    '  node scripts/openrouter-personas-example.js mindmappr "on assignment" "Outline a MindMappr launch plan"',
+  );
   console.log();
 }
 
@@ -124,7 +144,9 @@ function showPersonas() {
     console.log(`     Routing: ${route}`);
     console.log();
   }
-  console.log(`Modes: ${INSTANTIATION_MODES.EAGER} ("right away"), ${INSTANTIATION_MODES.ON_ASSIGNMENT} ("on assignment")`);
+  console.log(
+    `Modes: ${INSTANTIATION_MODES.EAGER} ("right away"), ${INSTANTIATION_MODES.ON_ASSIGNMENT} ("on assignment")`,
+  );
   console.log();
 }
 

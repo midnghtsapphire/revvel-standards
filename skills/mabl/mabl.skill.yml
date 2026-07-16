@@ -23,11 +23,11 @@ metadata:
 dependencies:
   skills:
     - testing
-    - vault_agent     # for MABL_API_KEY and MABL_WORKSPACE_ID provisioning
-    - ralph_loop      # for self-healing retry on Mabl test failure
+    - vault_agent # for MABL_API_KEY and MABL_WORKSPACE_ID provisioning
+    - ralph_loop # for self-healing retry on Mabl test failure
   tools:
     - github_actions
-    - nodejs          # Node.js 18+ required by the Mabl CLI
+    - nodejs # Node.js 18+ required by the Mabl CLI
   pip_packages: []
 
 workflow_files:

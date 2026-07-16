@@ -25,7 +25,8 @@ const MODEL_TRIAD = [
   "openai/gpt-4.1",
 ];
 
-const SYNTHESIS_MODEL = process.env.RESEARCH_SYNTHESIS_MODEL || "anthropic/claude-opus-4";
+const SYNTHESIS_MODEL =
+  process.env.RESEARCH_SYNTHESIS_MODEL || "anthropic/claude-opus-4";
 
 const MASTER_CHECKLIST = [
   "Scope the WR and extract the commercial question being answered.",
@@ -44,7 +45,8 @@ const LANE_DEFINITIONS = [
     name: "Market Positioning",
     agent: "Echo",
     roleLabel: "research:marketing",
-    purpose: "Identify positioning, channels, hooks, offers, and go-to-market proof.",
+    purpose:
+      "Identify positioning, channels, hooks, offers, and go-to-market proof.",
     checklist: [
       "Define the target buyer and the urgent pain.",
       "Identify best current marketing angles in the market.",
@@ -58,7 +60,8 @@ const LANE_DEFINITIONS = [
     name: "SEO Demand",
     agent: "Noimos",
     roleLabel: "research:seo",
-    purpose: "Map search intent, keywords, content angles, and landing-page requirements.",
+    purpose:
+      "Map search intent, keywords, content angles, and landing-page requirements.",
     checklist: [
       "List buyer-intent keyword clusters.",
       "Separate informational, comparison, and transactional intent.",
@@ -72,7 +75,8 @@ const LANE_DEFINITIONS = [
     name: "Competitor Intelligence",
     agent: "Iris",
     roleLabel: "research:competitors",
-    purpose: "Compare competitors, GitHub repositories, star momentum, pricing, reviews, and moat gaps.",
+    purpose:
+      "Compare competitors, GitHub repositories, star momentum, pricing, reviews, and moat gaps.",
     checklist: [
       "List direct competitors, OSS repos, and adjacent substitutes.",
       "Capture GitHub stars, recency, and project momentum when applicable.",
@@ -86,7 +90,8 @@ const LANE_DEFINITIONS = [
     name: "Audience and Chatter",
     agent: "Scout",
     roleLabel: "research:chatter",
-    purpose: "Summarize social chatter, forum complaints, objections, language, and unmet needs.",
+    purpose:
+      "Summarize social chatter, forum complaints, objections, language, and unmet needs.",
     checklist: [
       "Identify where the audience talks about the pain.",
       "Capture exact phrases, objections, and buying triggers.",
@@ -100,7 +105,8 @@ const LANE_DEFINITIONS = [
     name: "Factual Validation",
     agent: "Mirror",
     roleLabel: "research:facts",
-    purpose: "Check factual claims, source quality, contradictions, and hallucination risk.",
+    purpose:
+      "Check factual claims, source quality, contradictions, and hallucination risk.",
     checklist: [
       "Extract the claims that drive the recommendation.",
       "Mark each claim as supported, weak, contradicted, or unknown.",
@@ -114,7 +120,8 @@ const LANE_DEFINITIONS = [
     name: "Technical Delivery",
     agent: "Forge",
     roleLabel: "research:technical",
-    purpose: "Convert research into implementable requirements, acceptance gates, and system risks.",
+    purpose:
+      "Convert research into implementable requirements, acceptance gates, and system risks.",
     checklist: [
       "Name the files, workflows, scripts, MCPs, or services likely affected.",
       "Define the acceptance gates and test evidence required.",
@@ -128,7 +135,8 @@ const LANE_DEFINITIONS = [
     name: "Revenue Mechanics",
     agent: "Ledger",
     roleLabel: "research:revenue",
-    purpose: "Turn research into pricing, monetization, funnel, and conversion hypotheses.",
+    purpose:
+      "Turn research into pricing, monetization, funnel, and conversion hypotheses.",
     checklist: [
       "Select the sellable shape: PDF, skill, MCP, CLI, API, app, extension, or service.",
       "Recommend pricing and first paid tier.",
@@ -142,7 +150,8 @@ const LANE_DEFINITIONS = [
     name: "Research Review and Auto-Fix",
     agent: "Aria",
     roleLabel: "research:reviewer",
-    purpose: "Review the research packet like a code-review agent and produce fix-ready comments.",
+    purpose:
+      "Review the research packet like a code-review agent and produce fix-ready comments.",
     checklist: [
       "Review the packet for unsupported claims and missing evidence.",
       "Flag missing tests, labels, workflows, or docs before code starts.",
@@ -156,7 +165,8 @@ const LANE_DEFINITIONS = [
     name: "Repository Review and Web Search Fallback",
     agent: "Scout-Web",
     roleLabel: "research:repo-web",
-    purpose: "Review any GitHub repository referenced in the query. If it is unavailable, unmaintained, or inadequate, search for alternative tools, libraries, and competitor APIs that solve the same problem.",
+    purpose:
+      "Review any GitHub repository referenced in the query. If it is unavailable, unmaintained, or inadequate, search for alternative tools, libraries, and competitor APIs that solve the same problem.",
     checklist: [
       "Extract all GitHub repository URLs from the query and review each one (stars, last commit, license, purpose, open issues).",
       "If the primary repository is unavailable, abandoned, or not a fit, name the tool/library and search for alternatives online.",
@@ -177,11 +187,13 @@ function truncateForComment(text, limit = ERROR_BODY_LIMIT) {
 }
 
 function slugify(value) {
-  return String(value || "research")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80) || "research";
+  return (
+    String(value || "research")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || "research"
+  );
 }
 
 function parseCsv(value) {
@@ -230,7 +242,9 @@ function splitRepository(repository) {
 
 function defaultOutputFile({ issueNumber, query }) {
   const stamp = new Date().toISOString().slice(0, 10);
-  const suffix = issueNumber ? `issue-${issueNumber}` : slugify(query).slice(0, 48);
+  const suffix = issueNumber
+    ? `issue-${issueNumber}`
+    : slugify(query).slice(0, 48);
   return `docs/research-engine/${stamp}-${suffix}.md`;
 }
 
@@ -241,13 +255,16 @@ function getOptionsFromEnv(env = process.env) {
   return {
     apiKey: env.OPENROUTER_API_KEY || "",
     githubToken: env.GITHUB_TOKEN || "",
-    repository: env.GITHUB_REPOSITORY || env.WR_DEFAULT_REPO || DEFAULT_REPOSITORY,
+    repository:
+      env.GITHUB_REPOSITORY || env.WR_DEFAULT_REPO || DEFAULT_REPOSITORY,
     issueNumber,
     prNumber,
     query,
     issueTitle: env.ISSUE_TITLE || "",
     issueBody: env.ISSUE_BODY || "",
-    outputFile: env.OUTPUT_FILE || defaultOutputFile({ issueNumber, query: query || env.ISSUE_TITLE }),
+    outputFile:
+      env.OUTPUT_FILE ||
+      defaultOutputFile({ issueNumber, query: query || env.ISSUE_TITLE }),
     depth: parseDepth(env.RESEARCH_DEPTH),
     extraContext: env.RESEARCH_CONTEXT || "",
     dryRun: env.DRY_RUN === "true",
@@ -279,11 +296,19 @@ function requestJson({ hostname, pathName, method, headers = {}, payload }) {
           try {
             parsed = data ? JSON.parse(data) : {};
           } catch (error) {
-            reject(new Error(`Failed to parse response JSON (${status}): ${error.message}`));
+            reject(
+              new Error(
+                `Failed to parse response JSON (${status}): ${error.message}`,
+              ),
+            );
             return;
           }
           if (status < 200 || status >= 300) {
-            const message = parsed?.error?.message || parsed?.message || data || "unknown error";
+            const message =
+              parsed?.error?.message ||
+              parsed?.message ||
+              data ||
+              "unknown error";
             reject(new Error(`HTTP ${status}: ${message}`));
             return;
           }
@@ -298,7 +323,14 @@ function requestJson({ hostname, pathName, method, headers = {}, payload }) {
   });
 }
 
-async function callOpenRouter({ apiKey, repository, model, systemPrompt, userPrompt, maxTokens = 3500 }) {
+async function callOpenRouter({
+  apiKey,
+  repository,
+  model,
+  systemPrompt,
+  userPrompt,
+  maxTokens = 3500,
+}) {
   const response = await requestJson({
     hostname: OPENROUTER_HOST,
     pathName: OPENROUTER_PATH,
@@ -367,7 +399,9 @@ async function removeLabels({ githubToken, repository, number, labels }) {
       });
     } catch (error) {
       if (!/HTTP 404/.test(error.message)) {
-        console.log(`::warning::Could not remove label "${label}": ${error.message}`);
+        console.log(
+          `::warning::Could not remove label "${label}": ${error.message}`,
+        );
       }
     }
   }
@@ -385,7 +419,11 @@ async function postComment({ githubToken, repository, number, body }) {
   });
 }
 
-async function listPullRequestsForIssue({ githubToken, repository, issueNumber }) {
+async function listPullRequestsForIssue({
+  githubToken,
+  repository,
+  issueNumber,
+}) {
   if (!githubToken || !issueNumber) return [];
   const { owner, repo } = splitRepository(repository);
   const pulls = await requestJson({
@@ -396,11 +434,21 @@ async function listPullRequestsForIssue({ githubToken, repository, issueNumber }
   });
   const needle = new RegExp(`(?:#|issues/)${issueNumber}(?:\\b|$)`);
   return Array.isArray(pulls)
-    ? pulls.filter((pr) => needle.test(`${pr.title || ""}\n${pr.body || ""}\n${pr.head?.ref || ""}`))
+    ? pulls.filter((pr) =>
+        needle.test(
+          `${pr.title || ""}\n${pr.body || ""}\n${pr.head?.ref || ""}`,
+        ),
+      )
     : [];
 }
 
-async function dispatchWorkflow({ githubToken, repository, workflowId, ref, inputs }) {
+async function dispatchWorkflow({
+  githubToken,
+  repository,
+  workflowId,
+  ref,
+  inputs,
+}) {
   if (!githubToken) return;
   const { owner, repo } = splitRepository(repository);
   await requestJson({
@@ -467,8 +515,12 @@ async function runLane(lane, context, caller = callOpenRouter) {
     }),
   );
 
-  const successes = attempts.filter((attempt) => attempt.ok && attempt.content.trim());
-  const combinedContent = successes.map((attempt) => `### ${attempt.model}\n\n${attempt.content}`).join("\n\n");
+  const successes = attempts.filter(
+    (attempt) => attempt.ok && attempt.content.trim(),
+  );
+  const combinedContent = successes
+    .map((attempt) => `### ${attempt.model}\n\n${attempt.content}`)
+    .join("\n\n");
   // Extract confidence score from the combined model output for this lane.
   const confidenceScore = extractConfidenceScore(combinedContent);
   return {
@@ -491,9 +543,10 @@ function buildSynthesisPrompt(context, laneReports) {
         .filter((attempt) => !attempt.ok)
         .map((attempt) => `- ${attempt.model}: ${attempt.error}`)
         .join("\n");
-      const scoreNote = report.confidenceScore !== null && report.confidenceScore !== undefined
-        ? `Confidence score: ${report.confidenceScore}/100`
-        : "";
+      const scoreNote =
+        report.confidenceScore !== null && report.confidenceScore !== undefined
+          ? `Confidence score: ${report.confidenceScore}/100`
+          : "";
       return [
         `## ${report.name} (${report.agent})`,
         `Status: ${report.status}${scoreNote ? ` | ${scoreNote}` : ""}`,
@@ -504,20 +557,27 @@ function buildSynthesisPrompt(context, laneReports) {
     .join("\n\n---\n\n");
 
   // Include per-iteration confidence summary when iterationHistory is provided.
-  const iterationNote = context.iterationHistory && context.iterationHistory.length > 1
-    ? [
-      "",
-      `**Ralph Loop iterations completed:** ${context.iterationHistory.length}`,
-      "The confidence scores below represent the best result from all iterations.",
-      ...context.iterationHistory.map((iter, i) => {
-        const scores = iter.filter((r) => r.confidenceScore !== null && r.confidenceScore !== undefined);
-        const avg = scores.length
-          ? Math.round(scores.reduce((sum, r) => sum + r.confidenceScore, 0) / scores.length)
-          : "n/a";
-        return `- Iteration ${i + 1}: avg confidence ${avg}${typeof avg === "number" ? "/100" : ""}`;
-      }),
-    ].join("\n")
-    : "";
+  const iterationNote =
+    context.iterationHistory && context.iterationHistory.length > 1
+      ? [
+          "",
+          `**Ralph Loop iterations completed:** ${context.iterationHistory.length}`,
+          "The confidence scores below represent the best result from all iterations.",
+          ...context.iterationHistory.map((iter, i) => {
+            const scores = iter.filter(
+              (r) =>
+                r.confidenceScore !== null && r.confidenceScore !== undefined,
+            );
+            const avg = scores.length
+              ? Math.round(
+                  scores.reduce((sum, r) => sum + r.confidenceScore, 0) /
+                    scores.length,
+                )
+              : "n/a";
+            return `- Iteration ${i + 1}: avg confidence ${avg}${typeof avg === "number" ? "/100" : ""}`;
+          }),
+        ].join("\n")
+      : "";
 
   return [
     `Research query: ${context.query}`,
@@ -543,11 +603,11 @@ function buildSynthesisPrompt(context, laneReports) {
     // Mirrors the competitor-pricing rule in wr/WR_TEMPLATE_FULL.md; keep both in sync.
     // Parity is enforced by tests/research-engine.test.js ("keeps the competitor-pricing
     // rule in sync with wr/WR_TEMPLATE_FULL.md"), which fails if either wording drifts.
-    "For Competitor and GitHub Star Intelligence, the competitor/pricing table must list actual prices (e.g. \"$99-299/month\"), not vague labels like \"Paid tiers\". If a competitor's price is unknown, write \"Pricing data pending — competitive benchmark research required.\" Do not ship incomplete competitive intelligence.",
+    'For Competitor and GitHub Star Intelligence, the competitor/pricing table must list actual prices (e.g. "$99-299/month"), not vague labels like "Paid tiers". If a competitor\'s price is unknown, write "Pricing data pending — competitive benchmark research required." Do not ship incomplete competitive intelligence.',
     "Citation rule: every statistic, percentage, growth rate, or market-size claim must include a",
     "direct source link. If a number is not sourced, omit it or explicitly label it as an estimate",
-    "(e.g. \"internal estimate\", \"observed anecdotally — unverified\") and use a range instead of a",
-    "precise figure. Never present bare percentages (e.g. \"73% of teams\", \"40% YoY\") without attribution.",
+    '(e.g. "internal estimate", "observed anecdotally — unverified") and use a range instead of a',
+    'precise figure. Never present bare percentages (e.g. "73% of teams", "40% YoY") without attribution.',
     "",
     "For Confidence Score Summary, aggregate the per-lane confidence scores from all iterations. Select the best-scoring idea from the combined data and explain your reasoning. Discard low-confidence (< 60) findings unless they are the only data available.",
     "",
@@ -555,19 +615,33 @@ function buildSynthesisPrompt(context, laneReports) {
   ].join("\n");
 }
 
-async function synthesizeResearch(context, laneReports, caller = callOpenRouter) {
+async function synthesizeResearch(
+  context,
+  laneReports,
+  caller = callOpenRouter,
+) {
   try {
     return await caller({
       apiKey: context.apiKey,
       repository: context.repository,
       model: SYNTHESIS_MODEL,
-      systemPrompt: "You are Sage, the Revvel research orchestrator synthesizer. Produce complete, sourced, action-ready Markdown.",
+      systemPrompt:
+        "You are Sage, the Revvel research orchestrator synthesizer. Produce complete, sourced, action-ready Markdown.",
       userPrompt: buildSynthesisPrompt(context, laneReports),
       maxTokens: 6000,
     });
   } catch (error) {
     const fallback = laneReports
-      .map((report) => `## ${report.name}\n\n${report.content || `Failed: ${report.attempts.map((a) => a.error).filter(Boolean).join("; ")}`}`)
+      .map(
+        (report) =>
+          `## ${report.name}\n\n${
+            report.content ||
+            `Failed: ${report.attempts
+              .map((a) => a.error)
+              .filter(Boolean)
+              .join("; ")}`
+          }`,
+      )
       .join("\n\n---\n\n");
     return [
       "## Executive Decision",
@@ -610,8 +684,14 @@ function formatLaneAudit(laneReports) {
     .join("\n\n");
 }
 
-function buildReviewRequestComment({ outputFile, laneReports, includeCoderTrigger = false }) {
-  const laneLabels = laneReports.map((report) => `\`${report.roleLabel}\``).join(", ");
+function buildReviewRequestComment({
+  outputFile,
+  laneReports,
+  includeCoderTrigger = false,
+}) {
+  const laneLabels = laneReports
+    .map((report) => `\`${report.roleLabel}\``)
+    .join(", ");
   return [
     "<!-- revvel-research-engine-review-request -->",
     "## Research Engine Review Request",
@@ -622,7 +702,10 @@ function buildReviewRequestComment({ outputFile, laneReports, includeCoderTrigge
     // the comment omits the trigger phrase to avoid a duplicate run. On PRs the
     // `issues: labeled` event does not apply, so the phrase is the trigger there.
     ...(includeCoderTrigger
-      ? ["", "Research Findings: research is complete — the OpenRouter coding agent is cleared to implement this packet."]
+      ? [
+          "",
+          "Research Findings: research is complete — the OpenRouter coding agent is cleared to implement this packet.",
+        ]
       : []),
     "",
     "Code-review agents must review the research before implementation proceeds.",
@@ -676,7 +759,10 @@ function formatDocument({ context, synthesis, laneReports, status }) {
     "",
     "## Code Review Handoff",
     "",
-    buildReviewRequestComment({ outputFile: context.outputFile, laneReports }).replace("<!-- revvel-research-engine-review-request -->\n", ""),
+    buildReviewRequestComment({
+      outputFile: context.outputFile,
+      laneReports,
+    }).replace("<!-- revvel-research-engine-review-request -->\n", ""),
     "",
     "---",
     "",
@@ -725,16 +811,23 @@ function buildMissingKeyReport(context) {
 
 async function hydrateContext(options) {
   const context = { ...options };
-  if (options.issueNumber && options.githubToken && (!options.issueTitle || !options.issueBody)) {
+  if (
+    options.issueNumber &&
+    options.githubToken &&
+    (!options.issueTitle || !options.issueBody)
+  ) {
     try {
       const issue = await fetchIssueContext(options);
       context.issueTitle = context.issueTitle || issue.title || "";
       context.issueBody = context.issueBody || issue.body || "";
     } catch (error) {
-      console.log(`::warning::Could not fetch issue #${options.issueNumber}: ${error.message}`);
+      console.log(
+        `::warning::Could not fetch issue #${options.issueNumber}: ${error.message}`,
+      );
     }
   }
-  context.query = context.query || context.issueTitle || "Revvel research request";
+  context.query =
+    context.query || context.issueTitle || "Revvel research request";
   context.outputFile = context.outputFile || defaultOutputFile(context);
   return context;
 }
@@ -756,7 +849,9 @@ async function updateStartState(context) {
         labels,
       });
     } catch (error) {
-      console.log(`::warning::Could not apply start-state labels to #${context.issueNumber}: ${error.message}`);
+      console.log(
+        `::warning::Could not apply start-state labels to #${context.issueNumber}: ${error.message}`,
+      );
     }
   }
 }
@@ -768,7 +863,13 @@ async function updateCompleteState(context, laneReports, status) {
 
   const labelsToAdd =
     status === "complete"
-      ? ["research:complete", "wr:research-complete", "research:review-needed", "bito-ai", "awaiting-review"]
+      ? [
+          "research:complete",
+          "wr:research-complete",
+          "research:review-needed",
+          "bito-ai",
+          "awaiting-review",
+        ]
       : ["research:blocked", "openrouter:needs-key", "needs-human"];
 
   try {
@@ -779,7 +880,9 @@ async function updateCompleteState(context, laneReports, status) {
       labels: labelsToAdd,
     });
   } catch (error) {
-    console.log(`::warning::Could not apply complete-state labels to #${targetNumber}: ${error.message}`);
+    console.log(
+      `::warning::Could not apply complete-state labels to #${targetNumber}: ${error.message}`,
+    );
   }
   await removeLabels({
     githubToken: context.githubToken,
@@ -800,7 +903,9 @@ async function updateCompleteState(context, laneReports, status) {
       }),
     });
   } catch (error) {
-    console.log(`::warning::Could not post research review comment on #${targetNumber}: ${error.message}`);
+    console.log(
+      `::warning::Could not post research review comment on #${targetNumber}: ${error.message}`,
+    );
   }
 
   if (status === "complete" && context.issueNumber) {
@@ -818,14 +923,17 @@ async function updateCompleteState(context, laneReports, status) {
         }),
       });
     } catch (error) {
-      console.log(`::warning::Could not post research findings comment on #${context.issueNumber}: ${error.message}`);
+      console.log(
+        `::warning::Could not post research findings comment on #${context.issueNumber}: ${error.message}`,
+      );
     }
   }
 }
 
 async function requestPrReviews(context) {
   if (!context.githubToken || !context.prNumber) return;
-  const ref = process.env.GITHUB_REF_NAME || process.env.GITHUB_HEAD_REF || "main";
+  const ref =
+    process.env.GITHUB_REF_NAME || process.env.GITHUB_HEAD_REF || "main";
   try {
     await dispatchWorkflow({
       githubToken: context.githubToken,
@@ -858,7 +966,12 @@ async function findAndRequestLinkedPrReviews(
         githubToken: context.githubToken,
         repository: context.repository,
         number: pr.number,
-        labels: ["research:review-needed", "bito-ai", "awaiting-review", "auto-fix"],
+        labels: [
+          "research:review-needed",
+          "bito-ai",
+          "awaiting-review",
+          "auto-fix",
+        ],
       });
       await applyComment({
         githubToken: context.githubToken,
@@ -898,7 +1011,10 @@ function checkLanesNeedRetry(laneReports) {
     if (!report) return true; // missing — always retry
     if (report.status !== "complete") return true; // failed — retry
     // Low confidence: re-run unless confidence is at or above threshold.
-    if (report.confidenceScore !== null && report.confidenceScore !== undefined) {
+    if (
+      report.confidenceScore !== null &&
+      report.confidenceScore !== undefined
+    ) {
       return report.confidenceScore < RALPH_LOOP_MIN_CONFIDENCE;
     }
     // No parsable score — treat as needing retry only for the repo-web-search lane,
@@ -991,7 +1107,9 @@ async function runResearchEngine(options, caller = callOpenRouter) {
   } else {
     laneReports = await runRalphLoop(context, caller);
     synthesis = await synthesizeResearch(context, laneReports, caller);
-    status = laneReports.some((report) => report.status === "complete") ? "complete" : "blocked";
+    status = laneReports.some((report) => report.status === "complete")
+      ? "complete"
+      : "blocked";
   }
 
   const document = formatDocument({ context, synthesis, laneReports, status });
@@ -1013,7 +1131,9 @@ async function main() {
   const options = getOptionsFromEnv();
   console.log("Revvel Research Engine");
   console.log(`Repository: ${options.repository}`);
-  console.log(`Query: ${options.query || options.issueTitle || "(issue-derived)"}`);
+  console.log(
+    `Query: ${options.query || options.issueTitle || "(issue-derived)"}`,
+  );
   console.log(`Depth: ${options.depth}`);
   console.log(`Output: ${options.outputFile}`);
 
@@ -1027,7 +1147,9 @@ async function main() {
 
 if (require.main === module) {
   main().catch((error) => {
-    console.error(`Research engine failed: ${truncateForComment(error.stack || error.message)}`);
+    console.error(
+      `Research engine failed: ${truncateForComment(error.stack || error.message)}`,
+    );
     process.exit(1);
   });
 }

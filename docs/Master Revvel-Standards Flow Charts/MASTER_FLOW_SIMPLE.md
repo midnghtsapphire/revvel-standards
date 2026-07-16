@@ -28,6 +28,7 @@
 **Why:** Every project must follow the same standards. If you don't read the rules first, you'll build it wrong.
 
 **Tools used:**
+
 - Your browser or code editor (VS Code, Cursor)
 - GitHub.com (to read the file online)
 
@@ -38,6 +39,7 @@
 **What you do:** Ask the AI Research Module to investigate your question. It runs 5 AI assistants at the same time to get the best answer possible.
 
 **How to start it:**
+
 1. Go to GitHub → Actions tab
 2. Click "AI Research Module"
 3. Type your question
@@ -45,6 +47,7 @@
 5. Click "Run workflow"
 
 **What happens automatically:**
+
 - **Agent 1 (Spec)** reads official docs and specs → powered by Claude Sonnet
 - **Agent 2 (Competitive)** compares options → powered by GPT-4.1
 - **Agent 3 (Security)** checks for risks → powered by Claude Opus
@@ -55,6 +58,7 @@
 **Output:** A new `.md` file saved automatically in `docs/`
 
 **Tools used:**
+
 - GitHub Actions (the automation runner)
 - OpenRouter API (connects to all AI models)
 - `scripts/research-module.js` (the Node.js script that runs everything)
@@ -67,20 +71,22 @@
 
 **Every project needs these files (MANDATORY):**
 
-| Document | What It Is |
-|---|---|
-| `README.md` | What the project is and how to use it |
-| `BLUEPRINT.md` | How it's built (technical architecture) |
-| `ROADMAP.md` | 12-month plan |
-| `KANBAN_CARDS.md` | The first list of tasks |
-| `CHANGELOG.md` | Auto-updated list of every change |
-| `INFRASTRUCTURE_MAP.md` | All servers, domains, ports |
+| Document                | What It Is                              |
+| ----------------------- | --------------------------------------- |
+| `README.md`             | What the project is and how to use it   |
+| `BLUEPRINT.md`          | How it's built (technical architecture) |
+| `ROADMAP.md`            | 12-month plan                           |
+| `KANBAN_CARDS.md`       | The first list of tasks                 |
+| `CHANGELOG.md`          | Auto-updated list of every change       |
+| `INFRASTRUCTURE_MAP.md` | All servers, domains, ports             |
 
 **How it's automated:**
+
 - `scripts/bootstrap-new-project.sh` creates the starter documents from templates
 - Templates live in `revvel-standards/templates/`
 
 **Tools used:**
+
 - GitHub Copilot / Claude Code (AI writes the docs)
 - `scripts/bootstrap-new-project.sh` (shell script)
 - Templates folder (`revvel-standards/templates/`)
@@ -92,16 +98,19 @@
 **What you do:** Open a ticket in GitHub Issues so everyone knows what needs to be done.
 
 **What the issue should have:**
+
 - A clear title ("Build the login screen for NeuroOz")
 - Labels (like `New Project`, `bug`, `enhancement`)
 - Description with what needs to happen
 - Link to the research document
 
 **How it's automated:**
+
 - The research workflow (`research-module.yml`) creates an issue automatically when it finishes
 - The issue includes a link to the research doc
 
 **Manually:** (avoid the wrong repo default by pinning the repo)
+
 ```bash
 gh issue create \
   --repo midnghtsapphire/revvel-standards \
@@ -111,6 +120,7 @@ gh issue create \
 ```
 
 **Tools used:**
+
 - GitHub Issues (the ticket system)
 - GitHub CLI (`gh`) — the command-line tool for GitHub
 - `research-module.yml` workflow (auto-creates after research)
@@ -122,6 +132,7 @@ gh issue create \
 **What you do:** Create your own branch, make the changes, and run checks.
 
 **Step by step:**
+
 1. Create a branch (`git checkout -b feature/my-thing`)
 2. Make your changes
 3. Run linters and tests locally
@@ -129,6 +140,7 @@ gh issue create \
 5. Open a Pull Request (PR)
 
 **What happens automatically when you push:**
+
 - GitHub Actions runs the CI (Continuous Integration) checks
 - Code is linted (checked for style errors)
 - Tests run automatically
@@ -136,6 +148,7 @@ gh issue create \
 - Dependabot checks for outdated dependencies
 
 **Tools used:**
+
 - Git (version control)
 - GitHub Actions (automation)
 - Node.js / npm (JavaScript runtime)
@@ -150,6 +163,7 @@ gh issue create \
 **What you do:** Wait for checks to pass. If they fail, the system tries to fix itself.
 
 **The Ralph Loop (Self-Healing CI):**
+
 1. If CI fails → Ralph Loop fires automatically
 2. Ralph posts a comment tagging `@copilot` with the error
 3. Copilot reads the error and makes a fix
@@ -158,10 +172,12 @@ gh issue create \
 6. After 5 fails → escalates to a human (`@midnghtsapphire`)
 
 **Code Review:**
+
 - Copilot reviews the PR automatically
 - You can also ask Claude Code or Venice AI to review
 
 **Tools used:**
+
 - `.github/workflows/ralph-loop.yml` (the self-healing workflow)
 - GitHub Copilot (AI code reviewer and fixer)
 - Claude Code (AI coding agent)
@@ -174,6 +190,7 @@ gh issue create \
 **What you do:** Approve and merge the PR. Everything else is automatic.
 
 **What happens automatically when you merge:**
+
 1. `CHANGELOG.md` updates itself with what changed
 2. GitHub Actions deploys to the server
 3. For mobile apps: Fastlane submits to App Store / Play Store
@@ -181,12 +198,14 @@ gh issue create \
 5. `INFRASTRUCTURE_MAP.md` updates if servers changed
 
 **Deployment targets:**
+
 - Web apps → DigitalOcean Droplet via SSH
 - Mobile → App Store (iOS) and Google Play (Android) via Fastlane
 - Desktop → Windows `.exe`, Mac `.dmg`, Linux `.AppImage`
 - Docs/Portfolio → GitHub Pages
 
 **Tools used:**
+
 - GitHub Actions (the deployer)
 - SSH (secure server connection)
 - Fastlane (mobile app store submission)
@@ -227,5 +246,5 @@ gh issue create \
 
 ---
 
-*This document is automatically kept up-to-date by `scripts/sync-flow-charts.js`.*
-*Last auto-sync: 2026-05-05*
+_This document is automatically kept up-to-date by `scripts/sync-flow-charts.js`._
+_Last auto-sync: 2026-05-05_

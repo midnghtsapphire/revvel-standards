@@ -1,4 +1,4 @@
-# WR: Fix errors in self healing permanently 
+# WR: Fix errors in self healing permanently
 
 **Issue:** #15762  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  

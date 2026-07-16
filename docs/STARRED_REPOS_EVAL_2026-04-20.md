@@ -10,10 +10,10 @@ across the Revvel ecosystem.
 
 ## Summary
 
-| # | Repository | Tagline (as starred) | Fit | Recommendation |
-|---|---|---|---|---|
-| 1 | [`Infisical/Infisical`](https://github.com/Infisical/Infisical) | Application secrets and configuration management for developers. | ⭐⭐⭐ Directly overlaps with current HashiCorp Vault + manual `.env` usage | **Pilot as a Vault-complement** on one repo, then decide |
-| 2 | [`gabrielkoo/vscode-copilot-chat-bedrock`](https://github.com/gabrielkoo/vscode-copilot-chat-bedrock) | A VSCode extension to use AWS Bedrock models in Copilot Chat | ⭐⭐ Only useful if we already have (or plan) AWS Bedrock access | **Defer** — no active Bedrock spend; revisit if/when we adopt AWS Bedrock |
+| #   | Repository                                                                                            | Tagline (as starred)                                             | Fit                                                                         | Recommendation                                                            |
+| --- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 1   | [`Infisical/Infisical`](https://github.com/Infisical/Infisical)                                       | Application secrets and configuration management for developers. | ⭐⭐⭐ Directly overlaps with current HashiCorp Vault + manual `.env` usage | **Pilot as a Vault-complement** on one repo, then decide                  |
+| 2   | [`gabrielkoo/vscode-copilot-chat-bedrock`](https://github.com/gabrielkoo/vscode-copilot-chat-bedrock) | A VSCode extension to use AWS Bedrock models in Copilot Chat     | ⭐⭐ Only useful if we already have (or plan) AWS Bedrock access            | **Defer** — no active Bedrock spend; revisit if/when we adopt AWS Bedrock |
 
 Both tools are tracked in [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md) as 🟡 Research Topic. This document captures the reasoning behind each status.
 
@@ -49,13 +49,13 @@ workflow.
 
 ### Fit with Revvel stack
 
-| Dimension | Assessment |
-|---|---|
-| Replaces | Manual `.env` editing; ad-hoc `gh secret set` per repo |
-| Complements | HashiCorp Vault (Vault stays for infra + long-lived prod secrets; Infisical for developer-facing app secrets) |
-| Conflicts with | Nothing — Vault + Infisical is a documented pattern (see Infisical docs) |
+| Dimension           | Assessment                                                                                                                                                                 |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Replaces            | Manual `.env` editing; ad-hoc `gh secret set` per repo                                                                                                                     |
+| Complements         | HashiCorp Vault (Vault stays for infra + long-lived prod secrets; Infisical for developer-facing app secrets)                                                              |
+| Conflicts with      | Nothing — Vault + Infisical is a documented pattern (see Infisical docs)                                                                                                   |
 | Agent compatibility | Works with the Copilot Coding Agent: secrets still flow to workflows via `secrets.*`; no change to the ["secrets are read-only inputs"](./SECRETS_MANAGEMENT.md) invariant |
-| Cost | $0 if self-hosted on an existing DigitalOcean droplet; $6/user/mo only if we adopt cloud |
+| Cost                | $0 if self-hosted on an existing DigitalOcean droplet; $6/user/mo only if we adopt cloud                                                                                   |
 
 ### Risks / Unknowns
 
@@ -114,12 +114,12 @@ developer's own AWS account.
 
 ### Fit with Revvel stack
 
-| Dimension | Assessment |
-|---|---|
-| Overlaps with | OpenRouter (already listed P0 in [`_MASTER_BOM.md`](./_MASTER_BOM.md) §🧠 AI & LLM) — OpenRouter already routes to Claude, Llama, Mistral, etc. without AWS billing |
-| Requires | Active AWS account with Bedrock enabled (currently **not** in our stack) |
-| Agent compatibility | Extension runs in a human developer's VS Code — it does not affect the Copilot **Coding Agent** (this agent) which runs headless in Actions |
-| Cost | $0 extension + AWS Bedrock per-token (Claude 3.5 Sonnet ≈ $3/M in, $15/M out on Bedrock) |
+| Dimension           | Assessment                                                                                                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Overlaps with       | OpenRouter (already listed P0 in [`_MASTER_BOM.md`](./_MASTER_BOM.md) §🧠 AI & LLM) — OpenRouter already routes to Claude, Llama, Mistral, etc. without AWS billing |
+| Requires            | Active AWS account with Bedrock enabled (currently **not** in our stack)                                                                                            |
+| Agent compatibility | Extension runs in a human developer's VS Code — it does not affect the Copilot **Coding Agent** (this agent) which runs headless in Actions                         |
+| Cost                | $0 extension + AWS Bedrock per-token (Claude 3.5 Sonnet ≈ $3/M in, $15/M out on Bedrock)                                                                            |
 
 ### Risks / Unknowns
 
@@ -158,10 +158,10 @@ developer's own AWS account.
 
 ## 3. Crosswalk to existing tracking docs
 
-| Repo | `_MASTER_INVENTORY.md` | `_MASTER_BOM.md` | Priority |
-|---|---|---|---|
-| Infisical | §1.10 Security & Secrets Management (already listed) | 🔐 Security & Secrets Management (already listed, P1) | **P1 — pilot** |
-| vscode-copilot-chat-bedrock | §1.11 Code Quality & Autonomous Review (added in this PR) | 🧠 AI & LLM Infrastructure (added in this PR) | **P3 — defer** |
+| Repo                        | `_MASTER_INVENTORY.md`                                    | `_MASTER_BOM.md`                                      | Priority       |
+| --------------------------- | --------------------------------------------------------- | ----------------------------------------------------- | -------------- |
+| Infisical                   | §1.10 Security & Secrets Management (already listed)      | 🔐 Security & Secrets Management (already listed, P1) | **P1 — pilot** |
+| vscode-copilot-chat-bedrock | §1.11 Code Quality & Autonomous Review (added in this PR) | 🧠 AI & LLM Infrastructure (added in this PR)         | **P3 — defer** |
 
 ---
 

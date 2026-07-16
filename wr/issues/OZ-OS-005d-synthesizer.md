@@ -8,15 +8,19 @@
 **Depends on:** OZ-OS-005a (method-hunter), OZ-OS-005b (contrarian), OZ-OS-005c (adjacent-domain)
 
 ## Deliverable
+
 Single file: `oz-os/agents/synthesizer.md`
 
 ## Content Requirements
+
 The Synthesizer merges three input packs into a ranked decision:
+
 1. Method Pack (from method-hunter)
 2. Contrarian Pack (from contrarian)
 3. Adjacent Pack (from adjacent-domain)
 
 ### Mission
+
 Merge all research packs into a single ranked architecture recommendation.
 Resolve conflicts between Method Hunter's expansions and Contrarian's attacks.
 
@@ -34,6 +38,7 @@ Resolve conflicts between Method Hunter's expansions and Contrarian's attacks.
 ```
 
 ### Output Format
+
 `research-packs/<topic>/synthesis.md`
 
 ### Output Schema
@@ -55,15 +60,18 @@ methods_promoted: 2
 ```
 
 ### Conflict Resolution Order
+
 1. Contrarian confidence > 0.8 → method is rejected, must be justified to include
 2. Adjacent Domain finds same solution in 3+ unrelated industries → method is promoted
 3. No reference system in `reference-systems.md` uses it → flag as experimental
 4. Verifier cannot confirm any citation → entire pack returns to research phase
 
 ## Key Constraint
+
 Rejects methods with `contrarian_confidence > 0.7` unless justified with new evidence.
 
 ## Acceptance
+
 - File renders cleanly in GitHub
 - No raw tokens or bracket-placeholders
 - Includes conflict resolution rules

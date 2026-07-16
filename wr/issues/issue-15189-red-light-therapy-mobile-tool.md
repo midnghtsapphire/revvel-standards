@@ -18,12 +18,12 @@ concept based on evidence from the cited publication.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -58,11 +58,11 @@ claims beyond cited evidence and should include strong safety disclaimers.
 
 ### 3. Competitor and Pricing Snapshot
 
-| Product | Positioning | Price |
-| --- | --- | --- |
-| Joovv App + hardware ecosystem | Device companion + routines | Hardware starts at $599 (Joovv shop) |
-| Mito Red Light products | Device-led consumer PBM | Typical panels range by model (pricing changes by SKU) |
-| Generic interval/timer apps | Habit/timer only | Free to low-cost subscriptions |
+| Product                        | Positioning                 | Price                                                  |
+| ------------------------------ | --------------------------- | ------------------------------------------------------ |
+| Joovv App + hardware ecosystem | Device companion + routines | Hardware starts at $599 (Joovv shop)                   |
+| Mito Red Light products        | Device-led consumer PBM     | Typical panels range by model (pricing changes by SKU) |
+| Generic interval/timer apps    | Habit/timer only            | Free to low-cost subscriptions                         |
 
 Pricing verification links:
 
@@ -150,11 +150,11 @@ Suggested starter stack:
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 

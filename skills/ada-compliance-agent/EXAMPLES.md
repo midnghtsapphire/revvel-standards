@@ -7,11 +7,13 @@ This document provides practical examples of how to use the ADA Compliance Agent
 **Scenario:** You want to check the accessibility of your current codebase before deploying to production.
 
 **Command:**
+
 ```
 Load the ada-compliance-agent skill and run a full accessibility audit on the current branch
 ```
 
 **What happens:**
+
 1. Agent scans all HTML/JSX/TSX files
 2. Runs axe-core, Pa11y, and Lighthouse tests
 3. Auto-fixes safe violations (alt text, contrast, labels)
@@ -20,6 +22,7 @@ Load the ada-compliance-agent skill and run a full accessibility audit on the cu
 6. Commits auto-fixes to a new branch
 
 **Expected output:**
+
 ```
 ✅ Completed ADA Compliance Audit
 
@@ -50,11 +53,13 @@ Next steps:
 **Scenario:** You want to find free courses to learn about ADA compliance.
 
 **Command:**
+
 ```
 Load ada-compliance-agent and research free ADA certification courses available in 2026
 ```
 
 **What happens:**
+
 1. Agent scans primary certification sources (W3C, ADA National Network, LinkedIn Learning, etc.)
 2. Filters for free courses with certificates
 3. Prioritizes courses with CEU/CRCC credits
@@ -62,6 +67,7 @@ Load ada-compliance-agent and research free ADA certification courses available 
 5. Posts summary in GitHub Discussions
 
 **Expected output:**
+
 ```
 🎓 Free ADA Certification Courses (2026)
 
@@ -76,7 +82,7 @@ HIGH PRIORITY (CEU Credits Available):
    - Level: Beginner
 
 2. ADA Title II Tutorial
-   - Provider: ADA National Network  
+   - Provider: ADA National Network
    - URL: https://adatitle2.org
    - Credits: CEU/CRCC ✅
    - Duration: 2 hours
@@ -107,11 +113,13 @@ Updated: /docs/ada-certifications.md
 **Scenario:** CI failed on a PR due to accessibility violations.
 
 **Command:**
+
 ```
 Load ada-compliance-agent and fix accessibility violations in PR #42
 ```
 
 **What happens:**
+
 1. Agent checks out the PR branch
 2. Runs accessibility tests
 3. Identifies violations
@@ -120,6 +128,7 @@ Load ada-compliance-agent and fix accessibility violations in PR #42
 6. Requests review for manual fixes
 
 **Expected output:**
+
 ```
 🔧 Auto-Fixed Accessibility Violations in PR #42
 
@@ -148,14 +157,16 @@ Next steps: Address the 3 manual items above, then re-run tests.
 **Scenario:** Set up automatic weekly audits that run every Monday at 9 AM.
 
 **Setup:**
+
 1. Copy `skills/ada-compliance-agent/.github/workflows/ada-compliance-check.yml` to your repo's `.github/workflows/`
 2. Modify the schedule:
    ```yaml
    schedule:
-     - cron: '0 9 * * 1'  # Every Monday at 9 AM UTC
+     - cron: "0 9 * * 1" # Every Monday at 9 AM UTC
    ```
 
 **What happens:**
+
 - Workflow runs automatically every Monday
 - Audits all pages on staging environment
 - Generates compliance report
@@ -163,6 +174,7 @@ Next steps: Address the 3 manual items above, then re-run tests.
 - Posts summary to Slack/Discord (if configured)
 
 **Example report:**
+
 ```
 📊 Weekly ADA Compliance Report (May 5, 2026)
 
@@ -196,6 +208,7 @@ Next scheduled audit: May 12, 2026
 **Scenario:** Run the agent continuously to catch new violations immediately and stay current with ADA standards.
 
 **Setup:**
+
 ```yaml
 # In your repo's settings or OpenRouter configuration
 agent: ada-compliance-agent
@@ -210,24 +223,28 @@ alerts:
 **What the agent does continuously:**
 
 **Daily:**
+
 - Monitors W3C WAI RSS feeds for new guidelines
 - Scans ADA lawsuit database for new accessibility cases
 - Checks for updates to testing tools (axe-core, Pa11y, Lighthouse)
 - Runs nightly compliance scan on staging
 
 **Weekly:**
+
 - Completes one certification module
 - Reviews recent accessibility blog posts and research
 - Updates internal documentation with new findings
 - Generates compliance trend report
 
 **Monthly:**
+
 - Full production audit
 - Completes at least one full certification course
 - Benchmarks against top accessibility leaders
 - Posts detailed report to GitHub Discussions
 
 **Instant alerts for:**
+
 - New critical WCAG violation detected in production
 - Lighthouse score drops below 90
 - New accessibility lawsuit filed in your industry
@@ -235,6 +252,7 @@ alerts:
 - Major update to WCAG or Section 508
 
 **Example alert:**
+
 ```
 🚨 ADA Compliance Alert
 
@@ -253,7 +271,7 @@ Estimated fix time: 2 minutes
 Action: Agent created PR #789 with fix
 Status: Awaiting review and merge
 
-Affected pages: 
+Affected pages:
 - /login
 - /signup
 
@@ -267,6 +285,7 @@ Next: Merge PR #789 and deploy to fix immediately.
 **Scenario:** Automatically check accessibility on every PR before allowing merge.
 
 **Setup in `.github/workflows/pr-checks.yml`:**
+
 ```yaml
 name: PR Checks
 on: pull_request
@@ -290,6 +309,7 @@ jobs:
 ```
 
 **What happens on every PR:**
+
 1. Agent runs before other checks
 2. Only audits changed files (faster)
 3. Auto-fixes safe violations
@@ -297,6 +317,7 @@ jobs:
 5. Blocks merge if critical violations remain
 
 **Example PR comment:**
+
 ```
 ## 🔍 ADA Compliance Check
 
@@ -338,11 +359,13 @@ Status: ⚠️ **Action Required**
 **Scenario:** Final accessibility review before launching a new feature.
 
 **Command:**
+
 ```
 Load ada-compliance-agent and run complete pre-launch accessibility audit for the payment-flow feature
 ```
 
 **What happens:**
+
 1. Agent runs full audit suite on feature
 2. Tests with actual screen reader (NVDA)
 3. Keyboard navigation testing
@@ -350,6 +373,7 @@ Load ada-compliance-agent and run complete pre-launch accessibility audit for th
 5. Creates punch list of any remaining issues
 
 **Expected output:**
+
 ```
 🚀 Pre-Launch Accessibility Audit: Payment Flow
 
@@ -408,17 +432,20 @@ Would you like me to auto-fix issues #890 and #891?
 **Scenario:** Compare your accessibility against competitors.
 
 **Command:**
+
 ```
 Load ada-compliance-agent and benchmark our checkout flow against Amazon, Shopify, and Stripe
 ```
 
 **What happens:**
+
 1. Agent audits your checkout flow
 2. Audits competitor checkout flows
 3. Identifies gaps and opportunities
 4. Generates comparison report
 
 **Expected output:**
+
 ```
 📊 Accessibility Benchmark Report
 
@@ -482,21 +509,25 @@ Detailed comparison report saved to:
 ## Common Issues and Solutions
 
 ### "Lighthouse score varies between runs"
+
 - Run multiple times and take average
 - Test in incognito mode to avoid extension interference
 - Use CI environment for consistent results
 
 ### "Agent auto-fixed something incorrectly"
+
 - Revert the commit
 - Add the pattern to `.ada-compliance-ignore`
 - Open issue to improve auto-fix logic
 
 ### "Too many false positives"
+
 - Configure axe-core rules in `.axerc.json`
 - Use `aria-hidden` for truly decorative elements
 - Document exceptions in `/docs/ada-exceptions.md`
 
 ### "Agent can't access my dev server"
+
 - Ensure server runs on `localhost:3000` or configure URL
 - Add `--host 0.0.0.0` to make server accessible
 - Check firewall isn't blocking

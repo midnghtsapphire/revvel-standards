@@ -37,8 +37,8 @@ How to use the brand templates for every new Revvel/MIDNGHTSAPPHIRE project.
 
 ## Files in This Directory
 
-| File | Purpose |
-|---|---|
-| `REVVEL_EMBLEM_STANDARD.md` | Complete Revvel Emblem formula — universal design language |
-| `BRAND_IDENTITY_TEMPLATE.md` | Blank brand identity document — fill in for every new project |
-| `ICON_SIZE_SPEC.md` | Quick reference for all icon sizes, platforms, and export tools |
+| File                         | Purpose                                                         |
+| ---------------------------- | --------------------------------------------------------------- |
+| `REVVEL_EMBLEM_STANDARD.md`  | Complete Revvel Emblem formula — universal design language      |
+| `BRAND_IDENTITY_TEMPLATE.md` | Blank brand identity document — fill in for every new project   |
+| `ICON_SIZE_SPEC.md`          | Quick reference for all icon sizes, platforms, and export tools |

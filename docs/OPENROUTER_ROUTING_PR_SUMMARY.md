@@ -7,6 +7,7 @@ This PR implements task-based model routing with automatic fallback for OpenRout
 ## Files Changed
 
 ### Core Module
+
 - **scripts/openrouter-routing.js** (new, 245 lines)
   - Core routing module with fallback support
   - Implements three routing profiles
@@ -14,12 +15,14 @@ This PR implements task-based model routing with automatic fallback for OpenRout
   - Returns actual model used in response
 
 ### Example Usage
+
 - **scripts/openrouter-routing-example.js** (new, 139 lines)
   - CLI for testing routing profiles
   - Demonstrates all three profiles
   - Includes usage help and profile listing
 
 ### Testing
+
 - **tests/openrouter-routing.test.js** (new, 174 lines)
   - 11 unit tests covering profile validation
   - Request construction tests
@@ -27,6 +30,7 @@ This PR implements task-based model routing with automatic fallback for OpenRout
   - All tests passing
 
 ### Evaluation (Stretch Goal)
+
 - **scripts/openrouter-routing-eval.js** (new, 289 lines)
   - Harness for comparing profiles
   - Generates markdown reports
@@ -34,6 +38,7 @@ This PR implements task-based model routing with automatic fallback for OpenRout
   - Supports quality assessment
 
 ### Documentation
+
 - **docs/OPENROUTER_MODEL_ROUTING.md** (new, 414 lines)
   - Comprehensive usage guide
   - API reference
@@ -48,49 +53,59 @@ This PR implements task-based model routing with automatic fallback for OpenRout
   - Model behavior comparison notes
 
 ### Configuration
+
 - **.env.example** (modified)
   - Updated OPENROUTER_API_KEY comment to reference new routing module
-  
+
 - **package.json** (modified)
   - Added openrouter-routing.test.js to test suite
 
 ## Routing Profiles Added
 
 ### 1. repo_surgery
+
 **Use case:** Multi-file edits, bug fixing, refactors, and "take initiative" tasks
 
 **Model fallback chain:**
+
 ```
 anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
 ```
 
 **Rationale:**
+
 - Prioritizes Claude Sonnet 4 for independent, high-quality reasoning
 - Falls back to DeepSeek for cost-effective strong coding
 - GPT-5.2 Codex as final fallback for debugging expertise
 
 ### 2. cheap_batch_edits
+
 **Use case:** Repetitive transforms, test generation, lint-fix loops, lower-cost bulk changes
 
 **Model fallback chain:**
+
 ```
 deepseek/deepseek-v3.2 → anthropic/claude-sonnet-4
 ```
 
 **Rationale:**
+
 - Prioritizes DeepSeek for cost-effectiveness
 - Falls back to Claude for higher quality if needed
 - Optimized for batch operations where cost matters
 
 ### 3. hard_debug
+
 **Use case:** Difficult failures, ambiguous root-cause analysis, second-opinion patches
 
 **Model fallback chain:**
+
 ```
 openai/gpt-5.2-codex → anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2
 ```
 
 **Rationale:**
+
 - Prioritizes GPT-5.2 Codex for specialized debugging reasoning
 - Falls back to Claude for alternative perspective
 - DeepSeek as final option for code-focused analysis
@@ -98,28 +113,31 @@ openai/gpt-5.2-codex → anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2
 ## Example Invocation
 
 ### Basic Usage
+
 ```javascript
-const { routedChat } = require('./scripts/openrouter-routing');
+const { routedChat } = require("./scripts/openrouter-routing");
 
 const result = await routedChat({
-  profile: 'repo_surgery',
+  profile: "repo_surgery",
   messages: [
-    { role: 'user', content: 'Fix the memory leak in the session handler' }
+    { role: "user", content: "Fix the memory leak in the session handler" },
   ],
 });
 
-console.log(result.text);           // Generated response
-console.log(result.modelUsed);      // Model that responded
+console.log(result.text); // Generated response
+console.log(result.modelUsed); // Model that responded
 console.log(result.requestedModels); // Fallback chain
 ```
 
 ### CLI Usage
+
 ```bash
 export OPENROUTER_API_KEY="your-key-here"
 node scripts/openrouter-routing-example.js repo_surgery "Fix authentication bug"
 ```
 
 ### Evaluation Harness
+
 ```bash
 node scripts/openrouter-routing-eval.js "Refactor the database layer"
 ```
@@ -127,6 +145,7 @@ node scripts/openrouter-routing-eval.js "Refactor the database layer"
 ## Test Results
 
 ### Unit Tests
+
 All 11 unit tests pass:
 
 ```
@@ -150,6 +169,7 @@ Test Summary: 11 passed, 0 failed
 Integration tests require `OPENROUTER_API_KEY` to be set. See `docs/OPENROUTER_ROUTING_VALIDATION.md` for manual test procedures.
 
 **Expected results for each profile:**
+
 - **repo_surgery**: Claude 3.7 Sonnet should demonstrate independent reasoning
 - **cheap_batch_edits**: DeepSeek V3.2 should be faster and more cost-effective
 - **hard_debug**: GPT-5.2 Codex should provide deeper debugging insights
@@ -157,10 +177,12 @@ Integration tests require `OPENROUTER_API_KEY` to be set. See `docs/OPENROUTER_R
 ## Actual Model Returned During Test Run
 
 During unit testing (without API key):
+
 - Tests validate profile structure and error handling
 - No actual API calls made to avoid costs
 
 For actual model responses, run with `OPENROUTER_API_KEY` set:
+
 ```bash
 # Example: Test repo_surgery profile
 export OPENROUTER_API_KEY="sk-or-v1-..."
@@ -175,13 +197,16 @@ node scripts/openrouter-routing-example.js repo_surgery "Hello, world!"
 Based on [OpenRouter's fallback documentation](https://openrouter.ai/docs/guides/routing/model-fallbacks):
 
 ### When Fallback Triggers
+
 Fallbacks are triggered automatically by OpenRouter when:
+
 1. **Rate limiting**: Model's rate limit is reached
 2. **Context length**: Prompt exceeds model's context window
 3. **Moderation**: Content is flagged by safety filters
 4. **Downtime**: Model or provider is temporarily unavailable
 
 ### Important Notes
+
 - **Server-side**: Fallback happens automatically on OpenRouter's servers
 - **Transparent**: Client code doesn't need explicit retry logic
 - **Best-effort**: If all models fail for the same reason (e.g., content policy violation), request fails
@@ -189,19 +214,23 @@ Fallbacks are triggered automatically by OpenRouter when:
 - **Latency**: May be slightly higher when fallback occurs, but handled transparently
 
 ### Limitations
+
 - Fallback order is respected but not guaranteed (OpenRouter may optimize)
 - Cost is based on the model that actually responds, not the requested model
 - Some errors (auth, payment, network) won't trigger fallback
 
 ### Monitoring Recommendations
+
 Log the `modelUsed` field to track:
+
 - How often fallback occurs
 - Which models are most reliable
 - Cost implications of fallback patterns
 
 Example:
+
 ```javascript
-const result = await routedChat({ /* ... */ });
+const result = await routedChat({/* ... */});
 console.log(`Profile: ${result.profile}, Model: ${result.modelUsed}`);
 // Log to your monitoring system
 ```
@@ -213,6 +242,7 @@ console.log(`Profile: ${result.profile}, Model: ${result.modelUsed}`);
 ## Dependencies
 
 No new dependencies added. Uses only Node.js built-in modules:
+
 - `https` (for API calls)
 - `fs` (for file operations)
 - `path` (for path handling)
@@ -220,6 +250,7 @@ No new dependencies added. Uses only Node.js built-in modules:
 ## Configuration Requirements
 
 1. Set `OPENROUTER_API_KEY` environment variable
+
    ```bash
    export OPENROUTER_API_KEY="your-key-here"
    ```
@@ -231,17 +262,21 @@ No new dependencies added. Uses only Node.js built-in modules:
 ## Performance Considerations
 
 ### Response Time
+
 - **DeepSeek V3.2**: Typically fastest (~1-2 seconds)
 - **Claude 3.7 Sonnet**: Medium speed (~2-3 seconds)
 - **GPT-5.2 Codex**: Varies (~2-4 seconds)
 
 ### Cost Optimization
+
 - Use `cheap_batch_edits` for high-volume, low-criticality tasks
 - Use `repo_surgery` for important code changes where quality matters
 - Use `hard_debug` sparingly for difficult problems requiring specialized reasoning
 
 ### Rate Limiting
+
 OpenRouter handles rate limits via fallback:
+
 - If primary model hits rate limit, fallback triggers automatically
 - No client-side rate limit handling needed
 - Monitor `modelUsed` to detect patterns
@@ -257,6 +292,7 @@ OpenRouter handles rate limits via fallback:
 ## Future Enhancements
 
 Potential future improvements (not in scope for this PR):
+
 1. Add streaming support for long responses
 2. Add token usage tracking and cost estimation
 3. Add custom profile definitions via config file
@@ -269,19 +305,21 @@ Potential future improvements (not in scope for this PR):
 For existing OpenRouter callsites in the codebase:
 
 **Before:**
+
 ```javascript
 const result = await callOpenRouter(
-  'anthropic/claude-sonnet-4',
+  "anthropic/claude-sonnet-4",
   messages,
-  4000
+  4000,
 );
 ```
 
 **After:**
+
 ```javascript
-const { routedChat } = require('./scripts/openrouter-routing');
+const { routedChat } = require("./scripts/openrouter-routing");
 const result = await routedChat({
-  profile: 'repo_surgery',
+  profile: "repo_surgery",
   messages,
   max_tokens: 4000,
 });
@@ -300,6 +338,7 @@ const result = await routedChat({
 ## Reviewer Notes
 
 ### Focus Areas
+
 1. **Profile design**: Are the model fallback chains reasonable?
 2. **API design**: Is the `routedChat` API intuitive?
 3. **Documentation**: Is the documentation clear and complete?
@@ -307,13 +346,16 @@ const result = await routedChat({
 5. **Testing**: Are the tests sufficient?
 
 ### Manual Testing
+
 To fully validate, reviewers should:
+
 1. Set `OPENROUTER_API_KEY` in their environment
 2. Run the example CLI with each profile
 3. Review the response quality and model selection
 4. Run the evaluation harness to compare profiles
 
 ### Questions for Review
+
 - [ ] Should we add more routing profiles?
 - [ ] Should we support custom model arrays without named profiles?
 - [ ] Should we add caching for repeated prompts?
@@ -321,17 +363,17 @@ To fully validate, reviewers should:
 
 ## Acceptance Criteria Status
 
-| Criterion | Status | Evidence |
-|-----------|--------|----------|
-| Caller can request named routing profiles | ✅ | `routedChat({ profile: 'repo_surgery' })` |
-| Client sends correct models array | ✅ | Unit tests verify payload |
-| Response exposes actual model used | ✅ | `result.modelUsed` field |
-| Errors surfaced cleanly when all fail | ✅ | Error handling tested |
-| Unit tests cover profile selection | ✅ | 11 tests, all passing |
-| Example usage with only API key | ✅ | CLI requires only env var |
-| Documentation includes examples | ✅ | Multiple examples in docs |
-| No hardcoded secrets | ✅ | Uses env var only |
-| No breaking changes | ✅ | New module, no modifications |
+| Criterion                                 | Status | Evidence                                  |
+| ----------------------------------------- | ------ | ----------------------------------------- |
+| Caller can request named routing profiles | ✅     | `routedChat({ profile: 'repo_surgery' })` |
+| Client sends correct models array         | ✅     | Unit tests verify payload                 |
+| Response exposes actual model used        | ✅     | `result.modelUsed` field                  |
+| Errors surfaced cleanly when all fail     | ✅     | Error handling tested                     |
+| Unit tests cover profile selection        | ✅     | 11 tests, all passing                     |
+| Example usage with only API key           | ✅     | CLI requires only env var                 |
+| Documentation includes examples           | ✅     | Multiple examples in docs                 |
+| No hardcoded secrets                      | ✅     | Uses env var only                         |
+| No breaking changes                       | ✅     | New module, no modifications              |
 
 ## Links
 
@@ -342,6 +384,7 @@ To fully validate, reviewers should:
 ## Author Notes
 
 This implementation prioritizes:
+
 - **Maintainability**: Simple, clear code with comprehensive documentation
 - **Observability**: Structured logging and model tracking
 - **Flexibility**: Easy to add new profiles or modify existing ones

@@ -8,13 +8,13 @@ name: BIOME Homeostat
 
 on:
   schedule:
-    - cron: '40 */6 * * *'  # every 6 hours
+    - cron: "40 */6 * * *" # every 6 hours
   workflow_dispatch: {}
 
 permissions:
   contents: read
   issues: write
-  actions: write   # dispatch the existing Doppler->Actions recovery workflow when keys are missing
+  actions: write # dispatch the existing Doppler->Actions recovery workflow when keys are missing
 
 concurrency:
   group: biome-homeostat
@@ -36,7 +36,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Run homeostat
         # These secrets are read ONLY to detect presence. They are passed through
@@ -50,5 +50,5 @@ jobs:
           # When AI lanes are offline, dispatch the existing reviewed recovery
           # workflow to pull the key(s) back from Doppler promptly (it no-ops if
           # Doppler has no value, preserving its don't-overwrite-good-tokens rule).
-          BIOME_RECOVER_KEYS: 'true'
+          BIOME_RECOVER_KEYS: "true"
         run: node scripts/biome/homeostat.js

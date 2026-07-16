@@ -6,7 +6,7 @@ name: BIOME Sentinel
 
 on:
   schedule:
-    - cron: '20 */2 * * *'  # every 2 hours, offset from the 4h self-healing loop
+    - cron: "20 */2 * * *" # every 2 hours, offset from the 4h self-healing loop
   workflow_dispatch: {}
 
 permissions:
@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Run sentinel
         env:

@@ -97,7 +97,9 @@ function summarizeChart(amplitudeResponse) {
   const series = Array.isArray(data.series) ? data.series : [];
   out.seriesCount = series.length;
   out.seriesLabels = Array.isArray(data.seriesLabels)
-    ? data.seriesLabels.map((s) => (Array.isArray(s) ? s.join(" / ") : String(s)))
+    ? data.seriesLabels.map((s) =>
+        Array.isArray(s) ? s.join(" / ") : String(s),
+      )
     : [];
   for (const s of series) {
     if (!Array.isArray(s)) continue;
@@ -127,7 +129,8 @@ function buildNotionPagePayload({
   chartId,
   summary,
 }) {
-  if (!databaseId) throw new Error("buildNotionPagePayload: databaseId required");
+  if (!databaseId)
+    throw new Error("buildNotionPagePayload: databaseId required");
   const dateOnly = String(isoDate).slice(0, 10);
   const title = `${dateOnly} — ${repository}`;
   return {
@@ -149,7 +152,9 @@ function buildNotionPagePayload({
         rich_text: [
           {
             type: "text",
-            text: { content: (summary.seriesLabels || []).join(", ").slice(0, 1900) },
+            text: {
+              content: (summary.seriesLabels || []).join(", ").slice(0, 1900),
+            },
           },
         ],
       },
@@ -167,7 +172,13 @@ function buildNotionPagePayload({
 // HTTP helpers (Node built-in https; no external deps)
 // ---------------------------------------------------------------------------
 
-function httpRequest({ hostname, path, method = "GET", headers = {}, body = null }) {
+function httpRequest({
+  hostname,
+  path,
+  method = "GET",
+  headers = {},
+  body = null,
+}) {
   return new Promise((resolve, reject) => {
     const opts = { hostname, path, method, headers: { ...headers } };
     if (body) {
@@ -175,7 +186,9 @@ function httpRequest({ hostname, path, method = "GET", headers = {}, body = null
     }
     const req = https.request(opts, (res) => {
       let data = "";
-      res.on("data", (chunk) => { data += chunk; });
+      res.on("data", (chunk) => {
+        data += chunk;
+      });
       res.on("end", () => {
         resolve({ statusCode: res.statusCode || 0, body: data });
       });
@@ -198,7 +211,7 @@ async function fetchAmplitudeChart(cfg) {
   });
   if (res.statusCode < 200 || res.statusCode >= 300) {
     throw new Error(
-      `Amplitude chart fetch failed: HTTP ${res.statusCode} — ${res.body.slice(0, 500)}`
+      `Amplitude chart fetch failed: HTTP ${res.statusCode} — ${res.body.slice(0, 500)}`,
     );
   }
   try {
@@ -223,7 +236,7 @@ async function postNotionPage(cfg, payload) {
   });
   if (res.statusCode < 200 || res.statusCode >= 300) {
     throw new Error(
-      `Notion page create failed: HTTP ${res.statusCode} — ${res.body.slice(0, 500)}`
+      `Notion page create failed: HTTP ${res.statusCode} — ${res.body.slice(0, 500)}`,
     );
   }
   return JSON.parse(res.body);
@@ -249,7 +262,7 @@ async function main() {
   if (missing.length) {
     console.warn(
       `::warning::amplitude-to-notion skipped — missing env: ${missing.join(", ")}. ` +
-        `See standards/AMPLITUDE_NOTION_AGENT_STANDARD.md.`
+        `See standards/AMPLITUDE_NOTION_AGENT_STANDARD.md.`,
     );
     // Soft exit — same convention as amplitude-events.yml verify step.
     return 0;
@@ -257,14 +270,14 @@ async function main() {
 
   console.log(
     `[amplitude-to-notion] region=${cfg.amplitudeRegion} chart=${cfg.amplitudeChartId} ` +
-      `repo=${cfg.repository} dryRun=${cfg.dryRun}`
+      `repo=${cfg.repository} dryRun=${cfg.dryRun}`,
   );
 
   const chart = await fetchAmplitudeChart(cfg);
   const summary = summarizeChart(chart);
   console.log(
     `[amplitude-to-notion] summary: total=${summary.total} ` +
-      `series=${summary.seriesCount} labels=${JSON.stringify(summary.seriesLabels)}`
+      `series=${summary.seriesCount} labels=${JSON.stringify(summary.seriesLabels)}`,
   );
 
   const payload = buildNotionPagePayload({

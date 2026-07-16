@@ -27,13 +27,13 @@ The more you use it, the smarter your AI gets. This is called the **compounding 
 
 ## 📦 What Gets Installed
 
-| Component | What It Is | Required? |
-|---|---|---|
-| **Bun** | Fast JavaScript engine (like Node.js, but better) | ✅ Yes |
-| **GBrain CLI** | The brain tool (`gbrain` command) | ✅ Yes |
-| **~/brain folder** | Your personal brain (plain text markdown files) | ✅ Yes |
-| **Local database** | Fast search engine (lives on your computer, no cloud) | ✅ Yes |
-| **AI tool config** | Connects brain to Claude Code / Cursor | Auto-detected |
+| Component          | What It Is                                            | Required?     |
+| ------------------ | ----------------------------------------------------- | ------------- |
+| **Bun**            | Fast JavaScript engine (like Node.js, but better)     | ✅ Yes        |
+| **GBrain CLI**     | The brain tool (`gbrain` command)                     | ✅ Yes        |
+| **~/brain folder** | Your personal brain (plain text markdown files)       | ✅ Yes        |
+| **Local database** | Fast search engine (lives on your computer, no cloud) | ✅ Yes        |
+| **AI tool config** | Connects brain to Claude Code / Cursor                | Auto-detected |
 
 **What it does NOT install:** nothing runs in the background. GBrain only activates when your AI tool needs it. No subscriptions. No data sent to servers (unless you add optional API keys).
 
@@ -42,9 +42,11 @@ The more you use it, the smarter your AI gets. This is called the **compounding 
 ## 🍎 Mac Installation (super easy!)
 
 ### Step 1 — Download the installer
+
 The file you need is: **`install/mac/install-gbrain.command`**
 
 ### Step 2 — Allow Mac to run it
+
 Mac might block the file the first time. Here's how to fix that:
 
 1. Right-click (or Control+click) on `install-gbrain.command`
@@ -55,10 +57,13 @@ Mac might block the file the first time. Here's how to fix that:
 > 💡 **Why does Mac block it?** Apple checks if apps are from "verified developers." Our installer is a script, not a Mac app, so Apple hasn't verified it. It's safe — it just installs Bun and GBrain from their official websites.
 
 ### Step 3 — Follow the prompts
+
 The installer walks you through everything. When it asks a question, type **y** for yes or **n** for no, then press **Enter**.
 
 ### Step 4 — Done!
+
 Open a new Terminal window and test it:
+
 ```
 gbrain --version
 ```
@@ -68,9 +73,11 @@ gbrain --version
 ## 🪟 Windows Installation (super easy!)
 
 ### Step 1 — Download the installer
+
 The file you need is: **`install/windows/install-gbrain.bat`**
 
 ### Step 2 — Allow Windows to run it
+
 Windows Defender SmartScreen might pop up. Here's what to do:
 
 1. Double-click `install-gbrain.bat`
@@ -82,10 +89,13 @@ Windows Defender SmartScreen might pop up. Here's what to do:
 > 💡 **Why does Windows block it?** Windows checks if apps are from known publishers. Our installer is a batch script, not a signed program, so Windows hasn't verified it. It's safe — it just installs Bun and GBrain from their official websites.
 
 ### Step 3 — Follow the prompts
+
 The installer walks you through everything. When it asks a question, type **y** or **n** and press **Enter**.
 
 ### Step 4 — Done!
+
 Open a new Command Prompt and test it:
+
 ```
 gbrain --version
 ```
@@ -96,12 +106,13 @@ gbrain --version
 
 GBrain works WITHOUT any API keys — keyword search works right away. But if you add an OpenAI API key, GBrain also gets **AI-powered vector search** that understands meaning, not just words.
 
-| Key | What It Unlocks | Cost |
-|---|---|---|
-| OpenAI API Key | AI-powered search (semantic/vector search) | ~$0.0001 per search |
-| Anthropic API Key | Even smarter multi-query search | ~$0.0001 per search |
+| Key               | What It Unlocks                            | Cost                |
+| ----------------- | ------------------------------------------ | ------------------- |
+| OpenAI API Key    | AI-powered search (semantic/vector search) | ~$0.0001 per search |
+| Anthropic API Key | Even smarter multi-query search            | ~$0.0001 per search |
 
 **How to add (Mac):**
+
 ```bash
 echo 'export OPENAI_API_KEY=sk-...' >> ~/.zshrc
 source ~/.zshrc
@@ -109,6 +120,7 @@ gbrain embed --stale   # re-index with AI embeddings
 ```
 
 **How to add (Windows):**
+
 ```cmd
 setx OPENAI_API_KEY "sk-..."
 :: Open a new Command Prompt, then:
@@ -127,6 +139,7 @@ After installation, your brain lives at:
 - **Windows:** `%USERPROFILE%\brain\` (same as `C:\Users\yourname\brain\`)
 
 It's organized like this:
+
 ```
 brain/
 ├── people/       ← One file per person (e.g., people/sarah-johnson.md)
@@ -149,7 +162,9 @@ GBrain connects to your AI tool using something called **MCP** (Model Context Pr
 The installer tries to do this automatically. If it didn't work (or you're setting it up manually), here's what to add:
 
 ### Claude Code
+
 Add to `~/.claude/server.json`:
+
 ```json
 {
   "mcpServers": {
@@ -162,7 +177,9 @@ Add to `~/.claude/server.json`:
 ```
 
 ### Cursor
+
 Settings → MCP Servers → Add:
+
 ```json
 {
   "gbrain": {
@@ -173,6 +190,7 @@ Settings → MCP Servers → Add:
 ```
 
 ### Windsurf
+
 Settings → MCP Servers → Refresh after adding the same config as Cursor.
 
 ---
@@ -181,39 +199,46 @@ Settings → MCP Servers → Refresh after adding the same config as Cursor.
 
 Once GBrain is installed, here are the most useful things you can type in Terminal/Command Prompt:
 
-| Command | What It Does |
-|---|---|
-| `gbrain --version` | Check it's working |
-| `gbrain import ~/brain/` | Index your brain files for search |
-| `gbrain embed --stale` | Add AI-powered search (needs OpenAI key) |
-| `gbrain search "Sarah"` | Search your brain |
-| `gbrain query "who should I invite to dinner?"` | Ask a smart question |
-| `gbrain sync --repo ~/brain` | Sync latest changes |
-| `gbrain doctor` | Check everything is healthy |
-| `gbrain serve` | Start the AI tool connection (MCP server) |
+| Command                                         | What It Does                              |
+| ----------------------------------------------- | ----------------------------------------- |
+| `gbrain --version`                              | Check it's working                        |
+| `gbrain import ~/brain/`                        | Index your brain files for search         |
+| `gbrain embed --stale`                          | Add AI-powered search (needs OpenAI key)  |
+| `gbrain search "Sarah"`                         | Search your brain                         |
+| `gbrain query "who should I invite to dinner?"` | Ask a smart question                      |
+| `gbrain sync --repo ~/brain`                    | Sync latest changes                       |
+| `gbrain doctor`                                 | Check everything is healthy               |
+| `gbrain serve`                                  | Start the AI tool connection (MCP server) |
 
 ---
 
 ## ❓ Troubleshooting
 
 ### "gbrain: command not found"
+
 Open a new Terminal/Command Prompt window. The PATH was updated during install but old windows don't see it yet.
 
 ### "Permission denied" on Mac
+
 Run this in Terminal:
+
 ```bash
 chmod +x ~/path/to/install-gbrain.command
 ```
 
 ### Bun install fails
+
 Make sure you have internet access. Then try manually:
+
 - **Mac:** `curl -fsSL https://bun.sh/install | bash`
 - **Windows (PowerShell):** `irm bun.sh/install.ps1 | iex`
 
 ### GBrain install fails
+
 Try: `bun add -g github:garrytan/gbrain`
 
 ### AI tool doesn't see gbrain
+
 Restart the AI tool completely after installing. GBrain runs as a background service when the AI tool starts.
 
 ---
@@ -230,6 +255,7 @@ Restart the AI tool completely after installing. GBrain runs as a background ser
 ## 🔄 Upgrading GBrain
 
 To upgrade to the latest version:
+
 ```bash
 # Mac / Linux
 cd ~/gbrain && git pull origin main && bun install
@@ -242,4 +268,4 @@ Or just re-run the installer — it will update automatically.
 
 ---
 
-*GBrain is derived from [garrytan/gbrain](https://github.com/garrytan/gbrain) and packaged for easy installation as part of [Revvel Standards](https://github.com/midnghtsapphire/revvel-standards).*
+_GBrain is derived from [garrytan/gbrain](https://github.com/garrytan/gbrain) and packaged for easy installation as part of [Revvel Standards](https://github.com/midnghtsapphire/revvel-standards)._

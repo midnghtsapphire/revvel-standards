@@ -6,7 +6,16 @@ description: "Validate JSON-LD structured data markup against schema.org rules a
 metadata:
   author: "Revvel AI Engine"
   category: "SEO & Structured Data"
-  tags: ["schema-org", "json-ld", "rich-results", "structured-data", "seo", "google", "validation"]
+  tags:
+    [
+      "schema-org",
+      "json-ld",
+      "rich-results",
+      "structured-data",
+      "seo",
+      "google",
+      "validation",
+    ]
   created_at: "2026-04-30"
   updated_at: "2026-04-30"
 
@@ -25,7 +34,7 @@ implementation:
 
   content: |
     # Schema Rich Results Skill
-    
+
     See SKILL.md for complete documentation.
 
 triggers:

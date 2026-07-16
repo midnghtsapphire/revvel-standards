@@ -27,10 +27,14 @@ const sanitized = normalizeLoadInputs({
   windowFraction: 2.0,
   occupants: -1,
 });
-assert.equal(sanitized.floorArea, 100,        "floorArea clamped to min 100");
-assert.equal(sanitized.ceilingHeight, 20,     "ceilingHeight clamped to max 20");
-assert.equal(sanitized.windowFraction, 0.50,  "windowFraction clamped to max 0.50");
-assert.equal(sanitized.occupants, 0,          "occupants clamped to min 0");
+assert.equal(sanitized.floorArea, 100, "floorArea clamped to min 100");
+assert.equal(sanitized.ceilingHeight, 20, "ceilingHeight clamped to max 20");
+assert.equal(
+  sanitized.windowFraction,
+  0.5,
+  "windowFraction clamped to max 0.50",
+);
+assert.equal(sanitized.occupants, 0, "occupants clamped to min 0");
 
 // ─────────────────────────────────────────────────────────
 // calculateLoad — basic sanity checks
@@ -45,19 +49,19 @@ const atlantaGoodLoad = calculateLoad({
 
 assert.ok(
   atlantaGoodLoad.sensibleCoolingLoad > 0,
-  "Atlanta cooling load must be positive"
+  "Atlanta cooling load must be positive",
 );
 assert.ok(
   atlantaGoodLoad.sensibleHeatingLoad > 0,
-  "Atlanta heating load must be positive"
+  "Atlanta heating load must be positive",
 );
 assert.ok(
   atlantaGoodLoad.recommendedCoolingTons > 0,
-  "recommendedCoolingTons must be positive"
+  "recommendedCoolingTons must be positive",
 );
 assert.ok(
   atlantaGoodLoad.recommendedCoolingTons < 20,
-  "recommendedCoolingTons < 20 for 2000 sq ft"
+  "recommendedCoolingTons < 20 for 2000 sq ft",
 );
 
 // Poor insulation → higher load than good insulation
@@ -69,11 +73,11 @@ const atlantaPoorLoad = calculateLoad({
 });
 assert.ok(
   atlantaPoorLoad.sensibleCoolingLoad > atlantaGoodLoad.sensibleCoolingLoad,
-  "Poor insulation increases cooling load vs good insulation"
+  "Poor insulation increases cooling load vs good insulation",
 );
 assert.ok(
   atlantaPoorLoad.sensibleHeatingLoad > atlantaGoodLoad.sensibleHeatingLoad,
-  "Poor insulation increases heating load vs good insulation"
+  "Poor insulation increases heating load vs good insulation",
 );
 
 // Cold climate (Minneapolis) should have higher heating than Atlanta
@@ -85,7 +89,7 @@ const minneapolisLoad = calculateLoad({
 });
 assert.ok(
   minneapolisLoad.sensibleHeatingLoad > atlantaGoodLoad.sensibleHeatingLoad,
-  "Minneapolis heating load > Atlanta heating load"
+  "Minneapolis heating load > Atlanta heating load",
 );
 
 // Hot climate (Phoenix) should have higher cooling than Atlanta
@@ -97,17 +101,17 @@ const phoenixLoad = calculateLoad({
 });
 assert.ok(
   phoenixLoad.sensibleCoolingLoad > atlantaGoodLoad.sensibleCoolingLoad,
-  "Phoenix cooling load > Atlanta cooling load"
+  "Phoenix cooling load > Atlanta cooling load",
 );
 
 // Load breakdown should sum to total (within 1 BTU rounding)
 const breakdownSum = Object.values(atlantaGoodLoad.coolingBreakdown).reduce(
   (s, v) => s + v,
-  0
+  0,
 );
 assert.ok(
   Math.abs(breakdownSum - atlantaGoodLoad.sensibleCoolingLoad) < 5,
-  "Cooling breakdown components sum to total load (within 5 BTU)"
+  "Cooling breakdown components sum to total load (within 5 BTU)",
 );
 
 // ─────────────────────────────────────────────────────────
@@ -126,7 +130,7 @@ const rec3 = recommendEquipment(10000); // 0.83 tons → 1.0 ton nominal → ove
 assert.equal(rec3.nominalTons, 1.0);
 assert.ok(
   rec3.verdict === "slightly-oversized" || rec3.verdict === "oversized",
-  "1.0 ton for 10,000 BTU load should flag as oversized"
+  "1.0 ton for 10,000 BTU load should flag as oversized",
 );
 
 const rec4 = recommendEquipment(100000); // 8.3 tons → 10 ton?  above max → capped
@@ -141,14 +145,11 @@ assert.ok(duct.requiredCfm > 0, "CFM must be positive");
 assert.ok(duct.roundDuctDiameter > 0, "Round duct diameter must be positive");
 assert.ok(
   duct.rectangularDuct.width > 0 && duct.rectangularDuct.height > 0,
-  "Rectangular duct dimensions must be positive"
+  "Rectangular duct dimensions must be positive",
 );
 
 // 36,000 BTU / (1.1 × 20°F) = ~1636 CFM
-assert.ok(
-  Math.abs(duct.requiredCfm - 1636) < 5,
-  "36,000 BTU duct CFM ≈ 1636"
-);
+assert.ok(Math.abs(duct.requiredCfm - 1636) < 5, "36,000 BTU duct CFM ≈ 1636");
 
 // ─────────────────────────────────────────────────────────
 // calculateEnergy
@@ -171,7 +172,7 @@ assert.ok(energy.totalAnnualCost > 0, "Total annual cost must be positive");
 assert.equal(
   energy.totalAnnualCost,
   Math.round((energy.annualCoolingCost + energy.annualHeatingCost) * 100) / 100,
-  "Total cost = cooling + heating cost"
+  "Total cost = cooling + heating cost",
 );
 
 // Gas furnace path
@@ -199,7 +200,7 @@ const energyHighSeer = calculateEnergy({
 });
 assert.ok(
   energyHighSeer.annualCoolingCost < energy.annualCoolingCost,
-  "Higher SEER2 → lower annual cooling cost"
+  "Higher SEER2 → lower annual cooling cost",
 );
 
 // ─────────────────────────────────────────────────────────
@@ -227,9 +228,17 @@ assert.match(report, /Disclaimer/, "Report has disclaimer");
 const csv = buildCsvExport(load, energy);
 assert.match(csv, /"Metric","Value","Unit"/, "CSV has header row");
 assert.match(csv, /"Cooling Load"/, "CSV has cooling load row");
-assert.match(csv, /"Total Annual Cost"/, "CSV has annual cost row when energy provided");
+assert.match(
+  csv,
+  /"Total Annual Cost"/,
+  "CSV has annual cost row when energy provided",
+);
 
 const csvNoEnergy = buildCsvExport(load);
-assert.doesNotMatch(csvNoEnergy, /"Total Annual Cost"/, "CSV omits energy rows when not provided");
+assert.doesNotMatch(
+  csvNoEnergy,
+  /"Total Annual Cost"/,
+  "CSV omits energy rows when not provided",
+);
 
 console.log("✅ All HVAC calculator tests passed.");

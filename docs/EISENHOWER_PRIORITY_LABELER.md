@@ -4,7 +4,7 @@
 **Date:** April 20, 2026
 **Status:** Adopted
 **Action:** [`GeekZoneHQ/eisenhower`](https://github.com/GeekZoneHQ/eisenhower) (pinned to commit [`25222276`](https://github.com/GeekZoneHQ/eisenhower/commit/25222276fd5661d7a30042f6db2c3159ffabfb6d))
-**Methodology:** Eisenhower Matrix — attributed to U.S. President **Dwight D. Eisenhower** ("What is important is seldom urgent and what is urgent is seldom important"); popularised by Stephen Covey in *The 7 Habits of Highly Effective People* as the **Time-Management Matrix**.
+**Methodology:** Eisenhower Matrix — attributed to U.S. President **Dwight D. Eisenhower** ("What is important is seldom urgent and what is urgent is seldom important"); popularised by Stephen Covey in _The 7 Habits of Highly Effective People_ as the **Time-Management Matrix**.
 
 ---
 
@@ -18,24 +18,24 @@ It is a **deterministic, template-driven** classifier: the priority is derived f
 
 ## 2. Why Use It in Revvel?
 
-| Need | How Eisenhower Labeler Solves It |
-|---|---|
+| Need                                                                                                            | How Eisenhower Labeler Solves It                                                                                       |
+| --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | **Attributable methodology** — the test harness and triage flow should rest on a named, long-standing framework | The Eisenhower Matrix is a 70+ year-old, publicly-attributable decision framework; the action implements it faithfully |
-| **Deterministic priority** — labels must not drift when re-run | Priority is a pure function of the issue body; re-running always produces the same label |
-| **Low-cost triage** — non-technical stakeholders should be able to classify work without reading code | Reporters answer two dropdowns (`High/Low`, `Now/Later`) in a GitHub issue form |
-| **Self-healing labels** — manual label edits should be reconciled | If a human hand-edits the `Px` label, the action restores the correct one on the next `edited` event |
+| **Deterministic priority** — labels must not drift when re-run                                                  | Priority is a pure function of the issue body; re-running always produces the same label                               |
+| **Low-cost triage** — non-technical stakeholders should be able to classify work without reading code           | Reporters answer two dropdowns (`High/Low`, `Now/Later`) in a GitHub issue form                                        |
+| **Self-healing labels** — manual label edits should be reconciled                                               | If a human hand-edits the `Px` label, the action restores the correct one on the next `edited` event                   |
 
 ### Relationship to `priority-router.yml`
 
 Revvel already ships [`templates/cicd/priority-router.yml`](../templates/cicd/priority-router.yml), which uses **OpenRouter / Claude** plus keyword heuristics to assign `priority-p0`…`priority-p3` labels to free-form issues and PRs. The two are complementary:
 
-| | `priority-router.yml` | `eisenhower.yml` (this doc) |
-|---|---|---|
-| Source of truth | Title + body text (AI + heuristics) | `Impact` + `Urgency` dropdowns |
-| Labels | `priority-p0` … `priority-p3` | `P1` … `P4` (and `P?` for missing data) |
-| Attribution | Revvel internal | Eisenhower Matrix (public, citeable) |
-| Works on PRs? | Yes | Issues only |
-| Best for | Backlog sweeps, free-form reports, bots | Structured intake forms, stakeholder-facing triage |
+|                 | `priority-router.yml`                   | `eisenhower.yml` (this doc)                        |
+| --------------- | --------------------------------------- | -------------------------------------------------- |
+| Source of truth | Title + body text (AI + heuristics)     | `Impact` + `Urgency` dropdowns                     |
+| Labels          | `priority-p0` … `priority-p3`           | `P1` … `P4` (and `P?` for missing data)            |
+| Attribution     | Revvel internal                         | Eisenhower Matrix (public, citeable)               |
+| Works on PRs?   | Yes                                     | Issues only                                        |
+| Best for        | Backlog sweeps, free-form reports, bots | Structured intake forms, stakeholder-facing triage |
 
 You may run **either or both**. When both are enabled, the `P1`–`P4` labels reflect the stakeholder-declared priority, while `priority-p0`–`priority-p3` reflect the automated assessment. Teams can resolve conflicts during standup.
 
@@ -54,13 +54,13 @@ You may run **either or both**. When both are enabled, the `P1`–`P4` labels re
          └────────┴───────────┴───────────┘
 ```
 
-| Impact | Urgency | Label | Meaning |
-|---|---|---|---|
-| High | Now   | `P1` | Drop everything — do it first |
-| High | Later | `P2` | Important but not urgent — schedule it |
-| Low  | Now   | `P3` | Urgent but not important — delegate it |
-| Low  | Later | `P4` | Neither — eliminate / backlog it |
-| _missing_ | _missing_ | `P?` | Template incomplete — needs human triage |
+| Impact    | Urgency   | Label | Meaning                                  |
+| --------- | --------- | ----- | ---------------------------------------- |
+| High      | Now       | `P1`  | Drop everything — do it first            |
+| High      | Later     | `P2`  | Important but not urgent — schedule it   |
+| Low       | Now       | `P3`  | Urgent but not important — delegate it   |
+| Low       | Later     | `P4`  | Neither — eliminate / backlog it         |
+| _missing_ | _missing_ | `P?`  | Template incomplete — needs human triage |
 
 The action will **auto-create** any missing `P1`–`P4` / `P?` labels on first run.
 
@@ -105,22 +105,22 @@ Open a new issue using the `Prioritized Issue` form, pick `High` / `Now`, and su
 
 The action takes **no `with:` inputs**. It reads three environment variables:
 
-| Variable | Source | Required |
-|---|---|---|
-| `GH_ACCESS_TOKEN` | Repo secret or `GITHUB_TOKEN` | ✅ |
-| `GH_REPOSITORY` | `${{ github.repository }}` | ✅ |
-| `GH_ISSUE_NUMBER` | `${{ github.event.issue.number }}` | ✅ |
+| Variable          | Source                             | Required |
+| ----------------- | ---------------------------------- | -------- |
+| `GH_ACCESS_TOKEN` | Repo secret or `GITHUB_TOKEN`      | ✅       |
+| `GH_REPOSITORY`   | `${{ github.repository }}`         | ✅       |
+| `GH_ISSUE_NUMBER` | `${{ github.event.issue.number }}` | ✅       |
 
 ---
 
 ## 6. Known Limitations
 
-| Limitation | Details |
-|---|---|
-| **Issues only** | The action triggers on the `issues` event; it does not label PRs. Use [`priority-router.yml`](../templates/cicd/priority-router.yml) for PR priority. |
-| **Literal header match** | The action searches for the exact strings `### Impact` / `### Urgency` followed by `High`/`Low` and `Now`/`Later`. Free-form issues without the template get `P?`. |
-| **Two-axis only** | The pure Eisenhower Matrix has exactly four cells; it cannot express a `P0` ("security, page everyone") priority. Pair with `priority-router.yml` if you need `p0`. |
-| **`main` branch pin** | Upstream ships no semver tags. The workflow template pins to a specific commit SHA (`25222276…`, the tip of `main` as of 2023-07-26) per the Revvel security standard. Review upstream commits before bumping. |
+| Limitation               | Details                                                                                                                                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Issues only**          | The action triggers on the `issues` event; it does not label PRs. Use [`priority-router.yml`](../templates/cicd/priority-router.yml) for PR priority.                                                          |
+| **Literal header match** | The action searches for the exact strings `### Impact` / `### Urgency` followed by `High`/`Low` and `Now`/`Later`. Free-form issues without the template get `P?`.                                             |
+| **Two-axis only**        | The pure Eisenhower Matrix has exactly four cells; it cannot express a `P0` ("security, page everyone") priority. Pair with `priority-router.yml` if you need `p0`.                                            |
+| **`main` branch pin**    | Upstream ships no semver tags. The workflow template pins to a specific commit SHA (`25222276…`, the tip of `main` as of 2023-07-26) per the Revvel security standard. Review upstream commits before bumping. |
 
 ---
 
@@ -132,4 +132,4 @@ The action takes **no `with:` inputs**. It reads three environment variables:
 - Workflow template: [`templates/cicd/eisenhower.yml`](../templates/cicd/eisenhower.yml)
 - Complementary priority router: [`templates/cicd/priority-router.yml`](../templates/cicd/priority-router.yml)
 - Tools catalog: [`docs/Master Revvel-Standards Flow Charts/TOOLS_CATALOG.md`](Master%20Revvel-Standards%20Flow%20Charts/TOOLS_CATALOG.md)
-- Methodology background: Eisenhower, D. D. (1954), *Address at the Second Assembly of the World Council of Churches*; Covey, S. R. (1989), *The 7 Habits of Highly Effective People*, Habit 3.
+- Methodology background: Eisenhower, D. D. (1954), _Address at the Second Assembly of the World Council of Churches_; Covey, S. R. (1989), _The 7 Habits of Highly Effective People_, Habit 3.

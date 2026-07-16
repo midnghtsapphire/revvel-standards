@@ -7,6 +7,7 @@
 **Tracks:** OZ-OS-001
 
 ## Deliverable
+
 Create `oz-os/research-packs/` with three seed packs:
 
 ```
@@ -26,6 +27,7 @@ research-packs/
 ```
 
 Each pack README must contain:
+
 - Topic summary
 - At least 1 method reference (linked to `method-packs/`)
 - Search terms used during research
@@ -33,9 +35,11 @@ Each pack README must contain:
 - Sources consulted
 
 ## Key Constraint
+
 Each pack has a README + at least 1 method reference. No empty packs.
 
 ## Acceptance
+
 - 3 directories under `research-packs/`
 - Each directory has a `README.md` and at least one method file
 - No raw tokens or bracket-placeholders

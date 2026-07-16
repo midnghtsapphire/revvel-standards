@@ -77,6 +77,7 @@ Intelligence • Geospatial • Software • SAR
 ## Notable Projects
 
 ### 1. GrowlingEyes
+
 **Category:** OSINT & Threat Intelligence  
 **Status:** Active Development  
 **URL:** https://github.com/midnghtsapphire/growlingeyes
@@ -85,6 +86,7 @@ Intelligence • Geospatial • Software • SAR
 
 **Tech Stack:** Python, Node.js, PostgreSQL, Docker, n8n automation  
 **Outcomes:**
+
 - Automated threat intelligence pipeline
 - Integration with 15+ OSINT data sources
 - Real-time alert system for indicators of compromise (IOCs)
@@ -95,6 +97,7 @@ Intelligence • Geospatial • Software • SAR
 ---
 
 ### 2. Neurooz
+
 **Category:** AI & Health Tech  
 **Status:** Beta  
 **URL:** https://github.com/midnghtsapphire/neurooz
@@ -103,6 +106,7 @@ Intelligence • Geospatial • Software • SAR
 
 **Tech Stack:** React Native, Expo, Supabase, Python ML pipelines  
 **Outcomes:**
+
 - Personalized cognitive training programs
 - Longitudinal brain health tracking
 - Mobile-first accessible design
@@ -113,6 +117,7 @@ Intelligence • Geospatial • Software • SAR
 ---
 
 ### 3. Revvel Standards
+
 **Category:** AI Agent Systems  
 **Status:** Active  
 **URL:** https://github.com/midnghtsapphire/revvel-standards
@@ -121,6 +126,7 @@ Intelligence • Geospatial • Software • SAR
 
 **Tech Stack:** Markdown documentation, YAML configurations, GitHub Actions, OpenRouter API integration  
 **Outcomes:**
+
 - 40+ reusable agent skills
 - Automated product pipeline framework
 - Zero-human operations protocols
@@ -131,6 +137,7 @@ Intelligence • Geospatial • Software • SAR
 ---
 
 ### 4. Sun Peaks SAR Geospatial Brief
+
 **Category:** Search & Rescue / Geospatial Analysis  
 **Status:** Completed (2025)  
 **URL:** [Internal SAR documentation]
@@ -139,6 +146,7 @@ Intelligence • Geospatial • Software • SAR
 
 **Tech Stack:** QGIS, satellite imagery, terrain databases, mapping APIs  
 **Outcomes:**
+
 - Optimized search grid based on terrain analysis
 - Resource allocation recommendations
 - Movement probability modeling
@@ -170,7 +178,7 @@ Intelligence • Geospatial • Software • SAR
 
 ## Publications & Documentation
 
-*(To be added after Archive.org upload)*
+_(To be added after Archive.org upload)_
 
 1. **Professional Portfolio 2026** — Internet Archive
 2. **GrowlingEyes Technical Documentation** — GitHub
@@ -195,6 +203,7 @@ Intelligence • Geospatial • Software • SAR
 This brand statement is provided under CC BY 4.0 (Creative Commons Attribution 4.0 International).
 
 You are free to:
+
 - Share — copy and redistribute the material
 - Adapt — remix, transform, and build upon the material
 

@@ -24,6 +24,7 @@ This document provides guidelines for deploying autonomous AI agents that are pr
 **Deliver working, tested code that meets requirements and follows best practices.**
 
 Not just plans or proposals, but verified, production-ready solutions that:
+
 - Pass all tests
 - Follow coding standards
 - Include appropriate documentation
@@ -32,6 +33,7 @@ Not just plans or proposals, but verified, production-ready solutions that:
 ### 3. Resourcefulness with Boundaries
 
 Agents should:
+
 - Research solutions thoroughly before escalating
 - Attempt multiple approaches when initial attempts fail
 - Leverage documentation, examples, and community resources
@@ -53,6 +55,7 @@ Agents should:
 ### Step 2: Research Solutions
 
 Before implementing:
+
 - Review official documentation
 - Search for similar implementations
 - Check for known issues and solutions
@@ -148,41 +151,44 @@ For transient failures (network issues, timeouts, 5xx errors):
 async function fetchWithRetry<T>(
   url: string,
   options: RequestInit = {},
-  maxAttempts: number = 3
+  maxAttempts: number = 3,
 ): Promise<T> {
   let lastError: Error;
-  
+
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       const response = await fetch(url, options);
-      
+
       if (response.ok) {
         return await response.json();
       }
-      
+
       // Don't retry client errors (4xx)
       if (response.status >= 400 && response.status < 500) {
-        throw new Error(`Client error: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Client error: ${response.status} ${response.statusText}`,
+        );
       }
-      
+
       // Server error - will retry
-      lastError = new Error(`Server error: ${response.status} ${response.statusText}`);
-      
+      lastError = new Error(
+        `Server error: ${response.status} ${response.statusText}`,
+      );
     } catch (error) {
       lastError = error as Error;
-      
+
       if (attempt === maxAttempts) {
         throw lastError;
       }
     }
-    
+
     // Exponential backoff
     const delayMs = Math.min(Math.pow(2, attempt) * 1000, 30000);
-    await new Promise(resolve => setTimeout(resolve, delayMs));
-    
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+
     console.log(`Retry attempt ${attempt}/${maxAttempts} after ${delayMs}ms`);
   }
-  
+
   throw lastError!;
 }
 ```
@@ -190,6 +196,7 @@ async function fetchWithRetry<T>(
 ### Fallback Strategies
 
 When primary service is unavailable:
+
 - Switch to backup service
 - Use cached data if available
 - Degrade functionality gracefully
@@ -203,22 +210,22 @@ Prevent cascading failures:
 class CircuitBreaker {
   private failureCount = 0;
   private lastFailureTime = 0;
-  private state: 'closed' | 'open' | 'half-open' = 'closed';
-  
+  private state: "closed" | "open" | "half-open" = "closed";
+
   constructor(
     private threshold: number = 5,
-    private timeout: number = 60000
+    private timeout: number = 60000,
   ) {}
-  
+
   async execute<T>(fn: () => Promise<T>): Promise<T> {
-    if (this.state === 'open') {
+    if (this.state === "open") {
       if (Date.now() - this.lastFailureTime > this.timeout) {
-        this.state = 'half-open';
+        this.state = "half-open";
       } else {
-        throw new Error('Circuit breaker is open');
+        throw new Error("Circuit breaker is open");
       }
     }
-    
+
     try {
       const result = await fn();
       this.onSuccess();
@@ -228,18 +235,18 @@ class CircuitBreaker {
       throw error;
     }
   }
-  
+
   private onSuccess() {
     this.failureCount = 0;
-    this.state = 'closed';
+    this.state = "closed";
   }
-  
+
   private onFailure() {
     this.failureCount++;
     this.lastFailureTime = Date.now();
-    
+
     if (this.failureCount >= this.threshold) {
-      this.state = 'open';
+      this.state = "open";
     }
   }
 }
@@ -283,24 +290,29 @@ class CircuitBreaker {
 ## Task: [Clear description]
 
 ### Goal State
+
 - [ ] Specific outcome 1
 - [ ] Specific outcome 2
 - [ ] Specific outcome 3
 
 ### Current State
+
 - Current condition 1
 - Current condition 2
 - Current condition 3
 
 ### Gap Analysis
+
 What needs to change to reach goal state from current state.
 
 ### Available Actions
+
 1. **Action A**: Description, prerequisites, expected outcome
 2. **Action B**: Description, prerequisites, expected outcome
 3. **Action C**: Description, prerequisites, expected outcome
 
 ### Execution Plan
+
 1. Action A → Expected result
    - If successful: Proceed to step 2
    - If failed: Try alternative approach A1, then escalate
@@ -312,6 +324,7 @@ What needs to change to reach goal state from current state.
    - If failed: Try alternative approach C1, then escalate
 
 ### Validation
+
 - [ ] Goal state achieved
 - [ ] No regressions introduced
 - [ ] Tests pass
@@ -360,6 +373,7 @@ What needs to change to reach goal state from current state.
 ### When to Escalate
 
 Escalate when:
+
 - Security vulnerabilities are discovered
 - Legal or compliance issues arise
 - Ethical concerns are identified
@@ -371,6 +385,7 @@ Escalate when:
 ### How to Escalate
 
 When escalating, provide:
+
 - **Problem Description**: Clear summary of the issue
 - **Context**: What was being attempted
 - **Attempts Made**: What solutions were tried
@@ -388,14 +403,17 @@ When escalating, provide:
 **Category**: [Security/Legal/Technical/Business]
 
 ### Problem
+
 [Clear description of the issue]
 
 ### Impact
+
 - Who is affected
 - What functionality is impacted
 - Potential risks
 
 ### Attempts Made
+
 1. [First approach tried]
    - Result: [outcome]
 2. [Second approach tried]
@@ -404,14 +422,17 @@ When escalating, provide:
    - Result: [outcome]
 
 ### Current State
+
 - [What works]
 - [What doesn't work]
 - [What's blocked]
 
 ### Recommendation
+
 [Suggested next steps or decision needed]
 
 ### Additional Context
+
 - Relevant links
 - Error logs
 - Related issues
@@ -448,11 +469,11 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+
       - name: Setup Node (with retry)
         uses: nick-fields/retry@v2
         with:
@@ -462,7 +483,7 @@ jobs:
           command: |
             node --version
             npm --version
-            
+
       - name: Install Dependencies (with retry)
         uses: nick-fields/retry@v2
         with:
@@ -470,7 +491,7 @@ jobs:
           max_attempts: 3
           retry_wait_seconds: 30
           command: npm ci
-          
+
       - name: Build
         run: |
           npm run build || {
@@ -478,10 +499,10 @@ jobs:
             npm run build -- --verbose
             exit 1
           }
-          
+
       - name: Test
         run: npm test
-        
+
       - name: Report Failure
         if: failure()
         uses: actions/github-script@v7
@@ -588,6 +609,7 @@ jobs:
 ### Security Incident Response
 
 If security issue is discovered:
+
 1. **Assess severity immediately**
 2. **Contain the issue** (disable feature, revoke access, etc.)
 3. **Escalate to security team**
@@ -610,6 +632,7 @@ If security issue is discovered:
 ### Status Updates
 
 Regular updates should include:
+
 - What was completed
 - What's in progress
 - What's blocked

@@ -7,7 +7,9 @@
 ## What You Get
 
 ### 🔬 The Master Prompt System
+
 Forces any LLM to apply:
+
 - **DOE 5-Point Screening** (US Department of Energy methodology)
 - **TRIZ** (Theory of Inventive Problem Solving)
 - **MEErP** (European Commission's Ecodesign framework)
@@ -15,6 +17,7 @@ Forces any LLM to apply:
 - **BNAT** (Best Not Yet Available Technology)
 
 ### 🤖 Auto-Install AI Agent Fleet
+
 - **Perplexity Research Agent** - No API key required (FREE research)
 - **Deep Search Router** - Sonnet 3.5 + OpenRouter Fusion
 - **Skill-Persona System** - Modular agent personalities

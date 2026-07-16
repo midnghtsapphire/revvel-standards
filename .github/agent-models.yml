@@ -64,7 +64,8 @@ profiles:
     fallback: "anthropic/claude-opus-4.8"
     max_tokens: 16000
     temperature: 0.3
-    use_for: ["reason", "plan", "hard-debug", "math", "analysis", "architecture"]
+    use_for:
+      ["reason", "plan", "hard-debug", "math", "analysis", "architecture"]
 
   # Vision - anything with pixels goes here
   vision:
@@ -74,7 +75,16 @@ profiles:
     fallback: "google/gemini-2.5-flash"
     max_tokens: 12000
     temperature: 0.3
-    use_for: ["image", "screenshot", "ocr", "diagram", "vision", "multimodal", "pdf-image"]
+    use_for:
+      [
+        "image",
+        "screenshot",
+        "ocr",
+        "diagram",
+        "vision",
+        "multimodal",
+        "pdf-image",
+      ]
 
   # Image GENERATION - creating/editing pixels (not understanding them; that's `vision`)
   # Used by the marketplace relisting pipeline (scripts/marketplace-relist.js) for
@@ -87,7 +97,14 @@ profiles:
     fallback: "openai/gpt-image-1"
     max_tokens: 8000
     temperature: 0.6
-    use_for: ["image-gen", "image-to-image", "product-staging", "creative-render", "thumbnail"]
+    use_for:
+      [
+        "image-gen",
+        "image-to-image",
+        "product-staging",
+        "creative-render",
+        "thumbnail",
+      ]
     # Per-batch spend cap (USD). Pipelines MUST stop requesting new images once
     # the estimated batch spend reaches this cap (override via
     # IMAGE_GEN_BATCH_SPEND_CAP_USD env; see scripts/marketplace-relist.js).

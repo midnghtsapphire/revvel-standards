@@ -120,7 +120,13 @@ python growlingeyes/tools/weak_signal_finder.py --daemon --interval 3600
   "signal_timestamp": "2026-04-30T16:30:00Z",
   "signal_score": 82.5,
   "article_count": 47,
-  "top_emerging_themes": ["ransomware", "vulnerability", "patch", "exploit", "zero-day"],
+  "top_emerging_themes": [
+    "ransomware",
+    "vulnerability",
+    "patch",
+    "exploit",
+    "zero-day"
+  ],
   "intensity_words": {
     "ransomware": 23,
     "vulnerability": 18,
@@ -141,6 +147,7 @@ python growlingeyes/tools/weak_signal_finder.py --daemon --interval 3600
 GrowlingEyes includes an advanced trigger extraction engine that converts raw OSINT data into actionable intelligence alerts.
 
 **Key Features:**
+
 - **Pattern Recognition:** Keyword, regex, threshold, and anomaly detection
 - **Multi-Domain Support:** Cyber threats, kinetic events, environmental disasters, dark web
 - **Scoring & Prioritization:** 0-100 score with temporal, geographic, and correlation boosts
@@ -148,11 +155,13 @@ GrowlingEyes includes an advanced trigger extraction engine that converts raw OS
 - **Configurable Patterns:** YAML pattern files for each intelligence domain
 
 **Documentation:**
+
 - Methodology: [`docs/TRIGGER_EXTRACTION_METHODOLOGY.md`](../docs/TRIGGER_EXTRACTION_METHODOLOGY.md)
 - Database Schema: [`docs/growlingeyes/TRIGGER_DATABASE_SCHEMA.md`](../docs/growlingeyes/TRIGGER_DATABASE_SCHEMA.md)
 - Pattern Configs: [`patterns/`](patterns/)
 
 **Usage:**
+
 ```bash
 # Extract triggers from all domains
 python growlingeyes/tools/trigger_extractor.py
@@ -178,10 +187,10 @@ optical-like images to enable cloud-free Earth observation.
 
 ## Environment Variables
 
-| Variable | Tool | Purpose |
-|---|---|---|
-| `OTX_API_KEY` | `apt_signals.py` | AlienVault OTX subscribed pulses |
-| `NVD_API_KEY` | `apt_signals.py` | NVD CVE API (optional — increases rate limit) |
-| `AISSTREAM_API_KEY` | `stream_listener.py` | AIS vessel WebSocket stream |
-| `AXION_SAR2OPTICAL_WEIGHTS` | `axion_mcp/server.py` | ONNX model weights path |
-| `AXION_OUTPUT_FORMAT` | `axion_mcp/server.py` | Default output format (png/jpeg) |
+| Variable                    | Tool                  | Purpose                                       |
+| --------------------------- | --------------------- | --------------------------------------------- |
+| `OTX_API_KEY`               | `apt_signals.py`      | AlienVault OTX subscribed pulses              |
+| `NVD_API_KEY`               | `apt_signals.py`      | NVD CVE API (optional — increases rate limit) |
+| `AISSTREAM_API_KEY`         | `stream_listener.py`  | AIS vessel WebSocket stream                   |
+| `AXION_SAR2OPTICAL_WEIGHTS` | `axion_mcp/server.py` | ONNX model weights path                       |
+| `AXION_OUTPUT_FORMAT`       | `axion_mcp/server.py` | Default output format (png/jpeg)              |

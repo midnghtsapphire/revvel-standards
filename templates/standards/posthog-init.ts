@@ -228,7 +228,10 @@ export function captureEvent(
  * Associate the current session with a hashed user UUID.
  * NEVER pass raw email, phone, or any PII as the id.
  */
-export function identify(hashedUserId: string, properties?: Record<string, unknown>): void {
+export function identify(
+  hashedUserId: string,
+  properties?: Record<string, unknown>,
+): void {
   if (shouldSuppress()) return;
   const client = getClient();
   if (!client) return;
@@ -348,7 +351,10 @@ export function getFeatureFlag(flagKey: string): string | boolean | undefined {
 }
 
 /** Capture an exception for error tracking (requires source maps for readable stack traces). */
-export function captureException(error: Error, context?: Record<string, unknown>): void {
+export function captureException(
+  error: Error,
+  context?: Record<string, unknown>,
+): void {
   if (shouldSuppress()) return;
   const client = getClient();
   if (!client) return;

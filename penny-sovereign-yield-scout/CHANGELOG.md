@@ -54,4 +54,4 @@ Format: [Semantic Versioning](https://semver.org/)
 
 ---
 
-*All Rights Reserved. Copyright 2026 Freedom Angel Corp / Audrey Evans.*
+_All Rights Reserved. Copyright 2026 Freedom Angel Corp / Audrey Evans._

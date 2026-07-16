@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-09  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-09  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -37,18 +36,19 @@ _Source: `wr/pending/03-spec-to-action-bridge.md` (PR #15497). Highest-value ite
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -60,6 +60,7 @@ _Source: `wr/pending/03-spec-to-action-bridge.md` (PR #15497). Highest-value ite
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28922410017.md`
 
 # WR-Ready Research Packet: Spec-to-Action Bridge
@@ -77,6 +78,7 @@ Source packet: `docs/research-engine/run-28922410017.md`
 **Secondary Market Opportunity:** External development teams using structured research-to-delivery pipelines (software teams with formal WR/spec processes).
 
 **Why This Audience:**
+
 - High urgency pain point: "does a whole spec but cannot seem to put it in action"
 - Quantifiable waste: 100% of research investment lost when specs don't convert to code
 - Clear ROI: Direct velocity improvement and reduced time-to-market
@@ -84,16 +86,19 @@ Source packet: `docs/research-engine/run-28922410017.md`
 ## 3. Marketing and SEO Plan
 
 **Positioning Angles:**
+
 1. **Velocity:** "From Spec to Sprint in Minutes"
 2. **Clarity:** "Give Coders a Checklist, Not a Novel"
 3. **ROI:** "Stop Writing Specs That Die"
 
 **SEO Target Keywords:**
+
 - Transactional: "spec-to-action automation", "automate research to execution"
 - Informational: "why specs don't get implemented", "research-to-code workflow best practices"
 - Comparison: "spec-to-action vs traditional project management"
 
 **Landing Page Structure:**
+
 - Title: "Automate the Spec-to-Action Bridge: Turn Research into Execution Instantly"
 - Meta: "Eliminate workflow dead-ends. Automatically convert completed specs into actionable tasks and handoffs."
 - FAQ focus on pain points and automation benefits
@@ -102,25 +107,27 @@ Source packet: `docs/research-engine/run-28922410017.md`
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Category | GitHub Stars | Pricing | Key Feature Gap |
-|------------|----------|--------------|---------|-----------------|
-| GitHub Actions | Native CI/CD | 8.2k+ | Free for public, $0.008/min private | No research-specific automation |
-| n8n | Workflow automation | 44.7k | Free self-hosted, $20/mo cloud | No native spec validation |
-| Zapier | No-code automation | N/A (commercial) | $19.99+/month | Expensive for high volume |
-| Langchain | LLM framework | 93.4k | Free (MIT) | Not a complete workflow solution |
-| OpenDevin | AI agent | 21.7k | Free (OSS) | Not workflow-integrated |
-| Sweep | Code generation | 8.2k | Free (OSS) | No stuck detection |
+| Competitor     | Category            | GitHub Stars     | Pricing                             | Key Feature Gap                  |
+| -------------- | ------------------- | ---------------- | ----------------------------------- | -------------------------------- |
+| GitHub Actions | Native CI/CD        | 8.2k+            | Free for public, $0.008/min private | No research-specific automation  |
+| n8n            | Workflow automation | 44.7k            | Free self-hosted, $20/mo cloud      | No native spec validation        |
+| Zapier         | No-code automation  | N/A (commercial) | $19.99+/month                       | Expensive for high volume        |
+| Langchain      | LLM framework       | 93.4k            | Free (MIT)                          | Not a complete workflow solution |
+| OpenDevin      | AI agent            | 21.7k            | Free (OSS)                          | Not workflow-integrated          |
+| Sweep          | Code generation     | 8.2k             | Free (OSS)                          | No stuck detection               |
 
 **Moat:** No competitor offers research-specific automation with built-in spec validation and stuck detection. The integration of WR doc parsing with automated task generation is unique.
 
 ## 5. Chatter and Demand Signals
 
 **Internal Signals:**
+
 - "We finish the WR and then... nothing. Who picks it up?" (Slack #wr-research)
 - "Specs just sit there. Need a push to code." (Internal feedback)
 - "I want to see my research actually lead to builds, not just docs." (Community Forum)
 
 **Pain Language Patterns:**
+
 - "specs go nowhere"
 - "stuck in research"
 - "handoff never happens"
@@ -131,11 +138,13 @@ Source packet: `docs/research-engine/run-28922410017.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Verified Claims:**
+
 - ✅ Gap exists between research completion and execution
 - ✅ Technical approach using `research:complete` trigger is feasible
 - ✅ Label system (`wr:code`, `wr:jules`, `lifecycle:stuck`) follows established patterns
 
 **Unverified/Missing:**
+
 - ❓ Source document `wr/pending/03-spec-to-action-bridge.md` (PR #15497) - cannot verify
 - ❓ No quantitative data on research→execution gap frequency
 - ❓ `code_patch` lane capabilities not documented
@@ -146,6 +155,7 @@ Source packet: `docs/research-engine/run-28922410017.md`
 ## 7. Build Requirements and Acceptance Gates
 
 **Core Components:**
+
 1. GitHub Actions workflow triggered by `research:complete` label
 2. WR document parser using Langchain for task extraction
 3. Task list generator interfacing with `code_patch` lane
@@ -153,6 +163,7 @@ Source packet: `docs/research-engine/run-28922410017.md`
 5. Cron-based stuck detection (24-hour timeout recommended)
 
 **Acceptance Gates:**
+
 - WR with `research:complete` triggers handoff within 5 minutes
 - Generated task list contains specific file paths and commands
 - Handoff includes original WR context and requirements
@@ -160,6 +171,7 @@ Source packet: `docs/research-engine/run-28922410017.md`
 - Manual override capability exists
 
 **Files to Create/Modify:**
+
 - `.github/workflows/spec-to-action-bridge.yml` (new)
 - `scripts/extract_tasks.py` (new)
 - `.github/labeler.yml` (modify)
@@ -168,21 +180,25 @@ Source packet: `docs/research-engine/run-28922410017.md`
 ## 8. Code Review Agent Packet
 
 ### Bito AI Review Points:
+
 - Verify Langchain integration doesn't expose sensitive WR content
 - Ensure task extraction handles malformed documents gracefully
 - Check for infinite loop prevention in workflow triggers
 
 ### OpenRouter Review:
+
 - Validate GitHub Actions permissions for cross-lane dispatching
 - Review timeout logic for edge cases (weekends, holidays)
 - Ensure label application is idempotent
 
 ### Coderabbit Focus:
+
 - Task list format consistency across different WR structures
 - Error handling for failed `code_patch` lane calls
 - Proper cleanup of temporary parsing artifacts
 
 ### Ralph Loop Verification:
+
 - Integration test coverage for full workflow
 - Performance benchmarks for document parsing
 - Security review of LLM API key management
@@ -190,6 +206,7 @@ Source packet: `docs/research-engine/run-28922410017.md`
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Create Workflow File
+
 ```yaml
 # File: .github/workflows/spec-to-action-bridge.yml
 # Commit: "feat: Add spec-to-action bridge workflow automation"
@@ -213,6 +230,7 @@ jobs:
 ```
 
 ### Fix 2: Add Task Extraction Script
+
 ```python
 # File: scripts/extract_tasks.py
 # Commit: "feat: Add Langchain-powered task extraction from WR docs"
@@ -222,26 +240,33 @@ import langchain
 ```
 
 ### Fix 3: Update Documentation
+
 ```markdown
 # File: docs/contributor/spec-to-action.md
+
 # Commit: "docs: Document spec-to-action bridge workflow"
+
 ## Spec-to-Action Bridge
+
 When a WR doc reaches `research:complete`, an automated workflow...
 ```
 
 ## 10. Labels to Apply
 
 **Immediate:**
+
 - `priority:highest` - Confirmed highest-value item
 - `workflow:automation` - Core automation initiative
 - `needs-verification` - Source document and dependencies need validation
 
 **Risk Labels:**
+
 - `risk:integration-complexity` - Multiple system dependencies
 - `risk:task-extraction-accuracy` - LLM parsing reliability concerns
 - `risk:timeout-calibration` - Stuck detection tuning required
 
 **Process Labels:**
+
 - `lifecycle:implementation` - Ready to build
 - `needs-metrics` - Baseline measurements required
 - `needs-docs` - Documentation updates pending
@@ -251,16 +276,19 @@ When a WR doc reaches `research:complete`, an automated workflow...
 **No repository was specified in the query.** Based on the requirements, the best implementation approach is:
 
 **Primary Recommendation:** GitHub Actions + Langchain
+
 - Native GitHub integration for labels and status
 - Proven LLM framework for document parsing
 - Active maintenance and community support
 
 **Alternative:** n8n self-hosted (if GitHub Actions proves limiting)
+
 - More flexible workflow logic
 - Better timeout handling
 - Additional infrastructure overhead
 
 **Key Libraries:**
+
 - Langchain (93.4k stars) - Document parsing and task extraction
 - GitHub Actions - Native workflow automation
 - Unstructured.io (8.8k stars) - Backup for document processing
@@ -270,12 +298,14 @@ When a WR doc reaches `research:complete`, an automated workflow...
 **Overall Confidence: 85/100**
 
 **Best Iteration Results:**
+
 - Market Positioning: 85/100 (strong internal validation, external market unverified)
 - SEO Demand: 85/100 (clear pain points, keyword research needed)
 - Competitor Intelligence: 85/100 (unique positioning identified)
 - Technical Delivery: 85/100 (feasible with dependency verification)
 
 **Confidence Breakdown:**
+
 - Problem validation: HIGH (95%) - Multiple sources confirm the gap
 - Technical feasibility: MEDIUM-HIGH (80%) - Dependent on unverified components
 - Market opportunity: MEDIUM (70%) - Internal value clear, external unproven
@@ -323,11 +353,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -343,11 +373,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

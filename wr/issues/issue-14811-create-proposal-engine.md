@@ -8,7 +8,7 @@
 
 ---
 
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -41,6 +41,7 @@ None
 _No response_
 
 ### Objective
+
 Update alt attribute to describe the diagram content and add descriptive text below the image: ![Proposal engine architecture and workflow](...)
 <img width="2752" height="1536" alt="Image" src="https://github.com/user-attachments/assets/c7b55e29-9d19-4431-a364-53cc47c75562" />
 
@@ -85,16 +86,17 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter

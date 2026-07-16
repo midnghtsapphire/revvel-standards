@@ -37,6 +37,7 @@ This repository currently has **76 GitHub Actions workflows**, with **28 trigger
 **File:** `.github/workflows/workflow-monitor.yml`
 
 **Features:**
+
 - Monitors all workflows in real-time
 - Detects stuck workflows (>15 minutes)
 - Auto-cancels and retries hung workflows
@@ -44,6 +45,7 @@ This repository currently has **76 GitHub Actions workflows**, with **28 trigger
 - Auto-closes alerts when workflows recover
 
 **Impact:**
+
 - Detection time: 6 hours → < 5 minutes
 - Auto-recovery rate: 0% → 70%+
 
@@ -52,6 +54,7 @@ This repository currently has **76 GitHub Actions workflows**, with **28 trigger
 **File:** `scripts/workflow-retry.js`
 
 **Features:**
+
 - Exponential backoff (1min, 2min, 4min, 8min)
 - Jitter to prevent thundering herd
 - Transient failure detection (API limits, timeouts, network errors)
@@ -59,6 +62,7 @@ This repository currently has **76 GitHub Actions workflows**, with **28 trigger
 - Automatic retry on 70-80% of failures
 
 **Usage:**
+
 ```bash
 node scripts/workflow-retry.js <workflow-run-id>
 ```
@@ -68,12 +72,14 @@ node scripts/workflow-retry.js <workflow-run-id>
 **File:** `scripts/audit-workflow-concurrency.sh`
 
 **Features:**
+
 - Scans all workflows for concurrency controls
 - Identifies missing concurrency blocks
 - Recommends priority (P0/P1/P2)
 - Generates detailed audit report
 
 **Findings:**
+
 - 77 total workflows
 - 27 with concurrency (35%)
 - 50 missing concurrency (65%)
@@ -83,6 +89,7 @@ node scripts/workflow-retry.js <workflow-run-id>
 **File:** `scripts/add-workflow-concurrency.sh`
 
 **Features:**
+
 - Auto-adds concurrency blocks to workflows
 - Priority-based configuration (P0/P1/P2)
 - Dry-run mode for safety
@@ -93,6 +100,7 @@ node scripts/workflow-retry.js <workflow-run-id>
 **File:** `.github/labels.yml`
 
 **Added labels:**
+
 - `workflow-priority:p0` - Critical (must complete before merge)
 - `workflow-priority:p1` - Important (can cancel old runs)
 - `workflow-priority:p2` - Optional (async, non-blocking)
@@ -103,6 +111,7 @@ node scripts/workflow-retry.js <workflow-run-id>
 ### 7. Concurrency Controls (Partial) ✅
 
 **Modified files:**
+
 - `.github/workflows/pr-review-status.yml` (P0 - critical)
 - `.github/workflows/panda-ops.yml` (P1 - important)
 - `.github/workflows/ready-for-review.yml` (P1 - important)
@@ -133,6 +142,7 @@ gh workflow run sync-labels.yml
 The workflow monitor is already committed and will activate on the next workflow run.
 
 **Verify:**
+
 ```bash
 gh workflow list | grep "Workflow Monitor"
 ```
@@ -177,20 +187,21 @@ Add concurrency blocks to individual workflows based on audit report:
 # For PR-triggered P0 workflows (critical)
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: false  # Let runs complete
+  cancel-in-progress: false # Let runs complete
 
 # For PR-triggered P1 workflows (important)
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true  # Cancel old runs
+  cancel-in-progress: true # Cancel old runs
 
 # For scheduled workflows
 concurrency:
   group: ${{ github.workflow }}
-  cancel-in-progress: false  # Let runs complete
+  cancel-in-progress: false # Let runs complete
 ```
 
 **Expected Impact:**
+
 - Queue time: -50%
 - Stuck workflows: -60%
 - API rate limits: -40%
@@ -232,7 +243,7 @@ jobs:
           command: node scripts/ai-pr-review-openrouter.js
       - store_artifacts:
           path: review-output.json
-  
+
   # Analytics (Non-blocking)
   analytics:
     executor: node-executor
@@ -241,7 +252,7 @@ jobs:
       - run:
           name: Track PR Events
           command: node scripts/amplitude-events.js
-  
+
   # Weekly Report
   weekly-report:
     executor: node-executor
@@ -263,11 +274,11 @@ workflows:
       - analytics:
           requires:
             - ai-review
-  
+
   scheduled:
     triggers:
       - schedule:
-          cron: "0 10 * * 1"  # Monday 10:00 UTC
+          cron: "0 10 * * 1" # Monday 10:00 UTC
           filters:
             branches:
               only: main
@@ -282,10 +293,11 @@ For workflows migrated to CircleCI, add condition to skip them:
 ```yaml
 jobs:
   check-platform:
-    if: github.event_name != 'pull_request'  # Skip PRs, use CircleCI
+    if: github.event_name != 'pull_request' # Skip PRs, use CircleCI
 ```
 
 **Expected Impact:**
+
 - Offload 10-15 workflows to CircleCI
 - Free compute quotas on GitHub Actions
 - Parallel execution across both platforms
@@ -304,6 +316,7 @@ This is the most complex piece and should be implemented after validating Phase 
 ### Check Workflow Health
 
 **Dashboard:**
+
 ```bash
 # Trigger workflow health dashboard
 gh workflow run workflow-health-dashboard.yml
@@ -313,6 +326,7 @@ gh run list --workflow="Workflow Health Dashboard" --limit 1
 ```
 
 **Real-time Monitor:**
+
 ```bash
 # Check for stuck workflow alerts
 gh issue list --label "workflow-stuck"
@@ -334,6 +348,7 @@ cat docs/WORKFLOW_CONCURRENCY_AUDIT.md
 ### Check Metrics
 
 **Before deployment (baseline):**
+
 - Time to first check: 5-10 minutes
 - Total check duration: 30-60 minutes
 - Workflow success rate: ~85%
@@ -341,6 +356,7 @@ cat docs/WORKFLOW_CONCURRENCY_AUDIT.md
 - Concurrency coverage: 35%
 
 **After Phase 1 (target):**
+
 - Time to first check: < 2 minutes
 - Total check duration: < 15 minutes
 - Workflow success rate: > 95%
@@ -348,6 +364,7 @@ cat docs/WORKFLOW_CONCURRENCY_AUDIT.md
 - Concurrency coverage: 100%
 
 **Track with:**
+
 ```bash
 # Average PR check time (last 10 PRs)
 gh pr list --limit 10 --json number,createdAt,mergedAt
@@ -365,6 +382,7 @@ gh run list --limit 100 --json conclusion | jq '[.[] | select(.conclusion == "su
 **Symptoms:** No alerts created for stuck workflows
 
 **Fixes:**
+
 1. Check workflow is enabled: `gh workflow list | grep "Workflow Monitor"`
 2. Check workflow permissions: Settings → Actions → Workflow permissions → Read and write
 3. Check logs: `gh run list --workflow="Workflow Monitor" --limit 1`
@@ -374,6 +392,7 @@ gh run list --limit 100 --json conclusion | jq '[.[] | select(.conclusion == "su
 **Symptoms:** `Error: Could not re-run workflow`
 
 **Fixes:**
+
 1. Check GITHUB_TOKEN is set: `echo $GITHUB_TOKEN`
 2. Check run ID is correct: `gh run view <run-id>`
 3. Check workflow can be re-run: Only failed/cancelled runs can be retried
@@ -383,6 +402,7 @@ gh run list --limit 100 --json conclusion | jq '[.[] | select(.conclusion == "su
 **Symptoms:** Script exits with error
 
 **Fixes:**
+
 1. Check file permissions: `chmod +x scripts/add-workflow-concurrency.sh`
 2. Check workflow files are valid YAML: `yamllint .github/workflows/`
 3. Run in dry-run mode first: `DRY_RUN=true ./scripts/add-workflow-concurrency.sh`
@@ -392,6 +412,7 @@ gh run list --limit 100 --json conclusion | jq '[.[] | select(.conclusion == "su
 **Symptoms:** New labels don't appear in repository
 
 **Fixes:**
+
 1. Trigger manual sync: `gh workflow run sync-labels.yml`
 2. Check `.github/labels.yml` is valid YAML
 3. Check workflow logs: `gh run list --workflow="Sync Standard Labels" --limit 1`
@@ -438,17 +459,20 @@ gh workflow enable workflow-monitor.yml
 ## Success Criteria
 
 ✅ **Phase 1 Complete When:**
+
 - Concurrency coverage: > 90% (70+ workflows)
 - Workflow monitor active and creating alerts
 - At least 1 successful auto-recovery
 - No new "stuck workflow" complaints
 
 ✅ **Phase 2 Complete When:**
+
 - CircleCI running 10+ workflows
 - GitHub Actions quota usage down 30%+
 - PR check time < 15 minutes average
 
 ✅ **Phase 3 Complete When:**
+
 - Workflow queue manager active
 - PR check time < 5 minutes average
 - Zero manual interventions for stuck workflows
@@ -459,12 +483,14 @@ gh workflow enable workflow-monitor.yml
 ## Cost Impact
 
 ### Before
+
 - GitHub Actions: 50,000 min/month (included in Pro plan)
 - OpenRouter API: $200/month
 - Developer time debugging: 10 hrs/week = $26,000/year
 - **Total:** ~$29,000/year
 
 ### After
+
 - GitHub Actions: 30,000 min/month (-40%)
 - CircleCI: Free tier (6,000 min/month)
 - OpenRouter API: $120/month (-40%)

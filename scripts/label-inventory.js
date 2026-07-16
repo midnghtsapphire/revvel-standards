@@ -29,48 +29,48 @@
  * on 403/429 it degrades to "unknown" counts instead of failing the run.
  */
 
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const REPO_ROOT = path.resolve(__dirname, '..');
-const LABELS_FILE = path.join(REPO_ROOT, '.github', 'labels.yml');
+const REPO_ROOT = path.resolve(__dirname, "..");
+const LABELS_FILE = path.join(REPO_ROOT, ".github", "labels.yml");
 
 // The one-namespace-per-axis taxonomy. Every label in labels.yml must carry
 // an `axis:` from this set. Documented in docs/AGENT_MONITORING_STANDARD.md.
 const AXES = [
-  'type', // free set: bug, enhancement, documentation, security, …
-  'triage', // triage intake state machine (triage, triage:*)
-  'priority', // priority-p0..p3, priority-slot:*, urgent, blocked
-  'wr', // work-request lifecycle state machine (wr:*, work-request, …)
-  'research', // research-engine phase labels (research:*, deep-research, …)
-  'deliver', // ship-to-market delivery targets (deliver:*)
-  'review', // PR review/merge lifecycle (awaiting-review, checks-*, …)
-  'lifecycle', // issue lifecycle/escalation (issue:*, needs-human, resolved)
-  'fleet', // which agent owns the work (jules, copilot, openrouter:*, …)
-  'role', // agent role within the fleet (role:orchestrator, role:fixer)
-  'ops', // operations/automation health (auto-fix, self-heal, warning, …)
-  'content', // content/marketing pipeline (content, seo, writing, …)
+  "type", // free set: bug, enhancement, documentation, security, …
+  "triage", // triage intake state machine (triage, triage:*)
+  "priority", // priority-p0..p3, priority-slot:*, urgent, blocked
+  "wr", // work-request lifecycle state machine (wr:*, work-request, …)
+  "research", // research-engine phase labels (research:*, deep-research, …)
+  "deliver", // ship-to-market delivery targets (deliver:*)
+  "review", // PR review/merge lifecycle (awaiting-review, checks-*, …)
+  "lifecycle", // issue lifecycle/escalation (issue:*, needs-human, resolved)
+  "fleet", // which agent owns the work (jules, copilot, openrouter:*, …)
+  "role", // agent role within the fleet (role:orchestrator, role:fixer)
+  "ops", // operations/automation health (auto-fix, self-heal, warning, …)
+  "content", // content/marketing pipeline (content, seo, writing, …)
 ];
 
 // Label families constructed dynamically at runtime (template literals in
 // workflows), so a plain full-name grep misses them. Members of these
 // families count as "referenced" as long as the prefix appears anywhere.
 const DYNAMIC_LABEL_FAMILIES = [
-  'priority-slot:', // brain-dump-intake.yml: `priority-slot:${item.slot}`
-  'wr:retrigger-attempts-', // stuck-wr-detector.yml: `wr:retrigger-attempts-${n}`
+  "priority-slot:", // brain-dump-intake.yml: `priority-slot:${item.slot}`
+  "wr:retrigger-attempts-", // stuck-wr-detector.yml: `wr:retrigger-attempts-${n}`
 ];
 
 // Directories that count as "automation surfaces" for reference scanning.
 const AUTOMATION_DIRS = [
-  '.github/workflows',
-  '.github/ISSUE_TEMPLATE',
-  'scripts',
-  'wr/scripts',
-  'config',
-  'templates',
-  'src',
+  ".github/workflows",
+  ".github/ISSUE_TEMPLATE",
+  "scripts",
+  "wr/scripts",
+  "config",
+  "templates",
+  "src",
 ];
 
 /**
@@ -84,7 +84,7 @@ function parseLabelsYaml(raw) {
   let current = null;
   for (const rawLine of raw.split(/\r?\n/)) {
     const line = rawLine.trim();
-    if (line.startsWith('#') || line === '' || line === 'labels:') continue;
+    if (line.startsWith("#") || line === "" || line === "labels:") continue;
     const name = line.match(/^-\s+name:\s+"?([^"]+?)"?\s*$/);
     if (name) {
       if (current && current.name) labels.push(current);
@@ -94,7 +94,7 @@ function parseLabelsYaml(raw) {
     if (!current) continue;
     const color = line.match(/^color:\s+"?([^"]+?)"?\s*$/);
     if (color) {
-      current.color = color[1].replace(/^#/, '');
+      current.color = color[1].replace(/^#/, "");
       continue;
     }
     const description = line.match(/^description:\s+"?(.+?)"?\s*$/);
@@ -114,7 +114,8 @@ function listFiles(dir) {
   const out = [];
   if (!fs.existsSync(dir)) return out;
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (entry.name === 'node_modules' || entry.name.startsWith('.git')) continue;
+    if (entry.name === "node_modules" || entry.name.startsWith(".git"))
+      continue;
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) out.push(...listFiles(full));
     else out.push(full);
@@ -138,20 +139,24 @@ const LABEL_LITERAL = /["']([^"'\n$]+)["']/g;
 function extractWorkflowLabels(content) {
   const found = new Set();
   const add = (value) => {
-    for (const piece of String(value).split(',')) {
-      const label = piece.trim().replace(/^["']|["']$/g, '');
-      if (!label || label.includes('$') || label.includes(' ')) continue;
+    for (const piece of String(value).split(",")) {
+      const label = piece.trim().replace(/^["']|["']$/g, "");
+      if (!label || label.includes("$") || label.includes(" ")) continue;
       found.add(label);
     }
   };
 
-  for (const m of content.matchAll(/--(?:add-)?label(?:=|\s+)["']?([\w:.,' -]+)/g)) {
+  for (const m of content.matchAll(
+    /--(?:add-)?label(?:=|\s+)["']?([\w:.,' -]+)/g,
+  )) {
     add(m[1]);
   }
   for (const m of content.matchAll(/labels:\s*\[([^\]\n]*)\]/g)) {
     for (const lit of m[1].matchAll(LABEL_LITERAL)) add(lit[1]);
   }
-  for (const m of content.matchAll(/addLabels\(\s*\{[\s\S]{0,400}?labels:\s*\[([^\]]*)\]/g)) {
+  for (const m of content.matchAll(
+    /addLabels\(\s*\{[\s\S]{0,400}?labels:\s*\[([^\]]*)\]/g,
+  )) {
     for (const lit of m[1].matchAll(LABEL_LITERAL)) add(lit[1]);
   }
   return found;
@@ -160,11 +165,11 @@ function extractWorkflowLabels(content) {
 /** All labels hardcoded across every workflow, mapped to the files using them. */
 function collectWorkflowLabelUsage(repoRoot = REPO_ROOT) {
   const usage = new Map(); // label -> Set(workflow file)
-  const wfDir = path.join(repoRoot, '.github', 'workflows');
+  const wfDir = path.join(repoRoot, ".github", "workflows");
   for (const file of listFiles(wfDir)) {
     if (!/\.ya?ml$/.test(file)) continue;
     const rel = path.relative(repoRoot, file);
-    for (const label of extractWorkflowLabels(fs.readFileSync(file, 'utf8'))) {
+    for (const label of extractWorkflowLabels(fs.readFileSync(file, "utf8"))) {
       if (!usage.has(label)) usage.set(label, new Set());
       usage.get(label).add(rel);
     }
@@ -174,20 +179,22 @@ function collectWorkflowLabelUsage(repoRoot = REPO_ROOT) {
 
 /** Count automation files referencing each defined label (or its dynamic prefix). */
 function collectAutomationReferences(labelNames, repoRoot = REPO_ROOT) {
-  const files = AUTOMATION_DIRS.flatMap((d) => listFiles(path.join(repoRoot, d))).filter(
-    (f) => !f.endsWith(path.join('.github', 'labels.yml'))
-  );
+  const files = AUTOMATION_DIRS.flatMap((d) =>
+    listFiles(path.join(repoRoot, d)),
+  ).filter((f) => !f.endsWith(path.join(".github", "labels.yml")));
   const contents = files.map((f) => ({
     rel: path.relative(repoRoot, f),
-    text: fs.readFileSync(f, 'utf8'),
+    text: fs.readFileSync(f, "utf8"),
   }));
   const refs = new Map();
   for (const label of labelNames) {
-    const family = DYNAMIC_LABEL_FAMILIES.find((prefix) => label.startsWith(prefix));
+    const family = DYNAMIC_LABEL_FAMILIES.find((prefix) =>
+      label.startsWith(prefix),
+    );
     const needle = family || label;
     refs.set(
       label,
-      contents.filter((c) => c.text.includes(needle)).map((c) => c.rel)
+      contents.filter((c) => c.text.includes(needle)).map((c) => c.rel),
     );
   }
   return refs;
@@ -199,13 +206,16 @@ async function fetchIssueCounts(labelNames, token, repo) {
   for (const label of labelNames) {
     const query = encodeURIComponent(`repo:${repo} label:"${label}"`);
     try {
-      const res = await fetch(`https://api.github.com/search/issues?q=${query}&per_page=1`, {
-        headers: {
-          Authorization: 'Bearer ' + token,
-          Accept: 'application/vnd.github+json',
-          'User-Agent': 'label-inventory',
+      const res = await fetch(
+        `https://api.github.com/search/issues?q=${query}&per_page=1`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+            Accept: "application/vnd.github+json",
+            "User-Agent": "label-inventory",
+          },
         },
-      });
+      );
       if (!res.ok) {
         counts.set(label, null); // rate limited / forbidden — degrade, don't fail
         if (res.status === 403 || res.status === 429) {
@@ -225,7 +235,10 @@ async function fetchIssueCounts(labelNames, token, repo) {
 }
 
 function buildInventory(repoRoot = REPO_ROOT) {
-  const raw = fs.readFileSync(path.join(repoRoot, '.github', 'labels.yml'), 'utf8');
+  const raw = fs.readFileSync(
+    path.join(repoRoot, ".github", "labels.yml"),
+    "utf8",
+  );
   const labels = parseLabelsYaml(raw);
   const names = labels.map((l) => l.name);
 
@@ -236,40 +249,56 @@ function buildInventory(repoRoot = REPO_ROOT) {
     seen.add(name);
   }
 
-  const badAxis = labels.filter((l) => !l.axis || !AXES.includes(l.axis)).map((l) => l.name);
+  const badAxis = labels
+    .filter((l) => !l.axis || !AXES.includes(l.axis))
+    .map((l) => l.name);
 
   const workflowUsage = collectWorkflowLabelUsage(repoRoot);
   const invented = [...workflowUsage.keys()]
     .filter((label) => !seen.has(label))
     .sort()
-    .map((label) => ({ label, workflows: [...workflowUsage.get(label)].sort() }));
+    .map((label) => ({
+      label,
+      workflows: [...workflowUsage.get(label)].sort(),
+    }));
 
   const refs = collectAutomationReferences([...seen], repoRoot);
   const dead = [...seen].filter((label) => refs.get(label).length === 0).sort();
 
-  return { labels, uniqueCount: seen.size, duplicates, badAxis, invented, dead, refs };
+  return {
+    labels,
+    uniqueCount: seen.size,
+    duplicates,
+    badAxis,
+    invented,
+    dead,
+    refs,
+  };
 }
 
 async function main() {
   const args = process.argv.slice(2);
   const inv = buildInventory();
 
-  if (args.includes('--issue-counts')) {
+  if (args.includes("--issue-counts")) {
     const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
-    const repo = process.env.GITHUB_REPOSITORY || 'midnghtsapphire/revvel-standards';
+    const repo =
+      process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
     if (!token) {
-      console.error('⚠️  --issue-counts requires GH_TOKEN or GITHUB_TOKEN; skipping counts.');
+      console.error(
+        "⚠️  --issue-counts requires GH_TOKEN or GITHUB_TOKEN; skipping counts.",
+      );
     } else {
       const counts = await fetchIssueCounts(
         inv.labels.map((l) => l.name),
         token,
-        repo
+        repo,
       );
       for (const l of inv.labels) l.issueCount = counts.get(l.name);
     }
   }
 
-  if (args.includes('--json')) {
+  if (args.includes("--json")) {
     console.log(
       JSON.stringify(
         {
@@ -284,8 +313,8 @@ async function main() {
           })),
         },
         null,
-        2
-      )
+        2,
+      ),
     );
     return;
   }
@@ -298,40 +327,46 @@ async function main() {
   console.log(`Dead (0 automation refs): ${inv.dead.length}\n`);
 
   if (inv.duplicates.length) {
-    console.log('## Duplicate definitions (delete all but one)\n');
+    console.log("## Duplicate definitions (delete all but one)\n");
     for (const d of inv.duplicates) console.log(`- ${d}`);
-    console.log('');
+    console.log("");
   }
   if (inv.badAxis.length) {
-    console.log(`## Labels missing a valid axis (must be one of: ${AXES.join(', ')})\n`);
+    console.log(
+      `## Labels missing a valid axis (must be one of: ${AXES.join(", ")})\n`,
+    );
     for (const b of inv.badAxis) console.log(`- ${b}`);
-    console.log('');
+    console.log("");
   }
   if (inv.invented.length) {
-    console.log('## Labels invented inline by workflows (add to labels.yml or fix the workflow)\n');
+    console.log(
+      "## Labels invented inline by workflows (add to labels.yml or fix the workflow)\n",
+    );
     for (const { label, workflows } of inv.invented) {
-      console.log(`- ${label}  (${workflows.join(', ')})`);
+      console.log(`- ${label}  (${workflows.join(", ")})`);
     }
-    console.log('');
+    console.log("");
   }
   if (inv.dead.length) {
-    console.log('## Dead labels (no automation references — candidates for deletion)\n');
+    console.log(
+      "## Dead labels (no automation references — candidates for deletion)\n",
+    );
     for (const d of inv.dead) console.log(`- ${d}`);
-    console.log('');
+    console.log("");
   }
 
   const perAxis = new Map();
   for (const l of inv.labels) {
-    perAxis.set(l.axis || '(none)', (perAxis.get(l.axis || '(none)') || 0) + 1);
+    perAxis.set(l.axis || "(none)", (perAxis.get(l.axis || "(none)") || 0) + 1);
   }
-  console.log('## Labels per axis\n');
+  console.log("## Labels per axis\n");
   for (const [axis, n] of [...perAxis.entries()].sort((a, b) => b[1] - a[1])) {
     console.log(`- ${axis}: ${n}`);
   }
 
   const problems =
     inv.duplicates.length + inv.badAxis.length + inv.invented.length;
-  if (problems > 0 && args.includes('--check')) {
+  if (problems > 0 && args.includes("--check")) {
     console.error(`\n❌ ${problems} taxonomy violation(s) found.`);
     process.exit(1);
   }

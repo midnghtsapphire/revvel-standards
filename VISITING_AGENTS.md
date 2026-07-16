@@ -1,6 +1,6 @@
 # Visiting Agents — House Rules
 
-**Read this before you touch anything.** You are a *guest* in this repo.
+**Read this before you touch anything.** You are a _guest_ in this repo.
 
 This file exists for any visiting or transient agent — OpenHands, Cursor Cloud,
 Lovable, Replit, Jules, Copilot, a one-off API caller, or a human's throwaway
@@ -45,13 +45,13 @@ you never pushed.)
 
 Don't go spelunking and reinventing config. The canonical sources are:
 
-| You need… | Look here (only here) |
-| --- | --- |
-| Env vars / required keys | [`.env.example`](./.env.example) |
-| Agent stack + API credential setup | [`docs/agent-stack/AGENT_STACK_SETUP.md`](./docs/agent-stack/AGENT_STACK_SETUP.md) |
-| Repo / product layout + run commands | [`AGENTS.md`](./AGENTS.md) |
-| Prior decisions (don't re-litigate) | [`wr/memory/decisions.jsonl`](./wr/memory/decisions.jsonl) |
-| Onboarding | [`docs/ONBOARDING.md`](./docs/ONBOARDING.md) |
+| You need…                            | Look here (only here)                                                              |
+| ------------------------------------ | ---------------------------------------------------------------------------------- |
+| Env vars / required keys             | [`.env.example`](./.env.example)                                                   |
+| Agent stack + API credential setup   | [`docs/agent-stack/AGENT_STACK_SETUP.md`](./docs/agent-stack/AGENT_STACK_SETUP.md) |
+| Repo / product layout + run commands | [`AGENTS.md`](./AGENTS.md)                                                         |
+| Prior decisions (don't re-litigate)  | [`wr/memory/decisions.jsonl`](./wr/memory/decisions.jsonl)                         |
+| Onboarding                           | [`docs/ONBOARDING.md`](./docs/ONBOARDING.md)                                       |
 
 If a value isn't in one of these, ask via the work-request issue — don't guess
 and don't hardcode.
@@ -71,13 +71,13 @@ real time:
 
 ## 6. What already runs the fleet — don't rebuild it
 
-| Capability | Owned by |
-| --- | --- |
-| Agent task execution + fallback chain | `.github/workflows/agent-fallback.yml` (OpenRouter → OpenHands → manual) |
+| Capability                            | Owned by                                                                   |
+| ------------------------------------- | -------------------------------------------------------------------------- |
+| Agent task execution + fallback chain | `.github/workflows/agent-fallback.yml` (OpenRouter → OpenHands → manual)   |
 | Health + 15-min refresh / EOP monitor | `.github/workflows/agent-monitor.yml`, `scripts/agent-activity-monitor.js` |
-| Self-healing / auto-fix on error | `.github/workflows/auto-error-handler.yml`, `scripts/agent-self-heal.js` |
-| Durability snapshot | `.github/workflows/durability-mirror.yml` |
-| Anti-scaffolding / root-junk guards | `anti-scaffolding-enforcer.yml`, `no-root-junk.yml` |
+| Self-healing / auto-fix on error      | `.github/workflows/auto-error-handler.yml`, `scripts/agent-self-heal.js`   |
+| Durability snapshot                   | `.github/workflows/durability-mirror.yml`                                  |
+| Anti-scaffolding / root-junk guards   | `anti-scaffolding-enforcer.yml`, `no-root-junk.yml`                        |
 
 If your task is "make agents do X," wire into these. A second monitor or a
 parallel fallback chain is scaffolding — it will be removed.

@@ -8,9 +8,11 @@
 **Sibling of:** OZ-OS-005b (contrarian), OZ-OS-005c (adjacent-domain)
 
 ## Deliverable
+
 Single file: `oz-os/agents/method-hunter.md`
 
 ## Content Requirements
+
 The Method Hunter agent spec must include:
 
 - **Mission:** Never solve the problem. Find better ways to solve the problem.
@@ -30,14 +32,16 @@ topic: <research topic>
 generated: 2026-06-01
 agent: method-hunter
 method_count: 10
-domain_count: 6  # minimum distinct domains
+domain_count: 6 # minimum distinct domains
 ---
 ```
 
 ## Key Constraint
+
 Minimum 10 methods with scoring rubric. Agent is forbidden from stopping after finding a plausible solution.
 
 ## Acceptance
+
 - File renders cleanly in GitHub
 - No raw tokens or bracket-placeholders
 - Includes worked example (SAR / mountain search recommended)

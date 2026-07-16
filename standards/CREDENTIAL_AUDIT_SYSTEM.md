@@ -11,6 +11,7 @@
 **Why merged:** GATEKEEPER.md handles full credential lifecycle (rotation, drift, provisioning).
 
 **Where to find credential info:**
+
 - Primary: `standards/GATEKEEPER.md`
 - Workflow: `.github/workflows/credential-gatekeeper.yml`
 - Registry: `docs/_MASTER_INVENTORY.md`

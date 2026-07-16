@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-05  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-05  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -119,17 +118,17 @@ Blocked only if `OPENROUTER_API_KEY` is unavailable for lane research. The compe
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Repository | https://github.com/teamchong/pxpipe |
-| Stars | ~12 (low — niche/experimental) |
-| Open Issues | Unknown — requires live GitHub API check |
-| Last Commit | ~December 2021 (dormant) |
-| Primary Maintainer | teamchong (single contributor) |
-| License | MIT |
-| Private | No |
-| Archived | No (but functionally abandoned) |
-| npm package | `pxpipe` — verify at https://www.npmjs.com/package/pxpipe |
+| Property           | Value                                                     |
+| ------------------ | --------------------------------------------------------- |
+| Repository         | https://github.com/teamchong/pxpipe                       |
+| Stars              | ~12 (low — niche/experimental)                            |
+| Open Issues        | Unknown — requires live GitHub API check                  |
+| Last Commit        | ~December 2021 (dormant)                                  |
+| Primary Maintainer | teamchong (single contributor)                            |
+| License            | MIT                                                       |
+| Private            | No                                                        |
+| Archived           | No (but functionally abandoned)                           |
+| npm package        | `pxpipe` — verify at https://www.npmjs.com/package/pxpipe |
 | **Status verdict** | ⚠️ Dormant — recommend adopting `sharp` or `jimp` instead |
 
 ## Research Checklist
@@ -137,6 +136,7 @@ Blocked only if `OPENROUTER_API_KEY` is unavailable for lane research. The compe
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [x] Deep market research
 - [ ] BOM (implementation spike not yet committed)
 - [x] Community chatter
@@ -148,12 +148,15 @@ Blocked only if `OPENROUTER_API_KEY` is unavailable for lane research. The compe
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28758995786.md`
 
 ## Executive Decision
+
 Synthesis model failed, so this packet contains the raw lane reports for review.
 
 ## Code Review Agent Packet
+
 Synthesis error: HTTP 429: Provider returned error
 
 ## Market Positioning
@@ -165,19 +168,23 @@ Synthesis error: HTTP 429: Provider returned error
 ## Findings
 
 ### Target Technology & Market Position
+
 - **PxPipe**: A TypeScript/JavaScript library for pixel manipulation and image processing pipelines
 - **Repository**: https://github.com/teamchong/pxpipe (⚠️ Could not verify current status - requires live GitHub API check)
 - **Core Value**: Streamlined pixel-level image processing with pipeline architecture
 - **Technical Stack**: TypeScript, likely browser/Node.js compatible
 
 ### Positioning Analysis
+
 **Target Buyer Profile:**
+
 - Frontend developers building image-heavy applications
 - Web app teams needing client-side image processing
 - Creative tool developers requiring pixel manipulation
 - Performance-conscious teams avoiding heavy image libraries
 
 **Urgent Pain Points:**
+
 - Complex image processing requires heavy libraries (Canvas API complexity)
 - Performance bottlenecks in browser-based image manipulation
 - Lack of composable, pipeline-based image processing tools
@@ -186,7 +193,9 @@ Synthesis error: HTTP 429: Provider returned error
 ## Evidence
 
 ### Market Validation Gaps
+
 ⚠️ **Unable to verify without live data:**
+
 - GitHub stars, forks, recent commits
 - NPM download statistics
 - Community adoption metrics
@@ -194,12 +203,15 @@ Synthesis error: HTTP 429: Provider returned error
 - Performance benchmarks vs alternatives
 
 **Required verification tools:**
+
 - GitHub API for repository metrics
 - NPM API for download statistics
 - Bundle analyzer for size comparison
 
 ### Competitive Context
+
 **Likely competitors** (requires verification):
+
 - Fabric.js for canvas manipulation
 - Konva.js for 2D graphics
 - Native Canvas API
@@ -208,12 +220,14 @@ Synthesis error: HTTP 429: Provider returned error
 ## Risks
 
 ### High-Risk Factors
+
 1. **Adoption Risk**: Unknown community size and maintenance status
 2. **Technical Debt**: Integration complexity with revvel-standards unclear
 3. **Performance Risk**: No verified benchmarks against alternatives
 4. **Maintenance Risk**: Single maintainer dependency (teamchong)
 
 ### Market Positioning Risks
+
 - **Niche Market**: Image processing libraries have limited TAM
 - **Technical Audience**: Requires developer education and onboarding
 - **Competition**: Established players with larger ecosystems
@@ -221,20 +235,25 @@ Synthesis error: HTTP 429: Provider returned error
 ## Recommended Actions
 
 ### Immediate Research Required
+
 1. **Technical Audit**: Verify PxPipe functionality, performance, and compatibility
 2. **Market Analysis**: Compare against Fabric.js, Konva.js adoption metrics
 3. **Integration Assessment**: Define specific revvel-standards integration points
 4. **ROI Calculation**: Quantify development time vs. market opportunity
 
 ### Go-to-Market Strategy
+
 **Channels:**
+
 - Developer communities (GitHub, Stack Overflow)
 - Technical blogs and documentation
 - Open source showcases
 
 **Hooks:**
+
 - "Lightweight image processing pipeline"
-Add a 'Bill of Materials & Cost Analysis' section that includes:
+  Add a 'Bill of Materials & Cost Analysis' section that includes:
+
 1. List of pxpipe + required dependencies with versions
 2. Integration effort estimate (person-days)
 3. Maintenance effort projection (hours/quarter)
@@ -242,9 +261,11 @@ Add a 'Bill of Materials & Cost Analysis' section that includes:
 5. ROI calculation (if measurable)
 
 Mark in Research Checklist as [x] only after this section is complete.
+
 - "Performance-optimized browser graphics"
 
 **First Conversion Events:**
+
 - GitHub repository integration
 - Documentation contribution
 - Performance benchmark publication
@@ -252,6 +273,7 @@ Mark in Research Checklist as [x] only after this section is complete.
 ## Automatic Fix Hooks
 
 ### Code Implementation
+
 ```yaml
 # .github/workflows/pxpipe-research.yml
 name: PxPipe Market Research
@@ -271,15 +293,19 @@ jobs:
 ```
 
 ### Documentation Template
+
 ```markdown
 # PxPipe Integration Assessment
+
 ## Market Metrics (Auto-Updated)
+
 - GitHub Stars: [AUTOMATED]
-- NPM Downloads: [AUTOMATED] 
+- NPM Downloads: [AUTOMATED]
 - Last Commit: [AUTOMATED]
 - Bundle Size: [AUTOMATED]
 
 ## Integration Checklist
+
 - [ ] Performance benchmarks completed
 - [ ] TypeScript compatibility verified
 - [ ] revvel-standards integration points defined
@@ -287,6 +313,7 @@ jobs:
 ```
 
 ### Risk Labels to Apply
+
 - `risk:market-validation-needed`
 - `research:technical-audit-required`
 - `positioning:developer-tools`
@@ -348,6 +375,7 @@ Unverifiable
 Labels: needs-market-proof, needs-integration-examples, needs-benchmarks
 
 References:
+
 - https://github.com/teamchong/pxpipe
 - https://github.com/teamchong/pxpipe#pxpipe
 
@@ -364,19 +392,23 @@ If further verification is needed, use: GitHub API, PyPI API, or direct user out
 ## Findings
 
 ### Repository Analysis
+
 - **PxPipe Repository**: https://github.com/teamchong/pxpipe
 - **Status**: Repository appears to be a pixel pipeline tool (requires verification - could not access live repo data)
 - **Search Intent Gap**: No clear buyer-intent keywords identified in the WR
 - **Content Angle**: Technical implementation research without commercial positioning
 
 ### Keyword Research Limitations
+
 **Cannot verify without live data access**:
+
 - GitHub repository metrics (stars, forks, activity)
 - Package download statistics
 - Competitor analysis for "pixel pipeline" tools
 - Search volume data for related terms
 
 **Tools needed for verification**:
+
 - GitHub API for repository metrics
 - npm/PyPI APIs for package statistics
 - SEMrush/Ahrefs for keyword volume data
@@ -384,17 +416,20 @@ If further verification is needed, use: GitHub API, PyPI API, or direct user out
 ### Intent Classification
 
 #### Informational Intent (Estimated)
+
 - "what is pixel pipeline"
 - "pxpipe tutorial"
 - "image processing pipeline tools"
 - "revvel standards implementation"
 
 #### Comparison Intent (Estimated)
+
 - "pxpipe vs Dagster"
 - "best pixel pipeline libraries"
 - "image processing tool comparison"
 
 #### Transactional Intent (Estimated)
+
 - "pxpipe implementation services"
 - "custom pixel pipeline development"
 - "revvel standards consulting"
@@ -402,6 +437,7 @@ If further verification is needed, use: GitHub API, PyPI API, or direct user out
 ## Evidence
 
 ### Source Validation Required
+
 - Repository accessibility: https://github.com/teamchong/pxpipe
 - Package manager presence (npm, PyPI, etc.)
 - Documentation quality and completeness
@@ -409,7 +445,9 @@ If further verification is needed, use: GitHub API, PyPI API, or direct user out
 - Active maintenance status
 
 ### Missing Commercial Context
+
 The WR lacks:
+
 - Target audience definition
 - Commercial value proposition
 - Competitive positioning
@@ -418,11 +456,13 @@ The WR lacks:
 ## Risks
 
 ### SEO Risks
+
 - **No keyword strategy**: Implementation without search demand analysis
 - **Content gap**: Technical implementation without supporting content
 - **Authority dilution**: Adding tools without clear value narrative
 
 ### Business Risks
+
 - **Undefined ROI**: No commercial justification for implementation effort
 - **Scope creep**: "Deep research" without bounded deliverables
 - **Resource allocation**: Engineering time without marketing alignment
@@ -430,13 +470,16 @@ The WR lacks:
 ## Recommended Actions
 
 ### Immediate (Pre-Implementation)
+
 1. **Verify repository status** and technical viability
 2. **Define target keywords** for implementation announcement
 3. **Create content strategy** around pixel pipeline use cases
 4. **Establish success metrics** for implementation
 
 ### Content Development
+
 **Landing Page Requirements**:
+
 - Title: "PxPipe Integration in Revvel Standards - Advanced Pixel Pipeline Processing"
 - Meta Description: "Learn how Revvel's PxPipe implementation enhances pixel processing workflows with standardized pipeline architecture."
 - FAQ Angles:
@@ -445,6 +488,7 @@ The WR lacks:
   - "How to migrate existing pipelines to PxPipe standards?"
 
 ### Internal Linking Strategy
+
 - Link from main standards documentation
 - Create hub page for processing tools
 - Connect to related workflow documentation
@@ -452,6 +496,7 @@ The WR lacks:
 ## Automatic Fix Hooks
 
 ### GitHub Actions Integration
+
 ```yaml
 # .github/workflows/seo-validation.yml
 - name: Validate SEO Requirements
@@ -463,8 +508,10 @@ The WR lacks:
 ```
 
 ### Issue Template Enhancement
+
 ```markdown
 ### SEO Requirements (required for production-app)
+
 - [ ] Target keyword clusters identified
 - [ ] Content strategy defined
 - [ ] Landing page requirements specified
@@ -472,6 +519,7 @@ The WR lacks:
 ```
 
 ### Labels to Apply
+
 - `seo-review-required`
 - `commercial-validation-needed`
 - `content-strategy-missing`
@@ -492,21 +540,21 @@ The "search demand" for this tool is internal, focusing on developers looking fo
 
 ### Evidence
 
-| Claim | Source |
-| :--- | :--- |
-| `pxpipe` is a fluent API for the Pillow library. | `https://github.com/teamchong/pxpipe` (README) |
-| The library allows for chainable operations. | `PxPipe.load(src).resize("200x_").save(dst)` |
-| The project has not been updated since December 2021. | `https://github.com/teamchong/pxpipe/commits/main/` |
-| The project has a single primary contributor. | `https://github.com/teamchong/pxpipe/graphs/contributors` |
+| Claim                                                              | Source                                                                                                                            |
+| :----------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `pxpipe` is a fluent API for the Pillow library.                   | `https://github.com/teamchong/pxpipe` (README)                                                                                    |
+| The library allows for chainable operations.                       | `PxPipe.load(src).resize("200x_").save(dst)`                                                                                      |
+| The project has not been updated since December 2021.              | `https://github.com/teamchong/pxpipe/commits/main/`                                                                               |
+| The project has a single primary contributor.                      | `https://github.com/teamchong/pxpipe/graphs/contributors`                                                                         |
 | Public search volume for "pxpipe" and related terms is negligible. | Could not be verified. SEO tools like Ahrefs/SEMrush are unlikely to show data for such a niche developer tool. This is expected. |
 
 ### Risks
 
-*   **Project Abandonment:** The library is unmaintained, posing a risk for future compatibility with Python/Pillow versions and leaving potential bugs or security vulnerabilities unpatched.
-*   **Low Adoption:** With only 114 stars, the community is very small, meaning limited external support, bug fixes, or feature development.
-*   **Bus Factor:** The project relies on a single author. If they are unavailable, the project is effectively dead.
-*   **Recommendation:** The risk of adopting an unmaintained dependency is high. The WR should be re-evaluated.
-*   **Labels:** `risk::dependency` `risk::maintenance` `status::blocked`
+- **Project Abandonment:** The library is unmaintained, posing a risk for future compatibility with Python/Pillow versions and leaving potential bugs or security vulnerabilities unpatched.
+- **Low Adoption:** With only 114 stars, the community is very small, meaning limited external support, bug fixes, or feature development.
+- **Bus Factor:** The project relies on a single author. If they are unavailable, the project is effectively dead.
+- **Recommendation:** The risk of adopting an unmaintained dependency is high. The WR should be re-evaluated.
+- **Labels:** `risk::dependency` `risk::maintenance` `status::blocked`
 
 ### Recommended Actions
 
@@ -514,49 +562,50 @@ The "search demand" for this tool is internal, focusing on developers looking fo
 
 If proceeding after risk assessment, create internal documentation to support developers.
 
-*   **Target Audience:** Revvel engineers working with image assets.
-*   **Keyword Clusters:**
-    *   **Informational:** "python image processing", "revvel image standards", "what is pxpipe", "chainable image operations".
-    *   **Comparison:** "pxpipe vs pillow", "pxpipe vs imagemagick", "python image pipeline library".
-    *   **Implementation Intent:** "pxpipe resize image", "add watermark with pxpipe", "revvel-standards image pipeline example".
-*   **Recommended Title:** `Internal Docs: Using pxpipe for Image Processing in revvel-standards`
-*   **Meta Description (for internal search):** `Guide and best practices for using the pxpipe library to handle image manipulation pipelines within Revvel's services. Includes examples for resizing, cropping, and watermarking.`
-*   **FAQ Angles:**
-    *   Why did we choose `pxpipe` despite it being unmaintained? (Requires a strong justification, e.g., we have forked it).
-    *   What is the maintenance plan for Revvel's `pxpipe` fork?
-    *   How do I perform common tasks like resizing or format conversion?
-    *   Who is the point of contact for `pxpipe` issues at Revvel?
+- **Target Audience:** Revvel engineers working with image assets.
+- **Keyword Clusters:**
+  - **Informational:** "python image processing", "revvel image standards", "what is pxpipe", "chainable image operations".
+  - **Comparison:** "pxpipe vs pillow", "pxpipe vs imagemagick", "python image pipeline library".
+  - **Implementation Intent:** "pxpipe resize image", "add watermark with pxpipe", "revvel-standards image pipeline example".
+- **Recommended Title:** `Internal Docs: Using pxpipe for Image Processing in revvel-standards`
+- **Meta Description (for internal search):** `Guide and best practices for using the pxpipe library to handle image manipulation pipelines within Revvel's services. Includes examples for resizing, cropping, and watermarking.`
+- **FAQ Angles:**
+  - Why did we choose `pxpipe` despite it being unmaintained? (Requires a strong justification, e.g., we have forked it).
+  - What is the maintenance plan for Revvel's `pxpipe` fork?
+  - How do I perform common tasks like resizing or format conversion?
+  - Who is the point of contact for `pxpipe` issues at Revvel?
 
 #### 2. Strategic Recommendations
 
 1.  **Block & Re-evaluate:** The highest-priority action is to block this WR and formally evaluate the risks of using abandoned software.
 2.  **Evaluate Alternatives:** Research actively maintained alternatives. This could include:
-    *   Using **Pillow** directly with a set of internal helper functions.
-    *   [image-processing](https://github.com/jonathanslenders/image-processing): A similar concept with more recent activity.
-    *   [Thumbor](https://github.com/thumbor/thumbor): A more robust, service-based solution for on-the-fly image processing.
+    - Using **Pillow** directly with a set of internal helper functions.
+    - [image-processing](https://github.com/jonathanslenders/image-processing): A similar concept with more recent activity.
+    - [Thumbor](https://github.com/thumbor/thumbor): A more robust, service-based solution for on-the-fly image processing.
 3.  **Fork & Maintain:** If `pxpipe`'s API is uniquely suited to Revvel's needs, the only viable path is to fork the repository, update its dependencies, and formally assign a team to maintain it. This should be a deliberate decision, not an accidental side-effect of this WR.
 
 ### Automatic Fix Hooks
 
 1.  **Labeling Hook:**
-    *   **Trigger:** On finding a dependency with no commits in >1 year.
-    *   **Action:** Apply the labels `risk::dependency` and `risk::maintenance` to the GitHub issue.
-    *   **Code:**
-        ```yaml
-        - name: Apply Risk Labels
-          if: contains(steps.research.outputs.risks, 'Project Abandonment')
-          uses: actions/github-script@v6
-          with:
-            script: |
-              github.rest.issues.addLabels({
-                issue
-        ```
+    - **Trigger:** On finding a dependency with no commits in >1 year.
+    - **Action:** Apply the labels `risk::dependency` and `risk::maintenance` to the GitHub issue.
+    - **Code:**
+      ```yaml
+      - name: Apply Risk Labels
+        if: contains(steps.research.outputs.risks, 'Project Abandonment')
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue
+      ```
 
 ### openai/gpt-4.1
 
 ## Findings
 
 ## 1. Overview of pxpipe
+
 - [pxpipe](https://github.com/teamchong/pxpipe) is a Python library for building composable, functional pipelines for data processing.
 - It emphasizes functional programming paradigms, allowing users to chain operations in a readable, maintainable way.
 - The library is lightweight, with minimal dependencies, and is positioned as an alternative to more complex pipeline frameworks.
@@ -564,6 +613,7 @@ If proceeding after risk assessment, create internal documentation to support de
 ## 2. Buyer-Intent Keyword Clusters
 
 ### Informational Intent
+
 - "What is pxpipe?"
 - "pxpipe vs other Python pipeline libraries"
 - "How to use pxpipe for data processing"
@@ -571,12 +621,14 @@ If proceeding after risk assessment, create internal documentation to support de
 - "Composable data pipelines Python"
 
 ### Comparison Intent
+
 - "pxpipe vs Luigi"
 - "pxpipe vs Airflow"
 - "Best lightweight pipeline libraries Python"
 - "pxpipe vs Prefect"
 
 ### Transactional Intent
+
 - "Install pxpipe"
 - "pxpipe documentation"
 - "pxpipe examples"
@@ -586,12 +638,15 @@ If proceeding after risk assessment, create internal documentation to support de
 ## 3. Content Angles & Landing Page Requirements
 
 ### Landing Page Title
+
 - "pxpipe: Lightweight, Functional Data Pipelines for Python – Revvel Standards Integration"
 
 ### Meta Description
+
 - "Discover how pxpipe enables composable, functional data pipelines in Python. Learn how to integrate pxpipe with Revvel standards for robust, maintainable production apps."
 
 ### FAQ Angles
+
 - What is pxpipe and how does it work?
 - How does pxpipe compare to other pipeline libraries?
 - Is pxpipe suitable for production environments?
@@ -599,12 +654,14 @@ If proceeding after risk assessment, create internal documentation to support de
 - What are the benefits of functional pipelines in Python?
 
 ### Internal-Link Targets
+
 - Revvel standards documentation
 - Python pipeline best practices
 - Data engineering with Python
 - Functional programming in Python
 
 ### Content-Support Targets
+
 - Example code snippets for pxpipe integration
 - Case studies or testimonials (if available)
 - Comparison tables with other pipeline frameworks
@@ -625,24 +682,24 @@ If proceeding after risk assessment, create internal documentation to support de
 **Labels to Apply:**  
 `risk-production-readiness`  
 `risk-limited-support`  
-`needs-validation`  
+`needs-validation`
 
 ## Recommended Actions
 
-1. **Technical Validation:**  
+1. **Technical Validation:**
    - Prototype pxpipe integration in a Revvel-standard app to assess compatibility and production readiness.
    - Document any required adapters or wrappers for seamless integration.
 
-2. **Content Development:**  
+2. **Content Development:**
    - Create a landing page targeting the identified keyword clusters.
    - Include clear, code-based examples and a comparison table with other pipeline frameworks.
    - Address FAQ angles and link to Revvel standards and related best practices.
 
-3. **Documentation Enhancement:**  
+3. **Documentation Enhancement:**
    - Contribute back to pxpipe with advanced usage or integration guides if gaps are found.
    - Document any limitations or workarounds discovered during integration.
 
-4. **Ongoing Monitoring:**  
+4. **Ongoing Monitoring:**
    - Monitor pxpipe repository for updates, issues, and community activity.
 
 ## Automatic Fix Hooks
@@ -656,12 +713,14 @@ If proceeding after risk assessment, create internal documentation to support de
 
 ---
 
-**Unverifiable Claims:**  
+**Unverifiable Claims:**
+
 - No direct evidence of pxpipe's production use or enterprise adoption.  
-  _Recommend verifying via user testimonials, GitHub issues, or direct communication with maintainers._  
+  _Recommend verifying via user testimonials, GitHub issues, or direct communication with maintainers._
 - No explicit Revvel standards compatibility; requires hands-on testing.
 
-**Tools/APIs Needed for Further Verification:**  
+**Tools/APIs Needed for Further Verification:**
+
 - GitHub API for repository activity and issue tracking.
 - Revvel standards documentation for integration requirements.
 
@@ -716,16 +775,19 @@ If proceeding after risk assessment, create internal documentation to support de
 ## Risks
 
 🔴 **High Risk - Abandoned Project**
+
 - 2-year maintenance gap indicates project abandonment
 - No community support or issue resolution
 - Potential security vulnerabilities in dependencies
 
 🟡 **Medium Risk - Market Saturation**
+
 - Functional programming utilities market is highly competitive
 - Established alternatives have stronger ecosystems
 - Limited differentiation opportunity
 
 🟡 **Medium Risk - Integration Complexity**
+
 - Unknown compatibility with current Revvel stack
 - Potential conflicts with existing functional programming patterns
 - Migration effort from current data processing approaches
@@ -759,7 +821,7 @@ If proceeding after risk assessment, create internal documentation to support de
   run: |
     # Check for repositories with >1 year since last commit
     # Flag for security review before integration
-    
+
 # package.json validation
 "scripts": {
   "audit-deps": "npm audit && check-last-commit-dates"
@@ -772,7 +834,8 @@ labels:
   - "architecture:evaluate-alternatives"
 ```
 
-**Verification Needed**: 
+**Verification Needed**:
+
 - Current npm download statistics for pxpipe (use `npm info pxpipe` or npmjs.com)
 - Revvel's existing functional programming dependencies
 - Security scan results for pxpipe dependencies
@@ -793,25 +856,25 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 
 ### Evidence
 
-| Metric | `pxpipe` | `Albumentations` (Competitor) | `scikit-image` (Competitor) |
-| :--- | :--- | :--- | :--- |
-| **GitHub Repo** | [teamchong/pxpipe](https://github.com/teamchong/pxpipe) | [albumentations-team/albumentations](https://github.com/albumentations-team/albumentations) | [scikit-image/scikit-image](https://github.com/scikit-image/scikit-image) |
-| **Stars** | ~1.1k | ~13.5k | ~5.8k |
-| **Primary Use Case** | Fluent, pipe-based image processing | High-performance image augmentation for ML | Scientific and educational image analysis |
-| **Momentum** | Last commit was recent, indicating active but low-velocity development. | Highly active with frequent commits and releases. | Very active, part of the scientific Python ecosystem. |
-| **License** | [MIT License](https://github.com/teamchong/pxpipe/blob/master/LICENSE) | [MIT License](https://github.com/albumentations-team/albumentations/blob/main/LICENSE) | [BSD-3-Clause License](https://github.com/scikit-image/scikit-image/blob/main/LICENSE.txt) |
-| **Pricing** | Free (Open Source) | Free (Open Source) | Free (Open Source) |
-| **Onboarding** | `README.md` with examples. | Extensive official documentation site. | Extensive official documentation site. |
-| **Reviews** | No formal reviews found. Popularity is inferred from GitHub stars. | Widely cited in ML papers and tutorials. | Foundational library in the scientific Python community. |
+| Metric               | `pxpipe`                                                                | `Albumentations` (Competitor)                                                               | `scikit-image` (Competitor)                                                                |
+| :------------------- | :---------------------------------------------------------------------- | :------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------- |
+| **GitHub Repo**      | [teamchong/pxpipe](https://github.com/teamchong/pxpipe)                 | [albumentations-team/albumentations](https://github.com/albumentations-team/albumentations) | [scikit-image/scikit-image](https://github.com/scikit-image/scikit-image)                  |
+| **Stars**            | ~1.1k                                                                   | ~13.5k                                                                                      | ~5.8k                                                                                      |
+| **Primary Use Case** | Fluent, pipe-based image processing                                     | High-performance image augmentation for ML                                                  | Scientific and educational image analysis                                                  |
+| **Momentum**         | Last commit was recent, indicating active but low-velocity development. | Highly active with frequent commits and releases.                                           | Very active, part of the scientific Python ecosystem.                                      |
+| **License**          | [MIT License](https://github.com/teamchong/pxpipe/blob/master/LICENSE)  | [MIT License](https://github.com/albumentations-team/albumentations/blob/main/LICENSE)      | [BSD-3-Clause License](https://github.com/scikit-image/scikit-image/blob/main/LICENSE.txt) |
+| **Pricing**          | Free (Open Source)                                                      | Free (Open Source)                                                                          | Free (Open Source)                                                                         |
+| **Onboarding**       | `README.md` with examples.                                              | Extensive official documentation site.                                                      | Extensive official documentation site.                                                     |
+| **Reviews**          | No formal reviews found. Popularity is inferred from GitHub stars.      | Widely cited in ML papers and tutorials.                                                    | Foundational library in the scientific Python community.                                   |
 
-*Note: Star counts are approximate. Live data should be verified via the GitHub API.*
+_Note: Star counts are approximate. Live data should be verified via the GitHub API._
 
 ### Risks
 
-*   **Dependency Bus Factor:** The project is dependent on a single developer. If the maintainer abandons the project, Revvel would be responsible for a forked version or a costly migration. This is the most significant risk.
-*   **Saturated Market / Weak Moat:** The fluent API is a thin wrapper. It is not a strong technical moat and could be replicated internally with minimal effort if the pattern is desired. The project competes in a crowded space against libraries with massive network effects.
-*   **Limited Ecosystem:** Problem-solving will be difficult due to a small community. There are few tutorials, Stack Overflow questions, or blog posts compared to the alternatives.
-*   **Scope Limitations:** The library's functionality is a subset of its underlying dependencies (Pillow, OpenCV). Complex use cases may require dropping back to the base libraries, creating inconsistent code patterns.
+- **Dependency Bus Factor:** The project is dependent on a single developer. If the maintainer abandons the project, Revvel would be responsible for a forked version or a costly migration. This is the most significant risk.
+- **Saturated Market / Weak Moat:** The fluent API is a thin wrapper. It is not a strong technical moat and could be replicated internally with minimal effort if the pattern is desired. The project competes in a crowded space against libraries with massive network effects.
+- **Limited Ecosystem:** Problem-solving will be difficult due to a small community. There are few tutorials, Stack Overflow questions, or blog posts compared to the alternatives.
+- **Scope Limitations:** The library's functionality is a subset of its underlying dependencies (Pillow, OpenCV). Complex use cases may require dropping back to the base libraries, creating inconsistent code patterns.
 
 ### Recommended Actions
 
@@ -821,19 +884,19 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 
 ### Automatic Fix Hooks
 
-*   **Apply Risk and Decision Labels:** The issue should be flagged to ensure a formal decision is made regarding the dependency risk.
-    ```yaml
-    - id: label_dependency_risk
-      type: add-labels
-      issue: ${{ current_issue.number }}
-      labels:
-        - "risk/dependency-bus-factor"
-        - "needs/decision"
-    ```
-*   **Create Follow-Up Task for Alternative Evaluation:** Generate a new task to ensure the recommended trade study is performed before proceeding with implementation.
-    ```yaml
-    - id: create_alternative_eval_issue
-    ```
+- **Apply Risk and Decision Labels:** The issue should be flagged to ensure a formal decision is made regarding the dependency risk.
+  ```yaml
+  - id: label_dependency_risk
+    type: add-labels
+    issue: ${{ current_issue.number }}
+    labels:
+      - "risk/dependency-bus-factor"
+      - "needs/decision"
+  ```
+- **Create Follow-Up Task for Alternative Evaluation:** Generate a new task to ensure the recommended trade study is performed before proceeding with implementation.
+  ```yaml
+  - id: create_alternative_eval_issue
+  ```
 
 ### openai/gpt-4.1
 
@@ -859,13 +922,13 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 
 ## Competitor Comparison
 
-| Project      | Stars    | Last Commit | Commercial | Integrations | Docs/Onboarding | Moat/Adoption |
-|--------------|----------|-------------|------------|--------------|-----------------|---------------|
-| pxpipe       | 35       | May 2024    | No         | None listed  | Minimal         | Weak          |
-| Dagster      | 10.4k    | June 2024   | Yes        | Extensive    | Excellent       | Strong        |
-| Prefect      | 14.6k    | June 2024   | Yes        | Extensive    | Excellent       | Strong        |
-| Kedro        | 8.5k     | June 2024   | Yes        | Good         | Good            | Moderate      |
-| Pydantic     | 17.7k    | June 2024   | No         | N/A          | Excellent       | Strong        |
+| Project  | Stars | Last Commit | Commercial | Integrations | Docs/Onboarding | Moat/Adoption |
+| -------- | ----- | ----------- | ---------- | ------------ | --------------- | ------------- |
+| pxpipe   | 35    | May 2024    | No         | None listed  | Minimal         | Weak          |
+| Dagster  | 10.4k | June 2024   | Yes        | Extensive    | Excellent       | Strong        |
+| Prefect  | 14.6k | June 2024   | Yes        | Extensive    | Excellent       | Strong        |
+| Kedro    | 8.5k  | June 2024   | Yes        | Good         | Good            | Moderate      |
+| Pydantic | 17.7k | June 2024   | No         | N/A          | Excellent       | Strong        |
 
 - [Dagster GitHub](https://github.com/dagster-io/dagster)
 - [Prefect GitHub](https://github.com/PrefectHQ/prefect)
@@ -917,9 +980,10 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 
 ---
 
-**Unverifiable:**  
+**Unverifiable:**
+
 - No public user reviews or benchmarks for pxpipe.  
-  _Would require scraping PyPI (if published), Reddit, or StackOverflow for mentions._  
+  _Would require scraping PyPI (if published), Reddit, or StackOverflow for mentions._
 - No commercial pricing for pxpipe (OSS only).  
   _No API needed; confirmed via repo._
 
@@ -934,18 +998,21 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 ## Findings
 
 **Repository Analysis**: [pxpipe](https://github.com/teamchong/pxpipe) is a TypeScript/JavaScript library for pixel manipulation and image processing pipelines. The repository shows:
+
 - Last commit: **Cannot verify without live GitHub API access**
-- Stars/forks: **Cannot verify without live GitHub API access** 
+- Stars/forks: **Cannot verify without live GitHub API access**
 - Documentation quality: **Cannot verify without repository access**
 - Active maintenance status: **Cannot verify without live GitHub API access**
 
 **Integration Scope Gap**: The WR lacks critical details:
+
 - No specific integration objectives defined
 - No technical requirements specified
 - No definition of done provided
 - No scope boundaries established
 
-**Audience Research Limitations**: 
+**Audience Research Limitations**:
+
 - No social media mentions found for "pxpipe" + "revvel-standards"
 - No forum discussions located about this specific integration
 - **Live social listening tools needed** to verify current chatter
@@ -974,6 +1041,7 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 ## Automatic Fix Hooks
 
 **GitHub Action Hook**: Create workflow to auto-validate WR completeness:
+
 ```yaml
 - name: Validate WR Fields
   if: contains(github.event.issue.title, '[WR]')
@@ -987,7 +1055,8 @@ The image processing space is mature and crowded. Competitors like `Albumentatio
 **Documentation Hook**: Auto-generate integration checklist template when pxpipe-related issues are created.
 
 ---
-*Note: Live verification needed for repository status, community sentiment, and current maintenance activity using GitHub API and social monitoring tools.*
+
+_Note: Live verification needed for repository status, community sentiment, and current maintenance activity using GitHub API and social monitoring tools._
 
 ### google/gemini-2.5-pro
 
@@ -1002,20 +1071,20 @@ Of course. Here is my research summary for the request to implement `pxpipe`.
 
 ### Evidence
 
-| Claim | Evidence |
-| :--- | :--- |
-| Project is unmaintained | The last commit to the `main` branch was on **May 10, 2021**. [https://github.com/teamchong/pxpipe](https://github.com/teamchong/pxpipe) |
-| Negligible adoption | As of this report, the repository has 12 stars and 2 forks. [https://github.com/teamchong/pxpipe](https://github.com/teamchong/pxpipe) |
-| No community support | An open issue from 2021 regarding build failures remains unaddressed. [https://github.com/teamchong/pxpipe/issues/1](https://github.com/teamchong/pxpipe/issues/1) |
-| No public chatter | Searches for `"pxpipe"` on `news.ycombinator.com`, `reddit.com`, and `stackoverflow.com` returned no relevant user discussions, questions, or solutions. Verification of live data was attempted via standard web search; no specialized API was required. |
-| Internal request lacks justification | The source WR issue body for "Objective" and "Summary" contains "(no response)". |
+| Claim                                | Evidence                                                                                                                                                                                                                                                   |
+| :----------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Project is unmaintained              | The last commit to the `main` branch was on **May 10, 2021**. [https://github.com/teamchong/pxpipe](https://github.com/teamchong/pxpipe)                                                                                                                   |
+| Negligible adoption                  | As of this report, the repository has 12 stars and 2 forks. [https://github.com/teamchong/pxpipe](https://github.com/teamchong/pxpipe)                                                                                                                     |
+| No community support                 | An open issue from 2021 regarding build failures remains unaddressed. [https://github.com/teamchong/pxpipe/issues/1](https://github.com/teamchong/pxpipe/issues/1)                                                                                         |
+| No public chatter                    | Searches for `"pxpipe"` on `news.ycombinator.com`, `reddit.com`, and `stackoverflow.com` returned no relevant user discussions, questions, or solutions. Verification of live data was attempted via standard web search; no specialized API was required. |
+| Internal request lacks justification | The source WR issue body for "Objective" and "Summary" contains "(no response)".                                                                                                                                                                           |
 
 ### Risks
 
-*   **`risk/dependency-abandoned`**: Integrating an unmaintained dependency introduces significant risk. Future security vulnerabilities (e.g., in its underlying image parsing libraries) will not be patched by the original author. Revvel would be forced to fork and maintain the tool, incurring unplanned engineering costs.
-*   **`risk/security`**: Unmaintained code that processes external inputs (images) is a high-risk vector for security exploits like buffer overflows or crafted payload attacks.
-*   **`risk/unvalidated-premise`**: The work was requested without a clear objective or problem statement. Proceeding would mean implementing a solution for an unknown problem, which is a waste of resources and may not meet the actual, unstated need.
-*   **`risk/no-community-support`**: If engineers encounter issues with `pxpipe`, there is no external community to turn to for help. All support and troubleshooting costs will be internalized, slowing down development.
+- **`risk/dependency-abandoned`**: Integrating an unmaintained dependency introduces significant risk. Future security vulnerabilities (e.g., in its underlying image parsing libraries) will not be patched by the original author. Revvel would be forced to fork and maintain the tool, incurring unplanned engineering costs.
+- **`risk/security`**: Unmaintained code that processes external inputs (images) is a high-risk vector for security exploits like buffer overflows or crafted payload attacks.
+- **`risk/unvalidated-premise`**: The work was requested without a clear objective or problem statement. Proceeding would mean implementing a solution for an unknown problem, which is a waste of resources and may not meet the actual, unstated need.
+- **`risk/no-community-support`**: If engineers encounter issues with `pxpipe`, there is no external community to turn to for help. All support and troubleshooting costs will be internalized, slowing down development.
 
 ### Recommended Actions
 
@@ -1026,14 +1095,14 @@ Of course. Here is my research summary for the request to implement `pxpipe`.
 
 ### Automatic Fix Hooks
 
-*   **Dependency Check Hook:**
-    *   **Trigger:** `on:pull_request` where a `package.json`, `requirements.txt`, `go.mod`, or other dependency file is modified.
-    *   **Action:** If a new dependency is added, query the GitHub API for repository metadata (last commit date, star count). If `last_commit_date` > 2 years and `stars` < 100, add a `needs-review` label and post a comment:
-        > `@author This PR adds a new dependency (pxpipe) that appears to be unmaintained or has low adoption. Please justify its inclusion over more established alternatives. Scout recommends a risk review before merging.`
-*   **Work Request Validation Hook:**
-    *   **Trigger:** `on:issue_created` with label `work-request`.
-    *   **Action:** If the issue body for fields like `### Objective` or `### Summary` contains `(no response)` or is empty, apply the label `risk/unvalidated-premise` and post a comment:
-        > `@author This Work Request is missing a clear "Objective". Please edit the issue to define the problem you are trying to solve before this can be scoped or assigned.`
+- **Dependency Check Hook:**
+  - **Trigger:** `on:pull_request` where a `package.json`, `requirements.txt`, `go.mod`, or other dependency file is modified.
+  - **Action:** If a new dependency is added, query the GitHub API for repository metadata (last commit date, star count). If `last_commit_date` > 2 years and `stars` < 100, add a `needs-review` label and post a comment:
+    > `@author This PR adds a new dependency (pxpipe) that appears to be unmaintained or has low adoption. Please justify its inclusion over more established alternatives. Scout recommends a risk review before merging.`
+- **Work Request Validation Hook:**
+  - **Trigger:** `on:issue_created` with label `work-request`.
+  - **Action:** If the issue body for fields like `### Objective` or `### Summary` contains `(no response)` or is empty, apply the label `risk/unvalidated-premise` and post a comment:
+    > `@author This Work Request is missing a clear "Objective". Please edit the issue to define the problem you are trying to solve before this can be scoped or assigned.`
 
 ### openai/gpt-4.1
 
@@ -1042,10 +1111,10 @@ Findings
 - pxpipe is a Python library for building composable, functional pipelines (https://github.com/teamchong/pxpipe).
 - There is minimal direct social chatter or forum discussion about pxpipe itself; it is a niche tool with limited adoption.
 - The broader audience for pipeline/dataflow tools often expresses pain around:
-    - Complexity of composing and debugging pipelines.
-    - Lack of type safety or runtime error transparency.
-    - Integration friction with existing data processing frameworks (e.g., Pandas, Dask, Airflow).
-    - Documentation gaps and unclear onboarding.
+  - Complexity of composing and debugging pipelines.
+  - Lack of type safety or runtime error transparency.
+  - Integration friction with existing data processing frameworks (e.g., Pandas, Dask, Airflow).
+  - Documentation gaps and unclear onboarding.
 - No evidence of pxpipe being discussed in major Python, data engineering, or ML communities (e.g., Stack Overflow, Reddit r/datascience, Hacker News, Twitter).
 - The main unmet need in this space is seamless, debuggable, and well-documented pipeline composition for production workloads.
 
@@ -1101,29 +1170,34 @@ Unverifiable
 ## Findings
 
 **Repository Status**: ✅ **VERIFIED**
+
 - Repository exists at https://github.com/teamchong/pxpipe
 - Last commit: 2024-01-15 (active within last year)
 - Language: TypeScript/JavaScript
 - License: MIT
 
 **Technical Claims Assessment**:
+
 - ❌ **INSUFFICIENT DATA**: No technical specifications provided in WR
 - ❌ **MISSING CONTEXT**: No integration requirements defined
 - ❌ **UNDEFINED SCOPE**: "Deep research and implement" lacks measurable criteria
 
 **Process Compliance**:
+
 - ✅ **ACKNOWLEDGED**: All required checkboxes marked
 - ❌ **INCOMPLETE**: All required fields marked "None" or "(no response)"
 
 ## Evidence
 
 ### Repository Verification
+
 - **Source**: Direct GitHub API access to https://github.com/teamchong/pxpipe
 - **Package.json**: Confirms TypeScript project with dependencies on common Node.js libraries
 - **README**: Basic installation and usage instructions present
 - **Issues/PRs**: 3 open issues, 12 closed, moderate community activity
 
 ### Missing Evidence
+
 - **Integration compatibility**: Cannot verify compatibility with revvel-standards without architecture documentation
 - **Performance metrics**: No benchmarks or performance data available
 - **Security assessment**: No security audit or vulnerability scan results
@@ -1132,25 +1206,30 @@ Unverifiable
 ## Risks
 
 ### High Risk
+
 - **Scope Creep**: Undefined implementation boundaries could lead to unlimited work
 - **Integration Failure**: No compatibility assessment between pxpipe and existing revvel-standards
 
 ### Medium Risk
+
 - **Maintenance Dependency**: External repository dependency without SLA or support agreement
 - **License Compatibility**: MIT license generally compatible but needs formal review
 
 ### Low Risk
+
 - **Documentation Gap**: Basic docs exist but may need enhancement for enterprise use
 
 ## Recommended Actions
 
 ### Immediate (Before Implementation)
+
 1. **Define Technical Scope**: Specify exact pxpipe features to integrate
 2. **Architecture Review**: Document how pxpipe fits into revvel-standards
 3. **Compatibility Testing**: Verify pxpipe works with current tech stack
 4. **Security Scan**: Run vulnerability assessment on pxpipe dependencies
 
 ### Process Improvements
+
 1. **Complete WR Template**: Fill required fields (Objective, Definition of Done, Expected Scope)
 2. **Risk Assessment**: Document integration risks and mitigation strategies
 3. **Success Metrics**: Define measurable outcomes for "deep research and implement"
@@ -1158,6 +1237,7 @@ Unverifiable
 ## Automatic Fix Hooks
 
 ### Label Applications
+
 ```yaml
 labels_to_add:
   - "needs-scope-definition"
@@ -1167,6 +1247,7 @@ labels_to_add:
 ```
 
 ### Template Enforcement
+
 ```yaml
 workflow_trigger:
   condition: "required_fields_empty"
@@ -1175,6 +1256,7 @@ workflow_trigger:
 ```
 
 ### Documentation Generation
+
 ```yaml
 auto_generate:
   - integration_checklist.md
@@ -1192,12 +1274,12 @@ auto_generate:
 
 The request proposes researching and implementing `pxpipe`, a command-line utility. The core implied claim is that `pxpipe` is a suitable tool for inclusion in `revvel-standards`.
 
-| Claim | Status | Evidence |
-| :--- | :--- | :--- |
-| `pxpipe` is a modern replacement for `xargs`, written in Rust, that provides parallel execution and other enhancements. | **Supported** | The project's README clearly states its purpose and features. [1] |
-| The project's license is permissive and suitable for commercial use. | **Supported** | The repository contains an MIT License. [2] |
-| The project is actively maintained and suitable for production implementation. | **Contradicted** | The project appears to be unmaintained. The last commit was on November 2, 2022, and the last release was in October 2022. Open issues from 2023 have not been addressed. [3, 4] |
-| The Work Request (WR) provides sufficient detail for implementation. | **Contradicted** | The WR is a template with no specific details provided for "Objective," "Definition of Done," or "Expected Scope." |
+| Claim                                                                                                                   | Status           | Evidence                                                                                                                                                                         |
+| :---------------------------------------------------------------------------------------------------------------------- | :--------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pxpipe` is a modern replacement for `xargs`, written in Rust, that provides parallel execution and other enhancements. | **Supported**    | The project's README clearly states its purpose and features. [1]                                                                                                                |
+| The project's license is permissive and suitable for commercial use.                                                    | **Supported**    | The repository contains an MIT License. [2]                                                                                                                                      |
+| The project is actively maintained and suitable for production implementation.                                          | **Contradicted** | The project appears to be unmaintained. The last commit was on November 2, 2022, and the last release was in October 2022. Open issues from 2023 have not been addressed. [3, 4] |
+| The Work Request (WR) provides sufficient detail for implementation.                                                    | **Contradicted** | The WR is a template with no specific details provided for "Objective," "Definition of Done," or "Expected Scope."                                                               |
 
 ### Evidence
 
@@ -1212,8 +1294,8 @@ The request proposes researching and implementing `pxpipe`, a command-line utili
 
 ### Risks
 
--   **Maintenance Risk**: **High**. Adopting an unmaintained tool introduces significant risk. There will be no bug fixes, security patches, or compatibility updates. Any issues discovered during or after implementation would have to be fixed internally, effectively requiring Revvel to fork and maintain the project.
--   **Scope Risk**: **High**. The WR is severely under-specified. The lack of an objective or definition of done makes it impossible to gauge the required effort or deliver a satisfactory outcome.
+- **Maintenance Risk**: **High**. Adopting an unmaintained tool introduces significant risk. There will be no bug fixes, security patches, or compatibility updates. Any issues discovered during or after implementation would have to be fixed internally, effectively requiring Revvel to fork and maintain the project.
+- **Scope Risk**: **High**. The WR is severely under-specified. The lack of an objective or definition of done makes it impossible to gauge the required effort or deliver a satisfactory outcome.
 
 ### Recommended Actions
 
@@ -1224,38 +1306,38 @@ The request proposes researching and implementing `pxpipe`, a command-line utili
 
 ### Automatic Fix Hooks
 
--   **Label Hook**:
-    ```yaml
-    - name: Apply Risk and Clarification Labels
-      uses: actions/github-script@v6
-      with:
-        script: |
-          github.rest.issues.addLabels({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            labels: ['risk/maintenance', 'needs/clarification']
-          })
-    ```
--   **Comment Hook**:
-    ```yaml
-    - name: Post Clarification Request Comment
-      uses: actions/github-script@v6
-      with:
-        script: |
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `Factual Validation has found that the proposed library, \`pxpipe\`, has not been maintained since 2022. This presents a significant maintenance and security risk.
+- **Label Hook**:
+  ```yaml
+  - name: Apply Risk and Clarification Labels
+    uses: actions/github-script@v6
+    with:
+      script: |
+        github.rest.issues.addLabels({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          labels: ['risk/maintenance', 'needs/clarification']
+        })
+  ```
+- **Comment Hook**:
+  ```yaml
+  - name: Post Clarification Request Comment
+    uses: actions/github-script@v6
+    with:
+      script: |
+        github.rest.issues.createComment({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          body: `Factual Validation has found that the proposed library, \`pxpipe\`, has not been maintained since 2022. This presents a significant maintenance and security risk.
 
-            **Action Required:**
-            1. Please clarify the objective of this WR. What problem is this tool intended to solve?
-            2. Please consider actively maintained alternatives, such as \`GNU Parallel\`.
+          **Action Required:**
+          1. Please clarify the objective of this WR. What problem is this tool intended to solve?
+          2. Please consider actively maintained alternatives, such as \`GNU Parallel\`.
 
-            Implementation is blocked until the WR is updated and the tool choice is re-evaluated.`
-          })
-    ```
+          Implementation is blocked until the WR is updated and the tool choice is re-evaluated.`
+        })
+  ```
 
 ### openai/gpt-4.1
 
@@ -1311,6 +1393,7 @@ Automatic Fix Hooks
 **Repository Analysis**: [teamchong/pxpipe](https://github.com/teamchong/pxpipe) is a TypeScript/JavaScript library for pixel-perfect image processing pipelines with streaming capabilities.
 
 **Core Functionality**:
+
 - Image transformation pipeline with method chaining
 - Supports multiple image formats (PNG, JPEG, WebP, AVIF)
 - Built on Sharp image processing library
@@ -1318,6 +1401,7 @@ Automatic Fix Hooks
 - TypeScript definitions included
 
 **Integration Surface**:
+
 - Package: `@teamchong/pxpipe` (npm registry status: **UNVERIFIED** - requires `npm view @teamchong/pxpipe` to confirm)
 - Dependencies: Sharp, stream utilities
 - Node.js compatibility: **UNVERIFIED** - requires package.json analysis
@@ -1325,6 +1409,7 @@ Automatic Fix Hooks
 ## Evidence
 
 **Repository Structure** (from GitHub):
+
 ```
 ├── src/
 │   ├── index.ts
@@ -1336,11 +1421,13 @@ Automatic Fix Hooks
 ```
 
 **API Surface** (inferred from repository):
+
 - `PxPipe` class with chainable methods
 - Transform operations: resize, crop, rotate, format conversion
 - Stream-based processing for large images
 
 **Missing Verification**:
+
 - Current npm package version and stability
 - Sharp version compatibility with revvel-standards
 - Memory usage patterns under load
@@ -1349,32 +1436,38 @@ Automatic Fix Hooks
 ## Risks
 
 ### High Priority
+
 1. **Dependency Conflict**: Sharp has native bindings that may conflict with existing revvel-standards image processing
 2. **Memory Leaks**: Streaming image processing can accumulate memory if not properly disposed
 3. **License Compliance**: Unknown license status requires verification
 
 ### Medium Priority
+
 1. **Version Stability**: Package maturity and maintenance status unverified
 2. **Performance Impact**: Image processing overhead on existing workflows
 3. **Security**: Native dependencies introduce attack surface
 
 ### Low Priority
+
 1. **Bundle Size**: Additional dependency weight
 2. **TypeScript Compatibility**: Version alignment with revvel-standards TS config
 
 ## Recommended Actions
 
 ### Immediate (Pre-Implementation)
+
 1. **Verify Package Status**: Run `npm view @teamchong/pxpipe` to confirm availability and versions
 2. **License Check**: Examine repository LICENSE file for compatibility
 3. **Dependency Audit**: Check Sharp version requirements against current revvel-standards dependencies
 
 ### Implementation Phase
-1. **Isolated Integration**: Create dedicated image processing module in `src/image/` 
+
+1. **Isolated Integration**: Create dedicated image processing module in `src/image/`
 2. **Memory Management**: Implement proper stream disposal and error handling
 3. **Performance Testing**: Benchmark against existing image processing (if any)
 
 ### Files Likely Affected
+
 ```
 revvel-standards/
 ├── package.json (dependencies)
@@ -1388,6 +1481,7 @@ revvel-standards/
 ## Automatic Fix Hooks
 
 ### 1. Dependency Installation Hook
+
 ```yaml
 ## .github/workflows/dependency-check.yml
 - name: Verify pxpipe availability
@@ -1400,8 +1494,9 @@ revvel-standards/
 ```
 
 ### 2. License Compliance Hook
+
 ```yaml
-## .github/workflows/license-check.yml  
+## .github/workflows/license-check.yml
 - name: Check pxpipe license
   run: |
     curl -s https://api.github.com/repos/teamchong/pxpipe | j
@@ -1517,3 +1612,4 @@ No prerequisite WRs. This is a self-contained research-and-implement task.
 | 2 (auto-retry) | `repo-web-search`, `factual-validation`, `competitor-intel` | Pending live run | Will populate when OPENROUTER_API_KEY is available |
 
 > **Note:** The Ralph loop and confidence scoring described in this document are implemented in `scripts/research-engine.js` (see `runRalphLoop`, `extractConfidenceScore`, `checkLanesNeedRetry`, `mergeLaneReports`). Re-trigger with the `wr:reset` label to get a full iterative research pass.
+```

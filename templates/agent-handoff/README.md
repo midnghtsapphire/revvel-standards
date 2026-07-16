@@ -4,8 +4,8 @@ This directory contains reference examples of **build specification documents** 
 
 ## Files
 
-| File | What It Is |
-|---|---|
+| File                         | What It Is                                                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | `GROWLINGEYES_BUILD_SPEC.md` | The canonical GrowlingEyes 18-domain build spec — 95 data sources, sprint order, schema, deploy instructions |
 
 ## How to Write a Good Build Spec (Lessons from GrowlingEyes)

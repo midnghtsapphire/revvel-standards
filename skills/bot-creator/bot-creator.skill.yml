@@ -40,18 +40,18 @@ persona: forge
 
 # ── Functional categories ───────────────────────────────────────────────────
 categories:
-  adulting:      "Life-admin nudges: bills, appointments, chores, meds"
-  creative:      "Writes, illustrates, memes, remixes, brainstorms"
-  study:         "Explains, quizzes, flashcards, tracks a learning plan"
-  coding:        "Writes, reviews, and debugs code; opens PRs"
-  productivity:  "Inbox, calendar, tasks, focus timers, standups"
-  social:        "Reply drafts, tone-shift, DMs, comment crafting"
-  finance:       "Budget, subscriptions audit, expense categorization"
-  wellness:      "Mood, journal, sleep, hydration, gentle check-ins"
-  gaming:        "Game companions, lore bots, build optimizers"
-  shopping:      "Deal hunters, wishlist, price drop watchers"
-  weaponized:    "Aggressive debate / roast / cease-and-desist drafting (opt-in)"
-  guardian:      "Safety, red-team, fact-checking, scam detection"
+  adulting: "Life-admin nudges: bills, appointments, chores, meds"
+  creative: "Writes, illustrates, memes, remixes, brainstorms"
+  study: "Explains, quizzes, flashcards, tracks a learning plan"
+  coding: "Writes, reviews, and debugs code; opens PRs"
+  productivity: "Inbox, calendar, tasks, focus timers, standups"
+  social: "Reply drafts, tone-shift, DMs, comment crafting"
+  finance: "Budget, subscriptions audit, expense categorization"
+  wellness: "Mood, journal, sleep, hydration, gentle check-ins"
+  gaming: "Game companions, lore bots, build optimizers"
+  shopping: "Deal hunters, wishlist, price drop watchers"
+  weaponized: "Aggressive debate / roast / cease-and-desist drafting (opt-in)"
+  guardian: "Safety, red-team, fact-checking, scam detection"
 
 # ── Visual style library ────────────────────────────────────────────────────
 # Each style lists its kind (dimensional | persona), a one-line feel,
@@ -89,35 +89,74 @@ styles:
   adulting:
     kind: persona
     feel: "Soft neutrals, calm, reassuring"
-    tokens: { palette: ["#e9e3d5", "#8fa58a", "#2b2b2b"], radius: "2xl", heading_family: "serif" }
+    tokens:
+      {
+        palette: ["#e9e3d5", "#8fa58a", "#2b2b2b"],
+        radius: "2xl",
+        heading_family: "serif",
+      }
   bt21:
     kind: persona
     feel: "Cute mascot, pastel, plush, big eyes"
-    tokens: { palette: ["#ffd9e8", "#c7e9ff", "#fff3b0"], hero: "mascot", shadow: "plush" }
+    tokens:
+      {
+        palette: ["#ffd9e8", "#c7e9ff", "#fff3b0"],
+        hero: "mascot",
+        shadow: "plush",
+      }
   pretty-pony:
     kind: persona
     feel: "Sparkle, rainbow gradients, cutie-marks"
-    tokens: { palette: ["#ffc8dd", "#bde0fe", "#cdb4db", "#ffffb3"], effects: ["sparkles"], display_family: "script" }
+    tokens:
+      {
+        palette: ["#ffc8dd", "#bde0fe", "#cdb4db", "#ffffb3"],
+        effects: ["sparkles"],
+        display_family: "script",
+      }
   memelord:
     kind: persona
     feel: "Impact-font, deep-fried accents, reaction energy"
-    tokens: { display_family: "Impact", effects: ["heavy-drop-shadow", "emoji-chaos"] }
+    tokens:
+      {
+        display_family: "Impact",
+        effects: ["heavy-drop-shadow", "emoji-chaos"],
+      }
   genz:
     kind: persona
     feel: "Y2K × gradient blur × emoji-first"
-    tokens: { palette: ["gradient-chrome", "#ff7ad9", "#7af0ff"], case: "lowercase", effects: ["sticker-chaos"] }
+    tokens:
+      {
+        palette: ["gradient-chrome", "#ff7ad9", "#7af0ff"],
+        case: "lowercase",
+        effects: ["sticker-chaos"],
+      }
   genx:
     kind: persona
     feel: "MTV grunge, cassette, halftone"
-    tokens: { palette: ["#1a1a1a", "#d6d6d6", "#e03131"], effects: ["halftone-dots"], display_family: "ransom" }
+    tokens:
+      {
+        palette: ["#1a1a1a", "#d6d6d6", "#e03131"],
+        effects: ["halftone-dots"],
+        display_family: "ransom",
+      }
   millennial:
     kind: persona
     feel: "Soft sans, pastel, hand-lettered, avocado vibes"
-    tokens: { palette: ["#f7cac9", "#92a8a1", "#2b2b2b"], radius: "xl", body_family: "rounded-sans" }
+    tokens:
+      {
+        palette: ["#f7cac9", "#92a8a1", "#2b2b2b"],
+        radius: "xl",
+        body_family: "rounded-sans",
+      }
   boomer:
     kind: persona
     feel: "Clear, high-contrast, large type, classic"
-    tokens: { palette: ["#0b2545", "#fff9f0", "#b3321c"], body_family: "serif", min_body_px: 18 }
+    tokens:
+      {
+        palette: ["#0b2545", "#fff9f0", "#b3321c"],
+        body_family: "serif",
+        min_body_px: 18,
+      }
 
 # ── Combo rules ─────────────────────────────────────────────────────────────
 combo_rules:
@@ -133,14 +172,14 @@ combo_rules:
     - "three or more styles"
     - "boomer × memelord"
     - "adulting × weaponized"
-  background_default: "minimal"   # per owner feedback: avoid busy dioramas by default
+  background_default: "minimal" # per owner feedback: avoid busy dioramas by default
   background_opts: ["minimal", "scene", "diorama"]
 
 # ── Defaults ────────────────────────────────────────────────────────────────
 defaults:
   category: productivity
   style: "glassmorphic × millennial"
-  tone: neutral              # chill | neutral | spicy
+  tone: neutral # chill | neutral | spicy
   background: minimal
   radius: "2xl"
   motion: calm
@@ -163,13 +202,43 @@ interview:
 # ── Output schema (Bot Spec) ────────────────────────────────────────────────
 output_schema:
   type: object
-  required: [slug, name, pitch, category, style, tone, persona, system_prompt, capabilities, theme]
+  required:
+    [
+      slug,
+      name,
+      pitch,
+      category,
+      style,
+      tone,
+      persona,
+      system_prompt,
+      capabilities,
+      theme,
+    ]
   properties:
     slug: { type: string, pattern: "^[a-z0-9-]+$" }
     name: { type: string }
     pitch: { type: string }
     owner: { type: string }
-    category: { type: string, enum: [adulting, creative, study, coding, productivity, social, finance, wellness, gaming, shopping, weaponized, guardian] }
+    category:
+      {
+        type: string,
+        enum:
+          [
+            adulting,
+            creative,
+            study,
+            coding,
+            productivity,
+            social,
+            finance,
+            wellness,
+            gaming,
+            shopping,
+            weaponized,
+            guardian,
+          ],
+      }
     style: { type: string, description: "single style slug or `a × b`" }
     tone: { type: string, enum: [chill, neutral, spicy] }
     persona:

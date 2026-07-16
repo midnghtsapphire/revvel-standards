@@ -12,6 +12,7 @@
 This document defines the **agent fallback chain** for automated code generation and task execution. When the primary agent (OpenHands AI) reaches rate limits or becomes unavailable, the system automatically falls back to secondary agents (Cursor, then OpenRouter) to ensure continuous operation.
 
 **Fallback Chain:**
+
 ```
 OpenHands AI → Cursor → OpenRouter (multi-model) → Manual escalation
 ```
@@ -21,6 +22,7 @@ OpenHands AI → Cursor → OpenRouter (multi-model) → Manual escalation
 ## Why This Matters
 
 **The Problem:** AI coding agents have usage limits. OpenHands AI has both:
+
 - **Rate limits** (requests per minute/hour)
 - **Monthly usage quotas** (total compute time/tokens per billing cycle)
 
@@ -32,11 +34,11 @@ When these limits are reached, workflows that depend on OpenHands fail, blocking
 
 ## Agent Capabilities Matrix
 
-| Agent | Strengths | Use Cases | Rate Limits | Cost |
-|-------|-----------|-----------|-------------|------|
-| **OpenHands AI** | Full autonomous coding, multi-file refactoring, complex debugging | Large features, architecture changes, system-wide refactors | ~10 requests/hour, monthly quota | High |
-| **Cursor** | Fast iteration, inline editing, context-aware suggestions | Smaller features, bug fixes, targeted changes | ~100 requests/hour | Medium |
-| **OpenRouter** | Multi-model access (Sonnet, Opus, GPT-4), no hard limits | Code review, documentation, simple changes, emergency backup | Pay-per-use, effectively unlimited | Variable (model-dependent) |
+| Agent            | Strengths                                                         | Use Cases                                                    | Rate Limits                        | Cost                       |
+| ---------------- | ----------------------------------------------------------------- | ------------------------------------------------------------ | ---------------------------------- | -------------------------- |
+| **OpenHands AI** | Full autonomous coding, multi-file refactoring, complex debugging | Large features, architecture changes, system-wide refactors  | ~10 requests/hour, monthly quota   | High                       |
+| **Cursor**       | Fast iteration, inline editing, context-aware suggestions         | Smaller features, bug fixes, targeted changes                | ~100 requests/hour                 | Medium                     |
+| **OpenRouter**   | Multi-model access (Sonnet, Opus, GPT-4), no hard limits          | Code review, documentation, simple changes, emergency backup | Pay-per-use, effectively unlimited | Variable (model-dependent) |
 
 ---
 
@@ -45,18 +47,21 @@ When these limits are reached, workflows that depend on OpenHands fail, blocking
 The system switches to the next agent in the chain when:
 
 ### OpenHands AI → Cursor
+
 - **429 Too Many Requests** response from OpenHands API
 - **Quota exceeded** error
 - **No response** within 60 seconds (3 attempts with exponential backoff)
 - **Explicit failure** message from OpenHands
 
 ### Cursor → OpenRouter
+
 - **Rate limit exceeded** on Cursor API
 - **API key invalid or expired**
 - **Service unavailable** (5xx errors after 3 retries)
 - **Cursor fails to complete task** within expected time
 
 ### OpenRouter → Manual Escalation
+
 - **All models fail** (tried Sonnet → Opus → GPT-4)
 - **OpenRouter service down** (confirmed via status page)
 - **Task complexity exceeds model capability** (manual review required)
@@ -77,11 +82,13 @@ OPENROUTER_API_KEY=   # Tertiary agent + emergency backup
 ```
 
 **Vault paths:**
+
 - `revvel/shared/llm/OpenHands`
 - `revvel/shared/llm/cursor`
 - `revvel/shared/llm/openrouter`
 
 **Provision locally:**
+
 ```bash
 vault kv get -field=api_key revvel/shared/llm/OpenHands
 vault kv get -field=api_key revvel/shared/llm/cursor
@@ -89,6 +96,7 @@ vault kv get -field=api_key revvel/shared/llm/openrouter
 ```
 
 **Add to GitHub repo:**
+
 ```bash
 # Use the credential-gatekeeper workflow or manual:
 gh secret set OpenHands_API_KEY --repo midnghtsapphire/revvel-standards
@@ -101,12 +109,15 @@ gh secret set OPENROUTER_API_KEY --repo midnghtsapphire/revvel-standards
 The agent-fallback workflow **automatically triggers** on the following events:
 
 #### Issue Labels
+
 When an issue is labeled with:
+
 - `wr:code` — Triggers code generation
 - `wr:auto` — Triggers automated task execution
 - `agent-fallback` — Explicitly requests fallback system
 
 Example:
+
 ```bash
 gh issue create --title "Add new feature" --body "Description..."
 gh issue edit 123 --add-label "wr:code"
@@ -114,7 +125,9 @@ gh issue edit 123 --add-label "wr:code"
 ```
 
 #### Pull Request Events
+
 When a PR is:
+
 - **Opened** (non-draft)
 - **Reopened**
 - **Ready for review** (converted from draft)
@@ -122,19 +135,24 @@ When a PR is:
 The workflow analyzes the PR and generates suggestions/improvements automatically.
 
 Example:
+
 ```bash
 gh pr create --title "New feature" --body "Implementation"
 # Workflow automatically starts if PR is not a draft!
 ```
 
 #### Manual Trigger
+
 Can still be triggered manually via:
+
 ```bash
 gh workflow run agent-fallback.yml -f issue_number=123
 ```
 
 #### Reusable Workflow
+
 Can be called from other workflows:
+
 ```yaml
 jobs:
   my-job:
@@ -221,6 +239,7 @@ jobs:
 Three scripts implement the agent calls:
 
 #### `scripts/call-OpenHands-api.sh`
+
 ```bash
 #!/bin/bash
 # Call OpenHands AI with retry logic and rate limit detection
@@ -228,6 +247,7 @@ Three scripts implement the agent calls:
 ```
 
 #### `scripts/call-cursor-api.sh`
+
 ```bash
 #!/bin/bash
 # Call Cursor API with retry logic
@@ -235,6 +255,7 @@ Three scripts implement the agent calls:
 ```
 
 #### `scripts/call-openrouter-with-fallback.js`
+
 ```javascript
 // Call OpenRouter with model fallback chain:
 // anthropic/claude-sonnet-4 → anthropic/claude-opus-4 → openai/gpt-4-turbo
@@ -359,6 +380,7 @@ Not all tasks require OpenHands's full capabilities. Route intelligently:
 ```
 
 **Complexity heuristics:**
+
 - **Simple:** Documentation updates, single-file changes, <50 lines changed
 - **Medium:** Bug fixes, small features, 2-5 files changed
 - **Complex:** Architecture changes, multi-file refactors, >10 files changed
@@ -387,12 +409,14 @@ When quota is <10% remaining, **proactively switch** to Cursor for non-critical 
 **What happens:** OpenHands, Cursor, and OpenRouter all fail (service outage, invalid keys, etc.)
 
 **Recovery:**
+
 1. Workflow creates a `needs-human` issue
 2. Logs full error context (attempted agents, errors, timestamps)
 3. Notifies via configured channels (Discord, email, Slack)
 4. Does NOT retry automatically (prevents error spam)
 
 **Human intervention:**
+
 - Check agent status pages
 - Verify API keys are valid
 - Manually complete the task
@@ -403,6 +427,7 @@ When quota is <10% remaining, **proactively switch** to Cursor for non-critical 
 **What happens:** OpenHands works but Cursor fails (expired key, service down)
 
 **Recovery:**
+
 - Workflow continues using OpenHands
 - Creates a low-priority issue: `[WARNING] Cursor unavailable — fallback chain degraded`
 - Human should fix Cursor config when convenient
@@ -413,16 +438,18 @@ When quota is <10% remaining, **proactively switch** to Cursor for non-critical 
 **What happens:** Multiple workflows trigger simultaneously, all hit OpenHands rate limit
 
 **Recovery:**
+
 - First N workflows use OpenHands (up to rate limit)
 - Next N workflows automatically fall back to Cursor
 - Remaining workflows fall back to OpenRouter
 - Concurrency limits prevent overwhelming any single agent
 
 **Prevention:**
+
 ```yaml
 concurrency:
   group: agent-fallback-${{ github.workflow }}
-  cancel-in-progress: false  # Queue instead of cancel
+  cancel-in-progress: false # Queue instead of cancel
 ```
 
 ---
@@ -438,7 +465,7 @@ All three API keys should be rotated regularly:
 name: Rotate Agent API Keys
 on:
   schedule:
-    - cron: "0 0 1 */3 *"  # Every 3 months
+    - cron: "0 0 1 */3 *" # Every 3 months
   workflow_dispatch:
 
 jobs:
@@ -456,11 +483,13 @@ jobs:
 ### Rate Limit Abuse Prevention
 
 If an agent is being rate-limited excessively, it may indicate:
+
 - **Malicious automation** (compromised workflow, fork spam)
 - **Inefficient workflows** (infinite loops, redundant calls)
 - **Insufficient concurrency limits**
 
 **Detection:**
+
 ```bash
 # Count fallback events in the last hour
 gh issue list --label auto-fallback --created ">=@{1 hour ago}" | wc -l
@@ -469,6 +498,7 @@ gh issue list --label auto-fallback --created ">=@{1 hour ago}" | wc -l
 ```
 
 **Mitigation:**
+
 - Temporarily disable problematic workflow
 - Add stricter concurrency limits
 - Review recent workflow changes
@@ -514,6 +544,6 @@ gh issue list --label auto-fallback --created ">=@{1 hour ago}" | wc -l
 
 ## Changelog
 
-| Date | Change | Author |
-|------|--------|--------|
+| Date       | Change                                    | Author   |
+| ---------- | ----------------------------------------- | -------- |
 | 2026-04-30 | Initial agent fallback process documented | @copilot |

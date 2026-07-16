@@ -1,4 +1,4 @@
-# WR: [WR] Create  resume generator based on these comments in the screenshots and reddit link
+# WR: [WR] Create resume generator based on these comments in the screenshots and reddit link
 
 **Issue:** #15164  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-05  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-05  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -113,18 +112,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -136,6 +136,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28748186205.md`
 
 # WR-Ready Research Packet: Resume Generator
@@ -147,6 +148,7 @@ Source packet: `docs/research-engine/run-28748186205.md`
 The work request is blocked due to inaccessible primary sources (Reddit thread and screenshots) that contain the core requirements. Without these sources, we cannot define the product scope, user needs, or acceptance criteria. The request must be updated with transcribed requirements before development can begin.
 
 **Key Blockers**:
+
 - Reddit thread (https://www.reddit.com/r/recruitinghell/s/en2zyR33dj) returns access error
 - 7 screenshots containing user requirements are not accessible for analysis
 - All required WR fields are empty (Definition of Done, Expected Scope, Validation Expectations)
@@ -154,11 +156,13 @@ The work request is blocked due to inaccessible primary sources (Reddit thread a
 ## 2. Audience We Are Going After and Why
 
 **Primary Target**: Job seekers frustrated with ATS (Applicant Tracking System) rejection
+
 - **Pain Point**: Qualified candidates getting auto-rejected by resume screening software
 - **Demographics**: Mid-career professionals, career changers, recent graduates
 - **Psychographics**: Tech-literate, active in online communities (Reddit), skeptical of existing solutions
 
 **Why This Audience**:
+
 - High emotional investment (job search stress)
 - Proven willingness to pay for solutions (internal estimate: $10-20/month based on competitor pricing)
 - Strong word-of-mouth potential in job seeker communities
@@ -167,12 +171,14 @@ The work request is blocked due to inaccessible primary sources (Reddit thread a
 ## 3. Marketing and SEO Plan
 
 **Primary Keywords** (monthly search volume pending verification):
-- "ATS friendly resume builder" 
+
+- "ATS friendly resume builder"
 - "resume generator that beats ATS"
 - "why is my resume getting rejected"
 - "resume not getting responses"
 
 **Content Strategy**:
+
 1. **Landing Page**: "Beat the ATS Robots That Reject Qualified Candidates"
 2. **Blog Content**:
    - "How ATS Systems Screen Resumes (And How to Beat Them)"
@@ -180,6 +186,7 @@ The work request is blocked due to inaccessible primary sources (Reddit thread a
    - "The Single-Column Resume Format Recruiters Actually Want"
 
 **Distribution Channels**:
+
 - Reddit: r/recruitinghell (1M+ members), r/jobs (3.8M+ members), r/resumes (650k+ members)
 - LinkedIn: Career coaching content, ATS education posts
 - SEO: Target long-tail keywords around ATS frustration
@@ -188,25 +195,27 @@ The work request is blocked due to inaccessible primary sources (Reddit thread a
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Pricing | Key Features | GitHub Stars | Moat/Weakness |
-|------------|---------|--------------|--------------|---------------|
-| [Reactive Resume](https://github.com/AmruthPillai/Reactive-Resume) | Free/OSS | Privacy-focused, JSON export | 22.5k | No AI features, basic templates |
-| [HackMyResume](https://github.com/hacksalot/HackMyResume) | Free/OSS | CLI-based, developer-focused | 9.5k | Poor UX for non-technical users |
-| Resume.io | $2.95 trial, then $24.95/mo | Professional templates, easy UI | N/A | Bait-and-switch pricing model |
-| Zety | $2.70 trial, then paid | ATS optimization claims | N/A | Hidden paywall frustrates users |
-| Novoresume | Free basic, $16/mo premium | Modern templates | N/A | Limited free features |
-| [Resumake.io](https://github.com/saadq/resumake.io) | Free/OSS | Simple, fast | 2.8k | Abandoned (no updates since 2022) |
+| Competitor                                                         | Pricing                     | Key Features                    | GitHub Stars | Moat/Weakness                     |
+| ------------------------------------------------------------------ | --------------------------- | ------------------------------- | ------------ | --------------------------------- |
+| [Reactive Resume](https://github.com/AmruthPillai/Reactive-Resume) | Free/OSS                    | Privacy-focused, JSON export    | 22.5k        | No AI features, basic templates   |
+| [HackMyResume](https://github.com/hacksalot/HackMyResume)          | Free/OSS                    | CLI-based, developer-focused    | 9.5k         | Poor UX for non-technical users   |
+| Resume.io                                                          | $2.95 trial, then $24.95/mo | Professional templates, easy UI | N/A          | Bait-and-switch pricing model     |
+| Zety                                                               | $2.70 trial, then paid      | ATS optimization claims         | N/A          | Hidden paywall frustrates users   |
+| Novoresume                                                         | Free basic, $16/mo premium  | Modern templates                | N/A          | Limited free features             |
+| [Resumake.io](https://github.com/saadq/resumake.io)                | Free/OSS                    | Simple, fast                    | 2.8k         | Abandoned (no updates since 2022) |
 
 **Market Gap**: No OSS tool offers AI-powered resume optimization based on real recruiter feedback
 
 ## 5. Chatter and Demand Signals
 
 **Verified Demand Signals**:
+
 - Reddit post about simple resume format: 11,800+ upvotes, 780+ comments
 - Multiple explicit purchase intent comments: "I would pay for a service that just lets me input my info and it spits out a resume in this format"
 - User frustration with existing tools: "Every resume builder tries to make it 'look good' with multiple columns... which is what we're told NOT to do because of ATS"
 
 **Key User Language**:
+
 - "Your fancy resume is getting rejected by robots"
 - "Black hole applications"
 - "Perfect match but never hear back"
@@ -217,17 +226,20 @@ The work request is blocked due to inaccessible primary sources (Reddit thread a
 ## 6. Factual Validation and Evidence Gaps
 
 **Verified Facts**:
+
 - Resume builder market is saturated with 50+ competitors
 - ATS systems are widely used (internal estimate: 75%+ of large employers)
 - Single-column formats perform better with ATS (multiple user testimonials)
 
 **Critical Evidence Gaps**:
+
 - ❌ Reddit thread content (inaccessible URL)
 - ❌ Screenshot requirements (images not readable)
 - ❌ Actual ATS pass-through rate improvements (no public data)
 - ❌ Market size for ATS-optimized tools (requires paid research reports)
 
 **Required Validation**:
+
 1. Manual extraction of Reddit thread content
 2. OCR/transcription of screenshot requirements
 3. A/B testing of resume formats through actual ATS systems
@@ -236,6 +248,7 @@ The work request is blocked due to inaccessible primary sources (Reddit thread a
 ## 7. Build Requirements and Acceptance Gates
 
 **MVP Features** (pending requirement extraction):
+
 1. Single-column, ATS-friendly resume template
 2. Form-based input (no account required)
 3. Real-time preview
@@ -243,6 +256,7 @@ The work request is blocked due to inaccessible primary sources (Reddit thread a
 5. Client-side data processing (privacy-first)
 
 **Acceptance Gates**:
+
 - [ ] Resume passes 3+ major ATS parsers (Workday, Greenhouse, Lever)
 - [ ] PDF exports correctly on all major browsers
 - [ ] Zero user data stored on servers
@@ -251,6 +265,7 @@ The work request is blocked due to inaccessible primary sources (Reddit thread a
 - [ ] WCAG 2.1 AA accessibility compliance
 
 **Technical Stack** (recommended):
+
 - Frontend: React/Next.js for SEO
 - PDF Generation: react-pdf or puppeteer
 - Hosting: Vercel/Netlify (static site)
@@ -259,21 +274,25 @@ The work request is blocked due to inaccessible primary sources (Reddit thread a
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 Review focus: Ensure all resume data processing happens client-side only. Flag any server-side data transmission. Verify PDF generation doesn't leak user data.
 ```
 
 ### For OpenRouter
+
 ```
 Check for: ATS compatibility in generated PDFs. Ensure no tables, graphics, or multi-column layouts. Verify font choices are ATS-safe (Arial, Calibri, Times New Roman).
 ```
 
 ### For Coderabbit
+
 ```
 Security review: Validate no PII is logged or transmitted. Check for XSS vulnerabilities in resume input fields. Ensure PDF generation is memory-safe.
 ```
 
 ### For Ralph Loop
+
 ```
 Performance check: PDF generation should complete in <2 seconds. Form validation should be instant. Check for memory leaks in preview updates.
 ```
@@ -281,6 +300,7 @@ Performance check: PDF generation should complete in <2 seconds. Form validation
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Complete WR Requirements
+
 ```yaml
 # File: .github/workflows/wr-validation.yml
 name: WR Validation
@@ -298,9 +318,11 @@ jobs:
             exit 1
           fi
 ```
+
 **Commit message**: `fix: add WR validation to prevent incomplete requirements`
 
 ### Fix 2: Extract Screenshot Requirements
+
 ```yaml
 # File: .github/workflows/extract-requirements.yml
 name: Extract Requirements
@@ -319,47 +341,54 @@ jobs:
         run: |
           # Add extracted text to issue description
 ```
+
 **Commit message**: `feat: add automated screenshot text extraction workflow`
 
 ### Fix 3: Privacy-First Architecture
+
 ```javascript
 // File: src/utils/resumeGenerator.js
 export const generateResume = (userData) => {
   // BLOCKING: All processing must be client-side
-  if (typeof window === 'undefined') {
-    throw new Error('Resume generation must run in browser only');
+  if (typeof window === "undefined") {
+    throw new Error("Resume generation must run in browser only");
   }
-  
+
   // TODO: Implement ATS-friendly formatting
   const resume = {
-    format: 'single-column',
-    fonts: ['Arial', 'Calibri'],
+    format: "single-column",
+    fonts: ["Arial", "Calibri"],
     // No tables, no graphics, no columns
   };
-  
+
   return resume;
 };
 ```
+
 **Commit message**: `feat: implement privacy-first client-side resume generation`
 
 ## 10. Labels to Apply
 
 **Immediate (Blocking)**:
+
 - `blocked-evidence-missing` - Cannot access Reddit/screenshots
 - `needs-requirements-extraction` - Core requirements undefined
 - `validation-incomplete` - Missing acceptance criteria
 
 **Risk Labels**:
+
 - `high-competition-market` - 50+ established competitors
 - `privacy-critical` - Handles sensitive PII
 - `ats-compatibility-required` - Core value prop depends on ATS parsing
 
 **Technical Labels**:
+
 - `client-side-only` - No server processing of user data
 - `pdf-generation` - Complex browser compatibility requirements
 - `accessibility-required` - WCAG 2.1 AA compliance needed
 
 **Next Step Labels**:
+
 - `needs-manual-review` - Extract Reddit/screenshot content
 - `needs-market-validation` - Verify ATS improvement claims
 - `needs-pricing-research` - Confirm competitor pricing
@@ -408,11 +437,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 

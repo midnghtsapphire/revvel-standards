@@ -5,9 +5,10 @@ This directory contains Weekly Research (WR) documents for each repository in th
 ## Overview
 
 Each repository gets a comprehensive WR that includes:
+
 - Market opportunity analysis
 - Technology stack review
-- Security and vulnerability assessment  
+- Security and vulnerability assessment
 - Performance optimization recommendations
 - Monetization strategies
 - Deployment verification
@@ -38,12 +39,12 @@ wr/
 
 ## Template Guide
 
-| Template | When to use | Output lives in |
-|----------|-------------|-----------------|
-| `WR_TEMPLATE_IDEA.md` | Quick idea capture — fill only what you know now | `wr/ideas/` |
-| `WR_TEMPLATE_RESEARCH.md` | Targeted personal research — answer one specific question | `wr/research/` |
-| `WR_TEMPLATE_BASIC.md` | Bug / chore / docs / refactor WR | `wr/issues/` |
-| `WR_TEMPLATE_FULL.md` | New product or sellable asset — full market research | `wr/issues/` |
+| Template                  | When to use                                               | Output lives in |
+| ------------------------- | --------------------------------------------------------- | --------------- |
+| `WR_TEMPLATE_IDEA.md`     | Quick idea capture — fill only what you know now          | `wr/ideas/`     |
+| `WR_TEMPLATE_RESEARCH.md` | Targeted personal research — answer one specific question | `wr/research/`  |
+| `WR_TEMPLATE_BASIC.md`    | Bug / chore / docs / refactor WR                          | `wr/issues/`    |
+| `WR_TEMPLATE_FULL.md`     | New product or sellable asset — full market research      | `wr/issues/`    |
 
 ### Idea → Full WR promotion path
 
@@ -76,6 +77,7 @@ cd wr/scripts
 ### Via GitHub Actions
 
 Create an issue with title:
+
 ```
 [WR] Repository Review - [repository-name]
 ```
@@ -101,6 +103,7 @@ Each WR follows the 7-step process defined in `/promptforproject.md`:
 ## Prime Directive
 
 All WRs must align with the Prime Directive from `docs/AGENTS.md`:
+
 - **10M by 2030** - Revenue goal
 - **$2000+/month** - Monthly revenue target (starting May 1, 2026)
 - **Ship to Market** - Working, tested code (not plans)
@@ -123,6 +126,7 @@ All WRs must align with the Prime Directive from `docs/AGENTS.md`:
 - **Ship-to-Market Ready:** 0
 
 **Priority Distribution:**
+
 - P0 (Critical): ~10 repositories
 - P1 (High): ~20 repositories
 - P2 (Medium): ~40 repositories

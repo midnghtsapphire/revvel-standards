@@ -54,11 +54,13 @@ Successfully integrated the WeakSignalFinder methodology into the GrowlingEyes O
 ### 2. Documentation
 
 **Files:**
+
 - `growlingeyes/README.md` — Updated with WeakSignalFinder section
 - `docs/AXION_PLANETARY_MCP.md` — Added weak_signal_finder to tools table
 - `docs/growlingeyes/WEAK_SIGNAL_FINDER.md` — Comprehensive 400+ line spec
 
 **Documentation Includes:**
+
 - Architecture and pipeline explanation
 - Intelligence domain descriptions with use cases
 - Usage examples and CLI reference
@@ -94,6 +96,7 @@ Successfully integrated the WeakSignalFinder methodology into the GrowlingEyes O
   - python-dotenv>=1.0.1
 
 - **Scoring Configuration:** Extracted as module-level constants
+
   ```python
   INTENSITY_THRESHOLD = 10.0
   DIVERSITY_THRESHOLD = 20.0
@@ -114,6 +117,7 @@ Successfully integrated the WeakSignalFinder methodology into the GrowlingEyes O
 **Decision:** Used basic text processing instead of spaCy
 
 **Rationale:**
+
 - Faster for real-time OSINT monitoring
 - Lower memory footprint (~100-200 MB vs. 1+ GB)
 - Simpler dependency management
@@ -125,6 +129,7 @@ Successfully integrated the WeakSignalFinder methodology into the GrowlingEyes O
 **Decision:** Pre-configured RSS feeds per intelligence domain
 
 **Rationale:**
+
 - Aligned with GrowlingEyes' curated intelligence approach
 - Faster onboarding (no configuration needed)
 - Quality control over data sources
@@ -135,6 +140,7 @@ Successfully integrated the WeakSignalFinder methodology into the GrowlingEyes O
 **Decision:** JSON output (with optional PostgreSQL integration)
 
 **Rationale:**
+
 - Compatible with GrowlingEyes data ingestion pipeline
 - Easier integration with dashboard and alert systems
 - Allows for flexible storage backend (files, S3, PostgreSQL, etc.)
@@ -145,6 +151,7 @@ Successfully integrated the WeakSignalFinder methodology into the GrowlingEyes O
 **Decision:** Included `--daemon` mode in the tool itself
 
 **Rationale:**
+
 - Simplifies deployment (no separate cron/scheduler needed)
 - Consistent with other GrowlingEyes tools
 - Easier to manage as a PM2 process
@@ -161,7 +168,13 @@ Successfully integrated the WeakSignalFinder methodology into the GrowlingEyes O
   "signal_score": 82.5,
   "article_count": 47,
   "job_id": "20260430163000",
-  "top_emerging_themes": ["ransomware", "vulnerability", "patch", "exploit", "zero-day"],
+  "top_emerging_themes": [
+    "ransomware",
+    "vulnerability",
+    "patch",
+    "exploit",
+    "zero-day"
+  ],
   "intensity_words": {
     "ransomware": 23,
     "vulnerability": 18,
@@ -228,6 +241,7 @@ pm2 logs weak-signals
 ### 2. Dashboard Visualization
 
 Potential visualizations:
+
 - Signal strength gauges (0-100 scale)
 - Word clouds of emerging themes
 - Network graphs of contextual relationships

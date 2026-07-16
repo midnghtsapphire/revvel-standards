@@ -121,8 +121,8 @@ triggers:
     - "cde"
     - "saq"
     - "qsa"
-    - "tokenisation"  # UK/ISO spelling — both included intentionally for global coverage
-    - "tokenization"  # US spelling
+    - "tokenisation" # UK/ISO spelling — both included intentionally for global coverage
+    - "tokenization" # US spelling
     - "p2pe"
     - "merchant level"
     # TSA

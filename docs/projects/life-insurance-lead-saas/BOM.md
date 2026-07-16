@@ -25,24 +25,25 @@ status: open
 
 ## Line Items
 
-| # | Name | Category | Cost (USD) | Source | Acquisition | Blocking |
-|---|------|----------|------------|--------|-------------|----------|
-| 1 | GitHub org + repo | account | 0 | https://github.com | Create org `revvel-lils`, create private repo `lils-app` | true |
-| 2 | Vercel project linked to repo | account | 0/mo (Hobby) | https://vercel.com | Import repo, set prod domain | true |
-| 3 | Supabase project (Pro) | infra | 25/mo | https://supabase.com | New project `lils-prod`, region us-east, store URL+anon+service keys | true |
-| 4 | Domain `lifeleads.<tld>` | infra | 15/yr | Cloudflare Registrar | Purchase + point NS to Cloudflare, A/CNAME to Vercel | true |
-| 5 | Polar.sh product (lead pack) | service | 0 (5% fee) | https://polar.sh | Create org, connect GitHub, create $99 lead-pack product | true |
-| 6 | Make.com Core plan | service | 10/mo | https://make.com | Scenario: form → Supabase → Polar webhook → email | true |
-| 7 | SendGrid free tier | api | 0 | https://sendgrid.com | API key for transactional email | true |
-| 8 | TLD registration (one-time) | infra | 15 | Cloudflare | One-time first-year fee | true |
-| 9 | Lead source: Facebook Lead Ads pixel | api | 0 + ad budget | https://business.facebook.com | Business mgr, pixel install, lead form template | true |
-| 10 | Initial ad spend (test) | service | 200 (one-time) | Meta Ads | Run 7-day test campaign | false |
-| 11 | Stripe (via Polar) | account | 0 | https://stripe.com | Polar handles; verify business identity | true |
-| 12 | Legal: e-sign disclaimer + privacy policy | human | 20 (one-time, template) | Termly / GetTerms | Generate, host at `/legal/*` | true |
+| #   | Name                                      | Category | Cost (USD)              | Source                        | Acquisition                                                          | Blocking |
+| --- | ----------------------------------------- | -------- | ----------------------- | ----------------------------- | -------------------------------------------------------------------- | -------- |
+| 1   | GitHub org + repo                         | account  | 0                       | https://github.com            | Create org `revvel-lils`, create private repo `lils-app`             | true     |
+| 2   | Vercel project linked to repo             | account  | 0/mo (Hobby)            | https://vercel.com            | Import repo, set prod domain                                         | true     |
+| 3   | Supabase project (Pro)                    | infra    | 25/mo                   | https://supabase.com          | New project `lils-prod`, region us-east, store URL+anon+service keys | true     |
+| 4   | Domain `lifeleads.<tld>`                  | infra    | 15/yr                   | Cloudflare Registrar          | Purchase + point NS to Cloudflare, A/CNAME to Vercel                 | true     |
+| 5   | Polar.sh product (lead pack)              | service  | 0 (5% fee)              | https://polar.sh              | Create org, connect GitHub, create $99 lead-pack product             | true     |
+| 6   | Make.com Core plan                        | service  | 10/mo                   | https://make.com              | Scenario: form → Supabase → Polar webhook → email                    | true     |
+| 7   | SendGrid free tier                        | api      | 0                       | https://sendgrid.com          | API key for transactional email                                      | true     |
+| 8   | TLD registration (one-time)               | infra    | 15                      | Cloudflare                    | One-time first-year fee                                              | true     |
+| 9   | Lead source: Facebook Lead Ads pixel      | api      | 0 + ad budget           | https://business.facebook.com | Business mgr, pixel install, lead form template                      | true     |
+| 10  | Initial ad spend (test)                   | service  | 200 (one-time)          | Meta Ads                      | Run 7-day test campaign                                              | false    |
+| 11  | Stripe (via Polar)                        | account  | 0                       | https://stripe.com            | Polar handles; verify business identity                              | true     |
+| 12  | Legal: e-sign disclaimer + privacy policy | human    | 20 (one-time, template) | Termly / GetTerms             | Generate, host at `/legal/*`                                         | true     |
 
 ## Acquisition Playbook
 
 ### 1. GitHub Org + Repo
+
 - **Why:** All app code + CI lives here; runner target `github`.
 - **Where:** https://github.com/organizations/new
 - **Plan:** Free
@@ -56,6 +57,7 @@ status: open
 - **Stored at:** `.env.local` (org slug, repo name)
 
 ### 2. Supabase Project
+
 - **Why:** Postgres for leads + agents + transactions.
 - **Where:** https://supabase.com/dashboard/new
 - **Plan:** Pro ($25/mo) — required for daily backups + 8GB DB.
@@ -68,6 +70,7 @@ status: open
 - **Stored at:** Vercel env vars
 
 ### 3. Polar.sh Product
+
 - **Why:** Monetization runner; sells lead packs; PRIME-DIRECTIVE revenue surface.
 - **Where:** https://polar.sh
 - **Plan:** Free + 5% fee
@@ -82,6 +85,7 @@ status: open
 - **Stored at:** Vercel env vars + `BOM.md` registry
 
 ### 4. Make.com Scenario
+
 - **Why:** Orchestrates lead intake → DB → Polar fulfillment → email.
 - **Where:** https://make.com
 - **Plan:** Core $10/mo
@@ -93,6 +97,7 @@ status: open
 - **Stored at:** Make workspace `revvel-lils`
 
 ### 5. Meta Lead Ads
+
 - **Why:** Top-of-funnel for consumer lead gen.
 - **Steps:**
   1. Verify business in Meta Business Manager.
@@ -102,6 +107,7 @@ status: open
 - **ETA:** Day 3
 
 ### 6. Legal Templates
+
 - **Why:** TCPA/CCPA compliance to legally sell leads.
 - **Where:** https://termly.io
 - **Cost:** $20 one-time template pack
@@ -115,6 +121,7 @@ status: open
 ## Next Engine After Resolution
 
 Once all blocking items resolve, route to: `engine-saas-scaffold` which will:
+
 1. Scaffold Next.js app on `github` runner.
 2. Deploy on `vercel` runner.
 3. Apply Supabase schema on `supabase` runner.

@@ -20,7 +20,7 @@ const server = new Server(
     capabilities: {
       tools: {},
     },
-  }
+  },
 );
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
@@ -129,7 +129,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "auto_triage_issue",
-        description: "Automatically triage issue with labels, assignee, priority",
+        description:
+          "Automatically triage issue with labels, assignee, priority",
         inputSchema: {
           type: "object",
           properties: {
@@ -239,11 +240,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               repo: args.repo,
               issue_number: num,
               labels: args.labels,
-            })
-          )
+            }),
+          ),
         );
 
-        const succeeded = results.filter((r) => r.status === "fulfilled").length;
+        const succeeded = results.filter(
+          (r) => r.status === "fulfilled",
+        ).length;
         const failed = results.filter((r) => r.status === "rejected").length;
 
         return {
@@ -344,10 +347,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const body = issue.data.body?.toLowerCase() || "";
 
         // Type detection
-        if (title.includes("bug") || body.includes("error") || body.includes("crash")) {
+        if (
+          title.includes("bug") ||
+          body.includes("error") ||
+          body.includes("crash")
+        ) {
           labels.push("bug");
         }
-        if (title.includes("feature") || title.includes("add") || title.includes("implement")) {
+        if (
+          title.includes("feature") ||
+          title.includes("add") ||
+          title.includes("implement")
+        ) {
           labels.push("enhancement");
         }
         if (title.includes("doc")) {
@@ -358,7 +369,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
 
         // Priority detection
-        if (title.includes("critical") || title.includes("urgent") || body.includes("production")) {
+        if (
+          title.includes("critical") ||
+          title.includes("urgent") ||
+          body.includes("production")
+        ) {
           labels.push("priority:high");
         } else if (title.includes("important")) {
           labels.push("priority:medium");
@@ -408,18 +423,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const open = issues.filter((i) => i.state === "open").length;
         const closed = issues.filter((i) => i.state === "closed").length;
-        
+
         const closedWithDates = issues.filter(
-          (i) => i.state === "closed" && i.closed_at
+          (i) => i.state === "closed" && i.closed_at,
         );
-        
+
         const avgCloseDays =
           closedWithDates.length > 0
             ? closedWithDates
                 .map(
                   (i) =>
                     (new Date(i.closed_at) - new Date(i.created_at)) /
-                    (1000 * 60 * 60 * 24)
+                    (1000 * 60 * 60 * 24),
                 )
                 .reduce((a, b) => a + b, 0) / closedWithDates.length
             : 0;

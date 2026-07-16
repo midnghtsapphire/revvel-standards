@@ -87,5 +87,5 @@ Every UI creation must pass:
 
 ---
 
-*"Every digital product should compete with the top vendors in the USA."*  
-*— MIDNGHTSAPPHIRE*
+_"Every digital product should compete with the top vendors in the USA."_  
+_— MIDNGHTSAPPHIRE_

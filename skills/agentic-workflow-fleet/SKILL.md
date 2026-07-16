@@ -12,17 +12,17 @@ plain-language request.
 
 ## The nine members
 
-| Handle | Name | Pattern | Group | One job |
-| --- | --- | --- | --- | --- |
-| `@chain` | Chainwright | Prompt Chaining | Sequential Intelligence | Sequential LLM steps, each consuming the previous output |
-| `@planner` | Wayfinder | Plan and Execute | Sequential Intelligence | Plan, execute, review, adjust |
-| `@fanout` | Manifold | Parallelization | Parallel Processing | Run sections simultaneously, aggregate outputs |
-| `@conductor` | Maestro | Orchestrator-Worker | Parallel Processing | Decompose, delegate to workers, synthesize |
-| `@switchboard` | Switchyard | Routing | Intelligent Routing | Classify inputs, direct to specialists |
-| `@critic` | Whetstone | Evaluator-Optimizer | Intelligent Routing | Generate-evaluate feedback loop |
-| `@mirror` | Looking Glass | Reflection | Self-Improving Systems | Self-review to improve quality |
-| `@rewoo` | Deepcut | ReWOO | Self-Improving Systems | Plan-with-substitution, token-efficient deep search |
-| `@loop` | Perpetua | Autonomous Workflow | Self-Improving Systems | Continuous tool-feedback loop inside guardrails |
+| Handle         | Name          | Pattern             | Group                   | One job                                                  |
+| -------------- | ------------- | ------------------- | ----------------------- | -------------------------------------------------------- |
+| `@chain`       | Chainwright   | Prompt Chaining     | Sequential Intelligence | Sequential LLM steps, each consuming the previous output |
+| `@planner`     | Wayfinder     | Plan and Execute    | Sequential Intelligence | Plan, execute, review, adjust                            |
+| `@fanout`      | Manifold      | Parallelization     | Parallel Processing     | Run sections simultaneously, aggregate outputs           |
+| `@conductor`   | Maestro       | Orchestrator-Worker | Parallel Processing     | Decompose, delegate to workers, synthesize               |
+| `@switchboard` | Switchyard    | Routing             | Intelligent Routing     | Classify inputs, direct to specialists                   |
+| `@critic`      | Whetstone     | Evaluator-Optimizer | Intelligent Routing     | Generate-evaluate feedback loop                          |
+| `@mirror`      | Looking Glass | Reflection          | Self-Improving Systems  | Self-review to improve quality                           |
+| `@rewoo`       | Deepcut       | ReWOO               | Self-Improving Systems  | Plan-with-substitution, token-efficient deep search      |
+| `@loop`        | Perpetua      | Autonomous Workflow | Self-Improving Systems  | Continuous tool-feedback loop inside guardrails          |
 
 ## Shared charter
 

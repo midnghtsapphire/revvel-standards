@@ -22,6 +22,7 @@ avatars/
 All avatars must meet these standards for that **shiny, glowing, clean, healthy** look:
 
 ### Visual Requirements
+
 - **Glowing skin** - Radiant, luminous complexion with subtle highlights
 - **Healthy hair** - Shiny, voluminous, well-maintained looking hair
 - **Clean aesthetic** - Pristine, polished, professional appearance
@@ -29,6 +30,7 @@ All avatars must meet these standards for that **shiny, glowing, clean, healthy*
 - **High resolution** - 4K quality minimum for all avatar bases
 
 ### Skin Characteristics
+
 - Natural glow with subtle luminosity
 - Even skin tone with healthy undertone
 - Subtle highlighting on cheekbones, nose bridge
@@ -36,6 +38,7 @@ All avatars must meet these standards for that **shiny, glowing, clean, healthy*
 - Slight radiance effect (like skincare commercial quality)
 
 ### Hair Characteristics
+
 - Long, healthy-looking hair
 - Natural shine and movement
 - Well-maintained appearance
@@ -43,6 +46,7 @@ All avatars must meet these standards for that **shiny, glowing, clean, healthy*
 - Silky texture visible
 
 ### Lighting & Polish
+
 - Professional studio lighting
 - Soft, flattering illumination
 - Subtle rim lighting for depth
@@ -50,25 +54,30 @@ All avatars must meet these standards for that **shiny, glowing, clean, healthy*
 - Post-processing for that "glow" effect
 
 ### Reference: Donna AI Quality
+
 Like Donna AI avatars - high-end, glossy, premium appearance that looks expensive and professional.
 
 ### HeyGen Avatars
+
 - High-quality talking head videos
 - Multiple outfits per avatar
 - Custom backgrounds available
 - Best for: LinkedIn, YouTube, CLE training
 
 ### D-ID Avatars
+
 - Realistic talking photos
 - Quick generation
 - Best for: Social media, quick content
 
 ### Synthesia Avatars
+
 - Full-body AI presenters
 - Multiple languages
 - Best for: Training videos, courses
 
 ### Custom Avatars
+
 - Upload your own images
 - Style transfer options
 - Best for: Unique brand identity
@@ -93,15 +102,15 @@ avatar-name/
 
 ### Platform-Specific Selection
 
-| Platform | Recommended Style | Outfit |
-|----------|------------------|--------|
-| LinkedIn | Professional | outfit-professional |
-| YouTube | Depends on content | Casual or Formal |
-| TikTok | Casual, Creative | outfit-casual or outfit-creative |
-| Facebook | Casual, Friendly | outfit-casual |
-| CLE Training | Professional, Formal | outfit-formal |
-| Music Videos | Creative | outfit-creative |
-| Movies | Varies by role | Multiple outfits |
+| Platform     | Recommended Style    | Outfit                           |
+| ------------ | -------------------- | -------------------------------- |
+| LinkedIn     | Professional         | outfit-professional              |
+| YouTube      | Depends on content   | Casual or Formal                 |
+| TikTok       | Casual, Creative     | outfit-casual or outfit-creative |
+| Facebook     | Casual, Friendly     | outfit-casual                    |
+| CLE Training | Professional, Formal | outfit-formal                    |
+| Music Videos | Creative             | outfit-creative                  |
+| Movies       | Varies by role       | Multiple outfits                 |
 
 ### Generating New Content
 
@@ -121,6 +130,7 @@ avatar-name/
 ## Storage & Backup
 
 All avatars should be:
+
 - [ ] Saved to Google Drive (Primary)
 - [ ] Backed up to revvel-standards repo
 - [ ] Synced to cloud storage

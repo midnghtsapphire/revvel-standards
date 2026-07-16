@@ -82,24 +82,24 @@ If runtime orchestration cannot prove completion evidence, status must remain no
 9. **Docs/README sync**  
    Update source-of-truth docs/manifests with verified values only.
 10. **Handoff**  
-   Mark complete only after all mandatory gates pass with evidence.
+    Mark complete only after all mandatory gates pass with evidence.
 
 ---
 
 ## 5) Stage evidence requirements (minimum)
 
-| Stage | Required evidence |
-| --- | --- |
-| Intake | Request ID, inputs, required output definition, publication target |
-| Planning | Stage plan with dependencies + gate criteria |
-| Dependency discovery | Integration inventory (providers/services) and required interfaces |
-| Backend/API wiring | Connection checks, endpoint mapping, callback/poll contract |
-| Generation/build | Job IDs, timestamps, status transitions, output metadata |
-| Storage | Canonical object URL/ID, storage location, write confirmation |
-| Publication | Live public URL/deployment target + publication timestamp |
-| Verification | Artifact existence check + HTTP/status checks + content sanity checks |
-| Docs/README sync | Manifest/README updated with verified URLs, statuses, timestamps |
-| Handoff | Final completion record referencing all prior evidence |
+| Stage                | Required evidence                                                     |
+| -------------------- | --------------------------------------------------------------------- |
+| Intake               | Request ID, inputs, required output definition, publication target    |
+| Planning             | Stage plan with dependencies + gate criteria                          |
+| Dependency discovery | Integration inventory (providers/services) and required interfaces    |
+| Backend/API wiring   | Connection checks, endpoint mapping, callback/poll contract           |
+| Generation/build     | Job IDs, timestamps, status transitions, output metadata              |
+| Storage              | Canonical object URL/ID, storage location, write confirmation         |
+| Publication          | Live public URL/deployment target + publication timestamp             |
+| Verification         | Artifact existence check + HTTP/status checks + content sanity checks |
+| Docs/README sync     | Manifest/README updated with verified URLs, statuses, timestamps      |
+| Handoff              | Final completion record referencing all prior evidence                |
 
 ---
 

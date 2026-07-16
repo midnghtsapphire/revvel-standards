@@ -1,4 +1,5 @@
 # REVVEL MASTER STANDARDS & SPECIFICATIONS
+
 **Author:** Audrey Evans (MIDNGHTSAPPHIRE)  
 **Status:** SINGLE SOURCE OF TRUTH (SSOT)  
 **Version:** 2.1.0 (April 6, 2026)  
@@ -11,74 +12,85 @@
 This document is the master policy document. For detailed implementation specifications, field maps, and technical standards, refer to these dedicated documents. **Every document listed here is mandatory.**
 
 ### Core Architecture
-| Document | What It Covers |
-|---|---|
+
+| Document                                                                                  | What It Covers                                                      |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | [`DATABASE_ARCHITECTURE_STANDARD.md`](Master_Inventory/DATABASE_ARCHITECTURE_STANDARD.md) | PostgreSQL on DigitalOcean vs Supabase, connection pooling, backups |
-| [`DATA_MODEL_STANDARD.md`](Master_Inventory/DATA_MODEL_STANDARD.md) | Drizzle ORM conventions, column naming, audit fields, soft delete |
-| [`SECURITY_STANDARD.md`](Master_Inventory/SECURITY_STANDARD.md) | Vault, Helmet, CSP, OWASP, rate limiting |
-| [`DEPLOYMENT_STANDARD.md`](Master_Inventory/DEPLOYMENT_STANDARD.md) | DigitalOcean Droplet deploy, PM2, Nginx, CI/CD |
+| [`DATA_MODEL_STANDARD.md`](Master_Inventory/DATA_MODEL_STANDARD.md)                       | Drizzle ORM conventions, column naming, audit fields, soft delete   |
+| [`SECURITY_STANDARD.md`](Master_Inventory/SECURITY_STANDARD.md)                           | Vault, Helmet, CSP, OWASP, rate limiting                            |
+| [`DEPLOYMENT_STANDARD.md`](Master_Inventory/DEPLOYMENT_STANDARD.md)                       | DigitalOcean Droplet deploy, PM2, Nginx, CI/CD                      |
 
 ### Field Maps (Database → UI → API — every column mapped)
-| Document | What It Covers |
-|---|---|
-| [`docs/field-maps/DATABASE_TO_UI_MASTER_MAP.md`](field-maps/DATABASE_TO_UI_MASTER_MAP.md) | All 12 core tables: users, products, orders, subscriptions, affiliates, ad_campaigns, etc. |
-| [`docs/field-maps/LEADS_FIELD_MAP.md`](field-maps/LEADS_FIELD_MAP.md) | Lead capture form, CRM detail, pipeline board, metrics dashboard |
-| [`docs/field-maps/INSURANCE_LEADS_FIELD_MAP.md`](field-maps/INSURANCE_LEADS_FIELD_MAP.md) | Burial, term life, whole life, UL/IUL, pet insurance product fields |
-| [`docs/field-maps/BLOG_AND_NEWSLETTER_FIELD_MAP.md`](field-maps/BLOG_AND_NEWSLETTER_FIELD_MAP.md) | Blog editor, public listing, newsletter form, campaign editor, SEO app config |
+
+| Document                                                                                          | What It Covers                                                                             |
+| ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| [`docs/field-maps/DATABASE_TO_UI_MASTER_MAP.md`](field-maps/DATABASE_TO_UI_MASTER_MAP.md)         | All 12 core tables: users, products, orders, subscriptions, affiliates, ad_campaigns, etc. |
+| [`docs/field-maps/LEADS_FIELD_MAP.md`](field-maps/LEADS_FIELD_MAP.md)                             | Lead capture form, CRM detail, pipeline board, metrics dashboard                           |
+| [`docs/field-maps/INSURANCE_LEADS_FIELD_MAP.md`](field-maps/INSURANCE_LEADS_FIELD_MAP.md)         | Burial, term life, whole life, UL/IUL, pet insurance product fields                        |
+| [`docs/field-maps/BLOG_AND_NEWSLETTER_FIELD_MAP.md`](field-maps/BLOG_AND_NEWSLETTER_FIELD_MAP.md) | Blog editor, public listing, newsletter form, campaign editor, SEO app config              |
 
 ### Content & Marketing
-| Document | What It Covers |
-|---|---|
-| [`CONTENT_STANDARD.md`](Master_Inventory/CONTENT_STANDARD.md) | Blog system (20 posts at launch, AI generation, RSS), newsletter (CAN-SPAM), About pages, use cases |
-| [`SEO_METADATA_STANDARD.md`](Master_Inventory/SEO_METADATA_STANDARD.md) | **Mandatory Google metadata, alt text rules**, Open Graph, Twitter Cards, JSON-LD schemas, Lighthouse 90+ requirement |
-| [`MARKETING_AUTOMATION_STANDARD.md`](Master_Inventory/MARKETING_AUTOMATION_STANDARD.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, landing pages, funnels |
-| [`AFFILIATE_MARKETING_STANDARD.md`](Master_Inventory/AFFILIATE_MARKETING_STANDARD.md) | Affiliate program DB schema, inbound auto-linker, IRS $600 threshold |
+
+| Document                                                                                | What It Covers                                                                                                        |
+| --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| [`CONTENT_STANDARD.md`](Master_Inventory/CONTENT_STANDARD.md)                           | Blog system (20 posts at launch, AI generation, RSS), newsletter (CAN-SPAM), About pages, use cases                   |
+| [`SEO_METADATA_STANDARD.md`](Master_Inventory/SEO_METADATA_STANDARD.md)                 | **Mandatory Google metadata, alt text rules**, Open Graph, Twitter Cards, JSON-LD schemas, Lighthouse 90+ requirement |
+| [`MARKETING_AUTOMATION_STANDARD.md`](Master_Inventory/MARKETING_AUTOMATION_STANDARD.md) | Meta/TikTok/Instagram/X auto-posting, UTM tracking, landing pages, funnels                                            |
+| [`AFFILIATE_MARKETING_STANDARD.md`](Master_Inventory/AFFILIATE_MARKETING_STANDARD.md)   | Affiliate program DB schema, inbound auto-linker, IRS $600 threshold                                                  |
 
 ### Leads & Insurance
-| Document | What It Covers |
-|---|---|
+
+| Document                                                  | What It Covers                                                                                      |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | [`LEADS_STANDARD.md`](Master_Inventory/LEADS_STANDARD.md) | 13-stage pipeline, TCPA compliance, lead scoring, 7-attempt follow-up cadence, state licensing gate |
 
 ### Accessibility & Compliance
-| Document | What It Covers |
-|---|---|
+
+| Document                                                                  | What It Covers                                                                                      |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | [`ACCESSIBILITY_STANDARD.md`](Master_Inventory/ACCESSIBILITY_STANDARD.md) | WCAG 2.2 AA/AAA, **TTY/TDD** (confirmed line), 7 UI modes, screen reader testing, ADA for insurance |
-| [`COMPLIANCE_RUBRIC.md`](Master_Inventory/COMPLIANCE_RUBRIC.md) | P0/P1/P2 compliance tiers, scoring rubric, automated check |
-| [`TESTING_STANDARD.md`](Master_Inventory/TESTING_STANDARD.md) | Test coverage thresholds, Vitest config, E2E, contract testing |
+| [`COMPLIANCE_RUBRIC.md`](Master_Inventory/COMPLIANCE_RUBRIC.md)           | P0/P1/P2 compliance tiers, scoring rubric, automated check                                          |
+| [`TESTING_STANDARD.md`](Master_Inventory/TESTING_STANDARD.md)             | Test coverage thresholds, Vitest config, E2E, contract testing                                      |
 
 ### EDI & Tax
-| Document | What It Covers |
-|---|---|
-| [`docs/edi-maps/IRS_TAX_FORM_FIELD_MAP.md`](edi-maps/IRS_TAX_FORM_FIELD_MAP.md) | W-9, 1099-NEC, 1099-K DB→IRS field maps; TTY/phone filing for deaf users |
-| [`docs/edi-maps/EDI_INTEGRATION_STANDARD.md`](edi-maps/EDI_INTEGRATION_STANDARD.md) | How to hand field maps to any partner (IRS, carrier, bank) |
-| [`docs/edi-maps/GENERIC_PARTNER_FIELD_MAP_TEMPLATE.md`](edi-maps/GENERIC_PARTNER_FIELD_MAP_TEMPLATE.md) | Blank template for any external integration |
+
+| Document                                                                                                | What It Covers                                                           |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`docs/edi-maps/IRS_TAX_FORM_FIELD_MAP.md`](edi-maps/IRS_TAX_FORM_FIELD_MAP.md)                         | W-9, 1099-NEC, 1099-K DB→IRS field maps; TTY/phone filing for deaf users |
+| [`docs/edi-maps/EDI_INTEGRATION_STANDARD.md`](edi-maps/EDI_INTEGRATION_STANDARD.md)                     | How to hand field maps to any partner (IRS, carrier, bank)               |
+| [`docs/edi-maps/GENERIC_PARTNER_FIELD_MAP_TEMPLATE.md`](edi-maps/GENERIC_PARTNER_FIELD_MAP_TEMPLATE.md) | Blank template for any external integration                              |
 
 ### MCP Servers & AI Tool Integration
-| Document | What It Covers |
-|---|---|
-| [`MCP_STANDARD.md`](Master_Inventory/MCP_STANDARD.md) | **Mandatory.** All 32 standard MCP servers + FastMCP custom server standard. Every project must have `.mcp.json`. |
-| [`docs/MCP_REVVEL_CATALOG.md`](MCP_REVVEL_CATALOG.md) | Deep audit of all 22 MIDNGHTSAPPHIRE custom MCP repos — tools, databases, wiring instructions |
-| [`templates/mcp/mcp.full.json`](../templates/mcp/mcp.full.json) | Full 34-server config (32 standard + 2 mandatory custom) |
-| [`templates/mcp/mcp.web.json`](../templates/mcp/mcp.web.json) | Web project config (18 standard servers) |
-| [`templates/mcp/mcp.mobile.json`](../templates/mcp/mcp.mobile.json) | Mobile/Expo config (14 servers) |
-| [`templates/mcp/mcp.minimal.json`](../templates/mcp/mcp.minimal.json) | Minimal config (8 servers — DB, search, memory, filesystem) |
-| [`templates/mcp/mcp.revvel-custom.json`](../templates/mcp/mcp.revvel-custom.json) | All 19 custom Revvel MCP servers — merge into any project config |
-| [`templates/mcp/.env.mcp.example`](../templates/mcp/.env.mcp.example) | All env vars for every MCP server |
-| [`templates/mcp/custom-server/`](../templates/mcp/custom-server/) | FastMCP starter template for building new custom Revvel MCP servers |
+
+| Document                                                                          | What It Covers                                                                                                    |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| [`MCP_STANDARD.md`](Master_Inventory/MCP_STANDARD.md)                             | **Mandatory.** All 32 standard MCP servers + FastMCP custom server standard. Every project must have `.mcp.json`. |
+| [`docs/MCP_REVVEL_CATALOG.md`](MCP_REVVEL_CATALOG.md)                             | Deep audit of all 22 MIDNGHTSAPPHIRE custom MCP repos — tools, databases, wiring instructions                     |
+| [`templates/mcp/mcp.full.json`](../templates/mcp/mcp.full.json)                   | Full 34-server config (32 standard + 2 mandatory custom)                                                          |
+| [`templates/mcp/mcp.web.json`](../templates/mcp/mcp.web.json)                     | Web project config (18 standard servers)                                                                          |
+| [`templates/mcp/mcp.mobile.json`](../templates/mcp/mcp.mobile.json)               | Mobile/Expo config (14 servers)                                                                                   |
+| [`templates/mcp/mcp.minimal.json`](../templates/mcp/mcp.minimal.json)             | Minimal config (8 servers — DB, search, memory, filesystem)                                                       |
+| [`templates/mcp/mcp.revvel-custom.json`](../templates/mcp/mcp.revvel-custom.json) | All 19 custom Revvel MCP servers — merge into any project config                                                  |
+| [`templates/mcp/.env.mcp.example`](../templates/mcp/.env.mcp.example)             | All env vars for every MCP server                                                                                 |
+| [`templates/mcp/custom-server/`](../templates/mcp/custom-server/)                 | FastMCP starter template for building new custom Revvel MCP servers                                               |
 
 ---
 
 ## 1. EXRUP / XRP Methodology (Extreme Rapid Programming)
+
 **EXRUP** is the core execution framework for all Revvel and MIDNGHTSAPPHIRE projects. It is designed for maximum speed, one-iteration production delivery, and comprehensive artifact generation.
 
 ### Core Principles
+
 - **One-Iteration Delivery:** The goal is to move from idea to production-ready deployment in a single, intense iteration. Mid-PR retro-research (the owner having to drop "you should have considered X" comments) is the failure mode this principle exists to prevent. For visual / branded / merchandise WRs, the [`templates/research-preemptive-inputs/`](../templates/research-preemptive-inputs/) packs are the enforcement — research engine MUST surface regional motifs, palette tiers, and ready-to-use prompt packs in the first pass. Originating case: [PR #14085](https://github.com/midnghtsapphire/revvel-standards/pull/14085).
 - **Artifact-First:** Every project must generate a complete set of artifacts (Blueprints, Roadmaps, Specs) before or alongside code.
 - **Genius Orchestration:** Use multi-agent AI systems (OpenRouter, Kimi, Venice, Grok, Sonnet 4 and 4.5, DeepSeek) to handle complex research, design, and coding tasks autonomously.
 - **FOSS Priority:** Always prioritize Free and Open Source Software tools and libraries.
 
 ### Essential AI & Development Tools
+
 **Multi-Agent AI Systems:**
+
 - **OpenRouter** (https://openrouter.ai) - Unified API for multiple LLMs, cost-effective routing
 - **Anthropic Claude** (Sonnet 4, 4.5) - Advanced reasoning, long context windows up to 200k tokens
 - **DeepSeek** (https://deepseek.com) - Cutting-edge open models with competitive performance
@@ -87,6 +99,7 @@ This document is the master policy document. For detailed implementation specifi
 - **Venice.ai** (https://venice.ai) - Privacy-focused AI with uncensored models
 
 **Development & Coding Assistants:**
+
 - **Cursor** (https://cursor.sh) - AI-first code editor with GPT-4 integration
 - **GitHub Copilot** - Context-aware code completion
 - **Codeium** (https://codeium.com) - Free AI autocomplete for 70+ languages
@@ -94,21 +107,24 @@ This document is the master policy document. For detailed implementation specifi
 - **Replit Ghostwriter** - AI pair programmer for collaborative coding
 
 **Research & Knowledge Tools:**
+
 - **Perplexity AI** (https://perplexity.ai) - Research assistant with citations
 - **Elicit** (https://elicit.org) - AI research assistant for academic papers
 - **Consensus** (https://consensus.app) - Evidence-based answers from research papers
 - **Scite** (https://scite.ai) - Smart citations showing supporting/contrasting evidence
 
 ### The 8-Phase Lifecycle
-| Phase | Name | Focus | Key Deliverable |
-|-------|------|-------|-----------------|
-| **0** | Inception | Idea Validation & Legal | Entity Registration, EIN |
-| **1** | Planning | Strategic Blueprints | Roadmap, Technical Architecture |
-| **2** | Design | Visual & UX | Wireframes, Mockups, Prototypes |
+
+| Phase | Name      | Focus                   | Key Deliverable                 |
+| ----- | --------- | ----------------------- | ------------------------------- |
+| **0** | Inception | Idea Validation & Legal | Entity Registration, EIN        |
+| **1** | Planning  | Strategic Blueprints    | Roadmap, Technical Architecture |
+| **2** | Design    | Visual & UX             | Wireframes, Mockups, Prototypes |
 
 ### Frontend Frameworks & Libraries
 
 **React Ecosystem:**
+
 - **React** (https://react.dev) - Component-based UI library
 - **Next.js** (https://nextjs.org) - Full-stack React framework (recommended)
 - **Remix** (https://remix.run) - Full-stack web framework
@@ -116,12 +132,14 @@ This document is the master policy document. For detailed implementation specifi
 - **Create React App** (deprecated - use Vite instead)
 
 **Vue Ecosystem:**
+
 - **Vue 3** (https://vuejs.org) - Progressive JavaScript framework
 - **Nuxt 3** (https://nuxt.com) - Vue meta-framework
 - **Vite** (https://vitejs.dev) - Next-generation build tool
 - **Quasar** (https://quasar.dev) - Vue component framework
 
 **Other Frameworks:**
+
 - **Svelte** (https://svelte.dev) - Compiled framework (no virtual DOM)
 - **SvelteKit** (https://kit.svelte.dev) - Svelte application framework
 - **Solid.js** (https://solidjs.com) - Reactive UI library
@@ -132,6 +150,7 @@ This document is the master policy document. For detailed implementation specifi
 - **Qwik** (https://qwik.builder.io) - Resumable web framework
 
 **UI Component Libraries:**
+
 - **shadcn/ui** (https://ui.shadcn.com) - Re-usable components (Radix + Tailwind)
 - **Radix UI** (https://radix-ui.com) - Unstyled, accessible components
 - **Headless UI** (https://headlessui.com) - Unstyled components by Tailwind Labs
@@ -142,17 +161,19 @@ This document is the master policy document. For detailed implementation specifi
 - **Daisy UI** (https://daisyui.com) - Tailwind CSS component library
 
 **CSS Frameworks:**
+
 - **Tailwind CSS** (https://tailwindcss.com) - Utility-first CSS framework (recommended)
 - **UnoCSS** (https://unocss.dev) - Instant on-demand atomic CSS
 - **Bootstrap** (https://getbootstrap.com) - Classic responsive framework
 - **Bulma** (https://bulma.io) - Modern CSS framework
 - **Foundation** (https://get.foundation) - Responsive front-end framework
-| **3** | Development | Rapid Coding | Functional MVP, GitHub Repo |
-| **4** | Testing | QA & Security | Unit/E2E Tests, Security Scan |
+  | **3** | Development | Rapid Coding | Functional MVP, GitHub Repo |
+  | **4** | Testing | QA & Security | Unit/E2E Tests, Security Scan |
 
 ### Testing & Quality Assurance Tools
 
 **Unit Testing:**
+
 - **Vitest** (https://vitest.dev) - Fast unit test framework (Vite-powered)
 - **Jest** (https://jestjs.io) - JavaScript testing framework
 - **Mocha** (https://mochajs.org) - Feature-rich test framework
@@ -160,6 +181,7 @@ This document is the master policy document. For detailed implementation specifi
 - **AVA** (https://avajs.dev) - Minimalist testing framework
 
 **End-to-End Testing:**
+
 - **Playwright** (https://playwright.dev) - Cross-browser automation (recommended)
 - **Cypress** (https://cypress.io) - Front-end testing tool
 - **Puppeteer** (https://pptr.dev) - Chrome DevTools Protocol automation
@@ -167,6 +189,7 @@ This document is the master policy document. For detailed implementation specifi
 - **TestCafe** (https://testcafe.io) - Node.js E2E testing framework
 
 **API Testing:**
+
 - **Postman** (https://postman.com) - API development and testing platform
 - **Insomnia** (https://insomnia.rest) - API client and testing tool
 - **HTTPie** (https://httpie.io) - Human-friendly HTTP client
@@ -174,6 +197,7 @@ This document is the master policy document. For detailed implementation specifi
 - **Hoppscotch** (https://hoppscotch.io) - Open-source API development ecosystem
 
 **Security Testing:**
+
 - **OWASP ZAP** (https://zaproxy.org) - Web app security scanner (FREE, open source)
 - **Snyk** (https://snyk.io) - Dependency vulnerability scanning (FREE tier)
 - **Semgrep** (https://semgrep.dev) - Static analysis for code security
@@ -182,6 +206,7 @@ This document is the master policy document. For detailed implementation specifi
 - **SonarQube** (https://sonarqube.org) - Code quality and security analysis
 
 **Performance Testing:**
+
 - **Lighthouse** (Chrome DevTools) - Web performance auditing
 - **WebPageTest** (https://webpagetest.org) - Website performance testing
 - **k6** (https://k6.io) - Load testing tool for developers
@@ -189,35 +214,42 @@ This document is the master policy document. For detailed implementation specifi
 - **Locust** (https://locust.io) - Python-based load testing tool
 
 **Code Quality:**
+
 - **ESLint** (https://eslint.org) - JavaScript linting
 - **Biome** (https://biomejs.dev) - Fast linter/formatter (Rust-based)
 - **Prettier** (https://prettier.io) - Code formatter
 - **SonarLint** (VS Code extension) - Real-time code analysis
 - **CodeClimate** (https://codeclimate.com) - Automated code review
-| **5** | Deployment | Production Launch | App Store/Web Deployment |
-| **6** | Compliance | Legal & Ethics | Privacy Policy, SOC2/HIPAA |
-| **7** | Maintenance | Continuous Improvement | Monitoring, Patches, Updates |
+  | **5** | Deployment | Production Launch | App Store/Web Deployment |
+  | **6** | Compliance | Legal & Ethics | Privacy Policy, SOC2/HIPAA |
+  | **7** | Maintenance | Continuous Improvement | Monitoring, Patches, Updates |
 
 ---
 
 ## 2. Branding & Naming Conventions
 
 ### General Naming Rules
+
 - **Catchy & Addictive:** Names must be short, punchy, and memorable.
-- **The "Up" Prefix:** For specialized tools and MCPs, use the "Up" prefix (e.g., *UpSEO*, *UpQA*, *UpFastMoney*).
+- **The "Up" Prefix:** For specialized tools and MCPs, use the "Up" prefix (e.g., _UpSEO_, _UpQA_, _UpFastMoney_).
 - **SEO Optimization:** Always use top-trending, high-volume search terms in project titles and descriptions.
 
 ### SSRN & Academic Paper Naming
+
 **MANDATORY FORMAT:** `Walter_Evans_[ShortTitle]_[YYYYMMDD].pdf`
-- *Example:* `Walter_Evans_Quantum_Cognition_20260123.pdf`
+
+- _Example:_ `Walter_Evans_Quantum_Cognition_20260123.pdf`
 
 ### Domain Selection Process
+
 1. **Research:** Use AI to identify "hot trending" SEO keywords for the current and future year (up to 2030).
 2. **Availability:** Check for exact-match or high-relevance domains.
 3. **Branding:** Ensure the domain aligns with the "punchy, creative, short" naming standard.
 
 ### SEO & Trend Research Tools
+
 **Keyword Research:**
+
 - **Ahrefs** (https://ahrefs.com) - Comprehensive SEO toolkit, keyword difficulty, backlink analysis
 - **SEMrush** (https://semrush.com) - All-in-one marketing toolkit, competitor analysis
 - **Google Keyword Planner** (https://ads.google.com/keywordplanner) - Free keyword volume data
@@ -225,6 +257,7 @@ This document is the master policy document. For detailed implementation specifi
 - **AnswerThePublic** (https://answerthepublic.com) - Visualize search questions and autocomplete
 
 **Trend Analysis:**
+
 - **Google Trends** (https://trends.google.com) - Real-time search trend data
 - **Exploding Topics** (https://explodingtopics.com) - Identify trending topics before they peak
 - **TrendHunter** (https://trendhunter.com) - Crowdsourced trend spotting
@@ -232,6 +265,7 @@ This document is the master policy document. For detailed implementation specifi
 - **Hacker News** (https://news.ycombinator.com) - Tech industry trends and discussions
 
 **Domain Tools:**
+
 - **Namecheap** (https://namecheap.com) - Domain registration with privacy protection
 - **GoDaddy Domain Search** - Bulk domain availability checking
 - **Lean Domain Search** (https://leandomainsearch.com) - Domain name generator
@@ -240,19 +274,23 @@ This document is the master policy document. For detailed implementation specifi
 ---
 
 ## 3. Accessibility Module Specifications
+
 All Revvel applications must implement the following accessibility modes to serve neurodivergent and underserved populations.
 
 ### Accessibility Modes
+
 - **WCAG AAA:** High contrast, large text (18px+), focus indicators, and reduced motion.
 - **ADHD Mode:** Simplified layout, focus-mode timers (Pomodoro integration), and "sensory-safe" UI.
-- **Dyslexic Mode:** Uses special fonts (e.g., *OpenDyslexic*, *Atkinson Hyperlegible*) with increased line height (1.9) and letter spacing (0.2em).
+- **Dyslexic Mode:** Uses special fonts (e.g., _OpenDyslexic_, _Atkinson Hyperlegible_) with increased line height (1.9) and letter spacing (0.2em).
 - **Neuro Mode:** Sensory-safe environment—no animations, no transitions, increased contrast, and simplified navigation.
 - **ECO CODE Mode:** Low-power mode—minimal animations, no box shadows, no filters, and optimized for battery life.
 - **No Blue Light Mode:** Warm color palette (amber/sepia accents) to reduce eye strain.
 - **Menstrual UI:** Healing UI designed with soft pastels, cycle trackers, and confidence-boosting affirmations.
 
 ### Accessibility Resources & Tools
+
 **Accessibility Testing:**
+
 - **axe DevTools** (https://deque.com/axe) - Browser extension for automated accessibility testing
 - **WAVE** (https://wave.webaim.org) - Web accessibility evaluation tool
 - **Lighthouse** (Chrome DevTools) - Built-in accessibility auditing
@@ -260,18 +298,21 @@ All Revvel applications must implement the following accessibility modes to serv
 - **Tenon.io** (https://tenon.io) - Accessibility as a service API
 
 **Font Resources:**
+
 - **OpenDyslexic** (https://opendyslexic.org) - Free font for dyslexic readers
 - **Atkinson Hyperlegible** (https://brailleinstitute.org/freefont) - Free, highly readable font
 - **Lexend** (https://lexend.com) - Font family designed to reduce visual stress
 - **Google Fonts** (https://fonts.google.com) - Filter by readability and accessibility
 
 **Color & Contrast Tools:**
+
 - **WebAIM Contrast Checker** (https://webaim.org/resources/contrastchecker) - WCAG compliance checking
 - **Contrast Ratio** (https://contrast-ratio.com) - Real-time contrast calculation
 - **Colorable** (https://colorable.jxnblk.com) - Color palette contrast tester
 - **Who Can Use** (https://whocanuse.com) - Vision simulator for color combinations
 
 **Accessibility Guidelines:**
+
 - **WCAG 2.2 Guidelines** (https://w3.org/WAI/WCAG22/quickref) - Official accessibility standards
 - **A11y Project** (https://a11yproject.com) - Community-driven accessibility resource
 - **Inclusive Components** (https://inclusive-components.design) - Accessible UI patterns
@@ -279,38 +320,45 @@ All Revvel applications must implement the following accessibility modes to serv
 ---
 
 ## 4. Business Model & Token Economy
+
 Revvel operates on a unified, token-based freemium model.
 
 ### Subscription Tiers (Unified Platform)
-| Tier | Price/Month | Tokens | Key Features |
-|------|-------------|--------|--------------|
-| **Free** | $0 | 50 | Basic access, community support |
-| **Starter** | $9 | 100 | Core modules (Skin, Makeup) |
-| **Pro** | $29 | 500 | All modules, priority support |
-| **Business** | $99 | 2,000 | API access, white-labeling |
-| **Enterprise**| $299 | 10,000 | Dedicated support, custom integrations |
+
+| Tier           | Price/Month | Tokens | Key Features                           |
+| -------------- | ----------- | ------ | -------------------------------------- |
+| **Free**       | $0          | 50     | Basic access, community support        |
+| **Starter**    | $9          | 100    | Core modules (Skin, Makeup)            |
+| **Pro**        | $29         | 500    | All modules, priority support          |
+| **Business**   | $99         | 2,000  | API access, white-labeling             |
+| **Enterprise** | $299        | 10,000 | Dedicated support, custom integrations |
 
 ### Monetization Rules
+
 - **Token Usage:** Each AI action (generation, analysis) consumes a specific number of tokens (typically 2-5).
 - **Affiliate Auto-Linker:** Every product mention must automatically generate an Amazon affiliate link (Tag: `meetaudreyeva-20`).
 - **Self-Service Ads:** The "Selling Space" portal allows businesses to buy banner/sponsored space directly.
 
 ### Affiliate Marketing Automation Engine (MANDATORY)
+
 Every Revvel application MUST include a built-in affiliate marketing automation module.
 
 #### Active Affiliate & Referral Links
-| Platform | URL | Code |
-|---|---|---|
-| **Amazon** | Auto-generated per product | Tag: `meetaudreyeva-20` |
-| **Make.com** | https://www.make.com/en/register?pc=risingaloha | risingaloha |
-| **GoHighLevel** | https://www.gohighlevel.com/?fp_ref=audrey51 | audrey51 |
-| **VideoGen** | https://videogen.io/?fpr=audrey21 | audrey21 |
-| **Chime** | https://www.chime.com/r/audreyevans44/?c=s | audreyevans44 |
-| **DigitalOcean** | https://m.do.co/c/fe8240d60588 | fe8240d60588 |
-| **Monday.com** | https://try.monday.com/9828lfh0uct0 | 9828lfh0uct0 |
+
+| Platform         | URL                                             | Code                    |
+| ---------------- | ----------------------------------------------- | ----------------------- |
+| **Amazon**       | Auto-generated per product                      | Tag: `meetaudreyeva-20` |
+| **Make.com**     | https://www.make.com/en/register?pc=risingaloha | risingaloha             |
+| **GoHighLevel**  | https://www.gohighlevel.com/?fp_ref=audrey51    | audrey51                |
+| **VideoGen**     | https://videogen.io/?fpr=audrey21               | audrey21                |
+| **Chime**        | https://www.chime.com/r/audreyevans44/?c=s      | audreyevans44           |
+| **DigitalOcean** | https://m.do.co/c/fe8240d60588                  | fe8240d60588            |
+| **Monday.com**   | https://try.monday.com/9828lfh0uct0             | 9828lfh0uct0            |
 
 #### Auto-Campaign Generator
+
 Every app must include a Marketing Dashboard with campaign generation buttons at these tiers:
+
 - **20 campaigns** — Quick burst
 - **50 campaigns** — Standard push
 - **100 campaigns** — Growth mode
@@ -318,6 +366,7 @@ Every app must include a Marketing Dashboard with campaign generation buttons at
 - **500 campaigns** — Full blast
 
 Each campaign auto-generates using OpenRouter LLM:
+
 1. Ad copy / social media post text
 2. Email marketing content with affiliate links embedded
 3. Hashtags and SEO keywords
@@ -327,6 +376,7 @@ Each campaign auto-generates using OpenRouter LLM:
 ### Marketing & Automation Tools
 
 **Marketing Automation:**
+
 - **Make.com** (https://make.com) - Visual automation platform (FREE tier: 1000 ops/month)
 - **Zapier** (https://zapier.com) - App integration and workflow automation
 - **n8n** (https://n8n.io) - Open-source workflow automation (self-hostable)
@@ -334,6 +384,7 @@ Each campaign auto-generates using OpenRouter LLM:
 - **ActivePieces** (https://activepieces.com) - Open-source Zapier alternative
 
 **Email Marketing:**
+
 - **SendGrid** (https://sendgrid.com) - Email delivery service (FREE: 100 emails/day)
 - **Mailgun** (https://mailgun.com) - Developer-focused email API
 - **Postmark** (https://postmarkapp.com) - Transactional email service
@@ -342,6 +393,7 @@ Each campaign auto-generates using OpenRouter LLM:
 - **Brevo** (https://brevo.com) - All-in-one marketing platform (FREE tier)
 
 **Social Media Management:**
+
 - **Buffer** (https://buffer.com) - Social media scheduling (FREE: 3 channels)
 - **Hootsuite** (https://hootsuite.com) - Social media management suite
 - **Later** (https://later.com) - Visual social media planner
@@ -349,6 +401,7 @@ Each campaign auto-generates using OpenRouter LLM:
 - **Publer** (https://publer.io) - Multi-platform social media manager
 
 **Analytics & Tracking:**
+
 - **Google Analytics 4** (https://analytics.google.com) - Web analytics (FREE)
 - **Plausible** (https://plausible.io) - Privacy-friendly analytics
 - **Umami** (https://umami.is) - Open-source web analytics
@@ -357,13 +410,16 @@ Each campaign auto-generates using OpenRouter LLM:
 - **Hotjar** (https://hotjar.com) - Heatmaps and user recordings
 
 **Affiliate Management:**
+
 - **Tapfiliate** (https://tapfiliate.com) - Affiliate tracking software
 - **Rewardful** (https://rewardful.com) - Stripe-based affiliate program
 - **FirstPromoter** (https://firstpromoter.com) - SaaS affiliate management
 - **Refersion** (https://refersion.com) - Affiliate and influencer platform
 
 #### Social Media Distribution
+
 Campaigns must support posting to ALL platforms or individually:
+
 - **All Platforms** — One-click blast to every channel
 - **Facebook** — Individual targeting
 - **Instagram** — Individual targeting
@@ -375,15 +431,18 @@ Campaigns must support posting to ALL platforms or individually:
 Integration via Make.com webhooks or GoHighLevel API for scheduling and delivery.
 
 #### Email Campaign Automation
+
 - Auto-create email campaigns with affiliate links
 - Templates: product reviews, deals, recommendations, seasonal promotions
 - Bulk generation at 20/50/100/200/500 tiers
 - Track open rates, click-through, and affiliate conversions
 
 ### Email Collection & Newsletter System (MANDATORY)
+
 Every Revvel application MUST include email collection and newsletter functionality.
 
 #### Email Collection
+
 - **Subscribe form** on every app — footer, popup, or dedicated page
 - **Fields:** Email (required), Name (optional), Interests (optional checkboxes)
 - **Double opt-in** with confirmation email for GDPR/CAN-SPAM compliance
@@ -393,6 +452,7 @@ Every Revvel application MUST include email collection and newsletter functional
 - **Export:** CSV export for backup or migration to Mailchimp/SendGrid/GoHighLevel
 
 #### Auto-Newsletter Generation
+
 - **Triggered on every new site/app launch** — auto-generate and send announcement
 - **Weekly digest** — auto-compiled from all app activity across the ecosystem
 - **New content alerts** — when reviews, blog posts, or products are added
@@ -407,6 +467,7 @@ Every Revvel application MUST include email collection and newsletter functional
 - **Delivery:** Via SMTP, SendGrid, or GoHighLevel email API
 
 #### Subscriber Dashboard
+
 - Total subscribers count
 - Growth chart (daily/weekly/monthly)
 - Segmentation breakdown (by app, by interest)
@@ -414,10 +475,13 @@ Every Revvel application MUST include email collection and newsletter functional
 - One-click send to all subscribers or filtered segments
 
 ### SEO Infrastructure (MANDATORY)
+
 Every Revvel application MUST include comprehensive SEO infrastructure for organic traffic growth.
 
 #### About Section (Multi-Page)
+
 Every app must have a deep About section with multiple sub-pages:
+
 - **About Us** — Company story, mission, values
 - **About the Team** — Founder bio, team members
 - **About the Technology** — How the app works, tech stack
@@ -430,6 +494,7 @@ Every app must have a deep About section with multiple sub-pages:
 - **Contact** — Multiple contact methods, support form
 
 #### Blog System
+
 - **Auto-generated blog posts** via OpenRouter LLM on app launch and weekly
 - **SEO-optimized** with target keywords, meta descriptions, schema markup
 - **Categories:** How-To, Industry News, Product Updates, Tips & Tricks, Case Studies
@@ -438,6 +503,7 @@ Every app must have a deep About section with multiple sub-pages:
 - **RSS feed** for syndication
 
 #### FAQ System
+
 - **Comprehensive FAQ page** with 50+ questions at launch
 - **Categorized:** Getting Started, Pricing, Features, Technical, Legal, Accessibility
 - **Schema markup** (FAQPage) for Google rich snippets
@@ -445,6 +511,7 @@ Every app must have a deep About section with multiple sub-pages:
 - **Searchable** with instant filter
 
 #### Backlink Strategy (1000+ Links)
+
 - **Internal backlinks:** Every page links to 5-10 other pages within the app
 - **Cross-app backlinks:** Every Revvel app links to every other Revvel app
 - **Blog-to-page backlinks:** Every blog post links to relevant app features
@@ -455,6 +522,7 @@ Every app must have a deep About section with multiple sub-pages:
 - **Target: 1000+ backlinks** per app through internal + cross-app + directory + social + content strategy
 
 #### Technical SEO
+
 - **Sitemap.xml** auto-generated
 - **Robots.txt** configured
 - **Schema.org markup** on every page (Organization, Product, FAQ, Article, BreadcrumbList)
@@ -468,12 +536,15 @@ Every app must have a deep About section with multiple sub-pages:
 ## 5. Deployment & Process Standards
 
 ### Automated Deployment Pipeline
+
 - **Mobile (iOS/Android):** Use **Fastlane** for automated store submission.
 - **Desktop:** Use **Electron Builder** to package web apps as `.exe`, `.dmg`, and `.AppImage`.
 - **CI/CD:** GitHub Actions must be used for all repositories to automate testing and deployment on push to `main`.
 
 ### Deployment & DevOps Tools
+
 **CI/CD Platforms:**
+
 - **GitHub Actions** (https://github.com/features/actions) - Native GitHub automation (FREE for public repos)
 - **GitLab CI/CD** (https://gitlab.com) - Comprehensive DevOps platform
 - **CircleCI** (https://circleci.com) - Fast, scalable CI/CD
@@ -481,24 +552,28 @@ Every app must have a deep About section with multiple sub-pages:
 - **Jenkins** (https://jenkins.io) - Self-hosted automation server
 
 **Mobile Deployment:**
+
 - **Fastlane** (https://fastlane.tools) - iOS/Android automation toolkit
 - **App Center** (https://appcenter.ms) - Microsoft's mobile DevOps platform
 - **Bitrise** (https://bitrise.io) - Mobile-focused CI/CD
 - **Codemagic** (https://codemagic.io) - Flutter and native app CI/CD
 
 **Desktop Packaging:**
+
 - **Electron Builder** (https://electron.build) - Complete Electron packaging solution
 - **Tauri** (https://tauri.app) - Lightweight alternative to Electron (Rust-based)
 - **Neutralinojs** (https://neutralino.js.org) - Lightweight cross-platform framework
 - **NW.js** (https://nwjs.io) - Node.js + Chromium desktop apps
 
 **Container & Orchestration:**
+
 - **Docker** (https://docker.com) - Industry standard containerization
 - **Kubernetes** (https://kubernetes.io) - Container orchestration
 - **Docker Compose** - Multi-container application deployment
 - **Podman** (https://podman.io) - Daemonless container engine
 
 **Cloud Platforms:**
+
 - **DigitalOcean** (https://digitalocean.com) - Developer-friendly cloud (from $4/month)
 - **Vercel** (https://vercel.com) - Zero-config deployment for Next.js/React (FREE tier)
 - **Netlify** (https://netlify.com) - JAMstack deployment platform (FREE tier)
@@ -508,6 +583,7 @@ Every app must have a deep About section with multiple sub-pages:
 - **Fly.io** (https://fly.io) - Global app deployment platform
 
 ### Required Artifacts for Every Project
+
 - **README.md:** Standard project overview.
 - **BLUEPRINT.md:** Technical architecture and data flow.
 - **ROADMAP.md:** 12-month strategic timeline.
@@ -517,11 +593,13 @@ Every app must have a deep About section with multiple sub-pages:
 - **LICENSE:** Proprietary — All Rights Reserved, Audrey Evans / GlowStarLabs.
 
 ### Required Deployment Environments
+
 - **oAudrey UI (Live-Test Stage):** All projects MUST have a user interface accessible via an `<app>.oaudrey.com` subdomain for live testing and review, enabling Audrey to test and review the application before production deployment. See [`TEST_ENVIRONMENTS_STANDARD.md`](Master_Inventory/TEST_ENVIRONMENTS_STANDARD.md) for details.
 
 ### Design & Prototyping Tools
 
 **UI/UX Design:**
+
 - **Figma** (https://figma.com) - Industry-standard collaborative design (FREE for individuals)
 - **Penpot** (https://penpot.app) - Open-source Figma alternative
 - **Sketch** (https://sketch.com) - macOS-native design tool
@@ -529,23 +607,27 @@ Every app must have a deep About section with multiple sub-pages:
 - **Lunacy** (https://icons8.com/lunacy) - Free Sketch alternative for Windows
 
 **Prototyping:**
+
 - **Framer** (https://framer.com) - Interactive prototyping with code
 - **ProtoPie** (https://protopie.io) - Advanced interaction prototyping
 - **Principle** (https://principleformac.com) - Animated design tool
 - **InVision** (https://invisionapp.com) - Digital product design platform
 
 **Wireframing:**
+
 - **Excalidraw** (https://excalidraw.com) - Hand-drawn style diagrams (FREE, open source)
 - **Balsamiq** (https://balsamiq.com) - Rapid wireframing tool
 - **Whimsical** (https://whimsical.com) - Visual workspace for diagrams
 - **Draw.io / diagrams.net** (https://diagrams.net) - Free diagramming tool
 
 **Design Systems:**
+
 - **Storybook** (https://storybook.js.org) - Component library documentation
 - **Zero Height** (https://zeroheight.com) - Design system documentation platform
 - **Supernova** (https://supernova.io) - Design system platform with code export
 
 **Asset & Icon Libraries:**
+
 - **Iconify** (https://iconify.design) - 200,000+ open source icons
 - **Heroicons** (https://heroicons.com) - Beautiful hand-crafted SVG icons
 - **Lucide** (https://lucide.dev) - Community-driven icon library
@@ -555,6 +637,7 @@ Every app must have a deep About section with multiple sub-pages:
 - **Pexels** (https://pexels.com) - Free stock photos and videos
 
 ### Auto-Documentation (MANDATORY)
+
 - Every change to any repo, droplet, config, or deployment MUST be auto-logged with timestamp, what changed, and who/what made the change.
 - CHANGELOG.md in every repo, updated automatically on every push.
 - INFRASTRUCTURE_MAP.md in revvel-standards is the single source of truth for all infrastructure.
@@ -563,7 +646,9 @@ Every app must have a deep About section with multiple sub-pages:
 ---
 
 ## 6. Strategic Blue Ocean Areas
+
 Current high-priority innovation sectors for MIDNGHTSAPPHIRE:
+
 - **Universal Data Router:** Plugin-driven data staging and routing engine.
 - **Project Face:** AI skin analysis with climate/weather integration.
 - **Clinical Trials Finder:** Matching users to medical research via APIs.
@@ -573,6 +658,7 @@ Current high-priority innovation sectors for MIDNGHTSAPPHIRE:
 ### Database & Backend Resources
 
 **SQL Databases:**
+
 - **PostgreSQL** (https://postgresql.org) - Advanced open-source relational database
 - **MySQL** (https://mysql.com) - Popular open-source database
 - **SQLite** (https://sqlite.org) - Embedded database (perfect for small apps)
@@ -580,6 +666,7 @@ Current high-priority innovation sectors for MIDNGHTSAPPHIRE:
 - **CockroachDB** (https://cockroachlabs.com) - Distributed SQL database
 
 **NoSQL Databases:**
+
 - **MongoDB** (https://mongodb.com) - Document database (FREE tier: Atlas)
 - **Redis** (https://redis.io) - In-memory data store and cache
 - **Cassandra** (https://cassandra.apache.org) - Distributed wide-column database
@@ -587,6 +674,7 @@ Current high-priority innovation sectors for MIDNGHTSAPPHIRE:
 - **ArangoDB** (https://arangodb.com) - Multi-model database
 
 **Modern Database Options:**
+
 - **Supabase** (https://supabase.com) - Open-source Firebase alternative (Postgres)
 - **PocketBase** (https://pocketbase.io) - Open-source backend in one file (Go + SQLite)
 - **Appwrite** (https://appwrite.io) - Open-source backend server
@@ -594,6 +682,7 @@ Current high-priority innovation sectors for MIDNGHTSAPPHIRE:
 - **Convex** (https://convex.dev) - Real-time backend with TypeScript
 
 **ORMs & Query Builders:**
+
 - **Prisma** (https://prisma.io) - Next-generation TypeScript ORM
 - **Drizzle** (https://orm.drizzle.team) - TypeScript ORM for edge
 - **Kysely** (https://kysely.dev) - Type-safe SQL query builder
@@ -602,6 +691,7 @@ Current high-priority innovation sectors for MIDNGHTSAPPHIRE:
 - **Knex.js** (https://knexjs.org) - SQL query builder for Node.js
 
 **Backend Frameworks:**
+
 - **Express.js** (https://expressjs.com) - Minimalist Node.js framework
 - **Fastify** (https://fastify.dev) - Fast and low-overhead web framework
 - **NestJS** (https://nestjs.com) - Progressive Node.js framework
@@ -610,6 +700,7 @@ Current high-priority innovation sectors for MIDNGHTSAPPHIRE:
 - **tRPC** (https://trpc.io) - End-to-end typesafe APIs
 
 **API Development:**
+
 - **GraphQL** (https://graphql.org) - Query language for APIs
 - **Apollo Server** (https://apollographql.com/server) - GraphQL server
 - **REST** (RESTful architecture principles)
@@ -619,7 +710,9 @@ Current high-priority innovation sectors for MIDNGHTSAPPHIRE:
 ---
 
 ## 7. Auto-Documentation & Change Tracking
+
 All Revvel projects enforce strict documentation standards:
+
 - **No undocumented changes.** Every commit, deployment, and config change is logged.
 - **CHANGELOG.md** is mandatory in every repo and auto-updated.
 - **SPRINT_STATE.md** in revvel-standards tracks cross-project progress.
@@ -642,51 +735,51 @@ All Revvel applications inherit their corporate identity and SEO authority from 
 
 ### Parent Entity: Freedom Angel Corp (2010)
 
-| Field | Value |
-|---|---|
-| **Legal Name** | Freedom Angel Corp. |
-| **Type** | Non-Profit Corporation |
-| **EIN** | 86-1209156 |
-| **Founded** | 2010 |
-| **State** | Colorado |
-| **Founder/CEO** | Audrey Evans |
-| **SBA Certified** | Yes (Zonehub) |
-| **Motto 1** | "Home of the Free Because of The Brave" |
-| **Motto 2** | "End Trafficking and Violence of All Living Things In Mortal Danger of Extinction. Even A Spider In Sudan, Ooray" |
-| **American Legion** | Member #302393962 |
-| **PMI** | Membership ID #593830 |
-| **Colorado Supreme Court** | CLE Training — Moniker: ANGEL |
-| **Classification** | Minority-owned, veteran-connected, multi-tiered business corporation |
+| Field                      | Value                                                                                                             |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Legal Name**             | Freedom Angel Corp.                                                                                               |
+| **Type**                   | Non-Profit Corporation                                                                                            |
+| **EIN**                    | 86-1209156                                                                                                        |
+| **Founded**                | 2010                                                                                                              |
+| **State**                  | Colorado                                                                                                          |
+| **Founder/CEO**            | Audrey Evans                                                                                                      |
+| **SBA Certified**          | Yes (Zonehub)                                                                                                     |
+| **Motto 1**                | "Home of the Free Because of The Brave"                                                                           |
+| **Motto 2**                | "End Trafficking and Violence of All Living Things In Mortal Danger of Extinction. Even A Spider In Sudan, Ooray" |
+| **American Legion**        | Member #302393962                                                                                                 |
+| **PMI**                    | Membership ID #593830                                                                                             |
+| **Colorado Supreme Court** | CLE Training — Moniker: ANGEL                                                                                     |
+| **Classification**         | Minority-owned, veteran-connected, multi-tiered business corporation                                              |
 
 ### Divisions & Sub-Brands
 
-| Entity | Type | Focus | Parent |
-|---|---|---|---|
-| **Freedom Angel Fighters** | Program | Advocacy & Anti-Trafficking | Freedom Angel Corp |
-| **Angel Reporter(s)** | Brand | Investigative Journalism | Freedom Angel Corp |
-| **Aloha Notary & Copies** | Service | Notary for Native Hawaiian Veterans & Military | Freedom Angel Corp |
+| Entity                     | Type    | Focus                                          | Parent             |
+| -------------------------- | ------- | ---------------------------------------------- | ------------------ |
+| **Freedom Angel Fighters** | Program | Advocacy & Anti-Trafficking                    | Freedom Angel Corp |
+| **Angel Reporter(s)**      | Brand   | Investigative Journalism                       | Freedom Angel Corp |
+| **Aloha Notary & Copies**  | Service | Notary for Native Hawaiian Veterans & Military | Freedom Angel Corp |
 
 ### Information Technology Entities (All Under Freedom Angel Corp)
 
-| Entity | Type | Focus | Copyright |
-|---|---|---|---|
-| **Angel Reporter LLC** | LLC (CA) | Media & Reporting Technology | 2010, 2018 |
-| **XI Website Solutions LLC** | LLC | Web Development & Design | 2010 |
-| **Spiderwebz Designs** | DBA | Creative Design & Branding | 2010 |
-| **Evans Digital** | DBA | Digital Marketing & Technology | 2010 |
-| **Fast Macros** | DBA | Automation & Productivity Tools | 2010 |
+| Entity                       | Type     | Focus                           | Copyright  |
+| ---------------------------- | -------- | ------------------------------- | ---------- |
+| **Angel Reporter LLC**       | LLC (CA) | Media & Reporting Technology    | 2010, 2018 |
+| **XI Website Solutions LLC** | LLC      | Web Development & Design        | 2010       |
+| **Spiderwebz Designs**       | DBA      | Creative Design & Branding      | 2010       |
+| **Evans Digital**            | DBA      | Digital Marketing & Technology  | 2010       |
+| **Fast Macros**              | DBA      | Automation & Productivity Tools | 2010       |
 
 ### Modern Product Brands (Under IT Entities)
 
-| Brand | Focus | Domain |
-|---|---|---|
-| **Audrey Evans Official / GlowStarLabs** | Umbrella for all tech products | glowstarlabs.com |
-| **Revvel / Hailstorm** | Music artist brand (music only) | — |
-| **Reese Reviews** | Product review & Vine business | reesereviews.com |
-| **MeetAudreyEvans** | Personal hub & portfolio | meetaudreyevans.com |
-| **YumYumCode** | Developer tools & coding | yumyumcode.com |
-| **GrowlingEyes** | Security & surveillance | growlingeyes.com |
-| **TruthSlayer** | Fact-checking & investigation | truthslayer.com |
+| Brand                                    | Focus                           | Domain              |
+| ---------------------------------------- | ------------------------------- | ------------------- |
+| **Audrey Evans Official / GlowStarLabs** | Umbrella for all tech products  | glowstarlabs.com    |
+| **Revvel / Hailstorm**                   | Music artist brand (music only) | —                   |
+| **Reese Reviews**                        | Product review & Vine business  | reesereviews.com    |
+| **MeetAudreyEvans**                      | Personal hub & portfolio        | meetaudreyevans.com |
+| **YumYumCode**                           | Developer tools & coding        | yumyumcode.com      |
+| **GrowlingEyes**                         | Security & surveillance         | growlingeyes.com    |
+| **TruthSlayer**                          | Fact-checking & investigation   | truthslayer.com     |
 
 ### Schema.org Implementation (MANDATORY)
 
@@ -712,18 +805,46 @@ Every Revvel application MUST include the following JSON-LD in the `<head>` of e
   "taxID": "86-1209156",
   "nonprofitStatus": "NonprofitType",
   "memberOf": [
-    {"@type": "Organization", "name": "American Legion", "membershipNumber": "302393962"},
-    {"@type": "Organization", "name": "Project Management Institute", "membershipNumber": "593830"},
-    {"@type": "Organization", "name": "Small Business Administration", "description": "SBA Certified, Zonehub"}
+    {
+      "@type": "Organization",
+      "name": "American Legion",
+      "membershipNumber": "302393962"
+    },
+    {
+      "@type": "Organization",
+      "name": "Project Management Institute",
+      "membershipNumber": "593830"
+    },
+    {
+      "@type": "Organization",
+      "name": "Small Business Administration",
+      "description": "SBA Certified, Zonehub"
+    }
   ],
   "slogan": "Home of the Free Because of The Brave",
   "description": "A minority-owned, veteran-connected, multi-tiered business corporation supporting disabled veterans, at-risk seniors, and underserved communities.",
   "subOrganization": [
-    {"@type": "Organization", "name": "Angel Reporter LLC", "foundingDate": "2010"},
-    {"@type": "Organization", "name": "XI Website Solutions LLC", "foundingDate": "2010"},
-    {"@type": "Organization", "name": "Evans Digital", "foundingDate": "2010"},
-    {"@type": "Organization", "name": "Fast Macros", "foundingDate": "2010"},
-    {"@type": "Organization", "name": "Spiderwebz Designs", "foundingDate": "2010"}
+    {
+      "@type": "Organization",
+      "name": "Angel Reporter LLC",
+      "foundingDate": "2010"
+    },
+    {
+      "@type": "Organization",
+      "name": "XI Website Solutions LLC",
+      "foundingDate": "2010"
+    },
+    {
+      "@type": "Organization",
+      "name": "Evans Digital",
+      "foundingDate": "2010"
+    },
+    { "@type": "Organization", "name": "Fast Macros", "foundingDate": "2010" },
+    {
+      "@type": "Organization",
+      "name": "Spiderwebz Designs",
+      "foundingDate": "2010"
+    }
   ]
 }
 ```
@@ -766,6 +887,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 ### Online Learning Platforms
 
 **Comprehensive Courses:**
+
 - **Frontend Masters** (https://frontendmasters.com) - In-depth web development courses ($39/month)
 - **Egghead.io** (https://egghead.io) - Concise programming tutorials
 - **Pluralsight** (https://pluralsight.com) - Technology skills platform
@@ -774,6 +896,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 - **edX** (https://edx.org) - University courses from MIT, Harvard, etc.
 
 **Free Learning Resources:**
+
 - **freeCodeCamp** (https://freecodecamp.org) - Free coding bootcamp with certifications
 - **The Odin Project** (https://theodinproject.com) - Free full-stack curriculum
 - **MDN Web Docs** (https://developer.mozilla.org) - Definitive web platform documentation
@@ -783,6 +906,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 - **Roadmap.sh** (https://roadmap.sh) - Developer roadmaps and learning paths
 
 **Video Learning:**
+
 - **YouTube Channels:**
   - **Fireship** (https://youtube.com/@fireship) - 100-second tech explainers
   - **Traversy Media** - Web development tutorials
@@ -793,6 +917,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
   - **Jack Herrington** - Advanced TypeScript and React
 
 **Interactive Platforms:**
+
 - **Scrimba** (https://scrimba.com) - Interactive coding screencasts
 - **Exercism** (https://exercism.org) - Code practice with mentorship (FREE)
 - **LeetCode** (https://leetcode.com) - Coding interview preparation
@@ -803,6 +928,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 ### Documentation & References
 
 **Official Documentation:**
+
 - **React Docs** (https://react.dev)
 - **Vue Docs** (https://vuejs.org/guide)
 - **Node.js Docs** (https://nodejs.org/docs)
@@ -812,6 +938,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 - **Go Documentation** (https://go.dev/doc)
 
 **Cheat Sheets & Quick References:**
+
 - **DevDocs** (https://devdocs.io) - Searchable documentation browser
 - **Devhints** (https://devhints.io) - Cheat sheets for developers
 - **OverAPI** (https://overapi.com) - Collecting all cheat sheets
@@ -819,6 +946,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 - **TLDR Pages** (https://tldr.sh) - Simplified man pages
 
 **Books & Deep Dives:**
+
 - **You Don't Know JS** (https://github.com/getify/You-Dont-Know-JS) - JavaScript deep dive (FREE)
 - **Eloquent JavaScript** (https://eloquentjavascript.net) - Modern JS introduction (FREE)
 - **Clean Code** by Robert C. Martin - Software craftsmanship
@@ -829,6 +957,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 ### Community & Support
 
 **Forums & Q&A:**
+
 - **Stack Overflow** (https://stackoverflow.com) - Programming Q&A
 - **Reddit** - r/webdev, r/javascript, r/reactjs, r/programming
 - **Discord Communities:**
@@ -838,6 +967,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
   - Tailwind CSS - Tailwind community
 
 **Professional Networks:**
+
 - **GitHub** (https://github.com) - Code hosting and collaboration
 - **LinkedIn** (https://linkedin.com) - Professional networking
 - **Twitter/X** - Follow tech leaders and stay updated
@@ -852,6 +982,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 ### Technology Radar & Trend Platforms
 
 **Industry Technology Radars:**
+
 - **ThoughtWorks Technology Radar** (https://thoughtworks.com/radar) - Quarterly assessments of tools, techniques, platforms
 - **InfoQ Trends** (https://infoq.com/presentations) - Software architecture and development trends
 - **Gartner Hype Cycle** (https://gartner.com) - Enterprise technology maturity tracking
@@ -861,6 +992,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **DB-Engines** (https://db-engines.com) - Database popularity and trend tracking
 
 **Developer Communities:**
+
 - **Hacker News** (https://news.ycombinator.com) - Tech industry pulse, daily updates
 - **Reddit** - r/programming, r/webdev, r/MachineLearning, r/artificial
 - **Dev.to** (https://dev.to) - Developer community and tutorials
@@ -868,6 +1000,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Stack Overflow Trends** (https://insights.stackoverflow.com/trends) - Technology adoption data
 
 **GitHub & Open Source:**
+
 - **GitHub Trending** (https://github.com/trending) - Daily/weekly trending repositories
 - **GitHub Topics** (https://github.com/topics) - Curated technology collections
 - **Awesome Lists** (https://github.com/sindresorhus/awesome) - Curated lists of resources
@@ -875,6 +1008,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Libraries.io** (https://libraries.io) - Open source discovery across package managers
 
 **AI & Machine Learning:**
+
 - **Papers with Code** (https://paperswithcode.com) - Latest ML research with implementations
 - **Hugging Face** (https://huggingface.co) - ML models, datasets, and demos
 - **AI Index** (https://aiindex.stanford.edu) - Stanford's annual AI progress report
@@ -886,6 +1020,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 ### Technology Newsletters & Aggregators
 
 **Weekly/Daily Digests:**
+
 - **TLDR Newsletter** (https://tldr.tech) - Daily tech news in 5 minutes
 - **Changelog** (https://changelog.com) - Open source and developer news
 - **JavaScript Weekly** (https://javascriptweekly.com) - JS ecosystem updates
@@ -898,6 +1033,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **AI Weekly** (https://aiweekly.co) - Artificial intelligence developments
 
 **Podcasts:**
+
 - **Changelog** - Developer stories and open source
 - **Syntax.fm** - Web development topics
 - **JS Party** - JavaScript community discussions
@@ -949,6 +1085,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 ### Specific Cutting-Edge Areas to Watch (2026+)
 
 **Web & Frontend:**
+
 - **Astro** (https://astro.build) - Multi-framework static site generation
 - **Qwik** (https://qwik.builder.io) - Resumability-based framework (instant loading)
 - **Solid.js** (https://solidjs.com) - Fine-grained reactivity (faster than React)
@@ -958,6 +1095,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Alpine.js** (https://alpinejs.dev) - Lightweight JavaScript framework
 
 **Backend & APIs:**
+
 - **Bun** (https://bun.sh) - All-in-one JavaScript runtime (faster than Node.js)
 - **Deno 2.0** (https://deno.com) - Secure TypeScript runtime with built-in tools
 - **Hono** (https://hono.dev) - Ultrafast web framework for edge computing
@@ -967,6 +1105,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Encore** (https://encore.dev) - Backend development platform with infrastructure automation
 
 **Databases & Data:**
+
 - **Turso** (https://turso.tech) - Edge-hosted SQLite (libSQL)
 - **Neon** (https://neon.tech) - Serverless Postgres with autoscaling
 - **PlanetScale** (https://planetscale.com) - MySQL-compatible serverless database
@@ -977,6 +1116,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **LanceDB** (https://lancedb.com) - Vector database for AI applications
 
 **AI & Machine Learning:**
+
 - **Ollama** (https://ollama.ai) - Run LLMs locally (Llama, Mistral, etc.)
 - **LangChain** (https://langchain.com) - Framework for LLM applications
 - **LlamaIndex** (https://llamaindex.ai) - Data framework for LLM applications
@@ -987,6 +1127,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Langfuse** (https://langfuse.com) - LLM engineering platform (observability)
 
 **DevOps & Infrastructure:**
+
 - **Coolify** (https://coolify.io) - Self-hostable Heroku/Vercel alternative
 - **Kamal** (https://kamal-deploy.org) - Deploy web apps anywhere with Docker
 - **Pulumi** (https://pulumi.com) - Infrastructure as code using real programming languages
@@ -996,6 +1137,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Temporal** (https://temporal.io) - Durable execution for workflows
 
 **Testing & Quality:**
+
 - **Playwright** (https://playwright.dev) - Modern end-to-end testing (faster than Selenium)
 - **Vitest** (https://vitest.dev) - Next-generation testing framework (Vite-native)
 - **Testing Library** (https://testing-library.com) - User-centric testing utilities
@@ -1003,6 +1145,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Chromatic** (https://chromatic.com) - Visual testing and review
 
 **Developer Experience:**
+
 - **Biome** (https://biomejs.dev) - Fast formatter/linter (Rust-based, replaces ESLint+Prettier)
 - **Bun** package manager - Faster than npm/pnpm
 - **Turbo** (https://turbo.build) - Incremental bundler and build system
@@ -1011,6 +1154,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **swc** (https://swc.rs) - Rust-based JavaScript/TypeScript compiler
 
 **Mobile & Cross-Platform:**
+
 - **Expo** (https://expo.dev) - React Native framework with managed workflow
 - **Tamagui** (https://tamagui.dev) - Universal UI kit for React Native and Web
 - **Flutter 3.x** (https://flutter.dev) - Google's cross-platform framework
@@ -1029,6 +1173,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 6. **Standardize (Month 6+):** Add to official tech stack if proven valuable
 
 **Red Flags to Avoid:**
+
 - ❌ No commits in 6+ months
 - ❌ Major unresolved security vulnerabilities
 - ❌ Frequent breaking changes with no migration guides
@@ -1038,6 +1183,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - ❌ Requires extensive custom tooling or workarounds
 
 **Green Flags to Prioritize:**
+
 - ✅ Active development with regular releases
 - ✅ Responsive maintainers and community
 - ✅ Comprehensive documentation and examples
@@ -1048,4 +1194,5 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - ✅ Security-first design and regular audits
 
 ---
+
 **END OF DOCUMENT**

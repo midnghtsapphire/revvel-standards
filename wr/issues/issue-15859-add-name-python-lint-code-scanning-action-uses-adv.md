@@ -1,4 +1,4 @@
-# WR: [WR] add - name: Python Lint Code Scanning Action   uses: advanced-security/python-lint-code-scanning-action@v1.1.3
+# WR: [WR] add - name: Python Lint Code Scanning Action uses: advanced-security/python-lint-code-scanning-action@v1.1.3
 
 **Issue:** #15859  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -41,7 +41,7 @@ orchestrator
 
 ### Summary
 
-add - name: Python Lint Code Scanning Action   uses: advanced-security/python-lint-code-scanning-action@v1.1.3
+add - name: Python Lint Code Scanning Action uses: advanced-security/python-lint-code-scanning-action@v1.1.3
 
 ### Objective
 

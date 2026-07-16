@@ -16,15 +16,15 @@ Claw Code is a high-performance Rust CLI agent harness that turns Claude into an
 
 ## Core Crates & Responsibilities
 
-| Crate | Responsibility |
-|---|---|
-| **rusty-claude-cli** | Argument parsing, REPL (rustyline), output rendering |
-| **runtime** | ConversationRuntime, session management, permissions, prompt builder, MCP lifecycle |
-| **api** | Anthropic client with streaming support |
-| **tools** | 40+ tool implementations + executor |
-| **permissions** | PolicyEngine for read-only / workspace-write / danger modes |
-| **telemetry / plugins** | Observability and future extensibility |
-| **mock-anthropic-service** | Deterministic parity testing |
+| Crate                      | Responsibility                                                                      |
+| -------------------------- | ----------------------------------------------------------------------------------- |
+| **rusty-claude-cli**       | Argument parsing, REPL (rustyline), output rendering                                |
+| **runtime**                | ConversationRuntime, session management, permissions, prompt builder, MCP lifecycle |
+| **api**                    | Anthropic client with streaming support                                             |
+| **tools**                  | 40+ tool implementations + executor                                                 |
+| **permissions**            | PolicyEngine for read-only / workspace-write / danger modes                         |
+| **telemetry / plugins**    | Observability and future extensibility                                              |
+| **mock-anthropic-service** | Deterministic parity testing                                                        |
 
 ## Key Interfaces
 

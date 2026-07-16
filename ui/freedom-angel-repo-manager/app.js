@@ -10,7 +10,7 @@
  *            docs/REPO_CATALOG.md
  * ============================================================ */
 
-(function () {
+(() => {
   "use strict";
 
   /* ---------- Storage keys ---------- */
@@ -26,86 +26,57 @@
     {
       id: "readme",
       label: "README.md present",
-      run: function (ctx) {
-        return hasFile(ctx, "README.md");
-      },
+      run: (ctx) => hasFile(ctx, "README.md"),
     },
     {
       id: "license",
       label: "LICENSE present",
-      run: function (ctx) {
-        return hasFileAny(ctx, [
-          "LICENSE",
-          "LICENSE.md",
-          "LICENSE.txt",
-          "COPYING",
-        ]);
-      },
+      run: (ctx) =>
+        hasFileAny(ctx, ["LICENSE", "LICENSE.md", "LICENSE.txt", "COPYING"]),
     },
     {
       id: "changelog",
       label: "CHANGELOG.md present",
-      run: function (ctx) {
-        return hasFileAny(ctx, ["CHANGELOG.md", "CHANGELOG"]);
-      },
+      run: (ctx) => hasFileAny(ctx, ["CHANGELOG.md", "CHANGELOG"]),
     },
     {
       id: "workflows",
       label: ".github/workflows/ present",
-      run: function (ctx) {
-        return hasDirectory(ctx, ".github/workflows");
-      },
+      run: (ctx) => hasDirectory(ctx, ".github/workflows"),
     },
     {
       id: "security",
       label: "SECURITY.md or security workflow",
-      run: function (ctx) {
-        return hasFile(ctx, "SECURITY.md").then(function (ok) {
+      run: (ctx) =>
+        hasFile(ctx, "SECURITY.md").then((ok) => {
           if (ok) return true;
           return hasFile(ctx, ".github/workflows/security.yml");
-        });
-      },
+        }),
     },
     {
       id: "labels",
       label: "Standard labels (enhancement, bug, security)",
-      run: function (ctx) {
-        return gh(
-          ctx,
-          "/repos/" + ctx.owner + "/" + ctx.repo + "/labels?per_page=100"
-        )
-          .then(function (labels) {
+      run: (ctx) =>
+        gh(ctx, "/repos/" + ctx.owner + "/" + ctx.repo + "/labels?per_page=100")
+          .then((labels) => {
             if (!Array.isArray(labels)) return false;
-            var names = labels.map(function (l) {
-              return String(l.name || "").toLowerCase();
-            });
+            var names = labels.map((l) => String(l.name || "").toLowerCase());
             var required = ["enhancement", "bug", "security"];
-            return required.every(function (n) {
-              return names.indexOf(n) !== -1;
-            });
+            return required.every((n) => names.indexOf(n) !== -1);
           })
-          .catch(function () {
-            return false;
-          });
-      },
+          .catch(() => false),
     },
     {
       id: "accessibility",
       label: "README mentions accessibility",
-      run: function (ctx) {
-        return readmeText(ctx).then(function (txt) {
-          return /accessib|wcag|a11y/i.test(txt || "");
-        });
-      },
+      run: (ctx) =>
+        readmeText(ctx).then((txt) => /accessib|wcag|a11y/i.test(txt || "")),
     },
     {
       id: "ssot",
       label: "Inherits from revvel-standards",
-      run: function (ctx) {
-        return readmeText(ctx).then(function (txt) {
-          return /revvel-standards/i.test(txt || "");
-        });
-      },
+      run: (ctx) =>
+        readmeText(ctx).then((txt) => /revvel-standards/i.test(txt || "")),
     },
   ];
 
@@ -123,17 +94,15 @@
   function gh(ctx, path) {
     return fetch("https://api.github.com" + path, {
       headers: ghHeaders(ctx.token),
-    }).then(function (res) {
+    }).then((res) => {
       var remaining = res.headers.get("x-ratelimit-remaining");
       if (remaining != null) updateRate(remaining);
       if (res.status === 404) return null;
       if (!res.ok) {
         return res
           .json()
-          .catch(function () {
-            return {};
-          })
-          .then(function (err) {
+          .catch(() => ({}))
+          .then((err) => {
             var msg =
               (err && err.message) || "HTTP " + res.status + " from GitHub";
             var e = new Error(msg);
@@ -153,14 +122,10 @@
         "/" +
         ctx.repo +
         "/contents/" +
-        encodeURIPath(path)
+        encodeURIPath(path),
     )
-      .then(function (data) {
-        return !!data && !Array.isArray(data);
-      })
-      .catch(function () {
-        return false;
-      });
+      .then((data) => !!data && !Array.isArray(data))
+      .catch(() => false);
   }
 
   function hasDirectory(ctx, path) {
@@ -171,30 +136,29 @@
         "/" +
         ctx.repo +
         "/contents/" +
-        encodeURIPath(path)
+        encodeURIPath(path),
     )
-      .then(function (data) {
-        return Array.isArray(data) && data.length > 0;
-      })
-      .catch(function () {
-        return false;
-      });
+      .then((data) => Array.isArray(data) && data.length > 0)
+      .catch(() => false);
   }
 
   function hasFileAny(ctx, paths) {
     // Sequential OR — stops at first hit to reduce API calls.
-    return paths.reduce(function (chain, p) {
-      return chain.then(function (found) {
-        if (found) return true;
-        return hasFile(ctx, p);
-      });
-    }, Promise.resolve(false));
+    return paths.reduce(
+      (chain, p) =>
+        chain.then((found) => {
+          if (found) return true;
+          return hasFile(ctx, p);
+        }),
+      Promise.resolve(false),
+    );
   }
 
   function readmeText(ctx) {
-    if (ctx._readmeCache !== undefined) return Promise.resolve(ctx._readmeCache);
+    if (ctx._readmeCache !== undefined)
+      return Promise.resolve(ctx._readmeCache);
     return gh(ctx, "/repos/" + ctx.owner + "/" + ctx.repo + "/readme")
-      .then(function (data) {
+      .then((data) => {
         if (!data || !data.content) {
           ctx._readmeCache = "";
           return "";
@@ -208,17 +172,14 @@
           return "";
         }
       })
-      .catch(function () {
+      .catch(() => {
         ctx._readmeCache = "";
         return "";
       });
   }
 
   function encodeURIPath(path) {
-    return path
-      .split("/")
-      .map(encodeURIComponent)
-      .join("/");
+    return path.split("/").map(encodeURIComponent).join("/");
   }
 
   /* ---------- DOM helpers ---------- */
@@ -261,7 +222,7 @@
     list.textContent = "";
     var tpl = $("#repo-card-template");
 
-    repos.forEach(function (repo) {
+    repos.forEach((repo) => {
       var node = tpl.content.cloneNode(true);
       var article = node.querySelector(".repo-card");
       article.dataset.repo = repo.name;
@@ -282,7 +243,7 @@
       score.dataset.tier = "";
 
       var checksEl = node.querySelector(".repo-checks");
-      CHECKS.forEach(function (c) {
+      CHECKS.forEach((c) => {
         var li = document.createElement("li");
         li.dataset.status = "pending";
         li.dataset.check = c.id;
@@ -291,7 +252,7 @@
       });
 
       var auditBtn = node.querySelector(".audit-btn");
-      auditBtn.addEventListener("click", function () {
+      auditBtn.addEventListener("click", () => {
         auditOne(repo).catch(handleErr);
       });
 
@@ -301,7 +262,7 @@
 
   function renderAuditResult(repoName, result) {
     var card = document.querySelector(
-      '.repo-card[data-repo="' + cssEscape(repoName) + '"]'
+      '.repo-card[data-repo="' + cssEscape(repoName) + '"]',
     );
     if (!card) return;
 
@@ -310,7 +271,7 @@
     score.textContent = result.score + " / " + result.total + " (" + pct + "%)";
     score.dataset.tier = pct >= 85 ? "good" : pct >= 60 ? "fair" : "poor";
 
-    result.checks.forEach(function (c) {
+    result.checks.forEach((c) => {
       var li = card.querySelector('li[data-check="' + c.id + '"]');
       if (li) li.dataset.status = c.status;
     });
@@ -334,7 +295,7 @@
     $("#m-audited").textContent = audited;
     if (audited > 0) {
       var pctSum = 0;
-      Object.keys(state.auditResults).forEach(function (k) {
+      Object.keys(state.auditResults).forEach((k) => {
         var r = state.auditResults[k];
         pctSum += (r.score / r.total) * 100;
       });
@@ -365,10 +326,8 @@
     $("#repo-list").textContent = "";
 
     fetchAllRepos(owner, token)
-      .then(function (repos) {
-        state.repos = repos.sort(function (a, b) {
-          return a.name.localeCompare(b.name);
-        });
+      .then((repos) => {
+        state.repos = repos.sort((a, b) => a.name.localeCompare(b.name));
         state.auditResults = {};
         renderRepoList(state.repos);
         renderSummary();
@@ -378,7 +337,7 @@
           "Loaded " +
             repos.length +
             " repositories. Click “Audit all” or audit a single repo.",
-          "success"
+          "success",
         );
       })
       .catch(handleErr);
@@ -388,36 +347,30 @@
     // Try /orgs/{owner}/repos first, fall back to /users/{owner}/repos.
     var ctx = { owner: owner, token: token };
     return gh(ctx, "/orgs/" + owner + "/repos?per_page=100&type=all")
-      .then(function (data) {
+      .then((data) => {
         if (Array.isArray(data)) return data;
         return gh(ctx, "/users/" + owner + "/repos?per_page=100&type=owner");
       })
-      .then(function (data) {
-        return Array.isArray(data) ? data : [];
-      });
+      .then((data) => (Array.isArray(data) ? data : []));
   }
 
   function auditOne(repo) {
     var ctx = { owner: state.owner, repo: repo.name, token: state.token };
     setStatus("Auditing " + repo.name + "…");
 
-    var results = CHECKS.map(function (c) {
-      return Promise.resolve()
-        .then(function () {
-          return c.run(ctx);
-        })
-        .then(function (ok) {
-          return { id: c.id, label: c.label, status: ok ? "pass" : "fail" };
-        })
-        .catch(function () {
-          return { id: c.id, label: c.label, status: "fail" };
-        });
-    });
+    var results = CHECKS.map((c) =>
+      Promise.resolve()
+        .then(() => c.run(ctx))
+        .then((ok) => ({
+          id: c.id,
+          label: c.label,
+          status: ok ? "pass" : "fail",
+        }))
+        .catch(() => ({ id: c.id, label: c.label, status: "fail" })),
+    );
 
-    return Promise.all(results).then(function (checks) {
-      var score = checks.filter(function (c) {
-        return c.status === "pass";
-      }).length;
+    return Promise.all(results).then((checks) => {
+      var score = checks.filter((c) => c.status === "pass").length;
       var result = { score: score, total: checks.length, checks: checks };
       state.auditResults[repo.name] = result;
       renderAuditResult(repo.name, result);
@@ -439,13 +392,13 @@
         btn.disabled = false;
         setStatus(
           "All audits complete (" + state.repos.length + " repos).",
-          "success"
+          "success",
         );
         return Promise.resolve();
       }
       var repo = state.repos[i++];
       return auditOne(repo)
-        .catch(function () {
+        .catch(() => {
           /* swallow — already logged */
         })
         .then(next);
@@ -466,19 +419,18 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download =
-      "revvel-audit-" + state.owner + "-" + Date.now() + ".json";
+    a.download = "revvel-audit-" + state.owner + "-" + Date.now() + ".json";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    setTimeout(function () {
+    setTimeout(() => {
       URL.revokeObjectURL(url);
     }, 0);
   }
 
   function applyFilter() {
     var q = $("#filter").value.trim().toLowerCase();
-    $$(".repo-card").forEach(function (card) {
+    $$(".repo-card").forEach((card) => {
       var name = card.dataset.repo.toLowerCase();
       var desc = (
         card.querySelector(".repo-description").textContent || ""
@@ -529,7 +481,7 @@
 
   /* ---------- Boot ---------- */
 
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", () => {
     // Restore persisted state
     var savedOwner = localStorage.getItem(LS_OWNER);
     var savedToken = localStorage.getItem(LS_TOKEN);
@@ -538,7 +490,7 @@
     if (savedToken) $("#token").value = savedToken;
     applyA11yMode(savedMode);
 
-    $("#auth-form").addEventListener("submit", function (e) {
+    $("#auth-form").addEventListener("submit", (e) => {
       e.preventDefault();
       loadRepos();
     });
@@ -546,7 +498,7 @@
     $("#audit-all-btn").addEventListener("click", auditAll);
     $("#export-btn").addEventListener("click", exportReport);
     $("#filter").addEventListener("input", applyFilter);
-    $("#a11y-mode").addEventListener("change", function (e) {
+    $("#a11y-mode").addEventListener("change", (e) => {
       applyA11yMode(e.target.value);
     });
   });

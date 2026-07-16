@@ -95,24 +95,24 @@ Generates a DHF summary from a JSON payload:
 
 ## Design Phases Covered (21 CFR 820.30)
 
-| CFR Reference | Phase | Required Items |
-|---------------|-------|----------------|
-| 820.30(a) | Design & Development Planning | 4 of 6 |
-| 820.30(c) | Design Input | 7 of 8 |
-| 820.30(d) | Design Output | 5 of 6 |
-| 820.30(e) | Design Review | 6 of 6 |
-| 820.30(f) | Design Verification | 6 of 7 |
-| 820.30(g) | Design Validation | 4 of 7 |
-| 820.30(h) | Design Transfer | 5 of 6 |
-| 820.30(i) | Design Changes | 6 of 6 |
-| 820.30(j) | Design History File | 7 of 7 |
+| CFR Reference | Phase                         | Required Items |
+| ------------- | ----------------------------- | -------------- |
+| 820.30(a)     | Design & Development Planning | 4 of 6         |
+| 820.30(c)     | Design Input                  | 7 of 8         |
+| 820.30(d)     | Design Output                 | 5 of 6         |
+| 820.30(e)     | Design Review                 | 6 of 6         |
+| 820.30(f)     | Design Verification           | 6 of 7         |
+| 820.30(g)     | Design Validation             | 4 of 7         |
+| 820.30(h)     | Design Transfer               | 5 of 6         |
+| 820.30(i)     | Design Changes                | 6 of 6         |
+| 820.30(j)     | Design History File           | 7 of 7         |
 
 ---
 
 ## Runtime Configuration
 
-| Variable | Required | Description |
-|----------|----------|-------------|
+| Variable                         | Required | Description                                                                     |
+| -------------------------------- | -------- | ------------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_POLAR_CHECKOUT_URL` | Optional | Pro checkout URL (for future Pro tier). Falls back to email contact when unset. |
 
 ---

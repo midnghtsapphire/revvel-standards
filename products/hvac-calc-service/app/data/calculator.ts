@@ -99,27 +99,48 @@ export interface HeatingBreakdown {
  */
 export function normalizeLoadInputs(raw: Partial<LoadInputs>): LoadInputs {
   return {
-    floorArea: Math.max(100, Number.isFinite(raw.floorArea) ? raw.floorArea : 1500),
-    ceilingHeight: clamp(Number.isFinite(raw.ceilingHeight) ? raw.ceilingHeight : 9, 7, 20),
-    windowFraction: clamp(Number.isFinite(raw.windowFraction) ? raw.windowFraction : 0.15, 0.05, 0.50),
-    occupants: clamp(Math.round(Number.isFinite(raw.occupants) ? raw.occupants : 2), 0, 50),
+    floorArea: Math.max(
+      100,
+      Number.isFinite(raw.floorArea) ? raw.floorArea : 1500,
+    ),
+    ceilingHeight: clamp(
+      Number.isFinite(raw.ceilingHeight) ? raw.ceilingHeight : 9,
+      7,
+      20,
+    ),
+    windowFraction: clamp(
+      Number.isFinite(raw.windowFraction) ? raw.windowFraction : 0.15,
+      0.05,
+      0.5,
+    ),
+    occupants: clamp(
+      Math.round(Number.isFinite(raw.occupants) ? raw.occupants : 2),
+      0,
+      50,
+    ),
     climateZoneId:
-      typeof raw.climateZoneId === "string" && CLIMATE_ZONES.some((z) => z.id === raw.climateZoneId)
+      typeof raw.climateZoneId === "string" &&
+      CLIMATE_ZONES.some((z) => z.id === raw.climateZoneId)
         ? raw.climateZoneId
         : "3a",
     insulationLevelId:
-      typeof raw.insulationLevelId === "string" && INSULATION_LEVELS.some((l) => l.id === raw.insulationLevelId)
+      typeof raw.insulationLevelId === "string" &&
+      INSULATION_LEVELS.some((l) => l.id === raw.insulationLevelId)
         ? raw.insulationLevelId
         : "good",
     indoorCoolingSetpoint: clamp(
-      Number.isFinite(raw.indoorCoolingSetpoint) ? raw.indoorCoolingSetpoint : 75,
+      Number.isFinite(raw.indoorCoolingSetpoint)
+        ? raw.indoorCoolingSetpoint
+        : 75,
       68,
-      80
+      80,
     ),
     indoorHeatingSetpoint: clamp(
-      Number.isFinite(raw.indoorHeatingSetpoint) ? raw.indoorHeatingSetpoint : 70,
+      Number.isFinite(raw.indoorHeatingSetpoint)
+        ? raw.indoorHeatingSetpoint
+        : 70,
       60,
-      78
+      78,
     ),
   };
 }
@@ -136,32 +157,44 @@ export function calculateLoad(rawInputs: Partial<LoadInputs>): LoadResult {
   const zone = CLIMATE_ZONES.find((z) => z.id === inputs.climateZoneId);
   const ins = INSULATION_LEVELS.find((l) => l.id === inputs.insulationLevelId);
   if (!zone || !ins) {
-    throw new Error(`Unknown climateZoneId=${inputs.climateZoneId} or insulationLevelId=${inputs.insulationLevelId}`);
+    throw new Error(
+      `Unknown climateZoneId=${inputs.climateZoneId} or insulationLevelId=${inputs.insulationLevelId}`,
+    );
   }
 
   const indoorCool = inputs.indoorCoolingSetpoint!;
   const indoorHeat = inputs.indoorHeatingSetpoint!;
 
   // ── Geometric assumptions ─────────────────────────────
-  const perimeter = 4 * Math.sqrt(inputs.floorArea);            // ft
-  const wallArea = perimeter * inputs.ceilingHeight;            // ft²
-  const windowArea = Math.min(wallArea, inputs.floorArea * inputs.windowFraction); // ft²
-  const netWallArea = wallArea - windowArea;                    // ft²
-  const ceilingArea = inputs.floorArea;                        // ft²
-  const floorArea = inputs.floorArea;                          // ft²
-  const volume = inputs.floorArea * inputs.ceilingHeight;      // ft³ (conditioned volume)
+  const perimeter = 4 * Math.sqrt(inputs.floorArea); // ft
+  const wallArea = perimeter * inputs.ceilingHeight; // ft²
+  const windowArea = Math.min(
+    wallArea,
+    inputs.floorArea * inputs.windowFraction,
+  ); // ft²
+  const netWallArea = wallArea - windowArea; // ft²
+  const ceilingArea = inputs.floorArea; // ft²
+  const floorArea = inputs.floorArea; // ft²
+  const volume = inputs.floorArea * inputs.ceilingHeight; // ft³ (conditioned volume)
 
   // ── Cooling load ─────────────────────────────────────
   const coolingDeltaT = zone.designCoolingTemp - indoorCool;
 
   const coolingBreakdown: CoolingBreakdown = {
     wallTransmission: round2(netWallArea * ins.wallUValue * coolingDeltaT),
-    ceilingTransmission: round2(ceilingArea * ins.ceilingUValue * coolingDeltaT),
-    floorTransmission: round2(floorArea * ins.floorUValue * coolingDeltaT * 0.3), // 30% factor — slab/ground contact
+    ceilingTransmission: round2(
+      ceilingArea * ins.ceilingUValue * coolingDeltaT,
+    ),
+    floorTransmission: round2(
+      floorArea * ins.floorUValue * coolingDeltaT * 0.3,
+    ), // 30% factor — slab/ground contact
     windowTransmission: round2(windowArea * ins.windowUValue * coolingDeltaT),
     solarGain: round2(windowArea * WINDOW_SHGC * SOLAR_IRRADIANCE_BTU),
     infiltration: round2(
-      (volume / 60) * INFILTRATION_ACH[inputs.insulationLevelId] * INFILTRATION_FACTOR * coolingDeltaT
+      (volume / 60) *
+        INFILTRATION_ACH[inputs.insulationLevelId] *
+        INFILTRATION_FACTOR *
+        coolingDeltaT,
     ),
     internalGain: round2(inputs.floorArea * INTERNAL_GAIN_BTU_PER_SQFT),
     occupantGain: round2(inputs.occupants * OCCUPANT_SENSIBLE_GAIN_BTU),
@@ -169,7 +202,7 @@ export function calculateLoad(rawInputs: Partial<LoadInputs>): LoadResult {
 
   const sensibleCoolingLoad = Math.max(
     0,
-    Object.values(coolingBreakdown).reduce((sum, v) => sum + v, 0)
+    Object.values(coolingBreakdown).reduce((sum, v) => sum + v, 0),
   );
 
   // ── Heating load ─────────────────────────────────────
@@ -177,22 +210,29 @@ export function calculateLoad(rawInputs: Partial<LoadInputs>): LoadResult {
 
   const heatingBreakdown: HeatingBreakdown = {
     wallTransmission: round2(netWallArea * ins.wallUValue * heatingDeltaT),
-    ceilingTransmission: round2(ceilingArea * ins.ceilingUValue * heatingDeltaT),
-    floorTransmission: round2(floorArea * ins.floorUValue * heatingDeltaT * 0.3),
+    ceilingTransmission: round2(
+      ceilingArea * ins.ceilingUValue * heatingDeltaT,
+    ),
+    floorTransmission: round2(
+      floorArea * ins.floorUValue * heatingDeltaT * 0.3,
+    ),
     windowTransmission: round2(windowArea * ins.windowUValue * heatingDeltaT),
     infiltration: round2(
-      (volume / 60) * INFILTRATION_ACH[inputs.insulationLevelId] * INFILTRATION_FACTOR * heatingDeltaT
+      (volume / 60) *
+        INFILTRATION_ACH[inputs.insulationLevelId] *
+        INFILTRATION_FACTOR *
+        heatingDeltaT,
     ),
   };
 
   const sensibleHeatingLoad = Math.max(
     0,
-    Object.values(heatingBreakdown).reduce((sum, v) => sum + v, 0)
+    Object.values(heatingBreakdown).reduce((sum, v) => sum + v, 0),
   );
 
   // ── Equipment sizing ─────────────────────────────────
   // Add 10% safety factor per Manual S guidelines (do not over-size)
-  const recommendedCoolingTons = round2(sensibleCoolingLoad * 1.1 / 12000);
+  const recommendedCoolingTons = round2((sensibleCoolingLoad * 1.1) / 12000);
   const recommendedHeatingBtu = round2(sensibleHeatingLoad * 1.1);
 
   return {
@@ -214,21 +254,21 @@ export function calculateLoad(rawInputs: Partial<LoadInputs>): LoadResult {
 export interface EnergyInputs {
   coolingLoadBtu: number;
   heatingLoadBtu: number;
-  seer2: number;               // SEER2 rating (current DOE standard, ≈ SEER × 0.95)
-  hspf2: number;               // HSPF2 for heat pump heating (or furnace AFUE as decimal for gas)
+  seer2: number; // SEER2 rating (current DOE standard, ≈ SEER × 0.95)
+  hspf2: number; // HSPF2 for heat pump heating (or furnace AFUE as decimal for gas)
   electricityRateCentsKwh: number; // ¢/kWh
-  gasRateDollarsTherm?: number;    // $/therm (if gas furnace)
+  gasRateDollarsTherm?: number; // $/therm (if gas furnace)
   climateZoneId: string;
-  isFurnace?: boolean;         // true = gas furnace heating; false = heat pump (default)
+  isFurnace?: boolean; // true = gas furnace heating; false = heat pump (default)
 }
 
 export interface EnergyResult {
   annualCoolingKwh: number;
   annualCoolingCost: number;
-  annualHeatingKwh: number;    // kWh equiv even for gas (for comparison)
+  annualHeatingKwh: number; // kWh equiv even for gas (for comparison)
   annualHeatingCost: number;
   totalAnnualCost: number;
-  co2EquivalentKg: number;     // based on US avg grid intensity 0.386 kg CO₂/kWh
+  co2EquivalentKg: number; // based on US avg grid intensity 0.386 kg CO₂/kWh
 }
 
 /**
@@ -242,7 +282,8 @@ export function calculateEnergy(inputs: EnergyInputs): EnergyResult {
   const coolHours = ANNUAL_COOLING_HOURS[inputs.climateZoneId] ?? 1500;
   const heatHours = ANNUAL_HEATING_HOURS[inputs.climateZoneId] ?? 2000;
 
-  const seer2 = Number.isFinite(inputs.seer2) && inputs.seer2 > 0 ? inputs.seer2 : 16;
+  const seer2 =
+    Number.isFinite(inputs.seer2) && inputs.seer2 > 0 ? inputs.seer2 : 16;
   const hspf2 =
     Number.isFinite(inputs.hspf2) && inputs.hspf2 > 0
       ? inputs.hspf2
@@ -250,12 +291,17 @@ export function calculateEnergy(inputs: EnergyInputs): EnergyResult {
         ? 0.95
         : 8.5;
   const electricityRateCentsKwh =
-    Number.isFinite(inputs.electricityRateCentsKwh) && inputs.electricityRateCentsKwh > 0
+    Number.isFinite(inputs.electricityRateCentsKwh) &&
+    inputs.electricityRateCentsKwh > 0
       ? inputs.electricityRateCentsKwh
       : 16;
 
-  const annualCoolingKwh = round2((inputs.coolingLoadBtu * coolHours) / (seer2 * 1000));
-  const annualCoolingCost = round2((annualCoolingKwh * electricityRateCentsKwh) / 100);
+  const annualCoolingKwh = round2(
+    (inputs.coolingLoadBtu * coolHours) / (seer2 * 1000),
+  );
+  const annualCoolingCost = round2(
+    (annualCoolingKwh * electricityRateCentsKwh) / 100,
+  );
 
   let annualHeatingKwh: number;
   let annualHeatingCost: number;
@@ -267,8 +313,12 @@ export function calculateEnergy(inputs: EnergyInputs): EnergyResult {
     annualHeatingCost = round2(therms * inputs.gasRateDollarsTherm);
     annualHeatingKwh = round2(therms * 29.3); // 1 therm ≈ 29.3 kWh
   } else {
-    annualHeatingKwh = round2((inputs.heatingLoadBtu * heatHours) / (hspf2 * 1000));
-    annualHeatingCost = round2((annualHeatingKwh * electricityRateCentsKwh) / 100);
+    annualHeatingKwh = round2(
+      (inputs.heatingLoadBtu * heatHours) / (hspf2 * 1000),
+    );
+    annualHeatingCost = round2(
+      (annualHeatingKwh * electricityRateCentsKwh) / 100,
+    );
   }
 
   const totalAnnualCost = round2(annualCoolingCost + annualHeatingCost);
@@ -355,8 +405,12 @@ export interface EquipmentRecommendation {
  * Recommend equipment size per Manual S: size to calculated load, not to
  * the next standard size up.  Optimal is within +15% of the load.
  */
-export function recommendEquipment(coolingLoadBtu: number): EquipmentRecommendation {
-  const standardSizes = [0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0];
+export function recommendEquipment(
+  coolingLoadBtu: number,
+): EquipmentRecommendation {
+  const standardSizes = [
+    0.5, 0.75, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0,
+  ];
 
   // Guard against a non-positive load. calculateLoad always produces a positive
   // cooling load (solar + internal gains), but recommendEquipment is exported
@@ -391,8 +445,9 @@ export function recommendEquipment(coolingLoadBtu: number): EquipmentRecommendat
     note = `Equipment is undersized by ${((1 - oversizeRatio) * 100).toFixed(0)}%. The space will not reach setpoint on peak design days.`;
   } else if (oversizeRatio <= 1.15) {
     verdict = "optimal";
-    note = "Equipment is within Manual S limits (≤115% of calculated load). Good comfort and humidity control expected.";
-  } else if (oversizeRatio <= 1.40) {
+    note =
+      "Equipment is within Manual S limits (≤115% of calculated load). Good comfort and humidity control expected.";
+  } else if (oversizeRatio <= 1.4) {
     verdict = "slightly-oversized";
     note = `Equipment is ${((oversizeRatio - 1) * 100).toFixed(0)}% over load. Short-cycling may reduce humidity control; consider variable-speed equipment.`;
   } else {
@@ -423,7 +478,7 @@ export function buildMarkdownReport(
   inputs: LoadInputs,
   load: LoadResult,
   energy?: EnergyResult,
-  duct?: DuctResult
+  duct?: DuctResult,
 ): string {
   const lines: string[] = [
     "# HVAC Load Calculation Report",
@@ -452,7 +507,7 @@ export function buildMarkdownReport(
     `| Component | BTU/hr |`,
     `| --- | --- |`,
     ...Object.entries(load.coolingBreakdown).map(
-      ([k, v]) => `| ${camelToLabel(k)} | ${Math.round(v).toLocaleString()} |`
+      ([k, v]) => `| ${camelToLabel(k)} | ${Math.round(v).toLocaleString()} |`,
     ),
     `| **Total** | **${load.sensibleCoolingLoad.toLocaleString()}** |`,
     "",
@@ -461,7 +516,7 @@ export function buildMarkdownReport(
     `| Component | BTU/hr |`,
     `| --- | --- |`,
     ...Object.entries(load.heatingBreakdown).map(
-      ([k, v]) => `| ${camelToLabel(k)} | ${Math.round(v).toLocaleString()} |`
+      ([k, v]) => `| ${camelToLabel(k)} | ${Math.round(v).toLocaleString()} |`,
     ),
     `| **Total** | **${load.sensibleHeatingLoad.toLocaleString()}** |`,
   ];
@@ -478,7 +533,7 @@ export function buildMarkdownReport(
       `| Heating (kWh eq) | ${energy.annualHeatingKwh.toLocaleString()} |`,
       `| Heating Cost | $${energy.annualHeatingCost.toFixed(0)} |`,
       `| **Total Annual Cost** | **$${energy.totalAnnualCost.toFixed(0)}** |`,
-      `| CO₂ Equivalent | ${energy.co2EquivalentKg.toFixed(0)} kg |`
+      `| CO₂ Equivalent | ${energy.co2EquivalentKg.toFixed(0)} kg |`,
     );
   }
 
@@ -491,16 +546,24 @@ export function buildMarkdownReport(
       `| --- | --- |`,
       `| Required Airflow | ${duct.requiredCfm.toLocaleString()} CFM |`,
       `| Round Duct Diameter | ${duct.roundDuctDiameter.toFixed(1)}" |`,
-      `| Rectangular Duct | ${duct.rectangularDuct.width}" × ${duct.rectangularDuct.height}" |`
+      `| Rectangular Duct | ${duct.rectangularDuct.width}" × ${duct.rectangularDuct.height}" |`,
     );
   }
 
-  lines.push("", "---", "", "_Disclaimer: This tool provides simplified Manual J estimates for preliminary sizing. Always have a licensed HVAC engineer perform a full Manual J/D/S calculation before purchasing equipment._");
+  lines.push(
+    "",
+    "---",
+    "",
+    "_Disclaimer: This tool provides simplified Manual J estimates for preliminary sizing. Always have a licensed HVAC engineer perform a full Manual J/D/S calculation before purchasing equipment._",
+  );
 
   return lines.join("\n");
 }
 
-export function buildCsvExport(load: LoadResult, energy?: EnergyResult): string {
+export function buildCsvExport(
+  load: LoadResult,
+  energy?: EnergyResult,
+): string {
   const rows = [
     ["Metric", "Value", "Unit"],
     ["Cooling Load", String(load.sensibleCoolingLoad), "BTU/hr"],
@@ -518,7 +581,7 @@ export function buildCsvExport(load: LoadResult, energy?: EnergyResult): string 
       ["Annual Heating kWh", String(energy.annualHeatingKwh), "kWh"],
       ["Annual Heating Cost", energy.annualHeatingCost.toFixed(2), "USD"],
       ["Total Annual Cost", energy.totalAnnualCost.toFixed(2), "USD"],
-      ["CO2 Equivalent", energy.co2EquivalentKg.toFixed(0), "kg"]
+      ["CO2 Equivalent", energy.co2EquivalentKg.toFixed(0), "kg"],
     );
   }
 
@@ -543,7 +606,7 @@ function roundToNearestStandard(inches: number): number {
   // Standard duct dimensions: 6, 8, 10, 12, 14, 16, 18, 20, 24, 30, 36
   const standard = [6, 8, 10, 12, 14, 16, 18, 20, 24, 30, 36];
   return standard.reduce((prev, curr) =>
-    Math.abs(curr - inches) < Math.abs(prev - inches) ? curr : prev
+    Math.abs(curr - inches) < Math.abs(prev - inches) ? curr : prev,
   );
 }
 

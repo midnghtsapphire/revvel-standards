@@ -70,7 +70,8 @@ agents:
       Decomposes a complex task into sequential LLM steps where each call
       processes the output of the previous one. Owns chatbot-style flows and
       agent tool pipelines. Does nothing else.
-    use_for: ["prompt chain", "step-by-step", "sequential pipeline", "chatbot flow"]
+    use_for:
+      ["prompt chain", "step-by-step", "sequential pipeline", "chatbot flow"]
 
   - handle: planner
     name: Wayfinder
@@ -80,7 +81,13 @@ agents:
       Creates a multi-step plan, executes it sequentially, reviews after each
       task, and adjusts the remaining plan. Owns business-process automation
       and data-pipeline orchestration. Does nothing else.
-    use_for: ["plan and execute", "multi-step plan", "process automation", "pipeline orchestration"]
+    use_for:
+      [
+        "plan and execute",
+        "multi-step plan",
+        "process automation",
+        "pipeline orchestration",
+      ]
 
   - handle: fanout
     name: Manifold
@@ -90,7 +97,8 @@ agents:
       Sections a task or runs it multiple times simultaneously and aggregates
       the outputs. Owns automated evaluations and guardrail voting. Does
       nothing else.
-    use_for: ["parallelization", "fan-out", "aggregate outputs", "evals", "guardrails"]
+    use_for:
+      ["parallelization", "fan-out", "aggregate outputs", "evals", "guardrails"]
 
   - handle: conductor
     name: Maestro
@@ -100,7 +108,14 @@ agents:
       Acts as the central brain that dynamically breaks a task down, delegates
       to worker agents, and synthesizes their results. Owns agentic RAG and
       coding-agent coordination. Does nothing else.
-    use_for: ["orchestrator", "delegate", "worker agents", "synthesize results", "agentic rag"]
+    use_for:
+      [
+        "orchestrator",
+        "delegate",
+        "worker agents",
+        "synthesize results",
+        "agentic rag",
+      ]
 
   - handle: switchboard
     name: Switchyard
@@ -110,7 +125,14 @@ agents:
       Classifies every input and directs it to the right specialized handler,
       keeping concerns separated. Owns support-ticket triage and multi-agent
       hand-offs. Does nothing else.
-    use_for: ["routing", "classify", "triage", "direct to specialist", "separation of concerns"]
+    use_for:
+      [
+        "routing",
+        "classify",
+        "triage",
+        "direct to specialist",
+        "separation of concerns",
+      ]
 
   - handle: critic
     name: Whetstone
@@ -120,7 +142,8 @@ agents:
       Runs the generate-evaluate loop: one model produces, it evaluates and
       feeds back until quality clears the bar. Owns real-time output
       monitoring and coding-agent review loops. Does nothing else.
-    use_for: ["evaluator", "optimizer", "feedback loop", "quality bar", "llm judge"]
+    use_for:
+      ["evaluator", "optimizer", "feedback loop", "quality bar", "llm judge"]
 
   - handle: mirror
     name: Looking Glass
@@ -140,7 +163,14 @@ agents:
       Plans with substitution up front (ReWOO) to cut token use versus
       ReACT-style loops. Owns deep-search agents and multi-step question
       answering. Does nothing else.
-    use_for: ["rewoo", "deep search", "multi-step qa", "token efficiency", "plan with substitution"]
+    use_for:
+      [
+        "rewoo",
+        "deep search",
+        "multi-step qa",
+        "token efficiency",
+        "plan with substitution",
+      ]
 
   - handle: loop
     name: Perpetua
@@ -150,4 +180,11 @@ agents:
       Runs as a continuous LLM loop acting on tool feedback, inside guardrails
       and spend caps. Owns long-running autonomous automations and
       self-healing flows. Does nothing else.
-    use_for: ["autonomous loop", "tool feedback", "continuous", "self-healing", "always-on"]
+    use_for:
+      [
+        "autonomous loop",
+        "tool feedback",
+        "continuous",
+        "self-healing",
+        "always-on",
+      ]

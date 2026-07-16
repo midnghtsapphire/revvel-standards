@@ -19,17 +19,20 @@ All 10 issues identified in the PR review have been successfully resolved. The P
 **Problem**: Code nodes returned plain objects instead of n8n's expected array format. Webhook payload accessed via incorrect path.
 
 **Solution**:
+
 - Changed return format from `return { ... }` to `return [{ json: { ... } }];`
 - Read webhook data from `$json.body || $json` for proper compatibility
 - Follows pattern from existing `usda-loan-eligibility-checker.n8n.json`
 
 **Code Before**:
+
 ```javascript
 const niche = $input.item.json.niche || 'parenting';
 return { niche: niche, ... };
 ```
 
 **Code After**:
+
 ```javascript
 const body = $json.body || $json;
 const niche = body.niche || 'parenting';
@@ -43,23 +46,30 @@ return [{ json: { niche: niche, ... } }];
 **Problem**: Step 3 referenced `{{ $json.title }}` but Claude returns raw text, not parsed JSON. Variables would be undefined.
 
 **Solution**:
+
 - Added new node "Step 2b: Parse Title JSON" between Steps 2 and 3
 - Handles markdown code fence cleanup (`\`\`\`json` removal)
 - Includes proper error handling with context
 - Updated all downstream references to use parsed data
 
 **Added Node**:
-```javascript
+
+````javascript
 // Parse JSON response from Claude
 let response = $input.item.json.response || $input.item.json.text;
-response = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+response = response
+  .replace(/```json\n?/g, "")
+  .replace(/```\n?/g, "")
+  .trim();
 try {
   const parsed = JSON.parse(response);
   return [{ json: parsed }];
 } catch (e) {
-  throw new Error(`Failed to parse: ${e.message}. Response: ${response.substring(0, 200)}`);
+  throw new Error(
+    `Failed to parse: ${e.message}. Response: ${response.substring(0, 200)}`,
+  );
 }
-```
+````
 
 ---
 
@@ -68,10 +78,12 @@ try {
 **Problem**: Used `bodyParameters` with `Content-Type: application/json` header, causing format mismatch. n8n would send form-encoded data instead of JSON.
 
 **Solution**:
+
 - Changed from `bodyParameters` to `specifyBody: "json"` with `jsonBody`
 - Properly matches the `Content-Type: application/json` header
 
 **Before**:
+
 ```json
 {
   "sendBody": true,
@@ -82,6 +94,7 @@ try {
 ```
 
 **After**:
+
 ```json
 {
   "sendBody": true,
@@ -97,15 +110,18 @@ try {
 **Problem**: Used invalid base URL `https://api.shopify.com/admin/...` which doesn't work for Admin API product operations.
 
 **Solution**:
+
 - Corrected to `https://{{ $credentials.shopifyApi.shopDomain }}/admin/api/2024-01/products.json`
 - Dynamically uses shop domain from credentials
 
 **Before**:
+
 ```json
 "url": "https://api.shopify.com/admin/api/2024-01/products.json"
 ```
 
 **After**:
+
 ```json
 "url": "=https://{{ $credentials.shopifyApi.shopDomain }}/admin/api/2024-01/products.json"
 ```
@@ -117,16 +133,19 @@ try {
 **Problem**: `REPO_ROOT` hardcoded to `/home/runner/work/revvel-standards/revvel-standards`, failing outside CI environment.
 
 **Solution**:
+
 - Dynamic detection using `git rev-parse --show-toplevel`
 - Fallback to script directory resolution for non-git environments
 - Works in CI, local dev, and any checkout location
 
 **Before**:
+
 ```bash
 REPO_ROOT="/home/runner/work/revvel-standards/revvel-standards"
 ```
 
 **After**:
+
 ```bash
 if command -v git &> /dev/null && git rev-parse --is-inside-work-tree &> /dev/null 2>&1; then
     REPO_ROOT="$(git rev-parse --show-toplevel)"
@@ -143,11 +162,13 @@ fi
 **Problem**: Script recreated `test-payload.json` and `test-workflow.sh` even though they're tracked in repo, potentially clobbering local edits.
 
 **Solution**:
+
 - Removed file generation code
 - Script now references existing tracked files
 - Added warnings if files are missing (shouldn't happen)
 
 **Before**:
+
 ```bash
 cat > "$TEST_FILE" << 'EOF'
 { "niche": "parenting", ... }
@@ -156,6 +177,7 @@ print_success "Created test payload: $TEST_FILE"
 ```
 
 **After**:
+
 ```bash
 if [ ! -f "$WORKFLOWS_DIR/test-payload.json" ]; then
     print_warning "test-payload.json not found (should be tracked in repo)"
@@ -170,16 +192,19 @@ print_success "Setup script complete - using tracked test files from repo"
 **Problem**: Treated only HTTP 200 as success. Valid 201/202/204 responses flagged as failures.
 
 **Solution**:
+
 - Accept any 2xx status code as success
 - Use numeric comparison for range check
 
 **Before**:
+
 ```bash
 if [ "$HTTP_CODE" -eq 200 ]; then
     echo "✅ Success!"
 ```
 
 **After**:
+
 ```bash
 if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
     echo "✅ Success! HTTP $HTTP_CODE"
@@ -192,9 +217,11 @@ if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
 **Problem**: Python code used `datetime.now()` without importing datetime module, causing NameError at runtime.
 
 **Solution**:
+
 - Added `from datetime import datetime` at top of code block
 
 **Before**:
+
 ```python
 # Prepare research data
 niche = input_data.get('niche', 'parenting')
@@ -205,6 +232,7 @@ output = {
 ```
 
 **After**:
+
 ```python
 from datetime import datetime
 
@@ -223,11 +251,13 @@ output = {
 **Problem**: Bare `json.loads()` with no cleanup or exception handling. Claude often returns markdown code blocks, causing parse failures.
 
 **Solution**:
+
 - Added cleanup for markdown code fences
 - Wrapped in try/except with clear error messages
 - Includes response preview for debugging
 
 **Before**:
+
 ```python
 import json
 response = input_data.get('response', '{}')
@@ -236,7 +266,8 @@ output = { 'title': parsed.get('title'), ... }
 ```
 
 **After**:
-```python
+
+````python
 import json
 response = input_data.get('response', '{}')
 response = response.replace('```json', '').replace('```', '').strip()
@@ -245,7 +276,7 @@ try:
     output = { 'title': parsed.get('title'), ... }
 except json.JSONDecodeError as e:
     raise Exception(f'Failed to parse Claude response as JSON. Error: {str(e)}. Response preview: {response[:200]}')
-```
+````
 
 ---
 
@@ -254,15 +285,18 @@ except json.JSONDecodeError as e:
 **Problem**: Documentation claimed "Comprehensive test suite" but only manual scripts exist, no automated tests.
 
 **Solution**:
+
 - Changed claim to accurately describe validation approach
 - Updated to "Manual validation scripts and sample payloads"
 
 **Before**:
+
 ```markdown
 - **Testing**: Comprehensive test suite
 ```
 
 **After**:
+
 ```markdown
 - **Testing**: Manual validation scripts and sample payloads
 ```
@@ -272,16 +306,19 @@ except json.JSONDecodeError as e:
 ## Validation Results
 
 ### Syntax Validation
+
 - ✅ n8n workflow JSON: Valid
 - ✅ Make.com workflow JSON: Valid
 - ✅ setup-pdf-automation.sh: Valid bash syntax
 - ✅ test-workflow.sh: Valid bash syntax
 
 ### Code Review
+
 - ✅ No new issues found
 - ✅ All 10 original issues resolved
 
 ### CodeQL Security Scan
+
 - ✅ No security issues detected
 - ✅ Configuration changes only (no analyzable code)
 
@@ -299,13 +336,13 @@ Three memories stored for future reference:
 
 ## Files Changed
 
-| File | Lines Changed | Type |
-|------|---------------|------|
-| `workflows/n8n/pdf-product-creation.json` | +50/-30 | Fixed workflow structure |
-| `workflows/setup-pdf-automation.sh` | +15/-40 | Dynamic paths, no overwrites |
-| `workflows/test-workflow.sh` | +2/-1 | Accept 2xx codes |
-| `workflows/zapier/pdf-product-creation.md` | +25/-10 | Import + error handling |
-| `workflows/IMPLEMENTATION_SUMMARY.md` | +1/-1 | Accurate description |
+| File                                       | Lines Changed | Type                         |
+| ------------------------------------------ | ------------- | ---------------------------- |
+| `workflows/n8n/pdf-product-creation.json`  | +50/-30       | Fixed workflow structure     |
+| `workflows/setup-pdf-automation.sh`        | +15/-40       | Dynamic paths, no overwrites |
+| `workflows/test-workflow.sh`               | +2/-1         | Accept 2xx codes             |
+| `workflows/zapier/pdf-product-creation.md` | +25/-10       | Import + error handling      |
+| `workflows/IMPLEMENTATION_SUMMARY.md`      | +1/-1         | Accurate description         |
 
 ---
 

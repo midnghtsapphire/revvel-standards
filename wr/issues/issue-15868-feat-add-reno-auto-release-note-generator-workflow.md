@@ -10,6 +10,7 @@
 ---
 
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-29269477433.md`
@@ -21,6 +22,7 @@ Source packet: `docs/research-engine/run-29269477433.md`
 The reno-auto release note generator workflow template cannot be safely integrated without critical information about the existing OpenRouter system. The user's explicit concern about "overwriting openrouter" combined with the complete absence of OpenRouter documentation creates an unacceptable risk of breaking production systems.
 
 **Immediate Actions Required:**
+
 1. Apply labels: `status:blocked`, `needs:information`, `compatibility-risk`
 2. Request OpenRouter system documentation and configuration details
 3. Do not proceed with any implementation until compatibility is verified
@@ -28,11 +30,13 @@ The reno-auto release note generator workflow template cannot be safely integrat
 ## Audience We Are Going After and Why
 
 **Primary Audience**: Internal DevOps/Platform Engineering Team
+
 - **Pain Point**: Fear of breaking critical OpenRouter integration while trying to automate release notes
 - **Urgent Need**: Verifiable assurance of non-interference before any changes
 - **Current State**: Risk-averse, prepared to abandon automation rather than risk production disruption
 
 **Why This Matters Now**:
+
 - User language ("big big deal") indicates OpenRouter is mission-critical
 - Previous attempt may have already failed ("was going to close it as not compatible")
 - Trust erosion risk if we proceed without addressing compatibility concerns
@@ -42,35 +46,39 @@ The reno-auto release note generator workflow template cannot be safely integrat
 **SEO Priority: LOW** - This is internal tooling with minimal external search value
 
 **If Public Documentation Created**:
+
 - **Target Keywords**: "reno-auto openrouter compatibility", "github actions release notes non-destructive"
 - **Content Angle**: "How to Safely Add Release Note Automation Without Breaking Existing Workflows"
 - **Landing Page**: Technical guide with compatibility checklist and rollback procedures
 
 **Internal Marketing**:
+
 - Position as "Additive Automation" - enhances without replacing
 - Lead with safety messaging and rollback capabilities
 - Create compatibility matrix documentation
 
 ## Competitor and GitHub Star Intelligence
 
-| Tool | Stars | Last Commit | License | Pricing | Best For |
-|------|-------|-------------|---------|---------|----------|
-| **semantic-release** | 20.6k | Dec 2024 | MIT | Free | Full automation with versioning |
-| **release-drafter** | 4.0k | Nov 2024 | MIT | Free | GitHub-native, template-driven |
-| **auto** (Intuit) | 2.2k | Dec 2024 | MIT | Free | Plugin architecture |
-| **changesets** | 5.9k | Dec 2024 | MIT | Free | Monorepo support |
-| **reno** (OpenStack) | 89 | Oct 2024 | Apache 2.0 | Free | Python/OpenStack projects |
+| Tool                 | Stars | Last Commit | License    | Pricing | Best For                        |
+| -------------------- | ----- | ----------- | ---------- | ------- | ------------------------------- |
+| **semantic-release** | 20.6k | Dec 2024    | MIT        | Free    | Full automation with versioning |
+| **release-drafter**  | 4.0k  | Nov 2024    | MIT        | Free    | GitHub-native, template-driven  |
+| **auto** (Intuit)    | 2.2k  | Dec 2024    | MIT        | Free    | Plugin architecture             |
+| **changesets**       | 5.9k  | Dec 2024    | MIT        | Free    | Monorepo support                |
+| **reno** (OpenStack) | 89    | Oct 2024    | Apache 2.0 | Free    | Python/OpenStack projects       |
 
 **Market Reality**: The release note automation space is saturated with mature, well-maintained alternatives. Reno's 89 stars vs semantic-release's 20.6k stars indicates limited adoption outside OpenStack ecosystem.
 
 ## Chatter and Demand Signals
 
 **User Sentiment Analysis**:
+
 - **Language Pattern**: "i do not this overwriting openrouter? pleasae check this is a big big deal" - fragmented, anxious phrasing indicates high emotional stakes
 - **Risk Tolerance**: Zero - user was ready to close PR rather than risk conflict
 - **Trust Level**: Low - requires explicit proof of non-interference
 
 **Key Objections**:
+
 1. Fear of breaking OpenRouter (mentioned 5+ times)
 2. Lack of compatibility verification
 3. No clear rollback plan
@@ -78,6 +86,7 @@ The reno-auto release note generator workflow template cannot be safely integrat
 ## Factual Validation and Evidence Gaps
 
 **Critical Missing Information**:
+
 - ❌ GitHub repository URL for issue #15804
 - ❌ OpenRouter system documentation or configuration
 - ❌ Current release note generation process
@@ -85,6 +94,7 @@ The reno-auto release note generator workflow template cannot be safely integrat
 - ❌ Compatibility test results
 
 **Verified Facts**:
+
 - ✅ Reno is a real OpenStack tool for release note management
 - ✅ User has legitimate compatibility concerns
 - ✅ Multiple mature alternatives exist
@@ -92,12 +102,14 @@ The reno-auto release note generator workflow template cannot be safely integrat
 ## Build Requirements and Acceptance Gates
 
 **Required Before Proceeding**:
+
 1. **OpenRouter Documentation**: Complete system overview, configuration files, triggers
 2. **Compatibility Matrix**: Explicit mapping of potential conflicts
 3. **Test Environment**: Isolated testing with both systems running
 4. **Rollback Plan**: Step-by-step reversion procedures
 
 **Acceptance Gates**:
+
 - [ ] OpenRouter functionality verified unchanged after integration
 - [ ] Both workflows run successfully in parallel without conflicts
 - [ ] Rollback tested and documented
@@ -106,9 +118,11 @@ The reno-auto release note generator workflow template cannot be safely integrat
 ## Code Review Agent Packet
 
 ## Blocking Finding #1: Missing OpenRouter Documentation
+
 **Severity**: CRITICAL
 **Issue**: Cannot verify compatibility without OpenRouter system details
 **Automatic Fix**:
+
 ```yaml
 # Add to PR template
 ## OpenRouter Compatibility Checklist
@@ -117,12 +131,15 @@ The reno-auto release note generator workflow template cannot be safely integrat
 - [ ] No file path conflicts verified
 - [ ] Parallel execution tested
 ```
+
 **Commit Message**: `chore: add OpenRouter compatibility checklist to PR template`
 
 ## Blocking Finding #2: No Compatibility Tests
+
 **Severity**: HIGH
 **Issue**: No automated tests to prevent OpenRouter conflicts
 **Automatic Fix**:
+
 ```yaml
 # .github/workflows/compatibility-check.yml
 name: OpenRouter Compatibility Check
@@ -141,20 +158,24 @@ jobs:
             exit 1
           fi
 ```
+
 **Commit Message**: `feat: add OpenRouter compatibility check workflow`
 
 ## Automatic Fix and Commit Queue
 
 1. **Apply Blocking Labels**:
+
    ```bash
    gh issue edit 15804 --add-label "status:blocked,needs:information,compatibility-risk"
    ```
 
 2. **Post Information Request**:
+
    ```markdown
    This work request is **BLOCKED** pending OpenRouter documentation.
-   
+
    Required information:
+
    1. OpenRouter system purpose and architecture
    2. Configuration file locations
    3. GitHub Actions triggers used
@@ -166,14 +187,14 @@ jobs:
    mkdir -p docs/technical
    cat > docs/technical/reno-openrouter-compatibility.md << 'EOF'
    # Reno-Auto and OpenRouter Compatibility Analysis
-   
+
    ## Status: BLOCKED - Awaiting Information
-   
+
    ### OpenRouter System (Unknown)
    - Purpose: [REQUIRED]
    - Config Files: [REQUIRED]
    - Triggers: [REQUIRED]
-   
+
    ### Conflict Analysis
    | Component | OpenRouter | Reno-Auto | Conflict? |
    |-----------|------------|-----------|-----------|
@@ -185,21 +206,25 @@ jobs:
 ## Labels to Apply
 
 **Immediate**:
+
 - `status:blocked` - Cannot proceed without OpenRouter details
 - `needs:information` - Missing critical system documentation
 - `compatibility-risk` - High risk of breaking production
 
 **Conditional** (after information provided):
+
 - `needs:testing` - Compatibility verification required
 - `documentation-needed` - Integration guide required
 
 ## Repository Review and Best Alternative
 
 **Current Tool Analysis**:
+
 - **reno** (OpenStack): 89 stars, Python-specific, limited adoption
 - No `reno-auto` repository found - likely custom wrapper
 
 **Recommended Alternative**: **semantic-release**
+
 - 20.6k stars (230x more than reno)
 - Active maintenance (Dec 2024)
 - Extensive plugin ecosystem
@@ -207,6 +232,7 @@ jobs:
 - MIT license
 
 **Implementation Strategy**:
+
 1. Use semantic-release with custom plugins for reno-style output if needed
 2. Configure to avoid OpenRouter conflicts via isolated workflows
 3. Implement gradual rollout with feature flags
@@ -216,6 +242,7 @@ jobs:
 **Overall Confidence: 15/100** ⚠️
 
 **Breakdown by Lane**:
+
 - Market Positioning (Echo): 75/100 - Clear compatibility concerns identified
 - SEO Demand (Noimos): 60/100 - Limited external search value for internal tooling
 - Competitor Intelligence (Iris): 85/100 - Comprehensive alternative analysis

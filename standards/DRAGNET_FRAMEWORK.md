@@ -8,12 +8,12 @@
 
 ## Domain Classification
 
-| Category | Value |
-|----------|-------|
-| **Domain** | Autonomous Systems |
-| **Sub-domain** | Decision Orchestration |
-| **Use Case** | Zero-Human Decision Making |
-| **Complexity** | Very High |
+| Category       | Value                      |
+| -------------- | -------------------------- |
+| **Domain**     | Autonomous Systems         |
+| **Sub-domain** | Decision Orchestration     |
+| **Use Case**   | Zero-Human Decision Making |
+| **Complexity** | Very High                  |
 
 ---
 
@@ -48,30 +48,35 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ## System Definitions
 
 ### PLATO - Pre-cognitive Deep Research
+
 - **Code:** P
 - **Trigger:** Before any major decision
 - **Output:** Recommendation + Conditions
 - **Method:** Questions assumptions, counterfactual modeling, 5-year projection
 
 ### MEDUSA - Edge Case Research
+
 - **Code:** M
 - **Trigger:** When unconventional/dark intelligence needed
 - **Output:** Risk factors
 - **Method:** Searches unconventional sources, identifies edge cases
 
 ### COUNTER - Darwin Survival Testing
+
 - **Code:** C
 - **Trigger:** After PLATO approves
 - **Output:** KILL conditions
 - **Method:** Stress testing, failure mode analysis
 
 ### DARWIN - Evidence Validation
+
 - **Code:** D
 - **Trigger:** When proof required
 - **Output:** Validation report
 - **Method:** Fact-checking, source verification
 
 ### JUDGE - Final Authority
+
 - **Code:** J
 - **Trigger:** Continuous
 - **Output:** GREEN/YELLOW/RED verdict
@@ -82,6 +87,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ## Decision Pipeline
 
 ### Phase 1: Analysis (PLATO)
+
 ```
 1. Question all assumptions
 2. Identify stakeholders
@@ -91,6 +97,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ```
 
 ### Phase 2: Edge Cases (MEDUSA)
+
 ```
 1. Search unconventional sources
 2. Identify risk vectors
@@ -99,6 +106,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ```
 
 ### Phase 3: Stress Test (COUNTER)
+
 ```
 1. Apply death-by-thousand-cuts test
 2. Simulate negative scenarios
@@ -107,6 +115,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ```
 
 ### Phase 4: Validation (DARWIN)
+
 ```
 1. Verify all claims
 2. Check evidence chains
@@ -115,6 +124,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ```
 
 ### Phase 5: Judgment (JUDGE)
+
 ```
 1. Score all dimensions
 2. Apply thresholds
@@ -126,16 +136,17 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 
 ## Scoring Matrix (JUDGE)
 
-| Dimension | Weight | Score Range |
-|-----------|--------|------------|
-| Financial | 25% | [0-100] |
-| Legal | 25% | [0-100] |
-| Operational | 20% | [0-100] |
-| Strategic | 15% | [0-100] |
-| Risk | 10% | [0-100] |
-| Values | 5% | [0-100] |
+| Dimension   | Weight | Score Range |
+| ----------- | ------ | ----------- |
+| Financial   | 25%    | [0-100]     |
+| Legal       | 25%    | [0-100]     |
+| Operational | 20%    | [0-100]     |
+| Strategic   | 15%    | [0-100]     |
+| Risk        | 10%    | [0-100]     |
+| Values      | 5%     | [0-100]     |
 
 **Thresholds:**
+
 - GREEN: ≥75 average, no dimension <50
 - YELLOW: ≥50 average
 - RED: Any dimension <50, or average <50
@@ -145,11 +156,11 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ## Search Loop Continuation (Field-Completion Requirement)
 
 > Added 2026-07-09 after issue #15480: a `/dragnet please research use the
-> search loop until every field is filled out in full detail` comment produced
+search loop until every field is filled out in full detail` comment produced
 > **no** filled fields. Root cause (three stacked gaps):
 >
 > 1. `detectAction()` in `scripts/persona-comment-runner.js` anchored its verb
->    regex at `^`, so the politeness prefix ("please …") meant *no action* was
+>    regex at `^`, so the politeness prefix ("please …") meant _no action_ was
 >    detected — even though the file's own comments promised "please do a fix"
 >    would execute.
 > 2. "research" was not a routed verb at all, so the request fell into ADVISORY
@@ -170,12 +181,12 @@ gap list is a defect, not a completion.
 
 ### Routing
 
-| Trigger | Route | What runs |
-|---------|-------|-----------|
-| `/dragnet research <topic>` (politeness prefixes OK) | `persona-comment-runner.js` → `dispatchResearchEngine()` | `research-engine.yml` → `runRalphLoop()` |
-| `/dragnet … search loop …` (no execution verb) | same as above | same as above |
-| `/dragnet fix/build/… <task>` | EXECUTION mode | perm-fix WR → `wr:code` → openrouter-coder |
-| Anything else `/dragnet` | ADVISORY mode | one-shot diagnosis comment (never for field-filling) |
+| Trigger                                              | Route                                                    | What runs                                            |
+| ---------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------- |
+| `/dragnet research <topic>` (politeness prefixes OK) | `persona-comment-runner.js` → `dispatchResearchEngine()` | `research-engine.yml` → `runRalphLoop()`             |
+| `/dragnet … search loop …` (no execution verb)       | same as above                                            | same as above                                        |
+| `/dragnet fix/build/… <task>`                        | EXECUTION mode                                           | perm-fix WR → `wr:code` → openrouter-coder           |
+| Anything else `/dragnet`                             | ADVISORY mode                                            | one-shot diagnosis comment (never for field-filling) |
 
 A one-shot advisory chat reply is **never** an acceptable substitute for the
 search loop when the request is to research or fill out a packet.
@@ -212,18 +223,21 @@ search loop when the request is to research or fill out a packet.
 ## Integration Requirements
 
 ### Input Sources
+
 - [ ] GitHub Issues
 - [ ] Manual submissions
 - [ ] Scheduled cron
 - [ ] API calls
 
 ### Output Destinations
+
 - [ ] GitHub Issues (for review)
 - [ ] GitHub Actions (for execution)
 - [ ] Notifications (for alerts)
 - [ ] Logs (for audit)
 
 ### Required Standards
+
 - [ ] ERROR_REPORTING_STANDARD.md
 - [ ] MONITORING.md
 - [ ] CRON_SYSTEM.md
@@ -233,19 +247,20 @@ search loop when the request is to research or fill out a packet.
 
 ## Cron Jobs
 
-| Job ID | System | Schedule | Purpose |
-|--------|-------|----------|---------|
-| `dragnet:plato:start` | PLATO | `0 5 * * *` | Morning analysis |
-| `dragnet:medusa:edge` | MEDUSA | `0 6 * * 0` | Weekly edge scan |
-| `dragnet:counter:stress` | COUNTER | `0 7 * * 1` | Weekly stress test |
-| `dragnet:judge:review` | JUDGE | `0 8 * * *` | Daily verdict |
-| `dragnet:darwin:validate` | DARWIN | `0 8 1 * *` | Monthly validation |
+| Job ID                    | System  | Schedule    | Purpose            |
+| ------------------------- | ------- | ----------- | ------------------ |
+| `dragnet:plato:start`     | PLATO   | `0 5 * * *` | Morning analysis   |
+| `dragnet:medusa:edge`     | MEDUSA  | `0 6 * * 0` | Weekly edge scan   |
+| `dragnet:counter:stress`  | COUNTER | `0 7 * * 1` | Weekly stress test |
+| `dragnet:judge:review`    | JUDGE   | `0 8 * * *` | Daily verdict      |
+| `dragnet:darwin:validate` | DARWIN  | `0 8 1 * *` | Monthly validation |
 
 ---
 
 ## Error Handling
 
 Per ERROR_REPORTING_STANDARD.md:
+
 - [ ] All errors logged with severity
 - [ ] RED verdict = halt + alert
 - [ ] Stack traces captured
@@ -256,6 +271,7 @@ Per ERROR_REPORTING_STANDARD.md:
 ## Monitoring
 
 Per MONITORING.md:
+
 - [ ] Prometheus metrics for each system
 - [ ] Success/failure ratios
 - [ ] Latency tracking
@@ -273,5 +289,5 @@ Per MONITORING.md:
 
 ---
 
-*Standard maintained by revvel-standards*
-*Last updated: 2026-07-09*
+_Standard maintained by revvel-standards_
+_Last updated: 2026-07-09_

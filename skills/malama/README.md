@@ -1,6 +1,6 @@
 # Mālama 🌺 — the open self-evolving agent engine
 
-> *Mālama* (Hawaiian): **to care for, to steward, to maintain.**
+> _Mālama_ (Hawaiian): **to care for, to steward, to maintain.**
 
 Mālama is a small, model-agnostic operating constitution for an autonomous
 engineering agent. It plans, executes in verifiable steps, recovers from its own
@@ -17,12 +17,12 @@ it for you.
 
 ## What's here
 
-| File | What it is |
-|---|---|
+| File                                     | What it is                                                             |
+| ---------------------------------------- | ---------------------------------------------------------------------- |
 | [`SYSTEM_PROMPT.md`](./SYSTEM_PROMPT.md) | The drop-in master prompt (paste into any agent runtime / `CLAUDE.md`) |
-| [`SKILL.md`](./SKILL.md) | The skill spec — control loop, self-modification, honesty rules |
-| [`malama.skill.yml`](./malama.skill.yml) | Machine-readable skill config |
-| [`LICENSE`](./LICENSE) | AGPL-3.0-or-later |
+| [`SKILL.md`](./SKILL.md)                 | The skill spec — control loop, self-modification, honesty rules        |
+| [`malama.skill.yml`](./malama.skill.yml) | Machine-readable skill config                                          |
+| [`LICENSE`](./LICENSE)                   | AGPL-3.0-or-later                                                      |
 
 ## Quickstart
 
@@ -36,7 +36,7 @@ Mālama loop: **Plan → Act → Verify → Learn**, with full self-modification
 - **Self-evolving, not just self-healing** — the agent may rewrite its own
   tactics block to get better, while its identity and the honesty rule stay put.
 - **Honest by construction** — it is explicitly forbidden from fabricating
-  metrics, citations, or success rates. (That rule exists *because* it was
+  metrics, citations, or success rates. (That rule exists _because_ it was
   distilled from a design that over-claimed; Mālama keeps the engineering and
   drops the fiction.)
 - **Mission-linked** — a percentage of every paid oAudrey plan funds

@@ -17,26 +17,26 @@
  *   node scripts/chaosmender.js --scope <glob>    # override scan scope
  */
 
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
 
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
 
-const REPO_ROOT = path.resolve(__dirname, '..');
-const DEFAULT_LEDGER = path.join(REPO_ROOT, 'config', 'error-ledger.json');
+const REPO_ROOT = path.resolve(__dirname, "..");
+const DEFAULT_LEDGER = path.join(REPO_ROOT, "config", "error-ledger.json");
 
 // Map of chaosmender_check id → scanner function.
 // Each scanner receives (repoRoot) and returns an array of findings:
 //   { file, line, excerpt, errorId, title, fix, fix_code_snippet }
 const CHECKS = {
-  'bare-remove-label': scanBareRemoveLabel,
-  'workflow-run-missing-workflows-list': scanWorkflowRunMissingWorkflowsList,
-  'github-script-column-0-body': scanGithubScriptColumn0,
+  "bare-remove-label": scanBareRemoveLabel,
+  "workflow-run-missing-workflows-list": scanWorkflowRunMissingWorkflowsList,
+  "github-script-column-0-body": scanGithubScriptColumn0,
 };
 
 // ---------------------------------------------------------------------------
@@ -53,14 +53,16 @@ const CHECKS = {
  */
 function scanBareRemoveLabel(repoRoot) {
   const findings = [];
-  const workflowDir = path.join(repoRoot, '.github', 'workflows');
+  const workflowDir = path.join(repoRoot, ".github", "workflows");
   if (!fs.existsSync(workflowDir)) return findings;
 
-  const files = fs.readdirSync(workflowDir).filter(f => f.endsWith('.yml') || f.endsWith('.yaml'));
+  const files = fs
+    .readdirSync(workflowDir)
+    .filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"));
 
   for (const file of files) {
     const filepath = path.join(workflowDir, file);
-    const lines = fs.readFileSync(filepath, 'utf8').split('\n');
+    const lines = fs.readFileSync(filepath, "utf8").split("\n");
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -70,19 +72,19 @@ function scanBareRemoveLabel(repoRoot) {
 
       // Check whether this file uses a removeLabelSafe wrapper function.
       // If so, every call site in this file is considered guarded.
-      const fileContent = lines.join('\n');
+      const fileContent = lines.join("\n");
       if (/function\s+removeLabelSafe\b/.test(fileContent)) continue;
 
       // Look ahead up to 5 lines for a .catch
       const windowEnd = Math.min(i + 6, lines.length);
-      const window = lines.slice(i, windowEnd).join('\n');
+      const window = lines.slice(i, windowEnd).join("\n");
       if (/\.catch/.test(window)) continue;
 
       findings.push({
         file: path.relative(repoRoot, filepath),
         line: i + 1,
         excerpt: line.trim(),
-        errorId: 'LABEL-RACE-001',
+        errorId: "LABEL-RACE-001",
       });
     }
   }
@@ -100,19 +102,21 @@ function scanBareRemoveLabel(repoRoot) {
  */
 function scanWorkflowRunMissingWorkflowsList(repoRoot) {
   const findings = [];
-  const workflowDir = path.join(repoRoot, '.github', 'workflows');
+  const workflowDir = path.join(repoRoot, ".github", "workflows");
   if (!fs.existsSync(workflowDir)) return findings;
 
-  const files = fs.readdirSync(workflowDir).filter(f => f.endsWith('.yml') || f.endsWith('.yaml'));
+  const files = fs
+    .readdirSync(workflowDir)
+    .filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"));
 
   for (const file of files) {
     const filepath = path.join(workflowDir, file);
-    const content = fs.readFileSync(filepath, 'utf8');
+    const content = fs.readFileSync(filepath, "utf8");
 
     // Quick pre-filter: does this file even mention workflow_run?
     if (!/workflow_run/.test(content)) continue;
 
-    const lines = content.split('\n');
+    const lines = content.split("\n");
     for (let i = 0; i < lines.length; i++) {
       // Matches `workflow_run:` as an on: event key (indented or not)
       if (!/^\s+workflow_run\s*:/.test(lines[i])) continue;
@@ -122,8 +126,11 @@ function scanWorkflowRunMissingWorkflowsList(repoRoot) {
       for (let j = i + 1; j < Math.min(i + 15, lines.length); j++) {
         const ahead = lines[j];
         // If we hit a new top-level YAML key (no leading space on a non-blank line), stop
-        if (/^[a-zA-Z]/.test(ahead) && ahead.trim() !== '') break;
-        if (/^\s+workflows\s*:/.test(ahead)) { foundWorkflows = true; break; }
+        if (/^[a-zA-Z]/.test(ahead) && ahead.trim() !== "") break;
+        if (/^\s+workflows\s*:/.test(ahead)) {
+          foundWorkflows = true;
+          break;
+        }
       }
 
       if (!foundWorkflows) {
@@ -131,7 +138,7 @@ function scanWorkflowRunMissingWorkflowsList(repoRoot) {
           file: path.relative(repoRoot, filepath),
           line: i + 1,
           excerpt: lines[i].trim(),
-          errorId: 'WORKFLOW-RUN-001',
+          errorId: "WORKFLOW-RUN-001",
         });
       }
     }
@@ -148,14 +155,16 @@ function scanWorkflowRunMissingWorkflowsList(repoRoot) {
  */
 function scanGithubScriptColumn0(repoRoot) {
   const findings = [];
-  const workflowDir = path.join(repoRoot, '.github', 'workflows');
+  const workflowDir = path.join(repoRoot, ".github", "workflows");
   if (!fs.existsSync(workflowDir)) return findings;
 
-  const files = fs.readdirSync(workflowDir).filter(f => f.endsWith('.yml') || f.endsWith('.yaml'));
+  const files = fs
+    .readdirSync(workflowDir)
+    .filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"));
 
   for (const file of files) {
     const filepath = path.join(workflowDir, file);
-    const lines = fs.readFileSync(filepath, 'utf8').split('\n');
+    const lines = fs.readFileSync(filepath, "utf8").split("\n");
     let inScriptBlock = false;
     let scriptIndent = -1;
 
@@ -173,7 +182,7 @@ function scanGithubScriptColumn0(repoRoot) {
       if (!inScriptBlock) continue;
 
       // An empty line doesn't end the block
-      if (line.trim() === '') continue;
+      if (line.trim() === "") continue;
 
       const indent = line.search(/\S/);
 
@@ -186,7 +195,7 @@ function scanGithubScriptColumn0(repoRoot) {
           file: path.relative(repoRoot, filepath),
           line: i + 1,
           excerpt: line.trim().slice(0, 80),
-          errorId: 'GITHUB-SCRIPT-INLINE-001',
+          errorId: "GITHUB-SCRIPT-INLINE-001",
         });
         inScriptBlock = false;
         scriptIndent = -1;
@@ -197,7 +206,6 @@ function scanGithubScriptColumn0(repoRoot) {
       if (indent <= scriptIndent) {
         inScriptBlock = false;
         scriptIndent = -1;
-        continue;
       }
     }
   }
@@ -213,7 +221,7 @@ function loadLedger(ledgerPath) {
   if (!fs.existsSync(ledgerPath)) {
     throw new Error(`Error ledger not found: ${ledgerPath}`);
   }
-  return JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
+  return JSON.parse(fs.readFileSync(ledgerPath, "utf8"));
 }
 
 /**
@@ -239,7 +247,7 @@ function runChecks(repoRoot, ledger) {
         severity: entry.severity,
         fix: entry.fix,
         fix_code_snippet: entry.fix_code_snippet,
-        self_heal_label: entry.self_heal_label || 'auto-error',
+        self_heal_label: entry.self_heal_label || "auto-error",
         references: entry.references || [],
       });
     }
@@ -252,24 +260,31 @@ function runChecks(repoRoot, ledger) {
 // Reporting
 // ---------------------------------------------------------------------------
 
-const SEVERITY_ICON = { critical: '🔴', high: '🟠', medium: '🟡', low: '🔵' };
+const SEVERITY_ICON = { critical: "🔴", high: "🟠", medium: "🟡", low: "🔵" };
 
 function printReport(findings) {
   if (findings.length === 0) {
-    console.log('✅ ChaosMender: no known error patterns detected.');
+    console.log("✅ ChaosMender: no known error patterns detected.");
     return;
   }
 
-  console.log(`⚡ ChaosMender: ${findings.length} known error pattern(s) detected.\n`);
+  console.log(
+    `⚡ ChaosMender: ${findings.length} known error pattern(s) detected.\n`,
+  );
 
   for (const f of findings) {
-    const icon = SEVERITY_ICON[f.severity] || '⚪';
+    const icon = SEVERITY_ICON[f.severity] || "⚪";
     console.log(`${icon} [${f.errorId}] ${f.title}`);
     console.log(`   File  : ${f.file}:${f.line}`);
     console.log(`   Found : ${f.excerpt}`);
     console.log(`   Fix   : ${f.fix}`);
     if (f.fix_code_snippet) {
-      console.log(`   Snippet:\n${f.fix_code_snippet.split('\n').map(l => `     ${l}`).join('\n')}`);
+      console.log(
+        `   Snippet:\n${f.fix_code_snippet
+          .split("\n")
+          .map((l) => `     ${l}`)
+          .join("\n")}`,
+      );
     }
     console.log();
   }
@@ -284,11 +299,11 @@ function printReport(findings) {
  */
 function buildIssueBody(findings) {
   const lines = [
-    '## ChaosMender detected known error patterns',
-    '',
-    'The following unguarded call sites match patterns in `config/error-ledger.json`.',
-    'Apply the listed fix to each location.',
-    '',
+    "## ChaosMender detected known error patterns",
+    "",
+    "The following unguarded call sites match patterns in `config/error-ledger.json`.",
+    "Apply the listed fix to each location.",
+    "",
   ];
 
   // Group by errorId
@@ -300,43 +315,46 @@ function buildIssueBody(findings) {
   for (const [id, group] of Object.entries(byId)) {
     const first = group[0];
     lines.push(`### ${id} — ${first.title}`);
-    lines.push('');
+    lines.push("");
     lines.push(`**Category:** ${first.category}  `);
     lines.push(`**Severity:** ${first.severity}  `);
     lines.push(`**Fix:** ${first.fix}`);
-    lines.push('');
+    lines.push("");
     if (first.fix_code_snippet) {
-      lines.push('```javascript');
+      lines.push("```javascript");
       lines.push(first.fix_code_snippet);
-      lines.push('```');
-      lines.push('');
+      lines.push("```");
+      lines.push("");
     }
-    lines.push('**Affected locations:**');
-    lines.push('');
+    lines.push("**Affected locations:**");
+    lines.push("");
     for (const f of group) {
       lines.push(`- \`${f.file}\` line ${f.line}: \`${f.excerpt}\``);
     }
-    lines.push('');
+    lines.push("");
     if (first.references && first.references.length) {
-      lines.push(`**References:** ${first.references.join(', ')}`);
-      lines.push('');
+      lines.push(`**References:** ${first.references.join(", ")}`);
+      lines.push("");
     }
   }
 
-  lines.push('---');
-  lines.push('*Auto-filed by ChaosMender · config/error-ledger.json*');
-  return lines.join('\n');
+  lines.push("---");
+  lines.push("*Auto-filed by ChaosMender · config/error-ledger.json*");
+  return lines.join("\n");
 }
 
 async function fileIssue(findings, dryRun) {
   const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
   if (!token) {
-    console.warn('⚠️  No GH_TOKEN / GITHUB_TOKEN — skipping issue filing.');
+    console.warn("⚠️  No GH_TOKEN / GITHUB_TOKEN — skipping issue filing.");
     return;
   }
 
-  const repo = process.env.GITHUB_REPOSITORY || process.env.GH_REPO || 'midnghtsapphire/revvel-standards';
-  const [owner, repoName] = repo.split('/');
+  const repo =
+    process.env.GITHUB_REPOSITORY ||
+    process.env.GH_REPO ||
+    "midnghtsapphire/revvel-standards";
+  const [owner, repoName] = repo.split("/");
 
   const title = `[SELF-HEAL] ChaosMender: ${findings.length} known error pattern(s) detected`;
   const body = buildIssueBody(findings);
@@ -344,52 +362,76 @@ async function fileIssue(findings, dryRun) {
   // Deduplicate: check if an open [SELF-HEAL] ChaosMender issue already exists
   const searchUrl = `https://api.github.com/repos/${owner}/${repoName}/issues?state=open&labels=auto-error&per_page=50`;
   const searchRes = await fetch(searchUrl, {
-    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' },
+    headers: {
+      Authorization: `token ${token}`,
+      Accept: "application/vnd.github.v3+json",
+    },
   });
   if (searchRes.ok) {
     const open = await searchRes.json();
-    const existing = open.find(i => i.title.startsWith('[SELF-HEAL] ChaosMender'));
+    const existing = open.find((i) =>
+      i.title.startsWith("[SELF-HEAL] ChaosMender"),
+    );
     if (existing) {
-      console.log(`ℹ️  Existing ChaosMender issue #${existing.number} already open — updating in place.`);
+      console.log(
+        `ℹ️  Existing ChaosMender issue #${existing.number} already open — updating in place.`,
+      );
       if (!dryRun) {
-        await fetch(`https://api.github.com/repos/${owner}/${repoName}/issues/${existing.number}`, {
-          method: 'PATCH',
-          headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, body }),
-        });
+        await fetch(
+          `https://api.github.com/repos/${owner}/${repoName}/issues/${existing.number}`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `token ${token}`,
+              Accept: "application/vnd.github.v3+json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ title, body }),
+          },
+        );
         console.log(`✅ Updated issue #${existing.number}`);
       } else {
-        console.log('[dry-run] Would PATCH issue #' + existing.number);
+        console.log("[dry-run] Would PATCH issue #" + existing.number);
       }
       return;
     }
   }
 
   if (dryRun) {
-    console.log('[dry-run] Would create issue:');
+    console.log("[dry-run] Would create issue:");
     console.log(`  title: ${title}`);
     console.log(`  labels: auto-error, chaosmender`);
     return;
   }
 
   // Determine which labels exist before trying to add them
-  const labelCandidates = ['auto-error', 'chaosmender'];
+  const labelCandidates = ["auto-error", "chaosmender"];
   const labelsUrl = `https://api.github.com/repos/${owner}/${repoName}/labels?per_page=100`;
   let validLabels = [];
   const labelsRes = await fetch(labelsUrl, {
-    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' },
+    headers: {
+      Authorization: `token ${token}`,
+      Accept: "application/vnd.github.v3+json",
+    },
   });
   if (labelsRes.ok) {
     const all = await labelsRes.json();
-    const names = new Set(all.map(l => l.name));
-    validLabels = labelCandidates.filter(l => names.has(l));
+    const names = new Set(all.map((l) => l.name));
+    validLabels = labelCandidates.filter((l) => names.has(l));
   }
 
-  const createRes = await fetch(`https://api.github.com/repos/${owner}/${repoName}/issues`, {
-    method: 'POST',
-    headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title, body, labels: validLabels }),
-  });
+  const createRes = await fetch(
+    `https://api.github.com/repos/${owner}/${repoName}/issues`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ title, body, labels: validLabels }),
+    },
+  );
 
   if (createRes.ok) {
     const issue = await createRes.json();
@@ -414,10 +456,17 @@ function parseArgs(argv) {
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
     const next = argv[i + 1];
-    if (a === '--file-issues') opts.fileIssues = true;
-    else if (a === '--dry-run') { opts.dryRun = true; opts.fileIssues = true; }
-    else if (a === '--ledger' && next) { opts.ledger = next; i++; }
-    else if (a === '--scope' && next) { opts.scope = next; i++; }
+    if (a === "--file-issues") opts.fileIssues = true;
+    else if (a === "--dry-run") {
+      opts.dryRun = true;
+      opts.fileIssues = true;
+    } else if (a === "--ledger" && next) {
+      opts.ledger = next;
+      i++;
+    } else if (a === "--scope" && next) {
+      opts.scope = next;
+      i++;
+    }
   }
   return opts;
 }
@@ -442,14 +491,20 @@ async function main() {
 
   // Write findings to GITHUB_OUTPUT for workflow consumption
   if (process.env.GITHUB_OUTPUT) {
-    const summary = findings.length > 0
-      ? findings.map(f => `${f.errorId}:${f.file}:${f.line}`).join(',')
-      : '';
-    fs.appendFileSync(process.env.GITHUB_OUTPUT, `findings_count=${findings.length}\nfindings=${summary}\n`);
+    const summary =
+      findings.length > 0
+        ? findings.map((f) => `${f.errorId}:${f.file}:${f.line}`).join(",")
+        : "";
+    fs.appendFileSync(
+      process.env.GITHUB_OUTPUT,
+      `findings_count=${findings.length}\nfindings=${summary}\n`,
+    );
   }
 
   // Exit 1 only for critical/high findings (don't block CI on medium/low)
-  const blocking = findings.filter(f => f.severity === 'critical' || f.severity === 'high');
+  const blocking = findings.filter(
+    (f) => f.severity === "critical" || f.severity === "high",
+  );
   process.exit(blocking.length > 0 ? 1 : 0);
 }
 
@@ -465,8 +520,8 @@ module.exports = {
 };
 
 if (require.main === module) {
-  main().catch(err => {
-    console.error('Fatal:', err.message);
+  main().catch((err) => {
+    console.error("Fatal:", err.message);
     process.exit(1);
   });
 }

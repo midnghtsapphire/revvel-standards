@@ -31,68 +31,71 @@ Every SYSTEM_STATE.md must contain exactly these sections, in this order:
 
 ### 3.1. Infrastructure
 
-| Component | Status | Details |
-|---|---|---|
-| Production server | ✅ / ⚠️ / ❌ | [IP address, PM2 process name, uptime] |
-| Database | ✅ / ⚠️ / ❌ | [Host, database name, migration version] |
-| CI/CD | ✅ / ⚠️ / ❌ | [Last deploy date, last successful run] |
-| DNS | ✅ / ⚠️ / ❌ | [Domain, registrar, pointing to] |
-| SSL | ✅ / ⚠️ / ❌ | [Cert expiry date, provider] |
+| Component         | Status       | Details                                  |
+| ----------------- | ------------ | ---------------------------------------- |
+| Production server | ✅ / ⚠️ / ❌ | [IP address, PM2 process name, uptime]   |
+| Database          | ✅ / ⚠️ / ❌ | [Host, database name, migration version] |
+| CI/CD             | ✅ / ⚠️ / ❌ | [Last deploy date, last successful run]  |
+| DNS               | ✅ / ⚠️ / ❌ | [Domain, registrar, pointing to]         |
+| SSL               | ✅ / ⚠️ / ❌ | [Cert expiry date, provider]             |
 
 **Status icons:**
+
 - ✅ = Working in production as expected
 - ⚠️ = Working but with a known issue or degraded state
 - ❌ = Not working / not deployed
 
 ### 3.2. Domain Pages
 
-| Page / Route | Status | Last Verified | Notes |
-|---|---|---|---|
-| `/` | ✅ | [date] | Home page loads, no console errors |
-| `/login` | ✅ | [date] | Auth flow complete |
-| `/dashboard` | ⚠️ | [date] | Loads but sidebar missing |
-| `/api/health` | ✅ | [date] | Returns 200 |
+| Page / Route  | Status | Last Verified | Notes                              |
+| ------------- | ------ | ------------- | ---------------------------------- |
+| `/`           | ✅     | [date]        | Home page loads, no console errors |
+| `/login`      | ✅     | [date]        | Auth flow complete                 |
+| `/dashboard`  | ⚠️     | [date]        | Loads but sidebar missing          |
+| `/api/health` | ✅     | [date]        | Returns 200                        |
 
 ### 3.3. Known Bugs
 
-| ID | Description | Severity | Status | Reported |
-|---|---|---|---|---|
-| BUG-001 | [description] | high | open | [date] |
-| BUG-002 | [description] | low | in-progress | [date] |
+| ID      | Description   | Severity | Status      | Reported |
+| ------- | ------------- | -------- | ----------- | -------- |
+| BUG-001 | [description] | high     | open        | [date]   |
+| BUG-002 | [description] | low      | in-progress | [date]   |
 
 **Rules:**
+
 - Never delete a bug row — set status to `resolved` with the date resolved.
 - Bug IDs are sequential and permanent.
 
 ### 3.4. Database Schema Status
 
-| Table | Exists | Last Migration | Notes |
-|---|---|---|---|
-| `users` | ✅ | migration_001 | |
-| `sessions` | ✅ | migration_002 | |
-| `error_reports` | ✅ | migration_003 | |
-| `[new_table]` | ❌ | — | Planned in next MVI |
+| Table           | Exists | Last Migration | Notes               |
+| --------------- | ------ | -------------- | ------------------- |
+| `users`         | ✅     | migration_001  |                     |
+| `sessions`      | ✅     | migration_002  |                     |
+| `error_reports` | ✅     | migration_003  |                     |
+| `[new_table]`   | ❌     | —              | Planned in next MVI |
 
 ### 3.5. Environment Variables
 
-| Variable | Production | Staging | Notes |
-|---|---|---|---|
-| `DATABASE_URL` | ✅ set | ✅ set | |
-| `JWT_SECRET` | ✅ set | ✅ set | Min 32 chars |
-| `STRIPE_SECRET_KEY` | ✅ set | ❌ not set | Staging uses test mode |
-| `RESEND_API_KEY` | ✅ set | ✅ set | |
+| Variable            | Production | Staging    | Notes                  |
+| ------------------- | ---------- | ---------- | ---------------------- |
+| `DATABASE_URL`      | ✅ set     | ✅ set     |                        |
+| `JWT_SECRET`        | ✅ set     | ✅ set     | Min 32 chars           |
+| `STRIPE_SECRET_KEY` | ✅ set     | ❌ not set | Staging uses test mode |
+| `RESEND_API_KEY`    | ✅ set     | ✅ set     |                        |
 
 **Rules:**
+
 - Never put actual values in this table — only ✅/❌ status.
 - Keep this table in sync with `.env.example`.
 
 ### 3.6. Test Suite Status
 
-| Suite | Last Run | Status | Coverage |
-|---|---|---|---|
-| Unit tests | [date] | ✅ passing | [X]% |
-| Integration tests | [date] | ✅ passing | [X]% |
-| E2E tests | [date] | ⚠️ 2 failing | — |
+| Suite             | Last Run | Status       | Coverage |
+| ----------------- | -------- | ------------ | -------- |
+| Unit tests        | [date]   | ✅ passing   | [X]%     |
+| Integration tests | [date]   | ✅ passing   | [X]%     |
+| E2E tests         | [date]   | ⚠️ 2 failing | —        |
 
 ### 3.7. Last Updated
 
@@ -113,6 +116,7 @@ At the start of every agent session, the first action must be to read SYSTEM_STA
 ### 4.2. Update Last
 
 The last action of every agent session must be to update SYSTEM_STATE.md with:
+
 - Any status changes (components that were fixed or broke)
 - Any new bugs discovered
 - Any new pages or features deployed
@@ -132,12 +136,14 @@ Only mark something ✅ if you have personally verified it works in production d
 ## 5. Using SYSTEM_STATE.md Across Agent Sessions
 
 **Starting a new session:**
+
 1. Read SYSTEM_STATE.md completely
 2. Note the "Last Updated" section to understand recency
 3. Note any ❌ or ⚠️ items that may affect your current MVI
 4. Reference SYSTEM_STATE.md in Section 1 of your MVI Contract
 
 **Ending a session:**
+
 1. Update all affected rows in every table
 2. Add any new bugs to Section 3.3
 3. Update the "Last Updated" section with timestamp and session summary

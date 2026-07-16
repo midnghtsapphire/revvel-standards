@@ -43,11 +43,11 @@ fleet behavior or is presentation metaphor.
   point it evolved into **VINES** — the originator's system. So the lineage is
   **VSPR → VINES**. source: S3
 - `[verified]` **VINES ≠ VEINS.** The committed `docs/veins/` material in this
-  repo is a *separate, unrelated* thing and a coincidental name clash — it is
+  repo is a _separate, unrelated_ thing and a coincidental name clash — it is
   NOT the VSPR/VINES line. Do not use it as source material here. source: S3
 - `[plausible]` The "brain" component is a grounded research engine in the
   NotebookLM mold: acquire up to ~300 sources, then generate outputs (blog,
-  PDF, app) using *only* those sources. This folder is the GitHub-side home for
+  PDF, app) using _only_ those sources. This folder is the GitHub-side home for
   those source bundles + outputs. source: S3
 
 **Open threads:** capture VINES in the originator's own words (the brain + the

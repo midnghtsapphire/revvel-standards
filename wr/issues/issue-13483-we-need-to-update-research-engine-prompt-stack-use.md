@@ -18,17 +18,17 @@ This Work Request focuses on upgrading the core research engine and prompt stack
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-16 |
-| Last Updated | 2026-05-16 |
-| Primary Language | JavaScript |
-| Stars | 0 |
-| Open Issues | 15 |
-| Description | SSOT standards, templates, and automation |
-| Private | False |
-| Archived | False |
+| Property         | Value                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created          | 2026-05-16                                                                              |
+| Last Updated     | 2026-05-16                                                                              |
+| Primary Language | JavaScript                                                                              |
+| Stars            | 0                                                                                       |
+| Open Issues      | 15                                                                                      |
+| Description      | SSOT standards, templates, and automation                                               |
+| Private          | False                                                                                   |
+| Archived         | False                                                                                   |
 
 ### Current Status
 
@@ -74,11 +74,11 @@ In the current AI automation ecosystem, development speed is high, but distribut
 
 #### Competitors & Alternatives
 
-| Competitor | Features | Pricing | Market Share |
-|------------|----------|---------|--------------|
-| GitHub Copilot Workspace | Contextual code generation | Paid Subscription | High |
-| Devin | Autonomous SWE tasks | Paid Subscription | Low |
-| Sweep AI | Ticket-to-PR automation | Paid Subscription | Medium |
+| Competitor               | Features                   | Pricing           | Market Share |
+| ------------------------ | -------------------------- | ----------------- | ------------ |
+| GitHub Copilot Workspace | Contextual code generation | Paid Subscription | High         |
+| Devin                    | Autonomous SWE tasks       | Paid Subscription | Low          |
+| Sweep AI                 | Ticket-to-PR automation    | Paid Subscription | Medium       |
 
 #### Gaps in Existing Solutions
 
@@ -116,8 +116,8 @@ In the current AI automation ecosystem, development speed is high, but distribut
 **Outdated Dependencies:**
 
 | Package | Current | Latest | Security Issues | Priority |
-|---------|---------|--------|-----------------|----------|
-| N/A | N/A | N/A | None | Low |
+| ------- | ------- | ------ | --------------- | -------- |
+| N/A     | N/A     | N/A    | None            | Low      |
 
 **Recommended Updates:**
 
@@ -137,8 +137,8 @@ In the current AI automation ecosystem, development speed is high, but distribut
 
 #### FOSS Alternatives to Paid Dependencies
 
-| Current (Paid) | FOSS Alternative | Pros | Cons | Recommendation |
-|----------------|------------------|------|------|----------------|
+| Current (Paid)       | FOSS Alternative   | Pros                     | Cons        | Recommendation                    |
+| -------------------- | ------------------ | ------------------------ | ----------- | --------------------------------- |
 | Proprietary SEO APIs | Tavily / Firecrawl | Free tier, LLM optimized | Rate limits | Keep Tavily for topical retrieval |
 
 ### SEO & Content Research
@@ -157,9 +157,9 @@ In the current AI automation ecosystem, development speed is high, but distribut
 
 #### Competitor Content Strategies
 
-| Competitor | Content Type | Frequency | Engagement | Takeaway |
-|------------|--------------|-----------|------------|----------|
-| AutoGPT | GitHub READMEs | Weekly | High | Open source traction drives adoption. Focus on stars and community. |
+| Competitor | Content Type   | Frequency | Engagement | Takeaway                                                            |
+| ---------- | -------------- | --------- | ---------- | ------------------------------------------------------------------- |
+| AutoGPT    | GitHub READMEs | Weekly    | High       | Open source traction drives adoption. Focus on stars and community. |
 
 #### Partnership Opportunities
 
@@ -170,9 +170,9 @@ In the current AI automation ecosystem, development speed is high, but distribut
 
 #### Affiliate Programs
 
-| Program | Commission | Cookie Duration | Fit Score |
-|---------|------------|-----------------|-----------|
-| SEMrush / Ahrefs | Custom | 30 Days | 4/5 |
+| Program          | Commission | Cookie Duration | Fit Score |
+| ---------------- | ---------- | --------------- | --------- |
+| SEMrush / Ahrefs | Custom     | 30 Days         | 4/5       |
 
 ---
 
@@ -313,9 +313,9 @@ In the current AI automation ecosystem, development speed is high, but distribut
 
 **Links to Add:**
 
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| Tavily | Partner API | Custom | Prompts / Workflows |
+| Product/Service | Affiliate Program | Commission | Location            |
+| --------------- | ----------------- | ---------- | ------------------- |
+| Tavily          | Partner API       | Custom     | Prompts / Workflows |
 
 #### Payment Integration
 
@@ -369,8 +369,8 @@ None.
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
+| Feature                 | Status     | URL                                     |
+| ----------------------- | ---------- | --------------------------------------- |
 | Research Engine Prompts | ✅ Working | .github/workflows/openrouter-triage.yml |
 ```
 
@@ -432,7 +432,7 @@ None.
    - **Effort:** 1 hour
    - **Revenue Impact:** Multiplier on product launch success.
 
-2. **Update `docs/WEEKLY_RESEARCH_PROCESS.md`**
+3. **Update `docs/WEEKLY_RESEARCH_PROCESS.md`**
    - **Why:** Establish the standard for all future research.
    - **How:** Add SEO, marketing, and GitHub stars to the Research Checklist.
    - **Effort:** 1 hour
@@ -450,11 +450,11 @@ None.
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| Instructions contain errors | High | High | Agents must research and self-correct; never halt on bad instructions. Treat all instructions as research seeds. |
-| Prompt Bloat | Medium | High | Keep prompts concise and focused strictly on required outputs. |
-| Hallucinated Facts | High | Medium | Explicitly instruct the model to ground facts in provided search context (via Tavily/Firecrawl). |
+| Risk                        | Severity | Probability | Mitigation                                                                                                       |
+| --------------------------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| Instructions contain errors | High     | High        | Agents must research and self-correct; never halt on bad instructions. Treat all instructions as research seeds. |
+| Prompt Bloat                | Medium   | High        | Keep prompts concise and focused strictly on required outputs.                                                   |
+| Hallucinated Facts          | High     | Medium      | Explicitly instruct the model to ground facts in provided search context (via Tavily/Firecrawl).                 |
 
 ---
 
@@ -505,6 +505,7 @@ None.
 
 **Last Updated:** 2026-05-16  
 **Next Review:** After prompt stack deployment
+
 # Work Request: Update Research Engine Prompt Stack
 
 **Issue:** #13483
@@ -531,6 +532,7 @@ This directly serves the **$10M Prime Directive** by ensuring no engineering cyc
 ## 2. Scope
 
 ### In Scope
+
 - Update `research-engine/prompts/*.md` stack (system, planner, validator, synthesizer)
 - Add new prompt modules:
   - `seo-keyword-research.md`
@@ -541,6 +543,7 @@ This directly serves the **$10M Prime Directive** by ensuring no engineering cyc
 - Add Polar.sh monetization hook in synthesizer output
 
 ### Out of Scope
+
 - Building a paid SEO data integration (use free DataForSEO trial / Google Suggest scraping for v1)
 - Rewriting the orchestrator (separate WR)
 
@@ -548,12 +551,12 @@ This directly serves the **$10M Prime Directive** by ensuring no engineering cyc
 
 ## 3. Alignment with $10M Directive
 
-| Phase | Target | This WR's Contribution |
-|-------|--------|------------------------|
-| Phase 1 | $10k/mo | Ensure first 3 OSINT/dev-tool products ship with SEO landing pages + Polar.sh funding |
-| Phase 2 | $30k/mo | Compounding organic traffic from validated keyword bets |
-| Phase 3 | $100k/mo | Competitor-gap products with measurable star-velocity moat |
-| Phase 4 | $10M total | Portfolio of GTM-validated products, not engineering experiments |
+| Phase   | Target     | This WR's Contribution                                                                |
+| ------- | ---------- | ------------------------------------------------------------------------------------- |
+| Phase 1 | $10k/mo    | Ensure first 3 OSINT/dev-tool products ship with SEO landing pages + Polar.sh funding |
+| Phase 2 | $30k/mo    | Compounding organic traffic from validated keyword bets                               |
+| Phase 3 | $100k/mo   | Competitor-gap products with measurable star-velocity moat                            |
+| Phase 4 | $10M total | Portfolio of GTM-validated products, not engineering experiments                      |
 
 **Without this WR, the pipeline ships products with no buyers. With it, every product is pre-validated against real demand.**
 
@@ -562,16 +565,18 @@ This directly serves the **$10M Prime Directive** by ensuring no engineering cyc
 ## 4. Competitive Market Analysis
 
 ### Direct Competitors (Autonomous Research / Agent Stacks)
-| Tool | GitHub Stars | Monetization | Gap We Exploit |
-|------|--------------|--------------|----------------|
-| GPT-Researcher | ~14k | OSS + hosted | No GTM/SEO layer |
-| AutoGPT | ~166k | OSS | No product-market fit validation |
-| CrewAI | ~22k | OSS + enterprise | No competitor-stars tracking |
-| Perplexity | N/A (closed) | Subscription | Not extensible for builders |
 
-**Our wedge:** the only autonomous research stack that outputs a *sellable* product spec, not just a report.
+| Tool           | GitHub Stars | Monetization     | Gap We Exploit                   |
+| -------------- | ------------ | ---------------- | -------------------------------- |
+| GPT-Researcher | ~14k         | OSS + hosted     | No GTM/SEO layer                 |
+| AutoGPT        | ~166k        | OSS              | No product-market fit validation |
+| CrewAI         | ~22k         | OSS + enterprise | No competitor-stars tracking     |
+| Perplexity     | N/A (closed) | Subscription     | Not extensible for builders      |
+
+**Our wedge:** the only autonomous research stack that outputs a _sellable_ product spec, not just a report.
 
 ### SEO Keyword Targets (v1)
+
 - `autonomous research agent` — ~1.9k/mo, KD 32
 - `github stars tracker api` — ~480/mo, KD 18
 - `osint automation tools` — ~2.4k/mo, KD 28
@@ -582,17 +587,20 @@ This directly serves the **$10M Prime Directive** by ensuring no engineering cyc
 ## 5. Implementation Plan
 
 ### Phase A — Prompt Modules (Week 1)
+
 - [x] Draft `seo-keyword-research.md` — inputs: product idea; outputs: 10 keywords with volume/KD/intent
 - [x] Draft `marketing-plan.md` — inputs: product + ICP; outputs: 3 channels, 5 hooks, 30-day calendar skeleton
 - [x] Draft `competitor-stars-tracker.md` — inputs: domain; outputs: top 10 repos, star velocity, gaps
 - [x] Draft `factual-validator.md` — inputs: claim list; outputs: validated/flagged with sources
 
 ### Phase B — Integration (Week 1-2)
+
 - [x] Synthesizer prompt updated to require all 4 modules' output before emitting WR
 - [x] WR template extended with `## GTM Validation` block
 - [x] Polar.sh funding link auto-inserted into every generated product README
 
 ### Phase C — Validation (Week 2)
+
 - [x] Run 5 historical issues through new stack; verify GTM block populated
 - [x] Confirm zero hallucinated stats (factual-validator catches them)
 
@@ -609,12 +617,12 @@ This directly serves the **$10M Prime Directive** by ensuring no engineering cyc
 
 ## 7. Risks & Mitigations
 
-| Risk | Mitigation |
-|------|------------|
-| SEO data source rate limits | Cache + fallback to Google Suggest scraping |
-| Prompt token bloat | Split into sub-agents, summarize between hops |
+| Risk                          | Mitigation                                         |
+| ----------------------------- | -------------------------------------------------- |
+| SEO data source rate limits   | Cache + fallback to Google Suggest scraping        |
+| Prompt token bloat            | Split into sub-agents, summarize between hops      |
 | Hallucinated competitor stars | Pull live from GitHub API, never trust LLM numbers |
-| GTM section becomes noise | Enforce schema, fail closed if incomplete |
+| GTM section becomes noise     | Enforce schema, fail closed if incomplete          |
 
 ---
 

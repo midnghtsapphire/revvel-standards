@@ -84,18 +84,18 @@ The AI engineering community is moving away from monolithic agents (where the LL
 
 ### Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-| --- | --- | --- | --- | --- |
-| Website / app UI | yes | SaaS Dashboard | `scripts/ui-creation-engine.js` | Fleet management for microcontrollers |
-| API | yes | REST/WebSocket | `standards/shapes/API.md` | Signaling layer for the Controller |
-| CLI | yes | `revvel-mcu` | `standards/CLI_MCP_AUTOMATION.md` | To spin up a local microcontroller |
-| MCP | yes | Server | `standards/shapes/MCP.md` | For agents to command microcontrollers |
-| Skill | yes | Execution | `products/revvel-skill-runner/` | Skill to deploy an MCU |
-| PDF | no | N/A | N/A | N/A |
-| PowerPoint / deck | no | N/A | N/A | N/A |
-| Video | no | N/A | N/A | N/A |
-| Docs | yes | Architecture spec | revvel-standards docs | The Controller-Microcontroller paradigm |
-| Agent automation | yes | Workflow | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | N/A |
+| Output shape      | In scope? | Format / length   | Primary engine / standard                 | Notes                                   |
+| ----------------- | --------- | ----------------- | ----------------------------------------- | --------------------------------------- |
+| Website / app UI  | yes       | SaaS Dashboard    | `scripts/ui-creation-engine.js`           | Fleet management for microcontrollers   |
+| API               | yes       | REST/WebSocket    | `standards/shapes/API.md`                 | Signaling layer for the Controller      |
+| CLI               | yes       | `revvel-mcu`      | `standards/CLI_MCP_AUTOMATION.md`         | To spin up a local microcontroller      |
+| MCP               | yes       | Server            | `standards/shapes/MCP.md`                 | For agents to command microcontrollers  |
+| Skill             | yes       | Execution         | `products/revvel-skill-runner/`           | Skill to deploy an MCU                  |
+| PDF               | no        | N/A               | N/A                                       | N/A                                     |
+| PowerPoint / deck | no        | N/A               | N/A                                       | N/A                                     |
+| Video             | no        | N/A               | N/A                                       | N/A                                     |
+| Docs              | yes       | Architecture spec | revvel-standards docs                     | The Controller-Microcontroller paradigm |
+| Agent automation  | yes       | Workflow          | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | N/A                                     |
 
 ### Platform Defaults & Website Requirements
 
@@ -106,18 +106,18 @@ The AI engineering community is moving away from monolithic agents (where the LL
 
 ### Artifact Engine Map
 
-| Artifact Shape | Existing engine / standard | Status | Required action |
-| --- | --- | --- | --- |
-| Website / UI | `standards/shapes/APP.md` | Gap | Build Fleet Management Dashboard |
-| API | `standards/shapes/API.md` | Gap | Build signaling API |
-| CLI | `standards/CLI_MCP_AUTOMATION.md` | Gap | Build `revvel-mcu` CLI |
-| MCP | `standards/shapes/MCP.md` | Gap | Build MCU control MCP |
-| Skill | `products/revvel-skill-runner/` | Exists | Add MCU deployment skill |
-| PDF | `docs/playbooks/pdf-wr-playbook.md` | Exists | N/A |
-| PowerPoint / deck | N/A | Exists | N/A |
-| Video | N/A | Exists | N/A |
-| Docs | revvel-standards baseline | Exists | Add Controller-MCU architecture docs |
-| Agent automation | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Exists | Scaffold product pipeline |
+| Artifact Shape    | Existing engine / standard                | Status | Required action                      |
+| ----------------- | ----------------------------------------- | ------ | ------------------------------------ |
+| Website / UI      | `standards/shapes/APP.md`                 | Gap    | Build Fleet Management Dashboard     |
+| API               | `standards/shapes/API.md`                 | Gap    | Build signaling API                  |
+| CLI               | `standards/CLI_MCP_AUTOMATION.md`         | Gap    | Build `revvel-mcu` CLI               |
+| MCP               | `standards/shapes/MCP.md`                 | Gap    | Build MCU control MCP                |
+| Skill             | `products/revvel-skill-runner/`           | Exists | Add MCU deployment skill             |
+| PDF               | `docs/playbooks/pdf-wr-playbook.md`       | Exists | N/A                                  |
+| PowerPoint / deck | N/A                                       | Exists | N/A                                  |
+| Video             | N/A                                       | Exists | N/A                                  |
+| Docs              | revvel-standards baseline                 | Exists | Add Controller-MCU architecture docs |
+| Agent automation  | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Exists | Scaffold product pipeline            |
 
 ---
 
@@ -179,11 +179,11 @@ The AI engineering community is moving away from monolithic agents (where the LL
 
 ## Risks & Considerations
 
-| Risk | Severity | Mitigation |
-| ------ | ---------- | ------------ |
-| Over-engineering the execution layer | High | Keep the initial "Microcontroller" node as a simple HTTP/webhook listener that executes local shell/API commands, avoiding the complexity of Kubernetes (unlike Google AX). |
-| Latency between Controller and Microcontroller | Medium | Use lightweight WebSocket or optimized HTTP signaling. |
-| Monetization friction | Medium | Ensure the core open-source Controller has obvious value, while the Fleet Management Dashboard is the premium upgrade. |
+| Risk                                           | Severity | Mitigation                                                                                                                                                                  |
+| ---------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Over-engineering the execution layer           | High     | Keep the initial "Microcontroller" node as a simple HTTP/webhook listener that executes local shell/API commands, avoiding the complexity of Kubernetes (unlike Google AX). |
+| Latency between Controller and Microcontroller | Medium   | Use lightweight WebSocket or optimized HTTP signaling.                                                                                                                      |
+| Monetization friction                          | Medium   | Ensure the core open-source Controller has obvious value, while the Fleet Management Dashboard is the premium upgrade.                                                      |
 
 ---
 
@@ -192,7 +192,7 @@ The AI engineering community is moving away from monolithic agents (where the LL
 1. **Adopt Google AX directly**
    - Pros: Built by Google, designed for Kubernetes, has event logging.
    - Cons: Still in active early development (breaking changes expected), heavy Kubernetes dependency, does not natively integrate with our OpenRouter/GOAP OS execution pipeline.
-   - Decision: Rejected. We should learn from the *architecture* (Controller-Microcontroller) but build our own monetizable asset within the Revvel ecosystem that runs on simple infrastructure (DigitalOcean/Vercel).
+   - Decision: Rejected. We should learn from the _architecture_ (Controller-Microcontroller) but build our own monetizable asset within the Revvel ecosystem that runs on simple infrastructure (DigitalOcean/Vercel).
 
 ---
 

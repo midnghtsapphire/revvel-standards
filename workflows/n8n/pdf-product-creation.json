@@ -12,10 +12,7 @@
       "name": "Webhook Trigger",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [
-        250,
-        300
-      ],
+      "position": [250, 300],
       "webhookId": "pdf-product-creation"
     },
     {
@@ -26,10 +23,7 @@
       "name": "Step 1: Identify Problem",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        450,
-        300
-      ]
+      "position": [450, 300]
     },
     {
       "parameters": {
@@ -61,10 +55,7 @@
       "name": "Step 2: Generate Title with Claude",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
-      "position": [
-        650,
-        300
-      ]
+      "position": [650, 300]
     },
     {
       "parameters": {
@@ -74,10 +65,7 @@
       "name": "Step 2b: Parse Title JSON",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        850,
-        300
-      ]
+      "position": [850, 300]
     },
     {
       "parameters": {
@@ -109,10 +97,7 @@
       "name": "Step 3: Generate PDF Content",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
-      "position": [
-        1050,
-        300
-      ]
+      "position": [1050, 300]
     },
     {
       "parameters": {
@@ -122,10 +107,7 @@
       "name": "Step 4: Prepare Design Request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1250,
-        300
-      ]
+      "position": [1250, 300]
     },
     {
       "parameters": {
@@ -153,10 +135,7 @@
       "name": "Step 4: Create Canva Design",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
-      "position": [
-        1450,
-        300
-      ]
+      "position": [1450, 300]
     },
     {
       "parameters": {
@@ -182,10 +161,7 @@
       "name": "Step 5: Create Shopify Product",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
-      "position": [
-        1650,
-        300
-      ]
+      "position": [1650, 300]
     },
     {
       "parameters": {
@@ -195,10 +171,7 @@
       "name": "Step 6: Prepare Influencer Campaign",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        1850,
-        300
-      ]
+      "position": [1850, 300]
     },
     {
       "parameters": {
@@ -210,10 +183,7 @@
       "name": "Return Success Response",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1,
-      "position": [
-        2050,
-        300
-      ]
+      "position": [2050, 300]
     }
   ],
   "connections": {

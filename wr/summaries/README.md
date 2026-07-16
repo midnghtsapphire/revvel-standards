@@ -16,16 +16,21 @@ This directory contains automatically generated daily summary reports tracking:
 ## Viewing Summaries
 
 ### Local Viewing
+
 Open any `YYYY-MM-DD.html` file directly in your browser.
 
 ### GitHub Pages
+
 If GitHub Pages is enabled for this repository, summaries are available at:
+
 ```
 https://midnghtsapphire.github.io/revvel-standards/wr/summaries/YYYY-MM-DD.html
 ```
 
 ### Raw GitHub Content
+
 View summaries directly via:
+
 ```
 https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/wr/summaries/YYYY-MM-DD.html
 ```
@@ -35,6 +40,7 @@ https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/wr/summa
 Summaries are automatically generated daily at 23:00 UTC by the `.github/workflows/daily-wr-summary.yml` workflow.
 
 ### Manual Generation
+
 To manually generate a summary for today:
 
 ```bash
@@ -49,6 +55,7 @@ node scripts/generate-daily-summary.js
 ```
 
 Or trigger the workflow manually via GitHub Actions:
+
 1. Go to **Actions** → **Daily WR & PR Summary**
 2. Click **Run workflow**
 3. Select the branch and click **Run workflow**
@@ -58,11 +65,14 @@ Or trigger the workflow manually via GitHub Actions:
 Each daily summary includes:
 
 ### 1. Summary Statistics
+
 - Total issues created
 - Total PRs opened
 
 ### 2. Issues Created Today
+
 Table with:
+
 - Issue number and link
 - Title
 - Author
@@ -70,7 +80,9 @@ Table with:
 - Labels
 
 ### 3. Pull Requests Opened Today
+
 Table with:
+
 - PR number and link
 - Title
 - Author
@@ -78,9 +90,11 @@ Table with:
 - Status (Open/Merged/Closed)
 
 ### 4. Vercel Deployment URLs
+
 List of all Vercel URLs found in PR descriptions and comments.
 
 ### 5. Repositories Affected
+
 List of all repository references found in PR descriptions and comments.
 
 ## Technical Details

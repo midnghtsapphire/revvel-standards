@@ -13,8 +13,6 @@
 <!-- REQUIRED: Start the title with [WR] so automation routes it correctly. -->
 <!-- Example: "[WR] Add Polar.sh checkout button to OSINT tool landing page" -->
 
-
-
 ## Description
 
 <!-- Describe what you want in plain English. -->
@@ -24,8 +22,6 @@
 <!--   - Any constraints (deadline, budget, tech preference)? -->
 <!--   - If copying or refreshing an existing repo, include the repo URL so the research engine can identify the strongest assets and choose the optimal product direction -->
 <!-- The research engine will fill in technical details, acceptance criteria, etc. -->
-
-
 
 ---
 
@@ -56,12 +52,14 @@ All WRs are evaluated against the PRIME DIRECTIVE:
 > **$10k/month → $10M in 3 years**
 
 **Phase Gates:**
+
 - Phase 1 (Month 1-6): $10k/month
 - Phase 2 (Month 6-18): $30k/month
 - Phase 3 (Month 18-30): $100k/month
 - Phase 4 (Month 30-36): $10M total
 
 **Focus Areas:**
+
 1. Polar.sh — GitHub funding platform
 2. OSINT tools
 3. Automated product pipeline

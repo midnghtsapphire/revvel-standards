@@ -6,7 +6,7 @@ name: Stuck Check Watchdog
 
 on:
   schedule:
-    - cron: '8 * * * *'  # Every hour (staggered off :00 to reduce runner bursts)
+    - cron: "8 * * * *" # Every hour (staggered off :00 to reduce runner bursts)
   workflow_dispatch:
     inputs:
       dry_run:
@@ -39,7 +39,7 @@ jobs:
             const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
             const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
             const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
-            
+
             // Guard each list call: an installation rate-limit 403 here must
             // degrade gracefully (skip that label bucket) instead of
             // hard-failing the whole hourly job.
@@ -80,7 +80,7 @@ jobs:
               labels: 'lifecycle:stuck',
               per_page: 50
             });
-            
+
             // Combine and dedupe
             const allIssues = [...checkingIssues, ...inProgressIssues, ...lifecycleStuckIssues];
             const seen = new Set();
@@ -89,7 +89,7 @@ jobs:
               seen.add(issue.number);
               return !dup;
             });
-            
+
             // Check each issue for stuck status
             const stuckIssues = [];
             for (const issue of uniqueIssues) {
@@ -105,7 +105,7 @@ jobs:
                 labels: issue.labels.map(l => l.name)
               });
             }
-            
+
             core.setOutput('stuck_issues', JSON.stringify(stuckIssues));
             core.setOutput('count', String(stuckIssues.length));
             console.log('Found', stuckIssues.length, 'issues to check');
@@ -120,9 +120,9 @@ jobs:
             const thresholdHours = parseInt('${{ env.STUCK_THRESHOLD_HOURS }}');
             const pendingHours = parseInt('${{ env.PENDING_THRESHOLD_HOURS }}');
             const dryRun = ${{ github.event.inputs.dry_run == 'true' }};
-            
+
             const diagnoses = [];
-            
+
             for (const issue of issues) {
               const diagnosis = {
                 number: issue.number,
@@ -308,7 +308,7 @@ jobs:
                 });
               }
             }
-            
+
             core.setOutput('diagnoses', JSON.stringify(diagnoses));
             console.log('Analyzed', diagnoses.length, 'issues');
 
@@ -319,7 +319,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Issues analyzed: ${{ steps.fetch.outputs.count }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Parse diagnoses and summarize
           DIAGNOSES='${{ steps.analyze.outputs.diagnoses }}'
           echo "Diagnoses: $DIAGNOSES" >> $GITHUB_STEP_SUMMARY

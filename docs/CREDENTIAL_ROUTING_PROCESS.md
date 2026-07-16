@@ -30,6 +30,7 @@ When an issue is opened or labeled `ready-to-implement`:
 5. Applies the `credentials-ready` label if all credentials are already available
 
 **Detected Services:**
+
 - OpenRouter API key
 - Jules API key
 - OpenAI API key
@@ -47,6 +48,7 @@ When an issue is opened or labeled `ready-to-implement`:
 When the `credentials-missing` label is applied:
 
 **Priority 1: Agent HQ (if configured)**
+
 - Triggers desktop agent orchestrator
 - Desktop agent has full file system and keychain access
 - Can retrieve credentials from:
@@ -59,6 +61,7 @@ When the `credentials-missing` label is applied:
 - **Estimated time:** 5-15 minutes
 
 **Priority 2: Vault Agent (fallback)**
+
 - Applies `vault-agent` label
 - Posts routing comment with 3 provisioning options:
   1. **Automated via Doppler** (recommended)
@@ -67,6 +70,7 @@ When the `credentials-missing` label is applied:
 - Provides step-by-step instructions for each option
 
 **Priority 3: Stale Detection & Escalation**
+
 - If credentials-missing remains for > 24 hours without update
 - Automatically applies `needs-human` label
 - Posts escalation comment explaining why manual intervention is needed
@@ -75,6 +79,7 @@ When the `credentials-missing` label is applied:
 ### 3. Provisioning Phase
 
 **Option A: Automated (Agent HQ)**
+
 ```bash
 # Agent HQ desktop agent automatically:
 1. Detects credential requirements from issue
@@ -87,6 +92,7 @@ When the `credentials-missing` label is applied:
 ```
 
 **Option B: Automated (Doppler + Gatekeeper)**
+
 ```bash
 # Developer manually adds to Doppler:
 doppler login
@@ -102,6 +108,7 @@ doppler secrets set SECRET_NAME --value "VALUE"
 ```
 
 **Option C: Manual GitHub Secrets**
+
 ```bash
 # Developer adds directly:
 Settings → Secrets and variables → Actions → New repository secret
@@ -112,6 +119,7 @@ Settings → Secrets and variables → Actions → New repository secret
 ```
 
 **Option D: Desktop Agent (Flexina)**
+
 ```bash
 # If Flexina agent is available:
 1. Add flexina label to issue
@@ -248,24 +256,24 @@ Once all credentials are provisioned:
 
 ### Credential Status Labels
 
-| Label | Color | Meaning | Applied By |
-|---|---|---|---|
-| `credentials-missing` | Red (`d93f0b`) | Issue blocked — missing API keys/secrets | `credential-gatekeeper.yml` |
-| `credentials-ready` | Green (`0e8a16`) | All required credentials provisioned | `credential-gatekeeper.yml`, `credential-label-router.yml` |
+| Label                 | Color            | Meaning                                  | Applied By                                                 |
+| --------------------- | ---------------- | ---------------------------------------- | ---------------------------------------------------------- |
+| `credentials-missing` | Red (`d93f0b`)   | Issue blocked — missing API keys/secrets | `credential-gatekeeper.yml`                                |
+| `credentials-ready`   | Green (`0e8a16`) | All required credentials provisioned     | `credential-gatekeeper.yml`, `credential-label-router.yml` |
 
 ### Routing Labels
 
-| Label | Color | Meaning | Applied By |
-|---|---|---|---|
-| `vault-agent` | Yellow (`e4e669`) | Vault Agent credential provisioning required | `credential-label-router.yml` |
-| `agent-hq` | Purple (`6f42c1`) | Routed to Agent HQ desktop agent system | `credential-label-router.yml` |
+| Label                     | Color             | Meaning                                        | Applied By                    |
+| ------------------------- | ----------------- | ---------------------------------------------- | ----------------------------- |
+| `vault-agent`             | Yellow (`e4e669`) | Vault Agent credential provisioning required   | `credential-label-router.yml` |
+| `agent-hq`                | Purple (`6f42c1`) | Routed to Agent HQ desktop agent system        | `credential-label-router.yml` |
 | `desktop-access-required` | Orange (`fbca04`) | Requires desktop agent with file system access | `credential-label-router.yml` |
-| `flexina` | Purple (`9b59b6`) | Route to Flexina desktop automation agent | Manual or automation |
+| `flexina`                 | Purple (`9b59b6`) | Route to Flexina desktop automation agent      | Manual or automation          |
 
 ### Escalation Labels
 
-| Label | Color | Meaning | Applied By |
-|---|---|---|---|
+| Label         | Color          | Meaning                                 | Applied By                                |
+| ------------- | -------------- | --------------------------------------- | ----------------------------------------- |
 | `needs-human` | Red (`d93f0b`) | Escalated — requires human intervention | `credential-label-router.yml` (after 24h) |
 
 ---
@@ -274,13 +282,13 @@ Once all credentials are provisioned:
 
 ### Repository Secrets
 
-| Secret | Required | Purpose |
-|---|---|---|
-| `OPENROUTER_API_KEY` | Yes | Powers OpenRouter triage and routing |
-| `DOPPLER_TOKEN` | Recommended | Enables automated secret sync from Doppler |
-| `ADMIN_GITHUB_TOKEN` | Recommended | Allows gatekeeper to write Actions secrets |
-| `AGENT_HQ_TOKEN` | Optional | Enables Agent HQ desktop agent routing |
-| `AGENT_HQ_URL` | Optional | Agent HQ API endpoint (defaults to `https://agent-hq.revvel.co`) |
+| Secret               | Required    | Purpose                                                          |
+| -------------------- | ----------- | ---------------------------------------------------------------- |
+| `OPENROUTER_API_KEY` | Yes         | Powers OpenRouter triage and routing                             |
+| `DOPPLER_TOKEN`      | Recommended | Enables automated secret sync from Doppler                       |
+| `ADMIN_GITHUB_TOKEN` | Recommended | Allows gatekeeper to write Actions secrets                       |
+| `AGENT_HQ_TOKEN`     | Optional    | Enables Agent HQ desktop agent routing                           |
+| `AGENT_HQ_URL`       | Optional    | Agent HQ API endpoint (defaults to `https://agent-hq.revvel.co`) |
 
 ### Doppler Setup
 
@@ -307,6 +315,7 @@ doppler secrets
 ### Agent HQ Setup
 
 1. Deploy Agent HQ to your infrastructure:
+
    ```bash
    git clone https://github.com/your-org/agent-hq
    cd agent-hq
@@ -315,11 +324,13 @@ doppler secrets
    ```
 
 2. Generate API token:
+
    ```bash
    npm run create-token
    ```
 
 3. Add to repository secrets:
+
    ```bash
    gh secret set AGENT_HQ_TOKEN --body "agent-hq-token-here"
    gh secret set AGENT_HQ_URL --body "https://your-agent-hq.com"
@@ -339,6 +350,7 @@ doppler secrets
 **Cause:** Automated agents cannot access the credentials.
 
 **Solution:**
+
 1. Check the routing comment for instructions
 2. If Agent HQ is configured, verify the desktop agent is running
 3. If using Doppler, verify credentials are in the correct project/config
@@ -350,6 +362,7 @@ doppler secrets
 **Cause:** Agent HQ token not configured or endpoint unreachable.
 
 **Solution:**
+
 1. Verify `AGENT_HQ_TOKEN` secret is set: `gh secret list`
 2. Verify `AGENT_HQ_URL` is correct (or omit to use default)
 3. Check Agent HQ server logs for errors
@@ -361,6 +374,7 @@ doppler secrets
 **Cause:** `ADMIN_GITHUB_TOKEN` missing or has insufficient scopes.
 
 **Solution:**
+
 1. Create a fine-grained PAT with `Administration: read and write` permission for the repository
 2. Add as `ADMIN_GITHUB_TOKEN` secret: `gh secret set ADMIN_GITHUB_TOKEN --body "github_pat_..."`
 3. Re-run the credential-gatekeeper workflow: Actions → Credential Gatekeeper → Run workflow
@@ -370,6 +384,7 @@ doppler secrets
 **Cause:** Secret name mismatch or `gatekeeper-sync.sh` not executable.
 
 **Solution:**
+
 1. Verify secret names match exactly (case-sensitive)
 2. Verify `scripts/gatekeeper-sync.sh` exists and is executable
 3. Check workflow logs for specific error messages
@@ -386,6 +401,7 @@ doppler secrets
 **Cause:** Credentials not in expected locations or agent permissions insufficient.
 
 **Solution:**
+
 1. Verify credentials exist in one of:
    - HashiCorp Vault: `vault kv get revvel/apps/...`
    - macOS Keychain: `security find-generic-password -s "credential-name"`
@@ -399,13 +415,13 @@ doppler secrets
 
 ## Related Workflows
 
-| Workflow | Purpose | Trigger |
-|---|---|---|
-| `credential-gatekeeper.yml` | Detects credential requirements, applies labels | Issue opened/labeled `ready-to-implement` |
+| Workflow                      | Purpose                                         | Trigger                                        |
+| ----------------------------- | ----------------------------------------------- | ---------------------------------------------- |
+| `credential-gatekeeper.yml`   | Detects credential requirements, applies labels | Issue opened/labeled `ready-to-implement`      |
 | `credential-label-router.yml` | Routes to appropriate agent, handles escalation | `credentials-missing` label added, hourly cron |
-| `doppler-secrets-sync.yml` | Syncs all Doppler secrets to GitHub (bulk) | Manual, scheduled |
-| `openrouter-triage.yml` | AI-powered triage and routing | Issue/PR opened |
-| `ralph-loop.yml` | Self-healing for CI failures | CI fails |
+| `doppler-secrets-sync.yml`    | Syncs all Doppler secrets to GitHub (bulk)      | Manual, scheduled                              |
+| `openrouter-triage.yml`       | AI-powered triage and routing                   | Issue/PR opened                                |
+| `ralph-loop.yml`              | Self-healing for CI failures                    | CI fails                                       |
 
 ---
 
@@ -426,6 +442,7 @@ doppler secrets
 **Issue body includes:** `"AI-powered triage using OpenRouter"`
 
 **Workflow:**
+
 1. Credential Gatekeeper detects `openrouter` keyword
 2. Adds BOM comment: "OPENROUTER_API_KEY required"
 3. Applies `credentials-missing` label
@@ -442,6 +459,7 @@ doppler secrets
 **Issue body includes:** `"Deploy to Vercel with Stripe payments and Supabase database"`
 
 **Workflow:**
+
 1. Credential Gatekeeper detects 3 services
 2. BOM comment lists:
    - `VERCEL_TOKEN`
@@ -464,6 +482,7 @@ doppler secrets
 **Issue remains on credentials-missing for 25 hours**
 
 **Workflow:**
+
 1. Hourly cron sweep detects stale issue
 2. Triggers escalation job
 3. Applies `needs-human` label
@@ -571,8 +590,8 @@ When adding support for a new credential source:
 
 ## Change Log
 
-| Date | Change | PR |
-|---|---|---|
+| Date       | Change                                                | PR   |
+| ---------- | ----------------------------------------------------- | ---- |
 | 2026-05-01 | Initial implementation — automated credential routing | #TBD |
 
 ---

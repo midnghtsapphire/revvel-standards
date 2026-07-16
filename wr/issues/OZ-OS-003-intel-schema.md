@@ -7,6 +7,7 @@
 **Tracks:** OZ-OS-001
 
 ## Deliverable
+
 1. `oz-os/intel/SCHEMA.md` — YAML frontmatter schema for all intel entries
 2. Five backfilled entries from `revvel-standards/learnings.md`
 
@@ -24,11 +25,10 @@ confidence: 0.0–1.0
 evidence:
   - type: postmortem | doc | code | conversation | external
     ref: <URL or path>
-contradicts: [INTEL-2025-042]   # optional
-supersedes: [INTEL-2025-099]    # optional
-half_life_days: 90              # when to re-verify
+contradicts: [INTEL-2025-042] # optional
+supersedes: [INTEL-2025-099] # optional
+half_life_days: 90 # when to re-verify
 ---
-
 # <title>
 
 ## What we learned
@@ -38,6 +38,7 @@ half_life_days: 90              # when to re-verify
 ```
 
 ## Five Entries to Backfill
+
 1. WR_TEMPLATE_FULL causes placeholder leakage (ref PR #14118)
 2. `pull_request_target` + checkout PR head = RCE risk
 3. Auto-merge SQUASH on agent PRs enables supply-chain risk
@@ -45,6 +46,7 @@ half_life_days: 90              # when to re-verify
 5. `gh issue list --limit 1000` silently truncates
 
 ## Acceptance
+
 - SCHEMA.md passes wr-lint
 - 5 entries present, each cites a real PR or file path
 - No raw tokens anywhere

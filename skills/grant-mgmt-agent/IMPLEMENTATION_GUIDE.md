@@ -25,27 +25,32 @@ Automates the complete grant management lifecycle with **80%+ reduction in manua
 ## 📋 Complete Stack
 
 ### Discovery & Validation
+
 - **Instrumentl** — Grant opportunity matching and discovery
 - **Grants.gov API** — Federal grant opportunities (REST API)
 - **SAM.gov API** — Entity validation and compliance checking
 
 ### AI-Powered Proposal Writing
+
 - **OpenRouter** — Multi-model LLM gateway
   - **Claude Sonnet 4.5** — Proposal drafting ($3/MTok input, $15/MTok output)
   - **Claude Opus 4** — Complex research & analysis ($15/MTok input, $75/MTok output)
   - **Claude Haiku 4.5** — Summaries & tracking ($0.25/MTok input, $1.25/MTok output)
 
 ### Document Automation
+
 - **DocSpring** — PDF form filling (recommended, $49/mo for 500 docs)
 - **Anvil** — Alternative with Document AI (pay per doc)
 - **doqs.dev** — Free tier option ($0.02/doc after free tier)
 
 ### Workflow Automation
+
 - **n8n** — Self-hosted, open source (recommended, ~$10-20/mo hosting)
 - **Zapier** — No-code automation ($20-50/mo)
 - **Make (Integromat)** — Visual workflows ($9-29/mo)
 
 ### Database & Tracking
+
 - **Supabase** — PostgreSQL with REST API (recommended)
   - Free tier: 500MB DB, 2GB bandwidth
   - Pro: $25/mo (8GB DB, 50GB bandwidth)
@@ -58,6 +63,7 @@ Automates the complete grant management lifecycle with **80%+ reduction in manua
 ## 💰 Cost Analysis
 
 ### Monthly Costs
+
 - **LLM (OpenRouter)**: $3-8 per proposal × proposals/month
 - **Workflow Automation**: $10-50/month
 - **Database**: $0-25/month
@@ -67,6 +73,7 @@ Automates the complete grant management lifecycle with **80%+ reduction in manua
 **Total Estimated: $50-150/month**
 
 ### ROI
+
 - **Manual Hours Saved**: 20-40 hours/month
 - **Labor Cost Savings**: $1,000-$2,000/month (at $50/hr)
 - **Increased Throughput**: 3-5x more proposals submitted
@@ -183,6 +190,7 @@ crontab -e
 9. **audit_log** — Complete audit trail of all changes
 
 ### Key Features
+
 - **Row-level security (RLS)** for data isolation
 - **Audit triggers** on all critical tables
 - **Auto-updated timestamps** via triggers
@@ -196,12 +204,15 @@ crontab -e
 ### 1. Daily Discovery (Automated)
 
 ```javascript
-const { dailyDiscovery, scoreOpportunityFit } = require('./examples/grants-gov-integration');
+const {
+  dailyDiscovery,
+  scoreOpportunityFit,
+} = require("./examples/grants-gov-integration");
 
 const orgProfile = {
-  type: 'nonprofit',
-  keywords: ['education', 'technology', 'stem', 'youth'],
-  annualBudget: 500000
+  type: "nonprofit",
+  keywords: ["education", "technology", "stem", "youth"],
+  annualBudget: 500000,
 };
 
 // Run daily at 8 AM via cron
@@ -210,11 +221,11 @@ const opportunities = await dailyDiscovery(orgProfile);
 // Score and store in database
 for (const opp of opportunities) {
   const scored = scoreOpportunityFit(opp, orgProfile);
-  await db.insert('grant_opportunities', scored);
+  await db.insert("grant_opportunities", scored);
 }
 
 // Notify team of high-priority matches
-const highPriority = opportunities.filter(o => o.fitScore >= 70);
+const highPriority = opportunities.filter((o) => o.fitScore >= 70);
 await slack.send(`🎯 Found ${highPriority.length} high-priority grants!`);
 ```
 
@@ -223,7 +234,7 @@ await slack.send(`🎯 Found ${highPriority.length} high-priority grants!`);
 Team reviews opportunities in dashboard and marks decision:
 
 ```sql
-UPDATE grant_opportunities 
+UPDATE grant_opportunities
 SET status = 'go_decision', notes = 'Great fit, proceed with application'
 WHERE id = 'opp-uuid';
 ```
@@ -231,35 +242,35 @@ WHERE id = 'opp-uuid';
 ### 3. Proposal Generation (AI + Human)
 
 ```javascript
-const { generateCompleteProposal } = require('./examples/openrouter-proposals');
+const { generateCompleteProposal } = require("./examples/openrouter-proposals");
 
 // Generate all sections
 const proposal = await generateCompleteProposal({
-  opportunity: { /* opportunity data */ },
-  organization: { /* org data */ },
-  project: { /* project details */ },
+  opportunity: {/* opportunity data */},
+  organization: {/* org data */},
+  project: {/* project details */},
   sections: [
-    'executive_summary',
-    'need_statement',
-    'goals_objectives',
-    'methodology',
-    'evaluation',
-    'organizational_capacity',
-    'budget_narrative',
-    'sustainability'
-  ]
+    "executive_summary",
+    "need_statement",
+    "goals_objectives",
+    "methodology",
+    "evaluation",
+    "organizational_capacity",
+    "budget_narrative",
+    "sustainability",
+  ],
 });
 
 // Store sections in database
 for (const section of proposal.sections) {
-  await db.insert('proposal_sections', {
+  await db.insert("proposal_sections", {
     application_id: appId,
-    ...section
+    ...section,
   });
 }
 
 // Notify team for review
-await slack.send('📝 Proposal draft ready for review!');
+await slack.send("📝 Proposal draft ready for review!");
 ```
 
 ### 4. Human Review & Revision
@@ -267,23 +278,23 @@ await slack.send('📝 Proposal draft ready for review!');
 Team reviews AI-generated content, makes edits, and requests refinements:
 
 ```javascript
-const { refineSection } = require('./examples/openrouter-proposals');
+const { refineSection } = require("./examples/openrouter-proposals");
 
 // Refine based on feedback
 const refined = await refineSection({
   originalContent: section.content,
-  feedback: 'Add more specific data on community impact',
-  section: 'need_statement'
+  feedback: "Add more specific data on community impact",
+  section: "need_statement",
 });
 
-await db.update('proposal_sections', sectionId, refined);
+await db.update("proposal_sections", sectionId, refined);
 ```
 
 ### 5. Document Generation (Automated)
 
 ```javascript
 // Auto-fill PDF forms
-const docspring = require('docspring');
+const docspring = require("docspring");
 
 const pdf = await docspring.generatePDF(templateId, {
   organization_name: org.name,
@@ -293,8 +304,8 @@ const pdf = await docspring.generatePDF(templateId, {
   // ... all form fields
 });
 
-await db.update('applications', appId, {
-  submission_documents: { sf424: pdf.url }
+await db.update("applications", appId, {
+  submission_documents: { sf424: pdf.url },
 });
 ```
 
@@ -302,15 +313,15 @@ await db.update('applications', appId, {
 
 ```javascript
 // API submission (if supported)
-const response = await fetch('https://www.grants.gov/rest/submission', {
-  method: 'POST',
-  body: submissionPackage
+const response = await fetch("https://www.grants.gov/rest/submission", {
+  method: "POST",
+  body: submissionPackage,
 });
 
-await db.update('applications', appId, {
-  status: 'submitted',
+await db.update("applications", appId, {
+  status: "submitted",
   submitted_date: new Date(),
-  confirmation_number: response.confirmationNumber
+  confirmation_number: response.confirmationNumber,
 });
 ```
 
@@ -329,17 +340,17 @@ for (const milestone of upcomingMilestones) {
 }
 
 // Automated expense tracking
-await db.insert('expenses', {
+await db.insert("expenses", {
   application_id: appId,
   expense_date: new Date(),
-  category: 'personnel',
+  category: "personnel",
   amount: 5000,
-  description: 'Project Director salary - Month 1'
+  description: "Project Director salary - Month 1",
 });
 
 // Generate compliance reports
-const report = await generateComplianceReport(appId, 'quarterly');
-await slack.send('📊 Quarterly report ready for review');
+const report = await generateComplianceReport(appId, "quarterly");
+await slack.send("📊 Quarterly report ready for review");
 ```
 
 ---
@@ -385,23 +396,27 @@ const secrets = await vaultClient.getSecrets('grant-mgmt');
 ## 📈 Success Metrics
 
 ### Discovery Metrics
+
 - **Opportunities Discovered**: Target 20-50 per week
 - **Fit Score Distribution**: Aim for 30%+ scoring >70
 - **Time to Review**: <5 minutes per opportunity
 
 ### Application Metrics
+
 - **Applications Submitted**: Track monthly submissions
 - **Completion Time**: Measure days from start to submit
 - **Quality Scores**: Internal review scores
 - **Success Rate**: % of submissions receiving awards
 
 ### Outcomes
+
 - **Award Rate**: Industry average 10-20%, target 25%+
 - **Total Funding**: Track cumulative awards
 - **Average Award Size**: Monitor over time
 - **Cost per Award**: Total cost ÷ number of awards
 
 ### Efficiency
+
 - **Hours Saved**: Compare to manual baseline
 - **Automation Uptime**: Target 99%+
 - **Error Rate**: Target <1% in submissions
@@ -475,22 +490,26 @@ curl -X POST $N8N_WEBHOOK_URL -d '{"test": true}'
 ## 📚 Additional Resources
 
 ### Documentation
+
 - **[SKILL.md](SKILL.md)** — Complete skill documentation (29KB)
 - **[grant-mgmt-agent.skill.yml](grant-mgmt-agent.skill.yml)** — Configuration
 - **[README.md](README.md)** — Quick start guide
 
 ### API Documentation
+
 - **Grants.gov API**: https://developer.grants.gov/
 - **SAM.gov API**: https://open.gsa.gov/api/sam/
 - **OpenRouter API**: https://openrouter.ai/docs
 - **DocSpring API**: https://docspring.com/docs
 
 ### Tools & Platforms
+
 - **n8n**: https://docs.n8n.io/
 - **Supabase**: https://supabase.com/docs
 - **Instrumentl**: https://www.instrumentl.com/
 
 ### Learning Resources
+
 - **Federal Grant Writing**: https://www.grants.gov/learn-grants/grant-writing
 - **Foundation Grants**: https://candid.org/learn/knowledge-base/resources/grantwriting
 - **AI-Assisted Writing**: https://www.anthropic.com/index/prompting-long-form-content
@@ -499,11 +518,12 @@ curl -X POST $N8N_WEBHOOK_URL -d '{"test": true}'
 
 ## ✅ Implementation Checklist
 
-> **📝 NOTE:** This checklist describes *separate implementation phases* for future work. This is **planning documentation**, not instruction to implement incrementally. Per AGENTS.md, when assigned one phase as a task, deliver it completely—don't propose sub-phases.
+> **📝 NOTE:** This checklist describes _separate implementation phases_ for future work. This is **planning documentation**, not instruction to implement incrementally. Per AGENTS.md, when assigned one phase as a task, deliver it completely—don't propose sub-phases.
 
 Use this checklist to track your implementation progress:
 
 ### Phase 1: Foundation (Week 1-2)
+
 - [ ] Set up Supabase account and database
 - [ ] Run database schema creation script
 - [ ] Obtain Grants.gov API access (free registration)
@@ -513,6 +533,7 @@ Use this checklist to track your implementation progress:
 - [ ] Test all API connections
 
 ### Phase 2: Discovery & Tracking (Week 3-4)
+
 - [ ] Create organization profile in database
 - [ ] Configure daily discovery cron job
 - [ ] Test Grants.gov integration
@@ -522,6 +543,7 @@ Use this checklist to track your implementation progress:
 - [ ] Test end-to-end discovery workflow
 
 ### Phase 3: Proposal Automation (Week 5-6)
+
 - [ ] Create proposal templates
 - [ ] Test AI section generation
 - [ ] Set up human review workflow
@@ -531,6 +553,7 @@ Use this checklist to track your implementation progress:
 - [ ] Refine prompts based on results
 
 ### Phase 4: Submission & Docs (Week 7-8)
+
 - [ ] Set up DocSpring/Anvil account
 - [ ] Map PDF form templates
 - [ ] Test document generation
@@ -539,6 +562,7 @@ Use this checklist to track your implementation progress:
 - [ ] Document lessons learned
 
 ### Phase 5: Compliance & Reporting (Week 9-10)
+
 - [ ] Build milestone tracking workflow
 - [ ] Create expense tracking process
 - [ ] Set up automated reminders
@@ -546,6 +570,7 @@ Use this checklist to track your implementation progress:
 - [ ] Run full lifecycle with pilot grant
 
 ### Phase 6: Optimization (Week 11-12)
+
 - [ ] Analyze success metrics
 - [ ] Optimize AI prompts
 - [ ] Refine scoring algorithms
@@ -578,7 +603,8 @@ Start automating your grant management today! 🚀
 
 ---
 
-**Questions or Issues?**  
+**Questions or Issues?**
+
 - Review [SKILL.md](SKILL.md) for comprehensive documentation
 - Check [examples/](examples/) for working code
 - Open an issue in the revvel-standards repository

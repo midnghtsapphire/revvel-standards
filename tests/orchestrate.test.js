@@ -47,17 +47,46 @@ test("maps output_type and shape to ship-to-market deliver channels", () => {
   assert.strictEqual(deliverChannelFor({ output_type: "api-product" }), "api");
   assert.strictEqual(deliverChannelFor({ output_type: "cli-product" }), "cli");
   assert.strictEqual(deliverChannelFor({ output_type: "mcp-product" }), "mcp");
-  assert.strictEqual(deliverChannelFor({ output_type: "production-app" }), "app");
+  assert.strictEqual(
+    deliverChannelFor({ output_type: "production-app" }),
+    "app",
+  );
   // shape takes precedence over output_type
-  assert.strictEqual(deliverChannelFor({ output_type: "sellable-pdf", shape: "app" }), "app");
+  assert.strictEqual(
+    deliverChannelFor({ output_type: "sellable-pdf", shape: "app" }),
+    "app",
+  );
   // unknown -> safe docs default
   assert.strictEqual(deliverChannelFor({ output_type: "mystery" }), "docs");
 });
 
 test("runner targets are valid schema enum values", () => {
-  const allowed = new Set(["github", "vercel", "supabase", "zapier", "make", "n8n", "gumloop", "cli", "browser", "polar"]);
-  for (const ch of ["app", "api", "pdf", "cli", "mcp", "extension", "docs", "package"]) {
-    assert.ok(allowed.has(runnerTargetFor(ch)), `${ch} -> ${runnerTargetFor(ch)} not a valid runner_target`);
+  const allowed = new Set([
+    "github",
+    "vercel",
+    "supabase",
+    "zapier",
+    "make",
+    "n8n",
+    "gumloop",
+    "cli",
+    "browser",
+    "polar",
+  ]);
+  for (const ch of [
+    "app",
+    "api",
+    "pdf",
+    "cli",
+    "mcp",
+    "extension",
+    "docs",
+    "package",
+  ]) {
+    assert.ok(
+      allowed.has(runnerTargetFor(ch)),
+      `${ch} -> ${runnerTargetFor(ch)} not a valid runner_target`,
+    );
   }
 });
 
@@ -81,14 +110,14 @@ test("the deliver step carries the routed channel", () => {
 test("orchestrate refuses intake without a revenue target (CONTRACT Rule 4)", () => {
   assert.throws(
     () => orchestrate({ product_slug: "x", goal_phase: 1 }, { dryRun: true }),
-    /Rule 4|revenue_target_monthly_usd/
+    /Rule 4|revenue_target_monthly_usd/,
   );
 });
 
 test("orchestrate refuses intake without a product_slug", () => {
   assert.throws(
     () => orchestrate({ revenue_target_monthly_usd: 500 }, { dryRun: true }),
-    /product_slug/
+    /product_slug/,
   );
 });
 
@@ -112,7 +141,9 @@ test("orchestrate writes a schema-valid state.json when not dry-run", () => {
 });
 
 test("parseIntake reads JSON and coerces revenue/goal_phase", () => {
-  const intake = parseIntake('{"product_slug":"p","revenue_target_monthly_usd":"1500","goal_phase":"2"}');
+  const intake = parseIntake(
+    '{"product_slug":"p","revenue_target_monthly_usd":"1500","goal_phase":"2"}',
+  );
   assert.strictEqual(intake.revenue_target_monthly_usd, 1500);
   assert.strictEqual(intake.goal_phase, 2);
   assert.strictEqual(intake.intake_id, "intake-p");
@@ -130,7 +161,10 @@ test("engine loop chains research -> deliver -> done when the key is present", (
   assert.strictEqual(research.status, "ok");
   assert.strictEqual(deliver.status, "ok");
   assert.deepStrictEqual(deliver.artifacts, ["deliver:api"]);
-  assert.ok(validateState(state).valid, "state must stay schema-valid through the loop");
+  assert.ok(
+    validateState(state).valid,
+    "state must stay schema-valid through the loop",
+  );
 });
 
 test("engine loop halts with a Procurement BOM when OPENROUTER_API_KEY is missing", () => {

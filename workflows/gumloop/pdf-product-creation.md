@@ -44,6 +44,7 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
 ### 1. Webhook Trigger Node
 
 **Configuration:**
+
 - **Node Type**: Webhook Input
 - **Method**: POST
 - **Authentication**: None (or API Key if desired)
@@ -58,25 +59,27 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
 ### 2. Research Node - Validate Niche
 
 **Configuration:**
+
 - **Node Type**: Code/Transform
 - **Purpose**: Prepare research data structure
 - **Code**:
   ```javascript
-  const niche = input.niche || 'parenting';
+  const niche = input.niche || "parenting";
   const keywords = input.keywords || [];
-  
+
   return {
     niche: niche,
     keywords: keywords,
     timestamp: new Date().toISOString(),
-    step: 'trend_research',
-    ready_for_ai: true
+    step: "trend_research",
+    ready_for_ai: true,
   };
   ```
 
 ### 3. AI Node - Generate Title
 
 **Configuration:**
+
 - **Node Type**: AI - Claude Sonnet
 - **Model**: claude-sonnet-4
 - **Temperature**: 0.7
@@ -107,6 +110,7 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
 ### 4. Transform Node - Parse JSON
 
 **Configuration:**
+
 - **Node Type**: JSON Parser
 - **Input**: `{{title_response}}`
 - **Output Variables**:
@@ -117,6 +121,7 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
 ### 5. AI Node - Generate Content
 
 **Configuration:**
+
 - **Node Type**: AI - Claude Sonnet
 - **Model**: claude-sonnet-4
 - **Temperature**: 0.8
@@ -159,6 +164,7 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
 ### 6. API Node - Create Canva Design
 
 **Configuration:**
+
 - **Node Type**: HTTP Request
 - **Method**: POST
 - **URL**: `https://api.canva.com/v1/designs`
@@ -170,6 +176,7 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
   }
   ```
 - **Body**:
+
   ```json
   {
     "design_type": {
@@ -184,12 +191,14 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
   > (e.g., `presentation`, `doc`, `instagram-post`) **or**
   > `{"type": "custom", "width": <px>, "height": <px>}`. Mixing a preset
   > with root-level `width`/`height` violates the schema and returns 400.
+
 - **Success Condition**: Status code 200-299
 - **Output Variable**: `canva_design`
 
 ### 7. API Node - Create Shopify Product
 
 **Configuration:**
+
 - **Node Type**: HTTP Request
 - **Method**: POST
 - **URL**: `https://{{env.SHOPIFY_DOMAIN}}/admin/api/2024-01/products.json`
@@ -227,6 +236,7 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
 ### 8. Transform Node - Prepare Campaign
 
 **Configuration:**
+
 - **Node Type**: Code/Transform
 - **Purpose**: Structure influencer outreach data
 - **Code**:
@@ -235,53 +245,55 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
     outreach_campaign: {
       niche: input.niche,
       product_title: input.title,
-      product_url: input.shopify_product?.product?.admin_graphql_api_id || 'pending',
+      product_url:
+        input.shopify_product?.product?.admin_graphql_api_id || "pending",
       shopify_product_id: input.shopify_product?.product?.id,
       canva_design_id: input.canva_design?.design?.id,
-      target_platforms: ['youtube'],
+      target_platforms: ["youtube"],
       offer_structure: {
         option_a: {
-          type: 'high_commission',
-          rate: '50%',
-          description: 'Earn 50% commission on every sale'
+          type: "high_commission",
+          rate: "50%",
+          description: "Earn 50% commission on every sale",
         },
         option_b: {
-          type: 'flat_fee_plus_commission',
-          flat_fee: '$700',
-          commission: '15%',
-          description: '$700 upfront + 15% ongoing commission'
-        }
+          type: "flat_fee_plus_commission",
+          flat_fee: "$700",
+          commission: "15%",
+          description: "$700 upfront + 15% ongoing commission",
+        },
       },
       video_requirements: {
-        duration: '30-60 seconds',
-        integration_type: 'sponsored_segment',
+        duration: "30-60 seconds",
+        integration_type: "sponsored_segment",
         talking_points: [
-          'Authentic problem-solution story',
-          'Personal connection to the struggle',
-          'Clear call-to-action with discount code'
-        ]
+          "Authentic problem-solution story",
+          "Personal connection to the struggle",
+          "Clear call-to-action with discount code",
+        ],
       },
       influencer_criteria: {
         min_subscribers: 10000,
         niche_match: input.niche,
-        engagement_rate: '>3%',
-        audience_demographics: 'parents, caregivers'
-      }
+        engagement_rate: ">3%",
+        audience_demographics: "parents, caregivers",
+      },
     },
-    status: 'pipeline_complete',
+    status: "pipeline_complete",
     created_at: new Date().toISOString(),
     next_steps: [
-      'Review AI-generated content',
-      'Complete Canva design',
-      'Upload PDF to Shopify',
-      'Execute influencer outreach'
-    ]
+      "Review AI-generated content",
+      "Complete Canva design",
+      "Upload PDF to Shopify",
+      "Execute influencer outreach",
+    ],
   };
   ```
 
 ### 9. Webhook Response Node
 
 **Configuration:**
+
 - **Node Type**: Webhook Output
 - **Status Code**: 200
 - **Response Body**:
@@ -314,11 +326,7 @@ Use Gumloop's test feature with this payload:
 ```json
 {
   "niche": "parenting",
-  "keywords": [
-    "sleep training",
-    "toddler tantrums",
-    "picky eating"
-  ]
+  "keywords": ["sleep training", "toddler tantrums", "picky eating"]
 }
 ```
 
@@ -355,6 +363,7 @@ After running the workflow:
 ### Retry Configuration
 
 For each API node:
+
 - **Retry Count**: 3
 - **Retry Delay**: 2 seconds
 - **Exponential Backoff**: Enabled
@@ -362,6 +371,7 @@ For each API node:
 ### Error Notifications
 
 Configure error webhooks to notify when:
+
 - Claude AI fails to generate valid JSON
 - Canva API returns 401/403
 - Shopify API fails to create product
@@ -384,6 +394,7 @@ Gumloop supports parallel branches. After Step 3 (content generation), you can r
 ### 2. Caching
 
 Enable caching for the AI nodes to avoid redundant API calls during testing:
+
 - Cache key: `{{niche}}-{{keywords}}`
 - Cache duration: 1 hour
 
@@ -404,6 +415,7 @@ Enable caching for the AI nodes to avoid redundant API calls during testing:
 ### 2. Schedule (Optional)
 
 If you want to run this on a schedule instead of webhook:
+
 - Set up a "Schedule" trigger
 - Configure daily execution at off-peak hours
 - Pull niche ideas from a Google Sheet or database
@@ -411,6 +423,7 @@ If you want to run this on a schedule instead of webhook:
 ### 3. Monitoring
 
 Gumloop provides built-in monitoring:
+
 - Execution history
 - Success/failure rates
 - Average execution time
@@ -421,6 +434,7 @@ Gumloop provides built-in monitoring:
 ### Link to Product Pipeline
 
 This Gumloop workflow implements Steps 2-6 of the `AUTOMATED_PRODUCT_PIPELINE.md`:
+
 - Step 2: Create Punchy Title ✅
 - Step 3: Generate PDF Content ✅
 - Step 4: Design Guide ✅
@@ -430,6 +444,7 @@ This Gumloop workflow implements Steps 2-6 of the `AUTOMATED_PRODUCT_PIPELINE.md
 ### BOM Gate Integration
 
 Before running this workflow:
+
 1. Ensure BOM gate has provisioned all required API keys
 2. Verify connections are active in Gumloop
 3. Test each API endpoint individually
@@ -437,6 +452,7 @@ Before running this workflow:
 ## Cost Estimate
 
 Per execution:
+
 - Claude API: ~$0.25 (title + content generation)
 - Canva API: Free
 - Shopify API: Free
@@ -458,6 +474,7 @@ Per execution:
 For better tracking, add an Airtable node after Step 8:
 
 **Airtable Node Configuration:**
+
 - **Base**: PDF Products
 - **Table**: Products
 - **Action**: Create Record

@@ -36,9 +36,9 @@ the curated source of truth) while still preserving it.
 - The owner has a counselor and previously had a life coach. This journal does not
   replace either.
 - "I learned a lot by 'I cannot.'" — being told plainly what cannot be done, and
-  *why*, created clarity. The absence of an honest "I cannot, and here is the
+  _why_, created clarity. The absence of an honest "I cannot, and here is the
   reason" in many AI interactions reads as either limitation or an unexplained
-  guardrail. Restoring the *why* — not removing all limits — is the goal.
+  guardrail. Restoring the _why_ — not removing all limits — is the goal.
 
 ---
 
@@ -73,11 +73,12 @@ One remembered scene, kept because it taught something: taking a beating to the
 point of not being able to endure one more hit. Dad said "one more word — one more
 word"; I said "word" — the immortal word, worth it to show strength and principle.
 He beat me more, then burst out crying and ran to mom saying he was going to end up
-hurting me. The hard part: *he* was the one crying while *I* was the one enduring.
+hurting me. The hard part: _he_ was the one crying while _I_ was the one enduring.
 It felt like a win — until "you go handle it," which meant the face-slapper.
 
 **What I take from it (my framing, not a fact about anyone else):**
-- Survival taught me to *predict threat* and to *prove* everything (verbose, build
+
+- Survival taught me to _predict threat_ and to _prove_ everything (verbose, build
   the whole case). That armor is expensive now; I no longer have to prove I deserve
   to be heard.
 - "Street smart ≠ thrown into adult situations." Enduring is not the same as

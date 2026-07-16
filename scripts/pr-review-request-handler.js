@@ -3,14 +3,14 @@
 
 /**
  * PR Review Request Handler via OpenRouter
- * 
+ *
  * When a PR receives "changes-requested" review status, this script:
  * 1. Fetches all review comments and feedback
  * 2. Analyzes the PR diff and context
  * 3. Calls OpenRouter to generate fixes
  * 4. Posts analysis and recommendations
  * 5. Updates PR labels and status
- * 
+ *
  * Implements the Automation Routing Policy (OpenRouter via OPENROUTER_API_KEY).
  * See docs/PR_REVIEW_REQUEST_AUTOMATION.md for full process documentation.
  */
@@ -20,7 +20,8 @@ const https = require("https");
 // Environment variables
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
-const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
+const GITHUB_REPOSITORY =
+  process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
 const PR_NUMBER = process.env.PR_NUMBER || "";
 const MODEL = process.env.MODEL || "anthropic/claude-sonnet-4";
 
@@ -100,11 +101,19 @@ function requestJson({ hostname, pathName, method, headers, payload }) {
           try {
             parsed = data ? JSON.parse(data) : {};
           } catch (error) {
-            reject(new Error(`Failed to parse response JSON (${status}): ${error.message}`));
+            reject(
+              new Error(
+                `Failed to parse response JSON (${status}): ${error.message}`,
+              ),
+            );
             return;
           }
           if (status < 200 || status >= 300) {
-            const message = parsed?.error?.message || parsed?.message || data || "unknown error";
+            const message =
+              parsed?.error?.message ||
+              parsed?.message ||
+              data ||
+              "unknown error";
             reject(new Error(`HTTP ${status}: ${message}`));
             return;
           }
@@ -289,7 +298,9 @@ async function removePRLabels(labels) {
     } catch (err) {
       // 404 is expected when label doesn't exist
       if (!/HTTP 404/.test(err.message)) {
-        console.log(`::warning::Could not remove label "${label}": ${err.message}`);
+        console.log(
+          `::warning::Could not remove label "${label}": ${err.message}`,
+        );
       }
     }
   }
@@ -338,7 +349,9 @@ function buildSystemPrompt() {
  * Builds the user prompt with PR context
  */
 function buildUserPrompt(prDetails, reviews, reviewComments, diff) {
-  const changesRequestedReviews = reviews.filter((r) => r.state === "CHANGES_REQUESTED");
+  const changesRequestedReviews = reviews.filter(
+    (r) => r.state === "CHANGES_REQUESTED",
+  );
 
   const reviewSummary = changesRequestedReviews
     .map((review) => {
@@ -366,7 +379,8 @@ function buildUserPrompt(prDetails, reviews, reviewComments, diff) {
     .join("\n\n---\n\n");
 
   // Truncate diff if too large (keep first 10000 chars)
-  const truncatedDiff = diff.length > 10000 ? diff.slice(0, 10000) + "\n...(diff truncated)" : diff;
+  const truncatedDiff =
+    diff.length > 10000 ? diff.slice(0, 10000) + "\n...(diff truncated)" : diff;
 
   return [
     `# PR #${PR_NUMBER}: ${prDetails.title}`,
@@ -440,7 +454,12 @@ async function main() {
 
     // Build prompts
     const systemPrompt = buildSystemPrompt();
-    const userPrompt = buildUserPrompt(prDetails, reviews, reviewComments, diff);
+    const userPrompt = buildUserPrompt(
+      prDetails,
+      reviews,
+      reviewComments,
+      diff,
+    );
 
     // Call OpenRouter
     console.log("Calling OpenRouter for analysis...");
@@ -471,7 +490,9 @@ async function main() {
 
     console.log("::notice::Review request handling complete!");
   } catch (error) {
-    console.error(`::error::Failed to process review request: ${error.message}`);
+    console.error(
+      `::error::Failed to process review request: ${error.message}`,
+    );
 
     // Post error comment
     try {
@@ -488,7 +509,9 @@ async function main() {
       await removePRLabels(["review-fix:in-progress"]);
       await addPRLabels(["review-fix:failed", "needs-human"]);
     } catch (commentError) {
-      console.error(`::error::Could not post error comment: ${commentError.message}`);
+      console.error(
+        `::error::Could not post error comment: ${commentError.message}`,
+      );
     }
 
     process.exit(1);

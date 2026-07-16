@@ -15,16 +15,16 @@ All 10 applications were upgraded from frontend-only landing pages to powerful, 
 
 Key architectural components implemented for **every application** include:
 
-| Component                 | Technology/Implementation                                    |
-| ------------------------- | ------------------------------------------------------------ |
-| **Backend Framework**     | FastAPI (Python 3.11) for high-performance, asynchronous APIs. |
-| **Database**              | PostgreSQL 15, managed via SQLAlchemy ORM for robust data modeling. |
-| **Authentication**        | Secure user authentication with JSON Web Tokens (JWT) and a foundation for Google OAuth integration. |
-| **Payment Processing**    | Dual-mode Stripe integration, allowing seamless switching between `test` and `live` environments via a single environment variable. |
-| **Containerization**      | Docker and Docker Compose setup for consistent, one-command local development and production-ready deployment. |
-| **Caching**               | Redis integration for high-speed caching and task queuing.   |
-| **Documentation**         | A comprehensive `README.md` file for each project, detailing the new backend, features, and quick-start instructions. |
-| **Environment Setup**     | An `.env.example` file in each repository, providing a clear template for all required secret keys and configuration variables. |
+| Component              | Technology/Implementation                                                                                                           |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Backend Framework**  | FastAPI (Python 3.11) for high-performance, asynchronous APIs.                                                                      |
+| **Database**           | PostgreSQL 15, managed via SQLAlchemy ORM for robust data modeling.                                                                 |
+| **Authentication**     | Secure user authentication with JSON Web Tokens (JWT) and a foundation for Google OAuth integration.                                |
+| **Payment Processing** | Dual-mode Stripe integration, allowing seamless switching between `test` and `live` environments via a single environment variable. |
+| **Containerization**   | Docker and Docker Compose setup for consistent, one-command local development and production-ready deployment.                      |
+| **Caching**            | Redis integration for high-speed caching and task queuing.                                                                          |
+| **Documentation**      | A comprehensive `README.md` file for each project, detailing the new backend, features, and quick-start instructions.               |
+| **Environment Setup**  | An `.env.example` file in each repository, providing a clear template for all required secret keys and configuration variables.     |
 
 ## 3. Strategic Initiative: The Launch of Ordain.church
 
@@ -38,18 +38,18 @@ Based on this finding, we proceeded with rebranding the core ordination platform
 
 The following table provides a summary of the enhancements completed for each of the 10 applications. All repositories are now full-stack and ready for frontend-to-backend integration.
 
-| Application Name                     | Branded Name                     | Description                                                                 | GitHub Repository                                                                 |
-| ------------------------------------ | -------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `oath-gate-connect`                  | **Ordain.church**                | Modern online ordination platform to compete with ULC.                      | [MIDNGHTSAPPHIRE/oath-gate-connect](https://github.com/MIDNGHTSAPPHIRE/oath-gate-connect) |
-| `instant-ordain-certificate-pro`     | **Ordain Certificates**          | Certificate generation and verification system for Ordain.church.           | [MIDNGHTSAPPHIRE/instant-ordain-certificate-pro](https://github.com/MIDNGHTSAPPHIRE/instant-ordain-certificate-pro) |
-| `survivor-soul-songs`                | **Survivor Soul Songs**          | A music and healing platform for survivors, handled with deep respect.      | [MIDNGHTSAPPHIRE/survivor-soul-songs](https://github.com/MIDNGHTSAPPHIRE/survivor-soul-songs) |
-| `food-freedom-ai`                    | **Food Freedom AI**              | An AI-powered food, nutrition, and meal-planning application.               | [MIDNGHTSAPPHIRE/food-freedom-ai](https://github.com/MIDNGHTSAPPHIRE/food-freedom-ai) |
-| `climate-resilience-navigator`       | **Climate Resilience Navigator** | A platform for climate data analysis and resilience planning.               | [MIDNGHTSAPPHIRE/climate-resilience-navigator](https://github.com/MIDNGHTSAPPHIRE/climate-resilience-navigator) |
-| `rent-anything-hub`                  | **Rent Anything Hub**            | A rental marketplace with a unique 6-month capital donation model.          | [MIDNGHTSAPPHIRE/rent-anything-hub](https://github.com/MIDNGHTSAPPHIRE/rent-anything-hub) |
-| `carbon-champions`                   | **Carbon Champions**             | A platform for tracking and offsetting carbon footprints.                   | [MIDNGHTSAPPHIRE/carbon-champions](https://github.com/MIDNGHTSAPPHIRE/carbon-champions) |
-| `guardaio`                           | **Guardaio**                     | A security and personal protection application.                             | [MIDNGHTSAPPHIRE/guardaio](https://github.com/MIDNGHTSAPPHIRE/guardaio) |
-| `trusty-agents`                      | **Trusty Agents**                | A marketplace for discovering, managing, and building AI agents.            | [MIDNGHTSAPPHIRE/trusty-agents](https://github.com/MIDNGHTSAPPHIRE/trusty-agents) |
-| `anime-ascend`                       | **Anime Ascend**                 | A platform for the anime community, discovery, and watch-list management.   | [MIDNGHTSAPPHIRE/anime-ascend](https://github.com/MIDNGHTSAPPHIRE/anime-ascend) |
+| Application Name                 | Branded Name                     | Description                                                               | GitHub Repository                                                                                                   |
+| -------------------------------- | -------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `oath-gate-connect`              | **Ordain.church**                | Modern online ordination platform to compete with ULC.                    | [MIDNGHTSAPPHIRE/oath-gate-connect](https://github.com/MIDNGHTSAPPHIRE/oath-gate-connect)                           |
+| `instant-ordain-certificate-pro` | **Ordain Certificates**          | Certificate generation and verification system for Ordain.church.         | [MIDNGHTSAPPHIRE/instant-ordain-certificate-pro](https://github.com/MIDNGHTSAPPHIRE/instant-ordain-certificate-pro) |
+| `survivor-soul-songs`            | **Survivor Soul Songs**          | A music and healing platform for survivors, handled with deep respect.    | [MIDNGHTSAPPHIRE/survivor-soul-songs](https://github.com/MIDNGHTSAPPHIRE/survivor-soul-songs)                       |
+| `food-freedom-ai`                | **Food Freedom AI**              | An AI-powered food, nutrition, and meal-planning application.             | [MIDNGHTSAPPHIRE/food-freedom-ai](https://github.com/MIDNGHTSAPPHIRE/food-freedom-ai)                               |
+| `climate-resilience-navigator`   | **Climate Resilience Navigator** | A platform for climate data analysis and resilience planning.             | [MIDNGHTSAPPHIRE/climate-resilience-navigator](https://github.com/MIDNGHTSAPPHIRE/climate-resilience-navigator)     |
+| `rent-anything-hub`              | **Rent Anything Hub**            | A rental marketplace with a unique 6-month capital donation model.        | [MIDNGHTSAPPHIRE/rent-anything-hub](https://github.com/MIDNGHTSAPPHIRE/rent-anything-hub)                           |
+| `carbon-champions`               | **Carbon Champions**             | A platform for tracking and offsetting carbon footprints.                 | [MIDNGHTSAPPHIRE/carbon-champions](https://github.com/MIDNGHTSAPPHIRE/carbon-champions)                             |
+| `guardaio`                       | **Guardaio**                     | A security and personal protection application.                           | [MIDNGHTSAPPHIRE/guardaio](https://github.com/MIDNGHTSAPPHIRE/guardaio)                                             |
+| `trusty-agents`                  | **Trusty Agents**                | A marketplace for discovering, managing, and building AI agents.          | [MIDNGHTSAPPHIRE/trusty-agents](https://github.com/MIDNGHTSAPPHIRE/trusty-agents)                                   |
+| `anime-ascend`                   | **Anime Ascend**                 | A platform for the anime community, discovery, and watch-list management. | [MIDNGHTSAPPHIRE/anime-ascend](https://github.com/MIDNGHTSAPPHIRE/anime-ascend)                                     |
 
 ## 5. Next Steps
 

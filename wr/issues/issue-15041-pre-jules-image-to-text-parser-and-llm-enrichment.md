@@ -20,6 +20,7 @@ into a WR that carries every requirement Jules needs to rewrite the WR and PR.
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+
 - [x] Deep market research
 - [ ] BOM — N/A, software-only automation step
 - [x] Community chatter
@@ -59,12 +60,12 @@ routing) so it carries no new runtime dependencies.
 
 ### Image-to-text (OCR) engine comparison
 
-| Engine | GitHub stars | Cost | Fit |
-| --- | --- | --- | --- |
-| PaddleOCR | ~44k | Free / self-host | Layout-aware (PP-Structure), multilingual, already wired in `scripts/ocr-service.py` |
-| Tesseract (tesseract-ocr) | ~62k | Free / self-host | Mature but weaker on tables and rotated text |
-| EasyOCR | ~24k | Free / self-host | Simple API, heavier models, no layout output |
-| AWS Textract | Closed source | Paid per page | Strong tables but per-call cost and cloud dependency |
+| Engine                    | GitHub stars  | Cost             | Fit                                                                                  |
+| ------------------------- | ------------- | ---------------- | ------------------------------------------------------------------------------------ |
+| PaddleOCR                 | ~44k          | Free / self-host | Layout-aware (PP-Structure), multilingual, already wired in `scripts/ocr-service.py` |
+| Tesseract (tesseract-ocr) | ~62k          | Free / self-host | Mature but weaker on tables and rotated text                                         |
+| EasyOCR                   | ~24k          | Free / self-host | Simple API, heavier models, no layout output                                         |
+| AWS Textract              | Closed source | Paid per page    | Strong tables but per-call cost and cloud dependency                                 |
 
 Decision: reuse **PaddleOCR** via the existing `scripts/ocr-service.py`. The
 prior deep evaluation in WR-13653 already selected it (documented in that script's

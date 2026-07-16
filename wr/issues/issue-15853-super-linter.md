@@ -60,11 +60,11 @@ Super-Linter is a ready-to-run collection of linters and code analyzers that:
 
 ### Key configuration choices
 
-| Setting | Value | Rationale |
-| --- | --- | --- |
-| `VALIDATE_ALL_CODEBASE` | `false` | Only lint new/changed files on PRs to keep CI fast |
-| `DEFAULT_BRANCH` | `main` | Match repo default branch |
-| `FILTER_REGEX_EXCLUDE` | `wr/issues/.*` | Exclude WR issue docs (user-generated content with varied formatting) |
+| Setting                 | Value          | Rationale                                                             |
+| ----------------------- | -------------- | --------------------------------------------------------------------- |
+| `VALIDATE_ALL_CODEBASE` | `false`        | Only lint new/changed files on PRs to keep CI fast                    |
+| `DEFAULT_BRANCH`        | `main`         | Match repo default branch                                             |
+| `FILTER_REGEX_EXCLUDE`  | `wr/issues/.*` | Exclude WR issue docs (user-generated content with varied formatting) |
 
 ### Workflow file
 

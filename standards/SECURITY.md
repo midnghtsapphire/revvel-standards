@@ -7,12 +7,14 @@ All midnghtsapphire projects MUST follow these security standards.
 ### SQL Injection
 
 **NEVER do this:**
+
 ```python
 # VULNERABLE
 query = f"SELECT * FROM users WHERE id = {user_id}"
 ```
 
 **ALWAYS do this:**
+
 ```python
 # SAFE - Use parameterized queries
 from sqlalchemy import text
@@ -21,12 +23,14 @@ result = db.execute(query, {"id": user_id})
 ```
 
 ### ORM Usage
+
 ```python
 # SAFE - SQLAlchemy ORM
 user = db.query(User).filter(User.id == user_id).first()
 ```
 
 ### No Raw SQL Strings
+
 ```python
 # NEVER use f-strings or .format() with SQL
 # ALWAYS use parameterized queries or ORM
@@ -37,19 +41,20 @@ user = db.query(User).filter(User.id == user_id).first()
 ## Input Validation
 
 ### Backend (Pydantic)
+
 ```python
 from pydantic import BaseModel, validator
 
 class UserInput(BaseModel):
     email: str
     name: str
-    
+
     @validator('email')
     def validate_email(cls, v):
         if '@' not in v:
             raise ValueError('Invalid email')
         return v.lower()
-    
+
     @validator('name')
     def validate_name(cls, v):
         if len(v) < 2 or len(v) > 100:
@@ -58,16 +63,17 @@ class UserInput(BaseModel):
 ```
 
 ### Frontend Validation
+
 ```typescript
 // Always validate client-side too
 const validateEmail = (email: string): boolean => {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return re.test(email)
-}
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+};
 
 const sanitizeInput = (input: string): string => {
-  return input.replace(/[<>'"]/g, '')
-}
+  return input.replace(/[<>'"]/g, "");
+};
 ```
 
 ---
@@ -75,16 +81,20 @@ const sanitizeInput = (input: string): string => {
 ## XSS Prevention
 
 ### React (Auto-escaped)
+
 ```tsx
 // SAFE - React escapes by default
-return <div>{userContent}</div>
+return <div>{userContent}</div>;
 
 // DANGEROUS - Only use with sanitization
-import DOMPurify from 'dompurify'
-return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(userContent) }} />
+import DOMPurify from "dompurify";
+return (
+  <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(userContent) }} />
+);
 ```
 
 ### CSP Headers
+
 ```python
 # FastAPI
 @app.middleware("http")
@@ -102,6 +112,7 @@ async def add_security_headers(request, call_next):
 ## CSRF Protection
 
 ### FastAPI
+
 ```python
 from fastapi import Request
 from starlette.middleware.csrf import CSRFMiddleware
@@ -114,6 +125,7 @@ app.add_middleware(CSRFMiddleware, secret_key="your-secret-key")
 ## Rate Limiting
 
 Required for all public endpoints:
+
 ```python
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -171,14 +183,15 @@ dompurify>=3.0.0
 ## Compliance
 
 ### GDPR
+
 - Data minimization
 - Right to deletion
 - Consent management
 - Privacy policy
 
 ### SOC 2 (Enterprise)
+
 - Audit logging
 - Access controls
 - Encryption at rest
 - Incident response
-

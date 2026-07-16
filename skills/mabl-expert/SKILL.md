@@ -30,11 +30,11 @@ Companion setup skill (kept for reactivation): [`skills/mabl/`](../mabl/SKILL.md
 
 ## Why We Paused (preserved verdict) — and What's Changed
 
-| 2026-05 objection | Still true? |
-|---|---|
+| 2026-05 objection                                                   | Still true?                                                                                                                                                                 |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Test plans live in Mabl's dashboard, invisible to repo/review/audit | Largely — plans are still dashboard-managed; the MCP + CLI narrow the gap but don't version-control plan logic in-repo (verify current export options before re-litigating) |
-| Paid `MABL_API_KEY` kept expiring → Secrets Sentinel spam | True for cloud runs — but **local/CI runs via the CLI return pass/fail without consuming cloud credits**, which removes most of the cost pressure |
-| "We never saw it run" — silent no-ops when key/plans missing | Fixable with a hard key-check gate (the paused workflow already short-circuits loudly) |
+| Paid `MABL_API_KEY` kept expiring → Secrets Sentinel spam           | True for cloud runs — but **local/CI runs via the CLI return pass/fail without consuming cloud credits**, which removes most of the cost pressure                           |
+| "We never saw it run" — silent no-ops when key/plans missing        | Fixable with a hard key-check gate (the paused workflow already short-circuits loudly)                                                                                      |
 
 **Reactivation gate (all three or stay paused):** a concrete browser-E2E need that
 Keploy plus Playwright can't cover; a key-management owner (Doppler-synced, not
@@ -80,12 +80,12 @@ hand-pasted); and test plans labeled + linked so runs are never silent no-ops.
 Install: `npm i -g @mablhq/mabl-cli` (CI: `mablhq/setup-mabl-cli@v1.5` action).
 Auth: `mabl auth login` / API key. Then:
 
-| Command | What it does |
-|---|---|
+| Command                    | What it does                                              |
+| -------------------------- | --------------------------------------------------------- |
 | `mabl tests run [--local]` | Ad-hoc browser/API test runs — **credit-free locally/CI** |
-| `mabl deployments create` | Register a deployment event → triggers labeled plans |
-| `mabl auth`, `mabl config` | Session + workspace wiring |
-| `mabl <anything> --help` | Self-documenting tree — enumerate, don't guess |
+| `mabl deployments create`  | Register a deployment event → triggers labeled plans      |
+| `mabl auth`, `mabl config` | Session + workspace wiring                                |
+| `mabl <anything> --help`   | Self-documenting tree — enumerate, don't guess            |
 
 Setup-from-zero (apps, environments, plans, secrets) lives in the companion
 [`skills/mabl/SKILL.md`](../mabl/SKILL.md) — don't duplicate it here.

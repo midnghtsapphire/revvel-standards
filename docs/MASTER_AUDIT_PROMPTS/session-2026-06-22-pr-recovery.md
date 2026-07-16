@@ -9,8 +9,8 @@
 ## Original User Request
 
 ```
-These are my requirements and coding standards please review in detail. Review all PRs 
-that could be squashed and merged as they are complete. Help me push through all the 
+These are my requirements and coding standards please review in detail. Review all PRs
+that could be squashed and merged as they are complete. Help me push through all the
 self healing scripts holding everything up.
 ```
 
@@ -19,6 +19,7 @@ self healing scripts holding everything up.
 ## Session Context (Pre-Session State)
 
 ### Completed Actions Before Session
+
 - Explored repository structure and identified self-healing workflows
 - Ran self-heal-repo.js successfully (validated YAML, reprocessed PR labels, no stale issues)
 - Verified self-healing.yml workflow YAML structure is valid
@@ -28,6 +29,7 @@ self healing scripts holding everything up.
 - Merged PR #14677: fix(triage) sweep/route-new collisions
 
 ### Pending at Session Start
+
 - PR #14679: auditor-controller kill switch (blocked, needs human intervention)
 - Monitor self-healing workflow for next successful run
 - Verify no conflicts on remaining PRs
@@ -37,6 +39,7 @@ self healing scripts holding everything up.
 ## Investigation Steps Performed
 
 ### Step 1: Checked PR 14677 Status
+
 - **Issue Found:** CI status was actually "success" but labels showed `status:checks-failing`
 - **Root Cause:** Labels were out of sync with actual CI status
 - **Resolution:** Removed incorrect labels, added correct labels, merged PR
@@ -48,18 +51,21 @@ self healing scripts holding everything up.
 ```
 
 ### Step 2: Identified Remaining Open PRs
+
 - PR #14702: fix: resolve 205 markdownlint errors in docs playbooks
 - PR #14679: auditor-controller: kill switch on Doppler + recurring-failure audit
 
 ### Step 3: Investigated PR 14702
+
 - **Mergeable State:** "dirty" (conflicts with main)
 - **CI Status:** success
-- **Conflict Files:** 
+- **Conflict Files:**
   - `.markdownlint.jsonc`
   - `docs/SELF_HEALING_SYSTEM.md`
   - `docs/playbooks/branch-update-guide.md`
 
 ### Step 4: Resolved Conflicts
+
 ```bash
 # Fetched PR branch
 git fetch origin chunk/fix-markdownlint-docs-playbooks:chunk-branch
@@ -77,12 +83,14 @@ git add . && git cherry-pick --continue --no-edit
 ```
 
 ### Step 5: Pushed and Merged PR 14702
+
 ```bash
 git push origin main:chunk/fix-markdownlint-docs-playbooks --force
 # Merged via API with squash method
 ```
 
 ### Step 6: Investigated PR 14679
+
 - **Issue Found:** Has `CHANGES_REQUESTED` review from octopus-review[bot]
 - **Labels:** blocked, needs-human, priority-p2
 - **Decision:** Cannot merge - requires review changes
@@ -92,14 +100,16 @@ git push origin main:chunk/fix-markdownlint-docs-playbooks --force
 ## Key Failure Points Identified
 
 ### 1. Label Sync Issue
+
 - **Problem:** Labels showing incorrect CI state (`status:checks-failing` when CI was passing)
 - **Why:** Self-healing workflows update labels asynchronously, state can drift
-- **Fix Pattern:** 
+- **Fix Pattern:**
   1. Check actual CI status via API before trusting labels
   2. Use `git diff` or GitHub API to verify real state
   3. Directly fix labels via API when stale
 
 ### 2. Merge Conflict Resolution
+
 - **Problem:** PR branches diverge from main, causing dirty merge state
 - **Why:** Other PRs merge while branch is waiting for review
 - **Fix Pattern:**
@@ -110,6 +120,7 @@ git push origin main:chunk/fix-markdownlint-docs-playbooks --force
   5. Merge via API
 
 ### 3. Git Identity Not Set
+
 - **Problem:** `fatal: unable to auto-detect email address` during rebase
 - **Fix Pattern:**
   ```bash
@@ -118,6 +129,7 @@ git push origin main:chunk/fix-markdownlint-docs-playbooks --force
   ```
 
 ### 4. Rebase State Conflicts
+
 - **Problem:** Previous incomplete rebase leaves `rebase-merge` directory
 - **Fix Pattern:** `git rebase --abort` to clear state
 
@@ -126,6 +138,7 @@ git push origin main:chunk/fix-markdownlint-docs-playbooks --force
 ## Recovery Patterns Applied
 
 ### Pattern 1: Direct API Label Fix
+
 ```bash
 # Remove incorrect labels
 curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -X DELETE \
@@ -139,6 +152,7 @@ curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -X POST \
 ```
 
 ### Pattern 2: Merge via API
+
 ```bash
 curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -X PUT \
   -H "Content-Type: application/json" \
@@ -147,6 +161,7 @@ curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -X PUT \
 ```
 
 ### Pattern 3: Cherry-Pick Resolution
+
 ```bash
 # Get incoming version
 git show {branch}:{file} > {file}
@@ -162,6 +177,7 @@ git show {branch}:{file} > {file}
 ## Commands Reference
 
 ### Git Operations
+
 ```bash
 # Fetch PR branch
 git fetch origin {branch}:{local-name}
@@ -181,6 +197,7 @@ git push origin {local}:{remote} --force
 ```
 
 ### GitHub API Operations
+
 ```bash
 # Get PR details (including mergeable state)
 curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
@@ -216,23 +233,27 @@ curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -X PUT \
 ## Results Summary
 
 ### Merged PRs (5 total)
-| PR # | Title | Notes |
-|------|-------|-------|
+
+| PR #   | Title                                                          | Notes                      |
+| ------ | -------------------------------------------------------------- | -------------------------- |
 | #14676 | feat: add update-main self-heal job + WR novice playbook suite | Already merged pre-session |
-| #14677 | fix(triage): prevent sweep/route-new item collisions | Fixed labels, merged |
-| #14678 | feat(dragnet): add /dragnet persona with WR/PR dedup | Already merged pre-session |
-| #14702 | fix: resolve 205 markdownlint errors in docs playbooks | Resolved conflicts, merged |
-| #14710 | docs(wr): fleet-maintenance WR design artifact | Already merged pre-session |
+| #14677 | fix(triage): prevent sweep/route-new item collisions           | Fixed labels, merged       |
+| #14678 | feat(dragnet): add /dragnet persona with WR/PR dedup           | Already merged pre-session |
+| #14702 | fix: resolve 205 markdownlint errors in docs playbooks         | Resolved conflicts, merged |
+| #14710 | docs(wr): fleet-maintenance WR design artifact                 | Already merged pre-session |
 
 ### Remaining Open PRs
-| PR # | Title | Blocker |
-|------|-------|---------|
+
+| PR #   | Title                                      | Blocker                  |
+| ------ | ------------------------------------------ | ------------------------ |
 | #14679 | auditor-controller: kill switch on Doppler | CHANGES_REQUESTED review |
 
 ---
 
 ## Next Steps for PR #14679
+
 Per user's request:
+
 1. Close PR #14679 (contains Doppler changes being re-added separately)
 2. Create new PR extracting non-Doppler changes with:
    - Recurring-failure audit logic
@@ -241,4 +262,4 @@ Per user's request:
 
 ---
 
-*Generated by OpenHands Agent on 2026-06-22*
+_Generated by OpenHands Agent on 2026-06-22_

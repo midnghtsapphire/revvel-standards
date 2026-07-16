@@ -1,4 +1,4 @@
-# WR: [WR]  every PR is failing on this this should be caught and self-healed or just write a script with error and resolution script this is FIRE IN THE HULL nothing goes through
+# WR: [WR] every PR is failing on this this should be caught and self-healed or just write a script with error and resolution script this is FIRE IN THE HULL nothing goes through
 
 **Issue:** #16148  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  

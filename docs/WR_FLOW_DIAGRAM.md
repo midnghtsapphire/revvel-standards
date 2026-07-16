@@ -15,59 +15,59 @@ graph TD
     A[User Creates Issue with WR Prefix] --> B{weekly-research.yml<br/>Detects WR}
     B -->|Yes| C[Apply Labels:<br/>• weekly-research<br/>• wr:in-progress<br/>• deep-research<br/>• openrouter<br/>• role:orchestrator<br/>• jules]
     B -->|No| Z[Standard Issue Flow]
-    
+
     C --> D[Post Welcome Comment<br/>with Checklist]
-    
+
     D --> E[jules-invoke.yml<br/>Triggers on 'jules' Label]
-    
+
     E --> F[Jules Performs<br/>Deep Research]
-    
+
     F --> G[Jules Posts<br/>Research Findings<br/>as Issue Comment]
-    
+
     G --> H[openrouter-triage.yml<br/>Analyzes Scope]
-    
+
     H --> I[Apply Additional Labels<br/>e.g., codex, 49agents]
-    
+
     I --> J{Research<br/>Complete?}
-    
+
     J -->|Yes - Jules Posts<br/>Research Findings| K[wr-pr-creation.yml<br/>Triggered by Comment]
     J -->|Or Manual| L[Apply wr:complete<br/>Label]
-    
+
     L --> K
-    
+
     K --> M[Create WR Branch<br/>wr/issue-N-title]
-    
+
     M --> N[Generate WR Document<br/>from Template]
-    
+
     N --> O[Insert Jules'<br/>Research Findings]
-    
+
     O --> P[Commit and Push]
-    
+
     P --> Q[Create Pull Request]
-    
+
     Q --> R[Apply PR Labels:<br/>• weekly-research<br/>• jules<br/>• documentation<br/>• wr:in-progress]
-    
+
     R --> S[Request Jules<br/>to Rewrite PR]
-    
+
     S --> T[Jules Reviews<br/>and Refines WR]
-    
+
     T --> U[Jules Updates PR<br/>with Refined Content]
-    
+
     U --> V[jules-pr-reviewer.yml<br/>Posts Review]
-    
+
     V --> W[ai-pr-review-openrouter.yml<br/>Posts Summary]
-    
+
     W --> X{PR<br/>Approved?}
-    
+
     X -->|No| AA[Address Feedback]
     AA --> T
-    
+
     X -->|Yes| Y[Merge PR to main]
-    
+
     Y --> AB[Close Issue<br/>Apply wr:complete]
-    
+
     AB --> AC[End: WR Complete]
-    
+
     style A fill:#e1f5ff
     style F fill:#fff4e1
     style G fill:#fff4e1
@@ -82,6 +82,7 @@ graph TD
 ## Phase Breakdown
 
 ### Phase 1: Issue Creation & Detection
+
 **Duration:** < 1 minute  
 **Automation:** `weekly-research.yml`
 
@@ -91,12 +92,14 @@ graph TD
 4. Posts welcome comment with research checklist
 
 **Key Files:**
+
 - `.github/workflows/weekly-research.yml`
 - `templates/issue-template/issue.yml`
 
 ---
 
 ### Phase 2: Deep Research
+
 **Duration:** 30 minutes - 4 hours  
 **Automation:** `jules-invoke.yml`, `openrouter-triage.yml`
 
@@ -111,6 +114,7 @@ graph TD
 4. OpenRouter triage provides additional routing
 
 **Key Files:**
+
 - `.github/workflows/jules-invoke.yml`
 - `docs/WEEKLY_RESEARCH_PROCESS.md`
 - `skills/REGISTRY.md`
@@ -118,15 +122,18 @@ graph TD
 ---
 
 ### Phase 3: PR Creation
+
 **Duration:** < 2 minutes  
 **Automation:** `wr-pr-creation.yml`
 
 **Triggers:**
+
 - Jules posts comment containing "Research Findings:"
 - `wr:complete` label is applied
 - Manual workflow dispatch
 
 **Actions:**
+
 1. Detects research completion
 2. Creates branch: `wr/issue-{N}-{clean-title}`
 3. Generates WR document from template
@@ -137,12 +144,14 @@ graph TD
 8. Posts comment on original issue with PR link
 
 **Key Files:**
+
 - `.github/workflows/wr-pr-creation.yml`
 - `wr/WR_TEMPLATE.md`
 
 ---
 
 ### Phase 4: Jules Rewrite & Refinement
+
 **Duration:** 15-60 minutes  
 **Automation:** `jules-action`, `jules-pr-reviewer.yml`
 
@@ -158,32 +167,38 @@ graph TD
 6. Jules marks as ready when refinement is complete
 
 **Key Files:**
+
 - `.github/workflows/jules-pr-reviewer.yml`
 - `.github/workflows/jules-invoke.yml`
 
 ---
 
 ### Phase 5: Review & Merge
+
 **Duration:** Variable (depends on human review)  
 **Automation:** Multiple PR review workflows
 
 **Automatic Reviews:**
+
 - `jules-pr-reviewer.yml` - Jules review
 - `ai-pr-review-openrouter.yml` - OpenRouter summary
 - `openrouter-triage.yml` - Routing verification
 - `recurse-ml.yml` - Code quality checks
 
 **Human Review:**
+
 - Repository maintainer approval
 - Audrey final sign-off
 
 **Final Actions:**
+
 1. PR merged to main
 2. Original issue automatically closed
 3. `wr:complete` label applied
 4. WR document available in `wr/issues/`
 
 **Key Files:**
+
 - `.github/workflows/jules-pr-reviewer.yml`
 - `.github/workflows/ai-pr-review-openrouter.yml`
 
@@ -211,17 +226,17 @@ stateDiagram-v2
 
 ## Label Lifecycle
 
-| Label | Applied By | When | Removed By | When |
-|-------|------------|------|------------|------|
-| `weekly-research` | `weekly-research.yml` | Issue opened with [WR] | Never | Permanent marker |
-| `wr:in-progress` | `weekly-research.yml` | Issue opened | Merge | PR merged |
-| `deep-research` | `weekly-research.yml` | Issue opened | Never | Permanent marker |
-| `openrouter` | `weekly-research.yml` | Issue opened | Never | Routing marker |
-| `role:orchestrator` | `weekly-research.yml` | Issue opened | Never | Routing marker |
-| `jules` | `weekly-research.yml` | Issue opened | Never | Agent assignment |
-| `wr:complete` | `wr-pr-creation.yml` or Manual | Research complete | Never | Completion marker |
-| `in-review` | `wr-pr-creation.yml` | PR created | Merge | PR merged |
-| `documentation` | `wr-pr-creation.yml` | PR created | Never | Content type marker |
+| Label               | Applied By                     | When                   | Removed By | When                |
+| ------------------- | ------------------------------ | ---------------------- | ---------- | ------------------- |
+| `weekly-research`   | `weekly-research.yml`          | Issue opened with [WR] | Never      | Permanent marker    |
+| `wr:in-progress`    | `weekly-research.yml`          | Issue opened           | Merge      | PR merged           |
+| `deep-research`     | `weekly-research.yml`          | Issue opened           | Never      | Permanent marker    |
+| `openrouter`        | `weekly-research.yml`          | Issue opened           | Never      | Routing marker      |
+| `role:orchestrator` | `weekly-research.yml`          | Issue opened           | Never      | Routing marker      |
+| `jules`             | `weekly-research.yml`          | Issue opened           | Never      | Agent assignment    |
+| `wr:complete`       | `wr-pr-creation.yml` or Manual | Research complete      | Never      | Completion marker   |
+| `in-review`         | `wr-pr-creation.yml`           | PR created             | Merge      | PR merged           |
+| `documentation`     | `wr-pr-creation.yml`           | PR created             | Never      | Content type marker |
 
 ---
 
@@ -253,11 +268,13 @@ ai-pr-review-openrouter.yml (PR Review)
 ## Configuration Requirements
 
 ### Required Secrets
+
 - `JULES_API_KEY` - Google Jules API access
 - `OPENROUTER_API_KEY` - OpenRouter API access
 - `GITHUB_TOKEN` - Automatically provided
 
 ### Required Labels (synced by `sync-labels.yml`)
+
 - `weekly-research`
 - `wr:in-progress`
 - `wr:complete`
@@ -269,6 +286,7 @@ ai-pr-review-openrouter.yml (PR Review)
 - `documentation`
 
 ### Required Files
+
 - `.github/workflows/weekly-research.yml`
 - `.github/workflows/wr-pr-creation.yml`
 - `.github/workflows/jules-invoke.yml`
@@ -281,6 +299,7 @@ ai-pr-review-openrouter.yml (PR Review)
 ## Monitoring & Metrics
 
 ### Success Metrics
+
 - Time from issue open to PR creation: < 4 hours
 - Jules refinement cycles: 1-3 iterations
 - PR approval time: < 24 hours (human-dependent)
@@ -288,13 +307,13 @@ ai-pr-review-openrouter.yml (PR Review)
 
 ### Failure Modes & Recovery
 
-| Failure | Detection | Recovery |
-|---------|-----------|----------|
-| Jules API unavailable | Workflow warning | Manual research or retry |
-| PR creation fails | Workflow error + issue comment | Manual workflow dispatch |
-| Jules doesn't post findings | Timeout (7 days via stuck-label-automation) | Human escalation |
-| Branch conflict | PR creation error | Manual branch creation |
-| Research incomplete | `stuck-label-automation.yml` | Auto-escalate after 3 days |
+| Failure                     | Detection                                   | Recovery                   |
+| --------------------------- | ------------------------------------------- | -------------------------- |
+| Jules API unavailable       | Workflow warning                            | Manual research or retry   |
+| PR creation fails           | Workflow error + issue comment              | Manual workflow dispatch   |
+| Jules doesn't post findings | Timeout (7 days via stuck-label-automation) | Human escalation           |
+| Branch conflict             | PR creation error                           | Manual branch creation     |
+| Research incomplete         | `stuck-label-automation.yml`                | Auto-escalate after 3 days |
 
 ---
 
@@ -334,12 +353,14 @@ T+4:01 - PR merged, issue closed
 ## Changelog
 
 ### 2.0.0 - 2026-05-03
+
 - Added automatic PR creation workflow
 - Integrated Jules rewrite phase
 - Created complete flow documentation
 - Added state diagrams and metrics
 
 ### 1.0.0 - 2026-04-30
+
 - Initial WR automation with basic labeling
 - Jules deep research integration
 - OpenRouter triage routing

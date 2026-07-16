@@ -1,7 +1,6 @@
 {
   "_comment": "Revvel Web MCP Config — 18 servers for Next.js/React/Node web applications. Copy to .mcp.json at project root.",
   "mcpServers": {
-
     "postgres": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
@@ -9,7 +8,12 @@
 
     "sqlite": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "${SQLITE_DB_PATH}"]
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite",
+        "--db-path",
+        "${SQLITE_DB_PATH}"
+      ]
     },
 
     "mongodb": {
@@ -108,7 +112,11 @@
 
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${PROJECT_ROOT}"]
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "${PROJECT_ROOT}"
+      ]
     },
 
     "gdrive": {
@@ -130,6 +138,5 @@
       "command": "npx",
       "args": ["-y", "@wonderwhy-er/desktop-commander"]
     }
-
   }
 }

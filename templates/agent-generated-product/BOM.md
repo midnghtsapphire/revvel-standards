@@ -8,15 +8,15 @@
 
 ## Required (build cannot start until all rows are ✅)
 
-| Item | Type | Provider | Est. Cost | Status | Notes |
-|---|---|---|---|---|---|
-| _example: Stripe account_ | account | Stripe | free | ✅ on hand | shared org account |
-| _example: domain_ | infra | DigitalOcean | $12/yr | ⬜ needed | needs purchase |
+| Item                      | Type    | Provider     | Est. Cost | Status     | Notes              |
+| ------------------------- | ------- | ------------ | --------- | ---------- | ------------------ |
+| _example: Stripe account_ | account | Stripe       | free      | ✅ on hand | shared org account |
+| _example: domain_         | infra   | DigitalOcean | $12/yr    | ⬜ needed  | needs purchase     |
 
 ## Optional (improves product but not blocking)
 
 | Item | Type | Provider | Est. Cost | Status | Notes |
-|---|---|---|---|---|---|
+| ---- | ---- | -------- | --------- | ------ | ----- |
 
 ## Already-on-hand (informational)
 

@@ -7,21 +7,22 @@ Enforce Revvel code review standards including security, accessibility, test cov
 > **Note:** Updated May 6, 2026 — reflects current production setup
 
 1. **Bito AI** — Primary AI PR reviewer (assigned automatically via workflow labels)
-2. **OpenRouter** (claude-sonnet-4 via OpenRouter) — Fallback for complex logic/architecture  
+2. **OpenRouter** (claude-sonnet-4 via OpenRouter) — Fallback for complex logic/architecture
 3. **Coderabbit** — Automated line-by-line PR review; all comments must be addressed before merge
 4. **PromptFoo** — Skill/LLM testing with Claude Sonnet 4 (replaces PandaOps)
 
 ### Primary Model Configuration (Claude Sonnet 4 via OpenRouter)
+
 ```yaml
 # promptfooconfig.yaml
 providers:
-  - id: anthropic/claude-sonnet-4  # Primary - Claude Sonnet 4
+  - id: anthropic/claude-sonnet-4 # Primary - Claude Sonnet 4
     config:
       api_key: ${OPENROUTER_API_KEY}
       base_url: https://openrouter.ai/api/v1
       temperature: 0
 
-# Fallback: Claude Sonnet 4.5
+  # Fallback: Claude Sonnet 4.5
   - id: anthropic/claude-sonnet-4.5
     config:
       api_key: ${OPENROUTER_API_KEY}
@@ -30,6 +31,7 @@ providers:
 ```
 
 ### Fallback Model Chain
+
 ```
 Bito AI → Claude Sonnet 4 (OpenRouter) → Claude Sonnet 4.5 (fallback)
 ```
@@ -61,6 +63,7 @@ promptfoo eval --config skills/my-skill/tests/promptfoo.yml
 ```
 
 **Why PromptFoo over PandaOps:**
+
 - Tests actual skill/prompt outputs, not code diffs
 - Claude Sonnet 4 via OpenRouter as primary
 - Red-teaming security built-in
@@ -75,6 +78,7 @@ promptfoo eval --config skills/my-skill/tests/promptfoo.yml
 ## No Force-Push Policy (Non-Negotiable)
 
 `git push --force` is **permanently banned** across all repos.
+
 - Branch protection rules must block force-pushes at the server level
 - If a branch diverged, always use `git rebase` — never `--force`
 - Any force-push triggers an immediate alert to the repo owner

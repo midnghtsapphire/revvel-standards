@@ -5,7 +5,7 @@
 **Created:** 2026-07-06  
 **Researcher:** N/A  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -15,18 +15,19 @@ This issue requests the creation of a tool or mobile app based on the 7 best pra
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | N/A |
-| Archived | N/A |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | N/A   |
+| Archived    | N/A   |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
@@ -70,15 +71,15 @@ Either path monetizes immediately through B2B licensing or professional services
 
 A cross-platform (iOS + Android) React Native application that embeds all 7 best practices as first-class features:
 
-| Feature Area | Implementation |
-| --- | --- |
-| Security | AES-256 at rest, TLS 1.3 in transit, biometric + PIN auth, HIPAA audit log |
-| Regulatory | FDA SaMD pre-cert checklist, IEC 62304 lifecycle doc scaffold, in-app compliance badge |
+| Feature Area     | Implementation                                                                                                                                |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Security         | AES-256 at rest, TLS 1.3 in transit, biometric + PIN auth, HIPAA audit log                                                                    |
+| Regulatory       | FDA SaMD pre-cert checklist, IEC 62304 lifecycle doc scaffold, in-app compliance badge                                                        |
 | BLE Connectivity | react-native-ble-plx, standard medical BLE GATT services (e.g., Glucose/Heart Rate/Pulse Oximeter), auto-reconnect, signal strength indicator |
-| Clinical UX | Dark-mode optimized, large touch targets (≥44 px), WCAG 2.1 AA, one-hand layout |
-| Data Accuracy | Client-side checksum, server reconciliation, calibration reminder scheduling |
-| Battery | Background scan duty-cycling (5s active / 25s sleep), phone + device low-battery toast |
-| Alerts | FCM/APNs push, configurable threshold rules, on-call escalation via PagerDuty webhook |
+| Clinical UX      | Dark-mode optimized, large touch targets (≥44 px), WCAG 2.1 AA, one-hand layout                                                               |
+| Data Accuracy    | Client-side checksum, server reconciliation, calibration reminder scheduling                                                                  |
+| Battery          | Background scan duty-cycling (5s active / 25s sleep), phone + device low-battery toast                                                        |
+| Alerts           | FCM/APNs push, configurable threshold rules, on-call escalation via PagerDuty webhook                                                         |
 
 **Monetization path:**
 
@@ -106,14 +107,14 @@ A cross-platform (iOS + Android) React Native application that embeds all 7 best
 
 ### Competitor Analysis
 
-| Competitor | Category | Pricing | Strengths | Weaknesses |
-| --- | --- | --- | --- | --- |
-| **Validic** | mHealth platform SDK | $5,000–$20,000+/month (enterprise) | 350+ device integrations, HIPAA BAA | Not open-source, high cost, overkill for single-device apps |
-| **Humanapi** | Health data API | $0.05–$0.30/user/month (usage-based) | Broad EHR connectivity | Weak BLE/device pairing layer |
-| **Airstrip Technologies** | Clinical mobility platform | Pricing data pending — competitive benchmark research required | Deep EMR integration | Enterprise-only, not licensable as SDK |
-| **Propeller Health (ResMed)** | Respiratory device app | Consumer app — device-bundled (free to patient) | FDA-cleared companion app reference | Closed ecosystem, not licensable |
-| **Apple HealthKit / CareKit** | Open framework | Free (open source — [GitHub ~3.9k stars](https://github.com/carekit-apple/CareKit)) | iOS-native, FDA guidance favorable | iOS only, limited BLE device management |
-| **React Native BLE Plx** | Open-source BLE library | Free (open source — [GitHub ~2.8k stars](https://github.com/dotintent/react-native-ble-plx)) | Cross-platform BLE, active community | Library only; no compliance layer |
+| Competitor                    | Category                   | Pricing                                                                                      | Strengths                            | Weaknesses                                                  |
+| ----------------------------- | -------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------ | ----------------------------------------------------------- |
+| **Validic**                   | mHealth platform SDK       | $5,000–$20,000+/month (enterprise)                                                           | 350+ device integrations, HIPAA BAA  | Not open-source, high cost, overkill for single-device apps |
+| **Humanapi**                  | Health data API            | $0.05–$0.30/user/month (usage-based)                                                         | Broad EHR connectivity               | Weak BLE/device pairing layer                               |
+| **Airstrip Technologies**     | Clinical mobility platform | Pricing data pending — competitive benchmark research required                               | Deep EMR integration                 | Enterprise-only, not licensable as SDK                      |
+| **Propeller Health (ResMed)** | Respiratory device app     | Consumer app — device-bundled (free to patient)                                              | FDA-cleared companion app reference  | Closed ecosystem, not licensable                            |
+| **Apple HealthKit / CareKit** | Open framework             | Free (open source — [GitHub ~3.9k stars](https://github.com/carekit-apple/CareKit))          | iOS-native, FDA guidance favorable   | iOS only, limited BLE device management                     |
+| **React Native BLE Plx**      | Open-source BLE library    | Free (open source — [GitHub ~2.8k stars](https://github.com/dotintent/react-native-ble-plx)) | Cross-platform BLE, active community | Library only; no compliance layer                           |
 
 ### Community Chatter (Developer/Healthcare Forums)
 
@@ -149,15 +150,15 @@ A cross-platform (iOS + Android) React Native application that embeds all 7 best
 
 ### BOM (Bill of Materials — Key Dependencies)
 
-| Package | Purpose | License | Notes |
-| --- | --- | --- | --- |
-| react-native-ble-plx 3.x | BLE communication | MIT | Android & iOS, active maintenance |
-| react-native-keychain | Secure credential storage | MIT | Biometric auth, Keychain/Keystore |
-| react-native-encrypted-storage | AES-256 local data | MIT | HIPAA-suitable on-device storage |
-| notifee | Rich push notifications | Apache-2.0 | Foreground/background alerts |
-| react-native-charts-wrapper | Live sparkline charts | MIT | Wraps MPAndroidChart + Charts |
-| react-native-pdf | PDF export for compliance docs | MIT | Audit log and compliance export |
-| jest + detox | Unit + E2E testing | MIT | IEC 62304 test evidence |
+| Package                        | Purpose                        | License    | Notes                             |
+| ------------------------------ | ------------------------------ | ---------- | --------------------------------- |
+| react-native-ble-plx 3.x       | BLE communication              | MIT        | Android & iOS, active maintenance |
+| react-native-keychain          | Secure credential storage      | MIT        | Biometric auth, Keychain/Keystore |
+| react-native-encrypted-storage | AES-256 local data             | MIT        | HIPAA-suitable on-device storage  |
+| notifee                        | Rich push notifications        | Apache-2.0 | Foreground/background alerts      |
+| react-native-charts-wrapper    | Live sparkline charts          | MIT        | Wraps MPAndroidChart + Charts     |
+| react-native-pdf               | PDF export for compliance docs | MIT        | Audit log and compliance export   |
+| jest + detox                   | Unit + E2E testing             | MIT        | IEC 62304 test evidence           |
 
 ## Recommendations
 
@@ -181,18 +182,18 @@ A cross-platform (iOS + Android) React Native application that embeds all 7 best
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Severity | Mitigation |
-| --- | --- | --- |
-| FDA SaMD classification triggers 510(k) requirement | High | Scope MVP as a Class I wellness device (general wellness policy) or as a non-device software tool; defer cleared-device claim to v2 |
-| BLE inconsistency across Android OEMs | Medium | Use battle-tested react-native-ble-plx; maintain a device compatibility matrix; test on 5+ Android OEM variants |
-| HIPAA breach liability | High | Obtain HIPAA BAA with cloud provider; conduct annual penetration test; engage healthcare attorney for BAA template |
-| Competitor Validic acquiring mid-market customers before launch | Medium | Focus on the developer/startup segment that Validic prices out; build community first |
-| React Native performance ceiling for real-time BLE data | Low | Implement BLE data pipeline in a native module (JSI) if < 60 fps is observed during live data streaming |
+| Risk                                                            | Severity | Mitigation                                                                                                                          |
+| --------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| FDA SaMD classification triggers 510(k) requirement             | High     | Scope MVP as a Class I wellness device (general wellness policy) or as a non-device software tool; defer cleared-device claim to v2 |
+| BLE inconsistency across Android OEMs                           | Medium   | Use battle-tested react-native-ble-plx; maintain a device compatibility matrix; test on 5+ Android OEM variants                     |
+| HIPAA breach liability                                          | High     | Obtain HIPAA BAA with cloud provider; conduct annual penetration test; engage healthcare attorney for BAA template                  |
+| Competitor Validic acquiring mid-market customers before launch | Medium   | Focus on the developer/startup segment that Validic prices out; build community first                                               |
+| React Native performance ceiling for real-time BLE data         | Low      | Implement BLE data pipeline in a native module (JSI) if < 60 fps is observed during live data streaming                             |

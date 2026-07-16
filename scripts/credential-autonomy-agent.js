@@ -370,7 +370,7 @@ async function main() {
   console.log(`   Repo: ${REPO}`);
   console.log("");
 
-  let actionsTaken = [];
+  const actionsTaken = [];
   // Tracks whether the run should escalate (non-zero exit + status=failure) so
   // that heal-on-failure automation can actually trigger. Set when: a critical
   // secret remains unresolved after restore attempts, a restore itself failed,

@@ -221,13 +221,13 @@ A prompt packet is worth 10x more when it includes market facts, competitor gaps
 
 #### Marketplace-First BOM for Automation Tooling
 
-| Category | Marketplace-first choice | Cost | Free / FOSS fallback | Why it belongs in this stack |
-| -------- | ------------------------ | ---- | -------------------- | ---------------------------- |
-| Accessibility PR checks | AccessLint | Free | axe-core, Pa11y | Fast PR feedback for basic accessibility regressions |
-| AI PR review | CodeRabbit or Bito AI | Free tier / paid | OpenRouter review workflow, OpenCode | Speeds review loops on prompt packet and UI changes |
-| Workflow linting | Super Linter | Free | actionlint, yamllint, act | Catches YAML and repo hygiene issues early |
-| Prompt / LLM evaluation | Promptfoo Action | Free CLI / paid cloud optional | local promptfoo, OpenRouter prompt tests | Useful when PromptForge moves beyond deterministic output |
-| MCP / agent automation | No clear Marketplace leader | N/A | GitHub MCP servers, Cline, OpenCode, custom MCP | MCP coverage is stronger in GitHub-hosted OSS than Marketplace today |
+| Category                | Marketplace-first choice    | Cost                           | Free / FOSS fallback                            | Why it belongs in this stack                                         |
+| ----------------------- | --------------------------- | ------------------------------ | ----------------------------------------------- | -------------------------------------------------------------------- |
+| Accessibility PR checks | AccessLint                  | Free                           | axe-core, Pa11y                                 | Fast PR feedback for basic accessibility regressions                 |
+| AI PR review            | CodeRabbit or Bito AI       | Free tier / paid               | OpenRouter review workflow, OpenCode            | Speeds review loops on prompt packet and UI changes                  |
+| Workflow linting        | Super Linter                | Free                           | actionlint, yamllint, act                       | Catches YAML and repo hygiene issues early                           |
+| Prompt / LLM evaluation | Promptfoo Action            | Free CLI / paid cloud optional | local promptfoo, OpenRouter prompt tests        | Useful when PromptForge moves beyond deterministic output            |
+| MCP / agent automation  | No clear Marketplace leader | N/A                            | GitHub MCP servers, Cline, OpenCode, custom MCP | MCP coverage is stronger in GitHub-hosted OSS than Marketplace today |
 
 **Selection rule:** GitHub Marketplace choices are evaluated first for installation speed and discoverability.
 
@@ -695,6 +695,7 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **Last Updated:** 2026-05-18  
 **Next Review:** 2026-06-01
+
 # Work Request: Revvel PromptForge - AI Prompt Generation Platform
 
 **Issue:** #13546
@@ -713,6 +714,7 @@ User prompts and brainstorms are inputs, not immutable specs.
 The platform addresses the #1 pain point in AI adoption: **users don't know how to write effective prompts**. Our solution: a guided, template-driven prompt builder with industry-specific libraries, A/B testing, and team collaboration.
 
 ### Value Proposition
+
 - **For Solo Creators:** 10x output quality from any LLM in seconds
 - **For Teams:** Shared prompt libraries, version control, analytics
 - **For Enterprises:** Compliance-aware prompts, audit trails, SSO
@@ -722,37 +724,41 @@ The platform addresses the #1 pain point in AI adoption: **users don't know how 
 ## 2. Market Research
 
 ### Market Size (TAM/SAM/SOM)
+
 - **TAM:** $40B - Global Generative AI software market (2024)
 - **SAM:** $2.5B - Prompt engineering & AI tooling segment
 - **SOM:** $25M - English-speaking SMB/creator segment (Year 1-3 target)
 
 ### Market Trends
+
 1. **Prompt engineering** is the fastest-growing AI job category (LinkedIn 2024 data: +400% YoY)
 2. **86% of knowledge workers** use AI tools weekly (McKinsey 2024)
 3. **Average enterprise** uses 3+ LLM providers - need for cross-platform prompt portability
 4. **Token costs** are dropping but prompt quality remains the #1 quality lever
 
 ### Target Segments
-| Segment | Size | ARPU | Priority |
-|---------|------|------|----------|
-| Solo creators / freelancers | 50M | $15/mo | P0 |
-| SMB marketing teams | 8M | $49/mo | P1 |
-| Agencies | 500k | $199/mo | P1 |
-| Enterprise | 50k | $2k/mo | P2 |
+
+| Segment                     | Size | ARPU    | Priority |
+| --------------------------- | ---- | ------- | -------- |
+| Solo creators / freelancers | 50M  | $15/mo  | P0       |
+| SMB marketing teams         | 8M   | $49/mo  | P1       |
+| Agencies                    | 500k | $199/mo | P1       |
+| Enterprise                  | 50k  | $2k/mo  | P2       |
 
 ---
 
 ## 3. Competitive Analysis
 
-| Competitor | Strengths | Weaknesses | Our Edge |
-|-----------|-----------|------------|----------|
-| **PromptBase** | Marketplace model, large library | No generation tool, static prompts | Dynamic generation + templates |
-| **FlowGPT** | Free, community-driven | Cluttered UX, no business features | Curated quality, team features |
-| **PromptPerfect** | Auto-optimization | Limited templates, $20/mo entry | Cheaper entry + broader use cases |
-| **AIPRM** | Chrome extension, large user base | ChatGPT-only, freemium spam | Cross-LLM, no spam, B2B focus |
-| **LangSmith** | Developer-focused, robust | Too technical for marketers | Marketer-friendly UI |
+| Competitor        | Strengths                         | Weaknesses                         | Our Edge                          |
+| ----------------- | --------------------------------- | ---------------------------------- | --------------------------------- |
+| **PromptBase**    | Marketplace model, large library  | No generation tool, static prompts | Dynamic generation + templates    |
+| **FlowGPT**       | Free, community-driven            | Cluttered UX, no business features | Curated quality, team features    |
+| **PromptPerfect** | Auto-optimization                 | Limited templates, $20/mo entry    | Cheaper entry + broader use cases |
+| **AIPRM**         | Chrome extension, large user base | ChatGPT-only, freemium spam        | Cross-LLM, no spam, B2B focus     |
+| **LangSmith**     | Developer-focused, robust         | Too technical for marketers        | Marketer-friendly UI              |
 
 ### Differentiators
+
 1. **Multi-LLM output** - Generate prompts optimized for GPT-4, Claude 3.5, Gemini
 2. **Packet format** - Bundled system+user+examples+guardrails in one export
 3. **Industry verticals** - Pre-built libraries for SaaS, ecommerce, agencies, real estate
@@ -762,15 +768,16 @@ The platform addresses the #1 pain point in AI adoption: **users don't know how 
 
 ## 4. Pricing Strategy
 
-| Tier | Price | Target | Features |
-|------|-------|--------|----------|
-| **Free** | $0 | Acquisition | 10 prompts/mo, 3 templates |
-| **Pro** | $19/mo | Solo creators | Unlimited prompts, all templates, history |
-| **Team** | $49/user/mo | SMB | Shared library, collaboration, analytics |
-| **Agency** | $199/mo | Agencies | White-label, client workspaces, 10 seats |
-| **Enterprise** | Custom | Large orgs | SSO, audit logs, dedicated support |
+| Tier           | Price       | Target        | Features                                  |
+| -------------- | ----------- | ------------- | ----------------------------------------- |
+| **Free**       | $0          | Acquisition   | 10 prompts/mo, 3 templates                |
+| **Pro**        | $19/mo      | Solo creators | Unlimited prompts, all templates, history |
+| **Team**       | $49/user/mo | SMB           | Shared library, collaboration, analytics  |
+| **Agency**     | $199/mo     | Agencies      | White-label, client workspaces, 10 seats  |
+| **Enterprise** | Custom      | Large orgs    | SSO, audit logs, dedicated support        |
 
 ### Revenue Model to $10k/mo
+
 - **350 Pro users × $19 = $6,650** OR
 - **100 Pro + 100 Team users = $1,900 + $4,900 = $6,800** OR
 - **50 Team + 15 Agency = $2,450 + $2,985 = $5,435** PLUS
@@ -783,6 +790,7 @@ The platform addresses the #1 pain point in AI adoption: **users don't know how 
 ## 5. Technical Implementation
 
 ### Stack
+
 - **Frontend:** Next.js 15 (App Router), React 18, Tailwind CSS, shadcn/ui
 - **Backend:** Next.js API routes, Edge runtime where possible
 - **Database:** PostgreSQL (Supabase) for users/prompts, Redis for rate limits
@@ -792,6 +800,7 @@ The platform addresses the #1 pain point in AI adoption: **users don't know how 
 - **Analytics:** PostHog (self-hostable, GDPR-friendly)
 
 ### Core Modules
+
 1. `lib/prompt-generator.js` - Core packet generation (system + user + examples + guardrails)
 2. `lib/templates/` - Industry-specific template library (JSON-defined)
 3. `lib/optimizer.js` - LLM-powered prompt refinement
@@ -799,6 +808,7 @@ The platform addresses the #1 pain point in AI adoption: **users don't know how 
 5. `app/dashboard` - User workspace
 
 ### MVP Scope (4 weeks)
+
 - [x] Prompt packet generator library (`generatePromptPacket`, `packetToMarkdown`)
 - [ ] 20 starter templates across 5 verticals
 - [ ] Next.js landing + signup flow
@@ -811,6 +821,7 @@ The platform addresses the #1 pain point in AI adoption: **users don't know how 
 ## 6. Go-to-Market Plan
 
 ### Acquisition Channels (Phase 1)
+
 1. **SEO content** - "Best ChatGPT prompts for X" - 50 articles in 90 days
 2. **Twitter/X** - Daily prompt examples, build in public
 3. **Polar.sh / GitHub** - Open-source prompt library → upsell to SaaS
@@ -819,6 +830,7 @@ The platform addresses the #1 pain point in AI adoption: **users don't know how 
 6. **Affiliate** - 30% recurring commission for creators
 
 ### Launch Sequence
+
 - **Week 1-2:** Build MVP, recruit 20 beta users
 - **Week 3-4:** Beta feedback, content seeding
 - **Week 5:** Soft launch to email list
@@ -829,35 +841,35 @@ The platform addresses the #1 pain point in AI adoption: **users don't know how 
 
 ## 7. Success Metrics
 
-| Metric | Phase 1 Target (Month 6) |
-|--------|--------------------------|
-| MRR | $10,000 |
-| Paid users | 250+ |
-| Free → Paid conversion | 5% |
-| Monthly churn | <8% |
-| LTV / CAC | >3 |
-| NPS | >40 |
+| Metric                 | Phase 1 Target (Month 6) |
+| ---------------------- | ------------------------ |
+| MRR                    | $10,000                  |
+| Paid users             | 250+                     |
+| Free → Paid conversion | 5%                       |
+| Monthly churn          | <8%                      |
+| LTV / CAC              | >3                       |
+| NPS                    | >40                      |
 
 ---
 
 ## 8. Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|-----------|
-| LLM API price hikes | High | Multi-provider via OpenRouter, pass-through pricing on heavy tiers |
-| Commoditization (ChatGPT adds native prompt library) | High | Focus on cross-LLM + team features + verticals |
-| Low willingness-to-pay for free-tier abusers | Medium | Strong free→paid friction, generous Pro tier |
-| Polar.sh adoption | Medium | Stripe fallback ready |
+| Risk                                                 | Impact | Mitigation                                                         |
+| ---------------------------------------------------- | ------ | ------------------------------------------------------------------ |
+| LLM API price hikes                                  | High   | Multi-provider via OpenRouter, pass-through pricing on heavy tiers |
+| Commoditization (ChatGPT adds native prompt library) | High   | Focus on cross-LLM + team features + verticals                     |
+| Low willingness-to-pay for free-tier abusers         | Medium | Strong free→paid friction, generous Pro tier                       |
+| Polar.sh adoption                                    | Medium | Stripe fallback ready                                              |
 
 ---
 
 ## 9. Alignment with $10M / 3-Year Mission
 
-| Phase | Timeline | MRR Target | PromptForge Role |
-|-------|----------|-----------|------------------|
-| Phase 1 | Month 1-6 | $10k | **Primary driver** - MVP + GTM |
-| Phase 2 | Month 6-18 | $30k | Scale + add Agency/Enterprise |
-| Phase 3 | Month 18-30 | $100k | Enterprise + API revenue |
+| Phase   | Timeline    | MRR Target | PromptForge Role                         |
+| ------- | ----------- | ---------- | ---------------------------------------- |
+| Phase 1 | Month 1-6   | $10k       | **Primary driver** - MVP + GTM           |
+| Phase 2 | Month 6-18  | $30k       | Scale + add Agency/Enterprise            |
+| Phase 3 | Month 18-30 | $100k      | Enterprise + API revenue                 |
 | Phase 4 | Month 30-36 | $10M total | Acquisition target or vertical expansion |
 
 ---

@@ -7,7 +7,7 @@ email:
   api_key: "${RESEND_API_KEY}"
   from_address: "automation@oaudrey.com"
   from_name: "Revvel Rosette Automation"
-  
+
 # Slack integration (optional)
 slack:
   enabled: false
@@ -15,7 +15,7 @@ slack:
   channel: "#automation-alerts"
   username: "Rosette Bot"
   icon_emoji: ":robot_face:"
-  
+
 # DigitalOcean (for production deployments)
 digitalocean:
   enabled: false
@@ -23,13 +23,13 @@ digitalocean:
   spaces:
     bucket: "revvel-backups"
     region: "nyc3"
-    
+
 # Database (optional - for metrics/logs)
 database:
   enabled: false
   type: "sqlite"
   path: "./data/rosette.db"
-  
+
 # Redis (optional - for queue management)
 redis:
   enabled: false
@@ -37,24 +37,24 @@ redis:
   port: "${REDIS_PORT:-6379}"
   password: "${REDIS_PASSWORD}"
   db: 0
-  
+
 # Sentry (error tracking)
 sentry:
   enabled: false
   dsn: "${SENTRY_DSN}"
   environment: "${ENVIRONMENT:-production}"
   traces_sample_rate: 0.1
-  
+
 # Analytics
 analytics:
   enabled: false
   amplitude:
     api_key: "${AMPLITUDE_API_KEY}"
-    
+
 # Backup settings
 backups:
   enabled: true
-  schedule: "0 2 * * *"  # 2 AM daily
+  schedule: "0 2 * * *" # 2 AM daily
   retention_days: 30
   destinations:
     - type: "local"

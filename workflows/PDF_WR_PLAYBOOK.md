@@ -8,11 +8,11 @@
 
 ## 1. Read the batch count from the issue
 
-| `### PDF pipeline batch` value | Meaning for automations |
-|-------------------------------|-------------------------|
-| Not applicable | One primary concept / outline (default PDF WR). |
-| Autocreate 3 | Generate **3** candidate titles+outlines (or products-of-record) before picking one to ship. |
-| Autocreate 20 | Generate **20** candidates before narrowing. |
+| `### PDF pipeline batch` value | Meaning for automations                                                                      |
+| ------------------------------ | -------------------------------------------------------------------------------------------- |
+| Not applicable                 | One primary concept / outline (default PDF WR).                                              |
+| Autocreate 3                   | Generate **3** candidate titles+outlines (or products-of-record) before picking one to ship. |
+| Autocreate 20                  | Generate **20** candidates before narrowing.                                                 |
 
 Importer workflows (Make.com, n8n, Zapier, Gumloop) should parse the issue description or use GitHub Actions/API to read these lines — do **not** require an operator to duplicate the count into a label.
 
@@ -22,12 +22,12 @@ Importer workflows (Make.com, n8n, Zapier, Gumloop) should parse the issue descr
 
 Follow **[PDF_AUTOMATION_GUIDE.md](./PDF_AUTOMATION_GUIDE.md)** end-to-end:
 
-1. Profitable niche / emotional problem  
-2. Title + subtitle  
-3. Full manuscript draft  
-4. Layout / export (Canva or Markdown→PDF stack per **[standards/shapes/PDF.md](../standards/shapes/PDF.md)**)  
-5. Store listing  
-6. Influencer / distribution prep  
+1. Profitable niche / emotional problem
+2. Title + subtitle
+3. Full manuscript draft
+4. Layout / export (Canva or Markdown→PDF stack per **[standards/shapes/PDF.md](../standards/shapes/PDF.md)**)
+5. Store listing
+6. Influencer / distribution prep
 
 Quick installer:
 
@@ -41,7 +41,7 @@ Loop or branch inside that automation so the **autocreate N** step matches **PDF
 
 ## 3. Obey product shape + pipeline standards
 
-- **[standards/shapes/PDF.md](../standards/shapes/PDF.md)** — research gates, `build/pdf/` tree, optional tooling (Pandoc, WeasyPrint, Figma, etc.).  
+- **[standards/shapes/PDF.md](../standards/shapes/PDF.md)** — research gates, `build/pdf/` tree, optional tooling (Pandoc, WeasyPrint, Figma, etc.).
 - **[standards/AUTOMATED_PRODUCT_PIPELINE.md](../standards/AUTOMATED_PRODUCT_PIPELINE.md)** — where PDF fits in Listen → Ship.
 
 ---

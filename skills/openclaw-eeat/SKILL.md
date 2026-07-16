@@ -23,15 +23,15 @@ This skill exists because manually maintaining consistent brand presence across 
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
-| **Intake** | Accept brand statement + project descriptions (markdown or YAML) |
+| Task                    | Description                                                                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Intake**              | Accept brand statement + project descriptions (markdown or YAML)                                                         |
 | **Tier Classification** | Classify each platform into Tier 1 (already have foothold), Tier 2 (high-value deep web), or Tier 3 (OSINT/intelligence) |
-| **Format** | Transform content to each platform's schema (JSON-LD, ORCID XML, Wikidata RDF, plain forms) |
-| **Validate** | Check required fields, WCAG compliance, URL liveness, credential references |
-| **Queue or Draft** | For platforms with APIs: queue via n8n/MCP. For manual: generate markdown draft with instructions |
-| **Output** | Emit platform-specific files to `openclaw-eeat/output/<platform>/` directory |
-| **Track** | Maintain `state.json` showing which platforms are claimed, pending, or need refresh |
+| **Format**              | Transform content to each platform's schema (JSON-LD, ORCID XML, Wikidata RDF, plain forms)                              |
+| **Validate**            | Check required fields, WCAG compliance, URL liveness, credential references                                              |
+| **Queue or Draft**      | For platforms with APIs: queue via n8n/MCP. For manual: generate markdown draft with instructions                        |
+| **Output**              | Emit platform-specific files to `openclaw-eeat/output/<platform>/` directory                                             |
+| **Track**               | Maintain `state.json` showing which platforms are claimed, pending, or need refresh                                      |
 
 ---
 
@@ -39,30 +39,30 @@ This skill exists because manually maintaining consistent brand presence across 
 
 ### Tier 1 — Build on Existing Foothold
 
-| Platform | Format | Auto-Submit? | Notes |
-|---|---|---|---|
-| **ORCID** | ORCID XML API | ✅ Yes (with token) | Fill: works, employment, education, websites. Auto-feeds Google Scholar, ResearchGate |
-| **GitHub** | README.md + profile | ✅ Yes (via API) | Already integrated. Indexed by package registries, code search engines |
+| Platform   | Format              | Auto-Submit?        | Notes                                                                                 |
+| ---------- | ------------------- | ------------------- | ------------------------------------------------------------------------------------- |
+| **ORCID**  | ORCID XML API       | ✅ Yes (with token) | Fill: works, employment, education, websites. Auto-feeds Google Scholar, ResearchGate |
+| **GitHub** | README.md + profile | ✅ Yes (via API)    | Already integrated. Indexed by package registries, code search engines                |
 
 ### Tier 2 — High-Value Deep Web Nodes
 
-| Platform | Format | Auto-Submit? | Notes |
-|---|---|---|---|
-| **Wikidata** | RDF/Wikidata JSON | ⚠️ Draft only | Create entity for researcher/developer. **Direct feed to Google Knowledge Graph** |
-| **ResearchGate** | Web form | ⚠️ Draft only | Even non-academic work qualifies as applied research |
-| **Internet Archive** | Web form + upload | ⚠️ Draft only | Publish brand statement as citable document |
-| **Crunchbase** | Web form + API | ⚠️ Partial | Claim/create profile for business entities |
-| **OpenCorporates** | Claim existing | ⚠️ Draft only | Colorado entity should already exist; claim it |
-| **Semantic Scholar** | Auto-indexed from ORCID | ✅ Auto | Links to ORCID, good for intelligence/research angle |
+| Platform             | Format                  | Auto-Submit?  | Notes                                                                             |
+| -------------------- | ----------------------- | ------------- | --------------------------------------------------------------------------------- |
+| **Wikidata**         | RDF/Wikidata JSON       | ⚠️ Draft only | Create entity for researcher/developer. **Direct feed to Google Knowledge Graph** |
+| **ResearchGate**     | Web form                | ⚠️ Draft only | Even non-academic work qualifies as applied research                              |
+| **Internet Archive** | Web form + upload       | ⚠️ Draft only | Publish brand statement as citable document                                       |
+| **Crunchbase**       | Web form + API          | ⚠️ Partial    | Claim/create profile for business entities                                        |
+| **OpenCorporates**   | Claim existing          | ⚠️ Draft only | Colorado entity should already exist; claim it                                    |
+| **Semantic Scholar** | Auto-indexed from ORCID | ✅ Auto       | Links to ORCID, good for intelligence/research angle                              |
 
 ### Tier 3 — OSINT & Intelligence Community
 
-| Platform | Format | Auto-Submit? | Notes |
-|---|---|---|---|
-| **MISP Communities** | MISP JSON | ⚠️ Draft only | GrowlingEyes threat intel sharing |
-| **IntelligenceX** | Profile registration | ⚠️ Draft only | Researcher presence in OSINT tooling |
-| **Maltego** | Entity + transforms | ⚠️ Draft only | Public researcher profile |
-| **Bellingcat** | Community profile | ⚠️ Draft only | Forensic geospatial work (Sun Peaks SAR) |
+| Platform             | Format               | Auto-Submit?  | Notes                                    |
+| -------------------- | -------------------- | ------------- | ---------------------------------------- |
+| **MISP Communities** | MISP JSON            | ⚠️ Draft only | GrowlingEyes threat intel sharing        |
+| **IntelligenceX**    | Profile registration | ⚠️ Draft only | Researcher presence in OSINT tooling     |
+| **Maltego**          | Entity + transforms  | ⚠️ Draft only | Public researcher profile                |
+| **Bellingcat**       | Community profile    | ⚠️ Draft only | Forensic geospatial work (Sun Peaks SAR) |
 
 ---
 
@@ -141,6 +141,7 @@ brand:
 ### Project Description Template
 
 Each `projects/<name>.md` should include:
+
 ```markdown
 # [Project Name]
 
@@ -149,20 +150,25 @@ Each `projects/<name>.md` should include:
 **URL:** [GitHub URL]
 
 ## One-Line Pitch
+
 [One sentence description]
 
 ## Problem Solved
+
 [What problem this addresses]
 
 ## Tech Stack
+
 - [Technology 1]
 - [Technology 2]
 
 ## Outcomes / Impact
+
 - [Measurable outcome 1]
 - [Measurable outcome 2]
 
 ## Relevance to E-E-A-T
+
 [How this demonstrates expertise/authority/trust]
 ```
 
@@ -332,14 +338,14 @@ You are Echo 🌐 — the OpenClaw E-E-A-T content distribution specialist.
 
 ## Dependencies
 
-| Dependency | Required? | Purpose | Notes |
-|---|---|---|---|
-| `vault-agent` | ✅ Required | API key availability check | Never reads values |
-| `seo-metadata` | ✅ Required | JSON-LD generation | Reuses templates |
-| `system-state` | ✅ Required | Session initialization | Standard skill |
-| n8n or MCP | ⚠️ Optional | Automated submission queue | For API-enabled platforms |
-| xmllint | ⚠️ Optional | XML validation | For ORCID payloads |
-| jq | ⚠️ Optional | JSON validation | For JSON-LD/Wikidata |
+| Dependency     | Required?   | Purpose                    | Notes                     |
+| -------------- | ----------- | -------------------------- | ------------------------- |
+| `vault-agent`  | ✅ Required | API key availability check | Never reads values        |
+| `seo-metadata` | ✅ Required | JSON-LD generation         | Reuses templates          |
+| `system-state` | ✅ Required | Session initialization     | Standard skill            |
+| n8n or MCP     | ⚠️ Optional | Automated submission queue | For API-enabled platforms |
+| xmllint        | ⚠️ Optional | XML validation             | For ORCID payloads        |
+| jq             | ⚠️ Optional | JSON validation            | For JSON-LD/Wikidata      |
 
 ---
 
@@ -406,9 +412,9 @@ promptfoo eval --config promptfoo.yml
 
 ## Changelog
 
-| Version | Date | Change |
-|---|---|---|
-| 1.0.0 | 2026-04-30 | Initial release. Supports 12 platforms across 3 tiers, auto-submission for ORCID/GitHub, draft generation for all others. |
+| Version | Date       | Change                                                                                                                    |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------- |
+| 1.0.0   | 2026-04-30 | Initial release. Supports 12 platforms across 3 tiers, auto-submission for ORCID/GitHub, draft generation for all others. |
 
 ---
 

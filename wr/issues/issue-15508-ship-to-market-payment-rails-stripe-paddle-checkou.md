@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-09  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-09  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -37,18 +36,19 @@ _Source: `wr/pending/04-ship-to-market-payment-rails.md` (PR #15497)._
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -60,6 +60,7 @@ _Source: `wr/pending/04-ship-to-market-payment-rails.md` (PR #15497)._
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28922436607.md`
 
 # WR-Ready Research Packet: Ship-to-Market Payment Rails
@@ -69,6 +70,7 @@ Source packet: `docs/research-engine/run-28922436607.md`
 **Proceed with Stripe Payment Links for v1 implementation.** This provides the fastest path to automated payment rail creation with minimal infrastructure overhead. The solution will extend the existing `ship-to-market.yml` workflow to automatically create test-mode checkout links for digital products and SaaS apps, with a mandatory human approval gate before live deployment.
 
 **Key Decision Points:**
+
 - Stripe Payment Links require no webhook infrastructure for basic checkout
 - 2.9% + $0.30 transaction fees vs. Paddle's 5% + $0.50 (but Paddle handles tax compliance)
 - Test mode validation reduces financial risk during implementation
@@ -79,17 +81,20 @@ Source packet: `docs/research-engine/run-28922436607.md`
 **Primary Target:** Solo developers and small dev teams building digital products/SaaS who need to monetize quickly without payment infrastructure overhead.
 
 **Urgent Pain Points:**
+
 - Manual payment setup delays revenue by weeks
 - Gap between "I built something valuable" and "I can collect money for it"
 - Repetitive "yak shaving" for every product launch
 - Risk of broken or missing payment links
 
 **Why Now:**
+
 - No-code/low-code automation tools are trending
 - Developer productivity tools have proven PMF (GitHub Copilot $100M ARR, Vercel $150M+ ARR)
 - Explosion of indie SaaS and digital product launches
 
 **Language Patterns:**
+
 - "Ship-to-revenue in minutes"
 - "From code to cash flow"
 - "Zero-config checkout"
@@ -100,15 +105,18 @@ Source packet: `docs/research-engine/run-28922436607.md`
 ### Target Keywords
 
 **High Commercial Intent:**
+
 - "stripe payment links api" (transactional)
 - "paddle checkout integration" (transactional)
 - "automated payment processing for digital products" (transactional)
 
 **Comparison Intent:**
+
 - "stripe vs paddle for digital products"
 - "payment rails comparison saas"
 
 **Informational Intent:**
+
 - "how to automate payment link creation"
 - "digital product payment workflow automation"
 
@@ -119,12 +127,14 @@ Source packet: `docs/research-engine/run-28922436607.md`
 **Meta Description:** "Automate payment link creation for digital products and SaaS apps with integrated Stripe/Paddle checkout workflows. Human-approved pricing with revenue tracking."
 
 **FAQ Schema:**
+
 - How does automated payment link creation work?
 - What's the difference between Stripe Payment Links and Paddle checkout?
 - How is pricing determined and approved for automated products?
 - What revenue tracking is included?
 
 ### Content Channels
+
 - Developer communities: Reddit r/SideProject (900k), r/SaaS, Indie Hackers
 - GitHub Actions Marketplace listing
 - "From GitHub to revenue" tutorials
@@ -132,31 +142,34 @@ Source packet: `docs/research-engine/run-28922436607.md`
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Category | GitHub Stars | Pricing | Differentiation |
-|------------|----------|--------------|---------|-----------------|
-| **Stripe Payment Links** | Foundation API | N/A (API) | 2.9% + $0.30 per transaction | No webhook requirement, extensive docs, test/live modes |
-| **Paddle** | Foundation API | N/A (API) | 5% + $0.50 | Merchant of Record, handles global tax compliance |
-| **Gumroad** | All-in-One Platform | N/A | 10% flat fee | UI-first, creator-focused, closed ecosystem |
-| **Lemon Squeezy** | All-in-One Platform | N/A | 5% + $0.50 | Modern Gumroad alternative, acts as MoR |
-| **stripe/stripe-node** | Official SDK | 3.7k stars | MIT License | Official Stripe SDK, actively maintained |
-| **MedusaJS** | OSS Commerce | ~24.5k stars | MIT License | Headless commerce, requires significant setup |
-| **Saleor** | OSS Commerce | ~20.3k stars | BSD License | GraphQL-first, complex for simple products |
+| Competitor               | Category            | GitHub Stars | Pricing                      | Differentiation                                         |
+| ------------------------ | ------------------- | ------------ | ---------------------------- | ------------------------------------------------------- |
+| **Stripe Payment Links** | Foundation API      | N/A (API)    | 2.9% + $0.30 per transaction | No webhook requirement, extensive docs, test/live modes |
+| **Paddle**               | Foundation API      | N/A (API)    | 5% + $0.50                   | Merchant of Record, handles global tax compliance       |
+| **Gumroad**              | All-in-One Platform | N/A          | 10% flat fee                 | UI-first, creator-focused, closed ecosystem             |
+| **Lemon Squeezy**        | All-in-One Platform | N/A          | 5% + $0.50                   | Modern Gumroad alternative, acts as MoR                 |
+| **stripe/stripe-node**   | Official SDK        | 3.7k stars   | MIT License                  | Official Stripe SDK, actively maintained                |
+| **MedusaJS**             | OSS Commerce        | ~24.5k stars | MIT License                  | Headless commerce, requires significant setup           |
+| **Saleor**               | OSS Commerce        | ~20.3k stars | BSD License                  | GraphQL-first, complex for simple products              |
 
 **Key Insight:** No direct competitor offers automated WR → payment rail workflows. Existing solutions require manual product setup.
 
 ## 5. Chatter and Demand Signals
 
 ### Community Pain Points (from r/SaaS, Indie Hackers)
+
 - "I wish Stripe links could be auto-generated and embedded in my product pages"
 - "Biggest pain: updating checkout links for every new SaaS feature release"
 - "Is there a way to automate payment link creation and tie it to my CI/CD pipeline?"
 
 ### Payable Problem Validation
+
 - Gumroad processed $500M+ in creator sales (2023)
 - Lemonsqueezy growing 300%+ YoY
 - Platforms charging 5-10% fees prove creators will pay to abstract complexity
 
 ### Emotional Urgency
+
 - **High:** Launch anxiety due to last-minute payment setup
 - Fear of lost revenue from broken/missing links
 - Momentum killer between "code complete" and "collecting payments"
@@ -164,18 +177,21 @@ Source packet: `docs/research-engine/run-28922436607.md`
 ## 6. Factual Validation and Evidence Gaps
 
 ### Verified Claims ✅
+
 - Stripe Payment Links API supports programmatic creation ([API Docs](https://stripe.com/docs/api/payment_links))
 - Paddle offers API-based product creation ([API Docs](https://developer.paddle.com/api-reference))
 - Both platforms support test/live mode separation
 - GitHub Actions supports manual approval gates via Environments
 
 ### Evidence Gaps ⚠️
+
 - **File references:** `wr/pending/04-ship-to-market-payment-rails.md` (PR #15497) - Cannot verify
 - **Existing workflow:** `ship-to-market.yml` structure unknown
 - **Pricing data source:** "competitor pricing table" format unspecified
 - **Revenue tracking:** `docs/TOOL_COST_INDEX.md` structure undefined
 
 ### Contradicted Claims ❌
+
 - "No webhook infrastructure needed" - Stripe recommends webhooks for reliable payment confirmation
 
 ## 7. Build Requirements and Acceptance Gates
@@ -183,6 +199,7 @@ Source packet: `docs/research-engine/run-28922436607.md`
 ### Phase 1: Minimal Viable Implementation
 
 **Core Files:**
+
 ```yaml
 # .github/workflows/ship-to-market.yml extension
 - name: Create Payment Rail
@@ -193,11 +210,13 @@ Source packet: `docs/research-engine/run-28922436607.md`
 ```
 
 **New Scripts:**
+
 - `scripts/create-payment-link.js` - Stripe API integration
 - `scripts/update-product-page.js` - Checkout URL injection
 - `scripts/update-cost-index.js` - Revenue tracking
 
 ### Acceptance Gates
+
 1. ✅ Test WR produces working test-mode checkout link
 2. ✅ Human approval required before live-mode deployment
 3. ✅ Secrets (`STRIPE_API_KEY`) properly configured and masked
@@ -205,6 +224,7 @@ Source packet: `docs/research-engine/run-28922436607.md`
 5. ✅ Checkout URL posted to WR issue and product page
 
 ### Security Requirements
+
 - API keys stored in GitHub Secrets
 - Test/live mode separation enforced
 - Human review gate via GitHub Environments
@@ -213,6 +233,7 @@ Source packet: `docs/research-engine/run-28922436607.md`
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```yaml
 # Review focus: Security and API key handling
 - Verify STRIPE_API_KEY is never logged or exposed
@@ -222,6 +243,7 @@ Source packet: `docs/research-engine/run-28922436607.md`
 ```
 
 ### For OpenRouter
+
 ```yaml
 # Review focus: Error handling and edge cases
 - API rate limit handling
@@ -231,6 +253,7 @@ Source packet: `docs/research-engine/run-28922436607.md`
 ```
 
 ### For Coderabbit
+
 ```yaml
 # Review focus: Best practices and patterns
 - Stripe SDK usage patterns
@@ -240,6 +263,7 @@ Source packet: `docs/research-engine/run-28922436607.md`
 ```
 
 ### For Ralph Loop
+
 ```yaml
 # Review focus: Business logic validation
 - Price extraction accuracy
@@ -251,6 +275,7 @@ Source packet: `docs/research-engine/run-28922436607.md`
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Add Secret Masking
+
 ```yaml
 # File: .github/workflows/ship-to-market.yml
 # Commit: "security: add payment API key masking"
@@ -262,15 +287,17 @@ steps:
 ```
 
 ### Fix 2: Enforce Test Mode
+
 ```javascript
 // File: scripts/create-payment-link.js
 // Commit: "safety: enforce test mode for non-production"
-if (process.env.GITHUB_REF !== 'refs/heads/main') {
-  process.env.STRIPE_TEST_MODE = 'true';
+if (process.env.GITHUB_REF !== "refs/heads/main") {
+  process.env.STRIPE_TEST_MODE = "true";
 }
 ```
 
 ### Fix 3: Add Pricing Validation
+
 ```yaml
 # File: .github/workflows/ship-to-market.yml
 # Commit: "validation: require pricing research for commercial products"
@@ -284,10 +311,14 @@ if (process.env.GITHUB_REF !== 'refs/heads/main') {
 ```
 
 ### Fix 4: Document Secrets
+
 ```markdown
 # File: docs/SECURITY.md
+
 # Commit: "docs: add payment API key management guidelines"
+
 ## Payment API Keys
+
 - STRIPE_API_KEY: Test and live mode keys for Stripe Payment Links
 - PADDLE_API_KEY: Paddle API authentication
 - Storage: GitHub Secrets only
@@ -297,18 +328,21 @@ if (process.env.GITHUB_REF !== 'refs/heads/main') {
 ## 10. Labels to Apply
 
 ### Risk Labels
+
 - `risk:payment-integration` - Financial infrastructure interaction
 - `risk:secrets-management` - API key handling required
 - `risk:compliance` - Payment processing regulations
 - `risk:pricing-accuracy` - Automated pricing extraction
 
 ### Process Labels
+
 - `needs-human-approval` - Manual review gate required
 - `needs-pricing-research` - Competitor analysis incomplete
 - `needs-test-coverage` - Payment flow testing required
 - `commercial-mode` - Revenue-generating feature
 
 ### Technical Labels
+
 - `stripe-integration` - Stripe API usage
 - `automation:payment-rails` - Workflow automation
 - `docs:needs-update` - Documentation changes required
@@ -316,16 +350,19 @@ if (process.env.GITHUB_REF !== 'refs/heads/main') {
 ## 11. Repository Review and Best Alternative
 
 ### Primary Choice: Stripe Payment Links
+
 - **Rationale:** Most mature API, extensive documentation, no webhook requirement
 - **SDK:** [stripe/stripe-node](https://github.com/stripe/stripe-node) - 3.7k stars, MIT license
 - **Implementation:** Single API call creates shareable checkout page
 
 ### Alternative: Paddle (for v2)
+
 - **Rationale:** Merchant of Record handles tax compliance globally
 - **SDK:** [paddle/paddle-node-sdk](https://github.com/paddle/paddle-node-sdk) - 150+ stars
 - **Trade-off:** Higher fees (5% vs 2.9%) but eliminates tax complexity
 
 ### Not Recommended
+
 - **Gumroad/Lemon Squeezy:** Closed ecosystems, not suitable for automation
 - **MedusaJS/Saleor:** Overkill for simple payment links, high setup complexity
 
@@ -334,21 +371,25 @@ if (process.env.GITHUB_REF !== 'refs/heads/main') {
 ### Overall Confidence: 72%
 
 **High Confidence (80-90%):**
+
 - Stripe Payment Links technical feasibility (85%)
 - Market demand for payment automation (85%)
 - Security implementation approach (80%)
 
 **Medium Confidence (60-70%):**
+
 - Pricing extraction from WR research (65%)
 - Revenue tracking integration (70%)
 - Human approval workflow (75%)
 
 **Low Confidence (40-60%):**
+
 - Existing `ship-to-market.yml` structure (45%)
 - `docs/TOOL_COST_INDEX.md` format (50%)
 - Competitor pricing data quality (55%)
 
 **Recommendation:** Proceed with implementation but prioritize:
+
 1. Defining WR pricing table format
 2. Documenting existing workflow structure
 3. Creating comprehensive test scenarios
@@ -396,11 +437,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -416,11 +457,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

@@ -30,16 +30,17 @@ topical SIRT1 activators) and tracks skin-health progress over time.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
@@ -90,6 +91,7 @@ growing at 6–10% annually.
 **Decision: PROCEED — high market validation, clear science, monetisable niche.**
 
 Recommended output bundle:
+
 1. **Web app** — sirtuin skin-health score quiz + personalised protocol generator
 2. **Mobile companion** (Phase 2) — daily check-in, progress photos, NAD⁺ tracker
 3. **B2B white-label API** (Phase 3) — licensing to skincare brands for on-site
@@ -97,42 +99,42 @@ Recommended output bundle:
 
 ## Step 1A — Product/Output Selections
 
-| Output | Priority | Rationale |
-| --- | --- | --- |
-| Next.js web app (skin-score quiz + protocol) | P0 | Fastest to ship, SEO-indexable, pairs with Polar.sh freemium |
-| Ingredient-intelligence tool (topical + oral) | P0 | Differentiator — maps ingredients to SIRT pathway targets |
-| Progress tracker (photo + metric journal) | P1 | Retention driver; reduces churn on subscription |
-| B2B white-label SDK | P2 | High-margin licensing revenue stream |
-| Research digest newsletter / PDF export | P1 | Organic SEO + Polar.sh benefit tier |
+| Output                                        | Priority | Rationale                                                    |
+| --------------------------------------------- | -------- | ------------------------------------------------------------ |
+| Next.js web app (skin-score quiz + protocol)  | P0       | Fastest to ship, SEO-indexable, pairs with Polar.sh freemium |
+| Ingredient-intelligence tool (topical + oral) | P0       | Differentiator — maps ingredients to SIRT pathway targets    |
+| Progress tracker (photo + metric journal)     | P1       | Retention driver; reduces churn on subscription              |
+| B2B white-label SDK                           | P2       | High-margin licensing revenue stream                         |
+| Research digest newsletter / PDF export       | P1       | Organic SEO + Polar.sh benefit tier                          |
 
 ## Step 2 — Deep Web Research
 
 ### Competitor Analysis
 
-| Name | Type | Stars / Users | Pricing | Key Differentiator |
-| --- | --- | --- | --- | --- |
-| Haut.AI | B2B SaaS AI skin analysis | Private | Pricing data pending — competitive benchmark research required. | 250+ biomarker AI analysis |
-| SkinVision | Consumer app | 2 M+ users | Free + pay-per-scan / ~$10/mo | Mole/cancer risk focus |
-| Revieve | B2B beauty personalisation | Private | Custom enterprise | AR try-on + AI recommendations |
-| Perfect Corp. YouCam | Consumer + B2B | 1 B+ AR try-ons | Free consumer / custom B2B | Dominant AR skin try-on |
-| GlamAR | B2B AR skin analysis | Private | Contact sales | E-commerce plugin |
-| Face Age (Liqvid) | Consumer AI aging tracker | Small startup | Freemium | 250+ aging biomarker scores |
+| Name                 | Type                       | Stars / Users   | Pricing                                                         | Key Differentiator             |
+| -------------------- | -------------------------- | --------------- | --------------------------------------------------------------- | ------------------------------ |
+| Haut.AI              | B2B SaaS AI skin analysis  | Private         | Pricing data pending — competitive benchmark research required. | 250+ biomarker AI analysis     |
+| SkinVision           | Consumer app               | 2 M+ users      | Free + pay-per-scan / ~$10/mo                                   | Mole/cancer risk focus         |
+| Revieve              | B2B beauty personalisation | Private         | Custom enterprise                                               | AR try-on + AI recommendations |
+| Perfect Corp. YouCam | Consumer + B2B             | 1 B+ AR try-ons | Free consumer / custom B2B                                      | Dominant AR skin try-on        |
+| GlamAR               | B2B AR skin analysis       | Private         | Contact sales                                                   | E-commerce plugin              |
+| Face Age (Liqvid)    | Consumer AI aging tracker  | Small startup   | Freemium                                                        | 250+ aging biomarker scores    |
 
 **Gap identified:** No existing consumer app connects sirtuin biology to a
 personalised skin-aging protocol. Competitors focus on visual AI scoring (photo
-analysis) or product recommendations; none explain *why* certain ingredients work
+analysis) or product recommendations; none explain _why_ certain ingredients work
 via the SIRT pathway. This is our whitespace.
 
 ### SEO Target Keywords
 
-| Keyword | Monthly Searches (est.) |
-| --- | --- |
-| "sirtuin skin care" | ~1,200 |
-| "NAD+ for skin" | ~3,600 |
-| "skin longevity app" | ~880 |
-| "anti-aging supplement tracker" | ~1,900 |
-| "how to activate SIRT1 for skin" | ~590 |
-| "dermal fibroblast collagen boost" | ~480 |
+| Keyword                            | Monthly Searches (est.) |
+| ---------------------------------- | ----------------------- |
+| "sirtuin skin care"                | ~1,200                  |
+| "NAD+ for skin"                    | ~3,600                  |
+| "skin longevity app"               | ~880                    |
+| "anti-aging supplement tracker"    | ~1,900                  |
+| "how to activate SIRT1 for skin"   | ~590                    |
+| "dermal fibroblast collagen boost" | ~480                    |
 
 Estimates are internal; verify with Ahrefs / SEMrush before committing to
 content production.
@@ -146,11 +148,11 @@ content production.
 
 ### Domain Strategy
 
-| Domain | Status | Recommendation |
-| --- | --- | --- |
-| sirtuskin.com | Check availability | Primary brand domain |
-| sirskin.app | Check availability | Mobile-first alternative |
-| revvelskinglow.com | Available (internal) | Revvel-branded variant |
+| Domain             | Status               | Recommendation           |
+| ------------------ | -------------------- | ------------------------ |
+| sirtuskin.com      | Check availability   | Primary brand domain     |
+| sirskin.app        | Check availability   | Mobile-first alternative |
+| revvelskinglow.com | Available (internal) | Revvel-branded variant   |
 
 ## Step 3 — Requirements
 
@@ -201,18 +203,18 @@ content production.
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Severity | Mitigation |
-| --- | --- | --- |
-| Regulatory — health claims must not diagnose or prescribe | High | All copy uses "supports skin health" language; include disclaimer; consult FTC guidelines |
-| Science drift — sirtuin research fast-moving, content may date | Medium | Quarterly science review cycle; link to PMC sources, not internal claims |
-| Market crowding — AI skin apps proliferating | Medium | Differentiate on mechanism-of-action depth (no competitor explains SIRT pathway to consumers) |
-| NAD⁺ supplement affiliate commissions decline | Low | Diversify to Polar.sh subscription revenue early |
-| Supplement quality concerns (NMN/NR dosing debates) | Low | Surface multiple viewpoints; do not prescribe dosages; link to clinical citations |
+| Risk                                                           | Severity | Mitigation                                                                                    |
+| -------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------- |
+| Regulatory — health claims must not diagnose or prescribe      | High     | All copy uses "supports skin health" language; include disclaimer; consult FTC guidelines     |
+| Science drift — sirtuin research fast-moving, content may date | Medium   | Quarterly science review cycle; link to PMC sources, not internal claims                      |
+| Market crowding — AI skin apps proliferating                   | Medium   | Differentiate on mechanism-of-action depth (no competitor explains SIRT pathway to consumers) |
+| NAD⁺ supplement affiliate commissions decline                  | Low      | Diversify to Polar.sh subscription revenue early                                              |
+| Supplement quality concerns (NMN/NR dosing debates)            | Low      | Surface multiple viewpoints; do not prescribe dosages; link to clinical citations             |

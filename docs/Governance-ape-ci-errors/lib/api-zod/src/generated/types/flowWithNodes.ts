@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { Node } from './node';
+import type { Node } from "./node";
 
 export interface FlowWithNodes {
   id: number;

@@ -1,6 +1,6 @@
 # Match Labels — Process & Reference
 
-**Issue reference:** *"Add Match Labels Action"* — the workflow now performs the match inline with `actions/github-script` after the third-party action audit retired stale `binowork/match-labels@v0.1.1` in WR #14884.
+**Issue reference:** _"Add Match Labels Action"_ — the workflow now performs the match inline with `actions/github-script` after the third-party action audit retired stale `binowork/match-labels@v0.1.1` in WR #14884.
 
 Implementation: [`.github/workflows/match-labels.yml`](../.github/workflows/match-labels.yml).
 
@@ -19,7 +19,7 @@ Implementation: [`.github/workflows/match-labels.yml`](../.github/workflows/matc
 
 ## Why this workflow
 
-This workflow answers one question: *"which of the labels I care about are attached to this PR?"* It returns a comma-separated string, a JSON array, and a count, which makes it easy to write `if:` guards such as:
+This workflow answers one question: _"which of the labels I care about are attached to this PR?"_ It returns a comma-separated string, a JSON array, and a count, which makes it easy to write `if:` guards such as:
 
 ```yaml
 if: ${{ needs.match-labels.outputs.matched_labels_count == '1' }}
@@ -33,17 +33,17 @@ This is a cleaner pattern than scraping `github.event.pull_request.labels.*.name
 
 ## Inputs
 
-| Input | Description | Default in this workflow |
-|---|---|---|
+| Input          | Description                                             | Default in this workflow              |
+| -------------- | ------------------------------------------------------- | ------------------------------------- |
 | `match_labels` | Newline-separated list of labels to look for on the PR. | Revvel merge-control + routing labels |
 
 ## Outputs
 
-| Output | Type | Description |
-|---|---|---|
-| `matched_labels` | string | Comma-separated matched labels |
-| `matched_labels_array` | JSON array | Array of matched labels |
-| `matched_labels_count` | number | Count of matched labels |
+| Output                 | Type       | Description                    |
+| ---------------------- | ---------- | ------------------------------ |
+| `matched_labels`       | string     | Comma-separated matched labels |
+| `matched_labels_array` | JSON array | Array of matched labels        |
+| `matched_labels_count` | number     | Count of matched labels        |
 
 These are re-exported from the `match-labels` job so downstream workflows can reference them with `needs.match-labels.outputs.<name>`.
 

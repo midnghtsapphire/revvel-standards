@@ -4,13 +4,13 @@ on:
   push:
     branches: [main]
     paths:
-      - 'post-mortems/**'
-      - '.github/workflows/morty-post-mortems.yml'
+      - "post-mortems/**"
+      - ".github/workflows/morty-post-mortems.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'post-mortems/**'
-      - '.github/workflows/morty-post-mortems.yml'
+      - "post-mortems/**"
+      - ".github/workflows/morty-post-mortems.yml"
   workflow_dispatch:
 
 permissions:

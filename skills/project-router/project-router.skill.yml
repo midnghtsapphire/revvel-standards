@@ -13,7 +13,7 @@ metadata:
 dependencies:
   skills: [malama]
   tools: []
-  pip_packages: []   # zero-dependency, stdlib only
+  pip_packages: [] # zero-dependency, stdlib only
 
 related:
   detector: "skills/project-router/detect.py"

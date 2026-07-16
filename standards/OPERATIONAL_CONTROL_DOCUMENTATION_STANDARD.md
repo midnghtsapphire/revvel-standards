@@ -19,9 +19,11 @@ This standard defines how to document operational controls (gates, switches, fea
 Documentation must be immediately understandable by someone unfamiliar with the system.
 
 **Example of unclear:**
+
 > "This issue manages workflow state"
 
 **Example of clear:**
+
 > "Open this issue to enable scheduled workflows. Close it to disable them."
 
 ### 2.2 Show What TO Do (Positive Framing)
@@ -29,10 +31,12 @@ Documentation must be immediately understandable by someone unfamiliar with the 
 Always document the intended action, not what to avoid.
 
 **Avoid negative framing:**
+
 > "This does NOT create new cron jobs"
 > "This does NOT schedule automation"
 
 **Use positive framing:**
+
 > "This enables existing scheduled workflows"
 > "Workflows run on their normal schedule when this gate is open"
 
@@ -41,6 +45,7 @@ Always document the intended action, not what to avoid.
 Critical operational information must be at the top level, not buried in FAQs or sub-documents.
 
 **Avoid:**
+
 ```
 spec.md → "See FAQ for details"
 FAQ.md → "See workflow files for examples"
@@ -48,6 +53,7 @@ workflow.yml → "See spec for documentation"
 ```
 
 **Prefer:**
+
 ```
 spec.md → Complete specification with examples inline
 workflow.yml → Reference to spec.md only
@@ -64,11 +70,13 @@ Every operational control document must include:
 One-sentence explanation of what this control does.
 
 **Template:**
+
 ```markdown
 [Control Name] enables/disables [specific behavior] by [mechanism].
 ```
 
 **Example:**
+
 ```markdown
 Quiet Mode disables scheduled automation by requiring an open gate signal.
 ```
@@ -78,13 +86,15 @@ Quiet Mode disables scheduled automation by requiring an open gate signal.
 Implementation details with working code examples.
 
 **Requirements:**
+
 - Show actual code from the repository
 - Explain technical behavior accurately
 - Include edge cases (e.g., "listForRepo returns PRs too")
 - Provide copy-pasteable examples
 
 **Template:**
-```markdown
+
+````markdown
 ## How It Works
 
 [Brief description]
@@ -96,15 +106,17 @@ Implementation details with working code examples.
 \```
 
 **Technical notes:**
+
 - [Any edge cases or gotchas]
 - [Limitations or caveats]
-```
+````
 
 ### 3.3 Operational Procedures
 
 Step-by-step instructions for each control operation.
 
 **Template:**
+
 ```markdown
 ## To Enable [Feature]
 
@@ -124,12 +136,13 @@ Step-by-step instructions for each control operation.
 List all affected systems, workflows, or components.
 
 **Template:**
+
 ```markdown
 ## [Affected Systems] Inventory
 
-| Component | Details | Location |
-|-----------|---------|----------|
-| [Name] | [Description] | [File path] |
+| Component | Details       | Location    |
+| --------- | ------------- | ----------- |
+| [Name]    | [Description] | [File path] |
 ```
 
 ---
@@ -141,9 +154,11 @@ Agents copy examples literally. Documentation must be:
 ### 4.1 Precise
 
 **Avoid vague language:**
+
 > "The issue should be titled something like 'exit-quiet-mode'"
 
 **Use exact requirements:**
+
 > "The issue must have the exact title: `exit-quiet-mode` (case-insensitive)"
 
 ### 4.2 Explicit About Edge Cases
@@ -151,8 +166,9 @@ Agents copy examples literally. Documentation must be:
 If implementation has surprising behavior, document it upfront.
 
 **Example:**
+
 ```markdown
-**Technical note:** `github.rest.issues.listForRepo` returns both issues and 
+**Technical note:** `github.rest.issues.listForRepo` returns both issues and
 pull requests. An open PR titled `exit-quiet-mode` will also satisfy the gate.
 ```
 
@@ -161,6 +177,7 @@ pull requests. An open PR titled `exit-quiet-mode` will also satisfy the gate.
 Agents should not need to reference external documentation to implement the control.
 
 **Include:**
+
 - Complete code examples
 - All required configuration
 - Expected inputs and outputs
@@ -175,11 +192,13 @@ Operational control issue templates must:
 ### 5.1 Have Descriptive Names
 
 **Avoid:**
+
 ```yaml
 name: Exit Quiet Mode
 ```
 
 **Prefer:**
+
 ```yaml
 name: "🔓 Wake Automation (Exit Quiet Mode)"
 ```
@@ -187,6 +206,7 @@ name: "🔓 Wake Automation (Exit Quiet Mode)"
 ### 5.2 Include Visual Indicators
 
 Use emoji or symbols to quickly convey purpose:
+
 - 🔓 Enable/unlock
 - 🔒 Disable/lock
 - ⚠️ Warning/caution
@@ -197,6 +217,7 @@ Use emoji or symbols to quickly convey purpose:
 First section should answer: "What happens when I open this issue?"
 
 **Template:**
+
 ```markdown
 # [Emoji] This Issue [Action]
 
@@ -216,6 +237,7 @@ First section should answer: "What happens when I open this issue?"
 Use when: Manual human control is required for automation
 
 **Key components:**
+
 1. Issue template with clear title requirement
 2. Workflow gate check using github-script
 3. Conditional execution based on gate status
@@ -228,6 +250,7 @@ Use when: Manual human control is required for automation
 Use when: Programmatic or environment-based control is needed
 
 **Key components:**
+
 1. Environment variable or config file
 2. Runtime check in application code
 3. Default value (safe by default)
@@ -238,6 +261,7 @@ Use when: Programmatic or environment-based control is needed
 Use when: Immediate halt of all operations is required
 
 **Key components:**
+
 1. Multiple trigger mechanisms (issue, API, manual)
 2. Aggressive checking (every operation, not just scheduled)
 3. Clear recovery procedure
@@ -267,31 +291,37 @@ Before merging operational control documentation:
 ### 8.1 Claimed Automation That Doesn't Exist
 
 **Wrong:**
+
 > "Open issue `enter-quiet-mode` and the system will automatically close `exit-quiet-mode`"
 
 If the automation doesn't exist, do not document it.
 
 **Correct:**
+
 > "To re-enter Quiet Mode, close the `exit-quiet-mode` issue manually."
 
 ### 8.2 Metaphors Without Technical Details
 
 **Wrong:**
+
 > "Think of it like alarm clocks - workflows exist, this unmutes them"
 
 Metaphors are supplementary, not primary documentation.
 
 **Correct:**
+
 > "Workflows check for an open issue titled `exit-quiet-mode` before executing. [Then optionally add metaphor]"
 
 ### 8.3 Scattered Information
 
 **Wrong:**
+
 - Issue template: "See spec for details"
 - Spec: "See FAQ for examples"
 - FAQ: "See workflow files"
 
 **Correct:**
+
 - Issue template: Complete working example
 - Spec: Complete specification with all details
 - Workflows: Reference to spec only
@@ -303,18 +333,21 @@ Metaphors are supplementary, not primary documentation.
 When reviewing operational control documentation:
 
 ### For Technical Accuracy:
+
 - [ ] Code examples match actual repository files
 - [ ] Edge cases are documented
 - [ ] No promised features that don't exist
 - [ ] API behavior is correctly described
 
 ### For Clarity:
+
 - [ ] First-time reader can understand immediately
 - [ ] No jargon without explanation
 - [ ] Positive framing throughout
 - [ ] Step-by-step procedures are actionable
 
 ### For Agent Safety:
+
 - [ ] Examples are safe to copy literally
 - [ ] Exact requirements are specified
 - [ ] Error conditions are documented
@@ -325,10 +358,12 @@ When reviewing operational control documentation:
 ## 10. Reference Examples
 
 ### Excellent:
+
 - `wr/specs/01-quiet-mode.md` (after revision)
 - `.github/ISSUE_TEMPLATE/exit-quiet-mode.md` (after revision)
 
 ### Needs Improvement:
+
 - Documents that rely on FAQs for critical information
 - Templates with vague "see spec" references
 - Specs with negative framing
@@ -346,5 +381,6 @@ This standard is enforced through:
 ---
 
 **Related Standards:**
+
 - `docs/Master_Inventory/AUTO_DOCUMENTATION_STANDARD.md`
 - `wr/NORTH_STAR.md` § The Durability Rule

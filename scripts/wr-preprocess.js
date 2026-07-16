@@ -60,7 +60,16 @@ try {
 }
 
 // Image extensions we treat as OCR-able when a URL carries an explicit suffix.
-const IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "tiff", "tif"];
+const IMAGE_EXTENSIONS = [
+  "png",
+  "jpg",
+  "jpeg",
+  "gif",
+  "webp",
+  "bmp",
+  "tiff",
+  "tif",
+];
 
 // The canonical WR fields Jules needs to rewrite the WR and PR. Kept in sync
 // with the Work Request issue template (.github/ISSUE_TEMPLATE/00-work-request.yml).
@@ -120,7 +129,10 @@ function extractImageUrls(body) {
 
   // 3. Bare or linked URLs that end in a known image extension.
   const extAlt = IMAGE_EXTENSIONS.join("|");
-  const bareImg = new RegExp(`https?:\\/\\/[^\\s)"'<>]+\\.(?:${extAlt})(?:\\?[^\\s)"'<>]*)?`, "gi");
+  const bareImg = new RegExp(
+    `https?:\\/\\/[^\\s)"'<>]+\\.(?:${extAlt})(?:\\?[^\\s)"'<>]*)?`,
+    "gi",
+  );
   while ((m = bareImg.exec(body)) !== null) {
     add(m[0]);
   }
@@ -156,7 +168,11 @@ function runOcr(url, opts = {}) {
     const out = runner("python3", [ocrScript, "--input", url]);
     return { url, text: (out || "").trim() };
   } catch (err) {
-    return { url, text: "", error: err && err.message ? err.message : String(err) };
+    return {
+      url,
+      text: "",
+      error: err && err.message ? err.message : String(err),
+    };
   }
 }
 
@@ -188,9 +204,25 @@ function assembleOcrAppendix(ocrResults) {
   results.forEach((r, i) => {
     if (r.text) {
       anyText = true;
-      lines.push(`### Image ${i + 1}`, "", `Source: ${r.url}`, "", "```text", r.text, "```", "");
+      lines.push(
+        `### Image ${i + 1}`,
+        "",
+        `Source: ${r.url}`,
+        "",
+        "```text",
+        r.text,
+        "```",
+        "",
+      );
     } else {
-      lines.push(`### Image ${i + 1}`, "", `Source: ${r.url}`, "", `_No text extracted${r.error ? ` — ${r.error}` : ""}._`, "");
+      lines.push(
+        `### Image ${i + 1}`,
+        "",
+        `Source: ${r.url}`,
+        "",
+        `_No text extracted${r.error ? ` — ${r.error}` : ""}._`,
+        "",
+      );
     }
   });
   // If nothing was extractable, the appendix is noise — drop it.
@@ -223,7 +255,7 @@ function buildEnrichmentMessages({ title, body, ocrText }) {
     "- Preserve the author's original intent. Do NOT invent scope they excluded.",
     "- Fold any text extracted from images into the relevant fields.",
     "- Fill EVERY canonical field below. If a field is genuinely not applicable,",
-    "  write \"N/A — <reason>\" rather than leaving a placeholder.",
+    '  write "N/A — <reason>" rather than leaving a placeholder.',
     "- Be concrete and specific: a Definition of Done must be verifiable.",
     "- Output GitHub-flavoured markdown only. No preamble, no code fences around",
     "  the whole document, no scaffolding comments.",
@@ -238,7 +270,10 @@ function buildEnrichmentMessages({ title, body, ocrText }) {
     `WR BODY (original):\n${body || "(empty)"}`,
   ];
   if (ocrText && ocrText.trim()) {
-    userParts.push("", `TEXT EXTRACTED FROM ATTACHED IMAGES (OCR):\n${ocrText.trim()}`);
+    userParts.push(
+      "",
+      `TEXT EXTRACTED FROM ATTACHED IMAGES (OCR):\n${ocrText.trim()}`,
+    );
   }
   userParts.push("", "Rewrite the WR now as a complete markdown document.");
 
@@ -252,7 +287,13 @@ function buildEnrichmentMessages({ title, body, ocrText }) {
 // heading the structured assembler uses, without needing the results array.
 // Defined here (above enrichWorkRequest, its only caller) to read top-down.
 function assembleOcrAppendixText(ocrText) {
-  return ["## Extracted Image Text (OCR)", "", "```text", ocrText.trim(), "```"].join("\n");
+  return [
+    "## Extracted Image Text (OCR)",
+    "",
+    "```text",
+    ocrText.trim(),
+    "```",
+  ].join("\n");
 }
 
 /**
@@ -271,10 +312,19 @@ function assembleOcrAppendixText(ocrText) {
  * @param {Function} [args.routed] Injected routedChat (for tests).
  * @returns {Promise<{ body:string, enriched:boolean, modelUsed:string|null, error?:string }>}
  */
-async function enrichWorkRequest({ title, body, ocrText, apiKey, profile, routed } = {}) {
-  const key = apiKey !== undefined ? apiKey : process.env.OPENROUTER_API_KEY || "";
+async function enrichWorkRequest({
+  title,
+  body,
+  ocrText,
+  apiKey,
+  profile,
+  routed,
+} = {}) {
+  const key =
+    apiKey !== undefined ? apiKey : process.env.OPENROUTER_API_KEY || "";
   const chat = routed || routedChat;
-  const appendix = ocrText && ocrText.trim() ? `\n\n${assembleOcrAppendixText(ocrText)}` : "";
+  const appendix =
+    ocrText && ocrText.trim() ? `\n\n${assembleOcrAppendixText(ocrText)}` : "";
   const fallback = (error) => ({
     body: `${body || ""}${appendix}`.trim(),
     enriched: false,
@@ -283,7 +333,8 @@ async function enrichWorkRequest({ title, body, ocrText, apiKey, profile, routed
   });
 
   if (!key) return fallback("OPENROUTER_API_KEY not set — enrichment skipped");
-  if (typeof chat !== "function") return fallback("routedChat unavailable — enrichment skipped");
+  if (typeof chat !== "function")
+    return fallback("routedChat unavailable — enrichment skipped");
 
   try {
     const messages = buildEnrichmentMessages({ title, body, ocrText });
@@ -295,9 +346,15 @@ async function enrichWorkRequest({ title, body, ocrText, apiKey, profile, routed
       max_tokens: 4000,
       silent: true,
     });
-    const content = result && result.content ? String(result.content).trim() : "";
-    if (!content) return fallback("LLM returned empty content — using original body");
-    return { body: content, enriched: true, modelUsed: result.modelUsed || null };
+    const content =
+      result && result.content ? String(result.content).trim() : "";
+    if (!content)
+      return fallback("LLM returned empty content — using original body");
+    return {
+      body: content,
+      enriched: true,
+      modelUsed: result.modelUsed || null,
+    };
   } catch (err) {
     return fallback(err && err.message ? err.message : String(err));
   }
@@ -318,15 +375,31 @@ async function enrichWorkRequest({ title, body, ocrText, apiKey, profile, routed
  *   imageUrls:string[], ocrResults:Array<object>, error?:string
  * }>}
  */
-async function preprocessWorkRequest({ title, body, apiKey, profile, ocrOpts, routed } = {}) {
+async function preprocessWorkRequest({
+  title,
+  body,
+  apiKey,
+  profile,
+  ocrOpts,
+  routed,
+} = {}) {
   const imageUrls = extractImageUrls(body);
-  const ocrResults = imageUrls.length ? ocrImages(imageUrls, ocrOpts || {}) : [];
+  const ocrResults = imageUrls.length
+    ? ocrImages(imageUrls, ocrOpts || {})
+    : [];
   const ocrText = ocrResults
     .map((r) => r.text)
     .filter(Boolean)
     .join("\n\n");
 
-  const enriched = await enrichWorkRequest({ title, body, ocrText, apiKey, profile, routed });
+  const enriched = await enrichWorkRequest({
+    title,
+    body,
+    ocrText,
+    apiKey,
+    profile,
+    routed,
+  });
   return {
     enrichedBody: enriched.body,
     enriched: enriched.enriched,
@@ -347,7 +420,9 @@ async function main() {
   const outputFile = process.env.OUTPUT_FILE;
 
   if (!title && !body) {
-    console.error("wr-preprocess: nothing to do (ISSUE_TITLE and ISSUE_BODY are both empty)");
+    console.error(
+      "wr-preprocess: nothing to do (ISSUE_TITLE and ISSUE_BODY are both empty)",
+    );
     process.exit(2);
   }
 
@@ -361,7 +436,7 @@ async function main() {
     `wr-preprocess: ${result.imageUrls.length} image(s), ` +
       `enriched=${result.enriched}` +
       (result.modelUsed ? ` via ${result.modelUsed}` : "") +
-      (result.error ? ` (note: ${result.error})` : "")
+      (result.error ? ` (note: ${result.error})` : ""),
   );
 
   if (outputFile) {

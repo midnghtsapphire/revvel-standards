@@ -83,10 +83,14 @@ export default function HomePage() {
     (s) =>
       s.name.toLowerCase().includes(query.toLowerCase()) ||
       s.category.toLowerCase().includes(query.toLowerCase()) ||
-      s.description.toLowerCase().includes(query.toLowerCase())
+      s.description.toLowerCase().includes(query.toLowerCase()),
   );
 
-  async function runSkill(skillId: string, trigger: string, customInput?: string) {
+  async function runSkill(
+    skillId: string,
+    trigger: string,
+    customInput?: string,
+  ) {
     setRunStatus((prev) => ({ ...prev, [skillId]: "running" }));
     setOutputs((prev) => ({ ...prev, [skillId]: "" }));
 
@@ -95,7 +99,10 @@ export default function HomePage() {
       if (skillId === "ocr-document-parser") {
         const imageUrl = customInput?.trim();
         if (!imageUrl) {
-          setOutputs((prev) => ({ ...prev, [skillId]: "⚠️ Paste an image URL above and click Run." }));
+          setOutputs((prev) => ({
+            ...prev,
+            [skillId]: "⚠️ Paste an image URL above and click Run.",
+          }));
           setRunStatus((prev) => ({ ...prev, [skillId]: "error" }));
           return;
         }
@@ -215,10 +222,7 @@ function SkillCard({
   onInputChange: (val: string) => void;
   onRun: () => void;
 }) {
-  const statusConfig: Record<
-    RunStatus,
-    { label: string; cls: string }
-  > = {
+  const statusConfig: Record<RunStatus, { label: string; cls: string }> = {
     idle: { label: "Run", cls: "bg-purple-600 hover:bg-purple-500" },
     running: { label: "Running…", cls: "bg-yellow-600 cursor-not-allowed" },
     done: { label: "Run again", cls: "bg-green-700 hover:bg-green-600" },

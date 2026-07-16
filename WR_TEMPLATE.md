@@ -30,14 +30,14 @@ cp WR_TEMPLATE_FULL.md wr/WR-XXX.md
 
 ## Which to use?
 
-| Situation | Template |
-|-----------|----------|
-| "I want X built" — trust the engine | **BASIC** |
-| Quick idea, exploratory | **BASIC** |
-| Standard feature/fix | **BASIC** |
-| You have strict requirements | FULL |
-| Compliance / regulated work | FULL |
-| You want to override engine defaults | FULL |
+| Situation                            | Template  |
+| ------------------------------------ | --------- |
+| "I want X built" — trust the engine  | **BASIC** |
+| Quick idea, exploratory              | **BASIC** |
+| Standard feature/fix                 | **BASIC** |
+| You have strict requirements         | FULL      |
+| Compliance / regulated work          | FULL      |
+| You want to override engine defaults | FULL      |
 
 ---
 

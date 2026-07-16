@@ -9,6 +9,7 @@
 ## Vulnerabilities Patched
 
 ### Critical (Now Fixed ✅)
+
 1. **Denial of Service with Server Components** - Multiple CVEs
 2. **HTTP request deserialization DoS** - Multiple CVEs
 3. **Authorization bypass vulnerability** - CVE affecting middleware
@@ -16,6 +17,7 @@
 5. **Authorization Bypass in Next.js Middleware** - Multiple versions
 
 ### Remaining (Low Priority)
+
 - **glob** (dev dependency) - Command injection via CLI
 - **minimatch** (dev dependency) - ReDoS vulnerabilities
 - **postcss** (bundled) - XSS in dev mode (doesn't affect production static exports)
@@ -25,11 +27,13 @@
 ## Changes Made
 
 ### Updated Dependencies
+
 - **Next.js:** 14.2.3 → 15.5.15
 - **React:** 18.3.1 → 19.0.0
 - **React DOM:** 18.3.1 → 19.0.0
 
 ### Files Updated
+
 - `products/affiliate-hub/package.json`
 - `products/ai-video-toolkit/package.json`
 - `products/screen-recorder-finder/package.json`

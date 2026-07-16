@@ -20,6 +20,7 @@ Security is not bolted on at the end — it is built into every layer from day o
 Hardcoded API keys, passwords, tokens, and connection strings in source code are an automatic P0 compliance failure. The `check-compliance.js` script scans for common secret patterns and fails CI if any are found.
 
 **What counts as a secret:**
+
 - API keys (Stripe, Plaid, OpenAI, etc.)
 - Database connection strings with credentials
 - JWT signing secrets
@@ -40,6 +41,7 @@ CLERK_SECRET_KEY=sk_...
 ```
 
 **Rules:**
+
 - `.env` is always in `.gitignore`
 - `.env.example` is always committed and kept up to date
 - GitHub Actions secrets are used for CI/CD — never `.env` files in pipelines
@@ -62,7 +64,7 @@ vault kv put revvel/apps/YOUR_APP/prod \
 **Vault AppRole retrieval in Node.js:**
 
 ```ts
-import vault from 'node-vault';
+import vault from "node-vault";
 
 const client = vault({ endpoint: process.env.VAULT_ADDR });
 
@@ -71,7 +73,7 @@ async function getSecrets() {
     role_id: process.env.VAULT_ROLE_ID,
     secret_id: process.env.VAULT_SECRET_ID,
   });
-  const result = await client.read('revvel/apps/YOUR_APP/prod');
+  const result = await client.read("revvel/apps/YOUR_APP/prod");
   return result.data.data;
 }
 ```
@@ -83,73 +85,78 @@ async function getSecrets() {
 Every Express/Node.js backend must use `helmet` to set security headers. This is a P0 requirement.
 
 ```ts
-import helmet from 'helmet';
-import express from 'express';
+import helmet from "helmet";
+import express from "express";
 
 const app = express();
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://api.stripe.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["https://js.stripe.com"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://js.stripe.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://api.stripe.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["https://js.stripe.com"],
+      },
     },
-  },
-  crossOriginEmbedderPolicy: false, // Disable if using external iframes (e.g., Stripe)
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true,
-  },
-}));
+    crossOriginEmbedderPolicy: false, // Disable if using external iframes (e.g., Stripe)
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+  }),
+);
 ```
 
 **Required headers (enforced by Helmet):**
 
-| Header | Value | Purpose |
-|---|---|---|
-| `X-Content-Type-Options` | `nosniff` | Prevents MIME-type sniffing |
-| `X-Frame-Options` | `DENY` | Prevents clickjacking |
-| `X-XSS-Protection` | `1; mode=block` | Legacy XSS protection |
-| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains; preload` | Forces HTTPS |
-| `Content-Security-Policy` | (see config above) | Prevents XSS and injection |
-| `Referrer-Policy` | `no-referrer-when-downgrade` | Controls referrer info |
+| Header                      | Value                                          | Purpose                     |
+| --------------------------- | ---------------------------------------------- | --------------------------- |
+| `X-Content-Type-Options`    | `nosniff`                                      | Prevents MIME-type sniffing |
+| `X-Frame-Options`           | `DENY`                                         | Prevents clickjacking       |
+| `X-XSS-Protection`          | `1; mode=block`                                | Legacy XSS protection       |
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains; preload` | Forces HTTPS                |
+| `Content-Security-Policy`   | (see config above)                             | Prevents XSS and injection  |
+| `Referrer-Policy`           | `no-referrer-when-downgrade`                   | Controls referrer info      |
 
 ---
 
 ## 4. CORS Configuration
 
 ```ts
-import cors from 'cors';
+import cors from "cors";
 
 const allowedOrigins = [
-  'https://yourdomain.com',
-  'https://www.yourdomain.com',
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
+  "https://yourdomain.com",
+  "https://www.yourdomain.com",
+  process.env.NODE_ENV === "development" ? "http://localhost:3000" : null,
 ].filter(Boolean);
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error(`CORS blocked: ${origin} is not allowed`));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked: ${origin} is not allowed`));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 ```
 
 **Rules:**
+
 - Never use `cors({ origin: '*' })` on any route that handles authenticated requests or sensitive data.
 - Wildcard CORS is only acceptable for fully public, read-only, non-authenticated endpoints.
 
@@ -160,8 +167,8 @@ app.use(cors({
 All API endpoints must implement rate limiting to prevent brute-force attacks, credential stuffing, and abuse.
 
 ```ts
-import rateLimit from 'express-rate-limit';
-import slowDown from 'express-slow-down';
+import rateLimit from "express-rate-limit";
+import slowDown from "express-slow-down";
 
 // Global rate limiter (all routes)
 const globalLimiter = rateLimit({
@@ -169,7 +176,7 @@ const globalLimiter = rateLimit({
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Too many requests. Please try again later.' },
+  message: { error: "Too many requests. Please try again later." },
 });
 
 // Strict limiter for auth routes
@@ -177,7 +184,7 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   skipSuccessfulRequests: true,
-  message: { error: 'Too many login attempts. Try again in 15 minutes.' },
+  message: { error: "Too many login attempts. Try again in 15 minutes." },
 });
 
 // Slow down repeated requests (before hard block)
@@ -189,7 +196,7 @@ const speedLimiter = slowDown({
 
 app.use(globalLimiter);
 app.use(speedLimiter);
-app.use('/api/auth', authLimiter);
+app.use("/api/auth", authLimiter);
 ```
 
 ---
@@ -199,7 +206,7 @@ app.use('/api/auth', authLimiter);
 All request inputs (body, query params, route params) must be validated with Zod before processing.
 
 ```ts
-import { z } from 'zod';
+import { z } from "zod";
 
 const CreateProductSchema = z.object({
   name: z.string().min(1).max(255),
@@ -209,7 +216,7 @@ const CreateProductSchema = z.object({
 });
 
 // In route handler:
-app.post('/api/products', async (req, res) => {
+app.post("/api/products", async (req, res) => {
   const result = CreateProductSchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({ error: result.error.flatten() });
@@ -221,6 +228,7 @@ app.post('/api/products', async (req, res) => {
 ```
 
 **Rules:**
+
 - Never trust `req.body` directly without Zod validation.
 - Always use `.safeParse()` not `.parse()` in route handlers (avoid uncaught exceptions).
 - Validate query params and route params too — not just body.
@@ -238,7 +246,9 @@ const user = await db.query.users.findFirst({
 });
 
 // ❌ WRONG — raw SQL with string interpolation
-const user = await db.execute(sql`SELECT * FROM users WHERE email = '${email}'`);
+const user = await db.execute(
+  sql`SELECT * FROM users WHERE email = '${email}'`,
+);
 ```
 
 If raw SQL is absolutely necessary (complex queries), always use Drizzle's `sql` tagged template literal:
@@ -246,7 +256,7 @@ If raw SQL is absolutely necessary (complex queries), always use Drizzle's `sql`
 ```ts
 // ✅ ACCEPTABLE — sql tagged template is parameterized
 const result = await db.execute(
-  sql`SELECT * FROM products WHERE price < ${maxPrice} AND category_id = ${categoryId}`
+  sql`SELECT * FROM products WHERE price < ${maxPrice} AND category_id = ${categoryId}`,
 );
 ```
 
@@ -284,7 +294,7 @@ Before every major release, run an OWASP ZAP scan against the staging environmen
 - name: OWASP ZAP Baseline Scan
   uses: zaproxy/action-baseline@v0.11.0
   with:
-    target: 'https://staging.yourdomain.com'
+    target: "https://staging.yourdomain.com"
     fail_action: true
 ```
 
@@ -306,34 +316,35 @@ Clerk is the preferred authentication provider. Follow these security rules:
 For applications serving organization members or enterprise users, SAML SSO is **required** in addition to Clerk. Follow `SSO_SAML_STANDARD.md` for the full implementation guide.
 
 **Key rules:**
+
 - Every app must offer SSO as a login option on the login page.
 - Admin accounts must use SSO — password-only login is **forbidden** for admins.
 - In GitHub Actions, resolve a GitHub username to its corporate SSO email by querying the GraphQL SAML identity mapping directly (do **not** use `gagoar/get-saml-identity-action` — its published tag is broken and fails with `File not found: .../dist/index.js`):
 
 ```yaml
-      - name: Get SAML identity for PR author
-        id: saml
-        uses: actions/github-script@v8
-        env:
-          TARGET_USERNAME: ${{ github.actor }}
-        with:
-          github-token: ${{ secrets.ORG_ADMIN_TOKEN }}
-          script: |
-            const result = await github.graphql(
-              `query($org: String!, $login: String!) {
-                organization(login: $org) {
-                  samlIdentityProvider {
-                    externalIdentities(first: 1, login: $login) {
-                      nodes { samlIdentity { nameId } }
-                    }
-                  }
-                }
-              }`,
-              { org: context.repo.owner, login: process.env.TARGET_USERNAME }
-            );
-            const provider = result.organization && result.organization.samlIdentityProvider;
-            const node = provider && provider.externalIdentities.nodes[0];
-            core.setOutput('identity', (node && node.samlIdentity && node.samlIdentity.nameId) || '');
+- name: Get SAML identity for PR author
+  id: saml
+  uses: actions/github-script@v8
+  env:
+    TARGET_USERNAME: ${{ github.actor }}
+  with:
+    github-token: ${{ secrets.ORG_ADMIN_TOKEN }}
+    script: |
+      const result = await github.graphql(
+        `query($org: String!, $login: String!) {
+          organization(login: $org) {
+            samlIdentityProvider {
+              externalIdentities(first: 1, login: $login) {
+                nodes { samlIdentity { nameId } }
+              }
+            }
+          }
+        }`,
+        { org: context.repo.owner, login: process.env.TARGET_USERNAME }
+      );
+      const provider = result.organization && result.organization.samlIdentityProvider;
+      const node = provider && provider.externalIdentities.nodes[0];
+      core.setOutput('identity', (node && node.samlIdentity && node.samlIdentity.nameId) || '');
 ```
 
 The `ORG_ADMIN_TOKEN` must have `admin:org` scope and be stored as a repository secret. See `templates/cicd/get-saml-identity.yml` for the full workflow template.
@@ -343,25 +354,25 @@ The `ORG_ADMIN_TOKEN` must have `admin:org` scope and be stored as a repository 
 If building a custom JWT system:
 
 ```ts
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET || JWT_SECRET.length < 32) {
-  throw new Error('JWT_SECRET must be at least 32 characters');
+  throw new Error("JWT_SECRET must be at least 32 characters");
 }
 
 // Sign
-const token = jwt.sign(
-  { userId: user.id, role: user.role },
-  JWT_SECRET,
-  { expiresIn: '24h', algorithm: 'HS256' }
-);
+const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, {
+  expiresIn: "24h",
+  algorithm: "HS256",
+});
 
 // Verify
-const payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
+const payload = jwt.verify(token, JWT_SECRET, { algorithms: ["HS256"] });
 ```
 
 **JWT rules:**
+
 - Minimum secret length: 32 characters
 - Always set `expiresIn`
 - Store tokens in `httpOnly` cookies, not `localStorage`
@@ -391,11 +402,13 @@ Before any code can be merged to `main`, the reviewer (Venice AI primary, Claude
 Every Revvel application repository must include the `security.yml` workflow. Copy from `templates/cicd/security.yml`.
 
 The workflow runs:
+
 - On every push to `main`
 - On every pull request to `main`
 - Weekly on Monday at 6am UTC (scheduled baseline)
 
 **Jobs:**
+
 1. **Dependency Vulnerability Audit** — `pnpm audit --audit-level=high` (reports but does not block; change `continue-on-error: false` to make it a hard gate)
 2. **TruffleHog Secret Scanning** — Scans the full git history for verified leaked secrets
 
@@ -431,6 +444,7 @@ CI passes on PR → merge → issue auto-closes
 ```
 
 **Setup:**
+
 ```bash
 # Copy to your app repo
 cp templates/cicd/auto-fix.yml .github/workflows/auto-fix.yml

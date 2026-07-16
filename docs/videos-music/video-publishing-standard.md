@@ -20,9 +20,9 @@ Every music video product must travel from raw inputs (WAV + avatar) through gen
 
 ## 2. Required Inputs
 
-| Input | Type | Notes |
-|---|---|---|
-| Audio | WAV | Lossless audio; the sync source for lip animation |
+| Input  | Type           | Notes                                                          |
+| ------ | -------------- | -------------------------------------------------------------- |
+| Audio  | WAV            | Lossless audio; the sync source for lip animation              |
 | Avatar | Image or video | Still image (PNG/JPG) or short video clip of the artist/avatar |
 
 Both inputs **must** be recorded in the manifest `inputs` block before generation begins.
@@ -91,13 +91,13 @@ Before marking a video product as complete, verify:
 
 ## 4. Publish Status Values
 
-| Status | Meaning |
-|---|---|
-| `draft` | Manifest created; generation not yet started |
-| `generating` | Render job submitted to provider; awaiting completion |
-| `ready` | Render complete; MP4 available but not yet published to website |
-| `published` | MP4 is live on the main website with a public canonical URL |
-| `failed` | Generation or publishing step failed; requires investigation |
+| Status       | Meaning                                                         |
+| ------------ | --------------------------------------------------------------- |
+| `draft`      | Manifest created; generation not yet started                    |
+| `generating` | Render job submitted to provider; awaiting completion           |
+| `ready`      | Render complete; MP4 available but not yet published to website |
+| `published`  | MP4 is live on the main website with a public canonical URL     |
+| `failed`     | Generation or publishing step failed; requires investigation    |
 
 ---
 
@@ -159,14 +159,14 @@ An MP4 alone is not sufficient for strong organic reach. The main website page m
 
 ## 7. Naming Conventions
 
-| Convention | Rule |
-|---|---|
-| Song folder | `docs/videos-music/<song-slug>/` (kebab-case) |
-| Manifest filename | `video-manifest-YYYYMMDDTHHMMSSZ-v<major>.json` |
-| MP4 filename | `<song-slug>-YYYYMMDDTHHMMSSZ-v<major>.mp4` |
+| Convention         | Rule                                                            |
+| ------------------ | --------------------------------------------------------------- |
+| Song folder        | `docs/videos-music/<song-slug>/` (kebab-case)                   |
+| Manifest filename  | `video-manifest-YYYYMMDDTHHMMSSZ-v<major>.json`                 |
+| MP4 filename       | `<song-slug>-YYYYMMDDTHHMMSSZ-v<major>.mp4`                     |
 | Thumbnail filename | `<song-slug>-YYYYMMDDTHHMMSSZ-v<major>-thumb.jpg` (recommended) |
-| Captions filename | `<song-slug>-YYYYMMDDTHHMMSSZ-v<major>.vtt` (recommended) |
-| Version bump | Increment `v<major>` only on a full re-export/revision |
+| Captions filename  | `<song-slug>-YYYYMMDDTHHMMSSZ-v<major>.vtt` (recommended)       |
+| Version bump       | Increment `v<major>` only on a full re-export/revision          |
 
 Timestamp format in filenames: `YYYYMMDDTHHMMSSZ` (filesystem-safe, UTC).  
 Timestamp format in JSON: ISO 8601 UTC — `YYYY-MM-DDTHH:MM:SSZ`.
@@ -189,14 +189,14 @@ If `publish_status` is not `published` or these fields are empty, the video is n
 
 > This repository is the **standards and specification layer**. The automation runtime (API adapters, CI jobs, CMS integrations) may live in separate repositories or services.
 
-| Gap | Notes |
-|---|---|
-| Automated HeyGen job submission | Not implemented in this repo; must be built in the automation runtime |
-| CDN/media hosting integration | Depends on the main website stack; canonical URL must be recorded manually until automated |
-| Website CMS publish automation | Depends on the main website CMS; product pages may need to be created manually until integrated |
-| README auto-update on publish | Not implemented in this repo; currently a manual step after publishing |
-| Captions/transcript generation | Optional; may use ElevenLabs, HeyGen built-in, or a third-party subtitle tool |
-| Thumbnail auto-generation | Recommended; may use Leonardo or the frame-extraction feature of the video provider |
+| Gap                             | Notes                                                                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Automated HeyGen job submission | Not implemented in this repo; must be built in the automation runtime                           |
+| CDN/media hosting integration   | Depends on the main website stack; canonical URL must be recorded manually until automated      |
+| Website CMS publish automation  | Depends on the main website CMS; product pages may need to be created manually until integrated |
+| README auto-update on publish   | Not implemented in this repo; currently a manual step after publishing                          |
+| Captions/transcript generation  | Optional; may use ElevenLabs, HeyGen built-in, or a third-party subtitle tool                   |
+| Thumbnail auto-generation       | Recommended; may use Leonardo or the frame-extraction feature of the video provider             |
 
 Until the runtime automation exists, all steps in §3 are performed manually and the manifest + README are updated by hand.
 
@@ -204,7 +204,7 @@ Until the runtime automation exists, all steps in §3 are performed manually and
 
 ## 10. Template Files
 
-| File | Purpose |
-|---|---|
-| [`_template/video-manifest-template.json`](./_template/video-manifest-template.json) | Copy this into a new song folder and fill all fields |
-| [`_template/README.md`](./_template/README.md) | Copy this into a new song folder and fill all sections |
+| File                                                                                 | Purpose                                                |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------ |
+| [`_template/video-manifest-template.json`](./_template/video-manifest-template.json) | Copy this into a new song folder and fill all fields   |
+| [`_template/README.md`](./_template/README.md)                                       | Copy this into a new song folder and fill all sections |

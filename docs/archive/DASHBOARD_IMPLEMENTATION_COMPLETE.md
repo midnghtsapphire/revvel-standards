@@ -5,6 +5,7 @@
 **Issue:** No visibility into BOM inventory, handoff docs, where projects are at - need connection via cron jobs.
 
 **Specific Pain Points Addressed:**
+
 - ❌ "Cannot manage to look into folders etc for test URL links"
 - ❌ "Confused at oaudrey and freedom angel? and what url?"
 - ❌ "Need actual implementations to domain name for trust and sam.gov and grants.gov"
@@ -18,6 +19,7 @@
 ### Centralized Dashboard System
 
 **Files Created:**
+
 1. `scripts/aggregate-project-dashboard.js` - Aggregation script
 2. `scripts/dashboard-cli.js` - CLI tool
 3. `dashboard.html` - Visual dashboard (auto-generated)
@@ -29,33 +31,37 @@
 
 ### What It Tracks
 
-| Category | Count | Details |
-|---|---|---|
-| **Projects** | 33 | From PROJECTS_TO_SHIP.md + PROJECT_CATALOG.md |
-| **Active Services** | 121 | From _MASTER_INVENTORY.md (APIs, tools, subscriptions) |
-| **Test URLs** | 37 | Auto-extracted from all README files |
-| **Domains** | 12 | oaudrey.com, soup2bowl.com, revvel.co, subdomains |
-| **BOM Items** | All | From _MASTER_BOM.md |
+| Category            | Count | Details                                                |
+| ------------------- | ----- | ------------------------------------------------------ |
+| **Projects**        | 33    | From PROJECTS_TO_SHIP.md + PROJECT_CATALOG.md          |
+| **Active Services** | 121   | From _MASTER_INVENTORY.md (APIs, tools, subscriptions) |
+| **Test URLs**       | 37    | Auto-extracted from all README files                   |
+| **Domains**         | 12    | oaudrey.com, soup2bowl.com, revvel.co, subdomains      |
+| **BOM Items**       | All   | From _MASTER_BOM.md                                    |
 
 ### Key Features
 
 ✅ **No More "Looking in Folders"**
+
 - Everything in one HTML page
 - Live search across all data
 - CLI tool for terminal access
 
 ✅ **Automatic Updates**
+
 - Runs every 4 hours via GitHub Actions
 - Updates on file changes
 - Manual refresh: `npm run dashboard:generate`
 
 ✅ **Beautiful UI**
+
 - Glassmorphism design with purple gradient
 - Responsive tables
 - Color-coded status badges
 - Real-time filtering
 
 ✅ **CLI Tool**
+
 ```bash
 npm run dashboard              # Show summary
 npm run dashboard projects     # List all projects
@@ -70,10 +76,12 @@ npm run dashboard open         # Open HTML in browser
 ### 1. "Confused at oaudrey and freedom angel?"
 
 **Dashboard Shows:**
+
 - **oaudrey.com** - Active (Freedom Angel Hub, main automation hub)
 - **freedomangel.org** - Research (Nonprofit, anti-trafficking initiative)
 
 **Subdomains tracked:**
+
 - fieldwork.oaudrey.com
 - growlingeyes.oaudrey.com
 - penny.oaudrey.com
@@ -82,6 +90,7 @@ npm run dashboard open         # Open HTML in browser
 - coldtrace.oaudrey.com
 
 **Quick lookup:**
+
 ```bash
 npm run dashboard search oaudrey
 ```
@@ -89,10 +98,12 @@ npm run dashboard search oaudrey
 ### 2. "Need actual implementations to domain name for trust and sam.gov and grants.gov"
 
 **Dashboard Tracks:**
+
 - **sam.gov** - External (Gov Registration - Federal contracting)
 - **grants.gov** - External (Grant Search - Federal grants)
 
 **Your domains:**
+
 - oaudrey.com (Active)
 - soup2bowl.com (In Development)
 - revvel.co (Active)
@@ -100,6 +111,7 @@ npm run dashboard search oaudrey
 ### 3. "Android playstore checks your domain and need to get it up on real domain"
 
 **Dashboard shows domain status:**
+
 - Real domains with status (Active/In Development/Research)
 - Test URLs with deployment links
 - Quick search to find any domain: `npm run dashboard domains`
@@ -111,6 +123,7 @@ npm run dashboard search oaudrey
 Run: `npm run dashboard search soup2bowl`
 
 **Dashboard will show:**
+
 - Project: Soul2Bowl (In Development)
 - Description: Premium online ordering and catering platform
 - Link: https://github.com/MIDNGHTSAPPHIRE/Soul2Bowl
@@ -126,6 +139,7 @@ npm run dashboard urls
 ```
 
 **Shows all 37 test URLs:**
+
 - Vercel deployment links
 - Test sites
 - Preview URLs
@@ -133,6 +147,7 @@ npm run dashboard urls
 - Source file location
 
 **Example output:**
+
 ```
 🔗 Test URLs
 Found 37 URLs
@@ -167,21 +182,25 @@ npm run dashboard search <term>
 ### Common Tasks
 
 **Find all test URLs:**
+
 ```bash
 npm run dashboard urls
 ```
 
 **See all projects:**
+
 ```bash
 npm run dashboard projects
 ```
 
 **Check domain status:**
+
 ```bash
 npm run dashboard domains
 ```
 
 **Search for specific project:**
+
 ```bash
 npm run dashboard search soup2bowl
 npm run dashboard search oaudrey
@@ -191,6 +210,7 @@ npm run dashboard search vercel
 ### Dashboard Contents
 
 **Open `dashboard.html` in browser to see:**
+
 - Summary cards (counts, last updated)
 - All projects table (searchable)
 - All test URLs table (clickable links)
@@ -201,6 +221,7 @@ npm run dashboard search vercel
 ## Automation
 
 **Dashboard updates automatically:**
+
 - Every 4 hours via GitHub Actions cron
 - On push to main when relevant files change
 - Manual: `npm run dashboard:generate`
@@ -208,6 +229,7 @@ npm run dashboard search vercel
 **Workflow:** `.github/workflows/update-project-dashboard.yml`
 
 **Triggers:**
+
 - Cron: `0 */4 * * *` (every 4 hours)
 - Push to: `_MASTER_INVENTORY.md`, `_MASTER_BOM.md`, `PROJECTS_TO_SHIP.md`, etc.
 - Manual dispatch via GitHub Actions UI
@@ -215,6 +237,7 @@ npm run dashboard search vercel
 ## Data Sources
 
 Dashboard aggregates from:
+
 1. `docs/_MASTER_INVENTORY.md` - Services, APIs, subscriptions
 2. `docs/_MASTER_BOM.md` - Bill of materials
 3. `docs/PROJECTS_TO_SHIP.md` - Active projects, revenue targets
@@ -226,6 +249,7 @@ Dashboard aggregates from:
 ## Testing
 
 **All tests passing:**
+
 ```
 ✅ PASS: parseInventory parses service tables
 ✅ PASS: parseInventory handles empty content
@@ -239,12 +263,14 @@ Dashboard aggregates from:
 ```
 
 **Security scan passed:**
+
 - CodeQL: 0 alerts (JavaScript)
 - Code Review: 5 minor suggestions (all addressed)
 
 ## Documentation
 
 **Complete docs available:**
+
 - `docs/PROJECT_DASHBOARD.md` - Full documentation
 - `DASHBOARD_QUICKREF.md` - Quick reference
 - `README.md` - Quick links and usage
@@ -269,6 +295,7 @@ Domains (7):
 ## What This Means for You
 
 **Before:**
+
 - Had to look in multiple folders for information
 - Couldn't find test URLs easily
 - Unclear about domain status
@@ -276,6 +303,7 @@ Domains (7):
 - No visibility into BOM or inventory
 
 **After:**
+
 - Single source of truth: `dashboard.html`
 - Quick CLI access: `npm run dashboard`
 - All URLs in one place: `npm run dashboard urls`
@@ -286,6 +314,7 @@ Domains (7):
 ## Next Steps (Optional Enhancements)
 
 **Not blocking, but could add:**
+
 - [ ] GitHub Pages deployment (workflow ready)
 - [ ] Real-time URL status checks (ping URLs)
 - [ ] GitHub API integration (auto-discover repos)

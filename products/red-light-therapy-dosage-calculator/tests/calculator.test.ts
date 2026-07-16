@@ -1,8 +1,15 @@
 import assert from "node:assert/strict";
-import { calculateDosage, formatMinutes, normalizeDosageInput } from "../app/data/calculator";
+import {
+  calculateDosage,
+  formatMinutes,
+  normalizeDosageInput,
+} from "../app/data/calculator";
 
 function approxEqual(actual: number, expected: number, epsilon = 0.0001): void {
-  assert.ok(Math.abs(actual - expected) <= epsilon, `Expected ${actual} to be within ${epsilon} of ${expected}`);
+  assert.ok(
+    Math.abs(actual - expected) <= epsilon,
+    `Expected ${actual} to be within ${epsilon} of ${expected}`,
+  );
 }
 
 {

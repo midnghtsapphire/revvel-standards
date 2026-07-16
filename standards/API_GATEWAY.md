@@ -13,12 +13,14 @@
 Kong Gateway OSS is the **free, open-source** API gateway that sits in front of all Revvel services. It handles routing, authentication, rate limiting, and logging — so application code doesn't have to.
 
 **What Kong replaces:**
+
 - Manual nginx proxy configs
 - Hardcoded rate limiting in app code
 - Per-service auth middleware duplication
 - Scattered logging across services
 
 **What Kong provides:**
+
 - Single entry point for all API traffic
 - Plugin-based auth (key-auth, JWT, OAuth2, HMAC)
 - Rate limiting per consumer, route, or service
@@ -60,15 +62,15 @@ Internet Traffic
 
 **Port assignments:**
 
-| Service | Internal Port | Kong Route |
-|---------|--------------|------------|
-| Kong Proxy | 8000 | External entry point |
-| Kong Admin API | 8001 | `localhost` only — never expose externally |
-| Kong Admin API (read-only) | 8002 | Optional, for monitoring |
-| PostgreSQL (Kong datastore) | 5432 | Internal only |
-| growlingeyes | 3000 | `/api/ge/*`, `growlingeyes.com/*` |
-| neurooz | 5173 | `/api/nz/*`, `neurooz.com/*` |
-| reese-reviews | 8080 | `/api/rr/*`, `reese-reviews.com/*` |
+| Service                     | Internal Port | Kong Route                                 |
+| --------------------------- | ------------- | ------------------------------------------ |
+| Kong Proxy                  | 8000          | External entry point                       |
+| Kong Admin API              | 8001          | `localhost` only — never expose externally |
+| Kong Admin API (read-only)  | 8002          | Optional, for monitoring                   |
+| PostgreSQL (Kong datastore) | 5432          | Internal only                              |
+| growlingeyes                | 3000          | `/api/ge/*`, `growlingeyes.com/*`          |
+| neurooz                     | 5173          | `/api/nz/*`, `neurooz.com/*`               |
+| reese-reviews               | 8080          | `/api/rr/*`, `reese-reviews.com/*`         |
 
 ---
 
@@ -242,41 +244,44 @@ Every Revvel service behind Kong MUST have these plugins enabled:
 
 ### 6.1 Mandatory Plugins
 
-| Plugin | Purpose | Scope |
-|--------|---------|-------|
-| `rate-limiting` | Prevent abuse | Per-service |
-| `cors` | Control cross-origin access | Per-service |
-| `request-size-limiting` | Block oversized payloads | Global |
-| `bot-detection` | Block scrapers/bots | Global |
+| Plugin                  | Purpose                     | Scope       |
+| ----------------------- | --------------------------- | ----------- |
+| `rate-limiting`         | Prevent abuse               | Per-service |
+| `cors`                  | Control cross-origin access | Per-service |
+| `request-size-limiting` | Block oversized payloads    | Global      |
+| `bot-detection`         | Block scrapers/bots         | Global      |
 
 ### 6.2 Recommended Plugins
 
-| Plugin | Purpose | When to Use |
-|--------|---------|-------------|
-| `ip-restriction` | Block known-bad IPs | When OSINT blocklists are populated |
-| `key-auth` | API key authentication | Service-to-service APIs |
-| `jwt` | JWT validation | User-facing APIs |
-| `oauth2` | OAuth 2.0 flows | Third-party integrations |
-| `file-log` | Request logging to file | Always in production |
-| `http-log` | Send logs to external service | When using log aggregation |
-| `response-ratelimiting` | Limit by response header | Tiered API plans |
-| `acl` | Access control lists | Role-based route access |
-| `request-transformer` | Modify headers/body | API versioning, header injection |
+| Plugin                  | Purpose                       | When to Use                         |
+| ----------------------- | ----------------------------- | ----------------------------------- |
+| `ip-restriction`        | Block known-bad IPs           | When OSINT blocklists are populated |
+| `key-auth`              | API key authentication        | Service-to-service APIs             |
+| `jwt`                   | JWT validation                | User-facing APIs                    |
+| `oauth2`                | OAuth 2.0 flows               | Third-party integrations            |
+| `file-log`              | Request logging to file       | Always in production                |
+| `http-log`              | Send logs to external service | When using log aggregation          |
+| `response-ratelimiting` | Limit by response header      | Tiered API plans                    |
+| `acl`                   | Access control lists          | Role-based route access             |
+| `request-transformer`   | Modify headers/body           | API versioning, header injection    |
 
 ### 6.3 Plugin Configuration Standards
 
 **Rate Limiting:**
+
 - Default: 100 requests/minute per IP
 - Authenticated users: 500 requests/minute
 - Service-to-service: 1000 requests/minute
 - Policy: `local` for single-node, `redis` for multi-node
 
 **CORS:**
+
 - Origins: explicit allowlist only — never `*` in production
 - Credentials: `true` only when cookies are needed
 - Max age: 3600 seconds
 
 **Request Size:**
+
 - Default max: 10 MB
 - File upload endpoints: 100 MB (configure per-route)
 
@@ -317,9 +322,7 @@ Kong exposes `/status` on the Admin API:
     "reachable": true
   },
   "memory": {
-    "workers_lua_vms": [
-      { "http_allocated_gc": "48.01 MiB", "pid": 1234 }
-    ]
+    "workers_lua_vms": [{ "http_allocated_gc": "48.01 MiB", "pid": 1234 }]
   }
 }
 ```
@@ -339,6 +342,7 @@ docker compose -f /opt/kong/docker-compose.yml restart kong
 ### 8.3 Uptime Monitoring
 
 Add to your monitoring (UptimeRobot, Healthchecks.io, etc.):
+
 - `https://growlingeyes.com/health` → through Kong → backend health
 - `http://localhost:8001/status` → Kong itself (internal only)
 
@@ -374,27 +378,27 @@ bash bootstrap.sh
 
 ## 10. Relationship to Other Standards
 
-| Standard | Relationship |
-|----------|-------------|
-| `API_GATEKEEPER_STANDARD.md` | Kong implements Layer 2 of the Gatekeeper architecture |
-| `SECURITY_STANDARD.md` | Kong enforces security policies at the edge |
-| `DOCKER.md` | Kong follows Docker container standards |
-| `08_SECRETS_MANAGEMENT_STANDARD.md` | Kong pulls secrets from Doppler |
-| `MONITORING.md` | Kong feeds metrics into monitoring pipeline |
-| `DEPLOYMENT_STANDARD.md` | Kong deployment follows the standard deploy process |
+| Standard                            | Relationship                                           |
+| ----------------------------------- | ------------------------------------------------------ |
+| `API_GATEKEEPER_STANDARD.md`        | Kong implements Layer 2 of the Gatekeeper architecture |
+| `SECURITY_STANDARD.md`              | Kong enforces security policies at the edge            |
+| `DOCKER.md`                         | Kong follows Docker container standards                |
+| `08_SECRETS_MANAGEMENT_STANDARD.md` | Kong pulls secrets from Doppler                        |
+| `MONITORING.md`                     | Kong feeds metrics into monitoring pipeline            |
+| `DEPLOYMENT_STANDARD.md`            | Kong deployment follows the standard deploy process    |
 
 ---
 
 ## 11. Troubleshooting
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `502 Bad Gateway` | Backend service is down | Check upstream: `curl http://localhost:3000/health` |
-| `429 Too Many Requests` | Rate limit exceeded | Check consumer limits: `curl localhost:8001/consumers/{id}/plugins` |
-| `503 Service Unavailable` | Kong can't reach database | Check PostgreSQL: `docker compose logs kong-db` |
-| Admin API unreachable | Container not running | `docker compose ps` then `docker compose up -d` |
-| Routes not matching | Path/host mismatch | `curl localhost:8001/routes` to verify config |
-| Plugins not applying | Plugin scope wrong | Verify plugin is on correct service/route/global |
+| Symptom                   | Cause                     | Fix                                                                 |
+| ------------------------- | ------------------------- | ------------------------------------------------------------------- |
+| `502 Bad Gateway`         | Backend service is down   | Check upstream: `curl http://localhost:3000/health`                 |
+| `429 Too Many Requests`   | Rate limit exceeded       | Check consumer limits: `curl localhost:8001/consumers/{id}/plugins` |
+| `503 Service Unavailable` | Kong can't reach database | Check PostgreSQL: `docker compose logs kong-db`                     |
+| Admin API unreachable     | Container not running     | `docker compose ps` then `docker compose up -d`                     |
+| Routes not matching       | Path/host mismatch        | `curl localhost:8001/routes` to verify config                       |
+| Plugins not applying      | Plugin scope wrong        | Verify plugin is on correct service/route/global                    |
 
 ---
 
@@ -466,6 +470,7 @@ curl -s -X DELETE "http://localhost:8001/consumers/agent-OpenHands/key-auth/$OLD
 6. Remove redundant nginx proxy rules once Kong handles routing
 
 ### Timeline:
+
 - **Phase 1 (Day 1):** Kong installed, services registered, traffic routing through Kong
 - **Phase 2 (Day 2-3):** Rate limiting + CORS + logging enabled
 - **Phase 3 (Week 2):** Auth plugins configured, API keys issued to consumers

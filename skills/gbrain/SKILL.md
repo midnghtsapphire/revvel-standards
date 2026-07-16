@@ -14,13 +14,13 @@ GBrain fixes that. It stores everything your agent learns in a searchable knowle
 
 ### The Problem It Solves
 
-| Without GBrain | With GBrain |
-|---|---|
-| Agent forgets everything between sessions | Agent remembers everything forever |
-| "Who is Jordan?" — agent has no idea | Agent pulls full dossier: last meeting, open threads, deals |
-| You repeat context every conversation | Agent already has the context |
-| Knowledge dies when the session ends | Knowledge compounds with every conversation |
-| Agent answers from stale training data | Agent answers from YOUR personal knowledge |
+| Without GBrain                            | With GBrain                                                 |
+| ----------------------------------------- | ----------------------------------------------------------- |
+| Agent forgets everything between sessions | Agent remembers everything forever                          |
+| "Who is Jordan?" — agent has no idea      | Agent pulls full dossier: last meeting, open threads, deals |
+| You repeat context every conversation     | Agent already has the context                               |
+| Knowledge dies when the session ends      | Knowledge compounds with every conversation                 |
+| Agent answers from stale training data    | Agent answers from YOUR personal knowledge                  |
 
 ### What It Is Derived From
 
@@ -45,6 +45,7 @@ GBrain is the retrieval engine that makes that brain searchable. The brain repo 
 ```
 
 **Three layers:**
+
 1. **Brain Repo** — plain markdown files in a git repo (people/, companies/, concepts/, etc.)
 2. **GBrain CLI** — indexes markdown into Postgres, exposes 30 MCP tools and a CLI
 3. **AI Agent** — reads and writes through both layers on every conversation
@@ -53,14 +54,14 @@ GBrain is the retrieval engine that makes that brain searchable. The brain repo 
 
 ## Dependencies
 
-| Dependency | Required? | Purpose | Install |
-|---|---|---|---|
-| **Bun** (runtime) | ✅ Required | Runs gbrain CLI | `curl -fsSL https://bun.sh/install \| bash` |
-| **GBrain CLI** | ✅ Required | Core tool | `bun add -g github:garrytan/gbrain` |
-| **OpenAI API Key** | ⚡ Recommended | Vector embeddings (better search) | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
-| **Anthropic API Key** | ⭕ Optional | Multi-query expansion (smarter search) | [console.anthropic.com](https://console.anthropic.com) |
-| **Supabase** | ⭕ Optional | Scale to 1000+ files / multi-device | [supabase.com](https://supabase.com) — Pro $25/mo |
-| **ngrok** | ⭕ Optional | Remote MCP access / voice | [ngrok.com](https://ngrok.com) — Hobby $8/mo |
+| Dependency            | Required?      | Purpose                                | Install                                                              |
+| --------------------- | -------------- | -------------------------------------- | -------------------------------------------------------------------- |
+| **Bun** (runtime)     | ✅ Required    | Runs gbrain CLI                        | `curl -fsSL https://bun.sh/install \| bash`                          |
+| **GBrain CLI**        | ✅ Required    | Core tool                              | `bun add -g github:garrytan/gbrain`                                  |
+| **OpenAI API Key**    | ⚡ Recommended | Vector embeddings (better search)      | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
+| **Anthropic API Key** | ⭕ Optional    | Multi-query expansion (smarter search) | [console.anthropic.com](https://console.anthropic.com)               |
+| **Supabase**          | ⭕ Optional    | Scale to 1000+ files / multi-device    | [supabase.com](https://supabase.com) — Pro $25/mo                    |
+| **ngrok**             | ⭕ Optional    | Remote MCP access / voice              | [ngrok.com](https://ngrok.com) — Hobby $8/mo                         |
 
 **Default setup (PGLite):** No server, no account, no API keys required. Local embedded Postgres. Keyword search works immediately.
 
@@ -69,6 +70,7 @@ GBrain is the retrieval engine that makes that brain searchable. The brain repo 
 ## Setup Workflow
 
 ### Phase 1: Install GBrain
+
 ```bash
 # Install Bun (fast JavaScript runtime)
 curl -fsSL https://bun.sh/install | bash
@@ -82,12 +84,14 @@ gbrain --version
 ```
 
 ### Phase 2: Initialize the Brain Database
+
 ```bash
 gbrain init           # Creates local PGLite database — done in 2 seconds
 gbrain doctor --json  # Health check — all items should pass
 ```
 
 ### Phase 3: Create or Connect Your Brain Repo
+
 ```bash
 # Option A: New brain repo
 mkdir -p ~/brain && cd ~/brain && git init
@@ -97,6 +101,7 @@ mkdir -p ~/brain && cd ~/brain && git init
 ```
 
 ### Phase 4: Set Up Directory Structure (MECE Schema)
+
 ```
 ~/brain/
 ├── people/          # One file per person (name, role, company, history)
@@ -109,6 +114,7 @@ mkdir -p ~/brain && cd ~/brain && git init
 ```
 
 ### Phase 5: Import and Index
+
 ```bash
 cd ~/gbrain
 gbrain import ~/brain/ --no-embed    # Fast import (keyword search only)
@@ -117,13 +123,16 @@ gbrain query "key themes in my notes?"
 ```
 
 ### Phase 6: Add API Keys (Optional, for better search)
+
 ```bash
 export OPENAI_API_KEY=sk-...         # Add to ~/.zshrc or ~/.bashrc
 export ANTHROPIC_API_KEY=sk-ant-...  # Add to ~/.zshrc or ~/.bashrc
 ```
 
 ### Phase 7: Connect to Your AI Agent (MCP)
+
 Add to your MCP client configuration (`~/.claude/server.json` for Claude Code):
+
 ```json
 {
   "mcpServers": {
@@ -134,6 +143,7 @@ Add to your MCP client configuration (`~/.claude/server.json` for Claude Code):
   }
 }
 ```
+
 For Cursor: Settings > MCP Servers > add the same JSON block.
 
 ---
@@ -158,18 +168,18 @@ This is what makes the knowledge compound. Each cycle adds context. The agent ne
 
 ## Key Commands
 
-| Command | What It Does |
-|---|---|
-| `gbrain init` | Initialize local brain database |
-| `gbrain import ~/brain/` | Index all markdown files |
-| `gbrain embed --stale` | Generate vector embeddings for new/changed files |
-| `gbrain search "Jordan"` | Hybrid keyword + vector search |
-| `gbrain query "prep for meeting with Sarah"` | LLM-powered synthesis query |
-| `gbrain get people/jordan.md` | Get a specific brain page |
-| `gbrain sync --repo ~/brain` | Sync latest changes to database |
-| `gbrain doctor --json` | Health check all systems |
-| `gbrain serve` | Start MCP server (for AI agents) |
-| `gbrain check-update --json` | Check for updates (never auto-install) |
+| Command                                      | What It Does                                     |
+| -------------------------------------------- | ------------------------------------------------ |
+| `gbrain init`                                | Initialize local brain database                  |
+| `gbrain import ~/brain/`                     | Index all markdown files                         |
+| `gbrain embed --stale`                       | Generate vector embeddings for new/changed files |
+| `gbrain search "Jordan"`                     | Hybrid keyword + vector search                   |
+| `gbrain query "prep for meeting with Sarah"` | LLM-powered synthesis query                      |
+| `gbrain get people/jordan.md`                | Get a specific brain page                        |
+| `gbrain sync --repo ~/brain`                 | Sync latest changes to database                  |
+| `gbrain doctor --json`                       | Health check all systems                         |
+| `gbrain serve`                               | Start MCP server (for AI agents)                 |
+| `gbrain check-update --json`                 | Check for updates (never auto-install)           |
 
 ---
 
@@ -177,14 +187,14 @@ This is what makes the knowledge compound. Each cycle adds context. The agent ne
 
 Each integration is a self-contained installer. Your agent reads the recipe, asks for API keys, validates, and runs a smoke test.
 
-| Integration | What It Does | Requires |
-|---|---|---|
-| `recipes/email-to-brain.md` | Gmail → entity brain pages | Gmail credentials |
-| `recipes/calendar-to-brain.md` | Google Calendar → daily pages | Gmail credentials |
-| `recipes/meeting-sync.md` | Meeting transcripts → brain pages | Circleback |
-| `recipes/x-to-brain.md` | Twitter/X → brain pages | Twitter API |
-| `recipes/twilio-voice-brain.md` | Phone calls → brain pages | Twilio + ngrok |
-| `recipes/ngrok-tunnel.md` | Public URL for remote MCP access | ngrok account |
+| Integration                     | What It Does                      | Requires          |
+| ------------------------------- | --------------------------------- | ----------------- |
+| `recipes/email-to-brain.md`     | Gmail → entity brain pages        | Gmail credentials |
+| `recipes/calendar-to-brain.md`  | Google Calendar → daily pages     | Gmail credentials |
+| `recipes/meeting-sync.md`       | Meeting transcripts → brain pages | Circleback        |
+| `recipes/x-to-brain.md`         | Twitter/X → brain pages           | Twitter API       |
+| `recipes/twilio-voice-brain.md` | Phone calls → brain pages         | Twilio + ngrok    |
+| `recipes/ngrok-tunnel.md`       | Public URL for remote MCP access  | ngrok account     |
 
 Run `gbrain integrations list` to see status of all configured integrations.
 
@@ -206,6 +216,7 @@ Set up recurring cron jobs to keep the brain alive and growing:
 ```
 
 The dream cycle is what makes the brain compound while you sleep:
+
 - Entity sweep across all conversations
 - Fix broken citations and dead links
 - Consolidate duplicate entries
@@ -217,23 +228,24 @@ The dream cycle is what makes the brain compound while you sleep:
 
 When running as MCP server (`gbrain serve`), your agent gets these tools:
 
-| Tool | Action |
-|---|---|
-| `get_page` | Read a brain page by path |
-| `put_page` | Write/update a brain page |
-| `search` | Hybrid keyword + vector search |
-| `query` | LLM-synthesized answer from brain |
-| `add_link` | Create backlink between pages |
-| `traverse_graph` | Walk the knowledge graph |
-| `sync_brain` | Sync latest changes |
-| `file_upload` | Add document to brain |
-| + 22 more | See `gbrain --help` for full list |
+| Tool             | Action                            |
+| ---------------- | --------------------------------- |
+| `get_page`       | Read a brain page by path         |
+| `put_page`       | Write/update a brain page         |
+| `search`         | Hybrid keyword + vector search    |
+| `query`          | LLM-synthesized answer from brain |
+| `add_link`       | Create backlink between pages     |
+| `traverse_graph` | Walk the knowledge graph          |
+| `sync_brain`     | Sync latest changes               |
+| `file_upload`    | Add document to brain             |
+| + 22 more        | See `gbrain --help` for full list |
 
 ---
 
 ## Scaling: When to Migrate to Supabase
 
 Stay on PGLite (local, free) until you hit one of these:
+
 - 1,000+ brain files
 - Need multi-device access
 - Need remote MCP from multiple AI clients
@@ -245,15 +257,16 @@ Then run: `gbrain migrate --to supabase`
 
 ## Integration with Revvel Standards
 
-| Revvel Standard | GBrain Integration |
-|---|---|
-| `MCP_STANDARD.md` | Add `gbrain` to your project's `.mcp.json` |
-| `AGENT_FACTORY_STANDARD.md` | Use gbrain as agent memory layer |
-| `AUDREY_AUTONOMOUS_AGENT_STANDARD.md` | Brain-agent loop is the core pattern |
-| `skills/context-management/SKILL.md` | GBrain preserves context between sessions |
-| `skills/memory-pruning/SKILL.md` | Use gbrain to archive pruned memories |
+| Revvel Standard                       | GBrain Integration                         |
+| ------------------------------------- | ------------------------------------------ |
+| `MCP_STANDARD.md`                     | Add `gbrain` to your project's `.mcp.json` |
+| `AGENT_FACTORY_STANDARD.md`           | Use gbrain as agent memory layer           |
+| `AUDREY_AUTONOMOUS_AGENT_STANDARD.md` | Brain-agent loop is the core pattern       |
+| `skills/context-management/SKILL.md`  | GBrain preserves context between sessions  |
+| `skills/memory-pruning/SKILL.md`      | Use gbrain to archive pruned memories      |
 
 To add gbrain to your Revvel project's MCP config, add this entry to your `.mcp.json`:
+
 ```json
 "gbrain": {
   "command": "gbrain",

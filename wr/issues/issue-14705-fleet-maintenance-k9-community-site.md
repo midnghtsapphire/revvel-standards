@@ -43,7 +43,7 @@ The **one real gap** that blocks this WR's acceptance criteria is automation: th
 
 **This WR delivers (in revvel-standards, the hub):**
 
-1. A self-healing diagnosis answering the agent instruction *"Is this stuck?"*
+1. A self-healing diagnosis answering the agent instruction _"Is this stuck?"_
 2. Concrete, ranked improvements for the target repo (deps, security, tests, DX, perf, docs).
 3. **Ready-to-apply review workflows** (CodeQL + Semgrep self-contained; OpenRouter + Jules referencing org secrets) for the coder/PR stage to drop into `k9-community-site/.github/workflows/`.
 4. The required Artifact Engine Map and Agent Self-Healing Journal.
@@ -56,12 +56,12 @@ The **one real gap** that blocks this WR's acceptance criteria is automation: th
 
 **Yes, partially.** The WR issue (#14705) was filed by the fleet-maintenance sweep (`scripts/fleet-maintenance.js`) and is correctly classified (`client-code-task` / `standard` / `build-direct` / `refresh-existing`), but it cannot self-complete because of two structural reasons:
 
-| Symptom | Root cause | Correction (this WR) |
-| --- | --- | --- |
-| No draft PR appeared on the target repo | The fleet WR routes through `research-engine → coder`, but the coder needs the target repo to expose the standard review workflows to satisfy the "full jury" acceptance gate. The target only has `title-only-intake.yml`. | Provide the 4 missing review workflows as ready-to-apply artifacts so the coder PR satisfies its own acceptance criteria. |
-| Repo looked like an empty stub | Inventory docs (`REPO_CATALOG.md`, `Walter-Evans-GitHub-Repo-Inventory.md`) cache it as `0KB`/"Library/Other", which mis-signals "nothing to do" and can cause the sweep target to be skipped or mis-prioritised (currently P3). | Record the true state (Vite/React/TS app with tests + docs) here so future sweeps prioritise the automation gap, not a docs rewrite. |
+| Symptom                                 | Root cause                                                                                                                                                                                                                       | Correction (this WR)                                                                                                                 |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| No draft PR appeared on the target repo | The fleet WR routes through `research-engine → coder`, but the coder needs the target repo to expose the standard review workflows to satisfy the "full jury" acceptance gate. The target only has `title-only-intake.yml`.      | Provide the 4 missing review workflows as ready-to-apply artifacts so the coder PR satisfies its own acceptance criteria.            |
+| Repo looked like an empty stub          | Inventory docs (`REPO_CATALOG.md`, `Walter-Evans-GitHub-Repo-Inventory.md`) cache it as `0KB`/"Library/Other", which mis-signals "nothing to do" and can cause the sweep target to be skipped or mis-prioritised (currently P3). | Record the true state (Vite/React/TS app with tests + docs) here so future sweeps prioritise the automation gap, not a docs rewrite. |
 
-**Conclusion:** the work is *not* a deep redevelopment — the target repo is healthy. The actionable fix is **wiring the four review workflows** (plus a light docs/inventory correction), which is exactly what the coder stage needs to open a passing draft PR.
+**Conclusion:** the work is _not_ a deep redevelopment — the target repo is healthy. The actionable fix is **wiring the four review workflows** (plus a light docs/inventory correction), which is exactly what the coder stage needs to open a passing draft PR.
 
 ---
 
@@ -69,26 +69,26 @@ The **one real gap** that blocks this WR's acceptance criteria is automation: th
 
 ### Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Repository | [midnghtsapphire/k9-community-site](https://github.com/midnghtsapphire/k9-community-site) |
-| Stack | Vite 8 + React 19 + TypeScript ~6.0 |
-| Build | `tsc -b && vite build` |
-| Test | `vitest run` (Testing Library + jsdom), smoke test in `src/App.test.tsx` |
-| Lint | ESLint flat config (`eslint.config.js`) with `typescript-eslint`, `react-hooks`, `react-refresh` |
-| Checklist | `validate.py` asserts required files/scripts/README sections |
-| Docs present | `README`, `CHANGELOG`, `DEPLOYMENT_GUIDE`, `GO_TO_MARKET`, `BRAND_GUIDELINES`, `SECURITY`, `AGENTS.md` |
-| Workflows present | **only** `.github/workflows/title-only-intake.yml` + `.github/scitor.yaml` |
-| Priority (tracker) | P3 — "Community site" |
+| Property           | Value                                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------ |
+| Repository         | [midnghtsapphire/k9-community-site](https://github.com/midnghtsapphire/k9-community-site)              |
+| Stack              | Vite 8 + React 19 + TypeScript ~6.0                                                                    |
+| Build              | `tsc -b && vite build`                                                                                 |
+| Test               | `vitest run` (Testing Library + jsdom), smoke test in `src/App.test.tsx`                               |
+| Lint               | ESLint flat config (`eslint.config.js`) with `typescript-eslint`, `react-hooks`, `react-refresh`       |
+| Checklist          | `validate.py` asserts required files/scripts/README sections                                           |
+| Docs present       | `README`, `CHANGELOG`, `DEPLOYMENT_GUIDE`, `GO_TO_MARKET`, `BRAND_GUIDELINES`, `SECURITY`, `AGENTS.md` |
+| Workflows present  | **only** `.github/workflows/title-only-intake.yml` + `.github/scitor.yaml`                             |
+| Priority (tracker) | P3 — "Community site"                                                                                  |
 
 ### Current automation gap
 
-| Standard review workflow | Source of truth in hub | Present in target? |
-| --- | --- | --- |
-| OpenRouter code review | `.github/workflows/ai-pr-review-openrouter.yml` | ❌ Missing |
-| Jules PR reviewer | `.github/workflows/jules-pr-reviewer.yml` | ❌ Missing |
-| Semgrep SAST | `.github/workflows/semgrep.yml` | ❌ Missing |
-| CodeQL | `.github/workflows/codeql.yml` | ❌ Missing |
+| Standard review workflow | Source of truth in hub                          | Present in target? |
+| ------------------------ | ----------------------------------------------- | ------------------ |
+| OpenRouter code review   | `.github/workflows/ai-pr-review-openrouter.yml` | ❌ Missing         |
+| Jules PR reviewer        | `.github/workflows/jules-pr-reviewer.yml`       | ❌ Missing         |
+| Semgrep SAST             | `.github/workflows/semgrep.yml`                 | ❌ Missing         |
+| CodeQL                   | `.github/workflows/codeql.yml`                  | ❌ Missing         |
 
 ---
 
@@ -99,7 +99,7 @@ The **one real gap** that blocks this WR's acceptance criteria is automation: th
 - **Competitors / comparables (and GitHub stars of the underlying stack tools):**
   - Nextdoor / Meetup dog groups / BringFido — fragmented, ad-heavy, not community-owned.
   - Stack tooling stars (for provenance): React ≈ 235k★, Vite ≈ 72k★, Vitest ≈ 13k★, Testing Library ≈ 19k★ (GitHub, approximate as of 2026-06).
-- **Community chatter:** dog owners want a *local*, low-noise hub for events, lost-and-found, vetted trainers, and rescue volunteering — pain points are ads and irrelevant national content. The target's membership/partner/CTA sections already address this.
+- **Community chatter:** dog owners want a _local_, low-noise hub for events, lost-and-found, vetted trainers, and rescue volunteering — pain points are ads and irrelevant national content. The target's membership/partner/CTA sections already address this.
 
 ## Step 3: Monetization Path (target)
 
@@ -113,17 +113,17 @@ Revenue posture aligns with the Prime Directive (path to recurring revenue); thi
 
 ## Step 4: Concrete Improvements (ranked, for the target-repo draft PR)
 
-| # | Improvement | Category | Priority | Notes |
-| --- | --- | --- | --- | --- |
-| 1 | Add CodeQL workflow | Security | **P0** | Self-contained; see artifact below. |
-| 2 | Add Semgrep SAST workflow | Security | **P0** | Self-contained; OSS rule packs. |
-| 3 | Add OpenRouter AI PR review workflow | DX/review | **P0** | Needs org secret `OPENROUTER_API_KEY` (graceful skip if absent). |
-| 4 | Add Jules PR reviewer workflow (`workflow_dispatch`) | DX/review | **P1** | Needs `JULES_API_KEY`; upstream action is flaky — wire dispatch-only, mirroring hub. |
-| 5 | Add Dependabot (`.github/dependabot.yml`) for `npm` + `github-actions` | Deps | **P1** | Keeps React 19 / Vite 8 current; low-risk. |
-| 6 | Add a CI workflow running `lint` + `test` + `build` + `validate.py` on PRs | DX/tests | **P1** | The repo has scripts but no CI gate running them. |
-| 7 | README: add a `## Live Deployment` section with the live URL | Docs | **P1** | Required by repo Definition of Done (`docs/DEFINITION_OF_DONE.md`). |
-| 8 | Correct inventory entries that cache the repo as `0KB`/"Library/Other" | Docs | **P2** | `docs/REPO_CATALOG.md`, `docs/Walter-Evans-GitHub-Repo-Inventory.md`. |
-| 9 | Add `loading="lazy"`/`decoding="async"` to any imagery; confirm `<img>` alt text | Perf/A11y | **P2** | Lighthouse polish on the landing surface. |
+| #   | Improvement                                                                      | Category  | Priority | Notes                                                                                |
+| --- | -------------------------------------------------------------------------------- | --------- | -------- | ------------------------------------------------------------------------------------ |
+| 1   | Add CodeQL workflow                                                              | Security  | **P0**   | Self-contained; see artifact below.                                                  |
+| 2   | Add Semgrep SAST workflow                                                        | Security  | **P0**   | Self-contained; OSS rule packs.                                                      |
+| 3   | Add OpenRouter AI PR review workflow                                             | DX/review | **P0**   | Needs org secret `OPENROUTER_API_KEY` (graceful skip if absent).                     |
+| 4   | Add Jules PR reviewer workflow (`workflow_dispatch`)                             | DX/review | **P1**   | Needs `JULES_API_KEY`; upstream action is flaky — wire dispatch-only, mirroring hub. |
+| 5   | Add Dependabot (`.github/dependabot.yml`) for `npm` + `github-actions`           | Deps      | **P1**   | Keeps React 19 / Vite 8 current; low-risk.                                           |
+| 6   | Add a CI workflow running `lint` + `test` + `build` + `validate.py` on PRs       | DX/tests  | **P1**   | The repo has scripts but no CI gate running them.                                    |
+| 7   | README: add a `## Live Deployment` section with the live URL                     | Docs      | **P1**   | Required by repo Definition of Done (`docs/DEFINITION_OF_DONE.md`).                  |
+| 8   | Correct inventory entries that cache the repo as `0KB`/"Library/Other"           | Docs      | **P2**   | `docs/REPO_CATALOG.md`, `docs/Walter-Evans-GitHub-Repo-Inventory.md`.                |
+| 9   | Add `loading="lazy"`/`decoding="async"` to any imagery; confirm `<img>` alt text | Perf/A11y | **P2**   | Lighthouse polish on the landing surface.                                            |
 
 Items 1–4 directly satisfy the issue's "full jury" acceptance criterion. Items 5–9 are the "concrete improvements" the issue asks the coder to research and agree.
 
@@ -146,7 +146,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '20 3 * * 1'
+    - cron: "20 3 * * 1"
   workflow_dispatch:
 permissions:
   actions: read
@@ -169,7 +169,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['actions', 'javascript-typescript']
+        language: ["actions", "javascript-typescript"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -185,7 +185,7 @@ jobs:
           category: /language:${{ matrix.language }}
 ```
 
-> **Note:** disable GitHub's code-scanning *default setup* (Settings → Security → Code
+> **Note:** disable GitHub's code-scanning _default setup_ (Settings → Security → Code
 > scanning → Default setup → Disable) before this advanced workflow can upload SARIF.
 
 ### `semgrep.yml`
@@ -198,7 +198,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '15 4 * * 1'
+    - cron: "15 4 * * 1"
   workflow_dispatch:
 permissions:
   contents: read
@@ -286,23 +286,23 @@ if full Jules review is required.
 
 ## Artifact Engine Map
 
-| Artifact Shape | Existing engine / standard | Status | Required action |
-| --- | --- | --- | --- |
-| Website / UI | Target repo `src/App.tsx` (Vite/React/TS) | ✅ Exists & healthy | Docs/perf polish only (items 7, 9) |
-| API | N/A | N/A | Not in scope (static site) |
-| CLI | N/A | N/A | Not in scope |
-| MCP | N/A | N/A | Not in scope |
-| Skill | N/A | N/A | Not in scope |
-| PDF / deck / video | N/A | N/A | Not in scope |
-| Docs | `wr/issues/` + target `README`/ship-to-market docs | ✅ Exists | **Delivered:** this WR doc; target README `## Live Deployment` queued |
-| Agent automation | Hub `.github/workflows/{codeql,semgrep,ai-pr-review-openrouter,jules-pr-reviewer}.yml` | Gap on target | **Delivered:** ready-to-apply ports above for the coder PR |
-| Inventory | `docs/REPO_CATALOG.md`, `docs/Walter-Evans-GitHub-Repo-Inventory.md` | Stale (`0KB` cache) | Correction queued (item 8) |
+| Artifact Shape     | Existing engine / standard                                                             | Status              | Required action                                                       |
+| ------------------ | -------------------------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------------- |
+| Website / UI       | Target repo `src/App.tsx` (Vite/React/TS)                                              | ✅ Exists & healthy | Docs/perf polish only (items 7, 9)                                    |
+| API                | N/A                                                                                    | N/A                 | Not in scope (static site)                                            |
+| CLI                | N/A                                                                                    | N/A                 | Not in scope                                                          |
+| MCP                | N/A                                                                                    | N/A                 | Not in scope                                                          |
+| Skill              | N/A                                                                                    | N/A                 | Not in scope                                                          |
+| PDF / deck / video | N/A                                                                                    | N/A                 | Not in scope                                                          |
+| Docs               | `wr/issues/` + target `README`/ship-to-market docs                                     | ✅ Exists           | **Delivered:** this WR doc; target README `## Live Deployment` queued |
+| Agent automation   | Hub `.github/workflows/{codeql,semgrep,ai-pr-review-openrouter,jules-pr-reviewer}.yml` | Gap on target       | **Delivered:** ready-to-apply ports above for the coder PR            |
+| Inventory          | `docs/REPO_CATALOG.md`, `docs/Walter-Evans-GitHub-Repo-Inventory.md`                   | Stale (`0KB` cache) | Correction queued (item 8)                                            |
 
 ---
 
 ## Agent Self-Healing Journal
 
-- **Issue detected:** Fleet WR #14705 for `k9-community-site` filed by `scripts/fleet-maintenance.js`, but no draft PR materialised on the target and the issue carried the agent note *"Is this stuck?"*.
+- **Issue detected:** Fleet WR #14705 for `k9-community-site` filed by `scripts/fleet-maintenance.js`, but no draft PR materialised on the target and the issue carried the agent note _"Is this stuck?"_.
 - **Root cause:** (1) The coder stage's acceptance gate requires the target repo to expose the standard review workflows (OpenRouter, Jules, Semgrep, CodeQL); the target only had `title-only-intake.yml`, so a passing-jury PR could not be opened. (2) Inventory docs cached the repo as `0KB`/"Library/Other", mis-signalling an empty stub when it is actually a working Vite/React/TS app.
 - **Research / correction:** Copilot Coding Agent read the live target repo via the GitHub API, confirmed it is healthy (tests, lint, docs, `validate.py`), and produced this design + ready-to-apply workflow artifacts so the coder stage can open a jury-passing draft PR.
 - **Revvel-standards change:** new WR doc `wr/issues/issue-14705-fleet-maintenance-k9-community-site.md`; `wr/WR_TRACKER.md` row for k9-community-site now links the WR.

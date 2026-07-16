@@ -47,19 +47,20 @@ The `chrome-devtools-mcp` fork ([midnghtsapphire/chrome-devtools-mcp](https://gi
 
 ### Repository Metadata
 
-| Property | Value |
-|---|---|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Fork | [midnghtsapphire/chrome-devtools-mcp](https://github.com/midnghtsapphire/chrome-devtools-mcp) |
-| MCP catalog entry | `docs/REPO_CATALOG.md` — "Chrome DevTools for coding agents — Fork — MCP Server — PUBLIC" |
-| Prior mention | `docs/GROWLINGEYES_FORK_INTEGRATION_AND_CREDENTIAL_AUDIT.md` — "Useful for testing/debugging GrowlingEyes UI with AI agents" |
-| Current `.mcp.json` status | ❌ NOT wired in — missing from `.mcp.json` |
-| Labels on issue | `triage`, `openrouter`, `priority-p1`, `weekly-research`, `wr:in-progress`, `deep-research`, `work-request` |
-| Automated triage ran? | ✅ Partial — labels applied, WR doc not generated |
+| Property                   | Value                                                                                                                        |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Repository                 | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)                                      |
+| Fork                       | [midnghtsapphire/chrome-devtools-mcp](https://github.com/midnghtsapphire/chrome-devtools-mcp)                                |
+| MCP catalog entry          | `docs/REPO_CATALOG.md` — "Chrome DevTools for coding agents — Fork — MCP Server — PUBLIC"                                    |
+| Prior mention              | `docs/GROWLINGEYES_FORK_INTEGRATION_AND_CREDENTIAL_AUDIT.md` — "Useful for testing/debugging GrowlingEyes UI with AI agents" |
+| Current `.mcp.json` status | ❌ NOT wired in — missing from `.mcp.json`                                                                                   |
+| Labels on issue            | `triage`, `openrouter`, `priority-p1`, `weekly-research`, `wr:in-progress`, `deep-research`, `work-request`                  |
+| Automated triage ran?      | ✅ Partial — labels applied, WR doc not generated                                                                            |
 
 ### Current Gap
 
 The `chrome-devtools-mcp` fork exists in the org and is documented in two catalog files, but has never been:
+
 1. Added to the root `.mcp.json`
 2. Added to `docs/MCP_REVVEL_CATALOG.md` (the authoritative server catalog)
 3. Configured with usage examples for the specific "token/secret retrieval" use case the issue requests
@@ -76,46 +77,46 @@ The `chrome-devtools-mcp` fork exists in the org and is documented in two catalo
 
 ### Core Tool Surface (upstream `chrome-devtools-mcp`)
 
-| Tool | CDP Domain | What It Returns |
-|---|---|---|
-| `cdp_navigate` | Page | Navigate tab to URL |
-| `cdp_screenshot` | Page | Base64 PNG screenshot |
-| `cdp_evaluate` | Runtime | Execute JS expression, return result |
-| `cdp_get_cookies` | Network | All cookies for origin (name, value, domain, secure, httpOnly, expiry) |
-| `cdp_set_cookie` | Network | Write/overwrite a cookie |
-| `cdp_get_local_storage` | Runtime (via JS) | All `localStorage` keys+values for current origin |
-| `cdp_get_session_storage` | Runtime (via JS) | All `sessionStorage` keys+values |
-| `cdp_network_intercept` | Network | Capture request/response headers (incl. `Authorization`) |
-| `cdp_get_indexed_db` | IndexedDB | Enumerate databases, object stores, and records |
-| `cdp_service_worker_cache` | CacheStorage (via JS) | List Service Worker cache keys and entries |
-| `cdp_dom_query` | DOM | CSS selector → list of matching nodes + attributes |
-| `cdp_click` | Input | Simulate click on element |
-| `cdp_type` | Input | Type text into focused element |
-| `cdp_wait_for_selector` | Runtime | Poll until CSS selector resolves |
-| `cdp_close_tab` | Target | Close the current tab |
+| Tool                       | CDP Domain            | What It Returns                                                        |
+| -------------------------- | --------------------- | ---------------------------------------------------------------------- |
+| `cdp_navigate`             | Page                  | Navigate tab to URL                                                    |
+| `cdp_screenshot`           | Page                  | Base64 PNG screenshot                                                  |
+| `cdp_evaluate`             | Runtime               | Execute JS expression, return result                                   |
+| `cdp_get_cookies`          | Network               | All cookies for origin (name, value, domain, secure, httpOnly, expiry) |
+| `cdp_set_cookie`           | Network               | Write/overwrite a cookie                                               |
+| `cdp_get_local_storage`    | Runtime (via JS)      | All `localStorage` keys+values for current origin                      |
+| `cdp_get_session_storage`  | Runtime (via JS)      | All `sessionStorage` keys+values                                       |
+| `cdp_network_intercept`    | Network               | Capture request/response headers (incl. `Authorization`)               |
+| `cdp_get_indexed_db`       | IndexedDB             | Enumerate databases, object stores, and records                        |
+| `cdp_service_worker_cache` | CacheStorage (via JS) | List Service Worker cache keys and entries                             |
+| `cdp_dom_query`            | DOM                   | CSS selector → list of matching nodes + attributes                     |
+| `cdp_click`                | Input                 | Simulate click on element                                              |
+| `cdp_type`                 | Input                 | Type text into focused element                                         |
+| `cdp_wait_for_selector`    | Runtime               | Poll until CSS selector resolves                                       |
+| `cdp_close_tab`            | Target                | Close the current tab                                                  |
 
 ### Token / Secret Retrieval — Specific Use Cases
 
 The issue specifically asks "where tools can be used especially in retrieving tokens or secrets." The answer is scoped to **authorized, automated testing and agent debugging scenarios only** (see security boundary section).
 
-| Scenario | Tool(s) | Revvel product | Business value |
-|---|---|---|---|
-| Retrieve session cookie for CI login | `cdp_get_cookies` | All products with user auth | Enables headless E2E login flows without hardcoding test credentials |
-| Read JWT from `localStorage` after login | `cdp_get_local_storage` | GrowlingEyes, Lead Engine, Music Video Creator | Agent can verify auth state post-login without inspecting source |
-| Capture `Authorization: Bearer` header | `cdp_network_intercept` | Any product using REST APIs | Confirm token is sent with every authenticated request |
-| Read refresh token from `sessionStorage` | `cdp_get_session_storage` | Any OAuth flow (Google, GitHub sign-in) | Verify token rotation logic works end-to-end |
-| Inspect service-worker cached auth manifest | `cdp_service_worker_cache` | PWA products | Detect stale auth configs that block offline-mode login |
-| Read Doppler/env injected values from JS globals | `cdp_evaluate` | Any product consuming `window.__ENV__` | Confirm secrets are injected at runtime, not baked into bundle |
+| Scenario                                         | Tool(s)                    | Revvel product                                 | Business value                                                       |
+| ------------------------------------------------ | -------------------------- | ---------------------------------------------- | -------------------------------------------------------------------- |
+| Retrieve session cookie for CI login             | `cdp_get_cookies`          | All products with user auth                    | Enables headless E2E login flows without hardcoding test credentials |
+| Read JWT from `localStorage` after login         | `cdp_get_local_storage`    | GrowlingEyes, Lead Engine, Music Video Creator | Agent can verify auth state post-login without inspecting source     |
+| Capture `Authorization: Bearer` header           | `cdp_network_intercept`    | Any product using REST APIs                    | Confirm token is sent with every authenticated request               |
+| Read refresh token from `sessionStorage`         | `cdp_get_session_storage`  | Any OAuth flow (Google, GitHub sign-in)        | Verify token rotation logic works end-to-end                         |
+| Inspect service-worker cached auth manifest      | `cdp_service_worker_cache` | PWA products                                   | Detect stale auth configs that block offline-mode login              |
+| Read Doppler/env injected values from JS globals | `cdp_evaluate`             | Any product consuming `window.__ENV__`         | Confirm secrets are injected at runtime, not baked into bundle       |
 
 ### Market Landscape & Competitor BOM
 
-| Tool | Stars | Approach | Token access | Cost | Verdict |
-|---|---|---|---|---|---|
-| **chrome-devtools-mcp** | ~800 | MCP tools over CDP stdio | ✅ Full | MIT / $0 | ⭐ Use (already forked) |
-| `playwright-mcp` (Microsoft) | ~3 k | MCP tools over Playwright API | ✅ Via evaluate | MIT / $0 | ✅ Complementary (higher-level) |
-| `puppeteer-mcp` | ~300 | MCP tools over Puppeteer | ✅ Full | MIT / $0 | 🟡 Redundant if CDP MCP is wired |
-| `steel-browser` (fork in org) | ~600 | Managed browser API / REST | ⚠️ Limited to JS eval | $0 OSS / cloud pricing | 🟡 Complementary for persistent sessions |
-| `browserbase` | —  | Cloud headless browser API | ✅ Via CDP proxy | $49+/mo | ❌ Cost; CDP MCP is free |
+| Tool                          | Stars | Approach                      | Token access          | Cost                   | Verdict                                  |
+| ----------------------------- | ----- | ----------------------------- | --------------------- | ---------------------- | ---------------------------------------- |
+| **chrome-devtools-mcp**       | ~800  | MCP tools over CDP stdio      | ✅ Full               | MIT / $0               | ⭐ Use (already forked)                  |
+| `playwright-mcp` (Microsoft)  | ~3 k  | MCP tools over Playwright API | ✅ Via evaluate       | MIT / $0               | ✅ Complementary (higher-level)          |
+| `puppeteer-mcp`               | ~300  | MCP tools over Puppeteer      | ✅ Full               | MIT / $0               | 🟡 Redundant if CDP MCP is wired         |
+| `steel-browser` (fork in org) | ~600  | Managed browser API / REST    | ⚠️ Limited to JS eval | $0 OSS / cloud pricing | 🟡 Complementary for persistent sessions |
+| `browserbase`                 | —     | Cloud headless browser API    | ✅ Via CDP proxy      | $49+/mo                | ❌ Cost; CDP MCP is free                 |
 
 **Decision:** Wire `chrome-devtools-mcp` as the primary browser MCP server. `playwright-mcp` is optional for high-level UI flows. `steel-browser` can be evaluated separately for long-lived session management.
 
@@ -128,17 +129,18 @@ The issue specifically asks "where tools can be used especially in retrieving to
 
 ### Marketing / SEO Keywords
 
-| Keyword | Intent | Opportunity |
-|---|---|---|
-| `chrome devtools mcp server` | Tool research | High (nascent niche, low competition) |
-| `ai agent browser automation mcp` | Tool research | High |
-| `mcp cookie extraction testing` | Technical how-to | Medium |
-| `cdp token retrieval agent` | Technical how-to | Medium |
-| `playwright mcp vs chrome devtools mcp` | Comparison | High (first-mover content opportunity) |
+| Keyword                                 | Intent           | Opportunity                            |
+| --------------------------------------- | ---------------- | -------------------------------------- |
+| `chrome devtools mcp server`            | Tool research    | High (nascent niche, low competition)  |
+| `ai agent browser automation mcp`       | Tool research    | High                                   |
+| `mcp cookie extraction testing`         | Technical how-to | Medium                                 |
+| `cdp token retrieval agent`             | Technical how-to | Medium                                 |
+| `playwright mcp vs chrome devtools mcp` | Comparison       | High (first-mover content opportunity) |
 
 ### Monetization Path
 
 This WR is infrastructure, not a revenue product. Value is indirect:
+
 - Reduces manual QA effort → faster ship cycles → faster revenue from products shipping sooner
 - Enables automated E2E auth testing → fewer auth bugs in paid products
 - Could be surfaced as a **Revvel Developer Toolkit** offering if the org productizes its agent stack
@@ -166,16 +168,19 @@ This WR is infrastructure, not a revenue product. Value is indirect:
 ## Step 4: Security Boundary (Required — do not skip)
 
 > **Scope limitation:** Chrome DevTools MCP tools that access tokens, cookies, and secrets are authorized **only** for:
+>
 > 1. Automated testing against `localhost` or `*.test` / staging origins the operator owns.
 > 2. Local developer sessions where the human operator has explicitly started Chrome with `--remote-debugging-port`.
 > 3. CI pipeline steps that spin up a dedicated ephemeral Chrome profile.
 >
 > They are **not** authorized for:
+>
 > - Accessing a production browser session of a real end user.
 > - Extracting credentials from a browser the operator does not own.
 > - Any scenario that would constitute unauthorized computer access under CFAA / similar laws.
 >
 > **Agent system-prompt guard:** every agent that receives `cdp_get_cookies` or `cdp_get_local_storage` must have the following system-prompt constraint:
+>
 > ```
 > You may only call CDP cookie/storage tools against localhost or explicitly authorized test origins.
 > Never call these tools against a production site a user is currently browsing.
@@ -183,12 +188,12 @@ This WR is infrastructure, not a revenue product. Value is indirect:
 
 ### Compliance Surface
 
-| Area | Concern | Mitigation |
-|---|---|---|
-| CFAA (US) | Unauthorized computer access | Scope to owned/authorized origins only; document in policy |
-| GDPR (EU) | Extracting user session data | Never run against real user sessions; test data only |
-| OWASP A02 (Cryptographic Failures) | Secrets in logs | Never log cookie/token values; redact before storing |
-| SCA / SBOM | MIT license on upstream | ✅ No license conflict |
+| Area                               | Concern                      | Mitigation                                                 |
+| ---------------------------------- | ---------------------------- | ---------------------------------------------------------- |
+| CFAA (US)                          | Unauthorized computer access | Scope to owned/authorized origins only; document in policy |
+| GDPR (EU)                          | Extracting user session data | Never run against real user sessions; test data only       |
+| OWASP A02 (Cryptographic Failures) | Secrets in logs              | Never log cookie/token values; redact before storing       |
+| SCA / SBOM                         | MIT license on upstream      | ✅ No license conflict                                     |
 
 ---
 
@@ -199,6 +204,7 @@ This WR is infrastructure, not a revenue product. Value is indirect:
 Add a disabled-by-default entry (see delivered change in this PR).
 
 **How to enable locally:**
+
 ```bash
 # 1. Start Chrome with remote debugging
 google-chrome --remote-debugging-port=9222 --user-data-dir=/tmp/cdp-test-profile &
@@ -213,14 +219,14 @@ export CHROME_DEBUG_PORT=9222
 
 ### 2. Use Cases Per Revvel Product
 
-| Product | Recommended tools | Agent task |
-|---|---|---|
-| **GrowlingEyes** | `cdp_screenshot`, `cdp_dom_query`, `cdp_get_local_storage` | Screenshot UI state, verify auth token presence after login |
-| **Life Insurance Lead Engine** | `cdp_get_cookies`, `cdp_network_intercept` | Verify session cookie set after form submit; confirm `Authorization` header on API calls |
-| **Music Video Creator** | `cdp_evaluate`, `cdp_wait_for_selector` | Confirm upload state, check `window.__ENV__` for API keys |
-| **MindMappr** | `cdp_get_local_storage`, `cdp_get_session_storage` | Inspect persistent agent state stored in browser |
-| **Reesereviews** | `cdp_screenshot`, `cdp_click`, `cdp_type` | Automated review submission flow; screenshot before/after |
-| **Prompt Generation App** | `cdp_evaluate` | Verify OpenRouter key injected correctly at runtime |
+| Product                        | Recommended tools                                          | Agent task                                                                               |
+| ------------------------------ | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **GrowlingEyes**               | `cdp_screenshot`, `cdp_dom_query`, `cdp_get_local_storage` | Screenshot UI state, verify auth token presence after login                              |
+| **Life Insurance Lead Engine** | `cdp_get_cookies`, `cdp_network_intercept`                 | Verify session cookie set after form submit; confirm `Authorization` header on API calls |
+| **Music Video Creator**        | `cdp_evaluate`, `cdp_wait_for_selector`                    | Confirm upload state, check `window.__ENV__` for API keys                                |
+| **MindMappr**                  | `cdp_get_local_storage`, `cdp_get_session_storage`         | Inspect persistent agent state stored in browser                                         |
+| **Reesereviews**               | `cdp_screenshot`, `cdp_click`, `cdp_type`                  | Automated review submission flow; screenshot before/after                                |
+| **Prompt Generation App**      | `cdp_evaluate`                                             | Verify OpenRouter key injected correctly at runtime                                      |
 
 ### 3. CI Integration Pattern
 
@@ -245,18 +251,18 @@ export CHROME_DEBUG_PORT=9222
 
 ## Step 1A: Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-|---|---|---|---|---|
-| Website / app UI | No | — | — | No new UI built; existing products consume this |
-| API | No | — | — | |
-| CLI | No | — | — | |
-| MCP | ✅ Yes | MCP server entry in `.mcp.json` | `.mcp.json` + `docs/MCP_REVVEL_CATALOG.md` | `chrome-devtools-mcp` wired in |
-| Skill | No | — | — | |
-| PDF | No | — | — | |
-| PowerPoint / deck | No | — | — | |
-| Video | No | — | — | |
-| Docs | ✅ Yes | WR doc + catalog update | `wr/issues/` + `docs/MCP_REVVEL_CATALOG.md` | This file + catalog entry |
-| Agent automation | No | — | — | CI pattern documented; not yet a workflow |
+| Output shape      | In scope? | Format / length                 | Primary engine / standard                   | Notes                                           |
+| ----------------- | --------- | ------------------------------- | ------------------------------------------- | ----------------------------------------------- |
+| Website / app UI  | No        | —                               | —                                           | No new UI built; existing products consume this |
+| API               | No        | —                               | —                                           |                                                 |
+| CLI               | No        | —                               | —                                           |                                                 |
+| MCP               | ✅ Yes    | MCP server entry in `.mcp.json` | `.mcp.json` + `docs/MCP_REVVEL_CATALOG.md`  | `chrome-devtools-mcp` wired in                  |
+| Skill             | No        | —                               | —                                           |                                                 |
+| PDF               | No        | —                               | —                                           |                                                 |
+| PowerPoint / deck | No        | —                               | —                                           |                                                 |
+| Video             | No        | —                               | —                                           |                                                 |
+| Docs              | ✅ Yes    | WR doc + catalog update         | `wr/issues/` + `docs/MCP_REVVEL_CATALOG.md` | This file + catalog entry                       |
+| Agent automation  | No        | —                               | —                                           | CI pattern documented; not yet a workflow       |
 
 ### Platform Defaults & Website Requirements
 
@@ -304,30 +310,30 @@ export CHROME_DEBUG_PORT=9222
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|---|---|---|---|
-| Agent calls `cdp_get_cookies` on wrong origin | High | Medium | System-prompt guard (documented above); scope to `localhost` only |
-| Cookie values appear in agent logs | High | Low | Redaction rule in agent system prompt; never log raw cookie values |
-| Chrome not installed in CI | Medium | Medium | Use `google-chrome-stable` in CI runner; add apt install step |
-| `--remote-debugging-port` left open in prod | High | Low | Disable entry by default; document in `SECURITY.md` |
-| Upstream fork falls behind | Low | Medium | Monitor upstream for security patches; pin to a tagged version |
+| Risk                                          | Severity | Probability | Mitigation                                                         |
+| --------------------------------------------- | -------- | ----------- | ------------------------------------------------------------------ |
+| Agent calls `cdp_get_cookies` on wrong origin | High     | Medium      | System-prompt guard (documented above); scope to `localhost` only  |
+| Cookie values appear in agent logs            | High     | Low         | Redaction rule in agent system prompt; never log raw cookie values |
+| Chrome not installed in CI                    | Medium   | Medium      | Use `google-chrome-stable` in CI runner; add apt install step      |
+| `--remote-debugging-port` left open in prod   | High     | Low         | Disable entry by default; document in `SECURITY.md`                |
+| Upstream fork falls behind                    | Low      | Medium      | Monitor upstream for security patches; pin to a tagged version     |
 
 ---
 
 ## Artifact Engine Map
 
-| Artifact Shape | Existing engine / standard | Status | Required action |
-|---|---|---|---|
-| Website / UI | N/A | N/A | Not in scope |
-| API | N/A | N/A | Not in scope |
-| CLI | N/A | N/A | Not in scope |
-| MCP | `.mcp.json` + `docs/MCP_REVVEL_CATALOG.md` | ✅ Exists — gap was missing entry | **Delivered:** chrome-devtools-mcp entry added |
-| Skill | N/A | N/A | Not in scope |
-| PDF | N/A | N/A | Not in scope |
-| PowerPoint / deck | N/A | N/A | Not in scope |
-| Video | N/A | N/A | Not in scope |
-| Docs | `wr/issues/` + `docs/MCP_REVVEL_CATALOG.md` | ✅ Exists | **Delivered:** this WR doc + catalog update |
-| Agent automation | `.github/workflows/` | Gap | CI E2E workflow pattern documented (P1) |
+| Artifact Shape    | Existing engine / standard                  | Status                            | Required action                                |
+| ----------------- | ------------------------------------------- | --------------------------------- | ---------------------------------------------- |
+| Website / UI      | N/A                                         | N/A                               | Not in scope                                   |
+| API               | N/A                                         | N/A                               | Not in scope                                   |
+| CLI               | N/A                                         | N/A                               | Not in scope                                   |
+| MCP               | `.mcp.json` + `docs/MCP_REVVEL_CATALOG.md`  | ✅ Exists — gap was missing entry | **Delivered:** chrome-devtools-mcp entry added |
+| Skill             | N/A                                         | N/A                               | Not in scope                                   |
+| PDF               | N/A                                         | N/A                               | Not in scope                                   |
+| PowerPoint / deck | N/A                                         | N/A                               | Not in scope                                   |
+| Video             | N/A                                         | N/A                               | Not in scope                                   |
+| Docs              | `wr/issues/` + `docs/MCP_REVVEL_CATALOG.md` | ✅ Exists                         | **Delivered:** this WR doc + catalog update    |
+| Agent automation  | `.github/workflows/`                        | Gap                               | CI E2E workflow pattern documented (P1)        |
 
 ---
 

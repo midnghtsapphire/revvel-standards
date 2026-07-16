@@ -25,15 +25,15 @@ metadata:
 
 dependencies:
   skills:
-    - vault_agent       # for POSTHOG_API_KEY and POSTHOG_PERSONAL_API_KEY provisioning
-    - security          # PII rules for event properties
-    - error_reporting   # baseline 'error_surfaced' event
+    - vault_agent # for POSTHOG_API_KEY and POSTHOG_PERSONAL_API_KEY provisioning
+    - security # PII rules for event properties
+    - error_reporting # baseline 'error_surfaced' event
   tools:
     - nodejs
   pip_packages: []
   npm_packages:
-    - posthog-js        # client / SPA / Next.js
-    - posthog-node      # Node / worker / server
+    - posthog-js # client / SPA / Next.js
+    - posthog-node # Node / worker / server
 
 template_files:
   - path: "templates/standards/posthog-init.ts"

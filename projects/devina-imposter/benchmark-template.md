@@ -166,6 +166,7 @@ git checkout [specific commit/tag]
 **Result**: [Pass/Partial/Fail]
 **Time Taken**: [X minutes]
 **Scores**:
+
 - Code Quality: X/5
 - Correctness: X/5
 - Completeness: X/5
@@ -180,10 +181,10 @@ git checkout [specific commit/tag]
 
 ## Leaderboard
 
-| Rank | Agent | Total Score | Time | Notes |
-|------|-------|-------------|------|-------|
-| 1    | [Agent]| X/25       | Xm   | [Note]|
-| 2    | [Agent]| X/25       | Xm   | [Note]|
+| Rank | Agent   | Total Score | Time | Notes  |
+| ---- | ------- | ----------- | ---- | ------ |
+| 1    | [Agent] | X/25        | Xm   | [Note] |
+| 2    | [Agent] | X/25        | Xm   | [Note] |
 
 ## Related Tasks
 
@@ -213,4 +214,4 @@ git checkout [specific commit/tag]
 
 ---
 
-*This benchmark is part of the devina-imposter evaluation framework. Contributions and improvements welcome.*
+_This benchmark is part of the devina-imposter evaluation framework. Contributions and improvements welcome._

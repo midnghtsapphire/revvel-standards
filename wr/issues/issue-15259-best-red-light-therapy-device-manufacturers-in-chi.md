@@ -10,6 +10,7 @@
 ---
 
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 ## WR-Ready Research Packet: Red Light Therapy Manufacturer Finder & Comparison App
@@ -20,12 +21,12 @@ https://www.pureluxtech.com/best-red-light-therapy-device-manufacturers-in-china
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -47,55 +48,55 @@ The global red light therapy device market is estimated at **$587.5 million in 2
 
 ## Step 1A — Product/Output Selections
 
-| Field | Value |
-| --- | --- |
-| Output Type | production-app |
-| Delivery Mode | web |
-| Commercial Mode | SaaS + affiliate |
-| Lifecycle Mode | MVP → iterate |
-| Research Mode | deep |
-| Assign To | OpenHands / OpenRouter |
-**App name:** `RLT Source` (Red Light Therapy Source) — domain candidates: `rltsource.com`, `redlightsource.app`, `photobiomodulation.directory`
+| Field                                                                                                                                            | Value                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| Output Type                                                                                                                                      | production-app         |
+| Delivery Mode                                                                                                                                    | web                    |
+| Commercial Mode                                                                                                                                  | SaaS + affiliate       |
+| Lifecycle Mode                                                                                                                                   | MVP → iterate          |
+| Research Mode                                                                                                                                    | deep                   |
+| Assign To                                                                                                                                        | OpenHands / OpenRouter |
+| **App name:** `RLT Source` (Red Light Therapy Source) — domain candidates: `rltsource.com`, `redlightsource.app`, `photobiomodulation.directory` |
 
 ## Step 2 — Deep Web Research
 
 ### Market Size & Growth
 
-| Metric | Value | Source |
-| --- | --- | --- |
-| Global RLT device market 2026 | $587.5 million | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report) |
-| Market size by 2033 | $1.13 billion | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report) |
-| CAGR 2026–2033 | 9.8% | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report) |
-| RLT panel market (separate report; not directly comparable to the device-market total above) | $1.11 billion | [Research and Markets](https://www.researchandmarkets.com/reports/6178193/red-light-therapy-panel-market-report) |
-| Panel market CAGR | 15.5% | [Research and Markets](https://www.researchandmarkets.com/reports/6178193/red-light-therapy-panel-market-report) |
-| North America market share | ~44% of global revenue (estimate) | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report) |
+| Metric                                                                                       | Value                             | Source                                                                                                           |
+| -------------------------------------------------------------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Global RLT device market 2026                                                                | $587.5 million                    | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report)       |
+| Market size by 2033                                                                          | $1.13 billion                     | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report)       |
+| CAGR 2026–2033                                                                               | 9.8%                              | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report)       |
+| RLT panel market (separate report; not directly comparable to the device-market total above) | $1.11 billion                     | [Research and Markets](https://www.researchandmarkets.com/reports/6178193/red-light-therapy-panel-market-report) |
+| Panel market CAGR                                                                            | 15.5%                             | [Research and Markets](https://www.researchandmarkets.com/reports/6178193/red-light-therapy-panel-market-report) |
+| North America market share                                                                   | ~44% of global revenue (estimate) | [Grand View Research](https://www.grandviewresearch.com/industry-analysis/red-light-therapy-market-report)       |
 
 ### Target Manufacturers (Seed Database)
 
-| Manufacturer | Location | Certifications | Specialty |
-| --- | --- | --- | --- |
-| EZ-Therapylight | Shenzhen | FDA, CE, RoHS | Full-body panels, OEM/ODM |
-| ShineNova Technology | Shenzhen | FDA, CE, ISO 13485 (160+ certs) | Smart wearables, app-integrated devices |
-| Shenzhen Rainbow Technology (Rainbowdo) | Shenzhen | ISO 13485 | Multi-wavelength clinical panels |
-| Shenzhen Idea Light Limited | Shenzhen | N/A documented | High-volume OEM panels |
-| Red Dot LED | Thailand/China | N/A documented | Tariff-shield dual-country sourcing |
-| Beijing HONKON Technologies | Beijing | ISO 13485 | Dermatology / clinical devices |
-| Beijing ADSS Development | Beijing | FDA, CE | Non-invasive therapy panels |
-| Suns Red Technology | Shenzhen | N/A documented | Wearables, portable devices |
-| SGROW | Shenzhen | N/A documented | ODM / innovation focus |
-| Kernel Medical Equipment | Xuzhou | N/A documented | Clinical panels, therapy beds |
+| Manufacturer                            | Location       | Certifications                  | Specialty                               |
+| --------------------------------------- | -------------- | ------------------------------- | --------------------------------------- |
+| EZ-Therapylight                         | Shenzhen       | FDA, CE, RoHS                   | Full-body panels, OEM/ODM               |
+| ShineNova Technology                    | Shenzhen       | FDA, CE, ISO 13485 (160+ certs) | Smart wearables, app-integrated devices |
+| Shenzhen Rainbow Technology (Rainbowdo) | Shenzhen       | ISO 13485                       | Multi-wavelength clinical panels        |
+| Shenzhen Idea Light Limited             | Shenzhen       | N/A documented                  | High-volume OEM panels                  |
+| Red Dot LED                             | Thailand/China | N/A documented                  | Tariff-shield dual-country sourcing     |
+| Beijing HONKON Technologies             | Beijing        | ISO 13485                       | Dermatology / clinical devices          |
+| Beijing ADSS Development                | Beijing        | FDA, CE                         | Non-invasive therapy panels             |
+| Suns Red Technology                     | Shenzhen       | N/A documented                  | Wearables, portable devices             |
+| SGROW                                   | Shenzhen       | N/A documented                  | ODM / innovation focus                  |
+| Kernel Medical Equipment                | Xuzhou         | N/A documented                  | Clinical panels, therapy beds           |
 
 Sources: [EZ-Therapylight](https://www.therapy-light.com/top-10-red-light-manufacturers-in-china.html), [Rainbowdo 2026 OEM Guide](https://www.rainbowdo.com/2026-oem-guide-top-red-light-therapy-factories-in-china/), [ChineseMFG](https://chinesemfg.com/light-therapy-device-manufacturers-in-china/)
 
 ### Competitor Analysis
 
-| Competitor | Focus | Pricing | Gaps |
-| --- | --- | --- | --- |
-| Alibaba / Made-in-China | Horizontal B2B sourcing | Free browse; paid Gold Supplier listings from ~$2,000/yr | No RLT-specific filters, no irradiance data, no clinical cert validation |
-| Global Sources | Electronics OEM sourcing | Free browse; verified supplier listings ~$3,000–$5,000/yr | No wellness/medical device specialization |
-| JungleScout / Helium10 | Amazon FBA product research | $49–$99/month | Supplier discovery is secondary, no OEM workflow |
-| ThomasNet | US-only industrial supplier directory | Free | No China sourcing, no RLT niche |
-| Kompass | Global B2B directory | Free + paid tiers from ~$99/month | Broad horizontal, no device-specific comparison |
+| Competitor              | Focus                                 | Pricing                                                   | Gaps                                                                     |
+| ----------------------- | ------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Alibaba / Made-in-China | Horizontal B2B sourcing               | Free browse; paid Gold Supplier listings from ~$2,000/yr  | No RLT-specific filters, no irradiance data, no clinical cert validation |
+| Global Sources          | Electronics OEM sourcing              | Free browse; verified supplier listings ~$3,000–$5,000/yr | No wellness/medical device specialization                                |
+| JungleScout / Helium10  | Amazon FBA product research           | $49–$99/month                                             | Supplier discovery is secondary, no OEM workflow                         |
+| ThomasNet               | US-only industrial supplier directory | Free                                                      | No China sourcing, no RLT niche                                          |
+| Kompass                 | Global B2B directory                  | Free + paid tiers from ~$99/month                         | Broad horizontal, no device-specific comparison                          |
 
 **Gap confirmed:** No SaaS platform specifically serves red light therapy device sourcing with certification data, irradiance benchmarks, and side-by-side comparison — this is a clear whitespace opportunity.
 
@@ -108,15 +109,15 @@ Sources: [EZ-Therapylight](https://www.therapy-light.com/top-10-red-light-manufa
 
 ### SEO / Keyword Intelligence
 
-| Keyword | Estimated Intent | Notes |
-| --- | --- | --- |
-| red light therapy manufacturer China | Transactional | Primary buyer intent |
-| OEM red light therapy device | Transactional | Private label buyers |
-| best red light therapy device China supplier | Transactional | Core landing page keyword |
-| red light therapy wholesale | Transactional | Volume buyer intent |
-| photobiomodulation device manufacturer | Informational/Transactional | Clinical/medical segment |
-| red light therapy device comparison | Informational | SaaS comparison feature target |
-| how to find red light therapy manufacturer | Informational | Content/SEO funnel |
+| Keyword                                      | Estimated Intent            | Notes                          |
+| -------------------------------------------- | --------------------------- | ------------------------------ |
+| red light therapy manufacturer China         | Transactional               | Primary buyer intent           |
+| OEM red light therapy device                 | Transactional               | Private label buyers           |
+| best red light therapy device China supplier | Transactional               | Core landing page keyword      |
+| red light therapy wholesale                  | Transactional               | Volume buyer intent            |
+| photobiomodulation device manufacturer       | Informational/Transactional | Clinical/medical segment       |
+| red light therapy device comparison          | Informational               | SaaS comparison feature target |
+| how to find red light therapy manufacturer   | Informational               | Content/SEO funnel             |
 
 ### Monetization Path
 
@@ -152,15 +153,15 @@ Sources: [EZ-Therapylight](https://www.therapy-light.com/top-10-red-light-manufa
 
 ### Tech Stack
 
-| Layer | Choice | Rationale |
-| --- | --- | --- |
-| Frontend | Next.js 14 (App Router) | Consistent with other products in this monorepo |
-| Database | PostgreSQL via Prisma | Relational data for manufacturer + certification records |
-| Auth | NextAuth.js (or Clerk) | Choose based on desired auth UX + deployment constraints |
-| Payments | Stripe | Freemium subscription + per-lead billing |
-| Search | Algolia or pg_search | Fast faceted filtering |
-| Hosting | Vercel | CDN + SSR for SEO |
-| Emails | Resend | Transactional + lead nurture |
+| Layer    | Choice                  | Rationale                                                |
+| -------- | ----------------------- | -------------------------------------------------------- |
+| Frontend | Next.js 14 (App Router) | Consistent with other products in this monorepo          |
+| Database | PostgreSQL via Prisma   | Relational data for manufacturer + certification records |
+| Auth     | NextAuth.js (or Clerk)  | Choose based on desired auth UX + deployment constraints |
+| Payments | Stripe                  | Freemium subscription + per-lead billing                 |
+| Search   | Algolia or pg_search    | Fast faceted filtering                                   |
+| Hosting  | Vercel                  | CDN + SSR for SEO                                        |
+| Emails   | Resend                  | Transactional + lead nurture                             |
 
 ### Assigned Port
 
@@ -176,13 +177,13 @@ Sources: [EZ-Therapylight](https://www.therapy-light.com/top-10-red-light-manufa
 
 ### Smoke Test Coverage (Playwright)
 
-| Flow | Required Assertions |
-| --- | --- |
+| Flow                       | Required Assertions                                                             |
+| -------------------------- | ------------------------------------------------------------------------------- |
 | Manufacturer search/filter | Results update on filter change; ≥1 result returned for known manufacturer name |
-| Comparison UI | ≥2 manufacturers can be selected; comparison table renders all fields |
-| RFQ submission | Form submits successfully; confirmation message shown; admin email triggered |
-| Freemium gate | Unauthenticated user hits paywall after free-tier limit; Stripe Checkout opens |
-| Manufacturer profile page | Page loads with name, certifications, and contact info visible |
+| Comparison UI              | ≥2 manufacturers can be selected; comparison table renders all fields           |
+| RFQ submission             | Form submits successfully; confirmation message shown; admin email triggered    |
+| Freemium gate              | Unauthenticated user hits paywall after free-tier limit; Stripe Checkout opens  |
+| Manufacturer profile page  | Page loads with name, certifications, and contact info visible                  |
 
 ## Recommendations
 
@@ -194,20 +195,20 @@ Sources: [EZ-Therapylight](https://www.therapy-light.com/top-10-red-light-manufa
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 No upstream WR dependencies. This is a greenfield product.
 
 ## Risks
 
-| Risk | Severity | Mitigation |
-| --- | --- | --- |
-| Manufacturer data quality / fake certifications | High | Cross-reference FDA 510(k) and EU MDR databases; show verification badge only when confirmed |
-| Alibaba / Made-in-China ToS on scraping | Medium | Seed data manually; provide supplier self-service portal to add/update listings |
-| Regulatory: app making medical claims | High | Strict copy guidelines: "sourcing tool only" disclaimer, no efficacy claims |
-| Market too niche for SaaS scale | Medium | Expand to adjacent niches (LED grow lights, phototherapy for SAD) once the base is proven |
-| Competition from AI-assisted Alibaba search | Low | Niche specialization (certifications, irradiance data) creates moat Alibaba won't replicate |
+| Risk                                            | Severity | Mitigation                                                                                   |
+| ----------------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| Manufacturer data quality / fake certifications | High     | Cross-reference FDA 510(k) and EU MDR databases; show verification badge only when confirmed |
+| Alibaba / Made-in-China ToS on scraping         | Medium   | Seed data manually; provide supplier self-service portal to add/update listings              |
+| Regulatory: app making medical claims           | High     | Strict copy guidelines: "sourcing tool only" disclaimer, no efficacy claims                  |
+| Market too niche for SaaS scale                 | Medium   | Expand to adjacent niches (LED grow lights, phototherapy for SAD) once the base is proven    |
+| Competition from AI-assisted Alibaba search     | Low      | Niche specialization (certifications, irradiance data) creates moat Alibaba won't replicate  |

@@ -39,20 +39,21 @@ curl -sL https://<live-url> | head -20
 
 ## Rules
 
-| Rule | Requirement |
-|---|---|
-| No individual team deploys | Only deploy agent pushes to production |
+| Rule                          | Requirement                                             |
+| ----------------------------- | ------------------------------------------------------- |
+| No individual team deploys    | Only deploy agent pushes to production                  |
 | All teams merge to main first | Feature branches merged via PR before deploy agent runs |
-| CodeRabbit review required | All PRs must pass before merge |
-| Zero TypeScript errors | Deploy agent will not proceed with TS errors |
-| All tests must pass | Deploy agent will not proceed with failing tests |
-| Build must succeed | Deploy agent will not proceed if build fails |
-| Deploy report is mandatory | Every deployment produces a `DEPLOY_REPORT.md` |
-| Issues for findings | Bugs/warnings found during deployment → GitHub issues |
+| CodeRabbit review required    | All PRs must pass before merge                          |
+| Zero TypeScript errors        | Deploy agent will not proceed with TS errors            |
+| All tests must pass           | Deploy agent will not proceed with failing tests        |
+| Build must succeed            | Deploy agent will not proceed if build fails            |
+| Deploy report is mandatory    | Every deployment produces a `DEPLOY_REPORT.md`          |
+| Issues for findings           | Bugs/warnings found during deployment → GitHub issues   |
 
 ## Commit Message Format
 
 All deploy agent fix commits use:
+
 ```
 fix: deploy agent cleanup — <description>
 ```
@@ -60,6 +61,7 @@ fix: deploy agent cleanup — <description>
 ## Why This Pattern
 
 Multi-team environments risk deploying incomplete/conflicting code when individual teams deploy from their own context. The deploy agent model:
+
 - Sees the full integrated state of `main`
 - Catches conflicts between teams' merged changes
 - Provides a single point of accountability

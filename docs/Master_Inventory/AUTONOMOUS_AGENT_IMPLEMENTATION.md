@@ -3,7 +3,7 @@
 **Version:** 1.0.0  
 **Date:** 2026-04-29  
 **Status:** Active  
-**Category:** Agent Operations & Self-Healing  
+**Category:** Agent Operations & Self-Healing
 
 ---
 
@@ -26,6 +26,7 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 **Location:** `docs/AGENTS.md`
 
 **Changes:**
+
 - Added "Agent Autonomy — Driven Self-Sufficiency" section
 - Defined 7 core autonomy principles
 - Implemented "FIND SOLUTIONS, DON'T ASK QUESTIONS" mandate
@@ -34,6 +35,7 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 - Created self-healing workflow pattern
 
 **Key Principles:**
+
 1. **DRIVEN PROBLEM-SOLVING** — Try 3+ alternatives before escalating
 2. **SELF-HEALING BY DEFAULT** — Every error triggers automatic recovery
 3. **FIND SOLUTIONS, DON'T ASK** — Research and unblock autonomously
@@ -47,6 +49,7 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 **Location:** `docs/Master_Inventory/GOAP_AGENT_STANDARD.md`
 
 **Changes:**
+
 - Added "DRIVEN AUTONOMY" as first operational rule
 - Enhanced self-healing loop with auto-issue creation
 - Added deep research requirements
@@ -55,6 +58,7 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 - Documented error-to-solution memory system
 
 **New Requirements:**
+
 - Agents must try 3+ alternative approaches before escalating
 - Auto-create GitHub issues for all errors with full context
 - Document attempted fixes and solutions in learnings.md
@@ -68,6 +72,7 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 **Purpose:** Automatically capture errors, create issues, and attempt recovery
 
 **Features:**
+
 - Captures full error context (logs, stack trace, environment)
 - Creates detailed GitHub issues with auto-error label
 - Assigns to appropriate agent or @copilot
@@ -84,12 +89,14 @@ This guide provides the complete implementation of **relentlessly autonomous, se
   - `other` — Generic errors
 
 **Recovery Strategies:**
+
 - **OpenRouter failures:** Try alternative models (Claude, GPT-4)
 - **API timeouts:** Exponential backoff retry (10s, 40s, 90s)
 - **CI failures:** Detect patterns (ENOSPC → clean disk, timeout → increase limits)
 - **All failures:** Document attempts, create recovery log artifact
 
 **Usage:**
+
 ```yaml
 # From another workflow
 - name: Handle error
@@ -106,6 +113,7 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 **Location:** `scripts/openrouter-triage.js`
 
 **Changes:**
+
 - Added `triggerAutoErrorWorkflow()` function
 - Integrated with auto-error-handler workflow
 - Automatically creates recovery issues on failure
@@ -113,6 +121,7 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 - Logs attempted fixes for future reference
 
 **Behavior:**
+
 - When OpenRouter fails → Create detailed issue
 - When API key missing → Create setup issue
 - When rate limited → Schedule retry with backoff
@@ -126,23 +135,24 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 **Purpose:** Complete evaluation and implementation guide for strongDM alternatives
 
 **Contents:**
+
 - **Evaluation Results:**
   - strongDM analysis (enterprise, paid, not recommended)
   - Infisical recommendation (MIT, self-hostable, API-first)
   - Alternative solutions (Vault/OpenBao, SOPS)
-  
+
 - **Implementation Guide:**
   - Phase 1: Tool selection (Infisical)
   - Phase 2: Deployment options (cloud or self-hosted)
   - Phase 3: Migration from .env files
   - Phase 4: Automation integration
-  
+
 - **API Automation Patterns:**
   - Dynamic secret injection
   - CI/CD secret management
   - Kubernetes secret operator
   - Terraform integration
-  
+
 - **Security Best Practices:**
   - Least privilege
   - Secret rotation (every 90 days)
@@ -213,24 +223,24 @@ on_error:
     - Environment variables
     - Recent commits
     - Workflow logs
-  
+
   - create_github_issue(auto_error=true)
     - Auto-generate title
     - Include all context
     - Assign to appropriate agent
     - Add relevant labels
-  
+
   - attempt_alternatives(max=3)
     - Try alternative approach 1
     - Try alternative approach 2
     - Try alternative approach 3
     - Document each attempt
-  
+
   - if still_failing:
       - create_temporary_workaround()
       - schedule_permanent_fix()
       - notify_with_options(not_instructions)
-  
+
   - document_solution()
     - Update error handlers
     - Add to learnings.md
@@ -244,6 +254,7 @@ on_error:
 ### Example 1: Handling OpenRouter Failures
 
 **Before (Old Behavior):**
+
 ```javascript
 // Fails silently, no recovery
 try {
@@ -255,6 +266,7 @@ try {
 ```
 
 **After (New Behavior):**
+
 ```javascript
 // Auto-recovery with alternatives
 const attemptedFixes = [];
@@ -265,7 +277,7 @@ for (const model of ["claude-sonnet-4", "claude-sonnet-4.5", "gpt-4-turbo"]) {
     return result;
   } catch (err) {
     attemptedFixes.push(`Tried ${model}: ${err.message}`);
-    
+
     // Trigger auto-error workflow
     await triggerAutoErrorWorkflow({
       errorType: "openrouter",
@@ -277,12 +289,15 @@ for (const model of ["claude-sonnet-4", "claude-sonnet-4.5", "gpt-4-turbo"]) {
 }
 
 // If all alternatives fail, create detailed issue and use fallback
-throw new Error(`OpenRouter failed after 3 attempts: ${attemptedFixes.join("; ")}`);
+throw new Error(
+  `OpenRouter failed after 3 attempts: ${attemptedFixes.join("; ")}`,
+);
 ```
 
 ### Example 2: CI Failure Auto-Recovery
 
 **Workflow Integration:**
+
 ```yaml
 name: Build and Test
 
@@ -293,12 +308,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Build
         id: build
         run: npm run build
         continue-on-error: true
-      
+
       - name: Handle build failure
         if: steps.build.outcome == 'failure'
         uses: ./.github/workflows/auto-error-handler.yml
@@ -314,6 +329,7 @@ jobs:
 **Scenario:** Agent encounters unfamiliar technology
 
 **Old Approach:**
+
 ```
 Agent: "I don't know how to implement X. Can you provide guidance?"
 Human: *provides documentation*
@@ -321,6 +337,7 @@ Agent: *implements based on human input*
 ```
 
 **New Approach:**
+
 ```
 Agent identifies need for technology X
     ↓
@@ -352,24 +369,28 @@ No human interaction needed
 To integrate autonomous error handling into any project:
 
 ### Phase 1: Core Setup
+
 - [ ] Copy `auto-error-handler.yml` to `.github/workflows/`
 - [ ] Update `AGENTS.md` with autonomy principles (or link to standards)
 - [ ] Create `learnings.md` in project root
 - [ ] Add `openrouter:failed` and `auto-error` labels to `.github/labels.yml`
 
 ### Phase 2: Agent Integration
+
 - [ ] Update agent prompts with autonomy requirements
 - [ ] Add self-healing loop to agent templates
 - [ ] Implement 3-retry minimum for all API calls
 - [ ] Add deep research capability to agent workflows
 
 ### Phase 3: Workflow Integration
+
 - [ ] Add error handling to all CI workflows
 - [ ] Integrate auto-error workflow with existing workflows
 - [ ] Add recovery strategies for common error types
 - [ ] Test error handling with intentional failures
 
 ### Phase 4: Monitoring
+
 - [ ] Create dashboard for auto-error issues
 - [ ] Track recovery success rate
 - [ ] Review learnings.md weekly
@@ -383,13 +404,13 @@ To integrate autonomous error handling into any project:
 
 **Target:** 90% reduction in human escalations within 3 months
 
-| Metric | Baseline | Target | Current |
-|--------|----------|--------|---------|
-| Errors requiring human intervention | 80% | 20% | TBD |
-| Average alternatives tried before escalation | 1 | 3+ | TBD |
-| Auto-recovery success rate | 0% | 60% | TBD |
-| Time to first recovery attempt | N/A | <5 min | TBD |
-| Repeated errors (same root cause) | 40% | 5% | TBD |
+| Metric                                       | Baseline | Target | Current |
+| -------------------------------------------- | -------- | ------ | ------- |
+| Errors requiring human intervention          | 80%      | 20%    | TBD     |
+| Average alternatives tried before escalation | 1        | 3+     | TBD     |
+| Auto-recovery success rate                   | 0%       | 60%    | TBD     |
+| Time to first recovery attempt               | N/A      | <5 min | TBD     |
+| Repeated errors (same root cause)            | 40%      | 5%     | TBD     |
 
 ### Error Handling Metrics
 
@@ -415,11 +436,13 @@ Track in GitHub Projects:
 ### Issue: Auto-error workflow not triggering
 
 **Causes:**
+
 - Workflow not in `main` branch
 - Missing `GITHUB_TOKEN` permissions
 - Workflow file syntax error
 
 **Solutions:**
+
 1. Ensure workflow is committed to `main`
 2. Add workflow permissions to `.github/workflows/auto-error-handler.yml`:
    ```yaml
@@ -433,11 +456,13 @@ Track in GitHub Projects:
 ### Issue: Recovery attempts failing
 
 **Causes:**
+
 - Alternative approaches not configured
 - Missing API keys for alternatives
 - Rate limiting on backup services
 
 **Solutions:**
+
 1. Add multiple alternatives to recovery logic
 2. Configure backup API keys in secrets
 3. Implement exponential backoff for rate limits
@@ -445,11 +470,13 @@ Track in GitHub Projects:
 ### Issue: Too many auto-error issues
 
 **Causes:**
+
 - Noisy error detection
 - Same error triggering multiple times
 - Insufficient initial filtering
 
 **Solutions:**
+
 1. Add de-duplication logic (check for existing issue)
 2. Implement error fingerprinting
 3. Group related errors into single issue
@@ -507,12 +534,14 @@ Track in GitHub Projects:
 ## Acceptance Criteria (Original Issue)
 
 ✅ **Research Complete:**
+
 - Evaluated strongDM (enterprise, not recommended)
 - Identified Infisical as FOSS alternative (MIT license)
 - Documented comparison of 3+ alternatives
 - Created comprehensive implementation guide
 
 ✅ **Agent Enhancements:**
+
 - Added "driven autonomy" to agent purpose
 - Implemented self-healing protocols
 - Added deep research requirements
@@ -520,18 +549,21 @@ Track in GitHub Projects:
 - Created visible error tracking
 
 ✅ **Automation Implementation:**
+
 - Created auto-error-handler workflow
 - Enhanced OpenRouter error handling
 - Integrated with existing workflows
 - Added recovery strategies
 
 ✅ **Documentation:**
+
 - SECRET_MANAGEMENT_STANDARD.md (complete evaluation)
 - Updated AGENTS.md (autonomy principles)
 - Updated GOAP_AGENT_STANDARD.md (self-healing)
 - This implementation guide
 
 ✅ **Prime Directive Compliance:**
+
 - Shipped working code, not plans
 - All changes tested and committed
 - Workflows are functional
@@ -547,6 +579,7 @@ Track in GitHub Projects:
    - `docs/Master_Inventory/SECRET_MANAGEMENT_STANDARD.md` — strongDM evaluation
 
 2. **Test the auto-error workflow:**
+
    ```bash
    gh workflow run auto-error-handler.yml \
      -f error_type=other \

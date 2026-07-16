@@ -76,18 +76,18 @@ bito secret get revvel/shared/llm/openai api_key
 
 ## Labels
 
-| Label | Color | Meaning |
-|---|---|---|
-| `bito-ai` | `#0B6FFF` | PR or issue touched by BITO AI |
-| `bito-ai:review` | `#4D94FF` | BITO AI review complete |
-| `bito-ai:changes-needed` | `#D93F0B` | BITO found blocking issues |
+| Label                    | Color     | Meaning                        |
+| ------------------------ | --------- | ------------------------------ |
+| `bito-ai`                | `#0B6FFF` | PR or issue touched by BITO AI |
+| `bito-ai:review`         | `#4D94FF` | BITO AI review complete        |
+| `bito-ai:changes-needed` | `#D93F0B` | BITO found blocking issues     |
 
 ---
 
 ## Secrets
 
-| Secret | Purpose | Where to get it |
-|---|---|---|
+| Secret         | Purpose                              | Where to get it                                  |
+| -------------- | ------------------------------------ | ------------------------------------------------ |
 | `BITO_API_KEY` | Authenticates BITO API calls from CI | [bito.ai](https://bito.ai) → Settings → API Keys |
 
 Vault path: `revvel/shared/code-review/bito`
@@ -116,4 +116,4 @@ Vault path: `revvel/shared/code-review/bito`
 
 ---
 
-*Part of the Revvel Standards skills vault. See `skills/REGISTRY.md` for the full catalog.*
+_Part of the Revvel Standards skills vault. See `skills/REGISTRY.md` for the full catalog._

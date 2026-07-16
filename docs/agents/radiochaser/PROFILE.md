@@ -7,6 +7,7 @@ the fallback when oAudrey is down.
 
 As of the agent-fleet audit, RadioChaser is **registered in the roster comment
 but not actually wired**:
+
 - Not in `scripts/openrouter-personas.js` (`PERSONA_REGISTRY` has no `radiochaser`
   entry).
 - Not in `.github/workflows/persona-comment-trigger.yml` (`/radiochaser` and

@@ -48,30 +48,18 @@
           "regulatory_changes"
         ],
         "alert_threshold": 0.7,
-        "action_triggers": [
-          "create_wr",
-          "notify_team",
-          "auto_research"
-        ]
+        "action_triggers": ["create_wr", "notify_team", "auto_research"]
       }
     },
     "predictions": {
       "short_term": {
         "horizon": "30_days",
-        "metrics": [
-          "daily_revenue",
-          "user_signups",
-          "churn_rate"
-        ],
+        "metrics": ["daily_revenue", "user_signups", "churn_rate"],
         "update_frequency": "daily"
       },
       "medium_term": {
         "horizon": "6_months",
-        "metrics": [
-          "quarterly_revenue",
-          "market_share",
-          "product_adoption"
-        ],
+        "metrics": ["quarterly_revenue", "market_share", "product_adoption"],
         "update_frequency": "weekly"
       },
       "long_term": {

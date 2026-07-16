@@ -13,12 +13,12 @@
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A — product planning document |
+| Property    | Value                           |
+| ----------- | ------------------------------- |
+| Stars       | N/A — product planning document |
 | Open Issues | N/A — product planning document |
-| Private | No |
-| Archived | No |
+| Private     | No                              |
+| Archived    | No                              |
 
 ## Research Checklist
 
@@ -33,7 +33,9 @@
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source links used for this WR:
+
 - RedMed review page: <https://www.lighttherapyinsiders.com/redmed-light-therapy-app-review/>
 - RedMed App Store listing: <https://apps.apple.com/us/app/redmed/id1441232926>
 - RedMed Google Play listing: <https://play.google.com/store/apps/details?id=com.martin.redmed&hl=en-US>
@@ -58,6 +60,7 @@ Recommended product shape: a cross-platform **protocol planner + session tracker
 ## Step 2 — Deep Web Research
 
 ### Marketing and SEO keywords
+
 - red light therapy app
 - photobiomodulation tracker
 - infrared therapy routine planner
@@ -66,18 +69,18 @@ Recommended product shape: a cross-platform **protocol planner + session tracker
 
 ### Competitor snapshot
 
-| Product | Price | Notes | Source |
-| --- | --- | --- | --- |
-| RedMed (iOS) | Pricing data pending — competitive benchmark research required. | Screen-based red-light app concept; this WR pivots to hardware-assisted tracking | [Light Therapy Insiders review](https://www.lighttherapyinsiders.com/redmed-light-therapy-app-review/) |
-| RedMed (Android) | Pricing data pending — competitive benchmark research required. | Android listing confirms product presence; verify active pricing during launch prep | [Google Play listing](https://play.google.com/store/apps/details?id=com.martin.redmed&hl=en-US) |
-| Other wellness tracking apps | Pricing data pending — competitive benchmark research required. | Add final paid/free benchmark table during implementation sprint kickoff | N/A — requires follow-up market scrape |
+| Product                      | Price                                                           | Notes                                                                               | Source                                                                                                 |
+| ---------------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| RedMed (iOS)                 | Pricing data pending — competitive benchmark research required. | Screen-based red-light app concept; this WR pivots to hardware-assisted tracking    | [Light Therapy Insiders review](https://www.lighttherapyinsiders.com/redmed-light-therapy-app-review/) |
+| RedMed (Android)             | Pricing data pending — competitive benchmark research required. | Android listing confirms product presence; verify active pricing during launch prep | [Google Play listing](https://play.google.com/store/apps/details?id=com.martin.redmed&hl=en-US)        |
+| Other wellness tracking apps | Pricing data pending — competitive benchmark research required. | Add final paid/free benchmark table during implementation sprint kickoff            | N/A — requires follow-up market scrape                                                                 |
 
 ### GitHub stars for referenced build tools
 
-| Tool | GitHub Stars | Why it matters | Source |
-| --- | --- | --- | --- |
-| Expo (`expo/expo`) | 50,452 stars (checked 2026-07-06) | Fast cross-platform mobile delivery with React Native ecosystem | [expo/expo](https://github.com/expo/expo) |
-| Flutter (`flutter/flutter`) | 177,641 stars (checked 2026-07-06) | Mature cross-platform option if Dart stack is preferred | [flutter/flutter](https://github.com/flutter/flutter) |
+| Tool                        | GitHub Stars                       | Why it matters                                                  | Source                                                |
+| --------------------------- | ---------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------- |
+| Expo (`expo/expo`)          | 50,452 stars (checked 2026-07-06)  | Fast cross-platform mobile delivery with React Native ecosystem | [expo/expo](https://github.com/expo/expo)             |
+| Flutter (`flutter/flutter`) | 177,641 stars (checked 2026-07-06) | Mature cross-platform option if Dart stack is preferred         | [flutter/flutter](https://github.com/flutter/flutter) |
 
 ### Community/demand signals
 
@@ -100,6 +103,7 @@ Recommended product shape: a cross-platform **protocol planner + session tracker
 ## Step 3 — Requirements
 
 ### MVP scope (ship first)
+
 1. Session planner: body area, duration, frequency, and reminder schedule.
 2. Session timer + guided flow optimized for external red-light devices.
 3. Journal/logbook: track symptoms, goals, adherence, and notes.
@@ -107,6 +111,7 @@ Recommended product shape: a cross-platform **protocol planner + session tracker
 5. Safety UX: contraindication reminders, “not medical advice” framing, and escalation prompts.
 
 ### Acceptance gates
+
 - [ ] iOS and Android builds run from one codebase.
 - [ ] No therapeutic efficacy claims in UI copy without citation + legal approval.
 - [ ] Export and backup of session history works on-device.
@@ -114,6 +119,7 @@ Recommended product shape: a cross-platform **protocol planner + session tracker
 - [ ] App store metadata and in-app legal disclaimers are present.
 
 ### Explicit non-goals for MVP
+
 - No diagnosis features.
 - No claim that phone screen replaces clinical-grade therapy hardware.
 - No automated medical recommendation engine.
@@ -127,11 +133,11 @@ Recommended product shape: a cross-platform **protocol planner + session tracker
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 No blocking prerequisite WRs identified.
 

@@ -21,7 +21,7 @@ on:
           - "true"
 
 permissions:
-  contents: write  # required because flow-chart sync commits regenerated diagrams
+  contents: write # required because flow-chart sync commits regenerated diagrams
 concurrency:
   group: flow-chart-sync-${{ github.ref }}
   cancel-in-progress: true

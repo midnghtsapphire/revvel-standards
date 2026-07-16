@@ -15,7 +15,7 @@
 
 The **Ralph Loop** is an automated self-healing pattern: when a CI check, test, or PR merge fails, Ralph immediately triggers `@copilot` via a comment and blocks the merge. If the error persists after the fix attempt, Ralph calls again — and again — until the PR is auto-merged or escalated to a human.
 
-**Issue reference:** GitHub Issue #31 — *"Need a trigger or action to occur that when there is an error it generates a comment to @copilot won't merge errors need fix. And if the error is still there next round then gets called again...and again until it automerges."*
+**Issue reference:** GitHub Issue #31 — _"Need a trigger or action to occur that when there is an error it generates a comment to @copilot won't merge errors need fix. And if the error is still there next round then gets called again...and again until it automerges."_
 
 Named after the loop pattern: **R**etry → **A**nalyze → **L**og → **P**atch → re-c**H**eck.
 
@@ -23,14 +23,14 @@ Named after the loop pattern: **R**etry → **A**nalyze → **L**og → **P**atc
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
-| **Error detection** | Watches CI checks, PR status, and merge gates for failures |
-| **Copilot trigger** | Posts a `@copilot` comment with the error details on failure |
-| **Merge block** | Adds `won't-merge` label to prevent merge while error exists |
-| **Loop retry** | Re-triggers on every subsequent commit push until error is resolved |
-| **Auto-merge** | Removes `won't-merge` label and approves merge once all checks pass |
-| **Escalation** | After `max_retries`, escalates to human with `needs-human` label |
+| Task                | Description                                                         |
+| ------------------- | ------------------------------------------------------------------- |
+| **Error detection** | Watches CI checks, PR status, and merge gates for failures          |
+| **Copilot trigger** | Posts a `@copilot` comment with the error details on failure        |
+| **Merge block**     | Adds `won't-merge` label to prevent merge while error exists        |
+| **Loop retry**      | Re-triggers on every subsequent commit push until error is resolved |
+| **Auto-merge**      | Removes `won't-merge` label and approves merge once all checks pass |
+| **Escalation**      | After `max_retries`, escalates to human with `needs-human` label    |
 
 ---
 
@@ -207,18 +207,18 @@ jobs:
               repo: context.repo.repo,
               state: 'open'
             });
-            
+
             const head_sha = context.payload.check_suite?.head_sha || 
                             context.payload.workflow_run?.head_sha;
             const matching_pr = prs.data.find(pr => pr.head.sha === head_sha);
-            
+
             if (!matching_pr) return;
-            
+
             const labels = matching_pr.labels.map(l => l.name);
-            
+
             // Only act on PRs the Ralph Loop was managing
             if (!labels.includes("auto-fix")) return;
-            
+
             // Remove blocking labels
             for (const label of ["won't-merge", "auto-fix"]) {
               await github.rest.issues.removeLabel({
@@ -228,7 +228,7 @@ jobs:
                 name: label
               }).catch(() => {});
             }
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -246,15 +246,15 @@ Add to `.github/ralph-loop.yml` in any repository to customise the loop:
 ```yaml
 # .github/ralph-loop.yml
 ralph_loop:
-  max_retries: 5              # Number of auto-fix attempts before escalation
-  escalate_to: "midnghtsapphire"  # GitHub username to notify on escalation
+  max_retries: 5 # Number of auto-fix attempts before escalation
+  escalate_to: "midnghtsapphire" # GitHub username to notify on escalation
   labels:
     blocking: "won't-merge"
     in_progress: "auto-fix"
     escalated: "needs-human"
     ready: "auto-merge"
   copilot_trigger: "@copilot"
-  vault_agent_on_failure: true  # Trigger vault-agent if secret-related failure
+  vault_agent_on_failure: true # Trigger vault-agent if secret-related failure
 ```
 
 ---
@@ -278,7 +278,7 @@ Server job fails (monitored() wrapper)
 ## Agent Instructions (System Prompt)
 
 ```
-You are the Ralph Loop orchestrator. You are not a persona — you are an 
+You are the Ralph Loop orchestrator. You are not a persona — you are an
 automated process. You do not introduce yourself. You just run the loop.
 
 When triggered on a PR failure:
@@ -305,6 +305,7 @@ You succeed when: all CI checks pass and the "won't-merge" label is removed.
 ### Example 1: Lint Failure
 
 **Ralph comment triggers:**
+
 ```
 🔄 Ralph Loop — Attempt 1/5
 
@@ -327,6 +328,7 @@ and push a commit. Do not merge until all checks pass.
 ### Example 3: Escalation
 
 After 5 failed attempts:
+
 ```
 ⚠️ Ralph Loop — Escalation Required
 
@@ -338,11 +340,11 @@ This PR has failed 5 consecutive auto-fix attempts.
 
 ## Dependencies
 
-| Dependency | Required? | Purpose |
-|---|---|---|
-| **GitHub Actions** | ✅ Required | Runs the Ralph Loop workflow |
-| **`@copilot` assignment** | ✅ Required | Triggers Copilot auto-fix |
-| **`vault-agent` skill** | ⭕ Optional | For credential-related failures |
+| Dependency                  | Required?      | Purpose                                    |
+| --------------------------- | -------------- | ------------------------------------------ |
+| **GitHub Actions**          | ✅ Required    | Runs the Ralph Loop workflow               |
+| **`@copilot` assignment**   | ✅ Required    | Triggers Copilot auto-fix                  |
+| **`vault-agent` skill**     | ⭕ Optional    | For credential-related failures            |
 | **`error-reporting` skill** | ⭕ Recommended | Server-side error escalation to Ralph Loop |
 
 ---

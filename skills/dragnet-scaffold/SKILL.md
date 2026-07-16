@@ -29,14 +29,14 @@ describes a new product/feature rather than a bug)
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
-| **Extract** | Parse every screenshot, Reddit thread, and comment for user pain points |
-| **Classify** | Pick the cheapest viable solution shape (PDF, one-button app, extension, API, CLI, MCP, full app) |
-| **Score** | Run PLATO→JUDGE scoring matrix: Financial 25%, Legal 25%, Operational 20%, Strategic 15%, Risk 10%, Values 5% |
-| **Gate** | Issue GREEN/YELLOW/RED verdict; stop on RED and name the specific blocker |
-| **BOM** | Emit a Bill of Materials: product_slug, shape, MVP features (≤5), tech stack, price point, store, build cost, 90d revenue, ROI |
-| **WR** | Output a complete WR following `wr/WR_TEMPLATE_FULL.md` with traceable source citations |
+| Task         | Description                                                                                                                    |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Extract**  | Parse every screenshot, Reddit thread, and comment for user pain points                                                        |
+| **Classify** | Pick the cheapest viable solution shape (PDF, one-button app, extension, API, CLI, MCP, full app)                              |
+| **Score**    | Run PLATO→JUDGE scoring matrix: Financial 25%, Legal 25%, Operational 20%, Strategic 15%, Risk 10%, Values 5%                  |
+| **Gate**     | Issue GREEN/YELLOW/RED verdict; stop on RED and name the specific blocker                                                      |
+| **BOM**      | Emit a Bill of Materials: product_slug, shape, MVP features (≤5), tech stack, price point, store, build cost, 90d revenue, ROI |
+| **WR**       | Output a complete WR following `wr/WR_TEMPLATE_FULL.md` with traceable source citations                                        |
 
 ---
 
@@ -57,9 +57,9 @@ This skill activates when these phrases appear in a comment:
 
 DRAGNET auto-detects which mode to use:
 
-| Signal | Mode |
-|--------|------|
-| Task describes a bug, workflow failure, broken CI, runtime error | **ERROR MODE** |
+| Signal                                                                                    | Mode              |
+| ----------------------------------------------------------------------------------------- | ----------------- |
+| Task describes a bug, workflow failure, broken CI, runtime error                          | **ERROR MODE**    |
 | Task describes a new product, feature, or tool — especially with screenshots/social links | **SCAFFOLD MODE** |
 
 Both modes are documented; this skill covers SCAFFOLD MODE only.
@@ -90,31 +90,32 @@ Output a bulleted requirement list with a source citation for each item:
 
 Apply the product-pipeline decision rubric:
 
-| Score | Shape |
-|-------|-------|
-| One-shot reference, SEO-discoverable | PDF / booklet |
-| Single deterministic action with output | One-button app |
-| Fixing a vendor's web UI | Browser extension |
-| Hands-free household | Alexa / Google skill |
-| Developers want to call this | API |
-| Developers want to script this locally | CLI |
-| An LLM agent needs this tool | MCP server |
-| Bigger, only after strong ROI justification | Full app |
+| Score                                       | Shape                |
+| ------------------------------------------- | -------------------- |
+| One-shot reference, SEO-discoverable        | PDF / booklet        |
+| Single deterministic action with output     | One-button app       |
+| Fixing a vendor's web UI                    | Browser extension    |
+| Hands-free household                        | Alexa / Google skill |
+| Developers want to call this                | API                  |
+| Developers want to script this locally      | CLI                  |
+| An LLM agent needs this tool                | MCP server           |
+| Bigger, only after strong ROI justification | Full app             |
 
 ### Step 3 — PLATO→JUDGE Scoring
 
 Score each dimension 0–100, then apply thresholds:
 
-| Dimension | Weight |
-|-----------|--------|
-| Financial | 25% |
-| Legal | 25% |
-| Operational | 20% |
-| Strategic | 15% |
-| Risk | 10% |
-| Values | 5% |
+| Dimension   | Weight |
+| ----------- | ------ |
+| Financial   | 25%    |
+| Legal       | 25%    |
+| Operational | 20%    |
+| Strategic   | 15%    |
+| Risk        | 10%    |
+| Values      | 5%     |
 
 **Thresholds:**
+
 - 🟢 GREEN ≥ 75 avg, no dimension < 50 → proceed
 - 🟡 YELLOW ≥ 50 avg → proceed with conditions named
 - 🔴 RED any dimension < 50 or avg < 50 → stop, name blocker, label to apply
@@ -124,17 +125,17 @@ Score each dimension 0–100, then apply thresholds:
 ```markdown
 ## BOM — <product_slug>
 
-| Field | Value |
-|-------|-------|
-| product_slug | resume-generator-ats |
-| shape | one-button app (web) |
-| MVP features | form input, live preview, ATS-safe template, PDF export, client-side only |
-| tech stack | Next.js, Tailwind, jsPDF |
-| price point | Free (lead capture) / $9/mo Pro |
-| primary store | Direct (Polar.sh) |
-| build cost | ~$600 (est. 8h agent + 2h review) |
-| 90d revenue projection | $2,400 (est. 80 paid users × $9 × 3 months) |
-| ROI ratio | 4.0x |
+| Field                  | Value                                                                     |
+| ---------------------- | ------------------------------------------------------------------------- |
+| product_slug           | resume-generator-ats                                                      |
+| shape                  | one-button app (web)                                                      |
+| MVP features           | form input, live preview, ATS-safe template, PDF export, client-side only |
+| tech stack             | Next.js, Tailwind, jsPDF                                                  |
+| price point            | Free (lead capture) / $9/mo Pro                                           |
+| primary store          | Direct (Polar.sh)                                                         |
+| build cost             | ~$600 (est. 8h agent + 2h review)                                         |
+| 90d revenue projection | $2,400 (est. 80 paid users × $9 × 3 months)                               |
+| ROI ratio              | 4.0x                                                                      |
 ```
 
 ### Step 5 — WR Output
@@ -145,43 +146,56 @@ Mandatory sections for SCAFFOLD MODE output:
 
 ```markdown
 ## Objective
+
 <one-sentence product description>
 
 ## Requirements (extracted from source material)
+
 - <requirement> — _Source: <citation>_
 
 ## MVP Definition (≤ 5 items)
+
 - [ ] <feature 1>
 
 ## Solution Shape
+
 <shape> — rationale: <one sentence>
 
 ## PLATO→JUDGE Verdict
+
 🟢/🟡/🔴 — <score summary>
 
 ## BOM Reference
+
 See BOM table above.
 
 ## Audience
+
 <primary persona>, <secondary persona>
 
 ## SEO Keywords
+
 <top 5–10 keywords>
 
 ## Monetization Path
+
 <free tier / paid tier / Stripe price point / store>
 
 ## Competitor Snapshot
+
 | Competitor | Score | Gap |
-|---|---|---|
+| ---------- | ----- | --- |
 
 ## Acceptance Gates
+
 - [ ] <gate 1>
 
 ## Blockers
+
 - <blocker if any, with label to apply>
 
 ## Next Steps
+
 - [ ] Assign BOM to Coder for scaffold
 - [ ] Apply `bom_ready` label once BOM is approved
 ```
@@ -191,6 +205,7 @@ See BOM table above.
 ## Example
 
 **Trigger comment:**
+
 ```
 /scaffold Create a resume generator based on the screenshots in issue #15164 and the Reddit thread at https://www.reddit.com/r/recruitinghell/s/en2zyR33dj
 ```
@@ -201,6 +216,7 @@ See BOM table above.
 ## DRAGNET SCAFFOLD MODE — resume-generator-ats
 
 ### Extracted Requirements
+
 - ATS compatibility is the #1 concern  
   _Source: reddit.com/r/recruitinghell — "I've sent 200 applications and not one callback"_
 - Single-column, clean template preferred  
@@ -213,18 +229,22 @@ See BOM table above.
   _Source: screenshots 1–7 — all captured on mobile viewport_
 
 ### Solution Shape
+
 **One-button web app** — single-purpose tool (fill form → preview → export PDF);
 cheaper than full app, no vendor dependency.
 
 ### PLATO→JUDGE Verdict
+
 🟢 GREEN — avg 78/100 (Financial 80, Legal 90, Operational 75, Strategic 70, Risk 75, Values 80)
 
 ### BOM
+
 product_slug: resume-generator-ats | shape: one-button web app | MVP: form, live preview,
 ATS template, PDF export, client-side | stack: Next.js + Tailwind + jsPDF | price: Free /
 $9/mo Pro | store: Polar.sh | build cost: ~$600 | 90d rev: ~$2,400 | ROI: 4.0x
 
 ### Next Action
+
 Apply `bom_ready` label after BOM review. Assign to Coder for scaffold.
 ```
 
@@ -232,13 +252,13 @@ Apply `bom_ready` label after BOM review. Assign to Coder for scaffold.
 
 ## Integration
 
-| System | Role |
-|--------|------|
+| System                        | Role                                                                                     |
+| ----------------------------- | ---------------------------------------------------------------------------------------- |
 | `persona-comment-trigger.yml` | Invokes this skill when `/scaffold`, `/builder`, `/product-build`, or `/dragnet` is used |
-| `wr-pr-creation.yml` | Consumes the WR output to generate the full WR PR |
-| `product-pipeline` skill | Handles subsequent pipeline steps (Build → Certify → Deploy) after BOM is approved |
-| `ui-creation-engine` skill | Used for the UI scaffolding step when shape = web app |
-| `mvi-contract` skill | Wraps each SCAFFOLD session so scope is enforced |
+| `wr-pr-creation.yml`          | Consumes the WR output to generate the full WR PR                                        |
+| `product-pipeline` skill      | Handles subsequent pipeline steps (Build → Certify → Deploy) after BOM is approved       |
+| `ui-creation-engine` skill    | Used for the UI scaffolding step when shape = web app                                    |
+| `mvi-contract` skill          | Wraps each SCAFFOLD session so scope is enforced                                         |
 
 ---
 
@@ -274,4 +294,4 @@ SCAFFOLD MODE output is only valid when:
 
 ---
 
-*DRAGNET SCAFFOLD MODE — extract, score, build.*
+_DRAGNET SCAFFOLD MODE — extract, score, build._

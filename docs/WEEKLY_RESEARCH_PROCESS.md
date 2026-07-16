@@ -66,6 +66,7 @@ gh workflow run weekly-research.yml -f issue_number=123
 **Trigger:** Issue opened/reopened with [WR] prefix
 
 **Actions:**
+
 1. Detect [WR] prefix in title
 2. Apply labels:
    - `weekly-research`
@@ -81,6 +82,7 @@ gh workflow run weekly-research.yml -f issue_number=123
 **Workflow:** `jules-invoke.yml` (automatically triggered by `jules` label)
 
 **Actions:**
+
 1. Jules analyzes issue scope and requirements
 2. Performs comprehensive research across:
    - Repository documentation (AGENTS.md, skills/, standards/)
@@ -95,6 +97,7 @@ gh workflow run weekly-research.yml -f issue_number=123
 **Workflow:** `openrouter-triage.yml` (automatically triggered)
 
 **Actions:**
+
 1. OpenRouter analyzes issue scope
 2. Suggests additional labels (e.g., `codex`, `49agents`)
 3. Recommends research approach
@@ -159,7 +162,8 @@ gh workflow run weekly-research.yml -f issue_number=123
 
 Every WR task follows this standard checklist:
 
-> **Fleet Instruction:** User WR content is a *starting point*, not the final word. Self-correct against live data. Never follow user WR text verbatim — validate every claim, price, and API choice. The user has ADHD and produces rapid brain-dump instructions; treat them as directional signals, not firm requirements.
+> **Fleet Instruction:** User WR content is a _starting point_, not the final word. Self-correct against live data. Never follow user WR text verbatim — validate every claim, price, and API choice. The user has ADHD and produces rapid brain-dump instructions; treat them as directional signals, not firm requirements.
+
 - [ ] **Validate instructions before acting**
   - [ ] Cross-check issue title/body against actual repo state
   - [ ] Identify and silently correct any errors in the instruction
@@ -221,7 +225,7 @@ Every WR task follows this standard checklist:
   - [ ] Not just plans or proposals
   - [ ] Actionable implementation steps
 
-- [ ] **Marketing, SEO & competitive signals** *(required for every WR)*
+- [ ] **Marketing, SEO & competitive signals** _(required for every WR)_
   - [ ] Identify 3–5 primary SEO keywords relevant to the topic
   - [ ] Identify 3–5 long-tail keywords
   - [ ] Check GitHub stars for any tools/repos referenced (competitive traction)
@@ -229,22 +233,22 @@ Every WR task follows this standard checklist:
   - [ ] Assess distribution channel (organic search, social, community, API)
   - [ ] Verify all market claims with factual citations — no hallucinated stats
 
-- [ ] **Product / Output Selections** *(required for every WR/PR)*
+- [ ] **Product / Output Selections** _(required for every WR/PR)_
   - [ ] Explicitly select which artifact shapes are in scope: website/app UI, API, CLI, MCP, skill, PDF, PowerPoint/deck, video/demo/training/YouTube, docs, and agent automation
   - [ ] For any selected video output, state the intended format and target length
   - [ ] For any enhanced feature or new requirement that should apply globally, update both the current WR and revvel-standards so future WRs inherit it
 
-- [ ] **Platform defaults & website requirements** *(required when a website/app surface is in scope)*
+- [ ] **Platform defaults & website requirements** _(required when a website/app surface is in scope)_
   - [ ] Website in Test must name the Vercel URL or explicitly mark the gap
   - [ ] Backend/integration/runtime defaults must use DigitalOcean unless the WR documents a reviewed exception
   - [ ] Customer-facing websites must document admin access plus user login requirements, including Apple, Google, and GitHub sign-in when auth is in scope
 
-- [ ] **Artifact Engine Map** *(required for every WR/PR)*
+- [ ] **Artifact Engine Map** _(required for every WR/PR)_
   - [ ] End with a map for every required output shape: website/app UI, API, CLI, MCP, skill, PDF, PowerPoint/deck, video, docs, and agent automation
   - [ ] For each shape, point to the existing engine/workflow/standard that produces it or explicitly mark the gap that must be implemented
   - [ ] Reuse existing repo engines where available (for example delivery matrix, PDF routing, UI creation, video standards, orchestration/MCP contracts) instead of inventing duplicate systems
 
-- [ ] **Agent Self-Healing Journal** *(required at the end of every WR/PR)*
+- [ ] **Agent Self-Healing Journal** _(required at the end of every WR/PR)_
   - [ ] Record what was wrong, what the agent researched, what it corrected, and what should now be institutionalized in revvel-standards
   - [ ] Convert useful self-healing outcomes into a standard, workflow, template, or checklist update when the learning is durable
   - [ ] Preserve required credential, security, and compliance gates unless a reviewed standard explicitly replaces them
@@ -278,6 +282,7 @@ Every WR task follows this standard checklist:
 [Description]
 
 **Evidence:**
+
 - [Link/reference 1]
 - [Link/reference 2]
 
@@ -313,8 +318,8 @@ Every WR task follows this standard checklist:
 
 ### Risks & Considerations
 
-| Risk | Severity | Mitigation |
-|------|----------|------------|
+| Risk     | Severity     | Mitigation        |
+| -------- | ------------ | ----------------- |
 | [Risk 1] | High/Med/Low | [How to mitigate] |
 
 ---
@@ -338,18 +343,18 @@ Every WR task follows this standard checklist:
 
 ### Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-| --- | --- | --- | --- | --- |
-| Website / app UI | [yes/no] | [site/app] | [workflow/script/standard] | [notes] |
-| API | [yes/no] | [REST/GraphQL/etc.] | [workflow/script/standard] | [notes] |
-| CLI | [yes/no] | [binary/package] | [workflow/script/standard] | [notes] |
-| MCP | [yes/no] | [server/router/tool manifest] | [workflow/script/standard] | [notes] |
-| Skill | [yes/no] | [skill type] | [workflow/script/standard] | [notes] |
-| PDF | [yes/no] | [report/guide/etc.] | [workflow/script/standard] | [notes] |
-| PowerPoint / deck | [yes/no] | [sales/training/review deck] | [workflow/script/standard] | [notes] |
-| Video | [yes/no] | [demo/training/review/YouTube + target length] | [workflow/script/standard] | [notes] |
-| Docs | [yes/no] | [site/spec/readme] | [workflow/script/standard] | [notes] |
-| Agent automation | [yes/no] | [workflow/agent/service] | [workflow/script/standard] | [notes] |
+| Output shape      | In scope? | Format / length                                | Primary engine / standard  | Notes   |
+| ----------------- | --------- | ---------------------------------------------- | -------------------------- | ------- |
+| Website / app UI  | [yes/no]  | [site/app]                                     | [workflow/script/standard] | [notes] |
+| API               | [yes/no]  | [REST/GraphQL/etc.]                            | [workflow/script/standard] | [notes] |
+| CLI               | [yes/no]  | [binary/package]                               | [workflow/script/standard] | [notes] |
+| MCP               | [yes/no]  | [server/router/tool manifest]                  | [workflow/script/standard] | [notes] |
+| Skill             | [yes/no]  | [skill type]                                   | [workflow/script/standard] | [notes] |
+| PDF               | [yes/no]  | [report/guide/etc.]                            | [workflow/script/standard] | [notes] |
+| PowerPoint / deck | [yes/no]  | [sales/training/review deck]                   | [workflow/script/standard] | [notes] |
+| Video             | [yes/no]  | [demo/training/review/YouTube + target length] | [workflow/script/standard] | [notes] |
+| Docs              | [yes/no]  | [site/spec/readme]                             | [workflow/script/standard] | [notes] |
+| Agent automation  | [yes/no]  | [workflow/agent/service]                       | [workflow/script/standard] | [notes] |
 
 ---
 
@@ -362,18 +367,18 @@ Every WR task follows this standard checklist:
 
 ### Artifact Engine Map
 
-| Artifact Shape | Existing engine / standard | Status | Required action |
-| --- | --- | --- | --- |
-| Website / UI | [workflow/script/standard] | [exists/gap] | [action] |
-| API | [workflow/script/standard] | [exists/gap] | [action] |
-| CLI | [workflow/script/standard] | [exists/gap] | [action] |
-| MCP | [workflow/script/standard] | [exists/gap] | [action] |
-| Skill | [workflow/script/standard] | [exists/gap] | [action] |
-| PDF | [workflow/script/standard] | [exists/gap] | [action] |
-| PowerPoint / deck | [workflow/script/standard] | [exists/gap] | [action] |
-| Video | [workflow/script/standard] | [exists/gap] | [action] |
-| Docs | [workflow/script/standard] | [exists/gap] | [action] |
-| Agent automation | [workflow/script/standard] | [exists/gap] | [action] |
+| Artifact Shape    | Existing engine / standard | Status       | Required action |
+| ----------------- | -------------------------- | ------------ | --------------- |
+| Website / UI      | [workflow/script/standard] | [exists/gap] | [action]        |
+| API               | [workflow/script/standard] | [exists/gap] | [action]        |
+| CLI               | [workflow/script/standard] | [exists/gap] | [action]        |
+| MCP               | [workflow/script/standard] | [exists/gap] | [action]        |
+| Skill             | [workflow/script/standard] | [exists/gap] | [action]        |
+| PDF               | [workflow/script/standard] | [exists/gap] | [action]        |
+| PowerPoint / deck | [workflow/script/standard] | [exists/gap] | [action]        |
+| Video             | [workflow/script/standard] | [exists/gap] | [action]        |
+| Docs              | [workflow/script/standard] | [exists/gap] | [action]        |
+| Agent automation  | [workflow/script/standard] | [exists/gap] | [action]        |
 
 ---
 
@@ -407,6 +412,7 @@ Every WR task follows this standard checklist:
 **Model:** Claude Sonnet 4  
 **Role:** Coordinates overall research effort  
 **Responsibilities:**
+
 - Task decomposition
 - Sub-agent coordination
 - Findings consolidation
@@ -418,6 +424,7 @@ Every WR task follows this standard checklist:
 **Role:** Deep research and authoring  
 **Trigger:** Add `jules` label  
 **Responsibilities:**
+
 - Comprehensive web research
 - Multi-source synthesis
 - Long-form documentation
@@ -428,6 +435,7 @@ Every WR task follows this standard checklist:
 **Role:** Code analysis and implementation  
 **Trigger:** Add `codex` label  
 **Responsibilities:**
+
 - Code review
 - Implementation prototypes
 - Technical feasibility assessment
@@ -438,6 +446,7 @@ Every WR task follows this standard checklist:
 **Role:** Parallel investigation  
 **Trigger:** `AGENT_HQ_TOKEN` configured  
 **Responsibilities:**
+
 - Parallel research streams
 - Independent subtask execution
 - Real-time findings sharing
@@ -451,6 +460,7 @@ Every WR task follows this standard checklist:
 When AGENT_HQ_TOKEN is configured, WR issues automatically trigger a 49Agents canvas:
 
 **Canvas Layout:**
+
 - **Orchestrator pane** — Coordinates research
 - **Scout-1 pane** — Repository review
 - **Scout-2 pane** — Cross-repo analysis
@@ -459,6 +469,7 @@ When AGENT_HQ_TOKEN is configured, WR issues automatically trigger a 49Agents ca
 - **Monitor pane** — Progress tracking
 
 **Real-time Updates:**
+
 - Agent status indicators
 - Live terminal output
 - Shared findings notes
@@ -475,6 +486,7 @@ See `skills/49agents/SKILL.md` for setup instructions.
 **Issue:** `[WR] Evaluate 49Agents for integration`
 
 **Research performed:**
+
 1. ✅ Reviewed 49Agents documentation
 2. ✅ Compared with current automation
 3. ✅ Identified integration opportunities
@@ -488,6 +500,7 @@ See `skills/49agents/SKILL.md` for setup instructions.
 **Issue:** `[WR] Research migration from Lodash to native ES`
 
 **Research performed:**
+
 1. ✅ Audited Lodash usage across repos
 2. ✅ Identified native ES equivalents
 3. ✅ Performance comparison
@@ -528,6 +541,7 @@ A WR task is successful if:
 **Problem:** Issue with [WR] prefix didn't trigger automation
 
 **Solutions:**
+
 1. Check workflow run logs: `gh run list --workflow=weekly-research.yml`
 2. Manually trigger: `gh workflow run weekly-research.yml -f issue_number=XXX`
 3. Verify workflow file is syntactically correct
@@ -538,6 +552,7 @@ A WR task is successful if:
 **Problem:** Triage step failed with error
 
 **Solutions:**
+
 1. Check `OPENROUTER_API_KEY` is configured
 2. Verify OpenRouter API status: https://openrouter.ai/status
 3. Review triage script logs in workflow run
@@ -548,6 +563,7 @@ A WR task is successful if:
 **Problem:** Parallel research didn't trigger
 
 **Solutions:**
+
 1. Check `AGENT_HQ_TOKEN` is configured
 2. Verify 49Agents instance is running
 3. Test webhook endpoint: `curl https://agent-hq.revvel.co/api/health`
@@ -596,6 +612,7 @@ A WR task is successful if:
 ## Changelog
 
 ### 2026-05-17 — v1.1.0
+
 - Added **Instruction Resilience** core principle (instructions are research seeds, not firm rules)
 - Added instruction-validation step to Research Checklist
 - Added mandatory Marketing, SEO & competitive signals to Research Checklist (keywords, stars, monetization, citations)
@@ -603,6 +620,7 @@ A WR task is successful if:
 - Version bump 1.0.0 → 1.1.0
 
 ### 2026-04-30 — v1.0.0
+
 - Initial WR process documentation
 - Created `.github/workflows/weekly-research.yml`
 - Added `weekly-research`, `wr:in-progress`, `wr:complete` labels

@@ -25,8 +25,7 @@ const { callOpenRouter, ROUTING_PROFILES } = require("./openrouter-routing");
 
 const PROFILE_NAME = process.env.PROFILE || "deep_search";
 
-const profile =
-  ROUTING_PROFILES[PROFILE_NAME] ||
+const profile = ROUTING_PROFILES[PROFILE_NAME] ||
   ROUTING_PROFILES.deep_search || {
     description:
       "Deep R&D research using DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks",
@@ -109,7 +108,7 @@ async function postGitHubComment(issueNumber, repo, body) {
         } else {
           reject(new Error(`GitHub comment failed: ${res.statusCode}`));
         }
-      }
+      },
     );
     req.on("error", reject);
     req.write(payload);
@@ -128,7 +127,9 @@ async function main() {
   const repo = process.env.REPO;
 
   // Detect GitHub repo URL(s) in the query so Phase 6 gets a targeted hint.
-  const repoUrlMatch = query.match(/https?:\/\/github\.com\/([a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+)/);
+  const repoUrlMatch = query.match(
+    /https?:\/\/github\.com\/([a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+)/,
+  );
   const repoUrlHint = repoUrlMatch
     ? `\n\nPrimary GitHub repository to review in Phase 6: ${repoUrlMatch[0]}\nIf this repository is unavailable or unmaintained, perform a full web search for the tool name "${repoUrlMatch[1].split("/").pop()}" to identify the best alternative.`
     : "";
@@ -138,7 +139,8 @@ async function main() {
   console.log(`Profile: ${PROFILE_NAME} (${profile.description})`);
   console.log(`Models: ${models.join(" → ")}`);
   console.log(`Query: ${query}`);
-  if (repoUrlHint) console.log("Repository detected — Phase 6 competitor search enabled.");
+  if (repoUrlHint)
+    console.log("Repository detected — Phase 6 competitor search enabled.");
   console.log("");
 
   const messages = [

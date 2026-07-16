@@ -7,6 +7,7 @@
 **Tracks:** OZ-OS-001
 
 ## Deliverable (single PR)
+
 Create new repo `midnghtsapphire/oz-os` with this exact tree:
 
 ```
@@ -35,9 +36,11 @@ oz-os/
 ```
 
 ## Anti-Goal
+
 Do NOT copy `WR_TEMPLATE_FULL.md`. Use `WR_TEMPLATE_BASIC.md` only.
 
 ## Acceptance
+
 - Repo exists at `midnghtsapphire/oz-os`
 - All directories present with `.gitkeep`
 - wr-lint runs green on README.md

@@ -58,6 +58,7 @@ After comprehensive investigation:
    - Assigns to @midnghtsapphire
 
 **Triggers:**
+
 - Schedule: Every hour (`0 * * * *`)
 - Manual: `workflow_dispatch` with force recovery option
 - Protection: On `repository_dispatch` with `secret-delete` action
@@ -93,6 +94,7 @@ After comprehensive investigation:
    - Tracks progression over time
 
 **Triggers:**
+
 - Schedule: Every 6 hours (`0 */6 * * *`)
 - Manual: `workflow_dispatch` with dry-run option
 
@@ -101,6 +103,7 @@ After comprehensive investigation:
 **File:** `.github/labels.yml`
 
 **Added Labels:**
+
 - `auto-error` — Automatically created error reports
 - `needs-fix` — Identified issues needing fixes
 - `goap-escalation` — Escalated to GOAP
@@ -180,11 +183,11 @@ Edit `.github/workflows/stuck-label-automation.yml`:
 const STUCK_PATTERNS = [
   // ... existing patterns ...
   {
-    label: 'your-label',
-    max_age_ms: 48 * MS_PER_HOUR,  // 48 hours
-    next_action: 'your-action',
-    next_label: 'next-label-name',
-    description: 'Description of stuck state'
+    label: "your-label",
+    max_age_ms: 48 * MS_PER_HOUR, // 48 hours
+    next_action: "your-action",
+    next_label: "next-label-name",
+    description: "Description of stuck state",
   },
 ];
 ```
@@ -201,16 +204,19 @@ case 'your-action':
 ### Manual Triggers
 
 **Check secrets immediately:**
+
 ```bash
 gh workflow run secret-persistence-guard.yml
 ```
 
 **Force secret recovery:**
+
 ```bash
 gh workflow run secret-persistence-guard.yml -f force_recovery=true
 ```
 
 **Dry-run stuck label detection:**
+
 ```bash
 gh workflow run stuck-label-automation.yml -f dry_run=true
 ```
@@ -220,6 +226,7 @@ gh workflow run stuck-label-automation.yml -f dry_run=true
 ### Secret Health
 
 Check hourly reports in Actions → Secret Persistence Guard:
+
 - ✅ All secrets present
 - ⚠️ N secrets missing (auto-recovery attempted)
 - ❌ Recovery failed (issue created)
@@ -227,6 +234,7 @@ Check hourly reports in Actions → Secret Persistence Guard:
 ### Stuck Labels
 
 Check 6-hourly reports in Actions → Stuck Label Automation:
+
 - Count of stuck issues/PRs
 - Actions taken on each
 - Progression success rate
@@ -234,6 +242,7 @@ Check 6-hourly reports in Actions → Stuck Label Automation:
 ### Escalation Issues
 
 Monitor for auto-created issues:
+
 - `🚨 Secrets Missing: Manual Recovery Required`
 - `🚨 Blocked Protected Secret Deletion`
 - Comments on stuck items with progression actions
@@ -257,12 +266,14 @@ Monitor for auto-created issues:
 ## Future Enhancements
 
 ### Secrets
+
 - [ ] Multi-vault support (Vault, AWS Secrets Manager, Azure Key Vault)
 - [ ] Secret usage tracking (which workflows use which secrets)
 - [ ] Automated secret rotation with zero-downtime
 - [ ] Secret dependency graph (which secrets depend on others)
 
 ### Labels
+
 - [ ] Machine learning for optimal time thresholds
 - [ ] Predictive stuck detection (detect before threshold)
 - [ ] Cross-repo label synchronization
@@ -273,23 +284,29 @@ Monitor for auto-created issues:
 ### Secret Persistence Guard Issues
 
 **Issue:** Auto-recovery fails with "401 Unauthorized"
+
 - **Solution:** Check `DOPPLER_TOKEN` is valid and has read access
 
 **Issue:** Can't sync to GitHub with "403 Forbidden"
+
 - **Solution:** Ensure `ADMIN_GITHUB_TOKEN` has `secrets: write` permission
 
 **Issue:** Protected secret deletion still succeeds
+
 - **Solution:** Workflow runs AFTER deletion event; check if secret is in PROTECTED_SECRETS list
 
 ### Stuck Label Automation Issues
 
 **Issue:** Labels not progressing despite being stuck
+
 - **Solution:** Check workflow is enabled and running every 6 hours
 
 **Issue:** Too many false positives
+
 - **Solution:** Increase time thresholds in STUCK_PATTERNS
 
 **Issue:** Auto-progression fails
+
 - **Solution:** Check permissions (workflow needs `issues: write` and `pull-requests: write`)
 
 ## References

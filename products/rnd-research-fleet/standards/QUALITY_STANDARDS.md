@@ -1,6 +1,6 @@
 # R&D Research Fleet - Quality & Measurement Standards
 
-*Included in Self-Exploding Fleet ($399)*
+_Included in Self-Exploding Fleet ($399)_
 
 ---
 
@@ -15,20 +15,24 @@ The R&D Research Fleet follows enterprise-grade quality standards developed by M
 Every research task follows the MVI framework:
 
 ### 1. Context Check
+
 - What was done previously?
 - Current production state
 - Known issues
 
 ### 2. Feature Definition
+
 - One clear research objective
 - Observable outcome defined
 
 ### 3. Dependency Map
+
 - Required data sources
 - API access needed
 - Time constraints
 
 ### 4. Acceptance Gates
+
 ```
 [ ] Research completed
 [ ] Sources cited
@@ -38,13 +42,16 @@ Every research task follows the MVI framework:
 ```
 
 ### 5. Out of Scope
+
 - Explicitly what is NOT being researched
 
 ### 6. Files to Touch
+
 - Research outputs
 - Generated reports
 
 ### 7. Rollback Plan
+
 - How to recover from bad research direction
 
 ---
@@ -53,23 +60,23 @@ Every research task follows the MVI framework:
 
 Every research output is scored on 5 dimensions:
 
-| Dimension | Weight | What It Measures |
-|-----------|--------|------------------|
-| **Hallucination** | 30% | Unverified claims, missing sources |
-| **Bad Code** | 25% | Incorrect data, wrong formulas |
-| **Directions** | 20% | Following the framework correctly |
-| **Rash** | 15% | Skipping steps, incomplete analysis |
-| **CI/Latency** | 10% | Speed and efficiency |
+| Dimension         | Weight | What It Measures                    |
+| ----------------- | ------ | ----------------------------------- |
+| **Hallucination** | 30%    | Unverified claims, missing sources  |
+| **Bad Code**      | 25%    | Incorrect data, wrong formulas      |
+| **Directions**    | 20%    | Following the framework correctly   |
+| **Rash**          | 15%    | Skipping steps, incomplete analysis |
+| **CI/Latency**    | 10%    | Speed and efficiency                |
 
 ### Trust Grades
 
-| Grade | Score | Status |
-|-------|-------|--------|
-| A | 90+ | Trusted |
-| B | 80-89 | Reliable |
-| C | 70-79 | Watch |
-| D | 55-69 | Shaky |
-| F | <55 | Quarantine |
+| Grade | Score | Status     |
+| ----- | ----- | ---------- |
+| A     | 90+   | Trusted    |
+| B     | 80-89 | Reliable   |
+| C     | 70-79 | Watch      |
+| D     | 55-69 | Shaky      |
+| F     | <55   | Quarantine |
 
 ---
 
@@ -78,7 +85,7 @@ Every research output is scored on 5 dimensions:
 ### 1. Research Quality Score (0-100)
 
 ```
-Research Quality = 
+Research Quality =
   (Source Reliability × 0.30) +
   (Methodology Adherence × 0.25) +
   (Completeness × 0.20) +
@@ -106,11 +113,11 @@ How well did the agent follow the research framework?
 
 When research quality drops below threshold:
 
-| Tier | Action | Trigger |
-|------|--------|---------|
-| 0 | Prompt Correction | Minor hallucinations |
-| 1 | Agent Handoff | Framework not followed |
-| 2 | Escalate to Claude | Critical failures |
+| Tier | Action             | Trigger                |
+| ---- | ------------------ | ---------------------- |
+| 0    | Prompt Correction  | Minor hallucinations   |
+| 1    | Agent Handoff      | Framework not followed |
+| 2    | Escalate to Claude | Critical failures      |
 
 ---
 

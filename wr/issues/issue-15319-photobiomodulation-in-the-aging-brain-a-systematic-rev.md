@@ -15,22 +15,23 @@
 
 **Route tags:** `#tools` `#app`
 
-**Source article:** *Photobiomodulation in the aging brain: a systematic review from animal models to humans* — PMC11493890 (Aging, 2024). The review analyzed 37 studies on photobiomodulation (PBM) interventions across both animal models and human clinical trials, examining cognitive and neurological outcomes in healthy aging populations and those with Alzheimer's disease, mild cognitive impairment, and Parkinson's disease.
+**Source article:** _Photobiomodulation in the aging brain: a systematic review from animal models to humans_ — PMC11493890 (Aging, 2024). The review analyzed 37 studies on photobiomodulation (PBM) interventions across both animal models and human clinical trials, examining cognitive and neurological outcomes in healthy aging populations and those with Alzheimer's disease, mild cognitive impairment, and Parkinson's disease.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
@@ -52,6 +53,7 @@
 The combination of strong peer-reviewed clinical evidence (37-study systematic review, PMC11493890), a fragmented device-companion software market, zero dedicated open-source tracking solutions, and a rapidly growing addressable market creates a compelling opportunity. This is a **#tools + #app** output: a PBM brain health protocol manager, session tracker, and cognitive outcome logger, monetized via a SaaS subscription layered over hardware integrations.
 
 **Why now:**
+
 - PMC11493890 establishes clinical credibility (800–1064 nm wavelengths, mitochondrial CCO activation, neuroprotection) and explicitly calls for standardized protocols — a gap our tool fills.
 - No open-source alternative exists; proprietary apps are hardware-locked silos.
 - Aging population growth + non-drug cognitive health demand = durable tailwind.
@@ -60,12 +62,12 @@ The combination of strong peer-reviewed clinical evidence (37-study systematic r
 
 ### Primary Audiences
 
-| Segment | Size (US estimate) | Pain Point | WTP |
-|---|---|---|---|
-| **Biohackers / longevity enthusiasts** | 5–10M active (internal estimate — derived from r/biohacking 3M+ subreddit subscribers, Oura Ring 2M+ users, and general longevity-supplement buyer demographics; unverified) | No standardized protocol, no outcome tracking | $10–30/month |
-| **Older adults (55+) with MCI or early AD** | ~16M US adults with MCI ([Alzheimer's Assoc. 2024](https://www.alz.org/alzheimers-dementia/facts-figures)) | Fragmented device UX, no cognitive tracking | $15–40/month |
-| **Clinicians / neurorehab practitioners** | ~1M+ US PTs, OTs, neuro PTs ([BLS 2024](https://www.bls.gov/ooh/healthcare/physical-therapists.htm)) | Manual log-keeping, no protocol library | $49–199/month (pro tier) |
-| **PBM device manufacturers** (B2B) | Top 10–20 device brands | No companion app ecosystem; churn from poor UX | $500–2,000/month (OEM license) |
+| Segment                                     | Size (US estimate)                                                                                                                                                           | Pain Point                                     | WTP                            |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ------------------------------ |
+| **Biohackers / longevity enthusiasts**      | 5–10M active (internal estimate — derived from r/biohacking 3M+ subreddit subscribers, Oura Ring 2M+ users, and general longevity-supplement buyer demographics; unverified) | No standardized protocol, no outcome tracking  | $10–30/month                   |
+| **Older adults (55+) with MCI or early AD** | ~16M US adults with MCI ([Alzheimer's Assoc. 2024](https://www.alz.org/alzheimers-dementia/facts-figures))                                                                   | Fragmented device UX, no cognitive tracking    | $15–40/month                   |
+| **Clinicians / neurorehab practitioners**   | ~1M+ US PTs, OTs, neuro PTs ([BLS 2024](https://www.bls.gov/ooh/healthcare/physical-therapists.htm))                                                                         | Manual log-keeping, no protocol library        | $49–199/month (pro tier)       |
+| **PBM device manufacturers** (B2B)          | Top 10–20 device brands                                                                                                                                                      | No companion app ecosystem; churn from poor UX | $500–2,000/month (OEM license) |
 
 **Why this audience:** The peer-reviewed evidence in PMC11493890 gives us instant credibility with clinicians and the MCI/AD population. Biohackers follow clinical literature and are early adopters. Device OEMs need companion software but lack the resources to build it themselves.
 
@@ -73,17 +75,17 @@ The combination of strong peer-reviewed clinical evidence (37-study systematic r
 
 ### Primary SEO Keywords
 
-| Keyword | Est. Monthly Volume | Competition | Intent |
-|---|---|---|---|
-| `photobiomodulation` | 10,000–30,000 | Medium | Informational |
-| `red light therapy brain` | 2,000–8,000 | High | Commercial/Info |
-| `transcranial photobiomodulation` | 1,000–4,000 | Medium | Academic/Info |
-| `near infrared light therapy cognitive` | 500–2,000 | Low–Medium | Commercial |
-| `PBM session tracker app` | <500 | Low | Transactional |
-| `brain health red light therapy app` | 500–1,500 | Low | Commercial |
-| `photobiomodulation protocol management` | <500 | Low | Transactional |
+| Keyword                                  | Est. Monthly Volume | Competition | Intent          |
+| ---------------------------------------- | ------------------- | ----------- | --------------- |
+| `photobiomodulation`                     | 10,000–30,000       | Medium      | Informational   |
+| `red light therapy brain`                | 2,000–8,000         | High        | Commercial/Info |
+| `transcranial photobiomodulation`        | 1,000–4,000         | Medium      | Academic/Info   |
+| `near infrared light therapy cognitive`  | 500–2,000           | Low–Medium  | Commercial      |
+| `PBM session tracker app`                | <500                | Low         | Transactional   |
+| `brain health red light therapy app`     | 500–1,500           | Low         | Commercial      |
+| `photobiomodulation protocol management` | <500                | Low         | Transactional   |
 
-*(Volume estimates based on Ahrefs/SEMrush category data — verify before ad spend)*
+_(Volume estimates based on Ahrefs/SEMrush category data — verify before ad spend)_
 
 ### Landing Page Recommendations
 
@@ -111,19 +113,19 @@ The combination of strong peer-reviewed clinical evidence (37-study systematic r
 
 ### Device-Native Companion Apps (Hardware-Locked Silos)
 
-| Competitor | Device Pairing | App Features | Pricing | Stars (GitHub) | Weakness |
-|---|---|---|---|---|---|
-| **Vielight Neuro app** | Vielight Neuro Duo ($1,749 device) | Session scheduling, basic logs | Bundled with device; no standalone | N/A (closed) | Hardware-locked, no export, no cognitive outcome tracking |
-| **Sens.ai** | Sens.ai headset (~$2,000+) | Multi-modal brain training, protocol guidance | ~$49/month subscription + device | N/A (closed) | Expensive hardware barrier, not PBM-specific |
-| **MitoMIND app** | MitoMIND helmet | Preset protocols, session timer | Bundled with device (~$1,500–2,500) | N/A (closed) | No clinical outcome tracking, no data export |
-| **Neuronic Neuradiant app** | Neuradiant 1070 device | Session tracking | Bundled | N/A (closed) | Limited software depth |
+| Competitor                  | Device Pairing                     | App Features                                  | Pricing                             | Stars (GitHub) | Weakness                                                  |
+| --------------------------- | ---------------------------------- | --------------------------------------------- | ----------------------------------- | -------------- | --------------------------------------------------------- |
+| **Vielight Neuro app**      | Vielight Neuro Duo ($1,749 device) | Session scheduling, basic logs                | Bundled with device; no standalone  | N/A (closed)   | Hardware-locked, no export, no cognitive outcome tracking |
+| **Sens.ai**                 | Sens.ai headset (~$2,000+)         | Multi-modal brain training, protocol guidance | ~$49/month subscription + device    | N/A (closed)   | Expensive hardware barrier, not PBM-specific              |
+| **MitoMIND app**            | MitoMIND helmet                    | Preset protocols, session timer               | Bundled with device (~$1,500–2,500) | N/A (closed)   | No clinical outcome tracking, no data export              |
+| **Neuronic Neuradiant app** | Neuradiant 1070 device             | Session tracking                              | Bundled                             | N/A (closed)   | Limited software depth                                    |
 
 ### Open-Source Landscape
 
-| Repository | Stars | Last Update | Viability |
-|---|---|---|---|
-| [OpenPBM/10x10](https://github.com/OpenPBM/10x10) | ~50 | 2023 | Hardware firmware only, no app/tracking |
-| Generic health trackers (Apple Health, Google Fit) | N/A | Active | No PBM-specific protocol support |
+| Repository                                         | Stars | Last Update | Viability                               |
+| -------------------------------------------------- | ----- | ----------- | --------------------------------------- |
+| [OpenPBM/10x10](https://github.com/OpenPBM/10x10)  | ~50   | 2023        | Hardware firmware only, no app/tracking |
+| Generic health trackers (Apple Health, Google Fit) | N/A   | Active      | No PBM-specific protocol support        |
 
 **Key finding:** No dedicated open-source or standalone PBM brain health tracking app exists. All existing software is bundled with specific hardware and cannot be used with other devices or without the paired hardware.
 
@@ -182,18 +184,18 @@ A **photobiomodulation brain health platform** (web app + mobile companion + pro
 
 ### Artifacts to Build
 
-| Artifact | Description | Priority |
-|---|---|---|
-| **Web app (Next.js)** | Protocol browser, session logger, cognitive outcome tracker, device-agnostic | P0 |
-| **Mobile companion (PWA)** | Same feature set, installable on iOS/Android without app store gating | P0 |
-| **Protocol library (JSON/MDX)** | Curated evidence-backed protocols (wavelength, intensity, duration, target area) | P0 |
-| **PDF session report** | Exportable session summary for clinicians / caregivers | P1 |
-| **Cognitive assessment module** | Standardized self-reported cognitive checks (inspired by MoCA/Montreal Cognitive Assessment proxy) | P1 |
-| **Apple Health / Google Fit integration** | Bidirectional health data context | P2 |
-| **CLI tool** | `pbm-tracker` CLI for power users and developers | P2 |
-| **Sellable PDF booklet** | "Evidence-Based Guide to PBM for Brain Health" (monetized via Polar.sh / Gumroad) | P1 |
-| **MCP server** | Model Context Protocol server for AI agents to query PBM protocols | P2 |
-| **Chrome extension** | Session timer overlay while watching PBM educational content | P3 |
+| Artifact                                  | Description                                                                                        | Priority |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------- | -------- |
+| **Web app (Next.js)**                     | Protocol browser, session logger, cognitive outcome tracker, device-agnostic                       | P0       |
+| **Mobile companion (PWA)**                | Same feature set, installable on iOS/Android without app store gating                              | P0       |
+| **Protocol library (JSON/MDX)**           | Curated evidence-backed protocols (wavelength, intensity, duration, target area)                   | P0       |
+| **PDF session report**                    | Exportable session summary for clinicians / caregivers                                             | P1       |
+| **Cognitive assessment module**           | Standardized self-reported cognitive checks (inspired by MoCA/Montreal Cognitive Assessment proxy) | P1       |
+| **Apple Health / Google Fit integration** | Bidirectional health data context                                                                  | P2       |
+| **CLI tool**                              | `pbm-tracker` CLI for power users and developers                                                   | P2       |
+| **Sellable PDF booklet**                  | "Evidence-Based Guide to PBM for Brain Health" (monetized via Polar.sh / Gumroad)                  | P1       |
+| **MCP server**                            | Model Context Protocol server for AI agents to query PBM protocols                                 | P2       |
+| **Chrome extension**                      | Session timer overlay while watching PBM educational content                                       | P3       |
 
 ---
 
@@ -202,15 +204,18 @@ A **photobiomodulation brain health platform** (web app + mobile companion + pro
 ### Market Analysis
 
 **PBM Device Market (Hardware)**
+
 - Global PBM device market: ~$750M (2024) → ~$2.5B (2034) at ~13.5% CAGR ([Emergen Research](https://www.emergenresearch.com/industry-report/photobiomodulation-pbm-device-market))
 - Photobiostimulation devices (broader): ~$10.52B (2024) → ~$25.14B (2034) at ~9.1% CAGR ([Zion Market Research](https://www.zionmarketresearch.com/report/photobiostimulation-devices-market))
 - Key hardware manufacturers: Vielight, THOR Photomedicine, Erchonia, LumiThera, MitoMIND, Neuronic ([QY Research](https://www.qyresearch.com/reports/2152440/photobiomodulation--pbm--device))
 
 **Software/App Gap**
+
 - No dedicated open-source or hardware-agnostic PBM brain tracking app exists as of July 2026 (web search verified)
 - [OpenPBM/10x10](https://github.com/OpenPBM/10x10): firmware only (~50 stars), no tracking/app layer
 
 **Cognitive Health Software Market (adjacent)**
+
 - BrainHQ (Posit Science): $96–$144/year
 - Lumosity: $11.99/month or $59.99/year
 - Noom Brain Training: bundled into $60–$80/month Noom subscription
@@ -218,14 +223,14 @@ A **photobiomodulation brain health platform** (web app + mobile companion + pro
 
 ### Competitor Pricing Table
 
-| Competitor | Type | Pricing | PBM-Specific | Cognitive Tracking | Export |
-|---|---|---|---|---|---|
-| Vielight app | Hardware companion | Bundled (~$1,749 device) | Yes (Vielight only) | No | No |
-| Sens.ai | Multi-modal | ~$49/month + ~$2,000 device | Partial | Partial | No |
-| MitoMIND app | Hardware companion | Bundled (~$1,500–2,500 device) | Yes (MitoMIND only) | No | No |
-| BrainHQ | Cognitive training | $96–$144/year | No | Yes (games) | Partial |
-| Lumosity | Cognitive training | $11.99/month | No | Yes (games) | No |
-| **Our target** | **Hardware-agnostic SaaS** | **$12–$29/month** | **Yes (all devices)** | **Yes (standardized)** | **Yes (PDF/CSV)** |
+| Competitor     | Type                       | Pricing                        | PBM-Specific          | Cognitive Tracking     | Export            |
+| -------------- | -------------------------- | ------------------------------ | --------------------- | ---------------------- | ----------------- |
+| Vielight app   | Hardware companion         | Bundled (~$1,749 device)       | Yes (Vielight only)   | No                     | No                |
+| Sens.ai        | Multi-modal                | ~$49/month + ~$2,000 device    | Partial               | Partial                | No                |
+| MitoMIND app   | Hardware companion         | Bundled (~$1,500–2,500 device) | Yes (MitoMIND only)   | No                     | No                |
+| BrainHQ        | Cognitive training         | $96–$144/year                  | No                    | Yes (games)            | Partial           |
+| Lumosity       | Cognitive training         | $11.99/month                   | No                    | Yes (games)            | No                |
+| **Our target** | **Hardware-agnostic SaaS** | **$12–$29/month**              | **Yes (all devices)** | **Yes (standardized)** | **Yes (PDF/CSV)** |
 
 ---
 
@@ -286,32 +291,32 @@ A **photobiomodulation brain health platform** (web app + mobile companion + pro
 
 ### Monetization Path
 
-| Stream | Revenue Model | Monthly Potential | Timeline |
-|---|---|---|---|
-| Freemium SaaS (consumer) | $12–$29/month | $5k–$15k (at 500–1,000 subs) | Month 2–4 |
-| Clinical / Pro tier | $49–$199/month | $5k–$20k (50–100 practitioners) | Month 3–6 |
-| PDF booklet sales | $9–$19 one-time | $500–$2k/month | Month 1 |
-| OEM white-label | $500–$2,000/month/brand | $5k–$10k (3–5 device brands) | Month 4–8 |
-| Affiliate (device sales) | 5–10% commission | $1k–$5k/month | Month 2–4 |
+| Stream                   | Revenue Model           | Monthly Potential               | Timeline  |
+| ------------------------ | ----------------------- | ------------------------------- | --------- |
+| Freemium SaaS (consumer) | $12–$29/month           | $5k–$15k (at 500–1,000 subs)    | Month 2–4 |
+| Clinical / Pro tier      | $49–$199/month          | $5k–$20k (50–100 practitioners) | Month 3–6 |
+| PDF booklet sales        | $9–$19 one-time         | $500–$2k/month                  | Month 1   |
+| OEM white-label          | $500–$2,000/month/brand | $5k–$10k (3–5 device brands)    | Month 4–8 |
+| Affiliate (device sales) | 5–10% commission        | $1k–$5k/month                   | Month 2–4 |
 
 ---
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ---
 
 ## Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| FDA / medical claim restrictions restrict app store listing | Medium | High | Avoid diagnostic language; position as "wellness tracker" not "medical device"; consult regulatory counsel before launch |
-| PBM clinical evidence remains heterogeneous (high variability in protocols per PMC11493890) | High | Medium | Acknowledge in-app that protocols are based on published research and are not medical advice |
-| Hardware manufacturers launch competing companion apps | Low–Medium | Medium | Differentiate on hardware-agnostic positioning and open protocol library |
-| Low search demand for "PBM tracker" specifically | Medium | Medium | Anchor SEO to higher-volume terms (`red light therapy brain app`) with long-tail conversion |
-| Willingness-to-pay below projections | Medium | High | Validate with landing page / waitlist before full build; start with free tier |
+| Risk                                                                                        | Likelihood | Impact | Mitigation                                                                                                               |
+| ------------------------------------------------------------------------------------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------ |
+| FDA / medical claim restrictions restrict app store listing                                 | Medium     | High   | Avoid diagnostic language; position as "wellness tracker" not "medical device"; consult regulatory counsel before launch |
+| PBM clinical evidence remains heterogeneous (high variability in protocols per PMC11493890) | High       | Medium | Acknowledge in-app that protocols are based on published research and are not medical advice                             |
+| Hardware manufacturers launch competing companion apps                                      | Low–Medium | Medium | Differentiate on hardware-agnostic positioning and open protocol library                                                 |
+| Low search demand for "PBM tracker" specifically                                            | Medium     | Medium | Anchor SEO to higher-volume terms (`red light therapy brain app`) with long-tail conversion                              |
+| Willingness-to-pay below projections                                                        | Medium     | High   | Validate with landing page / waitlist before full build; start with free tier                                            |

@@ -19,10 +19,12 @@ Bellingcat is an independent international collective of researchers, investigat
 
 **Your Relevant Experience:**
 {{#each RELEVANT_EXPERIENCE}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 **Alignment with Bellingcat's Mission:**
+
 - Open-source intelligence (OSINT) expertise
 - Geospatial analysis capabilities
 - {{#if SAR_EXPERIENCE}}Search and Rescue operations experience{{/if}}
@@ -82,6 +84,7 @@ External Links:
 ```
 
 #### Profile Photo
+
 - Professional headshot
 - Clear visibility
 - Appropriate for investigative journalism community
@@ -89,6 +92,7 @@ External Links:
 ### 3. Areas of Expertise (Select)
 
 Check all that apply:
+
 - [ ] Open Source Intelligence (OSINT)
 - [ ] Geospatial Analysis
 - [ ] Satellite Imagery Analysis
@@ -136,6 +140,7 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 **Title:** "{{SAR_CASE_STUDY_TITLE}}"
 
 **Abstract:**
+
 ```
 {{SAR_ABSTRACT}}
 ```
@@ -171,12 +176,14 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
    - Reproducibility notes
 
 **Visuals to Include:**
+
 - Maps with search areas marked
 - Terrain analysis visualizations
 - Timeline graphics
 - Before/after comparisons (if applicable)
 
 **Submission:**
+
 1. Write case study in Markdown or Google Docs
 2. Get permission from SAR organization (if needed)
 3. Anonymize victim information (use "Subject" or initials)
@@ -212,6 +219,7 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 ### 7. Community Guidelines
 
 **Follow Bellingcat's Standards:**
+
 - Verify all information before sharing
 - Cite sources properly
 - Respect privacy and safety
@@ -220,6 +228,7 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 - Transparent about methods and limitations
 
 **Attribution:**
+
 - Give credit to contributors
 - Link to original sources
 - Document your methodology
@@ -233,6 +242,7 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 **Relevance:** Open-source threat intelligence
 
 **Submission Format:**
+
 ```markdown
 # GrowlingEyes: OSINT & Threat Intelligence Platform
 
@@ -240,13 +250,15 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 
 **OSINT Capabilities:**
 {{#each GROWLINGEYES_CAPABILITIES}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 **Use Cases for Investigative Journalism:**
 {{#each JOURNALISM_USE_CASES}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 **GitHub:** {{GROWLINGEYES_URL}}
 **Documentation:** {{DOCS_URL}}
@@ -255,6 +267,7 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 ### Geospatial Analysis Work
 
 **Showcase:**
+
 - Sun Peaks SAR brief (anonymized)
 - Any crisis mapping projects
 - Conflict zone analysis (if applicable)
@@ -265,18 +278,21 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 ## Networking & Visibility
 
 ### Follow Key Contributors
+
 - Eliot Higgins (@EliotHiggins) — Founder
 - Giancarlo Fiorella (@giancarlofiorel)
 - Aric Toler (@AricToler)
 - Christiaan Triebert (@trbrtc)
 
 ### Engage with Content
+
 - Comment on investigations
 - Share findings and tools
 - Participate in Discord discussions
 - Contribute to tutorials and guides
 
 ### Cross-Promote
+
 - Share Bellingcat investigations on your channels
 - Reference Bellingcat methods in your work
 - Collaborate on joint investigations
@@ -300,12 +316,14 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 ## Maintenance
 
 **Monthly Activities:**
+
 - Check for new investigations in your expertise areas
 - Contribute verifications or analysis
 - Share relevant tools or methods
 - Engage in Discord discussions
 
 **Quarterly:**
+
 - Submit case study or tutorial
 - Update profile with new projects
 - Review and contribute to methodology guides
@@ -315,17 +333,20 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 ## Benefits for E-E-A-T
 
 **Expertise Signals:**
+
 - Association with respected investigative journalism collective
 - Demonstrated OSINT and geospatial analysis capabilities
 - Peer-reviewed contributions
 - Published case studies and methodologies
 
 **Authority Signals:**
+
 - Recognized within OSINT community
 - Cited in investigations
 - Collaboration with established researchers
 
 **Trustworthiness Signals:**
+
 - Transparent methodologies
 - Verifiable contributions
 - Fact-based, cited work

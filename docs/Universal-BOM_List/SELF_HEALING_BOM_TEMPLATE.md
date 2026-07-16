@@ -22,19 +22,19 @@
 
 > Lock this in during Phase 0. Do not change without updating this BOM and running the Self-Healing Checklist.
 
-| Layer | Technology | License | Notes |
-|---|---|---|---|
-| Frontend | [e.g. Next.js 15, React 19, Tailwind CSS] | MIT | |
-| Backend | [e.g. Express, Hono, tRPC] | MIT | |
-| Database | [e.g. MySQL / Drizzle ORM] | MIT | |
-| Auth | [e.g. Clerk / Google OAuth / Better Auth] | | |
-| Payments | [e.g. Stripe] | | |
-| Email | [e.g. Resend] | | |
-| Hosting | [e.g. DigitalOcean Droplet / Vercel] | | |
-| CI/CD | GitHub Actions | MIT | |
-| Testing | [e.g. Vitest + Playwright + RTL] | MIT | |
-| Error Monitoring | [e.g. GlitchTip / Sentry] | | |
-| Analytics | [e.g. PostHog / Plausible] | | |
+| Layer            | Technology                                | License | Notes |
+| ---------------- | ----------------------------------------- | ------- | ----- |
+| Frontend         | [e.g. Next.js 15, React 19, Tailwind CSS] | MIT     |       |
+| Backend          | [e.g. Express, Hono, tRPC]                | MIT     |       |
+| Database         | [e.g. MySQL / Drizzle ORM]                | MIT     |       |
+| Auth             | [e.g. Clerk / Google OAuth / Better Auth] |         |       |
+| Payments         | [e.g. Stripe]                             |         |       |
+| Email            | [e.g. Resend]                             |         |       |
+| Hosting          | [e.g. DigitalOcean Droplet / Vercel]      |         |       |
+| CI/CD            | GitHub Actions                            | MIT     |       |
+| Testing          | [e.g. Vitest + Playwright + RTL]          | MIT     |       |
+| Error Monitoring | [e.g. GlitchTip / Sentry]                 |         |       |
+| Analytics        | [e.g. PostHog / Plausible]                |         |       |
 
 ---
 
@@ -42,13 +42,13 @@
 
 > Items here cost nothing extra — already provisioned at the account level.
 
-| Service | Provider | Cost | Notes |
-|---|---|---|---|
-| Hosting | DigitalOcean Droplet (shared) | $0 (shared) | Shared `164.90.148.7` — PM2 process: `[project-slug]` |
-| Database | DigitalOcean Managed MySQL (shared) | $0 (shared) | DB: `[project-slug]_prod` |
-| Email delivery | Resend | $0 (free tier) | Free tier: 3,000 emails/mo |
-| CI/CD | GitHub Actions | $0 | |
-| DNS | Namecheap | [Already purchased / Needed] | `[domain.com]` |
+| Service        | Provider                            | Cost                         | Notes                                                 |
+| -------------- | ----------------------------------- | ---------------------------- | ----------------------------------------------------- |
+| Hosting        | DigitalOcean Droplet (shared)       | $0 (shared)                  | Shared `164.90.148.7` — PM2 process: `[project-slug]` |
+| Database       | DigitalOcean Managed MySQL (shared) | $0 (shared)                  | DB: `[project-slug]_prod`                             |
+| Email delivery | Resend                              | $0 (free tier)               | Free tier: 3,000 emails/mo                            |
+| CI/CD          | GitHub Actions                      | $0                           |                                                       |
+| DNS            | Namecheap                           | [Already purchased / Needed] | `[domain.com]`                                        |
 
 ---
 
@@ -56,12 +56,12 @@
 
 > Every API this project calls. Provision all keys in Vault before Phase 2 begins.
 
-| API | Provider | Vault Path | Free Tier | Monthly Cost | Priority | Status |
-|---|---|---|---|---|---|---|
-| [e.g. Anthropic Claude] | Anthropic | `/revvel/[project]/llm/anthropic` | No | ~$20–100 | P0 | ❌ Not Provisioned |
-| [e.g. Google Maps] | Google | `/revvel/[project]/maps/google` | $200 credit | ~$0–50 | P0 | ❌ Not Provisioned |
-| [e.g. Firebase FCM] | Google | `/revvel/[project]/notifications/firebase` | Yes | $0 | P0 | ❌ Not Provisioned |
-| [e.g. Stripe] | Stripe | `/revvel/[project]/payments/stripe-secret` | N/A (transaction %) | Transaction % | P0 | ❌ Not Provisioned |
+| API                     | Provider  | Vault Path                                 | Free Tier           | Monthly Cost  | Priority | Status             |
+| ----------------------- | --------- | ------------------------------------------ | ------------------- | ------------- | -------- | ------------------ |
+| [e.g. Anthropic Claude] | Anthropic | `/revvel/[project]/llm/anthropic`          | No                  | ~$20–100      | P0       | ❌ Not Provisioned |
+| [e.g. Google Maps]      | Google    | `/revvel/[project]/maps/google`            | $200 credit         | ~$0–50        | P0       | ❌ Not Provisioned |
+| [e.g. Firebase FCM]     | Google    | `/revvel/[project]/notifications/firebase` | Yes                 | $0            | P0       | ❌ Not Provisioned |
+| [e.g. Stripe]           | Stripe    | `/revvel/[project]/payments/stripe-secret` | N/A (transaction %) | Transaction % | P0       | ❌ Not Provisioned |
 
 ---
 
@@ -69,12 +69,12 @@
 
 > Items that require spending money. Use priority levels from the Universal BOM Standard.
 
-| Item | Purpose | Provider | Est. Cost | Priority | Status | Purchased Date |
-|---|---|---|---|---|---|---|
-| Domain registration | Public URL | Namecheap | ~$15/yr | P1 | ❌ Not purchased | — |
-| Apple Developer Program | iOS App Store | Apple | $99/year | P2 | ❌ Not purchased | — |
-| Google Play Developer | Android Store | Google | $25 one-time | P2 | ❌ Not purchased | — |
-| [Add others...] | | | | | | |
+| Item                    | Purpose       | Provider  | Est. Cost    | Priority | Status           | Purchased Date |
+| ----------------------- | ------------- | --------- | ------------ | -------- | ---------------- | -------------- |
+| Domain registration     | Public URL    | Namecheap | ~$15/yr      | P1       | ❌ Not purchased | —              |
+| Apple Developer Program | iOS App Store | Apple     | $99/year     | P2       | ❌ Not purchased | —              |
+| Google Play Developer   | Android Store | Google    | $25 one-time | P2       | ❌ Not purchased | —              |
+| [Add others...]         |               |           |              |          |                  |                |
 
 ---
 
@@ -82,17 +82,17 @@
 
 > Testing tools active for this project. Reference `TESTING_STANDARD.md` for setup.
 
-| Category | Tool | Config File | Status |
-|---|---|---|---|
-| Unit / Integration | Vitest | `vitest.config.ts` | [✅ Configured / ❌ Needed] |
-| E2E | Playwright | `playwright.config.ts` | [✅ Configured / ❌ Needed] |
-| Component | React Testing Library | (via Vitest) | [✅ Configured / ❌ Needed] |
-| API Mocking | MSW | `tests/mocks/` | [✅ Configured / ❌ Needed] |
-| Error Monitoring | GlitchTip / Sentry | `.env`: `SENTRY_DSN` | [✅ Configured / ❌ Needed] |
-| Uptime Monitoring | UptimeRobot | External | [✅ Configured / ❌ Needed] |
-| Performance | Lighthouse CI | `.lighthouserc.json` | [✅ Configured / ❌ Needed] |
-| Accessibility | @axe-core/playwright | (via Playwright tests) | [✅ Configured / ❌ Needed] |
-| Secret Scanning | Gitleaks | `.gitleaks.toml` | [✅ Configured / ❌ Needed] |
+| Category           | Tool                  | Config File            | Status                      |
+| ------------------ | --------------------- | ---------------------- | --------------------------- |
+| Unit / Integration | Vitest                | `vitest.config.ts`     | [✅ Configured / ❌ Needed] |
+| E2E                | Playwright            | `playwright.config.ts` | [✅ Configured / ❌ Needed] |
+| Component          | React Testing Library | (via Vitest)           | [✅ Configured / ❌ Needed] |
+| API Mocking        | MSW                   | `tests/mocks/`         | [✅ Configured / ❌ Needed] |
+| Error Monitoring   | GlitchTip / Sentry    | `.env`: `SENTRY_DSN`   | [✅ Configured / ❌ Needed] |
+| Uptime Monitoring  | UptimeRobot           | External               | [✅ Configured / ❌ Needed] |
+| Performance        | Lighthouse CI         | `.lighthouserc.json`   | [✅ Configured / ❌ Needed] |
+| Accessibility      | @axe-core/playwright  | (via Playwright tests) | [✅ Configured / ❌ Needed] |
+| Secret Scanning    | Gitleaks              | `.gitleaks.toml`       | [✅ Configured / ❌ Needed] |
 
 ---
 
@@ -100,36 +100,36 @@
 
 > For any project that includes skills or agents. Reference `skills/testing-agent/SKILL.md`.
 
-| Skill / Agent | Test Method | Test File | Last Tested | Status |
-|---|---|---|---|---|
-| [e.g. vault-agent] | PromptFoo | `tests/skills/vault-agent.yml` | [DATE] | [✅ Pass / ❌ Fail / ⚠️ Skipped] |
-| [Add others...] | | | | |
+| Skill / Agent      | Test Method | Test File                      | Last Tested | Status                           |
+| ------------------ | ----------- | ------------------------------ | ----------- | -------------------------------- |
+| [e.g. vault-agent] | PromptFoo   | `tests/skills/vault-agent.yml` | [DATE]      | [✅ Pass / ❌ Fail / ⚠️ Skipped] |
+| [Add others...]    |             |                                |             |                                  |
 
 ---
 
 ## 7. Monthly Cost Summary
 
-| Category | Provider | Monthly Cost | Notes |
-|---|---|---|---|
-| Hosting (shared pro-rated) | DigitalOcean | ~$5/mo | |
-| Database (shared pro-rated) | DigitalOcean | Included | |
-| Email | Resend | $0 | Free tier |
-| Error monitoring | GlitchTip | $0 | Self-hosted |
-| Analytics | PostHog | $0 | Free tier |
-| [API 1] | [Provider] | ~$X/mo | |
-| [API 2] | [Provider] | ~$X/mo | |
-| **Total Fixed Monthly** | | **~$X/mo** | |
-| **Variable (payments)** | Stripe | Transaction % | |
+| Category                    | Provider     | Monthly Cost  | Notes       |
+| --------------------------- | ------------ | ------------- | ----------- |
+| Hosting (shared pro-rated)  | DigitalOcean | ~$5/mo        |             |
+| Database (shared pro-rated) | DigitalOcean | Included      |             |
+| Email                       | Resend       | $0            | Free tier   |
+| Error monitoring            | GlitchTip    | $0            | Self-hosted |
+| Analytics                   | PostHog      | $0            | Free tier   |
+| [API 1]                     | [Provider]   | ~$X/mo        |             |
+| [API 2]                     | [Provider]   | ~$X/mo        |             |
+| **Total Fixed Monthly**     |              | **~$X/mo**    |             |
+| **Variable (payments)**     | Stripe       | Transaction % |             |
 
 ---
 
 ## 8. One-Time Purchases Summary
 
-| Item | Cost | Status |
-|---|---|---|
-| Domain registration | ~$15/yr | [✅ Purchased / ❌ Not purchased] |
-| Apple Developer Program | $99/yr | [✅ Purchased / ❌ Not purchased] |
-| Google Play Developer | $25 | [✅ Purchased / ❌ Not purchased] |
+| Item                    | Cost    | Status                            |
+| ----------------------- | ------- | --------------------------------- |
+| Domain registration     | ~$15/yr | [✅ Purchased / ❌ Not purchased] |
+| Apple Developer Program | $99/yr  | [✅ Purchased / ❌ Not purchased] |
+| Google Play Developer   | $25     | [✅ Purchased / ❌ Not purchased] |
 
 ---
 
@@ -137,10 +137,10 @@
 
 > Document every technology or service evaluated and rejected. This prevents re-evaluating the same options.
 
-| Item | Reason Removed | Date | Phase | Alternative Used |
-|---|---|---|---|---|
+| Item               | Reason Removed                   | Date       | Phase   | Alternative Used   |
+| ------------------ | -------------------------------- | ---------- | ------- | ------------------ |
 | [e.g. PlanetScale] | Removed free tier; too expensive | April 2026 | Phase 0 | DigitalOcean MySQL |
-| [Add others...] | | | | |
+| [Add others...]    |                                  |            |         |                    |
 
 ---
 
@@ -148,10 +148,10 @@
 
 > Items to research when P0–P1 work is complete.
 
-| Item | Category | Why | Priority | Target Phase |
-|---|---|---|---|---|
-| [e.g. Turso edge SQLite] | Database | Reduce latency for mobile | P3 | Phase 5 |
-| [Add others...] | | | | |
+| Item                     | Category | Why                       | Priority | Target Phase |
+| ------------------------ | -------- | ------------------------- | -------- | ------------ |
+| [e.g. Turso edge SQLite] | Database | Reduce latency for mobile | P3       | Phase 5      |
+| [Add others...]          |          |                           |          |              |
 
 ---
 
@@ -164,6 +164,7 @@
 ## Instructions
 
 Answer each question. For each "❌ No" or "⚠️ Partial":
+
 1. Identify the gap
 2. Assign a priority (P0–P4)
 3. Open a GitHub Issue with label `bom-purchase` or `enhancement` + `copilot`
@@ -247,15 +248,15 @@ Run monthly or after any production incident:
 
 When something is flagged for potential removal, use this matrix:
 
-| Scenario | Action |
-|---|---|
-| Service used by < 1% of features and has a free FOSS alternative | Remove; add FOSS alternative |
-| API with recurring cost, no active users | Cancel; document in Section 9 |
-| Test that never fails and tests trivial code | Consider removing and relying on TypeScript types |
-| Dependency with no npm downloads in 6 months | Evaluate replacement or fork |
-| Tool added in Section 10 (backlog) for > 2 phases | Promote or permanently remove |
-| Framework with breaking changes in major version | Schedule upgrade sprint |
+| Scenario                                                         | Action                                            |
+| ---------------------------------------------------------------- | ------------------------------------------------- |
+| Service used by < 1% of features and has a free FOSS alternative | Remove; add FOSS alternative                      |
+| API with recurring cost, no active users                         | Cancel; document in Section 9                     |
+| Test that never fails and tests trivial code                     | Consider removing and relying on TypeScript types |
+| Dependency with no npm downloads in 6 months                     | Evaluate replacement or fork                      |
+| Tool added in Section 10 (backlog) for > 2 phases                | Promote or permanently remove                     |
+| Framework with breaking changes in major version                 | Schedule upgrade sprint                           |
 
 ---
 
-*Self-Healing BOM Template v1.0.0 — Revvel Standards. Copy to every new project. Last updated: April 14, 2026.*
+_Self-Healing BOM Template v1.0.0 — Revvel Standards. Copy to every new project. Last updated: April 14, 2026._

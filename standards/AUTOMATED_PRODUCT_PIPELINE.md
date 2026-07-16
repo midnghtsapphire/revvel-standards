@@ -62,15 +62,15 @@ The pipeline is implemented as a chain of n8n / Make / Zapier / Gumloop workflow
 
 ## 1. Listen — Daily Social Research
 
-| Source | Mechanism | Output |
-|---|---|---|
-| X / Twitter | `tavily` / `brave-search` MCP + public search | tweets w/ engagement |
-| Reddit | Pushshift mirror / Reddit API | threads + comment counts |
-| TikTok | TikTok Research API (or scraping fallback) | hashtags + comments |
-| YouTube comments | YouTube Data API v3 | comments by video |
-| Niche forums | RSS / scraping | thread headers |
-| App store reviews | RSS feeds (App Store, Play Store) | low-star reviews |
-| Amazon reviews | Keepa / public RSS | low-star reviews |
+| Source            | Mechanism                                     | Output                   |
+| ----------------- | --------------------------------------------- | ------------------------ |
+| X / Twitter       | `tavily` / `brave-search` MCP + public search | tweets w/ engagement     |
+| Reddit            | Pushshift mirror / Reddit API                 | threads + comment counts |
+| TikTok            | TikTok Research API (or scraping fallback)    | hashtags + comments      |
+| YouTube comments  | YouTube Data API v3                           | comments by video        |
+| Niche forums      | RSS / scraping                                | thread headers           |
+| App store reviews | RSS feeds (App Store, Play Store)             | low-star reviews         |
+| Amazon reviews    | Keepa / public RSS                            | low-star reviews         |
 
 **Cron:** Daily at 02:00 UTC (overlaps with `ZERO_HUMAN_FRAMEWORK.md` schedule).
 **Output:** `projects/agent-generated/_intake/<YYYY-MM-DD>.jsonl` — one normalized complaint per line:
@@ -82,7 +82,7 @@ The pipeline is implemented as a chain of n8n / Make / Zapier / Gumloop workflow
   "url": "...",
   "captured_at": "2026-04-27T02:00:00Z",
   "text": "...",
-  "engagement": {"likes": 0, "comments": 0, "shares": 0},
+  "engagement": { "likes": 0, "comments": 0, "shares": 0 },
   "tags": ["sleep", "snoring", "cpap"]
 }
 ```
@@ -93,13 +93,13 @@ The pipeline is implemented as a chain of n8n / Make / Zapier / Gumloop workflow
 
 ## 2. Cluster & Rank
 
-| Field | Definition | Source |
-|---|---|---|
-| `volume` | distinct authors / 30 days | listening output |
-| `recency` | days-since-first-occurrence (newer = higher) | timestamps |
-| `payability` | "would they pay?" 0–1 | LLM rubric |
-| `blue_ocean` | inverse of competitor count | competitor scan |
-| `score` | `volume × payability × (1 + blue_ocean) / max(1, days_old)` | computed |
+| Field        | Definition                                                  | Source           |
+| ------------ | ----------------------------------------------------------- | ---------------- |
+| `volume`     | distinct authors / 30 days                                  | listening output |
+| `recency`    | days-since-first-occurrence (newer = higher)                | timestamps       |
+| `payability` | "would they pay?" 0–1                                       | LLM rubric       |
+| `blue_ocean` | inverse of competitor count                                 | competitor scan  |
+| `score`      | `volume × payability × (1 + blue_ocean) / max(1, days_old)` | computed         |
 
 Top N (default N=10) per day move to step 3.
 
@@ -121,12 +121,12 @@ For each top-N problem:
 
 The ROI gate is the **only** mandatory human-touch step in the default pipeline (because it is irreversible spend). The gate runs automatically and sends a single Slack/email summary with a one-click approve/reject link.
 
-| Input | Threshold |
-|---|---|
-| Estimated build cost (`PRICING.md` daily rates × shape multiplier) | reported |
-| Estimated 90-day revenue (volume × payability × est. ASP) | reported |
-| Auto-approve if `revenue / cost ≥ 5` and shape ∈ {PDF, MCP, CLI, skill} | yes |
-| Otherwise | human approves |
+| Input                                                                   | Threshold      |
+| ----------------------------------------------------------------------- | -------------- |
+| Estimated build cost (`PRICING.md` daily rates × shape multiplier)      | reported       |
+| Estimated 90-day revenue (volume × payability × est. ASP)               | reported       |
+| Auto-approve if `revenue / cost ≥ 5` and shape ∈ {PDF, MCP, CLI, skill} | yes            |
+| Otherwise                                                               | human approves |
 
 Decisions are logged in [`DECISIONS-TODAY.md`](../DECISIONS-TODAY.md) and the longer-term [`DECISIONS.md`](../DECISIONS.md).
 
@@ -134,18 +134,18 @@ Decisions are logged in [`DECISIONS-TODAY.md`](../DECISIONS-TODAY.md) and the lo
 
 ## 5. Solution-Shape Router
 
-| Shape | Pick when… | Build standard |
-|---|---|---|
-| **PDF / booklet** | One-shot reference content; no state; SEO-driven discovery | [`shapes/PDF.md`](shapes/PDF.md) |
-| **CLI** | Developers; one binary; brew/scoop install | [`shapes/CLI.md`](shapes/CLI.md) |
-| **MCP server** | LLM agents will call it | [`shapes/MCP.md`](shapes/MCP.md) |
-| **API** | Other devs will call it; recurring revenue likely | [`shapes/API.md`](shapes/API.md) |
-| **Agent skill** | Reusable procedure for ClawBot / OpenHands / other agents | [`shapes/SKILL.md`](shapes/SKILL.md) |
-| **Excel / spreadsheet** | Business users; template-driven; data-heavy | [`shapes/EXCEL.md`](shapes/EXCEL.md) |
-| **Token / credits** | Usage-based access; prepaid credits; gated content | [`shapes/TOKEN.md`](shapes/TOKEN.md) |
-| **Full app** | Only when ROI gate strongly justifies | [`shapes/APP.md`](shapes/APP.md) |
-| **Browser extension** | In-page action against a vendor site | `templates/agent-generated-product/build/extension/` |
-| **Alexa/Google skill** | Voice-first, hands-free, household | shape-specific publish step |
+| Shape                   | Pick when…                                                 | Build standard                                       |
+| ----------------------- | ---------------------------------------------------------- | ---------------------------------------------------- |
+| **PDF / booklet**       | One-shot reference content; no state; SEO-driven discovery | [`shapes/PDF.md`](shapes/PDF.md)                     |
+| **CLI**                 | Developers; one binary; brew/scoop install                 | [`shapes/CLI.md`](shapes/CLI.md)                     |
+| **MCP server**          | LLM agents will call it                                    | [`shapes/MCP.md`](shapes/MCP.md)                     |
+| **API**                 | Other devs will call it; recurring revenue likely          | [`shapes/API.md`](shapes/API.md)                     |
+| **Agent skill**         | Reusable procedure for ClawBot / OpenHands / other agents  | [`shapes/SKILL.md`](shapes/SKILL.md)                 |
+| **Excel / spreadsheet** | Business users; template-driven; data-heavy                | [`shapes/EXCEL.md`](shapes/EXCEL.md)                 |
+| **Token / credits**     | Usage-based access; prepaid credits; gated content         | [`shapes/TOKEN.md`](shapes/TOKEN.md)                 |
+| **Full app**            | Only when ROI gate strongly justifies                      | [`shapes/APP.md`](shapes/APP.md)                     |
+| **Browser extension**   | In-page action against a vendor site                       | `templates/agent-generated-product/build/extension/` |
+| **Alexa/Google skill**  | Voice-first, hands-free, household                         | shape-specific publish step                          |
 
 The router output is a single string (`shape`) that selects the build standard and the deploy targets for steps 7 and 10. Each shape standard in [`shapes/`](shapes/README.md) defines the full lifecycle: research, create, design (Figma), publish, and required connections.
 
@@ -196,14 +196,14 @@ projects/agent-generated/<product-slug>/
 
 ## 8. Certify
 
-| Cert | Required for | Tool |
-|---|---|---|
-| Code review | every shape | `code-review` skill / `validate_deployment_readiness` |
-| Security scan | every shape | `security` skill (OWASP, Snyk-equivalent FOSS) |
-| Accessibility | UI shapes | `accessibility` skill (WCAG 2.1 AA) |
-| Store policy | extension / skill / app store / Play Store | shape-specific checklist |
-| Tax / legal | any monetized shape | `tax-legal-agent` skill |
-| Privacy policy + ToS | any product collecting input | autogen from `templates/legal/` |
+| Cert                 | Required for                               | Tool                                                  |
+| -------------------- | ------------------------------------------ | ----------------------------------------------------- |
+| Code review          | every shape                                | `code-review` skill / `validate_deployment_readiness` |
+| Security scan        | every shape                                | `security` skill (OWASP, Snyk-equivalent FOSS)        |
+| Accessibility        | UI shapes                                  | `accessibility` skill (WCAG 2.1 AA)                   |
+| Store policy         | extension / skill / app store / Play Store | shape-specific checklist                              |
+| Tax / legal          | any monetized shape                        | `tax-legal-agent` skill                               |
+| Privacy policy + ToS | any product collecting input               | autogen from `templates/legal/`                       |
 
 Cert results are persisted to `<product>/certify/report.json`. Failures auto-create issues; the pipeline pauses that product until green.
 
@@ -227,16 +227,16 @@ Every shape gets a Stripe entry, even if "free" (so we can attach receipts and t
 
 Deploy targets are **researched per shape** (the listening pipeline tracks where similar products earn the most). Defaults:
 
-| Shape | Primary store(s) | Secondary |
-|---|---|---|
-| PDF / booklet | Gumroad, Etsy (digital), own site (Stripe) | Payhip, LemonSqueezy |
-| One-button web app | own domain on DigitalOcean App Platform (`OAUDREY_DEPLOYMENT_STANDARD.md`) | ProductHunt launch |
-| One-button mobile app | Apple App Store + Google Play (Expo EAS) | — |
-| Extension | Chrome Web Store, Firefox Add-ons, Edge Add-ons | — |
-| Alexa skill | Alexa Skills Store | Google Actions |
-| API | RapidAPI, own docs site | Postman API Network |
-| CLI | npm + Homebrew + Scoop | crates.io / pypi if applicable |
-| MCP server | mcp.so registry, GitHub release | — |
+| Shape                 | Primary store(s)                                                           | Secondary                      |
+| --------------------- | -------------------------------------------------------------------------- | ------------------------------ |
+| PDF / booklet         | Gumroad, Etsy (digital), own site (Stripe)                                 | Payhip, LemonSqueezy           |
+| One-button web app    | own domain on DigitalOcean App Platform (`OAUDREY_DEPLOYMENT_STANDARD.md`) | ProductHunt launch             |
+| One-button mobile app | Apple App Store + Google Play (Expo EAS)                                   | —                              |
+| Extension             | Chrome Web Store, Firefox Add-ons, Edge Add-ons                            | —                              |
+| Alexa skill           | Alexa Skills Store                                                         | Google Actions                 |
+| API                   | RapidAPI, own docs site                                                    | Postman API Network            |
+| CLI                   | npm + Homebrew + Scoop                                                     | crates.io / pypi if applicable |
+| MCP server            | mcp.so registry, GitHub release                                            | —                              |
 
 Each store has a publish workflow under `templates/agent-generated-product/deploy/<store>/`. Deployment runs only if certify is green.
 
@@ -261,16 +261,16 @@ For every shipped product:
 
 A single dashboard (Notion + Stripe + Plausible/PostHog) tracks per product:
 
-| Metric | Source | SLA |
-|---|---|---|
-| Units sold | Stripe | live |
-| Gross revenue | Stripe | live |
-| Refund rate | Stripe | rolling 30d |
-| Conversion rate | landing-page analytics | rolling 7d |
-| CAC | ad spend / paid conversions | rolling 7d |
-| LTV | Stripe subscription / repurchase | rolling 90d |
-| Reviews / rating | store APIs | daily |
-| SEO position (top 5 keywords) | Search Console | weekly |
+| Metric                        | Source                           | SLA         |
+| ----------------------------- | -------------------------------- | ----------- |
+| Units sold                    | Stripe                           | live        |
+| Gross revenue                 | Stripe                           | live        |
+| Refund rate                   | Stripe                           | rolling 30d |
+| Conversion rate               | landing-page analytics           | rolling 7d  |
+| CAC                           | ad spend / paid conversions      | rolling 7d  |
+| LTV                           | Stripe subscription / repurchase | rolling 90d |
+| Reviews / rating              | store APIs                       | daily       |
+| SEO position (top 5 keywords) | Search Console                   | weekly      |
 
 Numbers loop back into step 2's `payability` weighting so the pipeline learns over time.
 
@@ -305,17 +305,17 @@ This folder is created by `scripts/init-product.sh <slug>` (which copies from `t
 
 ## Cron Schedule
 
-| Step | Cron | Where it runs |
-|---|---|---|
-| 1 Listen | `0 2 * * *` | n8n (or `.github/workflows/listen.yml`) |
-| 2 Cluster + 3 Competitor scan | `30 2 * * *` | n8n |
-| 4 ROI gate notification | `0 8 * * *` (after Audrey's morning) | n8n + Slack/email |
-| 5–7 Build | event-driven on ROI approval | GitHub Actions |
-| 8 Certify | event-driven on build green | GitHub Actions |
-| 9 Monetize | event-driven on certify green | GitHub Actions |
-| 10 Deploy | event-driven on monetize green | GitHub Actions |
-| 11 Market | event-driven on deploy green + daily 0 12 * * * for budget review | n8n + GitHub Actions |
-| 12 Measure | `0 * * * *` (hourly snapshot) + `0 6 * * *` (daily roll-up) | n8n |
+| Step                          | Cron                                                              | Where it runs                           |
+| ----------------------------- | ----------------------------------------------------------------- | --------------------------------------- |
+| 1 Listen                      | `0 2 * * *`                                                       | n8n (or `.github/workflows/listen.yml`) |
+| 2 Cluster + 3 Competitor scan | `30 2 * * *`                                                      | n8n                                     |
+| 4 ROI gate notification       | `0 8 * * *` (after Audrey's morning)                              | n8n + Slack/email                       |
+| 5–7 Build                     | event-driven on ROI approval                                      | GitHub Actions                          |
+| 8 Certify                     | event-driven on build green                                       | GitHub Actions                          |
+| 9 Monetize                    | event-driven on certify green                                     | GitHub Actions                          |
+| 10 Deploy                     | event-driven on monetize green                                    | GitHub Actions                          |
+| 11 Market                     | event-driven on deploy green + daily 0 12 * * * for budget review | n8n + GitHub Actions                    |
+| 12 Measure                    | `0 * * * *` (hourly snapshot) + `0 6 * * *` (daily roll-up)       | n8n                                     |
 
 All cron jobs comply with [`CRON_REQUIREMENTS.md`](CRON_REQUIREMENTS.md) and [`CRON_SYSTEM.md`](CRON_SYSTEM.md): they emit heartbeats, fail loudly, and self-heal on the next tick.
 
@@ -343,12 +343,14 @@ Nothing. This standard composes existing standards (`SAAS_PRODUCTS.md`, `ZERO_HU
 ## ADDED: Money & Execution Ethic
 
 ### Monetization First
+
 - **Ship to monetize in 24 hours** — not months
 - **$1 day 1** — free then paid, upsell always
 - **If it doesn't make money, kill it** — fast feedback loop
 - **Revenue > vanity** — real users, real payments
 
 ### Extreme Programming Ethic
+
 1. **One iteration** — ship complete, not perfect
 2. **Test in production** — real data, real feedback
 3. **Break things fast** — learn faster
@@ -361,10 +363,11 @@ Nothing. This standard composes existing standards (`SAAS_PRODUCTS.md`, `ZERO_HU
 10. **Revenue is the only metric**
 
 ### The Rule
+
 - Create → Ship → Monetize → Iterate → Scale
 - Skip any step = failure
 - Reverse any step = failure
 
 ---
 
-*ADDED: Phase 1 upgrade ($3k → $10k/month) + execution ethic*
+_ADDED: Phase 1 upgrade ($3k → $10k/month) + execution ethic_

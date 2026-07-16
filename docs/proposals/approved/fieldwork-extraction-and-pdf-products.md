@@ -4,7 +4,7 @@
 **Owner:** Audrey Evans (MIDNGHTSAPPHIRE) / Freedom Angel Corp
 **Author (draft):** automation agent, drafted on behalf of Jules
 **Date:** 2026-04-24
-**Issue:** *[Jules] Fieldwork is residing off the main directory in revvel-standards needs to have its own repository*
+**Issue:** _[Jules] Fieldwork is residing off the main directory in revvel-standards needs to have its own repository_
 **Related skills:** `skills/mvi-contract`, `skills/system-state`, `skills/wrap-up`, `skills/seo-metadata`
 
 > **Why this document exists.** The issue is two requests tangled together:
@@ -20,6 +20,7 @@
 ## 1. Plain-language ask → clear problem statement
 
 **Audrey's words (paraphrased from the issue):**
+
 > "I will be creating PDFs with code in them to sell on various places. I need
 > that researched? Fieldwork is sitting in the main directory of
 > `revvel-standards` and I don't know why. Should each PDF-product be its own
@@ -30,7 +31,7 @@
 
 `fieldwork/` currently lives as a top-level directory inside the
 `midnghtsapphire/revvel-standards` repository. `revvel-standards` is the
-*standards/skills/templates* mono-repo for the org; `fieldwork` is a
+_standards/skills/templates_ mono-repo for the org; `fieldwork` is a
 **product** (landing page + future Next.js app + planned PDF guides) aimed at
 architects and contractors. Co-locating a product with the standards repo:
 
@@ -55,11 +56,11 @@ extraction is the first test of that standard.**
 
 ### 2.1 Mono-repo vs. multi-repo for digital-PDF products
 
-| Option | Pros | Cons | Verdict |
-|---|---|---|---|
-| **One repo per PDF product** | Clean ownership, separate licenses, each product gets its own landing page + analytics, can be sold/transferred/open-sourced individually | N× CI setup, cross-product shared assets (brand, legal boilerplate) drift | Overkill for <10 titles |
-| **Single `pdf-products` repo, one folder per title** (recommended) | One CI, shared brand/legal/build chain, easy bulk discounts ("10 for $99"), single checkout landing page | Customers can't fork/own one title's source (fine — sources aren't the deliverable; the PDF is) | ✅ Recommended baseline |
-| **Hybrid** — `pdf-products` monorepo for the PDF catalogue + separate repos for *apps* like `fieldwork` (which is a SaaS, not a PDF) | Matches how Audrey actually thinks about them | Two conventions | ✅ Final recommendation |
+| Option                                                                                                                               | Pros                                                                                                                                      | Cons                                                                                            | Verdict                 |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------- |
+| **One repo per PDF product**                                                                                                         | Clean ownership, separate licenses, each product gets its own landing page + analytics, can be sold/transferred/open-sourced individually | N× CI setup, cross-product shared assets (brand, legal boilerplate) drift                       | Overkill for <10 titles |
+| **Single `pdf-products` repo, one folder per title** (recommended)                                                                   | One CI, shared brand/legal/build chain, easy bulk discounts ("10 for $99"), single checkout landing page                                  | Customers can't fork/own one title's source (fine — sources aren't the deliverable; the PDF is) | ✅ Recommended baseline |
+| **Hybrid** — `pdf-products` monorepo for the PDF catalogue + separate repos for _apps_ like `fieldwork` (which is a SaaS, not a PDF) | Matches how Audrey actually thinks about them                                                                                             | Two conventions                                                                                 | ✅ Final recommendation |
 
 **Recommendation:** treat `fieldwork` as what it actually is — a **SaaS
 product with a landing page**, not a PDF — and give it its own repo. Create a
@@ -71,14 +72,14 @@ is ready to ship. Do not conflate the two.
 Market comparables for PDF-with-code products aimed at working professionals
 (pragmatic, not reference-book scope):
 
-| Product | Format | Price | Notes |
-|---|---|---|---|
-| Refactoring UI (Adam Wathan / Steve Schoger) | PDF + code assets | $99 basic / $149 pro | Benchmark for "designer-quality" PDF |
-| The Pragmatic Bookshelf single titles | PDF + epub + code | $24–$39 | Per-title mass-market |
-| Wes Bos courses/ebooks | PDF + video + code | $39–$99 | Single-author indie |
-| A Book Apart | PDF | $11–$15 single, bundles $45–$90 | Short-form specialist |
-| Leanpub minimum suggested | PDF | $9.99 (author-set) | Baseline |
-| Gumroad indie ebooks (median) | PDF | $15–$35 | Median floor/ceiling |
+| Product                                      | Format             | Price                           | Notes                                |
+| -------------------------------------------- | ------------------ | ------------------------------- | ------------------------------------ |
+| Refactoring UI (Adam Wathan / Steve Schoger) | PDF + code assets  | $99 basic / $149 pro            | Benchmark for "designer-quality" PDF |
+| The Pragmatic Bookshelf single titles        | PDF + epub + code  | $24–$39                         | Per-title mass-market                |
+| Wes Bos courses/ebooks                       | PDF + video + code | $39–$99                         | Single-author indie                  |
+| A Book Apart                                 | PDF                | $11–$15 single, bundles $45–$90 | Short-form specialist                |
+| Leanpub minimum suggested                    | PDF                | $9.99 (author-set)              | Baseline                             |
+| Gumroad indie ebooks (median)                | PDF                | $15–$35                         | Median floor/ceiling                 |
 
 **Analysis of Audrey's proposed pricing:**
 
@@ -87,16 +88,16 @@ Market comparables for PDF-with-code products aimed at working professionals
 - **$99 for 10 titles** — this implies **$9.90/title**, which is below every
   comparable above. That's fine as a **launch/bundle anchor** (creates a
   strong "10× value" story), but it will cannibalize single sales unless the
-  bundle is positioned as a *completionist / library* offer, not the default.
+  bundle is positioned as a _completionist / library_ offer, not the default.
 
 **Recommended pricing structure:**
 
-| SKU | Price | Rationale |
-|---|---|---|
-| Single title | **$29** | Anchor price; matches Pragmatic single-title band |
-| 3-title bundle | **$69** | ~20% discount; impulse upsell at checkout |
-| 10-title library ("Full Vault") | **$149** | Keeps per-title >$14.90; $99 leaves too much on the table once there actually *are* 10 titles |
-| Launch promo (first 30 days) | **$99 for 10** | Keep Audrey's original as a time-boxed launch price — great for marketing copy, terrible as a permanent SKU |
+| SKU                             | Price          | Rationale                                                                                                   |
+| ------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------- |
+| Single title                    | **$29**        | Anchor price; matches Pragmatic single-title band                                                           |
+| 3-title bundle                  | **$69**        | ~20% discount; impulse upsell at checkout                                                                   |
+| 10-title library ("Full Vault") | **$149**       | Keeps per-title >$14.90; $99 leaves too much on the table once there actually _are_ 10 titles               |
+| Launch promo (first 30 days)    | **$99 for 10** | Keep Audrey's original as a time-boxed launch price — great for marketing copy, terrible as a permanent SKU |
 
 If Audrey prefers to stick with $99/10 permanently, it's still within
 market — just note the per-title floor becomes $9.90 and the pricing page
@@ -106,8 +107,8 @@ should foreground the bundle to avoid anchoring customers to $9.90/title.
 
 Three realistic delivery paths, in order of time-to-first-dollar:
 
-1. **Gumroad or Lemon Squeezy** hosted checkout — *no landing page needed to
-   start.* Upload PDF, set price, take money same day. Lemon Squeezy is
+1. **Gumroad or Lemon Squeezy** hosted checkout — _no landing page needed to
+   start._ Upload PDF, set price, take money same day. Lemon Squeezy is
    merchant-of-record (handles EU VAT / US sales tax) — strongly preferred
    once revenue is non-trivial.
 2. **Static landing page on `*.oaudrey.com`** that embeds Lemon Squeezy
@@ -115,7 +116,7 @@ Three realistic delivery paths, in order of time-to-first-dollar:
    `fieldwork/index.html`. Gives Audrey full brand control; payment still
    handled by LS.
 3. **Full Next.js storefront** — only worth building once there are ≥5
-   titles *or* Audrey wants subscription/library pricing. Not v1.
+   titles _or_ Audrey wants subscription/library pricing. Not v1.
 
 **Recommendation for the PDF catalogue:** start with **path 2** (static page
 on `pdf.oaudrey.com` or similar) + Lemon Squeezy checkout embed. Defer path 3
@@ -163,7 +164,7 @@ and the `fieldwork` references in `oaudrey/README.md`. This proposal does
 - [ ] New repo `midnghtsapphire/fieldwork` exists and contains the full
       `fieldwork/` tree with **commit history preserved** (via
       `git subtree split` or `git filter-repo --subdirectory-filter
-      fieldwork/`).
+    fieldwork/`).
 - [ ] The new repo's default branch builds / serves the landing page
       (`python3 -m http.server 8080` smoke-test passes).
 - [ ] `revvel-standards` no longer contains the `fieldwork/` source tree at
@@ -191,18 +192,20 @@ and the `fieldwork` references in `oaudrey/README.md`. This proposal does
 ### Section 6 — Files to touch (follow-up implementation PR)
 
 **In the source repo (`revvel-standards`):**
-- *Delete* `fieldwork/` (or replace with a ~10-line redirect `README.md`).
-- *Modify* `oaudrey/README.md` — update 1 relative link.
-- *Modify* `docs/GITKRAKEN_INTEGRATION.md` — update 2 references.
-- *Modify* `CHANGELOG.md` — add extraction entry.
-- *Add* `scripts/extract-fieldwork.sh` (optional, one-shot) — documents the
+
+- _Delete_ `fieldwork/` (or replace with a ~10-line redirect `README.md`).
+- _Modify_ `oaudrey/README.md` — update 1 relative link.
+- _Modify_ `docs/GITKRAKEN_INTEGRATION.md` — update 2 references.
+- _Modify_ `CHANGELOG.md` — add extraction entry.
+- _Add_ `scripts/extract-fieldwork.sh` (optional, one-shot) — documents the
   exact `git filter-repo` command used; delete after use.
 
 **In the new repo (`midnghtsapphire/fieldwork`):**
+
 - Everything currently under `revvel-standards/fieldwork/`, with history.
-- *Add* `.github/workflows/pages.yml` (or equivalent) to deploy the static
+- _Add_ `.github/workflows/pages.yml` (or equivalent) to deploy the static
   landing page to `fieldwork.oaudrey.com`.
-- *Symlink* `AGENTS.md` ↔ `CLAUDE.md` per the repo convention documented in
+- _Symlink_ `AGENTS.md` ↔ `CLAUDE.md` per the repo convention documented in
   `docs/AGENTS.md`; handle any `GEMINI.md` alias separately if that
   convention is added later.
 

@@ -4,7 +4,7 @@ name: API Monitor
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Every 30 min
+    - cron: "*/30 * * * *" # Every 30 min
   workflow_dispatch:
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
             https://api.github.com
             https://openrouter.ai/api/v1
           "
-          
+
           FAILED=""
           for url in $APIs; do
             status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
@@ -25,10 +25,10 @@ jobs:
               FAILED="${FAILED}"$'\n'"- $url: TIMEOUT"
             fi
           done
-          
+
           if [ -n "$FAILED" ]; then
             echo "failed=$FAILED" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Report
         run: echo "API check complete"

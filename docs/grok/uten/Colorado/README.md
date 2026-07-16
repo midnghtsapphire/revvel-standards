@@ -8,6 +8,7 @@
 BNAT-UTEN transforms waste heat from data centers into clean, reliable heating power for buildings and cities. It combines next-generation high-temperature heat pumps (HTHPs) and thermochemical/sorption seasonal thermal storage (TCES) with smart thermal energy networks.
 
 **Core Goals**:
+
 - Achieve ~88% effective system efficiency (capture → upgrade → storage → delivery)
 - Dramatically reduce water consumption from evaporative cooling
 - Provide resilient, low-carbon heating for Colorado Front Range and scale nationally
@@ -32,6 +33,7 @@ This repository contains the complete design, plans, roadmaps, technical specifi
 ## Key Components
 
 ### 1. Technical System (BNAT-UTEN)
+
 - **Capture**: High-efficiency plate heat exchangers on liquid cooling loops
 - **Upgrade**: Next-gen HTHPs (COP 3.4–5+, advanced cycles)
 - **Storage**: TCES for seasonal + PCM thermal batteries for daily
@@ -39,12 +41,14 @@ This repository contains the complete design, plans, roadmaps, technical specifi
 - **Controls**: AI-optimized for efficiency and demand matching
 
 ### 2. Colorado Focus
+
 - ~57+ data centers (Denver metro, Aurora, Colorado Springs, emerging Windsor area)
 - Estimated 3.5 TWh electricity use
 - Significant water stress opportunity
 - Cold climate = high heating demand perfect for waste heat
 
 ### 3. National Scaling
+
 Detailed profiles for Virginia, Texas, Arizona, Georgia, California + others included in `state-profiles.md`.
 
 ## How to Use
@@ -60,6 +64,7 @@ Detailed profiles for Virginia, Texas, Arizona, Georgia, California + others inc
 **Live (Vercel):** <https://revvel-standards.vercel.app/docs/grok/uten/Colorado/dashboard.html>
 
 Or open `dashboard.html` directly in a browser. It includes:
+
 - Interactive state table with filtering
 - Charts for electricity and heat recovery
 - Colorado-specific deep dive
@@ -76,4 +81,4 @@ For questions or collaboration: Contact via Revvel-Standards channels or GitHub.
 
 ---
 
-*This work supports water-positive, energy-efficient data center growth while delivering community heating benefits.*
+_This work supports water-positive, energy-efficient data center growth while delivering community heating benefits._

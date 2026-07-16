@@ -123,11 +123,13 @@ uv pip install -e .
 ### 3.3. Configuration
 
 1. Copy example configs:
+
    ```bash
    cp config/59-config.example.yaml config/59-config.yaml
    ```
 
 2. Set required environment variables:
+
    ```bash
    export DOPPLER_TOKEN="your-doppler-token"
    export TRELLO_API_KEY="your-trello-key"
@@ -135,7 +137,8 @@ uv pip install -e .
    export OPENROUTER_API_KEY="your-openrouter-key"
    ```
 
-3. Initialize the vault *(planned — `src/vault.py` not yet implemented)*:
+3. Initialize the vault _(planned — `src/vault.py` not yet implemented)_:
+
    ```bash
    # python src/vault.py --init
    ```
@@ -174,7 +177,7 @@ Automatically provision secrets when PRs/issues are created:
 ./scripts/monitoring.sh
 ```
 
-### 4.3. Trello Integration *(planned — module not yet implemented)*
+### 4.3. Trello Integration _(planned — module not yet implemented)_
 
 Five-step Trello workflow automation. The commands below describe the intended
 interface for `src/trello.py`; they are not runnable yet.
@@ -186,7 +189,7 @@ interface for `src/trello.py`; they are not runnable yet.
 #   python src/trello.py --workflow                # Five-step workflow
 ```
 
-### 4.4. Security & Vault *(planned — modules not yet implemented)*
+### 4.4. Security & Vault _(planned — modules not yet implemented)_
 
 Automated credential rotation and vault management. The commands below
 describe the intended interface; they are not runnable yet.
@@ -304,7 +307,7 @@ Task queue for asynchronous operations:
 
 ---
 
-## 8. Monitoring & Metrics *(planned — `src/metrics.py` not yet implemented)*
+## 8. Monitoring & Metrics _(planned — `src/metrics.py` not yet implemented)_
 
 ### 8.1. Dashboard
 

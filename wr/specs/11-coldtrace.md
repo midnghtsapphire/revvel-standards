@@ -39,14 +39,14 @@ equivalent with a modern, accessible web UI.
 
 ### 1. ArcGIS / ArcMap Ecosystem
 
-| Tool | Cost | Notes |
-|------|------|-------|
-| **ArcGIS Pro** (Esri) | $1,500/yr seat | Gold-standard forensic GIS; Spatial Analyst + 3D Analyst extensions add $1,500/yr each. Full viewshed, LiDAR toolboxes. |
-| **ArcGIS Online** | Free tier / $500/yr | Cloud hosted; limited LiDAR processing; REST API accessible. |
-| **ArcGIS MCP Server** (`GarrickGarcia/ArcGISMCP`) | Free/MIT | Connects LLM agents to ArcGIS Online REST API. Query feature layers, extract data as CSV. |
-| **ArcGIS Pro MCP Add-In** (`nicogis/MCP-Server-ArcGIS-Pro-AddIn`) | Free | C#/.NET MCP server; exposes ArcGIS Pro desktop tools to AI agents (GitHub Copilot in agent mode). |
-| **ArcGIS REST API** | Free (online layer queries) | Feature service queries, raster analysis, geocoding. |
-| **ArcPy** (Python) | Included with Pro license | Full Python access to all ArcGIS geoprocessing tools. |
+| Tool                                                              | Cost                        | Notes                                                                                                                   |
+| ----------------------------------------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **ArcGIS Pro** (Esri)                                             | $1,500/yr seat              | Gold-standard forensic GIS; Spatial Analyst + 3D Analyst extensions add $1,500/yr each. Full viewshed, LiDAR toolboxes. |
+| **ArcGIS Online**                                                 | Free tier / $500/yr         | Cloud hosted; limited LiDAR processing; REST API accessible.                                                            |
+| **ArcGIS MCP Server** (`GarrickGarcia/ArcGISMCP`)                 | Free/MIT                    | Connects LLM agents to ArcGIS Online REST API. Query feature layers, extract data as CSV.                               |
+| **ArcGIS Pro MCP Add-In** (`nicogis/MCP-Server-ArcGIS-Pro-AddIn`) | Free                        | C#/.NET MCP server; exposes ArcGIS Pro desktop tools to AI agents (GitHub Copilot in agent mode).                       |
+| **ArcGIS REST API**                                               | Free (online layer queries) | Feature service queries, raster analysis, geocoding.                                                                    |
+| **ArcPy** (Python)                                                | Included with Pro license   | Full Python access to all ArcGIS geoprocessing tools.                                                                   |
 
 **Decision:** ArcGIS is too expensive for our FOSS-first mandate. Use as
 reference implementation only. Target open-source equivalents throughout.
@@ -57,45 +57,45 @@ reference implementation only. Target open-source equivalents throughout.
 
 #### 2a. LiDAR / Point Cloud Processing
 
-| Tool | License | Key Capability |
-|------|---------|----------------|
-| **PDAL** (Point Data Abstraction Library) | BSD | CLI + Python bindings. Filter, classify, normalize, and pipeline LAS/LAZ data. Industry standard. |
-| **laspy** | BSD | Pure-Python LAS/LAZ reader/writer. |
-| **LAStools** (partial) | Mix (some tools free, some proprietary) | `lasground`, `lasheight`, `lasview` — free for non-commercial use. Avoid proprietary tools. |
-| **CloudCompare** | GPL | 3D point cloud comparison, change detection, cross-section extraction. CLI via `ccViewer`. |
-| **Open3D** | MIT | Python library for 3D data; ICP alignment for multi-epoch comparison. |
-| **Potree** | BSD-2 | Web-based point cloud renderer (THREE.js). In-browser LiDAR visualization. |
-| **PDAL + GDAL pipeline** | BSD | Convert LAZ → DEM (GeoTIFF) for raster analysis. |
+| Tool                                      | License                                 | Key Capability                                                                                    |
+| ----------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **PDAL** (Point Data Abstraction Library) | BSD                                     | CLI + Python bindings. Filter, classify, normalize, and pipeline LAS/LAZ data. Industry standard. |
+| **laspy**                                 | BSD                                     | Pure-Python LAS/LAZ reader/writer.                                                                |
+| **LAStools** (partial)                    | Mix (some tools free, some proprietary) | `lasground`, `lasheight`, `lasview` — free for non-commercial use. Avoid proprietary tools.       |
+| **CloudCompare**                          | GPL                                     | 3D point cloud comparison, change detection, cross-section extraction. CLI via `ccViewer`.        |
+| **Open3D**                                | MIT                                     | Python library for 3D data; ICP alignment for multi-epoch comparison.                             |
+| **Potree**                                | BSD-2                                   | Web-based point cloud renderer (THREE.js). In-browser LiDAR visualization.                        |
+| **PDAL + GDAL pipeline**                  | BSD                                     | Convert LAZ → DEM (GeoTIFF) for raster analysis.                                                  |
 
 #### 2b. Viewshed / Line-of-Sight Analysis
 
-| Tool | License | Key Capability |
-|------|---------|----------------|
-| **WhiteboxTools** | MIT | `viewshed` tool; Python API (`whitebox` package). DEM-based visibility from any observer point. Best FOSS option. |
-| **GRASS GIS** (`r.viewshed`, `r.los`) | GPL | CLI + Python (`grass.pygrass`). Full viewshed, fuzzy viewshed, cumulative viewshed. TGRASS for time series. |
-| **SAGA GIS** (`ta_lighting 2`) | GPL | CLI-first; `ta_lighting 2` module = viewshed from single observer. |
-| **GDAL/OGR** | MIT/X | No viewshed; used for DEM manipulation (clip, reproject, merge). |
+| Tool                                  | License | Key Capability                                                                                                    |
+| ------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------- |
+| **WhiteboxTools**                     | MIT     | `viewshed` tool; Python API (`whitebox` package). DEM-based visibility from any observer point. Best FOSS option. |
+| **GRASS GIS** (`r.viewshed`, `r.los`) | GPL     | CLI + Python (`grass.pygrass`). Full viewshed, fuzzy viewshed, cumulative viewshed. TGRASS for time series.       |
+| **SAGA GIS** (`ta_lighting 2`)        | GPL     | CLI-first; `ta_lighting 2` module = viewshed from single observer.                                                |
+| **GDAL/OGR**                          | MIT/X   | No viewshed; used for DEM manipulation (clip, reproject, merge).                                                  |
 
 **Recommendation:** WhiteboxTools first (cleaner Python API), GRASS as fallback
 for advanced multi-observer scenarios.
 
 #### 2c. Temporal Change Detection
 
-| Tool | License | Key Capability |
-|------|---------|----------------|
-| **GRASS TGRASS** | GPL | Time-series raster/vector data store; `t.rast.*` suite for difference, statistics, interpolation across epochs. |
-| **rioxarray + xarray** | Apache 2 | N-D time-series raster stacks; band math (NDVI diff, elevation diff). |
-| **scikit-image** | BSD | Image change detection algorithms (SSIM, difference maps). |
-| **eo-learn** | MIT | EO patch-based time-series ML; Sentinel-2 change detection workflows. |
-| **GeoAI** (`opengeos/geoai`) | MIT | Deep-learning change detection on satellite imagery. |
+| Tool                         | License  | Key Capability                                                                                                  |
+| ---------------------------- | -------- | --------------------------------------------------------------------------------------------------------------- |
+| **GRASS TGRASS**             | GPL      | Time-series raster/vector data store; `t.rast.*` suite for difference, statistics, interpolation across epochs. |
+| **rioxarray + xarray**       | Apache 2 | N-D time-series raster stacks; band math (NDVI diff, elevation diff).                                           |
+| **scikit-image**             | BSD      | Image change detection algorithms (SSIM, difference maps).                                                      |
+| **eo-learn**                 | MIT      | EO patch-based time-series ML; Sentinel-2 change detection workflows.                                           |
+| **GeoAI** (`opengeos/geoai`) | MIT      | Deep-learning change detection on satellite imagery.                                                            |
 
 #### 2d. MCP Servers for GIS
 
-| Server | Source | Capability |
-|--------|--------|------------|
+| Server                           | Source     | Capability                                                                                                          |
+| -------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
 | **GIS MCP** (`mahdin75/gis-mcp`) | MIT/GitHub | Python MCP server; exposes GeoPandas, Shapely, PyProj, Rasterio, PySAL via MCP tools. Best general-purpose GIS MCP. |
-| **ArcGIS MCP** | MIT/GitHub | ArcGIS Online integration for MCP agents. |
-| **ArcGIS Pro Add-In MCP** | GitHub | ArcGIS Pro desktop → MCP. |
+| **ArcGIS MCP**                   | MIT/GitHub | ArcGIS Online integration for MCP agents.                                                                           |
+| **ArcGIS Pro Add-In MCP**        | GitHub     | ArcGIS Pro desktop → MCP.                                                                                           |
 
 **Integration Plan:** Ship `gis-mcp` as a sidecar MCP server so AI agents can
 query ColdTrace data programmatically.
@@ -106,32 +106,32 @@ query ColdTrace data programmatically.
 
 #### 3a. LiDAR / Elevation (Free)
 
-| Source | Coverage | API |
-|--------|----------|-----|
-| **USGS 3DEP** (3D Elevation Program) | USA | REST + S3. `https://tnmaccess.nationalmap.gov/api/v1/` |
-| **OpenTopography** | Global + USA | REST. `https://portal.opentopography.org/api/`. Python client `pyopentopoapi`. Free tier (research). |
-| **AWS Terrain Tiles** | Global | S3. `s3://elevation-tiles-prod/`. GeoTIFF global DEM. |
-| **SRTM 30m** | Global | Free via USGS/NASA EarthData. 30m resolution. |
-| **ALOS Global DSM 30m** | Global | Free from JAXA. |
-| **Copernicus DEM (GLO-30)** | Global | Free via OpenTopography or AWS. 30m resolution, 2021 epoch. |
+| Source                               | Coverage     | API                                                                                                  |
+| ------------------------------------ | ------------ | ---------------------------------------------------------------------------------------------------- |
+| **USGS 3DEP** (3D Elevation Program) | USA          | REST + S3. `https://tnmaccess.nationalmap.gov/api/v1/`                                               |
+| **OpenTopography**                   | Global + USA | REST. `https://portal.opentopography.org/api/`. Python client `pyopentopoapi`. Free tier (research). |
+| **AWS Terrain Tiles**                | Global       | S3. `s3://elevation-tiles-prod/`. GeoTIFF global DEM.                                                |
+| **SRTM 30m**                         | Global       | Free via USGS/NASA EarthData. 30m resolution.                                                        |
+| **ALOS Global DSM 30m**              | Global       | Free from JAXA.                                                                                      |
+| **Copernicus DEM (GLO-30)**          | Global       | Free via OpenTopography or AWS. 30m resolution, 2021 epoch.                                          |
 
 #### 3b. Satellite / Multispectral (Free)
 
-| Source | Coverage | API |
-|--------|----------|-----|
-| **Sentinel-2** (ESA/Copernicus) | Global | Sentinel Hub REST API (free research tier). 10m multispectral. NDVI, change detection. |
-| **Landsat 8/9** (USGS) | Global | EarthData REST. 30m. Long historical archive (1972+). |
-| **NAIP** (USA aerial) | USA | USDA Geospatial Data Gateway. 1m resolution. |
-| **Planet Labs** (NICFI program) | Tropics | Free for non-commercial. Monthly composites. |
-| **Google Earth Engine** | Global | Free research API; large historical archive. Python `earthengine-api`. |
+| Source                          | Coverage | API                                                                                    |
+| ------------------------------- | -------- | -------------------------------------------------------------------------------------- |
+| **Sentinel-2** (ESA/Copernicus) | Global   | Sentinel Hub REST API (free research tier). 10m multispectral. NDVI, change detection. |
+| **Landsat 8/9** (USGS)          | Global   | EarthData REST. 30m. Long historical archive (1972+).                                  |
+| **NAIP** (USA aerial)           | USA      | USDA Geospatial Data Gateway. 1m resolution.                                           |
+| **Planet Labs** (NICFI program) | Tropics  | Free for non-commercial. Monthly composites.                                           |
+| **Google Earth Engine**         | Global   | Free research API; large historical archive. Python `earthengine-api`.                 |
 
 #### 3c. Historical Imagery / Archival
 
-| Source | Notes |
-|--------|-------|
-| **USGS EarthExplorer** | Historical Landsat, ASTER, Hyperion, aerial. Manual + API. |
-| **NARA (National Archives)** | Declassified satellite imagery (CORONA, HEXAGON). Very high res cold war era. |
-| **Wayback Imagery** (Esri, free) | Historical satellite imagery viewer — useful for visual cross-referencing. |
+| Source                           | Notes                                                                         |
+| -------------------------------- | ----------------------------------------------------------------------------- |
+| **USGS EarthExplorer**           | Historical Landsat, ASTER, Hyperion, aerial. Manual + API.                    |
+| **NARA (National Archives)**     | Declassified satellite imagery (CORONA, HEXAGON). Very high res cold war era. |
+| **Wayback Imagery** (Esri, free) | Historical satellite imagery viewer — useful for visual cross-referencing.    |
 
 ---
 
@@ -176,11 +176,11 @@ Given a date range `[t_start, t_end]` and last known location `(lat, lon)`:
 
 #### 4b. Key Literature / Empirical Basis
 
-- Koester, R.J. (2008). *Lost Person Behavior: A Search and Rescue Guide.*
+- Koester, R.J. (2008). _Lost Person Behavior: A Search and Rescue Guide._
   dbS Productions. (Standard behavioral profile reference for SAR.)
 - Carter, D.O. et al. (2010). Cadaver decomposition in terrestrial ecosystems.
-  *Naturwissenschaften*, 94(1), 12–24.
-- LeBlanc, D. (2003). *Managing the Lost Person Incident.* NASAR.
+  _Naturwissenschaften_, 94(1), 12–24.
+- LeBlanc, D. (2003). _Managing the Lost Person Incident._ NASAR.
 - Tukey, J.W. (1977). Exploratory Data Analysis — statistical basis for
   anomaly thresholding.
 - USGS Open-File Report 2016-1113 — LiDAR for forensic grave detection.
@@ -215,12 +215,12 @@ Given a date range `[t_start, t_end]` and last known location `(lat, lon)`:
 
 ### 6. Monetization Path (WR North Star Compliance)
 
-| Tier | Price | Target |
-|------|-------|--------|
-| Community (FOSS) | Free | Researchers, families, OSINT investigators |
-| Pro | $49/mo | Cold case investigators, private detectives, journalists |
-| Agency | $299/mo | Law enforcement units, ME offices, forensic firms |
-| Enterprise | Custom | Federal agencies, national labs, large SAR orgs |
+| Tier             | Price   | Target                                                   |
+| ---------------- | ------- | -------------------------------------------------------- |
+| Community (FOSS) | Free    | Researchers, families, OSINT investigators               |
+| Pro              | $49/mo  | Cold case investigators, private detectives, journalists |
+| Agency           | $299/mo | Law enforcement units, ME offices, forensic firms        |
+| Enterprise       | Custom  | Federal agencies, national labs, large SAR orgs          |
 
 Pro differentiators: saved cases, multi-user, export to ArcGIS, advanced ML
 anomaly scoring, case sharing with law enforcement API.
@@ -232,20 +232,20 @@ Giving Pledge: % of Pro/Agency/Enterprise revenue to Freedom Angel Fighters
 
 ### 7. Open Repositories Found (GitHub / Public)
 
-| Repo | Stars | Relevance |
-|------|-------|-----------|
-| `mahdin75/gis-mcp` | ~200 | MCP server for GIS; GeoPandas, Rasterio, PySAL |
-| `GarrickGarcia/ArcGISMCP` | ~50 | ArcGIS Online MCP |
-| `nicogis/MCP-Server-ArcGIS-Pro-AddIn` | ~30 | ArcGIS Pro MCP (C#) |
-| `Vedik-Kothari/Satellite_Change_Detection` | ~40 | Sentinel-2 NDVI K-Means change detection |
-| `khann789/Satellite-Imagery-Anomaly-Detection` | ~15 | Isolation Forest NDVI anomaly |
-| `opengeos/geoai` | ~3k | Deep-learning geospatial AI — change detection |
-| `sacridini/Awesome-Lidar` | ~2k | Curated LiDAR library list |
-| `jblindsay/whitebox-tools` | ~2.5k | WhiteboxTools — core viewshed engine |
-| `OSGeo/gdal` | ~5k | GDAL — raster/vector Swiss army knife |
-| `PDAL/PDAL` | ~1.5k | Point cloud processing |
-| `laspy/laspy` | ~500 | Python LAS/LAZ I/O |
-| `vikas-geotech/Time-series-Analysis-Sentinel-2` | ~30 | Sentinel-2 NDVI time-series |
+| Repo                                            | Stars | Relevance                                      |
+| ----------------------------------------------- | ----- | ---------------------------------------------- |
+| `mahdin75/gis-mcp`                              | ~200  | MCP server for GIS; GeoPandas, Rasterio, PySAL |
+| `GarrickGarcia/ArcGISMCP`                       | ~50   | ArcGIS Online MCP                              |
+| `nicogis/MCP-Server-ArcGIS-Pro-AddIn`           | ~30   | ArcGIS Pro MCP (C#)                            |
+| `Vedik-Kothari/Satellite_Change_Detection`      | ~40   | Sentinel-2 NDVI K-Means change detection       |
+| `khann789/Satellite-Imagery-Anomaly-Detection`  | ~15   | Isolation Forest NDVI anomaly                  |
+| `opengeos/geoai`                                | ~3k   | Deep-learning geospatial AI — change detection |
+| `sacridini/Awesome-Lidar`                       | ~2k   | Curated LiDAR library list                     |
+| `jblindsay/whitebox-tools`                      | ~2.5k | WhiteboxTools — core viewshed engine           |
+| `OSGeo/gdal`                                    | ~5k   | GDAL — raster/vector Swiss army knife          |
+| `PDAL/PDAL`                                     | ~1.5k | Point cloud processing                         |
+| `laspy/laspy`                                   | ~500  | Python LAS/LAZ I/O                             |
+| `vikas-geotech/Time-series-Analysis-Sentinel-2` | ~30   | Sentinel-2 NDVI time-series                    |
 
 ---
 
@@ -280,28 +280,28 @@ Giving Pledge: % of Pro/Agency/Enterprise revenue to Freedom Angel Fighters
 
 ## Tech Stack
 
-| Layer | Choice | Rationale |
-|-------|--------|-----------|
-| Frontend (demo) | Static HTML + MapLibre GL JS (CDN) | Zero build step; viewable immediately |
-| Frontend (production) | React 18 + Vite + TypeScript + Tailwind | Revvel standard web stack |
-| Backend | Python 3.11 + FastAPI | Best for scientific/GIS libs |
-| GIS engine | WhiteboxTools + GDAL + PDAL | FOSS; best-in-class |
-| Satellite data | Sentinel Hub API (free tier) | NDVI temporal analysis |
-| LiDAR data | OpenTopography REST API | Free research tier |
-| Map tiles | MapLibre GL + OpenFreeMap (free) | No Mapbox key required |
-| Database | PostgreSQL + PostGIS | Spatial queries; Revvel standard |
-| ORM | SQLAlchemy | Python standard |
-| Auth | Supabase Auth | Revvel standard |
-| Hosting | `coldtrace.oaudrey.com` on DigitalOcean | Revvel standard |
-| CI/CD | GitHub Actions | Revvel standard |
+| Layer                 | Choice                                  | Rationale                             |
+| --------------------- | --------------------------------------- | ------------------------------------- |
+| Frontend (demo)       | Static HTML + MapLibre GL JS (CDN)      | Zero build step; viewable immediately |
+| Frontend (production) | React 18 + Vite + TypeScript + Tailwind | Revvel standard web stack             |
+| Backend               | Python 3.11 + FastAPI                   | Best for scientific/GIS libs          |
+| GIS engine            | WhiteboxTools + GDAL + PDAL             | FOSS; best-in-class                   |
+| Satellite data        | Sentinel Hub API (free tier)            | NDVI temporal analysis                |
+| LiDAR data            | OpenTopography REST API                 | Free research tier                    |
+| Map tiles             | MapLibre GL + OpenFreeMap (free)        | No Mapbox key required                |
+| Database              | PostgreSQL + PostGIS                    | Spatial queries; Revvel standard      |
+| ORM                   | SQLAlchemy                              | Python standard                       |
+| Auth                  | Supabase Auth                           | Revvel standard                       |
+| Hosting               | `coldtrace.oaudrey.com` on DigitalOcean | Revvel standard                       |
+| CI/CD                 | GitHub Actions                          | Revvel standard                       |
 
 ---
 
 ## Estimated Effort
 
-| Phase | Scope | Notes |
-|-------|-------|-------|
-| v0 (demo) | Static HTML demo app | Complete in this WR; viewable via oaudrey immediately |
-| v1 (MVP) | FastAPI backend + viewshed + NDVI diff | 2 weeks |
-| v2 (full) | ML anomaly scoring + case database + export | 4–6 weeks |
-| v3 (pro) | Auth + billing + agency API | 6–8 weeks |
+| Phase     | Scope                                       | Notes                                                 |
+| --------- | ------------------------------------------- | ----------------------------------------------------- |
+| v0 (demo) | Static HTML demo app                        | Complete in this WR; viewable via oaudrey immediately |
+| v1 (MVP)  | FastAPI backend + viewshed + NDVI diff      | 2 weeks                                               |
+| v2 (full) | ML anomaly scoring + case database + export | 4–6 weeks                                             |
+| v3 (pro)  | Auth + billing + agency API                 | 6–8 weeks                                             |

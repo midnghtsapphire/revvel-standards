@@ -7,6 +7,7 @@
 ## What This Does
 
 This agent runs on YOUR desktop and autonomously:
+
 - Stores credentials locally (no cloud services like Doppler)
 - Syncs credentials to GitHub Secrets
 - Opens browser to service URLs for easy API key retrieval
@@ -68,17 +69,17 @@ chmod +x auto-fetch-credentials.sh
 
 ## Required Credentials
 
-| Credential | Service | Get from |
-|------------|---------|----------|
-| `OPENROUTER_API_KEY` | OpenRouter AI | openrouter.ai |
-| `CLAUDE_API_KEY` | Claude | claude.ai/code |
-| `CLAUDE_CODE_TOKEN` | Claude Code Extension | claude.ai/code |
-| `LINEAR_API_KEY` | Linear | linear.app |
-| `BITO_API_KEY` | Bito AI | bito.ai/settings |
-| `JULES_API_KEY` | Google Jules | jules.google.com |
-| `NOIMOSAI_API_KEY` | NoimosAI Marketing | noimosai.com |
-| `TAVILY_API_KEY` | Tavily Research | app.tavily.com |
-| `OPENAI_API_KEY` | OpenAI | platform.openai.com/api-keys |
+| Credential           | Service               | Get from                     |
+| -------------------- | --------------------- | ---------------------------- |
+| `OPENROUTER_API_KEY` | OpenRouter AI         | openrouter.ai                |
+| `CLAUDE_API_KEY`     | Claude                | claude.ai/code               |
+| `CLAUDE_CODE_TOKEN`  | Claude Code Extension | claude.ai/code               |
+| `LINEAR_API_KEY`     | Linear                | linear.app                   |
+| `BITO_API_KEY`       | Bito AI               | bito.ai/settings             |
+| `JULES_API_KEY`      | Google Jules          | jules.google.com             |
+| `NOIMOSAI_API_KEY`   | NoimosAI Marketing    | noimosai.com                 |
+| `TAVILY_API_KEY`     | Tavily Research       | app.tavily.com               |
+| `OPENAI_API_KEY`     | OpenAI                | platform.openai.com/api-keys |
 
 ---
 
@@ -111,10 +112,10 @@ chmod +x auto-fetch-credentials.sh
 
 ## File Locations
 
-| File | Purpose |
-|------|---------|
+| File                                 | Purpose                  |
+| ------------------------------------ | ------------------------ |
 | `~/.local/revvel-agent/credentials/` | Local credential storage |
-| `~/.local/revvel-agent/logs/` | Sync logs |
+| `~/.local/revvel-agent/logs/`        | Sync logs                |
 
 ---
 
@@ -123,6 +124,7 @@ chmod +x auto-fetch-credentials.sh
 ### Cron (Mac/Linux)
 
 Runs every 4 hours:
+
 ```bash
 0 */4 * * * /path/to/auto-fetch-credentials.sh sync >> ~/.local/revvel-agent/logs/cron.log 2>&1
 ```
@@ -148,6 +150,7 @@ Create a task to run `auto-fetch-credentials.ps1 sync` every 4 hours.
 ## Troubleshooting
 
 ### "gh CLI not found"
+
 ```bash
 # Install gh CLI
 # Mac: brew install gh
@@ -156,11 +159,13 @@ Create a task to run `auto-fetch-credentials.ps1 sync` every 4 hours.
 ```
 
 ### "Not logged in to GitHub"
+
 ```bash
 gh auth login
 ```
 
 ### Permission denied on sync
+
 Make sure your GitHub token has `secrets:write` scope.
 
 ---

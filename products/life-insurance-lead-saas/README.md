@@ -5,6 +5,7 @@
 ▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/life-insurance-lead-saas/)**
 
 ## Features
+
 - Next.js 15 with App Router
 - Tailwind CSS
 - Accessibility Controls (Contrast and Text Size)
@@ -12,6 +13,7 @@
 - Newsletter Module
 
 ## EXRUP Artifacts
+
 - BLUEPRINT.md
 - ROADMAP.md
 - KANBAN_CARDS.md
@@ -19,7 +21,9 @@
 - CHANGELOG.md
 
 ## Development
+
 To run in development: \`cd build && npm run dev\`
 
 ## Production
+
 To build and run in production: \`cd build && npm run build && npm start\`

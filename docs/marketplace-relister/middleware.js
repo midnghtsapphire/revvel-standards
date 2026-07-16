@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 /** Protect API routes when FAMILY_APP_PASSWORD is set. */
 export function middleware(request) {
@@ -7,17 +7,17 @@ export function middleware(request) {
 
   const { pathname } = request.nextUrl;
   if (
-    pathname.startsWith('/api/login') ||
-    pathname.startsWith('/api/session') ||
-    pathname.startsWith('/_next')
+    pathname.startsWith("/api/login") ||
+    pathname.startsWith("/api/session") ||
+    pathname.startsWith("/_next")
   ) {
     return NextResponse.next();
   }
 
-  if (pathname.startsWith('/api/')) {
-    const cookie = request.cookies.get('family_ok')?.value;
-    if (cookie !== '1') {
-      return NextResponse.json({ error: 'Login required' }, { status: 401 });
+  if (pathname.startsWith("/api/")) {
+    const cookie = request.cookies.get("family_ok")?.value;
+    if (cookie !== "1") {
+      return NextResponse.json({ error: "Login required" }, { status: 401 });
     }
   }
 
@@ -25,5 +25,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/api/:path*'],
+  matcher: ["/api/:path*"],
 };

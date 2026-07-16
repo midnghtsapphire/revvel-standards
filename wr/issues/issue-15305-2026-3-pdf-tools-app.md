@@ -10,6 +10,7 @@
 ---
 
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-<github-run-id>.md`
@@ -26,6 +27,7 @@ The source PDF (`https://lab-clint.org/Published/2026_3.pdf`) is the third 2026 
 The PDF domain is currently unreachable from the build environment. All research below is grounded in Lab CLINT's documented 2026 publication slate and the lab's broader known focus areas. Once the PDF is accessible, the spec should be refined to match the paper's precise subject.
 
 **Immediate Next Steps:**
+
 1. Retrieve the PDF and confirm the paper's title and subject area
 2. Identify the specific tool/app need described in the paper (diagnostic, therapeutic, data-collection, or analysis tool)
 3. Finalise feature requirements and MVP scope
@@ -37,18 +39,21 @@ The PDF domain is currently unreachable from the build environment. All research
 Lab CLINT's 2026 work lands in the **digital-health / neurotechnology** segment. Based on the lab's known research programme, the primary audience candidates are:
 
 **Option A — Clinicians and audiologists**
+
 - Pain Point: No consolidated AI-assisted diagnostic workflow for tinnitus or hearing-disorder sub-typing
-For any statistic used to justify market size or funding decisions: (1) verify the source document actually contains the claim, (2) if unverified, mark it clearly ('estimate pending verification — see TODO #xyz'), (3) for forward-facing docs, cite primary sources only or explicitly defer to post-PDF-review. Example: 'Tinnitus affects approximately 14% of adults ([WHO 2021](https://www.who.int/news-room/fact-sheets/detail/deafness-and-hearing-loss)) — pending confirmation in 2026_3.pdf analysis.'
+  For any statistic used to justify market size or funding decisions: (1) verify the source document actually contains the claim, (2) if unverified, mark it clearly ('estimate pending verification — see TODO #xyz'), (3) for forward-facing docs, cite primary sources only or explicitly defer to post-PDF-review. Example: 'Tinnitus affects approximately 14% of adults ([WHO 2021](https://www.who.int/news-room/fact-sheets/detail/deafness-and-hearing-loss)) — pending confirmation in 2026_3.pdf analysis.'
 - Market: ~13,000 audiologists in the US ([BLS 2024](https://www.bls.gov/ooh/healthcare/audiologists.htm)); broader ENT/neurotology community worldwide (unquantified).
 - Willingness to Pay: $100–600/month per clinician for validated diagnostic software
 
 **Option B — Research neuroscientists**
+
 - Pain Point: Fragmented tooling for EEG/fMRI data processing, subgroup discovery, and reproducibility
 - Market: ~50,000 active neuroscience researchers globally (estimate, unverified — needs primary source)
 - Market: ~50,000 active neuroscience researchers globally (estimate pending verification). [TODO: verify in PDF review with a primary-source citation.]
 - Willingness to Pay: Grants typically cover software tooling; $0–$50/month open-source/freemium is most common
 
 **Option C — Patients and consumer digital-health**
+
 - Pain Point: No widely available, clinically validated tinnitus self-management app
 - Market: ~750M people globally affected by tinnitus ([WHO 2021](https://www.who.int/news-room/fact-sheets/detail/deafness-and-hearing-loss))
 - Market: [TODO: verify tinnitus burden market-size statistic in PDF review]. A previously referenced WHO 2021 fact sheet covers deafness/hearing loss broadly, not a tinnitus-specific prevalence denominator.
@@ -59,16 +64,19 @@ For any statistic used to justify market size or funding decisions: (1) verify t
 ### 3. Marketing and SEO Plan
 
 **Primary Keyword Clusters (pending paper topic confirmation):**
+
 - "tinnitus app" — 22,000 monthly searches (estimate; unverified — verify with SEMrush/Keyword Planner)
 - "hearing health app" — 12,000 monthly searches (estimate)
 - "AI tinnitus diagnosis tool" — emerging keyword, low competition
 - "neurotechnology clinical tools" — 2,000–5,000 monthly searches (estimate)
 
 **Landing Page Draft:**
+
 - **Title:** "AI-Powered Tinnitus & Hearing Health Tool | Clinically Informed"
 - **Meta:** "Built on peer-reviewed neuroscience research from Trinity College Dublin. Assess, track, and manage hearing health with AI."
 
 **Content Strategy:**
+
 1. Research-backed credibility page citing the Lab CLINT paper
 2. Comparison with existing tinnitus apps (Tinnitus Relief, ReSound, etc.)
 3. Clinical validation data once available
@@ -80,26 +88,27 @@ For any statistic used to justify market size or funding decisions: (1) verify t
 
 #### Clinical / Consumer Tinnitus and Hearing Apps
 
-| Competitor | Type | Pricing | Key Features | Notes |
-| --- | --- | --- | --- | --- |
-| **ReSound Relief** | Consumer tinnitus | Free + $12.99/month premium | Sound therapy, CBT exercises, sleep sounds | App Store 4.2★ |
-| **Tinnitus Relief (AudioCardio)** | Consumer | $9.99/month | Sound therapy, audiologist-reviewed | Clinician-partnered |
-| **Starkey Thrive** | Hearing aid companion | Free (hardware-linked) | Hearing aid control, fall detection, activity tracking | Locked to Starkey hardware |
-| **Neosensory Duo** | Wearable neurostimulation | $499 device + $49/month | Cross-modal stimulation for tinnitus | Hardware dependency |
-| **Oto** | Tinnitus CBT | £12.99/month | UK-based, NHS-referenced, evidence-based CBT | Limited US availability |
+| Competitor                        | Type                      | Pricing                     | Key Features                                           | Notes                      |
+| --------------------------------- | ------------------------- | --------------------------- | ------------------------------------------------------ | -------------------------- |
+| **ReSound Relief**                | Consumer tinnitus         | Free + $12.99/month premium | Sound therapy, CBT exercises, sleep sounds             | App Store 4.2★             |
+| **Tinnitus Relief (AudioCardio)** | Consumer                  | $9.99/month                 | Sound therapy, audiologist-reviewed                    | Clinician-partnered        |
+| **Starkey Thrive**                | Hearing aid companion     | Free (hardware-linked)      | Hearing aid control, fall detection, activity tracking | Locked to Starkey hardware |
+| **Neosensory Duo**                | Wearable neurostimulation | $499 device + $49/month     | Cross-modal stimulation for tinnitus                   | Hardware dependency        |
+| **Oto**                           | Tinnitus CBT              | £12.99/month                | UK-based, NHS-referenced, evidence-based CBT           | Limited US availability    |
 
 **Pricing data for remaining competitors pending — competitive benchmark research required.**
 
 #### Open-Source Research Tooling
 
-| Repository | Stars | Last Update | Viability |
-| --- | --- | --- | --- |
-| [MNE-Python](https://github.com/mne-tools/mne-python) | 2.8k | Active (2026) | Gold standard EEG/MEG analysis; Python |
-| [Brainstorm](https://github.com/brainstorm-tools/brainstorm3) | 450+ | Active | MATLAB-based MEG/EEG; complex setup |
-| [OpenBCI](https://github.com/OpenBCI/OpenBCI_GUI) | 1.1k | Active | Open EEG hardware + GUI |
-| [EEGLAB](https://github.com/sccn/eeglab) | 400+ | Active | MATLAB; dominant in academic EEG |
+| Repository                                                    | Stars | Last Update   | Viability                              |
+| ------------------------------------------------------------- | ----- | ------------- | -------------------------------------- |
+| [MNE-Python](https://github.com/mne-tools/mne-python)         | 2.8k  | Active (2026) | Gold standard EEG/MEG analysis; Python |
+| [Brainstorm](https://github.com/brainstorm-tools/brainstorm3) | 450+  | Active        | MATLAB-based MEG/EEG; complex setup    |
+| [OpenBCI](https://github.com/OpenBCI/OpenBCI_GUI)             | 1.1k  | Active        | Open EEG hardware + GUI                |
+| [EEGLAB](https://github.com/sccn/eeglab)                      | 400+  | Active        | MATLAB; dominant in academic EEG       |
 
 **Competitive Moat Opportunities:**
+
 1. Direct affiliation with peer-reviewed Lab CLINT research — clinical credibility no competitor can match without similar academic backing
 2. Machine-learning sub-typing (personalized treatment selection) — no consumer app does this today
 3. Potential for IRB-validated in-app clinical trial data collection
@@ -128,12 +137,12 @@ The requester has linked to a peer-reviewed paper from Lab CLINT (Trinity Colleg
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -193,6 +202,7 @@ Recommended path: confirm PDF content → select audience tier (clinician tool v
 ## Step 3 — Requirements
 
 **Pre-conditions (must be resolved before build):**
+
 1. Retrieve and review 2026_3.pdf to confirm the paper's subject, methodology, and any open-source datasets or tooling released alongside it
 2. Confirm target audience (clinician vs. consumer vs. researcher)
 3. Confirm regulatory path (wellness app vs. SaMD)
@@ -200,15 +210,15 @@ Recommended path: confirm PDF content → select audience tier (clinician tool v
 
 **Proposed MVP acceptance gates (subject to PDF review):**
 
-| Gate | Criteria |
-| --- | --- |
-| Authentication | User login (clinician or patient role), MFA, HIPAA-safe session handling |
-| Assessment / intake | Validated questionnaire or protocol from the paper |
-| ML sub-typing | Model inference returns patient sub-type classification |
-| Results display | Clinician/patient-facing dashboard with actionable outputs |
-| Data export | CSV/PDF export of assessment results |
-| Compliance | HIPAA/GDPR data handling; no PII in logs |
-| Performance | Assessment flow < 2s per step on 4G mobile |
+| Gate                | Criteria                                                                 |
+| ------------------- | ------------------------------------------------------------------------ |
+| Authentication      | User login (clinician or patient role), MFA, HIPAA-safe session handling |
+| Assessment / intake | Validated questionnaire or protocol from the paper                       |
+| ML sub-typing       | Model inference returns patient sub-type classification                  |
+| Results display     | Clinician/patient-facing dashboard with actionable outputs               |
+| Data export         | CSV/PDF export of assessment results                                     |
+| Compliance          | HIPAA/GDPR data handling; no PII in logs                                 |
+| Performance         | Assessment flow < 2s per step on 4G mobile                               |
 
 ## Recommendations
 
@@ -219,18 +229,18 @@ Recommended path: confirm PDF content → select audience tier (clinician tool v
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | PDF source document (lab-clint.org/Published/2026_3.pdf) inaccessible; must be retrieved before full spec can be written |
-| Blocks (downstream WRs) | none |
+| Field                           | Value                                                                                                                    |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `depends_on` (prerequisite WRs) | none                                                                                                                     |
+| Blocked by                      | PDF source document (lab-clint.org/Published/2026_3.pdf) inaccessible; must be retrieved before full spec can be written |
+| Blocks (downstream WRs)         | none                                                                                                                     |
 
 ## Risks
 
-| Risk | Severity | Mitigation |
-| --- | --- | --- |
-| PDF source is inaccessible or paywalled | High | Requester to supply PDF directly; or retrieve via institutional library access |
-| Regulatory classification as SaMD triggers long FDA/CE timeline | High | Scope MVP as a wellness/research tool (not a diagnostic claim); add clinical claims in v2 post-clearance |
-| Lab CLINT does not license the methodology for commercial use | Medium | Reach out to Prof. Sven Vanneste's lab for licensing or research agreement before build |
-| ML model quality depends on access to training data | Medium | Start with public datasets (MITRE Tinnitus dataset, UK Biobank) while negotiating data access with Lab CLINT |
-| Market already served by established players (ReSound, Oto) | Low-Medium | Differentiate on academic credibility and personalised ML sub-typing, which no competitor offers today |
+| Risk                                                            | Severity   | Mitigation                                                                                                   |
+| --------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------ |
+| PDF source is inaccessible or paywalled                         | High       | Requester to supply PDF directly; or retrieve via institutional library access                               |
+| Regulatory classification as SaMD triggers long FDA/CE timeline | High       | Scope MVP as a wellness/research tool (not a diagnostic claim); add clinical claims in v2 post-clearance     |
+| Lab CLINT does not license the methodology for commercial use   | Medium     | Reach out to Prof. Sven Vanneste's lab for licensing or research agreement before build                      |
+| ML model quality depends on access to training data             | Medium     | Start with public datasets (MITRE Tinnitus dataset, UK Biobank) while negotiating data access with Lab CLINT |
+| Market already served by established players (ReSound, Oto)     | Low-Medium | Differentiate on academic credibility and personalised ML sub-typing, which no competitor offers today       |

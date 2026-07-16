@@ -23,10 +23,10 @@ Those same workflows will skip execution and log "Quiet Mode active; skipping".
 
 When this issue is **open**, these workflows run on schedule:
 
-| Workflow | Schedule | Action |
-|----------|----------|--------|
-| **Migration Cron** | Daily 1 PM UTC | Migrates one repository by priority |
-| **Triage Cron** | Daily 12 PM UTC | Proposes one decision to DECISIONS-TODAY.md |
+| Workflow           | Schedule        | Action                                      |
+| ------------------ | --------------- | ------------------------------------------- |
+| **Migration Cron** | Daily 1 PM UTC  | Migrates one repository by priority         |
+| **Triage Cron**    | Daily 12 PM UTC | Proposes one decision to DECISIONS-TODAY.md |
 
 **Note**: Compliance Watcher always runs (it pierces Quiet Mode).
 

@@ -1,11 +1,13 @@
 # Tactical Map Data Parsing Standard
 
 ## The Problem
-When building tactical maps (like the one in GrowlingEyes), data comes from many different sources: GDELT news, AIS ship trackers, ADS-B flight trackers, and manual OSINT reports. 
 
-If every source sends data to the map in its own unique format, the map breaks. The map doesn't know how to read 10 different languages. 
+When building tactical maps (like the one in GrowlingEyes), data comes from many different sources: GDELT news, AIS ship trackers, ADS-B flight trackers, and manual OSINT reports.
+
+If every source sends data to the map in its own unique format, the map breaks. The map doesn't know how to read 10 different languages.
 
 ## The Solution: The Universal Event Schema
+
 To fix this, **all data must be translated into one single language** before it touches the map. We call this the "Universal Event Schema."
 
 Think of it like a universal power adapter. You plug your American, European, and Asian cords into the adapter, and the adapter plugs into the wall. The wall only ever sees the adapter.
@@ -40,5 +42,5 @@ Whenever an AI agent or a backend script fetches data for a map, it **MUST** par
 
 1. Create a single database table called `unified_events` using the schema above.
 2. For every new data source you add (e.g., a new earthquake API), write a specific "Fetcher" script.
-3. The Fetcher script's *only* job is to pull the weird raw data and map it to the `unified_events` format.
-4. The frontend map *only* reads from the `unified_events` table. It never talks to the APIs directly.
+3. The Fetcher script's _only_ job is to pull the weird raw data and map it to the `unified_events` format.
+4. The frontend map _only_ reads from the `unified_events` table. It never talks to the APIs directly.

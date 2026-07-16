@@ -8,13 +8,16 @@
 **Depends on:** OZ-OS-005a, OZ-OS-005b, OZ-OS-005c
 
 ## Deliverable
+
 Single file: `oz-os/agents/verifier.md`
 
 ## Content Requirements
+
 The Verifier agent checks that every citation in every pack actually resolves.
 No hallucinated sources. No dead links. No invented postmortems.
 
 ### Mission
+
 Verify every claim and citation across all research packs before synthesis.
 
 ### Verification Rules
@@ -30,12 +33,13 @@ Verify every claim and citation across all research packs before synthesis.
 ```
 
 ### Output Format
+
 Verification report appended to each pack:
 
 ```yaml
 ---
 verification_id: VR-2026-001
-pack_verified: MP-2026-001  # or CP-/AP-
+pack_verified: MP-2026-001 # or CP-/AP-
 verified_date: 2026-06-01
 agent: verifier
 total_citations: 24
@@ -47,13 +51,16 @@ confidence: 0.83
 ```
 
 ### Escalation
+
 - If >20% of citations are unverified → pack returns to the originating agent
 - If any citation is fabricated (URL leads to unrelated content) → flag as hallucination, block synthesis
 
 ## Key Constraint
+
 Checks every citation resolves (HTTP 200 or file exists). Hallucinated citations are a blocking finding.
 
 ## Acceptance
+
 - File renders cleanly in GitHub
 - No raw tokens or bracket-placeholders
 - Includes verification schema

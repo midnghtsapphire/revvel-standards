@@ -221,7 +221,12 @@ function countLintErrors(output) {
  */
 function runMarkdownlint(files, opts = {}) {
   const flagArgs = opts.fix ? ["--fix"] : [];
-  const localBin = path.join(REPO_ROOT, "node_modules", ".bin", "markdownlint-cli2");
+  const localBin = path.join(
+    REPO_ROOT,
+    "node_modules",
+    ".bin",
+    "markdownlint-cli2",
+  );
   let cmd;
   let args;
   if (fs.existsSync(localBin)) {
@@ -311,7 +316,10 @@ function loadIgnorePatterns(repoRoot = REPO_ROOT) {
  * @returns {boolean}
  */
 function isIgnored(file, patterns, repoRoot = REPO_ROOT) {
-  const rel = path.relative(repoRoot, path.resolve(file)).split(path.sep).join("/");
+  const rel = path
+    .relative(repoRoot, path.resolve(file))
+    .split(path.sep)
+    .join("/");
   return patterns.some((re) => re.test(rel));
 }
 
@@ -366,7 +374,7 @@ function main() {
 
   console.log(
     `Structural pass: ${structuralFixes}/${files.length} file(s) rewritten ` +
-      "(setext→ATX, extra H1s demoted)."
+      "(setext→ATX, extra H1s demoted).",
   );
   console.log("Running markdownlint-cli2 --fix on the same files…");
   runMarkdownlint(files, { fix: true });
@@ -377,7 +385,9 @@ function main() {
     // Zero findings parsed + non-zero exit = the linter itself failed to run
     // (npx fetch failure, killed process, bad config) — that is NOT "clean".
     if (finalRun.status !== 0) {
-      console.error("markdownlint-cli2 invocation failed (no findings parsed):");
+      console.error(
+        "markdownlint-cli2 invocation failed (no findings parsed):",
+      );
       console.error(finalRun.output);
       process.exit(1);
     }

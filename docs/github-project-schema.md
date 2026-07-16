@@ -15,7 +15,7 @@ The Revvel operating model uses a single GitHub Project to track every work requ
 | Research Mode      | Single select | standard, deepresearch                                                                                          |
 | Delivery Mode      | Single select | build-direct, build-with-brief-options, proposal-first                                                          |
 | Iteration Mode     | Single select | single-pass, multi-iteration                                                                                    |
-| Lifecycle Mode    | Single select | new-build, refresh-existing, audit-only                                                                         |
+| Lifecycle Mode     | Single select | new-build, refresh-existing, audit-only                                                                         |
 | Commercial Mode    | Single select | digital-product, saas-app, api-usage, license, client-billable, internal-only                                   |
 | Deployment Target  | Single select | none, vercel, desktop-env, client-env, docs-only, package-manager, api-host                                     |
 | Decision           | Single select | BUILD, HOLD, ARCHIVE                                                                                            |
@@ -62,16 +62,16 @@ the values from the prose. Iteration Mode, Deployment Target, and Launch
 Priority are not present on either form — they are always inferred or
 defaulted.
 
-| Issue form field         | Project field          |
-| ------------------------ | ---------------------- |
-| Output Type              | Output Type            |
-| Research Mode            | Research Mode          |
-| Delivery Mode            | Delivery Mode          |
-| Iteration Mode           | Iteration Mode         |
-| Lifecycle Mode           | Lifecycle Mode         |
-| Commercial Mode          | Commercial Mode        |
-| Deployment Target        | Deployment Target      |
-| Launch Priority          | Priority               |
+| Issue form field  | Project field     |
+| ----------------- | ----------------- |
+| Output Type       | Output Type       |
+| Research Mode     | Research Mode     |
+| Delivery Mode     | Delivery Mode     |
+| Iteration Mode    | Iteration Mode    |
+| Lifecycle Mode    | Lifecycle Mode    |
+| Commercial Mode   | Commercial Mode   |
+| Deployment Target | Deployment Target |
+| Launch Priority   | Priority          |
 
 The remaining project fields are populated by reviewers during the research, scoring, and launch phases.
 
@@ -83,16 +83,16 @@ It expects these to be configured at the org or repo level before it will succee
 
 **Repository / organization variables** (Settings → Variables → Actions):
 
-| Variable                   | What it is                                       | Example format        |
-| -------------------------- | ------------------------------------------------ | --------------------- |
-| `PROJECT_ID`               | Project v2 node ID                               | `PVT_kwHOA...`        |
-| `PRIORITY_FIELD_ID`        | Priority field node ID                           | `PVTSSF_lAHO...`      |
-| `EFFORT_FIELD_ID`          | Effort field node ID                             | `PVTSSF_lAHO...`      |
-| `CUSTOM_SELECT_FIELD_ID`   | Additional default field node ID                 | `PVTSSF_lAHO...`      |
-| `PRIORITY_HIGH_OPTION_ID`  | Default Priority option ID                       | `47fc9ee4`            |
-| `EFFORT_MEDIUM_OPTION_ID`  | Default Effort option ID                         | `47fc9ee4`            |
-| `CUSTOM_DEFAULT_OPTION_ID` | Default option ID for the custom field           | `47fc9ee4`            |
-| `PROJECTS_APP_ID`          | GitHub App ID used to authenticate to Project v2 | `123456`              |
+| Variable                   | What it is                                       | Example format   |
+| -------------------------- | ------------------------------------------------ | ---------------- |
+| `PROJECT_ID`               | Project v2 node ID                               | `PVT_kwHOA...`   |
+| `PRIORITY_FIELD_ID`        | Priority field node ID                           | `PVTSSF_lAHO...` |
+| `EFFORT_FIELD_ID`          | Effort field node ID                             | `PVTSSF_lAHO...` |
+| `CUSTOM_SELECT_FIELD_ID`   | Additional default field node ID                 | `PVTSSF_lAHO...` |
+| `PRIORITY_HIGH_OPTION_ID`  | Default Priority option ID                       | `47fc9ee4`       |
+| `EFFORT_MEDIUM_OPTION_ID`  | Default Effort option ID                         | `47fc9ee4`       |
+| `CUSTOM_DEFAULT_OPTION_ID` | Default option ID for the custom field           | `47fc9ee4`       |
+| `PROJECTS_APP_ID`          | GitHub App ID used to authenticate to Project v2 | `123456`         |
 
 **Repository / organization secret**:
 

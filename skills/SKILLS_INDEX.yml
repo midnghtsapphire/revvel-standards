@@ -20,7 +20,6 @@ mandatory_session_end:
   - memory_pruning
 
 skills:
-
   # ─── Code Quality & Autonomous Review ─────────────────────────────────────
 
   - name: bito_ai
@@ -237,7 +236,7 @@ skills:
     path: "skills/model-router/"
     skill_file: "skills/model-router/model-router.skill.yml"
     category: "Agent Operations"
-    access: all  # all agents: openclaw, copilot, temporary
+    access: all # all agents: openclaw, copilot, temporary
     triggers:
       - "model selection"
       - "sonnet vs opus"

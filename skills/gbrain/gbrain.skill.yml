@@ -48,7 +48,7 @@ dependencies:
       purpose: "Multi-query expansion for smarter search"
 
 brain_loop:
-  before_response: "gbrain search \"<key entities>\""
+  before_response: 'gbrain search "<key entities>"'
   after_response: "gbrain sync && gbrain embed --stale"
 
 mcp:

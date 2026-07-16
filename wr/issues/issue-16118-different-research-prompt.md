@@ -56,18 +56,26 @@ Different research prompt
 ### Objective
 
 You are a helpful and harmless deep research assistant. Your task is to think carefully, seek external information when necessary, and provide accurate, well-supported answer to the user’s question.
+
 ## Think guidelines
+
 1. Reason step by step to solve the user’s question. Decompose the original question into clear, manageable sub-questions.
 2. After each reasoning cycle, summarize what has been established so far and decide whether additional sub-questions or external information are required.
 3. Your thinking process MUST remain internal and structured within <think>…</think>.
+
 ## Tool usage guidelines
+
 1. Use tools when external information is required to answer the question accurately.
 2. Tool queries must be specific and concrete. Avoid ambiguous references or pronouns (e.g., ”it”, ”this”, ”he”), and use explicit entity names, dates, technical terms, or unique identifiers.
 3. Effective tool usage depends on formulating high-quality queries and extracting useful information from tool responses.
 4. Enclose all tool calls within <tool_call>…</tool_call>, and all tool outputs within <tool_response>…</tool_response>.
+
 ## Answer guidelines
+
 1. If no external information or detailed explanation is required, always provide a concrete final answer enclosed within <answer>…</answer> (e.g., <answer>Beijing</answer>).
+
 ## Format guidelines
+
 The assistant may follow a valid execution path as follows:
 <think>reasoning</think>
 (If tool usage is required)
@@ -76,7 +84,9 @@ The assistant may follow a valid execution path as follows:
 (The above steps may be repeated if necessary)
 <think>final reasoning</think>
 <answer>final answer</answer>
+
 ## Tools
+
 You may call one or more functions to assist with the user query.
 You are provided with function signatures within <tools></tools> XML tags:
 <tools>
@@ -140,18 +150,19 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -163,6 +174,7 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29352628108.md`
 
 ## WR-Ready Research Packet: Different Research Prompt
@@ -178,10 +190,12 @@ Source packet: `docs/research-engine/run-29352628108.md`
 ## 2. Audience We Are Going After and Why
 
 **Primary Audience**: Technical teams building AI research assistants (developers, ML engineers)
+
 - Pain Point: Need for structured, multi-modal research workflows with external data validation
 - Current Solution Gap: Generic chatbots lack tool integration and evidence requirements
 
 **Secondary Audience**: Product teams requiring systematic research documentation
+
 - Pain Point: Unstructured research outputs without citation trails
 - Value Proposition: Transparent reasoning process with verifiable sources
 
@@ -190,17 +204,21 @@ Source packet: `docs/research-engine/run-29352628108.md`
 ## 3. Marketing and SEO Plan
 
 ### SEO Strategy
+
 **Target Keywords** (Low volume, high technical intent):
+
 - "AI research assistant prompt template"
 - "ReAct framework implementation"
 - "AI tool calling best practices"
 - "structured reasoning guidelines AI"
 
 **Landing Page Recommendation**:
+
 - Title: "AI Research Assistant Prompt Engineering: Complete Framework Guide"
 - Meta Description: "Learn structured prompt engineering for AI research assistants with tool integration, reasoning guidelines, and external information gathering best practices."
 
 ### Content Strategy
+
 1. **Pillar Page**: "The Complete Guide to AI-Powered Research"
 2. **Spoke Articles**:
    - "What is AI Function Calling? A Beginner's Guide with Code Examples"
@@ -212,19 +230,21 @@ Source packet: `docs/research-engine/run-29352628108.md`
 ## 4. Competitor and GitHub Star Intelligence
 
 ### Direct Competitors
-| Competitor | Pricing | Key Features |
-|------------|---------|--------------|
+
+| Competitor     | Pricing   | Key Features                      |
+| -------------- | --------- | --------------------------------- |
 | Perplexity Pro | $20/month | Web-connected research, citations |
-| Claude Pro | $20/month | Advanced reasoning, tool usage |
-| ChatGPT Plus | $20/month | GPT-4, web browsing |
-| You.com Pro | $15/month | Search-integrated AI |
+| Claude Pro     | $20/month | Advanced reasoning, tool usage    |
+| ChatGPT Plus   | $20/month | GPT-4, web browsing               |
+| You.com Pro    | $15/month | Search-integrated AI              |
 
 ### Open Source Alternatives
-| Repository | Stars | License | Differentiation |
-|------------|-------|---------|-----------------|
-| LangChain | 90k+ | MIT | Comprehensive LLM framework |
-| AutoGPT | 160k+ | MIT | Autonomous agent framework |
-| CrewAI | Pricing data pending — competitive benchmark research required | Unknown | Role-playing AI agents |
+
+| Repository | Stars                                                          | License | Differentiation             |
+| ---------- | -------------------------------------------------------------- | ------- | --------------------------- |
+| LangChain  | 90k+                                                           | MIT     | Comprehensive LLM framework |
+| AutoGPT    | 160k+                                                          | MIT     | Autonomous agent framework  |
+| CrewAI     | Pricing data pending — competitive benchmark research required | Unknown | Role-playing AI agents      |
 
 **Primary Recommendation**: LangChain for open-source flexibility and extensive tool ecosystem.
 
@@ -235,11 +255,13 @@ Source packet: `docs/research-engine/run-29352628108.md`
 **Critical Finding**: No actual market demand signals identified. The submission is a template, not evidence of user demand.
 
 **Risks**:
+
 - Building features without identified user demand
 - No community feedback or feature requests referenced
 - Missing audience validation data
 
 **Required Research**:
+
 - Survey target developers on research workflow pain points
 - Monitor AI/ML communities for ReAct framework discussions
 - Analyze competitor user reviews for unmet needs
@@ -247,12 +269,14 @@ Source packet: `docs/research-engine/run-29352628108.md`
 ## 6. Factual Validation and Evidence Gaps
 
 ### Unverifiable Claims
+
 1. Tool availability (`image_search_by_lens`, `model_search`) - requires production environment verification
 2. No market size data or growth metrics provided
 3. No user adoption or retention metrics
 4. API costs and rate limits not specified
 
 ### Evidence Required
+
 - Competitive pricing verification (live vendor websites)
 - GitHub star counts and momentum (GitHub API)
 - Search volume data (SEMrush, Ahrefs)
@@ -261,18 +285,21 @@ Source packet: `docs/research-engine/run-29352628108.md`
 ## 7. Build Requirements and Acceptance Gates
 
 ### Missing Critical Requirements
+
 - No technical specifications for tool implementations
 - No API endpoints or service integrations defined
 - No authentication/authorization requirements
 - No performance requirements or SLAs
 
 ### Acceptance Gates Required
+
 1. **Model Validation**: Target LLM must consistently follow XML structure for 5+ test queries
 2. **Agent Executor**: Must complete multi-step reasoning with at least one tool call
 3. **Monitoring**: Request traces must show complete reasoning chains
 4. **Cost Controls**: Usage metering and rate limiting implemented
 
 ### Technical Components Needed
+
 - Research assistant API endpoint
 - Tool integration middleware
 - Response formatting service
@@ -282,6 +309,7 @@ Source packet: `docs/research-engine/run-29352628108.md`
 ## 8. Code Review Agent Packet
 
 ### Bito AI Review Points
+
 ```yaml
 # Check for XML parsing vulnerabilities
 - Validate all user input before XML parsing
@@ -290,6 +318,7 @@ Source packet: `docs/research-engine/run-29352628108.md`
 ```
 
 ### OpenRouter Review
+
 ```yaml
 # Verify model compatibility
 - Test prompt format with target LLM
@@ -298,6 +327,7 @@ Source packet: `docs/research-engine/run-29352628108.md`
 ```
 
 ### Coderabbit Review
+
 ```yaml
 # Tool integration validation
 - Ensure tool function signatures match prompt definitions
@@ -306,6 +336,7 @@ Source packet: `docs/research-engine/run-29352628108.md`
 ```
 
 ### Ralph Loop Review
+
 ```yaml
 # Performance optimization
 - Add caching for repeated tool calls
@@ -314,6 +345,7 @@ Source packet: `docs/research-engine/run-29352628108.md`
 ```
 
 ### Automatic Fix Plan
+
 ```python
 # Fix 1: Add usage tracking middleware
 def check_quota(req, res, next):
@@ -331,6 +363,7 @@ def check_quota(req, res, next):
 ## 9. Automatic Fix and Commit Queue
 
 ### Priority 1: Template Validation
+
 ```yaml
 # .github/ISSUE_TEMPLATE/work-request.yml
 - type: input
@@ -341,9 +374,11 @@ def check_quota(req, res, next):
   validations:
     required: true
 ```
+
 **Commit**: "fix: add required field validation to WR template"
 
 ### Priority 2: Scope Validation Workflow
+
 ```yaml
 # .github/workflows/scope-validation.yml
 - name: Validate WR Scope
@@ -354,32 +389,38 @@ def check_quota(req, res, next):
       gh issue edit --add-label "needs-clarification"
     fi
 ```
+
 **Commit**: "feat: add automated scope validation for research requests"
 
 ### Priority 3: Revenue Setup
+
 ```yaml
 # Implement usage tracking and payment integration
 - Add Stripe subscription checks
 - Create usage dashboard component
 - Implement query counter middleware
 ```
+
 **Commit**: "feat: add revenue infrastructure for research assistant"
 
 ## 10. Labels to Apply
 
 ### Immediate Labels
+
 - `status/blocked` - Cannot proceed without clarification
 - `needs-clarification` - Missing research objectives
 - `type/incomplete-wr` - Required fields not filled
 - `priority/high` - Blocking research work
 
 ### Risk Labels
+
 - `revenue-model-needed` - No monetization strategy
 - `risk/cost-overrun` - Unlimited tool usage risk
 - `risk/user-confusion` - Unclear purpose
 - `needs-architecture-review` - Missing technical specs
 
 ### Process Labels
+
 - `template-validation-required`
 - `scope-undefined`
 - `missing-requirements`
@@ -409,17 +450,17 @@ Since no repository was specified, recommended alternatives for building researc
 
 ### Lane Confidence Scores
 
-| Lane | Confidence | Reasoning |
-|------|------------|-----------|
-| Market Positioning (Echo) | 65% | Clear technical pattern identified, but no market validation |
-| SEO Demand (Noimos) | 70% | Well-defined keyword clusters, but low search volume expected |
-| Competitor Intelligence (Iris) | 75% | Strong competitor landscape identified, pricing verified |
-| Audience and Chatter (Scout) | 40% | No actual audience data, only template analysis |
-| Factual Validation (Mirror) | 90% | Correctly identified lack of factual claims |
-| Technical Delivery (Forge) | 85% | Clear technical requirements and risks identified |
-| Revenue Mechanics (Ledger) | 80% | Strong revenue model recommendations despite missing data |
-| Research Review (Aria) | 95% | Accurately identified all WR deficiencies |
-| Repository Review (Scout-Web) | 100% | Correctly identified no repository specified |
+| Lane                           | Confidence | Reasoning                                                     |
+| ------------------------------ | ---------- | ------------------------------------------------------------- |
+| Market Positioning (Echo)      | 65%        | Clear technical pattern identified, but no market validation  |
+| SEO Demand (Noimos)            | 70%        | Well-defined keyword clusters, but low search volume expected |
+| Competitor Intelligence (Iris) | 75%        | Strong competitor landscape identified, pricing verified      |
+| Audience and Chatter (Scout)   | 40%        | No actual audience data, only template analysis               |
+| Factual Validation (Mirror)    | 90%        | Correctly identified lack of factual claims                   |
+| Technical Delivery (Forge)     | 85%        | Clear technical requirements and risks identified             |
+| Revenue Mechanics (Ledger)     | 80%        | Strong revenue model recommendations despite missing data     |
+| Research Review (Aria)         | 95%        | Accurately identified all WR deficiencies                     |
+| Repository Review (Scout-Web)  | 100%       | Correctly identified no repository specified                  |
 
 ### Best-Scoring Recommendation
 
@@ -469,11 +510,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -489,11 +530,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

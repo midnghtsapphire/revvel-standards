@@ -5,7 +5,7 @@
 **Created:** 2026-07-06  
 **Researcher:** Codex (GPT-5)  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -15,12 +15,12 @@ Build a mobile app or tool for red light therapy / photobiomodulation therapy ba
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -37,15 +37,18 @@ Build a mobile app or tool for red light therapy / photobiomodulation therapy ba
 <!-- revvel-research-findings -->
 
 Primary technical source:
+
 - [A Smartphone-Driven Low-Power Light-Emitting Device for Photobiomodulation Therapy (Sensors, PMCID: PMC5406741)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5406741/)
 
 Key evidence extracted from PMCID `PMC5406741`:
+
 - Device wavelengths reported: red and near-infrared LEDs (`630 nm` and `850 nm`).
 - Reported output/therapy profile includes low irradiance and session-level radiant exposure suitable for PBM use cases, with the paper reporting approximately `3 mW/cm²` and `7.2 J/cm²` in the tested setup.
 - Thermal safety in the test setup remained below approximately `41 °C` during operation.
 - Preclinical result in the paper indicates positive wound-healing response in a mouse model.
 
 Evidence confidence note:
+
 - Numeric values above are sourced from the PMCID paper summary and should be re-verified directly against the publication figures/tables before any production medical UX claims.
 
 ## Executive Summary
@@ -55,6 +58,7 @@ Ship a demand-led mobile PBM companion app for people already buying red/NIR har
 ## Step 1A — Product/Output Selections
 
 Output bundle:
+
 - Mobile app (`iOS`, `Android`) using Expo/React Native
 - Lightweight protocol engine for session presets
 - Dose/session calculator tuned to the PMC5406741 study's reported 630/850 nm profile
@@ -62,6 +66,7 @@ Output bundle:
 - Hardware pairing/control layer for supported BLE or USB-C accessories
 
 MVP features:
+
 - User onboarding with skin-type/sensitivity questionnaire
 - Protocol presets (general wellness, recovery support, custom protocol)
 - Timer + dose estimator using user-selected irradiance profile
@@ -79,22 +84,22 @@ MVP features:
 
 ### Competitor and Pricing Table
 
-| Competitor | Product Type | Pricing | Notes |
-| --- | --- | --- | --- |
-| Joovv | Hardware + app ecosystem | `$599-$6,995+` | Premium hardware positioning with app-linked control and recovery messaging per [INIA cost overview](https://theinia.com/a/blog/red-light-therapy-cost) and [Comfytemp cost overview](https://comfytemp.com/blogs/news/red-light-therapy-cost-professional-vs-home). |
-| Mito Red Light | Hardware-first ecosystem | `$199-$999` | Value-oriented home-device pricing range cited in [Comfytemp](https://comfytemp.com/blogs/news/red-light-therapy-cost-professional-vs-home) and [INIA](https://theinia.com/a/blog/red-light-therapy-cost). |
-| RedLightOS | Android app / tracker | Free | Device-focused session tracking and protocol UX, which validates demand for software-first logging and reminders ([RedLightOS](https://redlightos.com/)). |
-| RedMed | App-only workaround | `$1` | Low-cost "use your phone as the light source" positioning shows bargain demand but also leaves room for a serious protocol companion product ([Light Therapy Insiders review](https://www.lighttherapyinsiders.com/redmed-light-therapy-app-review/)). |
+| Competitor     | Product Type             | Pricing        | Notes                                                                                                                                                                                                                                                                |
+| -------------- | ------------------------ | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Joovv          | Hardware + app ecosystem | `$599-$6,995+` | Premium hardware positioning with app-linked control and recovery messaging per [INIA cost overview](https://theinia.com/a/blog/red-light-therapy-cost) and [Comfytemp cost overview](https://comfytemp.com/blogs/news/red-light-therapy-cost-professional-vs-home). |
+| Mito Red Light | Hardware-first ecosystem | `$199-$999`    | Value-oriented home-device pricing range cited in [Comfytemp](https://comfytemp.com/blogs/news/red-light-therapy-cost-professional-vs-home) and [INIA](https://theinia.com/a/blog/red-light-therapy-cost).                                                           |
+| RedLightOS     | Android app / tracker    | Free           | Device-focused session tracking and protocol UX, which validates demand for software-first logging and reminders ([RedLightOS](https://redlightos.com/)).                                                                                                            |
+| RedMed         | App-only workaround      | `$1`           | Low-cost "use your phone as the light source" positioning shows bargain demand but also leaves room for a serious protocol companion product ([Light Therapy Insiders review](https://www.lighttherapyinsiders.com/redmed-light-therapy-app-review/)).               |
 
 ### Bill of Materials (BOM)
 
-| Item | Category | Cost | Notes |
-| --- | --- | --- | --- |
-| Expo + React Native + TypeScript | App stack | Free to start | Matches repo mobile default; no incremental license cost for the first shipped build. |
-| EAS Build / app store delivery | Build/distribution | `$0/month` free tier or `$19/month` starter tier | As of `2026-07-06`, public Expo pricing shows a usable free tier and a starter tier for launch-stage apps ([Expo pricing](https://expo.dev/pricing)). |
-| Local encrypted storage library | App dependency | Internal estimate: low / open-source | Needed for private session history and export on-device. |
-| BLE-enabled light accessory dev kit | Hardware integration | Internal estimate: `$50-$150/unit` | Small prototype budget for pairing, timer sync, and thermal-state testing. |
-| Temperature sensor or thermal telemetry path | Safety instrumentation | Internal estimate: `$5-$15/unit` if external sensor is required | Only needed if the chosen accessory does not already expose temperature or duty-cycle telemetry. |
+| Item                                         | Category               | Cost                                                            | Notes                                                                                                                                                 |
+| -------------------------------------------- | ---------------------- | --------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Expo + React Native + TypeScript             | App stack              | Free to start                                                   | Matches repo mobile default; no incremental license cost for the first shipped build.                                                                 |
+| EAS Build / app store delivery               | Build/distribution     | `$0/month` free tier or `$19/month` starter tier                | As of `2026-07-06`, public Expo pricing shows a usable free tier and a starter tier for launch-stage apps ([Expo pricing](https://expo.dev/pricing)). |
+| Local encrypted storage library              | App dependency         | Internal estimate: low / open-source                            | Needed for private session history and export on-device.                                                                                              |
+| BLE-enabled light accessory dev kit          | Hardware integration   | Internal estimate: `$50-$150/unit`                              | Small prototype budget for pairing, timer sync, and thermal-state testing.                                                                            |
+| Temperature sensor or thermal telemetry path | Safety instrumentation | Internal estimate: `$5-$15/unit` if external sensor is required | Only needed if the chosen accessory does not already expose temperature or duty-cycle telemetry.                                                      |
 
 ### Community Chatter
 
@@ -122,17 +127,20 @@ Registrar availability was not verified in this pass, so treat these as naming d
 ### SEO and Content Plan
 
 Primary keywords:
+
 - `red light therapy app`
 - `photobiomodulation app`
 - `630nm 850nm light therapy`
 - `pbm session tracker`
 
 Long-tail keywords:
+
 - `how to track red light therapy sessions safely`
 - `best photobiomodulation protocol app for home use`
 - `red light therapy dose calculator for 630 and 850 nm`
 
 Content moat:
+
 - Protocol explainers tied to cited literature
 - Safety-first calculators and printable protocol reports
 - Clinic/team mode for coaches and esthetic providers
@@ -140,6 +148,7 @@ Content moat:
 ## Step 3 — Requirements
 
 Product requirements:
+
 - Must support configurable wavelength profile metadata (at minimum 630 and 850 presets).
 - Must support irradiance and exposure time inputs with calculated radiant exposure logging.
 - Must include user-facing thermal and overexposure warnings without turning the core experience into a compliance lecture.
@@ -147,17 +156,20 @@ Product requirements:
 - Must support export of session logs.
 
 Engineering requirements:
+
 - Build with Expo/React Native + TypeScript per repo mobile standards.
 - Config-driven protocol library (JSON) to allow updates without app rebuild.
 - Local-first storage with encrypted at-rest session data.
 - Feature-flag architecture for region-specific compliance copy.
 
 Compliance requirements:
+
 - Position as a protocol/tracking companion unless and until a medical-device pathway is intentionally pursued.
 - Review public-facing copy for disease-treatment claims, but keep most limits internal to the protocol engine and session thresholds.
 - Keep a traceable citation registry for every numeric claim shown in app education screens.
 
 Validation requirements:
+
 - Unit tests for dose calculations and duration guardrails.
 - Integration tests for protocol execution state transitions.
 - Manual QA checklist for safety lockouts, alert copy, and export correctness.
@@ -170,13 +182,14 @@ Validation requirements:
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 External dependencies:
+
 - Legal/compliance review for app-store metadata and disclaimer copy.
 - PBM subject-matter advisor review before public protocol recommendations.
 

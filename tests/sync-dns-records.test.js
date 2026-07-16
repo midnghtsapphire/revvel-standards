@@ -44,7 +44,9 @@ records:
 // ─── loadRecords ────────────────────────────────────────────────────────
 
 test("loadRecords interpolates {{APP_TARGET}} and applies default TTL", () => {
-  const out = loadRecords(SAMPLE_YAML, { appTarget: "oaudrey-hub.ondigitalocean.app" });
+  const out = loadRecords(SAMPLE_YAML, {
+    appTarget: "oaudrey-hub.ondigitalocean.app",
+  });
   assert.strictEqual(out.domain, "oaudrey.com");
   assert.strictEqual(out.records.length, 2);
   assert.strictEqual(out.records[0].host, "@");
@@ -67,7 +69,10 @@ test("loadRecords rejects YAML missing 'domain'", () => {
 });
 
 test("loadRecords rejects YAML with empty records", () => {
-  assert.throws(() => loadRecords("domain: a.com\nrecords: []"), /non-empty array/);
+  assert.throws(
+    () => loadRecords("domain: a.com\nrecords: []"),
+    /non-empty array/,
+  );
 });
 
 // ─── detectProvider ─────────────────────────────────────────────────────
@@ -79,21 +84,21 @@ test("detectProvider returns null when no credentials are set", () => {
 test("detectProvider picks namecheap when its creds are present", () => {
   assert.strictEqual(
     detectProvider({ NAMECHEAP_API_KEY: "k", NAMECHEAP_API_USER: "u" }),
-    "namecheap"
+    "namecheap",
   );
 });
 
 test("detectProvider picks godaddy when its creds are present", () => {
   assert.strictEqual(
     detectProvider({ GODADDY_API_KEY: "k", GODADDY_API_SECRET: "s" }),
-    "godaddy"
+    "godaddy",
   );
 });
 
 test("detectProvider picks porkbun when its creds are present", () => {
   assert.strictEqual(
     detectProvider({ PORKBUN_API_KEY: "k", PORKBUN_SECRET_API_KEY: "s" }),
-    "porkbun"
+    "porkbun",
   );
 });
 
@@ -105,18 +110,24 @@ test("detectProvider prefers namecheap over godaddy when both are set", () => {
       GODADDY_API_KEY: "k",
       GODADDY_API_SECRET: "s",
     }),
-    "namecheap"
+    "namecheap",
   );
 });
 
 // ─── splitDomain ────────────────────────────────────────────────────────
 
 test("splitDomain handles a normal two-label domain", () => {
-  assert.deepStrictEqual(splitDomain("oaudrey.com"), { sld: "oaudrey", tld: "com" });
+  assert.deepStrictEqual(splitDomain("oaudrey.com"), {
+    sld: "oaudrey",
+    tld: "com",
+  });
 });
 
 test("splitDomain handles a multi-label TLD like .co.uk", () => {
-  assert.deepStrictEqual(splitDomain("foo.co.uk"), { sld: "foo", tld: "co.uk" });
+  assert.deepStrictEqual(splitDomain("foo.co.uk"), {
+    sld: "foo",
+    tld: "co.uk",
+  });
 });
 
 test("splitDomain throws on a single-label input", () => {
@@ -126,7 +137,9 @@ test("splitDomain throws on a single-label input", () => {
 // ─── buildNamecheapRequest ──────────────────────────────────────────────
 
 test("buildNamecheapRequest builds a setHosts URL-encoded body", () => {
-  const records = [{ host: "fieldwork", type: "CNAME", value: "x.example.com", ttl: 300 }];
+  const records = [
+    { host: "fieldwork", type: "CNAME", value: "x.example.com", ttl: 300 },
+  ];
   const req = buildNamecheapRequest({
     domain: "oaudrey.com",
     records,
@@ -152,10 +165,12 @@ test("buildNamecheapRequest rejects ALIAS at the apex (unsupported by API)", () 
     () =>
       buildNamecheapRequest({
         domain: "oaudrey.com",
-        records: [{ host: "@", type: "ALIAS", value: "x.example.com", ttl: 300 }],
+        records: [
+          { host: "@", type: "ALIAS", value: "x.example.com", ttl: 300 },
+        ],
         credentials: { apiUser: "u", apiKey: "k", userName: "u" },
       }),
-    /ALIAS at the apex/
+    /ALIAS at the apex/,
   );
 });
 
@@ -167,21 +182,26 @@ test("buildNamecheapRequest fails fast when credentials are missing", () => {
         records: [{ host: "x", type: "CNAME", value: "y", ttl: 300 }],
         credentials: {},
       }),
-    /apiKey\/apiUser/
+    /apiKey\/apiUser/,
   );
 });
 
 // ─── buildGodaddyRequest ────────────────────────────────────────────────
 
 test("buildGodaddyRequest builds a PUT with sso-key auth header", () => {
-  const records = [{ host: "fieldwork", type: "CNAME", value: "x.example.com", ttl: 300 }];
+  const records = [
+    { host: "fieldwork", type: "CNAME", value: "x.example.com", ttl: 300 },
+  ];
   const req = buildGodaddyRequest({
     domain: "oaudrey.com",
     records,
     credentials: { apiKey: "GK", apiSecret: "GS" },
   });
   assert.strictEqual(req.method, "PUT");
-  assert.match(req.url, /api\.godaddy\.com\/v1\/domains\/oaudrey\.com\/records/);
+  assert.match(
+    req.url,
+    /api\.godaddy\.com\/v1\/domains\/oaudrey\.com\/records/,
+  );
   assert.strictEqual(req.headers.Authorization, "sso-key GK:GS");
   const payload = JSON.parse(req.body);
   assert.strictEqual(payload.length, 1);
@@ -207,10 +227,12 @@ test("buildGodaddyRequest translates ALIAS→A only when value is an IP", () => 
     () =>
       buildGodaddyRequest({
         domain: "oaudrey.com",
-        records: [{ host: "@", type: "ALIAS", value: "x.example.com", ttl: 300 }],
+        records: [
+          { host: "@", type: "ALIAS", value: "x.example.com", ttl: 300 },
+        ],
         credentials: { apiKey: "GK", apiSecret: "GS" },
       }),
-    /does not support ALIAS/
+    /does not support ALIAS/,
   );
 });
 
@@ -227,11 +249,18 @@ test("buildPorkbunCreateRequests emits one POST per record with auth in body", (
     credentials: { apiKey: "PK", secretApiKey: "PS" },
   });
   assert.strictEqual(reqs.length, 2);
-  assert.match(reqs[0].url, /api\.porkbun\.com\/api\/json\/v3\/dns\/create\/oaudrey\.com/);
+  assert.match(
+    reqs[0].url,
+    /api\.porkbun\.com\/api\/json\/v3\/dns\/create\/oaudrey\.com/,
+  );
   const body0 = JSON.parse(reqs[0].body);
   assert.strictEqual(body0.apikey, "PK");
   assert.strictEqual(body0.secretapikey, "PS");
-  assert.strictEqual(body0.name, "", "apex host should be empty string for Porkbun");
+  assert.strictEqual(
+    body0.name,
+    "",
+    "apex host should be empty string for Porkbun",
+  );
   assert.strictEqual(body0.type, "ALIAS");
   assert.strictEqual(body0.ttl, "300");
   const body1 = JSON.parse(reqs[1].body);
@@ -250,7 +279,7 @@ test("buildSyncRequests rejects unsupported providers", () => {
         records: [],
         env: {},
       }),
-    /unsupported provider/
+    /unsupported provider/,
   );
 });
 
@@ -266,7 +295,11 @@ test("buildSyncRequests dispatches to porkbun when asked", () => {
 });
 
 test("SUPPORTED_PROVIDERS lists all three registrars", () => {
-  assert.deepStrictEqual(SUPPORTED_PROVIDERS.slice().sort(), ["godaddy", "namecheap", "porkbun"]);
+  assert.deepStrictEqual(SUPPORTED_PROVIDERS.slice().sort(), [
+    "godaddy",
+    "namecheap",
+    "porkbun",
+  ]);
 });
 
 // ─── redaction ──────────────────────────────────────────────────────────
@@ -290,7 +323,10 @@ test("redactRequestForLog redacts Authorization header (GoDaddy)", () => {
   const safe = redactRequestForLog({
     method: "PUT",
     url: "https://api.godaddy.com/v1/domains/oaudrey.com/records",
-    headers: { Authorization: "sso-key GK:GS", "Content-Type": "application/json" },
+    headers: {
+      Authorization: "sso-key GK:GS",
+      "Content-Type": "application/json",
+    },
     body: "[]",
   });
   assert.strictEqual(safe.headers.Authorization, "<redacted>");

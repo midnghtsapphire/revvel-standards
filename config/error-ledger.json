@@ -52,9 +52,7 @@
       "fix": "Set GH_REPO: ${{ github.repository }} in job or workflow env. Exemption: gh api calls that use a full literal path are not affected.",
       "fix_code_snippet": "env:\n  GH_REPO: ${{ github.repository }}",
       "auto_detectable": false,
-      "references": [
-        "CLAUDE.md (Gotcha #1)"
-      ],
+      "references": ["CLAUDE.md (Gotcha #1)"],
       "occurrences": 2
     },
     {
@@ -69,9 +67,7 @@
       "auto_detectable": false,
       "detection_note": "No reliable static heuristic — requires semantic analysis of the full github-script context. Caught by existing tests (tests/workflow-yaml-validation.test.js) which assert owner/repo are passed in known workflows.",
       "last_seen": "2026-06-17T00:00:00Z",
-      "references": [
-        "learnings.md (workflow auth section)"
-      ],
+      "references": ["learnings.md (workflow auth section)"],
       "occurrences": 2
     },
     {

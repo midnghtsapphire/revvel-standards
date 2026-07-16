@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
       - name: Scan changed app files for SEO / a11y debt
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}

@@ -31,14 +31,14 @@ This integration ships the missing pieces so any agent or human can drop Mixpane
 
 ## 2. What this integration adds
 
-| Artifact | Path | Purpose |
-|---|---|---|
-| Skill (agent-facing) | `skills/mixpanel/SKILL.md` | Tells any agent how to integrate Mixpanel correctly |
-| Skill (machine-readable) | `skills/mixpanel/mixpanel.skill.yml` | Auto-loadable spec, registered in `SKILLS_INDEX.yml` |
-| Init template (TypeScript) | `templates/standards/mixpanel-init.ts` | Drop-in wrapper with DNT honoring, opt-out, PII strip |
-| Event standard | `templates/standards/mixpanel-events.md` | Event names, property keys, baseline catalog, PII rules |
-| Env documentation | `.env.example` (ANALYTICS block) | Documents `MIXPANEL_TOKEN`, `MIXPANEL_API_SECRET`, `NEXT_PUBLIC_MIXPANEL_TOKEN`, `MIXPANEL_API_HOST` |
-| Registry entries | `skills/REGISTRY.md`, `skills/SKILLS_INDEX.yml` | Discoverable via skill triggers (`mixpanel`, `track event`, etc.) |
+| Artifact                   | Path                                            | Purpose                                                                                              |
+| -------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Skill (agent-facing)       | `skills/mixpanel/SKILL.md`                      | Tells any agent how to integrate Mixpanel correctly                                                  |
+| Skill (machine-readable)   | `skills/mixpanel/mixpanel.skill.yml`            | Auto-loadable spec, registered in `SKILLS_INDEX.yml`                                                 |
+| Init template (TypeScript) | `templates/standards/mixpanel-init.ts`          | Drop-in wrapper with DNT honoring, opt-out, PII strip                                                |
+| Event standard             | `templates/standards/mixpanel-events.md`        | Event names, property keys, baseline catalog, PII rules                                              |
+| Env documentation          | `.env.example` (ANALYTICS block)                | Documents `MIXPANEL_TOKEN`, `MIXPANEL_API_SECRET`, `NEXT_PUBLIC_MIXPANEL_TOKEN`, `MIXPANEL_API_HOST` |
+| Registry entries           | `skills/REGISTRY.md`, `skills/SKILLS_INDEX.yml` | Discoverable via skill triggers (`mixpanel`, `track event`, etc.)                                    |
 
 The integration is **additive** — it does not replace, modify, or conflict with any existing skill, template, or workflow.
 
@@ -78,11 +78,11 @@ The integration is **additive** — it does not replace, modify, or conflict wit
 4. **Use it in feature code** — never call the SDK directly:
 
    ```ts
-   import { track, identify, optOut } from '@/lib/analytics';
+   import { track, identify, optOut } from "@/lib/analytics";
 
-   track('Signup Completed', {
-     signup_method: 'google',
-     referrer_source: 'twitter',
+   track("Signup Completed", {
+     signup_method: "google",
+     referrer_source: "twitter",
    });
    ```
 

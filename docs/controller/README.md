@@ -9,12 +9,12 @@ the CUDA execution model ([Oxford CUDA course, lec 3](https://people.maths.ox.ac
 a device runs many SMs, each running many blocks of warps, and a scheduler
 watches occupancy and **evicts warps that stall** so others make progress.
 
-| CUDA | Fleet |
-| --- | --- |
-| Grid scheduler | **Fleet Controller** (this) |
-| Thread block on an SM | An **orchestrator** (research orchestrator, twin/triplet run, any fleet workflow) |
-| Warp / thread | An **arm / agent** inside an orchestrator |
-| Evict a stalled warp, schedule a replacement | **Cut + reassign** a stalled orchestrator to the next LLM |
+| CUDA                                         | Fleet                                                                             |
+| -------------------------------------------- | --------------------------------------------------------------------------------- |
+| Grid scheduler                               | **Fleet Controller** (this)                                                       |
+| Thread block on an SM                        | An **orchestrator** (research orchestrator, twin/triplet run, any fleet workflow) |
+| Warp / thread                                | An **arm / agent** inside an orchestrator                                         |
+| Evict a stalled warp, schedule a replacement | **Cut + reassign** a stalled orchestrator to the next LLM                         |
 
 ## What it does
 
@@ -44,27 +44,27 @@ watches occupancy and **evicts warps that stall** so others make progress.
   actually trigger the target workflow (the default `GITHUB_TOKEN` can't trigger
   other workflows; see CLAUDE.md gotcha #2).
 - **Fail-open** — any error is caught and the process still exits `0`. A broken
-  controller can never wedge the fleet — it is *always there, and always fails
-  open*.
+  controller can never wedge the fleet — it is _always there, and always fails
+  open_.
 - **Preemption is gated** — cutting/reassigning only happens when
   `CONTROLLER_PREEMPT=1` (set by the scheduled workflow). A manual
   `workflow_dispatch` with `preempt: false` does a **dry scan** (reports the cuts
-  it *would* make as `would-cancel`).
+  it _would_ make as `would-cancel`).
 
 ## Feeds (what Lovable / self-healing read)
 
 Written to `docs/controller/` every run and committed back by the workflow:
 
-| File | Schema | Consumer |
-| --- | --- | --- |
-| `controller-status.json` | `fleet-controller/v1` | Lovable monitor — occupancy, per-orchestrator health, planned/applied cuts + reassignments |
-| `controller-stop.json` | `fleet-controller-stop/v1` | An **in-process** orchestrator reads this at its `onSoftBudget` tick to self-halt (the "signal stop" half of preemption) |
-| `controller-ingestion.json` | `fleet-controller-ingestion/v1` | **Self-healing** — orchestrators that exhausted reassignment and need the heal loop |
-| `controller-state.json` | `fleet-controller-state/v1` | **The controller itself** — the durable reassignment scoreboard (see below) |
+| File                        | Schema                          | Consumer                                                                                                                 |
+| --------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `controller-status.json`    | `fleet-controller/v1`           | Lovable monitor — occupancy, per-orchestrator health, planned/applied cuts + reassignments                               |
+| `controller-stop.json`      | `fleet-controller-stop/v1`      | An **in-process** orchestrator reads this at its `onSoftBudget` tick to self-halt (the "signal stop" half of preemption) |
+| `controller-ingestion.json` | `fleet-controller-ingestion/v1` | **Self-healing** — orchestrators that exhausted reassignment and need the heal loop                                      |
+| `controller-state.json`     | `fleet-controller-state/v1`     | **The controller itself** — the durable reassignment scoreboard (see below)                                              |
 
 ## The scoreboard and the heartbeat (2026-07-10 convergence fixes)
 
-Two failure modes made the controller *look* broken — it thrashed instead of
+Two failure modes made the controller _look_ broken — it thrashed instead of
 converging:
 
 1. **Amnesia loop.** Reassignment history used to live only inside the last
@@ -79,7 +79,7 @@ converging:
    current issue cycle, or eviction can never converge.
 2. **False stalls.** A run's `updated_at` does not tick while one long step
    executes, so a legitimately slow research step read as "stalled" and was cut
-   every 15 minutes while healthy. Before evicting a *stalled* run (runaways are
+   every 15 minutes while healthy. Before evicting a _stalled_ run (runaways are
    cut regardless), the driver now checks the run's **jobs/steps heartbeat**
    (`lastJobActivityMs`) — recent step activity spares the run
    (`cut: 'spared(step-progress)'` in the feed; spared runs never reach the stop
@@ -92,7 +92,7 @@ The controller is also a Node module the self-healing loop can ingest directly �
 no subprocess, no side effects:
 
 ```js
-const { ingest } = require('./scripts/controller/controller');
+const { ingest } = require("./scripts/controller/controller");
 const { needs_healing } = await ingest(); // read-only scan; no cancel, no dispatch
 // hand needs_healing[] to the heal loop (file [SELF-HEAL] WRs, route, …)
 ```

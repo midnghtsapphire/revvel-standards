@@ -48,15 +48,15 @@ The objective of this WR is to **map the flow, resources, dependencies, AI proce
 
 ### Target Metadata
 
-| Property | Value | Confidence |
-|----------|-------|------------|
-| Marketing host | `neyox.ai` | High (URL structure) |
-| App / console host | `console.neyox.ai` | High (given in issue) |
-| Auth entry point | `/login` | High (given in issue) |
-| Category | No-code/low-code AI-agent console for business teams | Medium (niche inference) |
-| Sub-domain pattern | Marketing ↔ `console.` app split (standard SaaS) | High (convention) |
-| Vendor / founders | Undisclosed in public sources | Low (not confirmed) |
-| Tech stack | Unconfirmed — see Step 3 fingerprinting plan | Low (must capture live) |
+| Property           | Value                                                | Confidence               |
+| ------------------ | ---------------------------------------------------- | ------------------------ |
+| Marketing host     | `neyox.ai`                                           | High (URL structure)     |
+| App / console host | `console.neyox.ai`                                   | High (given in issue)    |
+| Auth entry point   | `/login`                                             | High (given in issue)    |
+| Category           | No-code/low-code AI-agent console for business teams | Medium (niche inference) |
+| Sub-domain pattern | Marketing ↔ `console.` app split (standard SaaS)     | High (convention)        |
+| Vendor / founders  | Undisclosed in public sources                        | Low (not confirmed)      |
+| Tech stack         | Unconfirmed — see Step 3 fingerprinting plan         | Low (must capture live)  |
 
 ### Why a `console.` sub-domain matters for the flow map
 
@@ -73,13 +73,13 @@ These are the exact anchors the scrape harness (Step 4) is built to confirm or r
 
 ## Step 1A: Product / Output Selections
 
-| Output shape | In scope? | Format | Primary engine / standard | Notes |
-|--------------|-----------|--------|---------------------------|-------|
-| Flow-map research dossier (this doc) | **Yes** | Markdown WR | `docs/WEEKLY_RESEARCH_PROCESS.md` | Primary deliverable |
-| Reproducible scrape harness | **Yes** | Playwright recipe (Step 4) | `skills/` (Playwright skill) | Run when network access is available |
-| Login/onboarding flow map template | **Yes** | Table + diagram (Step 4) | this doc | Slots in live-captured values |
-| New hosted product / fork | **No** | — | — | This is a competitive recon WR, not a build |
-| Platform defaults (Vercel/DO, auth/admin) | **No** | — | — | N/A: no new UI shipped by this WR |
+| Output shape                              | In scope? | Format                     | Primary engine / standard         | Notes                                       |
+| ----------------------------------------- | --------- | -------------------------- | --------------------------------- | ------------------------------------------- |
+| Flow-map research dossier (this doc)      | **Yes**   | Markdown WR                | `docs/WEEKLY_RESEARCH_PROCESS.md` | Primary deliverable                         |
+| Reproducible scrape harness               | **Yes**   | Playwright recipe (Step 4) | `skills/` (Playwright skill)      | Run when network access is available        |
+| Login/onboarding flow map template        | **Yes**   | Table + diagram (Step 4)   | this doc                          | Slots in live-captured values               |
+| New hosted product / fork                 | **No**    | —                          | —                                 | This is a competitive recon WR, not a build |
+| Platform defaults (Vercel/DO, auth/admin) | **No**    | —                          | —                                 | N/A: no new UI shipped by this WR           |
 
 ### Platform Defaults & Website Requirements
 
@@ -99,13 +99,13 @@ No new website/UI is shipped by this WR (recon + harness only), so Vercel/Digita
 
 ### Adjacent competitors (for positioning, **not** asserted to be neyox.ai)
 
-| Product | Angle | GitHub stars (verify before quoting) |
-|---------|-------|--------------------------------------|
-| `nexos.ai` | No-code AI agents, 100+ models, work-tool integrations | Closed-source — N/A |
-| `neyo.ai` | AI marketing/ads automation | Closed-source — N/A |
-| Relevance AI | Multi-agent "AI workforce" | Closed-source — N/A |
-| Lindy | No-code AI agents/automations | Closed-source — N/A |
-| Sintra | "AI employees" for SMBs | Closed-source — N/A |
+| Product      | Angle                                                  | GitHub stars (verify before quoting) |
+| ------------ | ------------------------------------------------------ | ------------------------------------ |
+| `nexos.ai`   | No-code AI agents, 100+ models, work-tool integrations | Closed-source — N/A                  |
+| `neyo.ai`    | AI marketing/ads automation                            | Closed-source — N/A                  |
+| Relevance AI | Multi-agent "AI workforce"                             | Closed-source — N/A                  |
+| Lindy        | No-code AI agents/automations                          | Closed-source — N/A                  |
+| Sintra       | "AI employees" for SMBs                                | Closed-source — N/A                  |
 
 > GitHub-stars cells are marked N/A because these are closed-source SaaS — there is no public repo to count. This is the honest answer to the research-standard "GitHub stars for referenced tools" requirement for closed products.
 
@@ -121,25 +121,25 @@ This is the **map skeleton** the live scrape fills in. Each row is a question wi
 
 ### 3.1 Login flow (control flow)
 
-| Step | What to confirm | Capture method |
-|------|-----------------|----------------|
-| Landing on `/login` | Static HTML vs. client-rendered SPA shell | View source + JS-disabled load |
-| Auth options | Email+password, magic link, Google/Microsoft OAuth, SSO | DOM snapshot of login buttons |
-| Submit | Endpoint(s), method, payload shape, CSRF/state token | Network panel (XHR/fetch) |
-| Identity provider | First-party vs. Auth0/Clerk/Supabase/Firebase/Cognito | Redirect URL + token issuer |
-| Post-login redirect | Dashboard route, session cookie/JWT storage | Network + Application/Storage tab |
-| Session model | Cookie (HttpOnly/SameSite) vs. token in storage | Response headers + storage inspect |
+| Step                | What to confirm                                         | Capture method                     |
+| ------------------- | ------------------------------------------------------- | ---------------------------------- |
+| Landing on `/login` | Static HTML vs. client-rendered SPA shell               | View source + JS-disabled load     |
+| Auth options        | Email+password, magic link, Google/Microsoft OAuth, SSO | DOM snapshot of login buttons      |
+| Submit              | Endpoint(s), method, payload shape, CSRF/state token    | Network panel (XHR/fetch)          |
+| Identity provider   | First-party vs. Auth0/Clerk/Supabase/Firebase/Cognito   | Redirect URL + token issuer        |
+| Post-login redirect | Dashboard route, session cookie/JWT storage             | Network + Application/Storage tab  |
+| Session model       | Cookie (HttpOnly/SameSite) vs. token in storage         | Response headers + storage inspect |
 
 ### 3.2 Resources & dependencies (what the page loads)
 
-| Resource class | What to record | Capture method |
-|----------------|----------------|----------------|
-| Frontend framework | React/Vue/Svelte/Angular/Next + version hints | Bundle fingerprints, `__NEXT_DATA__`, hydration markers |
-| Bundler/host | Vite/webpack/Turbopack; CDN (Vercel/Cloudflare/Netlify) | Asset paths + response headers (`server`, `x-vercel-*`) |
-| API surface | REST vs. GraphQL, base host, auth header scheme | Network requests after submit |
-| Third-party scripts | Analytics, error tracking, feature flags, chat | Request hosts (Segment, PostHog, Sentry, LaunchDarkly, Intercom) |
-| Fonts/assets | Self-hosted vs. Google Fonts; image CDN | Request hosts |
-| Security headers | CSP, HSTS, `X-Frame-Options`, cookie flags | Response headers |
+| Resource class      | What to record                                          | Capture method                                                   |
+| ------------------- | ------------------------------------------------------- | ---------------------------------------------------------------- |
+| Frontend framework  | React/Vue/Svelte/Angular/Next + version hints           | Bundle fingerprints, `__NEXT_DATA__`, hydration markers          |
+| Bundler/host        | Vite/webpack/Turbopack; CDN (Vercel/Cloudflare/Netlify) | Asset paths + response headers (`server`, `x-vercel-*`)          |
+| API surface         | REST vs. GraphQL, base host, auth header scheme         | Network requests after submit                                    |
+| Third-party scripts | Analytics, error tracking, feature flags, chat          | Request hosts (Segment, PostHog, Sentry, LaunchDarkly, Intercom) |
+| Fonts/assets        | Self-hosted vs. Google Fonts; image CDN                 | Request hosts                                                    |
+| Security headers    | CSP, HSTS, `X-Frame-Options`, cookie flags              | Response headers                                                 |
 
 ### 3.3 AI process & agents (the differentiator)
 
@@ -162,45 +162,51 @@ This is a **reproducible recipe**, not a committed script. To run it, an operato
 
 ### Ranked tool BOM
 
-| Need | Best tool | Why it beats alternatives |
-|------|-----------|---------------------------|
+| Need                           | Best tool                                | Why it beats alternatives                                        |
+| ------------------------------ | ---------------------------------------- | ---------------------------------------------------------------- |
 | Headless capture + network log | **Playwright** (already a repo standard) | Cross-browser, reliable network interception, ships in `skills/` |
-| Quick header/TLS check | `curl -sIL` | Zero deps, fast, shows redirects + headers |
-| Tech fingerprinting | Wappalyzer / `webappanalyzer` rules | Maps bundles → frameworks/CDNs |
-| HTML/asset diffing over time | `git` + saved snapshots | Detects stack changes between runs |
+| Quick header/TLS check         | `curl -sIL`                              | Zero deps, fast, shows redirects + headers                       |
+| Tech fingerprinting            | Wappalyzer / `webappanalyzer` rules      | Maps bundles → frameworks/CDNs                                   |
+| HTML/asset diffing over time   | `git` + saved snapshots                  | Detects stack changes between runs                               |
 
 ### Playwright capture recipe (public surface only)
 
 ```js
 // Recipe to save as scripts/scrape/neyox-login-map.mjs (run only with network access + ToS review)
-import { chromium } from 'playwright';
+import { chromium } from "playwright";
 
-const TARGET = 'https://console.neyox.ai/login';
+const TARGET = "https://console.neyox.ai/login";
 const requests = [];
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
 
 // Record every network request the login page makes (dependency map).
-page.on('request', (r) => requests.push({ method: r.method(), url: r.url(), type: r.resourceType() }));
+page.on("request", (r) =>
+  requests.push({ method: r.method(), url: r.url(), type: r.resourceType() }),
+);
 
-const resp = await page.goto(TARGET, { waitUntil: 'networkidle' });
+const resp = await page.goto(TARGET, { waitUntil: "networkidle" });
 
 // 1) Control flow: final URL + status (catches redirects to an IdP).
-console.log('final-url', page.url(), 'status', resp?.status());
+console.log("final-url", page.url(), "status", resp?.status());
 
 // 2) Resources: response headers reveal host/CDN/security posture.
-console.log('headers', resp?.headers());
+console.log("headers", resp?.headers());
 
 // 3) Auth surface: list visible auth affordances without submitting anything.
-const authButtons = await page.$$eval('button, a', (els) =>
-  els.map((e) => e.textContent?.trim()).filter((t) => /sign|log\s?in|google|microsoft|sso|continue/i.test(t || '')),
+const authButtons = await page.$$eval("button, a", (els) =>
+  els
+    .map((e) => e.textContent?.trim())
+    .filter((t) =>
+      /sign|log\s?in|google|microsoft|sso|continue/i.test(t || ""),
+    ),
 );
-console.log('auth-options', authButtons);
+console.log("auth-options", authButtons);
 
 // 4) Dependencies: unique third-party hosts touched by the page.
 const hosts = [...new Set(requests.map((r) => new URL(r.url).host))].sort();
-console.log('hosts', hosts);
+console.log("hosts", hosts);
 
 await browser.close();
 ```
@@ -226,7 +232,7 @@ curl -sI https://console.neyox.ai/api 2>/dev/null | head -1
 
 ## Step 5: Compliance & Legal Surface
 
-- **Public-surface only.** This WR maps a third party's *publicly reachable, unauthenticated* login page and marketing/doc surfaces. It does **not** authenticate, create accounts, submit credentials, bypass auth, or scrape behind the login wall.
+- **Public-surface only.** This WR maps a third party's _publicly reachable, unauthenticated_ login page and marketing/doc surfaces. It does **not** authenticate, create accounts, submit credentials, bypass auth, or scrape behind the login wall.
 - **Respect ToS + robots.** Before any automated capture, check `https://neyox.ai/robots.txt` and the site Terms of Service. Honor rate limits; a single, low-frequency read is appropriate for recon.
 - **No personal data.** Do not collect or store any personal data encountered; record only technical/architectural facts (frameworks, hosts, headers, flow).
 - **Authenticated internals are out of scope.** The full AI-process/agent map (Step 3.3) is only lawfully obtainable from public docs/marketing or with the vendor's permission — not by scraping logged-in pages.
@@ -245,13 +251,13 @@ This WR ships **competitive recon + a reusable scrape harness**, not a sellable 
 
 ## Artifact Engine Map
 
-| Selected artifact | Repo engine / standard | Status |
-|-------------------|------------------------|--------|
-| Flow-map research dossier | `docs/WEEKLY_RESEARCH_PROCESS.md` | ✅ Produced (this file) |
-| Reproducible Playwright scrape recipe | `skills/` (Playwright testing skill) | ✅ Recipe delivered (Step 4); operator saves to `scripts/scrape/` + runs on network access |
-| Login/onboarding flow map | this doc (Step 3) | ✅ Structure delivered; ⏳ live values pending |
-| AI-process / agent map | this doc (Step 3.3) | ⏳ Gap — needs public docs or authorized access |
-| "Competitor stack & flow report" product | *no existing engine* | ⚠️ Gap — candidate OSINT productization (Focus Area #2) |
+| Selected artifact                        | Repo engine / standard               | Status                                                                                     |
+| ---------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------ |
+| Flow-map research dossier                | `docs/WEEKLY_RESEARCH_PROCESS.md`    | ✅ Produced (this file)                                                                    |
+| Reproducible Playwright scrape recipe    | `skills/` (Playwright testing skill) | ✅ Recipe delivered (Step 4); operator saves to `scripts/scrape/` + runs on network access |
+| Login/onboarding flow map                | this doc (Step 3)                    | ✅ Structure delivered; ⏳ live values pending                                             |
+| AI-process / agent map                   | this doc (Step 3.3)                  | ⏳ Gap — needs public docs or authorized access                                            |
+| "Competitor stack & flow report" product | _no existing engine_                 | ⚠️ Gap — candidate OSINT productization (Focus Area #2)                                    |
 
 ---
 
@@ -276,9 +282,9 @@ Durable findings institutionalized back into revvel-standards:
 
 ## Status Summary
 
-| Field | Value |
-|-------|-------|
-| WR Status | ✅ Complete (flow-map structure + reproducible scrape harness delivered) |
-| Deliverable | Recon dossier + ToS-aware Playwright capture recipe + flow/dependency/AI-process map skeleton |
-| Live capture | ⏳ Deferred — run harness when network access to `console.neyox.ai` is available |
-| Blocker | **Sandbox network/browser limit** — `neyox.ai`/`console.neyox.ai` DNS did not resolve in this automation run (`ENOTFOUND`), and the shared Playwright browser was locked by a prior session. **Re-run:** save the Step 4 recipe to `scripts/scrape/neyox-login-map.mjs`, then execute it from an environment with outbound network + an isolated browser; paste captured `final-url`, `headers`, `auth-options`, and `hosts` into the Step 3 tables. |
+| Field        | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WR Status    | ✅ Complete (flow-map structure + reproducible scrape harness delivered)                                                                                                                                                                                                                                                                                                                                                                             |
+| Deliverable  | Recon dossier + ToS-aware Playwright capture recipe + flow/dependency/AI-process map skeleton                                                                                                                                                                                                                                                                                                                                                        |
+| Live capture | ⏳ Deferred — run harness when network access to `console.neyox.ai` is available                                                                                                                                                                                                                                                                                                                                                                     |
+| Blocker      | **Sandbox network/browser limit** — `neyox.ai`/`console.neyox.ai` DNS did not resolve in this automation run (`ENOTFOUND`), and the shared Playwright browser was locked by a prior session. **Re-run:** save the Step 4 recipe to `scripts/scrape/neyox-login-map.mjs`, then execute it from an environment with outbound network + an isolated browser; paste captured `final-url`, `headers`, `auth-options`, and `hosts` into the Step 3 tables. |

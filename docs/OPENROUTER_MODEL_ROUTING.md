@@ -30,18 +30,18 @@ node scripts/openrouter-routing-example.js repo_surgery "Fix the authentication 
 ### 3. Use in your code
 
 ```javascript
-const { routedChat } = require('./scripts/openrouter-routing');
+const { routedChat } = require("./scripts/openrouter-routing");
 
 const result = await routedChat({
-  profile: 'repo_surgery',
+  profile: "repo_surgery",
   messages: [
-    { role: 'user', content: 'Refactor the database layer to use async/await' }
+    { role: "user", content: "Refactor the database layer to use async/await" },
   ],
   temperature: 0.7,
 });
 
-console.log(result.text);           // Generated response
-console.log(result.modelUsed);      // Which model responded
+console.log(result.text); // Generated response
+console.log(result.modelUsed); // Which model responded
 console.log(result.requestedModels); // Fallback chain attempted
 ```
 
@@ -54,11 +54,13 @@ The module includes three pre-configured routing profiles:
 **Use for:** Multi-file edits, bug fixing, refactors, and "take initiative" tasks
 
 **Model fallback chain:**
+
 1. `anthropic/claude-sonnet-4` (primary: independent, high-quality reasoning)
 2. `deepseek/deepseek-v3.2` (fallback: cost-effective, strong coding)
 3. `openai/gpt-5.2-codex` (fallback: debugging specialist)
 
 **When to use:**
+
 - Complex bug fixes requiring understanding of multiple components
 - Refactoring that requires maintaining correctness
 - Feature implementation with architectural decisions
@@ -69,10 +71,12 @@ The module includes three pre-configured routing profiles:
 **Use for:** Repetitive transforms, test generation, lint-fix loops, and lower-cost bulk changes
 
 **Model fallback chain:**
+
 1. `deepseek/deepseek-v3.2` (primary: cost-effective, reliable)
 2. `anthropic/claude-sonnet-4` (fallback: higher quality if needed)
 
 **When to use:**
+
 - Generating boilerplate code
 - Writing unit tests from specifications
 - Applying mechanical refactorings (rename, extract method)
@@ -84,11 +88,13 @@ The module includes three pre-configured routing profiles:
 **Use for:** Difficult failures, ambiguous root-cause analysis, and second-opinion patches
 
 **Model fallback chain:**
+
 1. `openai/gpt-5.2-codex` (primary: specialized debugging reasoning)
 2. `anthropic/claude-sonnet-4` (fallback: alternative perspective)
 3. `deepseek/deepseek-v3.2` (fallback: code-focused analysis)
 
 **When to use:**
+
 - Investigating flaky tests
 - Analyzing memory leaks or performance issues
 - Understanding race conditions or concurrency bugs
@@ -102,6 +108,7 @@ The module includes three pre-configured routing profiles:
 Execute a chat completion using a named routing profile.
 
 **Parameters:**
+
 - `profile` (string, required): Profile name (`repo_surgery`, `cheap_batch_edits`, `hard_debug`)
 - `messages` (array, required): Array of message objects with `role` and `content`
 - `temperature` (number, optional): Sampling temperature (0.0-2.0, default: 0.7)
@@ -113,6 +120,7 @@ Execute a chat completion using a named routing profile.
 - `appTitle` (string, optional): X-Title header (defaults to `OPENROUTER_APP_TITLE` env var or app name)
 
 **Returns:** Promise resolving to:
+
 ```javascript
 {
   text: string,              // Generated response content
@@ -125,12 +133,13 @@ Execute a chat completion using a named routing profile.
 ```
 
 **Example:**
+
 ```javascript
 const result = await routedChat({
-  profile: 'repo_surgery',
+  profile: "repo_surgery",
   messages: [
-    { role: 'system', content: 'You are a helpful coding assistant.' },
-    { role: 'user', content: 'How do I fix this memory leak?' }
+    { role: "system", content: "You are a helpful coding assistant." },
+    { role: "user", content: "How do I fix this memory leak?" },
   ],
   temperature: 0.5,
   max_tokens: 2000,
@@ -143,6 +152,7 @@ const result = await routedChat({
 Low-level function to call OpenRouter directly with custom model arrays.
 
 **Parameters:**
+
 - `models` (array, required): Array of model identifiers in fallback order
 - `messages` (array, required): Array of message objects
 - `temperature` (number, optional): Sampling temperature
@@ -155,12 +165,13 @@ Low-level function to call OpenRouter directly with custom model arrays.
 **Returns:** Promise resolving to response object (same structure as `routedChat` but without profile metadata)
 
 **Example:**
+
 ```javascript
-const { callOpenRouter } = require('./scripts/openrouter-routing');
+const { callOpenRouter } = require("./scripts/openrouter-routing");
 
 const result = await callOpenRouter({
-  models: ['anthropic/claude-sonnet-4', 'openai/gpt-4-turbo'],
-  messages: [{ role: 'user', content: 'Hello!' }],
+  models: ["anthropic/claude-sonnet-4", "openai/gpt-4-turbo"],
+  messages: [{ role: "user", content: "Hello!" }],
 });
 ```
 
@@ -171,6 +182,7 @@ Get all available routing profiles.
 **Returns:** Object mapping profile names to configuration objects
 
 **Example:**
+
 ```javascript
 const profiles = getProfiles();
 // {
@@ -184,13 +196,15 @@ const profiles = getProfiles();
 Get the model fallback chain for a specific profile.
 
 **Parameters:**
+
 - `profile` (string, required): Profile name
 
 **Returns:** Array of model identifiers
 
 **Example:**
+
 ```javascript
-const models = getProfileModels('repo_surgery');
+const models = getProfileModels("repo_surgery");
 // ['anthropic/claude-sonnet-4', 'deepseek/deepseek-v3.2', 'openai/gpt-5.2-codex']
 ```
 
@@ -201,16 +215,17 @@ The module surfaces errors cleanly when all fallbacks fail:
 ```javascript
 try {
   const result = await routedChat({
-    profile: 'repo_surgery',
-    messages: [{ role: 'user', content: 'test' }],
+    profile: "repo_surgery",
+    messages: [{ role: "user", content: "test" }],
   });
 } catch (err) {
-  console.error('All models failed:', err.message);
+  console.error("All models failed:", err.message);
   // Handle error appropriately
 }
 ```
 
 **Common error scenarios:**
+
 - Missing `OPENROUTER_API_KEY`: Throws immediately
 - All models in fallback chain fail: Throws after exhausting chain
 - Invalid profile name: Throws before making any requests (includes list of available profiles)
@@ -256,8 +271,8 @@ To suppress logs, use the `silent` option:
 
 ```javascript
 const result = await routedChat({
-  profile: 'repo_surgery',
-  messages: [{ role: 'user', content: 'test' }],
+  profile: "repo_surgery",
+  messages: [{ role: "user", content: "test" }],
   silent: true, // No console output
 });
 ```
@@ -271,6 +286,7 @@ node tests/openrouter-routing.test.js
 ```
 
 The tests verify:
+
 - Profile structure and model arrays
 - Error handling for invalid inputs
 - Request validation
@@ -282,17 +298,20 @@ The tests verify:
 ### Scenario 1: Bug Fix PR
 
 ```javascript
-const { routedChat } = require('./scripts/openrouter-routing');
+const { routedChat } = require("./scripts/openrouter-routing");
 
 async function generateBugFix(bugDescription, codeContext) {
   const result = await routedChat({
-    profile: 'repo_surgery',
+    profile: "repo_surgery",
     messages: [
-      { role: 'system', content: 'You are an expert software engineer.' },
-      { role: 'user', content: `Bug: ${bugDescription}\n\nCode:\n${codeContext}\n\nProvide a fix.` }
+      { role: "system", content: "You are an expert software engineer." },
+      {
+        role: "user",
+        content: `Bug: ${bugDescription}\n\nCode:\n${codeContext}\n\nProvide a fix.`,
+      },
     ],
   });
-  
+
   return result.text;
 }
 ```
@@ -302,12 +321,15 @@ async function generateBugFix(bugDescription, codeContext) {
 ```javascript
 async function generateTests(sourceCode, testFramework) {
   const result = await routedChat({
-    profile: 'cheap_batch_edits',
+    profile: "cheap_batch_edits",
     messages: [
-      { role: 'user', content: `Generate ${testFramework} tests for:\n${sourceCode}` }
+      {
+        role: "user",
+        content: `Generate ${testFramework} tests for:\n${sourceCode}`,
+      },
     ],
   });
-  
+
   console.log(`Tests generated using ${result.modelUsed}`);
   return result.text;
 }
@@ -318,13 +340,16 @@ async function generateTests(sourceCode, testFramework) {
 ```javascript
 async function debugStackTrace(stackTrace, sourceCode) {
   const result = await routedChat({
-    profile: 'hard_debug',
+    profile: "hard_debug",
     messages: [
-      { role: 'user', content: `Analyze this error:\n${stackTrace}\n\nRelevant code:\n${sourceCode}` }
+      {
+        role: "user",
+        content: `Analyze this error:\n${stackTrace}\n\nRelevant code:\n${sourceCode}`,
+      },
     ],
     temperature: 0.3, // Lower temperature for more deterministic debugging
   });
-  
+
   return {
     analysis: result.text,
     modelUsed: result.modelUsed,
@@ -337,19 +362,21 @@ async function debugStackTrace(stackTrace, sourceCode) {
 The routing module is designed to be drop-in compatible with existing OpenRouter callsites. To migrate:
 
 **Before:**
+
 ```javascript
 const result = await callOpenRouter(
-  'anthropic/claude-sonnet-4',
+  "anthropic/claude-sonnet-4",
   messages,
-  4000
+  4000,
 );
 ```
 
 **After:**
+
 ```javascript
-const { routedChat } = require('./scripts/openrouter-routing');
+const { routedChat } = require("./scripts/openrouter-routing");
 const result = await routedChat({
-  profile: 'repo_surgery',
+  profile: "repo_surgery",
   messages,
   max_tokens: 4000,
 });
@@ -360,6 +387,7 @@ const result = await routedChat({
 ### Issue: "OPENROUTER_API_KEY is required"
 
 **Solution:** Set the environment variable:
+
 ```bash
 export OPENROUTER_API_KEY='sk-or-v1-...'
 ```
@@ -367,6 +395,7 @@ export OPENROUTER_API_KEY='sk-or-v1-...'
 ### Issue: "All models in fallback chain failed"
 
 **Possible causes:**
+
 1. All models are rate-limited (wait and retry)
 2. Prompt violates content policies (modify prompt)
 3. Network connectivity issues (check internet connection)
@@ -389,7 +418,7 @@ Different models have different costs per token. The routing profiles are design
 To monitor costs, log the `modelUsed` field and track usage:
 
 ```javascript
-const result = await routedChat({ /* ... */ });
+const result = await routedChat({/* ... */});
 console.log(`Request handled by: ${result.modelUsed}`);
 // Log to your analytics/monitoring system
 ```

@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo } from "react";
 import {
   DESIGN_PHASES,
   type ProjectInfo,
@@ -9,32 +9,32 @@ import {
   countAllItems,
   countChecked,
   phaseCompletionPct,
-} from './data/controls';
+} from "./data/controls";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
 const DEFAULT_PROJECT: ProjectInfo = {
-  deviceName: '',
-  deviceVersion: '1.0',
-  projectLead: '',
-  intendedUse: '',
-  deviceClass: '',
-  startDate: '',
-  targetDate: '',
+  deviceName: "",
+  deviceVersion: "1.0",
+  projectLead: "",
+  intendedUse: "",
+  deviceClass: "",
+  startDate: "",
+  targetDate: "",
 };
 
 function progressColor(pct: number): string {
-  if (pct >= 80) return 'bg-emerald-500';
-  if (pct >= 50) return 'bg-yellow-400';
-  return 'bg-red-500';
+  if (pct >= 80) return "bg-emerald-500";
+  if (pct >= 50) return "bg-yellow-400";
+  return "bg-red-500";
 }
 
 function badgeColor(pct: number): string {
-  if (pct >= 80) return 'text-emerald-400';
-  if (pct >= 50) return 'text-yellow-400';
-  return 'text-red-400';
+  if (pct >= 80) return "text-emerald-400";
+  if (pct >= 50) return "text-yellow-400";
+  return "text-red-400";
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -45,15 +45,15 @@ export default function HomePage() {
   const [project, setProject] = useState<ProjectInfo>(DEFAULT_PROJECT);
   // Map<phaseId, Set<itemId>>
   const [checkedMap, setCheckedMap] = useState<Map<string, Set<string>>>(
-    new Map()
+    new Map(),
   );
   const [activePhaseId, setActivePhaseId] = useState<string>(
-    DESIGN_PHASES[0].id
+    DESIGN_PHASES[0].id,
   );
-  const [activeTab, setActiveTab] = useState<'checklist' | 'export'>(
-    'checklist'
+  const [activeTab, setActiveTab] = useState<"checklist" | "export">(
+    "checklist",
   );
-  const [exportType, setExportType] = useState<'markdown' | 'csv'>('markdown');
+  const [exportType, setExportType] = useState<"markdown" | "csv">("markdown");
   const [showGuidance, setShowGuidance] = useState<string | null>(null);
 
   // ── Toggle a single checklist item ─────────────────────────────────────────
@@ -90,7 +90,7 @@ export default function HomePage() {
   const { total, required } = useMemo(() => countAllItems(), []);
   const { checked, checkedRequired } = useMemo(
     () => countChecked(checkedMap),
-    [checkedMap]
+    [checkedMap],
   );
   const overallPct = total > 0 ? Math.round((checked / total) * 100) : 0;
   const requiredPct =
@@ -99,17 +99,17 @@ export default function HomePage() {
   // ── Report text ─────────────────────────────────────────────────────────────
   const markdownReport = useMemo(
     () => buildDhfMarkdown(project, checkedMap),
-    [project, checkedMap]
+    [project, checkedMap],
   );
   const csvReport = useMemo(
     () => buildDhfCsv(project, checkedMap),
-    [project, checkedMap]
+    [project, checkedMap],
   );
 
   function downloadFile(content: string, filename: string, mime: string) {
     const blob = new Blob([content], { type: mime });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     a.click();
@@ -121,7 +121,7 @@ export default function HomePage() {
   const activeChecked = checkedMap.get(activePhaseId) ?? new Set<string>();
   const activePct = phaseCompletionPct(activePhase, activeChecked);
   const allActiveChecked = activePhase.items.every((i) =>
-    activeChecked.has(i.id)
+    activeChecked.has(i.id),
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -185,9 +185,7 @@ export default function HomePage() {
                 label="Project Lead"
                 value={project.projectLead}
                 placeholder="Name / Role"
-                onChange={(v) =>
-                  setProject((p) => ({ ...p, projectLead: v }))
-                }
+                onChange={(v) => setProject((p) => ({ ...p, projectLead: v }))}
               />
               <div>
                 <label className="block text-xs text-gray-400 mb-1">
@@ -199,7 +197,7 @@ export default function HomePage() {
                   onChange={(e) =>
                     setProject((p) => ({
                       ...p,
-                      deviceClass: e.target.value as ProjectInfo['deviceClass'],
+                      deviceClass: e.target.value as ProjectInfo["deviceClass"],
                     }))
                   }
                 >
@@ -213,9 +211,7 @@ export default function HomePage() {
                 label="Intended Use"
                 value={project.intendedUse}
                 placeholder="Brief description"
-                onChange={(v) =>
-                  setProject((p) => ({ ...p, intendedUse: v }))
-                }
+                onChange={(v) => setProject((p) => ({ ...p, intendedUse: v }))}
               />
               <div className="flex gap-2">
                 <div className="flex-1">
@@ -264,16 +260,18 @@ export default function HomePage() {
                     key={phase.id}
                     onClick={() => {
                       setActivePhaseId(phase.id);
-                      setActiveTab('checklist');
+                      setActiveTab("checklist");
                     }}
                     className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
                       isActive
-                        ? 'bg-blue-800 text-blue-100'
-                        : 'hover:bg-gray-800 text-gray-300'
+                        ? "bg-blue-800 text-blue-100"
+                        : "hover:bg-gray-800 text-gray-300"
                     }`}
                   >
                     <div className="flex items-center justify-between text-sm">
-                      <span className="truncate font-medium">{phase.title}</span>
+                      <span className="truncate font-medium">
+                        {phase.title}
+                      </span>
                       <span
                         className={`ml-2 text-xs font-semibold flex-shrink-0 ${badgeColor(pct)}`}
                       >
@@ -298,7 +296,9 @@ export default function HomePage() {
           {/* Overall progress bar */}
           <div className="p-4 border-t border-gray-800">
             <div className="flex justify-between text-xs text-gray-400 mb-1">
-              <span>Overall: {checked}/{total}</span>
+              <span>
+                Overall: {checked}/{total}
+              </span>
               <span className={badgeColor(overallPct)}>{overallPct}%</span>
             </div>
             <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
@@ -308,7 +308,9 @@ export default function HomePage() {
               />
             </div>
             <div className="flex justify-between text-xs text-gray-500 mt-1">
-              <span>Required: {checkedRequired}/{required}</span>
+              <span>
+                Required: {checkedRequired}/{required}
+              </span>
               <span className={badgeColor(requiredPct)}>{requiredPct}%</span>
             </div>
           </div>
@@ -319,21 +321,21 @@ export default function HomePage() {
           {/* Tab bar */}
           <div className="border-b border-gray-800 bg-gray-900 px-6 flex items-center gap-4">
             <button
-              onClick={() => setActiveTab('checklist')}
+              onClick={() => setActiveTab("checklist")}
               className={`py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'checklist'
-                  ? 'border-blue-400 text-blue-300'
-                  : 'border-transparent text-gray-400 hover:text-gray-200'
+                activeTab === "checklist"
+                  ? "border-blue-400 text-blue-300"
+                  : "border-transparent text-gray-400 hover:text-gray-200"
               }`}
             >
               Checklist
             </button>
             <button
-              onClick={() => setActiveTab('export')}
+              onClick={() => setActiveTab("export")}
               className={`py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === 'export'
-                  ? 'border-blue-400 text-blue-300'
-                  : 'border-transparent text-gray-400 hover:text-gray-200'
+                activeTab === "export"
+                  ? "border-blue-400 text-blue-300"
+                  : "border-transparent text-gray-400 hover:text-gray-200"
               }`}
             >
               Export DHF
@@ -341,7 +343,7 @@ export default function HomePage() {
           </div>
 
           {/* ── Checklist tab ── */}
-          {activeTab === 'checklist' && (
+          {activeTab === "checklist" && (
             <div className="flex-1 overflow-y-auto p-6">
               <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
                 <div>
@@ -356,7 +358,9 @@ export default function HomePage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-3 flex-shrink-0">
-                  <span className={`text-2xl font-bold ${badgeColor(activePct)}`}>
+                  <span
+                    className={`text-2xl font-bold ${badgeColor(activePct)}`}
+                  >
                     {activePct}%
                   </span>
                   <button
@@ -365,7 +369,7 @@ export default function HomePage() {
                     }
                     className="text-xs px-3 py-1.5 rounded bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
                   >
-                    {allActiveChecked ? 'Uncheck All' : 'Check All'}
+                    {allActiveChecked ? "Uncheck All" : "Check All"}
                   </button>
                 </div>
               </div>
@@ -379,8 +383,8 @@ export default function HomePage() {
                       key={item.id}
                       className={`border rounded-lg p-4 transition-colors ${
                         done
-                          ? 'border-emerald-700 bg-emerald-950/30'
-                          : 'border-gray-700 bg-gray-900'
+                          ? "border-emerald-700 bg-emerald-950/30"
+                          : "border-gray-700 bg-gray-900"
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -390,10 +394,10 @@ export default function HomePage() {
                           aria-checked={done}
                           className={`mt-0.5 w-5 h-5 flex-shrink-0 rounded border-2 flex items-center justify-center transition-colors ${
                             done
-                              ? 'bg-emerald-500 border-emerald-500'
-                              : 'border-gray-500 hover:border-blue-400'
+                              ? "bg-emerald-500 border-emerald-500"
+                              : "border-gray-500 hover:border-blue-400"
                           }`}
-                          aria-label={done ? 'Uncheck item' : 'Check item'}
+                          aria-label={done ? "Uncheck item" : "Check item"}
                         >
                           {done && (
                             <svg
@@ -415,7 +419,9 @@ export default function HomePage() {
                           <div className="flex items-center gap-2 flex-wrap">
                             <span
                               className={`text-sm font-medium ${
-                                done ? 'line-through text-gray-500' : 'text-gray-100'
+                                done
+                                  ? "line-through text-gray-500"
+                                  : "text-gray-100"
                               }`}
                             >
                               {item.text}
@@ -437,7 +443,7 @@ export default function HomePage() {
                             }
                             className="mt-1 text-xs text-blue-500 hover:text-blue-400 flex items-center gap-1"
                           >
-                            <span>{isGuidanceOpen ? '▲' : '▼'}</span>
+                            <span>{isGuidanceOpen ? "▲" : "▼"}</span>
                             <span>Guidance</span>
                           </button>
                           {isGuidanceOpen && (
@@ -458,7 +464,7 @@ export default function HomePage() {
                   <button
                     onClick={() => {
                       const idx = DESIGN_PHASES.findIndex(
-                        (p) => p.id === activePhaseId
+                        (p) => p.id === activePhaseId,
                       );
                       setActivePhaseId(DESIGN_PHASES[idx - 1].id);
                     }}
@@ -474,7 +480,7 @@ export default function HomePage() {
                   <button
                     onClick={() => {
                       const idx = DESIGN_PHASES.findIndex(
-                        (p) => p.id === activePhaseId
+                        (p) => p.id === activePhaseId,
                       );
                       setActivePhaseId(DESIGN_PHASES[idx + 1].id);
                     }}
@@ -484,7 +490,7 @@ export default function HomePage() {
                   </button>
                 ) : (
                   <button
-                    onClick={() => setActiveTab('export')}
+                    onClick={() => setActiveTab("export")}
                     className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 rounded text-sm text-emerald-100 transition-colors"
                   >
                     Generate DHF ↗
@@ -495,7 +501,7 @@ export default function HomePage() {
           )}
 
           {/* ── Export tab ── */}
-          {activeTab === 'export' && (
+          {activeTab === "export" && (
             <div className="flex-1 overflow-y-auto p-6">
               <h2 className="text-lg font-bold text-gray-100 mb-1">
                 Export Design History File
@@ -530,15 +536,13 @@ export default function HomePage() {
                   label="Compliance Risk"
                   value={
                     requiredPct >= 80
-                      ? 'Low'
+                      ? "Low"
                       : requiredPct >= 50
-                      ? 'Medium'
-                      : 'High'
+                        ? "Medium"
+                        : "High"
                   }
                   sub={
-                    requiredPct < 80
-                      ? 'Complete required items'
-                      : 'On track'
+                    requiredPct < 80 ? "Complete required items" : "On track"
                   }
                   color={badgeColor(requiredPct)}
                 />
@@ -572,7 +576,7 @@ export default function HomePage() {
                           className="border-b border-gray-800 hover:bg-gray-800/50 cursor-pointer"
                           onClick={() => {
                             setActivePhaseId(phase.id);
-                            setActiveTab('checklist');
+                            setActiveTab("checklist");
                           }}
                         >
                           <td className="py-2 px-3 text-gray-200">
@@ -597,21 +601,21 @@ export default function HomePage() {
               <div className="flex items-center gap-3 mb-4 flex-wrap">
                 <div className="flex rounded overflow-hidden border border-gray-700">
                   <button
-                    onClick={() => setExportType('markdown')}
+                    onClick={() => setExportType("markdown")}
                     className={`px-4 py-2 text-sm transition-colors ${
-                      exportType === 'markdown'
-                        ? 'bg-blue-700 text-blue-100'
-                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      exportType === "markdown"
+                        ? "bg-blue-700 text-blue-100"
+                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
                     }`}
                   >
                     Markdown
                   </button>
                   <button
-                    onClick={() => setExportType('csv')}
+                    onClick={() => setExportType("csv")}
                     className={`px-4 py-2 text-sm transition-colors ${
-                      exportType === 'csv'
-                        ? 'bg-blue-700 text-blue-100'
-                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      exportType === "csv"
+                        ? "bg-blue-700 text-blue-100"
+                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
                     }`}
                   >
                     CSV
@@ -619,34 +623,33 @@ export default function HomePage() {
                 </div>
                 <button
                   onClick={() => {
-                    if (exportType === 'markdown') {
+                    if (exportType === "markdown") {
                       downloadFile(
                         markdownReport,
-                        'design-history-file.md',
-                        'text/markdown'
+                        "design-history-file.md",
+                        "text/markdown",
                       );
                     } else {
                       downloadFile(
                         csvReport,
-                        'design-controls-checklist.csv',
-                        'text/csv'
+                        "design-controls-checklist.csv",
+                        "text/csv",
                       );
                     }
                   }}
                   className="px-5 py-2 bg-emerald-700 hover:bg-emerald-600 text-emerald-100 text-sm font-medium rounded transition-colors"
                 >
-                  ↓ Download{' '}
-                  {exportType === 'markdown' ? 'Markdown' : 'CSV'}
+                  ↓ Download {exportType === "markdown" ? "Markdown" : "CSV"}
                 </button>
               </div>
 
               {/* Preview */}
               <pre className="bg-gray-900 border border-gray-700 rounded-lg p-4 text-xs text-gray-300 overflow-auto max-h-96 whitespace-pre-wrap font-mono leading-relaxed">
-                {exportType === 'markdown' ? markdownReport : csvReport}
+                {exportType === "markdown" ? markdownReport : csvReport}
               </pre>
 
               <p className="mt-4 text-xs text-gray-500">
-                Reference: 21 CFR 820.30 · FDA Design Controls Guidance ·{' '}
+                Reference: 21 CFR 820.30 · FDA Design Controls Guidance ·{" "}
                 <a
                   href="https://www.fda.gov/media/116762/download"
                   target="_blank"

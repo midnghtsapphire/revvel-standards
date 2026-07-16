@@ -10,6 +10,7 @@ Full technical design for data center waste heat capture, upgrade, storage, and 
 Data Center IT Load → Liquid Cooling Loop → Heat Exchangers (Capture) → Next-Gen HTHPs (Upgrade) → TCES + PCM Storage (Seasonal + Daily) → Thermal Energy Network → City Buildings (Heating)
 
 **Target Performance**:
+
 - Overall effective efficiency: **~88%**
 - Water savings: Major reduction in evaporative cooling
 - Heat delivery: Low-to-medium grade upgraded to district heating quality (65–90°C+)
@@ -17,11 +18,13 @@ Data Center IT Load → Liquid Cooling Loop → Heat Exchangers (Capture) → Ne
 ## 2. Key Technology Components
 
 ### 2.1 Heat Capture
+
 - High-efficiency plate heat exchangers (titanium/stainless)
 - Integrated with liquid cooling systems (preferred for higher-grade heat)
 - Target capture rate: >92–95%
 
 ### 2.2 Heat Upgrade — Next-Gen HTHPs (Emerging Priority)
+
 - Advanced cycles: Cascade or two-stage with internal heat exchangers/economizers
 - Low-GWP refrigerants (CO₂, ammonia, or advanced synthetics)
 - Target COP: 3.4 – 5.0+
@@ -29,16 +32,19 @@ Data Center IT Load → Liquid Cooling Loop → Heat Exchangers (Capture) → Ne
 - Modular, scalable design for redundancy
 
 ### 2.3 Storage — TCES (Seasonal) + PCM Hybrid (Daily)
+
 - **Thermochemical / Sorption Storage (TCES)**: Near-zero loss seasonal storage using chemical reactions or sorption materials. Ideal for Colorado winters.
 - **PCM Thermal Batteries**: Higher density daily/weekly buffering. Custom formulations matched to system temperatures.
 - Combined approach maximizes utilization and minimizes curtailment.
 
 ### 2.4 Distribution
+
 - Modern pre-insulated piping (low loss)
 - 4th/5th generation thermal networks (lower temperatures, bidirectional potential)
 - Smart pumps and controls
 
 ### 2.5 Controls & Optimization
+
 - AI-driven predictive management of storage charge/discharge
 - Real-time efficiency optimization
 - Integration with building management systems and grid signals

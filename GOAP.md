@@ -25,14 +25,14 @@ This is the top-level index for the **Goap agent system**. Every file in this sy
 
 ## Refined High-Level Goals (The "One Truth" Outcomes)
 
-| # | Goal | Target | Timeline |
-|---|------|--------|----------|
-| 1 | **Financial Freedom** | $5–10M+ net worth for Audrey; $2–5M+ per child | 3–5 years |
-| 2 | **Lifestyle & Environment** | Waterfront/lake-front property; 2–3 location splits including international | 3 years |
-| 3 | **Family & Presence** | Unstructured high-quality time with kids — travel, hanging out | Ongoing |
-| 4 | **Creative Expression & Impact** | Profitable songwriting/original work (AI assists, Audrey owns vision) | Q3 2026 |
-| 5 | **Health & Longevity** | Daily outdoor movement; responsible longevity experiments | Ongoing |
-| 6 | **Autonomy & Leverage** | Proactive agent system (Goap) that executes with minimal babysitting | 3 years |
+| #   | Goal                             | Target                                                                      | Timeline  |
+| --- | -------------------------------- | --------------------------------------------------------------------------- | --------- |
+| 1   | **Financial Freedom**            | $5–10M+ net worth for Audrey; $2–5M+ per child                              | 3–5 years |
+| 2   | **Lifestyle & Environment**      | Waterfront/lake-front property; 2–3 location splits including international | 3 years   |
+| 3   | **Family & Presence**            | Unstructured high-quality time with kids — travel, hanging out              | Ongoing   |
+| 4   | **Creative Expression & Impact** | Profitable songwriting/original work (AI assists, Audrey owns vision)       | Q3 2026   |
+| 5   | **Health & Longevity**           | Daily outdoor movement; responsible longevity experiments                   | Ongoing   |
+| 6   | **Autonomy & Leverage**          | Proactive agent system (Goap) that executes with minimal babysitting        | 3 years   |
 
 ---
 
@@ -78,16 +78,16 @@ Raise Amazon Vine review completion rate from **47% → 90%+** within 4–6 week
 
 ## ONE SOURCE OF TRUTH — File Map
 
-| File | Purpose | Authority |
-|------|---------|-----------|
-| **[`GOAP.md`](GOAP.md)** | This file — Goap system hub and persona index | ⭐ SSOT |
-| **[`GOAL.md`](GOAL.md)** | Mission, financial targets, project roadmap, rules | ⭐ SSOT |
-| **[`learnings.md`](learnings.md)** | Self-healing log — failures, root causes, fixes | ⭐ SSOT |
-| **[`GOAP_AGENT_PROMPT.md`](GOAP_AGENT_PROMPT.md)** | Full canonical system prompt (copy-paste for AI agents) | Deployment |
-| **[`docs/Master_Inventory/GOAP_AGENT_STANDARD.md`](docs/Master_Inventory/GOAP_AGENT_STANDARD.md)** | Technical operational standard | Reference |
-| **[`wr/NORTH_STAR.md`](wr/NORTH_STAR.md)** | Overriding rules — above all other rules | Rules |
-| **[`SYSTEM_STATE.md`](SYSTEM_STATE.md)** | Current production state | State |
-| **[`docs/AGENTS.md`](docs/AGENTS.md)** | Universal agent instructions for all agents | Instructions |
+| File                                                                                               | Purpose                                                 | Authority    |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------ |
+| **[`GOAP.md`](GOAP.md)**                                                                           | This file — Goap system hub and persona index           | ⭐ SSOT      |
+| **[`GOAL.md`](GOAL.md)**                                                                           | Mission, financial targets, project roadmap, rules      | ⭐ SSOT      |
+| **[`learnings.md`](learnings.md)**                                                                 | Self-healing log — failures, root causes, fixes         | ⭐ SSOT      |
+| **[`GOAP_AGENT_PROMPT.md`](GOAP_AGENT_PROMPT.md)**                                                 | Full canonical system prompt (copy-paste for AI agents) | Deployment   |
+| **[`docs/Master_Inventory/GOAP_AGENT_STANDARD.md`](docs/Master_Inventory/GOAP_AGENT_STANDARD.md)** | Technical operational standard                          | Reference    |
+| **[`wr/NORTH_STAR.md`](wr/NORTH_STAR.md)**                                                         | Overriding rules — above all other rules                | Rules        |
+| **[`SYSTEM_STATE.md`](SYSTEM_STATE.md)**                                                           | Current production state                                | State        |
+| **[`docs/AGENTS.md`](docs/AGENTS.md)**                                                             | Universal agent instructions for all agents             | Instructions |
 
 ---
 

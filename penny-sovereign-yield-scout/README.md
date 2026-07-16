@@ -75,18 +75,18 @@ uvicorn tools.auto_compounder_api:app --reload --port 8765
 
 Copy `.env.example` to `.env` and populate:
 
-| Variable | Description |
-|---|---|
-| `ALCHEMY_API_KEY` | Alchemy node RPC key (Ethereum / Polygon) |
-| `MORALIS_API_KEY` | Moralis Web3 data API |
-| `DEFILLAMA_BASE_URL` | DeFiLlama yield API base URL |
-| `TWITTER_BEARER_TOKEN` | Twitter/X v2 bearer token for social scan |
-| `REDDIT_CLIENT_ID` | Reddit API client ID |
-| `REDDIT_CLIENT_SECRET` | Reddit API client secret |
-| `OPENROUTER_API_KEY` | OpenRouter for AI signal scoring |
-| `VERIFIABLE_LOG_DIR` | Local directory for JSONL audit logs |
+| Variable                  | Description                               |
+| ------------------------- | ----------------------------------------- |
+| `ALCHEMY_API_KEY`         | Alchemy node RPC key (Ethereum / Polygon) |
+| `MORALIS_API_KEY`         | Moralis Web3 data API                     |
+| `DEFILLAMA_BASE_URL`      | DeFiLlama yield API base URL              |
+| `TWITTER_BEARER_TOKEN`    | Twitter/X v2 bearer token for social scan |
+| `REDDIT_CLIENT_ID`        | Reddit API client ID                      |
+| `REDDIT_CLIENT_SECRET`    | Reddit API client secret                  |
+| `OPENROUTER_API_KEY`      | OpenRouter for AI signal scoring          |
+| `VERIFIABLE_LOG_DIR`      | Local directory for JSONL audit logs      |
 | `COMPOUND_WALLET_ADDRESS` | EVM wallet for auto-compound transactions |
-| `COMPOUND_PRIVATE_KEY` | Private key — **NEVER commit this** |
+| `COMPOUND_PRIVATE_KEY`    | Private key — **NEVER commit this**       |
 
 ---
 
@@ -115,14 +115,14 @@ Social Feeds (Twitter / Reddit / Telegram)
 
 ## Key Tools
 
-| Tool | Purpose |
-|---|---|
-| `listener.py` | Monitors Twitter/Reddit/Telegram for penny + yield signals |
-| `yield_scraper_cli.py` | Sweeps all 50 protocols; ranks by APY, TVL, risk score |
-| `auto_compounder_api.py` | FastAPI server; call `/compound` to trigger re-invest |
-| `il_shield.py` | Calculates IL exposure; blocks positions above threshold |
-| `verifiable_logger.py` | JSONL logger with SHA-256 chain hash (tamper-evident) |
-| `blue_ocean_generator.py` | Scaffolds new CLIs, PDF reports, and FastAPI servers |
+| Tool                      | Purpose                                                    |
+| ------------------------- | ---------------------------------------------------------- |
+| `listener.py`             | Monitors Twitter/Reddit/Telegram for penny + yield signals |
+| `yield_scraper_cli.py`    | Sweeps all 50 protocols; ranks by APY, TVL, risk score     |
+| `auto_compounder_api.py`  | FastAPI server; call `/compound` to trigger re-invest      |
+| `il_shield.py`            | Calculates IL exposure; blocks positions above threshold   |
+| `verifiable_logger.py`    | JSONL logger with SHA-256 chain hash (tamper-evident)      |
+| `blue_ocean_generator.py` | Scaffolds new CLIs, PDF reports, and FastAPI servers       |
 
 ---
 

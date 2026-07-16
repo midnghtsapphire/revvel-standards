@@ -17,16 +17,16 @@ This folder is the result of a full **self-healing evaluation** of the Revvel St
 
 ## Files in This Folder
 
-| File | Purpose |
-|---|---|
-| [`README.md`](README.md) | This file — orientation and navigation |
-| [`TOOLING_AND_TESTING_BOM.md`](TOOLING_AND_TESTING_BOM.md) | Exhaustive list of testing, QA, monitoring, and auto-healing tools (FOSS + paid) |
-| [`UI_FIELD_TESTING_BOM.md`](UI_FIELD_TESTING_BOM.md) | Tools for UI-to-database field testing and mapping validation — the DBA process BOM |
-| [`API_REGISTRY_BOM.md`](API_REGISTRY_BOM.md) | Every API Revvel needs, uses, or should evaluate — with priority and cost |
-| [`SELF_HEALING_BOM_TEMPLATE.md`](SELF_HEALING_BOM_TEMPLATE.md) | Per-project self-healing BOM template — copy this into every new project |
-| [`INVENTORY_TEMPLATE.md`](INVENTORY_TEMPLATE.md) | Per-project/per-business inventory template — tracks services, quotas, physical products, and upgrade triggers |
-| [`LLM_RECOMMENDATIONS.md`](LLM_RECOMMENDATIONS.md) | Which LLMs to wire into Revvel for autonomous, self-improving agent operation |
-| [`FOLDER_STRUCTURE_RECOMMENDATIONS.md`](FOLDER_STRUCTURE_RECOMMENDATIONS.md) | Recommended improvements to repo and docs folder structure |
+| File                                                                         | Purpose                                                                                                        |
+| ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| [`README.md`](README.md)                                                     | This file — orientation and navigation                                                                         |
+| [`TOOLING_AND_TESTING_BOM.md`](TOOLING_AND_TESTING_BOM.md)                   | Exhaustive list of testing, QA, monitoring, and auto-healing tools (FOSS + paid)                               |
+| [`UI_FIELD_TESTING_BOM.md`](UI_FIELD_TESTING_BOM.md)                         | Tools for UI-to-database field testing and mapping validation — the DBA process BOM                            |
+| [`API_REGISTRY_BOM.md`](API_REGISTRY_BOM.md)                                 | Every API Revvel needs, uses, or should evaluate — with priority and cost                                      |
+| [`SELF_HEALING_BOM_TEMPLATE.md`](SELF_HEALING_BOM_TEMPLATE.md)               | Per-project self-healing BOM template — copy this into every new project                                       |
+| [`INVENTORY_TEMPLATE.md`](INVENTORY_TEMPLATE.md)                             | Per-project/per-business inventory template — tracks services, quotas, physical products, and upgrade triggers |
+| [`LLM_RECOMMENDATIONS.md`](LLM_RECOMMENDATIONS.md)                           | Which LLMs to wire into Revvel for autonomous, self-improving agent operation                                  |
+| [`FOLDER_STRUCTURE_RECOMMENDATIONS.md`](FOLDER_STRUCTURE_RECOMMENDATIONS.md) | Recommended improvements to repo and docs folder structure                                                     |
 
 ---
 
@@ -55,13 +55,13 @@ The **Self-Healing BOM** process asks three questions at each phase:
 
 All items in every BOM file use this standard priority system:
 
-| Priority | Label | Meaning |
-|---|---|---|
-| **P0** | 🔴 Critical | Blocks deployment or core functionality — do immediately |
-| **P1** | 🟡 High | Required for production quality — do this sprint |
-| **P2** | 🟢 Medium | Important for growth/scale — do next sprint |
-| **P3** | 🔵 Low | Nice to have — evaluate when P0–P2 are complete |
-| **P4** | ⚪ Research | Not yet decided — needs investigation before commitment |
+| Priority | Label       | Meaning                                                  |
+| -------- | ----------- | -------------------------------------------------------- |
+| **P0**   | 🔴 Critical | Blocks deployment or core functionality — do immediately |
+| **P1**   | 🟡 High     | Required for production quality — do this sprint         |
+| **P2**   | 🟢 Medium   | Important for growth/scale — do next sprint              |
+| **P3**   | 🔵 Low      | Nice to have — evaluate when P0–P2 are complete          |
+| **P4**   | ⚪ Research | Not yet decided — needs investigation before commitment  |
 
 ---
 
@@ -72,6 +72,7 @@ Based on exhaustive research (see [`LLM_RECOMMENDATIONS.md`](LLM_RECOMMENDATIONS
 > **Claude 3.7 Sonnet / Claude Opus 4** (Anthropic) — via the MCP Standard already in place
 
 For the autonomous BOM agent loop specifically:
+
 1. Claude reads each project's BOM + test results + error logs
 2. Claude evaluates gaps, new tools, deprecations, and cost changes
 3. Claude opens GitHub Issues for any P0 or P1 gaps it finds
@@ -83,6 +84,7 @@ For the autonomous BOM agent loop specifically:
 ## How to Use This Folder
 
 ### For new projects
+
 1. Copy `SELF_HEALING_BOM_TEMPLATE.md` into `docs/<project-name>/BOM.md`
 2. Copy `INVENTORY_TEMPLATE.md` into `docs/<project-name>/INVENTORY.md`
 3. Fill in the stack decisions during Phase 0
@@ -90,6 +92,7 @@ For the autonomous BOM agent loop specifically:
 5. Reference `API_REGISTRY_BOM.md` to identify required APIs
 
 ### For existing projects
+
 1. Open the project's `BOM.md`
 2. Run through the Self-Healing Checklist at the bottom of `SELF_HEALING_BOM_TEMPLATE.md`
 3. Update status fields (`❌ Not purchased` → `✅ Active` / `🗑️ Removed`)
@@ -97,6 +100,7 @@ For the autonomous BOM agent loop specifically:
 5. Review `INVENTORY.md` — update quota usage, flag any ⚡ UPGRADE TRIGGERs, and sync changes to `docs/_MASTER_INVENTORY.md`
 
 ### For the coding agent
+
 - Reference `API_REGISTRY_BOM.md` to identify which APIs are available and what credentials to request
 - Reference `TOOLING_AND_TESTING_BOM.md` to select the right testing tools per task
 - After every major feature or deployment, run the Self-Healing Checklist
@@ -116,16 +120,16 @@ This script pulls all `BOM.md` files from `docs/*/BOM.md`, extracts outstanding 
 
 ## Related Standards
 
-| Standard | Location |
-|---|---|
-| Testing Standard | [`TESTING_STANDARD.md`](../Master_Inventory/TESTING_STANDARD.md) |
+| Standard               | Location                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| Testing Standard       | [`TESTING_STANDARD.md`](../Master_Inventory/TESTING_STANDARD.md)             |
 | Agent Factory Standard | [`AGENT_FACTORY_STANDARD.md`](../Master_Inventory/AGENT_FACTORY_STANDARD.md) |
-| Deployment Standard | [`DEPLOYMENT_STANDARD.md`](../Master_Inventory/DEPLOYMENT_STANDARD.md) |
-| MCP Standard | [`MCP_STANDARD.md`](../Master_Inventory/MCP_STANDARD.md) |
-| Security Standard | [`SECURITY_STANDARD.md`](../Master_Inventory/SECURITY_STANDARD.md) |
-| Vault Agent Standard | [`VAULT_AGENT_STANDARD.md`](../Master_Inventory/VAULT_AGENT_STANDARD.md) |
-| Master Inventory | [`docs/_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md) |
+| Deployment Standard    | [`DEPLOYMENT_STANDARD.md`](../Master_Inventory/DEPLOYMENT_STANDARD.md)       |
+| MCP Standard           | [`MCP_STANDARD.md`](../Master_Inventory/MCP_STANDARD.md)                     |
+| Security Standard      | [`SECURITY_STANDARD.md`](../Master_Inventory/SECURITY_STANDARD.md)           |
+| Vault Agent Standard   | [`VAULT_AGENT_STANDARD.md`](../Master_Inventory/VAULT_AGENT_STANDARD.md)     |
+| Master Inventory       | [`docs/_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md)                       |
 
 ---
 
-*This document is maintained by the Revvel coding agent. Last audited: April 14, 2026.*
+_This document is maintained by the Revvel coding agent. Last audited: April 14, 2026._

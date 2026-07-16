@@ -37,6 +37,7 @@ gh workflow run brain-dump-intake.yml \
 ```
 
 Via GitHub UI:
+
 1. Go to **Actions → Brain Dump Intake**
 2. Click **"Run workflow"**
 3. Paste your notes into the `brain_dump` field
@@ -93,6 +94,7 @@ For best results, ensure `OPENROUTER_API_KEY` is set as a repository secret.
 ## Example Input → Output
 
 **Input brain dump:**
+
 ```
 every morning I want a tool to dump notes and auto create WRs. Neuros has
 the feature, maybe get it from there. Need notebook LM API integration.
@@ -101,12 +103,13 @@ We really need to use priority labels more robustly.
 ```
 
 **Output (4 WR issues):**
-| Issue | Title | Priority | Slot |
-|---|---|---|---|
-| #14700 | `[WR] Build daily brain dump to WR pipeline` | p1 | 1-1 |
-| #14701 | `[WR] Integrate Notebook LM API for idea capture` | p2 | 1-2 |
-| #14702 | `[WR] Add new scraping module to OSINT pipeline` | p2 | 2-1 |
-| #14703 | `[WR] Implement robust priority-slot label system` | p1 | 1-3 |
+
+| Issue  | Title                                              | Priority | Slot |
+| ------ | -------------------------------------------------- | -------- | ---- |
+| #14700 | `[WR] Build daily brain dump to WR pipeline`       | p1       | 1-1  |
+| #14701 | `[WR] Integrate Notebook LM API for idea capture`  | p2       | 1-2  |
+| #14702 | `[WR] Add new scraping module to OSINT pipeline`   | p2       | 2-1  |
+| #14703 | `[WR] Implement robust priority-slot label system` | p1       | 1-3  |
 
 ## Related Files
 

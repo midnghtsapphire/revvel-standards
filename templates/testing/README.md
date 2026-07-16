@@ -6,11 +6,11 @@ These three test templates provide a starting pattern for the field validation, 
 
 ## Files in This Directory
 
-| File | Test Type | Tool | Purpose |
-|---|---|---|---|
-| `field-validation.test.ts` | Unit / Integration | Vitest | Validates database field constraints |
-| `ui-db-map.test.ts` | Integration | Vitest | Validates API response shapes match DB schema |
-| `panel-data-void.spec.ts` | E2E | Playwright | Validates pages load with real data (no empty states) |
+| File                       | Test Type          | Tool       | Purpose                                               |
+| -------------------------- | ------------------ | ---------- | ----------------------------------------------------- |
+| `field-validation.test.ts` | Unit / Integration | Vitest     | Validates database field constraints                  |
+| `ui-db-map.test.ts`        | Integration        | Vitest     | Validates API response shapes match DB schema         |
+| `panel-data-void.spec.ts`  | E2E                | Playwright | Validates pages load with real data (no empty states) |
 
 ---
 
@@ -44,14 +44,14 @@ These three test templates provide a starting pattern for the field validation, 
 
 ## What to Substitute
 
-| Marker | Replace With | Example |
-|---|---|---|
-| `[TABLE_NAME]` | Drizzle table name | `users` |
-| `[FIELD_NAME]` | Column name | `email` |
-| `[ROUTER_NAME]` | tRPC router or Express router name | `user` |
-| `[ENDPOINT_NAME]` | Procedure or route name | `getProfile` |
-| `[PAGE_PATH]` | Page route | `/dashboard` |
-| `[PANEL_SELECTOR]` | CSS selector for content area | `.dashboard-panel` |
+| Marker             | Replace With                       | Example            |
+| ------------------ | ---------------------------------- | ------------------ |
+| `[TABLE_NAME]`     | Drizzle table name                 | `users`            |
+| `[FIELD_NAME]`     | Column name                        | `email`            |
+| `[ROUTER_NAME]`    | tRPC router or Express router name | `user`             |
+| `[ENDPOINT_NAME]`  | Procedure or route name            | `getProfile`       |
+| `[PAGE_PATH]`      | Page route                         | `/dashboard`       |
+| `[PANEL_SELECTOR]` | CSS selector for content area      | `.dashboard-panel` |
 
 ---
 

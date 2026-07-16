@@ -48,6 +48,7 @@ reesereviews/
 ## Features
 
 ### Current (v1.0)
+
 - ✅ Responsive landing page with glassmorphism UI
 - ✅ Review display with filtering and search
 - ✅ Trust badges and social proof
@@ -56,6 +57,7 @@ reesereviews/
 - ✅ Accessibility modes (5 modes per Revvel Standards)
 
 ### Planned (v1.1+)
+
 - 🔄 Amazon Vine review import automation
 - 🔄 Judge.me integration for review collection
 - 🔄 Multi-source review aggregation
@@ -81,6 +83,7 @@ This project follows all Revvel Standards:
 ## Setup & Development
 
 ### Prerequisites
+
 - Node.js 18+
 - Python 3.11+
 - PostgreSQL 15+
@@ -89,24 +92,28 @@ This project follows all Revvel Standards:
 ### Local Development
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/midnghtsapphire/revvel-standards.git
 cd revvel-standards/reesereviews
 ```
 
 2. Set up environment variables:
+
 ```bash
 cp .env.example .env
 # Edit .env with your API keys
 ```
 
 3. Install dependencies:
+
 ```bash
 npm install  # For frontend build tools
 pip install -r requirements.txt  # For backend API
 ```
 
 4. Run development server:
+
 ```bash
 # Simple HTTP server for frontend
 python -m http.server 8080
@@ -122,6 +129,7 @@ npx live-server --port=8080
 See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for full deployment instructions.
 
 Quick deploy via Kong Gateway:
+
 ```bash
 # Update Kong configuration
 cd /home/runner/work/revvel-standards/revvel-standards/install/kong
@@ -142,6 +150,7 @@ Run the automation script to set up test API keys:
 ```
 
 This will:
+
 1. Create test accounts for Judge.me, Amazon PA API, Google Reviews
 2. Retrieve API keys automatically
 3. Populate `.env` file
@@ -152,18 +161,21 @@ This will:
 If automation fails, follow these steps:
 
 #### Judge.me
+
 1. Sign up at https://judge.me
 2. Navigate to Settings → API
 3. Generate API token
 4. Add to `.env`: `JUDGEME_API_KEY=your_key_here`
 
 #### Amazon Product Advertising API
+
 1. Apply at https://affiliate-program.amazon.com/signup
 2. Request API access
 3. Generate keys in Associates Central
 4. Add to `.env`: `AMAZON_API_KEY=your_key_here`
 
 #### Google My Business API
+
 1. Create project at https://console.cloud.google.com
 2. Enable Google My Business API
 3. Create OAuth2 credentials
@@ -195,12 +207,14 @@ graph TD
 ## Social Media Integration
 
 Automated posting to:
+
 - YouTube (video reviews)
 - Twitter/X (review highlights)
 - Instagram (product photos)
 - TikTok (short review clips)
 
 Using:
+
 - **n8n**: Workflow automation
 - **Trigify CLI**: Social listening and posting
 - **Buffer alternative**: Self-hosted scheduler
@@ -208,6 +222,7 @@ Using:
 ## Analytics
 
 Track key metrics:
+
 - Total reviews
 - Average rating
 - Page views per review

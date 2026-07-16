@@ -19,13 +19,13 @@
 
 ## 1. Research Phase
 
-| Task | Tool | Output |
-|------|------|--------|
-| Validate strong demand | Social listening: ≥ 200 complaints + high payability | Demand must be 4x higher than PDF/CLI threshold |
-| Deep competitor analysis | Top 20 competitors, not just 10 | `research/competitors.md` — feature matrix, pricing, reviews |
-| Define MVP scope | Absolute minimum to launch | `research/mvp.md` — max 5 features for v1 |
-| Architecture decision | Web-only vs. mobile vs. both | `research/architecture.md` |
-| Revenue projection | Monthly recurring revenue model | `decision/pricing.json` — must show ≥ 10x ROI in 90 days |
+| Task                     | Tool                                                 | Output                                                       |
+| ------------------------ | ---------------------------------------------------- | ------------------------------------------------------------ |
+| Validate strong demand   | Social listening: ≥ 200 complaints + high payability | Demand must be 4x higher than PDF/CLI threshold              |
+| Deep competitor analysis | Top 20 competitors, not just 10                      | `research/competitors.md` — feature matrix, pricing, reviews |
+| Define MVP scope         | Absolute minimum to launch                           | `research/mvp.md` — max 5 features for v1                    |
+| Architecture decision    | Web-only vs. mobile vs. both                         | `research/architecture.md`                                   |
+| Revenue projection       | Monthly recurring revenue model                      | `decision/pricing.json` — must show ≥ 10x ROI in 90 days     |
 
 **Gate:** `research/brief.md` must exist AND ROI gate (step 4) must be human-approved.
 
@@ -35,11 +35,11 @@
 
 ### Platform Decision
 
-| Platform | When | Stack |
-|----------|------|-------|
-| **Web-only** | Browser is sufficient, faster to build | React + Vite + Tailwind + Supabase |
-| **Mobile (iOS + Android)** | Users need it on their phone | Expo + React Native + NativeWind + Supabase |
-| **Web + Mobile** | Maximum reach, justified by revenue | Expo (with web export) OR separate web + mobile |
+| Platform                   | When                                   | Stack                                           |
+| -------------------------- | -------------------------------------- | ----------------------------------------------- |
+| **Web-only**               | Browser is sufficient, faster to build | React + Vite + Tailwind + Supabase              |
+| **Mobile (iOS + Android)** | Users need it on their phone           | Expo + React Native + NativeWind + Supabase     |
+| **Web + Mobile**           | Maximum reach, justified by revenue    | Expo (with web export) OR separate web + mobile |
 
 **Default: Web-only** unless the research specifically shows mobile is required.
 
@@ -87,15 +87,15 @@ build/app/
 
 ### Tech Stack Defaults
 
-| Layer | Default |
-|-------|---------|
-| Frontend | React + TypeScript + Vite + Tailwind |
-| Mobile | Expo + React Native + NativeWind |
-| Backend | Supabase (auth + DB + edge functions) or Node.js + Fastify |
-| Database | PostgreSQL (via Supabase or direct) |
-| Auth | Supabase Auth or custom JWT |
-| Payments | Stripe (web) or RevenueCat (mobile IAP) |
-| Hosting | DigitalOcean App Platform or Vercel (web), Expo EAS (mobile) |
+| Layer    | Default                                                      |
+| -------- | ------------------------------------------------------------ |
+| Frontend | React + TypeScript + Vite + Tailwind                         |
+| Mobile   | Expo + React Native + NativeWind                             |
+| Backend  | Supabase (auth + DB + edge functions) or Node.js + Fastify   |
+| Database | PostgreSQL (via Supabase or direct)                          |
+| Auth     | Supabase Auth or custom JWT                                  |
+| Payments | Stripe (web) or RevenueCat (mobile IAP)                      |
+| Hosting  | DigitalOcean App Platform or Vercel (web), Expo EAS (mobile) |
 
 ### Quality Gates
 
@@ -116,16 +116,16 @@ build/app/
 
 Full apps require comprehensive design:
 
-| Asset | Purpose | Tool |
-|-------|---------|------|
-| Wireframes | Layout and flow | Figma |
-| UI components | Design system / component library | Figma |
-| App icon | Store listing (1024×1024) | Figma |
-| Screenshots | Store listing (6.5" + 5.5" for mobile) | Device frames in Figma |
-| Landing page | Marketing site | Figma → HTML |
-| OG image | Social sharing | Figma |
-| Onboarding flow | First-run experience | Figma |
-| Feature tour | In-app tutorial | Figma |
+| Asset           | Purpose                                | Tool                   |
+| --------------- | -------------------------------------- | ---------------------- |
+| Wireframes      | Layout and flow                        | Figma                  |
+| UI components   | Design system / component library      | Figma                  |
+| App icon        | Store listing (1024×1024)              | Figma                  |
+| Screenshots     | Store listing (6.5" + 5.5" for mobile) | Device frames in Figma |
+| Landing page    | Marketing site                         | Figma → HTML           |
+| OG image        | Social sharing                         | Figma                  |
+| Onboarding flow | First-run experience                   | Figma                  |
+| Feature tour    | In-app tutorial                        | Figma                  |
 
 ### Figma Workflow
 
@@ -141,20 +141,20 @@ Full apps require comprehensive design:
 
 ### Web App Deployment
 
-| Target | How | When |
-|--------|-----|------|
-| **DigitalOcean App Platform** | `.do/app.yaml` + `doctl` | Default for full-stack |
-| **Vercel** | `vercel deploy` | Static or SSR (Next.js) |
-| **Fly.io** | `fly deploy` | Global edge |
-| **Self-hosted (droplet)** | Docker Compose + Kong | If shared infrastructure |
+| Target                        | How                      | When                     |
+| ----------------------------- | ------------------------ | ------------------------ |
+| **DigitalOcean App Platform** | `.do/app.yaml` + `doctl` | Default for full-stack   |
+| **Vercel**                    | `vercel deploy`          | Static or SSR (Next.js)  |
+| **Fly.io**                    | `fly deploy`             | Global edge              |
+| **Self-hosted (droplet)**     | Docker Compose + Kong    | If shared infrastructure |
 
 ### Mobile App Deployment
 
-| Target | How | When |
-|--------|-----|------|
-| **Apple App Store** | `eas submit --platform ios` | iOS users |
-| **Google Play Store** | `eas submit --platform android` | Android users |
-| **TestFlight** | `eas build --platform ios --profile preview` | Beta testing |
+| Target                | How                                          | When          |
+| --------------------- | -------------------------------------------- | ------------- |
+| **Apple App Store**   | `eas submit --platform ios`                  | iOS users     |
+| **Google Play Store** | `eas submit --platform android`              | Android users |
+| **TestFlight**        | `eas build --platform ios --profile preview` | Beta testing  |
 
 ### App Store Checklist
 
@@ -176,6 +176,7 @@ Full apps require comprehensive design:
 ```
 
 Must include:
+
 - Hero with app screenshots/demo
 - Feature highlights (3-5 key features)
 - Pricing section
@@ -188,29 +189,29 @@ Must include:
 
 ## 5. Connections Required
 
-| Connection | Purpose | Where stored |
-|------------|---------|--------------|
-| **Supabase project** | Auth + DB + edge functions | Doppler (per-project) |
-| **Stripe API key** | Payments | Doppler `revvel-standards/prd/STRIPE_SECRET_KEY` |
-| **RevenueCat API key** | Mobile IAP (if applicable) | Doppler (per-project) |
-| **Apple Developer account** | App Store submission | Apple Developer Portal |
-| **Google Play Console** | Play Store submission | Google Play Console |
-| **DigitalOcean token** | Deployment | Doppler `revvel-standards/prd/DIGITALOCEAN_TOKEN` |
-| **EAS credentials** | Expo build service | `eas credentials` |
-| **Figma access** | Design handoff | Doppler `revvel-standards/prd/FIGMA_ACCESS_TOKEN` |
-| **Domain DNS** | Custom domain | Cloudflare or DO DNS |
-| **Kong Gateway** | API routing (if on droplet) | See [`KONG_GATEWAY.md`](../KONG_GATEWAY.md) |
+| Connection                  | Purpose                     | Where stored                                      |
+| --------------------------- | --------------------------- | ------------------------------------------------- |
+| **Supabase project**        | Auth + DB + edge functions  | Doppler (per-project)                             |
+| **Stripe API key**          | Payments                    | Doppler `revvel-standards/prd/STRIPE_SECRET_KEY`  |
+| **RevenueCat API key**      | Mobile IAP (if applicable)  | Doppler (per-project)                             |
+| **Apple Developer account** | App Store submission        | Apple Developer Portal                            |
+| **Google Play Console**     | Play Store submission       | Google Play Console                               |
+| **DigitalOcean token**      | Deployment                  | Doppler `revvel-standards/prd/DIGITALOCEAN_TOKEN` |
+| **EAS credentials**         | Expo build service          | `eas credentials`                                 |
+| **Figma access**            | Design handoff              | Doppler `revvel-standards/prd/FIGMA_ACCESS_TOKEN` |
+| **Domain DNS**              | Custom domain               | Cloudflare or DO DNS                              |
+| **Kong Gateway**            | API routing (if on droplet) | See [`KONG_GATEWAY.md`](../KONG_GATEWAY.md)       |
 
 ---
 
 ## Monetization Models
 
-| Model | Implementation | Best for |
-|-------|---------------|----------|
-| **Subscription** | Stripe Billing (web) or RevenueCat (mobile) | SaaS apps with ongoing value |
-| **One-time purchase** | Stripe Payment Link or App Store IAP | Simple tools |
-| **Freemium** | Free tier + paid features | User acquisition |
-| **Credits** | See [`TOKEN.md`](TOKEN.md) | Usage-based apps |
+| Model                 | Implementation                              | Best for                     |
+| --------------------- | ------------------------------------------- | ---------------------------- |
+| **Subscription**      | Stripe Billing (web) or RevenueCat (mobile) | SaaS apps with ongoing value |
+| **One-time purchase** | Stripe Payment Link or App Store IAP        | Simple tools                 |
+| **Freemium**          | Free tier + paid features                   | User acquisition             |
+| **Credits**           | See [`TOKEN.md`](TOKEN.md)                  | Usage-based apps             |
 
 ### RevenueCat Setup (Mobile IAP)
 
@@ -236,6 +237,7 @@ Every full app MUST have an MVI (Minimum Viable Iteration) contract per [`MVI_CO
 # MVI Contract: <Product Name>
 
 ## v1.0 — MVP (ship in ≤ 7 days)
+
 - [ ] Feature 1 (core value proposition)
 - [ ] Feature 2 (minimum to charge)
 - [ ] Auth (signup/login)
@@ -243,11 +245,13 @@ Every full app MUST have an MVI (Minimum Viable Iteration) contract per [`MVI_CO
 - [ ] Landing page
 
 ## v1.1 — Quick Wins (ship in ≤ 3 days after v1.0)
+
 - [ ] Feature 3
 - [ ] Feature 4
 - [ ] Onboarding flow
 
 ## v2.0 — Growth (ship in ≤ 14 days after v1.1)
+
 - [ ] Feature 5-8
 - [ ] Analytics integration
 - [ ] Email automation

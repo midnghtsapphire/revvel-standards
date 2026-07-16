@@ -38,16 +38,16 @@ Every change should be evaluated against this north star. Prefer work that:
 ## ⛔ ORCHESTRATOR DISCIPLINE — stay in your lane (read this every time)
 
 > **The #1 failure mode, learned the hard way:** a capable agent (e.g. Manus)
-> kept *doing the work itself* instead of assigning it out and recording who did
+> kept _doing the work itself_ instead of assigning it out and recording who did
 > what. It reverted to "I'll just do it" every time it wasn't reminded — because
-> it *could*. That destroys the two things that matter most: **parallelism** and
+> it _could_. That destroys the two things that matter most: **parallelism** and
 > **provenance** (the record of who proposed what, who executed, which LLM/route
 > performed — the data we actually measure and monetize).
 
 **If you are an orchestrator / controller / overseer, your job is to DELEGATE and
 RECORD — not to do the task.** Specifically:
 
-1. **Do only YOUR job.** The moment you hit a *specialty task* or a *roadblock*,
+1. **Do only YOUR job.** The moment you hit a _specialty task_ or a _roadblock_,
    **immediately delegate** it to the right agent/LLM (via OpenRouter / the
    fallback chain / a sub-agent) — and **do not come back to do it yourself**.
 2. **"You can do it" is not "you should do it."** Capability is the trap. Even
@@ -61,7 +61,7 @@ RECORD — not to do the task.** Specifically:
    section — it's the sticky note. Everyone forgets this under load; the reminder
    is what snaps the behavior back.
 
-Exception: a task explicitly *scoped to you* (you are the assigned specialist) —
+Exception: a task explicitly _scoped to you_ (you are the assigned specialist) —
 then do it well, fast, and hand the result + provenance back to the orchestrator.
 
 ## Conventional Commits
@@ -111,21 +111,21 @@ dependencies, build, and deploy pipeline.
 When running multiple products locally, use the assigned ports below to avoid
 collisions:
 
-| Product | Path | Dev port | Notes |
-| --- | --- | --- | --- |
-| Music Video Creator | `products/music-video-creator` | 3000 | Next.js. Requires API keys for full functionality (see product README). |
-| Affiliate Hub | `products/affiliate-hub` | 3001 | Next.js. May require `npm install --legacy-peer-deps` (see gotchas). |
-| AI Video Toolkit | `products/ai-video-toolkit` | 3002 | Next.js. |
-| Screen Recorder Finder | `products/screen-recorder-finder` | 3003 | Next.js. |
-| Revvel Skill Runner | `products/revvel-skill-runner` | 3004 | Next.js. Needs `OPENROUTER_API_KEY` for live skill execution. |
-| Creator Payout Tracker | `products/creator-payout-tracker` | 3005 | Next.js. Shippable deep-research product for creator payout rankings. |
-| HVAC Calc Service | `products/hvac-calc-service` | 3006 | Next.js. ACCA Manual J/S/D HVAC load calculator with Markdown/CSV export. |
-| CLI Engine | `products/cli-engine` | 3008 | Next.js. Glassmorphic CLI agent terminal UI with PDF export and Stripe billing. |
-| AI Ad Generator | `products/ai-ad-generator` | 3009 | Next.js. Zeely AI-inspired ad automation: product scraper, AI copy, static creatives, campaign manager, analytics. |
-| Red Light Therapy Dosage Calculator | `products/red-light-therapy-dosage-calculator` | 3010 | Next.js. Mobile-friendly PBM/red-light session-time calculator using irradiance and target dose. |
-| FDA Design Controls | `products/fda-design-controls` | 3010 | Next.js. Interactive 21 CFR 820.30 compliance checklist and DHF generator with Markdown/CSV export. |
-| MedDevice Compliance Navigator | `products/meddevice-compliance-navigator` | 3010 | Next.js. Medical device compliance tracker: FDA 510(k), ISO 13485, IEC 60601, ISO 10993, EU MDR pathways. |
-| DevOps Dashboard | `products/devops-dashboard` | 3011 | Next.js. Real-time DevOps monitoring: self-healing PRs, CI/CD pipeline health, agent status, workflow run history. |
+| Product                             | Path                                           | Dev port | Notes                                                                                                              |
+| ----------------------------------- | ---------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| Music Video Creator                 | `products/music-video-creator`                 | 3000     | Next.js. Requires API keys for full functionality (see product README).                                            |
+| Affiliate Hub                       | `products/affiliate-hub`                       | 3001     | Next.js. May require `npm install --legacy-peer-deps` (see gotchas).                                               |
+| AI Video Toolkit                    | `products/ai-video-toolkit`                    | 3002     | Next.js.                                                                                                           |
+| Screen Recorder Finder              | `products/screen-recorder-finder`              | 3003     | Next.js.                                                                                                           |
+| Revvel Skill Runner                 | `products/revvel-skill-runner`                 | 3004     | Next.js. Needs `OPENROUTER_API_KEY` for live skill execution.                                                      |
+| Creator Payout Tracker              | `products/creator-payout-tracker`              | 3005     | Next.js. Shippable deep-research product for creator payout rankings.                                              |
+| HVAC Calc Service                   | `products/hvac-calc-service`                   | 3006     | Next.js. ACCA Manual J/S/D HVAC load calculator with Markdown/CSV export.                                          |
+| CLI Engine                          | `products/cli-engine`                          | 3008     | Next.js. Glassmorphic CLI agent terminal UI with PDF export and Stripe billing.                                    |
+| AI Ad Generator                     | `products/ai-ad-generator`                     | 3009     | Next.js. Zeely AI-inspired ad automation: product scraper, AI copy, static creatives, campaign manager, analytics. |
+| Red Light Therapy Dosage Calculator | `products/red-light-therapy-dosage-calculator` | 3010     | Next.js. Mobile-friendly PBM/red-light session-time calculator using irradiance and target dose.                   |
+| FDA Design Controls                 | `products/fda-design-controls`                 | 3010     | Next.js. Interactive 21 CFR 820.30 compliance checklist and DHF generator with Markdown/CSV export.                |
+| MedDevice Compliance Navigator      | `products/meddevice-compliance-navigator`      | 3010     | Next.js. Medical device compliance tracker: FDA 510(k), ISO 13485, IEC 60601, ISO 10993, EU MDR pathways.          |
+| DevOps Dashboard                    | `products/devops-dashboard`                    | 3011     | Next.js. Real-time DevOps monitoring: self-healing PRs, CI/CD pipeline health, agent status, workflow run history. |
 
 Start a specific product on its assigned port:
 
@@ -191,6 +191,6 @@ npm test             # product-specific tests (if defined)
 ## Commenting
 
 Comment **robustly, for the next human** (who may not be you and can't skim code
-as fast as an agent): explain *why*, document external-service gotchas at the
+as fast as an agent): explain _why_, document external-service gotchas at the
 call site, and always state the fallback / "what to check if it fails." See
 `standards/CODE_COMMENTING_STANDARD.md`.

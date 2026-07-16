@@ -5,14 +5,17 @@ Templates optimized for TikTok's algorithm and audience.
 ## Video Types
 
 ### Educational
+
 **Duration:** 15-60 seconds
 **Best for:** Quick tips, how-tos, facts
 
 ### Entertaining
+
 **Duration:** 15-60 seconds
 **Best for:** Trends, humor, duets
 
 ### Promotional
+
 **Duration:** 15-30 seconds
 **Best for:** Product/service awareness
 
@@ -86,12 +89,14 @@ Follow for more tips like this 🔥"
 ## TikTok Best Practices
 
 ### Video Specs
+
 - **Aspect Ratio:** 9:16 (vertical)
 - **Duration:** 15 seconds to 10 minutes
 - **Resolution:** 1080p minimum
 - **Format:** MP4
 
 ### Monetization
+
 - TikTok Creator Fund (when eligible: 10K+ followers)
 - Brand partnerships
 - Affiliate links (bio)
@@ -99,6 +104,7 @@ Follow for more tips like this 🔥"
 - Live gifts
 
 ### Growth Tips
+
 - Post 3-5x daily for maximum reach
 - Use trending sounds within 24-48 hours
 - Hook in first 0.5-1 seconds
@@ -107,6 +113,7 @@ Follow for more tips like this 🔥"
 - Engage with comments within 30 minutes
 
 ### Hashtag Strategy
+
 ```
 Discovery: #[topic]#[topic] #[topic]
 Trending: #[trendinghashtag] #[viral]

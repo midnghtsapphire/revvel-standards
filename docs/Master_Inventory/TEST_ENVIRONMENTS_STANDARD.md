@@ -11,7 +11,7 @@
 
 This standard defines the **four-stage test environment pipeline** used by all Revvel and MIDNGHTSAPPHIRE projects. It names the test harness, specifies what runs in each environment, how to deploy to each stage, and how to graduate code from development to production.
 
-The test harness used across all Revvel applications is the **S.H.I.F.T. framework** — *Self-Healing Intent-Focused Tasks* — described fully in `templates/agent-handoff/SHIFT_TESTING_STANDARD.md`.
+The test harness used across all Revvel applications is the **S.H.I.F.T. framework** — _Self-Healing Intent-Focused Tasks_ — described fully in `templates/agent-handoff/SHIFT_TESTING_STANDARD.md`.
 
 ---
 
@@ -27,12 +27,12 @@ The test harness used across all Revvel applications is the **S.H.I.F.T. framewo
 └─────────────────────────────────────────────────────────────┘
 ```
 
-| Stage | Name | Host | URL Pattern | Who Can Access |
-|---|---|---|---|---|
-| 1 | **dev** | Local machine | `http://localhost:3000` | Developer only |
-| 2 | **staging** | GitHub Actions + Pages | `https://midnghtsapphire.github.io/<repo>` or private deploy | Team only (private repo) |
-| 3 | **live-test** | oaudrey subdomain | `https://<app>.oaudrey.com` | Invited testers only |
-| 4 | **production** | Freedom Angel Corps / DigitalOcean | `https://<app>.com` | End users |
+| Stage | Name           | Host                               | URL Pattern                                                  | Who Can Access           |
+| ----- | -------------- | ---------------------------------- | ------------------------------------------------------------ | ------------------------ |
+| 1     | **dev**        | Local machine                      | `http://localhost:3000`                                      | Developer only           |
+| 2     | **staging**    | GitHub Actions + Pages             | `https://midnghtsapphire.github.io/<repo>` or private deploy | Team only (private repo) |
+| 3     | **live-test**  | oaudrey subdomain                  | `https://<app>.oaudrey.com`                                  | Invited testers only     |
+| 4     | **production** | Freedom Angel Corps / DigitalOcean | `https://<app>.com`                                          | End users                |
 
 ---
 
@@ -106,8 +106,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -126,7 +126,7 @@ jobs:
       - name: Lighthouse CI
         uses: treosh/lighthouse-ci-action@v11
         with:
-          configPath: './lighthouserc.json'
+          configPath: "./lighthouserc.json"
 
   deploy-staging:
     needs: test
@@ -350,45 +350,45 @@ The full S.H.I.F.T. specification is in `templates/agent-handoff/SHIFT_TESTING_S
 
 The `scripts/run-human-testing-api.js` script orchestrates five AI test agents:
 
-| Agent | Role | Focus |
-|---|---|---|
-| `functional` | QA Tester | Journeys, happy paths, error handling |
-| `accessibility` | WCAG Auditor | WCAG 2.2 AA, neuro-inclusive design |
-| `performance` | Performance Engineer | Lighthouse CI, LCP, CLS, FID |
-| `security` | Security Analyst | OWASP Top 10, header compliance |
-| `ux` | UX Researcher | Usability, cognitive load, clarity |
+| Agent           | Role                 | Focus                                 |
+| --------------- | -------------------- | ------------------------------------- |
+| `functional`    | QA Tester            | Journeys, happy paths, error handling |
+| `accessibility` | WCAG Auditor         | WCAG 2.2 AA, neuro-inclusive design   |
+| `performance`   | Performance Engineer | Lighthouse CI, LCP, CLS, FID          |
+| `security`      | Security Analyst     | OWASP Top 10, header compliance       |
+| `ux`            | UX Researcher        | Usability, cognitive load, clarity    |
 
 A sixth **Synthesizer** agent aggregates all five reports into a single S.H.I.F.T. Verdict.
 
 ### S.H.I.F.T. Verdict Codes
 
-| Code | Meaning | Action Required |
-|---|---|---|
-| `PASS` | All five agents pass | Graduate to next stage |
-| `CONDITIONAL_PASS` | Minor issues, no blockers | Document and proceed |
-| `FAIL` | One or more P0/P1 findings | Fix before graduating |
-| `BLOCKED` | Unreachable URL or build failure | Fix deployment first |
+| Code               | Meaning                          | Action Required        |
+| ------------------ | -------------------------------- | ---------------------- |
+| `PASS`             | All five agents pass             | Graduate to next stage |
+| `CONDITIONAL_PASS` | Minor issues, no blockers        | Document and proceed   |
+| `FAIL`             | One or more P0/P1 findings       | Fix before graduating  |
+| `BLOCKED`          | Unreachable URL or build failure | Fix deployment first   |
 
 ### When to Run S.H.I.F.T.
 
-| Stage | Automated? | Manual? |
-|---|---|---|
-| dev | Optional (Playwright E2E) | Optional |
-| staging | Yes (CI via GitHub Actions) | No |
-| live-test | Yes (full S.H.I.F.T. Human Testing API) | Yes (stakeholder review) |
-| production | Post-deploy smoke test only | Yes (for major releases) |
+| Stage      | Automated?                              | Manual?                  |
+| ---------- | --------------------------------------- | ------------------------ |
+| dev        | Optional (Playwright E2E)               | Optional                 |
+| staging    | Yes (CI via GitHub Actions)             | No                       |
+| live-test  | Yes (full S.H.I.F.T. Human Testing API) | Yes (stakeholder review) |
+| production | Post-deploy smoke test only             | Yes (for major releases) |
 
 ---
 
 ## 8. Environment Variables by Stage
 
-| Variable | dev | staging | live-test | production |
-|---|---|---|---|---|
-| `NODE_ENV` | `development` | `test` | `staging` | `production` |
-| `DATABASE_URL` | Local SQLite or dev DB | Test DB | Staging DB | Production DB (Vault) |
-| `STRIPE_SECRET_KEY` | `sk_test_...` | `sk_test_...` | `sk_test_...` | `sk_live_...` (Vault) |
-| `CLERK_SECRET_KEY` | Dev instance | CI instance | Staging instance | Production instance (Vault) |
-| `BASE_URL` | `http://localhost:3000` | CI-provided | `https://<app>.oaudrey.com` | `https://<app>.com` |
+| Variable            | dev                     | staging       | live-test                   | production                  |
+| ------------------- | ----------------------- | ------------- | --------------------------- | --------------------------- |
+| `NODE_ENV`          | `development`           | `test`        | `staging`                   | `production`                |
+| `DATABASE_URL`      | Local SQLite or dev DB  | Test DB       | Staging DB                  | Production DB (Vault)       |
+| `STRIPE_SECRET_KEY` | `sk_test_...`           | `sk_test_...` | `sk_test_...`               | `sk_live_...` (Vault)       |
+| `CLERK_SECRET_KEY`  | Dev instance            | CI instance   | Staging instance            | Production instance (Vault) |
+| `BASE_URL`          | `http://localhost:3000` | CI-provided   | `https://<app>.oaudrey.com` | `https://<app>.com`         |
 
 ---
 

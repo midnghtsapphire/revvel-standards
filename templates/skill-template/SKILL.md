@@ -19,8 +19,8 @@
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
+| Task         | Description                  |
+| ------------ | ---------------------------- |
 | **[Task 1]** | [Plain-language description] |
 | **[Task 2]** | [Plain-language description] |
 | **[Task 3]** | [Plain-language description] |
@@ -65,11 +65,13 @@ Rules:
 ### Example 1: [Use case]
 
 **Input:**
+
 ```
 [Example user input]
 ```
 
 **Output:**
+
 ```
 [Example AI output]
 ```
@@ -78,10 +80,10 @@ Rules:
 
 ## Dependencies
 
-| Dependency | Required? | Purpose | Install |
-|---|---|---|---|
-| [Tool] | ✅ Required | [What it does] | [Install command] |
-| [Tool] | ⭕ Optional | [What it does] | [Install command] |
+| Dependency | Required?   | Purpose        | Install           |
+| ---------- | ----------- | -------------- | ----------------- |
+| [Tool]     | ✅ Required | [What it does] | [Install command] |
+| [Tool]     | ⭕ Optional | [What it does] | [Install command] |
 
 ---
 

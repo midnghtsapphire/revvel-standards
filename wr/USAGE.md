@@ -7,6 +7,7 @@ This guide explains how to use the Weekly Research (WR) system for reviewing all
 ### 1. Generate WR for a Single Repository
 
 **Via Script:**
+
 ```bash
 cd wr/scripts
 ./generate-wr.sh neurooz
@@ -19,36 +20,42 @@ The `weekly-research.yml` workflow will automatically detect and process it.
 ### 2. Generate WRs for Priority Repositories
 
 **P0 (Highest Priority):**
+
 ```bash
 cd wr/scripts
 ./batch-generate-wrs.sh p0
 ```
 
 **P1 (High Priority):**
+
 ```bash
 cd wr/scripts
 ./batch-generate-wrs.sh p1
 ```
-```
+
+````
 
 **P1 (High Priority):**
 ```bash
 ./batch-generate-wrs.sh p1
-```
+````
 
 ### 3. Create WR via Issue
 
 Create an issue with title format:
+
 ```
 [WR] Repository Review - [repository-name]
 ```
 
 Example:
+
 ```
 [WR] Repository Review - [neurooz]
 ```
 
 The automation will:
+
 1. Detect the `[WR]` prefix
 2. Label the issue with `weekly-research`, `wr:in-progress`
 3. Generate the WR document
@@ -83,11 +90,13 @@ wr/
 The WR system integrates with `.github/workflows/wr-repository-review.yml`:
 
 **Triggers:**
+
 1. **Issue opened** with `[WR]` prefix in title
 2. **Manual workflow dispatch** via GitHub Actions UI
 3. **Scheduled** (can be configured)
 
 **Actions Taken:**
+
 1. Label issue with `weekly-research`, `wr:in-progress`, `deep-research`
 2. Generate WR document(s)
 3. Update WR_TRACKER.md
@@ -112,12 +121,14 @@ The WR repository review system follows the standard Weekly Research process def
 Each WR includes:
 
 ### Step 1: Repository Discovery
+
 - Repository metadata
 - Current status (commits, issues, PRs)
 - Technology stack
 - Deployment status
 
 ### Step 2: Deep Web Research
+
 - Market opportunity analysis
 - Competitor research
 - Gap identification
@@ -126,12 +137,14 @@ Each WR includes:
 - SEO & content research
 
 ### Step 3: revvel-standards Requirements
+
 - Prime Directive alignment (10M by 2030, $2000+/month)
 - Driven autonomy assessment
 - Self-healing capabilities
 - Ship-to-market status
 
 ### Step 4: Redevelopment & Redesign
+
 - Error fixes (tests, linting, security, deployment)
 - Feature enhancements
 - UX/UI improvements
@@ -140,16 +153,19 @@ Each WR includes:
 - Monetization integration
 
 ### Step 5: Deployment Verification
+
 - Vercel deployment setup
 - UI verification checklist
 - Screenshots/testing
 
 ### Step 6: Documentation Requirements
+
 - TEST section in README
 - Deployment section in README
 - Additional documentation
 
 ### Step 7: Findings & Recommendations
+
 - Immediate actions (P0)
 - Short-term actions (P1)
 - Long-term actions (P2)
@@ -163,17 +179,20 @@ Each WR includes:
 ### Example 1: Single Repository WR
 
 **Command:**
+
 ```bash
 cd wr/scripts
 ./generate-wr.sh neurooz
 ```
 
 **Result:**
+
 - Creates `/wr/repos/neurooz.md`
 - Populated with repository metadata
 - Ready for research completion
 
 **Next Steps:**
+
 1. Review generated WR
 2. Complete research sections
 3. Add recommendations
@@ -182,12 +201,14 @@ cd wr/scripts
 ### Example 2: Batch P0 Generation
 
 **Command:**
+
 ```bash
 cd wr/scripts
 ./batch-generate-wrs.sh p0
 ```
 
 **Repositories Processed:**
+
 - neurooz
 - affiliate-marketing-system
 - WEBSITE-FACTORY-API
@@ -195,6 +216,7 @@ cd wr/scripts
 - premolt
 
 **Result:**
+
 - 5 WR files created in `/wr/repos/`
 - WR_TRACKER.md updated with statistics
 - Ready for research completion
@@ -202,11 +224,13 @@ cd wr/scripts
 ### Example 3: Via GitHub Issue
 
 **Issue Title:**
+
 ```
 [WR] Repository Review - [neurooz]
 ```
 
 **Issue Body:**
+
 ```markdown
 ## Repository to Review
 
@@ -227,6 +251,7 @@ P0 - Immediate revenue potential
 ```
 
 **Automation Actions:**
+
 1. Issue labeled with `weekly-research`, `wr:in-progress`
 2. WR generated in background
 3. PR created with WR document
@@ -262,24 +287,30 @@ Edit `/.github/workflows/wr-repository-review.yml` to change triggers or actions
 ## Best Practices
 
 ### 1. Start with P0 Repositories
+
 Focus on high-revenue-potential repositories first:
+
 ```bash
 ./batch-generate-wrs.sh p0
 ```
 
 ### 2. Complete Research Promptly
+
 - Generate WR
 - Complete research within 24-48 hours
 - Create implementation issues immediately for P0 actions
 
 ### 3. Update Tracker Regularly
+
 ```bash
 cd wr/scripts
 ./update-tracker.sh
 ```
 
 ### 4. Link to Issues
+
 When creating implementation issues, reference the WR:
+
 ```markdown
 **Based on WR:** [neurooz WR](/wr/repos/neurooz.md)
 **Priority:** P0
@@ -287,13 +318,17 @@ When creating implementation issues, reference the WR:
 ```
 
 ### 5. Track Revenue Impact
+
 In each WR, include:
+
 - Conservative revenue estimate
 - Moderate revenue estimate
 - Aggressive revenue estimate
 
 ### 6. Ship-to-Market Focus
+
 Every WR should include:
+
 - Deployment status
 - Blocker identification
 - Clear path to Vercel deployment
@@ -306,11 +341,13 @@ Every WR should include:
 ### Issue: WR Not Generated
 
 **Check:**
+
 1. Is the repository name correct?
 2. Does the repository exist in midnghtsapphire org?
 3. Are scripts executable? (`chmod +x scripts/*.sh`)
 
 **Solution:**
+
 ```bash
 # Make scripts executable
 chmod +x wr/scripts/*.sh
@@ -323,11 +360,13 @@ cd wr/scripts
 ### Issue: Template Placeholders Not Replaced
 
 **Check:**
+
 1. Is `gh` CLI authenticated?
 2. Does the script have internet access?
 
 **Solution:**
 If placeholders remain, manually edit the WR file:
+
 ```bash
 vim wr/repos/<repo-name>.md
 ```
@@ -337,11 +376,13 @@ Replace `{REPO_NAME}`, `{REPO_URL}`, etc. with actual values.
 ### Issue: Workflow Not Triggering
 
 **Check:**
+
 1. Is the issue title format correct? Must start with `[WR]`
 2. Are workflow permissions set? Check `.github/workflows/wr-repository-review.yml`
 
 **Solution:**
 Manually trigger workflow:
+
 ```bash
 gh workflow run wr-repository-review.yml -f repository=<repo-name> -f mode=single
 ```
@@ -390,6 +431,7 @@ cd wr/scripts
 ### WR Tracker Dashboard
 
 View `/wr/WR_TRACKER.md` for:
+
 - Total repositories (140)
 - WRs created
 - WRs in progress
@@ -411,16 +453,19 @@ cd wr/scripts
 Every WR must contribute to:
 
 ### 10M by 2030 Goal
+
 - Identify revenue potential
 - Suggest monetization strategies
 - Prioritize high-impact repositories
 
 ### $2000+/month Target (Start: May 1, 2026)
+
 - **URGENT:** Already past start date
 - Focus on immediate revenue opportunities
 - Ship-to-market in days, not weeks
 
 ### Ship Working Code
+
 - Not plans or proposals
 - Actual deployment to Vercel
 - Working, tested code

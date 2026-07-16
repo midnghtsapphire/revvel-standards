@@ -12,7 +12,7 @@ from trigger_extractor import TriggerPatternEngine, Trigger
 def extract_triggers_from_signals(signals: list[APTSignal]) -> list[Trigger]:
     """Convert APT signals to triggers using pattern engine"""
     engine = TriggerPatternEngine('cyber_threats')
-    
+
     # Convert APTSignals to standard data format
     data = {
         'items': [
@@ -25,26 +25,26 @@ def extract_triggers_from_signals(signals: list[APTSignal]) -> list[Trigger]:
             for signal in signals
         ]
     }
-    
+
     return engine.extract(data)
 
 # In main() function, after fetching signals:
 if __name__ == '__main__':
     # ... existing code ...
-    
+
     signals = fetch_all(sources=args.sources, limit=args.limit)
-    
+
     # NEW: Extract triggers
     if args.extract_triggers:
         from trigger_extractor import extract_triggers_from_signals
         triggers = extract_triggers_from_signals(signals)
-        
+
         if triggers:
             console.print("\n[bold cyan]🚨 Extracted Triggers[/]")
             for trigger in triggers:
                 score_style = "red" if trigger.score >= 90 else "yellow"
                 console.print(f"  [{score_style}][{trigger.score}][/] {trigger.title}")
-    
+
     # ... rest of existing code ...
 ```
 
@@ -56,21 +56,21 @@ if __name__ == '__main__':
 def extract_triggers_from_news(articles: list[NewsArticle]) -> list[Trigger]:
     """Extract triggers from news articles based on topic"""
     from trigger_extractor import TriggerPatternEngine
-    
+
     # Group articles by topic/domain
     domain_map = {
         'cyber': 'cyber_threats',
         'military': 'kinetic_events',
         'disaster': 'environmental',
     }
-    
+
     all_triggers = []
-    
+
     for topic, domain in domain_map.items():
         topic_articles = [a for a in articles if a.topic == topic]
         if not topic_articles:
             continue
-        
+
         engine = TriggerPatternEngine(domain)
         data = {
             'items': [
@@ -83,10 +83,10 @@ def extract_triggers_from_news(articles: list[NewsArticle]) -> list[Trigger]:
                 for a in topic_articles
             ]
         }
-        
+
         triggers = engine.extract(data)
         all_triggers.extend(triggers)
-    
+
     return all_triggers
 ```
 
@@ -98,7 +98,7 @@ def extract_triggers_from_news(articles: list[NewsArticle]) -> list[Trigger]:
 def extract_triggers_from_scraped_items(items: list[ScrapedItem]) -> list[Trigger]:
     """Extract triggers from scraped intelligence data"""
     from trigger_extractor import TriggerPatternEngine
-    
+
     # Map scrapers to domains
     domain_map = {
         'faa_tfr': 'maritime',
@@ -106,14 +106,14 @@ def extract_triggers_from_scraped_items(items: list[ScrapedItem]) -> list[Trigge
         'ofac_sdn': 'counter_intelligence',
         'un_sanctions': 'counter_intelligence',
     }
-    
+
     all_triggers = []
-    
+
     for scraper_name, domain in domain_map.items():
         scraper_items = [i for i in items if i.source == scraper_name]
         if not scraper_items:
             continue
-        
+
         engine = TriggerPatternEngine(domain)
         data = {
             'items': [
@@ -126,10 +126,10 @@ def extract_triggers_from_scraped_items(items: list[ScrapedItem]) -> list[Trigge
                 for item in scraper_items
             ]
         }
-        
+
         triggers = engine.extract(data)
         all_triggers.extend(triggers)
-    
+
     return all_triggers
 ```
 
@@ -159,24 +159,24 @@ logger = logging.getLogger(__name__)
 
 class UnifiedTriggerService:
     """Service that pulls from all OSINT sources and extracts triggers"""
-    
+
     def __init__(self):
         self.extractor = TriggerExtractor(
             domains=['cyber_threats', 'kinetic_events', 'environmental']
         )
         self.last_run = None
-    
+
     async def run_extraction_cycle(self) -> dict:
         """Run one complete extraction cycle across all sources"""
         logger.info("Starting extraction cycle...")
-        
+
         all_triggers = []
-        
+
         # 1. Fetch APT signals
         try:
             signals = fetch_all_signals(sources=['cisa', 'nvd', 'otx'])
             logger.info(f"Fetched {len(signals)} APT signals")
-            
+
             # Convert to triggers
             for signal in signals:
                 # Use existing signal scoring logic
@@ -186,7 +186,7 @@ class UnifiedTriggerService:
                     score = 70
                 else:
                     score = 50
-                
+
                 trigger = Trigger(
                     domain='cyber_threats',
                     source=signal.source,
@@ -197,17 +197,17 @@ class UnifiedTriggerService:
                     raw_data=vars(signal)
                 )
                 all_triggers.append(trigger)
-        
+
         except Exception as e:
             logger.error(f"Error fetching APT signals: {e}")
-        
+
         # 2. Fetch news
         try:
             # Would integrate with actual news fetching
             pass
         except Exception as e:
             logger.error(f"Error fetching news: {e}")
-        
+
         # 3. Fetch scraped data
         try:
             items = scrape_all(targets=['faa_tfr', 'nifc_fires'], limit=25)
@@ -215,23 +215,23 @@ class UnifiedTriggerService:
             # Convert to triggers...
         except Exception as e:
             logger.error(f"Error scraping: {e}")
-        
+
         # 4. Score and correlate
         results = self.extractor.correlation_engine.correlate(all_triggers)
-        
+
         self.last_run = datetime.now(timezone.utc)
-        
+
         return {
             'timestamp': self.last_run,
             'triggers': all_triggers,
             'correlated': results,
             'total_count': len(all_triggers),
         }
-    
+
     async def run_continuous(self, interval_seconds: int = 300):
         """Run extraction continuously at specified interval"""
         logger.info(f"Starting continuous trigger extraction (interval: {interval_seconds}s)")
-        
+
         while True:
             try:
                 results = await self.run_extraction_cycle()
@@ -239,28 +239,28 @@ class UnifiedTriggerService:
                     f"Extraction complete: {results['total_count']} triggers, "
                     f"{len(results['correlated'])} correlated"
                 )
-                
+
                 # Store in database, send alerts, etc.
                 await self._store_triggers(results)
                 await self._send_alerts(results)
-                
+
             except Exception as e:
                 logger.error(f"Error in extraction cycle: {e}", exc_info=True)
-            
+
             await asyncio.sleep(interval_seconds)
-    
+
     async def _store_triggers(self, results: dict):
         """Store triggers in database"""
         # TODO: Implement database storage
         pass
-    
+
     async def _send_alerts(self, results: dict):
         """Send alerts for high-priority triggers"""
         critical_triggers = [
-            t for t in results['triggers'] 
+            t for t in results['triggers']
             if t.score >= 90
         ]
-        
+
         if critical_triggers:
             logger.warning(f"⚠️  {len(critical_triggers)} CRITICAL triggers detected!")
             # TODO: Send notifications (email, Slack, etc.)
@@ -288,7 +288,7 @@ import json
 def store_triggers_in_db(triggers: List[Trigger], conn):
     """Store extracted triggers in PostgreSQL database"""
     cur = conn.cursor()
-    
+
     for trigger in triggers:
         try:
             cur.execute("""
@@ -305,21 +305,21 @@ def store_triggers_in_db(triggers: List[Trigger], conn):
                 trigger.reason,
                 trigger.timestamp,
                 (
-                    f"({trigger.coordinates[0]},{trigger.coordinates[1]})" 
+                    f"({trigger.coordinates[0]},{trigger.coordinates[1]})"
                     if trigger.coordinates else None
                 ),
                 trigger.affected_areas,
                 json.dumps(trigger.extracted_entities),
                 json.dumps(trigger.raw_data, default=str)
             ))
-            
+
             trigger_id = cur.fetchone()[0]
             logger.debug(f"Stored trigger {trigger_id}: {trigger.title[:50]}")
-        
+
         except Exception as e:
             logger.error(f"Error storing trigger: {e}")
             conn.rollback()
-    
+
     conn.commit()
 
 
@@ -355,7 +355,7 @@ def test_apt_signal_to_trigger():
         severity='critical',
         published=datetime.now(timezone.utc),
     )
-    
+
     engine = TriggerPatternEngine('cyber_threats')
     data = {
         'items': [{
@@ -365,9 +365,9 @@ def test_apt_signal_to_trigger():
             'published': signal.published,
         }]
     }
-    
+
     triggers = engine.extract(data)
-    
+
     assert len(triggers) > 0
     assert triggers[0].domain == 'cyber_threats'
     assert triggers[0].score >= 70  # Should be high priority

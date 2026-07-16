@@ -44,8 +44,8 @@ GitHub PR opened / synchronized
 
 ### 3.1 Secrets (Settings → Secrets and variables → Actions → Secrets)
 
-| Name | Purpose | Where to obtain |
-|---|---|---|
+| Name           | Purpose                                                                                 | Where to obtain                                  |
+| -------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | `BITO_API_KEY` | Authenticates all BITO API calls from CI. Server-only — never expose in client bundles. | [bito.ai](https://bito.ai) → Settings → API Keys |
 
 ### 3.2 Vault Path
@@ -79,10 +79,10 @@ bito auth status  # verify authentication
 
 The `bito-ai.yml` workflow fires on:
 
-| Trigger | Action |
-|---|---|
-| `pull_request` — `opened`, `synchronize`, `reopened` (non-draft) | Full BITO AI code review |
-| `workflow_dispatch` | On-demand review of any PR |
+| Trigger                                                          | Action                     |
+| ---------------------------------------------------------------- | -------------------------- |
+| `pull_request` — `opened`, `synchronize`, `reopened` (non-draft) | Full BITO AI code review   |
+| `workflow_dispatch`                                              | On-demand review of any PR |
 
 Drafts are skipped; PRs with `[skip-bito]` in the title are skipped.
 
@@ -92,11 +92,11 @@ Drafts are skipped; PRs with `[skip-bito]` in the title are skipped.
 
 BITO AI uses the following labels (defined in `.github/labels.yml`):
 
-| Label | Set when | Removed when |
-|---|---|---|
-| `bito-ai` | BITO reviews a PR for the first time | Never removed automatically |
-| `bito-ai:review` | A BITO review is complete | On the next BITO review cycle |
-| `bito-ai:changes-needed` | BITO finds blocking issues | When BITO re-reviews and finds no blockers, or PR author pushes a fix |
+| Label                    | Set when                             | Removed when                                                          |
+| ------------------------ | ------------------------------------ | --------------------------------------------------------------------- |
+| `bito-ai`                | BITO reviews a PR for the first time | Never removed automatically                                           |
+| `bito-ai:review`         | A BITO review is complete            | On the next BITO review cycle                                         |
+| `bito-ai:changes-needed` | BITO finds blocking issues           | When BITO re-reviews and finds no blockers, or PR author pushes a fix |
 
 These labels compose with the existing PR review status labels:
 
@@ -174,14 +174,14 @@ BITO's desktop agent assists developers in acquiring and wiring API keys without
 
 ## 9. Troubleshooting
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| Workflow skipped with "BITO_API_KEY is not set" | Secret not provisioned | Settings → Secrets → New secret: `BITO_API_KEY` |
-| HTTP 401 from BITO | Invalid API key | Re-generate at bito.ai → Settings → API Keys |
-| No review comment posted | `pull-requests: write` permission missing | Ensure the workflow `permissions:` block includes `pull-requests: write` |
-| BITO index out of date | Large refactor without re-indexing | Run `bito index .` locally or trigger re-index from the BITO dashboard |
-| `bito secret get` fails | Local Vault client not authenticated | Run `vault login` before using `bito secret get` |
+| Symptom                                         | Cause                                     | Fix                                                                      |
+| ----------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------ |
+| Workflow skipped with "BITO_API_KEY is not set" | Secret not provisioned                    | Settings → Secrets → New secret: `BITO_API_KEY`                          |
+| HTTP 401 from BITO                              | Invalid API key                           | Re-generate at bito.ai → Settings → API Keys                             |
+| No review comment posted                        | `pull-requests: write` permission missing | Ensure the workflow `permissions:` block includes `pull-requests: write` |
+| BITO index out of date                          | Large refactor without re-indexing        | Run `bito index .` locally or trigger re-index from the BITO dashboard   |
+| `bito secret get` fails                         | Local Vault client not authenticated      | Run `vault login` before using `bito secret get`                         |
 
 ---
 
-*Part of the Revvel Standards ecosystem. See `skills/bito-ai/SKILL.md` for agent-ready instructions and `docs/BITO_AI_INTEGRATION.md` for the full integration design.*
+_Part of the Revvel Standards ecosystem. See `skills/bito-ai/SKILL.md` for agent-ready instructions and `docs/BITO_AI_INTEGRATION.md` for the full integration design._

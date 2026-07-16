@@ -8,16 +8,16 @@ and is the build-side companion to the deep-research WR:
 
 ## What this template is for
 
-Stripe markets four ways for a platform to *earn* on payments instead of only
-*paying* for them. Copy this folder, pick a model, fill `monetize/links.json`, and
+Stripe markets four ways for a platform to _earn_ on payments instead of only
+_paying_ for them. Copy this folder, pick a model, fill `monetize/links.json`, and
 wire the snippet — no re-research required.
 
-| Model | Stripe product | Revenue source | Pick when… |
-| --- | --- | --- | --- |
-| Marketplace fee | Connect | `application_fee_amount` on each charge | money moves between two+ parties |
-| Subscription / usage | Billing | markup on recurring or metered plans | you sell a SaaS/API tool |
-| Interchange share | Issuing | share of card interchange | you issue branded cards (phase 2) |
-| In-person upcharge | Terminal | per-transaction upcharge | you sell card-present POS (phase 2) |
+| Model                | Stripe product | Revenue source                          | Pick when…                          |
+| -------------------- | -------------- | --------------------------------------- | ----------------------------------- |
+| Marketplace fee      | Connect        | `application_fee_amount` on each charge | money moves between two+ parties    |
+| Subscription / usage | Billing        | markup on recurring or metered plans    | you sell a SaaS/API tool            |
+| Interchange share    | Issuing        | share of card interchange               | you issue branded cards (phase 2)   |
+| In-person upcharge   | Terminal       | per-transaction upcharge                | you sell card-present POS (phase 2) |
 
 ## How to use
 

@@ -1,35 +1,41 @@
 # BNAT - Best Not Yet Available Technology
 
 ## Overview
+
 BNAT refers to cutting-edge technologies currently in research, patent phases, or early development that are not yet commercially available. Finding BNAT can reveal opportunities for competitive advantage or paradigm shifts.
 
 ## BNAT Sources
 
 ### 1. Academic Research
+
 - University lab publications
 - Research consortium findings
 - Government R&D reports
 - PhD dissertations and theses
 
 ### 2. Patent Databases
+
 - USPTO, EPO, WIPO patent filings
 - Patent applications (not yet granted)
 - Filed but not published applications
 - International patent cooperation
 
 ### 3. Industry R&D
+
 - Corporate R&D announcements
 - Startup funding rounds (seed, Series A)
 - R&D partnership announcements
 - Innovation lab projects
 
 ### 4. Scientific Conferences
+
 - Pre-prints (arXiv, bioRxiv, etc.)
 - Conference proceedings
 - Technical presentations
 - Workshop outcomes
 
 ### 5. Government Programs
+
 - DARPA, ARPA-E projects
 - NSF, DOE research grants
 - EU Horizon programs
@@ -55,17 +61,17 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 
 ## Technology Readiness Level (TRL)
 
-| Level | Description | Commercial Readiness |
-|-------|-------------|---------------------|
-| TRL 1 | Basic principles observed | Not applicable |
-| TRL 2 | Technology concept formulated | 15-20 years out |
-| TRL 3 | Analytical & experimental proof of concept | 10-15 years out |
-| TRL 4 | Component validated in lab | 7-10 years out |
-| TRL 5 | Component validated in relevant environment | 5-7 years out |
-| TRL 6 | System model or prototype in relevant environment | 3-5 years out |
-| TRL 7 | System prototype demonstration in operational environment | 1-3 years out |
-| TRL 8 | System complete and qualified | <1 year to market |
-| TRL 9 | System proven in operational environment | Market ready |
+| Level | Description                                               | Commercial Readiness |
+| ----- | --------------------------------------------------------- | -------------------- |
+| TRL 1 | Basic principles observed                                 | Not applicable       |
+| TRL 2 | Technology concept formulated                             | 15-20 years out      |
+| TRL 3 | Analytical & experimental proof of concept                | 10-15 years out      |
+| TRL 4 | Component validated in lab                                | 7-10 years out       |
+| TRL 5 | Component validated in relevant environment               | 5-7 years out        |
+| TRL 6 | System model or prototype in relevant environment         | 3-5 years out        |
+| TRL 7 | System prototype demonstration in operational environment | 1-3 years out        |
+| TRL 8 | System complete and qualified                             | <1 year to market    |
+| TRL 9 | System proven in operational environment                  | Market ready         |
 
 ## BNAT Report Template
 
@@ -73,6 +79,7 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 # BNAT Discovery Report
 
 ## Focus Area: [Technology/Industry]
+
 ## Research Date: [Date]
 
 ---
@@ -82,6 +89,7 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 **Key Finding:** [One-sentence summary]
 
 **Opportunity Assessment:**
+
 - Commercialization Timeline: [X years]
 - Competitive Advantage Potential: [High/Medium/Low]
 - Investment Required: [$X - $Y]
@@ -92,6 +100,7 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 ## Discovered Technologies
 
 ### 1. [Technology Name]
+
 **Source:** [Where found]
 **TRL:** [1-9]
 **Timeline to Market:** [X years]
@@ -100,10 +109,12 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 [What it is and how it works]
 
 **Potential Applications:**
+
 1. [Application 1]
 2. [Application 2]
 
 **Patent Status:**
+
 - Filed: [Yes/No]
 - Patent #: [If available]
 - Owner: [Entity]
@@ -117,6 +128,7 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 ---
 
 ### 2. [Technology Name]
+
 [Same structure]
 
 ---
@@ -124,15 +136,16 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 ## Cross-Industry Opportunities
 
 | This Industry | Transfer To | Technology | Synergy |
-|---------------|-------------|------------|---------|
-| | | | |
-| | | | |
+| ------------- | ----------- | ---------- | ------- |
+|               |             |            |         |
+|               |             |            |         |
 
 ---
 
 ## Investment Requirements
 
 **To Pursue BNAT [Name]:**
+
 - R&D Investment: $[X]
 - IP Acquisition: $[X]
 - Talent: [X FTE]
@@ -143,9 +156,9 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 ## Risk Assessment
 
 | Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
-| | | | |
-| | | | |
+| ---- | ----------- | ------ | ---------- |
+|      |             |        |            |
+|      |             |        |            |
 
 ---
 
@@ -186,24 +199,28 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 ## Search Strategies
 
 ### Academic Literature
+
 ```
 Search terms: "[technology] + prototype + lab + research + 2023-2025"
 Databases: Google Scholar, arXiv, ResearchGate, PubMed
 ```
 
 ### Patents
+
 ```
 Search: "status=active + [technology] + inventor"
 Focus: Filed < 2 years ago, international coverage
 ```
 
 ### Startup Activity
+
 ```
 Sources: Crunchbase, PitchBook, AngelList
 Focus: Series A/B funding, R&D headcount
 ```
 
 ### Government R&D
+
 ```
 Programs: DARPA, ARPA-E, Horizon Europe, SBIR/STTR
 Keywords: [technology] + [program name]
@@ -226,4 +243,4 @@ Keywords: [technology] + [program name]
 
 ---
 
-*Part of R&D Research Fleet*
+_Part of R&D Research Fleet_

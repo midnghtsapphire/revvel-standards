@@ -16,20 +16,24 @@
 ## Tool Categories
 
 ### All-in-One Platforms
+
 - **Katalist.ai** - Complete pipeline solution
 
 ### Scriptwriting & Research
+
 - **ChatGPT** - Brainstorming and scripts
 - **Jasper** - Marketing-focused writing
 - **Claude** - Deep research and analysis
 - **Perplexity** - AI research engine
 
 ### Voiceovers (Text-to-Speech)
+
 - **ElevenLabs** - Industry-leading realistic voices ($5/mo)
 - **Murf.ai** - Professional studio features
 - **Play.ht** - Natural storytelling voices
 
 ### Video Assembly & Visuals
+
 - **Pictory** - Script to video conversion
 - **Runway** - AI video generation suite
 - **Kling AI** - AI-powered creation
@@ -37,11 +41,13 @@
 - **AutoShorts.ai** - Automated short-form
 
 ### Short-Form Repurposing
+
 - **Opus Clip** - Long-form to shorts ($9/mo)
 - **Vizard.ai** - Social media repurposing
 - **Submagic** - Auto captions and engagement
 
 ### Thumbnail Design
+
 - **Canva AI** - Easy design with AI
 - **Midjourney** - Advanced AI art
 - **Leonardo AI** - Consistent style generation
@@ -99,6 +105,7 @@ This application is configured for static export and can be deployed to Vercel o
 ## Workflow Automation
 
 Recommended stack for complete automation:
+
 1. **Research:** Perplexity + ChatGPT
 2. **Script:** Claude or Jasper
 3. **Voiceover:** ElevenLabs

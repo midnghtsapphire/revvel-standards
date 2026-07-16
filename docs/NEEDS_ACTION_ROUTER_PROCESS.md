@@ -16,11 +16,13 @@ The **Needs Action Router** is a GitHub Actions workflow that automatically rout
 ## Purpose
 
 When an item is tagged with `needs-action`, it signals that:
+
 - The item requires immediate processing
 - Manual triage has determined action is needed
 - The item should be escalated to automated agents
 
 The Needs Action Router immediately:
+
 1. Assigns the item to `@Copilot` (representing the OpenRouter orchestrator)
 2. Applies routing labels for automated processing
 3. Posts an informative comment explaining the routing
@@ -33,6 +35,7 @@ The Needs Action Router immediately:
 ### Trigger Conditions
 
 The workflow triggers when:
+
 - The `needs-action` label is **applied** to an issue
 - The `needs-action` label is **applied** to a pull request
 - Manual workflow dispatch (for testing or re-routing)
@@ -40,15 +43,18 @@ The workflow triggers when:
 ### Automatic Actions
 
 **Step 1: Validation**
+
 - Verifies the item has the `needs-action` label
 - Checks if item already has an assignee (skip assignment if yes)
 - Checks if item already has `openrouter` label (skip if yes)
 
 **Step 2: Assignment**
+
 - Assigns the item to `@Copilot` (if not already assigned)
 - Note: `@Copilot` is a GitHub user account representing the OpenRouter orchestrator
 
 **Step 3: Label Management**
+
 - Applies routing labels:
   - `openrouter` — First line of sight
   - `auto-fix` — Eligible for automated fixes
@@ -57,6 +63,7 @@ The workflow triggers when:
 - Removes `needs-action` label (routing complete)
 
 **Step 4: Notification**
+
 - Posts a routing comment explaining:
   - What triggered the routing
   - What will happen next
@@ -68,6 +75,7 @@ The workflow triggers when:
 ## Label Definitions
 
 ### `needs-action`
+
 - **Color:** `#fbca04` (yellow-orange)
 - **Description:** "Requires immediate action — auto-route to OpenRouter"
 - **Lifecycle:** Applied manually or by automation → Removed after routing
@@ -77,12 +85,12 @@ The workflow triggers when:
 
 All routing labels are defined in `.github/labels.yml` and applied automatically:
 
-| Label | Purpose |
-|-------|---------|
-| `openrouter` | Marks item as routed to OpenRouter orchestrator |
-| `auto-fix` | Indicates item is eligible for automated fixes |
-| `copilot` | Tracked by the Ralph Loop self-healing workflow |
-| `role:orchestrator` | Primary role is orchestrator (not fixer) |
+| Label               | Purpose                                         |
+| ------------------- | ----------------------------------------------- |
+| `openrouter`        | Marks item as routed to OpenRouter orchestrator |
+| `auto-fix`          | Indicates item is eligible for automated fixes  |
+| `copilot`           | Tracked by the Ralph Loop self-healing workflow |
+| `role:orchestrator` | Primary role is orchestrator (not fixer)        |
 
 ---
 
@@ -93,6 +101,7 @@ All routing labels are defined in `.github/labels.yml` and applied automatically
 **Scenario:** A human triager reviews an issue and determines it needs immediate action.
 
 **Action:**
+
 ```bash
 # Using GitHub CLI
 gh issue edit 123 --add-label "needs-action"
@@ -102,6 +111,7 @@ gh issue edit 123 --add-label "needs-action"
 ```
 
 **Result:**
+
 - Workflow triggers automatically
 - Issue is assigned to `@Copilot`
 - Routing labels applied
@@ -113,6 +123,7 @@ gh issue edit 123 --add-label "needs-action"
 **Scenario:** The stuck-label-automation workflow detects an item stuck in `triage:in-progress` for >4 hours.
 
 **Automation:**
+
 ```yaml
 # In stuck-label-automation.yml
 - name: Escalate stuck triage
@@ -127,6 +138,7 @@ gh issue edit 123 --add-label "needs-action"
 **Scenario:** Testing the router or re-routing an item.
 
 **Action:**
+
 ```bash
 # Using GitHub CLI
 gh workflow run needs-action-router.yml -f issue_number=123
@@ -143,25 +155,29 @@ gh workflow run needs-action-router.yml -f issue_number=123
 ## Integration with Other Workflows
 
 ### OpenRouter Assignee
+
 - **Relationship:** Complementary workflows
-- **OpenRouter Assignee:** Runs hourly cron sweep for *all* unassigned items
+- **OpenRouter Assignee:** Runs hourly cron sweep for _all_ unassigned items
 - **Needs Action Router:** Immediate response to `needs-action` label
 - **Overlap:** Both assign to `@Copilot` and apply routing labels
 - **Conflict Prevention:** Both check for existing assignment/labels before acting
 
 ### Stuck Label Automation
+
 - **Relationship:** Escalation path
 - **Stuck Label Automation:** Detects labels stuck beyond timeout thresholds
 - **Needs Action Router:** Processes escalated items
 - **Flow:** Stuck item → Add `needs-action` label → Trigger Needs Action Router → Route to OpenRouter
 
 ### OpenRouter Triage
+
 - **Relationship:** Sequential processing
 - **Needs Action Router:** Routes item to OpenRouter (adds `openrouter` label)
 - **OpenRouter Triage:** Triggered by `openrouter` label, analyzes and routes further
 - **Flow:** `needs-action` → Assign to OpenRouter → Triage → Specialist agent assignment
 
 ### Ralph Loop
+
 - **Relationship:** Self-healing integration
 - **Needs Action Router:** Applies `copilot` and `auto-fix` labels
 - **Ralph Loop:** Monitors all items with these labels for failures
@@ -172,9 +188,11 @@ gh workflow run needs-action-router.yml -f issue_number=123
 ## Workflow Configuration
 
 ### File Location
+
 `.github/workflows/needs-action-router.yml`
 
 ### Permissions Required
+
 ```yaml
 permissions:
   issues: write
@@ -183,6 +201,7 @@ permissions:
 ```
 
 ### Concurrency Control
+
 ```yaml
 concurrency:
   group: needs-action-router-${{ github.event.issue.number }}
@@ -194,6 +213,7 @@ Ensures only one routing operation per item runs at a time, preventing race cond
 ### Dry Run Mode
 
 Test the workflow without making changes:
+
 ```bash
 gh workflow run needs-action-router.yml \
   -f issue_number=123 \
@@ -201,6 +221,7 @@ gh workflow run needs-action-router.yml \
 ```
 
 Dry run mode will:
+
 - Log what would be changed
 - Not assign, label, or comment
 - Generate summary showing planned actions
@@ -210,6 +231,7 @@ Dry run mode will:
 ## Monitoring & Debugging
 
 ### Check Workflow Runs
+
 ```bash
 # List recent runs
 gh run list --workflow=needs-action-router.yml --limit 10
@@ -221,19 +243,23 @@ gh run view <run-id> --log
 ### Common Issues
 
 **Issue:** Label applied but workflow didn't trigger
+
 - **Check:** Workflow file syntax: `yamllint needs-action-router.yml`
 - **Check:** GitHub Actions enabled in repo settings
 - **Check:** Permissions configured correctly
 
 **Issue:** Workflow triggered but assignment failed
+
 - **Cause:** `@Copilot` user doesn't exist or lacks permissions
 - **Solution:** Verify `@Copilot` account exists and is a repo collaborator
 
 **Issue:** Routing labels not applied
+
 - **Cause:** Labels don't exist in the repository
 - **Solution:** Run `sync-labels.yml` to create all labels from `.github/labels.yml`
 
 **Issue:** Duplicate routing comments
+
 - **Cause:** Workflow ran multiple times
 - **Mitigation:** Workflow checks for existing comment before posting
 - **If it happens:** Safe to ignore, duplicate detection should prevent this
@@ -246,17 +272,20 @@ If an item should **not** be processed by OpenRouter after receiving `needs-acti
 
 **Before routing completes:**
 Remove the `needs-action` label immediately:
+
 ```bash
 gh issue edit 123 --remove-label "needs-action"
 ```
 
 **After routing completes:**
 Remove the `openrouter` label:
+
 ```bash
 gh issue edit 123 --remove-label "openrouter"
 ```
 
 This will:
+
 - Prevent OpenRouter triage from processing the item
 - Stop the Ralph Loop from monitoring it
 - Require manual processing instead
@@ -266,15 +295,18 @@ This will:
 ## Success Metrics
 
 ### Routing Effectiveness
+
 - **Response time:** Time from `needs-action` applied to routing complete
 - **Target:** < 2 minutes
 - **Actual:** Typically 30-60 seconds
 
 ### Coverage
+
 - **Percentage of items routed within 5 minutes:** Target 100%
 - **Percentage requiring manual intervention:** Target < 5%
 
 ### Reliability
+
 - **Workflow success rate:** Target > 99%
 - **Duplicate routing rate:** Target < 1%
 
@@ -282,13 +314,13 @@ This will:
 
 ## Related Workflows
 
-| Workflow | File | Purpose |
-|----------|------|---------|
-| OpenRouter Assignee | `openrouter-assignee.yml` | Hourly cron sweep for all unassigned items |
-| OpenRouter Triage | `openrouter-triage.yml` | Analyzes and routes to specialist agents |
-| Stuck Label Automation | `stuck-label-automation.yml` | Detects stuck labels and escalates |
-| Ralph Loop | `ralph-loop.yml` | Self-healing for PR CI failures |
-| Priority Router | `priority-router.yml` | Assigns priority labels |
+| Workflow               | File                         | Purpose                                    |
+| ---------------------- | ---------------------------- | ------------------------------------------ |
+| OpenRouter Assignee    | `openrouter-assignee.yml`    | Hourly cron sweep for all unassigned items |
+| OpenRouter Triage      | `openrouter-triage.yml`      | Analyzes and routes to specialist agents   |
+| Stuck Label Automation | `stuck-label-automation.yml` | Detects stuck labels and escalates         |
+| Ralph Loop             | `ralph-loop.yml`             | Self-healing for PR CI failures            |
+| Priority Router        | `priority-router.yml`        | Assigns priority labels                    |
 
 ---
 
@@ -307,6 +339,7 @@ This will:
 ### Manual Test
 
 1. **Create test issue:**
+
    ```bash
    gh issue create \
      --title "Test: Needs Action Router" \
@@ -315,6 +348,7 @@ This will:
    ```
 
 2. **Apply needs-action label:**
+
    ```bash
    gh issue edit <issue-number> --add-label "needs-action"
    ```
@@ -333,6 +367,7 @@ This will:
 ### Automated Test
 
 Add to CI pipeline:
+
 ```yaml
 - name: Test needs-action router
   run: |
@@ -349,6 +384,7 @@ Add to CI pipeline:
 ## Changelog
 
 ### 2026-05-03 — v1.0.0
+
 - Initial implementation of Needs Action Router workflow
 - Created `.github/workflows/needs-action-router.yml`
 - Added `needs-action` label to `.github/labels.yml`
@@ -360,6 +396,7 @@ Add to CI pipeline:
 ## Future Enhancements
 
 ### Planned Features
+
 - [ ] Priority-based routing (P0 items get immediate attention)
 - [ ] Skill-specific routing (route to Jules/Codex/49Agents based on item type)
 - [ ] Metrics dashboard (routing performance, success rate, time to action)
@@ -367,6 +404,7 @@ Add to CI pipeline:
 - [ ] Auto-retry if initial routing fails
 
 ### Under Consideration
+
 - [ ] Smart routing based on issue content (ML classification)
 - [ ] Load balancing across multiple OpenRouter instances
 - [ ] Time-based routing (after-hours items queued for next business day)

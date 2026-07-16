@@ -19,14 +19,18 @@
 ### 2. Core Statements (Required)
 
 #### Instance of (P31)
+
 - **Value:** human (Q5)
 
 #### Occupation (P106)
+
 {{#each OCCUPATIONS}}
+
 - **Value:** {{qcode}} — {{label}}
-{{/each}}
+  {{/each}}
 
 **Suggested occupations for {{PERSON_NAME}}:**
+
 - Q1650915 — researcher
 - Q5482740 — software developer
 - Q15839264 — OSINT analyst
@@ -34,47 +38,59 @@
 - Q18939491 — search and rescue volunteer
 
 #### Sex or gender (P21)
+
 - **Value:** {{GENDER_QCODE}} (e.g., Q6581097 for male, Q6581072 for female)
 
 #### Country of citizenship (P27)
+
 - **Value:** {{CITIZENSHIP_QCODE}} (e.g., Q30 for United States)
 
 #### Place of residence (P551)
+
 - **Value:** {{RESIDENCE_QCODE}} (e.g., Q1261 for Colorado)
 
 ### 3. Identifiers (High Priority)
 
 #### ORCID iD (P496)
+
 - **Value:** `{{ORCID_ID}}` (format: 0000-0000-0000-0000)
 - **Reference URL:** https://orcid.org/{{ORCID_ID}}
 
 #### GitHub username (P2037)
+
 - **Value:** `{{GITHUB_USERNAME}}`
 - **Reference URL:** https://github.com/{{GITHUB_USERNAME}}
 
 ### 4. External Links
 
 #### Official website (P856)
+
 {{#each WEBSITES}}
+
 - **Value:** {{this}}
-{{/each}}
+  {{/each}}
 
 #### Social Media
+
 {{#if LINKEDIN_URL}}
+
 - **LinkedIn profile ID (P6634):** {{LINKEDIN_ID}}
-{{/if}}
-{{#if TWITTER_HANDLE}}
+  {{/if}}
+  {{#if TWITTER_HANDLE}}
 - **X username (P2002):** {{TWITTER_HANDLE}}
-{{/if}}
+  {{/if}}
 
 ### 5. Professional Information
 
 #### Field of work (P101)
+
 {{#each EXPERTISE_AREAS}}
+
 - **Value:** {{this}} (find corresponding Q-code at wikidata.org)
-{{/each}}
+  {{/each}}
 
 **Common Q-codes:**
+
 - Q21198 — computer science
 - Q82738 — intelligence studies
 - Q131476 — geospatial analysis
@@ -82,16 +98,20 @@
 - Q181788 — open-source intelligence
 
 #### Employer (P108)
+
 {{#each EMPLOYERS}}
+
 - **Value:** {{org_name}} ({{org_qcode}})
 - **Start time:** {{start_date}}
 - **End time:** {{end_time}} (or leave blank if current)
-{{/each}}
+  {{/each}}
 
 ### 6. Notable Works (P800)
 
 {{#each PROJECTS}}
+
 #### {{name}}
+
 - **Value:** Create new item if doesn't exist
   - **Label:** {{name}}
   - **Description:** {{description}}
@@ -105,28 +125,32 @@
 ### 7. Awards and Honors (P166)
 
 {{#each AWARDS}}
+
 - **Value:** {{this}}
-{{/each}}
+  {{/each}}
 
 ### 8. Education (P69)
 
 {{#each EDUCATION}}
+
 - **Value:** {{institution}} ({{qcode}})
 - **Start time:** {{start_year}}
 - **End time:** {{end_year}}
 - **Degree:** {{degree}} ({{degree_qcode}})
-{{/each}}
+  {{/each}}
 
 ### 9. References (Critical for Verification)
 
 For EVERY claim above, add references:
 
 #### Reference types:
+
 1. **Reference URL (P854):** Link to source
 2. **Retrieved (P813):** Date you accessed the source
 3. **Language of work or name (P407):** English (Q1860)
 
 #### High-quality reference sources:
+
 - ORCID profile (https://orcid.org/{{ORCID_ID}})
 - GitHub profile (https://github.com/{{GITHUB_USERNAME}})
 - Official website ({{PRIMARY_URL}})
@@ -136,6 +160,7 @@ For EVERY claim above, add references:
 ### 10. Categories and Topics
 
 Add relevant categories:
+
 - WikiProject Computer Science
 - WikiProject Software
 - WikiProject Intelligence

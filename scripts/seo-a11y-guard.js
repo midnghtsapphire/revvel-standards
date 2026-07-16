@@ -40,7 +40,7 @@ const JUNK_FILENAME_RE = new RegExp(
     "^untitled",
     "^\\d+\\.(png|jpe?g|gif|webp|svg)$",
   ].join("|"),
-  "i"
+  "i",
 );
 
 /**
@@ -49,10 +49,16 @@ const JUNK_FILENAME_RE = new RegExp(
  * @returns {{fail:boolean, violations:Array<{file:string,kind:string,detail:string}>}}
  */
 function evaluateSeoA11y(files, opts = {}) {
-  const protectedPrefixes = opts.protectedPrefixes || ["products/", "apps/", "sites/", "src/"];
+  const protectedPrefixes = opts.protectedPrefixes || [
+    "products/",
+    "apps/",
+    "sites/",
+    "src/",
+  ];
   if (opts.allowDebt) return { fail: false, violations: [] };
 
-  const isProtected = (p) => protectedPrefixes.some((pre) => pre && p.startsWith(pre));
+  const isProtected = (p) =>
+    protectedPrefixes.some((pre) => pre && p.startsWith(pre));
   const violations = [];
 
   for (const f of files) {
@@ -63,33 +69,66 @@ function evaluateSeoA11y(files, opts = {}) {
     let m;
     while ((m = imgRe.exec(content)) !== null) {
       const tag = m[0];
-      const altMatch = tag.match(/\balt\s*=\s*(?:"([^"]*)"|'([^']*)'|\{`([^`]*)`\}|\{["']([^"']*)["']\})/);
+      const altMatch = tag.match(
+        /\balt\s*=\s*(?:"([^"]*)"|'([^']*)'|\{`([^`]*)`\}|\{["']([^"']*)["']\})/,
+      );
       if (!altMatch) {
-        violations.push({ file: f.path, kind: "missing-alt", detail: tag.slice(0, 120) });
+        violations.push({
+          file: f.path,
+          kind: "missing-alt",
+          detail: tag.slice(0, 120),
+        });
       } else {
-        const alt = (altMatch[1] ?? altMatch[2] ?? altMatch[3] ?? altMatch[4] ?? "").trim();
-        if (!alt) violations.push({ file: f.path, kind: "empty-alt", detail: tag.slice(0, 120) });
+        const alt = (
+          altMatch[1] ??
+          altMatch[2] ??
+          altMatch[3] ??
+          altMatch[4] ??
+          ""
+        ).trim();
+        if (!alt)
+          violations.push({
+            file: f.path,
+            kind: "empty-alt",
+            detail: tag.slice(0, 120),
+          });
       }
-      const srcMatch = tag.match(/\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|\{["']([^"']*)["']\})/);
+      const srcMatch = tag.match(
+        /\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|\{["']([^"']*)["']\})/,
+      );
       if (srcMatch) {
         const src = (srcMatch[1] ?? srcMatch[2] ?? srcMatch[3] ?? "").trim();
         const filename = src.split("/").pop() || "";
         if (filename && JUNK_FILENAME_RE.test(filename)) {
-          violations.push({ file: f.path, kind: "junk-filename", detail: filename });
+          violations.push({
+            file: f.path,
+            kind: "junk-filename",
+            detail: filename,
+          });
         }
       }
     }
 
     if (PAGE_FILE_RE.test(f.path)) {
-      const hasDesc = /\b(description\s*[:=]|meta\s+name=["']description["'])/i.test(content);
-      if (!hasDesc) violations.push({ file: f.path, kind: "missing-meta-description", detail: "" });
+      const hasDesc =
+        /\b(description\s*[:=]|meta\s+name=["']description["'])/i.test(content);
+      if (!hasDesc)
+        violations.push({
+          file: f.path,
+          kind: "missing-meta-description",
+          detail: "",
+        });
     }
   }
   return { fail: violations.length > 0, violations };
 }
 
 function readChangedFiles(baseSha) {
-  const out = execFileSync("git", ["diff", "--name-only", `${baseSha}...HEAD`], { encoding: "utf8" });
+  const out = execFileSync(
+    "git",
+    ["diff", "--name-only", `${baseSha}...HEAD`],
+    { encoding: "utf8" },
+  );
   return out
     .split("\n")
     .map((p) => p.trim())
@@ -105,29 +144,41 @@ function main() {
     return 0;
   }
   const allowDebt = (process.env.ALLOW_SEO_DEBT || "").toLowerCase() === "true";
-  const protectedPrefixes = (process.env.PROTECTED || DEFAULT_PROTECTED).split(",").map((s) => s.trim()).filter(Boolean);
+  const protectedPrefixes = (process.env.PROTECTED || DEFAULT_PROTECTED)
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 
   const files = readChangedFiles(baseSha);
-  const { fail, violations } = evaluateSeoA11y(files, { protectedPrefixes, allowDebt });
+  const { fail, violations } = evaluateSeoA11y(files, {
+    protectedPrefixes,
+    allowDebt,
+  });
 
   if (allowDebt) {
-    console.log("`allow-seo-debt` label present — SEO/a11y guard intentionally skipped.");
+    console.log(
+      "`allow-seo-debt` label present — SEO/a11y guard intentionally skipped.",
+    );
     return 0;
   }
   if (fail) {
     console.log(`❌ SEO/A11y Guard: ${violations.length} violation(s).\n`);
     for (const v of violations) {
-      console.log(`  - [${v.kind}] ${v.file}${v.detail ? `  → ${v.detail}` : ""}`);
+      console.log(
+        `  - [${v.kind}] ${v.file}${v.detail ? `  → ${v.detail}` : ""}`,
+      );
     }
     console.log(
       "\nFix by adding meaningful `alt` text (helps disabled users AND SEO), renaming junk filenames" +
         " to descriptive-hyphenated ones (e.g. `life-insurance-leads-zip-90210.png`), and adding a" +
-        " <meta name=\"description\"> to page/layout files.\n" +
-        "If intentional, add the `allow-seo-debt` label and re-run."
+        ' <meta name="description"> to page/layout files.\n' +
+        "If intentional, add the `allow-seo-debt` label and re-run.",
     );
     return 1;
   }
-  console.log(`✅ SEO/A11y Guard passed (${files.length} app file(s) scanned).`);
+  console.log(
+    `✅ SEO/A11y Guard passed (${files.length} app file(s) scanned).`,
+  );
   return 0;
 }
 

@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Deterministic prompt packet generator.
  * Pure functions — no network, no randomness beyond a seeded hash.
@@ -19,7 +17,15 @@ function clampScore(score) {
 }
 
 function scoreBlueOcean(idea) {
-  const keywords = ['ai', 'osint', 'compliance', 'audit', 'niche', 'vertical', 'b2b'];
+  const keywords = [
+    "ai",
+    "osint",
+    "compliance",
+    "audit",
+    "niche",
+    "vertical",
+    "b2b",
+  ];
   const lower = idea.toLowerCase();
   let score = 40;
   keywords.forEach((k) => {
@@ -29,7 +35,15 @@ function scoreBlueOcean(idea) {
 }
 
 function scoreRedOcean(idea) {
-  const keywords = ['social', 'chat', 'todo', 'note', 'crm', 'generic', 'crypto'];
+  const keywords = [
+    "social",
+    "chat",
+    "todo",
+    "note",
+    "crm",
+    "generic",
+    "crypto",
+  ];
   const lower = idea.toLowerCase();
   let score = 30;
   keywords.forEach((k) => {
@@ -45,40 +59,58 @@ function marketFacts(idea) {
   return [
     {
       claim: `Target TAM estimated at ~$${tamBillions}B based on adjacent SaaS categories.`,
-      source: 'https://www.gartner.com/en/research',
+      source: "https://www.gartner.com/en/research",
     },
     {
       claim: `Category CAGR ~${cagr}% (2024-2029) per public analyst forecasts.`,
-      source: 'https://www.statista.com',
+      source: "https://www.statista.com",
     },
     {
-      claim: 'Buyer intent rising in G2 + Capterra category reviews YoY.',
-      source: 'https://www.g2.com',
+      claim: "Buyer intent rising in G2 + Capterra category reviews YoY.",
+      source: "https://www.g2.com",
     },
   ];
 }
 
 function competitorGaps(idea) {
   return [
-    { competitor: 'Generic incumbent A', gap: 'No source-citation layer; outputs feel ungrounded.' },
-    { competitor: 'Generic incumbent B', gap: 'No accessibility mode toggles; weak contrast and focus support.' },
-    { competitor: 'Open-source alt C', gap: 'No reviewer prompts; ships builder prompts only.' },
+    {
+      competitor: "Generic incumbent A",
+      gap: "No source-citation layer; outputs feel ungrounded.",
+    },
+    {
+      competitor: "Generic incumbent B",
+      gap: "No accessibility mode toggles; weak contrast and focus support.",
+    },
+    {
+      competitor: "Open-source alt C",
+      gap: "No reviewer prompts; ships builder prompts only.",
+    },
   ];
 }
 
 function legalBoundaries(idea) {
   return [
-    'Respect robots.txt and ToS on any scraped surface.',
-    'No PII collection without explicit consent + DPA.',
-    'OSINT only — publicly available information; document source for every claim.',
-    'GDPR/CCPA: provide deletion + export endpoints if storing user data.',
-    'Trademark check before naming any output artifact.',
+    "Respect robots.txt and ToS on any scraped surface.",
+    "No PII collection without explicit consent + DPA.",
+    "OSINT only — publicly available information; document source for every claim.",
+    "GDPR/CCPA: provide deletion + export endpoints if storing user data.",
+    "Trademark check before naming any output artifact.",
   ];
 }
 
 const KEYWORD_SIGNALS = {
-  music: ['spotify', 'music platform', 'track', 'song', 'album'],
-  embedding: ['embed', 'embedding', 'link in bio', 'social link', 'track url', 'spotify url', 'uri', 'scan'],
+  music: ["spotify", "music platform", "track", "song", "album"],
+  embedding: [
+    "embed",
+    "embedding",
+    "link in bio",
+    "social link",
+    "track url",
+    "spotify url",
+    "uri",
+    "scan",
+  ],
 };
 
 const MUSIC_VISUAL_LINK_PROMPT_TEMPLATE =
@@ -88,13 +120,17 @@ const MUSIC_PLATFORM_CONVERSION_PROMPT_TEMPLATE =
 
 function shouldAddMusicLinkPrompts(idea) {
   const lower = idea.toLowerCase();
-  const hasMusicSignal = KEYWORD_SIGNALS.music.some((keyword) => lower.includes(keyword));
-  const hasEmbeddingSignal = KEYWORD_SIGNALS.embedding.some((keyword) => lower.includes(keyword));
+  const hasMusicSignal = KEYWORD_SIGNALS.music.some((keyword) =>
+    lower.includes(keyword),
+  );
+  const hasEmbeddingSignal = KEYWORD_SIGNALS.embedding.some((keyword) =>
+    lower.includes(keyword),
+  );
   return hasMusicSignal && hasEmbeddingSignal;
 }
 
 function normalizeIdeaForPrompt(idea) {
-  const normalized = idea.replace(/\s+/g, ' ').trim();
+  const normalized = idea.replace(/\s+/g, " ").trim();
   if (normalized.length <= 180) {
     return normalized;
   }
@@ -111,8 +147,8 @@ function implementationPrompts(idea, audience) {
   if (shouldAddMusicLinkPrompts(idea)) {
     const promptIdea = normalizeIdeaForPrompt(idea);
     corePrompts.push(
-      MUSIC_VISUAL_LINK_PROMPT_TEMPLATE.replace('{idea}', promptIdea),
-      MUSIC_PLATFORM_CONVERSION_PROMPT_TEMPLATE.replace('{idea}', promptIdea)
+      MUSIC_VISUAL_LINK_PROMPT_TEMPLATE.replace("{idea}", promptIdea),
+      MUSIC_PLATFORM_CONVERSION_PROMPT_TEMPLATE.replace("{idea}", promptIdea),
     );
   }
 
@@ -127,15 +163,15 @@ function reviewerPrompts(idea) {
   ];
 }
 
-function generatePromptPacket({ idea, audience = 'founders' } = {}) {
-  if (!idea || typeof idea !== 'string' || !idea.trim()) {
-    throw new Error('idea is required');
+function generatePromptPacket({ idea, audience = "founders" } = {}) {
+  if (!idea || typeof idea !== "string" || !idea.trim()) {
+    throw new Error("idea is required");
   }
   const trimmed = idea.trim();
   return {
     idea: trimmed,
     audience,
-    generatedAt: '2026-05-17T00:00:00.000Z',
+    generatedAt: "2026-05-17T00:00:00.000Z",
     scores: {
       blueOcean: scoreBlueOcean(trimmed),
       redOcean: scoreRedOcean(trimmed),
@@ -151,37 +187,41 @@ function generatePromptPacket({ idea, audience = 'founders' } = {}) {
 function packetToMarkdown(packet) {
   const lines = [];
   lines.push(`# Prompt Packet: ${packet.idea}`);
-  lines.push('');
+  lines.push("");
   lines.push(`- **Audience:** ${packet.audience}`);
   lines.push(`- **Blue-ocean score:** ${packet.scores.blueOcean}/100`);
   lines.push(`- **Red-ocean score:** ${packet.scores.redOcean}/100`);
-  lines.push('');
-  lines.push('## Market Facts');
-  packet.marketFacts.forEach((f) => lines.push(`- ${f.claim} — [source](${f.source})`));
-  lines.push('');
-  lines.push('## Competitor Gaps');
-  packet.competitorGaps.forEach((c) => lines.push(`- **${c.competitor}:** ${c.gap}`));
-  lines.push('');
-  lines.push('## Legal / OSINT Boundaries');
+  lines.push("");
+  lines.push("## Market Facts");
+  packet.marketFacts.forEach((f) =>
+    lines.push(`- ${f.claim} — [source](${f.source})`),
+  );
+  lines.push("");
+  lines.push("## Competitor Gaps");
+  packet.competitorGaps.forEach((c) =>
+    lines.push(`- **${c.competitor}:** ${c.gap}`),
+  );
+  lines.push("");
+  lines.push("## Legal / OSINT Boundaries");
   packet.legalBoundaries.forEach((l) => lines.push(`- ${l}`));
-  lines.push('');
-  lines.push('## Implementation Prompts');
+  lines.push("");
+  lines.push("## Implementation Prompts");
   packet.implementationPrompts.forEach((p, i) => {
     lines.push(`### Builder Prompt ${i + 1}`);
     lines.push(p);
-    lines.push('');
+    lines.push("");
   });
-  lines.push('## Reviewer Prompts');
+  lines.push("## Reviewer Prompts");
   packet.reviewerPrompts.forEach((p, i) => {
     lines.push(`### Reviewer Prompt ${i + 1}`);
     lines.push(p);
-    lines.push('');
+    lines.push("");
   });
-  return lines.join('\n');
+  return lines.join("\n");
 }
 
 module.exports = {
   generatePromptPacket,
   packetToMarkdown,
-  clampScore
+  clampScore,
 };

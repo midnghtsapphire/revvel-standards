@@ -1,4 +1,4 @@
-# WR: [WR]  follow up from merge cluster fk earlier make sure these errors are fixed /dragnet /oaudrey
+# WR: [WR] follow up from merge cluster fk earlier make sure these errors are fixed /dragnet /oaudrey
 
 **Issue:** #16147  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  

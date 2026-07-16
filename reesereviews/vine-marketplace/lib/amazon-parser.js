@@ -15,28 +15,28 @@
  *   imageUrl from email/Amazon CDN when present (owner does not supply photos)
  */
 
-'use strict';
-
 /** Build the canonical Amazon product page URL from an ASIN. */
-function productUrlFromAsin(asin, marketplace = 'www.amazon.com') {
-  if (!asin || typeof asin !== 'string') return null;
+function productUrlFromAsin(asin, marketplace = "www.amazon.com") {
+  if (!asin || typeof asin !== "string") return null;
   const clean = asin.trim().toUpperCase();
   if (!/^[A-Z0-9]{10}$/.test(clean)) return null;
-  const host = marketplace.replace(/^https?:\/\//, '').replace(/\/$/, '') || 'www.amazon.com';
+  const host =
+    marketplace.replace(/^https?:\/\//, "").replace(/\/$/, "") ||
+    "www.amazon.com";
   return `https://${host}/dp/${clean}`;
 }
 
 /** True when value looks like a 10-char ASIN. */
 function isValidAsin(asin) {
-  return typeof asin === 'string' && /^[A-Z0-9]{10}$/i.test(asin.trim());
+  return typeof asin === "string" && /^[A-Z0-9]{10}$/i.test(asin.trim());
 }
 
 /**
  * Fill productUrl (and keep imageUrl) on any product-shaped record.
  * Safe to call repeatedly — does not overwrite a non-empty productUrl.
  */
-function attachProductLink(product, marketplace = 'www.amazon.com') {
-  if (!product || typeof product !== 'object') return product;
+function attachProductLink(product, marketplace = "www.amazon.com") {
+  if (!product || typeof product !== "object") return product;
   const asin = product.asin ? String(product.asin).trim().toUpperCase() : null;
   const url = productUrlFromAsin(asin, marketplace);
   return {
@@ -57,34 +57,33 @@ const PATTERNS = {
   // Product title — between "1 of:" or after "You ordered:" and before the next newline
   productTitle: /(?:You ordered:|Qty: \d+\s+)(.*?)(?:\n|ASIN|\$)/is,
   // Amazon image URL
-  imageUrl: /https:\/\/[a-z0-9-]+\.amazon\.com\/images\/I\/[A-Za-z0-9%-]+\.(?:jpg|jpeg|png)/i,
+  imageUrl:
+    /https:\/\/[a-z0-9-]+\.amazon\.com\/images\/I\/[A-Za-z0-9%-]+\.(?:jpg|jpeg|png)/i,
   // Vine tax value — "Estimated tax value: $12.34"
-  vineTaxValue: /(?:tax(?:able)?\s+value|estimated value)[:\s]*\$?([\d,]+\.\d{2})/i,
+  vineTaxValue:
+    /(?:tax(?:able)?\s+value|estimated value)[:\s]*\$?([\d,]+\.\d{2})/i,
   // Tracking number
   tracking: /(?:tracking\s+(?:number|#|ID))[:\s]*([A-Z0-9]+)/i,
   // Delivery date
-  deliveryDate: /(?:delivered|arrived|delivery\s+date)[:\s]*((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4})/i,
+  deliveryDate:
+    /(?:delivered|arrived|delivery\s+date)[:\s]*((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2},?\s+\d{4})/i,
 };
 
 // Subject-line heuristics to detect email type
-const VINE_SUBJECTS = [
-  'vine',
-  'product has arrived',
-  'vine product',
-];
-const SHIPPED_SUBJECTS = ['has shipped', 'your shipment', 'order shipped'];
-const DELIVERED_SUBJECTS = ['delivered', 'has been delivered', 'your package'];
+const VINE_SUBJECTS = ["vine", "product has arrived", "vine product"];
+const SHIPPED_SUBJECTS = ["has shipped", "your shipment", "order shipped"];
+const DELIVERED_SUBJECTS = ["delivered", "has been delivered", "your package"];
 
 /**
  * Detect email category from subject line.
  * @returns {'vine'|'shipped'|'delivered'|'unknown'}
  */
-function detectEmailType(subject = '') {
+function detectEmailType(subject = "") {
   const s = subject.toLowerCase();
-  if (VINE_SUBJECTS.some((k) => s.includes(k))) return 'vine';
-  if (DELIVERED_SUBJECTS.some((k) => s.includes(k))) return 'delivered';
-  if (SHIPPED_SUBJECTS.some((k) => s.includes(k))) return 'shipped';
-  return 'unknown';
+  if (VINE_SUBJECTS.some((k) => s.includes(k))) return "vine";
+  if (DELIVERED_SUBJECTS.some((k) => s.includes(k))) return "delivered";
+  if (SHIPPED_SUBJECTS.some((k) => s.includes(k))) return "shipped";
+  return "unknown";
 }
 
 /**
@@ -93,21 +92,21 @@ function detectEmailType(subject = '') {
  */
 function extract(pattern, text) {
   const m = text.match(pattern);
-  return m ? m[1].replace(/,/g, '').trim() : null;
+  return m ? m[1].replace(/,/g, "").trim() : null;
 }
 
 /**
  * Return true only if the sender's domain is exactly amazon.com or *.amazon.com.
  * Prevents spoofed senders like attacker@amazon.com.evil.com from passing.
  */
-function isAmazonSender(fromText = '') {
+function isAmazonSender(fromText = "") {
   const lower = fromText.toLowerCase();
   // Extract all email-like tokens (handles "Display Name <email@domain>" format)
   const emailTokens = lower.match(/[\w.+-]+@([\w.-]+)/g) || [];
   return emailTokens.some((token) => {
-    const atIdx = token.lastIndexOf('@');
-    const domain = atIdx !== -1 ? token.slice(atIdx + 1) : '';
-    return domain === 'amazon.com' || domain.endsWith('.amazon.com');
+    const atIdx = token.lastIndexOf("@");
+    const domain = atIdx !== -1 ? token.slice(atIdx + 1) : "";
+    return domain === "amazon.com" || domain.endsWith(".amazon.com");
   });
 }
 
@@ -118,9 +117,9 @@ function isAmazonSender(fromText = '') {
  * @returns {object|null}  normalised product record, or null if not recognisable
  */
 function parseAmazonEmail(mail) {
-  const subject = mail.subject || '';
-  const from = mail.from?.text || '';
-  const text = mail.text || mail.html?.replace(/<[^>]+>/g, ' ') || '';
+  const subject = mail.subject || "";
+  const from = mail.from?.text || "";
+  const text = mail.text || mail.html?.replace(/<[^>]+>/g, " ") || "";
 
   // Only process emails from verified Amazon domains
   if (!isAmazonSender(from)) {
@@ -128,22 +127,27 @@ function parseAmazonEmail(mail) {
   }
 
   const emailType = detectEmailType(subject);
-  if (emailType === 'unknown') return null;
+  if (emailType === "unknown") return null;
 
-  const orderId = extract(PATTERNS.orderId, text) || extract(PATTERNS.orderId, subject);
+  const orderId =
+    extract(PATTERNS.orderId, text) || extract(PATTERNS.orderId, subject);
   const asin = extract(PATTERNS.asin, text);
   const rawPrice = extract(PATTERNS.price, text);
   const paidPrice = rawPrice ? parseFloat(rawPrice) : 0;
   const titleMatch = text.match(PATTERNS.productTitle);
-  const productTitle = titleMatch ? titleMatch[1].replace(/\s+/g, ' ').trim() : subject;
+  const productTitle = titleMatch
+    ? titleMatch[1].replace(/\s+/g, " ").trim()
+    : subject;
   const imageUrl = extract(PATTERNS.imageUrl, text);
   const rawTaxValue = extract(PATTERNS.vineTaxValue, text);
   const vineTaxValue = rawTaxValue ? parseFloat(rawTaxValue) : 0;
   const tracking = extract(PATTERNS.tracking, text);
   const deliveryDateStr = extract(PATTERNS.deliveryDate, text);
-  const deliveryDate = deliveryDateStr ? new Date(deliveryDateStr).toISOString() : null;
+  const deliveryDate = deliveryDateStr
+    ? new Date(deliveryDateStr).toISOString()
+    : null;
 
-  const isVine = emailType === 'vine';
+  const isVine = emailType === "vine";
   const asinClean = asin ? asin.toUpperCase() : null;
 
   return attachProductLink({
@@ -157,9 +161,11 @@ function parseAmazonEmail(mail) {
     productUrl: productUrlFromAsin(asinClean),
     imageUrls: imageUrl ? [imageUrl] : [],
     trackingNumber: tracking || null,
-    deliveryDate: deliveryDate || (emailType === 'delivered' ? new Date().toISOString() : null),
+    deliveryDate:
+      deliveryDate ||
+      (emailType === "delivered" ? new Date().toISOString() : null),
     emailType,
-    source: 'email',
+    source: "email",
     receivedAt: new Date().toISOString(),
     subject,
     // Listing fields populated later

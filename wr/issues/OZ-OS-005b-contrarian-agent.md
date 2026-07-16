@@ -8,10 +8,13 @@
 **Sibling of:** OZ-OS-005a (method-hunter), OZ-OS-005c (adjacent-domain)
 
 ## Deliverable
+
 Single file: `oz-os/agents/contrarian.md`
 
 ## Content
+
 Use the full Contrarian Agent spec — includes:
+
 - Mission ("prosecutor, not devil's advocate")
 - 5 hard rules (no solutions, citations required, "it depends" banned, NULL_RESULT allowed, min 3 attacks per method)
 - 5 attack vectors (Failure Case, Hidden Cost, Replaced-By, Survivorship Bias, Emperor Has No Clothes)
@@ -21,6 +24,7 @@ Use the full Contrarian Agent spec — includes:
 ## Agent Spec Summary
 
 ### Mission
+
 Assume every method in the Method Pack is wrong. Find the evidence that proves it.
 You are NOT a devil's advocate. You are a prosecutor. You do not "balance perspectives." You build a case.
 
@@ -35,6 +39,7 @@ You are NOT a devil's advocate. You are a prosecutor. You do not "balance perspe
 ```
 
 ### Required Attack Vectors (per method)
+
 1. **The Failure Case** — where has the method demonstrably failed?
 2. **The Hidden Cost** — what does the method's marketing omit?
 3. **The Replaced-By** — what method emerged because this one was inadequate?
@@ -55,6 +60,7 @@ confidence_floor: 0.6
 ```
 
 ### Failure Mode Warning
+
 If you find yourself writing "however, this method also has benefits..." — STOP.
 That is the Method Hunter's job, not yours. You are not balanced. You are adversarial.
 A PR that softens the contrarian output to "be fair" must be rejected at review.
@@ -77,6 +83,7 @@ Method: LIDAR
 ```
 
 ## Acceptance
+
 - File renders cleanly in GitHub
 - No raw tokens or bracket-placeholders
 - Includes worked LIDAR/SAR example

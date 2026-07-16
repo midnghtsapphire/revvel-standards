@@ -3,7 +3,7 @@
 # Version: 1.0.0
 # Date: 2026-04-14
 #
-# PURPOSE: Autonomous BOM self-evaluation that runs on every deployment and 
+# PURPOSE: Autonomous BOM self-evaluation that runs on every deployment and
 # on a weekly schedule. Identifies P0/P1 gaps and creates GitHub Issues.
 #
 # PREREQUISITES:
@@ -21,14 +21,14 @@ on:
     types: [completed]
   # Run weekly on Monday mornings
   schedule:
-    - cron: '0 9 * * 1'
+    - cron: "0 9 * * 1"
   # Allow manual trigger
   workflow_dispatch:
     inputs:
       depth:
-        description: 'Audit depth (quick = Haiku, full = Sonnet, deep = Opus)'
+        description: "Audit depth (quick = Haiku, full = Sonnet, deep = Opus)"
         required: false
-        default: 'quick'
+        default: "quick"
         type: choice
         options:
           - quick
@@ -54,14 +54,14 @@ jobs:
           echo "=== BOM Self-Heal: Quick Audit ==="
           echo "Date: $(date -u +"%Y-%m-%d %H:%M UTC")"
           echo ""
-          
+
           # Check for common P0 indicators in BOM files
           P0_COUNT=$(grep -r "❌ Not Provisioned\|❌ Not purchased" docs/*/BOM.md 2>/dev/null | grep -c "P0" || true)
           MISSING_KEYS=$(grep -r "SENTRY_DSN\|ANTHROPIC_API_KEY\|FCM" docs/*/BOM.md 2>/dev/null | grep -c "Not Provisioned" || true)
-          
+
           echo "P0 items not provisioned: $P0_COUNT"
           echo "Missing critical API keys: $MISSING_KEYS"
-          
+
           if [ "$P0_COUNT" -gt "0" ] || [ "$MISSING_KEYS" -gt "0" ]; then
             echo "::warning::BOM has P0 gaps — run full audit for details"
           else
@@ -87,7 +87,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Regenerate Master BOM
         run: bash scripts/sync-bom.sh
@@ -128,7 +128,7 @@ jobs:
         with:
           script: |
             const p0Count = ${{ steps.p0-count.outputs.count }};
-            
+
             // Check if there's already an open issue for BOM P0 gaps
             const issues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
@@ -136,40 +136,40 @@ jobs:
               labels: 'bom-purchase',
               state: 'open'
             });
-            
+
             const existingIssue = issues.data.find(i => 
               i.title.includes('BOM P0 Gaps') && 
               new Date(i.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
             );
-            
+
             if (existingIssue) {
               console.log(`Issue already exists: #${existingIssue.number}`);
               return;
             }
-            
+
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: `[BOM Self-Heal] ${p0Count} P0 gaps detected — ${new Date().toISOString().slice(0, 10)}`,
               body: `## BOM Self-Healing Audit Found P0 Gaps
-            
+
             **Date:** ${new Date().toISOString().slice(0, 10)}
             **P0 Items Outstanding:** ${p0Count}
-            
+
             The weekly BOM Self-Healing audit has detected ${p0Count} P0-priority items that are not yet provisioned or purchased.
-            
+
             ### Action Required
-            
+
             1. Review \`docs/_MASTER_BOM.md\` for all outstanding P0 items
             2. Review each project's \`BOM.md\` for specifics
             3. Provision or purchase each item
             4. Update the BOM status from ❌ to ✅
-            
+
             ### Reference
             - [Master BOM](docs/_MASTER_BOM.md)
             - [API Registry](docs/Universal-BOM_List/API_REGISTRY_BOM.md)
             - [Self-Healing BOM Template](docs/Universal-BOM_List/SELF_HEALING_BOM_TEMPLATE.md)
-            
+
             *This issue was created automatically by the BOM Self-Healing workflow.*`,
               labels: ['bom-purchase', 'enhancement'],
               assignees: ['midnghtsapphire']
@@ -188,7 +188,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install Claude CLI
         run: npm install -g @anthropic-ai/claude-code
@@ -196,22 +196,22 @@ jobs:
       - name: Run Claude BOM Audit
         run: |
           echo "=== Deep BOM Audit via Claude Sonnet ==="
-          
+
           # Collect all BOM files
           BOM_CONTENT=$(find docs -name "BOM.md" -exec cat {} \; 2>/dev/null | head -5000)
-          
+
           # Prepare audit prompt
           PROMPT="You are the Revvel BOM Self-Healing Agent. Review the following Bill of Materials files from the Revvel Standards repository and provide:
           1. A list of P0/P1 gaps that need immediate attention
           2. Any APIs or tools that appear to be missing based on the projects described
           3. Any cost-saving recommendations
           4. Any deprecated services that should be replaced
-          
+
           Be concise and actionable. Format as a markdown list.
-          
+
           BOM FILES:
           $BOM_CONTENT"
-          
+
           # Note: In production, wire ANTHROPIC_API_KEY here
           echo "Claude audit would run here with ANTHROPIC_API_KEY"
           echo "Prompt prepared — wire API key to enable full autonomous audit"

@@ -12,7 +12,7 @@
 ## Purpose
 
 At session start, **detect what kind of project the agent is in** and load the
-matching playbook — so the agent reads the *right* standard instead of every
+matching playbook — so the agent reads the _right_ standard instead of every
 standard. It is the auto-detect front end for the **Solution-Shape Router**
 already described in `standards/shapes/` and `AUTOMATED_PRODUCT_PIPELINE.md`.
 
@@ -36,17 +36,17 @@ detect.py  ──scans cwd──▶  scores each shape from filesystem signals
                                AGENTS.md                       (repo rules)
 ```
 
-| Shape | Detected from | Loads |
-|---|---|---|
-| MCP server | `.mcp.json`, `mcp-servers/`, MCP SDK dep | `standards/shapes/MCP.md` |
-| Agent skill | `*.skill.yml`, `SKILL.md` | `standards/shapes/SKILL.md` |
-| CLI tool | `package.json` `bin`, console_scripts, Cargo `[[bin]]` | `standards/shapes/CLI.md` |
-| API service | express/fastify/fastapi/flask/django, openapi spec | `standards/shapes/API.md` |
-| Full app | next/react/vue/svelte/angular, `index.html` | `standards/shapes/APP.md` |
-| Data | `*.ipynb`, `*.csv/.parquet/.xlsx`, pandas | `standards/shapes/EXCEL.md` |
-| PDF / booklet | `*.tex`, `booklet/` | `standards/shapes/PDF.md` |
-| Infrastructure | Dockerfile/compose, `*.tf` | `standards/DOCKER.md` |
-| *(none)* | no strong signal | `standards/shapes/README.md` |
+| Shape          | Detected from                                          | Loads                        |
+| -------------- | ------------------------------------------------------ | ---------------------------- |
+| MCP server     | `.mcp.json`, `mcp-servers/`, MCP SDK dep               | `standards/shapes/MCP.md`    |
+| Agent skill    | `*.skill.yml`, `SKILL.md`                              | `standards/shapes/SKILL.md`  |
+| CLI tool       | `package.json` `bin`, console_scripts, Cargo `[[bin]]` | `standards/shapes/CLI.md`    |
+| API service    | express/fastify/fastapi/flask/django, openapi spec     | `standards/shapes/API.md`    |
+| Full app       | next/react/vue/svelte/angular, `index.html`            | `standards/shapes/APP.md`    |
+| Data           | `*.ipynb`, `*.csv/.parquet/.xlsx`, pandas              | `standards/shapes/EXCEL.md`  |
+| PDF / booklet  | `*.tex`, `booklet/`                                    | `standards/shapes/PDF.md`    |
+| Infrastructure | Dockerfile/compose, `*.tf`                             | `standards/DOCKER.md`        |
+| _(none)_       | no strong signal                                       | `standards/shapes/README.md` |
 
 Routing table is editable in [`routes.yml`](./routes.yml) (mirrored inside
 `detect.py` so the engine stays zero-dependency).
@@ -72,8 +72,14 @@ docs to load:
 {
   "hooks": {
     "SessionStart": [
-      { "hooks": [ { "type": "command",
-        "command": "python3 skills/project-router/detect.py . --json" } ] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 skills/project-router/detect.py . --json"
+          }
+        ]
+      }
     ]
   }
 }

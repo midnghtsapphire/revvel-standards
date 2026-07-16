@@ -6,7 +6,7 @@ move `fieldwork/` out of `revvel-standards` into its own repo
 (`midnghtsapphire/fieldwork`), with **full git history preserved**.
 
 > **Why this is a runbook, not a single PR:** the final steps create and push to
-> a *new* repository. The agent that prepared this is scoped to
+> a _new_ repository. The agent that prepared this is scoped to
 > `revvel-standards` only and cannot create or push to another repo — so those
 > cross-repo steps are listed here for you (or a broader-scoped agent) to run.
 > Nothing is deleted from `revvel-standards` until the new repo exists (Step 4).

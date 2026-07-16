@@ -3,7 +3,14 @@
   "$id": "https://revvel.dev/schemas/state.schema.json",
   "title": "Revvel Execution State",
   "type": "object",
-  "required": ["intake_id", "product_slug", "revenue_target_monthly_usd", "goal_phase", "steps", "status"],
+  "required": [
+    "intake_id",
+    "product_slug",
+    "revenue_target_monthly_usd",
+    "goal_phase",
+    "steps",
+    "status"
+  ],
   "properties": {
     "intake_id": { "type": "string", "minLength": 1 },
     "product_slug": { "type": "string", "minLength": 1 },
@@ -14,7 +21,15 @@
     "owner": { "type": "string" },
     "status": {
       "type": "string",
-      "enum": ["new", "routed", "in_progress", "needs_procurement", "blocked", "done", "failed"]
+      "enum": [
+        "new",
+        "routed",
+        "in_progress",
+        "needs_procurement",
+        "blocked",
+        "done",
+        "failed"
+      ]
     },
     "current_engine": { "type": ["string", "null"] },
     "steps": {
@@ -27,11 +42,30 @@
           "engine": { "type": "string" },
           "runner_target": {
             "type": ["string", "null"],
-            "enum": [null, "github", "vercel", "supabase", "zapier", "make", "n8n", "gumloop", "cli", "browser", "polar"]
+            "enum": [
+              null,
+              "github",
+              "vercel",
+              "supabase",
+              "zapier",
+              "make",
+              "n8n",
+              "gumloop",
+              "cli",
+              "browser",
+              "polar"
+            ]
           },
           "status": {
             "type": "string",
-            "enum": ["pending", "running", "ok", "needs_procurement", "failed", "skipped"]
+            "enum": [
+              "pending",
+              "running",
+              "ok",
+              "needs_procurement",
+              "failed",
+              "skipped"
+            ]
           },
           "started_at": { "type": ["string", "null"], "format": "date-time" },
           "finished_at": { "type": ["string", "null"], "format": "date-time" },
@@ -61,7 +95,18 @@
             "required": ["name", "acquisition"],
             "properties": {
               "name": { "type": "string" },
-              "category": { "type": "string", "enum": ["credential", "api", "account", "infra", "data", "service", "human"] },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "credential",
+                  "api",
+                  "account",
+                  "infra",
+                  "data",
+                  "service",
+                  "human"
+                ]
+              },
               "cost_usd": { "type": "number", "minimum": 0 },
               "source": { "type": "string" },
               "acquisition": { "type": "string" },

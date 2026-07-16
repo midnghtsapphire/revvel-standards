@@ -17,12 +17,12 @@ Build a compliance tool/app that implements the 7 best practices for medical mob
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -35,6 +35,7 @@ Build a compliance tool/app that implements the 7 best practices for medical mob
 - [ ] BOM
 
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 ### Overview: The 7 Best Practices (Source: Genesys Design)
@@ -50,6 +51,7 @@ Mobile apps provide superior accessibility, cloud connectivity, easier remote de
 #### 2. Classification of the Mobile App
 
 The regulatory classification of a connected mobile app depends on its function:
+
 - **Diagnosis, treatment, or device control** → The app typically takes on the same safety class as the hardware device (Class II or III under FDA; Class IIa/IIb/III under EU MDR).
 - **Data display or transfer of unmodified data only** → The app may qualify as a lower-risk Software as a Medical Device (SaMD) category or may be exempt from full device classification.
 
@@ -60,6 +62,7 @@ Genesys Design advises developing every medical mobile app to certification-grad
 #### 3. Design Controls & Compliance (IEC 62304)
 
 Adherence to the IEC 62304 software development lifecycle standard is essential. IEC 62304 mandates:
+
 - Software development planning with risk-tiered processes (Safety Class A/B/C)
 - Requirements management, architectural design, and detailed design documentation
 - Software unit implementation and verification
@@ -74,6 +77,7 @@ IEC 62304 works alongside ISO 13485 (Quality Management System) and ISO 14971 (R
 #### 4. Verification & Validation (V&V)
 
 Rigorous V&V is mandatory for connected medical apps. This includes:
+
 - **Verification:** Confirming the software was built correctly (unit tests, integration tests, code reviews, static analysis)
 - **Validation:** Confirming the software meets user needs and intended use in real-world conditions (usability studies, simulated failure modes, end-user feedback loops)
 - **Usability Engineering:** Compliance with IEC 62366-1 for human factors and user interface design
@@ -83,6 +87,7 @@ V&V documentation must be maintained throughout the product lifecycle, not just 
 #### 5. Cybersecurity
 
 Medical data is among the most sensitive personal data regulated under HIPAA (US), GDPR (EU), and national health privacy laws. Connected medical mobile apps must implement:
+
 - **Encryption at rest and in transit** (AES-256 minimum, TLS 1.2+)
 - **Secure authentication** (multi-factor where clinically appropriate)
 - **Software Bill of Materials (SBOM)** for third-party component vulnerability tracking
@@ -97,6 +102,7 @@ FDA's 2023 final cybersecurity guidance requires that new medical device submiss
 #### 6. Interoperability & Future-Proofing
 
 Connected medical apps must be designed for extensibility and interoperability from the outset:
+
 - **HL7 FHIR** (Fast Healthcare Interoperability Resources) for electronic health record (EHR) integration
 - **Bluetooth LE / ANT+ / WiFi** protocol support for device connectivity
 - **Cloud platform agnosticism** where possible (AWS, Azure, GCP health services)
@@ -108,6 +114,7 @@ Future-proofing reduces the cost of adding new device models, expanding to new m
 #### 7. Continuous Support & Updates
 
 Long-term product success for connected medical apps requires a structured post-market lifecycle:
+
 - **Over-the-air (OTA) update infrastructure** with cryptographic verification
 - **Remote diagnostics and telemetry** for real-world performance monitoring
 - **Incident response plan** for security vulnerabilities and adverse events
@@ -132,6 +139,7 @@ This WR covers the research and requirements for building a **Medical Mobile App
 **Primary Output:** Web application (Next.js + TypeScript)
 
 **Core Feature Set (MVP):**
+
 1. **7-Practice Compliance Checklist** — Interactive per-practice checklist covering all 7 best practices, with sub-items mapped to IEC 62304, ISO 14971, and FDA/EU MDR clauses
 2. **Gap Analysis Dashboard** — Visual compliance score per practice, overall readiness score, and drill-down by regulatory framework
 3. **Document Generator** — Auto-generates audit-ready PDF/CSV compliance reports with evidence placeholders and clause references
@@ -162,19 +170,20 @@ The MedTech software compliance tools sub-market (ALM, QMS, IEC 62304 tooling) i
 
 ### Competitor Analysis
 
-| Competitor | Type | Pricing | Key Features | Gap / Weakness |
-|---|---|---|---|---|
-| [Visure ALM](https://visuresolutions.com/medtech-and-pharma-guide/best-iec-62304-tools/) | Enterprise SaaS | Custom pricing (mid-to-high 4 figures USD/month) | Full ALM, IEC 62304, ISO 13485, traceability | Priced out of SMB/startup market |
-| [Ketryx](https://visuresolutions.com/medtech-and-pharma-guide/best-iec-62304-tools/) | AI-native SaaS | Custom pricing (enterprise-focused) | Automated compliance, Jira/Git overlay | Not affordable for individual devs |
-| [Parasoft IEC 62304](https://www.parasoft.com/solutions/iec-62304/) | Enterprise tool | Quote-based (~$2,000–$10,000/seat/year) | Static analysis, test management | Developer-tool focus, not app-level guidance |
-| [euverify.com](https://euverify.com/iec-62304-medical-software/) | Free web tool | Free | IEC 62304 checklist, PDF export | No V&V tracking, no team features, no versioning |
-| [Qt/Axivion](https://www.qt.io/quality-assurance/iec-62304) | Enterprise tool | Quote-based (enterprise) | Code quality, architecture verification | Requires code access, not workflow-level |
+| Competitor                                                                               | Type            | Pricing                                          | Key Features                                 | Gap / Weakness                                   |
+| ---------------------------------------------------------------------------------------- | --------------- | ------------------------------------------------ | -------------------------------------------- | ------------------------------------------------ |
+| [Visure ALM](https://visuresolutions.com/medtech-and-pharma-guide/best-iec-62304-tools/) | Enterprise SaaS | Custom pricing (mid-to-high 4 figures USD/month) | Full ALM, IEC 62304, ISO 13485, traceability | Priced out of SMB/startup market                 |
+| [Ketryx](https://visuresolutions.com/medtech-and-pharma-guide/best-iec-62304-tools/)     | AI-native SaaS  | Custom pricing (enterprise-focused)              | Automated compliance, Jira/Git overlay       | Not affordable for individual devs               |
+| [Parasoft IEC 62304](https://www.parasoft.com/solutions/iec-62304/)                      | Enterprise tool | Quote-based (~$2,000–$10,000/seat/year)          | Static analysis, test management             | Developer-tool focus, not app-level guidance     |
+| [euverify.com](https://euverify.com/iec-62304-medical-software/)                         | Free web tool   | Free                                             | IEC 62304 checklist, PDF export              | No V&V tracking, no team features, no versioning |
+| [Qt/Axivion](https://www.qt.io/quality-assurance/iec-62304)                              | Enterprise tool | Quote-based (enterprise)                         | Code quality, architecture verification      | Requires code access, not workflow-level         |
 
 **Market Gap:** No affordable ($0–$200/month), workflow-level, self-serve compliance tool exists for the **connected medical mobile app** segment covering all 7 best practices end-to-end.
 
 ### SEO & Marketing Strategy
 
 **Primary Keywords (preliminary estimates — must be validated with SEMrush/Ahrefs before finalizing SEO strategy; see P0 actions):**
+
 - "medical mobile app compliance checklist" (estimated 500–2,000 monthly searches — unverified)
 - "IEC 62304 compliance tool" (estimated 1,000–3,000 monthly searches — unverified)
 - "medical device app regulatory requirements" (estimated 2,000–5,000 monthly searches — unverified)
@@ -182,12 +191,14 @@ The MedTech software compliance tools sub-market (ALM, QMS, IEC 62304 tooling) i
 - "FDA medical app submission checklist" (estimated 1,000–2,500 monthly searches — unverified)
 
 **Content Strategy:**
+
 1. **Pillar Page:** "Complete Guide to Medical Mobile App Compliance (IEC 62304, FDA, EU MDR)"
 2. **Blog Series:** One post per best practice with deep-dive on regulatory requirements
 3. **Free Tool Hook:** Embeddable compliance score widget for MedTech blogs and consultancy sites
 4. **LinkedIn Distribution:** Target MedTech founders, regulatory affairs managers, CTOs of medical device companies
 
 **Community Channels:**
+
 - LinkedIn groups: MedTech, Digital Health, Regulatory Affairs professionals
 - Reddit: r/medicaldevelopers, r/MedicalDevices, r/healthIT
 - Slack communities: MedTech Nation, Digital Health Coalition
@@ -195,6 +206,7 @@ The MedTech software compliance tools sub-market (ALM, QMS, IEC 62304 tooling) i
 ### Chatter & Demand Signals
 
 Key pain points identified from MedTech developer communities and regulatory consultancy blogs:
+
 - **Compliance documentation burden:** IEC 62304 requires extensive documentation that is unfamiliar to software teams from non-medical backgrounds
 - **Classification confusion:** Teams frequently misclassify their app's risk level, leading to costly late-stage remediation
 - **Cybersecurity gaps:** Post-2023 FDA cybersecurity guidance is widely flagged as a new compliance hurdle that existing tools do not adequately address
@@ -210,6 +222,7 @@ Key pain points identified from MedTech developer communities and regulatory con
 **FR-01:** The app must present the 7 best practices as interactive compliance checklists with sub-items mapped to IEC 62304 clauses, ISO 14971 sections, and FDA/EU MDR articles.
 
 **FR-02:** Each checklist item must include:
+
 - Regulatory clause reference (e.g., "IEC 62304 §5.1.1")
 - Guidance text explaining the requirement
 - Evidence input field for linking to documentation artifacts
@@ -239,15 +252,15 @@ Key pain points identified from MedTech developer communities and regulatory con
 
 ### Tech Stack
 
-| Layer | Choice | Rationale |
-|---|---|---|
-| Frontend | Next.js 14 (App Router) + TypeScript | SSR, Vercel-native, existing repo conventions |
-| Styling | Tailwind CSS + shadcn/ui | Fast UI development, accessible components |
-| Database | Supabase (PostgreSQL) | Auth + DB in one, generous free tier |
-| PDF Export | @react-pdf/renderer | Client-side PDF generation, no server costs |
-| Auth | Supabase Auth | Magic link + OAuth for zero-friction signup |
-| Payments | Stripe | Industry standard, subscription billing |
-| Hosting | Vercel | Instant deploy from GitHub, edge functions |
+| Layer      | Choice                               | Rationale                                     |
+| ---------- | ------------------------------------ | --------------------------------------------- |
+| Frontend   | Next.js 14 (App Router) + TypeScript | SSR, Vercel-native, existing repo conventions |
+| Styling    | Tailwind CSS + shadcn/ui             | Fast UI development, accessible components    |
+| Database   | Supabase (PostgreSQL)                | Auth + DB in one, generous free tier          |
+| PDF Export | @react-pdf/renderer                  | Client-side PDF generation, no server costs   |
+| Auth       | Supabase Auth                        | Magic link + OAuth for zero-friction signup   |
+| Payments   | Stripe                               | Industry standard, subscription billing       |
+| Hosting    | Vercel                               | Instant deploy from GitHub, edge functions    |
 
 ---
 
@@ -279,11 +292,11 @@ Key pain points identified from MedTech developer communities and regulatory con
 
 ## Dependencies
 
-| Field | Value |
-|---|---|
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 No prerequisite WRs required. This WR is self-contained.
 
@@ -291,10 +304,10 @@ No prerequisite WRs required. This WR is self-contained.
 
 ## Risks
 
-| Risk | Severity | Likelihood | Mitigation |
-|---|---|---|---|
-| Regulatory liability — tool is used incorrectly in a real medical device submission | High | Low | Add clear disclaimer: "This tool is for guidance only and does not constitute regulatory advice. Consult a qualified regulatory affairs professional." |
-| Regulatory requirements change (FDA, EU MDR updates) | Medium | Medium | Build regulatory reference library as a versioned data layer; subscribe to FDA/EU MDR update feeds |
-| Market too small to reach MRR targets | Medium | Medium | Validate keyword demand before full build; pivot to consulting-led growth if organic SEO demand is insufficient |
-| Enterprise competitors add SMB tiers | Medium | Low | Build moat through: open-source community edition, content marketing, and niche focus on connected device mobile apps specifically |
-| GDPR/HIPAA compliance requirements for the tool itself add scope | Low | High | Use Supabase (EU region option), add DPA template for enterprise tier, no PHI required in tool itself |
+| Risk                                                                                | Severity | Likelihood | Mitigation                                                                                                                                             |
+| ----------------------------------------------------------------------------------- | -------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Regulatory liability — tool is used incorrectly in a real medical device submission | High     | Low        | Add clear disclaimer: "This tool is for guidance only and does not constitute regulatory advice. Consult a qualified regulatory affairs professional." |
+| Regulatory requirements change (FDA, EU MDR updates)                                | Medium   | Medium     | Build regulatory reference library as a versioned data layer; subscribe to FDA/EU MDR update feeds                                                     |
+| Market too small to reach MRR targets                                               | Medium   | Medium     | Validate keyword demand before full build; pivot to consulting-led growth if organic SEO demand is insufficient                                        |
+| Enterprise competitors add SMB tiers                                                | Medium   | Low        | Build moat through: open-source community edition, content marketing, and niche focus on connected device mobile apps specifically                     |
+| GDPR/HIPAA compliance requirements for the tool itself add scope                    | Low      | High       | Use Supabase (EU region option), add DPA template for enterprise tier, no PHI required in tool itself                                                  |

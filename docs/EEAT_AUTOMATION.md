@@ -14,12 +14,14 @@ This document describes the **TrustForge** agent — the automated E-E-A-T (Expe
 **What is E-E-A-T?**
 
 E-E-A-T is Google's framework for evaluating content quality. It stands for:
+
 - **Experience** — First-hand, real-world experience with the topic
 - **Expertise** — Recognized knowledge and skill in the domain
 - **Authoritativeness** — Recognition as a go-to source by others
 - **Trustworthiness** — Accuracy, honesty, and safety of the site/content
 
 Strong E-E-A-T signals lead to:
+
 - ✅ Higher search rankings
 - ✅ Better Google Knowledge Panel presence
 - ✅ Increased user trust
@@ -85,14 +87,14 @@ The user asked if the Doppler solution addresses E-E-A-T needs. Here's the answe
 
 Doppler (`growlingeyes/doppemcp/`) provides the secrets management infrastructure for TrustForge:
 
-| Secret | Purpose | Managed by Doppler? |
-|--------|---------|---------------------|
-| `OPENROUTER_API_KEY` | LLM for content generation | ✅ Yes |
-| `GITHUB_TOKEN` | Update repos and profiles | ✅ Yes |
-| `GOOGLE_SEARCH_CONSOLE_KEY` | Submit sitemaps, monitor search | ⚠️ Add to Doppler |
-| `GOOGLE_BUSINESS_PROFILE_KEY` | Update business info | ⚠️ Add to Doppler |
-| `LINKEDIN_ACCESS_TOKEN` | Sync profile updates | ⚠️ Optional, add if needed |
-| `ORCID_API_KEY` | Sync publications | ⚠️ Optional, add if needed |
+| Secret                        | Purpose                         | Managed by Doppler?        |
+| ----------------------------- | ------------------------------- | -------------------------- |
+| `OPENROUTER_API_KEY`          | LLM for content generation      | ✅ Yes                     |
+| `GITHUB_TOKEN`                | Update repos and profiles       | ✅ Yes                     |
+| `GOOGLE_SEARCH_CONSOLE_KEY`   | Submit sitemaps, monitor search | ⚠️ Add to Doppler          |
+| `GOOGLE_BUSINESS_PROFILE_KEY` | Update business info            | ⚠️ Add to Doppler          |
+| `LINKEDIN_ACCESS_TOKEN`       | Sync profile updates            | ⚠️ Optional, add if needed |
+| `ORCID_API_KEY`               | Sync publications               | ⚠️ Optional, add if needed |
 
 **Conclusion:** Doppler provides the infrastructure, but TrustForge implements the E-E-A-T strategy. Both are needed.
 
@@ -149,11 +151,13 @@ gh workflow run eeat-trust-cron.yml
 TrustForge runs daily at 2 AM UTC and creates a PR with a health report.
 
 Check recent runs:
+
 ```bash
 gh run list --workflow=eeat-trust-cron.yml --limit 10
 ```
 
 View latest report:
+
 ```bash
 ls -lt docs/reports/eeat-health-*.md | head -1
 ```
@@ -242,6 +246,7 @@ This Organization schema MUST appear in the `<head>` of every public-facing page
 ```
 
 **Why this matters:**
+
 - Links every app to Freedom Angel Corp (founded 2010)
 - Transfers authority and trust from parent to child
 - Helps Google understand the entity hierarchy
@@ -254,6 +259,7 @@ This Organization schema MUST appear in the `<head>` of every public-facing page
 TrustForge runs these tasks automatically:
 
 ### Daily (Automated via Cron)
+
 - ✅ Verify schema markup presence
 - ✅ Check HTTPS certificates
 - ✅ Validate canonical URLs
@@ -262,6 +268,7 @@ TrustForge runs these tasks automatically:
 - ✅ Generate health report
 
 ### Weekly
+
 - Audit NAP consistency across citations
 - Review and update brand statement if needed
 - Check ORCID profile for new publications
@@ -269,6 +276,7 @@ TrustForge runs these tasks automatically:
 - Review backlink profile
 
 ### Monthly
+
 - Full Lighthouse SEO audit
 - Update schema.org markup for business changes
 - Review Google Business Profile
@@ -276,6 +284,7 @@ TrustForge runs these tasks automatically:
 - Generate E-E-A-T health report
 
 ### Quarterly
+
 - Major schema.org markup review
 - Professional citation network expansion
 - Content audit for E-E-A-T strength
@@ -319,16 +328,16 @@ gh issue list --search "exit-quiet-mode in:title" --state open
 
 Track these to measure E-E-A-T improvement:
 
-| Metric | Target | How to Check |
-|--------|--------|-------------|
-| Schema markup coverage | 100% of pages | TrustForge health report |
-| Lighthouse SEO score | ≥ 90 on all properties | `npx lighthouse <url> --only-categories=seo` |
-| Google Knowledge Panel | Active and claimed | Search "Audrey Evans systems builder" |
-| ORCID backlinks | ≥ 5 properties | Check ORCID profile |
-| Authority backlinks | +10 per quarter | Google Search Console |
-| NAP consistency | 100% across citations | Manual citation audit |
-| HTTPS coverage | 100% | TrustForge health report |
-| Broken link count | 0 | TrustForge health report |
+| Metric                 | Target                 | How to Check                                 |
+| ---------------------- | ---------------------- | -------------------------------------------- |
+| Schema markup coverage | 100% of pages          | TrustForge health report                     |
+| Lighthouse SEO score   | ≥ 90 on all properties | `npx lighthouse <url> --only-categories=seo` |
+| Google Knowledge Panel | Active and claimed     | Search "Audrey Evans systems builder"        |
+| ORCID backlinks        | ≥ 5 properties         | Check ORCID profile                          |
+| Authority backlinks    | +10 per quarter        | Google Search Console                        |
+| NAP consistency        | 100% across citations  | Manual citation audit                        |
+| HTTPS coverage         | 100%                   | TrustForge health report                     |
+| Broken link count      | 0                      | TrustForge health report                     |
 
 ---
 
@@ -337,11 +346,13 @@ Track these to measure E-E-A-T improvement:
 ### TrustForge is Not Running
 
 **Check Quiet Mode status:**
+
 ```bash
 gh issue list --search "exit-quiet-mode in:title" --state open
 ```
 
 If no issue exists, create one:
+
 ```bash
 gh issue create --title "exit-quiet-mode"
 ```
@@ -349,11 +360,13 @@ gh issue create --title "exit-quiet-mode"
 ### Health Report Not Generated
 
 **Check workflow runs:**
+
 ```bash
 gh run list --workflow=eeat-trust-cron.yml --limit 5
 ```
 
 **View failed run logs:**
+
 ```bash
 gh run view <run-id> --log-failed
 ```
@@ -361,12 +374,14 @@ gh run view <run-id> --log-failed
 ### Schema Markup Not Validating
 
 **Test with Google Rich Results Test:**
+
 ```bash
 # Visit in browser:
 https://search.google.com/test/rich-results?url=<your-url>
 ```
 
 **Or use schema.org validator:**
+
 ```bash
 npm install -g jsonld
 jsonld validate your-schema.json
@@ -375,12 +390,14 @@ jsonld validate your-schema.json
 ### Missing Secrets
 
 **Check Doppler:**
+
 ```bash
 # List all secrets in project
 doppler secrets --project revvel-standards --config prd
 ```
 
 **Add missing secret:**
+
 ```bash
 doppler secrets set SECRET_NAME=value --project revvel-standards --config prd
 ```
@@ -437,5 +454,5 @@ TrustForge integrates with:
 
 ---
 
-*Last Updated: April 30, 2026*  
-*Agent: TrustForge v1.0.0*
+_Last Updated: April 30, 2026_  
+_Agent: TrustForge v1.0.0_

@@ -20,12 +20,12 @@ If the output is code or a dashboard, use the engineering WR flow instead.
 
 ## 2. Revenue alignment (why this matters)
 
-| Phase | Monthly target | PDF role |
-|-------|----------------|----------|
-| 1 | $10k/mo | One-off OSINT / audit PDFs at $500–$2,500 each |
-| 2 | $30k/mo | Productized PDF bundles + subscription briefs |
-| 3 | $100k/mo | Tiered report pipeline (self-serve + enterprise) |
-| 4 | $10M total | Licensed templates + white-label PDF workflows |
+| Phase | Monthly target | PDF role                                         |
+| ----- | -------------- | ------------------------------------------------ |
+| 1     | $10k/mo        | One-off OSINT / audit PDFs at $500–$2,500 each   |
+| 2     | $30k/mo        | Productized PDF bundles + subscription briefs    |
+| 3     | $100k/mo       | Tiered report pipeline (self-serve + enterprise) |
+| 4     | $10M total     | Licensed templates + white-label PDF workflows   |
 
 Every PDF we ship should be reusable as a template for the next phase. **No one-off throwaways.**
 

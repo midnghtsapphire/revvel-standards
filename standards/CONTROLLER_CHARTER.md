@@ -50,7 +50,7 @@ enforcement mechanism is a poster, not a contract. This is the
 promise-as-proof: we demonstrate care by how carefully each part is built.
 
 **Protection.** No healthy work is killed, and no failure takes the fleet
-down. *Proof:* the heartbeat check before every eviction (a slow step is not
+down. _Proof:_ the heartbeat check before every eviction (a slow step is not
 a stall); the protected set that the scheduler can never touch; fail-open
 error handling so a broken controller degrades to "no scheduling this tick",
 never to "fleet blocked".
@@ -59,14 +59,14 @@ never to "fleet blocked".
 Work is never abandoned: a struggling run is reassigned, a hopeless one is
 handed to healing — nothing is dropped on the floor. A model that works
 against the repo's operating rules does not get scheduled, no matter how
-capable its maker says it is. *Proof:* the cut → reassign → escalate ladder
+capable its maker says it is. _Proof:_ the cut → reassign → escalate ladder
 (every lineage ends in progress or in the heal loop, never in silence); the
 SSOT denylist plus the drift test that makes reintroducing a banned model a
 CI failure.
 
 **Respect.** Every run gets due process. Nothing is cancelled on a coarse
 signal alone; nothing is judged without its evidence being recorded; a run
-spared on appeal (step progress) is never punished downstream. *Proof:*
+spared on appeal (step progress) is never punished downstream. _Proof:_
 verify-before-evict; every decision — planned, applied, spared, failed —
 written to the feeds with its reason; spared runs excluded from the stop and
 ingestion signals.
@@ -74,14 +74,14 @@ ingestion signals.
 **Honesty.** The feeds say what actually happened, not what we wish had
 happened. A failed cancel is reported as failed, never as done. A dry run is
 labeled a dry run and changes nothing. A gate that passes is a gate that
-really ran — no always-green shims, ever. *Proof:* `cancel-failed` and
+really ran — no always-green shims, ever. _Proof:_ `cancel-failed` and
 `reassign-failed` outcomes surface verbatim; dry scans never advance the
 scoreboard; the repo-wide rule that test/lint gates stay real.
 
 **Judgment over rigidity.** Rules exist to serve the mission; a rule that
 blocks all progress has failed at its own job and is treated as a defect to
 heal, not a standard to submit to. Strictness that stops every project is
-not safety — it is failure wearing safety's uniform. *Proof:* the Markdown
+not safety — it is failure wearing safety's uniform. _Proof:_ the Markdown
 lint gate is real, but an auto-heal loop fixes what a machine can fix before
 the gate judges it, instead of failing every PR forever; the Sonnet family is
 denylisted precisely because rigid refusal killed project after project; the
@@ -104,14 +104,14 @@ the work itself.
 The fleet borrows the CUDA execution model deliberately (see
 `docs/controller/README.md` for the original mapping):
 
-| CUDA | Fleet | Layer responsibility |
-| --- | --- | --- |
-| Grid scheduler | **Controller** (`fleet-controller`) | Watch occupancy, evict stalls, escalate — never execute work |
-| Streaming multiprocessor / block | **Orchestrator** (research orchestrator, twin/triplet runs, workflow jobs) | Run a batch of related work with a budget and a heartbeat |
-| Warp / thread | **Agent / arm** inside an orchestrator | Execute one task; yield status upward |
-| Scoreboard | `docs/controller/controller-state.json` | Durable record of what was tried, carried across cycles |
-| Warp eviction | Cut + reassign | Cancel a stalled run and relaunch it on the next model in the chain |
-| Host (CPU) | **Self-healing loop** | Receives what the scheduler cannot fix; files WRs, routes to coding agents |
+| CUDA                             | Fleet                                                                      | Layer responsibility                                                       |
+| -------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Grid scheduler                   | **Controller** (`fleet-controller`)                                        | Watch occupancy, evict stalls, escalate — never execute work               |
+| Streaming multiprocessor / block | **Orchestrator** (research orchestrator, twin/triplet runs, workflow jobs) | Run a batch of related work with a budget and a heartbeat                  |
+| Warp / thread                    | **Agent / arm** inside an orchestrator                                     | Execute one task; yield status upward                                      |
+| Scoreboard                       | `docs/controller/controller-state.json`                                    | Durable record of what was tried, carried across cycles                    |
+| Warp eviction                    | Cut + reassign                                                             | Cancel a stalled run and relaunch it on the next model in the chain        |
+| Host (CPU)                       | **Self-healing loop**                                                      | Receives what the scheduler cannot fix; files WRs, routes to coding agents |
 
 Three CUDA principles the implementation must honor:
 
@@ -161,16 +161,16 @@ Three CUDA principles the implementation must honor:
 
 ## 5. Invariants (testable — each maps to a unit test)
 
-| # | Invariant | Test |
-| --- | --- | --- |
-| I1 | Protected runs are never selected for preemption | `controller-core.test.js` (selectPreemptions) |
-| I2 | Scoreboard survives quiet ticks; expires 6h after last cut | `controller-driver.test.js` (state round-trip, TTL) |
-| I3 | Lineage advances only on cuts that actually happened (`cancelled`) | `controller-driver.test.js` (cancel-failed / spared) |
-| I4 | Stalled runs with recent step activity are spared; spared runs never reach stop/ingestion feeds | driver behavior, feed shows `spared(step-progress)` |
-| I5 | After `maxReassigns`, the lineage escalates to ingestion — no infinite cut→relaunch | `controller-core.test.js` (planPreemptions) |
-| I6 | The model chain never contains an SSOT-denylisted model | `controller-core.test.js` (denylist drift test) |
-| I7 | Dry scans never advance scheduling state | `controller-driver.test.js` (dry-run feed ignored) |
-| I8 | A failed cancel never relaunches (no duplicate runs) | driver: `cancel-failed` → skip reassign |
+| #   | Invariant                                                                                       | Test                                                 |
+| --- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| I1  | Protected runs are never selected for preemption                                                | `controller-core.test.js` (selectPreemptions)        |
+| I2  | Scoreboard survives quiet ticks; expires 6h after last cut                                      | `controller-driver.test.js` (state round-trip, TTL)  |
+| I3  | Lineage advances only on cuts that actually happened (`cancelled`)                              | `controller-driver.test.js` (cancel-failed / spared) |
+| I4  | Stalled runs with recent step activity are spared; spared runs never reach stop/ingestion feeds | driver behavior, feed shows `spared(step-progress)`  |
+| I5  | After `maxReassigns`, the lineage escalates to ingestion — no infinite cut→relaunch             | `controller-core.test.js` (planPreemptions)          |
+| I6  | The model chain never contains an SSOT-denylisted model                                         | `controller-core.test.js` (denylist drift test)      |
+| I7  | Dry scans never advance scheduling state                                                        | `controller-driver.test.js` (dry-run feed ignored)   |
+| I8  | A failed cancel never relaunches (no duplicate runs)                                            | driver: `cancel-failed` → skip reassign              |
 
 Any PR that changes controller behavior must keep these tests green and update
 this table if it adds or removes an invariant.
@@ -213,12 +213,12 @@ so "use Claude via MCP" resolves to one of the two lanes above.
 
 ## 8. Interfaces
 
-| Feed | Schema | Consumer | Contract |
-| --- | --- | --- | --- |
-| `controller-status.json` | `fleet-controller/v1` | Lovable monitor | Full picture: health, occupancy, planned + applied actions |
-| `controller-stop.json` | `fleet-controller-stop/v1` | In-process orchestrators | Only runs that were actually cut (never spared runs) |
-| `controller-ingestion.json` | `fleet-controller-ingestion/v1` | Self-healing loop | Only exhausted lineages needing the heal loop |
-| `controller-state.json` | `fleet-controller-state/v1` | The controller itself | Durable scoreboard; consumers other than the controller treat it as opaque |
+| Feed                        | Schema                          | Consumer                 | Contract                                                                   |
+| --------------------------- | ------------------------------- | ------------------------ | -------------------------------------------------------------------------- |
+| `controller-status.json`    | `fleet-controller/v1`           | Lovable monitor          | Full picture: health, occupancy, planned + applied actions                 |
+| `controller-stop.json`      | `fleet-controller-stop/v1`      | In-process orchestrators | Only runs that were actually cut (never spared runs)                       |
+| `controller-ingestion.json` | `fleet-controller-ingestion/v1` | Self-healing loop        | Only exhausted lineages needing the heal loop                              |
+| `controller-state.json`     | `fleet-controller-state/v1`     | The controller itself    | Durable scoreboard; consumers other than the controller treat it as opaque |
 
 Schema changes are versioned (`/v1` → `/v2`) — never mutate a schema in
 place; consumers parse by schema string.

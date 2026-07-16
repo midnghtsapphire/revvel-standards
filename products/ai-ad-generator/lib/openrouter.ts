@@ -9,10 +9,10 @@
  * Default: anthropic/claude-haiku-3 (cheap, fast, good for ad copy).
  */
 
-import { ProductData, AdCopy, AdCopyVariant } from '../types';
+import type { ProductData, AdCopy, AdCopyVariant } from "../types";
 
-const OPENROUTER_BASE = 'https://openrouter.ai/api/v1';
-const DEFAULT_MODEL = 'anthropic/claude-haiku-3';
+const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
+const DEFAULT_MODEL = "anthropic/claude-haiku-3";
 
 function getModel(): string {
   return process.env.OPENROUTER_MODEL || DEFAULT_MODEL;
@@ -24,16 +24,16 @@ function buildPrompt(product: ProductData): string {
       ? `\nCustomer reviews (use as social proof):\n${product.reviews
           .slice(0, 3)
           .map((r) => `- "${r.text}"`)
-          .join('\n')}`
-      : '';
+          .join("\n")}`
+      : "";
 
   return `You are an elite performance marketing copywriter. Generate high-converting ad copy for the following product.
 
 PRODUCT DETAILS:
 - Name: ${product.title}
 - Description: ${product.description}
-- Price: ${product.price || 'Not specified'}
-- Brand: ${product.brand || 'Not specified'}${reviewSnippet}
+- Price: ${product.price || "Not specified"}
+- Brand: ${product.brand || "Not specified"}${reviewSnippet}
 
 OUTPUT (respond with ONLY valid JSON, no markdown fences):
 {
@@ -74,23 +74,23 @@ function mockAdCopy(product: ProductData): AdCopy {
     {
       headline: `Transform Your Life with ${name}`,
       body: `Attention: tired of settling for less? ${name} delivers premium quality at a price that makes sense. Interest piqued? Desire it. Act now.`,
-      cta: 'Shop Now',
-      hook: 'Stop settling for',
-      framework: 'AIDA',
+      cta: "Shop Now",
+      hook: "Stop settling for",
+      framework: "AIDA",
     },
     {
       headline: `Stop Struggling — ${name} Fixes That`,
       body: `Problem: you've tried everything and nothing works. Agitate: every day without a solution costs you time and money. Solution: ${name} was built exactly for this.`,
-      cta: 'Get Yours Today',
-      hook: 'Stop struggling with',
-      framework: 'PAS',
+      cta: "Get Yours Today",
+      hook: "Stop struggling with",
+      framework: "PAS",
     },
     {
       headline: `Before & After: The ${name} Difference`,
       body: `Before ${name}: frustration, wasted time, zero results. After: confidence, results, and freedom. Bridge: one click is all it takes to get there.`,
-      cta: 'Start Your Transformation',
-      hook: 'Before you had',
-      framework: 'BAB',
+      cta: "Start Your Transformation",
+      hook: "Before you had",
+      framework: "BAB",
     },
   ];
 
@@ -99,9 +99,9 @@ function mockAdCopy(product: ProductData): AdCopy {
     primaryHeadline: `${name} — The Smart Choice`,
     script: `[HOOK] Wait — are you still doing it the hard way?\n[PROBLEM] Most people waste hours every week on this.\n[SOLUTION] ${name} changes everything. Here's why...\n[PROOF] Thousands of happy customers can't be wrong.\n[CTA] Click the link to get yours — limited stock!`,
     variants,
-    hashtags: ['#ad', '#sponsored', '#musthave', '#review', '#shopping'],
+    hashtags: ["#ad", "#sponsored", "#musthave", "#review", "#shopping"],
     generatedAt: new Date().toISOString(),
-    model: 'mock-fallback',
+    model: "mock-fallback",
   };
 }
 
@@ -110,7 +110,9 @@ export async function generateAdCopy(product: ProductData): Promise<AdCopy> {
 
   // Use mock when key is absent — keeps local dev functional without credits
   if (!apiKey) {
-    console.warn('[openrouter] OPENROUTER_API_KEY not set — using mock fallback');
+    console.warn(
+      "[openrouter] OPENROUTER_API_KEY not set — using mock fallback",
+    );
     return mockAdCopy(product);
   }
 
@@ -126,18 +128,18 @@ export async function generateAdCopy(product: ProductData): Promise<AdCopy> {
     let res: Response;
     try {
       res = await fetch(`${OPENROUTER_BASE}/chat/completions`, {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           // Required headers for OpenRouter rankings
-          'HTTP-Referer':
-            process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3009',
-          'X-Title': 'AI Ad Generator',
+          "HTTP-Referer":
+            process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3009",
+          "X-Title": "AI Ad Generator",
         },
         body: JSON.stringify({
           model,
-          messages: [{ role: 'user', content: prompt }],
+          messages: [{ role: "user", content: prompt }],
           temperature: 0.8,
           max_tokens: 1200,
         }),
@@ -155,44 +157,50 @@ export async function generateAdCopy(product: ProductData): Promise<AdCopy> {
     const json = (await res.json()) as {
       choices: Array<{ message: { content: string } }>;
     };
-    raw = json.choices?.[0]?.message?.content || '';
+    raw = json.choices?.[0]?.message?.content || "";
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error('[openrouter] call failed, using mock:', msg);
+    console.error("[openrouter] call failed, using mock:", msg);
     return mockAdCopy(product);
   }
 
   // Parse JSON — strip any accidental markdown fences, then validate shape
   try {
-    const cleaned = raw.replace(/^```(?:json)?\s*/m, '').replace(/```\s*$/m, '');
+    const cleaned = raw
+      .replace(/^```(?:json)?\s*/m, "")
+      .replace(/```\s*$/m, "");
     const parsed = JSON.parse(cleaned) as Record<string, unknown>;
 
     // Shape validation — fall back to mock if the model returned unexpected structure
     if (
-      typeof parsed.primaryHeadline !== 'string' ||
-      typeof parsed.script !== 'string' ||
+      typeof parsed.primaryHeadline !== "string" ||
+      typeof parsed.script !== "string" ||
       !Array.isArray(parsed.variants) ||
       parsed.variants.length === 0
     ) {
-      console.warn('[openrouter] response failed shape validation, using mock');
+      console.warn("[openrouter] response failed shape validation, using mock");
       return mockAdCopy(product);
     }
 
-    const variants = (parsed.variants as Array<Record<string, unknown>>).map((v) => ({
-      headline:
-        typeof v.headline === 'string' && v.headline.trim() !== ''
-          ? v.headline.trim()
-          : (parsed.primaryHeadline as string),
-      body:
-        typeof v.body === 'string' && v.body.trim() !== ''
-          ? v.body.trim()
-          : '',
-      cta: typeof v.cta === 'string' ? v.cta : 'Shop Now',
-      hook: typeof v.hook === 'string' ? v.hook : undefined,
-      framework: (['AIDA', 'PAS', 'BAB', 'Direct'].includes(v.framework as string)
-        ? v.framework
-        : 'Direct') as AdCopyVariant['framework'],
-    }));
+    const variants = (parsed.variants as Array<Record<string, unknown>>).map(
+      (v) => ({
+        headline:
+          typeof v.headline === "string" && v.headline.trim() !== ""
+            ? v.headline.trim()
+            : (parsed.primaryHeadline as string),
+        body:
+          typeof v.body === "string" && v.body.trim() !== ""
+            ? v.body.trim()
+            : "",
+        cta: typeof v.cta === "string" ? v.cta : "Shop Now",
+        hook: typeof v.hook === "string" ? v.hook : undefined,
+        framework: (["AIDA", "PAS", "BAB", "Direct"].includes(
+          v.framework as string,
+        )
+          ? v.framework
+          : "Direct") as AdCopyVariant["framework"],
+      }),
+    );
 
     return {
       productTitle: product.title,
@@ -200,13 +208,15 @@ export async function generateAdCopy(product: ProductData): Promise<AdCopy> {
       script: parsed.script as string,
       variants,
       hashtags: Array.isArray(parsed.hashtags)
-        ? (parsed.hashtags as unknown[]).filter((h): h is string => typeof h === 'string')
+        ? (parsed.hashtags as unknown[]).filter(
+            (h): h is string => typeof h === "string",
+          )
         : [],
       generatedAt: new Date().toISOString(),
       model,
     };
   } catch {
-    console.warn('[openrouter] JSON parse failed, using mock');
+    console.warn("[openrouter] JSON parse failed, using mock");
     return mockAdCopy(product);
   }
 }

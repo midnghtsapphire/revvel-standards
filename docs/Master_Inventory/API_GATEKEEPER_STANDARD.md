@@ -74,17 +74,17 @@ Client Request
 
 Every request must pass ALL of these checks before reaching application logic:
 
-| Check | Rule | Action on Fail |
-|-------|------|---------------|
-| TLS | HTTPS only, TLS 1.2+ | Block + 426 |
-| Content-Type | Must match endpoint contract | Block + 415 |
-| Payload size | Max 10 MB (configurable per endpoint) | Block + 413 |
-| Schema | Request body must match Zod schema | Block + 422 |
-| SQL injection | Parameterized queries only; reject raw interpolation | Block + 400 |
-| XSS | Sanitize all string inputs with DOMPurify or equivalent | Strip + log |
-| Path traversal | Reject `../`, `%2e%2e`, encoded traversal sequences | Block + 400 |
-| CSRF | Require `X-Requested-With` or CSRF token for state-changing requests | Block + 403 |
-| CORS | Validate `Origin` against allowlist (see `SECURITY_STANDARD.md` §4) | Block + 403 |
+| Check          | Rule                                                                 | Action on Fail |
+| -------------- | -------------------------------------------------------------------- | -------------- |
+| TLS            | HTTPS only, TLS 1.2+                                                 | Block + 426    |
+| Content-Type   | Must match endpoint contract                                         | Block + 415    |
+| Payload size   | Max 10 MB (configurable per endpoint)                                | Block + 413    |
+| Schema         | Request body must match Zod schema                                   | Block + 422    |
+| SQL injection  | Parameterized queries only; reject raw interpolation                 | Block + 400    |
+| XSS            | Sanitize all string inputs with DOMPurify or equivalent              | Strip + log    |
+| Path traversal | Reject `../`, `%2e%2e`, encoded traversal sequences                  | Block + 400    |
+| CSRF           | Require `X-Requested-With` or CSRF token for state-changing requests | Block + 403    |
+| CORS           | Validate `Origin` against allowlist (see `SECURITY_STANDARD.md` §4)  | Block + 403    |
 
 ### 4.2. Request Validation Middleware (Express / Hono)
 
@@ -127,7 +127,7 @@ function sanitizeStrings<T>(data: T): T {
   if (Array.isArray(data)) return data.map(sanitizeStrings) as unknown as T;
   if (data !== null && typeof data === "object") {
     return Object.fromEntries(
-      Object.entries(data).map(([k, v]) => [k, sanitizeStrings(v)])
+      Object.entries(data).map(([k, v]) => [k, sanitizeStrings(v)]),
     ) as T;
   }
   return data;
@@ -161,7 +161,12 @@ function loadBlocklist(): BlockEntry[] {
 
 let blocklist = loadBlocklist();
 // Refresh every 5 minutes
-setInterval(() => { blocklist = loadBlocklist(); }, 5 * 60 * 1000);
+setInterval(
+  () => {
+    blocklist = loadBlocklist();
+  },
+  5 * 60 * 1000,
+);
 
 export function enforceBlocklist() {
   return (req: Request, res: Response, next: NextFunction) => {
@@ -188,13 +193,13 @@ export function enforceBlocklist() {
 
 ### 5.1. Token Types and Lifetimes
 
-| Token Type | Lifetime | Storage | Rotation Trigger |
-|------------|----------|---------|-----------------|
-| Access token (JWT) | 15 minutes | Memory only | Expiry |
-| Refresh token | 7 days | HttpOnly cookie | Use-once or expiry |
-| API key (service-to-service) | 90 days | HashiCorp Vault | 90-day schedule or compromise |
-| Webhook signing secret | 1 year | HashiCorp Vault | Annual schedule or compromise |
-| Session token | 24 hours | Server-side store | Logout or expiry |
+| Token Type                   | Lifetime   | Storage           | Rotation Trigger              |
+| ---------------------------- | ---------- | ----------------- | ----------------------------- |
+| Access token (JWT)           | 15 minutes | Memory only       | Expiry                        |
+| Refresh token                | 7 days     | HttpOnly cookie   | Use-once or expiry            |
+| API key (service-to-service) | 90 days    | HashiCorp Vault   | 90-day schedule or compromise |
+| Webhook signing secret       | 1 year     | HashiCorp Vault   | Annual schedule or compromise |
+| Session token                | 24 hours   | Server-side store | Logout or expiry              |
 
 ### 5.2. JWT Implementation
 
@@ -219,7 +224,9 @@ if (!SECRET || SECRET.length < 32) {
   throw new Error("JWT_SECRET must be at least 32 characters");
 }
 
-export function issueAccessToken(payload: Omit<TokenPayload, "iat" | "exp" | "jti">): string {
+export function issueAccessToken(
+  payload: Omit<TokenPayload, "iat" | "exp" | "jti">,
+): string {
   return jwt.sign(
     {
       ...payload,
@@ -231,7 +238,7 @@ export function issueAccessToken(payload: Omit<TokenPayload, "iat" | "exp" | "jt
       expiresIn: "15m",
       issuer: "revvel-gatekeeper",
       audience: "revvel-api",
-    }
+    },
   );
 }
 
@@ -253,7 +260,7 @@ name: Scheduled API Key Rotation
 
 on:
   schedule:
-    - cron: "0 2 1 */3 *"   # 1st of every 3rd month at 2am UTC
+    - cron: "0 2 1 */3 *" # 1st of every 3rd month at 2am UTC
   workflow_dispatch:
     inputs:
       service:
@@ -303,7 +310,10 @@ redis.connect();
 
 const REVOKED_PREFIX = "revoked:jti:";
 
-export async function revokeToken(jti: string, expiresInSeconds: number): Promise<void> {
+export async function revokeToken(
+  jti: string,
+  expiresInSeconds: number,
+): Promise<void> {
   await redis.set(`${REVOKED_PREFIX}${jti}`, "1", { EX: expiresInSeconds });
 }
 
@@ -318,13 +328,13 @@ export async function isRevoked(jti: string): Promise<boolean> {
 
 ### 6.1. Supported Auth Flows
 
-| Flow | Use Case | Standard |
-|------|---------|---------|
-| JWT Bearer | Stateless API access | RFC 7519 |
+| Flow                                | Use Case                    | Standard            |
+| ----------------------------------- | --------------------------- | ------------------- |
+| JWT Bearer                          | Stateless API access        | RFC 7519            |
 | OAuth 2.0 Authorization Code + PKCE | User-facing web/mobile apps | RFC 6749 + RFC 7636 |
-| Client Credentials | Service-to-service | RFC 6749 §4.4 |
-| API Key (HMAC-signed) | Third-party integrations | Custom (see §6.3) |
-| mTLS | High-security service mesh | RFC 8446 |
+| Client Credentials                  | Service-to-service          | RFC 6749 §4.4       |
+| API Key (HMAC-signed)               | Third-party integrations    | Custom (see §6.3)   |
+| mTLS                                | High-security service mesh  | RFC 8446            |
 
 ### 6.2. Role-Based Access Control (RBAC)
 
@@ -338,14 +348,8 @@ export const PERMISSIONS = {
     "read:public-data",
     "write:own-content",
   ],
-  service: [
-    "read:all",
-    "write:events",
-    "write:metrics",
-  ],
-  readonly: [
-    "read:public-data",
-  ],
+  service: ["read:all", "write:events", "write:metrics"],
+  readonly: ["read:public-data"],
 } satisfies Record<string, string[]>;
 
 export function can(role: keyof typeof PERMISSIONS, action: string): boolean {
@@ -364,7 +368,7 @@ export function verifyApiKey(
   providedKey: string,
   storedHash: string,
   requestBody: string,
-  timestamp: string
+  timestamp: string,
 ): boolean {
   // Reject requests older than 5 minutes (replay protection)
   if (Math.abs(Date.now() - parseInt(timestamp)) > 5 * 60 * 1000) {
@@ -380,7 +384,7 @@ export function verifyApiKey(
   const keyHash = crypto.createHash("sha256").update(providedKey).digest("hex");
   const timingSafe = crypto.timingSafeEqual(
     Buffer.from(keyHash),
-    Buffer.from(storedHash)
+    Buffer.from(storedHash),
   );
 
   return timingSafe;
@@ -393,14 +397,14 @@ export function verifyApiKey(
 
 ### 7.1. Rate Limit Tiers
 
-| Tier | Limit | Window | Applied To |
-|------|-------|--------|-----------|
-| Global | 10,000 req/min | 1 min | Per IP |
-| Authenticated user | 1,000 req/min | 1 min | Per user ID |
-| API key | 5,000 req/min | 1 min | Per API key |
-| Unauthenticated | 100 req/min | 1 min | Per IP |
-| Auth endpoints | 10 req/min | 1 min | Per IP (brute-force protection) |
-| Webhook | 500 req/min | 1 min | Per source IP |
+| Tier               | Limit          | Window | Applied To                      |
+| ------------------ | -------------- | ------ | ------------------------------- |
+| Global             | 10,000 req/min | 1 min  | Per IP                          |
+| Authenticated user | 1,000 req/min  | 1 min  | Per user ID                     |
+| API key            | 5,000 req/min  | 1 min  | Per API key                     |
+| Unauthenticated    | 100 req/min    | 1 min  | Per IP                          |
+| Auth endpoints     | 10 req/min     | 1 min  | Per IP (brute-force protection) |
+| Webhook            | 500 req/min    | 1 min  | Per source IP                   |
 
 ### 7.2. Rate Limiter Implementation
 
@@ -415,8 +419,8 @@ redisClient.connect();
 export const globalLimiter = new RateLimiterRedis({
   storeClient: redisClient,
   keyPrefix: "rl:global",
-  points: 10000,     // requests
-  duration: 60,      // per 60 seconds
+  points: 10000, // requests
+  duration: 60, // per 60 seconds
   blockDuration: 60, // block for 60 seconds after limit exceeded
 });
 
@@ -451,25 +455,25 @@ GitHub Actions workflows triggered via the API or webhook must validate that the
 
 ```yaml
 # Mandatory check on all workflow_dispatch and repository_dispatch events
-  authorize-trigger:
-    name: Authorize Workflow Trigger
-    runs-on: ubuntu-latest
-    steps:
-      - name: Validate caller identity
-        run: |
-          # Reject triggers from non-approved actors
-          APPROVED_ACTORS="dependabot[bot] github-actions[bot] copilot"
-          if [[ "${{ github.actor }}" != "midnghtsapphire" ]] && \
-             [[ ! " $APPROVED_ACTORS " =~ " ${{ github.actor }} " ]]; then
-            echo "Unauthorized actor: ${{ github.actor }}"
-            exit 1
-          fi
+authorize-trigger:
+  name: Authorize Workflow Trigger
+  runs-on: ubuntu-latest
+  steps:
+    - name: Validate caller identity
+      run: |
+        # Reject triggers from non-approved actors
+        APPROVED_ACTORS="dependabot[bot] github-actions[bot] copilot"
+        if [[ "${{ github.actor }}" != "midnghtsapphire" ]] && \
+           [[ ! " $APPROVED_ACTORS " =~ " ${{ github.actor }} " ]]; then
+          echo "Unauthorized actor: ${{ github.actor }}"
+          exit 1
+        fi
 
-      - name: Validate event signature
-        if: github.event_name == 'repository_dispatch'
-        run: |
-          echo "${{ toJSON(github.event.client_payload) }}" | \
-            python scripts/gatekeeper/verify_dispatch_signature.py
+    - name: Validate event signature
+      if: github.event_name == 'repository_dispatch'
+      run: |
+        echo "${{ toJSON(github.event.client_payload) }}" | \
+          python scripts/gatekeeper/verify_dispatch_signature.py
 ```
 
 ### 8.2. Workflow Permission Management
@@ -479,7 +483,7 @@ All GitHub Actions workflows must declare minimal permissions:
 ```yaml
 # REQUIRED at the top of every workflow file
 permissions:
-  contents: read         # Default: read only
+  contents: read # Default: read only
   # Add only what is needed:
   # pull-requests: write  # If opening PRs
   # security-events: write  # If uploading SARIF
@@ -500,18 +504,18 @@ Every API request must produce a structured log entry with these fields:
 ```typescript
 // src/audit/auditLog.ts
 interface AuditLogEntry {
-  timestamp: string;          // ISO 8601 UTC
-  request_id: string;         // UUID v4
-  method: string;             // GET, POST, etc.
-  path: string;               // Normalized path (no query params)
+  timestamp: string; // ISO 8601 UTC
+  request_id: string; // UUID v4
+  method: string; // GET, POST, etc.
+  path: string; // Normalized path (no query params)
   status_code: number;
   duration_ms: number;
-  client_ip: string;          // Forwarded IP (validated)
-  user_id?: string;           // If authenticated
-  api_key_id?: string;        // Key ID (not the key itself)
+  client_ip: string; // Forwarded IP (validated)
+  user_id?: string; // If authenticated
+  api_key_id?: string; // Key ID (not the key itself)
   user_agent: string;
-  blocked: boolean;           // True if gatekeeper blocked the request
-  block_reason?: string;      // Why it was blocked
+  blocked: boolean; // True if gatekeeper blocked the request
+  block_reason?: string; // Why it was blocked
   rate_limited: boolean;
   geo?: {
     country: string;
@@ -525,6 +529,7 @@ interface AuditLogEntry {
 ### 9.2. Log Integrity
 
 All audit logs are:
+
 - **Append-only** — no update or delete operations on log records.
 - **Shipped immediately** to a log aggregation service (Loki, Elastic, Datadog, CloudWatch).
 - **Retained for minimum 90 days** (365 days for regulated apps).
@@ -534,14 +539,19 @@ All audit logs are:
 // Log sanitization
 function sanitizeForLog(obj: Record<string, unknown>): Record<string, unknown> {
   const REDACTED_KEYS = new Set([
-    "password", "token", "secret", "authorization",
-    "x-api-key", "cookie", "set-cookie",
+    "password",
+    "token",
+    "secret",
+    "authorization",
+    "x-api-key",
+    "cookie",
+    "set-cookie",
   ]);
   return Object.fromEntries(
     Object.entries(obj).map(([k, v]) => [
       k,
       REDACTED_KEYS.has(k.toLowerCase()) ? "[REDACTED]" : v,
-    ])
+    ]),
   );
 }
 ```
@@ -559,7 +569,7 @@ services:
   kong:
     image: kong:3.7-ubuntu
     environment:
-      KONG_DATABASE: "off"               # DB-less mode
+      KONG_DATABASE: "off" # DB-less mode
       KONG_DECLARATIVE_CONFIG: /kong.yml
       KONG_PROXY_ACCESS_LOG: /dev/stdout
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
@@ -568,8 +578,8 @@ services:
     volumes:
       - ./kong.yml:/kong.yml:ro
     ports:
-      - "8000:8000"   # Proxy
-      - "8001:8001"   # Admin API (internal only)
+      - "8000:8000" # Proxy
+      - "8001:8001" # Admin API (internal only)
 ```
 
 ```yaml
@@ -593,7 +603,7 @@ services:
           allowed_content_types: ["application/json"]
       - name: ip-restriction
         config:
-          deny: []   # Populated from OSINT blocklist
+          deny: [] # Populated from OSINT blocklist
 ```
 
 ### 10.2. Traefik (Recommended for Container / Kubernetes)
@@ -655,7 +665,11 @@ api.revvel.io {
 import express from "express";
 import helmet from "helmet";
 import { enforceBlocklist } from "./middleware/blocklist";
-import { rateLimitMiddleware, globalLimiter, authLimiter } from "./middleware/rateLimiter";
+import {
+  rateLimitMiddleware,
+  globalLimiter,
+  authLimiter,
+} from "./middleware/rateLimiter";
 import { validateRequest } from "./middleware/gatekeeper";
 import { auditLogger } from "./audit/auditLog";
 
@@ -716,7 +730,9 @@ export function idempotencyMiddleware() {
     const originalJson = res.json.bind(res);
     res.json = (body) => {
       if (res.statusCode < 500) {
-        redis.set(`idempotent:${key}`, JSON.stringify(body), { EX: IDEMPOTENCY_TTL });
+        redis.set(`idempotent:${key}`, JSON.stringify(body), {
+          EX: IDEMPOTENCY_TTL,
+        });
       }
       return originalJson(body);
     };
@@ -735,7 +751,7 @@ export class GatekeeperError extends Error {
     public readonly statusCode: number,
     public readonly code: string,
     message: string,
-    public readonly details?: unknown
+    public readonly details?: unknown,
   ) {
     super(message);
   }
@@ -746,7 +762,7 @@ export function errorHandler(
   err: unknown,
   req: Request,
   res: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ): void {
   if (err instanceof GatekeeperError) {
     res.status(err.statusCode).json({
@@ -774,13 +790,13 @@ export function errorHandler(
 
 ### 12.1. Agent Authorization Matrix
 
-| Agent | Allowed Actions | Required Token Scope |
-|-------|----------------|---------------------|
-| OSINT Pipeline | Read feeds, write reports | `write:reports` |
-| Audit Agent | Read all code, open issues/PRs | `read:code`, `write:issues` |
-| Remediation Bot | Push branches, open PRs | `write:pull-requests` |
-| Dependency Watcher | Read lock files, open issues | `read:code`, `write:issues` |
-| Config Drift Detector | Read configs, post comments | `read:code`, `write:comments` |
+| Agent                 | Allowed Actions                | Required Token Scope          |
+| --------------------- | ------------------------------ | ----------------------------- |
+| OSINT Pipeline        | Read feeds, write reports      | `write:reports`               |
+| Audit Agent           | Read all code, open issues/PRs | `read:code`, `write:issues`   |
+| Remediation Bot       | Push branches, open PRs        | `write:pull-requests`         |
+| Dependency Watcher    | Read lock files, open issues   | `read:code`, `write:issues`   |
+| Config Drift Detector | Read configs, post comments    | `read:code`, `write:comments` |
 
 ### 12.2. Trigger Security Controls
 
@@ -855,18 +871,18 @@ OIDC_CLIENT_SECRET=<client-secret>   # In Vault, not here
 
 ## 15. FOSS Alternatives Reference
 
-| Category | FOSS Option | Hosted/SaaS Alternative |
-|----------|-------------|------------------------|
-| API Gateway | Kong, Traefik, Tyk | AWS API GW, Kong Cloud |
-| Auth/Identity | Keycloak, Authentik, Zitadel | Auth0, Clerk |
-| Rate Limiting | rate-limiter-flexible | Upstash Rate Limit |
-| Secret Management | HashiCorp Vault | AWS Secrets Manager |
-| Audit Logging | Loki + Grafana | Datadog, Splunk |
-| Policy Engine | Open Policy Agent (OPA) | AWS IAM, Styra DAS |
-| Blocklist Management | OpenCTI, MISP | Cloudflare Gateway |
-| Certificate Management | Certbot, Caddy | AWS ACM |
-| Service Mesh | Istio, Linkerd | AWS App Mesh |
-| WAF | ModSecurity, Coraza | Cloudflare WAF, AWS WAF |
+| Category               | FOSS Option                  | Hosted/SaaS Alternative |
+| ---------------------- | ---------------------------- | ----------------------- |
+| API Gateway            | Kong, Traefik, Tyk           | AWS API GW, Kong Cloud  |
+| Auth/Identity          | Keycloak, Authentik, Zitadel | Auth0, Clerk            |
+| Rate Limiting          | rate-limiter-flexible        | Upstash Rate Limit      |
+| Secret Management      | HashiCorp Vault              | AWS Secrets Manager     |
+| Audit Logging          | Loki + Grafana               | Datadog, Splunk         |
+| Policy Engine          | Open Policy Agent (OPA)      | AWS IAM, Styra DAS      |
+| Blocklist Management   | OpenCTI, MISP                | Cloudflare Gateway      |
+| Certificate Management | Certbot, Caddy               | AWS ACM                 |
+| Service Mesh           | Istio, Linkerd               | AWS App Mesh            |
+| WAF                    | ModSecurity, Coraza          | Cloudflare WAF, AWS WAF |
 
 ---
 

@@ -33,12 +33,12 @@ This copies the correct `.mcp.json` template and `.env.mcp.example` into your pr
 
 Templates are stored in `revvel-standards/templates/mcp/`. Copy the appropriate one to your project root as `.mcp.json`.
 
-| Template | Servers Included | Use Case |
-|---|---|---|
-| `mcp.full.json` | All 33 servers | Maximum capability — use for full-stack projects |
-| `mcp.web.json` | 19 servers | Web apps — DB, search, memory, productivity, filesystem, coding, creative |
-| `mcp.mobile.json` | 15 servers | Mobile/Expo apps — DB, search, memory, communication, filesystem, creative |
-| `mcp.minimal.json` | 8 servers | Lightweight — DB, search, memory, filesystem only |
+| Template           | Servers Included | Use Case                                                                   |
+| ------------------ | ---------------- | -------------------------------------------------------------------------- |
+| `mcp.full.json`    | All 33 servers   | Maximum capability — use for full-stack projects                           |
+| `mcp.web.json`     | 19 servers       | Web apps — DB, search, memory, productivity, filesystem, coding, creative  |
+| `mcp.mobile.json`  | 15 servers       | Mobile/Expo apps — DB, search, memory, communication, filesystem, creative |
+| `mcp.minimal.json` | 8 servers        | Lightweight — DB, search, memory, filesystem only                          |
 
 ---
 
@@ -74,7 +74,12 @@ These servers provide AI models with direct read/write access to databases. Use 
   ```json
   {
     "command": "npx",
-    "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "${SQLITE_DB_PATH}"]
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-sqlite",
+      "--db-path",
+      "${SQLITE_DB_PATH}"
+    ]
   }
   ```
 
@@ -235,21 +240,21 @@ Give AI agents live internet access to defeat knowledge cutoffs and hallucinatio
   import meilisearch
   client = meilisearch.Client('http://localhost:7700', 'masterKey')
   index = client.index('products')
-  
+
   # Add products
   products = [
     {'id': 1, 'name': 'Soul Bowl', 'category': 'entree', 'price': 1295},
     {'id': 2, 'name': 'Fried Rice', 'category': 'side', 'price': 595}
   ]
   index.add_documents(products)
-  
+
   # Configure search settings
   index.update_settings({
     'searchableAttributes': ['name', 'category', 'description'],
     'filterableAttributes': ['category', 'price'],
     'sortableAttributes': ['price', 'name']
   })
-  
+
   # Search (instant results, typo tolerant)
   results = index.search('soul bowls')  # finds "Soul Bowl" even with typo
   ```
@@ -681,7 +686,13 @@ Code execution, generation, debugging, and semantic editing.
   ```json
   {
     "command": "uvx",
-    "args": ["serena", "--context", "ide-assistant", "--project", "${PROJECT_ROOT}"]
+    "args": [
+      "serena",
+      "--context",
+      "ide-assistant",
+      "--project",
+      "${PROJECT_ROOT}"
+    ]
   }
   ```
 
@@ -714,77 +725,77 @@ All environment variables required by MCP servers. Copy from `templates/mcp/.env
 
 ### Database
 
-| Variable | Server | Description |
-|---|---|---|
-| `DATABASE_URL` | Postgres | Full PostgreSQL connection string |
-| `SQLITE_DB_PATH` | SQLite | Absolute path to `.db` file |
-| `MONGODB_URI` | MongoDB | MongoDB connection string |
-| `CLICKHOUSE_HOST` | ClickHouse | ClickHouse server hostname |
-| `CLICKHOUSE_PORT` | ClickHouse | ClickHouse port (default: 8443) |
-| `CLICKHOUSE_USER` | ClickHouse | ClickHouse username |
-| `CLICKHOUSE_PASSWORD` | ClickHouse | ClickHouse password |
-| `CLICKHOUSE_DATABASE` | ClickHouse | ClickHouse database name |
+| Variable              | Server     | Description                       |
+| --------------------- | ---------- | --------------------------------- |
+| `DATABASE_URL`        | Postgres   | Full PostgreSQL connection string |
+| `SQLITE_DB_PATH`      | SQLite     | Absolute path to `.db` file       |
+| `MONGODB_URI`         | MongoDB    | MongoDB connection string         |
+| `CLICKHOUSE_HOST`     | ClickHouse | ClickHouse server hostname        |
+| `CLICKHOUSE_PORT`     | ClickHouse | ClickHouse port (default: 8443)   |
+| `CLICKHOUSE_USER`     | ClickHouse | ClickHouse username               |
+| `CLICKHOUSE_PASSWORD` | ClickHouse | ClickHouse password               |
+| `CLICKHOUSE_DATABASE` | ClickHouse | ClickHouse database name          |
 
 ### Search
 
-| Variable | Server | Description |
-|---|---|---|
-| `BRAVE_API_KEY` | Brave Search | Brave Search API key (free tier available) |
-| `TAVILY_API_KEY` | Tavily | Tavily AI search API key |
+| Variable         | Server       | Description                                |
+| ---------------- | ------------ | ------------------------------------------ |
+| `BRAVE_API_KEY`  | Brave Search | Brave Search API key (free tier available) |
+| `TAVILY_API_KEY` | Tavily       | Tavily AI search API key                   |
 
 ### Finance
 
-| Variable | Server | Description |
-|---|---|---|
-| `COINMARKETCAP_API_KEY` | CoinMarketCap | CoinMarketCap API key |
+| Variable                | Server        | Description                                   |
+| ----------------------- | ------------- | --------------------------------------------- |
+| `COINMARKETCAP_API_KEY` | CoinMarketCap | CoinMarketCap API key                         |
 | `ALPHA_VANTAGE_API_KEY` | Alpha Vantage | Alpha Vantage API key (free tier: 25 req/day) |
 
 ### Communication
 
-| Variable | Server | Description |
-|---|---|---|
-| `SLACK_BOT_TOKEN` | Slack | Slack bot OAuth token (`xoxb-...`) |
-| `SLACK_TEAM_ID` | Slack | Slack workspace team ID |
-| `TELEGRAM_API_ID` | Telegram | Telegram app API ID |
-| `TELEGRAM_API_HASH` | Telegram | Telegram app API hash |
-| `TELEGRAM_PHONE` | Telegram | Phone number in international format |
-| `GSUITE_CLIENT_ID` | GSuite | Google OAuth client ID |
-| `GSUITE_CLIENT_SECRET` | GSuite | Google OAuth client secret |
-| `GSUITE_REFRESH_TOKEN` | GSuite | Google OAuth refresh token |
-| `WHATSAPP_DB_PATH` | WhatsApp | Path to WhatsApp chat database |
+| Variable               | Server   | Description                          |
+| ---------------------- | -------- | ------------------------------------ |
+| `SLACK_BOT_TOKEN`      | Slack    | Slack bot OAuth token (`xoxb-...`)   |
+| `SLACK_TEAM_ID`        | Slack    | Slack workspace team ID              |
+| `TELEGRAM_API_ID`      | Telegram | Telegram app API ID                  |
+| `TELEGRAM_API_HASH`    | Telegram | Telegram app API hash                |
+| `TELEGRAM_PHONE`       | Telegram | Phone number in international format |
+| `GSUITE_CLIENT_ID`     | GSuite   | Google OAuth client ID               |
+| `GSUITE_CLIENT_SECRET` | GSuite   | Google OAuth client secret           |
+| `GSUITE_REFRESH_TOKEN` | GSuite   | Google OAuth refresh token           |
+| `WHATSAPP_DB_PATH`     | WhatsApp | Path to WhatsApp chat database       |
 
 ### Memory & Knowledge
 
-| Variable | Server | Description |
-|---|---|---|
-| `MEM0_API_KEY` | Mem0 | Mem0 platform API key |
-| `GRAPHLIT_ORGANIZATION_ID` | Graphlit | Graphlit organization ID |
-| `GRAPHLIT_ENVIRONMENT_ID` | Graphlit | Graphlit environment ID |
-| `GRAPHLIT_JWT_SECRET` | Graphlit | Graphlit JWT signing secret |
+| Variable                   | Server   | Description                 |
+| -------------------------- | -------- | --------------------------- |
+| `MEM0_API_KEY`             | Mem0     | Mem0 platform API key       |
+| `GRAPHLIT_ORGANIZATION_ID` | Graphlit | Graphlit organization ID    |
+| `GRAPHLIT_ENVIRONMENT_ID`  | Graphlit | Graphlit environment ID     |
+| `GRAPHLIT_JWT_SECRET`      | Graphlit | Graphlit JWT signing secret |
 
 ### Productivity
 
-| Variable | Server | Description |
-|---|---|---|
-| `OBSIDIAN_API_KEY` | Obsidian | Obsidian Local REST API key |
-| `OBSIDIAN_HOST` | Obsidian | Obsidian Local REST API host (default: `http://localhost:27123`) |
-| `NOTION_API_KEY` | Notion | Notion integration token |
-| `INBOX_ZERO_API_KEY` | Inbox Zero | Inbox Zero API key |
+| Variable             | Server     | Description                                                      |
+| -------------------- | ---------- | ---------------------------------------------------------------- |
+| `OBSIDIAN_API_KEY`   | Obsidian   | Obsidian Local REST API key                                      |
+| `OBSIDIAN_HOST`      | Obsidian   | Obsidian Local REST API host (default: `http://localhost:27123`) |
+| `NOTION_API_KEY`     | Notion     | Notion integration token                                         |
+| `INBOX_ZERO_API_KEY` | Inbox Zero | Inbox Zero API key                                               |
 
 ### Cloud Storage
 
-| Variable | Server | Description |
-|---|---|---|
-| `GDRIVE_CLIENT_ID` | Google Drive | Google Drive OAuth client ID |
+| Variable               | Server       | Description                      |
+| ---------------------- | ------------ | -------------------------------- |
+| `GDRIVE_CLIENT_ID`     | Google Drive | Google Drive OAuth client ID     |
 | `GDRIVE_CLIENT_SECRET` | Google Drive | Google Drive OAuth client secret |
 | `GDRIVE_REFRESH_TOKEN` | Google Drive | Google Drive OAuth refresh token |
 
 ### Coding
 
-| Variable | Server | Description |
-|---|---|---|
-| `YEPCODE_API_TOKEN` | JavaScript MCP | YepCode cloud execution API token |
-| `PROJECT_ROOT` | Filesystem / Serena | Absolute path to project root |
+| Variable            | Server              | Description                       |
+| ------------------- | ------------------- | --------------------------------- |
+| `YEPCODE_API_TOKEN` | JavaScript MCP      | YepCode cloud execution API token |
+| `PROJECT_ROOT`      | Filesystem / Serena | Absolute path to project root     |
 
 ---
 
@@ -1090,15 +1101,15 @@ The 20 `MCP-*` repos are the InTheWild platform microservice suite. Each is a Ty
 
 **Modules with MCP tools fully implemented (add to projects that need them):**
 
-| Module | Repo | Tools | Domain |
-|---|---|---|---|
-| MCP-ANALYTICS | [midnghtsapphire/MCP-ANALYTICS](https://github.com/midnghtsapphire/MCP-ANALYTICS) | `get_analytics_data` | Event tracking, user analytics |
-| MCP-SUBSCRIPTION | [midnghtsapphire/MCP-SUBSCRIPTION](https://github.com/midnghtsapphire/MCP-SUBSCRIPTION) | `getSubscriptions` | Subscription lifecycle |
-| MCP-ADMIN-DASHBOARD | [midnghtsapphire/MCP-ADMIN-DASHBOARD](https://github.com/midnghtsapphire/MCP-ADMIN-DASHBOARD) | `getUsers`, `addUser` | Admin user management |
-| MCP-CUSTOMER-SUPPORT | [midnghtsapphire/MCP-CUSTOMER-SUPPORT](https://github.com/midnghtsapphire/MCP-CUSTOMER-SUPPORT) | `fetchCustomerData` | Customer data retrieval |
-| MCP-USER-DASHBOARD | [midnghtsapphire/MCP-USER-DASHBOARD](https://github.com/midnghtsapphire/MCP-USER-DASHBOARD) | `getUserData`, `updateUserData` | User profile management |
-| MCP-WEBSITE-GENERATOR | [midnghtsapphire/MCP-WEBSITE-GENERATOR](https://github.com/midnghtsapphire/MCP-WEBSITE-GENERATOR) | `generateWebsite` | AI website generation |
-| MCP-CONTENT-CALENDAR | [midnghtsapphire/MCP-CONTENT-CALENDAR](https://github.com/midnghtsapphire/MCP-CONTENT-CALENDAR) | (connected, tools pending) | Content scheduling |
+| Module                | Repo                                                                                              | Tools                           | Domain                         |
+| --------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------- | ------------------------------ |
+| MCP-ANALYTICS         | [midnghtsapphire/MCP-ANALYTICS](https://github.com/midnghtsapphire/MCP-ANALYTICS)                 | `get_analytics_data`            | Event tracking, user analytics |
+| MCP-SUBSCRIPTION      | [midnghtsapphire/MCP-SUBSCRIPTION](https://github.com/midnghtsapphire/MCP-SUBSCRIPTION)           | `getSubscriptions`              | Subscription lifecycle         |
+| MCP-ADMIN-DASHBOARD   | [midnghtsapphire/MCP-ADMIN-DASHBOARD](https://github.com/midnghtsapphire/MCP-ADMIN-DASHBOARD)     | `getUsers`, `addUser`           | Admin user management          |
+| MCP-CUSTOMER-SUPPORT  | [midnghtsapphire/MCP-CUSTOMER-SUPPORT](https://github.com/midnghtsapphire/MCP-CUSTOMER-SUPPORT)   | `fetchCustomerData`             | Customer data retrieval        |
+| MCP-USER-DASHBOARD    | [midnghtsapphire/MCP-USER-DASHBOARD](https://github.com/midnghtsapphire/MCP-USER-DASHBOARD)       | `getUserData`, `updateUserData` | User profile management        |
+| MCP-WEBSITE-GENERATOR | [midnghtsapphire/MCP-WEBSITE-GENERATOR](https://github.com/midnghtsapphire/MCP-WEBSITE-GENERATOR) | `generateWebsite`               | AI website generation          |
+| MCP-CONTENT-CALENDAR  | [midnghtsapphire/MCP-CONTENT-CALENDAR](https://github.com/midnghtsapphire/MCP-CONTENT-CALENDAR)   | (connected, tools pending)      | Content scheduling             |
 
 **Modules with partial MCP implementation (REST API works, tools need completion):**
 
@@ -1159,5 +1170,5 @@ For marketing and landing pages for MCP servers, the following image generation 
 
 💡 **Tips for Fine-Tuning the MCP Vibe:**
 
-- **To emphasize tool-calling or security:** Add phrases like *showing secure API authorization badges* or *displaying sandboxed tool execution logs* to make the functional purpose clearer.
-- **To change the visual hierarchy:** If you want a more abstract layout representing the "protocol" flow, use terms like *a central core with radial glass nodes stretching outward* to shift it away from a standard rectangular layout.
+- **To emphasize tool-calling or security:** Add phrases like _showing secure API authorization badges_ or _displaying sandboxed tool execution logs_ to make the functional purpose clearer.
+- **To change the visual hierarchy:** If you want a more abstract layout representing the "protocol" flow, use terms like _a central core with radial glass nodes stretching outward_ to shift it away from a standard rectangular layout.

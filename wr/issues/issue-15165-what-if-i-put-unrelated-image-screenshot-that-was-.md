@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-07  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-07  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -105,18 +104,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -128,6 +128,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28748263087.md`
 
 # WR-Ready Research Packet: Accidental Unrelated Image Screenshot
@@ -137,6 +138,7 @@ Source packet: `docs/research-engine/run-28748263087.md`
 **BLOCK**: This WR is malformed and unactionable. The issue contains only a question in the title with all required fields empty. This appears to be a process question about handling accidental uploads rather than a work request requiring development.
 
 **Immediate Action Required**:
+
 1. Close this issue as `invalid` with explanation
 2. Answer the user's question about correcting accidental uploads
 3. Create proper documentation for WR process and error handling
@@ -147,11 +149,13 @@ Source packet: `docs/research-engine/run-28748263087.md`
 **Primary Audience**: Development teams using automated documentation/content pipelines who need clear error recovery mechanisms.
 
 **Secondary Audiences**:
+
 - Product managers concerned about data exposure risks
 - Compliance teams needing audit trails for accidental uploads
 - End users who make upload mistakes and need immediate remediation
 
 **Why**: Accidental uploads are a common user error that can lead to:
+
 - Privacy breaches (sensitive data exposure)
 - Compliance violations (GDPR, HIPAA)
 - User frustration and support burden
@@ -160,12 +164,14 @@ Source packet: `docs/research-engine/run-28748263087.md`
 ## 3. Marketing and SEO Plan
 
 **Primary Keywords**:
+
 - "accidentally uploaded wrong image"
-- "remove unrelated screenshot" 
+- "remove unrelated screenshot"
 - "fix image upload mistake"
 - "how to delete uploaded image"
 
 **Content Strategy**:
+
 1. **Help Center Article**: "How to Fix Accidental Image Uploads in [Product]"
    - Meta: "Learn how to quickly remove or replace accidentally uploaded screenshots with step-by-step instructions and prevention tips."
    - Include FAQ section with common scenarios
@@ -184,31 +190,34 @@ Source packet: `docs/research-engine/run-28748263087.md`
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Image Upload Handling | Pricing | Verification |
-|------------|----------------------|---------|--------------|
-| GitHub | Edit/delete comments with attachments, clear UI controls | Free - $21/user/month | [GitHub Docs](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) |
-| Slack | Immediate file removal, confirmation dialogs, audit trails | Free - $12.50/user/month | [Slack Help](https://slack.com/help/articles/204399343-Upload-and-share-files-in-Slack) |
-| Google Drive | One-click removal, version history, trash recovery | Free - $12/user/month | [Drive Support](https://support.google.com/drive/answer/2424368?hl=en) |
-| Notion | Remove images anytime, clear UI affordances | Free - $10/user/month | [Notion Help](https://www.notion.so/help/remove-files) |
-| Jira | Delete attachments with edit permissions | $7.75 - $15.25/user/month | [Jira Docs](https://support.atlassian.com/jira-cloud-administration/docs/manage-attachments/) |
+| Competitor   | Image Upload Handling                                      | Pricing                   | Verification                                                                                      |
+| ------------ | ---------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------- |
+| GitHub       | Edit/delete comments with attachments, clear UI controls   | Free - $21/user/month     | [GitHub Docs](https://docs.github.com/en/issues/tracking-your-work-with-issues/creating-an-issue) |
+| Slack        | Immediate file removal, confirmation dialogs, audit trails | Free - $12.50/user/month  | [Slack Help](https://slack.com/help/articles/204399343-Upload-and-share-files-in-Slack)           |
+| Google Drive | One-click removal, version history, trash recovery         | Free - $12/user/month     | [Drive Support](https://support.google.com/drive/answer/2424368?hl=en)                            |
+| Notion       | Remove images anytime, clear UI affordances                | Free - $10/user/month     | [Notion Help](https://www.notion.so/help/remove-files)                                            |
+| Jira         | Delete attachments with edit permissions                   | $7.75 - $15.25/user/month | [Jira Docs](https://support.atlassian.com/jira-cloud-administration/docs/manage-attachments/)     |
 
 **Key Differentiators**: All major competitors provide immediate, user-initiated deletion with clear UI controls. This is table stakes for user trust.
 
 ## 5. Chatter and Demand Signals
 
 **User Pain Points** (from community research):
+
 - Fear of exposing sensitive data accidentally
 - Confusion about how to remove uploads
 - Anxiety about permanent storage of mistakes
 - Need for immediate "undo" functionality
 
 **Common Scenarios**:
+
 - Screenshots containing passwords or API keys
 - Personal information in work contexts
 - Wrong file selected from desktop
 - Clipboard confusion (pasted wrong image)
 
 **Support Burden Indicators**:
+
 - Reddit threads in r/webdev, r/userexperience about accidental uploads
 - Stack Overflow questions on file upload undo patterns
 - Feature requests in product forums for better removal options
@@ -216,17 +225,20 @@ Source packet: `docs/research-engine/run-28748263087.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Validated Facts**:
+
 - ✅ Accidental uploads are a common user error across all platforms
 - ✅ Major platforms (GitHub, Slack, Google) provide deletion mechanisms
 - ✅ No automated "unrelated image" detection exists in market
 
 **Evidence Gaps**:
+
 - ❌ Frequency of accidental uploads (requires internal analytics)
 - ❌ Current support ticket volume for this issue
 - ❌ Actual user behavior patterns in our system
 - ❌ Cost impact of manual remediation
 
 **Verification Needed**:
+
 - Current image upload/removal capabilities in production-app
 - Existing audit logging for uploads and deletions
 - Support ticket categorization for upload issues
@@ -278,6 +290,7 @@ infrastructure:
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 Review focus: Ensure all image upload components have corresponding delete handlers. Check for:
 - Missing error boundaries around upload logic
@@ -286,6 +299,7 @@ Review focus: Ensure all image upload components have corresponding delete handl
 ```
 
 ### For OpenRouter
+
 ```
 Validate that image deletion:
 1. Removes from primary storage
@@ -295,6 +309,7 @@ Validate that image deletion:
 ```
 
 ### For Coderabbit
+
 ```
 Check accessibility:
 - Delete buttons have proper ARIA labels
@@ -303,6 +318,7 @@ Check accessibility:
 ```
 
 ### For Ralph Loop
+
 ```
 Security review:
 - Verify user can only delete own uploads
@@ -313,20 +329,24 @@ Security review:
 ### Blocking Findings
 
 **Finding 1**: No image deletion capability exists
+
 - **Fix**: Implement DELETE /api/images/:id endpoint
 - **Commit**: `feat: add image deletion endpoint with audit logging`
 
 **Finding 2**: No upload preview before submission
+
 - **Fix**: Add ImagePreview component to all upload flows
 - **Commit**: `feat: add image preview with confirmation step`
 
 **Finding 3**: Missing documentation for error recovery
+
 - **Fix**: Create help article and link from upload UI
 - **Commit**: `docs: add image upload error recovery guide`
 
 ## 9. Automatic Fix and Commit Queue
 
 ### Priority 1: WR Validation (Immediate)
+
 ```yaml
 # .github/workflows/wr-validation.yml
 name: Validate Work Requests
@@ -348,12 +368,14 @@ jobs:
               --add-label "status/incomplete-wr,needs-clarification"
           fi
 ```
+
 **Commit**: `ci: add WR validation workflow`
 
 ### Priority 2: Close Invalid WR
+
 ```bash
 gh issue close $ISSUE_NUMBER --reason "not planned" \
-  --comment "Closing as this appears to be a process question rather than a work request. 
+  --comment "Closing as this appears to be a process question rather than a work request.
 
 To answer your question: You can edit the issue to remove accidental images by clicking the '...' menu and selecting Edit.
 
@@ -361,25 +383,30 @@ For future process questions, please use #dev-help Slack channel."
 ```
 
 ### Priority 3: Create Documentation Issue
+
 ```markdown
 # Title: docs: Create guide for handling accidental image uploads
 
 ## Objective
+
 Document the process for users who accidentally upload wrong images
 
 ## Definition of Done
+
 - [ ] Help article created covering removal process
-- [ ] FAQ section added for common scenarios  
+- [ ] FAQ section added for common scenarios
 - [ ] In-app tooltips reference the guide
 - [ ] Support team trained on new docs
 
 ## Acceptance Criteria
+
 - Users can find and follow removal instructions within 30 seconds
 - Documentation is indexed and searchable
 - Process works for all user roles
 ```
 
 ### Priority 4: Implement Image Management
+
 ```typescript
 // components/ImageUpload.tsx
 interface ImageUploadProps {
@@ -391,31 +418,36 @@ interface ImageUploadProps {
 export const ImageUpload: React.FC<ImageUploadProps> = ({
   onUpload,
   onDelete,
-  preview = true
+  preview = true,
 }) => {
   // Implementation with preview and delete
 };
 ```
+
 **Commit**: `feat: add universal ImageUpload component with preview and delete`
 
 ## 10. Labels to Apply
 
 ### Immediate (Blocking)
+
 - `status/incomplete-wr` - Missing required information
 - `needs-clarification` - Unclear if question or work request
 - `type/invalid` - Not a valid work request format
 
 ### Process Improvement
+
 - `docs/needed` - Documentation gap identified
 - `ux/improvement` - Better upload flow needed
 - `process/gap` - WR submission process unclear
 
-### Risk Management  
+### Risk Management
+
 - `risk/privacy` - Potential for data exposure
 - `risk/compliance` - May violate data regulations
 - `risk/user-trust` - Poor UX damages confidence
 
 ### Feature Development (Future)
+
 - `feat/image-management` - Need deletion capability
 - `feat/upload-preview` - Add confirmation step
 - `feat/audit-trail` - Track all upload actions
@@ -460,11 +492,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -480,11 +512,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

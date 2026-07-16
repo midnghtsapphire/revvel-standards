@@ -5,18 +5,21 @@ This directory contains automation scripts and configurations for the 30-day pro
 ## Automated Tasks
 
 ### Daily Tasks
+
 - Metrics collection and dashboard update
 - Error monitoring and alerts
 - Support queue check
 - Social media monitoring
 
 ### Weekly Tasks
+
 - Progress report generation
 - Metrics analysis
 - Feedback collection and analysis
 - Competitor monitoring
 
 ### Event-Driven Tasks
+
 - Payment processing (webhooks)
 - User onboarding (email sequences)
 - Error alerts (immediate)
@@ -46,4 +49,4 @@ This directory contains automation scripts and configurations for the 30-day pro
 
 ---
 
-*See also: `../launch/30-day-plan.md`*
+_See also: `../launch/30-day-plan.md`_

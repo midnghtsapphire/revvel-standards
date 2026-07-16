@@ -41,13 +41,13 @@ persona who answers "why did Octopus say that / stop reviewing / miss context?"
 
 ## How It's Wired Into This Org (current state)
 
-| Piece | Role |
-|---|---|
-| Octopus GitHub App | Auto-reviews PRs, posts the 🐙 sticky comment, files issues with `octopus-review` labels |
-| `.github/workflows/octopus-cli.yml` | Wraps **`@octp/cli`** (auth: `OCTOPUS_TOKEN` secret, `oct_...`) — on-demand `pr review`, `repo index`, `whoami`, `usage`; auto re-review when a PR closes an Octopus-originated issue so Octopus verifies its own ask |
-| `.github/workflows/octopus-route.yml` | Translates Octopus-filed issues into fleet vocabulary (`work-request`, `wr:code`, `[WR]` title) so the dispatcher routes them; has a rate-limited backfill mode |
+| Piece                                           | Role                                                                                                                                                                                                                                                                             |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Octopus GitHub App                              | Auto-reviews PRs, posts the 🐙 sticky comment, files issues with `octopus-review` labels                                                                                                                                                                                         |
+| `.github/workflows/octopus-cli.yml`             | Wraps **`@octp/cli`** (auth: `OCTOPUS_TOKEN` secret, `oct_...`) — on-demand `pr review`, `repo index`, `whoami`, `usage`; auto re-review when a PR closes an Octopus-originated issue so Octopus verifies its own ask                                                            |
+| `.github/workflows/octopus-route.yml`           | Translates Octopus-filed issues into fleet vocabulary (`work-request`, `wr:code`, `[WR]` title) so the dispatcher routes them; has a rate-limited backfill mode                                                                                                                  |
 | `.github/workflows/octopus-review-fallback.yml` | **Quota-death fallback lane** — when Octopus posts the "add your own API keys" banner (or never shows up), the fleet's own `review` profile (Opus 4.7 → DeepSeek R1 via OpenRouter, per `.github/agent-models.yml`) reviews the PR instead; `scripts/octopus-review-fallback.js` |
-| Findings → Coder | Octopus diagnoses auto-route to the `coder` persona for the actual patch |
+| Findings → Coder                                | Octopus diagnoses auto-route to the `coder` persona for the actual patch                                                                                                                                                                                                         |
 
 ## 🥚 Lesser-Known Features Bench
 
@@ -139,7 +139,7 @@ covers that gap:
 - **Reviewer:** the fleet's own `review` profile from `.github/agent-models.yml`
   (Opus 4.7 primary → DeepSeek R1 fallback) via **OpenRouter** — no new vendor
   lock-in; findings post as a formal PR review.
-- **No double-review:** the script skips PRs where Octopus posted a *healthy*
+- **No double-review:** the script skips PRs where Octopus posted a _healthy_
   review, and dedupes itself via the `<!-- octopus-review-fallback -->` marker.
 - **Debugging:** if fallback reviews stop, check `OPENROUTER_API_KEY` funding at
   <https://openrouter.ai/credits> first (401/402/429 = key/balance, not code).

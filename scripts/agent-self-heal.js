@@ -14,52 +14,68 @@
  *     --issue 123
  */
 
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const FALLBACK_MAP = {
   openrouter: {
-    labels: ['agent:fallback', 'route:retry', 'needs-triage'],
-    nextAgents: ['anthropic', 'openai', 'local-llm'],
+    labels: ["agent:fallback", "route:retry", "needs-triage"],
+    nextAgents: ["anthropic", "openai", "local-llm"],
   },
   anthropic: {
-    labels: ['agent:fallback', 'route:retry'],
-    nextAgents: ['openrouter', 'openai'],
+    labels: ["agent:fallback", "route:retry"],
+    nextAgents: ["openrouter", "openai"],
   },
   openai: {
-    labels: ['agent:fallback', 'route:retry'],
-    nextAgents: ['openrouter', 'anthropic'],
+    labels: ["agent:fallback", "route:retry"],
+    nextAgents: ["openrouter", "anthropic"],
   },
   default: {
-    labels: ['agent:fallback', 'needs-triage'],
-    nextAgents: ['orchestrator'],
+    labels: ["agent:fallback", "needs-triage"],
+    nextAgents: ["orchestrator"],
   },
 };
 
 const CONTEXT_LABELS = {
-  'weekly-research': ['weekly-research', 'wr:in-progress', 'deep-research'],
-  wr: ['work-request', 'wr:in-progress'],
-  'agent-factory': ['work-request', 'wr:in-progress', 'agent:fallback', 'route:retry'],
+  "weekly-research": ["weekly-research", "wr:in-progress", "deep-research"],
+  wr: ["work-request", "wr:in-progress"],
+  "agent-factory": [
+    "work-request",
+    "wr:in-progress",
+    "agent:fallback",
+    "route:retry",
+  ],
 };
 
 function parseArgs(argv) {
   const args = {
-    agent: 'default',
-    failure: '',
-    context: '',
-    issue: '',
-    output: '',
+    agent: "default",
+    failure: "",
+    context: "",
+    issue: "",
+    output: "",
   };
   for (let i = 2; i < argv.length; i += 1) {
     const a = argv[i];
     const next = argv[i + 1];
-    if (a === '--agent' && next) { args.agent = next; i += 1; }
-    else if (a === '--failure' && next) { args.failure = next; i += 1; }
-    else if (a === '--context' && next) { args.context = next; i += 1; }
-    else if (a === '--issue' && next) { args.issue = next; i += 1; }
-    else if (a === '--output' && next) { args.output = next; i += 1; }
+    if (a === "--agent" && next) {
+      args.agent = next;
+      i += 1;
+    } else if (a === "--failure" && next) {
+      args.failure = next;
+      i += 1;
+    } else if (a === "--context" && next) {
+      args.context = next;
+      i += 1;
+    } else if (a === "--issue" && next) {
+      args.issue = next;
+      i += 1;
+    } else if (a === "--output" && next) {
+      args.output = next;
+      i += 1;
+    }
   }
   return args;
 }
@@ -71,13 +87,13 @@ function buildPacket({ agent, failure, context, issue }) {
   return {
     timestamp: new Date().toISOString(),
     agent,
-    failure: failure || 'unspecified failure',
-    context: context || 'unspecified',
+    failure: failure || "unspecified failure",
+    context: context || "unspecified",
     issue: issue || null,
     fallbackLabels: labels,
     nextAgents: config.nextAgents,
     recovery: {
-      action: 'route-fallback',
+      action: "route-fallback",
       retry: true,
       maxRetries: 3,
     },
@@ -94,11 +110,11 @@ function emit(packet, outputPath) {
   // GitHub Actions outputs
   if (process.env.GITHUB_OUTPUT) {
     const lines = [
-      `labels=${packet.fallbackLabels.join(',')}`,
-      `next_agent=${packet.nextAgents[0] || ''}`,
+      `labels=${packet.fallbackLabels.join(",")}`,
+      `next_agent=${packet.nextAgents[0] || ""}`,
       `retry=${packet.recovery.retry}`,
     ];
-    fs.appendFileSync(process.env.GITHUB_OUTPUT, `${lines.join('\n')}\n`);
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, `${lines.join("\n")}\n`);
   }
 }
 

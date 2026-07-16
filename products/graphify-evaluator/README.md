@@ -29,11 +29,11 @@ npm run dev -- -p 3007
 
 ## Test
 
-| Feature | Status | URL |
-| ------- | ------ | --- |
-| Homepage | ✅ Working | <http://localhost:3007> |
-| Analysis Section | ✅ Working | <http://localhost:3007/#analysis> |
-| Accessibility Toggle | ✅ Working | <http://localhost:3007> |
+| Feature              | Status     | URL                               |
+| -------------------- | ---------- | --------------------------------- |
+| Homepage             | ✅ Working | <http://localhost:3007>           |
+| Analysis Section     | ✅ Working | <http://localhost:3007/#analysis> |
+| Accessibility Toggle | ✅ Working | <http://localhost:3007>           |
 
 ## Deployment
 

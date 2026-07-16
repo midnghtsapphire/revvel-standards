@@ -9,35 +9,35 @@ It contains the manifest, input references, generation status, output metadata, 
 
 ## Inputs
 
-| Field | Value |
-|---|---|
-| WAV audio | `<wav filename, URL, or asset ID>` |
-| Avatar | `<avatar filename, URL, or asset ID>` |
+| Field     | Value                                 |
+| --------- | ------------------------------------- |
+| WAV audio | `<wav filename, URL, or asset ID>`    |
+| Avatar    | `<avatar filename, URL, or asset ID>` |
 
 ---
 
 ## Generation
 
-| Field | Value |
-|---|---|
-| Provider | HeyGen |
-| Mode | `lip_sync_music_video` |
-| Status | `draft` / `generating` / `ready` / `published` / `failed` |
-| Provider job ID | `<job ID once submitted>` |
-| Requested at | `YYYY-MM-DDTHH:MM:SSZ` |
-| Completed at | `YYYY-MM-DDTHH:MM:SSZ` |
+| Field           | Value                                                     |
+| --------------- | --------------------------------------------------------- |
+| Provider        | HeyGen                                                    |
+| Mode            | `lip_sync_music_video`                                    |
+| Status          | `draft` / `generating` / `ready` / `published` / `failed` |
+| Provider job ID | `<job ID once submitted>`                                 |
+| Requested at    | `YYYY-MM-DDTHH:MM:SSZ`                                    |
+| Completed at    | `YYYY-MM-DDTHH:MM:SSZ`                                    |
 
 ---
 
 ## Outputs
 
-| Field | Value |
-|---|---|
-| MP4 filename | `<song-slug>-YYYYMMDDTHHMMSSZ-v1.mp4` |
-| MP4 exists (verified) | `yes` / `no` |
-| Thumbnail | `<thumbnail path or URL>` |
-| Captions (VTT) | `<captions path or URL>` |
-| Transcript | `<transcript path or URL>` |
+| Field                 | Value                                 |
+| --------------------- | ------------------------------------- |
+| MP4 filename          | `<song-slug>-YYYYMMDDTHHMMSSZ-v1.mp4` |
+| MP4 exists (verified) | `yes` / `no`                          |
+| Thumbnail             | `<thumbnail path or URL>`             |
+| Captions (VTT)        | `<captions path or URL>`              |
+| Transcript            | `<transcript path or URL>`            |
 
 > A filename alone is not proof of render completion. Mark `MP4 exists (verified)` only after existence checks pass.
 
@@ -45,15 +45,15 @@ It contains the manifest, input references, generation status, output metadata, 
 
 ## Publishing
 
-| Field | Value |
-|---|---|
-| Required on main website | `yes` |
-| Main website URL | `<https://…>` |
-| Canonical video URL | `<https://…>` |
-| CDN URL | `<https://…>` |
-| Embed URL | `<https://…>` |
-| Publish status | `draft` / `published` |
-| Published at | `YYYY-MM-DDTHH:MM:SSZ` |
+| Field                    | Value                  |
+| ------------------------ | ---------------------- |
+| Required on main website | `yes`                  |
+| Main website URL         | `<https://…>`          |
+| Canonical video URL      | `<https://…>`          |
+| CDN URL                  | `<https://…>`          |
+| Embed URL                | `<https://…>`          |
+| Publish status           | `draft` / `published`  |
+| Published at             | `YYYY-MM-DDTHH:MM:SSZ` |
 
 > **The MP4 is hosted externally.** Once published, `canonical_video_url` in the manifest is the authoritative link to the file.
 
@@ -61,12 +61,12 @@ It contains the manifest, input references, generation status, output metadata, 
 
 ## SEO
 
-| Field | Value |
-|---|---|
-| SEO title | `<title>` |
-| Meta description | `<≤160 character description>` |
-| Keywords | `<comma-separated keywords>` |
-| Thumbnail alt text | `<alt text>` |
+| Field              | Value                          |
+| ------------------ | ------------------------------ |
+| SEO title          | `<title>`                      |
+| Meta description   | `<≤160 character description>` |
+| Keywords           | `<comma-separated keywords>`   |
+| Thumbnail alt text | `<alt text>`                   |
 
 ---
 

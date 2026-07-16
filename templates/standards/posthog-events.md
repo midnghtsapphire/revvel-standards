@@ -39,15 +39,15 @@ PostHog displays event names in dashboards and session replays. Treat them like 
 
 Every Revvel app **must** emit these. Project-specific events go in the per-app `BOM.md` §Telemetry.
 
-| Event Name | Authoritative side | Required Properties |
-|---|---|---|
-| `app_loaded` | client | `app_version`, `platform` |
-| `user_signed_up` | server | `signup_method`, `referrer_source` |
-| `user_logged_in` | server | `login_method` |
-| `user_logged_out` | client | _(none)_ |
-| `feature_used` | client | `feature_name`, `surface` |
+| Event Name           | Authoritative side      | Required Properties                        |
+| -------------------- | ----------------------- | ------------------------------------------ |
+| `app_loaded`         | client                  | `app_version`, `platform`                  |
+| `user_signed_up`     | server                  | `signup_method`, `referrer_source`         |
+| `user_logged_in`     | server                  | `login_method`                             |
+| `user_logged_out`    | client                  | _(none)_                                   |
+| `feature_used`       | client                  | `feature_name`, `surface`                  |
 | `purchase_completed` | server (Stripe webhook) | `product_slug`, `amount_cents`, `currency` |
-| `error_surfaced` | client | `error_code`, `surface` |
+| `error_surfaced`     | client                  | `error_code`, `surface`                    |
 
 > **Authoritative side** is whichever side can confirm the event without race conditions. Stripe purchases are server-confirmed via webhook; client `purchase_completed` events are unreliable (closed tab, payment failure).
 
@@ -77,7 +77,7 @@ token                api_key
 
 ### EU residency
 
-If the app has *any* EU traffic, set:
+If the app has _any_ EU traffic, set:
 
 ```ts
 // In posthog-init.ts — already configurable via POSTHOG_API_HOST:
@@ -103,16 +103,16 @@ Three layers, all enforced by `posthog-init.ts`:
 For events the client cannot be trusted to fire (purchases, server-validated signups), use the Node SDK:
 
 ```ts
-import { PostHog } from 'posthog-node';
+import { PostHog } from "posthog-node";
 const posthog = new PostHog(process.env.POSTHOG_API_KEY!);
 
 posthog.capture({
-  distinctId: hashedUserId,                 // required for server-side
-  event: 'purchase_completed',
+  distinctId: hashedUserId, // required for server-side
+  event: "purchase_completed",
   properties: {
-    product_slug: 'asset-donation-engine',
+    product_slug: "asset-donation-engine",
     amount_cents: 4900,
-    currency: 'usd',
+    currency: "usd",
     ts: new Date().toISOString(),
   },
 });
@@ -133,10 +133,10 @@ PostHog session replay captures user interactions (clicks, scrolls, form fills) 
 // posthog-init.ts — add to the init options:
 posthog.init(token, {
   // ... other options
-  disable_session_recording: false,  // Enable session replay
+  disable_session_recording: false, // Enable session replay
   session_recording: {
-    maskAllInputs: true,               // Mask all input fields by default
-    maskTextSelector: '[data-private]', // Also mask elements with data-private
+    maskAllInputs: true, // Mask all input fields by default
+    maskTextSelector: "[data-private]", // Also mask elements with data-private
   },
 });
 ```
@@ -157,20 +157,24 @@ PostHog automatically masks credit card numbers, SSNs, and other sensitive patte
 PostHog feature flags let you A/B test features, gradual rollouts, and kill switches:
 
 ```ts
-import { posthog, isFeatureEnabled, getFeatureFlag } from '@/lib/analytics-posthog';
+import {
+  posthog,
+  isFeatureEnabled,
+  getFeatureFlag,
+} from "@/lib/analytics-posthog";
 
 // Check if a feature is enabled for the current user
-if (isFeatureEnabled('new-checkout-flow')) {
+if (isFeatureEnabled("new-checkout-flow")) {
   // Show new checkout flow
 } else {
   // Show old checkout flow
 }
 
 // Get the variant of a multivariate flag
-const variant = getFeatureFlag('pricing-test');
-if (variant === 'variant-a') {
+const variant = getFeatureFlag("pricing-test");
+if (variant === "variant-a") {
   // Show variant A pricing
-} else if (variant === 'variant-b') {
+} else if (variant === "variant-b") {
   // Show variant B pricing
 }
 ```
@@ -184,14 +188,14 @@ Feature flags are defined in PostHog dashboard → Feature Flags → New Flag.
 PostHog error tracking integrates with session replay and source maps:
 
 ```ts
-import { captureException } from '@/lib/analytics-posthog';
+import { captureException } from "@/lib/analytics-posthog";
 
 try {
   // Your code
 } catch (error) {
   captureException(error, {
-    surface: 'checkout-page',
-    user_action: 'submit-payment',
+    surface: "checkout-page",
+    user_action: "submit-payment",
   });
 }
 ```

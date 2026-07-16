@@ -23,7 +23,8 @@ const {
 } = require("../scripts/wr-preprocess.js");
 
 test("extractImageUrls: markdown image (extension-less GitHub attachment)", () => {
-  const body = "See ![screenshot](https://github.com/user-attachments/assets/abc-123) here.";
+  const body =
+    "See ![screenshot](https://github.com/user-attachments/assets/abc-123) here.";
   assert.deepStrictEqual(extractImageUrls(body), [
     "https://github.com/user-attachments/assets/abc-123",
   ]);
@@ -55,7 +56,7 @@ test("ocrImages: uses injected runner and never throws on failure", () => {
   };
   const results = ocrImages(
     ["https://ex.com/good.png", "https://ex.com/bad.png"],
-    { runner }
+    { runner },
   );
   assert.strictEqual(results[0].text, "OCR line one\nOCR line two");
   assert.strictEqual(results[1].text, "");
@@ -85,7 +86,10 @@ test("buildEnrichmentMessages: system lists every canonical field, user carries 
   assert.strictEqual(msgs.length, 2);
   assert.strictEqual(msgs[0].role, "system");
   for (const field of CANONICAL_WR_FIELDS) {
-    assert.ok(msgs[0].content.includes(field), `system prompt should mention ${field}`);
+    assert.ok(
+      msgs[0].content.includes(field),
+      `system prompt should mention ${field}`,
+    );
   }
   assert.match(msgs[1].content, /requirements from screenshot/);
   assert.match(msgs[1].content, /sparse body/);
@@ -142,7 +146,10 @@ test("preprocessWorkRequest: end-to-end with injected OCR + LLM", async () => {
     // Verify the OCR service is invoked correctly: python3 <script> --input <url>.
     assert.strictEqual(cmd, "python3");
     assert.ok(args.includes("--input"), "OCR runner should pass --input");
-    assert.strictEqual(args[args.length - 1], "https://github.com/user-attachments/assets/z");
+    assert.strictEqual(
+      args[args.length - 1],
+      "https://github.com/user-attachments/assets/z",
+    );
     return "text inside the image";
   };
   const routed = async ({ messages }) => {

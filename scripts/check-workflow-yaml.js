@@ -30,12 +30,12 @@
  *   Never write template-literal continuation lines flush-left.
  */
 
-'use strict';
+"use strict";
 
-const fs = require('node:fs');
-const path = require('node:path');
+const fs = require("node:fs");
+const path = require("node:path");
 
-const WORKFLOWS_DIR = path.resolve(__dirname, '..', '.github', 'workflows');
+const WORKFLOWS_DIR = path.resolve(__dirname, "..", ".github", "workflows");
 
 // Lines that begin at column 0 and start with one of these fragments are almost
 // always a github-script template literal that escaped its `script: |` block
@@ -48,21 +48,21 @@ function listWorkflowFiles() {
   if (!fs.existsSync(WORKFLOWS_DIR)) return [];
   return fs
     .readdirSync(WORKFLOWS_DIR)
-    .filter((f) => f.endsWith('.yml') || f.endsWith('.yaml'))
+    .filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"))
     .map((f) => path.join(WORKFLOWS_DIR, f));
 }
 
 function tryLoadYamlParser() {
   try {
     // Prefer the repo's `yaml` dependency when node_modules is present.
-    return require('yaml');
+    return require("yaml");
   } catch {
     return null;
   }
 }
 
 function heuristicError(text) {
-  const lines = text.split('\n');
+  const lines = text.split("\n");
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
     if (FLUSH_LEFT_BROKEN.test(l)) {
@@ -78,21 +78,21 @@ function heuristicError(text) {
 // a class that plain yaml.safe_load (the old "Workflow Lint") does NOT catch.
 // Line-based so it works with or without a YAML parser installed.
 function workflowRunMissingWorkflows(text) {
-  const lines = text.split('\n');
+  const lines = text.split("\n");
   for (let i = 0; i < lines.length; i++) {
     const m = lines[i].match(/^(\s*)workflow_run:\s*(\S.*)?$/);
     if (!m) continue;
     const indent = m[1].length;
-    const inline = (m[2] || '').trim();
+    const inline = (m[2] || "").trim();
     if (inline) {
       // Inline mapping form, e.g. `workflow_run: {workflows: [..], ...}`
-      return inline.includes('workflows')
+      return inline.includes("workflows")
         ? null
         : `line ${i + 1}: 'on.workflow_run' has no 'workflows:' — GitHub rejects the whole file as an invalid workflow`;
     }
     // Block form: scan the more-indented lines that belong to this mapping.
     for (let j = i + 1; j < lines.length; j++) {
-      if (lines[j].trim() === '') continue;
+      if (lines[j].trim() === "") continue;
       const curIndent = lines[j].match(/^(\s*)/)[1].length;
       if (curIndent <= indent) break; // left the workflow_run block
       if (/^\s*workflows:/.test(lines[j])) return null; // found it — valid
@@ -106,17 +106,17 @@ function workflowRunMissingWorkflows(text) {
 function findInvalidWorkflows() {
   const parser = tryLoadYamlParser();
   const bad = [];
-  const root = path.resolve(__dirname, '..');
+  const root = path.resolve(__dirname, "..");
   for (const file of listWorkflowFiles()) {
     const rel = path.relative(root, file);
-    const text = fs.readFileSync(file, 'utf8');
+    const text = fs.readFileSync(file, "utf8");
 
     // 1) YAML validity (real parse when available, flush-left heuristic otherwise)
     if (parser) {
       try {
         parser.parse(text);
       } catch (e) {
-        bad.push({ file: rel, error: e.message.split('\n')[0] });
+        bad.push({ file: rel, error: e.message.split("\n")[0] });
         continue; // can't trust structural checks on unparseable YAML
       }
     } else {
@@ -134,18 +134,27 @@ function findInvalidWorkflows() {
   return bad;
 }
 
-module.exports = { findInvalidWorkflows, listWorkflowFiles, heuristicError, workflowRunMissingWorkflows };
+module.exports = {
+  findInvalidWorkflows,
+  listWorkflowFiles,
+  heuristicError,
+  workflowRunMissingWorkflows,
+};
 
 // CLI: print report, exit 1 if any invalid (usable as a CI gate too).
 if (require.main === module) {
   const bad = findInvalidWorkflows();
   if (bad.length === 0) {
-    console.log('✅ All workflow YAML files are valid.');
+    console.log("✅ All workflow YAML files are valid.");
     process.exit(0);
   }
   console.log(`❌ ${bad.length} invalid workflow file(s):`);
   for (const b of bad) console.log(`   - ${b.file}: ${b.error}`);
-  console.log('\nFix: keep github-script bodies indented inside the `script: |` block —');
-  console.log('rebuild multi-line strings as `[ `line`, `` ].join(\'\\n\')`. Never flush-left.');
+  console.log(
+    "\nFix: keep github-script bodies indented inside the `script: |` block —",
+  );
+  console.log(
+    "rebuild multi-line strings as `[ `line`, `` ].join('\\n')`. Never flush-left.",
+  );
   process.exit(1);
 }

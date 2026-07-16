@@ -17,7 +17,7 @@
 **Superpowers** is a composable skills framework that teaches Claude structured software development methodologies. It enforces disciplined practices at every stage of the development cycle:
 
 - **Pre-coding** — Socratic `/brainstorming` sessions that lock requirements before a line of code is written
-- **Implementation** — red-green-refactor TDD cycles where tests *must* fail before implementation begins
+- **Implementation** — red-green-refactor TDD cycles where tests _must_ fail before implementation begins
 - **Debugging** — four-phase systematic methodology; architectural review auto-triggers after three failed fix attempts
 - **Review** — subagent-driven development with a built-in `code-reviewer` agent that evaluates against the original plan, coding standards, and architectural principles
 - **Skill authoring** — `writing-skills` module that applies TDD principles to documentation
@@ -28,13 +28,13 @@ Load any combination of modules; each module is independently useful and compose
 
 ## What This Skill Does
 
-| Module | Slash Command | Description |
-|---|---|---|
-| **Brainstorming** | `/brainstorming` | Socratic requirements refinement before any implementation begins |
-| **TDD** | `/tdd` | Red-green-refactor cycle — tests must fail first, then pass, then refactor |
-| **Debug** | `/debug` | Four-phase systematic debugging: root cause → pattern → hypothesis → fix |
-| **Execute Plan** | `/execute-plan` | Batched implementation plans with code-reviewer checkpoints |
-| **Writing Skills** | `/writing-skills` | Author and test new skills using TDD principles applied to documentation |
+| Module             | Slash Command     | Description                                                                |
+| ------------------ | ----------------- | -------------------------------------------------------------------------- |
+| **Brainstorming**  | `/brainstorming`  | Socratic requirements refinement before any implementation begins          |
+| **TDD**            | `/tdd`            | Red-green-refactor cycle — tests must fail first, then pass, then refactor |
+| **Debug**          | `/debug`          | Four-phase systematic debugging: root cause → pattern → hypothesis → fix   |
+| **Execute Plan**   | `/execute-plan`   | Batched implementation plans with code-reviewer checkpoints                |
+| **Writing Skills** | `/writing-skills` | Author and test new skills using TDD principles applied to documentation   |
 
 ---
 
@@ -55,6 +55,7 @@ subagent code review, composable skill framework, claude superpowers plugin
 **When to use:** At the very start of any new feature, product, or system design.
 
 **Rules:**
+
 1. Do NOT write any code or implementation plans until the brainstorming session ends with an explicit sign-off.
 2. Ask one probing question at a time.
 3. Explore: Who is affected? What are the constraints? What does success look like? What could go wrong?
@@ -63,8 +64,10 @@ subagent code review, composable skill framework, claude superpowers plugin
 **Exit condition:** User says "done brainstorming" or "proceed to implementation."
 
 **Output format:**
+
 ```markdown
 ## Requirements Summary
+
 - Functional: [list]
 - Non-functional: [list]
 - Constraints: [list]
@@ -89,6 +92,7 @@ REFACTOR → Clean up code without changing behaviour.
 ```
 
 **Rules:**
+
 - Never skip the RED phase. A test that passes before implementation is not a valid test.
 - Commit each phase separately: `test: red — <description>`, `feat: green — <description>`, `refactor: clean — <description>`.
 - If a test is hard to write, that is a design signal — refactor the design before writing the test.
@@ -100,19 +104,23 @@ REFACTOR → Clean up code without changing behaviour.
 **When to use:** Any time a bug, failure, or unexpected behaviour is reported.
 
 **Phase 1 — Root Cause Investigation**
+
 - Reproduce the issue with a minimal reproducible example.
 - Read logs, stack traces, and error messages in full before guessing.
 - State the root cause hypothesis before touching any code.
 
 **Phase 2 — Pattern Analysis**
+
 - Has this pattern occurred before? Search the codebase and issue history.
 - Classify: logic error, type mismatch, race condition, state corruption, external API, config, etc.
 
 **Phase 3 — Hypothesis Testing**
+
 - Write a failing test that reproduces the bug before applying the fix.
 - Apply one fix at a time; do not bundle multiple speculative fixes.
 
 **Phase 4 — Implementation**
+
 - Apply the minimal fix.
 - Confirm the failing test now passes.
 - Run the full test suite to check for regressions.
@@ -126,6 +134,7 @@ REFACTOR → Clean up code without changing behaviour.
 **When to use:** Any implementation task with ≥ 3 steps or multiple files.
 
 **Pipeline:**
+
 1. Write the full implementation plan before writing any code.
 2. Get explicit approval on the plan (or auto-proceed if plan was generated from a `/brainstorming` session summary).
 3. Implement in batches; each batch ends with a `code-reviewer` checkpoint.
@@ -133,10 +142,14 @@ REFACTOR → Clean up code without changing behaviour.
 5. Address all `code-reviewer` findings before proceeding to the next batch.
 
 **Batch format:**
+
 ```markdown
 ## Batch N — [Batch Title]
+
 ### Files changed: [list]
+
 ### What changed and why: [description]
+
 ### code-reviewer checkpoint: PASS / CHANGES NEEDED
 ```
 
@@ -147,6 +160,7 @@ REFACTOR → Clean up code without changing behaviour.
 **When to use:** When authoring a new skill, writing a standard, or producing any documentation that will be used as an agent instruction.
 
 **Pipeline (mirrors TDD):**
+
 ```
 RED   → Define what the skill/doc must make an agent do or not do.
         Write 3+ assertion statements that the finished doc must satisfy.
@@ -164,6 +178,7 @@ REFACTOR → Tighten language; remove ambiguity; add examples.
 The `code-reviewer` is a subagent spawned by `/execute-plan` at each batch checkpoint.
 
 **Evaluation criteria:**
+
 1. **Plan adherence** — Does the implementation match the approved plan?
 2. **Coding standards** — Does it follow the repo's `standards/` docs?
 3. **Architectural principles** — Does it respect existing patterns (no new frameworks, no global state leaks)?
@@ -171,6 +186,7 @@ The `code-reviewer` is a subagent spawned by `/execute-plan` at each batch check
 5. **Security** — Any injections, exposed secrets, or auth bypasses?
 
 **Output format:**
+
 ```
 ✅ PASS — [summary of what's good]
 🟡 CHANGES NEEDED — [numbered list of required changes]
@@ -181,13 +197,13 @@ The `code-reviewer` is a subagent spawned by `/execute-plan` at each batch check
 
 ## Composability Matrix
 
-| If you are... | Load these modules |
-|---|---|
-| Starting a new feature | `/brainstorming` → `/tdd` → `/execute-plan` |
-| Fixing a bug | `/debug` → `/tdd` (for the regression test) |
-| Building a new skill or doc | `/brainstorming` → `/writing-skills` |
-| Reviewing an implementation | `code-reviewer` (via `/execute-plan`) |
-| Full disciplined session | All modules |
+| If you are...               | Load these modules                          |
+| --------------------------- | ------------------------------------------- |
+| Starting a new feature      | `/brainstorming` → `/tdd` → `/execute-plan` |
+| Fixing a bug                | `/debug` → `/tdd` (for the regression test) |
+| Building a new skill or doc | `/brainstorming` → `/writing-skills`        |
+| Reviewing an implementation | `code-reviewer` (via `/execute-plan`)       |
+| Full disciplined session    | All modules                                 |
 
 ---
 

@@ -15,7 +15,7 @@ CircleCI is the fleet's second CI lane alongside GitHub Actions. Division of lab
 
 - **GitHub Actions** owns repo automation: AI PR review, persona summons, labels,
   lifecycle, auto-merge.
-- **CircleCI** owns the *build-and-test gate*: lint, tests, and (as adopted)
+- **CircleCI** owns the _build-and-test gate_: lint, tests, and (as adopted)
   parallelized suites, timing-based test splitting, and config policies.
 
 ORBIT is the named persona responsible for every `.circleci/config.yml` in the
@@ -26,9 +26,9 @@ first.
 
 `.circleci/config.yml` runs two jobs on every PR and on `main`:
 
-| Job | What it gates |
-|---|---|
-| `lint-and-test` | Changed-Markdown lint (merge-base scoped, so the legacy backlog doesn't drown new work) + real `node --test` and shell tests |
+| Job                   | What it gates                                                                                                                                                                |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lint-and-test`       | Changed-Markdown lint (merge-base scoped, so the legacy backlog doesn't drown new work) + real `node --test` and shell tests                                                 |
 | `validate-registries` | Persona registry (`scripts/openrouter-personas.js`) parses and resolves; `skills/SKILLS_INDEX.yml` is valid YAML — a broken edit here silently kills every `/persona` summon |
 
 ## 3. House rules
@@ -47,7 +47,7 @@ first.
 
 ## 4. One-time human steps (ORBIT cannot do these)
 
-1. Connect the repo: `app.circleci.com` → Projects → *Set Up Project* (org
+1. Connect the repo: `app.circleci.com` → Projects → _Set Up Project_ (org
    authorization required).
 2. Create org contexts and restrict them to teams.
 3. Confirm the connect with `circleci follow` / first `circleci run watch`.

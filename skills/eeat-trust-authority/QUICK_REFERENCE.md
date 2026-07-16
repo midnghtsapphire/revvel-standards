@@ -41,7 +41,7 @@ ls -lt docs/reports/eeat-health-*.md | head -1
 **Email:** angelreporters@gmail.com  
 **ORCID:** [0009-0005-0663-7832](https://orcid.org/0009-0005-0663-7832)  
 **Entity:** Freedom Angel Corp (Founded 2010, EIN: 86-1209156)  
-**Location:** Northern Colorado  
+**Location:** Northern Colorado
 
 ## Properties
 
@@ -53,28 +53,28 @@ ls -lt docs/reports/eeat-health-*.md | head -1
 
 ```html
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "[App Name]",
-  "url": "[App URL]",
-  "logo": "[Logo URL]",
-  "foundingDate": "2010",
-  "founder": {
-    "@type": "Person",
-    "name": "Audrey Evans",
-    "sameAs": [
-      "https://orcid.org/0009-0005-0663-7832",
-      "https://github.com/midnghtsapphire"
-    ]
-  },
-  "parentOrganization": {
+  {
+    "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Freedom Angel Corp",
+    "name": "[App Name]",
+    "url": "[App URL]",
+    "logo": "[Logo URL]",
     "foundingDate": "2010",
-    "taxID": "86-1209156"
+    "founder": {
+      "@type": "Person",
+      "name": "Audrey Evans",
+      "sameAs": [
+        "https://orcid.org/0009-0005-0663-7832",
+        "https://github.com/midnghtsapphire"
+      ]
+    },
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "Freedom Angel Corp",
+      "foundingDate": "2010",
+      "taxID": "86-1209156"
+    }
   }
-}
 </script>
 ```
 
@@ -96,13 +96,13 @@ ORCID_API_KEY=<key>             # Optional
 
 ## Success Metrics
 
-| Metric | Target |
-|--------|--------|
-| Schema coverage | 100% |
-| Lighthouse SEO | ≥ 90 |
+| Metric          | Target |
+| --------------- | ------ |
+| Schema coverage | 100%   |
+| Lighthouse SEO  | ≥ 90   |
 | Knowledge Panel | Active |
-| HTTPS coverage | 100% |
-| Broken links | 0 |
+| HTTPS coverage  | 100%   |
+| Broken links    | 0      |
 
 ## Files
 
@@ -113,4 +113,4 @@ ORCID_API_KEY=<key>             # Optional
 
 ---
 
-*TrustForge v1.0.0 — E-E-A-T Trust Authority Agent*
+_TrustForge v1.0.0 — E-E-A-T Trust Authority Agent_

@@ -1,9 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { OPENROUTER_API_URL, OR_MODELS, requireApiKey } from '../../../lib/music-video-api';
+import { type NextRequest, NextResponse } from "next/server";
+import {
+  OPENROUTER_API_URL,
+  OR_MODELS,
+  requireApiKey,
+} from "../../../lib/music-video-api";
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { extractJsonFromContent } = require('../../../lib/video-job-helpers') as {
-  extractJsonFromContent: (content: string) => Record<string, unknown> | null;
-};
+const { extractJsonFromContent } =
+  require("../../../lib/video-job-helpers") as {
+    extractJsonFromContent: (content: string) => Record<string, unknown> | null;
+  };
 
 const DEEP_RESEARCH_SYSTEM_PROMPT = `MISSION
 You are the deep research and project orchestration agent for the Music Video Creator.
@@ -51,10 +56,11 @@ export async function POST(request: NextRequest) {
   if (!apiKey) {
     return NextResponse.json(
       {
-        error: 'OPENROUTER_API_KEY is not configured. The orchestrator requires OpenRouter to plan and research.',
+        error:
+          "OPENROUTER_API_KEY is not configured. The orchestrator requires OpenRouter to plan and research.",
         setup_required: [
-          'Set OPENROUTER_API_KEY in your .env.local',
-          'See products/music-video-creator/.env.example for all required variables',
+          "Set OPENROUTER_API_KEY in your .env.local",
+          "See products/music-video-creator/.env.example for all required variables",
         ],
       },
       { status: 500 },
@@ -63,18 +69,18 @@ export async function POST(request: NextRequest) {
 
   let body: Partial<OrchestrateRequest>;
   try {
-    body = await request.json() as Partial<OrchestrateRequest>;
+    body = (await request.json()) as Partial<OrchestrateRequest>;
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   const {
-    project_name = 'Music Video',
-    artist_name = 'Unknown Artist',
-    song_title = 'Unknown Song',
-    destination_website = 'meetaudreyevans.com',
+    project_name = "Music Video",
+    artist_name = "Unknown Artist",
+    song_title = "Unknown Song",
+    destination_website = "meetaudreyevans.com",
     available_providers = [],
-    additional_context = '',
+    additional_context = "",
   } = body;
 
   const userPrompt = `Conduct deep research and produce a complete production plan for:
@@ -83,8 +89,8 @@ PROJECT: ${project_name}
 ARTIST: ${artist_name}
 SONG: ${song_title}
 DESTINATION: ${destination_website}
-AVAILABLE VIDEO PROVIDERS: ${available_providers.length > 0 ? available_providers.join(', ') : 'none configured — recommend what is needed'}
-ADDITIONAL CONTEXT: ${additional_context || 'none'}
+AVAILABLE VIDEO PROVIDERS: ${available_providers.length > 0 ? available_providers.join(", ") : "none configured — recommend what is needed"}
+ADDITIONAL CONTEXT: ${additional_context || "none"}
 
 Research the artist, song, target audience, visual style, and best video generation
 approach. Select the optimal provider and produce a step-by-step execution plan that
@@ -95,21 +101,21 @@ SEO metadata package for the publication page.`;
 
   try {
     const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
+      method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
-        'X-Title': 'Music Video Creator — Deep Research Orchestrator',
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://github.com/midnghtsapphire/revvel-standards",
+        "X-Title": "Music Video Creator — Deep Research Orchestrator",
       },
       body: JSON.stringify({
         // model field required for OpenAI-compatible clients; models array used for OR fallback routing
         model: OR_MODELS[0],
         models: OR_MODELS,
-        response_format: { type: 'json_object' },
+        response_format: { type: "json_object" },
         messages: [
-          { role: 'system', content: DEEP_RESEARCH_SYSTEM_PROMPT },
-          { role: 'user', content: userPrompt },
+          { role: "system", content: DEEP_RESEARCH_SYSTEM_PROMPT },
+          { role: "user", content: userPrompt },
         ],
         temperature: 0.4,
         max_tokens: 3000,
@@ -124,13 +130,13 @@ SEO metadata package for the publication page.`;
       );
     }
 
-    const data = await response.json() as {
+    const data = (await response.json()) as {
       choices?: Array<{ message?: { content?: string } }>;
       model?: string;
     };
 
-    const content = data.choices?.[0]?.message?.content ?? '';
-    const modelUsed = data.model ?? 'unknown';
+    const content = data.choices?.[0]?.message?.content ?? "";
+    const modelUsed = data.model ?? "unknown";
 
     // Use balanced-brace extractor instead of greedy regex to avoid
     // merging multiple JSON objects when the model includes prose examples.
@@ -142,10 +148,12 @@ SEO metadata package for the publication page.`;
       project: { project_name, artist_name, song_title, destination_website },
       plan,
     });
-
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error('Orchestrate API error:', error);
-    return NextResponse.json({ error: `Orchestrator failed: ${msg}` }, { status: 500 });
+    console.error("Orchestrate API error:", error);
+    return NextResponse.json(
+      { error: `Orchestrator failed: ${msg}` },
+      { status: 500 },
+    );
   }
 }

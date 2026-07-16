@@ -34,10 +34,10 @@ and confirms whether the <50 ms target is met for every query type.
 
 ## Environment Variables
 
-| Variable    | Default                    | Description                  |
-|-------------|----------------------------|------------------------------|
-| `MEILI_HOST`| `http://localhost:7700`    | MeiliSearch instance URL     |
-| `MEILI_KEY` | `masterKey`                | Master or search API key     |
+| Variable     | Default                 | Description              |
+| ------------ | ----------------------- | ------------------------ |
+| `MEILI_HOST` | `http://localhost:7700` | MeiliSearch instance URL |
+| `MEILI_KEY`  | `masterKey`             | Master or search API key |
 
 Set these in your `.env` file (see `.env.example` in the repo root) or export
 them in your shell before running `seed.py`.
@@ -51,11 +51,11 @@ them in your shell before running `seed.py`.
 
 ## Files
 
-| File                    | Purpose                                           |
-|-------------------------|---------------------------------------------------|
-| `docker-compose.yml`    | Spins up MeiliSearch v1.7 locally via Docker      |
-| `sample-products.json`  | 50 product catalog documents for seeding          |
-| `seed.py`               | Seeds data, runs benchmarks, prints report        |
+| File                   | Purpose                                      |
+| ---------------------- | -------------------------------------------- |
+| `docker-compose.yml`   | Spins up MeiliSearch v1.7 locally via Docker |
+| `sample-products.json` | 50 product catalog documents for seeding     |
+| `seed.py`              | Seeds data, runs benchmarks, prints report   |
 
 ---
 

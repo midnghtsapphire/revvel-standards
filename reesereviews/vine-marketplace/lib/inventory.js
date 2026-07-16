@@ -27,16 +27,14 @@
  *   lastRepostAt   string|null  — ISO 8601
  */
 
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 // rfy-tracker is in the same lib directory; loaded lazily-safe at module level.
 // We guard against circular-require or missing module scenarios.
 let rfyTracker = null;
 try {
-  rfyTracker = require('./rfy-tracker');
+  rfyTracker = require("./rfy-tracker");
 } catch {
   // rfy-tracker unavailable — RFY stats will be omitted from summary
 }
@@ -45,9 +43,9 @@ try {
 const DATA_DIR =
   process.env.DATA_DIR ||
   (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
-    ? path.join('/tmp', 'vine-marketplace-data')
-    : path.join(__dirname, '..', 'data'));
-const INVENTORY_FILE = path.join(DATA_DIR, 'inventory.json');
+    ? path.join("/tmp", "vine-marketplace-data")
+    : path.join(__dirname, "..", "data"));
+const INVENTORY_FILE = path.join(DATA_DIR, "inventory.json");
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
@@ -58,7 +56,7 @@ if (!fs.existsSync(DATA_DIR)) {
 function load() {
   if (!fs.existsSync(INVENTORY_FILE)) return [];
   try {
-    return JSON.parse(fs.readFileSync(INVENTORY_FILE, 'utf8'));
+    return JSON.parse(fs.readFileSync(INVENTORY_FILE, "utf8"));
   } catch {
     return [];
   }
@@ -66,7 +64,7 @@ function load() {
 
 /** Persist inventory to disk (pretty-printed for easy inspection). */
 function save(inventory) {
-  fs.writeFileSync(INVENTORY_FILE, JSON.stringify(inventory, null, 2), 'utf8');
+  fs.writeFileSync(INVENTORY_FILE, JSON.stringify(inventory, null, 2), "utf8");
 }
 
 /**
@@ -141,7 +139,9 @@ function recordRepost(orderId) {
 /**
  * Query helpers
  */
-function getAll() { return load(); }
+function getAll() {
+  return load();
+}
 
 function getUnlisted() {
   return load().filter((p) => !p.listed && !p.sold);

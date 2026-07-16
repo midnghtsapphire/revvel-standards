@@ -1,14 +1,25 @@
 # Recurse Rules — MIDNGHTSAPPHIRE / Revvel Standards
+
 #
+
 # This file defines custom code quality rules enforced by RecurseML on every PR.
+
 # RecurseML reads this file and flags any patterns listed below as violations.
+
 #
+
 # Rule format:
-#   ## Rule Name
-#   **Pattern:** description of what to look for
-#   **Why:** rationale
-#   **Fix:** how to fix it
+
+# ## Rule Name
+
+# **Pattern:** description of what to look for
+
+# **Why:** rationale
+
+# **Fix:** how to fix it
+
 #
+
 # Reference: https://docs.recurse.ml/recurse-rules
 
 ---
@@ -178,10 +189,11 @@ Revvel projects must prevent production crashes from recursive functions.
 Throw an error when the limit is exceeded. See `RECURSION_STANDARD.md` for full guidance.
 
 **Example:**
+
 ```typescript
 // ❌ WRONG - No depth tracking
 function process(data: any): any {
-  if (typeof data === 'object') {
+  if (typeof data === "object") {
     return Object.values(data).map(process);
   }
   return data;
@@ -192,8 +204,8 @@ function process(data: any, depth = 0, maxDepth = 50): any {
   if (depth > maxDepth) {
     throw new Error(`Recursion depth limit ${maxDepth} exceeded`);
   }
-  if (typeof data === 'object') {
-    return Object.values(data).map(v => process(v, depth + 1, maxDepth));
+  if (typeof data === "object") {
+    return Object.values(data).map((v) => process(v, depth + 1, maxDepth));
   }
   return data;
 }
@@ -227,6 +239,7 @@ exhausting all self-healing options. Creating escalation labels prematurely indi
 resourcefulness.
 
 **Fix:** Before escalating:
+
 1. Research documentation and similar issues
 2. Attempt automatic fixes (retries, fallbacks, alternatives)
 3. Test multiple approaches
@@ -247,6 +260,7 @@ steps.
 limits, temporary unavailability) should trigger automatic recovery, not immediate failure.
 
 **Fix:** Add to all workflows:
+
 - Retry logic with exponential backoff for network calls
 - `continue-on-error: true` only for non-critical diagnostic/recovery steps, and explicitly fail the job after diagnostics when critical steps fail
 - Fallback approaches when primary method fails
@@ -279,6 +293,7 @@ failures (5xx errors, timeouts, network issues).
 into successes without manual intervention.
 
 **Fix:** Wrap API calls in retry logic:
+
 ```typescript
 async function fetchWithRetry(url: string, maxAttempts = 3): Promise<Response> {
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -292,9 +307,11 @@ async function fetchWithRetry(url: string, maxAttempts = 3): Promise<Response> {
       if (attempt === maxAttempts) throw error;
     }
     // Exponential backoff
-    await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.pow(2, attempt) * 1000),
+    );
   }
-  throw new Error('Max retry attempts exceeded');
+  throw new Error("Max retry attempts exceeded");
 }
 ```
 
@@ -311,6 +328,7 @@ Examples: "Error occurred", "Failed", "Invalid input".
 context to diagnose and fix issues without manual investigation.
 
 **Fix:** Error messages must include:
+
 1. What failed (specific operation)
 2. Why it failed (root cause if known)
 3. What was attempted (input/context)
@@ -318,13 +336,13 @@ context to diagnose and fix issues without manual investigation.
 
 ```typescript
 // ❌ BAD
-throw new Error('Failed');
+throw new Error("Failed");
 
 // ✅ GOOD
 throw new Error(
   `Failed to create branch 'issue-${issueNumber}-${issueTitle}': ` +
-  `Branch name contains invalid characters (/:@). ` +
-  `Update .github/issue-branch.yml to add these characters to gitReplaceChars. ` +
-  `See git-check-ref-format documentation for full rules.`
+    `Branch name contains invalid characters (/:@). ` +
+    `Update .github/issue-branch.yml to add these characters to gitReplaceChars. ` +
+    `See git-check-ref-format documentation for full rules.`,
 );
 ```

@@ -10,6 +10,7 @@
 ---
 
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-29167221728.md`
@@ -19,6 +20,7 @@ Source packet: `docs/research-engine/run-29167221728.md`
 **Recommendation: DO NOT BUILD** this system as specified. The core functionality violates GitHub's Terms of Service.
 
 **Critical Finding**: Multiple research lanes confirm this is a "star-for-star scheme" explicitly prohibited by GitHub's Acceptable Use Policies. Building this would risk:
+
 - Immediate platform suspension
 - Permanent reputation damage to Revvel
 - Legal liability for facilitating ToS violations
@@ -30,16 +32,19 @@ Source packet: `docs/research-engine/run-29167221728.md`
 **Target Audience**: Open-source developers and project maintainers with <100 GitHub stars
 
 **Urgent Pain Points**:
+
 1. Quality projects remain undiscovered in GitHub's vast ecosystem
 2. No legitimate discovery mechanisms for new repositories
 3. Lack of initial social proof prevents organic growth
 
-**Why This Audience**: 
+**Why This Audience**:
+
 - 73% of new GitHub projects never reach 10 stars (internal estimate: 60-80% range)
 - High emotional urgency around project visibility
 - Willing to invest time in legitimate promotion strategies
 
 **Language They Use**:
+
 - "My project is stuck at 0 stars"
 - "How do I get my first contributors?"
 - "GitHub discovery is broken for new projects"
@@ -49,16 +54,19 @@ Source packet: `docs/research-engine/run-29167221728.md`
 ## SEO Strategy
 
 **Primary Keywords** (estimated monthly searches):
+
 - "GitHub project promotion" (500-1,000)
 - "how to get GitHub stars" (1,000-2,000)
 - "GitHub repository discovery" (300-800)
 
 **Content Strategy**:
+
 1. **Blog Series**: "Ethical GitHub Growth Strategies"
 2. **Landing Page**: "RepoBeacon - Discover Quality Open Source Projects"
 3. **Case Studies**: Success stories of projects that grew organically
 
 **Technical SEO Requirements**:
+
 - Implement structured data for software applications
 - Create GitHub integration landing pages
 - Build backlinks from developer communities
@@ -71,23 +79,25 @@ Source packet: `docs/research-engine/run-29167221728.md`
 
 ## Competitor and GitHub Star Intelligence
 
-| Competitor | Stars | Pricing | Last Update | Differentiation |
-|------------|-------|---------|-------------|-----------------|
-| GitHub Trending | N/A | Free | Daily | Official but algorithm-based |
-| Awesome Lists | Varies | Free | Ongoing | Manual curation, high barrier |
-| Product Hunt | N/A | Free listing | Daily | Not GitHub-specific |
-| **Black Market Services** | N/A | $50-500 | Active | Violate ToS, risk account ban |
+| Competitor                | Stars  | Pricing      | Last Update | Differentiation               |
+| ------------------------- | ------ | ------------ | ----------- | ----------------------------- |
+| GitHub Trending           | N/A    | Free         | Daily       | Official but algorithm-based  |
+| Awesome Lists             | Varies | Free         | Ongoing     | Manual curation, high barrier |
+| Product Hunt              | N/A    | Free listing | Daily       | Not GitHub-specific           |
+| **Black Market Services** | N/A    | $50-500      | Active      | Violate ToS, risk account ban |
 
 **Key Insight**: No legitimate competitors exist in the "project discovery" space. The only direct competitors are ToS-violating services.
 
 ## Chatter and Demand Signals
 
 **Community Sentiment**:
+
 - "Starswap sounds like a crypto thing, not a GitHub automation" - Multiple sources
 - "Please pick a name that tells me what it does" - User feedback
 - Strong negative reaction to anything resembling "gaming the system"
 
 **Demand Signals**:
+
 - GitHub Discussions show recurring threads about project discovery
 - Reddit r/opensource has weekly "how to promote my project" posts
 - No legitimate solution currently addresses this need
@@ -95,16 +105,19 @@ Source packet: `docs/research-engine/run-29167221728.md`
 ## Factual Validation and Evidence Gaps
 
 **Verified Facts**:
+
 - GitHub explicitly prohibits "star-for-star schemes" in their Acceptable Use Policies
 - The proposed webhook architecture is technically feasible
 - In-memory storage requirement conflicts with stated PostgreSQL backend
 
 **Critical Evidence Gaps**:
+
 - No market size data for GitHub project discovery tools
 - No pricing validation from potential users
 - No legal review of GitHub ToS compliance
 
 **Unverifiable Claims**:
+
 - Customer willingness to pay
 - Actual search volumes (requires paid SEO tools)
 - GitHub's enforcement patterns for ToS violations
@@ -114,6 +127,7 @@ Source packet: `docs/research-engine/run-29167221728.md`
 ## Pivot Requirements for RepoBeacon
 
 ### Core Features
+
 1. **Project Showcase System**
    - Weekly curated lists
    - Community voting (not star manipulation)
@@ -130,12 +144,14 @@ Source packet: `docs/research-engine/run-29167221728.md`
    - Build reputation score
 
 ### Technical Requirements
+
 - GitHub OAuth integration (read-only)
 - PostgreSQL for data persistence
 - Redis for caching and sessions
 - Webhook handlers for repository updates
 
 ### Acceptance Gates
+
 - [ ] Legal review confirms ToS compliance
 - [ ] MVP validates with 20+ project maintainers
 - [ ] Discovery algorithm shows 10x better results than random
@@ -147,36 +163,44 @@ Source packet: `docs/research-engine/run-29167221728.md`
 ## Critical Blockers
 
 ### 1. ToS Violation in Core Logic
+
 **Finding**: Any implementation of star swapping violates GitHub ToS
+
 ```javascript
 // BLOCKED: This entire concept is prohibited
 async function swapStars(repoA, repoB) {
   // DO NOT IMPLEMENT
 }
 ```
+
 **Fix**: Remove all star manipulation logic
 **Commit**: `fix: remove ToS-violating star swap functionality`
 
 ### 2. Unsafe Webhook Validation
+
 **Finding**: Missing HMAC signature verification
+
 ```javascript
 // Current (unsafe)
-app.post('/webhook', (req, res) => {
+app.post("/webhook", (req, res) => {
   handleWebhook(req.body);
 });
 
 // Fixed
-app.post('/webhook', (req, res) => {
+app.post("/webhook", (req, res) => {
   if (!verifyWebhookSignature(req)) {
-    return res.status(401).send('Unauthorized');
+    return res.status(401).send("Unauthorized");
   }
   handleWebhook(req.body);
 });
 ```
+
 **Commit**: `fix: add HMAC signature verification for webhooks`
 
 ### 3. Memory Leak in File Storage
+
 **Finding**: In-memory storage without cleanup
+
 ```javascript
 // Add TTL and size limits
 const cache = new Map();
@@ -185,12 +209,15 @@ const TTL = 3600000; // 1 hour
 
 function saveToMemory(key, data) {
   if (cache.size >= MAX_CACHE_SIZE) {
-    const oldest = [...cache.entries()].sort((a, b) => a[1].timestamp - b[1].timestamp)[0];
+    const oldest = [...cache.entries()].sort(
+      (a, b) => a[1].timestamp - b[1].timestamp,
+    )[0];
     cache.delete(oldest[0]);
   }
   cache.set(key, { data, timestamp: Date.now() });
 }
 ```
+
 **Commit**: `fix: add memory management for file cache`
 
 ## Automatic Fix and Commit Queue
@@ -211,14 +238,14 @@ jobs:
             echo "::error::ToS violation detected - star manipulation code found"
             exit 1
           fi
-      
+
       - name: Verify webhook security
         run: |
           if ! grep -r "verifyWebhookSignature\|crypto.createHmac" src/webhooks/; then
             echo "::error::Webhook signature verification missing"
             exit 1
           fi
-      
+
       - name: Check memory management
         run: |
           if grep -r "new Map()" src/ | grep -v "MAX_SIZE\|TTL"; then
@@ -229,17 +256,20 @@ jobs:
 ## Labels to Apply
 
 **Immediate**:
+
 - `compliance-risk-critical`
 - `pivot-required`
 - `legal-review-required`
 - `tos-violation-risk`
 
 **Technical**:
+
 - `security-webhook-validation`
 - `memory-leak-risk`
 - `needs-architecture-review`
 
 **Process**:
+
 - `needs-market-validation`
 - `needs-user-research`
 - `blocked-legal`
@@ -251,18 +281,21 @@ jobs:
 **Recommendation**: Use [Probot](https://github.com/probot/probot) (8.5k stars) as the foundation for RepoBeacon.
 
 **Why Probot**:
+
 - Mature GitHub App framework with webhook handling
 - Built-in security best practices
 - Active community and maintenance
 - Extensible architecture for custom features
 
 **Implementation Path**:
+
 1. Fork Probot starter template
 2. Add RepoBeacon-specific discovery logic
 3. Implement showcase and voting features
 4. Deploy as GitHub App
 
 **Alternative Stack**:
+
 - Next.js for frontend
 - PostgreSQL for data
 - Redis for caching
@@ -273,16 +306,19 @@ jobs:
 **Overall Confidence: 75/100**
 
 **High Confidence (90-95)**:
+
 - ToS violation assessment
 - Technical architecture feasibility
 - Security requirements
 
 **Medium Confidence (70-80)**:
+
 - Market demand for legitimate discovery tool
 - Developer willingness to use showcase platform
 - Technical implementation with Probot
 
 **Low Confidence (40-60)**:
+
 - Monetization potential
 - Specific search volumes
 - User acquisition costs

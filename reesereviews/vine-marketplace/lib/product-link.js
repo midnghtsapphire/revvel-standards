@@ -9,26 +9,28 @@
  * If Amazon blocks bots, we still return productUrl so the human can open the page.
  */
 
-'use strict';
-
 // Prefer global fetch (Node 18+ / Vercel); fall back to node-fetch if present.
 const fetchFn =
-  typeof globalThis.fetch === 'function'
+  typeof globalThis.fetch === "function"
     ? globalThis.fetch.bind(globalThis)
-    : (...args) => require('node-fetch')(...args);
-const { productUrlFromAsin, isValidAsin, attachProductLink } = require('./amazon-parser');
+    : (...args) => require("node-fetch")(...args);
+const {
+  productUrlFromAsin,
+  isValidAsin,
+  attachProductLink,
+} = require("./amazon-parser");
 
 /**
  * Collect candidate image URLs from HTML (og:image, product media).
  * Deterministic, no AI.
  */
 function extractImageUrlsFromHtml(html, limit = 8) {
-  if (!html || typeof html !== 'string') return [];
+  if (!html || typeof html !== "string") return [];
   const found = [];
   const push = (u) => {
-    if (!u || typeof u !== 'string') return;
-    let url = u.trim().replace(/&amp;/g, '&');
-    if (url.startsWith('//')) url = `https:${url}`;
+    if (!u || typeof u !== "string") return;
+    let url = u.trim().replace(/&amp;/g, "&");
+    if (url.startsWith("//")) url = `https:${url}`;
     if (!/^https?:\/\//i.test(url)) return;
     // Prefer Amazon media / product images
     if (!found.includes(url)) found.push(url);
@@ -42,10 +44,12 @@ function extractImageUrlsFromHtml(html, limit = 8) {
   while ((m = ogRe2.exec(html)) !== null) push(m[1]);
 
   // Amazon image CDN patterns in page
-  const cdnRe = /https?:\/\/[^"'\\s]*media-amazon\.com\/images\/I\/[A-Za-z0-9._%-]+\.(?:jpg|jpeg|png|webp)/gi;
+  const cdnRe =
+    /https?:\/\/[^"'\\s]*media-amazon\.com\/images\/I\/[A-Za-z0-9._%-]+\.(?:jpg|jpeg|png|webp)/gi;
   while ((m = cdnRe.exec(html)) !== null) push(m[0]);
 
-  const sslRe = /https?:\/\/[^"'\\s]*ssl-images-amazon\.com\/images\/I\/[A-Za-z0-9._%-]+\.(?:jpg|jpeg|png|webp)/gi;
+  const sslRe =
+    /https?:\/\/[^"'\\s]*ssl-images-amazon\.com\/images\/I\/[A-Za-z0-9._%-]+\.(?:jpg|jpeg|png|webp)/gi;
   while ((m = sslRe.exec(html)) !== null) push(m[0]);
 
   return found.slice(0, limit);
@@ -61,12 +65,12 @@ async function enrichProduct(product, opts = {}) {
   const fetchImages = opts.fetchImages !== false;
   const timeoutMs = opts.timeoutMs || 12000;
 
-  let next = attachProductLink({ ...product });
+  const next = attachProductLink({ ...product });
   if (!next.asin || !isValidAsin(next.asin)) {
     return {
       product: next,
       enriched: false,
-      reason: 'missing_or_invalid_asin',
+      reason: "missing_or_invalid_asin",
       imageUrls: next.imageUrls || (next.imageUrl ? [next.imageUrl] : []),
     };
   }
@@ -82,22 +86,30 @@ async function enrichProduct(product, opts = {}) {
 
   if (!fetchImages) {
     next.imageUrls = existing;
-    return { product: next, enriched: true, reason: 'link_only', imageUrls: existing };
+    return {
+      product: next,
+      enriched: true,
+      reason: "link_only",
+      imageUrls: existing,
+    };
   }
 
   let fetched = [];
   let fetchError = null;
   try {
-    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    const timer = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+    const controller =
+      typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timer = controller
+      ? setTimeout(() => controller.abort(), timeoutMs)
+      : null;
     const res = await fetchFn(next.productUrl, {
-      redirect: 'follow',
+      redirect: "follow",
       signal: controller ? controller.signal : undefined,
       headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
-        Accept: 'text/html,application/xhtml+xml',
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "en-US,en;q=0.9",
+        Accept: "text/html,application/xhtml+xml",
       },
     });
     if (timer) clearTimeout(timer);
@@ -122,7 +134,7 @@ async function enrichProduct(product, opts = {}) {
   return {
     product: next,
     enriched: true,
-    reason: fetchError ? `partial:${fetchError}` : 'ok',
+    reason: fetchError ? `partial:${fetchError}` : "ok",
     imageUrls: next.imageUrls,
     fetchError,
   };
@@ -133,29 +145,33 @@ async function enrichProduct(product, opts = {}) {
  */
 function buildListingPack(product, pricing = null) {
   const p = attachProductLink({ ...product });
-  const images = p.imageUrls && p.imageUrls.length
-    ? p.imageUrls
-    : p.imageUrl
-      ? [p.imageUrl]
-      : [];
+  const images =
+    p.imageUrls && p.imageUrls.length
+      ? p.imageUrls
+      : p.imageUrl
+        ? [p.imageUrl]
+        : [];
 
-  const title = (p.productTitle || 'Item for sale').substring(0, 100);
-  const price = pricing && pricing.listingPrice != null
-    ? pricing.listingPrice
-    : p.listingPrice;
+  const title = (p.productTitle || "Item for sale").substring(0, 100);
+  const price =
+    pricing && pricing.listingPrice != null
+      ? pricing.listingPrice
+      : p.listingPrice;
 
   const description = [
     p.productTitle || title,
-    '',
-    p.isVine ? 'Source: Amazon Vine (see condition notes).' : 'From my Amazon orders.',
+    "",
+    p.isVine
+      ? "Source: Amazon Vine (see condition notes)."
+      : "From my Amazon orders.",
     p.asin ? `Product reference ASIN: ${p.asin}` : null,
     p.productUrl ? `Product page: ${p.productUrl}` : null,
-    '',
-    'Condition: See photos / notes. Local pickup or shipping as agreed.',
-    'Message me with questions — thanks for looking!',
+    "",
+    "Condition: See photos / notes. Local pickup or shipping as agreed.",
+    "Message me with questions — thanks for looking!",
   ]
     .filter(Boolean)
-    .join('\n');
+    .join("\n");
 
   return {
     orderId: p.orderId,
@@ -171,8 +187,8 @@ function buildListingPack(product, pricing = null) {
     product: p,
     builtAt: new Date().toISOString(),
     note: images.length
-      ? 'Images from Amazon product/email — owner did not upload personal photos.'
-      : 'No images yet — open productUrl and copy images, or re-run enrich.',
+      ? "Images from Amazon product/email — owner did not upload personal photos."
+      : "No images yet — open productUrl and copy images, or re-run enrich.",
   };
 }
 

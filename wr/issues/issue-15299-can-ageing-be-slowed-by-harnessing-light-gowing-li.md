@@ -5,7 +5,7 @@
 **Created:** 2026-07-06  
 **Researcher:** Copilot + OpenRouter  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -19,18 +19,19 @@ The issue requests building a tool/app inspired by the Gowing Life article on ph
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | N/A |
-| Archived | N/A |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | N/A   |
+| Archived    | N/A   |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
@@ -60,6 +61,7 @@ This work request is grounded in a rapidly growing, well-funded longevity sub-ma
 **Secondary:** Clinicians, physiotherapists, and wellness coaches who prescribe PBM protocols and need a client-facing tool to assign and track adherence.
 
 **Why now:**
+
 - Red-light therapy device sales are growing driven by consumer wellness trends (internal estimate; the home red-light device market is described as a high-growth segment by industry analysts).
 - Subscription longevity apps (InsideTracker, Levels, Oura) have proven users pay $10–$50/month for personalized health optimization data.
 - No dominant software layer exists for PBM protocol tracking — hardware vendors (Joovv, PlatinumLED, Mito Red Light) ship devices with minimal companion apps.
@@ -67,6 +69,7 @@ This work request is grounded in a rapidly growing, well-funded longevity sub-ma
 ## 3. Marketing and SEO Plan
 
 **Primary Keywords (all search volumes are internal estimates — verify with Ahrefs/SEMrush):**
+
 - `red light therapy protocol`
 - `photobiomodulation dosing calculator`
 - `red light therapy tracker app`
@@ -74,10 +77,12 @@ This work request is grounded in a rapidly growing, well-funded longevity sub-ma
 - `PBM longevity tool`
 
 **Landing Page Recommendations:**
+
 - **Title:** "Red Light Therapy Protocol Tracker — Personalized PBM Dosing & Progress"
 - **Meta Description:** "Science-backed red-light therapy dose calculator and session tracker. Build evidence-based PBM protocols for skin, muscle recovery, cognition, and longevity."
 
 **Content Strategy:**
+
 1. **Pillar page:** "Complete Guide to Photobiomodulation Protocols for Anti-Ageing"
 2. **Spoke articles:** device comparisons, wavelength guides (630nm vs 810nm vs 850nm), condition-specific protocols
 3. **SEO moat:** library of curated study-backed protocols (indexed, linkable)
@@ -87,23 +92,23 @@ This work request is grounded in a rapidly growing, well-funded longevity sub-ma
 
 ### Direct Competitors
 
-| Platform | Pricing | GitHub Stars | Key Differentiator |
-|----------|---------|--------------|-------------------|
-| **Joovv App** (companion app) | Free (device required) | Closed source | Device-locked, limited protocol customization |
-| **PlatinumLED App** | Free (device required) | Closed source | Basic timer only |
-| **Mito Red Light App** | Free (device required) | Closed source | No dosing guidance |
-| **Kilo.health Red Light Tracker** | Pricing data pending — competitive benchmark research required. | Closed source | Habit tracker angle, no clinical protocols |
-| **InsideTracker** | $49–$699/year | Closed source | Broader longevity focus; no PBM specialization |
+| Platform                          | Pricing                                                         | GitHub Stars  | Key Differentiator                             |
+| --------------------------------- | --------------------------------------------------------------- | ------------- | ---------------------------------------------- |
+| **Joovv App** (companion app)     | Free (device required)                                          | Closed source | Device-locked, limited protocol customization  |
+| **PlatinumLED App**               | Free (device required)                                          | Closed source | Basic timer only                               |
+| **Mito Red Light App**            | Free (device required)                                          | Closed source | No dosing guidance                             |
+| **Kilo.health Red Light Tracker** | Pricing data pending — competitive benchmark research required. | Closed source | Habit tracker angle, no clinical protocols     |
+| **InsideTracker**                 | $49–$699/year                                                   | Closed source | Broader longevity focus; no PBM specialization |
 
 No dominant open-source or independent PBM tracking app exists — this is a clear whitespace opportunity.
 
 ### Adjacent OSS/Longevity Tools
 
-| Project | GitHub Stars | Relevance |
-|---------|--------------|-----------|
-| [apexcharts/apexcharts.js](https://github.com/apexcharts/apexcharts.js) | ~14K | Progress charts for session data |
-| [vercel/next.js](https://github.com/vercel/next.js) | ~125K | Recommended app framework |
-| [supabase/supabase](https://github.com/supabase/supabase) | ~70K | Auth + database layer |
+| Project                                                                 | GitHub Stars | Relevance                        |
+| ----------------------------------------------------------------------- | ------------ | -------------------------------- |
+| [apexcharts/apexcharts.js](https://github.com/apexcharts/apexcharts.js) | ~14K         | Progress charts for session data |
+| [vercel/next.js](https://github.com/vercel/next.js)                     | ~125K        | Recommended app framework        |
+| [supabase/supabase](https://github.com/supabase/supabase)               | ~70K         | Auth + database layer            |
 
 (Star counts are approximate — verify via GitHub API.)
 
@@ -116,11 +121,13 @@ No dominant open-source or independent PBM tracking app exists — this is a cle
 ## 6. Factual Validation and Evidence Gaps
 
 ### Verified / Well-Sourced Facts
+
 - PBM mechanism (cytochrome c oxidase stimulation): documented in peer-reviewed literature — [Hamblin MR (2016), J Biophotonics](https://pubmed.ncbi.nlm.nih.gov/27540842/)
 - Skin ageing benefits of red light therapy (630–660nm): RCT evidence for wrinkle reduction — [Wunsch & Matuschka (2014), Photomedicine and Laser Surgery](https://pubmed.ncbi.nlm.nih.gov/24286286/)
 - Cognitive / neuroprotective effects (810nm transcranial PBM): early-stage human studies — [Hamblin (2016) Photobiomodulation in the brain](https://pubmed.ncbi.nlm.nih.gov/27250344/)
 
 ### Requires Further Verification
+
 - Exact market size figures for home red-light device market (all volume figures above labeled as internal estimates)
 - Gowing Life article's specific claims and protocol recommendations (URL inaccessible during automated research — verify against live article before shipping protocol database)
 - Kilo.health tracker pricing (listed as pending — confirm via their website before publishing competitor table)
@@ -167,13 +174,13 @@ The photobiomodulation / red-light therapy consumer market is a high-growth segm
 
 ### Competitor Analysis
 
-| Competitor | Price | What's Missing |
-|------------|-------|----------------|
-| Joovv App | Free (device-locked) | No protocol customization, no dosing calculator |
-| PlatinumLED App | Free (device-locked) | Timer only, no study library |
-| Mito Red Light App | Free (device-locked) | No analytics, no multi-device support |
-| Kilo.health Tracker | Pricing data pending — competitive benchmark research required. | Habit-tracker focus, no clinical protocol basis |
-| Generic wellness apps | $5–$15/mo (internal estimate) | No PBM specialization |
+| Competitor            | Price                                                           | What's Missing                                  |
+| --------------------- | --------------------------------------------------------------- | ----------------------------------------------- |
+| Joovv App             | Free (device-locked)                                            | No protocol customization, no dosing calculator |
+| PlatinumLED App       | Free (device-locked)                                            | Timer only, no study library                    |
+| Mito Red Light App    | Free (device-locked)                                            | No analytics, no multi-device support           |
+| Kilo.health Tracker   | Pricing data pending — competitive benchmark research required. | Habit-tracker focus, no clinical protocol basis |
+| Generic wellness apps | $5–$15/mo (internal estimate)                                   | No PBM specialization                           |
 
 **Whitespace:** No cross-device, science-backed PBM protocol tracker with dosing guidance and progress analytics exists at a consumer price point.
 
@@ -233,11 +240,11 @@ The photobiomodulation / red-light therapy consumer market is a high-growth segm
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 Standalone product — no prerequisite WRs identified.
 

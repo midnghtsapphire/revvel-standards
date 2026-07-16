@@ -11,6 +11,7 @@
 ## ✨ Key Features
 
 ### 🛡️ **50+ OSINT Tools Integrated**
+
 - Threat Intelligence: AlienVault OTX, MISP, Abuse.ch, CISA KEV
 - Network Recon: Shodan, Censys, SecurityTrails, GreyNoise
 - OSINT Platforms: OpenCTI, Maltego CE, TheHive, Spiderfoot
@@ -18,19 +19,23 @@
 - Web Recon: theHarvester, Recon-ng, Photon, OSRFramework
 
 ### 🤖 **AI-Orchestrated Intelligence**
+
 - **Multi-LLM Collaboration**: GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro, Perplexity, DeepSeek R1
 - **Autonomous Collection**: 24/7 monitoring with zero human intervention
 - **Fusion Analysis**: Cross-source correlation and MITRE ATT&CK mapping
 - **Self-Healing**: Automatic error recovery and retry logic
 
 ### 👁️ **Project Overwatch**
+
 - Continuous monitoring of brand mentions, credential leaks, and infrastructure changes
 - Intelligent alerting with smart correlation (no alert fatigue)
 - Automated incident response workflows
 - GitHub Issues, tickets, and threat feed updates—all autonomous
 
 ### 🧬 **OSINT Fusion Blueprint**
+
 4-layer intelligence pipeline:
+
 1. **Collection**: Threat feeds, network scans, social media, dark web
 2. **Processing**: Normalization (STIX), deduplication, enrichment
 3. **Analysis**: AI correlation, pattern detection, ATT&CK mapping
@@ -41,6 +46,7 @@
 ## 🚀 30-Day Product Blueprint
 
 ### Week 1-2: Foundation
+
 - Infrastructure setup (GitHub, CI/CD)
 - Core OSINT tool integration
 - Data pipeline architecture
@@ -48,6 +54,7 @@
 - Initial feed ingestion (3+ sources)
 
 ### Week 3: Intelligence
+
 - Multi-LLM analysis pipeline
 - Correlation engine (MISP/OpenCTI)
 - Automated enrichment
@@ -55,6 +62,7 @@
 - Dashboard prototype
 
 ### Week 4: Production
+
 - Real-time monitoring activation
 - Alert system deployment
 - Auto-response workflows
@@ -80,11 +88,12 @@ Visit the live site: [https://midnghtsapphire.github.io/revvel-standards/osint-h
 The OSINT Hub is designed to be deployed as a static site. To deploy:
 
 1. **Local Development**:
+
    ```bash
    # Clone the repository
    git clone https://github.com/midnghtsapphire/revvel-standards.git
    cd revvel-standards/osint-hub
-   
+
    # Open in browser
    open index.html
    # or use a local server
@@ -100,7 +109,7 @@ The OSINT Hub is designed to be deployed as a static site. To deploy:
    ```bash
    # Deploy to Vercel
    vercel --prod
-   
+
    # Deploy to Netlify
    netlify deploy --prod --dir=osint-hub
    ```
@@ -128,18 +137,21 @@ GOOGLE_AI_API_KEY=your_google_key
 ## 📊 OSINT Data Sources
 
 ### Threat Intelligence Feeds
+
 - **AlienVault OTX** (STIX/TAXII, real-time)
 - **MISP Project** (community feeds, daily)
 - **Abuse.ch URLhaus** (malware URLs, hourly)
 - **CISA KEV** (known exploited vulnerabilities, daily)
 
 ### Network & Infrastructure
+
 - **Shodan**: Exposed services, banners, TLS fingerprints
 - **Censys**: TLS certificates, open services
 - **SecurityTrails**: DNS history, subdomain enumeration
 - **GreyNoise**: Internet scan noise classification
 
 ### OSINT Platforms
+
 - **OpenCTI**: Threat intelligence management
 - **MISP**: Threat sharing and correlation
 - **TheHive**: Incident response and case management
@@ -148,17 +160,18 @@ GOOGLE_AI_API_KEY=your_google_key
 
 ## 🤖 AI Research Stack
 
-| LLM | Best For | Context Window |
-|-----|----------|----------------|
-| **GPT-4o** | General synthesis, structured reports | 128K tokens |
-| **Claude 3.5 Sonnet** | Long-document analysis, code review | 200K tokens |
-| **Gemini 1.5 Pro** | Massive context, multi-source synthesis | 1M tokens |
-| **Perplexity no-key fork** | Real-time web search synthesis without an official API key | Live web |
-| **DeepSeek R1** | Cutting-edge reasoning, code generation | 64K tokens |
+| LLM                        | Best For                                                   | Context Window |
+| -------------------------- | ---------------------------------------------------------- | -------------- |
+| **GPT-4o**                 | General synthesis, structured reports                      | 128K tokens    |
+| **Claude 3.5 Sonnet**      | Long-document analysis, code review                        | 200K tokens    |
+| **Gemini 1.5 Pro**         | Massive context, multi-source synthesis                    | 1M tokens      |
+| **Perplexity no-key fork** | Real-time web search synthesis without an official API key | Live web       |
+| **DeepSeek R1**            | Cutting-edge reasoning, code generation                    | 64K tokens     |
 
 ## 🎨 Design Philosophy
 
 ### Gen Z Aesthetic
+
 - **Dark Mode First**: Optimized for OSINT operations
 - **Neon Gradients**: High-contrast, vibrant color palette
 - **Glassmorphism**: Modern, translucent UI elements
@@ -166,6 +179,7 @@ GOOGLE_AI_API_KEY=your_google_key
 - **Micro-interactions**: Smooth hover effects and animations
 
 ### Color Palette
+
 ```css
 Neon Blue:   #3a86ff  /* Primary actions, links */
 Neon Purple: #8338ec  /* Secondary elements */
@@ -177,6 +191,7 @@ Neon Yellow: #ffbe0b  /* Warnings */
 ## 📖 Documentation
 
 For detailed implementation guides, see:
+
 - [OSINT Integration Standard](../docs/Master_Inventory/OSINT_STANDARD.md)
 - [GROWLINGEYES MASTER SPEC](../docs/GROWLINGEYES_MASTER_SPEC.md)
 - [AGENTS.md](../docs/AGENTS.md) — Universal agent instructions
@@ -208,6 +223,7 @@ Contact: support@freedomangel.com
 ## 🌟 Acknowledgments
 
 Built with research from:
+
 - AI_Orchestrated_OSINT.pdf
 - OSINT_ARSENAL_2026.pdf
 - OSINT_Fusion_Blueprint.pdf

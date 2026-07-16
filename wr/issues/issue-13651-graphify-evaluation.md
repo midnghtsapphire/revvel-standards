@@ -61,15 +61,15 @@ The deep-research output recommends creating **Graphify Evaluator** as a web app
 
 ### Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Repository | [safishamsi/graphify](https://github.com/safishamsi/graphify) |
-| Created | 2024-11-20 |
-| Last Updated | 2026-05-21 |
-| Primary Language | Python |
-| Stars | 4200+ |
-| Description | LLM-powered codebase relationship graph extractor and visualizer |
-| Private | False |
+| Property         | Value                                                            |
+| ---------------- | ---------------------------------------------------------------- |
+| Repository       | [safishamsi/graphify](https://github.com/safishamsi/graphify)    |
+| Created          | 2024-11-20                                                       |
+| Last Updated     | 2026-05-21                                                       |
+| Primary Language | Python                                                           |
+| Stars            | 4200+                                                            |
+| Description      | LLM-powered codebase relationship graph extractor and visualizer |
+| Private          | False                                                            |
 
 ### Current Status
 
@@ -83,21 +83,21 @@ The deep-research output recommends creating **Graphify Evaluator** as a web app
 
 ### Target Audience & Search Intent
 
-| Keyword / Intent | Volume / mo | CPC | Why they search this |
-| --- | --- | --- | --- |
-| "codebase visualization tool" | 3,500 | $2.50 | Devs inheriting legacy code |
-| "how to understand large codebase" | 5,200 | $1.80 | Junior/mid engineers onboarding |
-| "github repo graph" | 8,100 | $1.20 | Architects tracking dependencies |
-| "LLM code parser" | 2,100 | $3.50 | AI engineers building RAG |
+| Keyword / Intent                   | Volume / mo | CPC   | Why they search this             |
+| ---------------------------------- | ----------- | ----- | -------------------------------- |
+| "codebase visualization tool"      | 3,500       | $2.50 | Devs inheriting legacy code      |
+| "how to understand large codebase" | 5,200       | $1.80 | Junior/mid engineers onboarding  |
+| "github repo graph"                | 8,100       | $1.20 | Architects tracking dependencies |
+| "LLM code parser"                  | 2,100       | $3.50 | AI engineers building RAG        |
 
 ### Community Chatter & Pain Points
 
-| Source | Sentiment | Key Complaints | What we solve |
-| --- | --- | --- | --- |
-| [Reddit thread](https://www.reddit.com/r/programming/comments/15tzvhg/what_tools_are_there_to_visualize_large_codebases/) | Skeptical | "Tools miss dynamic dependencies", "Too much noise in graphs" | Graphify uses LLM clustering to group by semantic relationship, not just lexical imports |
-| [Hacker News thread](https://news.ycombinator.com/item?id=39771383) | Curious | "Context window limits for large repos", "Expensive API calls" | Local Ollama support + token budgeting in Graphify |
-| [GitHub Issue #462](https://github.com/safishamsi/graphify/issues/462) | Frustrated | "Doesn't work with mono-repos" | Graphify provides a union-merge git hook and clustering exclusions |
-| [GitHub Issue #949](https://github.com/safishamsi/graphify/issues/949) | Frustrated | "Conflicting graph.json files" | Graphify provides a union-merge git hook and clustering exclusions |
+| Source                                                                                                                    | Sentiment  | Key Complaints                                                 | What we solve                                                                            |
+| ------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [Reddit thread](https://www.reddit.com/r/programming/comments/15tzvhg/what_tools_are_there_to_visualize_large_codebases/) | Skeptical  | "Tools miss dynamic dependencies", "Too much noise in graphs"  | Graphify uses LLM clustering to group by semantic relationship, not just lexical imports |
+| [Hacker News thread](https://news.ycombinator.com/item?id=39771383)                                                       | Curious    | "Context window limits for large repos", "Expensive API calls" | Local Ollama support + token budgeting in Graphify                                       |
+| [GitHub Issue #462](https://github.com/safishamsi/graphify/issues/462)                                                    | Frustrated | "Doesn't work with mono-repos"                                 | Graphify provides a union-merge git hook and clustering exclusions                       |
+| [GitHub Issue #949](https://github.com/safishamsi/graphify/issues/949)                                                    | Frustrated | "Conflicting graph.json files"                                 | Graphify provides a union-merge git hook and clustering exclusions                       |
 
 ### Deep Research Sources (Citations)
 
@@ -116,12 +116,12 @@ The deep-research output recommends creating **Graphify Evaluator** as a web app
 
 ## Step 3: Bill of Materials (BOM)
 
-| Component | Selected Solution | Alternatives | Why Selected | Monthly Cost |
-| --- | --- | --- | --- | --- |
-| Code Extraction | **Graphify CLI** | Madge, Dependency-Cruiser | LLM-aware semantic extraction | Free (Open Source) |
-| LLM Backend | **Ollama / Claude** | OpenAI, Bedrock | Local processing support via Ollama saves API costs | $0 (Local) / API cost |
-| Web Framework | **Next.js 15** | Vite/React, Nuxt | SSR, app router, standard for production | Free |
-| UI/Components | **Tailwind CSS** | Material UI, Chakra | Rapid prototyping, lightweight | Free |
+| Component       | Selected Solution   | Alternatives              | Why Selected                                        | Monthly Cost          |
+| --------------- | ------------------- | ------------------------- | --------------------------------------------------- | --------------------- |
+| Code Extraction | **Graphify CLI**    | Madge, Dependency-Cruiser | LLM-aware semantic extraction                       | Free (Open Source)    |
+| LLM Backend     | **Ollama / Claude** | OpenAI, Bedrock           | Local processing support via Ollama saves API costs | $0 (Local) / API cost |
+| Web Framework   | **Next.js 15**      | Vite/React, Nuxt          | SSR, app router, standard for production            | Free                  |
+| UI/Components   | **Tailwind CSS**    | Material UI, Chakra       | Rapid prototyping, lightweight                      | Free                  |
 
 ---
 

@@ -18,14 +18,14 @@ docs/proposals/
 
 ## Lifecycle States
 
-| State | Meaning | Action |
-|-------|---------|--------|
-| active | Under review | Prosecution workflow runs |
-| approved | Approved | Spawns work items |
-| implementing | PRs linked | Track progress |
-| shipped | Complete | Document learnings |
-| rejected | Declined | Document rationale |
-| superseded | Replaced | Link to replacement |
+| State        | Meaning      | Action                    |
+| ------------ | ------------ | ------------------------- |
+| active       | Under review | Prosecution workflow runs |
+| approved     | Approved     | Spawns work items         |
+| implementing | PRs linked   | Track progress            |
+| shipped      | Complete     | Document learnings        |
+| rejected     | Declined     | Document rationale        |
+| superseded   | Replaced     | Link to replacement       |
 
 ## Submitting a Proposal
 

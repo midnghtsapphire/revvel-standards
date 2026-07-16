@@ -13,9 +13,11 @@ assignees:
 ## Rationale
 
 ## Decision Contract
+
 - 👍 = approve
 - 👎 = reject
 - No response = skip
 
 ## Expiration
+
 Auto-close after 14 days if unanswered.

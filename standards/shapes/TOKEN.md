@@ -17,13 +17,13 @@
 
 ## 1. Research Phase
 
-| Task | Tool | Output |
-|------|------|--------|
+| Task                        | Tool                                                          | Output                               |
+| --------------------------- | ------------------------------------------------------------- | ------------------------------------ |
 | Validate usage-based demand | Competitor pricing pages, user complaints about subscriptions | Confirmed preference for pay-per-use |
-| Audit credit systems | How competitors handle credits/tokens | `research/competitors.md` |
-| Define credit economics | Cost per operation, margin target | `research/economics.md` |
-| Design credit packages | Price points, bonus structures | `decision/pricing.json` |
-| Legal review | Virtual currency regulations (state/federal) | `research/legal.md` |
+| Audit credit systems        | How competitors handle credits/tokens                         | `research/competitors.md`            |
+| Define credit economics     | Cost per operation, margin target                             | `research/economics.md`              |
+| Design credit packages      | Price points, bonus structures                                | `decision/pricing.json`              |
+| Legal review                | Virtual currency regulations (state/federal)                  | `research/legal.md`                  |
 
 **Gate:** `research/brief.md` must exist before proceeding.
 
@@ -89,14 +89,14 @@ async function consumeCredits(
   userId: string,
   amount: number,
   productSlug: string,
-  description: string
+  description: string,
 ): Promise<{ success: boolean; balanceAfter: number }> {
   return await db.transaction(async (tx) => {
     const row = await tx
       .select()
       .from(creditBalances)
       .where(eq(creditBalances.userId, userId))
-      .for("update")  // row-level lock
+      .for("update") // row-level lock
       .first();
 
     if (!row || row.balance < amount) {
@@ -104,8 +104,12 @@ async function consumeCredits(
     }
 
     const newBalance = row.balance - amount;
-    await tx.update(creditBalances)
-      .set({ balance: newBalance, lifetimeConsumed: row.lifetimeConsumed + amount })
+    await tx
+      .update(creditBalances)
+      .set({
+        balance: newBalance,
+        lifetimeConsumed: row.lifetimeConsumed + amount,
+      })
       .where(eq(creditBalances.userId, userId));
 
     await tx.insert(creditTransactions).values({
@@ -137,13 +141,13 @@ async function consumeCredits(
 
 ## 3. Design Phase
 
-| Asset | Purpose | Tool |
-|-------|---------|------|
-| Credit balance UI widget | Show current balance in products | Figma component |
-| Purchase modal | Credit package selection + checkout | Figma |
-| Usage dashboard | Transaction history, consumption chart | Figma |
-| Landing page | Explain credit system + pricing | Figma → HTML |
-| OG image | Social sharing | Figma |
+| Asset                    | Purpose                                | Tool            |
+| ------------------------ | -------------------------------------- | --------------- |
+| Credit balance UI widget | Show current balance in products       | Figma component |
+| Purchase modal           | Credit package selection + checkout    | Figma           |
+| Usage dashboard          | Transaction history, consumption chart | Figma           |
+| Landing page             | Explain credit system + pricing        | Figma → HTML    |
+| OG image                 | Social sharing                         | Figma           |
 
 ---
 
@@ -171,10 +175,19 @@ Every product that uses credits needs a middleware check:
 // middleware — check credits before expensive operations
 app.use("/api/v1/generate", async (req, res, next) => {
   const cost = getCreditCost(req.body.operation);
-  const result = await consumeCredits(req.user.id, cost, "product-slug", req.body.operation);
+  const result = await consumeCredits(
+    req.user.id,
+    cost,
+    "product-slug",
+    req.body.operation,
+  );
   if (!result.success) {
     return res.status(402).json({
-      error: { code: "INSUFFICIENT_CREDITS", balance: result.balanceAfter, required: cost }
+      error: {
+        code: "INSUFFICIENT_CREDITS",
+        balance: result.balanceAfter,
+        required: cost,
+      },
     });
   }
   req.creditsConsumed = cost;
@@ -185,6 +198,7 @@ app.use("/api/v1/generate", async (req, res, next) => {
 ### Landing Page
 
 Must include:
+
 - Credit pricing table (packages with bonus tiers)
 - What credits can be used for (list of products/operations)
 - Credit cost per operation (transparent pricing)
@@ -195,11 +209,11 @@ Must include:
 
 ## 5. Connections Required
 
-| Connection | Purpose | Where stored |
-|------------|---------|--------------|
-| **Stripe API key** | Credit purchase + webhooks | Doppler `revvel-standards/prd/STRIPE_SECRET_KEY` |
-| **Stripe webhook secret** | Verify webhook signatures | Doppler (per-project) |
-| **Database** | Credit balances + ledger | Doppler (per-project `DATABASE_URL`) |
+| Connection                | Purpose                    | Where stored                                     |
+| ------------------------- | -------------------------- | ------------------------------------------------ |
+| **Stripe API key**        | Credit purchase + webhooks | Doppler `revvel-standards/prd/STRIPE_SECRET_KEY` |
+| **Stripe webhook secret** | Verify webhook signatures  | Doppler (per-project)                            |
+| **Database**              | Credit balances + ledger   | Doppler (per-project `DATABASE_URL`)             |
 
 ---
 
@@ -207,13 +221,13 @@ Must include:
 
 Credits ARE the monetization. Key economics:
 
-| Metric | Target |
-|--------|--------|
+| Metric              | Target                                     |
+| ------------------- | ------------------------------------------ |
 | Credit cost to user | $0.05-0.50 per credit (depending on value) |
-| Cost of goods sold | < 30% of credit price |
-| Margin per credit | ≥ 70% |
-| Bonus tiers | 20% at 500, 30% at 1000 |
-| Expiration | Optional — 12 months is common |
+| Cost of goods sold  | < 30% of credit price                      |
+| Margin per credit   | ≥ 70%                                      |
+| Bonus tiers         | 20% at 500, 30% at 1000                    |
+| Expiration          | Optional — 12 months is common             |
 
 ---
 

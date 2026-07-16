@@ -17,17 +17,17 @@ name: Fleet Maintenance Sweep
 on:
   schedule:
     # Mondays 09:00 UTC.
-    - cron: '0 9 * * 1'
+    - cron: "0 9 * * 1"
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Log the plan without filing Work Requests'
+        description: "Log the plan without filing Work Requests"
         type: boolean
         default: true
       max_repos:
-        description: 'Max repos to sweep this run'
+        description: "Max repos to sweep this run"
         type: string
-        default: '5'
+        default: "5"
 
 permissions:
   contents: read
@@ -45,7 +45,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
       - name: Sweep repos and file Work Requests through revvel-standards
         env:
           FLEET_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.PROJECTS_PAT }}

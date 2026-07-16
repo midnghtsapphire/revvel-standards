@@ -15,7 +15,8 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Music Video Creator",
-  description: "Transform your .wav files and avatar images into AI-generated music videos powered by OpenRouter orchestration.",
+  description:
+    "Transform your .wav files and avatar images into AI-generated music videos powered by OpenRouter orchestration.",
 };
 
 export default function RootLayout({

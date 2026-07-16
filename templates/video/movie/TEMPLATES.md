@@ -5,14 +5,17 @@ Templates for creating full-length movies (90-120 minutes) using AI avatar techn
 ## Movie Types
 
 ### Documentary
+
 **Duration:** 60-90 minutes
 **Best for:** Educational content, storytelling
 
 ### Short Film
+
 **Duration:** 20-40 minutes
 **Best for:** Festivals, streaming platforms
 
 ### Feature Film
+
 **Duration:** 90-120 minutes
 **Best for:** Streaming services, theatrical
 
@@ -155,14 +158,15 @@ PHASE 5: DELIVERY
 
 ### Movie Formats
 
-| Standard | Resolution | Aspect Ratio | Frame Rate |
-|----------|------------|--------------|------------|
-| 4K UHD | 3840x2160 | 16:9 | 24/30fps |
-| 1080p HD | 1920x1080 | 16:9 | 24fps |
-| Cinema 2K | 2048x1080 | 17:9 | 24fps |
-| IMAX | 4096x2160 | 1.90:1 | 24fps |
+| Standard  | Resolution | Aspect Ratio | Frame Rate |
+| --------- | ---------- | ------------ | ---------- |
+| 4K UHD    | 3840x2160  | 16:9         | 24/30fps   |
+| 1080p HD  | 1920x1080  | 16:9         | 24fps      |
+| Cinema 2K | 2048x1080  | 17:9         | 24fps      |
+| IMAX      | 4096x2160  | 1.90:1       | 24fps      |
 
 ### Audio Specs
+
 - **Dialogue:** -24 LUFS
 - **Music:** -23 LUFS
 - **Effects:** -22 LUFS
@@ -171,19 +175,20 @@ PHASE 5: DELIVERY
 
 ### Platform Delivery
 
-| Platform | Format | Max Duration |
-|----------|--------|--------------|
-| Netflix | IMF/DCP | No limit |
-| Amazon Prime | H.264/H.265 | No limit |
-| Apple TV+ | ProRes/H.265 | No limit |
-| Vimeo | H.264 | No limit |
-| YouTube | H.264 | No limit |
+| Platform     | Format       | Max Duration |
+| ------------ | ------------ | ------------ |
+| Netflix      | IMF/DCP      | No limit     |
+| Amazon Prime | H.264/H.265  | No limit     |
+| Apple TV+    | ProRes/H.265 | No limit     |
+| Vimeo        | H.264        | No limit     |
+| YouTube      | H.264        | No limit     |
 
 ---
 
 ## Legal Requirements
 
 ### Talent & Rights
+
 - [ ] Avatar usage rights agreement
 - [ ] Voice clone consent
 - [ ] Music licensing
@@ -191,6 +196,7 @@ PHASE 5: DELIVERY
 - [ ] Stock footage licenses
 
 ### Distribution
+
 - [ ] Content ID registration
 - [ ] Copyright registration
 - [ ] E&O insurance

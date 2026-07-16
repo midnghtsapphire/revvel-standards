@@ -34,13 +34,13 @@ Do **not** use Puter.js when:
 The following Perplexity model IDs are supported through Puter.js as of this
 standard's last update:
 
-| Model ID                          | Notes                                |
-| --------------------------------- | ------------------------------------ |
-| `perplexity/sonar`                | General-purpose online search model. |
-| `perplexity/sonar-pro`            | Higher-quality reasoning + search.   |
-| `perplexity/sonar-reasoning`      | Reasoning-focused variant.           |
-| `perplexity/sonar-reasoning-pro`  | Pro reasoning variant.               |
-| `perplexity/sonar-deep-research`  | Long-form deep research.             |
+| Model ID                         | Notes                                |
+| -------------------------------- | ------------------------------------ |
+| `perplexity/sonar`               | General-purpose online search model. |
+| `perplexity/sonar-pro`           | Higher-quality reasoning + search.   |
+| `perplexity/sonar-reasoning`     | Reasoning-focused variant.           |
+| `perplexity/sonar-reasoning-pro` | Pro reasoning variant.               |
+| `perplexity/sonar-deep-research` | Long-form deep research.             |
 
 Always prefer the smallest model that satisfies the use case to minimize user cost.
 
@@ -53,12 +53,12 @@ Minimum viable usage (streaming):
 <script>
   async function ask(prompt) {
     const resp = await puter.ai.chat(prompt, {
-      model: 'perplexity/sonar',
+      model: "perplexity/sonar",
       stream: true,
     });
     for await (const part of resp) {
       // Always render via textContent, never innerHTML.
-      document.getElementById('out').textContent += part?.text ?? '';
+      document.getElementById("out").textContent += part?.text ?? "";
     }
   }
 </script>
@@ -102,12 +102,12 @@ Tighten further per deployment; the above is the minimum-permissive baseline.
 
 ## Routing Guidance
 
-| Scenario                                | Path                              |
-| --------------------------------------- | --------------------------------- |
-| Public marketing demo / research widget | Puter.js + `perplexity/sonar*`    |
+| Scenario                                | Path                               |
+| --------------------------------------- | ---------------------------------- |
+| Public marketing demo / research widget | Puter.js + `perplexity/sonar*`     |
 | Authenticated in-app browser feature    | Puter.js (preferred) or server API |
-| Server-side batch / cron / agent        | Perplexity API with server key    |
-| Cost must be billed to Revvel           | Perplexity API with server key    |
+| Server-side batch / cron / agent        | Perplexity API with server key     |
+| Cost must be billed to Revvel           | Perplexity API with server key     |
 
 ## References
 

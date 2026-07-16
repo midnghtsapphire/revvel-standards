@@ -27,14 +27,14 @@ it is enabled on `pull_request` triggers; keep CodeRabbit on the free tier.
 
 ## Review-Tool Inventory (50-PR sample — 2026-05-01 to 2026-07-08)
 
-| Tool | Cost / mo | Unique critical catches | Overlap with OpenRouter lane | Decision |
-| --- | --- | --- | --- | --- |
-| **Bito** | $0 (free limited) + `BITO_ACCESS_KEY` | 0 — ran but key absent, silent no-op | 100 % | **CUT** |
-| **RecurseML** | $0 free / est. $X paid — `RECURSE_ML_API_KEY` | 0 — key absent, no results posted | 100 % | **CUT** |
-| **Octopus Review** | $0 hosted (monthly quota hit); BYOK = $0 platform + provider cost | 3 (codebase-context lint catches) | 60 % | **REPLACE → OpenRouter lane** |
-| **CodeRabbit** | $0 free tier (GitHub App; no workflow required) | 2 (off-by-one, missing null check) | 40 % | **KEEP** (free; adds codebase index) |
-| **Mabl** | $0 (paused 2026-05-27) | n/a — tests never configured | n/a | Already cut |
-| **ai-pr-review-openrouter** | ~API cost only (OpenRouter) | baseline | — | **KEEP + enable on PR** |
+| Tool                        | Cost / mo                                                         | Unique critical catches              | Overlap with OpenRouter lane | Decision                             |
+| --------------------------- | ----------------------------------------------------------------- | ------------------------------------ | ---------------------------- | ------------------------------------ |
+| **Bito**                    | $0 (free limited) + `BITO_ACCESS_KEY`                             | 0 — ran but key absent, silent no-op | 100 %                        | **CUT**                              |
+| **RecurseML**               | $0 free / est. $X paid — `RECURSE_ML_API_KEY`                     | 0 — key absent, no results posted    | 100 %                        | **CUT**                              |
+| **Octopus Review**          | $0 hosted (monthly quota hit); BYOK = $0 platform + provider cost | 3 (codebase-context lint catches)    | 60 %                         | **REPLACE → OpenRouter lane**        |
+| **CodeRabbit**              | $0 free tier (GitHub App; no workflow required)                   | 2 (off-by-one, missing null check)   | 40 %                         | **KEEP** (free; adds codebase index) |
+| **Mabl**                    | $0 (paused 2026-05-27)                                            | n/a — tests never configured         | n/a                          | Already cut                          |
+| **ai-pr-review-openrouter** | ~API cost only (OpenRouter)                                       | baseline                             | —                            | **KEEP + enable on PR**              |
 
 ## Objective
 

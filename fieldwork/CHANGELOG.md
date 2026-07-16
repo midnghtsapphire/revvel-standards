@@ -6,6 +6,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [0.1.0] - 2026-04-20
 
 ### Added
+
 - Initial `fieldwork/` scaffold per `docs/DEFAULT_APP_TEMPLATE.md`.
 - Static landing page (`index.html`) built with Tailwind CSS (CDN).
   - Hero with left-aligned heavy-weight headline and floating browser mockup.

@@ -33,6 +33,7 @@ Both opportunities directly support the Prime Directive: **$3,000/month minimum 
 Polar.sh is an **open-source billing platform** and **Merchant of Record (MoR)** designed specifically for developers, SaaS products, and open-source projects. It became an official GitHub funding partner in 2024 and offers unique developer-centric monetization features【3:2†source】【3:4†source】.
 
 **Key Features:**
+
 - **Issue-based funding:** Fund specific GitHub issues with bounties
 - **Automated payouts:** Contributors get paid when issues are closed/merged
 - **License key gating:** Control repo access based on purchases
@@ -42,15 +43,15 @@ Polar.sh is an **open-source billing platform** and **Merchant of Record (MoR)**
 
 ### Competitive Analysis (2026)
 
-| Feature | Polar.sh | GitHub Sponsors | Open Collective |
-|---------|----------|----------------|-----------------|
-| **Fee Structure** | 4% + $0.40/txn (+1.5% intl, +0.5% subscription) | 0% direct (10% via OSC) | 10% + processor fees |
-| **Payout Currency** | USD only | Multiple currencies | Multiple currencies |
-| **Fiscal Sponsorship** | No (project-level) | Requires OSC for orgs | Built-in |
-| **Transparency** | Project-level | Private (unless via host) | Fully public ledger |
-| **GitHub Integration** | Deep (issues, access control) | Profile-level | Via GitHub Sponsors integration |
-| **Tax Compliance** | Full MoR service | Limited | Via fiscal host |
-| **Best For** | Dev tools, SaaS, digital products | Individual developers | Community collectives |
+| Feature                | Polar.sh                                        | GitHub Sponsors           | Open Collective                 |
+| ---------------------- | ----------------------------------------------- | ------------------------- | ------------------------------- |
+| **Fee Structure**      | 4% + $0.40/txn (+1.5% intl, +0.5% subscription) | 0% direct (10% via OSC)   | 10% + processor fees            |
+| **Payout Currency**    | USD only                                        | Multiple currencies       | Multiple currencies             |
+| **Fiscal Sponsorship** | No (project-level)                              | Requires OSC for orgs     | Built-in                        |
+| **Transparency**       | Project-level                                   | Private (unless via host) | Fully public ledger             |
+| **GitHub Integration** | Deep (issues, access control)                   | Profile-level             | Via GitHub Sponsors integration |
+| **Tax Compliance**     | Full MoR service                                | Limited                   | Via fiscal host                 |
+| **Best For**           | Dev tools, SaaS, digital products               | Individual developers     | Community collectives           |
 
 **Source:** Polar.sh Review 2026【3:4†source】, Open Source Funding Platforms【3:3†source】【3:6†source】
 
@@ -59,12 +60,14 @@ Polar.sh is an **open-source billing platform** and **Merchant of Record (MoR)**
 #### Immediate Opportunities (Week 1-4)
 
 **1. Revvel-Standards Monetization**
+
 - **Issue bounties:** Allow community to fund specific feature requests
 - **Paid skill access:** Premium skills available via Polar.sh license keys
 - **Documentation products:** Gated access to advanced implementation guides
 - **Consulting bounties:** High-value architecture reviews funded through Polar
 
 **2. Product-Specific Funding**
+
 - **GrowlingEyes OSINT toolkit:** Offer commercial license via Polar.sh
 - **Axion Planetary MCP:** Commercial access to SAR-to-optical model
 - **Skills vault:** Premium skill bundles at $47-$297/bundle
@@ -72,41 +75,44 @@ Polar.sh is an **open-source billing platform** and **Merchant of Record (MoR)**
 
 #### Revenue Projection
 
-| Week | Product | Price | Sales Target | Revenue |
-|------|---------|-------|--------------|---------|
-| 1 | AI Agent Starter Kit (existing) | $97 | 5 | $485 |
-| 2 | Premium Skills Bundle (NEW) | $147 | 4 | $588 |
-| 3 | GrowlingEyes OSINT License (NEW) | $297 | 2 | $594 |
-| 4 | Custom Agent Setup | $750 | 2 | $1,500 |
-| **TOTAL** | | | | **$3,167** |
+| Week      | Product                          | Price | Sales Target | Revenue    |
+| --------- | -------------------------------- | ----- | ------------ | ---------- |
+| 1         | AI Agent Starter Kit (existing)  | $97   | 5            | $485       |
+| 2         | Premium Skills Bundle (NEW)      | $147  | 4            | $588       |
+| 3         | GrowlingEyes OSINT License (NEW) | $297  | 2            | $594       |
+| 4         | Custom Agent Setup               | $750  | 2            | $1,500     |
+| **TOTAL** |                                  |       |              | **$3,167** |
 
 ✅ **Exceeds $3,000/month target**
 
 ### Implementation Roadmap
 
 #### Phase 1: Account Setup (Days 1-2)
+
 - [ ] Create Polar.sh account linked to MIDNGHTSAPPHIRE GitHub org
 - [ ] Connect revvel-standards repository
 - [ ] Set up payout details (USD bank account)
 - [ ] Configure webhook for payment notifications
 
 #### Phase 2: Product Creation (Days 3-7)
+
 - [ ] Create digital product: "Revvel Skills Vault — Premium Bundle"
   - Bundle: 10 high-value skills from `skills/` directory
   - Price: $147 one-time or $27/month subscription
   - Delivery: GitHub repo access + license key
-  
+
 - [ ] Create digital product: "GrowlingEyes OSINT Toolkit — Commercial License"
   - Includes: Complete OSINT MCP server + documentation
   - Price: $297 one-time or $49/month subscription
   - Delivery: Private repo access
-  
+
 - [ ] Create digital product: "Zero-Human Company Template"
   - Bundle: All templates, skills, agent configs
   - Price: $297 one-time
   - Delivery: Downloadable ZIP + setup guide
 
 #### Phase 3: Marketing Integration (Days 8-14)
+
 - [ ] Add Polar.sh badges to revvel-standards README
 - [ ] Create funding page: `docs/FUNDING.md`
 - [ ] Add "Sponsor" links to all skill READMEs
@@ -115,6 +121,7 @@ Polar.sh is an **open-source billing platform** and **Merchant of Record (MoR)**
 - [ ] Post to LinkedIn, Reddit (r/opensource, r/github)
 
 #### Phase 4: Automation (Days 15-30)
+
 - [ ] GitHub Action: Auto-comment on high-value issues with funding option
 - [ ] Webhook handler: Grant repo access on purchase
 - [ ] License key generator: Automate key delivery
@@ -124,6 +131,7 @@ Polar.sh is an **open-source billing platform** and **Merchant of Record (MoR)**
 ### Technical Integration
 
 **Add to `.github/FUNDING.yml`:**
+
 ```yaml
 polar: midnghtsapphire
 github: midnghtsapphire
@@ -131,6 +139,7 @@ custom: ["https://polar.sh/midnghtsapphire"]
 ```
 
 **Add to repository README:**
+
 ```markdown
 ## Support This Project
 
@@ -162,19 +171,21 @@ Named after the show's satirical approach to current events, this method applies
 
 **South Park's 6-day production cycle** (idea → script → animation → broadcast) maps to our product pipeline:
 
-| South Park Stage | Revvel Product Pipeline Stage | Duration |
-|------------------|------------------------------|----------|
-| Monday: Current events scan | Social listening (OSINT) | Daily cron |
-| Tuesday: Script writing | Problem clustering & validation | 2-4 hours |
-| Wed-Thu: Animation | Product build (automated) | 12-24 hours |
-| Friday: Final edits | Testing & certification | 4-6 hours |
-| Saturday: Broadcast | Deploy & market | 2-4 hours |
-| **TOTAL** | **7 days** | **Idea → Revenue** |
+| South Park Stage            | Revvel Product Pipeline Stage   | Duration           |
+| --------------------------- | ------------------------------- | ------------------ |
+| Monday: Current events scan | Social listening (OSINT)        | Daily cron         |
+| Tuesday: Script writing     | Problem clustering & validation | 2-4 hours          |
+| Wed-Thu: Animation          | Product build (automated)       | 12-24 hours        |
+| Friday: Final edits         | Testing & certification         | 4-6 hours          |
+| Saturday: Broadcast         | Deploy & market                 | 2-4 hours          |
+| **TOTAL**                   | **7 days**                      | **Idea → Revenue** |
 
 ### OSINT Tools & Techniques
 
 #### 1. Profile & Network Mapping
+
 **Tools Available:**
+
 - `skills/genz-int/` — Gen Z OSINT bot standard (Discord/Telegram)
 - `standards/GENZ_INT_OSINT.md` — Comprehensive OSINT toolkit documentation
 - WhatsMyName, BOSINT, steam-osint already documented
@@ -182,7 +193,9 @@ Named after the show's satirical approach to current events, this method applies
 **Use Case:** Map influencer networks to identify trend-setters and early adopters
 
 #### 2. Content Analysis & Trend Detection
+
 **Existing Implementation:**
+
 - `growlingeyes/tools/news_feed.py` — Google News OSINT across 20 domains
 - `growlingeyes/tools/weak_signal_finder.py` — Emerging theme detection from RSS
 - `growlingeyes/tools/stream_listener.py` — Real-time monitoring
@@ -190,7 +203,9 @@ Named after the show's satirical approach to current events, this method applies
 **Use Case:** Detect product opportunities before competitors
 
 #### 3. Social Media Pain Point Mining
+
 **Platforms to Monitor:**
+
 - Reddit: r/antiassholedesign, r/SaaS, r/startups, r/entrepreneur
 - X/Twitter: Tech complaints, workflow frustration threads
 - TikTok: "this is so annoying" + "why doesn't [product] do [feature]"
@@ -204,6 +219,7 @@ Named after the show's satirical approach to current events, this method applies
 #### Daily Cron (02:00 UTC)
 
 **Existing:** `standards/AUTOMATED_PRODUCT_PIPELINE.md` already defines:
+
 ```
 1. LISTEN (daily, cron)
    Social listening across X / Reddit / TikTok / YouTube comments / forums
@@ -224,12 +240,13 @@ def south_park_score(complaint):
 ```
 
 **Output Format:**
+
 ```json
 {
   "complaint_id": "reddit_antiwork_2026_05_03_42",
   "text": "Why isn't there a tool that auto-formats my Zoom recordings into TikTok clips?",
   "source": "reddit",
-  "engagement": {"upvotes": 847, "comments": 123},
+  "engagement": { "upvotes": 847, "comments": 123 },
   "south_park_score": 0.87,
   "estimated_addressable_market": 50000,
   "solution_shape": "CLI",
@@ -241,6 +258,7 @@ def south_park_score(complaint):
 #### Weekly Output → Product Build
 
 **Process:**
+
 1. **Monday 02:00 UTC:** Run OSINT scan (automated)
 2. **Monday 10:00 UTC:** Review top 5 scored opportunities (human gate)
 3. **Monday 12:00 UTC:** Select 1-2 products to build (human approval)
@@ -252,12 +270,12 @@ def south_park_score(complaint):
 
 ### Revenue Model: OSINT-Driven Products
 
-| Product Source | Build Time | Price | Weekly Sales Target | Weekly Revenue |
-|----------------|------------|-------|---------------------|----------------|
-| Reddit pain points | 12-24h | $27-47 | 5-10 | $135-470 |
-| X/Twitter complaints | 6-12h | $17-27 | 10-15 | $170-405 |
-| TikTok "life hacks needed" | 8-16h | $27-97 | 3-7 | $81-679 |
-| LinkedIn B2B needs | 24-48h | $97-297 | 2-4 | $194-1,188 |
+| Product Source             | Build Time | Price   | Weekly Sales Target | Weekly Revenue |
+| -------------------------- | ---------- | ------- | ------------------- | -------------- |
+| Reddit pain points         | 12-24h     | $27-47  | 5-10                | $135-470       |
+| X/Twitter complaints       | 6-12h      | $17-27  | 10-15               | $170-405       |
+| TikTok "life hacks needed" | 8-16h      | $27-97  | 3-7                 | $81-679        |
+| LinkedIn B2B needs         | 24-48h     | $97-297 | 2-4                 | $194-1,188     |
 
 **Total Weekly Range:** $580 - $2,742  
 **Monthly Range:** $2,320 - $10,968
@@ -267,6 +285,7 @@ def south_park_score(complaint):
 ### Competitive Advantage: Speed
 
 **South Park Model:**
+
 - Idea → Broadcast: **6 days**
 - Our Pipeline: Complaint → Revenue: **7 days**
 - Competitor Average: Pain point → Product: **60-120 days**
@@ -286,21 +305,25 @@ def south_park_score(complaint):
 #### Weekly Workflow
 
 **Monday:**
+
 - OSINT scan identifies 50 complaints (automated)
 - South Park scoring ranks top 10 (automated)
 - Human selects 2 to build (5 min review)
 
 **Tuesday-Thursday:**
+
 - Build 2 products via `AUTOMATED_PRODUCT_PIPELINE.md`
 - Create Polar.sh product listings (automated)
 - Generate marketing copy (automated)
 
 **Friday:**
+
 - QA both products (automated + 30 min human spot-check)
 - Deploy to Polar.sh (automated)
 - Publish to social media (automated)
 
 **Saturday-Sunday:**
+
 - Monitor sales (automated dashboard)
 - Respond to support (mostly automated)
 - Update learnings.md (automated)
@@ -314,6 +337,7 @@ def south_park_score(complaint):
 ## 4. Action Plan: Next 30 Days
 
 ### Week 1 (Days 1-7)
+
 - [ ] Set up Polar.sh account and connect GitHub
 - [ ] Create 3 digital products on Polar.sh
   - [ ] Premium Skills Vault Bundle ($147)
@@ -326,6 +350,7 @@ def south_park_score(complaint):
 **Expected:** 2-3 early adopter sales
 
 ### Week 2 (Days 8-14)
+
 - [ ] Implement South Park Method OSINT pipeline
 - [ ] Set up daily cron for social listening
 - [ ] Build scoring algorithm for opportunity ranking
@@ -336,6 +361,7 @@ def south_park_score(complaint):
 **Expected:** 3-4 sales (existing + new product)
 
 ### Week 3 (Days 15-21)
+
 - [ ] Automate Polar.sh product creation from pipeline
 - [ ] Build webhook handler for license delivery
 - [ ] Create email onboarding sequences
@@ -346,6 +372,7 @@ def south_park_score(complaint):
 **Expected:** 5-7 sales across product line
 
 ### Week 4 (Days 22-30)
+
 - [ ] Optimize conversion funnel based on Week 1-3 data
 - [ ] Double down on best-performing products
 - [ ] Create upsell sequences (buyer → higher-tier products)
@@ -358,6 +385,7 @@ def south_park_score(complaint):
 ### Month 1 Total Target: $3,000
 
 **Breakdown:**
+
 - Polar.sh products (existing catalog): $1,200
 - South Park Method products (new): $1,800
 - **Total:** $3,000
@@ -367,36 +395,44 @@ def south_park_score(complaint):
 ## 5. Risk Analysis & Mitigation
 
 ### Risk 1: Polar.sh Adoption Rate
+
 **Risk:** Low initial sales due to platform unfamiliarity  
 **Probability:** Medium  
 **Mitigation:**
+
 - Also list on Gumroad (established audience)
 - Offer launch discount (20% off first 100 buyers)
 - Create comparison chart (Polar vs alternatives)
 - Highlight GitHub-native benefits in marketing
 
 ### Risk 2: OSINT False Positives
+
 **Risk:** Building products for complaints that won't monetize  
 **Probability:** High (early iterations)  
 **Mitigation:**
+
 - Start with human-in-loop approval (Week 1-2)
 - Track conversion rate by complaint source
 - Build feedback loop: sales data → scoring algorithm
 - Set minimum threshold: 0.7+ South Park score only
 
 ### Risk 3: Content Saturation
+
 **Risk:** Market flooded with similar OSINT-discovered products  
 **Probability:** Low (6-12 month horizon)  
 **Mitigation:**
+
 - Speed advantage (7 days vs 60-120 days)
 - Quality focus (Revvel standards enforcement)
 - Brand trust (TruthSlayer verification)
 - Continuous innovation (new OSINT sources)
 
 ### Risk 4: Platform Dependency
+
 **Risk:** Polar.sh changes terms or shuts down  
 **Probability:** Low  
 **Mitigation:**
+
 - Multi-platform strategy (Polar + Gumroad + direct Stripe)
 - Own customer email list from day 1
 - Download Polar transaction data weekly
@@ -408,23 +444,23 @@ def south_park_score(complaint):
 
 ### Primary Metrics (Weekly)
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| **Revenue** | $750/week | Stripe dashboard |
-| **Products Shipped** | 2/week | Git tags + Polar listings |
-| **Conversion Rate** | 3-5% | Polar analytics |
-| **CAC (Customer Acquisition Cost)** | <$30 | Ad spend / customers |
-| **LTV (Lifetime Value)** | >$200 | Avg purchase + upsells |
+| Metric                              | Target    | Measurement               |
+| ----------------------------------- | --------- | ------------------------- |
+| **Revenue**                         | $750/week | Stripe dashboard          |
+| **Products Shipped**                | 2/week    | Git tags + Polar listings |
+| **Conversion Rate**                 | 3-5%      | Polar analytics           |
+| **CAC (Customer Acquisition Cost)** | <$30      | Ad spend / customers      |
+| **LTV (Lifetime Value)**            | >$200     | Avg purchase + upsells    |
 
 ### Secondary Metrics (Monthly)
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| **OSINT Complaints Captured** | 1,000+ | Daily scan logs |
-| **High-Score Opportunities** | 20+ | South Park score ≥0.7 |
-| **Products in Catalog** | 8-10 | Polar.sh product count |
-| **Active Customers** | 30-50 | Unique buyers |
-| **Refund Rate** | <5% | Stripe refunds |
+| Metric                        | Target | Measurement            |
+| ----------------------------- | ------ | ---------------------- |
+| **OSINT Complaints Captured** | 1,000+ | Daily scan logs        |
+| **High-Score Opportunities**  | 20+    | South Park score ≥0.7  |
+| **Products in Catalog**       | 8-10   | Polar.sh product count |
+| **Active Customers**          | 30-50  | Unique buyers          |
+| **Refund Rate**               | <5%    | Stripe refunds         |
 
 ### North Star Metric
 
@@ -435,24 +471,28 @@ def south_park_score(complaint):
 ## 7. Technology Stack
 
 ### OSINT Collection
+
 - **GrowlingEyes tools** (existing): news_feed.py, weak_signal_finder.py
 - **Social APIs:** Reddit API, X/Twitter API, TikTok Research API
 - **MCP servers:** tavily, brave-search for real-time web monitoring
 - **Storage:** JSONL files in `projects/agent-generated/_intake/`
 
 ### Product Pipeline
+
 - **Orchestration:** GitHub Actions + n8n workflows
 - **Build automation:** `AUTOMATED_PRODUCT_PIPELINE.md` standard
 - **Testing:** Vitest (unit), Playwright (E2E), `truthslayer-audit`
 - **Deployment:** Vercel (web apps), DigitalOcean (APIs), Doppler (secrets)
 
 ### Monetization
+
 - **Primary:** Polar.sh (4% + $0.40/txn)
 - **Secondary:** Gumroad (10% fee)
 - **Direct:** Stripe Checkout (2.9% + $0.30/txn)
 - **Tax:** Polar.sh handles VAT/sales tax globally
 
 ### Analytics
+
 - **Sales:** Polar.sh dashboard + Stripe
 - **Traffic:** PostHog (open-source, self-hosted)
 - **Errors:** Sentry (React Error Boundary integration)
@@ -463,6 +503,7 @@ def south_park_score(complaint):
 ## 8. References & Further Reading
 
 ### Internal Documentation
+
 - `GOAL.md` — $3k/month → $10M/3yr target
 - `revenue/REVENUE_PLAN.md` — Week-by-week execution plan
 - `standards/AUTOMATED_PRODUCT_PIPELINE.md` — Product build automation
@@ -470,6 +511,7 @@ def south_park_score(complaint):
 - `docs/AGENTS.md` — Autonomy and self-healing mandates
 
 ### External Resources
+
 - [Polar.sh Documentation](https://docs.polar.sh/)
 - [Polar.sh GitHub Repository](https://github.com/polarsource/polar)
 - [Polar.sh Review 2026](https://dodopayments.com/blogs/polar-sh-review) — Fee structure analysis
@@ -477,6 +519,7 @@ def south_park_score(complaint):
 - [Bellingcat OSINT Toolkit](https://www.bellingcat.com/resources/how-tos/2019/06/05/bellingcats-online-investigation-tools-and-methods-database/) — Professional OSINT methods
 
 ### OSINT Tools Referenced
+
 - **WhatsMyName** — Username search across 500+ platforms
 - **BOSINT** — Discord + Steam integrated OSINT
 - **Think-Pol / SnooSnoop** — Reddit deep analysis
@@ -494,6 +537,7 @@ The **OSINT POLAR + SOUTH PARK** follow-up investigation reveals two high-impact
 2. **South Park Method** applies rapid-cycle product development (7-day idea-to-revenue) using OSINT social listening to discover unmet needs before competitors.
 
 **Combined Impact:**
+
 - Achieves $3,000/month target in Week 4
 - Scales to $10,000+/month by Month 3
 - Creates sustainable product pipeline (2 products/week)
@@ -504,12 +548,14 @@ The **OSINT POLAR + SOUTH PARK** follow-up investigation reveals two high-impact
 The infrastructure exists. The tools are documented. The standards are defined. The only missing piece is **execution**.
 
 **First Action (Next 2 Hours):**
+
 1. Create Polar.sh account
 2. List "Premium Skills Vault Bundle" at $147
 3. Tweet announcement with Polar.sh badge
 4. Monitor first sale
 
 **Success Criteria:**
+
 - Day 7: First $500 in revenue
 - Day 30: $3,000 total revenue
 - Day 90: $10,000/month recurring
@@ -522,7 +568,7 @@ The infrastructure exists. The tools are documented. The standards are defined. 
 
 ---
 
-*Generated by: GitHub Copilot Coding Agent*  
-*Date: 2026-05-03*  
-*Confidence: High*  
-*Revenue Impact: Critical Path to $10M Goal*
+_Generated by: GitHub Copilot Coding Agent_  
+_Date: 2026-05-03_  
+_Confidence: High_  
+_Revenue Impact: Critical Path to $10M Goal_

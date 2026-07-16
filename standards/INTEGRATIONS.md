@@ -8,14 +8,14 @@ This standard defines integrations with communication platforms that can be sold
 
 ## Available Integrations
 
-| Platform | Package Name | Use Case | Price |
-|----------|-------------|----------|-------|
-| **Discord** | Discord Alerts | CI/CD notifications, team alerts | $500-2,000 |
-| **Slack** | Slack Bot | Team notifications, commands | $500-2,000 |
-| **Telegram** | Telegram Bot | Mobile notifications, alerts | $300-1,500 |
-| **OpenClaw** | OpenClaw Agent | Multi-platform management | $1,000-5,000 |
-| **Notion** | Notion Sync | Project tracking, docs | $500-2,000 |
-| **Okta** | Okta SSO | Enterprise authentication | $2,000-10,000 |
+| Platform       | Package Name        | Use Case                                       | Price                              |
+| -------------- | ------------------- | ---------------------------------------------- | ---------------------------------- |
+| **Discord**    | Discord Alerts      | CI/CD notifications, team alerts               | $500-2,000                         |
+| **Slack**      | Slack Bot           | Team notifications, commands                   | $500-2,000                         |
+| **Telegram**   | Telegram Bot        | Mobile notifications, alerts                   | $300-1,500                         |
+| **OpenClaw**   | OpenClaw Agent      | Multi-platform management                      | $1,000-5,000                       |
+| **Notion**     | Notion Sync         | Project tracking, docs                         | $500-2,000                         |
+| **Okta**       | Okta SSO            | Enterprise authentication                      | $2,000-10,000                      |
 | **RevenueCat** | Subscriptions / IAP | Cross-platform billing, paywalls, entitlements | See [REVENUECAT.md](REVENUECAT.md) |
 
 ---
@@ -23,6 +23,7 @@ This standard defines integrations with communication platforms that can be sold
 ## Discord Integration
 
 ### Features
+
 - CI/CD build status notifications
 - Error alerts from Sentry
 - Deployment notifications
@@ -39,16 +40,16 @@ from typing import Optional
 class DiscordNotifier:
     def __init__(self, webhook_url: str):
         self.webhook_url = webhook_url
-        
+
     async def send_message(self, content: str, embed: Optional[dict] = None):
         """Send message to Discord channel."""
         payload = {"content": content, "allowed_mentions": {"parse": []}}
         if embed:
             payload["embeds"] = [embed]
-            
+
         async with httpx.AsyncClient() as client:
             await client.post(self.webhook_url, json=payload)
-            
+
     async def send_build_status(self, build: dict):
         """Send CI/CD build status."""
         status = "✅ Passed" if build["status"] == "success" else "❌ Failed"
@@ -62,7 +63,7 @@ class DiscordNotifier:
             ]
         }
         await self.send_message(f"Build {status}", embed)
-        
+
     async def send_error_alert(self, error: dict):
         """Send Sentry error alert."""
         embed = {
@@ -88,7 +89,7 @@ from slack_sdk.errors import SlackApiError
 class SlackNotifier:
     def __init__(self, bot_token: str):
         self.client = WebClient(token=bot_token)
-        
+
     async def send_message(self, channel: str, text: str, blocks: list = None):
         """Send message to Slack channel."""
         try:
@@ -100,7 +101,7 @@ class SlackNotifier:
             return result
         except SlackApiError as e:
             print(f"Error: {e.response['error']}")
-            
+
     def create_deploy_block(self, deploy: dict) -> list:
         """Create deployment notification block."""
         status = "✅" if deploy["status"] == "success" else "❌"
@@ -128,7 +129,7 @@ class TelegramNotifier:
         self.bot_token = bot_token
         self.chat_id = chat_id
         self.api_url = f"https://api.telegram.org/bot{bot_token}"
-        
+
     async def send_message(self, text: str, parse_mode: str = "Markdown"):
         """Send message to Telegram chat."""
         payload = {
@@ -138,7 +139,7 @@ class TelegramNotifier:
         }
         async with httpx.AsyncClient() as client:
             await client.post(f"{self.api_url}/sendMessage", json=payload)
-            
+
     async def send_alert(self, title: str, message: str, severity: str = "warning"):
         emoji = {"critical": "🚨", "warning": "⚠️", "info": "ℹ️"}.get(severity, "📢")
         text = f"{emoji} *{title}*\n\n{message}"
@@ -150,9 +151,11 @@ class TelegramNotifier:
 ## OpenClaw Integration
 
 ### What is OpenClaw?
+
 Multi-agent management platform for orchestrating AI agents across services.
 
 ### Features
+
 - Centralized agent management
 - Cross-platform task execution
 - Workflow automation
@@ -169,7 +172,7 @@ class OpenClawClient:
         self.api_key = api_key
         self.base_url = base_url
         self.headers = {"Authorization": f"Bearer {api_key}"}
-        
+
     async def register_agent(self, agent_config: dict):
         """Register an agent with OpenClaw."""
         async with httpx.AsyncClient() as client:
@@ -178,7 +181,7 @@ class OpenClawClient:
                 json=agent_config,
                 headers=self.headers
             )
-            
+
     async def execute_task(self, agent_id: str, task: dict):
         """Execute a task via OpenClaw."""
         async with httpx.AsyncClient() as client:
@@ -187,7 +190,7 @@ class OpenClawClient:
                 json=task,
                 headers=self.headers
             )
-            
+
     async def get_agent_status(self, agent_id: str):
         """Get agent status."""
         async with httpx.AsyncClient() as client:
@@ -202,6 +205,7 @@ class OpenClawClient:
 ## Notion Integration
 
 ### Features
+
 - Sync project tasks to Notion database
 - Create pages for new clients/projects
 - Update project status automatically
@@ -220,7 +224,7 @@ class NotionClient:
             "Authorization": f"Bearer {integration_key}",
             "Notion-Version": "2022-06-28"
         }
-        
+
     async def create_project_page(self, parent_id: str, project: dict):
         """Create a new project page in Notion."""
         payload = {
@@ -238,7 +242,7 @@ class NotionClient:
                 json=payload,
                 headers=self.headers
             )
-            
+
     async def update_task_status(self, task_id: str, status: str):
         """Update task status in Notion."""
         payload = {
@@ -259,6 +263,7 @@ class NotionClient:
 ## Okta SSO Integration
 
 ### Features
+
 - Enterprise single sign-on (SSO)
 - User management
 - Multi-factor authentication
@@ -274,21 +279,21 @@ from fastapi import HTTPException
 class OktaSSO:
     def __init__(self, domain: str, token: str):
         self.client = OktaClient(okta_api_key=token, base_url=f"https://{domain}")
-        
+
     async def get_user(self, email: str):
         """Get user from Okta."""
         users, resp, err = await self.client.list_users(query_params={"filter": f'email eq "{email}"'})
         if err:
             raise HTTPException(400, f"Okta error: {err}")
         return users[0] if users else None
-        
+
     async def assign_to_app(self, user_id: str, app_id: str):
         """Assign user to application."""
         return await self.client.create_application_user(
-            app_id, 
+            app_id,
             {"id": user_id, "scope": "USER"}
         )
-        
+
     async def get_groups(self, user_id: str):
         """Get user's groups for RBAC."""
         return await self.client.list_user_groups(user_id)
@@ -300,23 +305,23 @@ class OktaSSO:
 
 ### "Business Automation Suite"
 
-| Integration | Retail Price | Bundle Price |
-|-------------|-------------|--------------|
-| Discord Alerts | $500 | |
-| Slack Bot | $500 | |
-| Telegram Bot | $300 | |
-| Notion Sync | $500 | |
-| **Bundle (All 4)** | **$1,800** | **$1,200** |
+| Integration        | Retail Price | Bundle Price |
+| ------------------ | ------------ | ------------ |
+| Discord Alerts     | $500         |              |
+| Slack Bot          | $500         |              |
+| Telegram Bot       | $300         |              |
+| Notion Sync        | $500         |              |
+| **Bundle (All 4)** | **$1,800**   | **$1,200**   |
 
 ### "Enterprise Suite"
 
-| Integration | Retail Price | Bundle Price |
-|-------------|-------------|--------------|
-| All Business Automation | $1,200 | |
-| Okta SSO | $2,000 | |
-| OpenClaw Agent | $1,000 | |
-| Priority Support | $500 | |
-| **Enterprise Bundle** | **$4,700** | **$3,500** |
+| Integration             | Retail Price | Bundle Price |
+| ----------------------- | ------------ | ------------ |
+| All Business Automation | $1,200       |              |
+| Okta SSO                | $2,000       |              |
+| OpenClaw Agent          | $1,000       |              |
+| Priority Support        | $500         |              |
+| **Enterprise Bundle**   | **$4,700**   | **$3,500**   |
 
 ---
 
@@ -329,7 +334,7 @@ class LocalLeadAnalyzer:
     """
     Analyze local business websites and suggest improvements.
     """
-    
+
     def analyze_website(self, url: str) -> dict:
         """Analyze a business website."""
         return {
@@ -347,7 +352,7 @@ class LocalLeadAnalyzer:
                 },
                 {
                     "category": "mobile",
-                    "impact": "high", 
+                    "impact": "high",
                     "description": "Mobile optimization",
                     "estimated_value": "+25% mobile traffic"
                 }
@@ -355,7 +360,7 @@ class LocalLeadAnalyzer:
             "estimated_roi": "6-12 months",
             "priority": "high"
         }
-        
+
     def generate_quote(self, improvements: list) -> dict:
         """Generate a quote based on needed improvements."""
         base_prices = {
@@ -365,7 +370,7 @@ class LocalLeadAnalyzer:
             "social": 800,        # Social setup
             "local_listing": 300  # Google My Business
         }
-        
+
         total = sum(base_prices.get(i["category"], 500) for i in improvements)
         return {
             "subtotal": total,
@@ -377,13 +382,13 @@ class LocalLeadAnalyzer:
 
 ### Local Business Categories
 
-| Business Type | Common Issues | Quick Wins |
-|---------------|--------------|------------|
-| Restaurants | No alt text, stale info | Menu images, hours |
-| Festivals | No website | Landing page |
-| HVAC/Contractors | No online presence | Basic site, listings |
-| Retail | No mobile optimization | Responsive, images |
-| Medical | Accessibility issues | ADA compliance |
+| Business Type    | Common Issues           | Quick Wins           |
+| ---------------- | ----------------------- | -------------------- |
+| Restaurants      | No alt text, stale info | Menu images, hours   |
+| Festivals        | No website              | Landing page         |
+| HVAC/Contractors | No online presence      | Basic site, listings |
+| Retail           | No mobile optimization  | Responsive, images   |
+| Medical          | Accessibility issues    | ADA compliance       |
 
 ---
 
@@ -394,4 +399,3 @@ class LocalLeadAnalyzer:
 - Handle rate limits gracefully
 - Log all integration errors for debugging
 - Provide user-friendly error messages
-

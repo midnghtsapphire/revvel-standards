@@ -32,12 +32,12 @@ After comprehensive research, **there are NO dedicated tax-specific LLM models a
 
 ### Recommended Models (OpenRouter)
 
-| Model | Context | Strengths | Best For |
-|-------|---------|----------|---------|
-| `anthropic/claude-sonnet-4.6` | 200K | Reasoning, tool use | Complex tax analysis |
-| `deepseek/deepseek-r1` | 64K | Chain-of-thought | Statutory reasoning |
-| `qwen/qwQ-32b-preview` | 32K | Coding + math | Calculations |
-| `google/gemini-2.5-pro` | 1M | Long context | Document analysis |
+| Model                         | Context | Strengths           | Best For             |
+| ----------------------------- | ------- | ------------------- | -------------------- |
+| `anthropic/claude-sonnet-4.6` | 200K    | Reasoning, tool use | Complex tax analysis |
+| `deepseek/deepseek-r1`        | 64K     | Chain-of-thought    | Statutory reasoning  |
+| `qwen/qwQ-32b-preview`        | 32K     | Coding + math       | Calculations         |
+| `google/gemini-2.5-pro`       | 1M      | Long context        | Document analysis    |
 
 ---
 
@@ -46,6 +46,7 @@ After comprehensive research, **there are NO dedicated tax-specific LLM models a
 ### 1. Tax Knowledge RAG System
 
 Must include:
+
 - IRS Publication 17 (Federal Income Tax)
 - State tax codes (by jurisdiction)
 - Latest tax court decisions
@@ -75,20 +76,20 @@ calc.calc_all()
 
 ### Accounting Software
 
-| Software | Integration Method | Status |
-|----------|-----------------|--------|
-| QuickBooks | API | Available |
-| Xero | API | Available |
-| FreshBooks | API | Available |
-| Wave | API | Available |
+| Software   | Integration Method | Status    |
+| ---------- | ------------------ | --------- |
+| QuickBooks | API                | Available |
+| Xero       | API                | Available |
+| FreshBooks | API                | Available |
+| Wave       | API                | Available |
 
 ### E-Filing
 
-| Service | API | Notes |
-|---------|-----|-------|
-| TaxSlayer Pro | REST | Direct API |
-| Drake Software | Local | No API |
-| UltraTax CS | Proprietary | Vendor agreement |
+| Service        | API         | Notes            |
+| -------------- | ----------- | ---------------- |
+| TaxSlayer Pro  | REST        | Direct API       |
+| Drake Software | Local       | No API           |
+| UltraTax CS    | Proprietary | Vendor agreement |
 
 ---
 
@@ -99,6 +100,7 @@ calc.calc_all()
 > **WARNING:** General LLMs can "hallucinate" tax rules. Always cite sources.
 
 Mitigation:
+
 1. Require source citations in all responses
 2. Validate against authoritative databases
 3. Block claims without citations
@@ -115,19 +117,19 @@ Mitigation:
 
 ### Tax-Specific AI Platforms
 
-| Service | Description | API |
-|---------|------------|-----|
+| Service                  | Description            | API        |
+| ------------------------ | ---------------------- | ---------- |
 | Taxfyle TXF Intelligence | AI tax prep automation | Enterprise |
-| Thomson Reuters AI | Checkpoint | Enterprise |
-| Bloomberg Tax | AI research | Enterprise |
+| Thomson Reuters AI       | Checkpoint             | Enterprise |
+| Bloomberg Tax            | AI research            | Enterprise |
 
 ---
 
 ## Conclusion
 
 Building a tax LLM requires:
+
 1. **General model** + **Tax knowledge base** (no special model needed)
 2. **TaxCalc** for actual calculations
 3. **Validation layer** for accuracy
 4. **Human review** for liability
-

@@ -5,23 +5,24 @@
 **Created:** 2026-07-06  
 **Researcher:** Codex (GPT-5)  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
 Reference app: [Radia Red Light Therapy on the App Store](https://apps.apple.com/us/app/radia-red-light-therapy/id6763434758)
 
 Requested outcome from issue body:
+
 - Create a first PDF and a mobile app/tool concept for red light therapy / photobiomodulation therapy.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -36,6 +37,7 @@ Requested outcome from issue body:
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Initial triage completed from issue text only. Full market/competitor research is still pending.
 
 ## Executive Summary
@@ -74,11 +76,11 @@ Pricing data pending — competitive benchmark research required.
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 No upstream WR dependency identified from issue context.
 

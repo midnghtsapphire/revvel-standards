@@ -70,9 +70,18 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 
 // Lane models — keep in sync with .github/agent-models.yml (source of truth).
 const LANES = {
-  vision: { primary: "google/gemini-2.5-pro", fallback: "google/gemini-2.5-flash" },
-  image_gen: { primary: "google/gemini-2.5-flash-image", fallback: "openai/gpt-image-1" },
-  cheap_summary: { primary: "deepseek/deepseek-chat", fallback: "openai/gpt-4o-mini" },
+  vision: {
+    primary: "google/gemini-2.5-pro",
+    fallback: "google/gemini-2.5-flash",
+  },
+  image_gen: {
+    primary: "google/gemini-2.5-flash-image",
+    fallback: "openai/gpt-image-1",
+  },
+  cheap_summary: {
+    primary: "deepseek/deepseek-chat",
+    fallback: "openai/gpt-4o-mini",
+  },
 };
 
 // Per-batch image spend cap (USD). Matches agent-models.yml
@@ -119,12 +128,16 @@ function parseCsvLine(line) {
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
     if (inQuotes) {
-      if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
-      else if (ch === '"') inQuotes = false;
+      if (ch === '"' && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else if (ch === '"') inQuotes = false;
       else cur += ch;
     } else if (ch === '"') inQuotes = true;
-    else if (ch === ",") { out.push(cur); cur = ""; }
-    else cur += ch;
+    else if (ch === ",") {
+      out.push(cur);
+      cur = "";
+    } else cur += ch;
   }
   out.push(cur);
   return out;
@@ -136,8 +149,13 @@ const HEADER_CANDIDATES = {
   asin: ["asin", "asin/isbn", "asin_isbn"],
   link: ["link", "url", "product url", "website link"],
   pricePaid: [
-    "unit price", "purchase price per unit", "item total", "price",
-    "item subtotal", "total owed", "purchase price",
+    "unit price",
+    "purchase price per unit",
+    "item total",
+    "price",
+    "item subtotal",
+    "total owed",
+    "purchase price",
   ],
   date: ["order date", "date", "purchase date", "date added"],
   orderId: ["order id", "order number", "order #"],
@@ -145,13 +163,21 @@ const HEADER_CANDIDATES = {
 };
 
 function mapHeaders(headerRow) {
-  const lower = headerRow.map((h) => h.trim().toLowerCase().replace(/^\ufeff/, ""));
+  const lower = headerRow.map((h) =>
+    h
+      .trim()
+      .toLowerCase()
+      .replace(/^\ufeff/, ""),
+  );
   const idx = {};
   for (const [field, candidates] of Object.entries(HEADER_CANDIDATES)) {
     idx[field] = -1;
     for (const cand of candidates) {
       const at = lower.indexOf(cand);
-      if (at !== -1) { idx[field] = at; break; }
+      if (at !== -1) {
+        idx[field] = at;
+        break;
+      }
     }
   }
   return idx;
@@ -159,16 +185,18 @@ function mapHeaders(headerRow) {
 
 function parseMoney(value) {
   if (value == null) return null;
-  const n = Number(String(value).replace(/[^0-9.\-]/g, ""));
+  const n = Number(String(value).replace(/[^0-9.-]/g, ""));
   return Number.isFinite(n) && String(value).trim() !== "" ? n : null;
 }
 
 function slugify(text) {
-  return String(text || "item")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60) || "item";
+  return (
+    String(text || "item")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "item"
+  );
 }
 
 /**
@@ -178,13 +206,21 @@ function slugify(text) {
  */
 function parseOrdersCsv(csvText) {
   const warnings = [];
-  const lines = String(csvText).split(/\r?\n/).filter((l) => l.trim() !== "");
-  if (lines.length < 2) return { items: [], warnings: ["CSV has no data rows"] };
+  const lines = String(csvText)
+    .split(/\r?\n/)
+    .filter((l) => l.trim() !== "");
+  if (lines.length < 2)
+    return { items: [], warnings: ["CSV has no data rows"] };
 
   const headers = parseCsvLine(lines[0]);
   const idx = mapHeaders(headers);
   if (idx.title === -1) {
-    return { items: [], warnings: [`No title-like column found in headers: ${headers.join(", ")}`] };
+    return {
+      items: [],
+      warnings: [
+        `No title-like column found in headers: ${headers.join(", ")}`,
+      ],
+    };
   }
 
   const items = [];
@@ -196,9 +232,12 @@ function parseOrdersCsv(csvText) {
       continue;
     }
     const asin = idx.asin !== -1 ? (cols[idx.asin] || "").trim() : "";
-    const link = idx.link !== -1 && (cols[idx.link] || "").trim()
-      ? cols[idx.link].trim()
-      : asin ? `https://www.amazon.com/dp/${asin}` : "";
+    const link =
+      idx.link !== -1 && (cols[idx.link] || "").trim()
+        ? cols[idx.link].trim()
+        : asin
+          ? `https://www.amazon.com/dp/${asin}`
+          : "";
     items.push({
       id: `${String(items.length + 1).padStart(3, "0")}-${slugify(title)}`,
       title,
@@ -206,7 +245,8 @@ function parseOrdersCsv(csvText) {
       link: link || null,
       pricePaid: idx.pricePaid !== -1 ? parseMoney(cols[idx.pricePaid]) : null,
       orderDate: idx.date !== -1 ? (cols[idx.date] || "").trim() || null : null,
-      orderId: idx.orderId !== -1 ? (cols[idx.orderId] || "").trim() || null : null,
+      orderId:
+        idx.orderId !== -1 ? (cols[idx.orderId] || "").trim() || null : null,
       quantity: idx.quantity !== -1 ? Number(cols[idx.quantity]) || 1 : 1,
       source: "csv",
     });
@@ -255,7 +295,9 @@ function buildEnrichmentPrompt(item) {
     `- ${GUARDRAILS.noAccountScraping}`,
     "- Only use the public product page; never any logged-in or account data.",
     "- If you cannot verify a fact, use null — do not invent specs or images.",
-  ].filter((l) => l !== null).join("\n");
+  ]
+    .filter((l) => l !== null)
+    .join("\n");
 }
 
 /**
@@ -321,7 +363,9 @@ function buildListingCopyPrompt(item, condition, suggestedPrice) {
     "- Describe only what is true of this exact item; never oversell condition.",
     `- ${GUARDRAILS.humanReview}`,
     `- ${GUARDRAILS.noAutoPost}`,
-  ].filter((l) => l !== null).join("\n");
+  ]
+    .filter((l) => l !== null)
+    .join("\n");
 }
 
 // ---------------------------------------------------------------------------
@@ -330,14 +374,18 @@ function buildListingCopyPrompt(item, condition, suggestedPrice) {
 
 class SpendTracker {
   constructor({ capUsd, costPerImageUsd } = {}) {
-    this.capUsd = capUsd != null ? capUsd
-      : parseMoney(process.env.IMAGE_GEN_BATCH_SPEND_CAP_USD) != null
-        ? parseMoney(process.env.IMAGE_GEN_BATCH_SPEND_CAP_USD)
-        : DEFAULT_BATCH_SPEND_CAP_USD;
-    this.costPerImageUsd = costPerImageUsd != null ? costPerImageUsd
-      : parseMoney(process.env.IMAGE_GEN_COST_PER_IMAGE_USD) != null
-        ? parseMoney(process.env.IMAGE_GEN_COST_PER_IMAGE_USD)
-        : DEFAULT_COST_PER_IMAGE_USD;
+    this.capUsd =
+      capUsd != null
+        ? capUsd
+        : parseMoney(process.env.IMAGE_GEN_BATCH_SPEND_CAP_USD) != null
+          ? parseMoney(process.env.IMAGE_GEN_BATCH_SPEND_CAP_USD)
+          : DEFAULT_BATCH_SPEND_CAP_USD;
+    this.costPerImageUsd =
+      costPerImageUsd != null
+        ? costPerImageUsd
+        : parseMoney(process.env.IMAGE_GEN_COST_PER_IMAGE_USD) != null
+          ? parseMoney(process.env.IMAGE_GEN_COST_PER_IMAGE_USD)
+          : DEFAULT_COST_PER_IMAGE_USD;
     this.spentUsd = 0;
   }
 
@@ -379,14 +427,24 @@ function openrouterRequest(body) {
           if (res.statusCode >= 400) {
             // 401/402/403/429 → check OPENROUTER_API_KEY + balance at
             // https://openrouter.ai/credits before assuming a code bug.
-            return reject(new Error(`OpenRouter HTTP ${res.statusCode}: ${data.slice(0, 300)}`));
+            return reject(
+              new Error(
+                `OpenRouter HTTP ${res.statusCode}: ${data.slice(0, 300)}`,
+              ),
+            );
           }
-          try { resolve(JSON.parse(data)); } catch (e) { reject(e); }
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(e);
+          }
         });
       },
     );
     req.on("error", reject);
-    req.on("timeout", () => { req.destroy(new Error("OpenRouter request timed out")); });
+    req.on("timeout", () => {
+      req.destroy(new Error("OpenRouter request timed out"));
+    });
     req.write(payload);
     req.end();
   });
@@ -403,11 +461,15 @@ async function callTextLane(lane, prompt, request = openrouterRequest) {
         messages: [{ role: "user", content: prompt }],
         max_tokens: 4000,
       });
-      const content = res && res.choices && res.choices[0] && res.choices[0].message
-        ? res.choices[0].message.content : "";
+      const content =
+        res && res.choices && res.choices[0] && res.choices[0].message
+          ? res.choices[0].message.content
+          : "";
       if (content && content.trim()) return { model, content };
       lastError = new Error(`Empty response from ${model}`);
-    } catch (e) { lastError = e; }
+    } catch (e) {
+      lastError = e;
+    }
   }
   throw lastError || new Error(`All ${lane} models failed`);
 }
@@ -416,11 +478,17 @@ async function callTextLane(lane, prompt, request = openrouterRequest) {
  * image_gen lane call — image-to-image conditioned on real product photos.
  * Returns { model, images: [dataUrl, ...] }.
  */
-async function callImageGen(prompt, sourceImageUrls, request = openrouterRequest) {
+async function callImageGen(
+  prompt,
+  sourceImageUrls,
+  request = openrouterRequest,
+) {
   const models = [LANES.image_gen.primary, LANES.image_gen.fallback];
   const content = [
     { type: "text", text: prompt },
-    ...(sourceImageUrls || []).slice(0, 4).map((url) => ({ type: "image_url", image_url: { url } })),
+    ...(sourceImageUrls || [])
+      .slice(0, 4)
+      .map((url) => ({ type: "image_url", image_url: { url } })),
   ];
   let lastError;
   for (const model of models) {
@@ -430,13 +498,16 @@ async function callImageGen(prompt, sourceImageUrls, request = openrouterRequest
         messages: [{ role: "user", content }],
         modalities: ["image", "text"],
       });
-      const msg = res && res.choices && res.choices[0] && res.choices[0].message;
+      const msg =
+        res && res.choices && res.choices[0] && res.choices[0].message;
       const images = ((msg && msg.images) || [])
         .map((im) => im && im.image_url && im.image_url.url)
         .filter(Boolean);
       if (images.length) return { model, images };
       lastError = new Error(`No images returned by ${model}`);
-    } catch (e) { lastError = e; }
+    } catch (e) {
+      lastError = e;
+    }
   }
   throw lastError || new Error("All image_gen models failed");
 }
@@ -456,7 +527,11 @@ function tryParseJson(text) {
   const start = candidate.indexOf("{");
   const end = candidate.lastIndexOf("}");
   if (start === -1 || end === -1) return null;
-  try { return JSON.parse(candidate.slice(start, end + 1)); } catch { return null; }
+  try {
+    return JSON.parse(candidate.slice(start, end + 1));
+  } catch {
+    return null;
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -470,8 +545,14 @@ function tryParseJson(text) {
  */
 async function buildListingPack(item, options) {
   const {
-    outDir, photos = 3, video = false, condition = "used",
-    margin = DEFAULT_MARGIN, spendTracker, live = false, request,
+    outDir,
+    photos = 3,
+    video = false,
+    condition = "used",
+    margin = DEFAULT_MARGIN,
+    spendTracker,
+    live = false,
+    request,
   } = options;
 
   const packDir = path.join(outDir, item.id);
@@ -488,7 +569,12 @@ async function buildListingPack(item, options) {
     status: "pending-review", // human-review gate: nothing ships without approve
     review: { decision: null, note: null, retries: [] },
     guardrails: GUARDRAILS,
-    enrichment: { status: "pending", prompt: buildEnrichmentPrompt(item), result: null, model: null },
+    enrichment: {
+      status: "pending",
+      prompt: buildEnrichmentPrompt(item),
+      result: null,
+      model: null,
+    },
     images: {
       // GUARDRAIL IN BEHAVIOR: AI staging only for new/sealed items.
       policy: isNew
@@ -498,13 +584,21 @@ async function buildListingPack(item, options) {
       status: "pending",
       prompts: [],
       files: [],
-      checklist: isNew ? null : [
-        "Photograph the ACTUAL item — front, back, close-up of any wear",
-        `Take ${photos} photos on a kitchen table / home surface with natural light`,
-        "Include original packaging/accessories if you still have them",
-      ],
+      checklist: isNew
+        ? null
+        : [
+            "Photograph the ACTUAL item — front, back, close-up of any wear",
+            `Take ${photos} photos on a kitchen table / home surface with natural light`,
+            "Include original packaging/accessories if you still have them",
+          ],
     },
-    video: video ? { status: "pending", prompt: buildVideoStoryboardPrompt(item), storyboard: null } : null,
+    video: video
+      ? {
+          status: "pending",
+          prompt: buildVideoStoryboardPrompt(item),
+          storyboard: null,
+        }
+      : null,
     copy: { status: "pending", prompt: null, result: null, model: null },
     posting: {
       method: "manual-human-only",
@@ -522,27 +616,44 @@ async function buildListingPack(item, options) {
   // --- Live lanes (skipped in dry-run; prompts stay in the pack) ---
   if (live) {
     try {
-      const enr = await callTextLane("vision", listing.enrichment.prompt, request);
+      const enr = await callTextLane(
+        "vision",
+        listing.enrichment.prompt,
+        request,
+      );
       listing.enrichment.model = enr.model;
-      listing.enrichment.result = tryParseJson(enr.content) || { raw: enr.content };
+      listing.enrichment.result = tryParseJson(enr.content) || {
+        raw: enr.content,
+      };
       listing.enrichment.status = "done";
-      if (!item.title && listing.enrichment.result.title) item.title = listing.enrichment.result.title;
+      if (!item.title && listing.enrichment.result.title)
+        item.title = listing.enrichment.result.title;
     } catch (e) {
       listing.enrichment.status = `error: ${e.message}`;
     }
 
     if (isNew) {
-      const sourceUrls = (listing.enrichment.result && listing.enrichment.result.officialImageUrls) || [];
+      const sourceUrls =
+        (listing.enrichment.result &&
+          listing.enrichment.result.officialImageUrls) ||
+        [];
       for (let s = 0; s < listing.images.prompts.length; s++) {
         if (!spendTracker.canSpend()) {
           listing.images.status = "skipped:spend-cap";
           break;
         }
         try {
-          const gen = await callImageGen(listing.images.prompts[s], sourceUrls, request);
+          const gen = await callImageGen(
+            listing.images.prompts[s],
+            sourceUrls,
+            request,
+          );
           spendTracker.record();
           gen.images.forEach((dataUrl, gi) => {
-            const file = saveDataUrlImage(dataUrl, path.join(imagesDir, `shot-${s + 1}-${gi + 1}`));
+            const file = saveDataUrlImage(
+              dataUrl,
+              path.join(imagesDir, `shot-${s + 1}-${gi + 1}`),
+            );
             listing.images.files.push(path.relative(packDir, file));
           });
           listing.images.status = "done";
@@ -557,7 +668,11 @@ async function buildListingPack(item, options) {
 
     if (video) {
       try {
-        const sb = await callTextLane("cheap_summary", listing.video.prompt, request);
+        const sb = await callTextLane(
+          "cheap_summary",
+          listing.video.prompt,
+          request,
+        );
         listing.video.storyboard = sb.content;
         listing.video.status = "done";
       } catch (e) {
@@ -566,8 +681,16 @@ async function buildListingPack(item, options) {
     }
 
     try {
-      listing.copy.prompt = buildListingCopyPrompt(item, listing.condition, suggestedPrice);
-      const copy = await callTextLane("cheap_summary", listing.copy.prompt, request);
+      listing.copy.prompt = buildListingCopyPrompt(
+        item,
+        listing.condition,
+        suggestedPrice,
+      );
+      const copy = await callTextLane(
+        "cheap_summary",
+        listing.copy.prompt,
+        request,
+      );
       listing.copy.model = copy.model;
       listing.copy.result = tryParseJson(copy.content) || { raw: copy.content };
       listing.copy.status = "done";
@@ -575,21 +698,36 @@ async function buildListingPack(item, options) {
       listing.copy.status = `error: ${e.message}`;
     }
   } else {
-    listing.copy.prompt = buildListingCopyPrompt(item, listing.condition, suggestedPrice);
+    listing.copy.prompt = buildListingCopyPrompt(
+      item,
+      listing.condition,
+      suggestedPrice,
+    );
     listing.enrichment.status = "dry-run";
     listing.images.status = isNew ? "dry-run" : "human-photos-required";
     listing.copy.status = "dry-run";
     if (listing.video) listing.video.status = "dry-run";
   }
 
-  fs.writeFileSync(path.join(packDir, "listing.json"), JSON.stringify(listing, null, 2));
+  fs.writeFileSync(
+    path.join(packDir, "listing.json"),
+    JSON.stringify(listing, null, 2),
+  );
   return listing;
 }
 
 function escapeHtml(text) {
-  return String(text == null ? "" : text).replace(/[&<>"']/g, (m) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
-  }[m]));
+  return String(text == null ? "" : text).replace(
+    /[&<>"']/g,
+    (m) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[m],
+  );
 }
 
 /**
@@ -703,7 +841,10 @@ function applyDecisions(batchDir, decisions) {
     else if (d.decision === "reject") listing.status = "rejected";
     else if (d.decision === "retry") {
       listing.status = "retry-requested";
-      listing.review.retries.push({ note: d.note || null, at: d.at || new Date().toISOString() });
+      listing.review.retries.push({
+        note: d.note || null,
+        at: d.at || new Date().toISOString(),
+      });
     }
     listing.review.decision = d.decision || null;
     listing.review.note = d.note || null;
@@ -722,8 +863,9 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--video") args.video = true;
-    else if (a.startsWith("--")) { args[a.slice(2)] = argv[++i]; }
-    else args._.push(a);
+    else if (a.startsWith("--")) {
+      args[a.slice(2)] = argv[++i];
+    } else args._.push(a);
   }
   return args;
 }
@@ -733,7 +875,9 @@ async function main() {
   const [cmd, input, extra] = args._;
 
   if (!cmd || cmd === "help") {
-    console.log("Usage: marketplace-relist.js <parse|run|retry|apply-decisions> ... (see file header)");
+    console.log(
+      "Usage: marketplace-relist.js <parse|run|retry|apply-decisions> ... (see file header)",
+    );
     return;
   }
 
@@ -758,40 +902,62 @@ async function main() {
 
     const photos = args.photos ? Number(args.photos) : 3;
     if (![3, 5].includes(photos)) throw new Error("--photos must be 3 or 5");
-    const outDir = path.resolve(args.out || path.join("artifacts", "relist", `batch-${Date.now()}`));
+    const outDir = path.resolve(
+      args.out || path.join("artifacts", "relist", `batch-${Date.now()}`),
+    );
     fs.mkdirSync(outDir, { recursive: true });
 
     const live = Boolean(OPENROUTER_API_KEY);
     if (!live) {
-      console.log("ℹ️  No OPENROUTER_API_KEY — dry-run: packs get prompts, no live generation.");
-      console.log("   (If a key IS set and calls fail with 401/402/403/429, check https://openrouter.ai/credits.)");
+      console.log(
+        "ℹ️  No OPENROUTER_API_KEY — dry-run: packs get prompts, no live generation.",
+      );
+      console.log(
+        "   (If a key IS set and calls fail with 401/402/403/429, check https://openrouter.ai/credits.)",
+      );
     }
     const spendTracker = new SpendTracker();
-    console.log(`image_gen spend cap: $${spendTracker.capUsd.toFixed(2)} (≈$${spendTracker.costPerImageUsd.toFixed(3)}/image)`);
+    console.log(
+      `image_gen spend cap: $${spendTracker.capUsd.toFixed(2)} (≈$${spendTracker.costPerImageUsd.toFixed(3)}/image)`,
+    );
 
     const listings = [];
     for (const item of items) {
       console.log(`→ ${item.id}`);
-      listings.push(await buildListingPack(item, {
-        outDir, photos, video: Boolean(args.video),
-        condition: args.condition === "new" ? "new" : "used",
-        margin: args.margin ? Number(args.margin) : DEFAULT_MARGIN,
-        spendTracker, live,
-      }));
+      listings.push(
+        await buildListingPack(item, {
+          outDir,
+          photos,
+          video: Boolean(args.video),
+          condition: args.condition === "new" ? "new" : "used",
+          margin: args.margin ? Number(args.margin) : DEFAULT_MARGIN,
+          spendTracker,
+          live,
+        }),
+      );
     }
-    fs.writeFileSync(path.join(outDir, "review-dashboard.html"), renderDashboard(listings, outDir));
+    fs.writeFileSync(
+      path.join(outDir, "review-dashboard.html"),
+      renderDashboard(listings, outDir),
+    );
     console.log(`✅ ${listings.length} pack(s) in ${outDir}`);
-    console.log(`   Review: open ${path.join(outDir, "review-dashboard.html")} then export decisions.json`);
+    console.log(
+      `   Review: open ${path.join(outDir, "review-dashboard.html")} then export decisions.json`,
+    );
     return;
   }
 
   if (cmd === "retry") {
     const batchDir = path.resolve(input || "");
     const itemId = extra;
-    if (!itemId) throw new Error("Usage: retry <batchDir> <itemId> [--note ...]");
+    if (!itemId)
+      throw new Error("Usage: retry <batchDir> <itemId> [--note ...]");
     const listingPath = path.join(batchDir, itemId, "listing.json");
     const listing = JSON.parse(fs.readFileSync(listingPath, "utf8"));
-    listing.review.retries.push({ note: args.note || null, at: new Date().toISOString() });
+    listing.review.retries.push({
+      note: args.note || null,
+      at: new Date().toISOString(),
+    });
     const spendTracker = new SpendTracker();
     const rebuilt = await buildListingPack(listing.item, {
       outDir: batchDir,
@@ -810,14 +976,24 @@ async function main() {
 
   if (cmd === "apply-decisions") {
     const batchDir = path.resolve(input || "");
-    const decisionsPath = extra ? path.resolve(extra) : path.join(batchDir, "decisions.json");
+    const decisionsPath = extra
+      ? path.resolve(extra)
+      : path.join(batchDir, "decisions.json");
     const decisions = JSON.parse(fs.readFileSync(decisionsPath, "utf8"));
     const applied = applyDecisions(batchDir, decisions);
-    applied.forEach((a) => console.log(`${a.decision === "approve" ? "✅" : a.decision === "reject" ? "❌" : "🔁"} ${a.id} → ${a.decision}`));
+    applied.forEach((a) =>
+      console.log(
+        `${a.decision === "approve" ? "✅" : a.decision === "reject" ? "❌" : "🔁"} ${a.id} → ${a.decision}`,
+      ),
+    );
     const retries = applied.filter((a) => a.decision === "retry");
     if (retries.length) {
       console.log("\nRetry with:");
-      retries.forEach((r) => console.log(`  node scripts/marketplace-relist.js retry ${batchDir} ${r.id}`));
+      retries.forEach((r) =>
+        console.log(
+          `  node scripts/marketplace-relist.js retry ${batchDir} ${r.id}`,
+        ),
+      );
     }
     return;
   }

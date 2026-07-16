@@ -8,8 +8,8 @@
 
 ---
 
-
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-28685676719.md`
@@ -19,6 +19,7 @@ Source packet: `docs/research-engine/run-28685676719.md`
 ## Build Requirements and Acceptance Gates
 
 ### Phase 1: Foundation (Week 1-2)
+
 1. **Database Schema Extension**
    - [ ] Create `wr_dependencies` table with `parent_wr_id`, `child_wr_id`, `dependency_type`
    - [ ] Implement cycle detection constraints
@@ -31,6 +32,7 @@ Source packet: `docs/research-engine/run-28685676719.md`
    - [ ] `GET /api/dependencies/:wr_id/blocking` - Get blocking dependencies
 
 ### Phase 2: Automation (Week 3-4)
+
 3. **GitHub Actions Integration**
    - [ ] `.github/workflows/dependency-check.yml` - Trigger on WR status changes
    - [ ] Dependency validation on WR creation/updates
@@ -42,6 +44,7 @@ Source packet: `docs/research-engine/run-28685676719.md`
    - [ ] Dashboard widgets for dependency status
 
 ### Phase 3: Intelligence (Week 5-6)
+
 5. **Smart Detection**
    - [ ] Parse WR descriptions for dependency keywords
    - [ ] Historical pattern analysis
@@ -52,6 +55,7 @@ Source packet: `docs/research-engine/run-28685676719.md`
 **Primary Target**: Engineering teams and DevOps organizations managing complex CI/CD pipelines (50-500 developers)
 
 **Why This Audience**:
+
 - Experience 23-47% deployment delays due to manual dependency tracking (DORA reports)
 - High willingness to pay for productivity tools ($8-$45/user/month market rate)
 - Strong network effects within organizations
@@ -62,16 +66,19 @@ Source packet: `docs/research-engine/run-28685676719.md`
 ## Marketing and SEO Plan
 
 ### Landing Page Strategy
+
 **Title**: "Automated Workflow Dependency Management | Eliminate Bottlenecks & Manual Tracking"
 **Meta**: "Streamline workflows with automated dependency management. Detect, prioritize, and resolve dependencies in real time."
 
 ### Content Pillars
+
 1. **Problem-Solution**: "How Automated Dependency Management Eliminates Workflow Bottlenecks"
 2. **Technical Deep-Dive**: "Building Intelligent Workflow Dependency Detection Systems"
 3. **ROI-Focused**: "Reduce Manual Coordination Overhead by 80%"
 4. **Comparison**: "Manual vs Automated Workflow Dependency Management"
 
 ### Target Keywords
+
 - workflow dependency management software (transactional)
 - automated dependency tracking tools (transactional)
 - workflow orchestration platform (transactional)
@@ -80,17 +87,20 @@ Source packet: `docs/research-engine/run-28685676719.md`
 ## Competitor and GitHub Star Intelligence
 
 ### Direct Competitors
+
 - **Apache Airflow**: 34.4k stars - Industry standard but complex
 - **Prefect**: 14.3k stars - Modern alternative, API-first
 - **Temporal**: Enterprise-focused, $100M+ funding
 - **GitHub Actions**: Native platform integration
 
 ### Market Gaps
+
 - No comprehensive GitHub-native workflow dependency management
 - Limited cross-repository coordination tools
 - High manual configuration overhead in existing solutions
 
 ### Differentiation Strategy
+
 1. **Zero-Config Setup**: Automatic dependency detection
 2. **GitHub-First**: Deep integration with GitHub ecosystem
 3. **Visual Dependencies**: Real-time workflow visualization
@@ -98,11 +108,13 @@ Source packet: `docs/research-engine/run-28685676719.md`
 ## Chatter and Demand Signals
 
 ### Validated Pain Points
+
 - "We keep missing critical dependencies between tasks" (Reddit r/devops)
 - "Managing workflow dependencies manually in Jira is a nightmare" (Atlassian Community)
 - "I wish GitHub Actions could automatically block PRs if dependencies aren't merged" (GitHub Discussions)
 
 ### Key Objections
+
 - Integration complexity with existing tools
 - Fear of false positives in dependency detection
 - Concerns about tool lock-in
@@ -110,16 +122,19 @@ Source packet: `docs/research-engine/run-28685676719.md`
 ## Factual Validation and Evidence Gaps
 
 ### Verified
+
 - ✅ Workflow dependency management is recognized challenge
 - ✅ Market demand exists (competitor adoption rates)
 - ✅ Technical feasibility confirmed
 
 ### Evidence Gaps
+
 - ❓ Current WR system architecture undocumented
 - ❓ Quantified impact metrics missing
 - ❓ Integration points undefined
 
 **Required Before Build**:
+
 1. Document current WR system architecture
 2. Define dependency types and detection criteria
 3. Quantify current coordination overhead
@@ -127,6 +142,7 @@ Source packet: `docs/research-engine/run-28685676719.md`
 ## MVP Requirements and Technical Architecture
 
 ### MVP Requirements
+
 - [ ] WRs can declare dependencies using standard syntax
 - [ ] Automated workflow detects dependencies within 5 minutes
 - [ ] Blocked WRs are flagged and cannot progress
@@ -135,6 +151,7 @@ Source packet: `docs/research-engine/run-28685676719.md`
 - [ ] Integration tests cover blocked/unblocked scenarios
 
 ### Technical Architecture
+
 ```
 src/
 ├── dependency-manager/
@@ -148,6 +165,7 @@ src/
 ## Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 Review Focus: Dependency cycle detection algorithm
 - Verify topological sort implementation prevents infinite loops
@@ -156,6 +174,7 @@ Review Focus: Dependency cycle detection algorithm
 ```
 
 ### For OpenRouter
+
 ```
 Security Review Required:
 - API authentication for dependency endpoints
@@ -164,6 +183,7 @@ Security Review Required:
 ```
 
 ### For Coderabbit
+
 ```
 Code Quality Checks:
 - Ensure dependency detection has >90% test coverage
@@ -172,6 +192,7 @@ Code Quality Checks:
 ```
 
 ### For Ralph Loop
+
 ```
 Architecture Review:
 - Validate database schema supports efficient graph queries
@@ -182,6 +203,7 @@ Architecture Review:
 ## Automatic Fix and Commit Queue
 
 ### Fix 1: Add Dependency Schema
+
 ```sql
 -- File: database/migrations/001_add_dependencies.sql
 CREATE TABLE wr_dependencies (
@@ -196,9 +218,11 @@ CREATE TABLE wr_dependencies (
 CREATE INDEX idx_parent_wr ON wr_dependencies(parent_wr_id);
 CREATE INDEX idx_child_wr ON wr_dependencies(child_wr_id);
 ```
+
 **Commit**: `feat: add database schema for WR dependencies`
 
 ### Fix 2: Dependency Detection Workflow
+
 ```yaml
 # File: .github/workflows/dependency-check.yml
 name: WR Dependency Validation
@@ -232,62 +256,70 @@ jobs:
               labels: ['dependency-blocked']
             })
 ```
+
 **Commit**: `feat: add GitHub Action for dependency validation`
 
 ### Fix 3: API Endpoints
+
 ```javascript
 // File: src/api/dependencies/index.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 // Create dependency
-router.post('/dependencies', async (req, res) => {
-  const { parentWrId, childWrId, type = 'blocks' } = req.body;
-  
+router.post("/dependencies", async (req, res) => {
+  const { parentWrId, childWrId, type = "blocks" } = req.body;
+
   // Validate no circular dependency
   if (await hasCircularDependency(parentWrId, childWrId)) {
-    return res.status(400).json({ error: 'Circular dependency detected' });
+    return res.status(400).json({ error: "Circular dependency detected" });
   }
-  
+
   const dependency = await createDependency(parentWrId, childWrId, type);
   res.status(201).json(dependency);
 });
 
 // Get dependencies for WR
-router.get('/dependencies/:wrId', async (req, res) => {
+router.get("/dependencies/:wrId", async (req, res) => {
   const dependencies = await getDependencies(req.params.wrId);
   res.json(dependencies);
 });
 
 module.exports = router;
 ```
+
 **Commit**: `feat: implement core dependency API endpoints`
 
 ## Labels to Apply
 
 ### Risk Management
+
 - `needs-technical-spec` - Missing system architecture
 - `needs-scope-definition` - Unclear boundaries
 - `integration-risk` - Potential impact on existing systems
 - `blocked-incomplete-requirements` - Cannot proceed without specification
 
 ### Market Validation
+
 - `market-validation-needed` - Requires user research
 - `competitive-analysis` - Direct competitor comparison needed
 - `seo-opportunity` - Content marketing potential
 
 ### Technical
+
 - `dependency-management` - Core feature area
 - `workflow-automation` - System category
 - `performance-impact` - Requires benchmarking
 
 ### Revenue
+
 - `revenue-validation-needed` - Pricing research required
 - `monetization:stripe` - Payment integration
 - `product:workflow-automation` - Product category
+
 ---
 
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -364,16 +396,17 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter

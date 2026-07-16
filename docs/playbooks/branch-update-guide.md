@@ -155,15 +155,15 @@ safer when there are many conflicts.
 
 ## 4. When to Update vs. When to Wait
 
-| Situation | Recommendation |
-|-----------|---------------|
-| GitHub shows "Update branch" (no conflicts) | Click the button — safe and fast |
-| Your PR has conflicts | Update is required before merge can proceed |
-| Your branch is 1–2 commits behind main, no conflicts | Optional — wait until you're ready to merge |
-| Your branch is 50+ commits behind main | Update now — the longer you wait, the harder it gets |
-| Two WRs touch the same file | Coordinate — one should merge first, then the other updates |
-| Self-healing `update-main` added `auto-merge` to your PR | Verify the PR looks right before it merges |
-| Your branch has automated commits (Jules) | Use merge, not rebase |
+| Situation                                                | Recommendation                                              |
+| -------------------------------------------------------- | ----------------------------------------------------------- |
+| GitHub shows "Update branch" (no conflicts)              | Click the button — safe and fast                            |
+| Your PR has conflicts                                    | Update is required before merge can proceed                 |
+| Your branch is 1–2 commits behind main, no conflicts     | Optional — wait until you're ready to merge                 |
+| Your branch is 50+ commits behind main                   | Update now — the longer you wait, the harder it gets        |
+| Two WRs touch the same file                              | Coordinate — one should merge first, then the other updates |
+| Self-healing `update-main` added `auto-merge` to your PR | Verify the PR looks right before it merges                  |
+| Your branch has automated commits (Jules)                | Use merge, not rebase                                       |
 
 ---
 

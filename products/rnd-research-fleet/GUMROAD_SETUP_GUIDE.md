@@ -23,11 +23,13 @@
 ## Step 3: Fill in Product Details
 
 ### Product Name:
+
 ```
 R&D Research Fleet
 ```
 
 ### Price:
+
 ```
 $400
 ```
@@ -44,6 +46,7 @@ $400
 
 **The Master Prompt System ($400 value)**
 A complete R&D engineering prompt that forces rigorous evaluation:
+
 - DOE 5-Point Screening (US Department of Energy methodology)
 - TRIZ Problem Solving (40 inventive principles from 250,000+ patents)
 - MEErP Framework (European Commission's ecodesign standard)
@@ -51,12 +54,14 @@ A complete R&D engineering prompt that forces rigorous evaluation:
 - BNAT Discovery (Hunt bleeding-edge lab research and patents)
 
 **Auto-Install Agent Fleet ($200 value)**
+
 - Perplexity Research Agent - No API key needed (FREE research)
 - Deep Search Router - Sonnet 3.5 + OpenRouter Fusion
 - 6 Research Personas - Switch between modes instantly
 - Auto GitHub Join - Creates your branded fork in one click
 
 **Complete Framework Library ($150 value)**
+
 - DOE 5-Point Screening Guide
 - TRIZ Analysis Handbook
 - MEErP Assessment Template
@@ -114,8 +119,8 @@ Email: support@freedomangelcorp.com
 1. Click **"Upload a file"** button
 2. Download the file first:
    - **Click this link:**
-   https://github.com/midnghtsapphire/revvel-standards/raw/main/products/rnd-research-fleet-v1.0.0.tar.gz
-   
+     https://github.com/midnghtsapphire/revvel-standards/raw/main/products/rnd-research-fleet-v1.0.0.tar.gz
+
 3. Upload the downloaded file to Gumroad
 
 **File size:** 22 KB
@@ -125,13 +130,16 @@ Email: support@freedomangelcorp.com
 ## Step 5: Configure Options
 
 ### Custom Fields (optional):
+
 - Leave default
 
 ### License (important!):
+
 - ✅ Enable license
 - Customers can use on unlimited projects
 
 ### Comments:
+
 - ✅ Allow comments (builds trust)
 
 ---
@@ -172,6 +180,7 @@ Email: support@freedomangelcorp.com
 ## After Publishing
 
 You'll get a shareable link like:
+
 ```
 https://freedomangelcorp.gumroad.com/l/rnd-research-fleet
 ```

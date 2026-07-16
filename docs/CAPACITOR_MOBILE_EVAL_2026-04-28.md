@@ -10,7 +10,7 @@
 ## 0. TL;DR — What to actually do
 
 - **Adopt Capacitor as the primary "PWA → native shell" layer for both Android and iOS** in every Revvel app that needs to land in a store. It is the strongest fit for our stack: framework-agnostic web → native, MIT-licensed, no SaaS lock-in for the core, and a first-class GitHub Actions + Fastlane integration story.
-- **Keep Bubblewrap/TWA** as the *zero-cost fallback* for an Android-only Play Store listing of a pure PWA when no native APIs (push, IAP, biometrics, file system) are required. Capacitor wins the moment a native API is required, which is true for any app using **RevenueCat** ([`../standards/REVENUECAT.md`](../standards/REVENUECAT.md)), push notifications, or background sync.
+- **Keep Bubblewrap/TWA** as the _zero-cost fallback_ for an Android-only Play Store listing of a pure PWA when no native APIs (push, IAP, biometrics, file system) are required. Capacitor wins the moment a native API is required, which is true for any app using **RevenueCat** ([`../standards/REVENUECAT.md`](../standards/REVENUECAT.md)), push notifications, or background sync.
 - **Demote Apache Cordova to "legacy / migration only."** Keep [`../templates/mobile/CORDOVA_STANDARD.md`](../templates/mobile/CORDOVA_STANDARD.md) and [`../templates/cicd/deploy-cordova.yml`](../templates/cicd/deploy-cordova.yml) for any inherited Cordova app, but do **not** start new projects on Cordova. The recommendation already in `CORDOVA_STANDARD.md` §2 ("Use Capacitor for new projects") is now the formal default; this evaluation upgrades it from a sentence in a sibling doc to a standards-level decision.
 - **Do not adopt Ionic Appflow / Live Updates today.** Capacitor's CodePush-style live-update SaaS is paid (~$499+/mo for the Launch tier as of 2026-Q1), and Apple's App Store guideline 4.5.5 + Google Play Developer Program Policies both restrict what can be live-updated without a re-review. Defer until a real over-the-air patch need is documented in [`./_MASTER_BOM.md`](./_MASTER_BOM.md).
 - **No new CI vendor required.** Capacitor builds use the same `./gradlew bundleRelease` / `xcodebuild archive` invocations the existing [`../templates/cicd/deploy-android.yml`](../templates/cicd/deploy-android.yml) and [`../templates/cicd/deploy-ios.yml`](../templates/cicd/deploy-ios.yml) already drive via Fastlane. Adoption is a **template addition** (a `templates/mobile/CAPACITOR_STANDARD.md` + a `templates/cicd/deploy-capacitor.yml` mirror of the Cordova workflow), not a CI rewrite.
@@ -20,25 +20,25 @@
 
 ## 1. Summary scorecard — Capacitor vs. the incumbents
 
-Legend: Fit = ⭐ (poor) … ⭐⭐⭐⭐ (excellent), scored *for Revvel's stack* (PWA-first, framework-agnostic, GH Actions + Fastlane, RevenueCat for IAP). "Stores" = can it produce a signed artifact and submit to Play / App Store.
+Legend: Fit = ⭐ (poor) … ⭐⭐⭐⭐ (excellent), scored _for Revvel's stack_ (PWA-first, framework-agnostic, GH Actions + Fastlane, RevenueCat for IAP). "Stores" = can it produce a signed artifact and submit to Play / App Store.
 
-| Dimension | Capacitor (v6/v7) | Apache Cordova | Bubblewrap (TWA) | Native (Kotlin/Swift) |
-|---|---|---|---|---|
-| Android `.aab` for Play | ✅ Gradle, standard | ✅ Gradle, standard | ✅ via TWA | ✅ |
-| iOS `.ipa` for App Store | ✅ Xcode/`xcodebuild` | ✅ Xcode/`xcodebuild` | ❌ Android only | ✅ |
-| Framework-agnostic (vanilla / React / Vue / Svelte) | ✅ | ✅ | ✅ (loads any PWA) | ❌ |
-| Native API plugin ecosystem | ⭐⭐⭐⭐ — official + community, actively maintained | ⭐⭐⭐ — large but aging; many plugins unmaintained | ⭐ — Web APIs only | ⭐⭐⭐⭐ — full SDK |
-| TypeScript-first plugin authoring | ✅ (`@capacitor/cli` scaffolds plugins in TS) | ❌ (JS + native, no TS scaffold) | N/A | N/A |
-| Native code customization | ✅ — open the `ios/` and `android/` projects directly in Xcode/Android Studio | ⚠️ — discouraged; native projects are regenerated | ❌ — TWA shell is opaque | ✅ |
-| Web-asset sync workflow | `npx cap sync` (deterministic, CI-safe) | `cordova prepare` (regenerates platforms) | Manual (Bubblewrap rebuild) | N/A |
-| Fastlane compatibility | ✅ — `gym` / `supply` / `pilot` work unchanged on the generated Xcode project and Gradle module | ✅ | ⚠️ — `supply` works; `gym` N/A | ✅ |
-| RevenueCat support ([`../standards/REVENUECAT.md`](../standards/REVENUECAT.md)) | ✅ — official `@revenuecat/purchases-capacitor` plugin | ⚠️ — community Cordova plugin, sporadic maintenance | ❌ — TWA cannot use Play Billing directly | ✅ |
-| License / lock-in | MIT, Ionic-maintained | Apache 2.0, Apache Foundation | Apache 2.0, Google | Platform SDKs |
-| Maintenance signal (2026-Q1) | Active — v7 shipping; quarterly minor releases | Maintenance mode — last major release cadence has slowed | Active — Google-maintained | Active |
-| Live updates (out of the box) | ❌ core; ✅ via paid Appflow | ❌ core; community CodePush-likes exist | N/A | ❌ |
-| Developer-account cost | $25 + $99/yr | Same | $25 (Android only) | Same |
-| **Mobile Fit (PWA → stores)** | **⭐⭐⭐⭐** | ⭐⭐⭐ | ⭐⭐ (Android-only PWA) | ⭐⭐⭐⭐ (but expensive engineering cost) |
-| **Recommendation** | **Adopt — primary** | **Legacy only** | **Keep — Android-only PWA fallback** | **Skip** unless we hit a hard WebView ceiling |
+| Dimension                                                                       | Capacitor (v6/v7)                                                                               | Apache Cordova                                           | Bubblewrap (TWA)                          | Native (Kotlin/Swift)                         |
+| ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------- | --------------------------------------------- |
+| Android `.aab` for Play                                                         | ✅ Gradle, standard                                                                             | ✅ Gradle, standard                                      | ✅ via TWA                                | ✅                                            |
+| iOS `.ipa` for App Store                                                        | ✅ Xcode/`xcodebuild`                                                                           | ✅ Xcode/`xcodebuild`                                    | ❌ Android only                           | ✅                                            |
+| Framework-agnostic (vanilla / React / Vue / Svelte)                             | ✅                                                                                              | ✅                                                       | ✅ (loads any PWA)                        | ❌                                            |
+| Native API plugin ecosystem                                                     | ⭐⭐⭐⭐ — official + community, actively maintained                                            | ⭐⭐⭐ — large but aging; many plugins unmaintained      | ⭐ — Web APIs only                        | ⭐⭐⭐⭐ — full SDK                           |
+| TypeScript-first plugin authoring                                               | ✅ (`@capacitor/cli` scaffolds plugins in TS)                                                   | ❌ (JS + native, no TS scaffold)                         | N/A                                       | N/A                                           |
+| Native code customization                                                       | ✅ — open the `ios/` and `android/` projects directly in Xcode/Android Studio                   | ⚠️ — discouraged; native projects are regenerated        | ❌ — TWA shell is opaque                  | ✅                                            |
+| Web-asset sync workflow                                                         | `npx cap sync` (deterministic, CI-safe)                                                         | `cordova prepare` (regenerates platforms)                | Manual (Bubblewrap rebuild)               | N/A                                           |
+| Fastlane compatibility                                                          | ✅ — `gym` / `supply` / `pilot` work unchanged on the generated Xcode project and Gradle module | ✅                                                       | ⚠️ — `supply` works; `gym` N/A            | ✅                                            |
+| RevenueCat support ([`../standards/REVENUECAT.md`](../standards/REVENUECAT.md)) | ✅ — official `@revenuecat/purchases-capacitor` plugin                                          | ⚠️ — community Cordova plugin, sporadic maintenance      | ❌ — TWA cannot use Play Billing directly | ✅                                            |
+| License / lock-in                                                               | MIT, Ionic-maintained                                                                           | Apache 2.0, Apache Foundation                            | Apache 2.0, Google                        | Platform SDKs                                 |
+| Maintenance signal (2026-Q1)                                                    | Active — v7 shipping; quarterly minor releases                                                  | Maintenance mode — last major release cadence has slowed | Active — Google-maintained                | Active                                        |
+| Live updates (out of the box)                                                   | ❌ core; ✅ via paid Appflow                                                                    | ❌ core; community CodePush-likes exist                  | N/A                                       | ❌                                            |
+| Developer-account cost                                                          | $25 + $99/yr                                                                                    | Same                                                     | $25 (Android only)                        | Same                                          |
+| **Mobile Fit (PWA → stores)**                                                   | **⭐⭐⭐⭐**                                                                                    | ⭐⭐⭐                                                   | ⭐⭐ (Android-only PWA)                   | ⭐⭐⭐⭐ (but expensive engineering cost)     |
+| **Recommendation**                                                              | **Adopt — primary**                                                                             | **Legacy only**                                          | **Keep — Android-only PWA fallback**      | **Skip** unless we hit a hard WebView ceiling |
 
 ---
 
@@ -46,16 +46,16 @@ Legend: Fit = ⭐ (poor) … ⭐⭐⭐⭐ (excellent), scored *for Revvel's stac
 
 Each option above is scored against the same five mobile-shipping dimensions the [`CI_APPS_MOBILE_EVAL_2026-04-23.md`](./CI_APPS_MOBILE_EVAL_2026-04-23.md) eval uses, plus three Capacitor-specific axes.
 
-| Dimension | What we check |
-|---|---|
-| **Replaces Fastlane path?** | Does it produce a signed `.aab` / `.ipa` and let Fastlane (`supply`, `pilot`, `deliver`) push to the stores? Capacitor: **yes** — the generated `android/` Gradle module and `ios/App.xcworkspace` are standard inputs to the lanes already scaffolded in [`../templates/mobile/fastlane/Fastfile`](../templates/mobile/fastlane/Fastfile). |
-| **Managed macOS** | iOS builds need a macOS runner. Capacitor adds **zero** new macOS minutes vs. Cordova — both shell out to `xcodebuild`. The mobile-CI options in [`CI_APPS_MOBILE_EVAL_2026-04-23.md` §3](./CI_APPS_MOBILE_EVAL_2026-04-23.md) (Codemagic primary fallback, Bitrise on condition) apply unchanged. |
-| **Signing UX** | Keystore + provisioning profiles + ASC API key flow per [`SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md). Capacitor does not touch signing — the existing Fastlane `match`/`gym`/`supply` story remains the source of truth. |
-| **Store submission** | `supply` (Play internal/closed/production) and `pilot` + `deliver` (TestFlight / App Store review) work against Capacitor-generated projects without changes. |
-| **Plugin governance** | Risk of pulling abandonware. Capacitor's official plugins (`@capacitor/*`) are versioned in lockstep with core, which gives Dependabot a clean upgrade lane (see [`../templates/cicd/dependabot.yml`](../templates/cicd/dependabot.yml)). |
-| **WebView parity** | Capacitor uses **WKWebView** on iOS and the system **WebView** on Android. We must document and enforce a min-WebView baseline (Chrome 100+ / iOS 15+) via app support docs, `browserslist`, CI smoke tests, and runtime compatibility checks. |
-| **Live-update legality** | Apple App Store Review Guideline 4.5.5 and Google Play Developer Program Policies both restrict what can be hot-patched. Any future Live-Updates adoption needs an Audrey-signed memo before enabling, regardless of vendor. |
-| **Migration cost from incumbent** | From PWA-only: low (3 commands per platform — see §3.1). From Cordova: medium (re-author plugins to Capacitor equivalents; ~1 dev-day per app of Revvel's current size). From Bubblewrap: zero — Capacitor coexists; Bubblewrap stays as Android-only fallback. |
+| Dimension                         | What we check                                                                                                                                                                                                                                                                                                                               |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Replaces Fastlane path?**       | Does it produce a signed `.aab` / `.ipa` and let Fastlane (`supply`, `pilot`, `deliver`) push to the stores? Capacitor: **yes** — the generated `android/` Gradle module and `ios/App.xcworkspace` are standard inputs to the lanes already scaffolded in [`../templates/mobile/fastlane/Fastfile`](../templates/mobile/fastlane/Fastfile). |
+| **Managed macOS**                 | iOS builds need a macOS runner. Capacitor adds **zero** new macOS minutes vs. Cordova — both shell out to `xcodebuild`. The mobile-CI options in [`CI_APPS_MOBILE_EVAL_2026-04-23.md` §3](./CI_APPS_MOBILE_EVAL_2026-04-23.md) (Codemagic primary fallback, Bitrise on condition) apply unchanged.                                          |
+| **Signing UX**                    | Keystore + provisioning profiles + ASC API key flow per [`SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md). Capacitor does not touch signing — the existing Fastlane `match`/`gym`/`supply` story remains the source of truth.                                                                                                              |
+| **Store submission**              | `supply` (Play internal/closed/production) and `pilot` + `deliver` (TestFlight / App Store review) work against Capacitor-generated projects without changes.                                                                                                                                                                               |
+| **Plugin governance**             | Risk of pulling abandonware. Capacitor's official plugins (`@capacitor/*`) are versioned in lockstep with core, which gives Dependabot a clean upgrade lane (see [`../templates/cicd/dependabot.yml`](../templates/cicd/dependabot.yml)).                                                                                                   |
+| **WebView parity**                | Capacitor uses **WKWebView** on iOS and the system **WebView** on Android. We must document and enforce a min-WebView baseline (Chrome 100+ / iOS 15+) via app support docs, `browserslist`, CI smoke tests, and runtime compatibility checks.                                                                                              |
+| **Live-update legality**          | Apple App Store Review Guideline 4.5.5 and Google Play Developer Program Policies both restrict what can be hot-patched. Any future Live-Updates adoption needs an Audrey-signed memo before enabling, regardless of vendor.                                                                                                                |
+| **Migration cost from incumbent** | From PWA-only: low (3 commands per platform — see §3.1). From Cordova: medium (re-author plugins to Capacitor equivalents; ~1 dev-day per app of Revvel's current size). From Bubblewrap: zero — Capacitor coexists; Bubblewrap stays as Android-only fallback.                                                                             |
 
 ---
 
@@ -73,17 +73,17 @@ Every Revvel app is a PWA first (see [`../templates/mobile/README.md`](../templa
 
 Official Ionic-maintained plugins under `@capacitor/*` cover the native APIs Revvel apps care about today and on the 12-month horizon:
 
-| Native need | Capacitor plugin | Notes |
-|---|---|---|
-| Push notifications (FCM + APNs) | `@capacitor/push-notifications` | Pairs with our existing FCM setup |
-| In-app purchases / subscriptions | `@revenuecat/purchases-capacitor` | RevenueCat-maintained, satisfies [`../standards/REVENUECAT.md`](../standards/REVENUECAT.md) |
-| Camera / photo library | `@capacitor/camera` | |
-| Filesystem | `@capacitor/filesystem` | Sandboxed; safe by default |
-| Geolocation | `@capacitor/geolocation` | |
-| Local notifications | `@capacitor/local-notifications` | |
-| Preferences (KV) | `@capacitor/preferences` | More reliable than `localStorage` in WKWebView; persists across app runs and updates |
-| App / device info | `@capacitor/app`, `@capacitor/device` | |
-| Status bar / splash screen | `@capacitor/status-bar`, `@capacitor/splash-screen` | |
+| Native need                      | Capacitor plugin                                    | Notes                                                                                       |
+| -------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Push notifications (FCM + APNs)  | `@capacitor/push-notifications`                     | Pairs with our existing FCM setup                                                           |
+| In-app purchases / subscriptions | `@revenuecat/purchases-capacitor`                   | RevenueCat-maintained, satisfies [`../standards/REVENUECAT.md`](../standards/REVENUECAT.md) |
+| Camera / photo library           | `@capacitor/camera`                                 |                                                                                             |
+| Filesystem                       | `@capacitor/filesystem`                             | Sandboxed; safe by default                                                                  |
+| Geolocation                      | `@capacitor/geolocation`                            |                                                                                             |
+| Local notifications              | `@capacitor/local-notifications`                    |                                                                                             |
+| Preferences (KV)                 | `@capacitor/preferences`                            | More reliable than `localStorage` in WKWebView; persists across app runs and updates        |
+| App / device info                | `@capacitor/app`, `@capacitor/device`               |                                                                                             |
+| Status bar / splash screen       | `@capacitor/status-bar`, `@capacitor/splash-screen` |                                                                                             |
 
 Community plugins (e.g., HealthKit, BLE) are available, but every adoption beyond the official set should be filtered through [`./MARKETPLACE_GUIDE.md`](./MARKETPLACE_GUIDE.md)-style scrutiny: maintenance signal in the last 6 months, license is MIT/Apache, and at least one Revvel-internal smoke test before a release ships.
 
@@ -137,7 +137,7 @@ This is not a Capacitor risk — it is the same constraint already managed in [`
 
 - **What:** Ionic's hosted CI + Live Updates + native binary builds product, layered on top of Capacitor.
 - **Why skip today:** the Launch tier starts at ~$499/mo (Ionic public pricing as of 2026-Q1), and every capability we need on day one is covered free by GitHub Actions + Fastlane (build, sign, ship) plus Capacitor's open-source CLI (`npx cap sync`). Live Updates are gated by App Store Guideline 4.5.5 and Google's policies anyway (§4.4), so the headline feature is not safe to enable without an explicit decision.
-- **Revisit when:** (a) we have a documented over-the-air patch need that survives the §4.4 legal check, or (b) we exhaust GitHub-hosted macOS minutes *and* Codemagic's free tier (§3.4 of [`CI_APPS_MOBILE_EVAL_2026-04-23.md`](./CI_APPS_MOBILE_EVAL_2026-04-23.md)).
+- **Revisit when:** (a) we have a documented over-the-air patch need that survives the §4.4 legal check, or (b) we exhaust GitHub-hosted macOS minutes _and_ Codemagic's free tier (§3.4 of [`CI_APPS_MOBILE_EVAL_2026-04-23.md`](./CI_APPS_MOBILE_EVAL_2026-04-23.md)).
 
 ### 5.2 Capgo / cap-go (community Live-Updates)
 
@@ -178,4 +178,4 @@ This eval is the decision artifact. The follow-up implementation tickets (each t
 
 ---
 
-*Authored: April 28, 2026. Next review: on Apple Developer Program purchase, on Capacitor v8 release, or if Apple/Google publish a Live-Updates policy change — whichever comes first.*
+_Authored: April 28, 2026. Next review: on Apple Developer Program purchase, on Capacitor v8 release, or if Apple/Google publish a Live-Updates policy change — whichever comes first._

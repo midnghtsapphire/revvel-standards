@@ -48,6 +48,7 @@ Source material: [BSI ISO 13485 Beginners Guide Webinar PDF](https://www.bsigrou
 ### Objective
 
 Create an interactive compliance tool (web app) that:
+
 1. Converts the BSI ISO 13485 beginners guide content into an actionable gap analysis wizard
 2. Helps small-to-mid-size medical device companies self-assess their readiness for ISO 13485 certification
 3. Generates a tailored remediation roadmap based on answers
@@ -87,12 +88,12 @@ Medium (2–4 weeks for MVP). Core scope: wizard UI, scoring engine, PDF export,
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -107,6 +108,7 @@ Medium (2–4 weeks for MVP). Core scope: wizard UI, scoring engine, PDF export,
 ---
 
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 ## WR-Ready Research Packet: ISO 13485 Compliance Gap Analysis Tool
@@ -122,21 +124,25 @@ ISO 13485 compliance tooling is an underserved niche with strong, recurring B2B 
 ## 2. Audience We Are Going After and Why
 
 ### Primary Persona: Quality Manager at a Small Medical Device Startup
+
 - **Pain Point:** ISO 13485 certification is required to sell medical devices in the EU (MDR/IVDR) and most global markets, but consulting fees for readiness assessments run $5,000–$25,000 ([BSI consulting](https://www.bsigroup.com/en-GB/medical-devices/our-services/iso-13485/)).
 - **Willingness to Pay:** $49–$199/month for a self-serve tool that replaces the first consulting engagement.
 - **Volume:** ~50,000 medical device manufacturers in the US alone ([FDA MedWatch data](https://www.fda.gov/medical-devices/device-regulation-and-guidance/overview-device-regulation)), and the ISO 13485 global certificate count grew to over 36,000 as of 2022 — the most recent publicly verified figure available from the [ISO Survey 2022](https://www.iso.org/the-iso-survey.html); more recent annual data should be checked there before citing in marketing copy.
 
 ### Secondary Persona: ISO Consultant / Notified Body Auditor
+
 - Uses the tool to pre-screen clients before a formal audit, saving billable hours.
 - Willingness to pay: $99–$299/month (agency tier with multiple client seats).
 
 ### Tertiary Persona: Medical Device Engineering Student / Beginner (free tier)
+
 - Drives top-of-funnel via organic search and the BSI beginner content.
 - Converts to paid via remediation roadmap feature.
 
 ## 3. Marketing and SEO Plan
 
 ### Primary Keyword Clusters
+
 - "ISO 13485 gap analysis" (1K–10K monthly searches — unverified, estimate based on Google Trends relative interest)
 - "ISO 13485 checklist" (1K–10K monthly searches — estimate)
 - "ISO 13485 compliance tool" (100–1K monthly searches — estimate)
@@ -144,17 +150,20 @@ ISO 13485 compliance tooling is an underserved niche with strong, recurring B2B 
 - "ISO 13485 certification cost" (1K–10K monthly searches — estimate)
 
 ### Landing Page Recommendations
+
 - **Title:** "ISO 13485 Gap Analysis Tool — Know Your QMS Readiness in 30 Minutes"
 - **Meta Description:** "Self-assess your medical device quality management system against ISO 13485:2016. Get a scored report and remediation roadmap — no consultant required. Free trial."
 - **Hero CTA:** "Start Free Gap Analysis →"
 
 ### Content Strategy
+
 1. **Pillar Guide:** "Complete ISO 13485:2016 Compliance Checklist (All 138 Requirements)"
 2. **Comparison:** "ISO 13485 vs. ISO 9001: What Medical Device Makers Need to Know"
 3. **Cost Guide:** "ISO 13485 Certification Cost: DIY vs. Consultant"
 4. **BSI Webinar Recap:** "Key Takeaways from the BSI ISO 13485 Beginners Guide"
 
 ### Distribution Channels
+
 - LinkedIn (medical device / quality engineering communities)
 - Reddit r/medicaldevices, r/QualityAssurance
 - MedTech conference circuits (MD&M, DeviceTalks)
@@ -165,20 +174,20 @@ ISO 13485 compliance tooling is an underserved niche with strong, recurring B2B 
 
 ### Closed-Source SaaS Competitors
 
-| Competitor | Focus | Pricing | Notes |
-|------------|-------|---------|-------|
-| [Qualio](https://www.qualio.com) | Full QMS platform (13485 + 21 CFR Part 820) | $599–$1,499/month ([G2](https://www.g2.com/products/qualio/pricing)) | Overkill for gap analysis; targets Series A+ medtech |
-| [Greenlight Guru](https://www.greenlight.guru) | Medical device-specific QMS | $1,000–$5,000/month (sales-only, estimate) | Enterprise; no self-serve pricing page |
-| [MasterControl](https://www.mastercontrol.com) | Enterprise QMS | Pricing data pending — enterprise sales-only; no public pricing page; estimated 5-figure ACV based on industry reports | Very large enterprise |
-| [ETQ Reliance](https://www.etq.com) | Enterprise QMS | Pricing data pending — enterprise sales-only; no public pricing page | Mid-to-large enterprise |
-| [SimplerQMS](https://www.simplerqms.com) | SME-focused QMS for life sciences | $299–$799/month (estimate from published tiers) | Closest competitor; no dedicated gap analysis wizard |
-| [ComplianceQuest](https://www.compliancequest.com) | Salesforce-based QMS | Pricing data pending — enterprise sales-only; no public pricing page | Salesforce dependency is a barrier |
+| Competitor                                         | Focus                                       | Pricing                                                                                                                | Notes                                                |
+| -------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| [Qualio](https://www.qualio.com)                   | Full QMS platform (13485 + 21 CFR Part 820) | $599–$1,499/month ([G2](https://www.g2.com/products/qualio/pricing))                                                   | Overkill for gap analysis; targets Series A+ medtech |
+| [Greenlight Guru](https://www.greenlight.guru)     | Medical device-specific QMS                 | $1,000–$5,000/month (sales-only, estimate)                                                                             | Enterprise; no self-serve pricing page               |
+| [MasterControl](https://www.mastercontrol.com)     | Enterprise QMS                              | Pricing data pending — enterprise sales-only; no public pricing page; estimated 5-figure ACV based on industry reports | Very large enterprise                                |
+| [ETQ Reliance](https://www.etq.com)                | Enterprise QMS                              | Pricing data pending — enterprise sales-only; no public pricing page                                                   | Mid-to-large enterprise                              |
+| [SimplerQMS](https://www.simplerqms.com)           | SME-focused QMS for life sciences           | $299–$799/month (estimate from published tiers)                                                                        | Closest competitor; no dedicated gap analysis wizard |
+| [ComplianceQuest](https://www.compliancequest.com) | Salesforce-based QMS                        | Pricing data pending — enterprise sales-only; no public pricing page                                                   | Salesforce dependency is a barrier                   |
 
 ### Open-Source / GitHub Projects
 
-| Repository | Stars | Last Update | Notes |
-|------------|-------|-------------|-------|
-| No directly comparable OSS gap analysis tool found | — | — | Gap in the market; spreadsheet-based checklists dominate |
+| Repository                                         | Stars | Last Update | Notes                                                    |
+| -------------------------------------------------- | ----- | ----------- | -------------------------------------------------------- |
+| No directly comparable OSS gap analysis tool found | —     | —           | Gap in the market; spreadsheet-based checklists dominate |
 
 **Key Finding:** The market lacks a self-serve, affordable ($50–$200/month) ISO 13485 gap analysis tool. Competitors are either enterprise QMS platforms (>$500/month) or free Excel spreadsheets with no scoring, remediation roadmaps, or export.
 
@@ -202,6 +211,7 @@ ISO 13485 compliance tooling is an underserved niche with strong, recurring B2B 
    - Existing tools target enterprises; small manufacturers (<50 employees) have no affordable self-serve option
 
 ### Demand Signals
+
 - ISO 13485 global certificate count has grown steadily year-over-year ([ISO Survey](https://www.iso.org/the-iso-survey.html))
 - EU MDR/IVDR compliance deadlines continue to drive demand for QMS tooling through 2025–2026
 - BSI's decision to produce a "beginners guide" webinar confirms unmet beginner demand
@@ -209,12 +219,14 @@ ISO 13485 compliance tooling is an underserved niche with strong, recurring B2B 
 ## 6. Factual Validation and Evidence Gaps
 
 ### Verified Facts
+
 - ISO 13485:2016 is the current version; it superseded ISO 13485:2003 ([ISO official](https://www.iso.org/standard/59752.html))
 - BSI Group is an accredited certification body for ISO 13485 ([BSI](https://www.bsigroup.com/en-GB/medical-devices/our-services/iso-13485/))
 - EU MDR (2017/745) and IVDR (2017/746) effectively require ISO 13485 for EU market access
 - Qualio pricing confirmed via G2 ([source](https://www.g2.com/products/qualio/pricing))
 
 ### Evidence Gaps / Estimates Flagged
+
 - Exact global ISO 13485 certificate count: ISO Survey 2022 data is the closest public source; "36,000+ certificates" is an estimate — verify at [iso.org/the-iso-survey](https://www.iso.org/the-iso-survey.html)
 - Keyword search volumes: labeled as estimates above; verify with Google Keyword Planner or Ahrefs before using in marketing copy
 - Greenlight Guru, MasterControl, ETQ, ComplianceQuest pricing: requires sales demo — flagged as "pricing data pending"
@@ -225,25 +237,30 @@ ISO 13485 compliance tooling is an underserved niche with strong, recurring B2B 
 ### MVP Feature Set
 
 #### Core: Gap Analysis Wizard
+
 - Clause-by-clause questionnaire covering ISO 13485:2016 sections 4–8 (approximately 138 requirements)
 - Three response options per item: ✅ Compliant / 🟡 Partial / ❌ Not Implemented
 - Progress bar and section navigation
 
 #### Scoring Dashboard
+
 - Percentage compliance score per section (4.1 QMS, 4.2 Documentation, 5.x Management, 6.x Resources, 7.x Product Realization, 8.x Measurement)
 - Overall readiness score (0–100%)
 - Visual radar/spider chart by section
 
 #### Remediation Roadmap
+
 - Auto-generated list of non-compliant items sorted by risk/priority
 - Each item links to ISO 13485 clause text + short plain-language explanation
 - Estimated effort tags (Quick Win / Medium / Long-Term)
 
 #### Export
+
 - PDF report (logo, date, scores, remediation list)
 - CSV export of all responses
 
 #### Paywall (Polar.sh)
+
 - Free tier: up to Section 4 (20 questions), no export
 - Pro tier ($49/month): full wizard + PDF export
 - Agency tier ($149/month): unlimited client workspaces + CSV export
@@ -251,25 +268,30 @@ ISO 13485 compliance tooling is an underserved niche with strong, recurring B2B 
 ### Acceptance Gates
 
 **Gate 1: Wizard Completeness**
+
 - All ISO 13485:2016 sections 4–8 covered
 - Each question maps to the correct clause number
 - Navigation between sections works without data loss
 
 **Gate 2: Scoring Accuracy**
+
 - Scoring engine produces correct percentages given known test inputs
 - Edge cases: all ✅, all ❌, mixed partial responses
 
 **Gate 3: Export Correctness**
+
 - PDF renders within 5 seconds
 - PDF includes company name, date, all scores, and remediation list
 - CSV export is valid UTF-8 with correct headers
 
 **Gate 4: Paywall Enforcement**
+
 - Unauthenticated users cannot download reports
 - Free tier cannot access sections 5–8
 - Polar.sh webhook correctly unlocks Pro tier on subscription
 
 **Gate 5: Deployment**
+
 - App deployed on Vercel or Railway
 - Custom domain (e.g., iso13485check.com or similar)
 - Lighthouse performance score ≥ 80
@@ -277,6 +299,7 @@ ISO 13485 compliance tooling is an underserved niche with strong, recurring B2B 
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 CONTEXT: Next.js SaaS app — ISO 13485 gap analysis wizard
 FOCUS AREAS:
@@ -292,6 +315,7 @@ BLOCKING ISSUES TO FLAG:
 ```
 
 ### For OpenRouter Review
+
 ```
 REVIEW PRIORITY: HIGH
 Focus areas:
@@ -302,6 +326,7 @@ Focus areas:
 ```
 
 ### For Coderabbit
+
 ```yaml
 review_config:
   blocking_rules:
@@ -320,6 +345,7 @@ review_config:
 ```
 
 ### For Ralph Loop
+
 ```
 DOMAIN: MedTech SaaS / ISO Compliance
 CRITICAL PATHS:
@@ -335,14 +361,18 @@ PERFORMANCE:
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Scaffold Next.js app
+
 ```bash
 cd products/ && npx create-next-app@latest iso13485-gap-analyzer \
   --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
 ```
+
 **Commit Message:** `feat: scaffold ISO 13485 gap analysis Next.js app`
 
 ### Fix 2: Add question bank JSON
+
 **File:** `products/iso13485-gap-analyzer/src/data/iso13485-questions.json`
+
 ```json
 {
   "version": "ISO 13485:2016",
@@ -351,20 +381,31 @@ cd products/ && npx create-next-app@latest iso13485-gap-analyzer \
       "id": "4",
       "title": "Quality Management System",
       "clauses": [
-        { "id": "4.1.1", "text": "Has the organization established, documented, implemented and maintained a QMS?", "risk": "critical" },
-        { "id": "4.2.1", "text": "Does the QMS documentation include a quality manual?", "risk": "high" }
+        {
+          "id": "4.1.1",
+          "text": "Has the organization established, documented, implemented and maintained a QMS?",
+          "risk": "critical"
+        },
+        {
+          "id": "4.2.1",
+          "text": "Does the QMS documentation include a quality manual?",
+          "risk": "high"
+        }
       ]
     }
   ]
 }
 ```
+
 **Commit Message:** `feat: add ISO 13485:2016 question bank data`
 
 ### Fix 3: Implement scoring engine
+
 **File:** `products/iso13485-gap-analyzer/src/lib/scoring.ts`
 **Commit Message:** `feat: implement gap analysis scoring engine`
 
 ### Fix 4: Add Polar.sh tier gating middleware
+
 **File:** `products/iso13485-gap-analyzer/src/middleware.ts`
 **Commit Message:** `feat: add Polar.sh subscription tier gate middleware`
 
@@ -398,24 +439,28 @@ Build a self-serve ISO 13485 gap analysis SaaS tool targeting small-to-mid-size 
 ## Step 2 — Deep Web Research
 
 ### Market Size
+
 - ISO 13485 is mandatory or strongly recommended in 90+ countries for medical device market access (internal estimate — verify country-by-country adoption via [ISO Survey country data](https://www.iso.org/the-iso-survey.html) or the [IMDRF global regulatory map](https://www.imdrf.org/working-groups/international-medical-device-regulators-forum))
 - EU MDR/IVDR enforcement has forced thousands of EU medical device companies to upgrade QMS documentation through 2024–2026 ([EU MDR timeline](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32017R0745))
 - BSI Group reports ISO 13485 as one of its highest-growth certification areas (internal BSI claim — cited from BSI Annual Review, verify at [bsigroup.com](https://www.bsigroup.com))
 
 ### Competitor Pricing Summary (verified where available)
-| Tool | Pricing | Source |
-|------|---------|--------|
-| Qualio | $599–$1,499/month | [G2](https://www.g2.com/products/qualio/pricing) |
-| SimplerQMS | ~$299–$799/month | Estimate — verify at [simplerqms.com/pricing](https://www.simplerqms.com/pricing) |
-| Greenlight Guru | Pricing data pending — enterprise sales-only; no public pricing page; estimated $1,000–$5,000/month based on comparable platforms | Sales-only |
-| MasterControl | Pricing data pending — enterprise sales-only; no public pricing page | Enterprise |
+
+| Tool            | Pricing                                                                                                                           | Source                                                                            |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Qualio          | $599–$1,499/month                                                                                                                 | [G2](https://www.g2.com/products/qualio/pricing)                                  |
+| SimplerQMS      | ~$299–$799/month                                                                                                                  | Estimate — verify at [simplerqms.com/pricing](https://www.simplerqms.com/pricing) |
+| Greenlight Guru | Pricing data pending — enterprise sales-only; no public pricing page; estimated $1,000–$5,000/month based on comparable platforms | Sales-only                                                                        |
+| MasterControl   | Pricing data pending — enterprise sales-only; no public pricing page                                                              | Enterprise                                                                        |
 
 ### Opportunity Gap
+
 No self-serve tool under $200/month covers ISO 13485 gap analysis specifically with scoring + PDF export + remediation roadmap. This product owns that price point.
 
 ## Step 3 — Requirements
 
 ### Functional Requirements
+
 1. **Wizard:** 138 questions spanning ISO 13485:2016 sections 4–8, with ✅/🟡/❌ responses
 2. **Scoring Engine:** Percentage compliance per section + overall score
 3. **Dashboard:** Radar chart by section, color-coded compliance bands (Red/Amber/Green)
@@ -426,12 +471,14 @@ No self-serve tool under $200/month covers ISO 13485 gap analysis specifically w
 8. **Landing Page:** SEO-optimized, with BSI webinar content summary as a lead magnet
 
 ### Non-Functional Requirements
+
 - WCAG 2.1 AA accessibility (medical device industry has enterprise buyers with accessibility mandates)
 - Mobile-responsive (auditors use tablets in the field)
 - Data privacy: user assessment data stored encrypted at rest; GDPR-compliant deletion flow
 - Uptime: 99.9% via Vercel edge
 
 ### Out of Scope (MVP)
+
 - Full QMS document management (Qualio's territory)
 - Supplier management module
 - CAPA workflow (post-MVP)
@@ -447,18 +494,18 @@ No self-serve tool under $200/month covers ISO 13485 gap analysis specifically w
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Severity | Mitigation |
-|------|----------|------------|
-| ISO 13485 clause coverage inaccuracy | High | Have a certified ISO 13485 lead auditor review the question bank before launch |
-| BSI PDF copyright (using content from their webinar) | Medium | Use BSI content only as a reference for clause mapping; do not reproduce verbatim; link to BSI source |
-| Polar.sh paywall bypass | Medium | Server-side tier enforcement on all /api/export and restricted wizard routes |
-| Competitor response (SimplerQMS adds gap analysis feature) | Low | Speed to market; build moat via SEO content and consultant partner network |
-| Medical device regulatory landscape change (e.g., new ISO 13485 revision) | Low | Modular question bank JSON makes updates straightforward |
+| Risk                                                                      | Severity | Mitigation                                                                                            |
+| ------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| ISO 13485 clause coverage inaccuracy                                      | High     | Have a certified ISO 13485 lead auditor review the question bank before launch                        |
+| BSI PDF copyright (using content from their webinar)                      | Medium   | Use BSI content only as a reference for clause mapping; do not reproduce verbatim; link to BSI source |
+| Polar.sh paywall bypass                                                   | Medium   | Server-side tier enforcement on all /api/export and restricted wizard routes                          |
+| Competitor response (SimplerQMS adds gap analysis feature)                | Low      | Speed to market; build moat via SEO content and consultant partner network                            |
+| Medical device regulatory landscape change (e.g., new ISO 13485 revision) | Low      | Modular question bank JSON makes updates straightforward                                              |

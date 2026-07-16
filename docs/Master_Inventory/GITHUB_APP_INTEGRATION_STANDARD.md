@@ -12,6 +12,7 @@
 Every Revvel and MIDNGHTSAPPHIRE project that needs to receive external events, make authenticated GitHub API calls, manage tokens, or run automations across multiple repositories **must** use a **GitHub App** as the primary integration identity. Personal access tokens (PATs) and OAuth apps are acceptable only for personal use — they must never be used as the identity for a shared automation or service.
 
 This standard covers:
+
 - When to use a GitHub App vs. a PAT vs. an OAuth App vs. GitHub Actions GITHUB_TOKEN
 - How to register, configure, and install a GitHub App
 - How to authenticate as an App Installation (short-lived tokens)
@@ -22,14 +23,14 @@ This standard covers:
 
 ## 2. Integration Methods Comparison
 
-| Method | Best For | Access Scope | Token Lifetime | Tied to a Human? |
-|---|---|---|---|---|
-| **GitHub App** | Long-lived automations, cross-repo bots, webhooks | Fine-grained, per-installation | 1 hour (auto-renewed) | No — standalone identity |
-| **PAT (Classic)** | Quick personal scripts, local dev | Broad (repo, org, user) | Until manually revoked | Yes — your account |
-| **Fine-Grained PAT** | Personal scripts with narrow scope | Per-repo, permission-level | Set expiry (max 1 year) | Yes — your account |
-| **OAuth App** | Third-party apps acting on behalf of a user | Delegated user permissions | Until revoked | Yes — user who authorized |
-| **Actions GITHUB_TOKEN** | Steps inside a GitHub Actions workflow | Scoped to that repo + workflow | Job lifetime only | No — but limited to one repo |
-| **GitHub Enterprise Managed Tokens** | Enterprise-wide service accounts | Org/enterprise level | Configurable | No — enterprise identity |
+| Method                               | Best For                                          | Access Scope                   | Token Lifetime          | Tied to a Human?             |
+| ------------------------------------ | ------------------------------------------------- | ------------------------------ | ----------------------- | ---------------------------- |
+| **GitHub App**                       | Long-lived automations, cross-repo bots, webhooks | Fine-grained, per-installation | 1 hour (auto-renewed)   | No — standalone identity     |
+| **PAT (Classic)**                    | Quick personal scripts, local dev                 | Broad (repo, org, user)        | Until manually revoked  | Yes — your account           |
+| **Fine-Grained PAT**                 | Personal scripts with narrow scope                | Per-repo, permission-level     | Set expiry (max 1 year) | Yes — your account           |
+| **OAuth App**                        | Third-party apps acting on behalf of a user       | Delegated user permissions     | Until revoked           | Yes — user who authorized    |
+| **Actions GITHUB_TOKEN**             | Steps inside a GitHub Actions workflow            | Scoped to that repo + workflow | Job lifetime only       | No — but limited to one repo |
+| **GitHub Enterprise Managed Tokens** | Enterprise-wide service accounts                  | Org/enterprise level           | Configurable            | No — enterprise identity     |
 
 **Rule:** For any automation that must survive past a single workflow run, access more than one repository, or receive webhooks from outside GitHub — always use a **GitHub App**.
 
@@ -45,26 +46,26 @@ This standard covers:
 
 2. Fill in the required fields:
 
-   | Field | Recommended Value |
-   |---|---|
-   | **GitHub App name** | `revvel-automation` (or `fac-revvel-agent` for org) |
-   | **Homepage URL** | `https://github.com/midnghtsapphire` |
-   | **Webhook URL** | Your server URL, e.g., `https://your-agent.revvel.app/webhook` |
-   | **Webhook secret** | Generate a strong random string — store in HashiCorp Vault |
-   | **Callback URL** | Required only if implementing user OAuth flow |
+   | Field               | Recommended Value                                              |
+   | ------------------- | -------------------------------------------------------------- |
+   | **GitHub App name** | `revvel-automation` (or `fac-revvel-agent` for org)            |
+   | **Homepage URL**    | `https://github.com/midnghtsapphire`                           |
+   | **Webhook URL**     | Your server URL, e.g., `https://your-agent.revvel.app/webhook` |
+   | **Webhook secret**  | Generate a strong random string — store in HashiCorp Vault     |
+   | **Callback URL**    | Required only if implementing user OAuth flow                  |
 
-3. **Select Permissions** under *Permissions & events*:
+3. **Select Permissions** under _Permissions & events_:
 
-   | Permission | Level | Why |
-   |---|---|---|
-   | Repository: Contents | Read & write | Clone, commit, push |
-   | Repository: Issues | Read & write | Create/manage issues |
-   | Repository: Pull requests | Read & write | Open/merge PRs |
-   | Repository: Metadata | Read | Always required |
-   | Repository: Workflows | Read & write | Manage Actions workflows |
-   | Repository: Secrets | Read & write | Manage GitHub Secrets |
-   | Organization: Members | Read | Enumerate org members |
-   | Organization: Administration | Read | Org-level settings (Enterprise only) |
+   | Permission                   | Level        | Why                                  |
+   | ---------------------------- | ------------ | ------------------------------------ |
+   | Repository: Contents         | Read & write | Clone, commit, push                  |
+   | Repository: Issues           | Read & write | Create/manage issues                 |
+   | Repository: Pull requests    | Read & write | Open/merge PRs                       |
+   | Repository: Metadata         | Read         | Always required                      |
+   | Repository: Workflows        | Read & write | Manage Actions workflows             |
+   | Repository: Secrets          | Read & write | Manage GitHub Secrets                |
+   | Organization: Members        | Read         | Enumerate org members                |
+   | Organization: Administration | Read         | Org-level settings (Enterprise only) |
 
 4. **Subscribe to Events** (check all that apply):
    - `push`, `pull_request`, `issues`, `issue_comment`
@@ -116,14 +117,16 @@ import { createNodeMiddleware } from "@octokit/webhooks";
 
 const app = new App({
   appId: process.env.GITHUB_APP_ID,
-  privateKey: process.env.GITHUB_APP_PRIVATE_KEY,  // PEM string from Vault
+  privateKey: process.env.GITHUB_APP_PRIVATE_KEY, // PEM string from Vault
   webhooks: {
     secret: process.env.GITHUB_WEBHOOK_SECRET,
   },
 });
 
 // Get installation access token for a specific installation
-const octokit = await app.getInstallationOctokit(Number(process.env.GITHUB_INSTALLATION_ID));
+const octokit = await app.getInstallationOctokit(
+  Number(process.env.GITHUB_INSTALLATION_ID),
+);
 
 // Make an API call
 const { data } = await octokit.rest.issues.create({
@@ -205,9 +208,8 @@ Issue opened      →   GitHub fires webhook  →   Route to handler
 import { createHmac, timingSafeEqual } from "crypto";
 
 function validateWebhookSignature(payload, signature, secret) {
-  const expectedSig = "sha256=" + createHmac("sha256", secret)
-    .update(payload)
-    .digest("hex");
+  const expectedSig =
+    "sha256=" + createHmac("sha256", secret).update(payload).digest("hex");
   const sigBuffer = Buffer.from(signature);
   const expectedBuffer = Buffer.from(expectedSig);
   if (sigBuffer.length !== expectedBuffer.length) return false;
@@ -252,14 +254,15 @@ console.log("Webhook server listening on port 3000");
 
 All GitHub App credentials follow the Vault Agent Standard (`VAULT_AGENT_STANDARD.md`).
 
-| Secret | Vault Path | Notes |
-|---|---|---|
-| App ID | `revvel/apps/github-app/prod/app_id` | Not sensitive but stored for consistency |
-| Private Key (PEM) | `revvel/apps/github-app/prod/private_key_pem` | Highly sensitive — never log or expose |
-| Webhook Secret | `revvel/apps/github-app/prod/webhook_secret` | Used for HMAC signature validation |
-| Installation ID | `revvel/apps/github-app/prod/installation_id` | Per-account — may have multiple |
+| Secret            | Vault Path                                    | Notes                                    |
+| ----------------- | --------------------------------------------- | ---------------------------------------- |
+| App ID            | `revvel/apps/github-app/prod/app_id`          | Not sensitive but stored for consistency |
+| Private Key (PEM) | `revvel/apps/github-app/prod/private_key_pem` | Highly sensitive — never log or expose   |
+| Webhook Secret    | `revvel/apps/github-app/prod/webhook_secret`  | Used for HMAC signature validation       |
+| Installation ID   | `revvel/apps/github-app/prod/installation_id` | Per-account — may have multiple          |
 
 Reference them in GitHub Actions via repository secrets:
+
 - `APP_ID` → store the numeric app ID
 - `APP_PRIVATE_KEY` → store the full PEM string
 - `APP_WEBHOOK_SECRET` → store the webhook secret
@@ -331,14 +334,14 @@ gh api graphql -f query='{ viewer { login } }'
 
 See `docs/GITHUB_ENTERPRISE_RESEARCH.md` for the full research comparison. Quick decision table:
 
-| Scenario | Use Personal (midnghtsapphire) | Use Enterprise (FAC) |
-|---|---|---|
-| Personal side projects | ✅ | ❌ |
-| Revvel products for clients | ✅ | Consider for billing |
-| Team of 5+ developers | ❌ | ✅ |
-| Needs SSO / SAML | ❌ | ✅ |
-| Advanced audit logs | ❌ | ✅ |
-| Cross-org app sharing | Limited | ✅ (Enterprise App) |
+| Scenario                                      | Use Personal (midnghtsapphire)  | Use Enterprise (FAC) |
+| --------------------------------------------- | ------------------------------- | -------------------- |
+| Personal side projects                        | ✅                              | ❌                   |
+| Revvel products for clients                   | ✅                              | Consider for billing |
+| Team of 5+ developers                         | ❌                              | ✅                   |
+| Needs SSO / SAML                              | ❌                              | ✅                   |
+| Advanced audit logs                           | ❌                              | ✅                   |
+| Cross-org app sharing                         | Limited                         | ✅ (Enterprise App)  |
 | midnghtsapphire needs access to FAC resources | Install FAC App on personal too | ✅ — install on both |
 
 **Key point:** A GitHub App registered under Freedom Angel Corps can be installed on both the FAC org **and** the `midnghtsapphire` personal account. This is the recommended approach for maximum flexibility.

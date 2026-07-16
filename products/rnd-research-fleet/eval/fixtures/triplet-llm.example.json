@@ -44,9 +44,7 @@
             "https://docs.github.com/en/actions",
             "https://stackoverflow.com/q/gh-not-a-git-repository"
           ],
-          [
-            "https://docs.github.com/en/actions"
-          ]
+          ["https://docs.github.com/en/actions"]
         ],
         "unsupported_claims": 0
       }
@@ -89,9 +87,7 @@
             "https://www.ftc.gov/",
             "https://www.iab.com/"
           ],
-          [
-            "https://www.experian.com/"
-          ]
+          ["https://www.experian.com/"]
         ],
         "unsupported_claims": 0
       }
@@ -120,15 +116,11 @@
         "disagreements": 0,
         "adjudication_quality": 0.98,
         "sources": [
-          [
-            "https://github.com/rhysd/actionlint"
-          ],
+          ["https://github.com/rhysd/actionlint"],
           [
             "https://docs.github.com/en/actions/learn-github-actions/workflow-syntax"
           ],
-          [
-            "https://github.com/rhysd/actionlint"
-          ]
+          ["https://github.com/rhysd/actionlint"]
         ],
         "unsupported_claims": 0
       }
@@ -157,15 +149,9 @@
         "disagreements": 0,
         "adjudication_quality": 0.96,
         "sources": [
-          [
-            "https://docs.github.com/en/actions/security-guides"
-          ],
-          [
-            "https://owasp.org/www-community/attacks/Command_Injection"
-          ],
-          [
-            "https://docs.github.com/en/actions/security-guides"
-          ]
+          ["https://docs.github.com/en/actions/security-guides"],
+          ["https://owasp.org/www-community/attacks/Command_Injection"],
+          ["https://docs.github.com/en/actions/security-guides"]
         ],
         "unsupported_claims": 0
       }
@@ -208,9 +194,7 @@
             "https://www.ibisworld.com/",
             "https://www.mordorintelligence.com/"
           ],
-          [
-            "https://www.statista.com/"
-          ]
+          ["https://www.statista.com/"]
         ],
         "unsupported_claims": 0
       }
@@ -240,17 +224,9 @@
         "disagreements": 0,
         "adjudication_quality": 0.97,
         "sources": [
-          [
-            "https://www.ashrae.org/",
-            "https://www.iso.org/"
-          ],
-          [
-            "https://www.ashrae.org/",
-            "https://www.ansi.org/"
-          ],
-          [
-            "https://www.ashrae.org/"
-          ]
+          ["https://www.ashrae.org/", "https://www.iso.org/"],
+          ["https://www.ashrae.org/", "https://www.ansi.org/"],
+          ["https://www.ashrae.org/"]
         ],
         "unsupported_claims": 0
       }

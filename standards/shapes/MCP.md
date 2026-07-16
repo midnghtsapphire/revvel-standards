@@ -18,13 +18,13 @@
 
 ## 1. Research Phase
 
-| Task | Tool | Output |
-|------|------|--------|
-| Validate agent demand | mcp.so registry, GitHub MCP repos, AI dev forums | Confirmed gap — no existing MCP server for this |
-| Audit existing MCP servers | `mcp.so`, Smithery, GitHub search `mcp-server-*` | `research/competitors.md` — what exists, what's missing |
-| Identify target agents | Claude Desktop, OpenHands, Cursor, Windsurf, Cline | `research/audience.md` — which agents would use this |
-| Define tool surface | User complaints about what agents can't do | `research/tools.md` — proposed tools, inputs, outputs |
-| Determine pricing | Free vs. API-key-gated vs. hosted | `decision/pricing.json` |
+| Task                       | Tool                                               | Output                                                  |
+| -------------------------- | -------------------------------------------------- | ------------------------------------------------------- |
+| Validate agent demand      | mcp.so registry, GitHub MCP repos, AI dev forums   | Confirmed gap — no existing MCP server for this         |
+| Audit existing MCP servers | `mcp.so`, Smithery, GitHub search `mcp-server-*`   | `research/competitors.md` — what exists, what's missing |
+| Identify target agents     | Claude Desktop, OpenHands, Cursor, Windsurf, Cline | `research/audience.md` — which agents would use this    |
+| Define tool surface        | User complaints about what agents can't do         | `research/tools.md` — proposed tools, inputs, outputs   |
+| Determine pricing          | Free vs. API-key-gated vs. hosted                  | `decision/pricing.json`                                 |
 
 **Gate:** `research/brief.md` must exist before proceeding.
 
@@ -82,7 +82,7 @@ server.tool(
   async ({ param }) => {
     // Implementation
     return { content: [{ type: "text", text: JSON.stringify(result) }] };
-  }
+  },
 );
 
 const transport = new StdioServerTransport();
@@ -106,13 +106,13 @@ await server.connect(transport);
 
 MCP servers are invisible to end users, but still need:
 
-| Asset | Purpose | Tool |
-|-------|---------|------|
-| Logo / icon | mcp.so listing, npm page, GitHub repo | Figma |
-| Architecture diagram | README, landing page | Figma or Mermaid |
-| Landing page | SEO + install instructions | Figma → HTML |
-| OG image | Social sharing (1200×630) | Figma |
-| Demo video/GIF | Show agent using the MCP server | Screen recording |
+| Asset                | Purpose                               | Tool             |
+| -------------------- | ------------------------------------- | ---------------- |
+| Logo / icon          | mcp.so listing, npm page, GitHub repo | Figma            |
+| Architecture diagram | README, landing page                  | Figma or Mermaid |
+| Landing page         | SEO + install instructions            | Figma → HTML     |
+| OG image             | Social sharing (1200×630)             | Figma            |
+| Demo video/GIF       | Show agent using the MCP server       | Screen recording |
 
 ---
 
@@ -120,12 +120,12 @@ MCP servers are invisible to end users, but still need:
 
 ### Primary Distribution
 
-| Channel | How | Notes |
-|---------|-----|-------|
-| **npm** | `npm publish` | Primary — agents install via `npx` |
-| **mcp.so** | Submit to MCP registry | Largest MCP directory |
-| **Smithery** | Submit to Smithery registry | Growing alternative |
-| **GitHub Releases** | Source + binary | For manual installs |
+| Channel             | How                         | Notes                              |
+| ------------------- | --------------------------- | ---------------------------------- |
+| **npm**             | `npm publish`               | Primary — agents install via `npx` |
+| **mcp.so**          | Submit to MCP registry      | Largest MCP directory              |
+| **Smithery**        | Submit to Smithery registry | Growing alternative                |
+| **GitHub Releases** | Source + binary             | For manual installs                |
 
 ### MCP Config Snippets (for README)
 
@@ -176,23 +176,23 @@ Must include:
 
 ## 5. Connections Required
 
-| Connection | Purpose | Where stored |
-|------------|---------|--------------|
-| **npm token** | Publish to npm registry | Doppler `revvel-standards/prd/NPM_TOKEN` |
-| **Target API credentials** | The API the MCP server wraps | Doppler (per-project) |
-| **mcp.so account** | Registry listing | Doppler `revvel-standards/prd/MCP_SO_TOKEN` |
-| **Stripe API key** | Monetization (if paid tier) | Doppler `revvel-standards/prd/STRIPE_SECRET_KEY` |
+| Connection                 | Purpose                      | Where stored                                     |
+| -------------------------- | ---------------------------- | ------------------------------------------------ |
+| **npm token**              | Publish to npm registry      | Doppler `revvel-standards/prd/NPM_TOKEN`         |
+| **Target API credentials** | The API the MCP server wraps | Doppler (per-project)                            |
+| **mcp.so account**         | Registry listing             | Doppler `revvel-standards/prd/MCP_SO_TOKEN`      |
+| **Stripe API key**         | Monetization (if paid tier)  | Doppler `revvel-standards/prd/STRIPE_SECRET_KEY` |
 
 ---
 
 ## Monetization Models
 
-| Model | How | Example |
-|-------|-----|---------|
-| **Free + API key** | MCP server is free, underlying API requires paid key | Wrap a paid API, earn affiliate commission |
-| **Hosted proxy** | Free MCP server hits your hosted proxy (metered) | Stripe metered billing per API call |
-| **Sponsorware** | Free for sponsors, public after threshold | GitHub Sponsors |
-| **Enterprise tier** | Free tools, paid advanced tools | `tool_basic` free, `tool_advanced` requires license |
+| Model               | How                                                  | Example                                             |
+| ------------------- | ---------------------------------------------------- | --------------------------------------------------- |
+| **Free + API key**  | MCP server is free, underlying API requires paid key | Wrap a paid API, earn affiliate commission          |
+| **Hosted proxy**    | Free MCP server hits your hosted proxy (metered)     | Stripe metered billing per API call                 |
+| **Sponsorware**     | Free for sponsors, public after threshold            | GitHub Sponsors                                     |
+| **Enterprise tier** | Free tools, paid advanced tools                      | `tool_basic` free, `tool_advanced` requires license |
 
 ---
 
@@ -222,5 +222,5 @@ For marketing and landing pages for MCP servers, the following image generation 
 
 💡 **Tips for Fine-Tuning the MCP Vibe:**
 
-- **To emphasize tool-calling or security:** Add phrases like *showing secure API authorization badges* or *displaying sandboxed tool execution logs* to make the functional purpose clearer.
-- **To change the visual hierarchy:** If you want a more abstract layout representing the "protocol" flow, use terms like *a central core with radial glass nodes stretching outward* to shift it away from a standard rectangular layout.
+- **To emphasize tool-calling or security:** Add phrases like _showing secure API authorization badges_ or _displaying sandboxed tool execution logs_ to make the functional purpose clearer.
+- **To change the visual hierarchy:** If you want a more abstract layout representing the "protocol" flow, use terms like _a central core with radial glass nodes stretching outward_ to shift it away from a standard rectangular layout.

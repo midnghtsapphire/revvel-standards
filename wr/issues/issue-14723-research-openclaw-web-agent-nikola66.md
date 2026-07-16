@@ -46,20 +46,20 @@ Closes #14723
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [nikola66/web-agent](https://github.com/nikola66/web-agent) |
-| Vendor | aratech (`webagent.aratech.ae`) — Necolas Hamwi, "CTO / Production Manager at aratech.ae" |
-| Created | 2026-05-13 |
-| Last pushed | 2026-05-31 (active; "launched yesterday" per LinkedIn DM dated the day before) |
-| Primary Language | TypeScript |
-| Stars | **25** |
-| Forks | **2** |
-| Open Issues | **0** |
-| License | **MIT** |
-| Topics | `agentic-ai`, `hermes-agent`, `openclaw`, `self-improving-agent`, `self-improving-ai`, `skills`, `web-agent`, `web-tools` |
-| Version | `0.0.78` (pre-1.0, fast-moving) |
-| Funding | Ko-fi (`ko-fi.com/nikola66`) + GitHub sponsor placeholders |
+| Property         | Value                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Repository       | [nikola66/web-agent](https://github.com/nikola66/web-agent)                                                               |
+| Vendor           | aratech (`webagent.aratech.ae`) — Necolas Hamwi, "CTO / Production Manager at aratech.ae"                                 |
+| Created          | 2026-05-13                                                                                                                |
+| Last pushed      | 2026-05-31 (active; "launched yesterday" per LinkedIn DM dated the day before)                                            |
+| Primary Language | TypeScript                                                                                                                |
+| Stars            | **25**                                                                                                                    |
+| Forks            | **2**                                                                                                                     |
+| Open Issues      | **0**                                                                                                                     |
+| License          | **MIT**                                                                                                                   |
+| Topics           | `agentic-ai`, `hermes-agent`, `openclaw`, `self-improving-agent`, `self-improving-ai`, `skills`, `web-agent`, `web-tools` |
+| Version          | `0.0.78` (pre-1.0, fast-moving)                                                                                           |
+| Funding          | Ko-fi (`ko-fi.com/nikola66`) + GitHub sponsor placeholders                                                                |
 
 ### Current Status
 
@@ -100,13 +100,13 @@ web-agent/
 
 ## Step 1A: Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-|--------------|-----------|-----------------|---------------------------|-------|
-| Research dossier (this doc) | **Yes** | Markdown WR | `docs/WEEKLY_RESEARCH_PROCESS.md` | Primary deliverable |
-| Adoption decision + recommendation | **Yes** | Section below | Decision Scoring Model | ADOPT-AS-REFERENCE |
-| Pattern-harvest backlog (issues) | **Yes** | 3 follow-up tasks | repo issues | WebContainer spike, guardrails, SKILL.md format |
-| Relationship action (star + reply) | **Yes** | GitHub star | n/a | Explicit asker request; free goodwill |
-| New hosted product / fork | **No** | — | — | No moat; vendor already hosts + monetizes |
+| Output shape                       | In scope? | Format / length   | Primary engine / standard         | Notes                                           |
+| ---------------------------------- | --------- | ----------------- | --------------------------------- | ----------------------------------------------- |
+| Research dossier (this doc)        | **Yes**   | Markdown WR       | `docs/WEEKLY_RESEARCH_PROCESS.md` | Primary deliverable                             |
+| Adoption decision + recommendation | **Yes**   | Section below     | Decision Scoring Model            | ADOPT-AS-REFERENCE                              |
+| Pattern-harvest backlog (issues)   | **Yes**   | 3 follow-up tasks | repo issues                       | WebContainer spike, guardrails, SKILL.md format |
+| Relationship action (star + reply) | **Yes**   | GitHub star       | n/a                               | Explicit asker request; free goodwill           |
+| New hosted product / fork          | **No**    | —                 | —                                 | No moat; vendor already hosts + monetizes       |
 
 ### Platform Defaults & Website Requirements
 
@@ -122,13 +122,13 @@ Browser-native / "no-install" autonomous agents are an emerging 2025–2026 cate
 
 **Keyword / SEO landscape (intent buckets):**
 
-| Keyword cluster | Intent | Notes |
-|-----------------|--------|-------|
-| "browser AI agent" / "no install AI agent" | High commercial | Differentiator headline; low competition vs. "AI agent" |
-| "open source AI agent" / "self-hosted agent" | High | MIT + local-first is the hook; strong dev-tool SEO |
-| "OpenClaw" / "Claude in browser" | Trend-rider | Riding the OpenClaw/Claude-clone wave; volatile but cheap |
-| "WebContainers agent" / "in-browser Node agent" | Niche/technical | Very low competition, high qualification |
-| "self-improving agent" / "skills agent" | Medium | Aligns with our self-healing thesis |
+| Keyword cluster                                 | Intent          | Notes                                                     |
+| ----------------------------------------------- | --------------- | --------------------------------------------------------- |
+| "browser AI agent" / "no install AI agent"      | High commercial | Differentiator headline; low competition vs. "AI agent"   |
+| "open source AI agent" / "self-hosted agent"    | High            | MIT + local-first is the hook; strong dev-tool SEO        |
+| "OpenClaw" / "Claude in browser"                | Trend-rider     | Riding the OpenClaw/Claude-clone wave; volatile but cheap |
+| "WebContainers agent" / "in-browser Node agent" | Niche/technical | Very low competition, high qualification                  |
+| "self-improving agent" / "skills agent"         | Medium          | Aligns with our self-healing thesis                       |
 
 **Why it matters to us:** these are the exact buyer phrases for our OSINT/automation tooling. Web Agent validates that "zero-install, local-first, skills-driven" is a marketable angle we can borrow for our own productized agents.
 
@@ -142,30 +142,30 @@ The following are **directional / anecdotal** themes inferred from public issue-
 
 ### Category: Agent Runtime / Sandbox (BOM)
 
-| Option | What it is | Cost | Verdict |
-|--------|-----------|------|---------|
+| Option                                           | What it is                    | Cost                                                     | Verdict                                              |
+| ------------------------------------------------ | ----------------------------- | -------------------------------------------------------- | ---------------------------------------------------- |
 | **WebContainers / Nodebox** (Web Agent's choice) | Node.js in-browser, no server | Free OSS / StackBlitz terms apply for WebContainers[^s2] | **Best for zero-install UX**; the capability we lack |
-| Docker + VPS (Devin/Manus-style) | Server sandbox per session | ~$5–$40+/mo/instance (provider-dependent estimate)[^s5] | Highest control, highest friction + cost |
-| E2B / Daytona cloud sandboxes | Hosted ephemeral sandboxes | Usage-based[^s9][^s10] | Good for backend agents, not "open-a-URL" UX |
-| Local CLI (Claude Code/OpenCode/Aider) | Runs on dev machine | Free + model cost | No browser UX; install friction |
+| Docker + VPS (Devin/Manus-style)                 | Server sandbox per session    | ~$5–$40+/mo/instance (provider-dependent estimate)[^s5]  | Highest control, highest friction + cost             |
+| E2B / Daytona cloud sandboxes                    | Hosted ephemeral sandboxes    | Usage-based[^s9][^s10]                                   | Good for backend agents, not "open-a-URL" UX         |
+| Local CLI (Claude Code/OpenCode/Aider)           | Runs on dev machine           | Free + model cost                                        | No browser UX; install friction                      |
 
 ### Category: Model Routing (BOM)
 
-| Option | Notes | Verdict |
-|--------|-------|---------|
-| **OpenRouter** (Web Agent default; also ours) | One key, many models, fallbacks | **Best** — already our standard (`OPENROUTER_API_KEY`) |
-| OpenAI-compatible providers | BYO base URL/key | Good flexibility; Web Agent supports via provider manifests |
-| Direct vendor APIs | More wiring, no fallback | Avoid for fleet automation |
+| Option                                        | Notes                           | Verdict                                                     |
+| --------------------------------------------- | ------------------------------- | ----------------------------------------------------------- |
+| **OpenRouter** (Web Agent default; also ours) | One key, many models, fallbacks | **Best** — already our standard (`OPENROUTER_API_KEY`)      |
+| OpenAI-compatible providers                   | BYO base URL/key                | Good flexibility; Web Agent supports via provider manifests |
+| Direct vendor APIs                            | More wiring, no fallback        | Avoid for fleet automation                                  |
 
 ### Competitor / Comparable Analysis
 
-| Project | Model | Install | Persistence | License | Moat vs. us |
-|---------|-------|---------|-------------|---------|-------------|
-| **Web Agent (this)** | Browser/WebContainers | **None** | Browser-local | MIT | Zero-install UX |
-| Manus | Hosted SaaS | Account | Cloud | Closed | Brand/scale |
-| Devin | Hosted SaaS | Account | Cloud | Closed | Brand/funding |
-| OpenCode / Aider / Claude Code | Local CLI | Yes | Local files | OSS/mixed | Dev mindshare |
-| Hermes Agent (NousResearch) | Framework | Yes | Local | OSS | Self-improvement research (Web Agent borrows this) |
+| Project                        | Model                 | Install  | Persistence   | License   | Moat vs. us                                        |
+| ------------------------------ | --------------------- | -------- | ------------- | --------- | -------------------------------------------------- |
+| **Web Agent (this)**           | Browser/WebContainers | **None** | Browser-local | MIT       | Zero-install UX                                    |
+| Manus                          | Hosted SaaS           | Account  | Cloud         | Closed    | Brand/scale                                        |
+| Devin                          | Hosted SaaS           | Account  | Cloud         | Closed    | Brand/funding                                      |
+| OpenCode / Aider / Claude Code | Local CLI             | Yes      | Local files   | OSS/mixed | Dev mindshare                                      |
+| Hermes Agent (NousResearch)    | Framework             | Yes      | Local         | OSS       | Self-improvement research (Web Agent borrows this) |
 
 **Gap / our advantage:** none of these combine a self-healing **fleet** (our 166+ workflow automation loop) with a browser-native single-agent UX. Borrowing Web Agent's runtime + skills format into our fleet is additive, not redundant.
 
@@ -176,14 +176,23 @@ Not required (no new product shipped). If the borrowed WebContainer capability b
 ---
 
 [^s1]: `nikola66/web-agent` README and docs: <https://github.com/nikola66/web-agent>
+
 [^s2]: StackBlitz WebContainers overview: <https://webcontainers.io/>
+
 [^s3]: OpenHands/OpenDevin-style local setup docs (Docker/runtime requirements): <https://github.com/All-Hands-AI/OpenHands>
+
 [^s4]: Aider install docs (local runtime/tooling prerequisites): <https://aider.chat/docs/install.html>
+
 [^s5]: DigitalOcean Droplet pricing reference (VPS baseline used for estimate range): <https://www.digitalocean.com/pricing/droplets>
+
 [^s6]: OpenHands issue discussions (setup friction examples): <https://github.com/All-Hands-AI/OpenHands/issues?q=is%3Aissue+docker>
+
 [^s7]: Aider issue discussions (install/setup friction examples): <https://github.com/Aider-AI/aider/issues?q=is%3Aissue+install>
+
 [^s8]: Open-source agent privacy/security discussion context: <https://github.com/Significant-Gravitas/AutoGPT/issues?q=privacy>
+
 [^s9]: E2B pricing: <https://e2b.dev/pricing>
+
 [^s10]: Daytona pricing/docs: <https://www.daytona.io/pricing>
 
 ## Step 3: Requirements from revvel-standards
@@ -192,12 +201,12 @@ Not required (no new product shipped). If the borrowed WebContainer capability b
 
 > **$10k/month → $10M in 3 years**
 
-| Lever | Fit | Rationale |
-|-------|-----|-----------|
-| Ship revenue products faster | **Strong** | SKILL.md format + tool-loop guardrails accelerate our agent pipeline reliability |
-| Reduce pipeline friction | **Strong** | Deterministic loop-detection is exactly our self-healing pain point |
-| Polar.sh / funding integrations | Weak | Web Agent uses Ko-fi; no direct overlap |
-| OSINT monetization | Medium | A zero-install browser agent could front-end our OSINT tools |
+| Lever                           | Fit        | Rationale                                                                        |
+| ------------------------------- | ---------- | -------------------------------------------------------------------------------- |
+| Ship revenue products faster    | **Strong** | SKILL.md format + tool-loop guardrails accelerate our agent pipeline reliability |
+| Reduce pipeline friction        | **Strong** | Deterministic loop-detection is exactly our self-healing pain point              |
+| Polar.sh / funding integrations | Weak       | Web Agent uses Ko-fi; no direct overlap                                          |
+| OSINT monetization              | Medium     | A zero-install browser agent could front-end our OSINT tools                     |
 
 **Net:** the patterns advance Focus Area #3 (automated product pipeline) and #2 (OSINT delivery surface). Direct rehosting does **not** advance the directive (no moat, MIT means anyone can clone the demo).
 
@@ -213,14 +222,14 @@ This is conceptually identical to our `self-healing.yml` / `agent-monitor.yml` s
 
 ### Decision Scoring Model Gate
 
-| Criterion (0–5) | Score | Note |
-|-----------------|-------|------|
-| Strategic alignment | 4 | Strong pattern fit, weak funding fit |
-| Revenue impact (near-term) | 2 | Indirect; reliability/cost savings, not new MRR |
-| Effort to integrate patterns | 3 | Guardrails + SKILL.md = low; WebContainer runtime = high |
-| Moat if we rehost | 0 | MIT, vendor-hosted, no defensibility |
-| Relationship value | 4 | Asker is a CTO; cheap goodwill via star + thoughtful reply |
-| **Decision** | — | **ADOPT-AS-REFERENCE + SELECTIVE-BORROW; do not fork/rehost** |
+| Criterion (0–5)              | Score | Note                                                          |
+| ---------------------------- | ----- | ------------------------------------------------------------- |
+| Strategic alignment          | 4     | Strong pattern fit, weak funding fit                          |
+| Revenue impact (near-term)   | 2     | Indirect; reliability/cost savings, not new MRR               |
+| Effort to integrate patterns | 3     | Guardrails + SKILL.md = low; WebContainer runtime = high      |
+| Moat if we rehost            | 0     | MIT, vendor-hosted, no defensibility                          |
+| Relationship value           | 4     | Asker is a CTO; cheap goodwill via star + thoughtful reply    |
+| **Decision**                 | —     | **ADOPT-AS-REFERENCE + SELECTIVE-BORROW; do not fork/rehost** |
 
 ---
 
@@ -264,13 +273,13 @@ This WR does **not** ship a sellable artifact. The monetization value is **indir
 
 ## Artifact Engine Map
 
-| Selected artifact | Repo engine / standard | Status |
-|-------------------|------------------------|--------|
-| Research WR dossier | `docs/WEEKLY_RESEARCH_PROCESS.md` | ✅ Produced (this file) |
-| Tool-loop guardrail pattern | `CLAUDE.md` self-healing loop / `scripts/` | ⏳ P1 backlog (gap → port thresholds) |
-| SKILL.md capability format | `skills/` directory | ⏳ P1 backlog (gap → evaluate adopting frontmatter+index) |
-| WebContainer zero-install front-end | _no existing engine_ | ⚠️ Gap — P2 spike, capability we currently lack |
-| Relationship action (star + reply) | n/a (manual GitHub action) | ⏳ Flagged to @midnghtsapphire |
+| Selected artifact                   | Repo engine / standard                     | Status                                                    |
+| ----------------------------------- | ------------------------------------------ | --------------------------------------------------------- |
+| Research WR dossier                 | `docs/WEEKLY_RESEARCH_PROCESS.md`          | ✅ Produced (this file)                                   |
+| Tool-loop guardrail pattern         | `CLAUDE.md` self-healing loop / `scripts/` | ⏳ P1 backlog (gap → port thresholds)                     |
+| SKILL.md capability format          | `skills/` directory                        | ⏳ P1 backlog (gap → evaluate adopting frontmatter+index) |
+| WebContainer zero-install front-end | _no existing engine_                       | ⚠️ Gap — P2 spike, capability we currently lack           |
+| Relationship action (star + reply)  | n/a (manual GitHub action)                 | ⏳ Flagged to @midnghtsapphire                            |
 
 ---
 
@@ -297,11 +306,11 @@ Durable findings institutionalized back into revvel-standards:
 
 ## Status Summary
 
-| Field | Value |
-|-------|-------|
-| WR Status | ✅ Complete (research + decision) |
-| Decision | ADOPT-AS-REFERENCE + SELECTIVE-BORROW (no fork/rehost) |
-| P0 | Star repo (manual) + reply; file dossier |
-| P1 | Port tool-loop guardrails; evaluate SKILL.md format |
-| P2 | WebContainer zero-install front-end spike |
-| Blocker | None |
+| Field     | Value                                                  |
+| --------- | ------------------------------------------------------ |
+| WR Status | ✅ Complete (research + decision)                      |
+| Decision  | ADOPT-AS-REFERENCE + SELECTIVE-BORROW (no fork/rehost) |
+| P0        | Star repo (manual) + reply; file dossier               |
+| P1        | Port tool-loop guardrails; evaluate SKILL.md format    |
+| P2        | WebContainer zero-install front-end spike              |
+| Blocker   | None                                                   |

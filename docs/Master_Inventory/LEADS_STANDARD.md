@@ -14,12 +14,12 @@ A **lead** is any person who has expressed interest in a product or service but 
 
 A lead is different from a customer:
 
-| | Lead | Customer |
-|---|---|---|
-| **Has purchased?** | No | Yes |
-| **DB Table** | `leads` | `users` + `orders` |
-| **Primary goal** | Move to next stage | Retain and upsell |
-| **Primary action** | Follow up / qualify | Fulfill / support |
+|                    | Lead                | Customer           |
+| ------------------ | ------------------- | ------------------ |
+| **Has purchased?** | No                  | Yes                |
+| **DB Table**       | `leads`             | `users` + `orders` |
+| **Primary goal**   | Move to next stage  | Retain and upsell  |
+| **Primary action** | Follow up / qualify | Fulfill / support  |
 
 When a lead purchases, they become a customer. Their lead record stays in the `leads` table (for attribution), and a `users` row is created.
 
@@ -37,21 +37,21 @@ NEW → CONTACTED → QUALIFIED → QUOTED → APPLIED → APPROVED → ISSUED
     UNREACHABLE  NOT_INTERESTED  LOST_TO_COMPETITION
 ```
 
-| Stage | Code | Meaning | Who Moves It |
-|---|---|---|---|
-| **New** | `new` | Just captured. Not yet contacted. | System (auto on form submit) |
-| **Contacted** | `contacted` | First outreach made (call, email, text). | Agent / AI agent |
-| **Qualified** | `qualified` | Confirmed interest + meets basic eligibility (age, state, budget). | Agent / AI agent |
-| **Quoted** | `quoted` | Received a rate quote. Considering. | System (auto after quote generated) |
-| **Applied** | `applied` | Submitted an application. | System (auto on app submit) |
-| **Underwriting** | `underwriting` | Application under review by carrier. | System / Agent |
-| **Approved** | `approved` | Carrier approved the application. | System (carrier webhook) |
-| **Issued** | `issued` | Policy is in force. Lead → Customer. | System (carrier webhook) |
-| **Declined** | `declined` | Carrier denied the application. | System / Agent |
-| **Not Interested** | `not_interested` | Lead confirmed they do not want the product. | Agent |
-| **Unreachable** | `unreachable` | 5+ contact attempts, no response. | Agent (after attempt limit) |
-| **Lost to Competition** | `lost_competition` | Went with another provider. | Agent |
-| **Disqualified** | `disqualified` | Does not meet eligibility (wrong age, state not licensed, etc.). | Agent / System |
+| Stage                   | Code               | Meaning                                                            | Who Moves It                        |
+| ----------------------- | ------------------ | ------------------------------------------------------------------ | ----------------------------------- |
+| **New**                 | `new`              | Just captured. Not yet contacted.                                  | System (auto on form submit)        |
+| **Contacted**           | `contacted`        | First outreach made (call, email, text).                           | Agent / AI agent                    |
+| **Qualified**           | `qualified`        | Confirmed interest + meets basic eligibility (age, state, budget). | Agent / AI agent                    |
+| **Quoted**              | `quoted`           | Received a rate quote. Considering.                                | System (auto after quote generated) |
+| **Applied**             | `applied`          | Submitted an application.                                          | System (auto on app submit)         |
+| **Underwriting**        | `underwriting`     | Application under review by carrier.                               | System / Agent                      |
+| **Approved**            | `approved`         | Carrier approved the application.                                  | System (carrier webhook)            |
+| **Issued**              | `issued`           | Policy is in force. Lead → Customer.                               | System (carrier webhook)            |
+| **Declined**            | `declined`         | Carrier denied the application.                                    | System / Agent                      |
+| **Not Interested**      | `not_interested`   | Lead confirmed they do not want the product.                       | Agent                               |
+| **Unreachable**         | `unreachable`      | 5+ contact attempts, no response.                                  | Agent (after attempt limit)         |
+| **Lost to Competition** | `lost_competition` | Went with another provider.                                        | Agent                               |
+| **Disqualified**        | `disqualified`     | Does not meet eligibility (wrong age, state not licensed, etc.).   | Agent / System                      |
 
 ---
 
@@ -140,23 +140,23 @@ lead_activities:
   created_at      TIMESTAMP NOT NULL DEFAULT NOW()
 ```
 
-| Activity Type | Code | Triggered By |
-|---|---|---|
-| Lead created | `lead_created` | System |
-| Stage changed | `stage_changed` | Agent / System |
-| Call made | `call_made` | Agent |
-| Call received | `call_received` | Agent |
-| SMS sent | `sms_sent` | Agent / System |
-| SMS received | `sms_received` | System |
-| Email sent | `email_sent` | Agent / System |
-| Email opened | `email_opened` | System (tracking pixel) |
-| Email clicked | `email_clicked` | System |
-| Quote generated | `quote_generated` | System |
-| Application started | `application_started` | Lead / System |
-| Application submitted | `application_submitted` | Lead / System |
-| Note added | `note_added` | Agent |
-| Document uploaded | `document_uploaded` | Lead / Agent |
-| TTY contact made | `tty_contact` | Agent (via TTY relay) |
+| Activity Type         | Code                    | Triggered By            |
+| --------------------- | ----------------------- | ----------------------- |
+| Lead created          | `lead_created`          | System                  |
+| Stage changed         | `stage_changed`         | Agent / System          |
+| Call made             | `call_made`             | Agent                   |
+| Call received         | `call_received`         | Agent                   |
+| SMS sent              | `sms_sent`              | Agent / System          |
+| SMS received          | `sms_received`          | System                  |
+| Email sent            | `email_sent`            | Agent / System          |
+| Email opened          | `email_opened`          | System (tracking pixel) |
+| Email clicked         | `email_clicked`         | System                  |
+| Quote generated       | `quote_generated`       | System                  |
+| Application started   | `application_started`   | Lead / System           |
+| Application submitted | `application_submitted` | Lead / System           |
+| Note added            | `note_added`            | Agent                   |
+| Document uploaded     | `document_uploaded`     | Lead / Agent            |
+| TTY contact made      | `tty_contact`           | Agent (via TTY relay)   |
 
 ---
 
@@ -166,25 +166,26 @@ The **Telephone Consumer Protection Act (TCPA)** is federal law. Violating it = 
 
 ### What You Must Do
 
-| Requirement | How to Meet It |
-|---|---|
-| Get explicit consent before calling/texting | Consent checkbox on every lead form |
-| Record what consent language was shown | Store `consent_text` in `leads` table |
+| Requirement                                    | How to Meet It                                     |
+| ---------------------------------------------- | -------------------------------------------------- |
+| Get explicit consent before calling/texting    | Consent checkbox on every lead form                |
+| Record what consent language was shown         | Store `consent_text` in `leads` table              |
 | Record when and from what IP consent was given | Store `consent_timestamp` and `consent_ip_address` |
-| Honor opt-outs immediately | Remove from all contact lists within minutes |
-| No calls before 8am or after 9pm local time | Check `leads.state` timezone before scheduling |
-| Identify yourself on every call | "Hi, this is [Name] from [Company]…" |
-| Provide opt-out on every text | "Reply STOP to opt out" |
+| Honor opt-outs immediately                     | Remove from all contact lists within minutes       |
+| No calls before 8am or after 9pm local time    | Check `leads.state` timezone before scheduling     |
+| Identify yourself on every call                | "Hi, this is [Name] from [Company]…"               |
+| Provide opt-out on every text                  | "Reply STOP to opt out"                            |
 
 ### Consent Language (Copy-Paste This Exactly)
 
 Place this below every lead capture form submit button:
 
-> *By clicking "Get My Free Quote," you agree to receive calls, texts, and emails from [Company Name] and its partners at the number and email provided, including by autodialer. Consent is not a condition of purchase. Message and data rates may apply. Reply STOP to opt out. [Privacy Policy] | [Terms of Service]*
+> _By clicking "Get My Free Quote," you agree to receive calls, texts, and emails from [Company Name] and its partners at the number and email provided, including by autodialer. Consent is not a condition of purchase. Message and data rates may apply. Reply STOP to opt out. [Privacy Policy] | [Terms of Service]_
 
 ### Do-Not-Call Registry
 
 Check the National Do Not Call Registry before contacting any lead:
+
 - API: `https://donotcall.gov` (commercial API access required for businesses)
 - Check frequency: Before every outbound call, or at minimum on lead creation
 
@@ -194,20 +195,21 @@ Check the National Do Not Call Registry before contacting any lead:
 
 Leads are automatically scored 0–100 based on signals. Higher score = hotter lead = contact first.
 
-| Signal | Points Added | Reason |
-|---|---|---|
-| Provided phone (not just email) | +20 | Phone leads close at higher rates |
-| Correct age for product | +15 | In-range leads are qualified |
-| State where we are licensed | +15 | Can't sell if not licensed there |
-| Answered health questions | +10 | Shows real intent |
-| Came from paid ad (high-intent) | +10 | Paid traffic is warmer |
-| Came from organic search | +8 | High intent, low cost |
-| Filled all fields (vs partial) | +10 | More complete = more serious |
-| Budget matches product range | +10 | Can afford it |
-| Responded to first contact | +15 | Engaged lead |
-| Referred by affiliate | +5 | Warm introduction |
+| Signal                          | Points Added | Reason                            |
+| ------------------------------- | ------------ | --------------------------------- |
+| Provided phone (not just email) | +20          | Phone leads close at higher rates |
+| Correct age for product         | +15          | In-range leads are qualified      |
+| State where we are licensed     | +15          | Can't sell if not licensed there  |
+| Answered health questions       | +10          | Shows real intent                 |
+| Came from paid ad (high-intent) | +10          | Paid traffic is warmer            |
+| Came from organic search        | +8           | High intent, low cost             |
+| Filled all fields (vs partial)  | +10          | More complete = more serious      |
+| Budget matches product range    | +10          | Can afford it                     |
+| Responded to first contact      | +15          | Engaged lead                      |
+| Referred by affiliate           | +5           | Warm introduction                 |
 
 **Thresholds:**
+
 - 70–100 → 🔴 Hot — contact within 1 hour
 - 40–69 → 🟡 Warm — contact within 24 hours
 - 0–39 → 🟢 Cold — contact within 72 hours, automate follow-up
@@ -218,16 +220,16 @@ Leads are automatically scored 0–100 based on signals. Higher score = hotter l
 
 Never leave a lead without a next step. The system auto-schedules follow-ups.
 
-| Attempt | Timing | Method |
-|---|---|---|
-| 1st contact | Within 5 minutes of form submit | Call |
-| 2nd attempt | 1 hour later (if no answer) | Call + SMS |
-| 3rd attempt | Next day, morning | Call |
-| 4th attempt | 2 days later | Email + Call |
-| 5th attempt | 5 days later | SMS + Email |
-| 6th attempt | 14 days later | Email |
-| Final | 30 days later | Email ("Last chance") |
-| After 7 attempts no response | Mark `unreachable` | Stop outreach |
+| Attempt                      | Timing                          | Method                |
+| ---------------------------- | ------------------------------- | --------------------- |
+| 1st contact                  | Within 5 minutes of form submit | Call                  |
+| 2nd attempt                  | 1 hour later (if no answer)     | Call + SMS            |
+| 3rd attempt                  | Next day, morning               | Call                  |
+| 4th attempt                  | 2 days later                    | Email + Call          |
+| 5th attempt                  | 5 days later                    | SMS + Email           |
+| 6th attempt                  | 14 days later                   | Email                 |
+| Final                        | 30 days later                   | Email ("Last chance") |
+| After 7 attempts no response | Mark `unreachable`              | Stop outreach         |
 
 ---
 
@@ -238,7 +240,7 @@ The app must check `leads.state` against a list of licensed states and reject le
 
 ```ts
 // lib/insurance-licensing.ts
-export const LICENSED_STATES = ['CO', 'CA', 'TX', 'FL', 'NY']; // Update as you get licensed
+export const LICENSED_STATES = ["CO", "CA", "TX", "FL", "NY"]; // Update as you get licensed
 
 export function isLicensedInState(stateCode: string): boolean {
   return LICENSED_STATES.includes(stateCode.toUpperCase());
@@ -246,27 +248,28 @@ export function isLicensedInState(stateCode: string): boolean {
 ```
 
 If a lead submits from an unlicensed state:
+
 - Do NOT store their data in `leads`
-- Show: *"We're not yet licensed in [State]. Enter your email to be notified when we launch there."*
+- Show: _"We're not yet licensed in [State]. Enter your email to be notified when we launch there."_
 - Store email only in a `waitlist` table — never contact them about insurance until licensed
 
 ---
 
 ## 9. Lead Sources and Attribution
 
-| Source Code | Where Lead Came From | UTM Source |
-|---|---|---|
-| `facebook_ad` | Facebook/Instagram paid ad | `facebook` |
-| `tiktok_ad` | TikTok paid ad | `tiktok` |
-| `google_search` | Google organic result | `google` |
-| `google_ad` | Google paid ad | `google` |
-| `referral` | Affiliate referral | affiliate code |
-| `organic_social` | Unpaid social post | platform name |
-| `email_campaign` | Newsletter or email | `email` |
-| `direct` | Typed URL directly | (none) |
-| `partner` | From a partner integration | partner name |
-| `phone_inbound` | Called in (no form) | `phone` |
-| `tty_inbound` | TTY relay call | `tty` |
+| Source Code      | Where Lead Came From       | UTM Source     |
+| ---------------- | -------------------------- | -------------- |
+| `facebook_ad`    | Facebook/Instagram paid ad | `facebook`     |
+| `tiktok_ad`      | TikTok paid ad             | `tiktok`       |
+| `google_search`  | Google organic result      | `google`       |
+| `google_ad`      | Google paid ad             | `google`       |
+| `referral`       | Affiliate referral         | affiliate code |
+| `organic_social` | Unpaid social post         | platform name  |
+| `email_campaign` | Newsletter or email        | `email`        |
+| `direct`         | Typed URL directly         | (none)         |
+| `partner`        | From a partner integration | partner name   |
+| `phone_inbound`  | Called in (no form)        | `phone`        |
+| `tty_inbound`    | TTY relay call             | `tty`          |
 
 ---
 
@@ -280,15 +283,15 @@ The **Americans with Disabilities Act (ADA)** and **Section 504 of the Rehabilit
 
 ### What Your App Must Do
 
-| Requirement | Implementation |
-|---|---|
-| Display TTY number on all contact pages | Add TTY number field to company settings |
-| Allow leads to identify as needing TTY | `leads.requires_tty` checkbox on forms |
-| Tag TTY leads in the pipeline | `leads.preferred_contact = 'tty'` |
-| Train agents on TTY relay calls | Via TTY relay service (711 nationwide) |
+| Requirement                             | Implementation                                        |
+| --------------------------------------- | ----------------------------------------------------- |
+| Display TTY number on all contact pages | Add TTY number field to company settings              |
+| Allow leads to identify as needing TTY  | `leads.requires_tty` checkbox on forms                |
+| Tag TTY leads in the pipeline           | `leads.preferred_contact = 'tty'`                     |
+| Train agents on TTY relay calls         | Via TTY relay service (711 nationwide)                |
 | App UI must be screen-reader accessible | WCAG 2.1 AA minimum (see `ACCESSIBILITY_STANDARD.md`) |
-| All lead forms keyboard-navigable | No mouse required for any step |
-| All required fields have ARIA labels | For screen reader compatibility |
+| All lead forms keyboard-navigable       | No mouse required for any step                        |
+| All required fields have ARIA labels    | For screen reader compatibility                       |
 
 ### How to Call a TTY Lead
 
@@ -300,7 +303,8 @@ The **Americans with Disabilities Act (ADA)** and **Section 504 of the Rehabilit
 ### TTY Display on Your Lead Forms
 
 Add this to every lead capture form footer:
-> *Deaf or hard of hearing? Call our TTY line: 1-800-XXX-XXXX | Or check the box below and we will contact you via TTY relay.*
+
+> _Deaf or hard of hearing? Call our TTY line: 1-800-XXX-XXXX | Or check the box below and we will contact you via TTY relay._
 
 ---
 

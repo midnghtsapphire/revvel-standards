@@ -10,6 +10,7 @@
 ---
 
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-15266-lllt-efficacy-app.md`
@@ -54,14 +55,14 @@ The Qiu 2022 paper provides validated clinical metrics (SALT score reduction, Gl
 
 ### Primary SEO Keyword Targets
 
-| Keyword | Est. Monthly Searches | CPC Est. | Notes |
-| --- | --- | --- | --- |
-| "LLLT hair loss tracker" | 1,200 | $2.40 | Low competition, high intent |
-| "low level laser therapy progress app" | 800 | $1.90 | Niche, direct buyers |
-| "hair loss treatment efficacy assessment" | 2,400 | $3.10 | Clinician-facing |
-| "LLLT before after photo comparison" | 4,500 | $1.60 | Consumer-facing |
-| "androgenetic alopecia tracking software" | 900 | $4.20 | High professional intent |
-| "hair regrowth progress tracker" | 8,900 | $1.20 | Broad consumer audience |
+| Keyword                                   | Est. Monthly Searches | CPC Est. | Notes                        |
+| ----------------------------------------- | --------------------- | -------- | ---------------------------- |
+| "LLLT hair loss tracker"                  | 1,200                 | $2.40    | Low competition, high intent |
+| "low level laser therapy progress app"    | 800                   | $1.90    | Niche, direct buyers         |
+| "hair loss treatment efficacy assessment" | 2,400                 | $3.10    | Clinician-facing             |
+| "LLLT before after photo comparison"      | 4,500                 | $1.60    | Consumer-facing              |
+| "androgenetic alopecia tracking software" | 900                   | $4.20    | High professional intent     |
+| "hair regrowth progress tracker"          | 8,900                 | $1.20    | Broad consumer audience      |
 
 _Note: search volumes are estimates based on SEMrush category data — verify with Google Keyword Planner before finalizing ad spend._
 
@@ -83,22 +84,22 @@ _Note: search volumes are estimates based on SEMrush category data — verify wi
 
 ### Closed-Source Competitors
 
-| Competitor | Focus | Pricing | Key Gap |
-| --- | --- | --- | --- |
-| **iRestore App** | iRestore device companion | Free (bundled) | Locked to one brand; no clinical metrics |
-| **HairMax App** | HairMax device companion | Free (bundled) | No evidence-linked scoring; basic timer |
-| **Capillus App** | Capillus device companion | Free (bundled) | No photo AI analysis; no export |
-| **Trichoscan** | Clinical trichoscopy SaaS | ~$200/mo (est.) | Requires expensive trichoscope hardware |
-| **HairCheck** | Clinic hair density tool | $1,500 hardware + SaaS | Hardware dependency, not LLLT-specific |
+| Competitor       | Focus                     | Pricing                | Key Gap                                  |
+| ---------------- | ------------------------- | ---------------------- | ---------------------------------------- |
+| **iRestore App** | iRestore device companion | Free (bundled)         | Locked to one brand; no clinical metrics |
+| **HairMax App**  | HairMax device companion  | Free (bundled)         | No evidence-linked scoring; basic timer  |
+| **Capillus App** | Capillus device companion | Free (bundled)         | No photo AI analysis; no export          |
+| **Trichoscan**   | Clinical trichoscopy SaaS | ~$200/mo (est.)        | Requires expensive trichoscope hardware  |
+| **HairCheck**    | Clinic hair density tool  | $1,500 hardware + SaaS | Hardware dependency, not LLLT-specific   |
 
 _Pricing data sources: vendor websites July 2026; "est." = estimated from public pricing pages or G2 reviews._
 
 ### Open-Source Landscape
 
-| Repository | Stars | Last Commit | Verdict |
-| --- | --- | --- | --- |
-| [hairloss-tracker](https://github.com/search?q=hairloss+tracker) | <50 | Stale | No viable base; build fresh |
-| General photo-comparison tools | Various | Active | Could use for UI layer only |
+| Repository                                                       | Stars   | Last Commit | Verdict                     |
+| ---------------------------------------------------------------- | ------- | ----------- | --------------------------- |
+| [hairloss-tracker](https://github.com/search?q=hairloss+tracker) | <50     | Stale       | No viable base; build fresh |
+| General photo-comparison tools                                   | Various | Active      | Could use for UI layer only |
 
 **Key Finding:** No open-source LLLT-specific progress tracker exists with clinical outcome metric support. The market is served only by vendor-locked device-companion apps. A standalone, device-agnostic SaaS with validated metrics is an unoccupied position.
 
@@ -121,13 +122,13 @@ _Pricing data sources: vendor websites July 2026; "est." = estimated from public
 
 ### Qiu 2022 Paper — Verified Clinical Metrics
 
-| Metric | Description | Source |
-| --- | --- | --- |
-| SALT Score (Severity of Alopecia Tool) | Standardised % scalp hair loss 0–100 | [Olsen et al. 2004](https://doi.org/10.1111/j.1365-2133.2004.06279.x) |
-| Global Photographic Assessment | 7-point scale for overall hair improvement | Validated in Qiu 2022 |
-| Patient Satisfaction Score | 5-point Likert self-report | Validated in Qiu 2022 |
-| Propensity score matching | Statistical method for real-world confounding | Qiu 2022 methodology |
-| Study size | 1,383 patients, multicentre | [DNB 1259867692](https://d-nb.info/1259867692/34) |
+| Metric                                 | Description                                   | Source                                                                |
+| -------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------- |
+| SALT Score (Severity of Alopecia Tool) | Standardised % scalp hair loss 0–100          | [Olsen et al. 2004](https://doi.org/10.1111/j.1365-2133.2004.06279.x) |
+| Global Photographic Assessment         | 7-point scale for overall hair improvement    | Validated in Qiu 2022                                                 |
+| Patient Satisfaction Score             | 5-point Likert self-report                    | Validated in Qiu 2022                                                 |
+| Propensity score matching              | Statistical method for real-world confounding | Qiu 2022 methodology                                                  |
+| Study size                             | 1,383 patients, multicentre                   | [DNB 1259867692](https://d-nb.info/1259867692/34)                     |
 
 ### Market Size Cross-Checks
 
@@ -264,19 +265,23 @@ cd products && npx create-next-app@latest lllt-efficacy-app \
 ## 10. Labels to Apply
 
 ### Research Complete
+
 - `research:complete` — triggers WR PR creation workflow
 - `work-request` — ensures downstream automation picks up the WR
 
 ### Delivery
+
 - `deliver:app` — confirmed app deliverable
 - `deliver:saas` — subscription-tier SaaS product
 - `deliver:pdf` — PDF report export feature
 
 ### Domain
+
 - `domain:healthtech` — HIPAA-conscious design required
 - `domain:hair-loss` — niche but validated market
 
 ### Priority
+
 - `priority-p1` — validated market, clear revenue path, low competition
 
 ---
@@ -293,6 +298,7 @@ https://d-nb.info/1259867692/34
 **Research paper:** Qiu et al. (2022), "Efficacy Assessment of a Low-Level Laser Helmet for the Treatment of Hair Loss: A Real-World, Multicentre, Propensity Score-Matched Analysis." German National Library record 1259867692.
 
 **Tags interpreted:**
+
 - `#tool` → build a clinical/consumer efficacy assessment tool
 - `#app` → ship as a web application (Next.js SaaS)
 - `project` → full product build, not a script/snippet
@@ -327,15 +333,15 @@ The market gap is clear: all major LLLT devices (iRestore, Capillus, HairMax, Th
 
 ### Competitor Deep Dive
 
-| Competitor | Price | Evidence-Based? | Device-Agnostic? | Report Export? | GitHub Stars |
-| --- | --- | --- | --- | --- | --- |
-| iRestore App | Free (bundled) | No | No | No | N/A (closed source) |
-| HairMax App | Free (bundled) | No | No | No | N/A (closed source) |
-| Capillus App | Free (bundled) | No | No | No | N/A (closed source) |
-| Theradome App | Free (bundled) | No | No | No | N/A (closed source) |
-| Trichoscan | ~$200/mo (est.) | Yes (trichoscope-based) | Requires hardware | Yes | N/A (closed source) |
-| HairCheck | $1,500 hardware + SaaS (est.) | Yes (density tool) | Requires hardware | Yes | N/A (closed source) |
-| **LLLT Efficacy Tracker (proposed)** | Free–$299/mo | **Yes (Qiu 2022)** | **Yes** | **Yes** | — |
+| Competitor                           | Price                         | Evidence-Based?         | Device-Agnostic?  | Report Export? | GitHub Stars        |
+| ------------------------------------ | ----------------------------- | ----------------------- | ----------------- | -------------- | ------------------- |
+| iRestore App                         | Free (bundled)                | No                      | No                | No             | N/A (closed source) |
+| HairMax App                          | Free (bundled)                | No                      | No                | No             | N/A (closed source) |
+| Capillus App                         | Free (bundled)                | No                      | No                | No             | N/A (closed source) |
+| Theradome App                        | Free (bundled)                | No                      | No                | No             | N/A (closed source) |
+| Trichoscan                           | ~$200/mo (est.)               | Yes (trichoscope-based) | Requires hardware | Yes            | N/A (closed source) |
+| HairCheck                            | $1,500 hardware + SaaS (est.) | Yes (density tool)      | Requires hardware | Yes            | N/A (closed source) |
+| **LLLT Efficacy Tracker (proposed)** | Free–$299/mo                  | **Yes (Qiu 2022)**      | **Yes**           | **Yes**        | —                   |
 
 _Pricing estimates based on vendor websites and G2 reviews, July 2026. "est." = inferred from public sources._
 
@@ -391,11 +397,11 @@ _Pricing estimates based on vendor websites and G2 reviews, July 2026. "est." = 
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 No prerequisite WRs. Standalone new product build. Optionally coordinate with `products/creator-payout-tracker` patterns for shared Polar.sh billing infrastructure.
 

@@ -7,7 +7,7 @@
 
 > This standard is **additive**. It complements, and does not replace,
 > [`COMMENT-DONT-DELETE.md`](COMMENT-DONT-DELETE.md) (RVS-AGENT-001). That standard
-> governs *code* audit trails; this one governs *data, goals, and stats*.
+> governs _code_ audit trails; this one governs _data, goals, and stats_.
 
 ---
 
@@ -51,12 +51,12 @@ deletions.**
 
 ## 5. Summary
 
-| Do | Don't |
-|----|-------|
-| Add new files / sidecar `*.revvel.md` | Overwrite working content |
-| Archive with who/date/why | Delete silently |
-| Preserve goals/stats exactly | Edit the $10M goal or any goal value |
-| Let the orchestrator own goals | Let an engine rewrite goals |
-| Let humans ratify deletions | Let agents ratify their own deletions |
+| Do                                    | Don't                                 |
+| ------------------------------------- | ------------------------------------- |
+| Add new files / sidecar `*.revvel.md` | Overwrite working content             |
+| Archive with who/date/why             | Delete silently                       |
+| Preserve goals/stats exactly          | Edit the $10M goal or any goal value  |
+| Let the orchestrator own goals        | Let an engine rewrite goals           |
+| Let humans ratify deletions           | Let agents ratify their own deletions |
 
 **Questions / amendments:** open an issue tagged `standard:RVS-PRESERVE-001`.

@@ -14,7 +14,7 @@
 **Created:** 2026-07-10  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-10  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -153,18 +153,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -176,6 +177,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29106779251.md`
 
 ## Executive Decision
@@ -189,16 +191,19 @@ The requested OpenHands PR Review Action (`All-Hands-AI/openhands-pr-review-acti
 ## Audience We Are Going After and Why
 
 **Primary Target**: Engineering teams at software companies (10-500 developers) seeking to:
+
 - Reduce PR review cycle time from days to hours
 - Maintain consistent code quality standards across distributed teams
 - Free senior developers from routine review tasks
 
 **Urgent Pain Points**:
+
 - Manual PR reviews create bottlenecks (average 21-hour wait time)
 - Inconsistent review quality leads to technical debt
 - Senior developer time wasted on basic code checks ($150-300/hour opportunity cost)
 
-**Why This Audience**: 
+**Why This Audience**:
+
 - High willingness to pay for developer productivity tools
 - Existing budget allocation for CI/CD and quality tools
 - Measurable ROI through reduced cycle time
@@ -208,12 +213,14 @@ The requested OpenHands PR Review Action (`All-Hands-AI/openhands-pr-review-acti
 ## Content Strategy
 
 ### Primary Keywords
+
 - "AI code review GitHub Actions" (implementation intent)
 - "automated PR review tools" (solution-seeking)
 - "GitHub Actions AI integration" (technical research)
 
 ### Content Calendar
-1. **Implementation Guide**: "How to Add AI Code Review to Your GitHub Workflow" 
+
+1. **Implementation Guide**: "How to Add AI Code Review to Your GitHub Workflow"
    - Target: `github actions ai review tutorial`
    - Meta: "Step-by-step guide to implementing AI-powered PR reviews. Reduce review time by 70% with automated code analysis."
 
@@ -226,6 +233,7 @@ The requested OpenHands PR Review Action (`All-Hands-AI/openhands-pr-review-acti
    - Include metrics and ROI calculations
 
 ### Distribution Channels
+
 - GitHub Marketplace listing
 - Dev.to and Medium technical blogs
 - Reddit (r/programming, r/githubactions)
@@ -234,13 +242,13 @@ The requested OpenHands PR Review Action (`All-Hands-AI/openhands-pr-review-acti
 
 ## Competitor and GitHub Star Intelligence
 
-| Competitor | GitHub Stars | Pricing | Key Differentiator | Last Commit |
-|------------|--------------|---------|-------------------|-------------|
-| **CodiumAI PR-Agent** | 4,800+ ⭐ | Free OSS; Pro $19/user/mo | Rich command interface, mature ecosystem | Daily |
-| **CodeRabbit** | 2,600+ ⭐ | Free OSS; Pro $12-48/dev/mo | Conversational UI, enterprise features | Weekly |
-| **ReviewGPT** | 7,600+ ⭐ | Free (BYO API key) | Simple setup, OpenAI-focused | Weekly |
-| **Sweep AI** | 7,200+ ⭐ | Free OSS; Enterprise custom | Code generation + review | Daily |
-| **OpenHands PR Action** | 13-101 ⭐ | Free (BYO API key) | Agent-based approach | Monthly |
+| Competitor              | GitHub Stars | Pricing                     | Key Differentiator                       | Last Commit |
+| ----------------------- | ------------ | --------------------------- | ---------------------------------------- | ----------- |
+| **CodiumAI PR-Agent**   | 4,800+ ⭐    | Free OSS; Pro $19/user/mo   | Rich command interface, mature ecosystem | Daily       |
+| **CodeRabbit**          | 2,600+ ⭐    | Free OSS; Pro $12-48/dev/mo | Conversational UI, enterprise features   | Weekly      |
+| **ReviewGPT**           | 7,600+ ⭐    | Free (BYO API key)          | Simple setup, OpenAI-focused             | Weekly      |
+| **Sweep AI**            | 7,200+ ⭐    | Free OSS; Enterprise custom | Code generation + review                 | Daily       |
+| **OpenHands PR Action** | 13-101 ⭐    | Free (BYO API key)          | Agent-based approach                     | Monthly     |
 
 **Market Position**: OpenHands is severely under-adopted compared to alternatives. The 50x star gap with competitors indicates either poor market fit or insufficient promotion.
 
@@ -249,16 +257,19 @@ The requested OpenHands PR Review Action (`All-Hands-AI/openhands-pr-review-acti
 ## Developer Community Feedback
 
 **Common Concerns** (from GitHub Issues/Reddit):
+
 - "How do I keep my API keys secure?"
 - "The AI reviews are too generic—need project-specific context"
 - "We need cost controls to prevent runaway API bills"
 
 **Adoption Barriers**:
+
 - Setup complexity with multiple secrets required
 - Fear of AI "noise" creating review fatigue
 - Lack of clear ROI metrics and case studies
 
 **Positive Signals**:
+
 - Growing interest in AI-assisted development (GitHub Copilot adoption)
 - Teams actively seeking PR bottleneck solutions
 - Willingness to pay for proven productivity gains
@@ -266,16 +277,19 @@ The requested OpenHands PR Review Action (`All-Hands-AI/openhands-pr-review-acti
 ## Factual Validation and Evidence Gaps
 
 ## Verified Facts ✅
+
 - GitHub Actions marketplace has 50+ AI review tools
 - LLM API costs range from $0.01-0.10 per PR review
 - Required permissions: `pull-requests: write`, `contents: read`
 
 ## Critical Contradictions 🚨
+
 - **Action Repository Confusion**: Two different sources cited:
   - `xinbenlv/openhands-pr-review-action@v1.0.0-rc1` (fork/outdated)
   - `All-Hands-AI/openhands-pr-review-action@v1` (canonical but low adoption)
 
 ## Evidence Gaps ⚠️
+
 - No verified performance benchmarks vs human reviewers
 - Missing cost analysis for typical repository sizes
 - No security audit documentation available
@@ -286,37 +300,40 @@ The requested OpenHands PR Review Action (`All-Hands-AI/openhands-pr-review-acti
 ## Implementation Requirements
 
 ### 1. Workflow File Creation
+
 ```yaml
 # .github/workflows/ai-pr-review.yml
 name: AI PR Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    
+
 permissions:
   pull-requests: write
   contents: read
-  
+
 jobs:
   ai-review:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.changed_files < 50  # Cost control
+    if: github.event.pull_request.changed_files < 50 # Cost control
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
-      - uses: Codium-ai/pr-agent@v0.20  # Use stable alternative
+
+      - uses: Codium-ai/pr-agent@v0.20 # Use stable alternative
         with:
           github_token: ${{ secrets.REVIEW_BOT_GITHUB_TOKEN }}
           openai_key: ${{ secrets.LLM_API_KEY }}
 ```
 
 ### 2. Secret Configuration
+
 - `REVIEW_BOT_GITHUB_TOKEN`: GitHub PAT with PR write permissions
 - `LLM_API_KEY`: OpenAI/Anthropic API key with usage limits
 
 ### 3. Documentation Requirements
+
 - Setup guide with security best practices
 - Cost estimation calculator
 - Troubleshooting guide
@@ -333,19 +350,24 @@ jobs:
 ## Blocking Issues
 
 ### 1. Repository Reference Mismatch
+
 **Finding**: Inconsistent action sources between issue description and workflow
 **Severity**: 🔴 BLOCKING
 **Automatic Fix**:
+
 ```yaml
 # Replace all instances of xinbenlv/openhands-pr-review-action
 # with Codium-ai/pr-agent@v0.20 (recommended alternative)
 ```
+
 **Commit Message**: `fix: standardize on CodiumAI PR-Agent for reliability`
 
 ### 2. Missing Secret Validation
+
 **Finding**: No verification that required secrets exist
 **Severity**: 🔴 BLOCKING  
 **Automatic Fix**:
+
 ```yaml
 - name: Validate Secrets
   run: |
@@ -354,15 +376,19 @@ jobs:
       exit 1
     fi
 ```
+
 **Commit Message**: `fix: add secret validation to prevent runtime failures`
 
 ### 3. No Cost Controls
+
 **Finding**: Unlimited API usage could cause budget overruns
 **Severity**: 🟡 HIGH
 **Automatic Fix**:
+
 ```yaml
 if: github.event.pull_request.changed_files < 50
 ```
+
 **Commit Message**: `fix: add cost controls to limit API usage on large PRs`
 
 ## Automatic Fix and Commit Queue
@@ -394,16 +420,19 @@ if: github.event.pull_request.changed_files < 50
 ## Labels to Apply
 
 ## Risk Labels 🚨
+
 - `blocked-missing-dependency` - OpenHands action not reliably available
 - `security-review-required` - Token permissions need audit
 - `cost-impact` - LLM API usage will incur costs
 
 ## Implementation Labels 🏗️
+
 - `needs-secrets-config` - Repository secrets must be configured
 - `needs-alternative-solution` - Must use CodiumAI instead
 - `documentation-required` - Setup guide needed
 
 ## Status Labels 📊
+
 - `external-dependency` - Relies on third-party services
 - `ai-pr-review` - Feature tracking label
 
@@ -412,6 +441,7 @@ if: github.event.pull_request.changed_files < 50
 ## Primary Repository Issues
 
 **OpenHands PR Review Action** (`All-Hands-AI/openhands-pr-review-action`)
+
 - **Status**: ❌ Inconsistent availability (404 errors reported)
 - **Adoption**: ❌ Minimal (13-101 stars)
 - **Maintenance**: ⚠️ Uncertain (conflicting last commit dates)
@@ -420,6 +450,7 @@ if: github.event.pull_request.changed_files < 50
 ## Recommended Alternative: CodiumAI PR-Agent
 
 **Repository**: `Codium-ai/pr-agent`
+
 - **Status**: ✅ Stable and available
 - **Adoption**: ✅ High (4,800+ stars)
 - **Maintenance**: ✅ Daily commits
@@ -427,12 +458,14 @@ if: github.event.pull_request.changed_files < 50
 - **License**: ✅ Apache-2.0
 
 **Why CodiumAI**:
+
 1. **Proven Reliability**: 50x more adoption than OpenHands
 2. **Rich Features**: Commands like `/review`, `/improve`, `/describe`
 3. **Active Community**: Daily updates and responsive support
 4. **Flexible Pricing**: Free for OSS, reasonable paid tiers
 
 **Implementation**:
+
 ```yaml
 - uses: Codium-ai/pr-agent@v0.20
   with:
@@ -445,6 +478,7 @@ if: github.event.pull_request.changed_files < 50
 ## Overall Confidence: 90/100
 
 ### Lane Confidence Breakdown
+
 - **Market Positioning** (Echo): 90/100 - Clear market need identified
 - **SEO Demand** (Noimos): 85/100 - Limited search volume but clear intent
 - **Competitor Intelligence** (Iris): 95/100 - Comprehensive competitive analysis
@@ -459,6 +493,7 @@ if: github.event.pull_request.changed_files < 50
 The high confidence score reflects the thoroughness of research and clarity of findings. While the originally requested OpenHands action is not viable due to availability issues, the research successfully identified a superior alternative (CodiumAI PR-Agent) with clear implementation path and proven market adoption.
 
 The 10-point deduction accounts for:
+
 - Unable to verify exact LLM API costs without live testing
 - Some community sentiment data requires ongoing monitoring
 - Revenue projections based on market comparisons rather than actual data
@@ -505,11 +540,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -525,11 +560,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

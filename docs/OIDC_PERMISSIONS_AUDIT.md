@@ -31,9 +31,9 @@ only one job needs it.
 
 ## Findings
 
-| Workflow | OIDC-requiring step | `id-token: write` present | Status |
-| --- | --- | --- | --- |
-| `static.yml` | `actions/deploy-pages` | Yes (workflow level) | Correct |
+| Workflow             | OIDC-requiring step                                   | `id-token: write` present     | Status             |
+| -------------------- | ----------------------------------------------------- | ----------------------------- | ------------------ |
+| `static.yml`         | `actions/deploy-pages`                                | Yes (workflow level)          | Correct            |
 | `ship-to-market.yml` | None (uses `peaceiris/actions-gh-pages`, token-based) | Was granted on `deliver-docs` | Over-grant removed |
 
 No workflow was missing `id-token: write` where an OIDC token is actually

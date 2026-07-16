@@ -6,7 +6,7 @@
 
 ---
 
-*Autonomous executions, failures, root causes, and locked-in solutions. Never repeat the same mistake twice.*
+_Autonomous executions, failures, root causes, and locked-in solutions. Never repeat the same mistake twice._
 
 ---
 
@@ -22,15 +22,15 @@
 
 ## [Auto-Generated Entries Below]
 
-<!-- 
+<!--
 Goap will append new entries below in this format:
 
 ## [YYYY-MM-DD HH:MM] Task Name
 
-**Task Attempted:** [Brief description of what was attempted]  
-**Outcome:** [Success / Failed / Partial]  
-**Root Cause of Failure:** [If failed, what specifically went wrong]  
-**Self-Healing Fix / Learned Lesson:** [Concrete code/logic fix locked in for next time]  
+**Task Attempted:** [Brief description of what was attempted]
+**Outcome:** [Success / Failed / Partial]
+**Root Cause of Failure:** [If failed, what specifically went wrong]
+**Self-Healing Fix / Learned Lesson:** [Concrete code/logic fix locked in for next time]
 **Next Action:** [What should happen next, with deadline if applicable]
 
 ---

@@ -32,7 +32,9 @@ export function useDashboardMutations() {
     mutation: {
       onSuccess: (_, variables) => {
         queryClient.invalidateQueries({ queryKey: getListFlowsQueryKey() });
-        queryClient.invalidateQueries({ queryKey: getGetFlowQueryKey(variables.id) });
+        queryClient.invalidateQueries({
+          queryKey: getGetFlowQueryKey(variables.id),
+        });
         toast({ title: "Flow updated successfully" });
       },
       onError: () => {
@@ -56,8 +58,12 @@ export function useDashboardMutations() {
   const createNode = useCreateNode({
     mutation: {
       onSuccess: (_, variables) => {
-        queryClient.invalidateQueries({ queryKey: getGetFlowQueryKey(variables.flowId) });
-        queryClient.invalidateQueries({ queryKey: getGetFlowSummaryQueryKey(variables.flowId) });
+        queryClient.invalidateQueries({
+          queryKey: getGetFlowQueryKey(variables.flowId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getGetFlowSummaryQueryKey(variables.flowId),
+        });
         toast({ title: "Node created successfully" });
       },
       onError: () => {
@@ -69,8 +75,12 @@ export function useDashboardMutations() {
   const updateNode = useUpdateNode({
     mutation: {
       onSuccess: (data) => {
-        queryClient.invalidateQueries({ queryKey: getGetFlowQueryKey(data.flowId) });
-        queryClient.invalidateQueries({ queryKey: getGetFlowSummaryQueryKey(data.flowId) });
+        queryClient.invalidateQueries({
+          queryKey: getGetFlowQueryKey(data.flowId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: getGetFlowSummaryQueryKey(data.flowId),
+        });
         toast({ title: "Node updated successfully" });
       },
       onError: () => {
@@ -82,7 +92,7 @@ export function useDashboardMutations() {
   const deleteNode = useDeleteNode({
     mutation: {
       onSuccess: () => {
-        // We'd ideally need the flowId here to invalidate specifically, 
+        // We'd ideally need the flowId here to invalidate specifically,
         // but invalidating all flows or a broader pattern might be needed.
         queryClient.invalidateQueries({ queryKey: ["/api/flows"] });
         toast({ title: "Node deleted successfully" });

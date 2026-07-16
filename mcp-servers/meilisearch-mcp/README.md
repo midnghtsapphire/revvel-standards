@@ -25,16 +25,16 @@ python -m meilisearch_mcp.server
 
 ## Tools Available
 
-| Tool | Description |
-|------|-------------|
-| `meili_index_create` | Create an index |
-| `meili_index_list` | List all indexes |
-| `meili_index_delete` | Delete an index |
-| `meili_documents_add` | Add documents |
-| `meili_documents_search` | Search documents |
-| `meili_documents_get` | Get a document |
-| `meili_settings_update` | Update search settings |
-| `meili_health` | Check health |
+| Tool                     | Description            |
+| ------------------------ | ---------------------- |
+| `meili_index_create`     | Create an index        |
+| `meili_index_list`       | List all indexes       |
+| `meili_index_delete`     | Delete an index        |
+| `meili_documents_add`    | Add documents          |
+| `meili_documents_search` | Search documents       |
+| `meili_documents_get`    | Get a document         |
+| `meili_settings_update`  | Update search settings |
+| `meili_health`           | Check health           |
 
 ## Configuration
 

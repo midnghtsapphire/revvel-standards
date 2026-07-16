@@ -7,7 +7,6 @@
 **Depth:** triangulated
 **Issue:** #13641
 
-
 ---
 
 ## Master Research Checklist
@@ -29,6 +28,7 @@
 **Label:** `research:marketing`
 
 **Checklist:**
+
 - [ ] Define the target buyer and the urgent pain.
 - [ ] Identify best current marketing angles in the market.
 - [ ] Explain why this audience is worth pursuing now.
@@ -36,6 +36,7 @@
 - [ ] List evidence needed before spend or public claims.
 
 **Model attempts:**
+
 - anthropic/claude-sonnet-4: failed - OPENROUTER_API_KEY is not configured
 - google/gemini-2.5-pro: failed - OPENROUTER_API_KEY is not configured
 - openai/gpt-4.1: failed - OPENROUTER_API_KEY is not configured
@@ -46,6 +47,7 @@
 **Label:** `research:seo`
 
 **Checklist:**
+
 - [ ] List buyer-intent keyword clusters.
 - [ ] Separate informational, comparison, and transactional intent.
 - [ ] Recommend landing-page title, meta description, and FAQ angles.
@@ -53,6 +55,7 @@
 - [ ] Suggest internal-link and content-support targets.
 
 **Model attempts:**
+
 - anthropic/claude-sonnet-4: failed - OPENROUTER_API_KEY is not configured
 - google/gemini-2.5-pro: failed - OPENROUTER_API_KEY is not configured
 - openai/gpt-4.1: failed - OPENROUTER_API_KEY is not configured
@@ -63,6 +66,7 @@
 **Label:** `research:competitors`
 
 **Checklist:**
+
 - [ ] List direct competitors, OSS repos, and adjacent substitutes.
 - [ ] Capture GitHub stars, recency, and project momentum when applicable.
 - [ ] Compare pricing, onboarding, integrations, and reviews.
@@ -70,6 +74,7 @@
 - [ ] Call out saturated spaces and weak moats.
 
 **Model attempts:**
+
 - anthropic/claude-sonnet-4: failed - OPENROUTER_API_KEY is not configured
 - google/gemini-2.5-pro: failed - OPENROUTER_API_KEY is not configured
 - openai/gpt-4.1: failed - OPENROUTER_API_KEY is not configured
@@ -80,6 +85,7 @@
 **Label:** `research:chatter`
 
 **Checklist:**
+
 - [ ] Identify where the audience talks about the pain.
 - [ ] Capture exact phrases, objections, and buying triggers.
 - [ ] Separate loud complaints from payable problems.
@@ -87,6 +93,7 @@
 - [ ] Name communities or channels to monitor next.
 
 **Model attempts:**
+
 - anthropic/claude-sonnet-4: failed - OPENROUTER_API_KEY is not configured
 - google/gemini-2.5-pro: failed - OPENROUTER_API_KEY is not configured
 - openai/gpt-4.1: failed - OPENROUTER_API_KEY is not configured
@@ -97,6 +104,7 @@
 **Label:** `research:facts`
 
 **Checklist:**
+
 - [ ] Extract the claims that drive the recommendation.
 - [ ] Mark each claim as supported, weak, contradicted, or unknown.
 - [ ] Require URLs or document references for facts and numbers.
@@ -104,6 +112,7 @@
 - [ ] Summarize confidence and evidence gaps.
 
 **Model attempts:**
+
 - anthropic/claude-sonnet-4: failed - OPENROUTER_API_KEY is not configured
 - google/gemini-2.5-pro: failed - OPENROUTER_API_KEY is not configured
 - openai/gpt-4.1: failed - OPENROUTER_API_KEY is not configured
@@ -114,6 +123,7 @@
 **Label:** `research:technical`
 
 **Checklist:**
+
 - [ ] Name the files, workflows, scripts, MCPs, or services likely affected.
 - [ ] Define the acceptance gates and test evidence required.
 - [ ] Identify auth, secret, data, and deployment implications.
@@ -121,6 +131,7 @@
 - [ ] Surface integration risks for the code agents.
 
 **Model attempts:**
+
 - anthropic/claude-sonnet-4: failed - OPENROUTER_API_KEY is not configured
 - google/gemini-2.5-pro: failed - OPENROUTER_API_KEY is not configured
 - openai/gpt-4.1: failed - OPENROUTER_API_KEY is not configured
@@ -131,6 +142,7 @@
 **Label:** `research:revenue`
 
 **Checklist:**
+
 - [ ] Select the sellable shape: PDF, skill, MCP, CLI, API, app, extension, or service.
 - [ ] Recommend pricing and first paid tier.
 - [ ] Define the fastest path to a paid transaction.
@@ -138,6 +150,7 @@
 - [ ] List metrics that prove revenue traction.
 
 **Model attempts:**
+
 - anthropic/claude-sonnet-4: failed - OPENROUTER_API_KEY is not configured
 - google/gemini-2.5-pro: failed - OPENROUTER_API_KEY is not configured
 - openai/gpt-4.1: failed - OPENROUTER_API_KEY is not configured
@@ -148,6 +161,7 @@
 **Label:** `research:reviewer`
 
 **Checklist:**
+
 - [ ] Review the packet for unsupported claims and missing evidence.
 - [ ] Flag missing tests, labels, workflows, or docs before code starts.
 - [ ] For every issue, offer an automatic fix plan with file paths and commit message.
@@ -155,6 +169,7 @@
 - [ ] Recommend labels for the PR review state.
 
 **Model attempts:**
+
 - anthropic/claude-sonnet-4: failed - OPENROUTER_API_KEY is not configured
 - google/gemini-2.5-pro: failed - OPENROUTER_API_KEY is not configured
 - openai/gpt-4.1: failed - OPENROUTER_API_KEY is not configured
@@ -176,6 +191,7 @@ It covers: verified 2025 payout rates for 12 platforms, SEO keyword analysis, BO
 ## Product Delivered
 
 The creator-payout-tracker product was built at `products/creator-payout-tracker/` (Next.js 16, port 3005):
+
 - Platform rankings table (ad revenue + subscription tabs, 12 platforms)
 - Live earnings calculator
 - Platform deep-dive cards
@@ -188,6 +204,7 @@ The creator-payout-tracker product was built at `products/creator-payout-tracker
 ## Infrastructure Classification
 
 To enable full AI research on future WR issues:
+
 1. Go to repository Settings → Secrets and variables → Actions
 2. Add secret: `OPENROUTER_API_KEY` = your OpenRouter API key
 3. Re-open or re-label issue #13641 with `research-engine` to re-trigger the workflow
@@ -209,6 +226,7 @@ Lane labels: `research:marketing`, `research:seo`, `research:competitors`, `rese
 Code-review agents must review the research before implementation proceeds.
 
 Review checklist:
+
 - [ ] Bito AI or equivalent persistent-memory reviewer checks the packet against repo standards.
 - [ ] OpenRouter review checks factual validation, gaps, and implementation risk.
 - [ ] Coderabbit or line-level review checks any PR changes created from this packet.

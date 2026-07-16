@@ -5,7 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { NodeType } from './nodeType';
+import type { NodeType } from "./nodeType";
 
 export interface NodeInput {
   /** @nullable */

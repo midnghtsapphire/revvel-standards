@@ -14,11 +14,11 @@ This bundle contains GitHub Actions workflows for automatically setting default 
 
 **Default fields written by the workflow on every new issue:**
 
-| Repo variable name | Project field | Default option |
-| ------------------ | ------------- | -------------- |
-| `PRIORITY_FIELD_ID` | `Priority` | `medium` |
-| `EFFORT_FIELD_ID` *(legacy name)* | `Status` | `Inbox` |
-| `CUSTOM_SELECT_FIELD_ID` *(legacy name)* | `Research Mode` | `standard` |
+| Repo variable name                       | Project field   | Default option |
+| ---------------------------------------- | --------------- | -------------- |
+| `PRIORITY_FIELD_ID`                      | `Priority`      | `medium`       |
+| `EFFORT_FIELD_ID` _(legacy name)_        | `Status`        | `Inbox`        |
+| `CUSTOM_SELECT_FIELD_ID` _(legacy name)_ | `Research Mode` | `standard`     |
 
 The legacy variable names (`EFFORT_FIELD_ID`, `CUSTOM_SELECT_FIELD_ID`, `PRIORITY_HIGH_OPTION_ID`, `EFFORT_MEDIUM_OPTION_ID`) are retained from the original workflow template to keep the existing workflow YAML untouched. The field-ID variables point at fields whose actual names are `Status` and `Research Mode`. `PRIORITY_HIGH_OPTION_ID` stores the option ID for `Priority: medium` (`be3c0726`) and `EFFORT_MEDIUM_OPTION_ID` stores the option ID for `Status: Inbox` (`0aff196f`) — the variable names are misleading but the values are correct per the default-fields mapping table above. The variable name is opaque to the workflow — only the value (the field/option node ID) matters at runtime.
 
@@ -204,8 +204,7 @@ issue type and normalize missing labels. Numeric prefixes force the sort order p
 - `.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml` — lightweight system form.
   The `10-` prefix sorts it after the heavy form. Output Type is the only
   required routing decision; every other routing dropdown defaults to
-  `auto-classify` and is filled from prose by [`wr-auto-classify.yml`](
-  ../.github/workflows/wr-auto-classify.yml). Carries the extra `quick` and
+  `auto-classify` and is filled from prose by [`wr-auto-classify.yml`](../.github/workflows/wr-auto-classify.yml). Carries the extra `quick` and
   `OpenHands` labels so workflows can distinguish lightweight WRs from primary
   ones if needed. Use this for low-risk, internal, or agent-driven work.
 - `.github/ISSUE_TEMPLATE/config.yml` — `blank_issues_enabled: false` plus a
@@ -223,24 +222,24 @@ See `templates/issue-template-archive/README.md` for why each was retired.
 Three CI checks were red on every recent PR (#13329 through #13336). The two
 that originated inside this repo were fixed in this PR; the third is external.
 
-| Check | Status | Resolution |
-| ----- | ------ | ---------- |
-| `log-agent-action` (Agent Audit Logger) | **fixed** | The `pull_request` trigger was removed from `.github/workflows/agent-audit-logger.yml`. The job tried to push the audit log to `main` from a PR-branch checkout, which the `Protect main` ruleset blocks → 100% failure rate. Issue/comment/review/cron triggers stay because they CAN push. |
-| `ci/circleci: pr-review` | **fixed** | The `pr-review` job was removed from `.circleci/config.yml`'s `pr-workflow`. It required `OPENROUTER_API_KEY` to be set in **CircleCI's** project env (it wasn't), and it duplicated work already done by OpenHands Review + Jules + BITO AI on every PR. |
-| `recurseml/analysis` | **external** | Posted by the RecurseML GitHub App, not by a workflow in this repo. The in-repo workflow `.github/workflows/recurse-ml.yml` already disables its `pull_request` trigger. To make this status check stop appearing on PRs, uninstall the RecurseML app at <https://github.com/settings/installations> or set its `RECURSE_ML_API_KEY` so it succeeds. Branch protection on `main` does not require this check, so it's visual noise rather than a merge blocker. |
-| `Analyze (ruby)` (CodeQL Advanced) | **fixed** | Fixed in the Project v2 workflow bundle's target repos (not in `revvel-standards`, where `.github/workflows/codeql.yml` remains active and has since been enhanced). In those target repos, CodeQL was replaced with [Semgrep](https://semgrep.dev/) + [Trivy](https://trivy.dev/) in a follow-up PR after #13338 because the per-language matrix included Ruby while those repos had zero `.rb` files, causing analyzer exit 32 (`CodeQL could not process any code written in Ruby`) on every PR. |
+| Check                                   | Status       | Resolution                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| --------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `log-agent-action` (Agent Audit Logger) | **fixed**    | The `pull_request` trigger was removed from `.github/workflows/agent-audit-logger.yml`. The job tried to push the audit log to `main` from a PR-branch checkout, which the `Protect main` ruleset blocks → 100% failure rate. Issue/comment/review/cron triggers stay because they CAN push.                                                                                                                                                                                                        |
+| `ci/circleci: pr-review`                | **fixed**    | The `pr-review` job was removed from `.circleci/config.yml`'s `pr-workflow`. It required `OPENROUTER_API_KEY` to be set in **CircleCI's** project env (it wasn't), and it duplicated work already done by OpenHands Review + Jules + BITO AI on every PR.                                                                                                                                                                                                                                           |
+| `recurseml/analysis`                    | **external** | Posted by the RecurseML GitHub App, not by a workflow in this repo. The in-repo workflow `.github/workflows/recurse-ml.yml` already disables its `pull_request` trigger. To make this status check stop appearing on PRs, uninstall the RecurseML app at <https://github.com/settings/installations> or set its `RECURSE_ML_API_KEY` so it succeeds. Branch protection on `main` does not require this check, so it's visual noise rather than a merge blocker.                                     |
+| `Analyze (ruby)` (CodeQL Advanced)      | **fixed**    | Fixed in the Project v2 workflow bundle's target repos (not in `revvel-standards`, where `.github/workflows/codeql.yml` remains active and has since been enhanced). In those target repos, CodeQL was replaced with [Semgrep](https://semgrep.dev/) + [Trivy](https://trivy.dev/) in a follow-up PR after #13338 because the per-language matrix included Ruby while those repos had zero `.rb` files, causing analyzer exit 32 (`CodeQL could not process any code written in Ruby`) on every PR. |
 
 ## Security scanning stack
 
 The PR-time security scanning has been consolidated to four tools that are
 fast, multi-language by default, and don't fail on missing source files:
 
-| Tool | Layer | Trigger | Why |
-| ---- | ----- | ------- | --- |
-| [Semgrep](https://semgrep.dev/) | SAST (code patterns) | every PR + weekly | Replaces CodeQL. ~30s, OSS rules cover OWASP Top 10, CWE Top 25, GitHub Actions hardening, secrets, Dockerfiles. No per-language matrix (auto-detect). |
-| [Trivy](https://trivy.dev/) | SCA + IaC + secrets | every PR + weekly | Single-tool dependency vulnerabilities + Infrastructure-as-Code misconfigs + supplementary secret scanning. Auto-detects everything in the filesystem. |
-| [GitGuardian](https://www.gitguardian.com/) | git-leak / runtime secrets | every PR | Already configured at the org level. Catches committed secrets in any file. |
-| [Mabl](https://www.mabl.com/) | behavioral E2E tests | every PR | Already configured. Tests deployed Vercel preview, complements static scanners. |
+| Tool                                        | Layer                      | Trigger           | Why                                                                                                                                                    |
+| ------------------------------------------- | -------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [Semgrep](https://semgrep.dev/)             | SAST (code patterns)       | every PR + weekly | Replaces CodeQL. ~30s, OSS rules cover OWASP Top 10, CWE Top 25, GitHub Actions hardening, secrets, Dockerfiles. No per-language matrix (auto-detect). |
+| [Trivy](https://trivy.dev/)                 | SCA + IaC + secrets        | every PR + weekly | Single-tool dependency vulnerabilities + Infrastructure-as-Code misconfigs + supplementary secret scanning. Auto-detects everything in the filesystem. |
+| [GitGuardian](https://www.gitguardian.com/) | git-leak / runtime secrets | every PR          | Already configured at the org level. Catches committed secrets in any file.                                                                            |
+| [Mabl](https://www.mabl.com/)               | behavioral E2E tests       | every PR          | Already configured. Tests deployed Vercel preview, complements static scanners.                                                                        |
 
 CodeQL was removed **from this Project v2 workflow bundle's target repos**
 (not from `revvel-standards` itself, where `.github/workflows/codeql.yml`

@@ -7,7 +7,10 @@
     {
       "query_id": "repo-automation-gh-repo",
       "answer": "The gh CLI infers the repo from git remotes. With no actions/checkout step, set GH_REPO to github.repository at the job env, or pass --repo on each gh call.",
-      "citations": ["https://docs.github.com/en/actions", "https://cli.github.com/manual/"],
+      "citations": [
+        "https://docs.github.com/en/actions",
+        "https://cli.github.com/manual/"
+      ],
       "error": false,
       "latency_ms": 1400,
       "tokens": { "input": 700, "output": 900 },

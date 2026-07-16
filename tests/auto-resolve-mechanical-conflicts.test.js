@@ -17,7 +17,12 @@ const {
   tryAdditive,
 } = require("../scripts/auto-resolve-mechanical-conflicts.js");
 
-const SCRIPT_PATH = path.join(__dirname, "..", "scripts", "auto-resolve-mechanical-conflicts.js");
+const SCRIPT_PATH = path.join(
+  __dirname,
+  "..",
+  "scripts",
+  "auto-resolve-mechanical-conflicts.js",
+);
 
 let passed = 0;
 let failed = 0;
@@ -178,8 +183,8 @@ test("tryAdditive returns null when blocks are empty", () => {
 });
 
 test("tryAdditive returns null for non-additive content", () => {
-  const current = "foo = \"a\"";
-  const incoming = "foo = \"b\"";
+  const current = 'foo = "a"';
+  const incoming = 'foo = "b"';
   const result = tryAdditive(current, incoming);
   assert.strictEqual(result, null, "Value swaps are not additive");
 });
@@ -204,7 +209,11 @@ test("tryAdditive returns null when table headers/separators overlap", () => {
   const incoming = "|---|---|\n| c | d |";
   const result = tryAdditive(current, incoming);
   // Headers/separators overlap, so this returns null (correct behavior)
-  assert.strictEqual(result, null, "Identical headers/separators should block auto-resolve");
+  assert.strictEqual(
+    result,
+    null,
+    "Identical headers/separators should block auto-resolve",
+  );
 });
 
 test("tryAdditive resolves pure data rows without headers", () => {
@@ -217,7 +226,7 @@ test("tryAdditive resolves pure data rows without headers", () => {
 
 test("tryAdditive returns null when only one side is additive", () => {
   const current = "- List item";
-  const incoming = "foo = \"value\"";
+  const incoming = 'foo = "value"';
   const result = tryAdditive(current, incoming);
   assert.strictEqual(result, null, "Mixed content is not purely additive");
 });
@@ -247,9 +256,9 @@ function withTempGitRepo(fn) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "conflict-resolver-test-"));
   try {
     const git = (cmd) => execSync(`git ${cmd}`, { cwd: dir, stdio: "pipe" });
-    git('init -q -b main');
-    git('config user.email test@example.com');
-    git('config user.name test');
+    git("init -q -b main");
+    git("config user.email test@example.com");
+    git("config user.name test");
     fn(dir, git);
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -265,15 +274,15 @@ test("main() exits non-zero for a binary conflict with zero marker hunks", () =>
     // 0 hunk(s) ambiguous" case the bug missed.
     fs.writeFileSync(file, Buffer.from([0, 1, 65]));
     git("add bin.dat");
-    git('commit -qm base');
+    git("commit -qm base");
     git("checkout -q -b feature");
     fs.writeFileSync(file, Buffer.from([0, 1, 66]));
     git("add bin.dat");
-    git('commit -qm feature-change');
+    git("commit -qm feature-change");
     git("checkout -q main");
     fs.writeFileSync(file, Buffer.from([0, 1, 67]));
     git("add bin.dat");
-    git('commit -qm main-change');
+    git("commit -qm main-change");
 
     let mergeFailed = false;
     try {
@@ -286,14 +295,24 @@ test("main() exits non-zero for a binary conflict with zero marker hunks", () =>
     let exitCode = 0;
     let output = "";
     try {
-      output = execSync(`node "${SCRIPT_PATH}"`, { cwd: dir, encoding: "utf8" });
+      output = execSync(`node "${SCRIPT_PATH}"`, {
+        cwd: dir,
+        encoding: "utf8",
+      });
     } catch (e) {
       exitCode = e.status;
       output = e.stdout || "";
     }
-    assert.strictEqual(exitCode, 2, "unresolved binary conflict must not exit 0");
+    assert.strictEqual(
+      exitCode,
+      2,
+      "unresolved binary conflict must not exit 0",
+    );
     assert.ok(output.includes("MANUAL"), "should report the file as MANUAL");
-    assert.ok(output.includes("0 hunk(s) ambiguous"), "should show 0 ambiguous hunks");
+    assert.ok(
+      output.includes("0 hunk(s) ambiguous"),
+      "should show 0 ambiguous hunks",
+    );
   });
 });
 
@@ -302,15 +321,18 @@ test("main() exits 0 when every hunk is cleanly auto-resolved", () => {
     const file = path.join(dir, "workflow.yml");
     fs.writeFileSync(file, "steps:\n  - uses: actions/checkout@v4\n");
     git("add workflow.yml");
-    git('commit -qm base');
+    git("commit -qm base");
     git("checkout -q -b feature");
     fs.writeFileSync(file, "steps:\n  - uses: actions/checkout@v5\n");
     git("add workflow.yml");
-    git('commit -qm feature-change');
+    git("commit -qm feature-change");
     git("checkout -q main");
-    fs.writeFileSync(file, "steps:\n  - uses: actions/checkout@v4\n  - run: echo hi\n");
+    fs.writeFileSync(
+      file,
+      "steps:\n  - uses: actions/checkout@v4\n  - run: echo hi\n",
+    );
     git("add workflow.yml");
-    git('commit -qm main-change');
+    git("commit -qm main-change");
 
     try {
       git("merge --no-commit --no-ff feature");
@@ -321,13 +343,19 @@ test("main() exits 0 when every hunk is cleanly auto-resolved", () => {
     let exitCode = 0;
     let output = "";
     try {
-      output = execSync(`node "${SCRIPT_PATH}"`, { cwd: dir, encoding: "utf8" });
+      output = execSync(`node "${SCRIPT_PATH}"`, {
+        cwd: dir,
+        encoding: "utf8",
+      });
     } catch (e) {
       exitCode = e.status;
       output = e.stdout || "";
     }
     assert.strictEqual(exitCode, 0, "fully resolved conflicts should exit 0");
-    assert.ok(output.includes("RESOLVED"), "should report the file as RESOLVED");
+    assert.ok(
+      output.includes("RESOLVED"),
+      "should report the file as RESOLVED",
+    );
   });
 });
 

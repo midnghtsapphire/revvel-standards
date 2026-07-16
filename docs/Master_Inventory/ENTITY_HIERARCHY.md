@@ -12,14 +12,14 @@ By consistently referencing the parent organization and its **2010 anchor foundi
 
 The following table details the legal entities that form our corporate structure. The anchor date for all SEO and branding purposes is **2010**, based on the earliest declared copyright and operational history, even though formal registration dates vary.
 
-| Entity Name             | State | Entity Number      | Formation Date (Official) | Entity Type (Official)       | Status             | Notes                                                                   |
-| ----------------------- | ----- | ------------------ | ------------------------- | ---------------------------- | ------------------ | ----------------------------------------------------------------------- |
-| **Freedom Angel Corp**  | CO    | 20211011774        | 01/05/2021                | Corporation (Non-Profit)     | Good Standing      | **PARENT ENTITY**. Anchor founding date is **2010**. EIN: **86-1209156**.       |
-| Angel Reporter, LLC     | CA    | 201313610094       | 05/08/2013                | Limited Liability Company    | Suspended - FTB/SOS | Operational since 2010. Mailing address matches parent.                 |
-| Evans Digital Assets LLC| CO    | 20181113423        | 02/06/2018                | Limited Liability Company    | Name Changed       | Originally Evans Digital Photography LLC (2011). Voluntarily Dissolved. |
-| XI Website Solutions LLC| N/A   | N/A                | N/A                       | Operational (Assumed LLC)    | N/A                | Functions as a DBA/internal division. No public registration found.     |
-| Spiderwebz Designs      | N/A   | N/A                | N/A                       | Operational (DBA)            | N/A                | Functions as a DBA/internal division. No public registration found.     |
-| Fast Macros             | N/A   | N/A                | N/A                       | Operational (DBA/Product)    | N/A                | Functions as a DBA/internal software product line.                      |
+| Entity Name              | State | Entity Number | Formation Date (Official) | Entity Type (Official)    | Status              | Notes                                                                     |
+| ------------------------ | ----- | ------------- | ------------------------- | ------------------------- | ------------------- | ------------------------------------------------------------------------- |
+| **Freedom Angel Corp**   | CO    | 20211011774   | 01/05/2021                | Corporation (Non-Profit)  | Good Standing       | **PARENT ENTITY**. Anchor founding date is **2010**. EIN: **86-1209156**. |
+| Angel Reporter, LLC      | CA    | 201313610094  | 05/08/2013                | Limited Liability Company | Suspended - FTB/SOS | Operational since 2010. Mailing address matches parent.                   |
+| Evans Digital Assets LLC | CO    | 20181113423   | 02/06/2018                | Limited Liability Company | Name Changed        | Originally Evans Digital Photography LLC (2011). Voluntarily Dissolved.   |
+| XI Website Solutions LLC | N/A   | N/A           | N/A                       | Operational (Assumed LLC) | N/A                 | Functions as a DBA/internal division. No public registration found.       |
+| Spiderwebz Designs       | N/A   | N/A           | N/A                       | Operational (DBA)         | N/A                 | Functions as a DBA/internal division. No public registration found.       |
+| Fast Macros              | N/A   | N/A           | N/A                       | Operational (DBA/Product) | N/A                 | Functions as a DBA/internal software product line.                        |
 
 ## 3. Authoritative Hierarchy Structure
 
@@ -116,8 +116,8 @@ To further bolster credibility, the following trust signals should be woven into
   - American Legion Member ID: 302393962
   - Project Management Institute (PMI) ID: 593830
 - **Official Mottos:**
-  - *"Home of the Free Because of The Brave"*
-  - *"End Trafficking and Violence of All Living Things In Mortal Danger of Extinction. Even A Spider In Sudan, Ooray"*
+  - _"Home of the Free Because of The Brave"_
+  - _"End Trafficking and Violence of All Living Things In Mortal Danger of Extinction. Even A Spider In Sudan, Ooray"_
 
 By adhering to these standards, we create a powerful, unified brand identity that leverages over a decade of history to build trust and authority for all future innovations.
 

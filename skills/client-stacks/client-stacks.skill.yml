@@ -6,14 +6,26 @@ description: "Paid-contract engagement kit: detect a client repo's stack (langua
 metadata:
   author: "Revvel AI Engine"
   category: "Agent Operations"
-  tags: [client-contract, stack-detection, polyglot, dotnet, java, python, typescript, php, engagement, audit-log]
+  tags:
+    [
+      client-contract,
+      stack-detection,
+      polyglot,
+      dotnet,
+      java,
+      python,
+      typescript,
+      php,
+      engagement,
+      audit-log,
+    ]
   created_at: "2026-07-09"
   updated_at: "2026-07-09"
 
 dependencies:
   skills: [project-router]
   tools: []
-  pip_packages: []   # zero-dependency, Node stdlib only
+  pip_packages: [] # zero-dependency, Node stdlib only
 
 related:
   detector: "skills/client-stacks/detect-stack.js"

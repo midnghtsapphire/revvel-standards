@@ -37,7 +37,7 @@
 
 When this WR is executed via `workflow_dispatch`, the following inputs are pre-set to ensure autonomous research depth:
 
-```yaml
+````yaml
 # Paste into any workflow_dispatch trigger to enforce research standards
 on:
   workflow_dispatch:
@@ -1004,3 +1004,4 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Last Updated:** 2026-05-24
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
+````

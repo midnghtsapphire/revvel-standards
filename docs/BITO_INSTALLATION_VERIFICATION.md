@@ -3,7 +3,7 @@
 **Date:** May 3, 2026  
 **Status:** Active  
 **Installation ID:** 128849516  
-**Repository:** midnghtsapphire/revvel-standards  
+**Repository:** midnghtsapphire/revvel-standards
 
 ---
 
@@ -36,6 +36,7 @@ The Bito AI GitHub App is installed with ID: **128849516**
 **Required Permissions:**
 
 The Bito GitHub App requires the following permissions:
+
 - ✅ **Pull requests:** Read & Write (to post review comments)
 - ✅ **Issues:** Read & Write (to manage labels)
 - ✅ **Contents:** Read (to access repository code)
@@ -45,21 +46,21 @@ The Bito GitHub App requires the following permissions:
 
 The following files confirm Bito AI integration in the repository:
 
-| File | Purpose | Status |
-|------|---------|--------|
-| `.github/workflows/bito-ai.yml` | Main review workflow | ✅ Present |
-| `.github/workflows/test-bito-integration.yml` | Integration tests | ✅ Present |
-| `scripts/bito-api-helper.sh` | API key management | ✅ Present |
-| `scripts/test-bito-api.sh` | API connectivity tests | ✅ Present |
-| `docs/BITO_AI_INTEGRATION.md` | Integration documentation | ✅ Present |
-| `standards/BITO_AI_INTEGRATION_STANDARD.md` | Integration standard | ✅ Present |
-| `skills/bito-ai/SKILL.md` | Skill metadata | ✅ Present |
-| `.env.example` | Environment variables | ✅ Includes BITO_API_KEY |
+| File                                          | Purpose                   | Status                   |
+| --------------------------------------------- | ------------------------- | ------------------------ |
+| `.github/workflows/bito-ai.yml`               | Main review workflow      | ✅ Present               |
+| `.github/workflows/test-bito-integration.yml` | Integration tests         | ✅ Present               |
+| `scripts/bito-api-helper.sh`                  | API key management        | ✅ Present               |
+| `scripts/test-bito-api.sh`                    | API connectivity tests    | ✅ Present               |
+| `docs/BITO_AI_INTEGRATION.md`                 | Integration documentation | ✅ Present               |
+| `standards/BITO_AI_INTEGRATION_STANDARD.md`   | Integration standard      | ✅ Present               |
+| `skills/bito-ai/SKILL.md`                     | Skill metadata            | ✅ Present               |
+| `.env.example`                                | Environment variables     | ✅ Includes BITO_API_KEY |
 
 ### 2.3 Required GitHub Secrets
 
-| Secret | Status | Where to Configure |
-|--------|--------|-------------------|
+| Secret         | Status                | Where to Configure                                              |
+| -------------- | --------------------- | --------------------------------------------------------------- |
 | `BITO_API_KEY` | ⚠️ Needs Verification | Settings → Secrets and variables → Actions → Repository secrets |
 
 **To verify the secret:**
@@ -82,11 +83,11 @@ gh secret list --repo midnghtsapphire/revvel-standards | grep BITO_API_KEY
 
 The following labels must exist in the repository for Bito AI workflow automation:
 
-| Label | Color | Description | Status |
-|-------|-------|-------------|--------|
-| `bito-ai` | `#7B68EE` | Marks PR as reviewed by BITO AI | ✅ Configured |
-| `bito-ai:review` | `#9370DB` | BITO review complete | ✅ Configured |
-| `bito-ai:changes-needed` | `#FF6347` | BITO found blocking issues | ✅ Configured |
+| Label                    | Color     | Description                     | Status        |
+| ------------------------ | --------- | ------------------------------- | ------------- |
+| `bito-ai`                | `#7B68EE` | Marks PR as reviewed by BITO AI | ✅ Configured |
+| `bito-ai:review`         | `#9370DB` | BITO review complete            | ✅ Configured |
+| `bito-ai:changes-needed` | `#FF6347` | BITO found blocking issues      | ✅ Configured |
 
 **Verification:** Labels are defined in `.github/labels.yml` and synced by the `sync-labels.yml` workflow.
 
@@ -166,6 +167,7 @@ bito auth login
 **Symptom:** Bito workflow doesn't trigger on PRs
 
 **Solutions:**
+
 - Verify the workflow file exists: `.github/workflows/bito-ai.yml`
 - Check PR is not in draft mode (drafts are skipped)
 - Verify PR title doesn't contain `[skip-bito]`
@@ -176,6 +178,7 @@ bito auth login
 **Symptom:** Workflow runs but no review comments appear
 
 **Solutions:**
+
 - Check `BITO_API_KEY` secret is configured
 - Verify the secret has a valid API key from https://bito.ai
 - Check workflow logs for errors: Actions → BITO AI — Code Review → View logs
@@ -186,6 +189,7 @@ bito auth login
 **Symptom:** Review completes but labels aren't added
 
 **Solutions:**
+
 - Run the label sync workflow: Actions → Sync Standard Labels → Run workflow
 - Verify labels exist: Settings → Labels
 - Check workflow has `issues: write` permission
@@ -196,6 +200,7 @@ bito auth login
 **Symptom:** Workflow shows "BITO_API_KEY is not set" warning
 
 **Solutions:**
+
 - Add the secret: Settings → Secrets and variables → Actions → New repository secret
 - Use helper script: `./scripts/bito-api-helper.sh wire`
 - Verify secret name is exactly `BITO_API_KEY` (case-sensitive)

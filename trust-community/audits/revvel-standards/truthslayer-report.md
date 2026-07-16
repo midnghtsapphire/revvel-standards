@@ -7,11 +7,12 @@
 - **Self-audit:** true
 - **Confidence:** high
 
-## TruthSlayer Score: 78  ·  Grade: B
+## TruthSlayer Score: 78 · Grade: B
+
 Badge: **TruthSlayer Verified — Bronze**
 
 > **Research verdict (per issue ask).** `revvel-standards` is **reusable in
-> whole *and* in part.** The repo is explicitly designed as a drop-in vault:
+> whole _and_ in part.** The repo is explicitly designed as a drop-in vault:
 > `docs/AGENTS.md` lines 17–23 ship the exact symlink commands to wire the
 > standards into any other repo, and every sub-tree (`skills/`, `standards/`,
 > `templates/agent-factory/`, `recurse-rules.md`) is independently portable.
@@ -29,25 +30,27 @@ Security, Maintainability, Tests & CI, and Documentation.
 
 ### Sub-scores
 
-| Factor                 | Score (0–10) | Weight | Weighted | Per-factor confidence |
-|---|---:|---:|---:|:---:|
-| Security               | 8  | 0.225 | 1.800 | high |
-| Authenticity           | 9  | 0.15  | 1.350 | high |
-| Help-Intent            | 9  | 0.10  | 0.900 | medium |
-| Maintainability        | 7  | 0.125 | 0.875 | high |
-| Tests & CI             | 6  | 0.175 | 1.050 | high |
-| Documentation          | 9  | 0.125 | 1.125 | high |
-| Community & Activity   | 7  | 0.10  | 0.700 | medium |
-| Accessibility          | N/A | —    | —    | n/a (redistributed) |
-| **Total**              |    | 1.000 | **7.800 → round(×10) = 78** | **high** |
+| Factor               | Score (0–10) | Weight |                    Weighted | Per-factor confidence |
+| -------------------- | -----------: | -----: | --------------------------: | :-------------------: |
+| Security             |            8 |  0.225 |                       1.800 |         high          |
+| Authenticity         |            9 |   0.15 |                       1.350 |         high          |
+| Help-Intent          |            9 |   0.10 |                       0.900 |        medium         |
+| Maintainability      |            7 |  0.125 |                       0.875 |         high          |
+| Tests & CI           |            6 |  0.175 |                       1.050 |         high          |
+| Documentation        |            9 |  0.125 |                       1.125 |         high          |
+| Community & Activity |            7 |   0.10 |                       0.700 |        medium         |
+| Accessibility        |          N/A |      — |                           — |  n/a (redistributed)  |
+| **Total**            |              |  1.000 | **7.800 → round(×10) = 78** |       **high**        |
 
 ### P0 Findings (auto-cap to F if any)
+
 - None. No live secrets, no malware, no license fraud, no data exfiltration,
   no RCE-on-install vector. `recurse-rules.md` actively forbids the first,
   `.gitignore` + `.env.example` pattern shields env credentials, and the
   proprietary `LICENSE` is consistent with repository contents.
 
 ### Top 3 Strengths
+
 1. **Exceptional documentation surface.** `docs/AGENTS.md`, `CHANGELOG.md`,
    `skills/REGISTRY.md`, `skills/SKILLS_INDEX.yml`, per-skill `SKILL.md`
    files, `recurse-rules.md`, and `AI_RESEARCH_MODULE_STANDARD.md` together
@@ -60,6 +63,7 @@ Security, Maintainability, Tests & CI, and Documentation.
    etc.) show the repo is maintained, not abandoned.
 
 ### Top 3 Improvements
+
 1. **Coverage is thin for the JS layer.** `tests/scripts/` contains only two
    suites (`fork-audit-bot.test.js`, `check-compliance.test.js`). A standards
    vault is mostly markdown, but anything under `scripts/` and the `install/`
@@ -99,7 +103,7 @@ Security, Maintainability, Tests & CI, and Documentation.
     portfolio context — and the tree matches that description exactly:
     `skills/`, `standards/`, `templates/`, `docs/`, `recurse-rules.md`.
   - No hidden telemetry, upsell traps, or dark patterns detected in the
-    markdown surface. Confidence marked *medium* for this factor because
+    markdown surface. Confidence marked _medium_ for this factor because
     help-intent verification ideally includes runtime behavior, and this
     repo has very little runtime surface to exercise.
 - **Maintainability (score 7, confidence high):**
@@ -110,7 +114,7 @@ Security, Maintainability, Tests & CI, and Documentation.
 - **Tests & CI (score 6, confidence high):**
   - Tests directory: only `tests/scripts/fork-audit-bot.test.js` and
     `tests/scripts/check-compliance.test.js`.
-  - CI is strong in *automation* surface (31 workflows) but coverage
+  - CI is strong in _automation_ surface (31 workflows) but coverage
     enforcement and coverage-threshold reporting are not visible at root.
 - **Documentation (score 9, confidence high):**
   - `README.md`, `CHANGELOG.md`, `LICENSE`, `docs/AGENTS.md`,
@@ -129,17 +133,17 @@ Security, Maintainability, Tests & CI, and Documentation.
 
 ### Reusability Research (the explicit issue ask)
 
-| Sub-tree | Reusability | Confidence | How to reuse |
-|---|---|:---:|---|
-| `docs/AGENTS.md` + symlinks block | **Whole** | high | Copy file into any repo; run the symlink commands at the top (`CLAUDE.md`, `.cursorrules`, `.windsurfrules`, `.clinerules`, `.github/copilot-instructions.md`). Instantly gives any agent the Prime Directive + Skills Vault rules. |
-| `skills/` (entire vault) | **Whole or partial** | high | Either git-submodule the whole `skills/` directory, or cherry-pick individual skills (each skill is self-contained in `skills/<name>/SKILL.md` + `.skill.yml`). `REGISTRY.md` and `SKILLS_INDEX.yml` are the source of truth for the catalog. |
-| `standards/` | **Whole** | high | Drop-in standards catalog. Import the folder and reference the files from PRs / CI. |
-| `recurse-rules.md` | **Whole** | high | Drop-in for any repo wired to RecurseML; the file format is documented at the top of the file itself. |
-| `templates/agent-factory/` | **Whole or partial** | high | `AGENT_TEMPLATE.md` is the canonical agent template; copy per agent you spawn. |
-| `trust-community/` (new, this PR) | **Pattern** | high | Layout + schema (`truthslayer-audit/v1.1` + `trust-community-index/v1`) are stable. Any MIDNGHTSAPPHIRE repo can mirror the folder to publish its own TruthSlayer audits. |
-| `.github/workflows/` | **Partial** | medium | 31 workflows; individually portable but several are MIDNGHTSAPPHIRE-specific (panda-ops, openrouter-*, jules-*). Cherry-pick: `recurse-ml.yml`, `ralph-loop.yml`, `ai-ci-failure-helper.yml` are the most universally reusable. |
+| Sub-tree                          | Reusability          | Confidence | How to reuse                                                                                                                                                                                                                                  |
+| --------------------------------- | -------------------- | :--------: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `docs/AGENTS.md` + symlinks block | **Whole**            |    high    | Copy file into any repo; run the symlink commands at the top (`CLAUDE.md`, `.cursorrules`, `.windsurfrules`, `.clinerules`, `.github/copilot-instructions.md`). Instantly gives any agent the Prime Directive + Skills Vault rules.           |
+| `skills/` (entire vault)          | **Whole or partial** |    high    | Either git-submodule the whole `skills/` directory, or cherry-pick individual skills (each skill is self-contained in `skills/<name>/SKILL.md` + `.skill.yml`). `REGISTRY.md` and `SKILLS_INDEX.yml` are the source of truth for the catalog. |
+| `standards/`                      | **Whole**            |    high    | Drop-in standards catalog. Import the folder and reference the files from PRs / CI.                                                                                                                                                           |
+| `recurse-rules.md`                | **Whole**            |    high    | Drop-in for any repo wired to RecurseML; the file format is documented at the top of the file itself.                                                                                                                                         |
+| `templates/agent-factory/`        | **Whole or partial** |    high    | `AGENT_TEMPLATE.md` is the canonical agent template; copy per agent you spawn.                                                                                                                                                                |
+| `trust-community/` (new, this PR) | **Pattern**          |    high    | Layout + schema (`truthslayer-audit/v1.1` + `trust-community-index/v1`) are stable. Any MIDNGHTSAPPHIRE repo can mirror the folder to publish its own TruthSlayer audits.                                                                     |
+| `.github/workflows/`              | **Partial**          |   medium   | 31 workflows; individually portable but several are MIDNGHTSAPPHIRE-specific (panda-ops, openrouter-_, jules-_). Cherry-pick: `recurse-ml.yml`, `ralph-loop.yml`, `ai-ci-failure-helper.yml` are the most universally reusable.               |
 
-**Conclusion.** The answer to *"can this be used in whole or in part?"* is an
+**Conclusion.** The answer to _"can this be used in whole or in part?"_ is an
 unambiguous **yes, both** — with `high` confidence on the core (AGENTS.md +
 `skills/` + `standards/` + `recurse-rules.md`) and `medium` confidence on the
 org-specific workflow surface.

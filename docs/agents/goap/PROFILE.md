@@ -7,12 +7,12 @@ agent persona — direct, pragmatic, no-nonsense. Defined fully in:
 
 ## Relationship to other agents
 
-- **Goap** = the planning *methodology* + persona. Goal-oriented decomposition:
+- **Goap** = the planning _methodology_ + persona. Goal-oriented decomposition:
   declare the goal, plan intermediate states, choose the next action against
   that plan, repeat.
 - **oAudrey (Triager)** = the day-to-day orchestrator that USES Goap-style
   planning to triage incoming work.
-- **RadioChaser (Standby)** = the *backup* that takes over Goap planning when
+- **RadioChaser (Standby)** = the _backup_ that takes over Goap planning when
   oAudrey is unavailable (rate-limited, no credits, down).
 
 So "GOAP-support" in the RadioChaser description means: when oAudrey is dead,
@@ -22,7 +22,7 @@ RadioChaser keeps the Goap-style autonomous loop running.
 
 - Standard doc exists and is detailed (mission, personality, operational rules).
 - Goap is a **persona/methodology**, not a wired runtime agent — it's the
-  *style* of planning oAudrey and (eventually) RadioChaser apply, not a
+  _style_ of planning oAudrey and (eventually) RadioChaser apply, not a
   separate model endpoint with its own slash command.
 - No `/goap` slash trigger in `persona-comment-trigger.yml` (intentional;
   it's a methodology, not a callable).
@@ -30,6 +30,7 @@ RadioChaser keeps the Goap-style autonomous loop running.
 ## When to invoke Goap thinking explicitly
 
 In a prompt to oAudrey, MindMappr, Coder, or any persona:
+
 > "Apply Goap planning: state the goal, list intermediate states, pick the
 > single next action. No multi-phase plan."
 
@@ -48,7 +49,7 @@ endpoint.
 
 ## Fingerprints to scrub
 
-Goap doesn't produce attribution strings. Its "fingerprint" is *style* (terse,
+Goap doesn't produce attribution strings. Its "fingerprint" is _style_ (terse,
 action-first, no flourish) — desirable, not banned.
 
 ## Session capture

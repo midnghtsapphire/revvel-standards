@@ -6,6 +6,7 @@
 **Out of Scope of:** OZ-OS-001 (intelligence layer)
 
 ## Source
+
 LinkedIn post by @world_of_infographics — bar chart race showing people without
 electricity access by country, 1990–2025.
 
@@ -17,11 +18,13 @@ electricity access by country, 1990–2025.
 - **Polish:** CapCut or similar, vertical 1080x1920 for LinkedIn / TikTok / Reels
 
 ## Deliverables
+
 1. `scripts/wdi-fetch.py` — pulls WDI indicators, joins datasets, computes access gap
 2. `scripts/render-race.py` — outputs MP4 bar-chart-race animation
 3. `data/anomaly-report.md` — flags missing, estimated, interpolated, or projected values (required because LinkedIn commenter caught India anomaly in the source)
 
 ## Requirements
+
 - Show top 10 countries per year from 1990 to 2025
 - Animate year-by-year as a bar chart race
 - Use country flags beside names
@@ -35,15 +38,18 @@ electricity access by country, 1990–2025.
 - Do not hide countries due to missing data without noting it
 
 ## Anti-Goal
+
 Do NOT hide countries with missing data without an explicit footnote.
 Do NOT use fabricated or interpolated data without marking it clearly.
 
 ## Agentic Version (future — see RIS-002)
+
 Act as a data journalist + visualization engineer. Pull public World Bank data, clean it,
 calculate the access gap, verify anomalies, create a bar chart race, write the LinkedIn
 post copy, alt text, metadata, hashtags, and a 3-sentence fact-check note.
 
 ## Acceptance
+
 - MP4 renders and plays
 - Data matches World Bank source
 - Anomaly report present and honest

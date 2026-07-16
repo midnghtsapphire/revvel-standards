@@ -11,12 +11,12 @@ the motif + palette templates and ship them as part of the research packet.
 
 ## 1. Subject capture
 
-| Field | Value |
-| --- | --- |
-| Artifact format | _e.g., 2x2 concept grid, hero composition, vector logo, sticker pack_ |
-| Subject character / element | _e.g., banana mascot in baseball uniform_ |
-| Composition setting | _e.g., Neyland Stadium with Tennessee River + Vol Navy boats_ |
-| Output medium | _e.g., screen-printable apparel, RGB-first web logo, CMYK print collateral_ |
+| Field                       | Value                                                                       |
+| --------------------------- | --------------------------------------------------------------------------- |
+| Artifact format             | _e.g., 2x2 concept grid, hero composition, vector logo, sticker pack_       |
+| Subject character / element | _e.g., banana mascot in baseball uniform_                                   |
+| Composition setting         | _e.g., Neyland Stadium with Tennessee River + Vol Navy boats_               |
+| Output medium               | _e.g., screen-printable apparel, RGB-first web logo, CMYK print collateral_ |
 
 ## 2. The prompt slots
 

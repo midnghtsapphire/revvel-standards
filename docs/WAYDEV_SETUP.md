@@ -13,28 +13,28 @@
 
 Waydev is a **developer productivity analytics platform** that connects to GitHub (and GitLab, Jira, etc.) to automatically collect commit, pull-request, and code-review metadata. It produces dashboards and reports that surface:
 
-| Metric | What It Shows |
-|---|---|
-| **Commit volume** | How much code is being written and merged over time |
-| **PR cycle time** | How long PRs sit open before review and merge |
-| **Review activity** | Who is reviewing, and how quickly |
-| **Code churn** | Rewrites, rework, and instability indicators |
-| **Work breakdown** | Feature vs bug fix vs refactor split |
-| **Team benchmarks** | Compare activity trends across contributors |
+| Metric              | What It Shows                                       |
+| ------------------- | --------------------------------------------------- |
+| **Commit volume**   | How much code is being written and merged over time |
+| **PR cycle time**   | How long PRs sit open before review and merge       |
+| **Review activity** | Who is reviewing, and how quickly                   |
+| **Code churn**      | Rewrites, rework, and instability indicators        |
+| **Work breakdown**  | Feature vs bug fix vs refactor split                |
+| **Team benchmarks** | Compare activity trends across contributors         |
 
-> **Privacy note:** Waydev reads only repository *metadata* (commits, PR titles, timestamps, authors). It does **not** access source code content.
+> **Privacy note:** Waydev reads only repository _metadata_ (commits, PR titles, timestamps, authors). It does **not** access source code content.
 
 ---
 
 ## 2. Where It Fits in Revvel Standards
 
-| Revvel Standard | Waydev Role |
-|---|---|
-| **CODE_REVIEW_STANDARD.md** | Tracks PR review latency, cycle time; confirms Coderabbit/Venice reviews are happening regularly |
-| **DEPLOYMENT_STANDARD.md** | Monitors deployment frequency (commits to `main`) |
-| **CONCURRENT_DEVELOPMENT_STANDARD.md** | Detects long-lived branches and stale PRs that violate the no-force-push + fast-merge policy |
-| **TESTING_STANDARD.md** | Tracks the ratio of test-related commits vs feature commits over time |
-| **SECURITY_STANDARD.md** | Identifies contributors with unusually high direct-to-`main` commit rates (audit flag) |
+| Revvel Standard                        | Waydev Role                                                                                      |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **CODE_REVIEW_STANDARD.md**            | Tracks PR review latency, cycle time; confirms Coderabbit/Venice reviews are happening regularly |
+| **DEPLOYMENT_STANDARD.md**             | Monitors deployment frequency (commits to `main`)                                                |
+| **CONCURRENT_DEVELOPMENT_STANDARD.md** | Detects long-lived branches and stale PRs that violate the no-force-push + fast-merge policy     |
+| **TESTING_STANDARD.md**                | Tracks the ratio of test-related commits vs feature commits over time                            |
+| **SECURITY_STANDARD.md**               | Identifies contributors with unusually high direct-to-`main` commit rates (audit flag)           |
 
 Waydev operates as a **passive observer** — it requires no changes to workflows, no GitHub Actions steps, and no code modifications. Installing the GitHub App at the organisation level is sufficient to begin collecting data from all repositories under `midnghtsapphire`.
 
@@ -88,9 +88,9 @@ Use this checklist to decide whether to keep Waydev after the trial:
 
 ## 5. Pricing Summary
 
-| Plan | Price | Contributors | Repos | History |
-|---|---|---|---|---|
-| **Pro** | ~$20/month per contributor (billed annually, ~$240/year) | Up to team size | Up to 50 | 6 months |
+| Plan        | Price                                                    | Contributors    | Repos     | History   |
+| ----------- | -------------------------------------------------------- | --------------- | --------- | --------- |
+| **Pro**     | ~$20/month per contributor (billed annually, ~$240/year) | Up to team size | Up to 50  | 6 months  |
 | **Premium** | ~$54/month per contributor (billed annually, ~$648/year) | Up to team size | Up to 300 | 36 months |
 
 For a solo developer / small team, the **Pro annual** plan is the right choice. The issue referenced "~$20/year" — verify the exact checkout price before purchasing, as GitHub Marketplace promotional rates can differ from the standard rate.
@@ -114,12 +114,12 @@ No code changes are required — Waydev has no footprint in the repositories the
 
 Waydev complements (not replaces) existing tools:
 
-| Tool | Role | Overlap With Waydev |
-|---|---|---|
-| **RecurseML** (`.github/workflows/recurse-ml.yml`) | Automated code quality review on PRs | RecurseML reviews *code*; Waydev tracks *process metrics* — no overlap |
-| **Coderabbit** | Line-by-line PR review comments | Same split — content vs process |
-| **DeployBot** | Deployment event tracking | Waydev's deployment frequency view complements DeployBot |
-| **GitHub Projects** | Sprint board / issue tracking | Waydev's cycle time metrics validate whether sprint estimates are accurate |
+| Tool                                               | Role                                 | Overlap With Waydev                                                        |
+| -------------------------------------------------- | ------------------------------------ | -------------------------------------------------------------------------- |
+| **RecurseML** (`.github/workflows/recurse-ml.yml`) | Automated code quality review on PRs | RecurseML reviews _code_; Waydev tracks _process metrics_ — no overlap     |
+| **Coderabbit**                                     | Line-by-line PR review comments      | Same split — content vs process                                            |
+| **DeployBot**                                      | Deployment event tracking            | Waydev's deployment frequency view complements DeployBot                   |
+| **GitHub Projects**                                | Sprint board / issue tracking        | Waydev's cycle time metrics validate whether sprint estimates are accurate |
 
 ---
 

@@ -35,13 +35,13 @@ For each repository under `midnghtsapphire`:
 
 **Priority order (do these first):**
 
-| Repository | Reason |
-|---|---|
-| `revvel-standards` | Contains all proprietary standards, agent prompts, and infrastructure maps |
-| All MCP-* repositories | Contains application module code |
-| `OpenClaw_DigitalOcean` | Contains production deployment configuration |
-| `SSRN-AUTOMATION` | Contains automation logic |
-| All active application repos | Protect business logic and API integrations |
+| Repository                   | Reason                                                                     |
+| ---------------------------- | -------------------------------------------------------------------------- |
+| `revvel-standards`           | Contains all proprietary standards, agent prompts, and infrastructure maps |
+| All MCP-* repositories       | Contains application module code                                           |
+| `OpenClaw_DigitalOcean`      | Contains production deployment configuration                               |
+| `SSRN-AUTOMATION`            | Contains automation logic                                                  |
+| All active application repos | Protect business logic and API integrations                                |
 
 ### 2.2. Automated Audit (GitHub CLI)
 
@@ -163,15 +163,15 @@ git push origin --force --tags
 
 ### 4.1. Why Migrate?
 
-| Concern | Personal Account | Freedom Angel Corps (FAC) |
-|---|---|---|
-| Code ownership | Tied to personal account | Owned by the legal entity |
-| Repository privacy | Private (requires paid plan for orgs) | Private by default on GitHub Team/Enterprise |
-| Team access | Manual collaborator invites | Role-based org membership |
-| CI/CD secrets | Per-repo only | Org-level secrets available |
-| Audit trail | Personal audit log only | Org-level audit log |
-| Business continuity | Account deletion = repo loss | Org persists independently |
-| Compliance | Personal account policies | Org policies, SAML SSO (on Enterprise) |
+| Concern             | Personal Account                      | Freedom Angel Corps (FAC)                    |
+| ------------------- | ------------------------------------- | -------------------------------------------- |
+| Code ownership      | Tied to personal account              | Owned by the legal entity                    |
+| Repository privacy  | Private (requires paid plan for orgs) | Private by default on GitHub Team/Enterprise |
+| Team access         | Manual collaborator invites           | Role-based org membership                    |
+| CI/CD secrets       | Per-repo only                         | Org-level secrets available                  |
+| Audit trail         | Personal audit log only               | Org-level audit log                          |
+| Business continuity | Account deletion = repo loss          | Org persists independently                   |
+| Compliance          | Personal account policies             | Org policies, SAML SSO (on Enterprise)       |
 
 **Recommendation:** Migrate all production application repositories to Freedom Angel Corps. Keep `midnghtsapphire` personal account for personal experiments and forks.
 
@@ -221,12 +221,12 @@ git status
 
 ### 4.3. Priority Migration Order
 
-| Phase | Repositories | Rationale |
-|---|---|---|
-| **Phase 1 (Immediate)** | `revvel-standards`, all MCP-* repos | Core standards and active platform modules |
-| **Phase 2 (This Week)** | `OpenClaw_DigitalOcean`, `SSRN-AUTOMATION` | Production infrastructure |
-| **Phase 3 (This Month)** | All active application repos | Business logic protection |
-| **Phase 4 (When Ready)** | Forks and experimental repos | Lower priority |
+| Phase                    | Repositories                               | Rationale                                  |
+| ------------------------ | ------------------------------------------ | ------------------------------------------ |
+| **Phase 1 (Immediate)**  | `revvel-standards`, all MCP-* repos        | Core standards and active platform modules |
+| **Phase 2 (This Week)**  | `OpenClaw_DigitalOcean`, `SSRN-AUTOMATION` | Production infrastructure                  |
+| **Phase 3 (This Month)** | All active application repos               | Business logic protection                  |
+| **Phase 4 (When Ready)** | Forks and experimental repos               | Lower priority                             |
 
 ---
 
@@ -287,12 +287,12 @@ To enforce that no unauthorized authors appear in new commits, add this check to
 
 All test environments must be isolated from public access:
 
-| Environment | Visibility | Auth Required | Notes |
-|---|---|---|---|
-| `dev` (local) | Developer machine only | No | Local development, no external access |
-| `staging` (midnghtsapphire) | Private GitHub Pages or password-protected | Yes | GitHub Actions deploy, HTTPS only |
-| `live-test` (oaudrey subdomain) | Password-protected subdomain | Yes | Live URL for acceptance testing only |
-| `production` (Freedom Angel Corps / DigitalOcean) | Public (app users) or Private (internal tools) | App-level auth | DigitalOcean App Platform or Droplet |
+| Environment                                       | Visibility                                     | Auth Required  | Notes                                 |
+| ------------------------------------------------- | ---------------------------------------------- | -------------- | ------------------------------------- |
+| `dev` (local)                                     | Developer machine only                         | No             | Local development, no external access |
+| `staging` (midnghtsapphire)                       | Private GitHub Pages or password-protected     | Yes            | GitHub Actions deploy, HTTPS only     |
+| `live-test` (oaudrey subdomain)                   | Password-protected subdomain                   | Yes            | Live URL for acceptance testing only  |
+| `production` (Freedom Angel Corps / DigitalOcean) | Public (app users) or Private (internal tools) | App-level auth | DigitalOcean App Platform or Droplet  |
 
 ---
 

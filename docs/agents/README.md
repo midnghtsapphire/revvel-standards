@@ -6,21 +6,21 @@ by what each agent leaves behind and what each one is actually good at.
 
 ## Profiles
 
-| Agent | Lane | Profile | Captured sessions |
-|-------|------|---------|-------------------|
-| Claude (Claude Code, this CLI) | code + reasoning | [PROFILE.md](claude/PROFILE.md) | `claude/transcripts/` |
-| Lovable | scaffold + UI | [PROFILE.md](lovable/PROFILE.md) | — |
-| Replit | scaffold + dev env | [PROFILE.md](replit/PROFILE.md) | — |
-| Manus | code + deploy SOP | [PROFILE.md](manus/PROFILE.md) | — |
-| RadioChaser | backup orchestrator (phantom — not yet wired) | [PROFILE.md](radiochaser/PROFILE.md) | — |
-| Goap | planning methodology / persona | [PROFILE.md](goap/PROFILE.md) | (folded into invoking persona) |
-| Devin (Cognition) | session-based fix | TBD | `devin/` (via Sessions API) |
-| Cursor | inline coder | TBD | TBD |
-| GitHub Copilot | inline + review | TBD | TBD |
-| Octopus Review | PR review (SaaS) | TBD | archived PR comments |
-| cubic | PR review (SaaS) | TBD | archived PR comments |
-| CodeRabbit | PR review (App) | TBD | archived PR comments |
-| OpenRouter personas (oAudrey, Professor, MindMappr, Coder, RadioChaser) | various | TBD | `<persona>/` |
+| Agent                                                                   | Lane                                          | Profile                              | Captured sessions              |
+| ----------------------------------------------------------------------- | --------------------------------------------- | ------------------------------------ | ------------------------------ |
+| Claude (Claude Code, this CLI)                                          | code + reasoning                              | [PROFILE.md](claude/PROFILE.md)      | `claude/transcripts/`          |
+| Lovable                                                                 | scaffold + UI                                 | [PROFILE.md](lovable/PROFILE.md)     | —                              |
+| Replit                                                                  | scaffold + dev env                            | [PROFILE.md](replit/PROFILE.md)      | —                              |
+| Manus                                                                   | code + deploy SOP                             | [PROFILE.md](manus/PROFILE.md)       | —                              |
+| RadioChaser                                                             | backup orchestrator (phantom — not yet wired) | [PROFILE.md](radiochaser/PROFILE.md) | —                              |
+| Goap                                                                    | planning methodology / persona                | [PROFILE.md](goap/PROFILE.md)        | (folded into invoking persona) |
+| Devin (Cognition)                                                       | session-based fix                             | TBD                                  | `devin/` (via Sessions API)    |
+| Cursor                                                                  | inline coder                                  | TBD                                  | TBD                            |
+| GitHub Copilot                                                          | inline + review                               | TBD                                  | TBD                            |
+| Octopus Review                                                          | PR review (SaaS)                              | TBD                                  | archived PR comments           |
+| cubic                                                                   | PR review (SaaS)                              | TBD                                  | archived PR comments           |
+| CodeRabbit                                                              | PR review (App)                               | TBD                                  | archived PR comments           |
+| OpenRouter personas (oAudrey, Professor, MindMappr, Coder, RadioChaser) | various                                       | TBD                                  | `<persona>/`                   |
 
 ## What goes in each profile
 

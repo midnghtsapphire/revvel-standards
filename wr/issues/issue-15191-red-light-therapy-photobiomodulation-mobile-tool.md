@@ -50,12 +50,12 @@ Use the study at [PubMed PMID 33119134](https://pubmed.ncbi.nlm.nih.gov/33119134
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -114,11 +114,11 @@ Content plan:
 
 ### 4) Competitor and GitHub star intelligence
 
-| Competitor / Tool | Pricing | GitHub Stars | Notes |
-| --- | --- | --- | --- |
-| Consumer red-light timer apps (general category) | Pricing data pending — competitive benchmark research required. | N/A | Most focus on timers, not evidence-driven screening guardrails. |
-| Generic habit trackers | Freemium across market; pricing varies. | N/A | Can track sessions but lacks domain-specific contraindication checks. |
-| Open-source PBM-specific mobile project | Pricing data pending — competitive benchmark research required. | N/A | No clear dominant OSS PBM app identified from this issue packet alone. |
+| Competitor / Tool                                | Pricing                                                         | GitHub Stars | Notes                                                                  |
+| ------------------------------------------------ | --------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------- |
+| Consumer red-light timer apps (general category) | Pricing data pending — competitive benchmark research required. | N/A          | Most focus on timers, not evidence-driven screening guardrails.        |
+| Generic habit trackers                           | Freemium across market; pricing varies.                         | N/A          | Can track sessions but lacks domain-specific contraindication checks.  |
+| Open-source PBM-specific mobile project          | Pricing data pending — competitive benchmark research required. | N/A          | No clear dominant OSS PBM app identified from this issue packet alone. |
 
 ### 5) Chatter and demand signals
 
@@ -180,11 +180,11 @@ Non-functional requirements:
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 

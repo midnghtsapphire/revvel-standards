@@ -8,11 +8,11 @@ name: BIOME Sheaf
 
 on:
   schedule:
-    - cron: '0 */1 * * *'  # hourly
+    - cron: "0 */1 * * *" # hourly
   workflow_dispatch: {}
 
 permissions:
-  contents: write   # commits the status feed
+  contents: write # commits the status feed
   issues: read
   actions: read
 
@@ -36,7 +36,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Generate feed
         env:

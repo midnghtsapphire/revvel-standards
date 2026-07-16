@@ -1,4 +1,4 @@
-# WR: [WR] add - name: reno-auto   uses: vblagoje/reno-auto@v1.2
+# WR: [WR] add - name: reno-auto uses: vblagoje/reno-auto@v1.2
 
 **Issue:** #15794  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -51,7 +51,7 @@ orchestrator
 
 ### Summary
 
-add - name: reno-auto   uses: vblagoje/reno-auto@v1.2
+add - name: reno-auto uses: vblagoje/reno-auto@v1.2
 
 ### Objective
 
@@ -66,23 +66,22 @@ Usage Scenarios
 Reno-auto can be used in two distinct scenarios, each with its own security implications and use cases:
 
 1. Secure Usage with Forks (Recommended for public repositories)
-This approach uses the pull_request_target event and is completely secure, allowing forks to make PRs.
+   This approach uses the pull_request_target event and is completely secure, allowing forks to make PRs.
 
 name: Pull Request Reno Note Generator Workflow
 
 on:
-  pull_request_target:
-    types: [opened]
+pull_request_target:
+types: [opened]
 
 jobs:
-  create-pr-release-note:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Generate Release Note for this PR
-        uses: vblagoje/reno-auto@v1
-        id: reno-auto-step
-        with:
-          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+create-pr-release-note:
+runs-on: ubuntu-latest
+steps: - name: Generate Release Note for this PR
+uses: vblagoje/reno-auto@v1
+id: reno-auto-step
+with:
+openai_api_key: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Create PR comment
         uses: peter-evans/create-or-update-comment@v4
@@ -103,6 +102,7 @@ jobs:
             ```
             4. Review the release note text, adjust if needed, and save the file.
             5. Add this file to your commit and push it to the branch.
+
 Pros:
 
 Completely secure, even for PRs from forks
@@ -114,34 +114,31 @@ Doesn't automatically commit the release note to the PR
 Requires manual action from the PR author to add the release note
 Here is an example PR that uses this approach:
 
-<https://github.com/vblagoje/workflow-playground/pull/185>
-2. Trusted Setting with Fork Approval (For controlled environments)
+<https://github.com/vblagoje/workflow-playground/pull/185> 2. Trusted Setting with Fork Approval (For controlled environments)
 This approach uses the pull_request event and is suitable for environments where PRs from forks need approval.
 
 name: Create Reno release note and commit it
 on:
-  pull_request:
-    types: [opened]
+pull_request:
+types: [opened]
 jobs:
-  create-pr-release-note:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository (even forks) to add reno note commit to it
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
-      - name: Generate Release Note for this PR
-        uses: vblagoje/reno-auto@v1
-        id: reno-auto-step
-        with:
-          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
+create-pr-release-note:
+runs-on: ubuntu-latest
+steps: - name: Checkout Repository (even forks) to add reno note commit to it
+uses: actions/checkout@v4
+with:
+fetch-depth: 0
+ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}} - name: Generate Release Note for this PR
+uses: vblagoje/reno-auto@v1
+id: reno-auto-step
+with:
+openai_api_key: ${{ secrets.OPENAI_API_KEY }}
       - name: Create PR release note and commit it to the branch
         uses: vblagoje/create-or-update-release-note@v2
         with:
           note-name: ${{steps.reno-auto-step.outputs.file-name}}
-          note-content: ${{steps.reno-auto-step.outputs.note}}
+note-content: ${{steps.reno-auto-step.outputs.note}}
 Pros:
 
 Automatically commits the release note to the PR branch
@@ -237,18 +234,19 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -260,6 +258,7 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29251630438.md`
 
 ## Executive Decision
@@ -269,21 +268,25 @@ Source packet: `docs/research-engine/run-29251630438.md`
 ## Audience We Are Going After and Why
 
 **Primary Audience**: OpenStack developers and Python project maintainers using the `reno` release notes tool
+
 - **Pain Point**: Manual execution of `reno report` commands during release processes
 - **Urgent Need**: Automation of release note generation in CI/CD pipelines
 - **Market Size**: ~100 OpenStack projects, limited broader adoption
 
 **Secondary Audience**: General DevOps engineers seeking release note automation
+
 - **Better Served By**: More popular alternatives like semantic-release (20.6k stars) or release-drafter (3.7k stars)
 
 ## Marketing and SEO Plan
 
 **SEO Strategy**:
+
 - **Target Keywords**: "reno release notes automation", "github actions changelog", "openstack release automation"
 - **Landing Page Title**: "How to Automate Release Notes with GitHub Actions"
 - **Meta Description**: "Learn how to automate changelog generation in GitHub workflows. Compare reno-auto, release-drafter, and semantic-release."
 
 **Content Plan**:
+
 1. Comparison guide: "Best GitHub Actions for Release Note Automation"
 2. Migration tutorial: "Moving from Manual to Automated Release Notes"
 3. OpenStack-specific content targeting the niche audience
@@ -292,24 +295,26 @@ Source packet: `docs/research-engine/run-29251630438.md`
 
 ## Competitor and GitHub Star Intelligence
 
-| Tool | Stars | Last Update | Pricing | Key Differentiator |
-|------|-------|-------------|---------|-------------------|
-| **vblagoje/reno-auto** | 6-29 | Nov 2020 | Free (OSS) | Reno-specific, **ABANDONED** |
-| **semantic-release** | 20.6k | Active | Free (OSS) | Industry standard, full automation |
-| **release-drafter** | 3.7k | Active | Free (OSS) | GitHub-native, PR-based notes |
-| **google/release-please** | 2.1k+ | Active | Free (OSS) | Conventional commits, Google-backed |
-| **OpenStack reno** | 89 | Active | Free (OSS) | Original tool, Python-based |
+| Tool                      | Stars | Last Update | Pricing    | Key Differentiator                  |
+| ------------------------- | ----- | ----------- | ---------- | ----------------------------------- |
+| **vblagoje/reno-auto**    | 6-29  | Nov 2020    | Free (OSS) | Reno-specific, **ABANDONED**        |
+| **semantic-release**      | 20.6k | Active      | Free (OSS) | Industry standard, full automation  |
+| **release-drafter**       | 3.7k  | Active      | Free (OSS) | GitHub-native, PR-based notes       |
+| **google/release-please** | 2.1k+ | Active      | Free (OSS) | Conventional commits, Google-backed |
+| **OpenStack reno**        | 89    | Active      | Free (OSS) | Original tool, Python-based         |
 
 **Market Gap**: No actively maintained GitHub Action specifically for reno automation
 
 ## Chatter and Demand Signals
 
 **Limited Public Discussion**:
+
 - <5 relevant discussions across Stack Overflow, Reddit, Dev.to
 - Primary chatter confined to GitHub issues within the repository
 - No significant social media presence or community
 
 **Key Pain Points from Users**:
+
 - "Doesn't pick up my changelog entries automatically"
 - "Fails silently if token permissions are wrong"
 - "Confusing YAML config"
@@ -319,16 +324,19 @@ Source packet: `docs/research-engine/run-29251630438.md`
 ## Factual Validation and Evidence Gaps
 
 **Verified**:
+
 - Repository exists at `vblagoje/reno-auto`
 - Version v1.2 was released November 27, 2020
 - Uses Apache 2.0 license
 
 **Critical Issues**:
+
 - Action configured for deprecated `ubuntu-18.04` runner (removed April 2023)
 - No commits since November 2020
 - Open issue #13 confirms the action is broken
 
 **Evidence Gaps**:
+
 - Current usage statistics unavailable
 - No performance benchmarks
 - Security scan results unknown
@@ -336,6 +344,7 @@ Source packet: `docs/research-engine/run-29251630438.md`
 ## Build Requirements and Acceptance Gates
 
 **Immediate Requirements**:
+
 1. ❌ **DO NOT USE** - Action will fail due to deprecated runner
 2. If forking is required:
    - Update `action.yml` to use `ubuntu-latest`
@@ -344,6 +353,7 @@ Source packet: `docs/research-engine/run-29251630438.md`
    - Pin to specific commit SHA
 
 **Acceptance Gates**:
+
 - [ ] Action repository verified and functional
 - [ ] Security scan completed
 - [ ] Minimal permissions documented
@@ -353,21 +363,25 @@ Source packet: `docs/research-engine/run-29251630438.md`
 ## Code Review Agent Packet
 
 ## Bito AI Review Points
+
 - **Critical**: Action uses deprecated `ubuntu-18.04` runner - workflow will fail immediately
 - **Security**: Third-party action from unmaintained repository poses supply chain risk
 - **Fix**: Replace with `release-drafter/release-drafter@v5` or `google-github-actions/release-please-action@v4`
 
 ## OpenRouter Review
+
 - **Maintenance Risk**: No updates for 3+ years indicates abandonment
 - **Compatibility**: GitHub Actions environment changes will break unmaintained actions
 - **Recommendation**: Use actively maintained alternatives
 
 ## Coderabbit Analysis
+
 - **Version Pinning**: Good practice using `@v1.2`, but should use commit SHA for security
 - **Documentation**: No usage examples or configuration guide provided
 - **Testing**: No evidence of integration testing
 
 ## Ralph Loop Findings
+
 - **Workflow Impact**: Adding broken action will cause CI/CD pipeline failures
 - **Alternative Available**: Multiple well-maintained alternatives exist
 - **Migration Path**: Clear upgrade path to release-drafter or semantic-release
@@ -375,6 +389,7 @@ Source packet: `docs/research-engine/run-29251630438.md`
 ## Automatic Fix and Commit Queue
 
 ## Fix 1: Replace with release-drafter
+
 ```yaml
 # Replace in workflow file
 - name: Release Drafter
@@ -382,22 +397,28 @@ Source packet: `docs/research-engine/run-29251630438.md`
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
+
 **Commit Message**: `fix: replace abandoned reno-auto with maintained release-drafter`
 
 ## Fix 2: Add workflow permissions
+
 ```yaml
 permissions:
   contents: write
   pull-requests: write
 ```
+
 **Commit Message**: `security: add minimal required permissions for release automation`
 
 ## Fix 3: Add documentation
+
 ```markdown
 ## Release Notes Automation
+
 This repository uses release-drafter for automated changelog generation.
 See `.github/release-drafter.yml` for configuration.
 ```
+
 **Commit Message**: `docs: add release automation documentation`
 
 ## Labels to Apply
@@ -411,6 +432,7 @@ See `.github/release-drafter.yml` for configuration.
 ## Repository Review and Best Alternative
 
 **Original Repository Status**: `vblagoje/reno-auto` exists but is abandoned
+
 - Last commit: November 2020
 - Uses deprecated GitHub Actions runner
 - Will cause immediate workflow failures
@@ -440,6 +462,7 @@ See `.github/release-drafter.yml` for configuration.
 **Overall Confidence**: 15/100 - DO NOT IMPLEMENT
 
 **Breakdown by Lane**:
+
 - Market Positioning: Low confidence (narrow niche, limited adoption)
 - SEO Demand: Low search volume, high competition from alternatives
 - Competitor Intelligence: Weak moat, saturated market
@@ -491,11 +514,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -511,11 +534,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

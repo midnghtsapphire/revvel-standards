@@ -1,9 +1,15 @@
 # SCIM Provisioning Configuration Template
+
 #
+
 # This template provides example configurations for SCIM (System for Cross-domain Identity Management)
+
 # provisioning with Google Cloud Workforce Identity Federation.
+
 #
+
 # Reference: docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md
+
 # Official Docs: https://cloud.google.com/iam/docs/configure-scim-ms-entra
 
 ---
@@ -11,6 +17,7 @@
 ## Microsoft Entra ID SCIM Configuration
 
 ### Prerequisites
+
 - Workforce Identity Federation pool and provider already created
 - Microsoft Entra ID tenant with appropriate admin access
 - Users and groups already defined in Entra ID
@@ -29,6 +36,7 @@ gcloud iam workforce-pools providers create-oidc PROVIDER_ID \
 ```
 
 **Output:**
+
 - SCIM Endpoint URL: `https://iam.googleapis.com/v1/locations/global/workforcePools/WORKFORCE_POOL_ID/providers/PROVIDER_ID/scim`
 - SCIM Bearer Token: Generated automatically (retrieve via console or gcloud)
 
@@ -74,17 +82,18 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 
 ### User Attribute Mappings (Entra ID → Google Cloud)
 
-| Source (Entra ID) | Target (SCIM) | Type | Required |
-|---|---|---|---|
-| `userPrincipalName` | `userName` | Direct | ✅ Yes |
-| `mail` | `emails[type eq "work"].value` | Direct | ✅ Yes |
-| `givenName` | `name.givenName` | Direct | Recommended |
-| `surname` | `name.familyName` | Direct | Recommended |
-| `displayName` | `displayName` | Direct | Recommended |
-| `mailNickname` | `nickName` | Direct | Optional |
-| `accountEnabled` | `active` | Direct | ✅ Yes |
+| Source (Entra ID)   | Target (SCIM)                  | Type   | Required    |
+| ------------------- | ------------------------------ | ------ | ----------- |
+| `userPrincipalName` | `userName`                     | Direct | ✅ Yes      |
+| `mail`              | `emails[type eq "work"].value` | Direct | ✅ Yes      |
+| `givenName`         | `name.givenName`               | Direct | Recommended |
+| `surname`           | `name.familyName`              | Direct | Recommended |
+| `displayName`       | `displayName`                  | Direct | Recommended |
+| `mailNickname`      | `nickName`                     | Direct | Optional    |
+| `accountEnabled`    | `active`                       | Direct | ✅ Yes      |
 
 **Expression Mappings:**
+
 ```json
 {
   "userName": "userPrincipalName",
@@ -108,13 +117,14 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 
 ### Group Attribute Mappings (Entra ID → Google Cloud)
 
-| Source (Entra ID) | Target (SCIM) | Type | Required |
-|---|---|---|---|
-| `displayName` | `displayName` | Direct | ✅ Yes |
-| `mailNickname` | `externalId` | Direct | ✅ Yes |
-| `members` | `members` | Direct | ✅ Yes |
+| Source (Entra ID) | Target (SCIM) | Type   | Required |
+| ----------------- | ------------- | ------ | -------- |
+| `displayName`     | `displayName` | Direct | ✅ Yes   |
+| `mailNickname`    | `externalId`  | Direct | ✅ Yes   |
+| `members`         | `members`     | Direct | ✅ Yes   |
 
 **Expression Mappings:**
+
 ```json
 {
   "displayName": "displayName",
@@ -128,11 +138,13 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 ## SCIM Provisioning Scopes
 
 ### Option 1: Sync All Users and Groups
+
 - **Scope:** All users and groups
 - **Use case:** Full directory sync
 - **Setting:** In Entra ID Provisioning → Settings → Scope → Select "Sync all users and groups"
 
 ### Option 2: Sync Assigned Users and Groups Only (Recommended)
+
 - **Scope:** Only users/groups explicitly assigned to the application
 - **Use case:** Controlled rollout, specific teams only
 - **Setting:** In Entra ID Provisioning → Settings → Scope → Select "Sync only assigned users and groups"
@@ -145,6 +157,7 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 ### Test Provisioning with a Pilot User
 
 **Step 1: Create a Test User in Entra ID**
+
 ```
 User Principal Name: testuser@yourdomain.com
 Display Name: Test User
@@ -152,16 +165,19 @@ Email: testuser@yourdomain.com
 ```
 
 **Step 2: Assign Test User to Application**
+
 1. Go to Enterprise Applications → Your app → Users and groups
 2. Click **Add user/group**
 3. Select test user
 4. Click **Assign**
 
 **Step 3: Trigger Provisioning**
+
 - Wait 40 minutes for automatic sync, OR
 - Go to Provisioning → Click **Provision on demand** → Select test user → Click **Provision**
 
 **Step 4: Verify in Google Cloud**
+
 ```bash
 # List users in workforce pool
 gcloud iam workforce-pools providers list-workforce-identities PROVIDER_ID \
@@ -171,6 +187,7 @@ gcloud iam workforce-pools providers list-workforce-identities PROVIDER_ID \
 ```
 
 **Expected Output:**
+
 ```
 name: locations/global/workforcePools/WORKFORCE_POOL_ID/subjects/testuser@yourdomain.com
 subject: testuser@yourdomain.com
@@ -180,15 +197,18 @@ state: ACTIVE
 ### Test Deprovisioning
 
 **Step 1: Unassign Test User**
+
 1. Go to Enterprise Applications → Your app → Users and groups
 2. Select test user
 3. Click **Remove**
 
 **Step 2: Wait for Deprovisioning**
+
 - Automatic sync: Wait up to 40 minutes
 - Manual sync: Provisioning → **Provision on demand**
 
 **Step 3: Verify User Removed**
+
 ```bash
 # Verify user no longer exists or is deactivated
 gcloud iam workforce-pools providers list-workforce-identities PROVIDER_ID \
@@ -214,13 +234,13 @@ gcloud iam workforce-pools providers list-workforce-identities PROVIDER_ID \
 
 ### Common Log Messages
 
-| Message | Meaning | Action |
-|---|---|---|
-| `User 'testuser@domain.com' was created in target system 'Google Cloud'` | Success | No action needed |
-| `User 'testuser@domain.com' was updated in target system 'Google Cloud'` | Success | No action needed |
-| `Failed to create user: 400 Bad Request` | Attribute mapping error | Check attribute mappings |
-| `Failed to create user: 401 Unauthorized` | SCIM token expired | Regenerate and update token |
-| `Skipped user as they are out of scope` | User not assigned to app | Assign user or change scope |
+| Message                                                                  | Meaning                  | Action                      |
+| ------------------------------------------------------------------------ | ------------------------ | --------------------------- |
+| `User 'testuser@domain.com' was created in target system 'Google Cloud'` | Success                  | No action needed            |
+| `User 'testuser@domain.com' was updated in target system 'Google Cloud'` | Success                  | No action needed            |
+| `Failed to create user: 400 Bad Request`                                 | Attribute mapping error  | Check attribute mappings    |
+| `Failed to create user: 401 Unauthorized`                                | SCIM token expired       | Regenerate and update token |
+| `Skipped user as they are out of scope`                                  | User not assigned to app | Assign user or change scope |
 
 ### Set Up Provisioning Alerts
 
@@ -235,6 +255,7 @@ gcloud iam workforce-pools providers list-workforce-identities PROVIDER_ID \
 ## SCIM Security Best Practices
 
 ### Token Security
+
 - ✅ Rotate SCIM bearer tokens every 90 days
 - ✅ Store tokens in secure secret manager (Azure Key Vault, HashiCorp Vault)
 - ✅ Use separate tokens for production and non-production environments
@@ -242,12 +263,14 @@ gcloud iam workforce-pools providers list-workforce-identities PROVIDER_ID \
 - ❌ Never share SCIM tokens via email or chat
 
 ### Access Control
+
 - ✅ Restrict SCIM endpoint access by IP (use firewall rules)
 - ✅ Enable Cloud Audit Logs for all SCIM operations
 - ✅ Monitor provisioning logs for anomalies
 - ✅ Set up alerts for provisioning failures
 
 ### Provisioning Scope
+
 - ✅ Start with "Sync only assigned users and groups" for controlled rollout
 - ✅ Test with a small pilot group before full deployment
 - ✅ Document which groups have access to which resources
@@ -260,10 +283,12 @@ gcloud iam workforce-pools providers list-workforce-identities PROVIDER_ID \
 If your organization has more than approximately 150 groups, use the scalable groups configuration:
 
 ### Prerequisites
+
 - SCIM must be configured (required)
 - Workforce Identity Federation provider created
 
 ### Attribute Mappings for Large Groups
+
 ```
 google.subject=user.emails[0].value.lowerAscii()
 google.groups=group.externalId
@@ -272,12 +297,14 @@ google.groups=group.externalId
 **Note:** The `google.groups` attribute mapping is ignored when SCIM is enabled. Groups are synced via SCIM instead.
 
 ### Setup Steps
+
 1. Follow standard SCIM setup (Steps 1-3 above)
 2. In Entra ID, ensure all groups are assigned to the application
 3. SCIM will sync groups automatically (no additional configuration needed)
 4. Verify groups appear in Google Cloud Workforce Identity Pool
 
 ### Verify Group Sync
+
 ```bash
 # List groups in workforce pool
 gcloud iam workforce-pools providers list-workforce-group-memberships PROVIDER_ID \
@@ -290,37 +317,46 @@ gcloud iam workforce-pools providers list-workforce-group-memberships PROVIDER_I
 ## Troubleshooting SCIM
 
 ### Issue: Test connection fails in Entra ID
+
 **Possible Causes:**
+
 - Incorrect SCIM endpoint URL
 - Invalid or expired SCIM bearer token
 - Firewall blocking Entra ID IP ranges
 - Workforce pool or provider does not exist
 
 **Solution:**
+
 1. Verify SCIM endpoint URL format
 2. Regenerate SCIM bearer token
 3. Check firewall rules
 4. Verify workforce pool exists: `gcloud iam workforce-pools describe WORKFORCE_POOL_ID --location=global`
 
 ### Issue: Users not appearing in Google Cloud
+
 **Possible Causes:**
+
 - Provisioning not started or still in progress
 - Users not assigned to application
 - Attribute mapping errors
 
 **Solution:**
+
 1. Check provisioning status in Entra ID
 2. Verify users are assigned to the application
 3. Review provisioning logs for errors
 4. Manually trigger provisioning for a specific user
 
 ### Issue: Groups not syncing
+
 **Possible Causes:**
+
 - Group attribute mapping incorrect
 - Groups not assigned to application
 - SCIM group provisioning not enabled
 
 **Solution:**
+
 1. Verify group attribute mappings
 2. Assign groups to application in Entra ID
 3. Check provisioning logs for group operations
@@ -337,4 +373,4 @@ gcloud iam workforce-pools providers list-workforce-group-memberships PROVIDER_I
 
 ---
 
-*Part of the Revvel Standards Templates. See `templates/standards/` for more templates.*
+_Part of the Revvel Standards Templates. See `templates/standards/` for more templates._

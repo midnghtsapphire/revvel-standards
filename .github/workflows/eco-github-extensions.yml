@@ -17,14 +17,14 @@ jobs:
           task: start-measurement
         continue-on-error: true
 
-      - name: 'Checkout repository'
+      - name: "Checkout repository"
         uses: actions/checkout@v4
 
       - name: Checkout Repo Measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v5.3.0
         with:
           task: get-measurement
-          label: 'repo checkout'
+          label: "repo checkout"
         continue-on-error: true
 
       - name: Run sustainable npm install
@@ -34,7 +34,7 @@ jobs:
         uses: green-coding-solutions/eco-ci-energy-estimation@v5.3.0
         with:
           task: get-measurement
-          label: 'sustainable npm'
+          label: "sustainable npm"
         continue-on-error: true
 
       - name: Show Energy Results
@@ -50,31 +50,31 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: 'Checkout repository'
+      - name: "Checkout repository"
         uses: actions/checkout@v4
 
       - name: Run accessibility check
         uses: zachkklein/WCAG_PR_Checker@v2
         with:
-          APP_DIR: '.'
+          APP_DIR: "."
           # Static site is served from the repository root, not a public/ build
           # directory. Point the checker at '.' so it scans the real index.html
           # (with title/lang/zoomable viewport) instead of a placeholder page.
-          BUILD_DIR: '.'
-          URLS: '/'
+          BUILD_DIR: "."
+          URLS: "/"
         continue-on-error: true
 
   ecoinfra:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: 'Checkout repository'
+      - name: "Checkout repository"
         uses: actions/checkout@v4
 
       - name: Check Eco Infra emissions
         uses: eco-infra/ecoinfra-action@v1.1.2
         with:
           token: ${{ secrets.ECOINFRA_TOKEN }}
-          project-name: 'eco-github-extensions'
-          file: './state.json'
+          project-name: "eco-github-extensions"
+          file: "./state.json"
         continue-on-error: true

@@ -26,22 +26,22 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 14 (App Router) |
-| Styling | Tailwind CSS + Glassmorphism design system |
-| Animations | Framer Motion |
-| Backend | Next.js Route Handlers / tRPC |
-| Database | PostgreSQL (Drizzle ORM) |
-| Authentication | Clerk (Google, Apple, Email) |
-| Payments | Stripe (one-time + subscriptions) |
-| Email | Resend |
-| Calendar | FullCalendar.js |
-| Media CDN | DigitalOcean Spaces CDN |
-| Deployment | DigitalOcean App Platform |
-| CI/CD | GitHub Actions |
-| Analytics | Plausible |
-| Error Tracking | Sentry |
+| Layer          | Technology                                 |
+| -------------- | ------------------------------------------ |
+| Frontend       | Next.js 14 (App Router)                    |
+| Styling        | Tailwind CSS + Glassmorphism design system |
+| Animations     | Framer Motion                              |
+| Backend        | Next.js Route Handlers / tRPC              |
+| Database       | PostgreSQL (Drizzle ORM)                   |
+| Authentication | Clerk (Google, Apple, Email)               |
+| Payments       | Stripe (one-time + subscriptions)          |
+| Email          | Resend                                     |
+| Calendar       | FullCalendar.js                            |
+| Media CDN      | DigitalOcean Spaces CDN                    |
+| Deployment     | DigitalOcean App Platform                  |
+| CI/CD          | GitHub Actions                             |
+| Analytics      | Plausible                                  |
+| Error Tracking | Sentry                                     |
 
 ---
 
@@ -157,10 +157,10 @@ npm run test:e2e
 
 ## Deployment
 
-| Environment | Platform | URL | Trigger |
-|---|---|---|---|
-| Staging | Vercel | [soul2bowl.vercel.app](https://soul2bowl.vercel.app) | Every push to `main` |
-| Production | DigitalOcean App Platform | [soul2bowl.com](https://soul2bowl.com) | Manual / tagged release |
+| Environment | Platform                  | URL                                                  | Trigger                 |
+| ----------- | ------------------------- | ---------------------------------------------------- | ----------------------- |
+| Staging     | Vercel                    | [soul2bowl.vercel.app](https://soul2bowl.vercel.app) | Every push to `main`    |
+| Production  | DigitalOcean App Platform | [soul2bowl.com](https://soul2bowl.com)               | Manual / tagged release |
 
 See [VERCEL_DEPLOYMENT.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/VERCEL_DEPLOYMENT.md) for the full Vercel setup guide (env vars, secrets, monitoring).
 
@@ -175,20 +175,20 @@ See [VERCEL_DEPLOYMENT.md](https://github.com/midnghtsapphire/revvel-standards/b
 
 All documentation lives in [`docs/`](./docs/) and in [revvel-standards/docs/Soul2Bowl/](https://github.com/midnghtsapphire/revvel-standards/tree/main/docs/Soul2Bowl/).
 
-| Document | Description |
-|---|---|
-| [BLUEPRINT.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/BLUEPRINT.md) | Full product specification — master reference |
-| [BRAND.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/BRAND.md) | Brand identity, colors, typography, assets |
-| [BOM.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/BOM.md) | Bill of Materials — services, costs |
-| [ROADMAP.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/ROADMAP.md) | Phased release plan |
-| [SPRINT_LOG.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/SPRINT_LOG.md) | Sprint planning and history |
-| [DARE_LOG.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/DARE_LOG.md) | Decisions, Actions, Results, Evidence |
-| [RAID_LOG.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/RAID_LOG.md) | Risks, Assumptions, Issues, Dependencies |
-| [SEO_STRATEGY.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/SEO_STRATEGY.md) | SEO keywords, metadata, content strategy |
-| [DATA_MODEL.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/DATA_MODEL.md) | Database schema (PostgreSQL + Drizzle) |
-| [API_SPEC.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/API_SPEC.md) | API endpoint specification |
-| [ADMIN_PANEL_SPEC.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/ADMIN_PANEL_SPEC.md) | Admin panel feature specification |
-| [VERCEL_DEPLOYMENT.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/VERCEL_DEPLOYMENT.md) | Vercel staging setup, env vars, monitoring |
+| Document                                                                                                                  | Description                                   |
+| ------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| [BLUEPRINT.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/BLUEPRINT.md)                 | Full product specification — master reference |
+| [BRAND.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/BRAND.md)                         | Brand identity, colors, typography, assets    |
+| [BOM.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/BOM.md)                             | Bill of Materials — services, costs           |
+| [ROADMAP.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/ROADMAP.md)                     | Phased release plan                           |
+| [SPRINT_LOG.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/SPRINT_LOG.md)               | Sprint planning and history                   |
+| [DARE_LOG.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/DARE_LOG.md)                   | Decisions, Actions, Results, Evidence         |
+| [RAID_LOG.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/RAID_LOG.md)                   | Risks, Assumptions, Issues, Dependencies      |
+| [SEO_STRATEGY.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/SEO_STRATEGY.md)           | SEO keywords, metadata, content strategy      |
+| [DATA_MODEL.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/DATA_MODEL.md)               | Database schema (PostgreSQL + Drizzle)        |
+| [API_SPEC.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/API_SPEC.md)                   | API endpoint specification                    |
+| [ADMIN_PANEL_SPEC.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/ADMIN_PANEL_SPEC.md)   | Admin panel feature specification             |
+| [VERCEL_DEPLOYMENT.md](https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/Soul2Bowl/VERCEL_DEPLOYMENT.md) | Vercel staging setup, env vars, monitoring    |
 
 ---
 

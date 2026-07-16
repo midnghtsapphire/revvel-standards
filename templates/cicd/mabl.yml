@@ -18,8 +18,8 @@ name: Mabl — AI-Powered Test Automation
 
 # CONFIGURE: Adjust the app ID and environment ID to match your Mabl workspace.
 env:
-  MABL_APP_ID: ""          # Set to your Mabl application ID
-  MABL_ENVIRONMENT_ID: ""  # Set to your Mabl environment ID (e.g., staging)
+  MABL_APP_ID: "" # Set to your Mabl application ID
+  MABL_ENVIRONMENT_ID: "" # Set to your Mabl environment ID (e.g., staging)
 
 on:
   push:
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      checks: write         # Required to post check run results
+      checks: write # Required to post check run results
 
     steps:
       - name: Checkout code

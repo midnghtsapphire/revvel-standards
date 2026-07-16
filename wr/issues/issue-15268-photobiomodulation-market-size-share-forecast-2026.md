@@ -5,7 +5,7 @@
 **Created:** 2026-07-06  
 **Researcher:** N/A  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -33,18 +33,19 @@ Research and document the global photobiomodulation market opportunity (USD ~281
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [x] Deep market research
 - [ ] BOM
 - [x] Community chatter
@@ -63,19 +64,21 @@ Research and document the global photobiomodulation market opportunity (USD ~281
 
 #### Market Sizing Summary
 
-| Year | Market Size (USD) | CAGR Source |
-|------|-------------------|-------------|
-| 2026 | ~$281 million | [Coherent Market Insights](https://www.coherentmarketinsights.com/industry-reports/photobiomodulation-market) |
-| 2033 | ~$515 million | [Coherent Market Insights](https://www.coherentmarketinsights.com/industry-reports/photobiomodulation-market) |
+| Year | Market Size (USD)  | CAGR Source                                                                                                   |
+| ---- | ------------------ | ------------------------------------------------------------------------------------------------------------- |
+| 2026 | ~$281 million      | [Coherent Market Insights](https://www.coherentmarketinsights.com/industry-reports/photobiomodulation-market) |
+| 2033 | ~$515 million      | [Coherent Market Insights](https://www.coherentmarketinsights.com/industry-reports/photobiomodulation-market) |
 | CAGR | ~10.6% (2026–2033) | [Coherent Market Insights](https://www.coherentmarketinsights.com/industry-reports/photobiomodulation-market) |
 
 #### Key Demand Drivers
+
 - Rising prevalence of chronic pain, neurological conditions, and non-healing wounds
 - Growing preference for non-invasive, drug-sparing therapies
 - Advances in LED/laser device miniaturization enabling portable and at-home units
 - Expanding clinical evidence base for PBM in dermatology and orthopedics
 
 #### Regional Outlook
+
 - **North America:** Current market leader (dominant hospital/clinic penetration, reimbursement pathway growth)
 - **Asia Pacific:** Fastest-growing region due to healthcare infrastructure investment and rising med-tech adoption
 
@@ -92,11 +95,13 @@ The opportunity for Revvel: build a **market intelligence + treatment-tracking t
 **Primary Output Type:** `desktop-tool` / market-intelligence SaaS (web app)
 
 **Sellable Artifacts:**
+
 1. **PDF Market Report** — "Photobiomodulation Market 2026-2033: Size, Share & Forecast" (Gumroad/Polar.sh, ~$29-49)
 2. **SaaS Dashboard** — PBM market tracker with competitive intelligence feeds, segment breakdowns, and trend alerts ($19-79/month B2B tier)
 3. **Clinic Management Module** — treatment session logger + outcome tracker for PBM clinics (upsell from dashboard)
 
 **Target Personas:**
+
 - PBM device manufacturers and distributors seeking competitive benchmarking
 - Clinic operators and practitioners needing patient progress tracking
 - Market researchers and investors monitoring the PBM sector
@@ -116,36 +121,40 @@ The opportunity for Revvel: build a **market intelligence + treatment-tracking t
 ### Market Segmentation
 
 **By Application (largest to smallest, estimated internal ranking):**
+
 1. Pain Management — largest segment; chronic back pain and musculoskeletal treatments dominate clinical use
 2. Wound Healing — strong hospital/SNF channel; reimbursement pathway improving post-CMS guidance
 3. Dermatology — hair loss (LLLT helmets), acne, photorejuvenation; strong consumer/at-home sub-market
 4. Orthopedics — sports medicine and post-surgical rehabilitation
 
 **By Wavelength:**
+
 - Near-infrared (NIR, 800-1100 nm) — deepest tissue penetration; preferred for pain/orthopedics
 - Red light (600-700 nm) — skin surface treatments; dominant in consumer devices
 
 **By End User:**
+
 - Hospitals and specialty clinics (primary revenue)
 - At-home consumer devices (fastest-growing unit volume, lower ASP)
 
 ### Competitor Landscape
 
-| Competitor | Segment | Estimated Price | GitHub Stars | Notes |
-|-----------|---------|----------------|--------------|-------|
-| **Erchonia Corporation** | Clinical lasers | Pricing data pending — competitive benchmark research required | N/A (closed-source hardware) | FDA-cleared low-level laser devices; market leader in clinical LLLT |
-| **THOR Photomedicine Ltd.** | Clinical LLLT | Pricing data pending — competitive benchmark research required | N/A | UK-based; strong clinical evidence portfolio; training/certification program |
-| **Vielight Inc.** | Brain/neurological PBM | ~$1,749-$2,499 per device (direct consumer) | N/A | Transcranial/intranasal devices; direct-to-consumer and clinical channels |
-| **BioLight Technologies LLC** | Wound care | Pricing data pending — competitive benchmark research required | N/A | Hospital-focused wound healing devices |
-| **Alcon Inc.** | Ophthalmic PBM | Pricing data pending — competitive benchmark research required | N/A | Large-cap diversified medical device company; PBM is a sub-segment |
-| **Joovv** | Consumer red light | $295-$1,199 per panel (consumer retail) | N/A | Leading consumer-facing brand; strong DTC marketing |
-| **PlatinumLED Therapy Lights** | Consumer red light | $249-$999 per panel (consumer retail) | N/A | Direct competitor to Joovv in consumer market |
+| Competitor                     | Segment                | Estimated Price                                                | GitHub Stars                 | Notes                                                                        |
+| ------------------------------ | ---------------------- | -------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------- |
+| **Erchonia Corporation**       | Clinical lasers        | Pricing data pending — competitive benchmark research required | N/A (closed-source hardware) | FDA-cleared low-level laser devices; market leader in clinical LLLT          |
+| **THOR Photomedicine Ltd.**    | Clinical LLLT          | Pricing data pending — competitive benchmark research required | N/A                          | UK-based; strong clinical evidence portfolio; training/certification program |
+| **Vielight Inc.**              | Brain/neurological PBM | ~$1,749-$2,499 per device (direct consumer)                    | N/A                          | Transcranial/intranasal devices; direct-to-consumer and clinical channels    |
+| **BioLight Technologies LLC**  | Wound care             | Pricing data pending — competitive benchmark research required | N/A                          | Hospital-focused wound healing devices                                       |
+| **Alcon Inc.**                 | Ophthalmic PBM         | Pricing data pending — competitive benchmark research required | N/A                          | Large-cap diversified medical device company; PBM is a sub-segment           |
+| **Joovv**                      | Consumer red light     | $295-$1,199 per panel (consumer retail)                        | N/A                          | Leading consumer-facing brand; strong DTC marketing                          |
+| **PlatinumLED Therapy Lights** | Consumer red light     | $249-$999 per panel (consumer retail)                          | N/A                          | Direct competitor to Joovv in consumer market                                |
 
 **OSS Landscape:** No meaningful open-source photobiomodulation tracking or market intelligence tools identified. The closest adjacent OSS is generic health/wellness trackers (no PBM-specific features).
 
 ### SEO Keywords
 
 **High-value target keywords (estimated monthly search volume — unverified, requires SEMrush/Ahrefs validation):**
+
 - "photobiomodulation therapy" — high informational intent
 - "red light therapy devices" — high commercial intent, large consumer market
 - "LLLT treatment" — clinical/practitioner audience
@@ -217,11 +226,11 @@ The opportunity for Revvel: build a **market intelligence + treatment-tracking t
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 

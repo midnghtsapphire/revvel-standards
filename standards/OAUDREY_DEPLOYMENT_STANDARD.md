@@ -3,7 +3,7 @@
 **Version:** 1.0.0  
 **Date:** 2026-04-26  
 **Status:** Active  
-**Owner:** MIDNGHTSAPPHIRE / Freedom Angel Corp  
+**Owner:** MIDNGHTSAPPHIRE / Freedom Angel Corp
 
 ---
 
@@ -52,15 +52,15 @@ Secrets: GitHub Actions repo secrets → Doppler (revvel-standards project)
 
 > Run the **Credential Gatekeeper** workflow (`.github/workflows/credential-gatekeeper.yml`) for an automated BOM checklist.
 
-| Secret / Credential | Purpose | Where to Get It | Where to Store |
-|---|---|---|---|
-| `DIGITALOCEAN_API_TOKEN` | `doctl` authentication — create/update DO App Platform apps | DO Dashboard → API → Personal Access Tokens | GitHub repo secret + Doppler `DIGITALOCEAN_API_TOKEN` |
-| `DOPPLER_TOKEN` | Injects all secrets into GitHub Actions workflows | Doppler Dashboard → Project → Service Tokens | GitHub repo secret `DOPPLER_TOKEN` |
-| Namecheap credentials | Update DNS records (Namecheap API or dashboard) | Namecheap account `uprisinghope` | Vault: `revvel/shared/dns/namecheap` |
-| `NAMECHEAP_API_KEY` | Namecheap API for automated DNS updates | Namecheap → Profile → API Access | GitHub repo secret + Doppler |
-| `NAMECHEAP_USERNAME` | Namecheap username | `uprisinghope` | Doppler `NAMECHEAP_USERNAME` |
-| `GODADDY_API_KEY` / `GODADDY_API_SECRET` | GoDaddy API for automated DNS updates | [developer.godaddy.com](https://developer.godaddy.com/keys) → Production keys | GitHub repo secret + Doppler |
-| `PORKBUN_API_KEY` / `PORKBUN_SECRET_API_KEY` | Porkbun API for automated DNS updates | Porkbun → Account → API Access (enable per-domain too) | GitHub repo secret + Doppler |
+| Secret / Credential                          | Purpose                                                     | Where to Get It                                                               | Where to Store                                        |
+| -------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `DIGITALOCEAN_API_TOKEN`                     | `doctl` authentication — create/update DO App Platform apps | DO Dashboard → API → Personal Access Tokens                                   | GitHub repo secret + Doppler `DIGITALOCEAN_API_TOKEN` |
+| `DOPPLER_TOKEN`                              | Injects all secrets into GitHub Actions workflows           | Doppler Dashboard → Project → Service Tokens                                  | GitHub repo secret `DOPPLER_TOKEN`                    |
+| Namecheap credentials                        | Update DNS records (Namecheap API or dashboard)             | Namecheap account `uprisinghope`                                              | Vault: `revvel/shared/dns/namecheap`                  |
+| `NAMECHEAP_API_KEY`                          | Namecheap API for automated DNS updates                     | Namecheap → Profile → API Access                                              | GitHub repo secret + Doppler                          |
+| `NAMECHEAP_USERNAME`                         | Namecheap username                                          | `uprisinghope`                                                                | Doppler `NAMECHEAP_USERNAME`                          |
+| `GODADDY_API_KEY` / `GODADDY_API_SECRET`     | GoDaddy API for automated DNS updates                       | [developer.godaddy.com](https://developer.godaddy.com/keys) → Production keys | GitHub repo secret + Doppler                          |
+| `PORKBUN_API_KEY` / `PORKBUN_SECRET_API_KEY` | Porkbun API for automated DNS updates                       | Porkbun → Account → API Access (enable per-domain too)                        | GitHub repo secret + Doppler                          |
 
 ### Doppler Provisioning
 
@@ -198,16 +198,16 @@ https://midnghtsapphire.github.io/revvel-standards/fieldwork/
 
 ### GitHub Pages vs DigitalOcean App Platform
 
-| Feature           | GitHub Pages                         | DigitalOcean App Platform                 |
-| ----------------- | ------------------------------------ | ----------------------------------------- |
-| **Cost**          | Free                                 | Free tier (3 sites), then $3/mo per site |
-| **Custom domain** | Supported (`oaudrey.com` via A/ALIAS/ANAME; subdomains via CNAME) | Supported                                 |
-| **HTTPS**         | Automatic (Let's Encrypt)            | Automatic                                 |
-| **Deployment**    | Auto (on push to `main`)             | Auto (on push to `main`)                  |
-| **Subdomains**    | Only via custom DNS                  | Native support (`*.oaudrey.com`)          |
-| **Build time**    | ~30 seconds                          | ~2-3 minutes                              |
-| **Bandwidth**     | 100 GB/month soft limit              | Unmetered                                 |
-| **Best for**      | Testing, mirrors, development        | Production with subdomains                |
+| Feature           | GitHub Pages                                                      | DigitalOcean App Platform                |
+| ----------------- | ----------------------------------------------------------------- | ---------------------------------------- |
+| **Cost**          | Free                                                              | Free tier (3 sites), then $3/mo per site |
+| **Custom domain** | Supported (`oaudrey.com` via A/ALIAS/ANAME; subdomains via CNAME) | Supported                                |
+| **HTTPS**         | Automatic (Let's Encrypt)                                         | Automatic                                |
+| **Deployment**    | Auto (on push to `main`)                                          | Auto (on push to `main`)                 |
+| **Subdomains**    | Only via custom DNS                                               | Native support (`*.oaudrey.com`)         |
+| **Build time**    | ~30 seconds                                                       | ~2-3 minutes                             |
+| **Bandwidth**     | 100 GB/month soft limit                                           | Unmetered                                |
+| **Best for**      | Testing, mirrors, development                                     | Production with subdomains               |
 
 ### Running Locally (No Deployment)
 
@@ -298,11 +298,11 @@ The repo ships a registrar-agnostic DNS sync that pushes the declarative
 record list in [`oaudrey/dns-records.yml`](../oaudrey/dns-records.yml) to
 whichever registrar `oaudrey.com` lives on:
 
-| Registrar | Credentials                                          | Notes |
-|-----------|------------------------------------------------------|-------|
-| Namecheap | `NAMECHEAP_API_KEY`, `NAMECHEAP_API_USER`, `NAMECHEAP_USERNAME`, `NAMECHEAP_CLIENT_IP` | API rejects ALIAS at apex — keep apex on DO nameservers |
-| GoDaddy   | `GODADDY_API_KEY`, `GODADDY_API_SECRET`              | Sync auto-translates apex `ALIAS` → `A` when value is an IP |
-| Porkbun   | `PORKBUN_API_KEY`, `PORKBUN_SECRET_API_KEY`          | Native `ALIAS` at apex — recommended for oAudrey |
+| Registrar | Credentials                                                                            | Notes                                                       |
+| --------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Namecheap | `NAMECHEAP_API_KEY`, `NAMECHEAP_API_USER`, `NAMECHEAP_USERNAME`, `NAMECHEAP_CLIENT_IP` | API rejects ALIAS at apex — keep apex on DO nameservers     |
+| GoDaddy   | `GODADDY_API_KEY`, `GODADDY_API_SECRET`                                                | Sync auto-translates apex `ALIAS` → `A` when value is an IP |
+| Porkbun   | `PORKBUN_API_KEY`, `PORKBUN_SECRET_API_KEY`                                            | Native `ALIAS` at apex — recommended for oAudrey            |
 
 The active registrar is **auto-detected** from whichever credential set is
 present (provisioned via the Credential Gatekeeper). Workflow:
@@ -338,10 +338,10 @@ Triggers:
 
 ### Workflows
 
-| Workflow | File | Triggers | Purpose |
-|---|---|---|---|
-| Deploy | `deploy-oaudrey.yml` | Push to `main` touching `oaudrey/**` or `fieldwork/**` | Deploy to DO App Platform |
-| Retro | `oaudrey-retro.yml` | After successful deploy; weekly Monday 06:00 UTC | Health check + gap analysis + retro issue |
+| Workflow | File                 | Triggers                                               | Purpose                                   |
+| -------- | -------------------- | ------------------------------------------------------ | ----------------------------------------- |
+| Deploy   | `deploy-oaudrey.yml` | Push to `main` touching `oaudrey/**` or `fieldwork/**` | Deploy to DO App Platform                 |
+| Retro    | `oaudrey-retro.yml`  | After successful deploy; weekly Monday 06:00 UTC       | Health check + gap analysis + retro issue |
 
 ### Deploy Checklist (per deploy)
 
@@ -396,8 +396,13 @@ To add a new product (e.g., `neurooz.oaudrey.com`):
 Find the `role="tablist"` section and add:
 
 ```html
-<button role="tab" id="tab-neurooz" aria-controls="panel-neurooz" aria-selected="false"
-        class="px-4 py-2 border hairline font-mono text-[11px] uppercase tracking-widest hover:text-ice">
+<button
+  role="tab"
+  id="tab-neurooz"
+  aria-controls="panel-neurooz"
+  aria-selected="false"
+  class="px-4 py-2 border hairline font-mono text-[11px] uppercase tracking-widest hover:text-ice"
+>
   Neurooz
 </button>
 ```
@@ -407,29 +412,44 @@ Find the `role="tablist"` section and add:
 After the last panel, add:
 
 ```html
-<div role="tabpanel" id="panel-neurooz" aria-labelledby="tab-neurooz" hidden
-     class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+<div
+  role="tabpanel"
+  id="panel-neurooz"
+  aria-labelledby="tab-neurooz"
+  hidden
+  class="grid grid-cols-1 lg:grid-cols-12 gap-10"
+>
   <div class="lg:col-span-7 glass p-8 md:p-10">
-    <div class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-mist">
+    <div
+      class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-mist"
+    >
       <span class="h-1.5 w-1.5 bg-cyan pulse-dot" aria-hidden="true"></span>
       neurooz.oaudrey.com
     </div>
-    <h3 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]">
+    <h3
+      class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]"
+    >
       Neurooz — [product description].
     </h3>
-    <p class="mt-6 text-mist leading-relaxed">
-      [Description paragraph]
-    </p>
+    <p class="mt-6 text-mist leading-relaxed">[Description paragraph]</p>
   </div>
   <aside class="lg:col-span-5 glass p-8 md:p-10">
-    <div class="font-mono text-[10px] uppercase tracking-widest text-mist">// Subdomain</div>
+    <div class="font-mono text-[10px] uppercase tracking-widest text-mist">
+      // Subdomain
+    </div>
     <div class="mt-3 font-mono text-ice break-all">neurooz.oaudrey.com</div>
     <dl class="mt-6 space-y-4 text-sm">
-      <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
-        <dt class="text-mist">Status</dt><dd class="font-mono text-gold">IN BUILD</dd>
+      <div
+        class="flex items-start justify-between gap-6 border-t hairline pt-4"
+      >
+        <dt class="text-mist">Status</dt>
+        <dd class="font-mono text-gold">IN BUILD</dd>
       </div>
-      <div class="flex items-start justify-between gap-6 border-t hairline pt-4">
-        <dt class="text-mist">Pledge</dt><dd class="text-gold">% to survivors</dd>
+      <div
+        class="flex items-start justify-between gap-6 border-t hairline pt-4"
+      >
+        <dt class="text-mist">Pledge</dt>
+        <dd class="text-gold">% to survivors</dd>
       </div>
     </dl>
   </aside>
@@ -439,17 +459,17 @@ After the last panel, add:
 ### 3. Add subdomain to app spec (`oaudrey/.do/app.yaml`)
 
 ```yaml
-  - name: neurooz-landing
-    github:
-      repo: midnghtsapphire/revvel-standards
-      branch: main
-      deploy_on_push: true
-    source_dir: /neurooz   # or the appropriate directory
-    output_dir: /
-    index_document: index.html
-    error_document: 404.html
-    routes:
-      - path: /neurooz
+- name: neurooz-landing
+  github:
+    repo: midnghtsapphire/revvel-standards
+    branch: main
+    deploy_on_push: true
+  source_dir: /neurooz # or the appropriate directory
+  output_dir: /
+  index_document: index.html
+  error_document: 404.html
+  routes:
+    - path: /neurooz
 ```
 
 ### 4. Add DNS record in DigitalOcean
@@ -507,9 +527,9 @@ DO Dashboard → API → Personal Access Tokens → Generate New Token → check
 
 The repo ships `.github/workflows/secrets-sentinel.yml` which runs daily at 05:00 UTC and auto-heals missing secrets from Doppler. It only needs two stable bootstrap secrets:
 
-| Secret | How to provision | TTL |
-|--------|-----------------|-----|
-| `DOPPLER_TOKEN` | Doppler Dashboard → Project `revvel-standards` → Service Tokens → Generate | Non-expiring (use a **service token**, not a personal token) |
+| Secret               | How to provision                                                                                                                 | TTL                                                                        |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `DOPPLER_TOKEN`      | Doppler Dashboard → Project `revvel-standards` → Service Tokens → Generate                                                       | Non-expiring (use a **service token**, not a personal token)               |
 | `ADMIN_GITHUB_TOKEN` | GitHub → Settings → Developer settings → Fine-grained PATs → generate with `secrets:write` on `midnghtsapphire/revvel-standards` | Up to 1 year — **set a calendar reminder to rotate 30 days before expiry** |
 
 ```bash
@@ -577,14 +597,14 @@ would be `4xx`/`5xx`). Triage in this order:
 
 ## Research: FOSS / GitHub CLI / Extensions Used
 
-| Tool | Category | How Used in This Standard |
-|---|---|---|
-| [doctl](https://github.com/digitalocean/doctl) | DO CLI | Deploy app spec, manage domains and DNS |
-| [digitalocean/action-doctl](https://github.com/digitalocean/action-doctl) | GitHub Action | Installs `doctl` in GitHub Actions |
-| [octodns](https://github.com/octodns/octodns) | DNS-as-code | Declarative DNS management from YAML |
-| [lexicon](https://github.com/AnalogJ/lexicon) | DNS CLI | Manipulate DNS across Namecheap and other providers |
-| [Doppler CLI](https://github.com/DopplerHQ/cli) | Secrets management | Inject secrets into GitHub Actions and local dev |
-| [gh CLI](https://github.com/cli/cli) | GitHub CLI | Create secrets, list workflows, open issues |
+| Tool                                                                      | Category           | How Used in This Standard                           |
+| ------------------------------------------------------------------------- | ------------------ | --------------------------------------------------- |
+| [doctl](https://github.com/digitalocean/doctl)                            | DO CLI             | Deploy app spec, manage domains and DNS             |
+| [digitalocean/action-doctl](https://github.com/digitalocean/action-doctl) | GitHub Action      | Installs `doctl` in GitHub Actions                  |
+| [octodns](https://github.com/octodns/octodns)                             | DNS-as-code        | Declarative DNS management from YAML                |
+| [lexicon](https://github.com/AnalogJ/lexicon)                             | DNS CLI            | Manipulate DNS across Namecheap and other providers |
+| [Doppler CLI](https://github.com/DopplerHQ/cli)                           | Secrets management | Inject secrets into GitHub Actions and local dev    |
+| [gh CLI](https://github.com/cli/cli)                                      | GitHub CLI         | Create secrets, list workflows, open issues         |
 
 ---
 
@@ -594,9 +614,9 @@ would be `4xx`/`5xx`). Triage in this order:
 
 **Issue:** `oAudrey retro — 2026-05-03 — 2 item(s) need attention` ([#575](https://github.com/midnghtsapphire/revvel-standards/issues/575))
 
-| Item | Finding | Resolution | Status |
-|------|---------|------------|--------|
-| `oaudrey.com` not responding (HTTP 000) — DNS resolves to `3.33.130.190` | DNS points to an AWS Global Accelerator IP, not the DigitalOcean App Platform ingress. App Platform ingress and correct ALIAS/CNAME records not yet pushed. | `oaudrey.com` came back online before 2026-05-18 (confirmed by retro update comments). Root cause was deploy + DNS sync completing after the 2026-05-03 retro run. | ✅ Resolved |
+| Item                                                                     | Finding                                                                                                                                                                                                                                      | Resolution                                                                                                                                                                                    | Status                                             |
+| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `oaudrey.com` not responding (HTTP 000) — DNS resolves to `3.33.130.190` | DNS points to an AWS Global Accelerator IP, not the DigitalOcean App Platform ingress. App Platform ingress and correct ALIAS/CNAME records not yet pushed.                                                                                  | `oaudrey.com` came back online before 2026-05-18 (confirmed by retro update comments). Root cause was deploy + DNS sync completing after the 2026-05-03 retro run.                            | ✅ Resolved                                        |
 | `fieldwork.oaudrey.com` not responding (HTTP 000) — DNS does not resolve | No CNAME record exists for the `fieldwork` subdomain; the DO App Platform app spec did not declare `fieldwork.oaudrey.com` as a custom domain, so the domain was never registered and `sync-oaudrey-dns.yml` had nothing to sync it against. | Added `domains` block to `oaudrey/.do/app.yaml` (`fieldwork.oaudrey.com` as `ALIAS`) so `doctl apps update` registers it automatically on next deploy, eliminating the manual dashboard step. | ⚠️ Infrastructure pending — resolve on next deploy |
 
 **Root cause — `fieldwork.oaudrey.com` never registering:**
@@ -625,10 +645,10 @@ The weekly retro was updating issue #575 with a new "still open" comment every M
 
 **Issue:** `oAudrey retro — 2026-04-30 — 2 item(s) need attention`
 
-| Item | Finding | Resolution | Status |
-|------|---------|------------|--------|
-| `oaudrey.com` not responding | `HTTP 000` — curl cannot complete TLS handshake; DNS not provisioned or app not deployed | Root cause: `DIGITALOCEAN_API_TOKEN` repeatedly absent from GitHub repo secrets, preventing the deploy workflow from running. See **Secrets Persistence** section below. | ⚠️ Infrastructure pending |
-| `fieldwork.oaudrey.com` not responding | Same root cause as apex | Same as above | ⚠️ Infrastructure pending |
+| Item                                   | Finding                                                                                  | Resolution                                                                                                                                                               | Status                    |
+| -------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------- |
+| `oaudrey.com` not responding           | `HTTP 000` — curl cannot complete TLS handshake; DNS not provisioned or app not deployed | Root cause: `DIGITALOCEAN_API_TOKEN` repeatedly absent from GitHub repo secrets, preventing the deploy workflow from running. See **Secrets Persistence** section below. | ⚠️ Infrastructure pending |
+| `fieldwork.oaudrey.com` not responding | Same root cause as apex                                                                  | Same as above                                                                                                                                                            | ⚠️ Infrastructure pending |
 
 **Root cause analysis — secrets disappearing:**
 
@@ -645,10 +665,10 @@ Additionally, Doppler service tokens are non-expiring by default, but if `DOPPLE
 
 Only two secrets need to be set manually; everything else can auto-heal from them:
 
-| Secret | Type | TTL | Notes |
-|--------|------|-----|-------|
-| `DOPPLER_TOKEN` | Doppler service token | Non-expiring (default) | Use a **service token**, not a personal token, to avoid expiry |
-| `ADMIN_GITHUB_TOKEN` | GitHub fine-grained PAT | Max 1 year | Must have `secrets:write` on this repo; set a calendar reminder to rotate 30 days before expiry |
+| Secret               | Type                    | TTL                    | Notes                                                                                           |
+| -------------------- | ----------------------- | ---------------------- | ----------------------------------------------------------------------------------------------- |
+| `DOPPLER_TOKEN`      | Doppler service token   | Non-expiring (default) | Use a **service token**, not a personal token, to avoid expiry                                  |
+| `ADMIN_GITHUB_TOKEN` | GitHub fine-grained PAT | Max 1 year             | Must have `secrets:write` on this repo; set a calendar reminder to rotate 30 days before expiry |
 
 Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.yml`) will auto-restore any other missing secret by pulling it from Doppler.
 
@@ -667,10 +687,10 @@ Once both bootstrap secrets are present, the daily sentinel (`secrets-sentinel.y
 
 **Issue:** `oAudrey retro — 2026-04-28 — 2 item(s) need attention`
 
-| Item | Finding | Resolution | Status |
-|------|---------|------------|--------|
-| `oaudrey.com` not responding | `HTTP 000000` reported — two issues: (1) retro script double-printed `000` via \|\| echo pattern; (2) app not yet deployed to DO App Platform | (1) Fixed in `oaudrey-retro.yml` — health check now uses \|\| true so curl's `-w "%{http_code}"` is the sole source of the status string; (2) Requires `DIGITALOCEAN_API_TOKEN` secret and DNS pointed to DigitalOcean nameservers — see [Troubleshooting: HTTP 000](#retro-health-check-reports-http-000-for-oaudreycom--fieldworkoaudreycom) | ⚠️ Infrastructure pending |
-| `fieldwork.oaudrey.com` not responding | App not yet deployed; DNS not configured | Same as above + `fieldwork/404.html` was missing from repo (required by `oaudrey/.do/app.yaml` `error_document: 404.html`) — now added | ⚠️ Infrastructure pending |
+| Item                                   | Finding                                                                                                                                       | Resolution                                                                                                                                                                                                                                                                                                                                     | Status                    |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| `oaudrey.com` not responding           | `HTTP 000000` reported — two issues: (1) retro script double-printed `000` via \|\| echo pattern; (2) app not yet deployed to DO App Platform | (1) Fixed in `oaudrey-retro.yml` — health check now uses \|\| true so curl's `-w "%{http_code}"` is the sole source of the status string; (2) Requires `DIGITALOCEAN_API_TOKEN` secret and DNS pointed to DigitalOcean nameservers — see [Troubleshooting: HTTP 000](#retro-health-check-reports-http-000-for-oaudreycom--fieldworkoaudreycom) | ⚠️ Infrastructure pending |
+| `fieldwork.oaudrey.com` not responding | App not yet deployed; DNS not configured                                                                                                      | Same as above + `fieldwork/404.html` was missing from repo (required by `oaudrey/.do/app.yaml` `error_document: 404.html`) — now added                                                                                                                                                                                                         | ⚠️ Infrastructure pending |
 
 **Actions taken (code):**
 

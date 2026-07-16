@@ -4,11 +4,7 @@
   "default_framework": "go",
   "package_manager": "go modules",
   "test_runner": "go test",
-  "verify": [
-    "go build ./...",
-    "go test ./...",
-    "go vet ./..."
-  ],
+  "verify": ["go build ./...", "go test ./...", "go vet ./..."],
   "format": "gofmt -l . | (! grep .)",
   "prompt_pack": {
     "idioms": [

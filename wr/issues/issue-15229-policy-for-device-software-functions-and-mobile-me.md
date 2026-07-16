@@ -3,7 +3,7 @@
 **Issue:** #15229  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -17,6 +17,7 @@ Define a compliance-first PBMT software concept that maps requested features to 
 ## Objective
 
 Produce an implementation-ready plan for a PBMT app/tool that separates:
+
 1. low-risk wellness/administrative software functions that can ship quickly, and
 2. features that may trigger device/software oversight and require regulatory review before release.
 

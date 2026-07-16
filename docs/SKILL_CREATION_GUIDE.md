@@ -42,6 +42,7 @@ Skill Forge is a skill that builds other skills. It's like a machine that makes 
 ### Step 1: Pick What Your Skill Does 🎯
 
 First, decide:
+
 - **What is the skill for?** (Examples: reviewing code, writing emails, checking security, brainstorming ideas)
 - **Who will use it?** (You? Other developers? Writers? Business owners?)
 - **What problem does it solve?** (What's slow, annoying, or hard that the skill will fix?)
@@ -49,6 +50,7 @@ First, decide:
 Write these down. You'll need them in the next steps.
 
 **Example:**
+
 > - What it does: Reviews code for security problems
 > - Who uses it: Developers building web apps
 > - Problem it solves: Security checks are slow and easy to forget
@@ -70,6 +72,7 @@ skills/
 ```
 
 **Example:** If you're building a security review skill, the folder would be:
+
 ```
 skills/security-review/
 ```
@@ -85,27 +88,33 @@ Copy the template from `templates/skill-template/SKILL.md` and fill in the blank
 Here's the important parts you need to fill in:
 
 #### The Purpose section
+
 Write 1-2 sentences explaining what the skill does. Write like you're explaining it to a 10-year-old.
 
 **Example:**
+
 ```
 This skill reviews your code for security problems before you publish it.
 It checks for common mistakes that hackers use to break into apps.
 ```
 
 #### The Trigger Keywords section
+
 These are the words that turn the skill on. When someone types one of these words, the skill activates.
 
 **Example:**
+
 ```
 security review, check for vulnerabilities, scan my code, security check,
 OWASP, is my code safe, security audit
 ```
 
 #### The System Prompt section
+
 This is what the AI reads before every conversation when the skill is active. Write it like you're giving instructions to a very smart assistant.
 
 **Example:**
+
 ```
 You are a security expert reviewing code for vulnerabilities.
 When given code, check for:
@@ -127,6 +136,7 @@ The `.yml` file is a settings file that AI tools read. It's like the skill's ID 
 Copy `templates/skill-template/skill.yml` and fill in the blanks.
 
 The important parts:
+
 - `skill:` — your skill's name (lowercase-with-dashes)
 - `title:` — your skill's display name
 - `description:` — what it does (1-2 sentences)
@@ -150,6 +160,7 @@ You need at least 3 tests:
 You don't need to know how to code to write tests. Just fill in what you EXPECT the skill to say.
 
 **Example test:**
+
 ```yaml
 - description: "Should flag SQL injection vulnerability"
   vars:
@@ -168,14 +179,17 @@ This says: "When I give the skill this code with a SQL injection problem, it sho
 Now make it easy for people to install your skill.
 
 #### For Windows (.bat file)
+
 Copy `templates/skill-template/install/windows/install.bat`  
 Replace all the `[BRACKETS]` with your skill's information.
 
 #### For Mac (.command file)
+
 Copy `templates/skill-template/install/mac/install.command`  
 Replace all the `[BRACKETS]` with your skill's information.
 
 Both files should:
+
 - Check that the computer has the tools it needs
 - Install anything that's missing (automatically!)
 - Show clear messages about what's happening
@@ -190,6 +204,7 @@ A persona is a character that "wears" your skill. When the skill is active, the 
 Copy `templates/skill-template/persona.yml` and fill it in.
 
 **Example:**
+
 ```yaml
 name: "Shield"
 role: "Security Specialist"
@@ -209,6 +224,7 @@ So others (and AI tools) can find your skill, add it to the Skills Index.
 3. Add your skill following the same format as the others
 
 **Example entry:**
+
 ```yaml
 - name: security_review
   title: "Security Review"
@@ -232,6 +248,7 @@ Also add an entry to `skills/REGISTRY.md` following the same format as the other
 Before you ship, make sure it works.
 
 #### Run the tests
+
 ```bash
 # Install PromptFoo (only needed once)
 npm install -g promptfoo
@@ -245,7 +262,9 @@ promptfoo view
 ```
 
 #### Do the 8-year-old test
+
 Read your README out loud as if you're explaining it to an 8-year-old.
+
 - Can they understand what it does?
 - Would they know what to do first?
 - Does it sound confusing or simple?
@@ -253,6 +272,7 @@ Read your README out loud as if you're explaining it to an 8-year-old.
 If it's confusing, simplify it.
 
 #### Test the installer
+
 - On Windows: double-click the `.bat` file. Does it install cleanly?
 - On Mac: double-click the `.command` file. Does it install cleanly?
 
@@ -318,4 +338,4 @@ install/
 
 ---
 
-*Built with the Revvel Agentic Skills Framework. See [AGENTIC_METHODOLOGY_STANDARD.md](Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md) for the full methodology.*
+_Built with the Revvel Agentic Skills Framework. See [AGENTIC_METHODOLOGY_STANDARD.md](Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md) for the full methodology._

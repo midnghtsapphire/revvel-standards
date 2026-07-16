@@ -7,7 +7,18 @@ metadata:
   author: "Audrey Evans (MIDNGHTSAPPHIRE)"
   agent_name: "TrustForge"
   category: "SEO & Brand Authority"
-  tags: ["eeat", "google", "schema-org", "knowledge-panel", "seo", "trust", "authority", "brand-identity", "orcid"]
+  tags:
+    [
+      "eeat",
+      "google",
+      "schema-org",
+      "knowledge-panel",
+      "seo",
+      "trust",
+      "authority",
+      "brand-identity",
+      "orcid",
+    ]
   created_at: "2026-04-30"
   updated_at: "2026-04-30"
 
@@ -34,7 +45,7 @@ implementation:
     fallback: "gpt-4-turbo"
     cost_per_1m_input_tokens: 3
     cost_per_1m_output_tokens: 15
-  
+
   apis:
     - name: "Google Search Console API"
       secret: "GOOGLE_SEARCH_CONSOLE_KEY"
@@ -52,13 +63,13 @@ implementation:
       secret: "OPENROUTER_API_KEY"
       required: true
       managed_by: "doppler"
-  
+
   mcp_connectors:
     - doppemcp
     - gbrain
     - github
     - filesystem
-  
+
   automation:
     cron_workflow: "eeat-trust-cron.yml"
     frequency:
@@ -72,7 +83,7 @@ implementation:
 
   content: |
     # E-E-A-T Trust Authority Skill (TrustForge)
-    
+
     See SKILL.md for complete documentation.
 
 triggers:
@@ -91,11 +102,11 @@ examples:
   - name: "Add Organization schema to new app"
     input: "Set up E-E-A-T for new app GlowingStars"
     output: "Generated Organization + WebApplication schema with Freedom Angel Corp parent, added to layout.tsx, validated with Google Rich Results Test"
-  
+
   - name: "Sync brand statement across platforms"
     input: "Update brand statement on GitHub profiles"
     output: "Created PRs to update README.md on midnghtsapphire and MIDNGHTSAPPHIRE profiles with canonical brand statement"
-  
+
   - name: "Daily E-E-A-T health check"
     input: "Run TrustForge daily tasks"
     output: "Scanned all properties, validated schema markup, checked HTTPS, ran linkchecker, generated health report"

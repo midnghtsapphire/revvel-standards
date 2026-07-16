@@ -18,14 +18,12 @@
  *   updatedAt    string|null  — ISO 8601 last status change
  */
 
-'use strict';
+const fs = require("fs");
+const path = require("path");
+const crypto = require("crypto");
 
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-
-const DATA_DIR = path.join(__dirname, '..', 'data');
-const RFY_FILE = path.join(DATA_DIR, 'rfy-watchlist.json');
+const DATA_DIR = path.join(__dirname, "..", "data");
+const RFY_FILE = path.join(DATA_DIR, "rfy-watchlist.json");
 
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -35,7 +33,7 @@ if (!fs.existsSync(DATA_DIR)) {
 function load() {
   if (!fs.existsSync(RFY_FILE)) return [];
   try {
-    return JSON.parse(fs.readFileSync(RFY_FILE, 'utf8'));
+    return JSON.parse(fs.readFileSync(RFY_FILE, "utf8"));
   } catch {
     return [];
   }
@@ -43,12 +41,12 @@ function load() {
 
 /** Persist the RFY watchlist to disk. */
 function save(list) {
-  fs.writeFileSync(RFY_FILE, JSON.stringify(list, null, 2), 'utf8');
+  fs.writeFileSync(RFY_FILE, JSON.stringify(list, null, 2), "utf8");
 }
 
 /** Generate a unique ID (8 random bytes → 16 hex chars). */
 function genId() {
-  return 'rfy-' + crypto.randomBytes(8).toString('hex');
+  return "rfy-" + crypto.randomBytes(8).toString("hex");
 }
 
 /**
@@ -64,18 +62,18 @@ function genId() {
  */
 function add(item) {
   if (!item.productTitle || !item.productTitle.trim()) {
-    throw new Error('productTitle is required');
+    throw new Error("productTitle is required");
   }
   const list = load();
   const entry = {
     rfyId: genId(),
     asin: item.asin || null,
     productTitle: item.productTitle.trim(),
-    estPrice: typeof item.estPrice === 'number' ? item.estPrice : null,
+    estPrice: typeof item.estPrice === "number" ? item.estPrice : null,
     category: item.category || null,
     notes: item.notes || null,
     seenAt: new Date().toISOString(),
-    status: 'watching',
+    status: "watching",
     orderId: null,
     updatedAt: null,
   };
@@ -96,7 +94,7 @@ function getAll(status = null) {
   return list;
 }
 
-const VALID_STATUSES = ['watching', 'ordered', 'missed', 'passed'];
+const VALID_STATUSES = ["watching", "ordered", "missed", "passed"];
 
 /**
  * Update the status of an RFY entry.
@@ -108,7 +106,9 @@ const VALID_STATUSES = ['watching', 'ordered', 'missed', 'passed'];
  */
 function updateStatus(rfyId, status, orderId = null) {
   if (!VALID_STATUSES.includes(status)) {
-    throw new Error(`Invalid status "${status}". Must be one of: ${VALID_STATUSES.join(', ')}`);
+    throw new Error(
+      `Invalid status "${status}". Must be one of: ${VALID_STATUSES.join(", ")}`,
+    );
   }
   const list = load();
   const idx = list.findIndex((e) => e.rfyId === rfyId);
@@ -116,7 +116,8 @@ function updateStatus(rfyId, status, orderId = null) {
   list[idx] = {
     ...list[idx],
     status,
-    orderId: status === 'ordered' ? (orderId || list[idx].orderId) : list[idx].orderId,
+    orderId:
+      status === "ordered" ? orderId || list[idx].orderId : list[idx].orderId,
     updatedAt: new Date().toISOString(),
   };
   save(list);
@@ -163,14 +164,13 @@ function remove(rfyId) {
 function getSummary() {
   const list = load();
   const totalRFY = list.length;
-  const rfyWatching = list.filter((e) => e.status === 'watching').length;
-  const rfyOrdered = list.filter((e) => e.status === 'ordered').length;
-  const rfyMissed = list.filter((e) => e.status === 'missed').length;
-  const rfyPassed = list.filter((e) => e.status === 'passed').length;
+  const rfyWatching = list.filter((e) => e.status === "watching").length;
+  const rfyOrdered = list.filter((e) => e.status === "ordered").length;
+  const rfyMissed = list.filter((e) => e.status === "missed").length;
+  const rfyPassed = list.filter((e) => e.status === "passed").length;
   const decided = rfyOrdered + rfyMissed + rfyPassed;
-  const rfyConversionRate = decided > 0
-    ? parseFloat((rfyOrdered / decided).toFixed(4))
-    : 0;
+  const rfyConversionRate =
+    decided > 0 ? parseFloat((rfyOrdered / decided).toFixed(4)) : 0;
 
   return {
     totalRFY,

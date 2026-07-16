@@ -15,10 +15,10 @@ what we need to verify in Lovable's build.
 - `[verified]` VINES corrects errors **in real time** and should be **constantly
   improving** by design. source: S1
 - `[verified]` This is **different from** a Perplexity-style "brain", which is a
-  **learner**: it uses what it has learned to solve recurring problems *faster*,
+  **learner**: it uses what it has learned to solve recurring problems _faster_,
   but is not a real-time self-healer. "Mine and what it does are two different
   things." source: S1
-- `[verified]` Combining VINES with the Perplexity brain was hard *because*
+- `[verified]` Combining VINES with the Perplexity brain was hard _because_
   Perplexity "isn't really a self-healer real time" — so the brain is a
   component at most, not the healing engine. source: S1
 - `[plausible→to-verify]` Lovable "frequently doesn't tell the truth about

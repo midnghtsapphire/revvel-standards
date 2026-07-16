@@ -4,19 +4,19 @@ Everything needed to add a platform revenue stream on top of Stripe payments.
 
 ## Accounts & credentials
 
-| Item | Purpose | Notes |
-| --- | --- | --- |
-| Stripe platform account | Owns Connect, collects application fees | Enable Connect in Dashboard |
-| `STRIPE_SECRET_KEY` | Server-side API calls | Store in env / secrets manager, never commit |
-| `STRIPE_WEBHOOK_SECRET` | Verify webhook signatures | Per endpoint |
-| Connected accounts | Sellers / payees | Standard, Express, or Custom |
+| Item                    | Purpose                                 | Notes                                        |
+| ----------------------- | --------------------------------------- | -------------------------------------------- |
+| Stripe platform account | Owns Connect, collects application fees | Enable Connect in Dashboard                  |
+| `STRIPE_SECRET_KEY`     | Server-side API calls                   | Store in env / secrets manager, never commit |
+| `STRIPE_WEBHOOK_SECRET` | Verify webhook signatures               | Per endpoint                                 |
+| Connected accounts      | Sellers / payees                        | Standard, Express, or Custom                 |
 
 ## Dependencies
 
-| Package | Ecosystem | Purpose |
-| --- | --- | --- |
+| Package             | Ecosystem        | Purpose                             |
+| ------------------- | ---------------- | ----------------------------------- |
 | stripe (server SDK) | npm / pip / etc. | Create charges, set application fee |
-| @stripe/stripe-js | npm | Client-side Elements / Checkout |
+| @stripe/stripe-js   | npm              | Client-side Elements / Checkout     |
 
 ## Stripe objects to create
 

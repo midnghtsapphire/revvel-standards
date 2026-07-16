@@ -23,15 +23,16 @@ status: open # open | in_procurement | resolved
 
 ## Line Items
 
-| # | Name | Category | Cost (USD) | Source | Acquisition | Blocking |
-|---|------|----------|------------|--------|-------------|----------|
-| 1 |      | credential / api / account / infra / data / service / human |  |  |  | true / false |
+| #   | Name | Category                                                    | Cost (USD) | Source | Acquisition | Blocking     |
+| --- | ---- | ----------------------------------------------------------- | ---------- | ------ | ----------- | ------------ |
+| 1   |      | credential / api / account / infra / data / service / human |            |        |             | true / false |
 
 ## Acquisition Playbook
 
 For each blocking item, list:
 
 ### 1. <Item Name>
+
 - **Why needed:** <what it unblocks>
 - **Where to get it:** <URL>
 - **Plan / SKU:** <exact tier>

@@ -22,9 +22,11 @@ For dynamic PR status based on GitHub API:
 
 ```markdown
 <!-- Open PRs count -->
+
 ![Open PRs](https://img.shields.io/github/issues-pr/midnghtsapphire/REPO_NAME?label=Open%20PRs&style=for-the-badge)
 
 <!-- Closed PRs count -->
+
 ![Closed PRs](https://img.shields.io/github/issues-pr-closed/midnghtsapphire/REPO_NAME?label=Merged%20PRs&style=for-the-badge&color=purple)
 ```
 
@@ -41,6 +43,7 @@ Shields.io supports multiple badge styles:
 - `social` — Social media style badge
 
 Example:
+
 ```markdown
 ![Status](https://img.shields.io/badge/status-approved-green?style=flat-square)
 ```
@@ -54,6 +57,7 @@ https://img.shields.io/badge/{LABEL}-{MESSAGE}-{COLOR}?style={STYLE}
 ```
 
 Parameters:
+
 - `{LABEL}` — Left side text (e.g., "Status", "Review", "PR")
 - `{MESSAGE}` — Right side text (e.g., "approved", "pending", "changes_requested")
 - `{COLOR}` — Color name or hex code (without #)
@@ -61,13 +65,13 @@ Parameters:
 
 ### Color Options
 
-| Status | Color Code | Hex |
-|--------|------------|-----|
-| Success/Approved | `green` | `0e8a16` |
-| Warning/Awaiting | `yellow` | `fbca04` |
-| Error/Changes | `red` | `d93f0b` |
-| Info/Review | `blue` | `0075ca` |
-| Inactive | `gray` | `6c757d` |
+| Status           | Color Code | Hex      |
+| ---------------- | ---------- | -------- |
+| Success/Approved | `green`    | `0e8a16` |
+| Warning/Awaiting | `yellow`   | `fbca04` |
+| Error/Changes    | `red`      | `d93f0b` |
+| Info/Review      | `blue`     | `0075ca` |
+| Inactive         | `gray`     | `6c757d` |
 
 ## Integration with GitHub Actions
 
@@ -154,16 +158,19 @@ Full status board in README:
 ## 📊 Repository Status
 
 ### Build & Tests
+
 ![CI](https://img.shields.io/github/actions/workflow/status/midnghtsapphire/REPO_NAME/ci.yml?label=CI&style=for-the-badge)
 ![Tests](https://img.shields.io/badge/tests-passing-green?style=for-the-badge)
 ![Coverage](https://img.shields.io/badge/coverage-85%25-yellowgreen?style=for-the-badge)
 
 ### Pull Requests
+
 ![Open PRs](https://img.shields.io/github/issues-pr/midnghtsapphire/REPO_NAME?style=for-the-badge)
 ![Awaiting Review](https://img.shields.io/badge/awaiting_review-3-yellow?style=for-the-badge)
 ![Approved](https://img.shields.io/badge/approved-2-green?style=for-the-badge)
 
 ### Issues
+
 ![Open Issues](https://img.shields.io/github/issues/midnghtsapphire/REPO_NAME?style=for-the-badge)
 ![Closed Issues](https://img.shields.io/github/issues-closed/midnghtsapphire/REPO_NAME?style=for-the-badge&color=purple)
 ```
@@ -185,6 +192,7 @@ Full status board in README:
 ### Badge URL Encoding
 
 Spaces in badge text need encoding:
+
 - Space → `%20` or `_`
 - Example: `Review Started` → `Review_Started`
 

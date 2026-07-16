@@ -6,19 +6,17 @@
  * Without a key, the pack still gets listing.txt + product reference (if fetchable).
  */
 
-'use strict';
-
-const fs = require('fs');
-const path = require('path');
-const { attachProductLink, productUrlFromAsin } = require('./amazon-parser');
-const { enrichProduct, buildListingPack } = require('./product-link');
-const { calculateListingPrice } = require('./price-calculator');
-const packStore = require('./pack-store');
+const fs = require("fs");
+const path = require("path");
+const { attachProductLink, productUrlFromAsin } = require("./amazon-parser");
+const { enrichProduct, buildListingPack } = require("./product-link");
+const { calculateListingPrice } = require("./price-calculator");
+const packStore = require("./pack-store");
 
 const fetchFn =
-  typeof globalThis.fetch === 'function'
+  typeof globalThis.fetch === "function"
     ? globalThis.fetch.bind(globalThis)
-    : (...args) => require('node-fetch')(...args);
+    : (...args) => require("node-fetch")(...args);
 
 /** @type {Map<string, object>} */
 const jobs = new Map();
@@ -31,7 +29,7 @@ function getJob(id) {
   return jobs.get(id) || null;
 }
 
-function setStep(job, id, status, detail = '') {
+function setStep(job, id, status, detail = "") {
   const step = job.steps.find((s) => s.id === id);
   if (step) {
     step.status = status; // pending | running | done | error | skipped
@@ -42,10 +40,10 @@ function setStep(job, id, status, detail = '') {
 }
 
 function createJob(product, opts = {}) {
-  const count = Math.min(5, Math.max(3, parseInt(opts.count || '3', 10) || 3));
+  const count = Math.min(5, Math.max(3, parseInt(opts.count || "3", 10) || 3));
   const job = {
     id: newJobId(),
-    status: 'queued', // queued | running | done | error
+    status: "queued", // queued | running | done | error
     product: attachProductLink({ ...product }),
     count,
     createdAt: new Date().toISOString(),
@@ -55,11 +53,36 @@ function createJob(product, opts = {}) {
     error: null,
     hasOpenRouter: Boolean(process.env.OPENROUTER_API_KEY),
     steps: [
-      { id: 'parse', label: 'Parse product from order', status: 'pending', detail: '' },
-      { id: 'link', label: 'Build Amazon product link (ASIN)', status: 'pending', detail: '' },
-      { id: 'ref', label: 'Fetch product reference image', status: 'pending', detail: '' },
-      { id: 'lifestyle', label: `Generate ${count} lifestyle / in-use images`, status: 'pending', detail: '' },
-      { id: 'save', label: 'Save pack to your Documents folder', status: 'pending', detail: '' },
+      {
+        id: "parse",
+        label: "Parse product from order",
+        status: "pending",
+        detail: "",
+      },
+      {
+        id: "link",
+        label: "Build Amazon product link (ASIN)",
+        status: "pending",
+        detail: "",
+      },
+      {
+        id: "ref",
+        label: "Fetch product reference image",
+        status: "pending",
+        detail: "",
+      },
+      {
+        id: "lifestyle",
+        label: `Generate ${count} lifestyle / in-use images`,
+        status: "pending",
+        detail: "",
+      },
+      {
+        id: "save",
+        label: "Save pack to your Documents folder",
+        status: "pending",
+        detail: "",
+      },
     ],
   };
   jobs.set(job.id, job);
@@ -81,11 +104,11 @@ const LIFESTYLE_PROMPTS = [
 
 async function downloadToFile(url, destPath) {
   const res = await fetchFn(url, {
-    redirect: 'follow',
+    redirect: "follow",
     headers: {
-      'User-Agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      Accept: 'image/*,*/*',
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      Accept: "image/*,*/*",
     },
   });
   if (!res.ok) throw new Error(`HTTP ${res.status} downloading image`);
@@ -99,41 +122,47 @@ async function downloadToFile(url, destPath) {
  */
 async function openRouterImage(prompt, { refPath = null, model = null } = {}) {
   const key = process.env.OPENROUTER_API_KEY;
-  if (!key) throw new Error('OPENROUTER_API_KEY not set');
+  if (!key) throw new Error("OPENROUTER_API_KEY not set");
 
   const modelId =
     model ||
     process.env.OPENROUTER_IMAGE_MODEL ||
-    'google/gemini-2.5-flash-image-preview';
+    "google/gemini-2.5-flash-image-preview";
 
-  const content = [{ type: 'text', text: prompt }];
+  const content = [{ type: "text", text: prompt }];
   if (refPath && fs.existsSync(refPath)) {
-    const b64 = fs.readFileSync(refPath).toString('base64');
-    const ext = path.extname(refPath).toLowerCase().replace('.', '') || 'jpeg';
-    const mime = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+    const b64 = fs.readFileSync(refPath).toString("base64");
+    const ext = path.extname(refPath).toLowerCase().replace(".", "") || "jpeg";
+    const mime =
+      ext === "png"
+        ? "image/png"
+        : ext === "webp"
+          ? "image/webp"
+          : "image/jpeg";
     content.push({
-      type: 'image_url',
+      type: "image_url",
       image_url: { url: `data:${mime};base64,${b64}` },
     });
   }
 
-  const res = await fetchFn('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
+  const res = await fetchFn("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
     headers: {
       Authorization: `Bearer ${key}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
-      'X-Title': 'vine-marketplace-lifestyle-packs',
+      "Content-Type": "application/json",
+      "HTTP-Referer": "https://github.com/midnghtsapphire/revvel-standards",
+      "X-Title": "vine-marketplace-lifestyle-packs",
     },
     body: JSON.stringify({
       model: modelId,
-      messages: [{ role: 'user', content }],
+      messages: [{ role: "user", content }],
     }),
   });
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const msg = data.error?.message || data.message || JSON.stringify(data).slice(0, 200);
+    const msg =
+      data.error?.message || data.message || JSON.stringify(data).slice(0, 200);
     throw new Error(`OpenRouter ${res.status}: ${msg}`);
   }
 
@@ -146,15 +175,18 @@ async function openRouterImage(prompt, { refPath = null, model = null } = {}) {
   const parts = Array.isArray(msg?.content) ? msg.content : null;
   if (parts) {
     for (const p of parts) {
-      if (p.type === 'image_url' && p.image_url?.url) return bufferFromDataUrl(p.image_url.url);
+      if (p.type === "image_url" && p.image_url?.url)
+        return bufferFromDataUrl(p.image_url.url);
       if (p.inline_data?.data) {
-        return Buffer.from(p.inline_data.data, 'base64');
+        return Buffer.from(p.inline_data.data, "base64");
       }
     }
   }
   // string content with data URL
-  if (typeof msg?.content === 'string') {
-    const m = msg.content.match(/data:image\/[a-zA-Z0-9+.-]+;base64,[A-Za-z0-9+/=]+/);
+  if (typeof msg?.content === "string") {
+    const m = msg.content.match(
+      /data:image\/[a-zA-Z0-9+.-]+;base64,[A-Za-z0-9+/=]+/,
+    );
     if (m) return bufferFromDataUrl(m[0]);
     // markdown image with http
     const http = msg.content.match(/https?:\/\/\S+\.(?:jpg|jpeg|png|webp)/i);
@@ -164,122 +196,160 @@ async function openRouterImage(prompt, { refPath = null, model = null } = {}) {
     }
   }
 
-  throw new Error('OpenRouter returned no image bytes (check OPENROUTER_IMAGE_MODEL supports images)');
+  throw new Error(
+    "OpenRouter returned no image bytes (check OPENROUTER_IMAGE_MODEL supports images)",
+  );
 }
 
 function bufferFromDataUrl(url) {
-  if (url.startsWith('data:')) {
-    const b64 = url.split(',')[1];
-    return Buffer.from(b64, 'base64');
+  if (url.startsWith("data:")) {
+    const b64 = url.split(",")[1];
+    return Buffer.from(b64, "base64");
   }
-  throw new Error('Expected data URL for image');
+  throw new Error("Expected data URL for image");
 }
 
 /**
  * Run full pipeline for one product. Updates job in place.
  */
 async function runPipeline(job) {
-  job.status = 'running';
+  job.status = "running";
   const product = attachProductLink({ ...job.product });
   const dir = packStore.packDir(product);
   job.packDir = dir;
 
   try {
     // 1 parse
-    setStep(job, 'parse', 'running', 'Reading title, ASIN, price…');
+    setStep(job, "parse", "running", "Reading title, ASIN, price…");
     if (!product.productTitle && !product.asin) {
-      throw new Error('Product missing title and ASIN');
+      throw new Error("Product missing title and ASIN");
     }
     setStep(
       job,
-      'parse',
-      'done',
-      `${(product.productTitle || '').slice(0, 80)} · ASIN ${product.asin || 'none'}`
+      "parse",
+      "done",
+      `${(product.productTitle || "").slice(0, 80)} · ASIN ${product.asin || "none"}`,
     );
 
     // 2 link
-    setStep(job, 'link', 'running');
+    setStep(job, "link", "running");
     product.productUrl = product.productUrl || productUrlFromAsin(product.asin);
     if (!product.productUrl) {
-      setStep(job, 'link', 'error', 'No ASIN — cannot build product URL');
+      setStep(job, "link", "error", "No ASIN — cannot build product URL");
     } else {
-      setStep(job, 'link', 'done', product.productUrl);
+      setStep(job, "link", "done", product.productUrl);
     }
 
     // 3 reference image
-    setStep(job, 'ref', 'running', 'Enriching from product page…');
-    let refPath = path.join(dir, '00-product-reference.jpg');
+    setStep(job, "ref", "running", "Enriching from product page…");
+    let refPath = path.join(dir, "00-product-reference.jpg");
     try {
       const enriched = await enrichProduct(product, { fetchImages: true });
       Object.assign(product, enriched.product);
       const urls = enriched.imageUrls || [];
       if (urls[0]) {
         await downloadToFile(urls[0], refPath);
-        setStep(job, 'ref', 'done', `Saved reference · ${urls.length} candidate URL(s)`);
+        setStep(
+          job,
+          "ref",
+          "done",
+          `Saved reference · ${urls.length} candidate URL(s)`,
+        );
       } else {
         refPath = null;
-        setStep(job, 'ref', 'skipped', enriched.fetchError || 'No product image URL (Amazon may block bots)');
+        setStep(
+          job,
+          "ref",
+          "skipped",
+          enriched.fetchError || "No product image URL (Amazon may block bots)",
+        );
       }
     } catch (err) {
       refPath = null;
-      setStep(job, 'ref', 'skipped', err.message);
+      setStep(job, "ref", "skipped", err.message);
     }
 
     // 4 lifestyle
-    setStep(job, 'lifestyle', 'running', 'Starting…');
+    setStep(job, "lifestyle", "running", "Starting…");
     const images = [];
     const key = process.env.OPENROUTER_API_KEY;
     if (!key) {
       setStep(
         job,
-        'lifestyle',
-        'error',
-        'Set OPENROUTER_API_KEY in .env to generate lifestyle images. Pack will still save listing + reference.'
+        "lifestyle",
+        "error",
+        "Set OPENROUTER_API_KEY in .env to generate lifestyle images. Pack will still save listing + reference.",
       );
     } else {
       for (let i = 0; i < job.count; i++) {
         const n = i + 1;
-        setStep(job, 'lifestyle', 'running', `Generating lifestyle image ${n} of ${job.count}…`);
-        const prompt = LIFESTYLE_PROMPTS[i % LIFESTYLE_PROMPTS.length](product.productTitle || product.asin);
+        setStep(
+          job,
+          "lifestyle",
+          "running",
+          `Generating lifestyle image ${n} of ${job.count}…`,
+        );
+        const prompt = LIFESTYLE_PROMPTS[i % LIFESTYLE_PROMPTS.length](
+          product.productTitle || product.asin,
+        );
         try {
           const buf = await openRouterImage(prompt, { refPath });
-          const name = `${String(n).padStart(2, '0')}-lifestyle.jpg`;
+          const name = `${String(n).padStart(2, "0")}-lifestyle.jpg`;
           const full = path.join(dir, name);
           packStore.writeBinary(full, buf);
-          images.push({ name, path: full, kind: 'lifestyle' });
+          images.push({ name, path: full, kind: "lifestyle" });
         } catch (err) {
-          setStep(job, 'lifestyle', 'error', `Image ${n} failed: ${err.message}`);
+          setStep(
+            job,
+            "lifestyle",
+            "error",
+            `Image ${n} failed: ${err.message}`,
+          );
           // continue others
         }
       }
       if (images.length) {
-        setStep(job, 'lifestyle', 'done', `${images.length} lifestyle file(s) written`);
-      } else if (job.steps.find((s) => s.id === 'lifestyle').status !== 'error') {
-        setStep(job, 'lifestyle', 'error', 'No lifestyle images produced');
+        setStep(
+          job,
+          "lifestyle",
+          "done",
+          `${images.length} lifestyle file(s) written`,
+        );
+      } else if (
+        job.steps.find((s) => s.id === "lifestyle").status !== "error"
+      ) {
+        setStep(job, "lifestyle", "error", "No lifestyle images produced");
       }
     }
     job.images = images;
 
     // 5 save pack metadata
-    setStep(job, 'save', 'running');
+    setStep(job, "save", "running");
     const pricing = calculateListingPrice(product);
     const listing = buildListingPack(product, pricing);
-    packStore.writeText(path.join(dir, 'listing.txt'), [
-      listing.title,
-      '',
-      `Asking: $${listing.suggestedPrice ?? '?'}`,
-      '',
-      listing.description,
-      '',
-      'Images in this folder:',
-      ...images.map((im) => ` - ${im.name}`),
-      refPath && fs.existsSync(refPath) ? ' - 00-product-reference.jpg' : null,
-      '',
-      `Product URL: ${product.productUrl || ''}`,
-      `Pack folder: ${dir}`,
-    ].filter(Boolean).join('\n'));
+    packStore.writeText(
+      path.join(dir, "listing.txt"),
+      [
+        listing.title,
+        "",
+        `Asking: $${listing.suggestedPrice ?? "?"}`,
+        "",
+        listing.description,
+        "",
+        "Images in this folder:",
+        ...images.map((im) => ` - ${im.name}`),
+        refPath && fs.existsSync(refPath)
+          ? " - 00-product-reference.jpg"
+          : null,
+        "",
+        `Product URL: ${product.productUrl || ""}`,
+        `Pack folder: ${dir}`,
+      ]
+        .filter(Boolean)
+        .join("\n"),
+    );
 
-    packStore.writeJson(path.join(dir, 'meta.json'), {
+    packStore.writeJson(path.join(dir, "meta.json"), {
       product,
       pricing,
       listing,
@@ -290,14 +360,17 @@ async function runPipeline(job) {
     });
 
     job.product = product;
-    setStep(job, 'save', 'done', dir);
-    job.status = images.length || fs.existsSync(path.join(dir, 'listing.txt')) ? 'done' : 'error';
-    if (job.status === 'error' && !job.error) job.error = 'Pack incomplete';
+    setStep(job, "save", "done", dir);
+    job.status =
+      images.length || fs.existsSync(path.join(dir, "listing.txt"))
+        ? "done"
+        : "error";
+    if (job.status === "error" && !job.error) job.error = "Pack incomplete";
   } catch (err) {
-    job.status = 'error';
+    job.status = "error";
     job.error = err.message;
-    const running = job.steps.find((s) => s.status === 'running');
-    if (running) setStep(job, running.id, 'error', err.message);
+    const running = job.steps.find((s) => s.status === "running");
+    if (running) setStep(job, running.id, "error", err.message);
   }
 
   job.updatedAt = new Date().toISOString();
@@ -309,7 +382,7 @@ function startPipeline(product, opts = {}) {
   // fire and forget
   setImmediate(() => {
     runPipeline(job).catch((err) => {
-      job.status = 'error';
+      job.status = "error";
       job.error = err.message;
     });
   });

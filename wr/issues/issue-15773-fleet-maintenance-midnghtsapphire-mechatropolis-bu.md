@@ -14,7 +14,7 @@
 **Created:** 2026-07-13  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-13  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -28,6 +28,7 @@ The resulting PR must pass the **full code review** — OpenRouter
 revvel-standards change.
 
 ## Tasks
+
 - [ ] Update / refresh the docs (README, overview, contributing).
 - [ ] Research concrete improvements (deps, security, tests, DX, performance).
 - [ ] Ensure the target repo has the standard review workflows (OpenRouter code
@@ -38,18 +39,19 @@ revvel-standards change.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -61,6 +63,7 @@ revvel-standards change.
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29241576822.md`
 
 ## Fleet Maintenance Research Packet: midnghtsapphire/mechatropolis-business
@@ -76,27 +79,33 @@ Source packet: `docs/research-engine/run-29241576822.md`
 Based on the repository name pattern and fleet maintenance context:
 
 **Primary Audience**: Rust/Go developers building simulation games or fleet management systems
+
 - **Pain Point**: Need modular, performance-first business logic for city-building or fleet management
 - **Why This Matters**: Developers want to focus on unique features, not reinvent core mechanics
 
 **Secondary Audience**: Small-to-medium businesses managing vehicle fleets
+
 - **Pain Point**: Complex maintenance scheduling, high downtime costs, poor visibility
 - **Why This Matters**: Fleet downtime directly impacts revenue; automation reduces costs by 30%
 
 ## 3. Marketing and SEO Plan
 
 ### Target Keywords by Intent
+
 **Transactional (High Intent)**:
+
 - "fleet maintenance software" (high volume, competitive)
 - "fleet management API" (medium volume)
 - "open source fleet management" (low volume, high relevance)
 
 **Informational (Top of Funnel)**:
+
 - "fleet maintenance best practices" (medium volume)
 - "preventive maintenance scheduling" (medium volume)
 - "how to reduce fleet downtime" (medium volume)
 
 ### Content Strategy
+
 1. **Landing Page**: "Open Source Fleet Maintenance for Developers"
    - Title: `Fleet Maintenance API & Backend | Mechatropolis Business`
    - Meta: "Build fleet management features fast. Open-source, API-first, developer-friendly. Reduce fleet downtime by 30%."
@@ -111,15 +120,16 @@ Based on the repository name pattern and fleet maintenance context:
 
 ### Direct Competitors
 
-| Competitor | Stars | Pricing | Last Commit | Key Differentiator |
-|------------|-------|---------|-------------|-------------------|
-| **Fleetbase/fleetbase** | 1,400 | Open source, paid cloud | 2024-06 | Modular, extensible, real-time tracking |
-| **FleetOps/fleetops** | 1,200 | Open source, commercial support | 2024-05 | API-driven, telematics integration |
-| **ERPNext** | 17,800 | Open source | 2024-12 | Full ERP with fleet modules |
-| **Fleetio** | N/A | $4-8/vehicle/month | Commercial | Industry standard SaaS |
-| **Samsara** | N/A | $30+/vehicle/month | Commercial | IoT + fleet, enterprise focus |
+| Competitor              | Stars  | Pricing                         | Last Commit | Key Differentiator                      |
+| ----------------------- | ------ | ------------------------------- | ----------- | --------------------------------------- |
+| **Fleetbase/fleetbase** | 1,400  | Open source, paid cloud         | 2024-06     | Modular, extensible, real-time tracking |
+| **FleetOps/fleetops**   | 1,200  | Open source, commercial support | 2024-05     | API-driven, telematics integration      |
+| **ERPNext**             | 17,800 | Open source                     | 2024-12     | Full ERP with fleet modules             |
+| **Fleetio**             | N/A    | $4-8/vehicle/month              | Commercial  | Industry standard SaaS                  |
+| **Samsara**             | N/A    | $30+/vehicle/month              | Commercial  | IoT + fleet, enterprise focus           |
 
 ### Exploitable Gaps
+
 1. **Developer Experience**: Competitors lack API-first design and developer documentation
 2. **Transparent Pricing**: Most hide pricing behind "Contact Sales"
 3. **Modern Tech Stack**: Many use legacy frameworks; opportunity for Rust/Go performance
@@ -127,12 +137,14 @@ Based on the repository name pattern and fleet maintenance context:
 ## 5. Chatter and Demand Signals
 
 ### Pain Points from Developer Communities
+
 - "Documentation is outdated or missing" (common complaint)
 - "No clear contribution guidelines"
 - "Missing automated code review and security checks"
 - "Setup instructions don't work"
 
 ### Market Signals
+
 - Fleet management market growing due to e-commerce boom
 - Increasing demand for API-first solutions
 - Developers seeking alternatives to expensive commercial solutions
@@ -142,11 +154,13 @@ Based on the repository name pattern and fleet maintenance context:
 ## 6. Factual Validation and Evidence Gaps
 
 ### Verified Facts
+
 ✅ Repository URL format is valid GitHub pattern  
 ✅ Fleet maintenance is established revvel-standards process  
 ✅ Required workflows are documented standards (OpenRouter, Jules, Semgrep, CodeQL)
 
 ### Critical Evidence Gaps
+
 ❌ **Repository existence/accessibility** - Cannot verify  
 ❌ **Current codebase state** - No access to assess  
 ❌ **Existing workflows** - Cannot check .github/workflows/  
@@ -156,12 +170,14 @@ Based on the repository name pattern and fleet maintenance context:
 ## 7. Build Requirements and Acceptance Gates
 
 ### Required Workflows (Must Have)
+
 1. `.github/workflows/ai-pr-review-openrouter.yml`
 2. `.github/workflows/jules.yml`
 3. `.github/workflows/semgrep.yml`
 4. `.github/workflows/codeql.yml`
 
 ### Acceptance Criteria
+
 - [ ] All four review workflows present and passing
 - [ ] Documentation updated (README, CONTRIBUTING, API docs)
 - [ ] Dependencies updated with no high-severity vulnerabilities
@@ -169,6 +185,7 @@ Based on the repository name pattern and fleet maintenance context:
 - [ ] Security policy documented
 
 ### Technical Requirements
+
 - Modern CI/CD pipeline
 - Automated dependency updates (Dependabot)
 - API documentation (OpenAPI/Swagger)
@@ -177,6 +194,7 @@ Based on the repository name pattern and fleet maintenance context:
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```yaml
 review_focus:
   - Check for missing error handling in fleet maintenance endpoints
@@ -186,6 +204,7 @@ review_focus:
 ```
 
 ### For OpenRouter
+
 ```yaml
 security_checks:
   - SQL injection vulnerabilities
@@ -195,6 +214,7 @@ security_checks:
 ```
 
 ### For Coderabbit
+
 ```yaml
 performance_review:
   - Database query optimization (N+1 queries)
@@ -204,6 +224,7 @@ performance_review:
 ```
 
 ### For Ralph Loop
+
 ```yaml
 architecture_review:
   - Separation of concerns violations
@@ -215,6 +236,7 @@ architecture_review:
 ## 9. Automatic Fix and Commit Queue
 
 ### Priority 1: Add Required Workflows
+
 ```bash
 # Commit: "ci: add standard review workflows for revvel compliance"
 mkdir -p .github/workflows
@@ -222,6 +244,7 @@ cp revvel-standards/workflows/*.yml .github/workflows/
 ```
 
 ### Priority 2: Update Documentation
+
 ```bash
 # Commit: "docs: refresh README with setup and contribution guides"
 cat > README.md << 'EOF'
@@ -237,6 +260,7 @@ EOF
 ```
 
 ### Priority 3: Security Baseline
+
 ```bash
 # Commit: "security: add dependency scanning and security policy"
 cat > .github/dependabot.yml << 'EOF'
@@ -250,6 +274,7 @@ EOF
 ```
 
 ### Priority 4: Test Infrastructure
+
 ```bash
 # Commit: "test: add basic test suite and CI pipeline"
 npm install --save-dev jest @types/jest
@@ -260,12 +285,14 @@ echo "test('basic', () => expect(1).toBe(1));" > tests/basic.test.js
 ## 10. Labels to Apply
 
 ### Immediate Labels
+
 - `blocked` - Repository access required
 - `repository-not-found` - Cannot verify target exists
 - `fleet-maintenance` - Automated maintenance task
 - `needs-verification` - Requires access confirmation
 
 ### Post-Access Labels (If Resolved)
+
 - `needs-docs` - Documentation refresh required
 - `needs-workflows` - Missing standard CI/CD
 - `security-review-required` - Dependency audit needed
@@ -274,11 +301,13 @@ echo "test('basic', () => expect(1).toBe(1));" > tests/basic.test.js
 ## 11. Repository Review and Best Alternative
 
 ### Current Repository Status
+
 **INACCESSIBLE** - Cannot proceed without resolving access issues
 
 ### Best Alternative: Fleetbase
 
 **Why Fleetbase**:
+
 - **Active Development**: 1.4k stars, last commit June 2024
 - **MIT License**: Same as target repo's intended license
 - **Modern Stack**: API-first, real-time tracking, plugin system
@@ -286,12 +315,14 @@ echo "test('basic', () => expect(1).toBe(1));" > tests/basic.test.js
 - **Community**: Active contributors and issue discussions
 
 **Implementation Path**:
+
 1. Fork Fleetbase as foundation
 2. Customize for mechatropolis-specific needs
 3. Maintain upstream compatibility for security updates
 4. Contribute improvements back to upstream
 
 ### Secondary Alternative: Build on ERPNext
+
 - 17.8k stars, massive community
 - Includes fleet management modules
 - May be overkill for focused fleet maintenance
@@ -301,19 +332,23 @@ echo "test('basic', () => expect(1).toBe(1));" > tests/basic.test.js
 **Overall Confidence: 95/100**
 
 ### Per-Lane Confidence Scores
+
 - **Repository Access**: 100/100 (confirmed inaccessible)
 - **Alternative Analysis**: 95/100 (comprehensive competitor research)
 - **Market Demand**: 90/100 (strong signals, specific repo unknown)
 - **Technical Requirements**: 95/100 (clear standards documented)
 
 ### Reasoning for High Confidence
+
 Despite inability to access the target repository, the research conclusively identifies:
+
 1. Repository is definitively inaccessible (not a research failure)
 2. Clear market demand for fleet maintenance solutions
 3. Well-documented alternatives with proven adoption
 4. Established revvel-standards for implementation
 
 ### Next Steps
+
 1. **Immediate**: Resolve repository access with stakeholder
 2. **If Abandoned**: Adopt Fleetbase and customize
 3. **If Private**: Request access and re-run analysis
@@ -359,11 +394,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -379,11 +414,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

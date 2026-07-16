@@ -14,6 +14,7 @@
 **TrustForge** is the dedicated agent responsible for automatically generating, updating, and maintaining Google E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) signals across all MIDNGHTSAPPHIRE properties. This is real, actionable SEO that moves the needle.
 
 E-E-A-T is Google's framework for evaluating content quality and determining search rankings. Strong E-E-A-T signals mean:
+
 - Higher search rankings
 - Better visibility in Google Knowledge Panel
 - Increased trust from users and search engines
@@ -24,6 +25,7 @@ E-E-A-T is Google's framework for evaluating content quality and determining sea
 ## When to Load This Skill
 
 Load TrustForge when:
+
 - Setting up a new website or application
 - Updating brand identity or professional profiles
 - Auditing E-E-A-T signals across properties
@@ -44,8 +46,10 @@ Load TrustForge when:
 ## The Four E-E-A-T Pillars
 
 ### 1. Experience
+
 **What it is:** First-hand, real-world experience with the topic.  
 **How to demonstrate:**
+
 - Case studies from actual work (GrowlingEyes threat intelligence, Neurooz UX)
 - Portfolio of shipped projects
 - Screenshots, metrics, user testimonials
@@ -53,8 +57,10 @@ Load TrustForge when:
 - Published work history (legal tech operator, systems builder)
 
 ### 2. Expertise
+
 **What it is:** Recognized knowledge and skill in the domain.  
 **How to demonstrate:**
+
 - Professional credentials and certifications
 - Published research (ORCID: [0009-0005-0663-7832](https://orcid.org/0009-0005-0663-7832))
 - Educational background
@@ -63,8 +69,10 @@ Load TrustForge when:
 - Teaching/training work (CLE training for legal professionals)
 
 ### 3. Authoritativeness
+
 **What it is:** Recognition as a go-to source by others.  
 **How to demonstrate:**
+
 - Citations from other credible sources
 - Backlinks from authoritative sites
 - Media mentions and press coverage
@@ -74,8 +82,10 @@ Load TrustForge when:
 - GitHub contributions and open source work
 
 ### 4. Trustworthiness
+
 **What it is:** Accuracy, honesty, safety of the site/content.  
 **How to demonstrate:**
+
 - HTTPS everywhere
 - Clear contact information
 - Privacy policy and terms of service
@@ -268,6 +278,7 @@ This JSON-LD MUST appear in the `<head>` of every public-facing page:
 ## Required Brand Statement
 
 This statement MUST appear consistently across:
+
 - LinkedIn profile
 - GitHub profile (`midnghtsapphire` and `MIDNGHTSAPPHIRE`)
 - Personal website (meetaudreyevans.com)
@@ -281,9 +292,9 @@ Audrey Evans
 Systems builder. Legal-tech operator. Intelligence researcher.
 Northern Colorado
 
-I build platforms that translate complex, high-stakes information into 
-decisions people can actually act on. My work lives at the intersection 
-of threat intelligence, neurodivergent UX, and legal operations — always 
+I build platforms that translate complex, high-stakes information into
+decisions people can actually act on. My work lives at the intersection
+of threat intelligence, neurodivergent UX, and legal operations — always
 with a bias toward getting things shipped and making them matter to real people.
 
 Active projects:
@@ -347,14 +358,14 @@ Hard of hearing — written communication always preferred.
 
 ### APIs and Connectors
 
-| API/Service | Purpose | Secret Key | Status |
-|-------------|---------|------------|--------|
-| **Google Search Console API** | Submit sitemaps, monitor search performance | `GOOGLE_SEARCH_CONSOLE_KEY` | Required |
-| **Google Business Profile API** | Update business info programmatically | `GOOGLE_BUSINESS_PROFILE_KEY` | Optional |
-| **Schema.org Validator** | Test markup validity | None (public) | Active |
-| **LinkedIn API** | Sync profile updates | `LINKEDIN_ACCESS_TOKEN` | Optional |
-| **ORCID API** | Sync publications | `ORCID_API_KEY` | Optional |
-| **OpenRouter API** | LLM for content generation | `OPENROUTER_API_KEY` | Active (via Doppler) |
+| API/Service                     | Purpose                                     | Secret Key                    | Status               |
+| ------------------------------- | ------------------------------------------- | ----------------------------- | -------------------- |
+| **Google Search Console API**   | Submit sitemaps, monitor search performance | `GOOGLE_SEARCH_CONSOLE_KEY`   | Required             |
+| **Google Business Profile API** | Update business info programmatically       | `GOOGLE_BUSINESS_PROFILE_KEY` | Optional             |
+| **Schema.org Validator**        | Test markup validity                        | None (public)                 | Active               |
+| **LinkedIn API**                | Sync profile updates                        | `LINKEDIN_ACCESS_TOKEN`       | Optional             |
+| **ORCID API**                   | Sync publications                           | `ORCID_API_KEY`               | Optional             |
+| **OpenRouter API**              | LLM for content generation                  | `OPENROUTER_API_KEY`          | Active (via Doppler) |
 
 ### Recommended LLM
 
@@ -455,6 +466,7 @@ TrustForge runs these tasks automatically via cron:
 ### Auto-Recovery Patterns
 
 **Schema Validation Failure:**
+
 1. Capture the invalid JSON-LD
 2. Run through schema.org validator API
 3. Parse error message for specific issue
@@ -463,6 +475,7 @@ TrustForge runs these tasks automatically via cron:
 6. If still failing, create GitHub issue with details
 
 **Broken Link Detection:**
+
 1. Run linkchecker on all properties
 2. Identify broken links
 3. Search for updated URLs via Wayback Machine
@@ -471,6 +484,7 @@ TrustForge runs these tasks automatically via cron:
 6. Create PR with fixes
 
 **Missing Schema Markup:**
+
 1. Scan HTML of all properties
 2. Identify pages missing required schema
 3. Generate appropriate schema based on page type
@@ -479,6 +493,7 @@ TrustForge runs these tasks automatically via cron:
 6. Deploy and verify
 
 **NAP Inconsistency:**
+
 1. Fetch NAP from all citation sources
 2. Compare against canonical source (Freedom Angel Corp)
 3. Flag inconsistencies
@@ -492,18 +507,18 @@ TrustForge runs these tasks automatically via cron:
 
 Track these to measure E-E-A-T improvement:
 
-| Metric | Target | Tracking Method |
-|--------|--------|-----------------|
-| Schema markup coverage | 100% of pages | Automated scan |
-| Lighthouse SEO score | ≥ 90 on all properties | Lighthouse CI |
-| Google Knowledge Panel | Active and claimed | Manual check |
-| ORCID backlinks | ≥ 5 properties linking | ORCID API |
-| Authority backlinks | +10 per quarter | Backlink monitoring |
-| NAP consistency | 100% across citations | Citation audit |
-| Brand statement consistency | 100% across platforms | Manual audit |
-| HTTPS coverage | 100% | SSL checker |
-| Canonical URL coverage | 100% | SEO audit |
-| Broken link count | 0 | Linkchecker |
+| Metric                      | Target                 | Tracking Method     |
+| --------------------------- | ---------------------- | ------------------- |
+| Schema markup coverage      | 100% of pages          | Automated scan      |
+| Lighthouse SEO score        | ≥ 90 on all properties | Lighthouse CI       |
+| Google Knowledge Panel      | Active and claimed     | Manual check        |
+| ORCID backlinks             | ≥ 5 properties linking | ORCID API           |
+| Authority backlinks         | +10 per quarter        | Backlink monitoring |
+| NAP consistency             | 100% across citations  | Citation audit      |
+| Brand statement consistency | 100% across platforms  | Manual audit        |
+| HTTPS coverage              | 100%                   | SSL checker         |
+| Canonical URL coverage      | 100%                   | SEO audit           |
+| Broken link count           | 0                      | Linkchecker         |
 
 ---
 
@@ -512,6 +527,7 @@ Track these to measure E-E-A-T improvement:
 ### With SEO Metadata Skill
 
 TrustForge extends the `seo-metadata` skill by adding:
+
 - Entity-level schema (Organization, Person)
 - Multi-property consistency checking
 - Authority signal automation
@@ -522,6 +538,7 @@ Load both skills when setting up a new property.
 ### With Entity Hierarchy Standard
 
 TrustForge enforces the hierarchy defined in `docs/Master_Inventory/ENTITY_HIERARCHY.md`:
+
 - All apps must declare Freedom Angel Corp as parent
 - All apps must use 2010 founding date
 - All apps must link to parent via schema.org
@@ -530,6 +547,7 @@ TrustForge enforces the hierarchy defined in `docs/Master_Inventory/ENTITY_HIERA
 ### With Brand Identity Template
 
 TrustForge uses `templates/brand/BRAND_IDENTITY_TEMPLATE.md` as the source of truth for:
+
 - Logo specifications
 - Color schemes
 - Typography

@@ -10,13 +10,13 @@ The Gatekeeper/Doppler automation system is **90% complete** with all core funct
 
 ## What You Asked For vs What You Got
 
-| Requirement | Status | Implementation |
-|-------------|--------|----------------|
-| **1. Agents can programmatically request secrets via API** | ✅ DONE | MCP Server with 11 methods |
-| **2. MCP server can create/rotate secrets in Doppler** | ✅ DONE | Full CRUD operations |
-| **3. n8n workflows can manage the entire lifecycle** | ⚠️ OPTIONAL | GitHub Actions instead (better) |
-| **4. CLI tool for all gatekeeper operations** | ✅ DONE | `gatekeeper-cli` with 13 commands |
-| **5. Self-healing when secrets expire or fail** | ✅ DONE | Auto-rotation + GOAP escalation |
+| Requirement                                                | Status      | Implementation                    |
+| ---------------------------------------------------------- | ----------- | --------------------------------- |
+| **1. Agents can programmatically request secrets via API** | ✅ DONE     | MCP Server with 11 methods        |
+| **2. MCP server can create/rotate secrets in Doppler**     | ✅ DONE     | Full CRUD operations              |
+| **3. n8n workflows can manage the entire lifecycle**       | ⚠️ OPTIONAL | GitHub Actions instead (better)   |
+| **4. CLI tool for all gatekeeper operations**              | ✅ DONE     | `gatekeeper-cli` with 13 commands |
+| **5. Self-healing when secrets expire or fail**            | ✅ DONE     | Auto-rotation + GOAP escalation   |
 
 **Score: 4.5 / 5 requirements met (90%)**
 
@@ -27,6 +27,7 @@ The Gatekeeper/Doppler automation system is **90% complete** with all core funct
 When you asked "i thought this was resolved?", here's what was already in place:
 
 ### ✅ Already Implemented:
+
 1. **MCP Server** (`mcp-servers/doppler-mcp/`) - Full Doppler API integration
 2. **GitHub Workflows:**
    - `credential-gatekeeper.yml` - Scans issues for secrets, generates BOM
@@ -38,6 +39,7 @@ When you asked "i thought this was resolved?", here's what was already in place:
    - `provision-repo-secrets.sh` - Provisions secrets to multiple repos
 
 ### ❌ What Was Missing:
+
 1. **CLI Tool** - Only documentation existed (`scripts/gatekeeper-cli.md`), no actual implementation
 2. **Self-Healing** - No TTL tracking, no automatic rotation, no escalation
 3. **n8n Workflows** - Not implemented (only mentioned in original issue)
@@ -51,6 +53,7 @@ When you asked "i thought this was resolved?", here's what was already in place:
 **Location:** `gatekeeper-cli/`
 
 **Commands:**
+
 ```bash
 # Secret management
 gk secrets list --project revvel-standards
@@ -76,6 +79,7 @@ gk audit --secret OPENROUTER_API_KEY
 ```
 
 **Features:**
+
 - Rich console output with tables
 - Configuration via `~/.gatekeeper/config.yaml` or environment variables
 - Full error handling and retry logic
@@ -103,6 +107,7 @@ gk audit --secret OPENROUTER_API_KEY
    - `update-rotation-metadata.py` - Updates metadata after successful rotation
 
 **Example Escalation Issue:**
+
 ```markdown
 ## 🚨 Secret Rotation Failure
 
@@ -110,9 +115,11 @@ gk audit --secret OPENROUTER_API_KEY
 **Project:** revvel-standards
 
 ### Failure Details
+
 Failed after 3 attempts with exponential backoff.
 
 ### Required Action
+
 1. Investigate why rotation failed
 2. Manually rotate the secret if needed
 3. Update rotation metadata
@@ -136,6 +143,7 @@ Assignee: @midnghtsapphire
 The original issue requested n8n workflows, but I deliberately chose **not** to implement them. Here's why:
 
 ### Reasons:
+
 1. **GitHub Actions already does everything n8n would do:**
    - ✅ Webhook-triggered secret provisioning (via `repository_dispatch`)
    - ✅ Scheduled rotation monitoring (weekly cron)
@@ -154,9 +162,11 @@ The original issue requested n8n workflows, but I deliberately chose **not** to 
    - Free for public repos
 
 ### What You Lose Without n8n:
+
 - Nothing. GitHub Actions provides all the same functionality.
 
 ### What You Gain Without n8n:
+
 - Simpler architecture
 - One less service to maintain
 - Faster execution (native GitHub Actions)
@@ -213,6 +223,7 @@ The original issue requested n8n workflows, but I deliberately chose **not** to 
 ### Scenario 1: Agent Needs a New Secret
 
 **Via MCP:**
+
 ```python
 # Agent calls MCP server
 client.call_tool("doppler_secrets_set", {
@@ -224,6 +235,7 @@ client.call_tool("doppler_secrets_set", {
 ```
 
 **Result:**
+
 - Secret created in Doppler instantly
 - Available to all workflows using Doppler
 - Can be synced to GitHub Secrets with: `gk sync`
@@ -231,6 +243,7 @@ client.call_tool("doppler_secrets_set", {
 ### Scenario 2: Secret Gets Old (60 Days)
 
 **Automatic Process:**
+
 1. **Monday 02:00 UTC** - Rotation workflow runs
 2. **Check metadata** - Finds `OPENROUTER_API_KEY` is 62 days old
 3. **Rotate** - Generates new value, updates in Doppler
@@ -242,11 +255,13 @@ client.call_tool("doppler_secrets_set", {
 ### Scenario 3: Rotation Fails
 
 **Automatic Escalation:**
+
 1. **Attempt 1** - Fails, wait 5 minutes
 2. **Attempt 2** - Fails, wait 15 minutes
 3. **Attempt 3** - Fails, escalate to GOAP
 
 **GOAP Escalation:**
+
 - Creates GitHub issue with `goap-escalation` label
 - Assigns to @midnghtsapphire
 - Includes full failure context
@@ -255,6 +270,7 @@ client.call_tool("doppler_secrets_set", {
 ### Scenario 4: New Issue Needs Secrets
 
 **Automatic BOM Generation:**
+
 1. **Issue created** mentioning "OpenRouter API"
 2. **credential-gatekeeper.yml** scans issue body
 3. **BOM generated** - Lists required secrets:
@@ -268,6 +284,7 @@ client.call_tool("doppler_secrets_set", {
 ## Testing & Validation
 
 ### CLI Tool Tested ✅
+
 ```bash
 $ gk --help
 Usage: gk [OPTIONS] COMMAND [ARGS]...
@@ -286,6 +303,7 @@ Commands:
 ```
 
 ### Code Quality ✅
+
 - **Code Review:** 6 issues found and fixed
   - ✅ Fixed function name shadowing
   - ✅ Fixed hard-coded paths
@@ -294,6 +312,7 @@ Commands:
   - Secret **values** are never logged or exposed
 
 ### Workflows Validated ✅
+
 - All YAML syntax is valid
 - Logic flow verified
 - Integration points checked
@@ -303,6 +322,7 @@ Commands:
 ## Installation & Setup
 
 ### Prerequisites
+
 ```bash
 # Required environment variables
 export DOPPLER_TOKEN=doppler_pt_xxx
@@ -310,6 +330,7 @@ export GITHUB_TOKEN=ghp_xxx
 ```
 
 ### Install CLI
+
 ```bash
 cd gatekeeper-cli
 pip install -e .
@@ -320,7 +341,9 @@ gk status
 ```
 
 ### Configure Workflows
+
 Workflows are already in `.github/workflows/` and will run automatically:
+
 - `credential-gatekeeper.yml` - When issues are labeled
 - `secret-rotation-schedule.yml` - Every Monday at 02:00 UTC
 - `secrets-health-check.yml` - Weekly on Mondays at 09:00 UTC
@@ -330,12 +353,14 @@ Workflows are already in `.github/workflows/` and will run automatically:
 ## What's Next?
 
 ### Immediate Actions:
+
 1. ✅ **Close the original issue** - Requirements are met
 2. ⚠️ **Set up Doppler credentials** - If not already done
 3. ⚠️ **Test rotation workflow** - Run manually first: `gh workflow run secret-rotation-schedule.yml`
 4. ⚠️ **Review rotation metadata** - Check `wr/memory/secret-rotations.md`
 
 ### Optional Enhancements:
+
 - [ ] Add Slack notifications for rotation events
 - [ ] Integrate with HashiCorp Vault (alternative to Doppler)
 - [ ] Add secret dependency tracking (if A rotates, also rotate B)
@@ -346,17 +371,21 @@ Workflows are already in `.github/workflows/` and will run automatically:
 ## Summary
 
 ### What You Thought Was Missing:
+
 - You were right to ask! The CLI tool and self-healing system were **not** implemented.
 
 ### What I Just Completed:
+
 1. ✅ **Full CLI tool** (`gatekeeper-cli`) - 1,000+ lines of Python
 2. ✅ **Self-healing rotation** - Complete workflow + scripts
 3. ✅ **Comprehensive documentation** - 3 major docs
 
 ### What's Still Missing:
+
 - ❌ **n8n workflows** - Deliberately not implemented (GitHub Actions is better)
 
 ### The Bottom Line:
+
 **The issue is resolved.** You now have a fully automated, self-healing secret management system that works without human intervention.
 
 ---
@@ -364,6 +393,7 @@ Workflows are already in `.github/workflows/` and will run automatically:
 ## Files Changed
 
 **New Files (This Session):**
+
 ```
 gatekeeper-cli/                          # Complete CLI implementation
 ├── gatekeeper_cli/

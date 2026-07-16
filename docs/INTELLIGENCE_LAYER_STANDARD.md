@@ -13,6 +13,7 @@ re-make the same mistakes. The intelligence layer ensures that what is learned o
 is available forever.
 
 The compounding assets are:
+
 - `intel/` entries (permanent intelligence records)
 - `research-packs/` (per-topic research bundles)
 - `method-packs/` (reusable methodology templates)
@@ -20,25 +21,27 @@ The compounding assets are:
 ## 2. Scope
 
 This standard applies to:
+
 - `midnghtsapphire/oz-os` (primary intelligence repository)
 - Any repo that produces research as part of a WR
 - Any agent that consumes intel entries to inform decisions
 
 This standard does NOT apply to:
+
 - Product repos that only consume intel (they read, not write)
 - `revvel-standards` itself (this repo hosts the standard but does not produce research packs)
 
 ## 3. Definitions
 
-| Term | Definition |
-|------|-----------|
-| **Intel entry** | A permanent record in `intel/INTEL-YYYY-NNN.md` following the YAML frontmatter schema. Contains: what was learned, why it matters, how to apply it, when it expires. |
-| **Research pack** | A per-topic bundle in `research-packs/<topic>/` containing a README, method files, and optionally contrarian/adjacent packs. |
-| **Method pack** | The output of a Method Hunter agent: 10+ methods scored by confidence, cost, risk, complexity, novelty, scalability. |
-| **Contrarian pack** | The output of a Contrarian agent: attacks on every method in a method pack, each with citations. |
-| **Adjacent pack** | The output of an Adjacent Domain agent: cross-industry methods that transfer to the target domain. |
-| **Synthesis** | The output of a Synthesizer agent: a ranked, conflict-resolved list of methods. |
-| **NULL_RESULT** | A valid research output declaring "searched thoroughly and found nothing," with required fields: queries tried, sources checked, time spent, confidence in absence. |
+| Term                | Definition                                                                                                                                                           |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Intel entry**     | A permanent record in `intel/INTEL-YYYY-NNN.md` following the YAML frontmatter schema. Contains: what was learned, why it matters, how to apply it, when it expires. |
+| **Research pack**   | A per-topic bundle in `research-packs/<topic>/` containing a README, method files, and optionally contrarian/adjacent packs.                                         |
+| **Method pack**     | The output of a Method Hunter agent: 10+ methods scored by confidence, cost, risk, complexity, novelty, scalability.                                                 |
+| **Contrarian pack** | The output of a Contrarian agent: attacks on every method in a method pack, each with citations.                                                                     |
+| **Adjacent pack**   | The output of an Adjacent Domain agent: cross-industry methods that transfer to the target domain.                                                                   |
+| **Synthesis**       | The output of a Synthesizer agent: a ranked, conflict-resolved list of methods.                                                                                      |
+| **NULL_RESULT**     | A valid research output declaring "searched thoroughly and found nothing," with required fields: queries tried, sources checked, time spent, confidence in absence.  |
 
 ## 4. Method Divergence Requirement
 
@@ -68,14 +71,14 @@ changes, and other Tier 0/1 work (see `oz-os/AUTONOMY_TIERS.md`).
 
 Six specialized agents form the intelligence pipeline:
 
-| Agent | Mission | Output |
-|-------|---------|--------|
-| **Method Hunter** | Find 10+ methods; never solve the problem | `method-pack.md` |
-| **Contrarian** | Attack every method; build a prosecution case | `contrarian-pack.md` |
-| **Adjacent Domain** | Steal proven methods from unrelated industries | `adjacent-pack.md` |
-| **Synthesizer** | Merge packs; resolve conflicts; rank methods | `synthesis.md` |
-| **Verifier** | Check every citation resolves (HTTP 200 or file exists) | verification report |
-| **Archivist** | Write the intel entry; block PR close if missing | `intel/INTEL-*.md` |
+| Agent               | Mission                                                 | Output               |
+| ------------------- | ------------------------------------------------------- | -------------------- |
+| **Method Hunter**   | Find 10+ methods; never solve the problem               | `method-pack.md`     |
+| **Contrarian**      | Attack every method; build a prosecution case           | `contrarian-pack.md` |
+| **Adjacent Domain** | Steal proven methods from unrelated industries          | `adjacent-pack.md`   |
+| **Synthesizer**     | Merge packs; resolve conflicts; rank methods            | `synthesis.md`       |
+| **Verifier**        | Check every citation resolves (HTTP 200 or file exists) | verification report  |
+| **Archivist**       | Write the intel entry; block PR close if missing        | `intel/INTEL-*.md`   |
 
 Agent specs live in `oz-os/agents/`. No agent merges its own PR.
 
@@ -96,20 +99,24 @@ have a citation. Every failure must produce an intel entry before the PR closes.
 ## 7. Intel Entry Lifecycle
 
 ### Creation
+
 - Archivist agent creates `intel/INTEL-YYYY-NNN.md` after each research cycle
 - Entry follows `intel/SCHEMA.md` frontmatter
 - All four body sections required: What we learned / Why it matters / How to apply it / When it stops being true
 
 ### Validation
+
 - Verifier agent checks all citations in the entry
 - wr-lint.mjs validates formatting (no raw tokens, no bracket-placeholders)
 
 ### Decay
+
 - Each entry has a `half_life_days` field (default: 90)
 - After `half_life_days`, the entry is flagged for re-verification
 - Re-verification updates the `date` and `confidence` fields or marks the entry superseded
 
 ### Re-verification
+
 - Triggered automatically when `half_life_days` expires
 - Agent re-checks citations and re-evaluates confidence
 - If the finding is no longer valid, a new entry supersedes it (`supersedes` field)
@@ -119,6 +126,7 @@ have a citation. Every failure must produce an intel entry before the PR closes.
 `NULL_RESULT` is a valid and respected output. Fake completion is not.
 
 Required fields for a NULL_RESULT:
+
 1. **Queries tried** — minimum 10 search strings
 2. **Sources checked** — databases, APIs, repos, forums
 3. **Time spent** — wall-clock research time

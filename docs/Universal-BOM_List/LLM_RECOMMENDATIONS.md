@@ -11,15 +11,15 @@
 
 ## TL;DR — The Revvel LLM Stack
 
-| Role | LLM | Why |
-|---|---|---|
-| **Primary coding agent** | Claude Sonnet 4 (Anthropic) | Best code generation, reasoning, and context window |
-| **Primary reasoning agent** | Claude Opus 4 (Anthropic) | Highest reasoning quality for planning and evaluation |
-| **Fast/cheap agent tasks** | Claude Haiku 3.5 (Anthropic) | Near-instant responses for routine tasks |
-| **Search-augmented tasks** | Perplexity / Tavily + Claude | Web-grounded answers for BOM research |
-| **Local/private tasks** | Ollama + Llama 3.3 70B | Zero cost, offline, no data leaves the machine |
-| **Fallback/secondary** | GPT-4o (OpenAI) | When Claude is unavailable or for cross-validation |
-| **Multi-agent orchestration** | CrewAI + LangChain (FOSS) | Orchestration framework for the Agent Factory |
+| Role                          | LLM                          | Why                                                   |
+| ----------------------------- | ---------------------------- | ----------------------------------------------------- |
+| **Primary coding agent**      | Claude Sonnet 4 (Anthropic)  | Best code generation, reasoning, and context window   |
+| **Primary reasoning agent**   | Claude Opus 4 (Anthropic)    | Highest reasoning quality for planning and evaluation |
+| **Fast/cheap agent tasks**    | Claude Haiku 3.5 (Anthropic) | Near-instant responses for routine tasks              |
+| **Search-augmented tasks**    | Perplexity / Tavily + Claude | Web-grounded answers for BOM research                 |
+| **Local/private tasks**       | Ollama + Llama 3.3 70B       | Zero cost, offline, no data leaves the machine        |
+| **Fallback/secondary**        | GPT-4o (OpenAI)              | When Claude is unavailable or for cross-validation    |
+| **Multi-agent orchestration** | CrewAI + LangChain (FOSS)    | Orchestration framework for the Agent Factory         |
 
 ---
 
@@ -29,18 +29,18 @@
 
 After exhaustive research and direct evaluation across Claude 3.7 Sonnet, GPT-4o, Gemini 1.5 Pro, Llama 3.3 70B, and Mistral Large, **Claude is the clear choice** for Revvel's autonomous operation:
 
-| Criterion | Claude | GPT-4o | Gemini Pro | Llama 3.3 |
-|---|---|---|---|---|
-| **Code generation quality** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Long context handling** | ⭐⭐⭐⭐⭐ (200K) | ⭐⭐⭐⭐ (128K) | ⭐⭐⭐⭐⭐ (1M) | ⭐⭐⭐ (128K) |
-| **Instruction following** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Safety/refusal balance** | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **TypeScript/React quality** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Document/markdown output** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **API availability** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ |
-| **Cost efficiency** | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
-| **MCP compatibility** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
-| **GitHub Copilot integration** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐ | ⭐⭐ |
+| Criterion                      | Claude            | GPT-4o          | Gemini Pro      | Llama 3.3     |
+| ------------------------------ | ----------------- | --------------- | --------------- | ------------- |
+| **Code generation quality**    | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐        | ⭐⭐⭐⭐        | ⭐⭐⭐        |
+| **Long context handling**      | ⭐⭐⭐⭐⭐ (200K) | ⭐⭐⭐⭐ (128K) | ⭐⭐⭐⭐⭐ (1M) | ⭐⭐⭐ (128K) |
+| **Instruction following**      | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐        | ⭐⭐⭐⭐        | ⭐⭐⭐        |
+| **Safety/refusal balance**     | ⭐⭐⭐⭐          | ⭐⭐⭐⭐        | ⭐⭐⭐          | ⭐⭐⭐⭐⭐    |
+| **TypeScript/React quality**   | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐        | ⭐⭐⭐⭐        | ⭐⭐⭐        |
+| **Document/markdown output**   | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐        | ⭐⭐⭐⭐        | ⭐⭐⭐        |
+| **API availability**           | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐⭐      | ⭐⭐⭐⭐        | ⭐⭐⭐        |
+| **Cost efficiency**            | ⭐⭐⭐⭐          | ⭐⭐⭐          | ⭐⭐⭐⭐        | ⭐⭐⭐⭐⭐    |
+| **MCP compatibility**          | ⭐⭐⭐⭐⭐        | ⭐⭐⭐          | ⭐⭐⭐          | ⭐⭐          |
+| **GitHub Copilot integration** | ⭐⭐⭐⭐⭐        | ⭐⭐⭐⭐        | ⭐⭐⭐          | ⭐⭐          |
 
 **Key reasons Claude wins for Revvel:**
 
@@ -52,12 +52,12 @@ After exhaustive research and direct evaluation across Claude 3.7 Sonnet, GPT-4o
 
 ### 1.2. Claude Model Tiers for Revvel
 
-| Model | Speed | Cost (Input/Output) | Best For |
-|---|---|---|---|
-| **Claude Opus 4** | Slowest | $15 / $75 per M tokens | Deep reasoning, architecture decisions, complex BOM evaluations |
-| **Claude Sonnet 4** | Medium | $3 / $15 per M tokens | **Default for all Revvel coding tasks** — best balance |
-| **Claude Sonnet 3.7** | Medium | $3 / $15 per M tokens | Current Copilot default; proven in Revvel workflow |
-| **Claude Haiku 3.5** | Fastest | $0.25 / $1.25 per M tokens | Routine tasks: BOM status checks, doc updates, quick summaries |
+| Model                 | Speed   | Cost (Input/Output)        | Best For                                                        |
+| --------------------- | ------- | -------------------------- | --------------------------------------------------------------- |
+| **Claude Opus 4**     | Slowest | $15 / $75 per M tokens     | Deep reasoning, architecture decisions, complex BOM evaluations |
+| **Claude Sonnet 4**   | Medium  | $3 / $15 per M tokens      | **Default for all Revvel coding tasks** — best balance          |
+| **Claude Sonnet 3.7** | Medium  | $3 / $15 per M tokens      | Current Copilot default; proven in Revvel workflow              |
+| **Claude Haiku 3.5**  | Fastest | $0.25 / $1.25 per M tokens | Routine tasks: BOM status checks, doc updates, quick summaries  |
 
 **Revvel Recommendation:** Use **Sonnet 4** as the default. Route to **Opus 4** only for planning phases, architecture decisions, and complex multi-file audits. Route to **Haiku 3.5** for all high-frequency, low-stakes operations (status updates, label assignments, link checks).
 
@@ -109,7 +109,8 @@ routes:
     model: claude-sonnet-4
     max_tokens: 8192
 
-  - trigger: ["plan", "architect", "audit", "security", "multi-file", "evaluate"]
+  - trigger:
+      ["plan", "architect", "audit", "security", "multi-file", "evaluate"]
     model: claude-opus-4
     max_tokens: 16384
 
@@ -132,8 +133,9 @@ The **BOM Self-Healing Agent** is the autonomous process that periodically revie
 **Trigger:** Every deployment + monthly cron
 
 **Prompt strategy:**
+
 ```
-System: You are the Revvel BOM Self-Healing Agent. Your job is to review 
+System: You are the Revvel BOM Self-Healing Agent. Your job is to review
 the project BOM at [path] and identify:
 1. Items that are no longer needed or have been replaced
 2. New tools or APIs that should be added based on current best practices
@@ -147,6 +149,7 @@ Tools available: read_file, search_web (Brave/Tavily), create_github_issue
 ```
 
 **Operational cadence:**
+
 - **After every deployment:** Haiku runs a 2-minute status check (are all ✅ items still active?)
 - **Weekly:** Sonnet runs a deeper review (new tools in ecosystem? Price changes? New vulnerabilities?)
 - **Quarterly:** Opus runs a full architecture review (is the stack still the right choice?)
@@ -175,54 +178,54 @@ graph TD
 
 ### 4.1. Google Gemini — When to Use
 
-| Use Case | Model | Why |
-|---|---|---|
-| Very long document processing (>200K tokens) | Gemini 1.5 Pro | 1M context window |
-| Free tier development / prototyping | Gemini 1.5 Flash | Generous free tier |
-| Google Workspace integration | Gemini Advanced | Native Google ecosystem |
-| Image analysis (screenshots, designs) | Gemini Pro Vision | Competitive with Claude Vision |
+| Use Case                                     | Model             | Why                            |
+| -------------------------------------------- | ----------------- | ------------------------------ |
+| Very long document processing (>200K tokens) | Gemini 1.5 Pro    | 1M context window              |
+| Free tier development / prototyping          | Gemini 1.5 Flash  | Generous free tier             |
+| Google Workspace integration                 | Gemini Advanced   | Native Google ecosystem        |
+| Image analysis (screenshots, designs)        | Gemini Pro Vision | Competitive with Claude Vision |
 
 **Revvel fit:** Use as a **secondary model** for specific tasks requiring 1M+ context or when API budget is constrained.
 
 ### 4.2. OpenAI — When to Use
 
-| Use Case | Model | Why |
-|---|---|---|
-| Neurooz AI features | GPT-4o | Neurooz is designed around OpenAI API |
-| Fine-tuned models | GPT-3.5 Turbo / GPT-4o Mini | OpenAI has the best fine-tuning support |
-| Assistants API with file search | GPT-4o | OpenAI Assistants for document Q&A |
-| Structured outputs | GPT-4o | OpenAI's `response_format: json_object` is reliable |
+| Use Case                        | Model                       | Why                                                 |
+| ------------------------------- | --------------------------- | --------------------------------------------------- |
+| Neurooz AI features             | GPT-4o                      | Neurooz is designed around OpenAI API               |
+| Fine-tuned models               | GPT-3.5 Turbo / GPT-4o Mini | OpenAI has the best fine-tuning support             |
+| Assistants API with file search | GPT-4o                      | OpenAI Assistants for document Q&A                  |
+| Structured outputs              | GPT-4o                      | OpenAI's `response_format: json_object` is reliable |
 
 **Revvel fit:** Required for **Neurooz**. Keep as Claude fallback. Do not use as primary for coding tasks — Claude outperforms.
 
 ### 4.3. Groq — When to Use
 
-| Use Case | Model | Why |
-|---|---|---|
+| Use Case                       | Model                 | Why                             |
+| ------------------------------ | --------------------- | ------------------------------- |
 | Real-time chatbots / streaming | Llama 3.3 70B on Groq | 500+ tokens/sec — feels instant |
-| High-volume agent tasks | Mixtral 8x7B on Groq | Fast + cheap |
-| Development / testing | Any Groq model | Free tier |
+| High-volume agent tasks        | Mixtral 8x7B on Groq  | Fast + cheap                    |
+| Development / testing          | Any Groq model        | Free tier                       |
 
 **Revvel fit:** Wire into the **Fast Path** of the LLM router for latency-critical features. Also useful for **development** to avoid burning Claude credits.
 
 ### 4.4. Ollama (Local) — When to Use
 
-| Use Case | Model | Why |
-|---|---|---|
-| Development / offline work | Llama 3.3 70B | Free, no internet |
-| Private / sensitive data | Any Ollama model | Data never leaves the machine |
-| Skill testing | CodeLlama | No cost for prompt iteration |
-| Pre-production BOM checks | Llama 3.3 | Don't burn production API credits |
+| Use Case                   | Model            | Why                               |
+| -------------------------- | ---------------- | --------------------------------- |
+| Development / offline work | Llama 3.3 70B    | Free, no internet                 |
+| Private / sensitive data   | Any Ollama model | Data never leaves the machine     |
+| Skill testing              | CodeLlama        | No cost for prompt iteration      |
+| Pre-production BOM checks  | Llama 3.3        | Don't burn production API credits |
 
 **Revvel fit:** **Required for development** to avoid burning Claude/OpenAI credits. Set `REVVEL_LLM_BACKEND=ollama` in local `.env`. In production, automatically routes to Claude.
 
 ### 4.5. Mistral — When to Use
 
-| Use Case | Model | Why |
-|---|---|---|
+| Use Case                            | Model         | Why                           |
+| ----------------------------------- | ------------- | ----------------------------- |
 | European/GDPR-compliant deployments | Mistral Large | EU-based servers, GDPR-native |
-| Function calling | Mistral Large | Reliable function calling |
-| Code generation (alternative) | Codestral | Specialized coding model |
+| Function calling                    | Mistral Large | Reliable function calling     |
+| Code generation (alternative)       | Codestral     | Specialized coding model      |
 
 **Revvel fit:** **Evaluate for projects with EU data residency requirements.** Not recommended as primary.
 
@@ -234,15 +237,15 @@ Here is the complete recommended agent architecture for Revvel's autonomous self
 
 ### 5.1. Agents & Their LLMs
 
-| Agent | Role | LLM | Trigger |
-|---|---|---|---|
-| **Audrey (MIDNGHTSAPPHIRE)** | Primary coding agent | Claude Sonnet 4 | All PRs, issues |
-| **BOM Self-Heal Agent** | Audit and update BOMs | Claude Sonnet 4 / Haiku | Daily cron, post-deploy |
-| **Ralph Loop** | CI failure recovery | Claude Sonnet 4 | CI failure |
-| **Security Scan Agent** | Vulnerability triage | Claude Sonnet 4 | PR + weekly |
-| **Research Agent** | New tool discovery | Claude Sonnet 4 + Brave Search | Weekly |
-| **Deployment Agent** | Deploy coordination | Claude Haiku 3.5 | Deploy trigger |
-| **Doc Sync Agent** | Keep docs in sync | Claude Haiku 3.5 | Post-merge |
+| Agent                        | Role                  | LLM                            | Trigger                 |
+| ---------------------------- | --------------------- | ------------------------------ | ----------------------- |
+| **Audrey (MIDNGHTSAPPHIRE)** | Primary coding agent  | Claude Sonnet 4                | All PRs, issues         |
+| **BOM Self-Heal Agent**      | Audit and update BOMs | Claude Sonnet 4 / Haiku        | Daily cron, post-deploy |
+| **Ralph Loop**               | CI failure recovery   | Claude Sonnet 4                | CI failure              |
+| **Security Scan Agent**      | Vulnerability triage  | Claude Sonnet 4                | PR + weekly             |
+| **Research Agent**           | New tool discovery    | Claude Sonnet 4 + Brave Search | Weekly                  |
+| **Deployment Agent**         | Deploy coordination   | Claude Haiku 3.5               | Deploy trigger          |
+| **Doc Sync Agent**           | Keep docs in sync     | Claude Haiku 3.5               | Post-merge              |
 
 ### 5.2. Orchestration Framework — CrewAI
 
@@ -288,7 +291,7 @@ import { QdrantVectorStore } from "@langchain/qdrant";
 const vectorStore = await QdrantVectorStore.fromDocuments(
   revvelDocs,
   embeddings,
-  { url: process.env.QDRANT_URL, collectionName: "revvel-standards" }
+  { url: process.env.QDRANT_URL, collectionName: "revvel-standards" },
 );
 
 // Skills can now search the entire standards corpus
@@ -300,15 +303,15 @@ const chain = createRetrievalChain({ retriever, combineDocsChain });
 
 ## 6. Cost Projection — Running the Full Autonomous Stack
 
-| Agent | Frequency | Est. Claude Tokens/Run | Est. Monthly Cost |
-|---|---|---|---|
-| BOM Self-Heal (Haiku) | Daily | 10K tokens | ~$0.30/mo |
-| BOM Deep Audit (Sonnet) | Weekly | 50K tokens | ~$3/mo |
-| Ralph Loop (Sonnet) | Per CI failure | 20K tokens | ~$2/mo (varies) |
-| Security Scan (Sonnet) | Per PR | 15K tokens | ~$5/mo |
-| Research Agent (Sonnet) | Weekly | 30K tokens | ~$2/mo |
-| Doc Sync (Haiku) | Per merge | 5K tokens | ~$0.50/mo |
-| **Total** | | | **~$13–20/mo** |
+| Agent                   | Frequency      | Est. Claude Tokens/Run | Est. Monthly Cost |
+| ----------------------- | -------------- | ---------------------- | ----------------- |
+| BOM Self-Heal (Haiku)   | Daily          | 10K tokens             | ~$0.30/mo         |
+| BOM Deep Audit (Sonnet) | Weekly         | 50K tokens             | ~$3/mo            |
+| Ralph Loop (Sonnet)     | Per CI failure | 20K tokens             | ~$2/mo (varies)   |
+| Security Scan (Sonnet)  | Per PR         | 15K tokens             | ~$5/mo            |
+| Research Agent (Sonnet) | Weekly         | 30K tokens             | ~$2/mo            |
+| Doc Sync (Haiku)        | Per merge      | 5K tokens              | ~$0.50/mo         |
+| **Total**               |                |                        | **~$13–20/mo**    |
 
 This assumes ~10 PRs/week, ~2 CI failures/week, and 5 projects active. A very manageable cost for full autonomy.
 
@@ -316,16 +319,16 @@ This assumes ~10 PRs/week, ~2 CI failures/week, and 5 projects active. A very ma
 
 ## 7. Implementation Roadmap
 
-| Priority | Action | Effort | Benefit |
-|---|---|---|---|
-| P0 | Provision `ANTHROPIC_API_KEY` in Vault | 1 hour | Unlocks all Claude-based automation |
-| P0 | Configure model-router skill with Haiku/Sonnet/Opus routing | 2 hours | Cost-optimized LLM usage |
-| P1 | Deploy BOM Self-Heal Agent as GitHub Actions workflow | 4 hours | Autonomous BOM maintenance |
-| P1 | Add Brave Search API key; connect to Research Agent | 2 hours | Web-grounded BOM updates |
-| P2 | Set up Ollama on local dev machines | 1 hour | Free LLM for development |
-| P2 | Integrate CrewAI for multi-agent orchestration | 8 hours | Full agent factory |
-| P3 | Index Revvel standards in Qdrant for RAG | 4 hours | Skills can search standards |
+| Priority | Action                                                      | Effort  | Benefit                             |
+| -------- | ----------------------------------------------------------- | ------- | ----------------------------------- |
+| P0       | Provision `ANTHROPIC_API_KEY` in Vault                      | 1 hour  | Unlocks all Claude-based automation |
+| P0       | Configure model-router skill with Haiku/Sonnet/Opus routing | 2 hours | Cost-optimized LLM usage            |
+| P1       | Deploy BOM Self-Heal Agent as GitHub Actions workflow       | 4 hours | Autonomous BOM maintenance          |
+| P1       | Add Brave Search API key; connect to Research Agent         | 2 hours | Web-grounded BOM updates            |
+| P2       | Set up Ollama on local dev machines                         | 1 hour  | Free LLM for development            |
+| P2       | Integrate CrewAI for multi-agent orchestration              | 8 hours | Full agent factory                  |
+| P3       | Index Revvel standards in Qdrant for RAG                    | 4 hours | Skills can search standards         |
 
 ---
 
-*Last updated: April 14, 2026. Re-evaluate quarterly as the LLM landscape evolves rapidly.*
+_Last updated: April 14, 2026. Re-evaluate quarterly as the LLM landscape evolves rapidly._

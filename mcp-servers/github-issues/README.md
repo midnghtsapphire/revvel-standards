@@ -49,7 +49,9 @@ Add to your `.mcp.json`:
   "mcpServers": {
     "github-issues-enhanced": {
       "command": "node",
-      "args": ["/absolute/path/to/revvel-standards/mcp-servers/github-issues/index.js"],
+      "args": [
+        "/absolute/path/to/revvel-standards/mcp-servers/github-issues/index.js"
+      ],
       "env": {
         "GITHUB_TOKEN": "${GITHUB_TOKEN}"
       }
@@ -158,11 +160,13 @@ npm run dev  # Run with auto-reload
 ## Security
 
 **Important Security Updates:**
+
 - Uses `@modelcontextprotocol/sdk` version 1.25.2+ which includes:
   - Fix for ReDoS vulnerability (CVE affecting versions < 1.25.2)
   - DNS rebinding protection enabled by default (fixed in 1.24.0+)
 
 **Security Best Practices:**
+
 - Never commit your `GITHUB_TOKEN` to source control
 - Use GitHub Actions secrets for CI/CD
 - Prefer GitHub Apps over personal access tokens for production

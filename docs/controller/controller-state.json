@@ -4,10 +4,7 @@
   "workflows": {
     ".github/workflows/perplexity-research-agent.yml": {
       "count": 2,
-      "tried": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
-      ],
+      "tried": ["anthropic/claude-opus-4.8", "anthropic/claude-opus-4.7"],
       "last_cut_at": "2026-07-15T21:14:31.239Z"
     }
   }

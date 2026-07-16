@@ -318,4 +318,4 @@
 
 ---
 
-*Auto-maintained. Last sync: 2026-04-15. Script: `scripts/sync-flow-charts.js`*
+_Auto-maintained. Last sync: 2026-04-15. Script: `scripts/sync-flow-charts.js`_

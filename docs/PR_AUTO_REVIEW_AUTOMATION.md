@@ -47,11 +47,11 @@ graph TD
 
 The system can submit three types of reviews:
 
-| Review Type | When Used | Effect |
-|------------|-----------|--------|
-| `APPROVE` | No critical issues found; code looks good | PR can be merged (with required approval count met) |
-| `REQUEST_CHANGES` | Critical bugs, security issues, or blocking problems | PR cannot be merged until addressed |
-| `COMMENT` | Suggestions or observations without blocking issues | PR can still be merged; feedback is advisory |
+| Review Type       | When Used                                            | Effect                                              |
+| ----------------- | ---------------------------------------------------- | --------------------------------------------------- |
+| `APPROVE`         | No critical issues found; code looks good            | PR can be merged (with required approval count met) |
+| `REQUEST_CHANGES` | Critical bugs, security issues, or blocking problems | PR cannot be merged until addressed                 |
+| `COMMENT`         | Suggestions or observations without blocking issues  | PR can still be merged; feedback is advisory        |
 
 ---
 
@@ -59,14 +59,14 @@ The system can submit three types of reviews:
 
 ### Trigger Label
 
-| Label | Color | Meaning | Applied By |
-|-------|-------|---------|------------|
+| Label               | Color                                                               | Meaning         | Applied By           |
+| ------------------- | ------------------------------------------------------------------- | --------------- | -------------------- |
 | `awaiting-approval` | ![#fbca04](https://via.placeholder.com/15/fbca04/fbca04.png) Yellow | PR needs review | pr-review-status.yml |
 
 ### Skip Labels
 
-| Label | Meaning | Effect |
-|-------|---------|--------|
+| Label       | Meaning             | Effect                |
+| ----------- | ------------------- | --------------------- |
 | `no-triage` | Skip all automation | Workflow will not run |
 
 ---
@@ -96,11 +96,13 @@ _This is an automated review via OpenRouter._
 ### 3. OpenRouter Analyzes
 
 The script fetches:
+
 - PR details (title, description, author)
 - Files changed (list with additions/deletions)
 - Full diff of all changes
 
 It sends this to OpenRouter with instructions to:
+
 - Check for bugs, security issues, logic errors
 - Review code quality and best practices
 - Provide specific, actionable feedback
@@ -134,6 +136,7 @@ OpenRouter returns a structured review:
 ```
 
 The system submits a formal GitHub review with:
+
 - Inline comments on lines 42 and 15
 - Overall summary
 - General feedback points
@@ -142,6 +145,7 @@ The system submits a formal GitHub review with:
 ### 5. Author Reviews Feedback
 
 Alice sees the automated review in the PR's "Files changed" tab with inline comments on specific lines. She can:
+
 - Address the suggestions
 - Reply to individual comments
 - Request re-review if needed
@@ -166,10 +170,11 @@ Edit `.github/workflows/pr-auto-review.yml`:
 
 ```yaml
 env:
-  MODEL: anthropic/claude-sonnet-4  # Change this
+  MODEL: anthropic/claude-sonnet-4 # Change this
 ```
 
 Available models on OpenRouter:
+
 - `anthropic/claude-sonnet-4` (default) — Good balance of speed and quality
 - `anthropic/claude-opus-4` — Highest quality, slower
 - `openai/gpt-4-turbo` — Alternative high-quality option
@@ -189,8 +194,8 @@ Or set environment variables in the "Run OpenRouter auto-review" step:
 
 ```yaml
 env:
-  MAX_DIFF_SIZE: 50000      # Diff truncation size (default: 30000)
-  MAX_FILES_TO_FETCH: 200   # Max files to fetch (default: 100)
+  MAX_DIFF_SIZE: 50000 # Diff truncation size (default: 30000)
+  MAX_FILES_TO_FETCH: 200 # Max files to fetch (default: 100)
 ```
 
 #### Adjust Review Criteria
@@ -225,6 +230,7 @@ Edit `scripts/pr-auto-review.js` and modify the `buildSystemPrompt()` function t
 **Issue:** Workflow doesn't run when PR needs review
 
 **Solutions:**
+
 1. Check if `OPENROUTER_API_KEY` is configured (workflow will skip silently if not set)
 2. Verify the `awaiting-approval` label is present
 3. Check for `no-triage` label (blocks automation)
@@ -236,6 +242,7 @@ Edit `scripts/pr-auto-review.js` and modify the `buildSystemPrompt()` function t
 **Issue:** Workflow runs but no review appears
 
 **Solutions:**
+
 1. Check workflow run logs for error messages
 2. Verify OpenRouter API status: https://openrouter.ai/status
 3. Check API key has credits remaining
@@ -247,6 +254,7 @@ Edit `scripts/pr-auto-review.js` and modify the `buildSystemPrompt()` function t
 **Issue:** Reviews are not helpful or miss important issues
 
 **Solutions:**
+
 1. Try a different model (Claude Opus for higher quality)
 2. Adjust the system prompt in `pr-auto-review.js`
 3. Provide more context in PR descriptions
@@ -259,6 +267,7 @@ Edit `scripts/pr-auto-review.js` and modify the `buildSystemPrompt()` function t
 **Issue:** Bot reviews every small change or hits rate limits
 
 **Solutions:**
+
 1. Add `no-triage` label to skip automation on specific PRs
 2. Adjust trigger conditions in workflow file
 3. Use draft PRs for work-in-progress (bot only reviews ready PRs)
@@ -271,6 +280,7 @@ Edit `scripts/pr-auto-review.js` and modify the `buildSystemPrompt()` function t
 **Issue:** PR is skipped because it's too large
 
 **Solutions:**
+
 1. Split the PR into smaller, focused changes
 2. Increase size limits in workflow configuration (see "Adjust Size Limits" above)
 3. Use `no-triage` label and request manual human review
@@ -308,15 +318,16 @@ Edit `scripts/pr-auto-review.js` and modify the `buildSystemPrompt()` function t
 
 ## Differences from pr-review-request-handler.yml
 
-| Feature | pr-auto-review.yml | pr-review-request-handler.yml |
-|---------|-------------------|------------------------------|
-| **Trigger** | PR needs initial review | Reviewer requests changes |
-| **Action** | Submits a new review | Analyzes existing feedback |
-| **Output** | Formal GitHub review with inline comments | Analysis comment with recommendations |
-| **Purpose** | Proactive code review | Reactive change guidance |
-| **When to use** | First review pass | After human has requested changes |
+| Feature         | pr-auto-review.yml                        | pr-review-request-handler.yml         |
+| --------------- | ----------------------------------------- | ------------------------------------- |
+| **Trigger**     | PR needs initial review                   | Reviewer requests changes             |
+| **Action**      | Submits a new review                      | Analyzes existing feedback            |
+| **Output**      | Formal GitHub review with inline comments | Analysis comment with recommendations |
+| **Purpose**     | Proactive code review                     | Reactive change guidance              |
+| **When to use** | First review pass                         | After human has requested changes     |
 
 Both workflows complement each other:
+
 1. **pr-auto-review.yml** provides initial automated review
 2. Human reviewer reviews and may request changes
 3. **pr-review-request-handler.yml** analyzes requested changes and suggests fixes
@@ -328,6 +339,7 @@ Both workflows complement each other:
 ### API Calls
 
 The script makes these GitHub API calls:
+
 1. `GET /repos/{owner}/{repo}/pulls/{pr_number}` — Fetch PR details
 2. `GET /repos/{owner}/{repo}/pulls/{pr_number}/files` — Fetch changed files
 3. `GET /repos/{owner}/{repo}/pulls/{pr_number}` (Accept: diff) — Fetch diff
@@ -339,12 +351,16 @@ The script makes these GitHub API calls:
 The script sends a structured prompt and expects JSON response:
 
 **Request:**
+
 ```json
 {
   "model": "anthropic/claude-sonnet-4",
   "messages": [
     { "role": "system", "content": "You are an expert code reviewer..." },
-    { "role": "user", "content": "# PR #123: Add feature\n\n## Files Changed\n..." }
+    {
+      "role": "user",
+      "content": "# PR #123: Add feature\n\n## Files Changed\n..."
+    }
   ],
   "temperature": 0.3,
   "max_tokens": 4000
@@ -352,6 +368,7 @@ The script sends a structured prompt and expects JSON response:
 ```
 
 **Expected Response:**
+
 ```json
 {
   "overall_assessment": "APPROVE | REQUEST_CHANGES | COMMENT",
@@ -425,14 +442,14 @@ Potential improvements (not yet implemented):
 
 OpenRouter charges vary by model:
 
-| Model | Cost per 1M tokens (input) | Cost per 1M tokens (output) | Typical PR cost |
-|-------|----------------------------|----------------------------|-----------------|
-| Claude Sonnet 4 | $3 | $15 | ~$0.05-0.15 |
-| Claude Opus 4 | $15 | $75 | ~$0.25-0.75 |
-| GPT-4 Turbo | $10 | $30 | ~$0.10-0.30 |
-| GPT-3.5 Turbo | $0.50 | $1.50 | ~$0.01-0.03 |
+| Model           | Cost per 1M tokens (input) | Cost per 1M tokens (output) | Typical PR cost |
+| --------------- | -------------------------- | --------------------------- | --------------- |
+| Claude Sonnet 4 | $3                         | $15                         | ~$0.05-0.15     |
+| Claude Opus 4   | $15                        | $75                         | ~$0.25-0.75     |
+| GPT-4 Turbo     | $10                        | $30                         | ~$0.10-0.30     |
+| GPT-3.5 Turbo   | $0.50                      | $1.50                       | ~$0.01-0.03     |
 
-*Estimates assume 5-10K token input (PR diff) and 500-1K token output (review). Actual costs vary based on PR size.*
+_Estimates assume 5-10K token input (PR diff) and 500-1K token output (review). Actual costs vary based on PR size._
 
 ---
 

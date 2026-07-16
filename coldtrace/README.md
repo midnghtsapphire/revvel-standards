@@ -110,11 +110,11 @@ docker compose up --build
 
 ## API Keys (Free)
 
-| Service | Purpose | Free Tier | Register |
-|---------|---------|-----------|----------|
-| **OpenTopography** | LiDAR + DEM fetch | 2,500 req/day | https://opentopography.org |
-| **Sentinel Hub** | Satellite NDVI | 30k units/mo | https://www.sentinel-hub.com |
-| **USGS EarthData** | Landsat + archive | Free | https://urs.earthrs.gov |
+| Service            | Purpose           | Free Tier     | Register                     |
+| ------------------ | ----------------- | ------------- | ---------------------------- |
+| **OpenTopography** | LiDAR + DEM fetch | 2,500 req/day | https://opentopography.org   |
+| **Sentinel Hub**   | Satellite NDVI    | 30k units/mo  | https://www.sentinel-hub.com |
+| **USGS EarthData** | Landsat + archive | Free          | https://urs.earthrs.gov      |
 
 Set `DEMO_MODE=false` and add keys to `.env` to activate real data.
 
@@ -122,16 +122,16 @@ Set `DEMO_MODE=false` and add keys to `.env` to activate real data.
 
 ## GIS Engine Stack
 
-| Role | Tool | License |
-|------|------|---------|
-| Viewshed / line-of-sight | **WhiteboxTools** | MIT |
-| LiDAR processing | **PDAL** | BSD |
-| LAS/LAZ I/O | **laspy** | BSD |
-| Raster processing | **rasterio + GDAL** | MIT/X |
-| Temporal analysis | **rioxarray + xarray** | Apache 2 |
-| Spatial analysis | **GeoPandas + Shapely** | BSD |
-| Map rendering | **MapLibre GL JS** | BSD-2 |
-| Map tiles | **OpenFreeMap** | Free |
+| Role                     | Tool                    | License  |
+| ------------------------ | ----------------------- | -------- |
+| Viewshed / line-of-sight | **WhiteboxTools**       | MIT      |
+| LiDAR processing         | **PDAL**                | BSD      |
+| LAS/LAZ I/O              | **laspy**               | BSD      |
+| Raster processing        | **rasterio + GDAL**     | MIT/X    |
+| Temporal analysis        | **rioxarray + xarray**  | Apache 2 |
+| Spatial analysis         | **GeoPandas + Shapely** | BSD      |
+| Map rendering            | **MapLibre GL JS**      | BSD-2    |
+| Map tiles                | **OpenFreeMap**         | Free     |
 
 ---
 
@@ -149,16 +149,16 @@ P(location) =
 
 ### Subject Behavioral Profiles
 
-Based on Koester (2008) *Lost Person Behavior* empirical data:
+Based on Koester (2008) _Lost Person Behavior_ empirical data:
 
-| Subject Type | Expected Distance Range |
-|-------------|------------------------|
-| Person (healthy adult) | 3–8 km |
-| Person (impaired/disoriented) | 1–3.5 km |
-| Person (elderly) | 1.5–4 km |
-| Person (child) | 0.5–2.5 km |
-| Remains | 0–0.5 km from placement site |
-| Vehicle | 2–10 km |
+| Subject Type                  | Expected Distance Range      |
+| ----------------------------- | ---------------------------- |
+| Person (healthy adult)        | 3–8 km                       |
+| Person (impaired/disoriented) | 1–3.5 km                     |
+| Person (elderly)              | 1.5–4 km                     |
+| Person (child)                | 0.5–2.5 km                   |
+| Remains                       | 0–0.5 km from placement site |
+| Vehicle                       | 2–10 km                      |
 
 ---
 
@@ -222,12 +222,12 @@ can query analysis results programmatically:
 
 ## Monetization
 
-| Tier | Price | Features |
-|------|-------|---------|
-| Community | Free | Demo mode, single session |
-| Pro | $49/mo | Real data, saved cases, exports, API access |
-| Agency | $299/mo | Multi-user, ArcGIS export, priority support |
-| Enterprise | Custom | Federal/legal, dedicated infra |
+| Tier       | Price   | Features                                    |
+| ---------- | ------- | ------------------------------------------- |
+| Community  | Free    | Demo mode, single session                   |
+| Pro        | $49/mo  | Real data, saved cases, exports, API access |
+| Agency     | $299/mo | Multi-user, ArcGIS export, priority support |
+| Enterprise | Custom  | Federal/legal, dedicated infra              |
 
 Giving Pledge: % of Pro/Agency/Enterprise revenue to Freedom Angel Fighters
 (trafficking survivor reskilling, recovery, restoration).
@@ -236,8 +236,8 @@ Giving Pledge: % of Pro/Agency/Enterprise revenue to Freedom Angel Fighters
 
 ## References
 
-- Koester, R.J. (2008). *Lost Person Behavior.* dbS Productions.
-- Carter, D.O. et al. (2010). Cadaver decomposition in terrestrial ecosystems. *Naturwissenschaften*, 94(1).
+- Koester, R.J. (2008). _Lost Person Behavior._ dbS Productions.
+- Carter, D.O. et al. (2010). Cadaver decomposition in terrestrial ecosystems. _Naturwissenschaften_, 94(1).
 - USGS OFR 2016-1113 — LiDAR for forensic grave detection.
 - WhiteboxTools documentation: https://jblindsay.github.io/ghrg/WhiteboxTools/
 - OpenTopography API: https://opentopography.org/developers
@@ -245,6 +245,6 @@ Giving Pledge: % of Pro/Agency/Enterprise revenue to Freedom Angel Fighters
 
 ---
 
-*ColdTrace is an open-source, non-partisan investigation tool. It does not
+_ColdTrace is an open-source, non-partisan investigation tool. It does not
 access law enforcement databases and does not store case data beyond your own
-session. All data sources used are public / free-tier.*
+session. All data sources used are public / free-tier._

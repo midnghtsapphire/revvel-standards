@@ -5,7 +5,7 @@
 **Created:** 2026-07-06  
 **Researcher:** Copilot + OpenRouter  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -15,12 +15,12 @@ Build an FDA-compliant app or tool for Photobiomodulation Therapy (PBMT) — cov
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | false |
-| Archived | false |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | false |
+| Archived    | false |
 
 ## Research Checklist
 
@@ -41,6 +41,7 @@ Build an FDA-compliant app or tool for Photobiomodulation Therapy (PBMT) — cov
 The FDA issued draft guidance (January 12, 2023) on Photobiomodulation (PBM) Devices for 510(k) premarket notification submissions. PBM devices (also called low-level laser/light therapy — LLLT) are generally classified as Class II medical devices requiring a 510(k) to legally market in the US ([Federal Register, Jan 2023](https://www.federalregister.gov/documents/2023/01/12/2023-00422/photobiomodulation-devices-premarket-notification-submissions-draft-guidance-for-industry-and-food)).
 
 Key 510(k) submission requirements per FDA guidance:
+
 - **Device Description:** anatomical areas of intended use, light generation mechanism, wavelength, power output, treatment area, emission duration, irradiance
 - **Non-clinical Testing:** safety, electromagnetic compatibility (IEC 60601), biocompatibility (ISO 10993), mechanical safety, and performance testing
 - **Clinical Studies:** required when the new device has different indications, technology, or claims vs. predicate devices
@@ -71,66 +72,69 @@ Primary revenue lever: monthly SaaS subscriptions on Polar.sh; secondary lever: 
 
 **Output shapes required (full revvel-standards product bundle):**
 
-| Output | Description |
-| --- | --- |
-| Public landing page | SEO-optimized marketing page, FDA compliance overview, CTA to sign up |
-| Authenticated app | PBMT 510(k) compliance checklist builder, document tracker, regulation navigator |
-| Protocol Planner | Clinical dosimetry calculator (wavelength, power density, treatment time, dose in J/cm²) |
-| PDF export | Compliance checklist PDF, treatment protocol PDF (Polar.sh premium tier gated) |
-| REST API | `POST /api/compliance-check` — returns gaps in 510(k) readiness for a given device spec |
-| CLI | `pbmt check --device-spec spec.json` — runs compliance gap check locally |
+| Output              | Description                                                                              |
+| ------------------- | ---------------------------------------------------------------------------------------- |
+| Public landing page | SEO-optimized marketing page, FDA compliance overview, CTA to sign up                    |
+| Authenticated app   | PBMT 510(k) compliance checklist builder, document tracker, regulation navigator         |
+| Protocol Planner    | Clinical dosimetry calculator (wavelength, power density, treatment time, dose in J/cm²) |
+| PDF export          | Compliance checklist PDF, treatment protocol PDF (Polar.sh premium tier gated)           |
+| REST API            | `POST /api/compliance-check` — returns gaps in 510(k) readiness for a given device spec  |
+| CLI                 | `pbmt check --device-spec spec.json` — runs compliance gap check locally                 |
 
 ## Step 2 — Deep Web Research
 
 ### Target Audience
 
 **Segment 1 — Small PBMT Device Manufacturers (~2,000–5,000 in US)**
+
 - Pain point: FDA 510(k) process is opaque, expensive, and time-consuming without regulatory consultants ($200–$500/hr)
 - Willingness to pay: $49–$149/month for self-service regulatory guidance
 - Decision maker: regulatory affairs manager or founder of a medtech startup
 
 **Segment 2 — PBMT Clinicians and Practitioners (~15,000–30,000 in North America — internal estimate)**
+
 - Pain point: dosimetry calculations are manual, error-prone; no standardized protocol tracking exists
 - Willingness to pay: $9–$29/month for session tracking and protocol templates
 - Decision maker: clinic owner, physical therapist, chiropractor
 
 **Segment 3 — Wellness Spas and Consumer PBMT Users**
+
 - Fastest-growing segment; consumer red light therapy panels from $200–$1,500
 - Pain point: no guidance on optimal protocols for home use; fear of overexposure
 - Willingness to pay: free tier acceptable; upsell to $9/month for personalized regimens
 
 ### Competitor Analysis
 
-| Competitor | Focus | Pricing | Notable Features |
-| --- | --- | --- | --- |
-| Greenlight Guru | Medical device QMS / 510(k) | $500–$2,000/month (enterprise) | Full QMS, 510(k) project management, design controls |
-| MasterControl | Document control / compliance | $1,000+/month (enterprise) | Workflow automation, audit trails |
-| Qualio | QMS for medical devices | ~$250–$600/month | Regulatory templates, submission tracking |
-| Arena QMS | End-to-end device management | Pricing data pending — competitive benchmark research required. | Regulatory compliance modules |
-| Veeva Vault QMS | Enterprise document/submission mgmt | Pricing data pending — competitive benchmark research required. | Enterprise-grade, submission lifecycle |
-| THOR Dosimetry App | Clinical PBMT dosimetry | Free (with device purchase) | Session logging, dosimetry tables |
-| Lumaflex App | Consumer red light therapy tracking | Free (with Lumaflex device $350–$700) | Bluetooth sync, reminders, session logs |
+| Competitor         | Focus                               | Pricing                                                         | Notable Features                                     |
+| ------------------ | ----------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------- |
+| Greenlight Guru    | Medical device QMS / 510(k)         | $500–$2,000/month (enterprise)                                  | Full QMS, 510(k) project management, design controls |
+| MasterControl      | Document control / compliance       | $1,000+/month (enterprise)                                      | Workflow automation, audit trails                    |
+| Qualio             | QMS for medical devices             | ~$250–$600/month                                                | Regulatory templates, submission tracking            |
+| Arena QMS          | End-to-end device management        | Pricing data pending — competitive benchmark research required. | Regulatory compliance modules                        |
+| Veeva Vault QMS    | Enterprise document/submission mgmt | Pricing data pending — competitive benchmark research required. | Enterprise-grade, submission lifecycle               |
+| THOR Dosimetry App | Clinical PBMT dosimetry             | Free (with device purchase)                                     | Session logging, dosimetry tables                    |
+| Lumaflex App       | Consumer red light therapy tracking | Free (with Lumaflex device $350–$700)                           | Bluetooth sync, reminders, session logs              |
 
 **Gap identified:** No affordable ($49–$149/month), PBMT-specific, self-service tool exists for the FDA 510(k) compliance + clinical protocol planning use case. The field is split between expensive enterprise QMS platforms and free device-bundled apps.
 
 ### SEO and Marketing Keywords
 
-| Keyword | Est. Monthly Searches | Notes |
-| --- | --- | --- |
-| "photobiomodulation 510k" | 100–500 (internal estimate) | High-intent regulatory; low competition |
-| "PBMT protocol calculator" | 500–2,000 (internal estimate) | Clinical practitioners; mid-funnel |
-| "red light therapy dosage calculator" | 2,000–10,000 (internal estimate) | Broad consumer; top-of-funnel |
-| "FDA medical device 510k checklist" | 1,000–5,000 (internal estimate) | Compliance-seeker; high intent |
-| "photobiomodulation therapy app" | 1,000–5,000 (internal estimate) | Direct product match |
+| Keyword                               | Est. Monthly Searches            | Notes                                   |
+| ------------------------------------- | -------------------------------- | --------------------------------------- |
+| "photobiomodulation 510k"             | 100–500 (internal estimate)      | High-intent regulatory; low competition |
+| "PBMT protocol calculator"            | 500–2,000 (internal estimate)    | Clinical practitioners; mid-funnel      |
+| "red light therapy dosage calculator" | 2,000–10,000 (internal estimate) | Broad consumer; top-of-funnel           |
+| "FDA medical device 510k checklist"   | 1,000–5,000 (internal estimate)  | Compliance-seeker; high intent          |
+| "photobiomodulation therapy app"      | 1,000–5,000 (internal estimate)  | Direct product match                    |
 
 All search volume estimates are internal/unverified — primary source data required from SEMrush or Ahrefs before launch.
 
 ### GitHub Stars for Referenced Open-Source Tools
 
-| Tool | Stars | Notes |
-| --- | --- | --- |
-| PropertyWebBuilder (reference only) | ~1,100 | Not relevant — listed for template reference |
-| No open-source PBMT 510(k) tool found | N/A | Gap confirms greenfield opportunity |
+| Tool                                  | Stars  | Notes                                        |
+| ------------------------------------- | ------ | -------------------------------------------- |
+| PropertyWebBuilder (reference only)   | ~1,100 | Not relevant — listed for template reference |
+| No open-source PBMT 510(k) tool found | N/A    | Gap confirms greenfield opportunity          |
 
 ### Community Chatter
 
@@ -170,15 +174,15 @@ All search volume estimates are internal/unverified — primary source data requ
 
 ### Technical Stack
 
-| Layer | Choice | Reason |
-| --- | --- | --- |
-| Frontend | Next.js 15 (App Router) | Monorepo standard |
-| Styling | Tailwind CSS | Monorepo standard |
-| Auth | Supabase Auth | Monorepo standard |
-| DB | Supabase (Postgres) | Monorepo standard |
-| PDF export | Pandoc / WeasyPrint | PDF playbook standard |
-| Deployment | Vercel | Monorepo standard |
-| Port | 3010 | Next available per AGENTS.md port assignment table |
+| Layer      | Choice                  | Reason                                             |
+| ---------- | ----------------------- | -------------------------------------------------- |
+| Frontend   | Next.js 15 (App Router) | Monorepo standard                                  |
+| Styling    | Tailwind CSS            | Monorepo standard                                  |
+| Auth       | Supabase Auth           | Monorepo standard                                  |
+| DB         | Supabase (Postgres)     | Monorepo standard                                  |
+| PDF export | Pandoc / WeasyPrint     | PDF playbook standard                              |
+| Deployment | Vercel                  | Monorepo standard                                  |
+| Port       | 3010                    | Next available per AGENTS.md port assignment table |
 
 ### Definition of Done
 
@@ -202,19 +206,19 @@ All search volume estimates are internal/unverified — primary source data requ
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Severity | Mitigation |
-| --- | --- | --- |
-| FDA guidance is still draft (Jan 2023) — may change before finalization | High | Build checklist as editable/updateable config; monitor FDA docket FDA-2022-D-3116 |
-| Product perceived as legal/medical advice | High | Prominent disclaimer: "This tool is for educational and informational purposes only; not a substitute for qualified regulatory or medical counsel" |
-| Dosimetry errors could lead to patient harm | High | Cite all dose references; add safety warnings at threshold values; require professional acknowledgment |
-| Compliance SaaS market dominated by enterprise tools with deep pockets | Medium | Stay focused on PBMT niche + price point under $149/month where enterprise players don't compete |
-| SEO keyword volumes may not support organic acquisition at scale | Medium | Validate with SEMrush/Ahrefs before launch; supplement with LinkedIn and NAALT/ASLMS community outreach |
-| Device manufacturer segment is small in absolute numbers | Medium | Layer in clinical + consumer segments to broaden TAM; offer API access for device manufacturers to embed in their own software |
+| Risk                                                                    | Severity | Mitigation                                                                                                                                         |
+| ----------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FDA guidance is still draft (Jan 2023) — may change before finalization | High     | Build checklist as editable/updateable config; monitor FDA docket FDA-2022-D-3116                                                                  |
+| Product perceived as legal/medical advice                               | High     | Prominent disclaimer: "This tool is for educational and informational purposes only; not a substitute for qualified regulatory or medical counsel" |
+| Dosimetry errors could lead to patient harm                             | High     | Cite all dose references; add safety warnings at threshold values; require professional acknowledgment                                             |
+| Compliance SaaS market dominated by enterprise tools with deep pockets  | Medium   | Stay focused on PBMT niche + price point under $149/month where enterprise players don't compete                                                   |
+| SEO keyword volumes may not support organic acquisition at scale        | Medium   | Validate with SEMrush/Ahrefs before launch; supplement with LinkedIn and NAALT/ASLMS community outreach                                            |
+| Device manufacturer segment is small in absolute numbers                | Medium   | Layer in clinical + consumer segments to broaden TAM; offer API access for device manufacturers to embed in their own software                     |

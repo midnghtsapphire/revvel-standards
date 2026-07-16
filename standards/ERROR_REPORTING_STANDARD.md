@@ -23,24 +23,25 @@ Tier 2 — Email (via Resend or configured transport)
 Tier 3 — GitHub Issue (auto-created, labeled, assigned)
 ```
 
-| Tier | Trigger | Output |
-|---|---|---|
-| **Console** | Every error | `console.error` with structured log object |
-| **Email** | severity ≥ `medium` | Email to configured admin address via Resend |
-| **GitHub Issue** | severity ≥ `high` | Issue auto-created in app repo with full context |
+| Tier             | Trigger             | Output                                           |
+| ---------------- | ------------------- | ------------------------------------------------ |
+| **Console**      | Every error         | `console.error` with structured log object       |
+| **Email**        | severity ≥ `medium` | Email to configured admin address via Resend     |
+| **GitHub Issue** | severity ≥ `high`   | Issue auto-created in app repo with full context |
 
 ---
 
 ## 3. Severity Levels
 
-| Level | Code | When to Use |
-|---|---|---|
-| `low` | 1 | Expected user errors, input validation failures, 404s |
-| `medium` | 2 | Unexpected but recoverable server errors, third-party timeouts |
-| `high` | 3 | Data integrity failures, auth system errors, payment failures |
-| `critical` | 4 | System down, database unreachable, security incidents |
+| Level      | Code | When to Use                                                    |
+| ---------- | ---- | -------------------------------------------------------------- |
+| `low`      | 1    | Expected user errors, input validation failures, 404s          |
+| `medium`   | 2    | Unexpected but recoverable server errors, third-party timeouts |
+| `high`     | 3    | Data integrity failures, auth system errors, payment failures  |
+| `critical` | 4    | System down, database unreachable, security incidents          |
 
 **Rules:**
+
 - Default severity for an unknown error is `medium`.
 - When in doubt, escalate up (use a higher severity).
 - `critical` errors bypass the cooldown and always fire immediately.
@@ -55,20 +56,20 @@ Every significant server job must be wrapped with `monitored()`. "Significant" m
 
 ```typescript
 interface MonitoredOptions {
-  jobName: string;          // Unique name for this job — used in emails + GitHub issues
-  severity?: 'low' | 'medium' | 'high' | 'critical';  // Default: 'medium'
+  jobName: string; // Unique name for this job — used in emails + GitHub issues
+  severity?: "low" | "medium" | "high" | "critical"; // Default: 'medium'
   cooldownMinutes?: number; // Minimum minutes between repeated GitHub issues. Default: 60
-  tags?: string[];          // Optional extra labels for the GitHub issue
+  tags?: string[]; // Optional extra labels for the GitHub issue
 }
 
 interface ErrorReportPayload {
   jobName: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  severity: "low" | "medium" | "high" | "critical";
   error: Error;
   context?: Record<string, unknown>;
   occurredAt: Date;
   appName: string;
-  environment: 'production' | 'staging' | 'development';
+  environment: "production" | "staging" | "development";
 }
 
 /**
@@ -81,8 +82,8 @@ interface ErrorReportPayload {
  */
 async function monitored<T>(
   fn: () => Promise<T>,
-  options: MonitoredOptions
-): Promise<T>
+  options: MonitoredOptions,
+): Promise<T>;
 ```
 
 ### Usage Example
@@ -95,46 +96,60 @@ await monitored(
     await saveToDatabase(records);
   },
   {
-    jobName: 'daily-data-ingestion',
-    severity: 'high',
+    jobName: "daily-data-ingestion",
+    severity: "high",
     cooldownMinutes: 120,
-    tags: ['data-pipeline'],
-  }
+    tags: ["data-pipeline"],
+  },
 );
 ```
 
 ### Implementation Sketch
 
 ```typescript
-async function monitored<T>(fn: () => Promise<T>, options: MonitoredOptions): Promise<T> {
+async function monitored<T>(
+  fn: () => Promise<T>,
+  options: MonitoredOptions,
+): Promise<T> {
   try {
     return await fn();
   } catch (error) {
     const payload: ErrorReportPayload = {
       jobName: options.jobName,
-      severity: options.severity ?? 'medium',
+      severity: options.severity ?? "medium",
       error: error instanceof Error ? error : new Error(String(error)),
       occurredAt: new Date(),
-      appName: process.env.APP_NAME ?? 'unknown',
-      environment: (process.env.NODE_ENV as ErrorReportPayload['environment']) ?? 'production',
+      appName: process.env.APP_NAME ?? "unknown",
+      environment:
+        (process.env.NODE_ENV as ErrorReportPayload["environment"]) ??
+        "production",
     };
 
     // Tier 1: Console — always
-    console.error('[ERROR_REPORT]', JSON.stringify({
-      ...payload,
-      error: { message: payload.error.message, stack: payload.error.stack },
-    }));
+    console.error(
+      "[ERROR_REPORT]",
+      JSON.stringify({
+        ...payload,
+        error: { message: payload.error.message, stack: payload.error.stack },
+      }),
+    );
 
     // Tier 2: Email — severity >= medium
-    if (['medium', 'high', 'critical'].includes(payload.severity)) {
-      await sendErrorEmail(payload).catch(e => console.error('Email send failed:', e));
+    if (["medium", "high", "critical"].includes(payload.severity)) {
+      await sendErrorEmail(payload).catch((e) =>
+        console.error("Email send failed:", e),
+      );
     }
 
     // Tier 3: GitHub Issue — severity >= high, with cooldown
-    if (['high', 'critical'].includes(payload.severity)) {
-      const canFire = payload.severity === 'critical' || (await checkCooldown(payload.jobName, options.cooldownMinutes ?? 60));
+    if (["high", "critical"].includes(payload.severity)) {
+      const canFire =
+        payload.severity === "critical" ||
+        (await checkCooldown(payload.jobName, options.cooldownMinutes ?? 60));
       if (canFire) {
-        await createGitHubIssue(payload, options.tags).catch(e => console.error('GitHub issue creation failed:', e));
+        await createGitHubIssue(payload, options.tags).catch((e) =>
+          console.error("GitHub issue creation failed:", e),
+        );
         await updateCooldownTimestamp(payload.jobName);
       }
     }
@@ -150,12 +165,12 @@ async function monitored<T>(fn: () => Promise<T>, options: MonitoredOptions): Pr
 
 Cooldowns prevent GitHub issue spam when a job is repeatedly failing.
 
-| Rule | Behavior |
-|---|---|
-| Default cooldown | 60 minutes between issues for the same `jobName` |
-| `critical` severity | **No cooldown** — always creates a new issue immediately |
-| Cooldown storage | Store last-fired timestamp in the `error_reports` database table |
-| Cooldown check | Query `SELECT MAX(created_at) FROM error_reports WHERE job_name = ? AND github_issue_created = true` |
+| Rule                | Behavior                                                                                             |
+| ------------------- | ---------------------------------------------------------------------------------------------------- |
+| Default cooldown    | 60 minutes between issues for the same `jobName`                                                     |
+| `critical` severity | **No cooldown** — always creates a new issue immediately                                             |
+| Cooldown storage    | Store last-fired timestamp in the `error_reports` database table                                     |
+| Cooldown check      | Query `SELECT MAX(created_at) FROM error_reports WHERE job_name = ? AND github_issue_created = true` |
 
 ---
 
@@ -168,11 +183,13 @@ All auto-created GitHub issues must be labeled with:
 ```
 
 **Examples:**
+
 - `growlingeyes/error`
 - `neurooz/error`
 - `revvel-music-studio/error`
 
 **Additional labels by severity:**
+
 - `high` → also add `priority:high`
 - `critical` → also add `priority:critical`
 
@@ -208,26 +225,53 @@ CREATE TABLE error_reports (
 **Drizzle ORM schema:**
 
 ```typescript
-import { mysqlTable, bigint, varchar, text, json, tinyint, datetime, mysqlEnum, index } from 'drizzle-orm/mysql-core';
+import {
+  mysqlTable,
+  bigint,
+  varchar,
+  text,
+  json,
+  tinyint,
+  datetime,
+  mysqlEnum,
+  index,
+} from "drizzle-orm/mysql-core";
 
-export const errorReports = mysqlTable('error_reports', {
-  id:                 bigint('id', { mode: 'number', unsigned: true }).primaryKey().autoincrement(),
-  appName:            varchar('app_name', { length: 100 }).notNull(),
-  jobName:            varchar('job_name', { length: 255 }).notNull(),
-  severity:           mysqlEnum('severity', ['low', 'medium', 'high', 'critical']).notNull().default('medium'),
-  errorMessage:       text('error_message').notNull(),
-  errorStack:         text('error_stack'),
-  contextJson:        json('context_json'),
-  environment:        mysqlEnum('environment', ['production', 'staging', 'development']).notNull().default('production'),
-  emailSent:          tinyint('email_sent').notNull().default(0),
-  githubIssueCreated: tinyint('github_issue_created').notNull().default(0),
-  githubIssueUrl:     varchar('github_issue_url', { length: 500 }),
-  createdAt:          datetime('created_at').notNull().default(new Date()),
-}, (table) => ({
-  jobNameCreatedIdx: index('idx_job_name_created').on(table.jobName, table.createdAt),
-  severityIdx:       index('idx_severity').on(table.severity),
-  environmentIdx:    index('idx_environment').on(table.environment),
-}));
+export const errorReports = mysqlTable(
+  "error_reports",
+  {
+    id: bigint("id", { mode: "number", unsigned: true })
+      .primaryKey()
+      .autoincrement(),
+    appName: varchar("app_name", { length: 100 }).notNull(),
+    jobName: varchar("job_name", { length: 255 }).notNull(),
+    severity: mysqlEnum("severity", ["low", "medium", "high", "critical"])
+      .notNull()
+      .default("medium"),
+    errorMessage: text("error_message").notNull(),
+    errorStack: text("error_stack"),
+    contextJson: json("context_json"),
+    environment: mysqlEnum("environment", [
+      "production",
+      "staging",
+      "development",
+    ])
+      .notNull()
+      .default("production"),
+    emailSent: tinyint("email_sent").notNull().default(0),
+    githubIssueCreated: tinyint("github_issue_created").notNull().default(0),
+    githubIssueUrl: varchar("github_issue_url", { length: 500 }),
+    createdAt: datetime("created_at").notNull().default(new Date()),
+  },
+  (table) => ({
+    jobNameCreatedIdx: index("idx_job_name_created").on(
+      table.jobName,
+      table.createdAt,
+    ),
+    severityIdx: index("idx_severity").on(table.severity),
+    environmentIdx: index("idx_environment").on(table.environment),
+  }),
+);
 ```
 
 ---
@@ -246,6 +290,7 @@ export const errorReports = mysqlTable('error_reports', {
 - [ ] Database migrations
 
 **What does NOT need to be wrapped:**
+
 - Simple CRUD route handlers (these are covered by the global error middleware)
 - Read-only API endpoints
 - Client-side code

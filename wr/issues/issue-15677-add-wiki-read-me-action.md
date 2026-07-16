@@ -14,7 +14,7 @@
 **Created:** 2026-07-10  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-10  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -48,7 +48,7 @@ orchestrator
 
 ### Summary
 
-- name: Wiki-As-Readme   uses: catuscio/wiki-as-readme@v1.5.0
+- name: Wiki-As-Readme uses: catuscio/wiki-as-readme@v1.5.0
 
 ### Objective
 
@@ -105,18 +105,19 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -128,6 +129,7 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29131156329.md`
 
 ## WR-Ready Research Packet: Wiki-As-Readme Action
@@ -137,6 +139,7 @@ Source packet: `docs/research-engine/run-29131156329.md`
 **REJECT** the requested `catuscio/wiki-as-readme@v1.5.0` action due to critical technical and maintenance risks.
 
 **Primary Blockers:**
+
 - Repository `catuscio/wiki-as-readme` is **UNAVAILABLE** (404 Not Found)
 - Action uses deprecated `node16` runtime (will fail when GitHub removes support)
 - Last maintained in 2022 with unaddressed issues
@@ -147,12 +150,14 @@ Source packet: `docs/research-engine/run-29131156329.md`
 ## 2. Audience We Are Going After and Why
 
 **Target Audience:** Developer teams and open-source maintainers managing GitHub repositories
+
 - **Primary Buyer:** Technical leads, DevOps engineers, repository maintainers
 - **Urgent Pain:** Manual synchronization between GitHub wikis and README files creates documentation drift
 - **Emotional Urgency:** Low-to-moderate quality-of-life improvement
 - **Language Used:** "sync wiki to readme," "single source of truth," "automate documentation"
 
 **Why This Audience:**
+
 - Growing need for documentation automation as repositories scale
 - Teams value DRY principles and reducing manual maintenance
 - Low switching barriers make adoption easy for productivity gains
@@ -160,20 +165,24 @@ Source packet: `docs/research-engine/run-29131156329.md`
 ## 3. Marketing and SEO Plan
 
 **Landing Page Strategy:**
+
 - **Title:** "Automate GitHub Documentation with Wiki-to-README Sync"
 - **Meta Description:** "Keep your GitHub README always up-to-date with your Wiki. Step-by-step implementation guide for documentation automation."
 
 **Target Keywords:**
+
 - High-intent: "github action wiki readme" (100-500 monthly searches)
 - Informational: "github wiki vs readme" (500-1000 monthly searches)
 - Transactional: "automated documentation github" (200-800 monthly searches)
 
 **Content Angles:**
+
 1. Tutorial: "How to Set Up Wiki-to-README Automation"
 2. Comparison: "Wiki vs README: When to Use Each"
 3. Best Practices: "Automated Documentation Workflows for Teams"
 
 **Distribution Channels:**
+
 - GitHub Marketplace listing
 - Developer forums (Reddit r/github, r/devops)
 - Stack Overflow documentation tags
@@ -181,14 +190,15 @@ Source packet: `docs/research-engine/run-29131156329.md`
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Repository | Stars | Last Commit | Status | Pricing |
-|------------|-------|-------------|---------|---------|
-| catuscio/wiki-as-readme | N/A | N/A | **UNAVAILABLE (404)** | N/A |
-| andstor/wiki-to-readme | 42 | Aug 2023 | Active | Free (MIT) |
-| ShiftForward/wiki-to-readme-action | 49 | May 2024 | Active | Free (MIT) |
-| Custom workflows | N/A | N/A | Self-maintained | Free |
+| Repository                         | Stars | Last Commit | Status                | Pricing    |
+| ---------------------------------- | ----- | ----------- | --------------------- | ---------- |
+| catuscio/wiki-as-readme            | N/A   | N/A         | **UNAVAILABLE (404)** | N/A        |
+| andstor/wiki-to-readme             | 42    | Aug 2023    | Active                | Free (MIT) |
+| ShiftForward/wiki-to-readme-action | 49    | May 2024    | Active                | Free (MIT) |
+| Custom workflows                   | N/A   | N/A         | Self-maintained       | Free       |
 
 **Market Analysis:**
+
 - Very niche market with <50 stars on most solutions
 - No commercial offerings found
 - Weak moat - easy to replicate functionality
@@ -197,12 +207,14 @@ Source packet: `docs/research-engine/run-29131156329.md`
 ## 5. Chatter and Demand Signals
 
 **Community Feedback:**
+
 - Limited public discussion available
 - Common complaints: workflow complexity, permissions confusion
 - Feature requests: custom wiki page support, better error handling
 - Users concerned about granting write permissions to actions
 
 **Unmet Needs:**
+
 - Bidirectional sync capabilities
 - Support for multiple wiki pages
 - Better documentation and troubleshooting guides
@@ -211,17 +223,20 @@ Source packet: `docs/research-engine/run-29131156329.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Verified Facts:**
+
 - Original repository `catuscio/wiki-as-readme` is unavailable (404)
 - Alternative actions exist with similar functionality
 - GitHub supports `gollum` event for wiki changes
 
 **Evidence Gaps:**
+
 - Cannot verify original action's usage metrics
 - No data on actual market size or adoption rates
 - Missing competitive pricing data (all solutions are free)
 - No testimonials or case studies available
 
 **Required Verification:**
+
 - GitHub API check for repository status
 - Marketplace metrics for alternative solutions
 - Developer survey data on documentation workflows
@@ -229,12 +244,14 @@ Source packet: `docs/research-engine/run-29131156329.md`
 ## 7. Build Requirements and Acceptance Gates
 
 **Technical Requirements:**
+
 1. GitHub Actions workflow file (`.github/workflows/wiki-readme-sync.yml`)
 2. Repository permissions: `contents: write`, `pages: read`
 3. Wiki must be enabled on repository
 4. Target README.md location specified
 
 **Acceptance Gates:**
+
 - [ ] Alternative action selected and verified
 - [ ] Workflow validates with GitHub Actions syntax
 - [ ] Test run completes without errors
@@ -246,6 +263,7 @@ Source packet: `docs/research-engine/run-29131156329.md`
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```yaml
 # Check for deprecated runtime usage
 - pattern: "runs.using: 'node16'"
@@ -255,6 +273,7 @@ Source packet: `docs/research-engine/run-29131156329.md`
 ```
 
 ### For OpenRouter Review
+
 ```yaml
 # Verify permissions are scoped correctly
 - check: "Workflow permissions"
@@ -265,6 +284,7 @@ Source packet: `docs/research-engine/run-29131156329.md`
 ```
 
 ### For Coderabbit
+
 ```yaml
 # Security check for action pinning
 - rule: "GitHub Actions must be pinned to SHA"
@@ -274,6 +294,7 @@ Source packet: `docs/research-engine/run-29131156329.md`
 ```
 
 ### For Ralph Loop
+
 ```yaml
 # Documentation requirements
 - requirement: "Workflow must include inline documentation"
@@ -286,13 +307,15 @@ Source packet: `docs/research-engine/run-29131156329.md`
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Replace with Alternative Action
+
 **File:** `.github/workflows/wiki-readme-sync.yml`
 **Commit Message:** `feat: add wiki-to-readme sync workflow with maintained action`
+
 ```yaml
 name: Wiki to README Sync
 on:
-  gollum:  # Wiki edit trigger
-  workflow_dispatch:  # Manual trigger
+  gollum: # Wiki edit trigger
+  workflow_dispatch: # Manual trigger
 
 jobs:
   sync-wiki:
@@ -305,14 +328,16 @@ jobs:
       - name: Sync Wiki to README
         uses: andstor/wiki-to-readme@232338565541364635a787125303960069875354
         with:
-          wiki-page: 'Home'
-          readme-path: 'README.md'
-          commit-message: 'docs: sync README from wiki [skip ci]'
+          wiki-page: "Home"
+          readme-path: "README.md"
+          commit-message: "docs: sync README from wiki [skip ci]"
 ```
 
 ### Fix 2: Add Security Configuration
+
 **File:** `.github/dependabot.yml`
 **Commit Message:** `security: add dependabot monitoring for GitHub Actions`
+
 ```yaml
 version: 2
 updates:
@@ -323,20 +348,25 @@ updates:
 ```
 
 ### Fix 3: Add Documentation
+
 **File:** `docs/wiki-readme-sync.md`
 **Commit Message:** `docs: add wiki-readme synchronization guide`
+
 ```markdown
 # Wiki-README Synchronization
 
 This repository uses automated synchronization from the GitHub Wiki to README.md.
 
 ## Important Notes
+
 - DO NOT edit README.md directly - changes will be overwritten
 - Edit content in the Wiki's Home page instead
 - Sync happens automatically on wiki updates
 
 ## Troubleshooting
+
 If sync fails, check:
+
 1. Wiki is enabled in repository settings
 2. Home.md exists in the wiki
 3. Workflow has correct permissions
@@ -345,6 +375,7 @@ If sync fails, check:
 ## 10. Labels to Apply
 
 **Immediate Labels:**
+
 - `risk:broken-dependency` (blocking)
 - `risk:unmaintained-dependency` (high)
 - `risk:security` (permissions required)
@@ -353,6 +384,7 @@ If sync fails, check:
 - `docs-automation` (categorization)
 
 **Conditional Labels:**
+
 - `needs-fork` (if choosing to fork and maintain)
 - `workflow-change` (when implementing)
 - `needs-validation` (post-implementation)
@@ -362,6 +394,7 @@ If sync fails, check:
 **Primary Repository Status:** `catuscio/wiki-as-readme` - **UNAVAILABLE (404)**
 
 **Best Alternative:** `andstor/wiki-to-readme@v1`
+
 - 42 GitHub stars
 - Last commit: August 2023
 - MIT License
@@ -370,12 +403,14 @@ If sync fails, check:
 - Similar API to requested action
 
 **Why This Alternative:**
+
 1. Only actively maintained purpose-built solution
 2. Drop-in replacement with minimal changes
 3. Better error handling and documentation
 4. Community support available
 
 **Implementation Path:**
+
 1. Fork `andstor/wiki-to-readme` to organization
 2. Pin to specific commit SHA for security
 3. Implement with restricted permissions
@@ -386,6 +421,7 @@ If sync fails, check:
 **Overall Confidence: 25/100**
 
 **Lane Confidence Scores:**
+
 - Market Positioning (Echo): 45/100 - Limited market validation, no revenue model
 - SEO Demand (Noimos): 60/100 - Clear keywords but low search volume
 - Competitor Intelligence (Iris): 70/100 - Well-researched alternatives available
@@ -397,6 +433,7 @@ If sync fails, check:
 
 **Decision Rationale:**
 The extremely low overall confidence (25/100) is driven by:
+
 1. **Critical blocker**: Original repository doesn't exist (404)
 2. **No revenue path**: Internal tool with no monetization
 3. **Technical debt**: Even alternatives use deprecated runtimes
@@ -444,11 +481,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -464,11 +501,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

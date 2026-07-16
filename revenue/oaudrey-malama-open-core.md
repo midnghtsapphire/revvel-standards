@@ -9,11 +9,11 @@
 
 ## 1. The Two-Layer Model
 
-| Layer | Name | What it is | License |
-|---|---|---|---|
-| **Brand / product** | **oAudrey** | What customers buy — the Automation Software Hub (`<app>.oaudrey.com`) | Proprietary |
-| **Engine** | **Mālama** | The open self-evolving agent loop inside oAudrey | **AGPLv3 (open core)** — `skills/malama/` |
-| **Company / mission** | Freedom Angel Corp | Umbrella + giving pledge | — |
+| Layer                 | Name               | What it is                                                             | License                                   |
+| --------------------- | ------------------ | ---------------------------------------------------------------------- | ----------------------------------------- |
+| **Brand / product**   | **oAudrey**        | What customers buy — the Automation Software Hub (`<app>.oaudrey.com`) | Proprietary                               |
+| **Engine**            | **Mālama**         | The open self-evolving agent loop inside oAudrey                       | **AGPLv3 (open core)** — `skills/malama/` |
+| **Company / mission** | Freedom Angel Corp | Umbrella + giving pledge                                               | —                                         |
 
 Positioning line: **"oAudrey runs on the Mālama engine."**
 (Same shape as Devin→Cognition and OpenHands Cloud→OpenHands framework.)
@@ -29,27 +29,31 @@ Positioning line: **"oAudrey runs on the Mālama engine."**
   (AGPLv3) instead of permissive (MIT) so the engine can't be quietly closed and
   resold against us.
 
-The free Mālama engine is the top of the funnel. The repo *is* the ad.
+The free Mālama engine is the top of the funnel. The repo _is_ the ad.
 
 ---
 
 ## 3. Tiers
 
 ### FREE — Mālama Engine (open source, AGPLv3)
+
 - The agent loop: `skills/malama/` (SKILL, SYSTEM_PROMPT, standard).
 - Self-host, self-modify, full access. No support, no hosting.
 - **Goal:** developer adoption, credibility, inbound.
 
 ### PRO — oAudrey (hosted, individual)
+
 - Managed oAudrey, no setup. Higher run limits.
 - Access to a starter set of vertical agents.
 - **Goal:** convert self-hosters who don't want to run infra.
 
 ### CLOUD / TEAM — oAudrey (hosted, team)
+
 - Team seats, connectors (Airtable, Notion, Slack, HubSpot, Gmail, Drive).
 - Secrets vault / SSO, the full vertical catalog, priority support.
 
 ### ENTERPRISE / DONE-FOR-YOU
+
 - Custom verticals, SLAs, dedicated runs, compliance.
 
 ---
@@ -58,15 +62,15 @@ The free Mālama engine is the top of the funnel. The repo *is* the ad.
 
 These repo assets become the oAudrey paid verticals:
 
-| Vertical | Source |
-|---|---|
-| Grant management | `skills/grant-mgmt-agent/` |
-| OSINT intelligence | `osint-hub/`, OSINT skills |
-| Tax & legal | `skills/tax-legal-agent/` |
-| USDA / lending | `skills/usda-loan-agent/`, `products/life-insurance-lead-saas/` |
-| ADA / accessibility | `skills/ada-compliance-agent/`, `skills/accessibility/` |
-| Content automation | `skills/content-automation/` |
-| HVAC BOM | `hvac-bom-generator*.html` |
+| Vertical            | Source                                                          |
+| ------------------- | --------------------------------------------------------------- |
+| Grant management    | `skills/grant-mgmt-agent/`                                      |
+| OSINT intelligence  | `osint-hub/`, OSINT skills                                      |
+| Tax & legal         | `skills/tax-legal-agent/`                                       |
+| USDA / lending      | `skills/usda-loan-agent/`, `products/life-insurance-lead-saas/` |
+| ADA / accessibility | `skills/ada-compliance-agent/`, `skills/accessibility/`         |
+| Content automation  | `skills/content-automation/`                                    |
+| HVAC BOM            | `hvac-bom-generator*.html`                                      |
 
 Plus the existing Gumroad products in `revenue/REVENUE_PLAN.md` as the entry-price
 funnel (AI Agent Starter Kit $97, Claude Code Setup $47, Swarm Blueprint $197).

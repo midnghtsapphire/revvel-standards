@@ -14,12 +14,12 @@ This standard defines the framework for auditing business entities, repositories
 
 ## Domain Classification
 
-| Category | Value |
-|----------|-------|
-| **Domain** | Business Intelligence |
-| **Sub-domain** | Entity Discovery & Audit |
-| **Use Case** | Multi-entity portfolio management |
-| **Complexity** | Medium |
+| Category       | Value                             |
+| -------------- | --------------------------------- |
+| **Domain**     | Business Intelligence             |
+| **Sub-domain** | Entity Discovery & Audit          |
+| **Use Case**   | Multi-entity portfolio management |
+| **Complexity** | Medium                            |
 
 ---
 
@@ -48,21 +48,21 @@ For each business entity, discover and document:
 
 ### 2. Naming Convention
 
-| Resource Type | Pattern | Example |
-|--------------|---------|---------|
-| GitHub Repo | `{business}-{type}-{name}` | `freedoman gel-reviews-frontend` |
-| Domain | `{business}.{tld}` | `freedoman gelcorp.com` |
-| Email | `{role}@{business}.{tld}` | `admin@freedoman gelcorp.com` |
-| AWS Resource | `{business}-{env}-{resource}` | `freedoman gel-prod-ec2` |
+| Resource Type | Pattern                       | Example                          |
+| ------------- | ----------------------------- | -------------------------------- |
+| GitHub Repo   | `{business}-{type}-{name}`    | `freedoman gel-reviews-frontend` |
+| Domain        | `{business}.{tld}`            | `freedoman gelcorp.com`          |
+| Email         | `{role}@{business}.{tld}`     | `admin@freedoman gelcorp.com`    |
+| AWS Resource  | `{business}-{env}-{resource}` | `freedoman gel-prod-ec2`         |
 
 ### 3. Entity Classification Matrix
 
-| Entity Type | Tax Classification | Risk Level | Compliance |
-|-------------|------------------|------------|------------|
-| LLC - Partnership | Partnership | Low | Annual report |
-| S-Corp | S-Corp | Medium | 1120-S, salary |
-| C-Corp | C-Corp | High | 1120, double tax |
-| Sole Proprietorship | Schedule C | Low | Simple |
+| Entity Type         | Tax Classification | Risk Level | Compliance       |
+| ------------------- | ------------------ | ---------- | ---------------- |
+| LLC - Partnership   | Partnership        | Low        | Annual report    |
+| S-Corp              | S-Corp             | Medium     | 1120-S, salary   |
+| C-Corp              | C-Corp             | High       | 1120, double tax |
+| Sole Proprietorship | Schedule C         | Low        | Simple           |
 
 ---
 
@@ -79,13 +79,13 @@ For each business entity, discover and document:
 
 ### Annual Audit Requirements
 
-| Audit | Due | Performed |
-|-------|-----|-----------|
-| Tax returns | Nov 15 | [ ] |
-| Secretary of State | March | [ ] |
-| Business license | Varies | [ ] |
-| Insurance renewal | Policy date | [ ] |
-| Medicaid redetermination | Annual | [ ] |
+| Audit                    | Due         | Performed |
+| ------------------------ | ----------- | --------- |
+| Tax returns              | Nov 15      | [ ]       |
+| Secretary of State       | March       | [ ]       |
+| Business license         | Varies      | [ ]       |
+| Insurance renewal        | Policy date | [ ]       |
+| Medicaid redetermination | Annual      | [ ]       |
 
 ---
 
@@ -93,13 +93,13 @@ For each business entity, discover and document:
 
 ### Business Name Registry
 
-| Business | Legal Name | DBA | Entity Type | State |
-|----------|------------|-----|------------|-------|
-| Freedom Angel | Freedom Angel Holdings LLC | - | LLC | CO |
-| Reese Reviews | Reese Reviews LLC | - | LLC | CO |
-| Overflow | Overflow LLC | - | LLC | CO |
-| Rental Co | [TBD] LLC | - | LLC | CO |
-| Fidelity Trust | Fidelity Trust Services LLC | - | LLC | CO |
+| Business       | Legal Name                  | DBA | Entity Type | State |
+| -------------- | --------------------------- | --- | ----------- | ----- |
+| Freedom Angel  | Freedom Angel Holdings LLC  | -   | LLC         | CO    |
+| Reese Reviews  | Reese Reviews LLC           | -   | LLC         | CO    |
+| Overflow       | Overflow LLC                | -   | LLC         | CO    |
+| Rental Co      | [TBD] LLC                   | -   | LLC         | CO    |
+| Fidelity Trust | Fidelity Trust Services LLC | -   | LLC         | CO    |
 
 ---
 
@@ -107,34 +107,34 @@ For each business entity, discover and document:
 
 ### Known Domains
 
-| Domain | Registrar | Expires | DNS |
-|--------|-----------|---------|-----|
-| freedoman gelcorp.com | | | |
-| reesereviews.com | | | |
-| fidelitytrust.services | | | |
+| Domain                 | Registrar | Expires | DNS |
+| ---------------------- | --------- | ------- | --- |
+| freedoman gelcorp.com  |           |         |     |
+| reesereviews.com       |           |         |     |
+| fidelitytrust.services |           |         |     |
 
 ---
 
 ## Credential Inventory
 
-| Credential | Service | Last Rotated | Notes |
-|------------|---------|--------------|-------|
-| GitHub | midnghtsapphire | - | Primary org |
-| AWS | | | |
-| Google Workspace | | | |
-| Odoo | | | |
-| QuickBooks | | | |
+| Credential       | Service         | Last Rotated | Notes       |
+| ---------------- | --------------- | ------------ | ----------- |
+| GitHub           | midnghtsapphire | -            | Primary org |
+| AWS              |                 |              |             |
+| Google Workspace |                 |              |             |
+| Odoo             |                 |              |             |
+| QuickBooks       |                 |              |             |
 
 ---
 
 ## Integration Points
 
-| System | Purpose |
-|--------|---------|
-| GitHub API | Repository discovery |
-| WHOIS | Domain research |
-| Google DNS | DNS enumeration |
-| State SOS API | Entity verification |
+| System        | Purpose              |
+| ------------- | -------------------- |
+| GitHub API    | Repository discovery |
+| WHOIS         | Domain research      |
+| Google DNS    | DNS enumeration      |
+| State SOS API | Entity verification  |
 
 ---
 
@@ -146,5 +146,5 @@ For each business entity, discover and document:
 
 ---
 
-*Standard maintained by revvel-standards*
-*Last updated: 2026-04-25*
+_Standard maintained by revvel-standards_
+_Last updated: 2026-04-25_

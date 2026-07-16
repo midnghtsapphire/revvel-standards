@@ -17,12 +17,13 @@ closed-loop **Plan → Act → Verify → Learn** cycle with bounded recovery, l
 privilege, and honest reporting.
 
 It is the agent-side companion to two existing standards. Do not duplicate them:
+
 - [`SELF_HEALING_STANDARDS.md`](./SELF_HEALING_STANDARDS.md) — how to **document
-  every change** (Who/When/Why/What). Mālama governs the *agent loop*; that
-  governs *change provenance*.
+  every change** (Who/When/Why/What). Mālama governs the _agent loop_; that
+  governs _change provenance_.
 - [`MONITORING.md`](./MONITORING.md) — telemetry/observability requirements.
 
-> **Naming.** *Mālama* is Hawaiian for *to care for, to steward, to maintain* —
+> **Naming.** _Mālama_ is Hawaiian for _to care for, to steward, to maintain_ —
 > the function this standard performs. Backronym: **M**odular **A**gents,
 > **L**earning **A**nd **M**onitored **A**utomation.
 
@@ -34,6 +35,7 @@ It is the agent-side companion to two existing standards. Do not duplicate them:
 modifies this repo or its products.
 
 **Explicit non-goals (banned in production):**
+
 - ❌ **Unbounded self-modification.** No agent may grant itself permissions, edit
   its own safety rules, or rewrite its own runtime with "complete autonomy."
   (Research patterns like the raw Gödel-Agent/Polaris goal prompt are sandbox-only
@@ -46,12 +48,12 @@ modifies this repo or its products.
 
 ## 3. The Required Loop
 
-| Phase | Requirement |
-|---|---|
-| **Plan** | Locate target files; write the step list **and** the success checks before editing. No ad-hoc code. |
-| **Act** | Single-responsibility steps, one tool at a time. Deterministic work (git, DB, timestamps, API posts) via plain functions, not LLM hand-rolling. |
-| **Verify** | Run tests/linters. Validate structured output against schema; repair **once** on failure, then escalate. Syntactically valid ≠ correct. |
-| **Learn** | Append concise lessons to [`learnings.md`](../learnings.md) at session end; read it at session start. |
+| Phase      | Requirement                                                                                                                                     |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Plan**   | Locate target files; write the step list **and** the success checks before editing. No ad-hoc code.                                             |
+| **Act**    | Single-responsibility steps, one tool at a time. Deterministic work (git, DB, timestamps, API posts) via plain functions, not LLM hand-rolling. |
+| **Verify** | Run tests/linters. Validate structured output against schema; repair **once** on failure, then escalate. Syntactically valid ≠ correct.         |
+| **Learn**  | Append concise lessons to [`learnings.md`](../learnings.md) at session end; read it at session start.                                           |
 
 ---
 
@@ -61,11 +63,11 @@ Retries are capped at **3–5 attempts** with **jittered exponential backoff**, 
 **transient failures only** (timeouts, rate limits, network). Route deterministic
 failures by class:
 
-| Class | Trigger | Remediation |
-|---|---|---|
-| `basic_fix` | syntax, indentation, timeout | feed raw trace; fix locally |
-| `api_doc` | AttributeError / TypeError / ImportError | fetch the API calling contract; inject; regenerate |
-| `boundary_contract` | schema/value errors at DB/API/dataframe edges | inject boundary schema; realign |
+| Class               | Trigger                                       | Remediation                                        |
+| ------------------- | --------------------------------------------- | -------------------------------------------------- |
+| `basic_fix`         | syntax, indentation, timeout                  | feed raw trace; fix locally                        |
+| `api_doc`           | AttributeError / TypeError / ImportError      | fetch the API calling contract; inject; regenerate |
+| `boundary_contract` | schema/value errors at DB/API/dataframe edges | inject boundary schema; realign                    |
 
 **Circuit breaker (mandatory):** after **≥5 attempts on one task with no
 measurable improvement**, the agent must HALT, dump its state/trace, and escalate
@@ -85,8 +87,8 @@ to a human. Looping past this is a standard violation.
    verification.
 6. **Human escalation** — required when underspecified, low-confidence, or before
    any irreversible/data-destructive action. Package full context for the reviewer.
-7. **Bounded adaptation** — the agent may revise only a delimited *adaptive
-   tactics* block (see the system prompt). It may not edit Sections 1–7 of its
+7. **Bounded adaptation** — the agent may revise only a delimited _adaptive
+   tactics_ block (see the system prompt). It may not edit Sections 1–7 of its
    constitution, its permissions, or this standard.
 
 ---
@@ -117,6 +119,6 @@ A change is Mālama-compliant when:
 
 ## 8. Change Log
 
-| Version | Date | Who | What |
-|---|---|---|---|
-| 1.0.0 | 2026-06-20 | Audrey Evans (midnghtsapphire) | Initial standard. Grounded distillation of a self-healing agent design exploration; fabricated-research framing and unbounded self-modification deliberately excluded. |
+| Version | Date       | Who                            | What                                                                                                                                                                   |
+| ------- | ---------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0.0   | 2026-06-20 | Audrey Evans (midnghtsapphire) | Initial standard. Grounded distillation of a self-healing agent design exploration; fabricated-research framing and unbounded self-modification deliberately excluded. |

@@ -14,12 +14,14 @@
 After auditing the full `revvel-standards` repository, the current structure is strong but has several areas where clarity, discoverability, and automation could be improved significantly.
 
 **Strengths:**
+
 - Clear per-project docs in `docs/<project>/` with BOM, BRAND, SPRINT_LOG
 - Master BOM auto-generation via `scripts/sync-bom.sh`
 - Comprehensive standards documents at root level
 - Agent Factory, skills, and templates well-organized
 
 **Areas for improvement:**
+
 1. Root-level standard files (30+) are undifferentiated — hard to navigate
 2. `docs/` has a mix of project docs and general docs — could be split
 3. No dedicated `tests/` directory structure at the standards repo level
@@ -132,12 +134,14 @@ standards/
 ```
 
 **Implementation Steps:**
+
 1. Create `standards/` directory
 2. Copy each file with new name (keep originals temporarily with redirect notice)
 3. Update all cross-references in README.md and other documents
 4. After 2 weeks, remove originals with git history preserved
 
 **GitHub Issue Template:**
+
 ```
 Title: [Folder Structure] Move standards files into standards/ directory
 Labels: enhancement, documentation, New Project
@@ -167,6 +171,7 @@ Assign: midnghtsapphire
 ```
 
 **`CODEOWNERS` content:**
+
 ```
 * @midnghtsapphire
 docs/Universal-BOM_List/ @midnghtsapphire @Copilot
@@ -174,6 +179,7 @@ standards/ @midnghtsapphire
 ```
 
 **`PULL_REQUEST_TEMPLATE.md` key sections:**
+
 - Summary of changes
 - Link to related issue
 - BOM impact (did you add/change any services or APIs?)
@@ -189,6 +195,7 @@ standards/ @midnghtsapphire
 **Problem:** `docs/` contains a mix of project-specific docs (GrowlingEyes, Neurooz, etc.), general guides (ONBOARDING.md, NON_CODER_GUIDE.md), and session notes (SESSION_NOTES_2026-02-25.md). This makes it hard to find things.
 
 **Solution:**
+
 ```
 docs/
 ├── projects/          ← project-specific directories
@@ -235,6 +242,7 @@ skills/
 ```
 
 **PromptFoo test template for skills:**
+
 ```yaml
 # skills/<skill-name>/tests/promptfoo.yml
 description: Tests for [Skill Name] skill
@@ -271,6 +279,7 @@ tests:
 **Problem:** The `SELF_HEALING_BOM_TEMPLATE.md` is now in `docs/Universal-BOM_List/` but should also be accessible from `templates/` for the `bootstrap-new-project.sh` script.
 
 **Solution:**
+
 ```
 templates/
 ├── bom/
@@ -292,11 +301,13 @@ Update `scripts/bootstrap-new-project.sh` to auto-copy `templates/bom/BOM_TEMPLA
 **Problem:** Commits are inconsistent. `CHANGELOG.md` is manually maintained. This is error-prone and time-consuming.
 
 **Solution:**
+
 1. Adopt [Conventional Commits](https://www.conventionalcommits.org/) spec for all commits
 2. Add `commitlint` to enforce the spec in CI
 3. Use `semantic-release` or `release-please` to auto-generate `CHANGELOG.md` and version tags
 
 **Commit format:**
+
 ```
 <type>(<scope>): <subject>
 
@@ -319,6 +330,7 @@ chore(ci): add bom-self-heal workflow
 **Problem:** `docs/PROJECT_CATALOG.md` and `docs/REPO_CATALOG.md` exist but are not prominently linked. New team members and agents have trouble discovering what projects exist.
 
 **Solution:** Create `docs/catalog/` with auto-generated project index:
+
 ```
 docs/catalog/
 ├── README.md           ← Quick-start "what is Revvel building?"
@@ -337,12 +349,13 @@ docs/catalog/
 **Current state:** `skills/SKILLS_INDEX.yml` exists but many skills don't have consistent metadata.
 
 **Recommended `SKILLS_INDEX.yml` entry format:**
+
 ```yaml
 - name: vault-agent
   path: skills/vault-agent/SKILL.md
-  status: stable          # stable | beta | experimental | deprecated
+  status: stable # stable | beta | experimental | deprecated
   llm: claude-sonnet-4
-  triggers:               # keywords that route to this skill
+  triggers: # keywords that route to this skill
     - vault
     - secret
     - api-key
@@ -369,18 +382,22 @@ docs/catalog/
 This file provides instructions for AI coding agents working in this repository.
 
 ## You Are
+
 Audrey Evans' coding agent for the Revvel ecosystem. You follow Revvel Standards.
 
 ## Before Making Any Change
+
 1. Read TESTING_STANDARD.md
 2. Check docs/Universal-BOM_List/README.md for BOM requirements
 3. Check docs/Universal-BOM_List/API_REGISTRY_BOM.md before adding any new API
 4. Run the Self-Healing Checklist in docs/Universal-BOM_List/SELF_HEALING_BOM_TEMPLATE.md
 
 ## Standards to Follow
+
 [Links to all standard files]
 
 ## Do Not
+
 - Hardcode API keys
 - Commit to main directly
 - Skip tests
@@ -390,17 +407,17 @@ Audrey Evans' coding agent for the Revvel ecosystem. You follow Revvel Standards
 
 ## Summary — Priority Matrix
 
-| # | Recommendation | Priority | Effort | Impact |
-|---|---|---|---|---|
-| REC-001 | Move standards into `standards/` | P2 | Medium | High |
-| REC-002 | Add `.github/` templates | P1 | Low | High |
-| REC-003 | Split `docs/` into sub-folders | P2 | Low | Medium |
-| REC-004 | Add `tests/` to each skill | P1 | Medium | Critical |
-| REC-005 | Add `templates/bom/` directory | P1 | Low | Medium |
-| REC-006 | Conventional commits + auto-changelog | P1 | Low | High |
-| REC-007 | Add `docs/catalog/` | P2 | Low | Medium |
-| REC-008 | Standardize `SKILLS_INDEX.yml` | P1 | Low | High |
-| REC-009 | Add `AGENTS.md` at root | P0 | Very Low | High |
+| #       | Recommendation                        | Priority | Effort   | Impact   |
+| ------- | ------------------------------------- | -------- | -------- | -------- |
+| REC-001 | Move standards into `standards/`      | P2       | Medium   | High     |
+| REC-002 | Add `.github/` templates              | P1       | Low      | High     |
+| REC-003 | Split `docs/` into sub-folders        | P2       | Low      | Medium   |
+| REC-004 | Add `tests/` to each skill            | P1       | Medium   | Critical |
+| REC-005 | Add `templates/bom/` directory        | P1       | Low      | Medium   |
+| REC-006 | Conventional commits + auto-changelog | P1       | Low      | High     |
+| REC-007 | Add `docs/catalog/`                   | P2       | Low      | Medium   |
+| REC-008 | Standardize `SKILLS_INDEX.yml`        | P1       | Low      | High     |
+| REC-009 | Add `AGENTS.md` at root               | P0       | Very Low | High     |
 
 ---
 
@@ -409,6 +426,7 @@ Audrey Evans' coding agent for the Revvel ecosystem. You follow Revvel Standards
 For each recommendation you want to implement:
 
 1. Open a GitHub Issue using this template:
+
    ```
    Title: [Folder Structure] REC-00X: [Recommendation Name]
    Labels: enhancement, documentation, New Project
@@ -428,4 +446,4 @@ For each recommendation you want to implement:
 
 ---
 
-*Last updated: April 14, 2026. This document itself should be reviewed quarterly.*
+_Last updated: April 14, 2026. This document itself should be reviewed quarterly._

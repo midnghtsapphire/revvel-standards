@@ -13,10 +13,10 @@ This document is the deep-research output the source issue asked for. **No file 
 
 - **Current identity** (from `docs/growlingeyes/BRAND.md` and `docs/GROWLINGEYES_MASTER_SPEC.md`):
   - Name: **GrowlingEyes**
-  - Tagline: *"The more we find out, the more our eyes narrow into a digital growl"*
-  - Sub-tagline (master spec): *"Neighborhood Watch From Your Livingroom"*
+  - Tagline: _"The more we find out, the more our eyes narrow into a digital growl"_
+  - Sub-tagline (master spec): _"Neighborhood Watch From Your Livingroom"_
   - Domain: `growlingeyes.com` (registered at Namecheap)
-  - Parent: Freedom Angel Corp (EIN 86-1209156) — motto *"We believe you."*
+  - Parent: Freedom Angel Corp (EIN 86-1209156) — motto _"We believe you."_
   - Palette: teal `#0D9488` · red `#DC2626` · gold `#F59E0B` · off-white `#F8FAFC`
   - Emblem: frosted teal dome, human iris core, defensive fangs, gold "truth crystal"
 - **Production state we cannot break:**
@@ -29,21 +29,21 @@ This document is the deep-research output the source issue asked for. **No file 
 - **What the issue actually asks** (paraphrased from screenshots + body):
   > "Rebrand growling eyes — every page and sub-page. I do like the wolf or similar for the growling eyes / eye growling. The eyes can be a hero gleaming through a similar background."
 - **Triviality check (per `docs/AGENTS.md` issue protocol):** ❌ **Not trivial.**
-  - 50 files in *this* repo reference the brand string (see §6).
+  - 50 files in _this_ repo reference the brand string (see §6).
   - A separate app repo (`midnghtsapphire/growlingeyes`) holds every page from the screenshots and is out of scope for this PR.
   - Domain, deploy paths, PM2 name, vault paths cascade to ops work.
   - The new identity is **not yet defined** — the brief is exploratory.
-- **Conclusion:** Per the issue's own instruction — *"Wait for Audrey's 👍 before implementing, unless the change is clearly trivial"* — implementation is gated on this proposal's approval.
+- **Conclusion:** Per the issue's own instruction — _"Wait for Audrey's 👍 before implementing, unless the change is clearly trivial"_ — implementation is gated on this proposal's approval.
 
 ---
 
 ## Section 2 — Problem Statement
 
-GrowlingEyes' current visual identity (frosted-teal dome + human iris + fangs) reads as a generic "OSINT dashboard" emblem. Audrey wants the brand to lean into the **growl** — a wolf-forward mark — while preserving the **eyes-as-hero** motif: the eyes should *gleam through* the same dark/gold cinematic background already used on the dashboard hero.
+GrowlingEyes' current visual identity (frosted-teal dome + human iris + fangs) reads as a generic "OSINT dashboard" emblem. Audrey wants the brand to lean into the **growl** — a wolf-forward mark — while preserving the **eyes-as-hero** motif: the eyes should _gleam through_ the same dark/gold cinematic background already used on the dashboard hero.
 
-**One-sentence feature:** *Replace the GrowlingEyes brand identity (name decision, mark, palette tokens, tagline, emblem spec, web manifest, all docs/specs/templates that reference the brand, and every page in the sister app repo) with an Audrey-approved "wolf + gleaming eyes" identity, with no production downtime and a documented rollback.*
+**One-sentence feature:** _Replace the GrowlingEyes brand identity (name decision, mark, palette tokens, tagline, emblem spec, web manifest, all docs/specs/templates that reference the brand, and every page in the sister app repo) with an Audrey-approved "wolf + gleaming eyes" identity, with no production downtime and a documented rollback._
 
-**User story:** *As Audrey, I can land on any GrowlingEyes surface (homepage, sub-pages, favicon, OG share, README, internal docs) and see one consistent wolf-eyes brand, so that the product reads as the cinematic threat-intel platform I pitched, not as generic stock OSINT.*
+**User story:** _As Audrey, I can land on any GrowlingEyes surface (homepage, sub-pages, favicon, OG share, README, internal docs) and see one consistent wolf-eyes brand, so that the product reads as the cinematic threat-intel platform I pitched, not as generic stock OSINT._
 
 ---
 
@@ -53,22 +53,22 @@ The implementation MVI cannot start until these five inputs are pinned. Reply on
 
 ### 3.1 — Name
 
-| Option | Rationale | Cost |
-|---|---|---|
-| **A. Keep "GrowlingEyes"** — refresh visuals only | Domain, repo, droplet, PM2, vault stay. Lowest blast radius. | Low — this repo + app repo only |
-| **B. New name (e.g. "WolfEye", "DireWatch", "LupineIntel")** | Stronger wolf signal | High — new domain, repo rename, droplet path, PM2, vault, certs, OG, ads |
-| **C. Keep word-mark, restyle the mark only** | Word "GrowlingEyes" stays, mascot becomes wolf-forward eyes | Low-medium |
+| Option                                                       | Rationale                                                    | Cost                                                                     |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| **A. Keep "GrowlingEyes"** — refresh visuals only            | Domain, repo, droplet, PM2, vault stay. Lowest blast radius. | Low — this repo + app repo only                                          |
+| **B. New name (e.g. "WolfEye", "DireWatch", "LupineIntel")** | Stronger wolf signal                                         | High — new domain, repo rename, droplet path, PM2, vault, certs, OG, ads |
+| **C. Keep word-mark, restyle the mark only**                 | Word "GrowlingEyes" stays, mascot becomes wolf-forward eyes  | Low-medium                                                               |
 
 > **Recommended default if Audrey doesn't pick:** **Option C** — least destructive, satisfies the screenshots (which still show "GROWLING EYES" type), addresses the "I like the wolf" steer.
 
 ### 3.2 — Mark direction
 
-| Option | Description |
-|---|---|
-| **M1. Wolf head, frontal, eyes glowing gold through dark fur** | Direct read on "growling eyes" |
+| Option                                                                     | Description                                                           |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| **M1. Wolf head, frontal, eyes glowing gold through dark fur**             | Direct read on "growling eyes"                                        |
 | **M2. Two gleaming wolf eyes only, in the dark/gold cinematic background** | Closest to "eyes can be a hero gleaming through a similar background" |
-| **M3. Wolf silhouette in profile, eye is the focal hot-spot** | Editorial / cinematic |
-| **M4. Hybrid: M2 as primary mark, M1 as secondary illustration** | Most flexible across favicon → hero |
+| **M3. Wolf silhouette in profile, eye is the focal hot-spot**              | Editorial / cinematic                                                 |
+| **M4. Hybrid: M2 as primary mark, M1 as secondary illustration**           | Most flexible across favicon → hero                                   |
 
 > **Recommended default:** **M4** — gives a 16×16-legible favicon (M2 simplified to two glowing dots) and a hero-scale illustration (M1).
 
@@ -76,29 +76,29 @@ The implementation MVI cannot start until these five inputs are pinned. Reply on
 
 Current palette (teal/red/gold/off-white) is bright; the actual hero screenshots are **dark + gold + brass**. Proposed reconciliation:
 
-| Token | Current | Proposed |
-|---|---|---|
-| `--ge-bg` | `#F8FAFC` | `#0A0A0B` (near-black) |
-| `--ge-surface` | `#0D9488` (teal) | `#161616` |
-| `--ge-primary` | `#0D9488` (teal) | `#D4A24C` (brass-gold) |
-| `--ge-accent` | `#F59E0B` (amber) | `#F5C76A` (eye-gleam gold) |
-| `--ge-danger` | `#DC2626` | `#DC2626` *(keep)* |
-| `--ge-ink` | n/a | `#F8FAFC` |
+| Token          | Current           | Proposed                   |
+| -------------- | ----------------- | -------------------------- |
+| `--ge-bg`      | `#F8FAFC`         | `#0A0A0B` (near-black)     |
+| `--ge-surface` | `#0D9488` (teal)  | `#161616`                  |
+| `--ge-primary` | `#0D9488` (teal)  | `#D4A24C` (brass-gold)     |
+| `--ge-accent`  | `#F59E0B` (amber) | `#F5C76A` (eye-gleam gold) |
+| `--ge-danger`  | `#DC2626`         | `#DC2626` _(keep)_         |
+| `--ge-ink`     | n/a               | `#F8FAFC`                  |
 
 > Confirm or amend. Accessibility check (WCAG AA on body text) is part of the implementation MVI per `skills/accessibility/SKILL.md`.
 
 ### 3.4 — Tagline
 
-| Option |
-|---|
-| **T1.** *"The more we find out, the more our eyes narrow into a digital growl."* (current) |
-| **T2.** *"The wolf is watching."* |
-| **T3.** *"Truth has teeth."* |
-| **T4.** *"We see in the dark."* |
+| Option                                                                                     |
+| ------------------------------------------------------------------------------------------ |
+| **T1.** _"The more we find out, the more our eyes narrow into a digital growl."_ (current) |
+| **T2.** _"The wolf is watching."_                                                          |
+| **T3.** _"Truth has teeth."_                                                               |
+| **T4.** _"We see in the dark."_                                                            |
 
 ### 3.5 — Scope of "every page and sub-page"
 
-Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app) **plus** every doc surface in this repo (`midnghtsapphire/revvel-standards`).* Anything else (e.g. Odoo customer portal, Manus pipeline UI) is **out of scope** unless explicitly added.
+Confirm: _"Every page" = every route in `midnghtsapphire/growlingeyes` (the app) **plus** every doc surface in this repo (`midnghtsapphire/revvel-standards`)._ Anything else (e.g. Odoo customer portal, Manus pipeline UI) is **out of scope** unless explicitly added.
 
 ---
 
@@ -128,7 +128,7 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 ## Section 5 — Out of Scope (explicit)
 
 - **Any rename in this PR.** This PR is the proposal only.
-- The `neurooz/`, `nemoclaw-*`, `penny-sovereign-yield-scout/`, `agent-factory/`, `oaudrey/`, `wr/` projects — they may *mention* GrowlingEyes for context, but their own identities are untouched.
+- The `neurooz/`, `nemoclaw-*`, `penny-sovereign-yield-scout/`, `agent-factory/`, `oaudrey/`, `wr/` projects — they may _mention_ GrowlingEyes for context, but their own identities are untouched.
 - Marketing copy beyond tagline and hero subtitle.
 - New product features. This is rebrand-only.
 - Domain transfer to a different registrar.
@@ -141,6 +141,7 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 ### 6.1 — In `midnghtsapphire/revvel-standards` (this repo) — **50 files**
 
 #### Canonical brand sources (rewrite, not search/replace)
+
 - `docs/growlingeyes/BRAND.md`
 - `docs/GROWLINGEYES_MASTER_SPEC.md`
 - `templates/agent-handoff/GROWLINGEYES_BUILD_SPEC.md`
@@ -148,7 +149,8 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 - `README.md` (project list section)
 
 #### Sprint / state / inventory (string-level updates)
-- `docs/SPRINT_2026_04_GROWLINGEYES.md` *(rename file if §3.1 = B)*
+
+- `docs/SPRINT_2026_04_GROWLINGEYES.md` _(rename file if §3.1 = B)_
 - `docs/SPRINT_STATE.md`
 - `docs/growlingeyes/SPRINT_LOG.md`
 - `docs/growlingeyes/BOM.md`
@@ -157,9 +159,10 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 - `docs/_MASTER_BOM.md`
 - `docs/DATA_DICTIONARY.md`
 - `inventory/ideas-found.md`
-- `CHANGELOG.md` *(add rebrand entry)*
+- `CHANGELOG.md` _(add rebrand entry)_
 
 #### Master inventory / standards (cross-references)
+
 - `docs/Master_Inventory/AUTOMATED_AUDIT_AGENT_STANDARD.md`
 - `docs/Master_Inventory/INFRASTRUCTURE_MAP.md`
 - `docs/Master_Inventory/ODOO_INTEGRATION_STANDARD.md`
@@ -173,6 +176,7 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 - `standards/ERROR_REPORTING_STANDARD.md`
 
 #### Eval / pipeline / integration docs
+
 - `docs/API_CRAFTPRO_EVAL_2026-04-20.md`
 - `docs/STARRED_REPOS_EVAL_2026-04-20.md`
 - `docs/GITHUB_PROJECTS_SETUP.md`
@@ -186,34 +190,40 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 - `docs/neurooz/NEUROOZ_DARE_LOG.md`
 
 #### Templates (consumed by agent-handoff)
+
 - `templates/agent-handoff/README.md`
 - `templates/agent-handoff/SHIFT_TESTING_STANDARD.md`
 - `templates/agent-handoff/TACTICAL_MAP_PARSING_STANDARD.md`
 - `templates/agent-handoff/WOZ_METHOD_EXPLAINED.md`
 - `templates/agent-handoff/WOZ_SYSTEM_PROMPT_TEMPLATE.md`
 - `templates/cicd/README.md`
-- `templates/cicd/deploy.yml` *(if §3.1 = B: rename PM2 process, deploy paths)*
-- `templates/cicd/monitor.yml` *(if §3.1 = B)*
+- `templates/cicd/deploy.yml` _(if §3.1 = B: rename PM2 process, deploy paths)_
+- `templates/cicd/monitor.yml` _(if §3.1 = B)_
 - `templates/testing/README.md`
 
 #### Skills vault
+
 - `skills/testing/SKILL.md`
 - `skills/testing/testing.skill.yml`
 - `skills/vault-agent/tests/promptfoo.yml`
 
 #### Personal / brand surfaces
+
 - `oaudrey/README.md`
 - `oaudrey/index.html`
 
 #### Folder rename (only if §3.1 = B)
+
 - `docs/growlingeyes/` → `docs/<new-slug>/`
 
 #### New file added by implementation MVI
+
 - `docs/growlingeyes/REBRAND_RUNBOOK.md` — the cut-over runbook (DNS, droplet, PM2, vault, certs)
 
 ### 6.2 — In `midnghtsapphire/growlingeyes` (sister app repo, separate PR)
 
 This PR cannot touch that repo. The implementation MVI will open a companion PR with at minimum:
+
 - `public/` favicon set + PWA icons + apple-touch + maskable
 - `public/og-image-1200x630.{png,jpg}`
 - `public/manifest.webmanifest` (name, short_name, theme_color, background_color)
@@ -225,6 +235,7 @@ This PR cannot touch that repo. The implementation MVI will open a companion PR 
 - E2E test asserting the new word-mark renders on home + one sub-page
 
 ### 6.3 — Out of repo (ops, only if §3.1 = B — new name)
+
 - Namecheap DNS for new domain
 - Let's Encrypt cert renewal
 - DigitalOcean droplet path rename or new droplet
@@ -237,7 +248,7 @@ This PR cannot touch that repo. The implementation MVI will open a companion PR 
 
 ## Section 7 — Tests to Add
 
-- **In this repo:** add a doc-link smoke test in `tests/` (matching existing test infra) that greps the post-rebrand allow-list — i.e., asserts no remaining `GrowlingEyes` references *unless* §3.1 = A or C (which keep the word-mark). Skipped/inverted depending on the §3.1 choice.
+- **In this repo:** add a doc-link smoke test in `tests/` (matching existing test infra) that greps the post-rebrand allow-list — i.e., asserts no remaining `GrowlingEyes` references _unless_ §3.1 = A or C (which keep the word-mark). Skipped/inverted depending on the §3.1 choice.
 - **In the app repo:** Playwright E2E asserting the home `<h1>`/hero word-mark and favicon hash, plus a snapshot of the wolf mark SVG.
 - **Visual regression:** one Percy or `@playwright/test` screenshot baseline per top-level route.
 
@@ -245,13 +256,13 @@ This PR cannot touch that repo. The implementation MVI will open a companion PR 
 
 ## Section 8 — Rollback Plan
 
-| Step | Command |
-|---|---|
-| 1. Revert this repo's rebrand commit | `git revert <sha> && push` |
-| 2. Revert app repo's rebrand commit | same, in `midnghtsapphire/growlingeyes` |
-| 3. (Only if §3.1 = B) Re-point DNS to old droplet | Namecheap UI |
-| 4. (Only if §3.1 = B) Restore PM2 process name | `pm2 delete <new>; pm2 start growlingeyes` |
-| 5. (Only if §3.1 = B) Restore vault path alias | `vault kv copy secret/<new>/ secret/growlingeyes/` |
+| Step                                              | Command                                            |
+| ------------------------------------------------- | -------------------------------------------------- |
+| 1. Revert this repo's rebrand commit              | `git revert <sha> && push`                         |
+| 2. Revert app repo's rebrand commit               | same, in `midnghtsapphire/growlingeyes`            |
+| 3. (Only if §3.1 = B) Re-point DNS to old droplet | Namecheap UI                                       |
+| 4. (Only if §3.1 = B) Restore PM2 process name    | `pm2 delete <new>; pm2 start growlingeyes`         |
+| 5. (Only if §3.1 = B) Restore vault path alias    | `vault kv copy secret/<new>/ secret/growlingeyes/` |
 
 **Rollback risk:** Low if §3.1 = A or C. **High** if §3.1 = B (involves DNS + ops surfaces).
 

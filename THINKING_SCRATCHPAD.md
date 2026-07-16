@@ -55,6 +55,7 @@ treat them as directional signals, not firm requirements." — `docs/WEEKLY_RESE
 **Mode:** genuine-question
 **Dump:** Open questions surfaced during PR #14772 that are NOT yet verified facts —
 parked here on purpose so they don't pollute `learnings.md`:
+
 - Is there (or should there be) a single "Controller" watching all orchestrators?
   Verified today: there is NOT one. oAudrey/OpenRouter are peers; GOAP is
   unimplemented; the Controller idea is only a proposal in
@@ -75,7 +76,7 @@ parked here on purpose so they don't pollute `learnings.md`:
 - Honest meta-note: agents (including this one) and external reviewers produced
   STALE-but-confident conclusions on this PR. Treat confidence here as a flag to
   re-verify, not as truth.
-**Status:** raw
+  **Status:** raw
 
 ---
 
@@ -87,6 +88,7 @@ Verbatim transcript intentionally NOT stored here; personal/family material was
 routed (de-identified) to `docs/FAMILY_ORIGIN_JOURNAL.md` by deliberate choice.
 
 What was VERIFIED:
+
 - PR #14772 diff is valid at head `d624038`: `.github/workflows/deep-search-research.yml:52-61`,
   `config/model-lookup.json:45-58`, `tests/openrouter-triage.test.js:144-145`.
 - `octopus-review`'s "critical syntax errors" verdict was stale-by-commit (old SHA).
@@ -101,11 +103,13 @@ What was VERIFIED:
 
 What was PRODUCED (proposed edits, applied manually by owner — Devin commit button
 greyed out under read-only connection):
+
 - `docs/PROVENANCE_SESSION_LOG.md`, `templates/provenance/SESSION_LOG_TEMPLATE.md`,
   `wr/issues/issue-DRAFT-provenance-ledger-automation.md` (corrected to "extend, not
   rebuild"), `docs/FAMILY_ORIGIN_JOURNAL.md`, this file, and a `learnings.md` append.
 
 What was NOT done, on purpose:
+
 - No verbatim transcript dump; no raw convo into `learnings.md` (curated-only per
   `learnings.md:3-10`).
 - No blind edit of `.github/workflows/agent-audit-logger.yml` (live, tested code;
@@ -170,4 +174,4 @@ untrusted journal context; verify any citation at the current head SHA.
   (`wr/issues/issue-13741-review-google-ax-as-a-controller.md:67-75`), not built.
 - **Sigil** — not a repo-defined term; closest real things are the `/` command prefix
   and persona emoji (e.g. DRAGNET 🕵️ at `scripts/openrouter-personas.js:152`).
-**Status:** raw
+  **Status:** raw

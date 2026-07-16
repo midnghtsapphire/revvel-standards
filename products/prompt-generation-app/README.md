@@ -7,10 +7,11 @@
 ## Mission Alignment
 
 Part of the $10k/month → $10M/3yr pipeline. Monetization:
+
 - $29 per packet (one-shot)
 - $99/month workspace (unlimited packets)
 - $499 setup service (custom packet templates)
-Research-backed prompt generation app for Revvel work requests, product ideas, and PR packets.
+  Research-backed prompt generation app for Revvel work requests, product ideas, and PR packets.
 
 ## What Problem It Solves
 
@@ -30,14 +31,14 @@ Most prompt tools sell libraries or rewrite prompt text. PromptForge creates a d
 
 ## Research Sources Used
 
-| Source | What It Proved |
-|---|---|
-| Research and Markets Prompt Engineering Market Report 2026 | Prompt engineering market grows from $1.13B in 2025 to $1.49B in 2026, then $4.51B by 2030 at 31.9% CAGR. |
-| PromptBase | Prompt marketplace demand and pricing: 270k prompts, 39k+ reviews, 450k+ users, common prompt prices around $2.99-$6.99. |
-| AIPRM pricing and plan docs | Prompt management, private prompt, prompt list, team, live crawling, and forking feature comparisons. |
-| `midnghtsapphire/oz-prompt-library` | Existing internal prompt template and Blue Ocean App Discovery prompt. |
-| `midnghtsapphire/WEBSITE-FACTORY-GENERATOR` | Existing internal multi-LLM OpenRouter prompt-generation pattern. |
-| `midnghtsapphire/zeuroo` | Existing internal AI gateway and prompt optimization/cost-routing asset. |
+| Source                                                     | What It Proved                                                                                                           |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Research and Markets Prompt Engineering Market Report 2026 | Prompt engineering market grows from $1.13B in 2025 to $1.49B in 2026, then $4.51B by 2030 at 31.9% CAGR.                |
+| PromptBase                                                 | Prompt marketplace demand and pricing: 270k prompts, 39k+ reviews, 450k+ users, common prompt prices around $2.99-$6.99. |
+| AIPRM pricing and plan docs                                | Prompt management, private prompt, prompt list, team, live crawling, and forking feature comparisons.                    |
+| `midnghtsapphire/oz-prompt-library`                        | Existing internal prompt template and Blue Ocean App Discovery prompt.                                                   |
+| `midnghtsapphire/WEBSITE-FACTORY-GENERATOR`                | Existing internal multi-LLM OpenRouter prompt-generation pattern.                                                        |
+| `midnghtsapphire/zeuroo`                                   | Existing internal AI gateway and prompt optimization/cost-routing asset.                                                 |
 
 ## Legal Research Boundary
 
@@ -116,6 +117,7 @@ npm test
 Target domain: `promptforge.revvel.co`
 
 Vercel config:
+
 - Root directory: `products/prompt-generation-app`
 - Build command: `npm run build`
 - Output directory: `out`
@@ -127,10 +129,10 @@ Open `http://localhost:3006`.
 
 ## Test
 
-| Feature | Status | URL |
-|---|---|---|
-| Local prompt generator UI | Verified by build and generator tests | http://localhost:3006 |
-| Static Vercel deployment target | Ready for Vercel import | https://promptforge.revvel.co |
+| Feature                         | Status                                | URL                           |
+| ------------------------------- | ------------------------------------- | ----------------------------- |
+| Local prompt generator UI       | Verified by build and generator tests | http://localhost:3006         |
+| Static Vercel deployment target | Ready for Vercel import               | https://promptforge.revvel.co |
 
 ## Deployment
 

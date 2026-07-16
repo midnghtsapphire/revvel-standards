@@ -10,14 +10,14 @@
 
 The following phrases are **forbidden** in all WR documents:
 
-| Phrase | Why it's banned |
-| --- | --- |
-| `N/A — pending Jules refinement` | Agent stopped instead of researching |
-| `N/A — pending human review` | Agent deferred to a human instead of completing the work |
-| `pending refinement` | Section was never filled |
-| `TBD` | Placeholder left in the doc |
-| `TODO` | Unfinished work item left exposed |
-| `_No response_` | GitHub issue-form blank-field artifact (also caught by rule 7) |
+| Phrase                           | Why it's banned                                                |
+| -------------------------------- | -------------------------------------------------------------- |
+| `N/A — pending Jules refinement` | Agent stopped instead of researching                           |
+| `N/A — pending human review`     | Agent deferred to a human instead of completing the work       |
+| `pending refinement`             | Section was never filled                                       |
+| `TBD`                            | Placeholder left in the doc                                    |
+| `TODO`                           | Unfinished work item left exposed                              |
+| `_No response_`                  | GitHub issue-form blank-field artifact (also caught by rule 7) |
 
 ---
 

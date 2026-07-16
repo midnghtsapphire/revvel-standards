@@ -13,10 +13,13 @@ failure_behavior:
 ---
 
 # Usage
+
 - When to run, expected duration, and prerequisites.
 
 # Success Criteria
+
 - What must be true for the command to be considered done.
 
 # Artifacts
+
 - Paths to logs/reports to persist.

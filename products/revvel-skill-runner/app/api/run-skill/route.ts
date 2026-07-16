@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { skillId, trigger } = await req.json();
@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   if (!skillId || !trigger) {
     return NextResponse.json(
       { error: "skillId and trigger are required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
           "⚠️ OPENROUTER_API_KEY not set. Add it to your .env.local to enable live skill execution.\n\nSkill would run: " +
           trigger,
       },
-      { status: 200 }
+      { status: 200 },
     );
   }
 
@@ -45,7 +45,7 @@ Respond with a concise, actionable summary of what this skill does and what it w
     const err = await res.text();
     return NextResponse.json(
       { error: `OpenRouter error: ${res.status} — ${err}` },
-      { status: 502 }
+      { status: 502 },
     );
   }
 

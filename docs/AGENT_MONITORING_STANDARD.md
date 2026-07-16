@@ -40,7 +40,7 @@ When an agent opens a PR for the issue:
 1. **Subscribe to the PR** so its CI failures, review comments, and merges
    come through as events (matches the existing watchdog pattern).
 2. **Match the diff against the Acceptance criteria** — did the agent do
-   *what was asked* or scope-creep?
+   _what was asked_ or scope-creep?
 3. **Run the standards gates against the diff** (no need to wait for CI):
    - No-Destroy Guard — any existing app file deleted/rewritten without
      `allow-destroy`?
@@ -57,13 +57,13 @@ When an agent opens a PR for the issue:
 
 ## 3. What to do per outcome
 
-| Outcome | Action |
-| --- | --- |
-| Agent did the work correctly and within scope | Merge (admin override if checks blocked by billing/secrets). Close source WR with reference. |
-| Agent partially did the work | Comment on the PR with the unmet acceptance criteria, leave it open, do **not** silently fix it ourselves (we'd be hiding the agent's gap). |
-| Agent overshot scope (scope-creep) | Comment requesting the unwanted changes be reverted; if they're useful, the agent files them as a **new** WR. |
-| Agent broke a standard (destroy / scaffolding / missing alt / etc.) | Add the failing case to the relevant guard's test suite so it can't recur; comment on the PR; do **not** merge until fixed. |
-| Agent surfaced a standards gap | Open a follow-up PR adding the rule to the relevant standard (so the gap is now enforced, not just noted). |
+| Outcome                                                             | Action                                                                                                                                      |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent did the work correctly and within scope                       | Merge (admin override if checks blocked by billing/secrets). Close source WR with reference.                                                |
+| Agent partially did the work                                        | Comment on the PR with the unmet acceptance criteria, leave it open, do **not** silently fix it ourselves (we'd be hiding the agent's gap). |
+| Agent overshot scope (scope-creep)                                  | Comment requesting the unwanted changes be reverted; if they're useful, the agent files them as a **new** WR.                               |
+| Agent broke a standard (destroy / scaffolding / missing alt / etc.) | Add the failing case to the relevant guard's test suite so it can't recur; comment on the PR; do **not** merge until fixed.                 |
+| Agent surfaced a standards gap                                      | Open a follow-up PR adding the rule to the relevant standard (so the gap is now enforced, not just noted).                                  |
 
 ## 4. Adding to standards — the "agent surfaced a gap" loop
 
@@ -93,7 +93,8 @@ action:
 
 ## 6. What this serves (the enterprise pitch angle)
 
-A buyer asks: *"How do you supervise the AI agents?"*
+A buyer asks: _"How do you supervise the AI agents?"_
+
 - You point them at this standard.
 - Plus `docs/PROVENANCE_STANDARD.md` (who/what ran the work).
 - Plus the running `docs/UPGRADE_LOG.md` (cost decisions).
@@ -106,8 +107,8 @@ That's a more credible "AI under control" story than most teams have.
 
 ## Current monitoring queue (rolling)
 
-| Issue / PR | Source | Acceptance | Subscribed? | Notes |
-| --- | --- | --- | --- | --- |
-| #13987 | Octopus audit item #5 — OpenRouter doc caveat | banner above the example block in `docs/AGENT_AUTONOMY_PROTOCOLS.md` | will subscribe to the resulting PR when it opens | First test of the openrouter-coder loop end-to-end after the secrets cleanup |
+| Issue / PR | Source                                        | Acceptance                                                           | Subscribed?                                      | Notes                                                                        |
+| ---------- | --------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------- |
+| #13987     | Octopus audit item #5 — OpenRouter doc caveat | banner above the example block in `docs/AGENT_AUTONOMY_PROTOCOLS.md` | will subscribe to the resulting PR when it opens | First test of the openrouter-coder loop end-to-end after the secrets cleanup |
 
 Append rows as we delegate more items from #13978 (and other audits).

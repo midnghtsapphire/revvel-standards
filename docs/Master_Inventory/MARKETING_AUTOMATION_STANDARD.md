@@ -26,19 +26,19 @@ You do not need to understand code to use this. The Marketing Dashboard in every
 
 Every Revvel app uses this exact stack. Do not substitute.
 
-| Layer | Tool | Purpose | Cost |
-|---|---|---|---|
-| **Campaign Generator** | OpenRouter LLM (DeepSeek/Claude) | AI writes all ad copy, headlines, hashtags | Per-token (minimal) |
-| **Social Scheduling** | Make.com or n8n | Queues and auto-posts to all platforms | Make.com: free tier / $9/mo |
-| **Meta/Facebook/Instagram** | Meta Graph API | Posts to Facebook Pages and Instagram | Free (API) |
-| **TikTok** | TikTok Content Posting API | Posts videos/images to TikTok | Free (API) |
-| **X / Twitter** | X API v2 | Posts tweets/threads | Free (1,500 posts/month) |
-| **LinkedIn** | LinkedIn API | Posts to company page | Free (API) |
-| **Email** | Resend.com | Transactional + campaign emails | Free (3,000/month) |
-| **Analytics** | PostHog (self-hosted) or Google Analytics 4 | Tracks clicks, conversions | Free |
-| **UTM Builder** | Built-in to campaign generator | Tags every link for tracking | Included |
-| **SEO** | Next.js + JSON-LD + sitemap.xml | Organic search ranking | Free |
-| **Landing Pages** | Next.js pages in `app/lp/` directory | Conversion-optimized pages | Included |
+| Layer                       | Tool                                        | Purpose                                    | Cost                        |
+| --------------------------- | ------------------------------------------- | ------------------------------------------ | --------------------------- |
+| **Campaign Generator**      | OpenRouter LLM (DeepSeek/Claude)            | AI writes all ad copy, headlines, hashtags | Per-token (minimal)         |
+| **Social Scheduling**       | Make.com or n8n                             | Queues and auto-posts to all platforms     | Make.com: free tier / $9/mo |
+| **Meta/Facebook/Instagram** | Meta Graph API                              | Posts to Facebook Pages and Instagram      | Free (API)                  |
+| **TikTok**                  | TikTok Content Posting API                  | Posts videos/images to TikTok              | Free (API)                  |
+| **X / Twitter**             | X API v2                                    | Posts tweets/threads                       | Free (1,500 posts/month)    |
+| **LinkedIn**                | LinkedIn API                                | Posts to company page                      | Free (API)                  |
+| **Email**                   | Resend.com                                  | Transactional + campaign emails            | Free (3,000/month)          |
+| **Analytics**               | PostHog (self-hosted) or Google Analytics 4 | Tracks clicks, conversions                 | Free                        |
+| **UTM Builder**             | Built-in to campaign generator              | Tags every link for tracking               | Included                    |
+| **SEO**                     | Next.js + JSON-LD + sitemap.xml             | Organic search ranking                     | Free                        |
+| **Landing Pages**           | Next.js pages in `app/lp/` directory        | Conversion-optimized pages                 | Included                    |
 
 ---
 
@@ -57,15 +57,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${product.name} | YourApp`,
     description: product.metaDescription || product.shortDescription,
-    keywords: product.tags?.join(', '),
+    keywords: product.tags?.join(", "),
     openGraph: {
       title: product.name,
       description: product.shortDescription,
       images: [product.images?.[0]?.url],
-      type: 'website',
+      type: "website",
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: product.name,
       description: product.shortDescription,
       images: [product.images?.[0]?.url],
@@ -86,18 +86,18 @@ Every product page must include Schema.org JSON-LD so Google shows rich results:
     __html: JSON.stringify({
       "@context": "https://schema.org",
       "@type": "Product",
-      "name": product.name,
-      "description": product.description,
-      "image": product.images?.[0]?.url,
-      "offers": {
+      name: product.name,
+      description: product.description,
+      image: product.images?.[0]?.url,
+      offers: {
         "@type": "Offer",
-        "price": (product.priceCents / 100).toFixed(2),
-        "priceCurrency": "USD",
-        "availability": "https://schema.org/InStock",
+        price: (product.priceCents / 100).toFixed(2),
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
       },
-      "brand": {
+      brand: {
         "@type": "Brand",
-        "name": "MIDNGHTSAPPHIRE",
+        name: "MIDNGHTSAPPHIRE",
       },
     }),
   }}
@@ -108,25 +108,30 @@ Every product page must include Schema.org JSON-LD so Google shows rich results:
 
 These files must exist at the root of every deployed app:
 
-| File | Location | What It Does |
-|---|---|---|
-| `sitemap.xml` | Auto-generated at `/sitemap.xml` | Tells Google every URL to index |
-| `robots.txt` | `/robots.txt` | Tells crawlers which pages to index |
-| `manifest.json` | `/manifest.json` | PWA support and mobile install |
-| `favicon.ico` | `/favicon.ico` | Browser tab icon |
+| File            | Location                         | What It Does                        |
+| --------------- | -------------------------------- | ----------------------------------- |
+| `sitemap.xml`   | Auto-generated at `/sitemap.xml` | Tells Google every URL to index     |
+| `robots.txt`    | `/robots.txt`                    | Tells crawlers which pages to index |
+| `manifest.json` | `/manifest.json`                 | PWA support and mobile install      |
+| `favicon.ico`   | `/favicon.ico`                   | Browser tab icon                    |
 
 **Generate sitemap dynamically in Next.js:**
+
 ```ts
 // app/sitemap.ts
-import { MetadataRoute } from 'next';
+import { MetadataRoute } from "next";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const products = await getPublishedProducts();
   return [
-    { url: 'https://yourapp.com', changeFrequency: 'daily', priority: 1 },
-    { url: 'https://yourapp.com/products', changeFrequency: 'daily', priority: 0.9 },
+    { url: "https://yourapp.com", changeFrequency: "daily", priority: 1 },
+    {
+      url: "https://yourapp.com/products",
+      changeFrequency: "daily",
+      priority: 0.9,
+    },
     ...products.map((p) => ({
       url: `https://yourapp.com/products/${p.slug}`,
-      changeFrequency: 'weekly' as const,
+      changeFrequency: "weekly" as const,
       priority: 0.8,
       lastModified: p.updatedAt,
     })),
@@ -138,13 +143,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
 Every app must have at minimum 5 SEO landing pages targeting high-value keywords:
 
-| Page Path | Target | Content |
-|---|---|---|
-| `/lp/[niche]-for-[city]` | Local + niche keywords | City/industry-specific copy |
-| `/lp/best-[category]-tools` | Comparison keywords | Top tools in your niche |
-| `/lp/how-to-[action]` | How-to keywords | Tutorial / guide content |
-| `/lp/[competitor]-alternative` | Competitor keywords | Why you're better |
-| `/lp/[keyword]-pricing` | Commercial intent | Pricing comparison |
+| Page Path                      | Target                 | Content                     |
+| ------------------------------ | ---------------------- | --------------------------- |
+| `/lp/[niche]-for-[city]`       | Local + niche keywords | City/industry-specific copy |
+| `/lp/best-[category]-tools`    | Comparison keywords    | Top tools in your niche     |
+| `/lp/how-to-[action]`          | How-to keywords        | Tutorial / guide content    |
+| `/lp/[competitor]-alternative` | Competitor keywords    | Why you're better           |
+| `/lp/[keyword]-pricing`        | Commercial intent      | Pricing comparison          |
 
 ---
 
@@ -154,13 +159,13 @@ Every outbound link from a campaign, email, or social post must include UTM para
 
 ### UTM Parameter Definitions
 
-| Parameter | Key | What to Put | Example |
-|---|---|---|---|
-| Source | `utm_source` | The platform where the link appears | `instagram`, `tiktok`, `email`, `x` |
-| Medium | `utm_medium` | The marketing medium | `social`, `cpc`, `email`, `affiliate` |
-| Campaign | `utm_campaign` | The campaign name | `spring_launch_2026`, `product_drop_april` |
-| Content | `utm_content` | The specific ad variant | `video_15s`, `carousel_post`, `story` |
-| Term | `utm_term` | Keyword for paid ads | `neuro_planner`, `adhd_tools` |
+| Parameter | Key            | What to Put                         | Example                                    |
+| --------- | -------------- | ----------------------------------- | ------------------------------------------ |
+| Source    | `utm_source`   | The platform where the link appears | `instagram`, `tiktok`, `email`, `x`        |
+| Medium    | `utm_medium`   | The marketing medium                | `social`, `cpc`, `email`, `affiliate`      |
+| Campaign  | `utm_campaign` | The campaign name                   | `spring_launch_2026`, `product_drop_april` |
+| Content   | `utm_content`  | The specific ad variant             | `video_15s`, `carousel_post`, `story`      |
+| Term      | `utm_term`     | Keyword for paid ads                | `neuro_planner`, `adhd_tools`              |
 
 ### UTM Builder Function
 
@@ -174,19 +179,20 @@ export function buildUTMUrl(
     campaign: string;
     content?: string;
     term?: string;
-  }
+  },
 ): string {
   const url = new URL(baseUrl);
-  url.searchParams.set('utm_source', params.source);
-  url.searchParams.set('utm_medium', params.medium);
-  url.searchParams.set('utm_campaign', params.campaign);
-  if (params.content) url.searchParams.set('utm_content', params.content);
-  if (params.term) url.searchParams.set('utm_term', params.term);
+  url.searchParams.set("utm_source", params.source);
+  url.searchParams.set("utm_medium", params.medium);
+  url.searchParams.set("utm_campaign", params.campaign);
+  if (params.content) url.searchParams.set("utm_content", params.content);
+  if (params.term) url.searchParams.set("utm_term", params.term);
   return url.toString();
 }
 ```
 
 **Example UTM links:**
+
 ```
 Instagram post → yourapp.com/products/planner?utm_source=instagram&utm_medium=social&utm_campaign=spring_2026&utm_content=carousel
 TikTok bio link → yourapp.com?utm_source=tiktok&utm_medium=social&utm_campaign=tiktok_bio
@@ -201,23 +207,23 @@ Email newsletter → yourapp.com/products?utm_source=email&utm_medium=email&utm_
 
 Before auto-posting works, these API credentials must be added to the app's environment variables:
 
-| Platform | Required Credentials | Where to Get |
-|---|---|---|
-| **Meta (Facebook Pages)** | `META_ACCESS_TOKEN`, `META_PAGE_ID` | developers.facebook.com → My Apps |
-| **Instagram** | `INSTAGRAM_ACCOUNT_ID`, `META_ACCESS_TOKEN` | Same as Meta (linked account) |
-| **TikTok** | `TIKTOK_ACCESS_TOKEN`, `TIKTOK_OPEN_ID` | developers.tiktok.com |
-| **X (Twitter)** | `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET` | developer.x.com |
-| **LinkedIn** | `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_ORGANIZATION_ID` | linkedin.com/developers |
+| Platform                  | Required Credentials                                             | Where to Get                      |
+| ------------------------- | ---------------------------------------------------------------- | --------------------------------- |
+| **Meta (Facebook Pages)** | `META_ACCESS_TOKEN`, `META_PAGE_ID`                              | developers.facebook.com → My Apps |
+| **Instagram**             | `INSTAGRAM_ACCOUNT_ID`, `META_ACCESS_TOKEN`                      | Same as Meta (linked account)     |
+| **TikTok**                | `TIKTOK_ACCESS_TOKEN`, `TIKTOK_OPEN_ID`                          | developers.tiktok.com             |
+| **X (Twitter)**           | `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET` | developer.x.com                   |
+| **LinkedIn**              | `LINKEDIN_ACCESS_TOKEN`, `LINKEDIN_ORGANIZATION_ID`              | linkedin.com/developers           |
 
 ### 5.2. Platform Character Limits and Rules
 
-| Platform | Text Limit | Image | Video | Hashtag Style |
-|---|---|---|---|---|
-| **Instagram** | 2,200 chars | 1080×1080px | 15–60s Reels | Up to 30 hashtags |
-| **TikTok** | 2,200 chars | 1080×1920px | 15s–3min | Up to 100 hashtags |
-| **X / Twitter** | 280 chars | 1200×675px | Up to 2:20min | 1–2 hashtags max |
-| **Facebook** | 63,206 chars | 1200×630px | Up to 240min | 3–5 hashtags |
-| **LinkedIn** | 3,000 chars | 1200×628px | Up to 10min | 3–5 hashtags |
+| Platform        | Text Limit   | Image       | Video         | Hashtag Style      |
+| --------------- | ------------ | ----------- | ------------- | ------------------ |
+| **Instagram**   | 2,200 chars  | 1080×1080px | 15–60s Reels  | Up to 30 hashtags  |
+| **TikTok**      | 2,200 chars  | 1080×1920px | 15s–3min      | Up to 100 hashtags |
+| **X / Twitter** | 280 chars    | 1200×675px  | Up to 2:20min | 1–2 hashtags max   |
+| **Facebook**    | 63,206 chars | 1200×630px  | Up to 240min  | 3–5 hashtags       |
+| **LinkedIn**    | 3,000 chars  | 1200×628px  | Up to 10min   | 3–5 hashtags       |
 
 ### 5.3. Campaign Generation Flow
 
@@ -281,19 +287,19 @@ Social Post  →  Landing Page  →  Checkout Page
 
 Every landing page at `/lp/[slug]` must have:
 
-| Element | Field Map ID | Description |
-|---|---|---|
-| Hero Headline | FM-LP-001 | Bold, benefit-focused. Max 8 words. |
-| Hero Subheadline | FM-LP-002 | Expands on headline. 1–2 sentences. |
-| Hero CTA Button | FM-LP-003 | "Get Started Free", "Shop Now", "Try It". |
-| Hero Image/Video | FM-LP-004 | Product screenshot, demo video, or lifestyle image. |
-| Social Proof | FM-LP-005 | "Join 10,000+ users" or 3–5 star reviews. |
-| Benefits Section | FM-LP-006 | 3–6 bullet points. Lead with the outcome, not the feature. |
-| How It Works | FM-LP-007 | 3 steps. Simple. Use icons. |
-| Pricing Section | FM-LP-008 | Shows all tiers. Highlights recommended plan. |
-| FAQ Section | FM-LP-009 | 5–8 questions. Addresses objections. |
-| Final CTA | FM-LP-010 | Repeat the main CTA at the bottom. |
-| Footer | FM-LP-011 | Privacy Policy, Terms, contact. Required by Meta/Google for ads. |
+| Element          | Field Map ID | Description                                                      |
+| ---------------- | ------------ | ---------------------------------------------------------------- |
+| Hero Headline    | FM-LP-001    | Bold, benefit-focused. Max 8 words.                              |
+| Hero Subheadline | FM-LP-002    | Expands on headline. 1–2 sentences.                              |
+| Hero CTA Button  | FM-LP-003    | "Get Started Free", "Shop Now", "Try It".                        |
+| Hero Image/Video | FM-LP-004    | Product screenshot, demo video, or lifestyle image.              |
+| Social Proof     | FM-LP-005    | "Join 10,000+ users" or 3–5 star reviews.                        |
+| Benefits Section | FM-LP-006    | 3–6 bullet points. Lead with the outcome, not the feature.       |
+| How It Works     | FM-LP-007    | 3 steps. Simple. Use icons.                                      |
+| Pricing Section  | FM-LP-008    | Shows all tiers. Highlights recommended plan.                    |
+| FAQ Section      | FM-LP-009    | 5–8 questions. Addresses objections.                             |
+| Final CTA        | FM-LP-010    | Repeat the main CTA at the bottom.                               |
+| Footer           | FM-LP-011    | Privacy Policy, Terms, contact. Required by Meta/Google for ads. |
 
 ### 6.3. Conversion Tracking
 
@@ -302,30 +308,30 @@ When a visitor converts (signs up, purchases), fire these events:
 ```ts
 // lib/analytics.ts
 export function trackConversion(event: {
-  type: 'signup' | 'purchase' | 'lead';
+  type: "signup" | "purchase" | "lead";
   value?: number; // revenue in dollars
   orderId?: string;
   source?: string;
 }) {
   // Google Analytics 4
-  gtag('event', 'conversion', {
+  gtag("event", "conversion", {
     send_to: process.env.NEXT_PUBLIC_GA_CONVERSION_ID,
     value: event.value,
-    currency: 'USD',
+    currency: "USD",
     transaction_id: event.orderId,
   });
 
   // Meta Pixel
-  fbq('track', event.type === 'purchase' ? 'Purchase' : 'Lead', {
+  fbq("track", event.type === "purchase" ? "Purchase" : "Lead", {
     value: event.value,
-    currency: 'USD',
+    currency: "USD",
     order_id: event.orderId,
   });
 
   // TikTok Pixel
-  ttq.track(event.type === 'purchase' ? 'CompletePayment' : 'SubmitForm', {
+  ttq.track(event.type === "purchase" ? "CompletePayment" : "SubmitForm", {
     value: event.value,
-    currency: 'USD',
+    currency: "USD",
   });
 }
 ```
@@ -338,27 +344,27 @@ export function trackConversion(event: {
 
 Every app must send these transactional emails automatically:
 
-| Trigger | Email | Tool |
-|---|---|---|
-| User signs up | Welcome email + email verification | Resend |
-| Order placed | Order confirmation with receipt | Resend |
-| Order shipped | Shipping notification | Resend |
-| Password reset | Password reset link | Resend (via Clerk) |
-| Subscription renewed | Renewal receipt | Resend (via Stripe webhook) |
-| Subscription canceled | Cancellation confirmation + win-back offer | Resend |
-| Weekly | Newsletter with affiliate links embedded | Resend or Brevo |
+| Trigger               | Email                                      | Tool                        |
+| --------------------- | ------------------------------------------ | --------------------------- |
+| User signs up         | Welcome email + email verification         | Resend                      |
+| Order placed          | Order confirmation with receipt            | Resend                      |
+| Order shipped         | Shipping notification                      | Resend                      |
+| Password reset        | Password reset link                        | Resend (via Clerk)          |
+| Subscription renewed  | Renewal receipt                            | Resend (via Stripe webhook) |
+| Subscription canceled | Cancellation confirmation + win-back offer | Resend                      |
+| Weekly                | Newsletter with affiliate links embedded   | Resend or Brevo             |
 
 ### 7.2. Email Field Map
 
-| Email Field | DB Source | Notes |
-|---|---|---|
-| To address | `users.email` | |
-| Greeting name | `users.first_name` | Falls back to "there" if null |
-| Order number | `orders.id` (first 8 chars) | |
-| Order total | `orders.total_cents ÷ 100` | Formatted as `$19.99` |
-| Order items | `order_items` JOIN `products` | List of product names + prices |
-| Affiliate link | `affiliate_links.url` | Auto-inserted in newsletters |
-| Unsubscribe link | `users.id` + token | GDPR required |
+| Email Field      | DB Source                     | Notes                          |
+| ---------------- | ----------------------------- | ------------------------------ |
+| To address       | `users.email`                 |                                |
+| Greeting name    | `users.first_name`            | Falls back to "there" if null  |
+| Order number     | `orders.id` (first 8 chars)   |                                |
+| Order total      | `orders.total_cents ÷ 100`    | Formatted as `$19.99`          |
+| Order items      | `order_items` JOIN `products` | List of product names + prices |
+| Affiliate link   | `affiliate_links.url`         | Auto-inserted in newsletters   |
+| Unsubscribe link | `users.id` + token            | GDPR required                  |
 
 ---
 
@@ -366,16 +372,16 @@ Every app must send these transactional emails automatically:
 
 Before running paid ads on any platform, these elements must be in place:
 
-| Requirement | Platform | Where to Configure |
-|---|---|---|
-| Privacy Policy page | Meta, TikTok, Google | `/privacy` route in app |
-| Terms of Service page | Meta, TikTok, Google | `/terms` route in app |
-| Business verification | Meta | Meta Business Manager |
-| Pixel installed | Meta | `<MetaPixel />` component in `app/layout.tsx` |
-| TikTok Pixel installed | TikTok | `<TikTokPixel />` component |
-| Ad account linked | X | developer.x.com |
-| Payment method on file | All paid platforms | Each platform's billing settings |
-| Disclaimer text (financial/health claims) | All | Add to ad copy: "Results may vary" |
+| Requirement                               | Platform             | Where to Configure                            |
+| ----------------------------------------- | -------------------- | --------------------------------------------- |
+| Privacy Policy page                       | Meta, TikTok, Google | `/privacy` route in app                       |
+| Terms of Service page                     | Meta, TikTok, Google | `/terms` route in app                         |
+| Business verification                     | Meta                 | Meta Business Manager                         |
+| Pixel installed                           | Meta                 | `<MetaPixel />` component in `app/layout.tsx` |
+| TikTok Pixel installed                    | TikTok               | `<TikTokPixel />` component                   |
+| Ad account linked                         | X                    | developer.x.com                               |
+| Payment method on file                    | All paid platforms   | Each platform's billing settings              |
+| Disclaimer text (financial/health claims) | All                  | Add to ad copy: "Results may vary"            |
 
 ---
 
@@ -383,12 +389,12 @@ Before running paid ads on any platform, these elements must be in place:
 
 The Marketing Dashboard supports generating batches of campaigns at these sizes:
 
-| Button | Campaigns Generated | Platforms × Variants | Best For |
-|---|---|---|---|
-| Quick Burst | 20 | 4 platforms × 5 variants | Testing a new product |
-| Standard Push | 50 | 5 platforms × 10 variants | Regular monthly push |
-| Growth Mode | 100 | 5 platforms × 20 variants | Launch week |
-| Aggressive | 200 | 5 platforms × 40 variants | Scaling a proven offer |
-| Full Blast | 500 | 5 platforms × 100 variants | Max growth mode |
+| Button        | Campaigns Generated | Platforms × Variants       | Best For               |
+| ------------- | ------------------- | -------------------------- | ---------------------- |
+| Quick Burst   | 20                  | 4 platforms × 5 variants   | Testing a new product  |
+| Standard Push | 50                  | 5 platforms × 10 variants  | Regular monthly push   |
+| Growth Mode   | 100                 | 5 platforms × 20 variants  | Launch week            |
+| Aggressive    | 200                 | 5 platforms × 40 variants  | Scaling a proven offer |
+| Full Blast    | 500                 | 5 platforms × 100 variants | Max growth mode        |
 
 Each generated campaign is a unique combination of headline, copy, visual, CTA, and audience — AI-varied so platforms don't penalize repeated content.

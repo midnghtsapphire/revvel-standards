@@ -40,19 +40,19 @@
 Deterministic scoring from [`scripts/fork-audit-bot.js`](../scripts/fork-audit-bot.js),
 documented in [`FORK_AUDIT_BOT_PROCESS.md`](./FORK_AUDIT_BOT_PROCESS.md#scoring-rubric).
 
-| Signal | Points | Note |
-|---|---:|---|
-| Stars (÷100, cap 20) | 0.1 | 11 stars — niche action |
-| Forks (÷50, cap 10) | 0.0 | 0 forks |
-| Issue health (cap 10) | 10.0 | Only 2 open issues — healthy |
-| OSS license (cap 10) | 10.0 | MIT |
-| Recency of push (cap 15) | 5.0 | Last push 2025‑11‑17 (≤ 365 d) |
-| Strategic value (×2, cap 20) | 14.0 | `strategic_value: 7` in `candidates.json` |
-| Goal-tag alignment (cap 15) | 5.0 | tags `ai, jules, automation` |
-| Archived penalty | 0.0 | Not archived |
-| Fork-of-fork penalty | 0.0 | Not a fork |
-| Disabled penalty | 0.0 | Not disabled |
-| **Total (clamped 0‑100)** | **44** | **Band C** |
+| Signal                       | Points | Note                                      |
+| ---------------------------- | -----: | ----------------------------------------- |
+| Stars (÷100, cap 20)         |    0.1 | 11 stars — niche action                   |
+| Forks (÷50, cap 10)          |    0.0 | 0 forks                                   |
+| Issue health (cap 10)        |   10.0 | Only 2 open issues — healthy              |
+| OSS license (cap 10)         |   10.0 | MIT                                       |
+| Recency of push (cap 15)     |    5.0 | Last push 2025‑11‑17 (≤ 365 d)            |
+| Strategic value (×2, cap 20) |   14.0 | `strategic_value: 7` in `candidates.json` |
+| Goal-tag alignment (cap 15)  |    5.0 | tags `ai, jules, automation`              |
+| Archived penalty             |    0.0 | Not archived                              |
+| Fork-of-fork penalty         |    0.0 | Not a fork                                |
+| Disabled penalty             |    0.0 | Not disabled                              |
+| **Total (clamped 0‑100)**    | **44** | **Band C**                                |
 
 **Why it does not reach Band B (≥ 70):** the low star/fork counts (0.1 + 0.0) and
 the recency bucket (5.0, because the last push is older than 90 days) cap the
@@ -63,16 +63,16 @@ contribute upstream".
 
 ## 2. Upstream snapshot
 
-| Field | Value |
-|---|---|
-| Stars | 11 |
-| Forks | 0 |
-| Open issues | 2 |
-| License | MIT |
-| Last push | 2025‑11‑17T05:10:18Z |
-| Archived | No |
-| Default branch | `main` |
-| Maintainer | Single maintainer (BeksOmega) |
+| Field          | Value                         |
+| -------------- | ----------------------------- |
+| Stars          | 11                            |
+| Forks          | 0                             |
+| Open issues    | 2                             |
+| License        | MIT                           |
+| Last push      | 2025‑11‑17T05:10:18Z          |
+| Archived       | No                            |
+| Default branch | `main`                        |
+| Maintainer     | Single maintainer (BeksOmega) |
 
 ## 3. What it is and how Revvel uses it
 
@@ -85,12 +85,12 @@ It is the entry point of the **Jules lane** in this repo and part of the wider
 `BeksOmega/*` family already catalogued in
 [`PROVENANCE_STANDARD.md`](./PROVENANCE_STANDARD.md):
 
-| Workflow | Action used | Role |
-|---|---|---|
-| [`jules-invoke.yml`](../.github/workflows/jules-invoke.yml) | `BeksOmega/jules-action@v1.0.0`, `BeksOmega/on-unblocked@v1.0.0` | Invoke Jules on `workflow_dispatch`, on new `[WR]` / `jules` / `deep-research` / `weekly-research` issues, and on newly-unblocked issues |
-| [`wr-pr-creation.yml`](../.github/workflows/wr-pr-creation.yml) | `BeksOmega/jules-action@v1.0.0` | Promote a WR issue into a Jules-authored PR |
-| [`jules-feedback.yml`](../.github/workflows/jules-feedback.yml) | `BeksOmega/jules-comms@v1.0.0` | Feedback lane |
-| [`jules-pr-comment.yml`](../.github/workflows/jules-pr-comment.yml) | `BeksOmega/jules-publish@v1.0.0` | Publish lane |
+| Workflow                                                            | Action used                                                      | Role                                                                                                                                     |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| [`jules-invoke.yml`](../.github/workflows/jules-invoke.yml)         | `BeksOmega/jules-action@v1.0.0`, `BeksOmega/on-unblocked@v1.0.0` | Invoke Jules on `workflow_dispatch`, on new `[WR]` / `jules` / `deep-research` / `weekly-research` issues, and on newly-unblocked issues |
+| [`wr-pr-creation.yml`](../.github/workflows/wr-pr-creation.yml)     | `BeksOmega/jules-action@v1.0.0`                                  | Promote a WR issue into a Jules-authored PR                                                                                              |
+| [`jules-feedback.yml`](../.github/workflows/jules-feedback.yml)     | `BeksOmega/jules-comms@v1.0.0`                                   | Feedback lane                                                                                                                            |
+| [`jules-pr-comment.yml`](../.github/workflows/jules-pr-comment.yml) | `BeksOmega/jules-publish@v1.0.0`                                 | Publish lane                                                                                                                             |
 
 Every invocation is **guarded** — each job verifies `JULES_API_KEY` is set and
 emits a `::warning::` then skips when it is absent (see the "Verify
@@ -146,13 +146,13 @@ than touching one in isolation.
 
 ## 5. Decision
 
-| Question | Answer |
-|---|---|
-| Open an upstream PR? | **No** — Band C generates no upstream contribution. |
-| Open an upstream issue? | **No** — same reason; the 2 open issues are healthy. |
-| Bump / replace the pin? | **No** — `@v1.0.0` works and is recently maintained. |
-| Track anything? | **Yes** — single-maintainer + mutable-tag pin, deferred to the org-wide third-party action hardening sweep (§4). |
-| Net cost / new secrets | **$0 / none.** |
+| Question                | Answer                                                                                                           |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Open an upstream PR?    | **No** — Band C generates no upstream contribution.                                                              |
+| Open an upstream issue? | **No** — same reason; the 2 open issues are healthy.                                                             |
+| Bump / replace the pin? | **No** — `@v1.0.0` works and is recently maintained.                                                             |
+| Track anything?         | **Yes** — single-maintainer + mutable-tag pin, deferred to the org-wide third-party action hardening sweep (§4). |
+| Net cost / new secrets  | **$0 / none.**                                                                                                   |
 
 This is logged so the next Fork-Audit sweep does not re-litigate `jules-action`
 from scratch; the candidate stays in

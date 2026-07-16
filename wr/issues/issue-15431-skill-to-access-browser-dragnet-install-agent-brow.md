@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-07  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-07  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -105,18 +104,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -128,6 +128,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28853314034.md`
 
 # WR-Ready Research Packet: Browser Agent Skill Implementation
@@ -136,7 +137,8 @@ Source packet: `docs/research-engine/run-28853314034.md`
 
 **Recommendation**: Build the browser agent skill using **Playwright** as the underlying automation engine, wrapped in a secure, resource-managed skill interface for the Dragnet agent framework.
 
-**Rationale**: 
+**Rationale**:
+
 - Playwright offers the best balance of cross-browser support, modern architecture, and active maintenance (65.9k GitHub stars, daily commits)
 - The skill addresses a validated market need for AI agents to interact with web browsers programmatically
 - Security and resource management must be primary design considerations given the inherent risks of browser automation
@@ -150,12 +152,14 @@ Source packet: `docs/research-engine/run-28853314034.md`
 **Urgent Pain Point**: AI agents are "blind" to the interactive web. They can process static HTML but cannot reliably perform actions on modern JavaScript-heavy websites. Existing automation tools require precise element selectors that are difficult for LLMs to generate and break frequently.
 
 **Why This Audience**:
+
 - High technical sophistication with clear ROI understanding
 - Active community (CrewAI: 25k+ stars, OpenDevin: 10k+ stars)
 - Willing to pay for tools that save development time
 - Strong word-of-mouth potential in developer communities
 
 **User Language**:
+
 - "I just want my agent to click a button on a page"
 - "Why is browser automation so hard to set up?"
 - "Stop writing brittle web scrapers. Let your agent browse like a human"
@@ -165,17 +169,20 @@ Source packet: `docs/research-engine/run-28853314034.md`
 **Positioning**: "The missing browser skill for your autonomous agent - natural language control for any website"
 
 **Content Strategy**:
+
 1. **Hub Landing Page**: "Dragnet Browser Skill: Autonomous Web Agents for Your LLM Apps"
 2. **Technical Tutorials**: Step-by-step guides for common use cases
 3. **Comparison Content**: vs. Selenium, Puppeteer, MultiOn
 4. **Video Demos**: "Find cheapest flight" or "Order pizza" showcases
 
 **SEO Targets**:
+
 - Primary: "AI browser agent", "LLM web automation", "agent browser skill"
 - Long-tail: "how to give llm access to browser", "langchain browser tools alternative"
 - Transactional: "install agent browser skill", "dragnet browser automation"
 
 **Distribution Channels**:
+
 - GitHub (primary)
 - Hacker News launch
 - Reddit (r/LocalLLaMA, r/LangChain)
@@ -184,15 +191,16 @@ Source packet: `docs/research-engine/run-28853314034.md`
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Stars | Pricing | Key Differentiator | Our Advantage |
-|------------|-------|---------|-------------------|---------------|
-| Playwright | 65.9k | Free OSS | Cross-browser automation | We add AI-native interface |
-| Puppeteer | 88.2k | Free OSS | Chrome-focused | We support natural language |
-| MultiOn | N/A | $49-299/mo | AI browser API | We're open-source + cheaper |
-| Selenium | 30.5k | Free OSS | Industry standard | We're modern + agent-focused |
-| LaVague | 3.2k | Free OSS | Natural language to Selenium | Better integration + reliability |
+| Competitor | Stars | Pricing    | Key Differentiator           | Our Advantage                    |
+| ---------- | ----- | ---------- | ---------------------------- | -------------------------------- |
+| Playwright | 65.9k | Free OSS   | Cross-browser automation     | We add AI-native interface       |
+| Puppeteer  | 88.2k | Free OSS   | Chrome-focused               | We support natural language      |
+| MultiOn    | N/A   | $49-299/mo | AI browser API               | We're open-source + cheaper      |
+| Selenium   | 30.5k | Free OSS   | Industry standard            | We're modern + agent-focused     |
+| LaVague    | 3.2k  | Free OSS   | Natural language to Selenium | Better integration + reliability |
 
 **Pricing Strategy**:
+
 - Free Tier: 1,000 browser actions/month
 - Pro: $25/month for 50,000 actions
 - Enterprise: Custom pricing
@@ -202,12 +210,14 @@ Source packet: `docs/research-engine/run-28853314034.md`
 ## 5. Chatter and Demand Signals
 
 **Validated Pain Points**:
+
 - "Setting up browser skills is too complex" (Reddit, Discord)
 - "Agents break when websites change" (GitHub issues)
 - "Security concerns with browser access" (Forums)
 - "Can't get reliable form filling to work" (Support channels)
 
 **Demand Evidence**:
+
 - LangChain browser tool integration heavily requested
 - OpenDevin architecture relies on browser interaction
 - Commercial products (MultiOn, Adept) raising significant funding
@@ -217,17 +227,20 @@ Source packet: `docs/research-engine/run-28853314034.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Validated**:
+
 - ✅ Playwright supports cross-browser automation
 - ✅ Natural language element selection is technically feasible
 - ✅ Market demand exists (GitHub stars, commercial products)
 
 **Evidence Gaps**:
+
 - ❌ Cannot access `agent-browser-SKILL.1.md` specification
 - ❌ No specific implementation details available
 - ❌ Security requirements undefined
 - ❌ Resource consumption benchmarks missing
 
 **Critical Missing Data**:
+
 - Actual skill API specification
 - Integration points with Dragnet framework
 - Performance requirements
@@ -236,6 +249,7 @@ Source packet: `docs/research-engine/run-28853314034.md`
 ## 7. Build Requirements and Acceptance Gates
 
 ### Core Requirements
+
 1. Natural language element selection (e.g., "click the search button")
 2. Cross-browser support via Playwright
 3. Sandboxed execution environment
@@ -243,6 +257,7 @@ Source packet: `docs/research-engine/run-28853314034.md`
 5. Error handling and retry logic
 
 ### Acceptance Gates
+
 - **Gate 1**: Navigate to test site, extract text, click link successfully
 - **Gate 2**: Run for 5 minutes without memory leaks
 - **Gate 3**: Fail to access local file:// URLs (security test)
@@ -250,6 +265,7 @@ Source packet: `docs/research-engine/run-28853314034.md`
 - **Gate 5**: Integrate with Dragnet skill discovery system
 
 ### Files Affected
+
 ```
 /skills/browser/ (new directory)
 /dragnet/skill_registry.py
@@ -263,21 +279,25 @@ Source packet: `docs/research-engine/run-28853314034.md`
 ### Blocking Issues
 
 **Issue 1: Missing Specification**
+
 - **Finding**: Cannot implement without access to `agent-browser-SKILL.1.md`
 - **Automatic Fix**: Request inline specification in issue body
 - **Commit Message**: `fix(docs): add inline specification for browser skill requirements`
 
 **Issue 2: Security Policy Undefined**
+
 - **Finding**: Browser access requires sandboxing and network controls
 - **Automatic Fix**: Create default security policy template
 - **Commit Message**: `feat(security): add browser skill security policy template`
 
 **Issue 3: Resource Management Missing**
+
 - **Finding**: No limits defined for browser instances
 - **Automatic Fix**: Add resource limit configuration
 - **Commit Message**: `feat(config): add browser resource limits and cleanup hooks`
 
 ### Non-Blocking Suggestions
+
 - Add telemetry for usage tracking
 - Implement retry logic for flaky operations
 - Add proxy support for IP rotation
@@ -285,6 +305,7 @@ Source packet: `docs/research-engine/run-28853314034.md`
 ## 9. Automatic Fix and Commit Queue
 
 ### Priority 1: Documentation
+
 ```bash
 # Create specification template
 echo "# Browser Skill Specification
@@ -303,6 +324,7 @@ git commit -m "docs: add browser skill specification template"
 ```
 
 ### Priority 2: Security Configuration
+
 ```python
 # skills/browser/security_config.py
 BROWSER_SECURITY_POLICY = {
@@ -314,9 +336,11 @@ BROWSER_SECURITY_POLICY = {
     "proxy_required": True
 }
 ```
+
 Commit: `feat(security): add browser skill security configuration`
 
 ### Priority 3: Resource Management
+
 ```python
 # skills/browser/resource_manager.py
 import atexit
@@ -333,11 +357,13 @@ def managed_browser():
             browser.close()
             cleanup_resources()
 ```
+
 Commit: `feat(resources): add browser lifecycle management`
 
 ## 10. Labels to Apply
 
 **Required Labels**:
+
 - `blocked-incomplete-specification` (Critical)
 - `security-review-required` (High Priority)
 - `needs-pricing` (Revenue)
@@ -347,6 +373,7 @@ Commit: `feat(resources): add browser lifecycle management`
 - `needs-docs` (Documentation)
 
 **Risk Labels**:
+
 - `risk:security`
 - `risk:resource-consumption`
 - `risk:weak-moat`
@@ -357,17 +384,20 @@ Commit: `feat(resources): add browser lifecycle management`
 **Since no repository exists for agent-browser-SKILL, recommended approach**:
 
 ### Best Alternative: Playwright
+
 - **Repository**: https://github.com/microsoft/playwright
 - **Rationale**: Modern architecture, cross-browser support, active maintenance
 - **Integration**: Wrap Playwright in agent-friendly interface
 
 ### Implementation Strategy
+
 1. Fork/wrap Playwright for agent use
 2. Add natural language layer on top
 3. Implement Dragnet skill interface
 4. Package with security controls
 
 ### Migration Path
+
 ```yaml
 # .github/workflows/setup-browser-skill.yml
 name: Setup Browser Skill
@@ -387,6 +417,7 @@ steps:
 **Overall Confidence: 85/100**
 
 ### Per-Lane Confidence Scores
+
 - Market Positioning: 85% (strong demand, clear pain points)
 - SEO Demand: 80% (good keyword opportunities)
 - Competitor Intelligence: 90% (well-understood landscape)
@@ -396,13 +427,16 @@ steps:
 - Revenue Mechanics: 70% (viable pricing model)
 
 ### Best Idea Selection
+
 **Natural language browser control for AI agents** emerges as the strongest concept because:
+
 1. Validated market demand (GitHub stars, commercial products)
 2. Clear technical differentiation (natural language vs. selectors)
 3. Strong community need (developer frustration documented)
 4. Viable revenue model (usage-based pricing)
 
 ### Critical Next Steps
+
 1. **Immediate**: Retrieve and analyze `agent-browser-SKILL.1.md` specification
 2. **Day 1**: Define security and resource policies
 3. **Week 1**: Build MVP with Playwright wrapper
@@ -450,11 +484,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -470,11 +504,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

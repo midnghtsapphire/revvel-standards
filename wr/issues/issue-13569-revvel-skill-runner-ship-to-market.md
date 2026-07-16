@@ -38,29 +38,29 @@ on:
   workflow_dispatch:
     inputs:
       deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
+        description: "Run full deep market research (keywords, BOM, chatter, domain)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
+        description: "Generate Bill of Materials (API/tool comparison table)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
+        description: "Research Reddit/forums/TrustPilot for buyer complaints"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
+        description: "Full competitor pricing + gap analysis"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       research_depth:
-        description: 'Research depth level'
+        description: "Research depth level"
         type: choice
         options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
+        default: deep # ← default to deep, not standard
 ```
 
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a _starting point_ — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
 
 ---
 
@@ -74,17 +74,17 @@ Revvel Skill Runner is a Next.js production app designed to execute internal and
 
 ### Repository Metadata
 
-| Property | Value |
-| ---------- | ------- |
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-19 |
-| Last Updated | 2026-05-19 |
-| Primary Language | JavaScript |
-| Stars | 0 |
-| Open Issues | 0 |
-| Description | A production-ready Next.js application to run Revvel skills following the EXRUP methodology. |
-| Private | False |
-| Archived | False |
+| Property         | Value                                                                                        |
+| ---------------- | -------------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)      |
+| Created          | 2026-05-19                                                                                   |
+| Last Updated     | 2026-05-19                                                                                   |
+| Primary Language | JavaScript                                                                                   |
+| Stars            | 0                                                                                            |
+| Open Issues      | 0                                                                                            |
+| Description      | A production-ready Next.js application to run Revvel skills following the EXRUP methodology. |
+| Private          | False                                                                                        |
+| Archived         | False                                                                                        |
 
 ### Current Status
 
@@ -151,21 +151,21 @@ The market for AI agent execution engines and autonomous task runners is explodi
 
 Developers, agency owners, and technical founders buy these platforms when they hit scaling limits with zapier or basic scripts and need a robust, UI-driven execution environment for complex agentic workflows.
 
-| Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-| ----------------- | --------------- | -------------- | ----------------- |
-| Solopreneurs/Indie Hackers | Need to automate personal workflows | High | 500k+ |
-| Agency Owners | Scaling operations without headcount | High | 250k+ |
-| Enterprise Automation Teams | Standardizing internal AI tools | Medium | 50k+ |
+| Audience Segment            | Trigger Event                        | Intent Level | Est. Market Size |
+| --------------------------- | ------------------------------------ | ------------ | ---------------- |
+| Solopreneurs/Indie Hackers  | Need to automate personal workflows  | High         | 500k+            |
+| Agency Owners               | Scaling operations without headcount | High         | 250k+            |
+| Enterprise Automation Teams | Standardizing internal AI tools      | Medium       | 50k+             |
 
 #### SEO & Keyword Research
 
 **This section is REQUIRED for any product with a web/content component.**
 
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-| --------- | --------------------- | --------- | ------------- | -------- |
-| AI task runner | 3,600 | $4.50 | Medium | Transactional |
-| autonomous agent framework | 5,400 | $8.00 | High | Informational |
-| execute AI skills | 1,200 | $3.20 | Low | Transactional |
+| Keyword                    | Monthly Volume (US) | Avg CPC | Competition | Intent        |
+| -------------------------- | ------------------- | ------- | ----------- | ------------- |
+| AI task runner             | 3,600               | $4.50   | Medium      | Transactional |
+| autonomous agent framework | 5,400               | $8.00   | High        | Informational |
+| execute AI skills          | 1,200               | $3.20   | Low         | Transactional |
 
 **Long-tail / trigger-specific keywords:**
 
@@ -180,33 +180,33 @@ Developers, agency owners, and technical founders buy these platforms when they 
 
 ### Category: Execution Context / Orchestration
 
-| API / Tool | Cost | Coverage | Best For | Verdict |
-| ------------ | ------ | ---------- | ---------- | --------- |
-| Vercel | $20/mo (Pro) | Global edge, Next.js native | App hosting & serverless execution | ⭐ Recommended |
-| Railway | ~$5-10/mo | Full stack | Long-running worker execution | ✅ Acceptable |
+| API / Tool | Cost         | Coverage                    | Best For                           | Verdict        |
+| ---------- | ------------ | --------------------------- | ---------------------------------- | -------------- |
+| Vercel     | $20/mo (Pro) | Global edge, Next.js native | App hosting & serverless execution | ⭐ Recommended |
+| Railway    | ~$5-10/mo    | Full stack                  | Long-running worker execution      | ✅ Acceptable  |
 
 ### Category: Authentication / AuthZ
 
-| API / Tool | Cost | Features | Best For | Verdict |
-| ------------ | ------ | ---------- | ---------- | --------- |
-| Clerk | $25/mo | User management, B2B orgs | Skill access control | ⭐ Recommended |
-| Supabase Auth | Free/$25 | Auth + DB | Data heavy skills | ✅ Acceptable |
+| API / Tool    | Cost     | Features                  | Best For             | Verdict        |
+| ------------- | -------- | ------------------------- | -------------------- | -------------- |
+| Clerk         | $25/mo   | User management, B2B orgs | Skill access control | ⭐ Recommended |
+| Supabase Auth | Free/$25 | Auth + DB                 | Data heavy skills    | ✅ Acceptable  |
 
 ### Category: Monetization / Storefront
 
-| Platform | Rev Share | Best For | Verdict |
-| ---------- | ----------- | ---------- | --------- |
-| Polar.sh | 4% | Developer tools, SaaS | ⭐ Recommended |
-| Gumroad | 10% | Digital downloads, simple subs | ✅ Acceptable |
+| Platform | Rev Share | Best For                       | Verdict        |
+| -------- | --------- | ------------------------------ | -------------- |
+| Polar.sh | 4%        | Developer tools, SaaS          | ⭐ Recommended |
+| Gumroad  | 10%       | Digital downloads, simple subs | ✅ Acceptable  |
 
 **BOM Cost Summary:**
 
-| Category | Recommended Tool | Est. Monthly Cost |
-| ---------- | ----------------- | ------------------- |
-| Hosting | Vercel | $20 |
-| Auth | Clerk | $25 |
-| Store | Polar.sh | 4% Rev Share |
-| **Total Infrastructure** | | **$45/mo** |
+| Category                 | Recommended Tool | Est. Monthly Cost |
+| ------------------------ | ---------------- | ----------------- |
+| Hosting                  | Vercel           | $20               |
+| Auth                     | Clerk            | $25               |
+| Store                    | Polar.sh         | 4% Rev Share      |
+| **Total Infrastructure** |                  | **$45/mo**        |
 
 > **ROI Check:** 2 sales at $25/mo subscription covers base infra.
 
@@ -216,21 +216,21 @@ The current market relies on heavy orchestrators (like LangChain/LangGraph) or n
 
 **Shared vs. Exclusive / Tiered pricing:**
 
-| Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-| -------------- | ------------- | ------ | ---------------- | ------------------------ |
-| Premium Skills | Access to high-value agentic tasks | $20-$100/mo | 2-4% | Saves hours of manual work |
-| Execution Time | Metered billing per run | $0.05/run | 5-8% | Alignment with compute costs |
+| Solution Type  | How It Works                       | Cost        | Conversion Rate | Why Some Are Worth More      |
+| -------------- | ---------------------------------- | ----------- | --------------- | ---------------------------- |
+| Premium Skills | Access to high-value agentic tasks | $20-$100/mo | 2-4%            | Saves hours of manual work   |
+| Execution Time | Metered billing per run            | $0.05/run   | 5-8%            | Alignment with compute costs |
 
 **Why some executions are worth more than others:**
 Premium skills are worth more when they interact with restricted APIs, process proprietary data formats, or string together complex multi-step decisions (e.g., Lead generation engine vs simple text summarizer).
 
 #### Competitors & Alternatives
 
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-| ------------ | ------ | ------ | ------------------- | -------------------------- |
-| AutoGPT/Forge | CLI/Local | Free | High/Tech-heavy | No easy web UI deployment |
-| LangServe | API Wrapper | Free (Compute) | High/Dev-focused | No built-in monetization/UI |
-| **This Engine** | Web App Runner | $25/mo SaaS | High UI/UX | EXRUP methodology out of the box, monetization-first design. |
+| Competitor      | Type           | Cost           | Conversion/Quality | Gap / What They Don't Do                                     |
+| --------------- | -------------- | -------------- | ------------------ | ------------------------------------------------------------ |
+| AutoGPT/Forge   | CLI/Local      | Free           | High/Tech-heavy    | No easy web UI deployment                                    |
+| LangServe       | API Wrapper    | Free (Compute) | High/Dev-focused   | No built-in monetization/UI                                  |
+| **This Engine** | Web App Runner | $25/mo SaaS    | High UI/UX         | EXRUP methodology out of the box, monetization-first design. |
 
 #### API / Data Source BOM (REQUIRED)
 
@@ -238,10 +238,10 @@ Premium skills are worth more when they interact with restricted APIs, process p
 
 If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
 
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-| -------------- | ---------- | ----------------- | ------------ | ----------- | ------------------ | ------------------ |
-| Vercel Serverless | Execution | JSON/Text | Vercel Pro | Native Next.js | Cold Starts | Max 5m execution limit |
-| Trigger.dev | Orchestration | Success/Fail | Usage-based | Long-running jobs | External dependency | Standard SaaS ToS |
+| Provider/API      | Best For      | Data/Capability | Cost Model  | Strengths         | Weaknesses/Risks    | Compliance Notes       |
+| ----------------- | ------------- | --------------- | ----------- | ----------------- | ------------------- | ---------------------- |
+| Vercel Serverless | Execution     | JSON/Text       | Vercel Pro  | Native Next.js    | Cold Starts         | Max 5m execution limit |
+| Trigger.dev       | Orchestration | Success/Fail    | Usage-based | Long-running jobs | External dependency | Standard SaaS ToS      |
 
 **BOM Decision:**
 
@@ -272,10 +272,10 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **High-value domain patterns for this niche:**
 
-| Pattern | Examples | Rationale |
-| --------- | --------- | ----------- |
-| Action-oriented | runskills.com, executeskills.ai | Clear intent |
-| Brand-centric | revvelskills.com, skillrunner.dev | Professional, aligned with dev ecosystem |
+| Pattern         | Examples                          | Rationale                                |
+| --------------- | --------------------------------- | ---------------------------------------- |
+| Action-oriented | runskills.com, executeskills.ai   | Clear intent                             |
+| Brand-centric   | revvelskills.com, skillrunner.dev | Professional, aligned with dev ecosystem |
 
 **Recommendation:** `revvel-skill-runner.dev` or `.ai`. Prioritize `.dev` as it targets developers building skills.
 
@@ -299,10 +299,10 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **This section is REQUIRED. Research current marketing strategies in this niche.**
 
-| Strategy | What Works Now | How This WR Improves It |
-| ---------- | --------------- | ------------------------ |
-| Build-in-public | Tweeting agent capabilities | We provide a shareable UI link |
-| OSS "Freemium" | Open source core, paid cloud | We offer monetization out-of-the-box for their code |
+| Strategy        | What Works Now               | How This WR Improves It                             |
+| --------------- | ---------------------------- | --------------------------------------------------- |
+| Build-in-public | Tweeting agent capabilities  | We provide a shareable UI link                      |
+| OSS "Freemium"  | Open source core, paid cloud | We offer monetization out-of-the-box for their code |
 
 **Inbound vs. Outbound ROI comparison:**
 
@@ -349,6 +349,7 @@ User prompts and brainstorms are inputs, not immutable specs. Record:
 - What was rejected and why
 
 This prevents copy/paste execution of low-quality or conflicting ideas and keeps WRs aligned to repository standards.
+
 ## Executive Summary
 
 The `revvel-skill-runner` work request has two distinct deliverables:
@@ -376,22 +377,24 @@ ran on merge but its `gate` job skipped every delivery channel.
 
 Added an **Output Type → deliver label** mapping in `Apply labels to PR`:
 
-| Output Type | Deliver label |
-|---|---|
-| `production-app` | `deliver:app` |
-| `sellable-pdf` | `deliver:pdf` |
-| `technical-documentation` | `deliver:docs` |
-| `project-management-doc` | `deliver:docs` |
-| `api` | `deliver:api` |
-| `cli-tool` | `deliver:cli` |
-| `docker` | `deliver:docker` |
-| `mcp-server` | `deliver:mcp` |
-| `video` | `deliver:video` |
+| Output Type               | Deliver label    |
+| ------------------------- | ---------------- |
+| `production-app`          | `deliver:app`    |
+| `sellable-pdf`            | `deliver:pdf`    |
+| `technical-documentation` | `deliver:docs`   |
+| `project-management-doc`  | `deliver:docs`   |
+| `api`                     | `deliver:api`    |
+| `cli-tool`                | `deliver:cli`    |
+| `docker`                  | `deliver:docker` |
+| `mcp-server`              | `deliver:mcp`    |
+| `video`                   | `deliver:video`  |
 
 The label is parsed from the issue body using:
+
 ```
 ###\s*Output Type[^\n]*\n+([^\n#]+)
 ```
+
 and looked up in `OUTPUT_TYPE_DELIVER_MAP`. Unrecognised types log a notice and
 are skipped gracefully.
 
@@ -511,16 +514,16 @@ products/revvel-skill-runner/
 **Weighted Factors:**
 
 | Factor | Weight | Source | Why it matters |
-| --- | ---: | --- | --- |
-| N/A | 0.00 | N/A | N/A |
+| ------ | -----: | ------ | -------------- |
+| N/A    |   0.00 | N/A    | N/A            |
 
 **Threshold Bands:**
 
-| Score Range | Status | Action |
-| --- | --- | --- |
-| N/A | eligible | N/A |
-| N/A | manual_review | N/A |
-| N/A | blocked | N/A |
+| Score Range | Status        | Action |
+| ----------- | ------------- | ------ |
+| N/A         | eligible      | N/A    |
+| N/A         | manual_review | N/A    |
+| N/A         | blocked       | N/A    |
 
 **Audit Trail Required:**
 
@@ -656,10 +659,10 @@ products/revvel-skill-runner/
 
 **Links to Add:**
 
-| Product/Service | Affiliate Program | Commission | Location |
-| ---------------- | ------------------- | ------------ | ---------- |
-| Vercel | Vercel Affiliate | Var | Footer |
-| Clerk | Auth Provider | Var | Auth Pages |
+| Product/Service | Affiliate Program | Commission | Location   |
+| --------------- | ----------------- | ---------- | ---------- |
+| Vercel          | Vercel Affiliate  | Var        | Footer     |
+| Clerk           | Auth Provider     | Var        | Auth Pages |
 
 #### Payment Integration
 
@@ -754,11 +757,11 @@ Pending implementation.
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-| -------- | -------- | ----- |
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
+| Feature   | Status     | URL                                       |
+| --------- | ---------- | ----------------------------------------- |
+| Homepage  | ✅ Working | https://{repo-name}.vercel.app            |
+| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard  |
+| API       | ✅ Working | https://{repo-name}.vercel.app/api/health |
 ```
 
 **Action Required:** Update URLs once deployed
@@ -852,10 +855,10 @@ Pending implementation.
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-| ------ | ---------- | ------------- | ------------ |
-| Security of executed skills | High | High | Sandboxing, restricted API keys, strict input validation |
-| Compute costs | High | Med | Set timeouts on execution, pass through API costs to user |
+| Risk                        | Severity | Probability | Mitigation                                                |
+| --------------------------- | -------- | ----------- | --------------------------------------------------------- |
+| Security of executed skills | High     | High        | Sandboxing, restricted API keys, strict input validation  |
+| Compute costs               | High     | Med         | Set timeouts on execution, pass through API costs to user |
 
 ---
 
@@ -924,6 +927,7 @@ Pending implementation.
 
 **Last Updated:** 2026-05-19  
 **Next Review:** 2026-05-26
+
 - ✅ Ships revenue-generating product (skill runner with paid tier path)
 - ✅ Reduces friction in automated product pipeline (fixes deliver-label gap)
 - ✅ Strengthens OSINT/automation tooling
@@ -940,14 +944,14 @@ Pending implementation.
 
 ### BOM (Bill of Materials)
 
-| Item | Cost | Notes |
-|---|---|---|
-| Next.js 15 | Free | OSS |
-| Tailwind CSS | Free | OSS |
-| OpenRouter API | ~$0.003/run | Claude 3.7 Sonnet |
-| Vercel hosting | Free tier | Hobby plan sufficient |
-| **Total monthly (0 users)** | **$0** | |
-| **Break-even** | **~3 Pro subscribers** | At $9/mo |
+| Item                        | Cost                   | Notes                 |
+| --------------------------- | ---------------------- | --------------------- |
+| Next.js 15                  | Free                   | OSS                   |
+| Tailwind CSS                | Free                   | OSS                   |
+| OpenRouter API              | ~$0.003/run            | Claude 3.7 Sonnet     |
+| Vercel hosting              | Free tier              | Hobby plan sufficient |
+| **Total monthly (0 users)** | **$0**                 |                       |
+| **Break-even**              | **~3 Pro subscribers** | At $9/mo              |
 
 ---
 
@@ -957,6 +961,7 @@ Pending implementation.
 - [x] `products/revvel-skill-runner/` created, all required files present
 - [x] WR document created
 - [x] PR targets `main`, closes issue #13569
+
 # WR: revvel-skill-runner — Ship-to-Market
 
 **Issue:** #13569
@@ -980,25 +985,26 @@ Pending implementation.
 
 ### 2.1 Target Audience
 
-| Segment | Pain Point | Willingness to Pay |
-|---|---|---|
-| Solo developers building AI side projects | Don't want to manage prompt versioning + billing | $20–$50/mo |
-| AI agencies serving SMB clients | Need to white-label skill bundles per client | $200–$2,000/mo |
-| Enterprise dev teams | Compliance, audit logs, SSO | $2,000–$20,000/mo |
+| Segment                                   | Pain Point                                       | Willingness to Pay |
+| ----------------------------------------- | ------------------------------------------------ | ------------------ |
+| Solo developers building AI side projects | Don't want to manage prompt versioning + billing | $20–$50/mo         |
+| AI agencies serving SMB clients           | Need to white-label skill bundles per client     | $200–$2,000/mo     |
+| Enterprise dev teams                      | Compliance, audit logs, SSO                      | $2,000–$20,000/mo  |
 
 ### 2.2 Competitive Analysis
 
-| Competitor | Strength | Weakness | Our Edge |
-|---|---|---|---|
-| LangChain Hub | Ecosystem | No native billing | Stripe + Polar.sh built-in |
-| Vellum | Enterprise polish | $500+/mo entry | $20/mo starter |
-| PromptLayer | Observability | No execution layer | End-to-end runner |
-| Flowise | Open source UI | Self-host friction | Hosted + open core |
-| OpenAI Assistants | Native API | Vendor lock-in | Multi-model (Claude, Gemini, Llama) |
+| Competitor        | Strength          | Weakness           | Our Edge                            |
+| ----------------- | ----------------- | ------------------ | ----------------------------------- |
+| LangChain Hub     | Ecosystem         | No native billing  | Stripe + Polar.sh built-in          |
+| Vellum            | Enterprise polish | $500+/mo entry     | $20/mo starter                      |
+| PromptLayer       | Observability     | No execution layer | End-to-end runner                   |
+| Flowise           | Open source UI    | Self-host friction | Hosted + open core                  |
+| OpenAI Assistants | Native API        | Vendor lock-in     | Multi-model (Claude, Gemini, Llama) |
 
 ### 2.3 SEO Keyword Research
 
 **Primary keywords (target rankings within 90 days):**
+
 - "ai skill runner" — Low competition, ~200 searches/mo
 - "prompt as api" — Medium, ~1,200/mo
 - "monetize ai prompts" — Low, ~800/mo
@@ -1013,16 +1019,16 @@ Pending implementation.
 
 ### 3.1 Infrastructure
 
-| Component | Choice | Cost (Month 1) | Notes |
-|---|---|---|---|
-| Hosting | Vercel Pro | $20/mo | Edge functions for low-latency skill execution |
-| Database | Neon Postgres | $19/mo | Serverless, branching for preview envs |
-| Auth | Clerk | $0 (free tier <10k MAU) | SSO, organizations built-in |
-| Payments | Polar.sh | 4% + Stripe fees | GitHub-native, sponsor-friendly |
-| LLM Routing | OpenRouter | Pass-through + 5% | Multi-model from single API |
-| Observability | Axiom | $25/mo | Log streaming + analytics |
-| Email | Resend | $20/mo | Transactional + onboarding |
-| Analytics | PostHog Cloud | $0 (free tier) | Product analytics + feature flags |
+| Component     | Choice        | Cost (Month 1)          | Notes                                          |
+| ------------- | ------------- | ----------------------- | ---------------------------------------------- |
+| Hosting       | Vercel Pro    | $20/mo                  | Edge functions for low-latency skill execution |
+| Database      | Neon Postgres | $19/mo                  | Serverless, branching for preview envs         |
+| Auth          | Clerk         | $0 (free tier <10k MAU) | SSO, organizations built-in                    |
+| Payments      | Polar.sh      | 4% + Stripe fees        | GitHub-native, sponsor-friendly                |
+| LLM Routing   | OpenRouter    | Pass-through + 5%       | Multi-model from single API                    |
+| Observability | Axiom         | $25/mo                  | Log streaming + analytics                      |
+| Email         | Resend        | $20/mo                  | Transactional + onboarding                     |
+| Analytics     | PostHog Cloud | $0 (free tier)          | Product analytics + feature flags              |
 
 **Total fixed cost: ~$84/mo** + variable LLM passthrough.
 
@@ -1039,13 +1045,13 @@ Pending implementation.
 
 ### 4.1 Pricing Tiers
 
-| Tier | Price | Limits | Target |
-|---|---|---|---|
-| Free | $0 | 100 runs/mo, 1 skill | Trial / hobbyists |
-| Starter | $20/mo | 5k runs, 10 skills | Solo devs |
-| Pro | $99/mo | 50k runs, unlimited skills, team of 3 | Small agencies |
-| Scale | $499/mo | 500k runs, SSO, audit logs | Larger agencies |
-| Enterprise | Custom | SLA, dedicated, on-prem | Enterprise |
+| Tier       | Price   | Limits                                | Target            |
+| ---------- | ------- | ------------------------------------- | ----------------- |
+| Free       | $0      | 100 runs/mo, 1 skill                  | Trial / hobbyists |
+| Starter    | $20/mo  | 5k runs, 10 skills                    | Solo devs         |
+| Pro        | $99/mo  | 50k runs, unlimited skills, team of 3 | Small agencies    |
+| Scale      | $499/mo | 500k runs, SSO, audit logs            | Larger agencies   |
+| Enterprise | Custom  | SLA, dedicated, on-prem               | Enterprise        |
 
 ### 4.2 Path to $10k MRR
 
@@ -1068,6 +1074,7 @@ Pending implementation.
 ## 5. Implementation Roadmap
 
 ### Week 1–2: Foundation
+
 - [ ] Repo scaffold (Next.js 15 + Drizzle + Clerk)
 - [ ] Skill schema + CRUD
 - [ ] Single-model execution endpoint
@@ -1075,6 +1082,7 @@ Pending implementation.
 - **Issue:** #13570 — Scaffold + skill execution MVP
 
 ### Week 3–4: MVP Launch
+
 - [ ] Multi-model routing via OpenRouter
 - [ ] Usage metering + Stripe/Polar billing
 - [ ] Public skill directory
@@ -1082,12 +1090,14 @@ Pending implementation.
 - **Issue:** #13571 — Billing + public launch
 
 ### Week 5–8: Growth
+
 - [ ] Team/organization support
 - [ ] Webhook integrations
 - [ ] CLI tool (`npx revvel-skill`)
 - [ ] Programmatic SEO pages
 
 ### Week 9–12: Scale
+
 - [ ] SSO (SAML/OIDC)
 - [ ] Audit logs
 - [ ] Self-hosted enterprise tier
@@ -1142,12 +1152,12 @@ UPSTASH_QSTASH_TOKEN=
 
 ## 9. Risks & Mitigations
 
-| Risk | Mitigation |
-|---|---|
-| LLM provider price hikes | OpenRouter abstraction, can swap providers |
-| Commodity competition | Differentiate on billing UX + GitHub-native sponsorship |
-| Slow organic growth | Build-in-public + 2x/wk content cadence |
-| Vercel cost scaling | Migrate hot endpoints to Cloudflare Workers at >$500/mo Vercel bill |
+| Risk                     | Mitigation                                                          |
+| ------------------------ | ------------------------------------------------------------------- |
+| LLM provider price hikes | OpenRouter abstraction, can swap providers                          |
+| Commodity competition    | Differentiate on billing UX + GitHub-native sponsorship             |
+| Slow organic growth      | Build-in-public + 2x/wk content cadence                             |
+| Vercel cost scaling      | Migrate hot endpoints to Cloudflare Workers at >$500/mo Vercel bill |
 
 ---
 

@@ -1,9 +1,11 @@
 # [WR] P2 — Deletion archaeology: 70 files deleted without REVVEL-DISABLED coverage since 2026-05-15
 
 ## Title
+
 [WR] Restore-or-mark the uncovered deletions found in git history (llm-router.yml is the headline)
 
 ## Description
+
 **Findings (git log --diff-filter=D, full history, generated-file allowlist applied).** ~70 uncovered deletions in 60 days. The ones that matter:
 
 1. **`bd3c4687` 2026-06-15 — "chore: delete llm-router temporarily" — deleted `.github/workflows/llm-router.yml`.** This was the central LLM Router with Perplexity No-Key Fallback (OpenRouter-first, free no-key Perplexity when credits exhausted, workflow_call reusable). Deleted "temporarily", never restored, never REVVEL-DISABLED. This is very likely the "orchestrator instantiation Opus took away": the fleet lost its shared no-key routing entrypoint. **Action: restore from `bd3c4687^`, review against current model policy, or re-commit fully commented with a REVVEL-DISABLED header per the standard.**
@@ -16,6 +18,7 @@
 **Acceptance.** llm-router decision made (restored or marked); zero live references to deleted paths (extends WR-A3 acceptance); cfdb8d91 file list dispositioned.
 
 ## Agent learning note
+
 "Delete temporarily" is how permanent losses happen — nothing schedules the restore. Under COMMENT-DONT-DELETE the correct temporary disable is a REVVEL-DISABLED block, which stays greppable and restorable in place. Deletions also break silently at a distance: the Cursor script removal manufactured WR-A3's runtime failure a month later.
 
 Assignee: Dragnet | Labels: P2, governance, archaeology, restore

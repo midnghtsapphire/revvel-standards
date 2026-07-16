@@ -20,7 +20,7 @@ regex:
     pattern: (\d+\.\d+)[Mm]\s*(magnitude|earthquake)
     score: 50
     description: Earthquake magnitude
-  
+
   - name: HURRICANE_CATEGORY
     pattern: Category\s*([1-5])\s*(hurricane|cyclone)
     score: 60
@@ -32,13 +32,13 @@ thresholds:
     score: 50
     scale: true
     description: Earthquake magnitude
-  
+
   - field: category
     threshold: 3
     score: 70
     scale: true
     description: Hurricane category
-  
+
   - field: temperature
     threshold: 45
     score: 65
@@ -49,7 +49,7 @@ severity_map:
     7.0: 95
     6.0: 75
     5.5: 50
-  
+
   hurricane:
     5: 95
     4: 85

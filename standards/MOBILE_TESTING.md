@@ -4,7 +4,7 @@ All Revvel/MIDNGHTSAPPHIRE applications targeting iOS and/or Android MUST follow
 The default mobile stack is **Expo + React Native + TypeScript + NativeWind** per [`docs/AGENTS.md`](../docs/AGENTS.md).
 
 For the full research and rationale, see [`docs/revvel-standards/MOBILE_TEST_HARNESS_RESEARCH.md`](../docs/revvel-standards/MOBILE_TEST_HARNESS_RESEARCH.md).
-For the *web* testing standard, see [`standards/TESTING.md`](./TESTING.md).
+For the _web_ testing standard, see [`standards/TESTING.md`](./TESTING.md).
 
 ---
 
@@ -26,16 +26,16 @@ npm run test:e2e:ios           # Maestro on iOS simulator
 
 ## Recommended Stack
 
-| Layer | Tool | License | Notes |
-|---|---|---|---|
-| Unit + component | **jest-expo** preset for Jest | MIT | Official Expo preset. |
-| RN component queries | **@testing-library/react-native** | MIT | RTL-equivalent API for RN trees. |
-| Matchers | **@testing-library/jest-native** | MIT | Adds `toBeVisible()`, `toHaveAccessibilityState()`, etc. |
-| E2E (default) | **Maestro** | Apache-2.0 | Declarative YAML; one flow runs on iOS + Android. |
-| E2E (alternate tier) | **Detox** | MIT | Add only when grey-box internals must be asserted; requires `expo prebuild`. |
-| Native build for E2E | **EAS Build** `--profile preview` | Free tier sufficient for low volume | No local Xcode / Android Studio. |
-| iOS sim runner | GitHub Actions `macos-14` | — | Free for public repos. |
-| Android emu runner | GitHub Actions `ubuntu-latest` + `reactivecircus/android-emulator-runner` | Apache-2.0 | Headless emulator on the runner. |
+| Layer                | Tool                                                                      | License                             | Notes                                                                        |
+| -------------------- | ------------------------------------------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------- |
+| Unit + component     | **jest-expo** preset for Jest                                             | MIT                                 | Official Expo preset.                                                        |
+| RN component queries | **@testing-library/react-native**                                         | MIT                                 | RTL-equivalent API for RN trees.                                             |
+| Matchers             | **@testing-library/jest-native**                                          | MIT                                 | Adds `toBeVisible()`, `toHaveAccessibilityState()`, etc.                     |
+| E2E (default)        | **Maestro**                                                               | Apache-2.0                          | Declarative YAML; one flow runs on iOS + Android.                            |
+| E2E (alternate tier) | **Detox**                                                                 | MIT                                 | Add only when grey-box internals must be asserted; requires `expo prebuild`. |
+| Native build for E2E | **EAS Build** `--profile preview`                                         | Free tier sufficient for low volume | No local Xcode / Android Studio.                                             |
+| iOS sim runner       | GitHub Actions `macos-14`                                                 | —                                   | Free for public repos.                                                       |
+| Android emu runner   | GitHub Actions `ubuntu-latest` + `reactivecircus/android-emulator-runner` | Apache-2.0                          | Headless emulator on the runner.                                             |
 
 **Excluded:** Appium (slow, flaky), Calabash (unmaintained), separate native iOS/Android codebases (forbidden by AGENTS.md).
 
@@ -43,26 +43,26 @@ npm run test:e2e:ios           # Maestro on iOS simulator
 
 ## Coverage Thresholds (Hard CI Gate)
 
-| Metric | Minimum |
-|---|---|
-| Statements | 80% |
-| Branches | 75% |
-| Functions | 80% |
-| Lines | 80% |
+| Metric     | Minimum |
+| ---------- | ------- |
+| Statements | 80%     |
+| Branches   | 75%     |
+| Functions  | 80%     |
+| Lines      | 80%     |
 
 Same as [`skills/testing/SKILL.md`](../skills/testing/SKILL.md). Configure in `jest.config.js`:
 
 ```js
 // jest.config.js
 module.exports = {
-  preset: 'jest-expo',
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  preset: "jest-expo",
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   collectCoverage: true,
   coverageThreshold: {
     global: { statements: 80, branches: 75, functions: 80, lines: 80 },
   },
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|nativewind))',
+    "node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|nativewind))",
   ],
 };
 ```
@@ -73,12 +73,12 @@ module.exports = {
 
 Mirror the web mandate from [`skills/testing/SKILL.md`](../skills/testing/SKILL.md), enforced on **both** iOS and Android:
 
-| Journey | Required |
-|---|---|
-| Auth: Sign Up, Sign In, Sign Out | ✅ |
-| Checkout: Add to Cart, Complete Purchase | ✅ |
-| Admin: Toggle Feature Flag | ✅ |
-| Accessibility: VoiceOver / TalkBack navigation | ✅ |
+| Journey                                        | Required |
+| ---------------------------------------------- | -------- |
+| Auth: Sign Up, Sign In, Sign Out               | ✅       |
+| Checkout: Add to Cart, Complete Purchase       | ✅       |
+| Admin: Toggle Feature Flag                     | ✅       |
+| Accessibility: VoiceOver / TalkBack navigation | ✅       |
 
 Starter Maestro flows live in [`templates/mobile/testing/maestro/`](../templates/mobile/testing/maestro/).
 
@@ -86,13 +86,13 @@ Starter Maestro flows live in [`templates/mobile/testing/maestro/`](../templates
 
 ## Mocking Strategy
 
-| What | Tool |
-|---|---|
+| What                                                    | Tool                                                             |
+| ------------------------------------------------------- | ---------------------------------------------------------------- |
 | `expo-secure-store`, `expo-image`, `expo-notifications` | Built-in `jest-expo` mocks; override per-test with `jest.mock()` |
-| RevenueCat | Mock the SDK at the import boundary, never the wire format |
-| Stripe Mobile SDK | Same — mock at import boundary |
-| Time / Date | `jest.useFakeTimers()` (always reset after) |
-| Network | `msw/native` |
+| RevenueCat                                              | Mock the SDK at the import boundary, never the wire format       |
+| Stripe Mobile SDK                                       | Same — mock at import boundary                                   |
+| Time / Date                                             | `jest.useFakeTimers()` (always reset after)                      |
+| Network                                                 | `msw/native`                                                     |
 
 Shared mocks MUST live in `tests/mocks/` and be imported by `jest.setup.ts`. Never inline mock blocks into individual test files.
 

@@ -10,17 +10,18 @@ RAID (Risks, Assumptions, Issues, Dependencies) is passive — it identifies pro
 
 Every major issue, decision, or agent failure must be tracked in DARE format:
 
-| Step | What to Do | Example |
-|---|---|---|
-| **D — Define** | Clearly state the problem or decision needed | "The Plaid API is timing out during the sync phase" |
-| **A — Assess** | Evaluate potential outcomes and impacts of different choices | "Impact: High. Option 1: Increase timeout. Option 2: Implement retry logic with exponential backoff" |
-| **R — Respond** | Implement the chosen action or solution | "Implemented exponential backoff retry logic for Plaid API calls" |
-| **E — Evaluate** | Reflect afterward to improve future choices | "Retry logic solved 95% of timeouts. Need graceful degradation UI for remaining 5%" |
+| Step             | What to Do                                                   | Example                                                                                              |
+| ---------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| **D — Define**   | Clearly state the problem or decision needed                 | "The Plaid API is timing out during the sync phase"                                                  |
+| **A — Assess**   | Evaluate potential outcomes and impacts of different choices | "Impact: High. Option 1: Increase timeout. Option 2: Implement retry logic with exponential backoff" |
+| **R — Respond**  | Implement the chosen action or solution                      | "Implemented exponential backoff retry logic for Plaid API calls"                                    |
+| **E — Evaluate** | Reflect afterward to improve future choices                  | "Retry logic solved 95% of timeouts. Need graceful degradation UI for remaining 5%"                  |
 
 ## DARE Log Entry Format
 
 ```markdown
 ### DARE-[ID] — [Short Title]
+
 **Date:** [YYYY-MM-DD]
 **Status:** Open / In Progress / Resolved
 
@@ -28,6 +29,7 @@ Every major issue, decision, or agent failure must be tracked in DARE format:
 [Clear statement of the problem or decision]
 
 **A — Assess:**
+
 - Impact: [Low / Medium / High / Critical]
 - Option 1: [description + pros/cons]
 - Option 2: [description + pros/cons]
@@ -43,6 +45,7 @@ Every major issue, decision, or agent failure must be tracked in DARE format:
 ## Kanban Flow
 
 Track DARE items on a Kanban board:
+
 - **To-Do** → **Doing** → **Done**
 
 Never maintain a static "risk register" — focus on flow of resolution.
@@ -67,6 +70,7 @@ When assigning tasks to agents, use these principles alongside DARE:
 ## Enforcement
 
 Code review and session sign-off should confirm:
+
 - [ ] Any new risk or decision from this session has a DARE entry
 - [ ] DARE items that were resolved have the E (Evaluate) step completed
 - [ ] No "orphan" issues without a DARE entry for complex failures

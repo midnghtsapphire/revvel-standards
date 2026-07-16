@@ -10,13 +10,13 @@
 
 DRAGNET is the evolution of THE COUNCIL - five autonomous decision systems working in concert.
 
-| System | Role | Code | Trigger |
-|--------|------|------|--------|
-| **PLATO** | Pre-cognitive deep research | P | Before decisions |
-| **COUNTER** | Darwin survival testing | C | After PLATO approves |
-| **JUDGE** | Matrix final authority | J | Continuous |
-| **MEDUSA** | Edge case research | M | When edge advantage |
-| **DARWIN** | Evidence validation | D | When proof needed |
+| System      | Role                        | Code | Trigger              |
+| ----------- | --------------------------- | ---- | -------------------- |
+| **PLATO**   | Pre-cognitive deep research | P    | Before decisions     |
+| **COUNTER** | Darwin survival testing     | C    | After PLATO approves |
+| **JUDGE**   | Matrix final authority      | J    | Continuous           |
+| **MEDUSA**  | Edge case research          | M    | When edge advantage  |
+| **DARWIN**  | Evidence validation         | D    | When proof needed    |
 
 ---
 
@@ -45,30 +45,35 @@ DRAGNET is the evolution of THE COUNCIL - five autonomous decision systems worki
 ## Team Protocols
 
 ### 1. PLATO Protocol
+
 - Questions EVERY assumption
 - Models 5-year projections
 - Identifies unknown unknowns
 - Output: Recommendation + Conditions
 
 ### 2. MEDUSA Protocol
+
 - Searches unconventional sources
 - Finds dark web intelligence
 - Identifies edge cases
 - Output: Risk factors
 
 ### 3. COUNTER Protocol
+
 - Stress tests the model
 - Identifies kill conditions
 - Simulates failure modes
 - Output: KILL triggers
 
 ### 4. DARWIN Protocol
+
 - Validates all claims
 - Checks evidence chains
 - Verifies sources
 - Output: Validation report
 
 ### 5. JUDGE Protocol
+
 - Scores all dimensions
 - Applies thresholds
 - Issues final verdict
@@ -89,6 +94,7 @@ DRAGNET is the evolution of THE COUNCIL - five autonomous decision systems worki
 ## Silent Operation Mode
 
 All DRAGNET systems operate in **SILENT MODE**:
+
 - No user prompts during execution
 - Autonomous decision-making
 - Output only on trigger conditions
@@ -98,24 +104,24 @@ All DRAGNET systems operate in **SILENT MODE**:
 
 ## Integration Points
 
-| System | Integration |
-|--------|------------|
+| System         | Integration         |
+| -------------- | ------------------- |
 | GitHub Actions | Automatic execution |
-| Cron | Scheduled runs |
-| MCP | Tool orchestration |
-| Odoo | Business sync |
+| Cron           | Scheduled runs      |
+| MCP            | Tool orchestration  |
+| Odoo           | Business sync       |
 
 ---
 
 ## Cron Schedule
 
-| Job | System | Schedule |
-|-----|-------|----------|
-| `dragnet:plato:daily` | PLATO | 0 5 * * * |
-| `dragnet:medusa:weekly` | MEDUSA | 0 6 * * 0 |
-| `dragnet:counter:weekly` | COUNTER | 0 7 * * 1 |
-| `dragnet:darwin:monthly` | DARWIN | 0 8 1 * * |
-| `dragnet:judge:continuous` | JUDGE | Real-time |
+| Job                        | System  | Schedule  |
+| -------------------------- | ------- | --------- |
+| `dragnet:plato:daily`      | PLATO   | 0 5 * * * |
+| `dragnet:medusa:weekly`    | MEDUSA  | 0 6 * * 0 |
+| `dragnet:counter:weekly`   | COUNTER | 0 7 * * 1 |
+| `dragnet:darwin:monthly`   | DARWIN  | 0 8 1 * * |
+| `dragnet:judge:continuous` | JUDGE   | Real-time |
 
 ---
 
@@ -124,11 +130,12 @@ All DRAGNET systems operate in **SILENT MODE**:
 **TRIGGER:** Any RED verdict + 2 consecutive failures
 
 **ACTION:**
+
 1. Halt all executions
 2. Create incident ticket
 3. Notify via configured channels
-4.Await human intervention
+   4.Await human intervention
 
 ---
 
-*DRAGNET - Autonomous Decision Team*
+_DRAGNET - Autonomous Decision Team_

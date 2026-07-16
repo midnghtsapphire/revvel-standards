@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Campaign, CampaignStatus } from '../types';
-import { updateCampaignStatus, deleteCampaign } from '../lib/campaign-store';
+import type { Campaign, CampaignStatus } from "../types";
+import { updateCampaignStatus, deleteCampaign } from "../lib/campaign-store";
 
 interface CampaignCardProps {
   campaign: Campaign;
@@ -9,27 +9,34 @@ interface CampaignCardProps {
 }
 
 const STATUS_STYLES: Record<CampaignStatus, string> = {
-  draft: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
-  active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  paused: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-  completed: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  draft: "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300",
+  active:
+    "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+  paused:
+    "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+  completed: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
 };
 
 const PLATFORM_ICONS: Record<string, string> = {
-  meta: '📘',
-  tiktok: '🎵',
-  google: '🔍',
-  twitter: '🐦',
+  meta: "📘",
+  tiktok: "🎵",
+  google: "🔍",
+  twitter: "🐦",
 };
 
-export default function CampaignCard({ campaign, onUpdated }: CampaignCardProps) {
+export default function CampaignCard({
+  campaign,
+  onUpdated,
+}: CampaignCardProps) {
   // Use != null so zero-value metrics are shown, not hidden
   const roas =
     campaign.revenue != null && campaign.spend != null && campaign.spend > 0
       ? (campaign.revenue / campaign.spend).toFixed(2)
       : null;
   const ctr =
-    campaign.clicks != null && campaign.impressions != null && campaign.impressions > 0
+    campaign.clicks != null &&
+    campaign.impressions != null &&
+    campaign.impressions > 0
       ? ((campaign.clicks / campaign.impressions) * 100).toFixed(2)
       : null;
 
@@ -51,10 +58,16 @@ export default function CampaignCard({ campaign, onUpdated }: CampaignCardProps)
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-lg">{PLATFORM_ICONS[campaign.platform] || '📣'}</span>
-            <h3 className="font-bold text-gray-900 dark:text-white truncate">{campaign.name}</h3>
+            <span className="text-lg">
+              {PLATFORM_ICONS[campaign.platform] || "📣"}
+            </span>
+            <h3 className="font-bold text-gray-900 dark:text-white truncate">
+              {campaign.name}
+            </h3>
           </div>
-          <p className="text-xs text-gray-400 truncate">{campaign.productData.title}</p>
+          <p className="text-xs text-gray-400 truncate">
+            {campaign.productData.title}
+          </p>
         </div>
 
         <select
@@ -71,10 +84,30 @@ export default function CampaignCard({ campaign, onUpdated }: CampaignCardProps)
 
       {/* Metrics */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-        <Metric label="Spend" value={campaign.spend != null ? `$${campaign.spend.toLocaleString()}` : '—'} />
-        <Metric label="Impressions" value={campaign.impressions != null ? campaign.impressions.toLocaleString() : '—'} />
-        <Metric label="CTR" value={ctr != null ? `${ctr}%` : '—'} highlight={Number(ctr) >= 2} />
-        <Metric label="ROAS" value={roas != null ? `${roas}x` : '—'} highlight={Number(roas) >= 2} />
+        <Metric
+          label="Spend"
+          value={
+            campaign.spend != null ? `$${campaign.spend.toLocaleString()}` : "—"
+          }
+        />
+        <Metric
+          label="Impressions"
+          value={
+            campaign.impressions != null
+              ? campaign.impressions.toLocaleString()
+              : "—"
+          }
+        />
+        <Metric
+          label="CTR"
+          value={ctr != null ? `${ctr}%` : "—"}
+          highlight={Number(ctr) >= 2}
+        />
+        <Metric
+          label="ROAS"
+          value={roas != null ? `${roas}x` : "—"}
+          highlight={Number(roas) >= 2}
+        />
       </div>
 
       {/* Budget bar — only requires budget to be set; spend may be 0 */}
@@ -82,12 +115,16 @@ export default function CampaignCard({ campaign, onUpdated }: CampaignCardProps)
         <div className="mb-4">
           <div className="flex justify-between text-xs text-gray-400 mb-1">
             <span>Budget used</span>
-            <span>${campaign.spend ?? 0} / ${campaign.budget}</span>
+            <span>
+              ${campaign.spend ?? 0} / ${campaign.budget}
+            </span>
           </div>
           <div className="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
             <div
               className="h-full bg-blue-500 rounded-full"
-              style={{ width: `${Math.min(100, ((campaign.spend ?? 0) / campaign.budget) * 100)}%` }}
+              style={{
+                width: `${Math.min(100, ((campaign.spend ?? 0) / campaign.budget) * 100)}%`,
+              }}
             />
           </div>
         </div>
@@ -111,10 +148,20 @@ export default function CampaignCard({ campaign, onUpdated }: CampaignCardProps)
   );
 }
 
-function Metric({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function Metric({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+}) {
   return (
     <div className="text-center">
-      <p className={`text-lg font-bold ${highlight ? 'text-green-600 dark:text-green-400' : 'text-gray-900 dark:text-white'}`}>
+      <p
+        className={`text-lg font-bold ${highlight ? "text-green-600 dark:text-green-400" : "text-gray-900 dark:text-white"}`}
+      >
         {value}
       </p>
       <p className="text-xs text-gray-400">{label}</p>

@@ -17,9 +17,11 @@ handoff_expectations:
 ---
 
 # Purpose
+
 - What this agent owns and when to trigger it.
 
 # Operating Protocol
+
 1. Confirm triggers and scope.
 2. Load context kit (task, constraints, decisions, risks, tests to run).
 3. Plan: list smallest command stack to finish.
@@ -28,15 +30,19 @@ handoff_expectations:
 6. Recap: decisions, diffs, risks, next steps.
 
 # Trigger Words
+
 - e.g., `react`, `tailwind`, `ui`, `storybook`.
 
 # Guardrails
+
 - Security posture, network rules, timeouts, redaction notes.
 
 # Tools
+
 - Allowed tools and how to use them safely.
 
 # Handoff Checklist
+
 - [ ] Recap complete
 - [ ] Risks listed
 - [ ] Tests rerun (list)

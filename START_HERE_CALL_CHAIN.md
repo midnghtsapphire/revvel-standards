@@ -12,13 +12,13 @@
 
 ## Plain words (no shame)
 
-| Word | Means |
-| --- | --- |
-| **Workflow** | A YAML recipe under `.github/workflows/` that GitHub runs when something happens |
-| **Runner (GitHub)** | The machine that runs the job — usually `runs-on: ubuntu-latest` |
+| Word                     | Means                                                                              |
+| ------------------------ | ---------------------------------------------------------------------------------- |
+| **Workflow**             | A YAML recipe under `.github/workflows/` that GitHub runs when something happens   |
+| **Runner (GitHub)**      | The machine that runs the job — usually `runs-on: ubuntu-latest`                   |
 | **Runner (our engines)** | Anything that does a real action outside prose: Vercel, n8n, Gumloop, npm, browser |
-| **Engine** | Code that researches / prepares / decides (e.g. research script) |
-| **Orchestrator** | Traffic cop that routes work; should not do craft work itself |
+| **Engine**               | Code that researches / prepares / decides (e.g. research script)                   |
+| **Orchestrator**         | Traffic cop that routes work; should not do craft work itself                      |
 
 ---
 
@@ -89,28 +89,28 @@ PR merged to main
 
 ## Step table (file → next)
 
-| Step | What happens | Starts in | Calls next |
-| ---: | --- | --- | --- |
-| 0 | You file work | **GitHub Issue `[WR]…`** | event `issues: opened` |
-| 1 | Route / assign | `openrouter-assignee.yml` | labels + comment |
-| 2 | Board classify | `wr-auto-classify.yml` | Project v2 API |
-| 3 | Research | `research-engine.yml` | research lanes → packet + labels |
-| 4 | WR document PR | `wr-pr-creation.yml` | `wr/issues/….md` + PR |
-| 5 | **Code** | `openrouter-coder.yml` | needs label **`wr:code`** or **`spec-approved`** |
-| 6 | Tests / lint | CircleCI + GHA | red = do not trust “ship quality” alone |
-| 7 | Merge path | `pr-state-orchestrator.yml` + `trusted-bot-auto-approve.yml` | approve / auto-merge |
-| 8 | Ship | `ship-to-market.yml` | needs **`deliver:*`** on merged PR |
-| Heal | Stuck WR | `stuck-wr-detector.yml` | re-dispatch `wr-pr-creation.yml` (capped) |
+| Step | What happens   | Starts in                                                    | Calls next                                       |
+| ---: | -------------- | ------------------------------------------------------------ | ------------------------------------------------ |
+|    0 | You file work  | **GitHub Issue `[WR]…`**                                     | event `issues: opened`                           |
+|    1 | Route / assign | `openrouter-assignee.yml`                                    | labels + comment                                 |
+|    2 | Board classify | `wr-auto-classify.yml`                                       | Project v2 API                                   |
+|    3 | Research       | `research-engine.yml`                                        | research lanes → packet + labels                 |
+|    4 | WR document PR | `wr-pr-creation.yml`                                         | `wr/issues/….md` + PR                            |
+|    5 | **Code**       | `openrouter-coder.yml`                                       | needs label **`wr:code`** or **`spec-approved`** |
+|    6 | Tests / lint   | CircleCI + GHA                                               | red = do not trust “ship quality” alone          |
+|    7 | Merge path     | `pr-state-orchestrator.yml` + `trusted-bot-auto-approve.yml` | approve / auto-merge                             |
+|    8 | Ship           | `ship-to-market.yml`                                         | needs **`deliver:*`** on merged PR               |
+| Heal | Stuck WR       | `stuck-wr-detector.yml`                                      | re-dispatch `wr-pr-creation.yml` (capped)        |
 
 ---
 
 ## Optional local path (not the issue path)
 
-| Start | File |
-| --- | --- |
+| Start            | File                                         |
+| ---------------- | -------------------------------------------- |
 | `npm run engine` | `engines/runner-orchestrator/orchestrate.js` |
-| Rules | `engines/CONTRACT.md` |
-| State schema | `schemas/state.schema.json` |
+| Rules            | `engines/CONTRACT.md`                        |
+| State schema     | `schemas/state.schema.json`                  |
 
 Orchestrator → engines → runners (external platforms). Missing access → **BOM.md**, not a silent lie.
 
@@ -152,12 +152,12 @@ That gap is tracked as the **spec-to-action bridge** (issue #15507).
 
 Before claiming work is done, state one of:
 
-| Status | Meaning |
-| --- | --- |
-| **CAN** | Verified tool + key + playbook |
-| **CAN-PARTIAL** | Missing one named piece → open blocker |
-| **CANNOT** | Say cannot + nearest alternative from inventory |
-| **UNKNOWN** | Check inventory first — never guess |
+| Status          | Meaning                                         |
+| --------------- | ----------------------------------------------- |
+| **CAN**         | Verified tool + key + playbook                  |
+| **CAN-PARTIAL** | Missing one named piece → open blocker          |
+| **CANNOT**      | Say cannot + nearest alternative from inventory |
+| **UNKNOWN**     | Check inventory first — never guess             |
 
 Receipt required: URL, PR, file path, or test run — not vibes.
 
@@ -165,15 +165,15 @@ Receipt required: URL, PR, file path, or test run — not vibes.
 
 ## Where to change color (blue vs pink) so you do not random-edit
 
-| You want to change… | Prefer this place |
-| --- | --- |
-| Brand / site look | `products/<app>/` or site CSS/theme there — not random root |
-| WR pipeline / labels | `.github/workflows/` listed above + `MASTER.md` order |
-| Agent instructions | `AGENTS.md`, this file, `VISITING_AGENTS.md` |
-| Connections / keys map | `config/connections.yml` then `npm run connections` |
-| PDF product shape | `standards/shapes/PDF.md` |
-| Delivery after merge | `standards/DELIVERY_MATRIX.md` + `ship-to-market.yml` |
-| System of record order | `MASTER.md` |
+| You want to change…    | Prefer this place                                           |
+| ---------------------- | ----------------------------------------------------------- |
+| Brand / site look      | `products/<app>/` or site CSS/theme there — not random root |
+| WR pipeline / labels   | `.github/workflows/` listed above + `MASTER.md` order       |
+| Agent instructions     | `AGENTS.md`, this file, `VISITING_AGENTS.md`                |
+| Connections / keys map | `config/connections.yml` then `npm run connections`         |
+| PDF product shape      | `standards/shapes/PDF.md`                                   |
+| Delivery after merge   | `standards/DELIVERY_MATRIX.md` + `ship-to-market.yml`       |
+| System of record order | `MASTER.md`                                                 |
 
 If two docs conflict: **`MASTER.md` ordering wins** for process; **this file wins** for “what file runs next.”
 
@@ -181,25 +181,25 @@ If two docs conflict: **`MASTER.md` ordering wins** for process; **this file win
 
 ## Healers (if stuck)
 
-| File | Job |
-| --- | --- |
-| `stuck-wr-detector.yml` | WR with no PR → retrigger creation |
-| `stuck-label-watchdog.yml` / `stuck-check-watchdog.yml` | stuck labels/checks |
-| `agent-fallback.yml` | OpenRouter → OpenHands → human |
-| `npm run automation:doctor` | `scripts/automation-doctor.js` |
+| File                                                    | Job                                |
+| ------------------------------------------------------- | ---------------------------------- |
+| `stuck-wr-detector.yml`                                 | WR with no PR → retrigger creation |
+| `stuck-label-watchdog.yml` / `stuck-check-watchdog.yml` | stuck labels/checks                |
+| `agent-fallback.yml`                                    | OpenRouter → OpenHands → human     |
+| `npm run automation:doctor`                             | `scripts/automation-doctor.js`     |
 
 ---
 
 ## Related root files (do not scatter)
 
-| File | Role |
-| --- | --- |
-| **START_HERE_CALL_CHAIN.md** (this file) | Call chain — start here when busy |
-| `MASTER.md` | Process order / conflict rule |
-| `AGENTS.md` | Agent behavior + prime directive |
-| `GOAL.md` | Revenue targets |
-| `SYSTEM_STATE.md` | Infra status (update at session end) |
-| `REMINDERS.md` | “If you’re about to do X, read Y” |
+| File                                     | Role                                 |
+| ---------------------------------------- | ------------------------------------ |
+| **START_HERE_CALL_CHAIN.md** (this file) | Call chain — start here when busy    |
+| `MASTER.md`                              | Process order / conflict rule        |
+| `AGENTS.md`                              | Agent behavior + prime directive     |
+| `GOAL.md`                                | Revenue targets                      |
+| `SYSTEM_STATE.md`                        | Infra status (update at session end) |
+| `REMINDERS.md`                           | “If you’re about to do X, read Y”    |
 
 ---
 
@@ -216,7 +216,6 @@ _Last intent: stop hunting folders; one root file for start → next. Detail liv
 
 That page accepts your CSV in the browser. The main Vercel site only shows docs/folders.
 
-
 ---
 
 ## Simple Marketplace Relister (Vercel — no local hoops)
@@ -225,10 +224,8 @@ App code: `docs/marketplace-relister`
 Deploy as its **own** Vercel project (Root Directory = `docs/marketplace-relister`).  
 Set `OPENROUTER_API_KEY` once in Vercel. Bookmark that app URL only.
 
-
 ## Family Order Packs (private Vercel)
 
 Code: `docs/marketplace-relister`.
 Deploy once on Vercel (Root Directory = that folder). Env: `OPENROUTER_API_KEY` + `FAMILY_APP_PASSWORD`.
 Daily use: one bookmark, upload CSV, Process next 10/25, download packs.
-

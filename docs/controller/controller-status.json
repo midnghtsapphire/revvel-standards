@@ -152,9 +152,7 @@
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
+      "tried_models": ["anthropic/claude-opus-4.8"],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29262820826/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
@@ -168,9 +166,7 @@
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
+      "tried_models": ["anthropic/claude-opus-4.8"],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29257786646/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
@@ -184,9 +180,7 @@
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
-      "tried_models": [
-        "anthropic/claude-opus-4.8"
-      ],
+      "tried_models": ["anthropic/claude-opus-4.8"],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
       "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29252937753/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"

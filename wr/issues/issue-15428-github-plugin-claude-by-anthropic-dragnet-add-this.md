@@ -5,7 +5,7 @@
 **Created:** 2026-07-07  
 **Researcher:** Copilot Coding Agent  
 **Research Date:** 2026-07-07  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -20,18 +20,19 @@ the repository.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A — plugin endpoint, not a public repo |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value                                    |
+| ----------- | ---------------------------------------- |
+| Stars       | N/A — plugin endpoint, not a public repo |
+| Open Issues | N/A                                      |
+| Private     | No                                       |
+| Archived    | No                                       |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
@@ -69,13 +70,13 @@ The `revvel-standards` repository already references and uses `github-mcp-server
 automation workflows (see `mcp-servers/` and `.github/workflows/`). The two integrations
 are complementary, not competing:
 
-| Dimension | Claude GitHub Plugin | `github-mcp-server` |
-| --- | --- | --- |
-| Auth | GitHub OAuth App (user-delegated) | PAT / GitHub App token (machine) |
-| Runtime | Anthropic-hosted relay; zero infra | Self-hosted or CI-run process |
-| Audience | Human operator using Claude.ai | CI/agent automation pipelines |
-| Rate limits | Shared with user's GitHub account | Tied to the PAT/App token |
-| Best for | Interactive research, one-off queries | Repeatable automated pipelines |
+| Dimension   | Claude GitHub Plugin                  | `github-mcp-server`              |
+| ----------- | ------------------------------------- | -------------------------------- |
+| Auth        | GitHub OAuth App (user-delegated)     | PAT / GitHub App token (machine) |
+| Runtime     | Anthropic-hosted relay; zero infra    | Self-hosted or CI-run process    |
+| Audience    | Human operator using Claude.ai        | CI/agent automation pipelines    |
+| Rate limits | Shared with user's GitHub account     | Tied to the PAT/App token        |
+| Best for    | Interactive research, one-off queries | Repeatable automated pipelines   |
 
 **Recommendation:** Use the plugin for human operator sessions (DRAGNET research,
 ad-hoc PR reviews). Keep `github-mcp-server` for CI workflows and agent automation
@@ -100,12 +101,12 @@ No new server, no new secrets, no new CI workflow required.
 
 ## Step 1A — Product/Output Selections
 
-| Output | Type | Priority |
-| --- | --- | --- |
-| Update `docs/AGENTS.md` — plugin entry under MCP catalog | Documentation | P1 |
-| Update `scripts/openrouter-personas.js` dragnet persona — prefer plugin in Claude.ai sessions | Config | P1 |
-| Add plugin note to `.mcp.json` (or its README) | Documentation | P2 |
-| Add entry to `docs/APP_REGISTRY.md` or equivalent catalog | Documentation | P2 |
+| Output                                                                                        | Type          | Priority |
+| --------------------------------------------------------------------------------------------- | ------------- | -------- |
+| Update `docs/AGENTS.md` — plugin entry under MCP catalog                                      | Documentation | P1       |
+| Update `scripts/openrouter-personas.js` dragnet persona — prefer plugin in Claude.ai sessions | Config        | P1       |
+| Add plugin note to `.mcp.json` (or its README)                                                | Documentation | P2       |
+| Add entry to `docs/APP_REGISTRY.md` or equivalent catalog                                     | Documentation | P2       |
 
 ## Step 2 — Deep Web Research
 
@@ -121,13 +122,13 @@ No new server, no new secrets, no new CI workflow required.
 
 ### Comparable GitHub AI Integrations — Competitor Analysis
 
-| Tool | Stars (GitHub) | Pricing | Key Differentiator |
-| --- | --- | --- | --- |
-| **Claude GitHub Plugin** (Anthropic) | N/A — hosted plugin | Included in Claude Pro $20/mo; Team $30/user/mo ([source](https://www.anthropic.com/pricing)) | Official Anthropic plugin; OAuth, no self-hosting |
-| **GitHub Copilot Chat** (GitHub/MS) | N/A — hosted | $10/user/mo individual; $19/user/mo business ([source](https://github.com/features/copilot)) | Deeply integrated into VS Code & GitHub.com; code completion |
-| `modelcontextprotocol/servers` GitHub MCP | ~11k ⭐ as of July 2026 ([GitHub](https://github.com/modelcontextprotocol/servers)) | Free, self-hosted | Standard MCP spec; broad tool support beyond GitHub |
-| `anthropics/anthropic-sdk-python` | ~2.5k ⭐ as of July 2026 | Free (SDK) | Direct API access for custom tooling |
-| **Cursor** w/ GitHub context | N/A — IDE | Hobby free; Pro $20/mo ([source](https://cursor.sh/pricing)) | IDE-native AI; not a standalone plugin |
+| Tool                                      | Stars (GitHub)                                                                      | Pricing                                                                                       | Key Differentiator                                           |
+| ----------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Claude GitHub Plugin** (Anthropic)      | N/A — hosted plugin                                                                 | Included in Claude Pro $20/mo; Team $30/user/mo ([source](https://www.anthropic.com/pricing)) | Official Anthropic plugin; OAuth, no self-hosting            |
+| **GitHub Copilot Chat** (GitHub/MS)       | N/A — hosted                                                                        | $10/user/mo individual; $19/user/mo business ([source](https://github.com/features/copilot))  | Deeply integrated into VS Code & GitHub.com; code completion |
+| `modelcontextprotocol/servers` GitHub MCP | ~11k ⭐ as of July 2026 ([GitHub](https://github.com/modelcontextprotocol/servers)) | Free, self-hosted                                                                             | Standard MCP spec; broad tool support beyond GitHub          |
+| `anthropics/anthropic-sdk-python`         | ~2.5k ⭐ as of July 2026                                                            | Free (SDK)                                                                                    | Direct API access for custom tooling                         |
+| **Cursor** w/ GitHub context              | N/A — IDE                                                                           | Hobby free; Pro $20/mo ([source](https://cursor.sh/pricing))                                  | IDE-native AI; not a standalone plugin                       |
 
 Pricing data current as of July 2026 (internal check); verify at linked sources.
 
@@ -144,11 +145,11 @@ Pricing data current as of July 2026 (internal check); verify at linked sources.
 
 ### SEO / Marketing Keywords (if productized as a how-to guide)
 
-| Keyword | Search Volume Status | Notes |
-| --- | --- | --- |
-| "claude github plugin" | Unverified — likely low-to-medium (1k–5k/mo estimate) | Growing with Claude.ai plugin ecosystem |
-| "claude ai github integration" | Unverified — likely medium (2k–8k/mo estimate) | High intent: setup guides |
-| "anthropic github mcp" | Unverified — likely low (<1k/mo estimate) | Developer-focused |
+| Keyword                        | Search Volume Status                                  | Notes                                   |
+| ------------------------------ | ----------------------------------------------------- | --------------------------------------- |
+| "claude github plugin"         | Unverified — likely low-to-medium (1k–5k/mo estimate) | Growing with Claude.ai plugin ecosystem |
+| "claude ai github integration" | Unverified — likely medium (2k–8k/mo estimate)        | High intent: setup guides               |
+| "anthropic github mcp"         | Unverified — likely low (<1k/mo estimate)             | Developer-focused                       |
 
 ### Monetization
 
@@ -206,22 +207,22 @@ This WR is an **internal tooling integration** — no direct monetization. Indir
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 No hard dependencies. Work can start immediately.
 
 ## Risks
 
-| Risk | Severity | Mitigation |
-| --- | --- | --- |
-| Plugin availability gated behind Claude Pro plan | Low | Document plan requirement in AGENTS.md |
-| OAuth token scope broader than needed | Medium | Plugin uses read-write; scope cannot be narrowed per Anthropic's current OAuth flow — document and accept, or use read-only PAT via `github-mcp-server` for sensitive repos |
-| Anthropic deprecates or changes the plugin | Low | Plugin is first-party Anthropic; low deprecation risk; monitor <https://claude.ai/changelog> |
-| Human operator accidentally commits credentials via plugin | Medium | Training: all repo writes via plugin still require GitHub's own branch protection and PR review — standard safeguards apply |
+| Risk                                                       | Severity | Mitigation                                                                                                                                                                  |
+| ---------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Plugin availability gated behind Claude Pro plan           | Low      | Document plan requirement in AGENTS.md                                                                                                                                      |
+| OAuth token scope broader than needed                      | Medium   | Plugin uses read-write; scope cannot be narrowed per Anthropic's current OAuth flow — document and accept, or use read-only PAT via `github-mcp-server` for sensitive repos |
+| Anthropic deprecates or changes the plugin                 | Low      | Plugin is first-party Anthropic; low deprecation risk; monitor <https://claude.ai/changelog>                                                                                |
+| Human operator accidentally commits credentials via plugin | Medium   | Training: all repo writes via plugin still require GitHub's own branch protection and PR review — standard safeguards apply                                                 |
 
 ## Superseded Content
 
@@ -231,11 +232,11 @@ No hard dependencies. Work can start immediately.
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — new work, no prior implementation |
-| Reason for replacement | N/A |
-| Archival status | NOT-APPLICABLE |
+| Field                  | Value                                   |
+| ---------------------- | --------------------------------------- |
+| Supersedes WR/issue    | N/A — new work, no prior implementation |
+| Reason for replacement | N/A                                     |
+| Archival status        | NOT-APPLICABLE                          |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

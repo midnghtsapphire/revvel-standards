@@ -8,9 +8,10 @@
 
 Traditional E2E testing focuses purely on code execution (e.g., "Did the button click?"). The S.H.I.F.T. framework moves away from binary "pass/fail" unit tests and mandates **Behavioral Validation**. This ensures that the system or agent doesn't just hit zero code errors, but actually solves the problem in a way that respects neurodivergent needs. [14, 15]
 
-For an AI agent (like the "Scarecrow" persona) or an application like GrowlingEyes, this means testing not just that an action occurred, but that the *intent* behind the action is clear, predictable, and doesn't cause cognitive overload. [1, 2, 3]
+For an AI agent (like the "Scarecrow" persona) or an application like GrowlingEyes, this means testing not just that an action occurred, but that the _intent_ behind the action is clear, predictable, and doesn't cause cognitive overload. [1, 2, 3]
 
 ### The Five Dimensions of Self-Healing Validation
+
 To ensure the agents and systems "self-heal" for the next run, evaluate every core test on these five dimensions: [1]
 
 1. **Memory:** Did it remember critical context from past interactions or integrations (e.g., remembering a past-due bill from a Plaid sync)? [4]
@@ -24,21 +25,22 @@ To ensure the agents and systems "self-heal" for the next run, evaluate every co
 To validate the S.H.I.F.T. principles, we use Humanistic Acceptance Tests. The biggest "failure" for a solo project manager is often an agent ignoring a personal crisis to meet a work deadline. This test pattern uses actual external data (e.g., Plaid) and work deadlines to verify the agent's intent. [4, 5]
 
 ### Example User Story
+
 "As a project manager with ADHD, I need the Scarecrow to alert me if a high-priority work deadline is at risk because of a past-due personal bill, so I don't hyperfocus on work while my power is at risk of being cut off."
 
 ### Acceptance Criteria (Behavioral Bounds)
 
-* **Contextual Awareness (Given):** The agent has access to Plaid data showing a utility bill (e.g., Black Hills Energy, $61.15) was due 8 days ago, and a work deadline (e.g., Stripe sandbox setup) is approaching. [4, 5]
-* **Intent Validation (When):** The user asks the agent to "plan my next 48 hours for the project."
-* **Functional Success (Then):**
-    1. The agent MUST NOT simply generate a work plan.
-    2. The agent MUST surface the past-due utility bill as a "Critical Dependency" *before* the work task.
-    3. The agent MUST suggest a "10-3 Rule" break or a "Brain Dump Tornado" session if it detects the schedule is too densely packed.
-* **Graceful Failure:** If the bank balance (via Plaid) is too low to cover the bill, the agent must propose an "Emerald City" strategy (e.g., calling the provider for an extension) rather than just stating "insufficient funds". [2, 6, 7]
+- **Contextual Awareness (Given):** The agent has access to Plaid data showing a utility bill (e.g., Black Hills Energy, $61.15) was due 8 days ago, and a work deadline (e.g., Stripe sandbox setup) is approaching. [4, 5]
+- **Intent Validation (When):** The user asks the agent to "plan my next 48 hours for the project."
+- **Functional Success (Then):**
+  1. The agent MUST NOT simply generate a work plan.
+  2. The agent MUST surface the past-due utility bill as a "Critical Dependency" _before_ the work task.
+  3. The agent MUST suggest a "10-3 Rule" break or a "Brain Dump Tornado" session if it detects the schedule is too densely packed.
+- **Graceful Failure:** If the bank balance (via Plaid) is too low to cover the bill, the agent must propose an "Emerald City" strategy (e.g., calling the provider for an extension) rather than just stating "insufficient funds". [2, 6, 7]
 
 ## 3. Implementing the "Wizard of Oz" (WoZ) Method
 
-For solo developers on a budget, it is critical to use the Wizard of Oz method to test agent behavior *before* writing code. [8]
+For solo developers on a budget, it is critical to use the Wizard of Oz method to test agent behavior _before_ writing code. [8]
 
 1. **Roleplay the Agent:** Manually type out how you wish the agent (e.g., the Scarecrow) would respond to the conflict scenario.
 2. **Analyze the "Human" Response:** Did your manual response feel supportive or stressful? Which part of the interaction feels most helpful for ADHD?
@@ -49,39 +51,47 @@ For solo developers on a budget, it is critical to use the Wizard of Oz method t
 All E2E testing must be automated using Playwright, guided by the S.H.I.F.T. principles.
 
 ### Neuro-Inclusive UI Validation Rules
+
 When writing Playwright tests, assert the following neuro-inclusive design principles: [8, 9]
-* **Predictability:** Navigation elements must remain in fixed DOM locations.
-* **Sensory Control:** If animations exist, there must be a tested toggle to disable them.
-* **Contrast & Halation:** Verify that critical text does not use pure black (`#000000`) on pure white (`#FFFFFF`).
-* **Calm Microcopy:** Error states must be tested for reassuring language (e.g., "We couldn't reach the server right now, but you can try again later" instead of "FATAL ERROR 500"). [10, 11, 12, 13]
+
+- **Predictability:** Navigation elements must remain in fixed DOM locations.
+- **Sensory Control:** If animations exist, there must be a tested toggle to disable them.
+- **Contrast & Halation:** Verify that critical text does not use pure black (`#000000`) on pure white (`#FFFFFF`).
+- **Calm Microcopy:** Error states must be tested for reassuring language (e.g., "We couldn't reach the server right now, but you can try again later" instead of "FATAL ERROR 500"). [10, 11, 12, 13]
 
 ### Simulation-Based "Bad Day" Testing
+
 Use the Playwright MCP to simulate degraded states:
-* Block network requests to external APIs to ensure the UI handles the failure gracefully.
-* Throttle network speed to test loading states and prevent user anxiety during long waits.
-* Simulate a user navigating away mid-task to ensure progress is saved.
+
+- Block network requests to external APIs to ensure the UI handles the failure gracefully.
+- Throttle network speed to test loading states and prevent user anxiety during long waits.
+- Simulate a user navigating away mid-task to ensure progress is saved.
 
 ## 5. Continuous Self-Healing Monitor
 
 A system that only reports errors is incomplete. The system must "Self-Heal" by adjusting its behavior based on failures. [1, 18, 19]
 
 ### The Self-Healing Loop
+
 1. **Monitor:** A cron job or external monitor (e.g., a Playwright synthetic test) runs every 10 minutes.
 2. **Evaluate:** If a test fails, the monitor captures the DOM state, console logs, and network requests.
 3. **Diagnose (Agentic):** An LLM agent analyzes the failure context. Did the UI change? Did an API format change?
-4. **Heal (Automated or Proposed):** 
-    * *Soft Failures:* If an external API is down, the monitor automatically flips a feature flag to gracefully hide the broken component in the UI, replacing it with a calm placeholder.
-    * *Hard Failures:* The monitor automatically generates a highly specific, persona-driven bug report (acting as the "Scarecrow" persona) with exact steps to reproduce. [3, 4, 5, 6, 7]
+4. **Heal (Automated or Proposed):**
+   - _Soft Failures:_ If an external API is down, the monitor automatically flips a feature flag to gracefully hide the broken component in the UI, replacing it with a calm placeholder.
+   - _Hard Failures:_ The monitor automatically generates a highly specific, persona-driven bug report (acting as the "Scarecrow" persona) with exact steps to reproduce. [3, 4, 5, 6, 7]
 
 ## 6. Implementation Guide for New Apps
 
 Every new Revvel application must include:
+
 1. A `playwright.config.ts` file at the root.
 2. A `tests/e2e/` directory containing at least one "Happy Path" test and one "Bad Day" simulation test.
 3. A GitHub Action workflow (`.github/workflows/monitor.yml`) that runs the tests on a schedule and triggers the Self-Healing alert system on failure.
 
 ---
+
 ### References
+
 [1] Galileo AI: AI Agent Testing & Behavioral Validation - https://galileo.ai/learn/ai-observability/ai-agent-testing-behavioral-validation
 [2] LinkedIn: Writing Acceptance Criteria for AI Products - https://www.linkedin.com/pulse/writing-acceptance-criteria-ai-products-product-managers-aruna-singh-iw7uc
 [3] Leantime: ADHD and Project Management Techniques - https://leantime.io/adhd-and-project-management-techniques-for-focus-and-organization/

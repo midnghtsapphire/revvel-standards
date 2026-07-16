@@ -129,7 +129,7 @@ jobs:
           echo "BITO AI Secret Verification"
           echo "=========================================="
           echo ""
-          
+
           MISSING=()
           if [ -z "${BITO_ACCESS_KEY}" ]; then
             echo "❌ BITO_ACCESS_KEY: MISSING"
@@ -137,14 +137,14 @@ jobs:
           else
             echo "✅ BITO_ACCESS_KEY: configured (${#BITO_ACCESS_KEY} chars)"
           fi
-          
+
           if [ -z "${GIT_ACCESS_TOKEN}" ]; then
             echo "❌ GIT_ACCESS_TOKEN: MISSING"
             MISSING+=("GIT_ACCESS_TOKEN")
           else
             echo "✅ GIT_ACCESS_TOKEN: configured (${#GIT_ACCESS_TOKEN} chars)"
           fi
-          
+
           echo ""
           if [ ${#MISSING[@]} -ne 0 ]; then
             echo "⚠️  BITO review will be SKIPPED"
@@ -173,7 +173,7 @@ jobs:
         with:
           script: |
             let prNumber, prUrl, prTitle;
-            
+
             if (context.eventName === 'pull_request') {
               prNumber = context.payload.pull_request.number;
               prUrl = context.payload.pull_request.html_url;
@@ -197,7 +197,7 @@ jobs:
               prUrl = pr.html_url;
               prTitle = pr.title;
             }
-            
+
             core.setOutput('number', prNumber);
             core.setOutput('url', prUrl);
             core.setOutput('title', prTitle);
@@ -217,7 +217,7 @@ jobs:
           OPTIONS+=" --bee.actn_dir=/automation-platform/default_bito_ad/bito_modules"
           OPTIONS+=" --git.access_token=${{ secrets.ADMIN_GITHUB_TOKEN || github.token }}"
           OPTIONS+=" --bito_cli.bito.access_key=${{ secrets.BITO_ACCESS_KEY }}"
-          
+
           # Optional configurations from repo variables
           if [[ -n "${{ vars.GIT_DOMAIN }}" ]]; then
             OPTIONS+=" --git.domain=${{ vars.GIT_DOMAIN }}"
@@ -225,7 +225,7 @@ jobs:
           if [[ -n "${{ vars.EXCLUDE_FILES }}" ]]; then
             OPTIONS+=" --exclude_files=${{ vars.EXCLUDE_FILES }}"
           fi
-          
+
           echo "OPTIONS=$OPTIONS" >> $GITHUB_ENV
           echo "✅ BITO options built"
 
@@ -253,14 +253,14 @@ jobs:
           script: |
             const prNumber = parseInt('${{ steps.pr-context.outputs.number }}', 10);
             const outcome = '${{ steps.bito-review.outcome }}';
-            
+
             const labels = ['bito-ai', 'bito-ai:review'];
             if (outcome === 'success') {
               labels.push('awaiting-approval');
             } else {
               labels.push('bito-ai:changes-needed');
             }
-            
+
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,

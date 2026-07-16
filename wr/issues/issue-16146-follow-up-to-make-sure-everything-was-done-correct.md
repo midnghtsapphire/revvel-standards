@@ -1,4 +1,4 @@
-# WR: [WR] Follow up to make sure everything was done correct see internal notes  including invalid YAML in agent-fallback.yml and openrouter-coder.yml. create pr at same time
+# WR: [WR] Follow up to make sure everything was done correct see internal notes including invalid YAML in agent-fallback.yml and openrouter-coder.yml. create pr at same time
 
 **Issue:** #16146  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  

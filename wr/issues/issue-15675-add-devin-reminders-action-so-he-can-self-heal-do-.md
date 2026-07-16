@@ -1,4 +1,4 @@
-# WR: [WR]  add Devin Reminders Action so he can self-heal, do recursive code, code review
+# WR: [WR] add Devin Reminders Action so he can self-heal, do recursive code, code review
 
 **Issue:** #15675  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -14,7 +14,7 @@
 **Created:** 2026-07-12  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-12  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -104,16 +104,16 @@ Optional Slack notifications (opt-in via slack-channel input)
 Timezone-aware display for notification messages
 Inputs
 Name Description Required Default
-action Action to perform: put, list, cancel, or cron Yes 
-remind-at ISO 8601 timestamp with timezone offset for when the reminder fires. Must be in the future and no more than 3 days ahead. Required for put. No 
-reminder-message Message to deliver when the reminder fires. Required for put. No 
-agent-session-url Devin session URL to ping when the reminder fires. Required for put and cancel. No 
-slack-users-cc Comma or newline-delimited list of Slack user tags to CC on notifications (e.g. <@U12345>, <@U67890>). No 
-devin-token Devin API token. Yes 
-slack-channel Slack channel name for notifications. Leave empty to skip Slack. No 
-slack-token Slack bot token. Only needed if slack-channel is set. No 
+action Action to perform: put, list, cancel, or cron Yes
+remind-at ISO 8601 timestamp with timezone offset for when the reminder fires. Must be in the future and no more than 3 days ahead. Required for put. No
+reminder-message Message to deliver when the reminder fires. Required for put. No
+agent-session-url Devin session URL to ping when the reminder fires. Required for put and cancel. No
+slack-users-cc Comma or newline-delimited list of Slack user tags to CC on notifications (e.g. <@U12345>, <@U67890>). No
+devin-token Devin API token. Yes
+slack-channel Slack channel name for notifications. Leave empty to skip Slack. No
+slack-token Slack bot token. Only needed if slack-channel is set. No
 reminder-timezone Timezone for displaying times in notifications. Accepts IANA names (e.g. America/Los_Angeles) or UTC offsets. Does not affect parsing of remind-at. No UTC
-cancel-guids JSON array of reminder GUIDs to cancel. Required for cancel. No 
+cancel-guids JSON array of reminder GUIDs to cancel. Required for cancel. No
 lock-mode Controls artifact-based locking to prevent race conditions. auto locks on put, cancel, and cron, none disables locking, always locks on all actions including list. No auto
 Outputs
 Name Description
@@ -127,85 +127,81 @@ popped-count Number of reminders removed after cron firing
 cancelled-count Number of reminders cancelled (only for cancel)
 Usage
 Schedule a Reminder
+
 - uses: aaronsteers/devin-reminders-action@v1
   with:
-    action: put
-    remind-at: "2026-02-20T17:00:00-08:00"
-    reminder-message: "Check on the deployment status"
-    agent-session-url: "<https://app.devin.ai/sessions/abc123>"
-    devin-token: ${{ secrets.DEVIN_AI_API_KEY }}
+  action: put
+  remind-at: "2026-02-20T17:00:00-08:00"
+  reminder-message: "Check on the deployment status"
+  agent-session-url: "<https://app.devin.ai/sessions/abc123>"
+  devin-token: ${{ secrets.DEVIN_AI_API_KEY }}
     slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
-    slack-channel: devin-reminders
-    reminder-timezone: America/Los_Angeles
-List Reminders
+  slack-channel: devin-reminders
+  reminder-timezone: America/Los_Angeles
+  List Reminders
 - uses: aaronsteers/devin-reminders-action@v1
   id: reminders
   with:
-    action: list
-    devin-token: ${{ secrets.DEVIN_AI_API_KEY }}
+  action: list
+  devin-token: ${{ secrets.DEVIN_AI_API_KEY }}
 
 - run: echo "Due: ${{ steps.reminders.outputs.due-count }} / Total: ${{ steps.reminders.outputs.total-count }}"
-Cancel Reminders
-Cancel by GUIDs for a session (requires agent-session-url + cancel-guids):
+  Cancel Reminders
+  Cancel by GUIDs for a session (requires agent-session-url + cancel-guids):
 
 - uses: aaronsteers/devin-reminders-action@v1
   with:
-    action: cancel
-    agent-session-url: "<https://app.devin.ai/sessions/abc123>"
-    cancel-guids: '["abc-123", "def-456"]'
-    devin-token: ${{ secrets.DEVIN_AI_API_KEY }}
+  action: cancel
+  agent-session-url: "<https://app.devin.ai/sessions/abc123>"
+  cancel-guids: '["abc-123", "def-456"]'
+  devin-token: ${{ secrets.DEVIN_AI_API_KEY }}
     slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
-    slack-channel: devin-reminders
-Full Workflow (Cron + Manual)
-name: Devin Reminders Workflow
-run-name: "Devin Reminders (${{ inputs.action || 'cron' }})"
+  slack-channel: devin-reminders
+  Full Workflow (Cron + Manual)
+  name: Devin Reminders Workflow
+  run-name: "Devin Reminders (${{ inputs.action || 'cron' }})"
 
 on:
-  schedule:
-    - cron: "*/30* ** *"
+schedule: - cron: "_/30_ ** *"
 
-  workflow_dispatch:
-    inputs:
-      action:
-        description: "Action to perform: put, list, cancel, or cron"
-        required: true
-        type: choice
-        options:
-          - cron
-          - list
-          - put
-          - cancel
-      reminder_message:
-        description: "Reminder message to deliver (required for 'put')."
-        required: false
-        type: string
-      remind_at:
-        description: >
-          ISO 8601 timestamp with timezone offset for when the reminder fires
-          (required for 'put'). Must be in the future and no more than 3 days ahead.
-          Example: 2026-02-20T17:00:00-08:00
-        required: false
-        type: string
-      agent_session_url:
-        description: "Devin session URL (required for 'put' and 'cancel')."
-        required: false
-        type: string
-      slack_users_cc:
-        description: >
-          Comma-delimited list of Slack user tags to CC on notifications.
-          Example: '<@U12345>, <@U67890>'
-        required: false
-        type: string
-      cancel_guids:
-        description: "JSON array of reminder GUIDs to cancel (required for 'cancel')."
-        required: false
-        type: string
+workflow_dispatch:
+inputs:
+action:
+description: "Action to perform: put, list, cancel, or cron"
+required: true
+type: choice
+options: - cron - list - put - cancel
+reminder_message:
+description: "Reminder message to deliver (required for 'put')."
+required: false
+type: string
+remind_at:
+description: >
+ISO 8601 timestamp with timezone offset for when the reminder fires
+(required for 'put'). Must be in the future and no more than 3 days ahead.
+Example: 2026-02-20T17:00:00-08:00
+required: false
+type: string
+agent_session_url:
+description: "Devin session URL (required for 'put' and 'cancel')."
+required: false
+type: string
+slack_users_cc:
+description: >
+Comma-delimited list of Slack user tags to CC on notifications.
+Example: '<@U12345>, <@U67890>'
+required: false
+type: string
+cancel_guids:
+description: "JSON array of reminder GUIDs to cancel (required for 'cancel')."
+required: false
+type: string
 
 jobs:
-  list-reminders:
-    name: List Reminders
-    runs-on: ubuntu-latest
-    if: ${{ inputs.action == 'list' }}
+list-reminders:
+name: List Reminders
+runs-on: ubuntu-latest
+if: ${{ inputs.action == 'list' }}
     permissions:
       contents: read
       actions: read
@@ -217,10 +213,10 @@ jobs:
           reminder-timezone: America/Los_Angeles
           devin-token: ${{ secrets.DEVIN_AI_API_KEY }}
 
-  create-new-reminder:
-    name: Create New Reminder
-    runs-on: ubuntu-latest
-    if: ${{ inputs.action == 'put' }}
+create-new-reminder:
+name: Create New Reminder
+runs-on: ubuntu-latest
+if: ${{ inputs.action == 'put' }}
     permissions:
       contents: read
       actions: write
@@ -232,17 +228,17 @@ jobs:
           lock-mode: auto
           reminder-timezone: America/Los_Angeles
           devin-token: ${{ secrets.DEVIN_AI_API_KEY }}
-          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
+slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
           slack-channel: devin-reminders
           remind-at: ${{ inputs.remind_at }}
-          reminder-message: ${{ inputs.reminder_message }}
+reminder-message: ${{ inputs.reminder_message }}
           agent-session-url: ${{ inputs.agent_session_url }}
-          slack-users-cc: ${{ inputs.slack_users_cc }}
+slack-users-cc: ${{ inputs.slack_users_cc }}
 
-  cancel-reminders:
-    name: Cancel Reminders
-    runs-on: ubuntu-latest
-    if: ${{ inputs.action == 'cancel' }}
+cancel-reminders:
+name: Cancel Reminders
+runs-on: ubuntu-latest
+if: ${{ inputs.action == 'cancel' }}
     permissions:
       contents: read
       actions: write
@@ -254,15 +250,15 @@ jobs:
           lock-mode: auto
           reminder-timezone: America/Los_Angeles
           devin-token: ${{ secrets.DEVIN_AI_API_KEY }}
-          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
+slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
           slack-channel: devin-reminders
           agent-session-url: ${{ inputs.agent_session_url }}
-          cancel-guids: ${{ inputs.cancel_guids }}
+cancel-guids: ${{ inputs.cancel_guids }}
 
-  process-reminders-due:
-    name: Process Reminders Due
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'schedule' || inputs.action == 'cron' }}
+process-reminders-due:
+name: Process Reminders Due
+runs-on: ubuntu-latest
+if: ${{ github.event_name == 'schedule' || inputs.action == 'cron' }}
     permissions:
       contents: read
       actions: write
@@ -274,8 +270,8 @@ jobs:
           lock-mode: auto
           reminder-timezone: America/Los_Angeles
           devin-token: ${{ secrets.DEVIN_AI_API_KEY }}
-          slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
-          slack-channel: devin-reminders
+slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
+slack-channel: devin-reminders
 How It Works
 put schedules a reminder by appending it to a JSON artifact
 list reads the artifact, filters due reminders, and outputs counts and JSON
@@ -303,18 +299,19 @@ License
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -326,6 +323,7 @@ License
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 N/A — pending Jules refinement
 
 ## Executive Summary
@@ -368,11 +366,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -388,11 +386,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

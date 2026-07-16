@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
 /**
  * BIOME — minimal credit-free GitHub REST helper.
@@ -10,27 +10,30 @@
  * Doppler wipes the AI-lane secrets.
  */
 
-const REPO = process.env.GITHUB_REPOSITORY || 'midnghtsapphire/revvel-standards';
-const [OWNER, NAME] = REPO.split('/');
-const TOKEN = process.env.GH_TOKEN || process.env.GITHUB_TOKEN || '';
+const REPO =
+  process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
+const [OWNER, NAME] = REPO.split("/");
+const TOKEN = process.env.GH_TOKEN || process.env.GITHUB_TOKEN || "";
 
 async function api(path, options = {}) {
-  const url = path.startsWith('http') ? path : `https://api.github.com${path}`;
+  const url = path.startsWith("http") ? path : `https://api.github.com${path}`;
   const res = await fetch(url, {
-    method: options.method || 'GET',
+    method: options.method || "GET",
     body: options.body ? JSON.stringify(options.body) : undefined,
     headers: {
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'biome-crew',
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+      "User-Agent": "biome-crew",
       ...(TOKEN ? { Authorization: `Bearer ${TOKEN}` } : {}),
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
       ...(options.headers || {}),
     },
   });
   if (!res.ok && !options.allowError) {
-    const text = await res.text().catch(() => '');
-    throw new Error(`GitHub API ${options.method || 'GET'} ${path} -> ${res.status} ${text.slice(0, 300)}`);
+    const text = await res.text().catch(() => "");
+    throw new Error(
+      `GitHub API ${options.method || "GET"} ${path} -> ${res.status} ${text.slice(0, 300)}`,
+    );
   }
   if (res.status === 204) return null;
   const text = await res.text();
@@ -48,7 +51,7 @@ async function api(path, options = {}) {
     // surface it instead of silently masking it as null (which callers read as
     // "no match").
     throw new Error(
-      `GitHub API ${options.method || 'GET'} ${path} -> ${res.status} returned non-JSON: ${text.slice(0, 200)}`
+      `GitHub API ${options.method || "GET"} ${path} -> ${res.status} returned non-JSON: ${text.slice(0, 200)}`,
     );
   }
 }
@@ -58,7 +61,7 @@ function repoApi(path, options) {
 }
 
 function hasToken() {
-  return TOKEN.trim() !== '';
+  return TOKEN.trim() !== "";
 }
 
 module.exports = { OWNER, NAME, REPO, hasToken, api, repoApi };

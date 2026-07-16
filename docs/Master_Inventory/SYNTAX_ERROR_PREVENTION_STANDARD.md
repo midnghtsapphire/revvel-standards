@@ -17,12 +17,12 @@ Syntax errors are the most common cause of CI failures, broken PRs, and wasted a
 
 ## 2. The Four-Layer Defense
 
-| Layer | When It Runs | Tools | Catches |
-|---|---|---|---|
-| **1 — Git Pre-commit Hook** | On every `git commit` locally | `bash -n`, `node --check`, `python -m py_compile` | Shell, JS/TS, Python syntax |
-| **2 — Pre-commit Framework** | On every `git commit` locally | `.pre-commit-config.yaml` hooks | YAML, JSON, mixed-language syntax |
-| **3 — Husky + lint-staged** | On every `git commit` in Node.js repos | ESLint, `tsc --noEmit` | TypeScript/JS type errors & style |
-| **4 — CI/CD Syntax Check** | On every push and pull request | GitHub Actions `syntax-check.yml` | All of the above, server-side |
+| Layer                        | When It Runs                           | Tools                                             | Catches                           |
+| ---------------------------- | -------------------------------------- | ------------------------------------------------- | --------------------------------- |
+| **1 — Git Pre-commit Hook**  | On every `git commit` locally          | `bash -n`, `node --check`, `python -m py_compile` | Shell, JS/TS, Python syntax       |
+| **2 — Pre-commit Framework** | On every `git commit` locally          | `.pre-commit-config.yaml` hooks                   | YAML, JSON, mixed-language syntax |
+| **3 — Husky + lint-staged**  | On every `git commit` in Node.js repos | ESLint, `tsc --noEmit`                            | TypeScript/JS type errors & style |
+| **4 — CI/CD Syntax Check**   | On every push and pull request         | GitHub Actions `syntax-check.yml`                 | All of the above, server-side     |
 
 Every Revvel project **MUST** implement at minimum **Layer 3** (Husky + lint-staged with ESLint) and **Layer 4** (CI syntax-check workflow). Layers 1 and 2 are strongly recommended.
 
@@ -47,13 +47,13 @@ Or use the bootstrap script (Step 5) which does this automatically.
 
 The standard Revvel pre-commit hook (`templates/hooks/pre-commit`) checks:
 
-| File Type | Command | What It Catches |
-|---|---|---|
-| `.sh` / `.bash` | `bash -n <file>` | Shell syntax errors |
-| `.js` / `.mjs` | `node --check <file>` | JavaScript syntax errors |
-| `.ts` / `.tsx` | `npx tsc --noEmit --skipLibCheck` | TypeScript type errors |
-| `.json` | `python3 -m json.tool` or `node -e "JSON.parse(…)"` | JSON syntax errors |
-| `.py` | `python3 -m py_compile <file>` | Python syntax errors |
+| File Type       | Command                                             | What It Catches          |
+| --------------- | --------------------------------------------------- | ------------------------ |
+| `.sh` / `.bash` | `bash -n <file>`                                    | Shell syntax errors      |
+| `.js` / `.mjs`  | `node --check <file>`                               | JavaScript syntax errors |
+| `.ts` / `.tsx`  | `npx tsc --noEmit --skipLibCheck`                   | TypeScript type errors   |
+| `.json`         | `python3 -m json.tool` or `node -e "JSON.parse(…)"` | JSON syntax errors       |
+| `.py`           | `python3 -m py_compile <file>`                      | Python syntax errors     |
 
 ### 3.3 Hook Template
 
@@ -91,15 +91,15 @@ Place `.pre-commit-config.yaml` in the repo root. See the template at [`template
 
 ### 4.3 Required Hooks for Revvel Projects
 
-| Hook | What It Checks |
-|---|---|
-| `check-yaml` | YAML syntax (catches broken GitHub Actions, CI configs) |
-| `check-json` | JSON syntax (.prettierrc, tsconfig, package.json) |
-| `check-merge-conflict` | Leftover merge conflict markers |
-| `end-of-file-fixer` | Trailing newlines |
-| `trailing-whitespace` | Trailing spaces |
-| `detect-private-key` | Accidental private key commits |
-| `eslint` | JavaScript/TypeScript lint + syntax |
+| Hook                   | What It Checks                                          |
+| ---------------------- | ------------------------------------------------------- |
+| `check-yaml`           | YAML syntax (catches broken GitHub Actions, CI configs) |
+| `check-json`           | JSON syntax (.prettierrc, tsconfig, package.json)       |
+| `check-merge-conflict` | Leftover merge conflict markers                         |
+| `end-of-file-fixer`    | Trailing newlines                                       |
+| `trailing-whitespace`  | Trailing spaces                                         |
+| `detect-private-key`   | Accidental private key commits                          |
+| `eslint`               | JavaScript/TypeScript lint + syntax                     |
 
 ### 4.4 Updating Hooks
 
@@ -125,6 +125,7 @@ npx husky init
 ### 5.2 Required Husky Pre-commit Hook
 
 `.husky/pre-commit`:
+
 ```sh
 #!/bin/sh
 npx lint-staged
@@ -133,22 +134,14 @@ npx lint-staged
 ### 5.3 Required lint-staged Configuration
 
 In `package.json`:
+
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "bash -c 'tsc --noEmit --skipLibCheck'"
-    ],
-    "*.{js,jsx,mjs}": [
-      "eslint --fix"
-    ],
-    "*.{json,yaml,yml}": [
-      "prettier --write"
-    ],
-    "*.sh": [
-      "bash -n"
-    ]
+    "*.{ts,tsx}": ["eslint --fix", "bash -c 'tsc --noEmit --skipLibCheck'"],
+    "*.{js,jsx,mjs}": ["eslint --fix"],
+    "*.{json,yaml,yml}": ["prettier --write"],
+    "*.sh": ["bash -n"]
   }
 }
 ```
@@ -178,14 +171,14 @@ Copy it to `.github/workflows/syntax-check.yml` in your app repo.
 
 ### 6.2 What It Runs
 
-| Step | Command | Blocks PR? |
-|---|---|---|
-| YAML lint | `yamllint .github/` | ✅ Yes |
-| JSON validate | `node -e "JSON.parse(…)"` on all `.json` files | ✅ Yes |
-| Shell syntax | `bash -n` on all `.sh` files | ✅ Yes |
-| ESLint | `eslint . --ext .ts,.tsx,.js,.jsx` | ✅ Yes |
-| TypeScript check | `tsc --noEmit` | ✅ Yes |
-| Prettier check | `prettier --check .` | ✅ Yes |
+| Step             | Command                                        | Blocks PR? |
+| ---------------- | ---------------------------------------------- | ---------- |
+| YAML lint        | `yamllint .github/`                            | ✅ Yes     |
+| JSON validate    | `node -e "JSON.parse(…)"` on all `.json` files | ✅ Yes     |
+| Shell syntax     | `bash -n` on all `.sh` files                   | ✅ Yes     |
+| ESLint           | `eslint . --ext .ts,.tsx,.js,.jsx`             | ✅ Yes     |
+| TypeScript check | `tsc --noEmit`                                 | ✅ Yes     |
+| Prettier check   | `prettier --check .`                           | ✅ Yes     |
 
 ### 6.3 PR Blocking
 
@@ -244,16 +237,16 @@ Copilot **MUST** fix the syntax error and open a PR referencing the issue before
 
 This standard is enforced by the Revvel Compliance Rubric (`COMPLIANCE_RUBRIC.md`) under **Category G: Pre-commit Hooks & Syntax Checks**.
 
-| Check | ID | Tier |
-|---|---|---|
-| `.husky/` directory exists | G1 | P2 |
-| `lint-staged` config exists | G2 | P2 |
-| Pre-commit hook runs linting | G3 | P2 |
-| Pre-commit hook runs TypeScript check | G4 | P2 |
-| Secret scanning configured | G5 | P1 |
-| `syntax-check.yml` workflow exists | G6 | P1 |
-| `.pre-commit-config.yaml` exists | G7 | P2 |
-| Husky pre-commit hook runs `tsc --noEmit` | G8 | P1 |
+| Check                                     | ID  | Tier |
+| ----------------------------------------- | --- | ---- |
+| `.husky/` directory exists                | G1  | P2   |
+| `lint-staged` config exists               | G2  | P2   |
+| Pre-commit hook runs linting              | G3  | P2   |
+| Pre-commit hook runs TypeScript check     | G4  | P2   |
+| Secret scanning configured                | G5  | P1   |
+| `syntax-check.yml` workflow exists        | G6  | P1   |
+| `.pre-commit-config.yaml` exists          | G7  | P2   |
+| Husky pre-commit hook runs `tsc --noEmit` | G8  | P1   |
 
 Run `node scripts/check-compliance.js` to audit your repo against all checks.
 

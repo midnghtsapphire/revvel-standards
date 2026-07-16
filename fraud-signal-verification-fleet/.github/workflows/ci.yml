@@ -1,16 +1,16 @@
 name: fleet-ci
 on:
-  push: { paths: ['fraud-signal-verification-fleet/**'] }
-  pull_request: { paths: ['fraud-signal-verification-fleet/**'] }
+  push: { paths: ["fraud-signal-verification-fleet/**"] }
+  pull_request: { paths: ["fraud-signal-verification-fleet/**"] }
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10   # backstop: never let a hung agent burn the full 6h job limit
+    timeout-minutes: 10 # backstop: never let a hung agent burn the full 6h job limit
     defaults: { run: { working-directory: fraud-signal-verification-fleet } }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with: { python-version: '3.12' }
+        with: { python-version: "3.12" }
       - run: pip install -r requirements.txt
       - name: unit tests (stdlib, no yaml needed)
         run: python3 -m unittest discover -s tests -v

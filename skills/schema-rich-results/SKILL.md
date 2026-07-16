@@ -5,6 +5,7 @@ Validate JSON-LD structured data markup against schema.org rules and Google Rich
 ## When to Load This Skill
 
 Load this skill when:
+
 - Adding or updating JSON-LD structured data to any page
 - Auditing schema markup on existing sites
 - Debugging why a page is not showing rich snippets in Google Search
@@ -21,13 +22,13 @@ Load this skill when:
 
 ## The Five Validation Tools
 
-| Tool | Best For | URL |
-|------|----------|-----|
-| **Google Rich Results Test** | Verify rich snippet eligibility (FAQ, Product, Article, Recipe, etc.) | https://search.google.com/test/rich-results |
-| **Schema Markup Validator** | Official schema.org spec compliance for JSON-LD, Microdata, RDFa | https://validator.schema.org/ |
-| **Bing Webmaster — Structured Data** | Bing-specific structured data analysis | https://www.bing.com/webmasters/markup-validator |
-| **Merkle Schema Markup Tester** | Technical SEO validation of code snippets | https://technicalseo.com/tools/schema-markup-generator/ |
-| **SEO Site Checkup** | Audit and competitor comparison | https://seositecheckup.com/tools/structured-data-test |
+| Tool                                 | Best For                                                              | URL                                                     |
+| ------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------- |
+| **Google Rich Results Test**         | Verify rich snippet eligibility (FAQ, Product, Article, Recipe, etc.) | https://search.google.com/test/rich-results             |
+| **Schema Markup Validator**          | Official schema.org spec compliance for JSON-LD, Microdata, RDFa      | https://validator.schema.org/                           |
+| **Bing Webmaster — Structured Data** | Bing-specific structured data analysis                                | https://www.bing.com/webmasters/markup-validator        |
+| **Merkle Schema Markup Tester**      | Technical SEO validation of code snippets                             | https://technicalseo.com/tools/schema-markup-generator/ |
+| **SEO Site Checkup**                 | Audit and competitor comparison                                       | https://seositecheckup.com/tools/structured-data-test   |
 
 ---
 
@@ -35,13 +36,13 @@ Load this skill when:
 
 ```js
 const {
-  parseJsonLd,       // Extract JSON-LD blocks from HTML
-  validateSchema,    // Validate a single parsed node
-  checkRichResults,  // Check Google Rich Results eligibility
-  runChecks,         // Full pipeline — HTML or pre-parsed array
-  generateReport,    // Markdown report from runChecks() output
-  renderSchemaCheckboxLine,  // PR checklist line
-} = require('./scripts/schema-rich-results-checker.js');
+  parseJsonLd, // Extract JSON-LD blocks from HTML
+  validateSchema, // Validate a single parsed node
+  checkRichResults, // Check Google Rich Results eligibility
+  runChecks, // Full pipeline — HTML or pre-parsed array
+  generateReport, // Markdown report from runChecks() output
+  renderSchemaCheckboxLine, // PR checklist line
+} = require("./scripts/schema-rich-results-checker.js");
 
 // From raw HTML:
 const result = runChecks(htmlString);
@@ -57,6 +58,7 @@ const result = runChecks(nodes);
 ## Required Properties Per @type
 
 ### Organization (every page)
+
 ```json
 {
   "@context": "https://schema.org",
@@ -67,10 +69,12 @@ const result = runChecks(nodes);
   "sameAs": ["https://linkedin.com/...", "https://github.com/..."]
 }
 ```
+
 - **Required:** `name`, `url`
 - **Recommended:** `logo`, `contactPoint`, `sameAs`, `foundingDate`
 
 ### Article / BlogPosting
+
 ```json
 {
   "@context": "https://schema.org",
@@ -81,10 +85,12 @@ const result = runChecks(nodes);
   "image": "https://[domain]/image.jpg"
 }
 ```
+
 - **Required:** `headline` (≤110 chars), `author`, `datePublished`, `image`
 - **Recommended:** `dateModified`, `publisher`, `description`, `url`
 
 ### Product
+
 ```json
 {
   "@context": "https://schema.org",
@@ -99,10 +105,12 @@ const result = runChecks(nodes);
   }
 }
 ```
+
 - **Required:** `name`, `image`, `description`
 - **Recommended:** `offers` (with `price` + `priceCurrency`), `aggregateRating`, `brand`
 
 ### FAQPage
+
 ```json
 {
   "@context": "https://schema.org",
@@ -116,22 +124,36 @@ const result = runChecks(nodes);
   ]
 }
 ```
+
 - **Required:** `mainEntity` (array of `Question` nodes with `acceptedAnswer.text`)
 
 ### BreadcrumbList
+
 ```json
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://[domain]/" },
-    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://[domain]/blog" }
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://[domain]/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Blog",
+      "item": "https://[domain]/blog"
+    }
   ]
 }
 ```
+
 - **Required:** `itemListElement` (array of `ListItem` with `position` + `name`/`item`)
 
 ### WebApplication
+
 ```json
 {
   "@context": "https://schema.org",
@@ -142,6 +164,7 @@ const result = runChecks(nodes);
   "provider": { "@type": "Organization", "name": "Freedom Angel Corp" }
 }
 ```
+
 - **Required:** `name`, `url`, `applicationCategory`
 - **Recommended:** `description`, `operatingSystem`, `offers`, `provider`
 
@@ -157,15 +180,15 @@ The following `@type` values qualify for Google rich snippet treatment (when req
 
 ## Common Errors and Fixes
 
-| Error | Fix |
-|-------|-----|
-| `@context is missing` | Add `"@context": "https://schema.org"` |
-| `@type is missing` | Add the appropriate `"@type"` |
-| `Required property "url" is missing for Organization` | Add `"url": "https://yourdomain.com"` |
-| `headline exceeds 110 characters` | Shorten the `headline` value |
-| `mainEntity items must have @type "Question"` | Wrap FAQ entries in `{ "@type": "Question", ... }` |
-| `"position" is required on each ListItem` | Add `"position": 1` (integer) to each BreadcrumbList item |
-| `Offer should have "price" or "priceRange"` | Add `"price": "X.XX"` to the `Offer` node |
+| Error                                                 | Fix                                                       |
+| ----------------------------------------------------- | --------------------------------------------------------- |
+| `@context is missing`                                 | Add `"@context": "https://schema.org"`                    |
+| `@type is missing`                                    | Add the appropriate `"@type"`                             |
+| `Required property "url" is missing for Organization` | Add `"url": "https://yourdomain.com"`                     |
+| `headline exceeds 110 characters`                     | Shorten the `headline` value                              |
+| `mainEntity items must have @type "Question"`         | Wrap FAQ entries in `{ "@type": "Question", ... }`        |
+| `"position" is required on each ListItem`             | Add `"position": 1` (integer) to each BreadcrumbList item |
+| `Offer should have "price" or "priceRange"`           | Add `"price": "X.XX"` to the `Offer` node                 |
 
 ---
 
@@ -177,13 +200,13 @@ In `.github/workflows/ready-for-review.yml`, call `runChecks()` from `actions/gi
 
 ## Revvel Page Type → Required Schema Map
 
-| Page Type | Required JSON-LD |
-|-----------|-----------------|
-| Home | `Organization` + `WebApplication` |
-| Blog post | `Article` + `BreadcrumbList` |
-| Product page | `Product` + `BreadcrumbList` |
-| About | `AboutPage` + `Person`/`Organization` |
-| FAQ page | `FAQPage` |
-| Landing page | `WebPage` |
+| Page Type    | Required JSON-LD                      |
+| ------------ | ------------------------------------- |
+| Home         | `Organization` + `WebApplication`     |
+| Blog post    | `Article` + `BreadcrumbList`          |
+| Product page | `Product` + `BreadcrumbList`          |
+| About        | `AboutPage` + `Person`/`Organization` |
+| FAQ page     | `FAQPage`                             |
+| Landing page | `WebPage`                             |
 
 Every page must also carry the global `Organization` schema (see `seo-metadata` skill).

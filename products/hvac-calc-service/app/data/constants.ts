@@ -14,7 +14,7 @@ export interface ClimateZone {
   designHeatingTemp: number; // °F outdoor dry-bulb 99% design temp
   coolingDegreeDays: number; // CDD 65°F base
   heatingDegreeDays: number; // HDD 65°F base
-  state: string;             // representative state/region
+  state: string; // representative state/region
 }
 
 export const CLIMATE_ZONES: ClimateZone[] = [
@@ -155,33 +155,33 @@ export const INSULATION_LEVELS: InsulationLevel[] = [
     id: "poor",
     label: "Poor (pre-1980, minimal insulation)",
     ceilingUValue: 0.066, // ~R-15
-    wallUValue: 0.110,    // ~R-9
-    floorUValue: 0.083,   // ~R-12
-    windowUValue: 0.87,   // single pane, no low-E
+    wallUValue: 0.11, // ~R-9
+    floorUValue: 0.083, // ~R-12
+    windowUValue: 0.87, // single pane, no low-E
   },
   {
     id: "fair",
     label: "Fair (1980–2000, code-minimum)",
-    ceilingUValue: 0.040, // ~R-25
-    wallUValue: 0.069,    // ~R-14
-    floorUValue: 0.060,   // ~R-17
-    windowUValue: 0.48,   // double pane, clear
+    ceilingUValue: 0.04, // ~R-25
+    wallUValue: 0.069, // ~R-14
+    floorUValue: 0.06, // ~R-17
+    windowUValue: 0.48, // double pane, clear
   },
   {
     id: "good",
     label: "Good (2000–2015, energy code)",
     ceilingUValue: 0.026, // ~R-38
-    wallUValue: 0.051,    // ~R-19
-    floorUValue: 0.047,   // ~R-21
-    windowUValue: 0.30,   // double pane, low-E
+    wallUValue: 0.051, // ~R-19
+    floorUValue: 0.047, // ~R-21
+    windowUValue: 0.3, // double pane, low-E
   },
   {
     id: "excellent",
     label: "Excellent (2015+, high-performance)",
-    ceilingUValue: 0.020, // ~R-49
-    wallUValue: 0.036,    // ~R-27
-    floorUValue: 0.033,   // ~R-30
-    windowUValue: 0.20,   // triple pane or high-performance low-E
+    ceilingUValue: 0.02, // ~R-49
+    wallUValue: 0.036, // ~R-27
+    floorUValue: 0.033, // ~R-30
+    windowUValue: 0.2, // triple pane or high-performance low-E
   },
 ];
 
@@ -204,8 +204,8 @@ export const INFILTRATION_FACTOR = 1.1;
 export const INFILTRATION_ACH: Record<string, number> = {
   poor: 0.5,
   fair: 0.35,
-  good: 0.20,
-  excellent: 0.10,
+  good: 0.2,
+  excellent: 0.1,
 };
 
 /**
@@ -230,7 +230,8 @@ export const REFRIGERANTS: Refrigerant[] = [
     ozoneDepleting: true,
     status: "phased-out",
     normalBoilingPoint: -41.4,
-    notes: "Phased out Jan 2020. Cannot be manufactured/imported. Servicing only from reclaimed stock.",
+    notes:
+      "Phased out Jan 2020. Cannot be manufactured/imported. Servicing only from reclaimed stock.",
   },
   {
     id: "r410a",
@@ -239,7 +240,8 @@ export const REFRIGERANTS: Refrigerant[] = [
     ozoneDepleting: false,
     status: "transitional",
     normalBoilingPoint: -61.9,
-    notes: "Phase-down under AIM Act. US equipment ban from 2025 for new residential, 2026 commercial.",
+    notes:
+      "Phase-down under AIM Act. US equipment ban from 2025 for new residential, 2026 commercial.",
   },
   {
     id: "r32",
@@ -257,7 +259,8 @@ export const REFRIGERANTS: Refrigerant[] = [
     ozoneDepleting: false,
     status: "low-gwp",
     normalBoilingPoint: -61.6,
-    notes: "Primary R-410A replacement. Adopted by Carrier, Trane, Lennox for 2025+ equipment.",
+    notes:
+      "Primary R-410A replacement. Adopted by Carrier, Trane, Lennox for 2025+ equipment.",
   },
   {
     id: "r290",
@@ -266,7 +269,8 @@ export const REFRIGERANTS: Refrigerant[] = [
     ozoneDepleting: false,
     status: "low-gwp",
     normalBoilingPoint: -43.7,
-    notes: "Excellent efficiency; flammable (A3 safety group). Common in room ACs, mini-splits.",
+    notes:
+      "Excellent efficiency; flammable (A3 safety group). Common in room ACs, mini-splits.",
   },
 ];
 

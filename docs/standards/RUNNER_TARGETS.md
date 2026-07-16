@@ -9,18 +9,18 @@ Define the closed set of execution surfaces ("runner targets") that Revvel engin
 
 ## Approved Runner Targets
 
-| Target     | Purpose                                | Typical Artifact            |
-|------------|----------------------------------------|-----------------------------|
-| `github`   | Repos, PRs, Issues, Actions, Releases  | commit SHA, PR URL          |
-| `vercel`   | Web deploys, edge functions            | deployment URL              |
-| `supabase` | Postgres, auth, storage, edge fns      | project ref, table name     |
-| `zapier`   | Cross-SaaS automation                  | Zap URL, run ID             |
-| `make`     | Visual workflow automation             | scenario URL                |
-| `n8n`      | Self-hosted workflow automation        | workflow ID                 |
-| `gumloop`  | AI workflow automation                 | flow URL                    |
-| `polar`    | GitHub funding / monetization          | product URL, checkout URL   |
-| `cli`      | Local shell execution                  | exit code, stdout           |
-| `browser`  | Headless/manual browser ops            | screenshot, URL             |
+| Target     | Purpose                               | Typical Artifact          |
+| ---------- | ------------------------------------- | ------------------------- |
+| `github`   | Repos, PRs, Issues, Actions, Releases | commit SHA, PR URL        |
+| `vercel`   | Web deploys, edge functions           | deployment URL            |
+| `supabase` | Postgres, auth, storage, edge fns     | project ref, table name   |
+| `zapier`   | Cross-SaaS automation                 | Zap URL, run ID           |
+| `make`     | Visual workflow automation            | scenario URL              |
+| `n8n`      | Self-hosted workflow automation       | workflow ID               |
+| `gumloop`  | AI workflow automation                | flow URL                  |
+| `polar`    | GitHub funding / monetization         | product URL, checkout URL |
+| `cli`      | Local shell execution                 | exit code, stdout         |
+| `browser`  | Headless/manual browser ops           | screenshot, URL           |
 
 Any dispatch to a target outside this list MUST be rejected by the orchestrator.
 
@@ -30,10 +30,10 @@ Some runner targets are **already-paid capacity**: the operator maintains an
 active paid subscription, so the engine should treat them as available execution
 surface and dispatch to them **before** recommending any new spend.
 
-| Target     | `already_paid_runner_capacity` | Notes                                                              |
-|------------|--------------------------------|--------------------------------------------------------------------|
-| `n8n`      | `true`                         | Covered under the operator's ~$60/mo n8n + Gumloop subscriptions.  |
-| `gumloop`  | `true`                         | Covered under the operator's ~$60/mo n8n + Gumloop subscriptions.  |
+| Target    | `already_paid_runner_capacity` | Notes                                                             |
+| --------- | ------------------------------ | ----------------------------------------------------------------- |
+| `n8n`     | `true`                         | Covered under the operator's ~$60/mo n8n + Gumloop subscriptions. |
+| `gumloop` | `true`                         | Covered under the operator's ~$60/mo n8n + Gumloop subscriptions. |
 
 - The operator currently pays **~$60/month total** for **n8n** and **Gumloop**.
   Engines MUST design workflows and BOMs assuming this capacity already exists
@@ -82,6 +82,7 @@ When a runner cannot execute because it lacks credentials, API access, an accoun
 ### What a BOM Must Contain
 
 Each line item:
+
 - **Name** — exact thing needed (e.g., "Twilio API key", "LLC EIN", "$50 Meta Ads credit").
 - **Category** — `credential | api | account | infra | data | service | human`.
 - **Cost (USD)** — one-time or monthly; `0` if free.
@@ -101,24 +102,24 @@ For procurement decisions about paid services, APIs, and subscription tiers,
 each BOM service entry uses the following fields. This is **advisory data for a
 human approver**; emitting it never triggers spend.
 
-| Field                         | Meaning                                                                 |
-|-------------------------------|-------------------------------------------------------------------------|
-| `service`                     | The service / API / subscription (e.g. `n8n`, `gumloop`, `twilio`).     |
-| `current_status`              | `already_paid` \| `free_tier` \| `trial` \| `not_subscribed` \| `unknown`. |
-| `current_monthly_cost_if_known` | Known monthly spend in USD, or `unknown`.                             |
-| `free_tier_available`         | `true` \| `false` \| `unknown` — does the service offer a free tier?    |
-| `free_tier_limits`            | The free-tier quotas/limits (requests, rows, seats, etc.), or `unknown`. |
-| `trial_available`             | `true` \| `false` \| `unknown` — is a time-limited free trial offered?  |
-| `expected_usage`              | Projected usage for `needed_for` (volume/tokens/runs), to compare against limits. |
-| `upgrade_trigger`             | What would force a paid upgrade: `usage_exceeds_limits` \| `capability_gap` \| `reliability` \| `compliance` \| `goal_justified` \| `none`. |
-| `token_or_credit_limit`       | Free-tier/trial token or credit cap (e.g. `200k tokens/mo`), or `none`/`unknown`. |
-| `overage_risk`                | `low` \| `medium` \| `high` — likelihood expected usage breaches the free/trial limit. |
-| `needed_for`                  | The step / capability / revenue target this unblocks.                   |
-| `upgrade_or_purchase_needed`  | `none` \| `new_subscription` \| `tier_upgrade` \| `api_purchase`.       |
-| `reason`                      | Why spend is justified: unique capability / time saved / reliability / compliance / revenue. |
-| `expected_benefit`            | Concrete expected outcome (time saved, reliability gain, revenue unblocked). |
-| `approval_required`           | Always `true` for any non-zero or tier-changing spend.                  |
-| `credential_store`            | Where the credential would live once approved (secret manager path). Never a literal secret. |
+| Field                           | Meaning                                                                                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `service`                       | The service / API / subscription (e.g. `n8n`, `gumloop`, `twilio`).                                                                         |
+| `current_status`                | `already_paid` \| `free_tier` \| `trial` \| `not_subscribed` \| `unknown`.                                                                  |
+| `current_monthly_cost_if_known` | Known monthly spend in USD, or `unknown`.                                                                                                   |
+| `free_tier_available`           | `true` \| `false` \| `unknown` — does the service offer a free tier?                                                                        |
+| `free_tier_limits`              | The free-tier quotas/limits (requests, rows, seats, etc.), or `unknown`.                                                                    |
+| `trial_available`               | `true` \| `false` \| `unknown` — is a time-limited free trial offered?                                                                      |
+| `expected_usage`                | Projected usage for `needed_for` (volume/tokens/runs), to compare against limits.                                                           |
+| `upgrade_trigger`               | What would force a paid upgrade: `usage_exceeds_limits` \| `capability_gap` \| `reliability` \| `compliance` \| `goal_justified` \| `none`. |
+| `token_or_credit_limit`         | Free-tier/trial token or credit cap (e.g. `200k tokens/mo`), or `none`/`unknown`.                                                           |
+| `overage_risk`                  | `low` \| `medium` \| `high` — likelihood expected usage breaches the free/trial limit.                                                      |
+| `needed_for`                    | The step / capability / revenue target this unblocks.                                                                                       |
+| `upgrade_or_purchase_needed`    | `none` \| `new_subscription` \| `tier_upgrade` \| `api_purchase`.                                                                           |
+| `reason`                        | Why spend is justified: unique capability / time saved / reliability / compliance / revenue.                                                |
+| `expected_benefit`              | Concrete expected outcome (time saved, reliability gain, revenue unblocked).                                                                |
+| `approval_required`             | Always `true` for any non-zero or tier-changing spend.                                                                                      |
+| `credential_store`              | Where the credential would live once approved (secret manager path). Never a literal secret.                                                |
 
 Example (advisory only — no spend executed):
 

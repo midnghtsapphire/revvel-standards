@@ -8,8 +8,10 @@ tools:
   allow: ["shell", "vault", "gh"]
   deny: ["file_write_sensitive", "network_outside_vault_and_target_service"]
 settings_profile: "secure-ephemeral"
-inputs: ["app_name", "environment", "services_list", "vault_addr", "vault_role_id"]
-outputs: ["vault_path_references", "provisioning_summary", "env_example_additions"]
+inputs:
+  ["app_name", "environment", "services_list", "vault_addr", "vault_role_id"]
+outputs:
+  ["vault_path_references", "provisioning_summary", "env_example_additions"]
 handoff_expectations:
   recap: true
   next_actions: false
@@ -22,6 +24,7 @@ handoff_expectations:
 The Vault Agent is an **ephemeral specialist** that provisions, stores, and rotates secrets for Revvel projects. It is the **only** agent with permission to touch raw credential values. All other agents receive vault path references — never the secrets themselves.
 
 Spawn this agent when:
+
 - A new project is being bootstrapped
 - A coding agent encounters a missing credential
 - An existing credential has expired or been compromised
@@ -62,6 +65,7 @@ This agent **terminates immediately** after delivering its provisioning summary.
 # Tools
 
 ## Vault CLI
+
 ```bash
 # Check
 vault kv get revvel/apps/{APP}/{ENV}/{SERVICE}
@@ -80,6 +84,7 @@ vault write auth/approle/login \
 ```
 
 ## GitHub CLI (for CI secrets)
+
 ```bash
 SECRET_VALUE=$(vault kv get -field=<key> revvel/apps/{APP}/{ENV}/{SERVICE})
 gh secret set {SECRET_NAME} --body "$SECRET_VALUE" --repo {OWNER}/{REPO}

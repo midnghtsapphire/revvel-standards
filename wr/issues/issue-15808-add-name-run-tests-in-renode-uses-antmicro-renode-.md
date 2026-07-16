@@ -1,4 +1,4 @@
-# WR: [WR] add - name: Run tests in Renode   uses: antmicro/renode-test-action@v5
+# WR: [WR] add - name: Run tests in Renode uses: antmicro/renode-test-action@v5
 
 **Issue:** #15808  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -51,7 +51,7 @@ orchestrator
 
 ### Summary
 
-add - name: Run tests in Renode   uses: antmicro/renode-test-action@v5
+add - name: Run tests in Renode uses: antmicro/renode-test-action@v5
 
 ### Objective
 
@@ -72,21 +72,22 @@ Test action
 See action.yml
 
 steps:
+
 - uses: antmicro/renode-test-action@v5
   with:
-    renode-revision: 'master'
-    tests-to-run: 'tests/**/*.robot'
-Action parameters
-renode-revision - indicates the Renode version to be built. Can be the name of a branch or tag in the repository or a commit hash. The default is Renode's master branch.
-renode-repository - indicates the repository containing the Renode source to build. The default is the official Renode repository (<https://github.com/renode/renode>).
-tests-to-run - path to the Robot files you want to execute.
-renode-arguments - optional, additional arguments passed to Renode. See Renode README for details. Default: no additional arguments.
-artifacts-path - optional, path where test artifacts should be stored. This includes Robot logs and HTML reports. Default: current directory.
-gather-execution-metrics - optional, whether to gather and visualize execution metrics. Default: no.
-install-dependencies - optional, whether to install dependencies before building Renode (requires sudo privileges, Linux specific). Default: yes.
-disable-summary-generation - optional, whether to disable step summary generation. Default: no.
-Using cache
-This action caches Renode builds by default using the standard GitHub caching
+  renode-revision: 'master'
+  tests-to-run: 'tests/**/*.robot'
+  Action parameters
+  renode-revision - indicates the Renode version to be built. Can be the name of a branch or tag in the repository or a commit hash. The default is Renode's master branch.
+  renode-repository - indicates the repository containing the Renode source to build. The default is the official Renode repository (<https://github.com/renode/renode>).
+  tests-to-run - path to the Robot files you want to execute.
+  renode-arguments - optional, additional arguments passed to Renode. See Renode README for details. Default: no additional arguments.
+  artifacts-path - optional, path where test artifacts should be stored. This includes Robot logs and HTML reports. Default: current directory.
+  gather-execution-metrics - optional, whether to gather and visualize execution metrics. Default: no.
+  install-dependencies - optional, whether to install dependencies before building Renode (requires sudo privileges, Linux specific). Default: yes.
+  disable-summary-generation - optional, whether to disable step summary generation. Default: no.
+  Using cache
+  This action caches Renode builds by default using the standard GitHub caching
 
 ### Required Bundle
 
@@ -138,18 +139,19 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -161,6 +163,7 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29252561973.md`
 
 ## Executive Decision
@@ -179,11 +182,13 @@ Source packet: `docs/research-engine/run-29252561973.md`
 **Primary Target**: Embedded software teams transitioning from manual hardware testing to automated CI/CD pipelines
 
 **Secondary Targets**:
+
 - IoT device manufacturers seeking scalable testing solutions
 - Automotive software teams requiring hardware simulation
 - RISC-V and Zephyr RTOS developers already using Renode
 
 **Why This Audience**:
+
 - **High Pain Point**: Hardware-dependent testing is a major bottleneck (slow, expensive, doesn't scale)
 - **Budget Available**: Enterprise embedded teams have significant testing budgets
 - **Growing Market**: Embedded CI/CD adoption is accelerating with remote work and distributed teams
@@ -200,12 +205,14 @@ Source packet: `docs/research-engine/run-29252561973.md`
 ## Keyword Targets
 
 **Transactional Intent**:
+
 - renode github action setup
 - embedded ci/cd automation
 - robot framework embedded testing
 - hardware simulation github actions
 
 **Informational Intent**:
+
 - how to test firmware without hardware
 - renode vs qemu for ci testing
 - embedded software testing best practices
@@ -227,13 +234,13 @@ Source packet: `docs/research-engine/run-29252561973.md`
 
 ## Competitor and GitHub Star Intelligence
 
-| Competitor | Stars | Pricing | Key Features | Our Advantage |
-|------------|-------|---------|--------------|---------------|
-| antmicro/renode-test-action | 16 | Free (OSS) | Robot Framework, caching, metrics | We're using it, not competing |
-| QEMU-based actions | Various | Free (OSS) | General emulation | Renode is embedded-specific |
-| PlatformIO CI | 41 | Free tier, Pro $10-29/month | Multi-board support | Less simulation focus |
-| Zephyr CI tools | 41 | Free (OSS) | RTOS-specific | Broader hardware support via Renode |
-| Commercial HIL services | N/A | $500-5000/month | Physical hardware access | 10x cost reduction with simulation |
+| Competitor                  | Stars   | Pricing                     | Key Features                      | Our Advantage                       |
+| --------------------------- | ------- | --------------------------- | --------------------------------- | ----------------------------------- |
+| antmicro/renode-test-action | 16      | Free (OSS)                  | Robot Framework, caching, metrics | We're using it, not competing       |
+| QEMU-based actions          | Various | Free (OSS)                  | General emulation                 | Renode is embedded-specific         |
+| PlatformIO CI               | 41      | Free tier, Pro $10-29/month | Multi-board support               | Less simulation focus               |
+| Zephyr CI tools             | 41      | Free (OSS)                  | RTOS-specific                     | Broader hardware support via Renode |
+| Commercial HIL services     | N/A     | $500-5000/month             | Physical hardware access          | 10x cost reduction with simulation  |
 
 **Market Position**: Position as the "embedded testing automation experts" who help teams transition from expensive hardware labs to scalable cloud CI/CD.
 
@@ -242,9 +249,11 @@ Source packet: `docs/research-engine/run-29252561973.md`
 ## Key Pain Points from Community
 
 1. **Setup Complexity** ([GitHub Issue #12](https://github.com/antmicro/renode-test-action/issues/12)):
+
    > "The logs are not helpful when something fails. It's hard to know if it's a Renode issue or a test script problem."
 
 2. **Platform Limitations** ([GitHub Issue #15](https://github.com/antmicro/renode-test-action/issues/15)):
+
    > "Any plans to support runners other than Linux? Our team uses macOS for development."
 
 3. **Documentation Gaps** ([Reddit r/embedded](https://www.reddit.com/r/embedded/comments/12xyzab/renode_github_action/)):
@@ -299,15 +308,15 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Run tests in Renode
-        uses: antmicro/renode-test-action@<COMMIT_SHA>  # Pin to verified commit
+        uses: antmicro/renode-test-action@<COMMIT_SHA> # Pin to verified commit
         with:
-          renode-revision: 'v1.15.0'  # Use stable release, not master
-          tests-to-run: 'tests/embedded/**/*.robot'
+          renode-revision: "v1.15.0" # Use stable release, not master
+          tests-to-run: "tests/embedded/**/*.robot"
           gather-execution-metrics: true
-          artifacts-path: 'test-results/renode'
-          
+          artifacts-path: "test-results/renode"
+
       - name: Upload test results
         uses: actions/upload-artifact@v4
         if: always()
@@ -416,10 +425,10 @@ body:
 
 ```yaml
 - name: Run tests in Renode
-  uses: antmicro/renode-test-action@8f3a8c9d8e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t  # v5.0.0
+  uses: antmicro/renode-test-action@8f3a8c9d8e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t # v5.0.0
   with:
-    renode-revision: 'v1.15.0'
-    tests-to-run: 'tests/embedded/**/*.robot'
+    renode-revision: "v1.15.0"
+    tests-to-run: "tests/embedded/**/*.robot"
 ```
 
 ## Fix 3: Create Minimal Test
@@ -441,17 +450,20 @@ Verify Renode Environment
 ## Labels to Apply
 
 ## Required Labels
+
 - `enhancement` - Adding new testing capability
 - `ci/cd-integration` - Modifies GitHub Actions
 - `testing-framework` - Introduces Robot Framework tests
 - `embedded-systems` - Targets embedded software
 
 ## Risk Labels
+
 - `needs-security-review` - Third-party action requires assessment
 - `resource-intensive` - Renode builds consume significant compute
 - `incomplete-specification` - WR missing required fields
 
 ## Process Labels
+
 - `needs-pilot` - Start with limited test scope
 - `documentation-required` - Must document setup and usage
 
@@ -462,6 +474,7 @@ Verify Renode Environment
 **Use `antmicro/renode-test-action@v5.0.0`** (pin to commit SHA)
 
 **Rationale**:
+
 - Purpose-built for embedded CI/CD testing
 - Active maintenance (last commit December 2024)
 - 1,100+ repositories using it successfully
@@ -491,21 +504,22 @@ Verify Renode Environment
 
 ### Lane Confidence Breakdown
 
-| Research Lane | Best Score | Key Finding |
-|--------------|------------|-------------|
-| Market Positioning | 92% | Strong niche in embedded CI/CD with clear value prop |
-| SEO Demand | 85% | Specialized keywords with high intent, low volume |
-| Competitor Intelligence | 88% | Limited direct competition, clear differentiation |
-| Audience & Chatter | 90% | Active community with identifiable pain points |
-| Factual Validation | 95% | Core claims verified, minor corrections needed |
-| Technical Delivery | 91% | Clear implementation path with manageable risks |
-| Revenue Mechanics | 78% | Indirect monetization through services/consulting |
+| Research Lane           | Best Score | Key Finding                                          |
+| ----------------------- | ---------- | ---------------------------------------------------- |
+| Market Positioning      | 92%        | Strong niche in embedded CI/CD with clear value prop |
+| SEO Demand              | 85%        | Specialized keywords with high intent, low volume    |
+| Competitor Intelligence | 88%        | Limited direct competition, clear differentiation    |
+| Audience & Chatter      | 90%        | Active community with identifiable pain points       |
+| Factual Validation      | 95%        | Core claims verified, minor corrections needed       |
+| Technical Delivery      | 91%        | Clear implementation path with manageable risks      |
+| Revenue Mechanics       | 78%        | Indirect monetization through services/consulting    |
 
 ### Best-Scoring Idea
 
 **"Embedded CI/CD Acceleration Service"** - Package Renode expertise into a $5,000-10,000 consulting offering for teams transitioning from hardware to simulation-based testing.
 
 **Why This Wins**:
+
 - Addresses urgent pain point (hardware bottlenecks)
 - High-value B2B service model
 - Leverages specialized knowledge
@@ -514,12 +528,14 @@ Verify Renode Environment
 ### Confidence Rationale
 
 High confidence due to:
+
 - Active maintenance and community adoption
 - Clear technical documentation
 - Verified functionality claims
 - Growing market demand
 
 Lower confidence areas:
+
 - Revenue model requires service packaging
 - Market size claims need verification
 - Resource consumption needs monitoring
@@ -564,11 +580,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -584,11 +600,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

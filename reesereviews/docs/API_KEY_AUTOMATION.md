@@ -14,7 +14,7 @@ For development and testing without real API keys:
 
 ```javascript
 // Mock API responses for testing
-const MOCK_MODE = process.env.USE_MOCK_APIS === 'true';
+const MOCK_MODE = process.env.USE_MOCK_APIS === "true";
 
 if (MOCK_MODE) {
   // Use mock data generators
@@ -24,6 +24,7 @@ if (MOCK_MODE) {
 ```
 
 **Benefits:**
+
 - No API keys required
 - Instant setup
 - Predictable testing
@@ -94,30 +95,30 @@ When APIs are unavailable, use ethical web scraping:
 
 ```javascript
 // Amazon review scraping (respecting robots.txt)
-const puppeteer = require('puppeteer');
+const puppeteer = require("puppeteer");
 
 async function scrapeAmazonReviews(productUrl) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  
+
   // Set user agent to identify as automated tool
-  await page.setUserAgent('ReeseReviews-Bot/1.0');
-  
+  await page.setUserAgent("ReeseReviews-Bot/1.0");
+
   // Respect rate limits
-  await page.goto(productUrl, { waitUntil: 'networkidle2' });
+  await page.goto(productUrl, { waitUntil: "networkidle2" });
   await page.waitForTimeout(2000);
-  
+
   // Extract review data
   const reviews = await page.evaluate(() => {
     // Parse review elements
-    return Array.from(document.querySelectorAll('.review')).map(r => ({
-      rating: r.querySelector('.rating')?.textContent,
-      text: r.querySelector('.review-text')?.textContent,
-      author: r.querySelector('.author')?.textContent,
-      date: r.querySelector('.review-date')?.textContent
+    return Array.from(document.querySelectorAll(".review")).map((r) => ({
+      rating: r.querySelector(".rating")?.textContent,
+      text: r.querySelector(".review-text")?.textContent,
+      author: r.querySelector(".author")?.textContent,
+      date: r.querySelector(".review-date")?.textContent,
     }));
   });
-  
+
   await browser.close();
   return reviews;
 }
@@ -131,28 +132,28 @@ Use publicly available test APIs that don't require authentication:
 // Free review APIs for testing
 const testAPIs = {
   // JSON Placeholder for mock data
-  jsonPlaceholder: 'https://jsonplaceholder.typicode.com/comments',
-  
+  jsonPlaceholder: "https://jsonplaceholder.typicode.com/comments",
+
   // MockAPI for custom schemas
-  mockAPI: 'https://mockapi.io/projects/reviews',
-  
+  mockAPI: "https://mockapi.io/projects/reviews",
+
   // ReqRes for user data
-  reqres: 'https://reqres.in/api/users'
+  reqres: "https://reqres.in/api/users",
 };
 
 // Transform test data to match our schema
 async function getTestReviews() {
   const response = await fetch(testAPIs.jsonPlaceholder);
   const comments = await response.json();
-  
-  return comments.slice(0, 50).map(c => ({
+
+  return comments.slice(0, 50).map((c) => ({
     id: c.id,
     rating: Math.floor(Math.random() * 5) + 1,
     productName: `Product ${c.id}`,
     reviewText: c.body,
     author: c.name,
     verified: Math.random() > 0.3,
-    date: new Date().toISOString()
+    date: new Date().toISOString(),
   }));
 }
 ```
@@ -187,36 +188,36 @@ case $MODE in
     echo "USE_MOCK_APIS=true" >> .env
     echo "✅ Mock mode enabled. All APIs will use test data."
     ;;
-    
+
   2)
     echo "🔑 Attempting automated setup..."
-    
+
     # Judge.me
     read -p "Email for Judge.me test account: " EMAIL
     ./scripts/auto-setup-judgeme.sh "$EMAIL"
-    
+
     # Amazon PA API
     echo "📦 Amazon PA API requires manual approval."
     echo "   Application submitted. Check email for approval."
     ./scripts/apply-amazon-api.sh
-    
+
     # Google Reviews
     echo "🔍 Setting up Google service account..."
     ./scripts/setup-google-api.sh
-    
+
     echo "✅ Automated setup complete!"
     ;;
-    
+
   3)
     echo "📝 Manual key entry mode"
     read -p "Judge.me API Key: " JUDGEME_KEY
     read -p "Amazon PA API Key: " AMAZON_KEY
     read -p "Google API Key: " GOOGLE_KEY
-    
+
     echo "JUDGEME_API_KEY=$JUDGEME_KEY" >> .env
     echo "AMAZON_API_KEY=$AMAZON_KEY" >> .env
     echo "GOOGLE_API_KEY=$GOOGLE_KEY" >> .env
-    
+
     echo "✅ Keys added to .env"
     ;;
 esac
@@ -233,58 +234,58 @@ echo "✨ Setup complete! Run 'npm start' to begin."
 
 ```javascript
 // scripts/test-apis.js
-require('dotenv').config();
+require("dotenv").config();
 
 async function testAPIs() {
-  console.log('🧪 Testing API connections...\n');
-  
+  console.log("🧪 Testing API connections...\n");
+
   const results = {
     judgeme: await testJudgeMe(),
     amazon: await testAmazon(),
-    google: await testGoogle()
+    google: await testGoogle(),
   };
-  
+
   // Display results
   Object.entries(results).forEach(([api, result]) => {
-    const status = result.success ? '✅' : '❌';
+    const status = result.success ? "✅" : "❌";
     console.log(`${status} ${api.toUpperCase()}: ${result.message}`);
   });
-  
+
   // If all fail, suggest mock mode
-  const allFailed = Object.values(results).every(r => !r.success);
+  const allFailed = Object.values(results).every((r) => !r.success);
   if (allFailed) {
-    console.log('\n⚠️  All APIs failed. Consider using mock mode:');
+    console.log("\n⚠️  All APIs failed. Consider using mock mode:");
     console.log('   echo "USE_MOCK_APIS=true" >> .env');
   }
 }
 
 async function testJudgeMe() {
   try {
-    const response = await fetch('https://judge.me/api/v1/reviews', {
+    const response = await fetch("https://judge.me/api/v1/reviews", {
       headers: {
-        'Authorization': `Bearer ${process.env.JUDGEME_API_KEY}`
-      }
+        Authorization: `Bearer ${process.env.JUDGEME_API_KEY}`,
+      },
     });
     return {
       success: response.ok,
-      message: response.ok ? 'Connected' : `HTTP ${response.status}`
+      message: response.ok ? "Connected" : `HTTP ${response.status}`,
     };
   } catch (error) {
     return {
       success: false,
-      message: error.message
+      message: error.message,
     };
   }
 }
 
 async function testAmazon() {
   // Similar testing for Amazon API
-  return { success: true, message: 'Not implemented yet - using mock data' };
+  return { success: true, message: "Not implemented yet - using mock data" };
 }
 
 async function testGoogle() {
   // Similar testing for Google API
-  return { success: true, message: 'Not implemented yet - using mock data' };
+  return { success: true, message: "Not implemented yet - using mock data" };
 }
 
 testAPIs();
@@ -320,18 +321,21 @@ Use caching and batching to stay within limits.
 ## Troubleshooting
 
 ### "API key invalid"
+
 - Verify key is correctly copied
 - Check for whitespace/newlines
 - Try regenerating key
 - Ensure account is active
 
 ### "Rate limit exceeded"
+
 - Enable caching layer
 - Reduce polling frequency
 - Upgrade to paid tier
 - Use mock mode temporarily
 
 ### "Account approval pending"
+
 - Amazon PA API takes 1-3 business days
 - Use mock mode while waiting
 - Check spam folder for approval email
@@ -348,6 +352,7 @@ Use caching and batching to stay within limits.
 ## Support
 
 For API setup issues:
+
 - Check logs: `tail -f logs/api-setup.log`
 - Test connectivity: `npm run test:apis`
 - Use mock mode: `USE_MOCK_APIS=true npm start`

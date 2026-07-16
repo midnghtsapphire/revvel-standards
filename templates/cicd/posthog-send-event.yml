@@ -37,7 +37,7 @@ on:
         required: true
         default: "ci_completed"
       properties:
-        description: "JSON string of event properties (e.g., {\"status\":\"success\"})"
+        description: 'JSON string of event properties (e.g., {"status":"success"})'
         type: string
         required: false
         default: "{}"
@@ -80,7 +80,7 @@ jobs:
           script: |
             const eventName = process.env.EVENT_NAME || 'ci_completed';
             const repo = `${context.repo.owner}/${context.repo.repo}`;
-            
+
             // Parse custom properties (if valid JSON)
             let customProps = {};
             try {

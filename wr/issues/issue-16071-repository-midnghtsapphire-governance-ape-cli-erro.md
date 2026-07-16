@@ -118,18 +118,19 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -141,6 +142,7 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29341050118.md`
 
 ## WR-Ready Research Packet: Empty Repository Indexing Issue
@@ -152,6 +154,7 @@ Source packet: `docs/research-engine/run-29341050118.md`
 **Decision**: Implement graceful empty repository handling with automated recovery mechanisms. This is a common developer experience friction point that blocks onboarding and creates support burden.
 
 **Immediate Actions**:
+
 1. Add pre-indexing validation to detect empty repositories
 2. Create user-friendly error messaging with actionable guidance
 3. Implement automated retry mechanism with repository state monitoring
@@ -159,11 +162,13 @@ Source packet: `docs/research-engine/run-29341050118.md`
 ## 2. Audience We Are Going After and Why
 
 **Primary Audience**: Developers using GitHub-based CI/CD workflows with automated indexing
+
 - **Pain Point**: Repository indexing failures blocking development velocity
 - **Urgent Need**: Seamless handling of empty repositories during initial setup
 - **Market Size (internal estimate)**: ~60M-80M GitHub users and ~10-20% empty-repository scenarios in new projects
 
-**Why This Matters**: 
+**Why This Matters**:
+
 - ~60-70% of developers may abandon tools that fail on first use (internal estimate)
 - Empty repository handling is a critical first-touch experience
 - Poor error handling creates immediate churn risk during onboarding
@@ -171,15 +176,18 @@ Source packet: `docs/research-engine/run-29341050118.md`
 ## 3. Marketing and SEO Plan
 
 **Landing Page Strategy**:
+
 - **Title**: "Fix 'Repository Appears Empty' Error in GitHub Indexing - Complete Guide"
 - **Meta Description**: "Resolve GitHub repository indexing failures. Step-by-step guide to fix empty repository errors and set up automated workflows."
 
 **Keyword Clusters**:
+
 - Problem-solving: "repository appears empty github", "no files to index error"
 - Solution-seeking: "fix empty repository indexing", "github repository setup tutorial"
 - Tool-specific: "ape cli empty repository", "governance token cli tools"
 
 **Content Architecture**:
+
 1. Primary troubleshooting guide for empty repository errors
 2. GitHub repository initialization best practices
 3. Automated workflow setup tutorials
@@ -189,12 +197,12 @@ Source packet: `docs/research-engine/run-29341050118.md`
 
 ### Competitive Analysis
 
-| Tool | Stars | Pricing [1] | Empty Repo Handling | Differentiation |
-|------|-------|---------|-------------------|-----------------|
-| GitHub Codespaces | Native | [1] | Graceful skip | Native GitHub integration |
-| Sourcegraph | 9.8k+ | [1] | Silent skip | Enterprise code intelligence |
-| GitLab CI/CD | 23k+ | [1] | Conditional logic | Integrated DevOps platform |
-| JetBrains Space | N/A | [1] | Built-in handling | All-in-one collaboration |
+| Tool              | Stars  | Pricing [1] | Empty Repo Handling | Differentiation              |
+| ----------------- | ------ | ----------- | ------------------- | ---------------------------- |
+| GitHub Codespaces | Native | [1]         | Graceful skip       | Native GitHub integration    |
+| Sourcegraph       | 9.8k+  | [1]         | Silent skip         | Enterprise code intelligence |
+| GitLab CI/CD      | 23k+   | [1]         | Conditional logic   | Integrated DevOps platform   |
+| JetBrains Space   | N/A    | [1]         | Built-in handling   | All-in-one collaboration     |
 
 [1] Pricing data pending — competitive benchmark research required.
 
@@ -209,11 +217,13 @@ Source packet: `docs/research-engine/run-29341050118.md`
 ## 5. Chatter and Demand Signals
 
 **Developer Pain Points**:
+
 - "Repository is empty" errors are common in GitHub Community discussions
 - Stack Overflow shows recurring questions about CI/CD failures on empty repos
 - Reddit r/github and r/devops report frustration with brittle automation
 
 **Unmet Needs**:
+
 - Clear, actionable error messages
 - Automated recovery mechanisms
 - Pre-flight validation before expensive operations
@@ -223,16 +233,19 @@ Source packet: `docs/research-engine/run-29341050118.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Verified Facts**:
+
 - Repository authentication succeeds but tree fetch returns empty
 - Error occurs on main branch with zero files
 - Multiple retry attempts show consistent behavior
 
 **Cannot Verify Without API Access**:
+
 - Current repository state (may be deleted/private)
 - Actual branch structure
 - Repository permissions and visibility
 
 **Required Verification Tools**:
+
 - GitHub API: `GET /repos/midnghtsapphire/Governance-ape-cli-errors`
 - Repository contents endpoint
 - Branch listing API
@@ -242,12 +255,14 @@ Source packet: `docs/research-engine/run-29341050118.md`
 ### Implementation Requirements
 
 **Files to Modify/Create**:
+
 - `src/indexing/repository_validator.py` - Pre-flight validation
 - `src/indexing/empty_repo_handler.py` - Graceful handling logic
 - `src/indexing/retry_manager.py` - Exponential backoff retry
 - `tests/test_empty_repository_handling.py` - Test coverage
 
 **Acceptance Criteria**:
+
 1. Empty repository detection returns specific error code (not generic failure)
 2. User receives actionable error message with next steps
 3. System implements retry with exponential backoff
@@ -257,6 +272,7 @@ Source packet: `docs/research-engine/run-29341050118.md`
 ## 8. Code Review Agent Packet
 
 ### For Bito AI Review
+
 ```python
 # Check for empty repository before indexing
 def validate_repository_content(repo_name, branch='main'):
@@ -270,11 +286,13 @@ def validate_repository_content(repo_name, branch='main'):
 ```
 
 ### For Coderabbit Review
+
 - Ensure error messages are user-friendly, not technical jargon
 - Validate retry logic doesn't create infinite loops
 - Check for proper error code differentiation (empty vs. not found vs. no permissions)
 
 ### For OpenRouter Review
+
 - Verify GitHub API rate limit handling
 - Ensure authentication tokens are properly scoped
 - Check for security implications of automated retry mechanisms
@@ -282,6 +300,7 @@ def validate_repository_content(repo_name, branch='main'):
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Pre-Indexing Validation
+
 ```yaml
 # Commit message: "feat: add pre-indexing validation for empty repositories"
 - name: Validate Repository Content
@@ -294,6 +313,7 @@ def validate_repository_content(repo_name, branch='main'):
 ```
 
 ### Fix 2: Graceful Error Handling
+
 ```python
 # Commit message: "fix: handle empty repositories gracefully in indexing pipeline"
 class EmptyRepositoryError(Exception):
@@ -304,6 +324,7 @@ class EmptyRepositoryError(Exception):
 ```
 
 ### Fix 3: Automated Recovery
+
 ```yaml
 # Commit message: "feat: implement automated retry for repository state changes"
 on:
@@ -316,6 +337,7 @@ on:
 ## 10. Labels to Apply
 
 **Required Labels**:
+
 - `bug` - Current behavior is a defect
 - `enhancement` - Improving error handling
 - `indexing` - Related to indexing pipeline
@@ -324,12 +346,14 @@ on:
 - `needs-testing` - Requires comprehensive test coverage
 
 **Risk Labels**:
+
 - `blocker` - Prevents indexing functionality
 - `devex-friction` - Creates poor developer experience
 
 ## 11. Repository Review and Best Alternative
 
 **Current Repository Status**: Empty/Inaccessible
+
 - Cannot verify current state without API access
 - Name suggests governance tooling for Ape CLI errors
 
@@ -355,16 +379,19 @@ on:
 **Overall Confidence: 85/100**
 
 **High Confidence (90-100)**:
+
 - Problem identification and root cause
 - Technical solution approach
 - Developer experience impact
 
 **Medium Confidence (70-89)**:
+
 - Market demand quantification
 - SEO traffic potential
 - Alternative tool recommendations
 
 **Low Confidence (< 70)**:
+
 - Current repository state (cannot verify)
 - Specific user requirements
 - Revenue impact estimates
@@ -413,11 +440,11 @@ N/A — no additional details are available in the source issue
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                                                         |
+| ------------------------------- | ------------------------------------------------------------- |
 | `depends_on` (prerequisite WRs) | N/A — no additional details are available in the source issue |
-| Blocked by | N/A — no additional details are available in the source issue |
-| Blocks (downstream WRs) | N/A — no additional details are available in the source issue |
+| Blocked by                      | N/A — no additional details are available in the source issue |
+| Blocks (downstream WRs)         | N/A — no additional details are available in the source issue |
 
 N/A — no additional details are available in the source issue
 
@@ -433,11 +460,11 @@ N/A — no additional details are available in the source issue
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — no additional details are available in the source issue |
+| Field                  | Value                                                         |
+| ---------------------- | ------------------------------------------------------------- |
+| Supersedes WR/issue    | N/A — no additional details are available in the source issue |
 | Reason for replacement | N/A — no additional details are available in the source issue |
-| Archival status | N/A — no additional details are available in the source issue |
+| Archival status        | N/A — no additional details are available in the source issue |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

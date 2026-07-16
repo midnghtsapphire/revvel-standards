@@ -18,17 +18,17 @@ This Work Request implements an automated, form-driven pipeline for "sellable-pd
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-08 |
-| Last Updated | 2026-05-08 |
-| Primary Language | JavaScript, Shell, YAML (GitHub Actions) |
-| Stars | 0 |
-| Open Issues | 15 |
-| Description | SSOT standards, templates, and automation |
-| Private | False |
-| Archived | False |
+| Property         | Value                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created          | 2026-05-08                                                                              |
+| Last Updated     | 2026-05-08                                                                              |
+| Primary Language | JavaScript, Shell, YAML (GitHub Actions)                                                |
+| Stars            | 0                                                                                       |
+| Open Issues      | 15                                                                                      |
+| Description      | SSOT standards, templates, and automation                                               |
+| Private          | False                                                                                   |
+| Archived         | False                                                                                   |
 
 ### Current Status
 
@@ -71,21 +71,22 @@ workflows/PDF_AUTOMATION_GUIDE.md
 Automated PDF generation directly from GitHub Work Requests unlocks scalable, passive revenue pipelines. Codifying the batch sizes (1, 3, or 20) directly in the issue form standardizes the hand-off to external workflow engines like Make.com, eliminating manual intervention and human error associated with ad-hoc labeling.
 
 **Sources:**
+
 - Internal Analysis: Automation workflow scalability
 - GitHub Actions Documentation: Webhook integrations
 
 #### Competitors & Alternatives
 
-| Competitor | Features | Pricing | Market Share |
-|------------|----------|---------|--------------|
-| Manual PDF Generation | Bespoke formatting | High labor cost | High |
-| Traditional Automation | Unstructured webhook triggers | Variable | Medium |
+| Competitor             | Features                      | Pricing         | Market Share |
+| ---------------------- | ----------------------------- | --------------- | ------------ |
+| Manual PDF Generation  | Bespoke formatting            | High labor cost | High         |
+| Traditional Automation | Unstructured webhook triggers | Variable        | Medium       |
 
 #### Gaps in Existing Solutions
 
 1. **Gap 1:** Unreliable label-based triggers in CI.
    - **Opportunity:** Migrate to issue-form-driven routing for deterministic payloads.
-   
+
 2. **Gap 2:** Lack of batching for output generation.
    - **Opportunity:** Introduce autocreate logic (3, 20) for automated candidate generation.
 
@@ -107,6 +108,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 #### Dependency Audit
 
 **Current Dependencies:**
+
 ```json
 {
   "devDependencies": {
@@ -116,22 +118,27 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 ```
 
 **Outdated Dependencies:**
+
 | Package | Current | Latest | Security Issues | Priority |
-|---------|---------|--------|-----------------|----------|
-| N/A | N/A | N/A | None | Low |
+| ------- | ------- | ------ | --------------- | -------- |
+| N/A     | N/A     | N/A    | None            | Low      |
 
 **Recommended Updates:**
+
 1. Maintain existing `package.json` structure for built-in modules to avoid unnecessary bloat.
 
 #### Security Vulnerabilities
 
 **Critical Issues:**
+
 - None detected.
 
 **Medium Issues:**
+
 - None detected.
 
 **Low Issues:**
+
 - None detected.
 
 **Security Score:** 10/10
@@ -143,27 +150,29 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 
 #### FOSS Alternatives to Paid Dependencies
 
-| Current (Paid) | FOSS Alternative | Pros | Cons | Recommendation |
-|----------------|------------------|------|------|----------------|
-| Make.com | n8n (self-hosted) | Free, full control | Setup overhead | Evaluate for long-term |
+| Current (Paid) | FOSS Alternative  | Pros               | Cons           | Recommendation         |
+| -------------- | ----------------- | ------------------ | -------------- | ---------------------- |
+| Make.com       | n8n (self-hosted) | Free, full control | Setup overhead | Evaluate for long-term |
 
 ### SEO & Content Research
 
 #### Relevant Keywords
 
 **Primary Keywords:**
+
 - sellable pdf automation: 1k - Low
 - github actions webhook make.com: 500 - Low
 
 **Long-tail Keywords:**
+
 - automated pdf product generation workflow: 200 - Low
 - issue form driven github automation: 150 - Low
 
 #### Competitor Content Strategies
 
-| Competitor | Content Type | Frequency | Engagement | Takeaway |
-|------------|--------------|-----------|------------|----------|
-| Automation Blogs | Guides | Monthly | Medium | Standardize playbooks internally |
+| Competitor       | Content Type | Frequency | Engagement | Takeaway                         |
+| ---------------- | ------------ | --------- | ---------- | -------------------------------- |
+| Automation Blogs | Guides       | Monthly   | Medium     | Standardize playbooks internally |
 
 #### Partnership Opportunities
 
@@ -179,9 +188,9 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 
 #### Affiliate Programs
 
-| Program | Commission | Cookie Duration | Fit Score |
-|---------|------------|-----------------|-----------|
-| Make.com | 20% | 30 Days | 5/5 |
+| Program  | Commission | Cookie Duration | Fit Score |
+| -------- | ---------- | --------------- | --------- |
+| Make.com | 20%        | 30 Days         | 5/5       |
 
 ---
 
@@ -190,11 +199,13 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 ### Prime Directive Alignment
 
 **10M by 2030 Goal:**
+
 - Current contribution: $0/month (Pipeline establishment)
 - Potential contribution: Scalable to $10k+/month Phase 1
 - Path to contribution: Enable seamless creation of monetizable digital products via GitHub operations.
 
 **$2000+/month Target (Start: May 1, 2026):**
+
 - Revenue streams identified: 2 (Direct PDF sales, OSINT reports)
 - Estimated monthly revenue: Variable
 - Time to first revenue: Immediate post-deployment
@@ -204,9 +215,11 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current Autonomy Level:** High
 
 **Blockers Identified:**
+
 1. Manual label assignment: Error-prone and delays routing → Solution: Parse `pdf_pipeline_batch` from issue body.
 
 **Autonomous Capabilities:**
+
 - Router workflow automatically intercepts WRs: Deployed
 - Webhook dispatch to external systems: Deployed
 
@@ -215,9 +228,11 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current Self-Healing:** Partial
 
 **Implemented:**
+
 - Idempotency checks to prevent duplicate marker comments.
 
 **Missing:**
+
 - Automated retry on Make.com webhook 5xx errors (requires further implementation).
 
 ### Ship to Market Status
@@ -225,6 +240,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current Status:** Ready
 
 **Readiness Checklist:**
+
 - [x] All tests passing
 - [x] No linting errors
 - [x] No security vulnerabilities
@@ -245,6 +261,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current Status:** Pass
 
 **Failures Identified:**
+
 - None. Added new robust tests: `tests/parse-pdf-work-request.test.js` and `tests/work-request-form-sync.test.js`.
 
 #### Linting Errors
@@ -252,6 +269,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current Status:** Pass
 
 **Errors Identified:**
+
 - None.
 
 #### Security Vulnerabilities
@@ -266,6 +284,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current Status:** Working
 
 **Issues Identified:**
+
 - None.
 
 ### Enhance Features
@@ -287,6 +306,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current UX Score:** 9/10 (GitHub Native)
 
 **Improvements:**
+
 1. Added distinct dropdown options (`Not applicable`, `Autocreate 3`, `Autocreate 20`) to guide user selection precisely.
 
 #### Accessibility Features
@@ -294,6 +314,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current Accessibility:** GitHub standard
 
 **Required:**
+
 - [x] Keyboard navigation
 - [x] Screen reader support
 - [x] Color contrast (WCAG AA)
@@ -304,10 +325,12 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 #### Performance Optimization
 
 **Current Performance:**
+
 - Action Execution Time: < 30 seconds
 - Payload Size: < 5 KB
 
 **Optimizations:**
+
 1. Native parsing script execution instead of heavy dependencies.
 
 ### Add Monetization
@@ -315,19 +338,22 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 #### Affiliate Links Integration
 
 **revvel-affiliate-links MCP:**
+
 - [x] MCP server configured (Internal)
 - [x] Affiliate links identified
 - [x] Links integrated in content
 - [x] Tracking configured
 
 **Links to Add:**
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| Make.com | Partner | 20% | README / Workflows |
+
+| Product/Service | Affiliate Program | Commission | Location           |
+| --------------- | ----------------- | ---------- | ------------------ |
+| Make.com        | Partner           | 20%        | README / Workflows |
 
 #### Payment Integration
 
 **Gumroad:**
+
 - [x] Account setup
 - [x] Products created
 - [x] Integration implemented
@@ -340,6 +366,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current Analytics:** Partial
 
 **To Implement:**
+
 - [x] Google Analytics 4 (External landing pages)
 - [x] Conversion tracking
 - [x] Revenue tracking
@@ -355,16 +382,19 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current Status:** Not deployed (GitHub Actions based)
 
 **Configuration:**
+
 - [x] GitHub Action triggers verified
 - [x] Secrets configured (`MAKE_PDF_WR_WEBHOOK_URL`)
 - [x] Repository dispatch events mapped
 
 **Deployment Issues:**
+
 - None.
 
 ### UI Verification
 
 **Verification Checklist:**
+
 - [x] Homepage renders correctly
 - [x] All pages render correctly
 - [x] All forms work
@@ -379,6 +409,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 - [x] Links work correctly
 
 **Issues Found:**
+
 - None.
 
 ---
@@ -390,14 +421,15 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current README Status:** Pending README update (playbook docs added)
 
 **Required Format:**
+
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Parser Script | ✅ Working | N/A |
+| Feature         | Status     | URL                                           |
+| --------------- | ---------- | --------------------------------------------- |
+| Parser Script   | ✅ Working | N/A                                           |
 | Router Workflow | ✅ Working | .github/workflows/pdf-work-request-router.yml |
-| Form Sync | ✅ Working | tests/work-request-form-sync.test.js |
+| Form Sync       | ✅ Working | tests/work-request-form-sync.test.js          |
 ```
 
 **Action Required:** Add or refresh the README `## Test` section; interim details are documented in `workflows/PDF_WR_PLAYBOOK.md`.
@@ -407,6 +439,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 **Current README Status:** Has deployment section
 
 **Required Format:**
+
 ```markdown
 ## Deployment
 
@@ -418,6 +451,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 ### Additional Documentation
 
 **Existing Documentation:**
+
 - [x] README.md
 - [x] CONTRIBUTING.md
 - [x] LICENSE
@@ -425,6 +459,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 - [x] SECURITY.md
 
 **Missing Documentation:**
+
 - Deleted obsolete Flextina stubs. Added `PDF_WR_PLAYBOOK.md` to serve as the definitive routing spine.
 
 ---
@@ -441,6 +476,7 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 ### Implementation Tasks Created
 
 **Issues Created:**
+
 1. #13437: Implement form-driven PDF WR routing - Priority P0
 
 ### Next Steps
@@ -472,10 +508,10 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| Webhook Failure | High | Low | Add retry logic to GitHub Action payload delivery. |
-| Form Sync Drift | Medium | Low | Maintained CI tests (`work-request-form-sync.test.js`) to catch discrepancies. |
+| Risk            | Severity | Probability | Mitigation                                                                     |
+| --------------- | -------- | ----------- | ------------------------------------------------------------------------------ |
+| Webhook Failure | High     | Low         | Add retry logic to GitHub Action payload delivery.                             |
+| Form Sync Drift | Medium   | Low         | Maintained CI tests (`work-request-form-sync.test.js`) to catch discrepancies. |
 
 ---
 
@@ -484,9 +520,11 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 ### Alternative 1: Strict Label-Based Routing
 
 **Pros:**
+
 - Simple to implement.
 
 **Cons:**
+
 - Requires operators to memorize and spell labels correctly (e.g., `autocreate-3`).
 - Difficult to extract structured integer values inside the automation layer.
 
@@ -497,14 +535,17 @@ Automated PDF generation directly from GitHub Work Requests unlocks scalable, pa
 ## References
 
 ### Documentation
+
 - [AGENTS.md](/docs/AGENTS.md)
 - [WEEKLY_RESEARCH_PROCESS.md](/docs/WEEKLY_RESEARCH_PROCESS.md)
 - [PDF_WR_PLAYBOOK.md](/workflows/PDF_WR_PLAYBOOK.md)
 
 ### External Resources
+
 - [Make.com Webhook Documentation](https://www.make.com/en/help/tools/webhooks)
 
 ### Research Sources
+
 - [Internal Revvel Standards Architecture](https://github.com/midnghtsapphire/revvel-standards)
 
 ---

@@ -60,29 +60,29 @@ schema_version: string # The version of this .skill spec, e.g., "1.0"
 
 ## Field Definitions
 
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `name` | string | Yes | A unique, `snake_case` identifier for the skill. This is the primary key. |
-| `title` | string | Yes | A human-friendly, `Title Case` name for display purposes. |
-| `version` | string | Yes | The skill's version, following SemVer (e.g., `1.0.0`). |
-| `description` | string | Yes | A brief, clear explanation of what the skill does. |
-| `metadata` | object | Yes | A container for classification and tracking information. |
-| `metadata.author` | string | Yes | The name of the person, team, or community that created the skill. |
-| `metadata.category` | string | Yes | The primary functional category. The skill loader will maintain a canonical list of categories. |
-| `metadata.tags` | array | Yes | A list of lowercase string tags to aid in searching and filtering. |
-| `metadata.created_at` | date | No | The date the skill was first created in `YYYY-MM-DD` format. |
-| `metadata.updated_at` | date | No | The date the skill was last modified in `YYYY-MM-DD` format. |
-| `dependencies` | object | No | Specifies any prerequisites needed for the skill to function. |
-| `dependencies.skills` | array | No | A list of other skill `name`s that this skill relies on. |
-| `dependencies.tools` | array | No | A list of command-line binaries that must be in the system's `PATH`. |
-| `dependencies.pip_packages` | array | No | A list of Python packages required by the skill. |
-| `install` | array | No | A list of commands to install the specified dependencies. |
-| `implementation` | object | Yes | The core logic of the skill. |
-| `implementation.type` | string | Yes | The nature of the implementation. Must be one of `python_code`, `markdown_prompt`, or `shell_script`. |
-| `implementation.language` | string | Yes | The programming or markup language of the content (e.g., `python`, `markdown`, `bash`). |
-| `implementation.content` | string | Yes | The complete, multi-line string of the skill's code or prompt. Must be properly escaped for YAML/JSON. |
-| `examples` | array | No | A list of usage examples. |
-| `schema_version` | string | Yes | The version of the `.skill` specification this file adheres to. Currently `1.0`. |
+| Field                       | Type   | Required | Description                                                                                            |
+| --------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------ |
+| `name`                      | string | Yes      | A unique, `snake_case` identifier for the skill. This is the primary key.                              |
+| `title`                     | string | Yes      | A human-friendly, `Title Case` name for display purposes.                                              |
+| `version`                   | string | Yes      | The skill's version, following SemVer (e.g., `1.0.0`).                                                 |
+| `description`               | string | Yes      | A brief, clear explanation of what the skill does.                                                     |
+| `metadata`                  | object | Yes      | A container for classification and tracking information.                                               |
+| `metadata.author`           | string | Yes      | The name of the person, team, or community that created the skill.                                     |
+| `metadata.category`         | string | Yes      | The primary functional category. The skill loader will maintain a canonical list of categories.        |
+| `metadata.tags`             | array  | Yes      | A list of lowercase string tags to aid in searching and filtering.                                     |
+| `metadata.created_at`       | date   | No       | The date the skill was first created in `YYYY-MM-DD` format.                                           |
+| `metadata.updated_at`       | date   | No       | The date the skill was last modified in `YYYY-MM-DD` format.                                           |
+| `dependencies`              | object | No       | Specifies any prerequisites needed for the skill to function.                                          |
+| `dependencies.skills`       | array  | No       | A list of other skill `name`s that this skill relies on.                                               |
+| `dependencies.tools`        | array  | No       | A list of command-line binaries that must be in the system's `PATH`.                                   |
+| `dependencies.pip_packages` | array  | No       | A list of Python packages required by the skill.                                                       |
+| `install`                   | array  | No       | A list of commands to install the specified dependencies.                                              |
+| `implementation`            | object | Yes      | The core logic of the skill.                                                                           |
+| `implementation.type`       | string | Yes      | The nature of the implementation. Must be one of `python_code`, `markdown_prompt`, or `shell_script`.  |
+| `implementation.language`   | string | Yes      | The programming or markup language of the content (e.g., `python`, `markdown`, `bash`).                |
+| `implementation.content`    | string | Yes      | The complete, multi-line string of the skill's code or prompt. Must be properly escaped for YAML/JSON. |
+| `examples`                  | array  | No       | A list of usage examples.                                                                              |
+| `schema_version`            | string | Yes      | The version of the `.skill` specification this file adheres to. Currently `1.0`.                       |
 
 ---
 

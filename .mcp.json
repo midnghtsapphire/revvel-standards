@@ -5,7 +5,9 @@
     "rvvel-affiliate-links": {
       "_comment": "8 tools for the Revvel affiliate link ecosystem. See AGENTS.md for tool list.",
       "command": "node",
-      "args": ["${MCP_AFFILIATE_LINKS_PATH:-./mcp-servers/affiliate-links/index.js}"],
+      "args": [
+        "${MCP_AFFILIATE_LINKS_PATH:-./mcp-servers/affiliate-links/index.js}"
+      ],
       "env": {
         "DATABASE_URL": "${AFFILIATE_DB_URL}",
         "NODE_ENV": "production"
@@ -95,7 +97,9 @@
     "chrome-devtools-mcp": {
       "_comment": "Chrome DevTools Protocol (CDP) as MCP tools. Fork: midnghtsapphire/chrome-devtools-mcp. Docs: docs/MCP_REVVEL_CATALOG.md. SECURITY: token/cookie tools scoped to localhost and authorized test origins ONLY.",
       "command": "node",
-      "args": ["${CHROME_DEVTOOLS_MCP_PATH:-./node_modules/.bin/chrome-devtools-mcp}"],
+      "args": [
+        "${CHROME_DEVTOOLS_MCP_PATH:-./node_modules/.bin/chrome-devtools-mcp}"
+      ],
       "env": {
         "CHROME_DEBUG_PORT": "${CHROME_DEBUG_PORT:-9222}",
         "CHROME_DEBUG_HOST": "${CHROME_DEBUG_HOST:-localhost}"

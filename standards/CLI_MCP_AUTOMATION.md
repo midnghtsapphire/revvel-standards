@@ -26,14 +26,14 @@ When a workflow, extension, CLI, or MCP-adjacent tool is needed:
 
 ## Marketplace-First BOM
 
-| Category | Marketplace-first choice | Free/Paid | Open-source / GitHub fallback | Why this is the default |
-| -------- | ------------------------ | ---------- | ----------------------------- | ----------------------- |
-| Accessibility PR checks | AccessLint | Free | axe-core, Pa11y, Storybook a11y addon | Fast PR feedback through GitHub-native installation; FOSS fallbacks cover CI and local audits |
-| AI PR/code review | CodeRabbit or Bito AI | Paid/free tier | OpenCode, Cline, OpenRouter review workflows | Marketplace apps are quickest to install; OSS fallback remains available when budget or policy blocks SaaS |
-| Workflow / repo linting | Super Linter | Free | `actionlint`, `yamllint`, `act`, Danger | Marketplace listing is easy to adopt; FOSS CLIs are stronger for local enforcement and custom checks |
-| GitHub automation / dispatch | `peter-evans/*` Actions | Free | native GitHub Actions + `gh` CLI | Mature ecosystem standard with minimal setup friction |
-| MCP / agent automation | No single Marketplace winner yet | N/A | Cline, OpenCode, GitHub MCP servers, custom MCP servers | Marketplace coverage is immature; GitHub-hosted OSS is the safer default today |
-| Prompt / LLM evaluation | Promptfoo Action | Free / paid cloud optional | local `promptfoo`, OpenRouter workflows | GitHub Action is straightforward in CI; local CLI remains available with no vendor lock-in |
+| Category                     | Marketplace-first choice         | Free/Paid                  | Open-source / GitHub fallback                           | Why this is the default                                                                                    |
+| ---------------------------- | -------------------------------- | -------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Accessibility PR checks      | AccessLint                       | Free                       | axe-core, Pa11y, Storybook a11y addon                   | Fast PR feedback through GitHub-native installation; FOSS fallbacks cover CI and local audits              |
+| AI PR/code review            | CodeRabbit or Bito AI            | Paid/free tier             | OpenCode, Cline, OpenRouter review workflows            | Marketplace apps are quickest to install; OSS fallback remains available when budget or policy blocks SaaS |
+| Workflow / repo linting      | Super Linter                     | Free                       | `actionlint`, `yamllint`, `act`, Danger                 | Marketplace listing is easy to adopt; FOSS CLIs are stronger for local enforcement and custom checks       |
+| GitHub automation / dispatch | `peter-evans/*` Actions          | Free                       | native GitHub Actions + `gh` CLI                        | Mature ecosystem standard with minimal setup friction                                                      |
+| MCP / agent automation       | No single Marketplace winner yet | N/A                        | Cline, OpenCode, GitHub MCP servers, custom MCP servers | Marketplace coverage is immature; GitHub-hosted OSS is the safer default today                             |
+| Prompt / LLM evaluation      | Promptfoo Action                 | Free / paid cloud optional | local `promptfoo`, OpenRouter workflows                 | GitHub Action is straightforward in CI; local CLI remains available with no vendor lock-in                 |
 
 ### Decision Notes
 
@@ -52,14 +52,14 @@ When a workflow, extension, CLI, or MCP-adjacent tool is needed:
 
 ### Must-Have GitHub Actions
 
-| Action | Purpose | Use Case |
-|--------|---------|----------|
-| **peter-evans/automerge-action** | Auto-merge PRs | Merge approved PRs |
-| **peter-evans/repository-dispatch** | Custom triggers | Slash commands |
-| **mmorenoregalado/github-branch-cleaner** | Clean old branches | Remove merged |
-| **actions/checkout** | Checkout code | Every workflow |
-| **actions/setup-node** | Node.js | Node projects |
-| **actions/setup-python** | Python | Python projects |
+| Action                                    | Purpose            | Use Case           |
+| ----------------------------------------- | ------------------ | ------------------ |
+| **peter-evans/automerge-action**          | Auto-merge PRs     | Merge approved PRs |
+| **peter-evans/repository-dispatch**       | Custom triggers    | Slash commands     |
+| **mmorenoregalado/github-branch-cleaner** | Clean old branches | Remove merged      |
+| **actions/checkout**                      | Checkout code      | Every workflow     |
+| **actions/setup-node**                    | Node.js            | Node projects      |
+| **actions/setup-python**                  | Python             | Python projects    |
 
 ---
 
@@ -82,13 +82,13 @@ tools = {
 class ZeroHumanMCPServer:
     def __init__(self):
         self.tools = {}
-        
+
     def tool(self, name: str):
         def decorator(func):
             self.tools[name] = func
             return func
         return decorator
-        
+
     async def handle(self, tool: str, params: dict):
         return await self.tools[tool](**params)
 ```
@@ -121,7 +121,7 @@ jobs:
 name: Cleanup
 
 on:
-  schedule: ['0 3 * * *']
+  schedule: ["0 3 * * *"]
 
 jobs:
   cleanup:
@@ -141,11 +141,11 @@ jobs:
 ```json
 {
   "nodes": [
-    {"name": "Email Trigger"},
-    {"name": "AI Classifier"},
-    {"name": "Route"},
-    {"name": "Generate Quote"},
-    {"name": "Send Reply"}
+    { "name": "Email Trigger" },
+    { "name": "AI Classifier" },
+    { "name": "Route" },
+    { "name": "Generate Quote" },
+    { "name": "Send Reply" }
   ]
 }
 ```
@@ -155,11 +155,11 @@ jobs:
 ```json
 {
   "nodes": [
-    {"name": "Email Invoice"},
-    {"name": "Parse PDF"},
-    {"name": "Verify Payment"},
-    {"name": "Log to Sheets"},
-    {"name": "Send Receipt"}
+    { "name": "Email Invoice" },
+    { "name": "Parse PDF" },
+    { "name": "Verify Payment" },
+    { "name": "Log to Sheets" },
+    { "name": "Send Receipt" }
   ]
 }
 ```
@@ -264,13 +264,13 @@ Scenario: GitHub PR → Deploy
 
 ## Recommended Tools
 
-| Category | Priority | Tools |
-|----------|----------|-------|
-| CI/CD | High | GitHub Actions, peter-evans/* |
-| MCP | High | GitHub MCP, Custom |
-| Email | High | n8n, Zapier |
-| Notifications | High | Slack, Discord, Telegram |
-| Tasks | Medium | Notion, Linear |
-| AI Agents | High | OpenHands, Claude |
-| Scheduling | High | GitHub Actions cron |
-| Code Review | Medium | AI + MCP |
+| Category      | Priority | Tools                         |
+| ------------- | -------- | ----------------------------- |
+| CI/CD         | High     | GitHub Actions, peter-evans/* |
+| MCP           | High     | GitHub MCP, Custom            |
+| Email         | High     | n8n, Zapier                   |
+| Notifications | High     | Slack, Discord, Telegram      |
+| Tasks         | Medium   | Notion, Linear                |
+| AI Agents     | High     | OpenHands, Claude             |
+| Scheduling    | High     | GitHub Actions cron           |
+| Code Review   | Medium   | AI + MCP                      |

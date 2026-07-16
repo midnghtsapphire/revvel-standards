@@ -26,57 +26,57 @@ This DigitalOcean droplet is the primary server for hosting all Node.js, Python,
 2.  **Install Dependencies:** Navigate into the project directory and run `pnpm install`.
 3.  **Build Application:** Run `pnpm build` to compile any necessary assets (e.g., TypeScript).
 4.  **Configure systemd:**
-    -   Create a new service file: `sudo nano /etc/systemd/system/your-app-name.service`
-    -   Add the following configuration, replacing `your-app-name` and paths as needed:
-        ```ini
-        [Unit]
-        Description=Your App Name
-        After=network.target
+    - Create a new service file: `sudo nano /etc/systemd/system/your-app-name.service`
+    - Add the following configuration, replacing `your-app-name` and paths as needed:
+      ```ini
+      [Unit]
+      Description=Your App Name
+      After=network.target
 
-        [Service]
-        User=root
-        WorkingDirectory=/var/www/your-app-name
-        ExecStart=/usr/bin/pnpm start
-        Restart=always
+      [Service]
+      User=root
+      WorkingDirectory=/var/www/your-app-name
+      ExecStart=/usr/bin/pnpm start
+      Restart=always
 
-        [Install]
-        WantedBy=multi-user.target
-        ```
+      [Install]
+      WantedBy=multi-user.target
+      ```
 5.  **Enable and Start Service:**
-    -   `sudo systemctl daemon-reload`
-    -   `sudo systemctl enable your-app-name`
-    -   `sudo systemctl start your-app-name`
+    - `sudo systemctl daemon-reload`
+    - `sudo systemctl enable your-app-name`
+    - `sudo systemctl start your-app-name`
 6.  **Configure Nginx:** See Section 4.
 
 ### 3.2. Python Applications (FastAPI, Flask)
 
 1.  **Clone Repository:** Clone the application's GitHub repository into `/var/www/`.
 2.  **Create Virtual Environment:**
-    -   `python3 -m venv venv`
-    -   `source venv/bin/activate`
+    - `python3 -m venv venv`
+    - `source venv/bin/activate`
 3.  **Install Dependencies:** `pip install -r requirements.txt`.
 4.  **Configure systemd:**
-    -   Create a new service file: `sudo nano /etc/systemd/system/your-app-name.service`
-    -   Add the following configuration:
-        ```ini
-        [Unit]
-        Description=Your Python App
-        After=network.target
+    - Create a new service file: `sudo nano /etc/systemd/system/your-app-name.service`
+    - Add the following configuration:
+      ```ini
+      [Unit]
+      Description=Your Python App
+      After=network.target
 
-        [Service]
-        User=root
-        WorkingDirectory=/var/www/your-app-name
-        ExecStart=/var/www/your-app-name/venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app -b 0.0.0.0:PORT
-        Restart=always
+      [Service]
+      User=root
+      WorkingDirectory=/var/www/your-app-name
+      ExecStart=/var/www/your-app-name/venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker main:app -b 0.0.0.0:PORT
+      Restart=always
 
-        [Install]
-        WantedBy=multi-user.target
-        ```
-        *Replace `main:app` and `PORT` as appropriate.*
+      [Install]
+      WantedBy=multi-user.target
+      ```
+      _Replace `main:app` and `PORT` as appropriate._
 5.  **Enable and Start Service:**
-    -   `sudo systemctl daemon-reload`
-    -   `sudo systemctl enable your-app-name`
-    -   `sudo systemctl start your-app-name`
+    - `sudo systemctl daemon-reload`
+    - `sudo systemctl enable your-app-name`
+    - `sudo systemctl start your-app-name`
 6.  **Configure Nginx:** See Section 4.
 
 ### 3.3. Vite Applications (React)
@@ -84,13 +84,13 @@ This DigitalOcean droplet is the primary server for hosting all Node.js, Python,
 For Vite applications that need to be served from a subpath (e.g., `meetaudreyevans.com/appname/`), you **must** set the `base` property in `vite.config.ts`:
 
 ```typescript
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  base: '/appname/', // This is critical!
-})
+  base: "/appname/", // This is critical!
+});
 ```
 
 Deployment then follows the standard Node.js process, with Nginx routing to the correct subpath.
@@ -112,24 +112,25 @@ Nginx is used to route traffic from port 80 to the correct application service b
         proxy_cache_bypass $http_upgrade;
     }
     ```
-    *Replace `/appname/` with the desired subpath and `PORT` with the application's assigned port.*
+
+    _Replace `/appname/` with the desired subpath and `PORT` with the application's assigned port._
 
 3.  **Test and Reload Nginx:**
-    -   `sudo nginx -t`
-    -   `sudo systemctl reload nginx`
+    - `sudo nginx -t`
+    - `sudo systemctl reload nginx`
 
 ## 5. Port Assignments
 
 The following ports are assigned to specific applications. Do not use these for new apps.
 
-| Port | Application |
-| :--- | :--- |
+| Port | Application               |
+| :--- | :------------------------ |
 | 3000 | MeetAudreyEvans Dashboard |
-| 3001 | PawSitting |
-| 3002 | TheAltText |
-| 3003 | ReeseReviews |
-| 3004 | ForensicStudio |
-| 8080 | MindMappr Bot |
+| 3001 | PawSitting                |
+| 3002 | TheAltText                |
+| 3003 | ReeseReviews              |
+| 3004 | ForensicStudio            |
+| 8080 | MindMappr Bot             |
 
 ## 6. Docker Deployment (Alternative)
 

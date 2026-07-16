@@ -21,12 +21,12 @@ regex:
     pattern: CVE-\d{4}-\d{4,7}
     score: 40
     description: Common Vulnerabilities and Exposures identifier
-  
+
   - name: HIGH_CVSS
     pattern: CVSS:\s*([89]\.\d|10\.0)
     score: 70
     description: Critical CVSS score (8.0+)
-  
+
   - name: APT_GROUP
     pattern: (APT\d+|Lazarus|Sandworm|Fancy Bear|Cozy Bear|Volt Typhoon|Kimsuky|APT28|APT29)
     score: 60

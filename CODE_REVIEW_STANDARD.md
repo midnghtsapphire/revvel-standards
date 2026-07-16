@@ -50,11 +50,11 @@ For agentic / IDE-based reviews (Claude Desktop, Cursor, etc.), an MCP (Model Co
 
 ## Provider History (Reference)
 
-| Date | Primary | Notes |
-|------|---------|-------|
-| 2025-Q1 | Venice AI (Claude Sonnet 4.5) | Deprecated — replaced by Bito AI |
-| 2025-Q1 | DeepSeek V3.2 Speciale | Deprecated — replaced by AI Code Review Pro |
-| Current | **Bito AI (Claude Sonnet 4)** | Production primary reviewer |
+| Date    | Primary                       | Notes                                       |
+| ------- | ----------------------------- | ------------------------------------------- |
+| 2025-Q1 | Venice AI (Claude Sonnet 4.5) | Deprecated — replaced by Bito AI            |
+| 2025-Q1 | DeepSeek V3.2 Speciale        | Deprecated — replaced by AI Code Review Pro |
+| Current | **Bito AI (Claude Sonnet 4)** | Production primary reviewer                 |
 
 ## Live-First Exception
 
@@ -104,6 +104,7 @@ When a coder requests to bypass normal merge requirements, reviewers should leav
 ### How to Request Force-Merge
 
 Coder comments on PR:
+
 ```
 /force-merge reason: <brief explanation>
 ```
@@ -113,17 +114,20 @@ Coder comments on PR:
 When a force-merge request is made, reviewers should respond with:
 
 **To APPROVE:**
+
 ```markdown
 /lgtm force-merge approved
 
 Reason: [accepts coder's explanation]
 Prerequisites verified:
+
 - [x] CI checks passing
 - [x] At least one review approval (or emergency exception)
 - [x] No unresolved blocking issues
 ```
 
 **To DENY:**
+
 ```markdown
 /force-merge denied
 
@@ -134,6 +138,7 @@ Required action: [what needs to happen before reconsideration]
 ### Prerequisites for Force-Merge Approval
 
 Before approving force-merge, verify:
+
 - [ ] All CI checks passing
 - [ ] At least one approval (unless emergency)
 - [ ] No unresolved `CHANGES_REQUESTED` reviews
@@ -143,6 +148,7 @@ Before approving force-merge, verify:
 ### Emergency Exception
 
 For production incidents requiring immediate action:
+
 - Any team member can approve force-merge
 - Must document in incident channel within 1 hour
 - Retroactive review within 48 hours required

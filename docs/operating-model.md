@@ -124,11 +124,11 @@ Score 1–5 on:
 
 Decision thresholds:
 
-| Total score | Decision                       |
-| ----------- | ------------------------------ |
-| 24–30       | BUILD                          |
-| 16–23       | HOLD / NEEDS SHARPENING        |
-| Below 16    | ARCHIVE / DO NOT BUILD         |
+| Total score | Decision                |
+| ----------- | ----------------------- |
+| 24–30       | BUILD                   |
+| 16–23       | HOLD / NEEDS SHARPENING |
+| Below 16    | ARCHIVE / DO NOT BUILD  |
 
 Rules:
 
@@ -165,7 +165,7 @@ The expected end-to-end flow once the operating model is wired:
 
 The operator-facing setup walkthrough — auth path, repo variable wiring, ID discovery, validation evidence — lives in [`docs/github-project-v2-workflows.md`](./github-project-v2-workflows.md).
 
-*Note: The auto-classifier also adds an `output-type:<type>` label so automation workflows can adapt to the requested deliverable (e.g., `wr-pr-creation.yml` skips deployment scaffolding when creating the WR document if the output type is PDF/documentation).*
+_Note: The auto-classifier also adds an `output-type:<type>` label so automation workflows can adapt to the requested deliverable (e.g., `wr-pr-creation.yml` skips deployment scaffolding when creating the WR document if the output type is PDF/documentation)._
 
 ---
 
@@ -338,13 +338,13 @@ The operating model is successful when:
 
 ## File Index
 
-| Asset                                                                                  | Purpose                                                |
-| -------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| [`.github/ISSUE_TEMPLATE/00-work-request.yml`](../.github/ISSUE_TEMPLATE/00-work-request.yml)                | Primary human Work Request form (anti-under-scoping)   |
-| [`.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml)          | Lightweight WR for internal/agent-driven work          |
-| [`templates/viability-gate-template.md`](../templates/viability-gate-template.md)       | Viability scoring rubric                               |
-| [`templates/invention-flow-template.md`](../templates/invention-flow-template.md)       | Invention evaluation flow                              |
-| [`templates/legacy-refresh-checklist.md`](../templates/legacy-refresh-checklist.md)     | Refresh-existing audit checklist                       |
-| [`docs/github-project-schema.md`](./github-project-schema.md)                           | GitHub Project field schema and status lifecycle       |
-| [`docs/notion-structure.md`](./notion-structure.md)                                     | Notion database structure for the knowledge layer      |
-| [`promptforproject.md`](../promptforproject.md)                                         | Step 0 router that runs before any implementation work |
+| Asset                                                                                                       | Purpose                                                |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| [`.github/ISSUE_TEMPLATE/00-work-request.yml`](../.github/ISSUE_TEMPLATE/00-work-request.yml)               | Primary human Work Request form (anti-under-scoping)   |
+| [`.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml`](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml) | Lightweight WR for internal/agent-driven work          |
+| [`templates/viability-gate-template.md`](../templates/viability-gate-template.md)                           | Viability scoring rubric                               |
+| [`templates/invention-flow-template.md`](../templates/invention-flow-template.md)                           | Invention evaluation flow                              |
+| [`templates/legacy-refresh-checklist.md`](../templates/legacy-refresh-checklist.md)                         | Refresh-existing audit checklist                       |
+| [`docs/github-project-schema.md`](./github-project-schema.md)                                               | GitHub Project field schema and status lifecycle       |
+| [`docs/notion-structure.md`](./notion-structure.md)                                                         | Notion database structure for the knowledge layer      |
+| [`promptforproject.md`](../promptforproject.md)                                                             | Step 0 router that runs before any implementation work |

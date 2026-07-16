@@ -8,8 +8,14 @@
   }
 
   function calculateSessionMinutes(input) {
-    const targetDoseJcm2 = toPositiveNumber(input.targetDoseJcm2, "targetDoseJcm2");
-    const irradianceMwCm2 = toPositiveNumber(input.irradianceMwCm2, "irradianceMwCm2");
+    const targetDoseJcm2 = toPositiveNumber(
+      input.targetDoseJcm2,
+      "targetDoseJcm2",
+    );
+    const irradianceMwCm2 = toPositiveNumber(
+      input.irradianceMwCm2,
+      "irradianceMwCm2",
+    );
 
     const irradianceWcm2 = irradianceMwCm2 / 1000;
     const seconds = targetDoseJcm2 / irradianceWcm2;
@@ -18,7 +24,10 @@
 
   function calculateDeliveredDose(input) {
     const minutes = toPositiveNumber(input.minutes, "minutes");
-    const irradianceMwCm2 = toPositiveNumber(input.irradianceMwCm2, "irradianceMwCm2");
+    const irradianceMwCm2 = toPositiveNumber(
+      input.irradianceMwCm2,
+      "irradianceMwCm2",
+    );
 
     const seconds = minutes * 60;
     const irradianceWcm2 = irradianceMwCm2 / 1000;
@@ -26,8 +35,13 @@
   }
 
   function buildWeeklyPlan(input) {
-    const daysPerWeek = Math.round(toPositiveNumber(input.daysPerWeek, "daysPerWeek"));
-    const dosePerSessionJcm2 = toPositiveNumber(input.dosePerSessionJcm2, "dosePerSessionJcm2");
+    const daysPerWeek = Math.round(
+      toPositiveNumber(input.daysPerWeek, "daysPerWeek"),
+    );
+    const dosePerSessionJcm2 = toPositiveNumber(
+      input.dosePerSessionJcm2,
+      "dosePerSessionJcm2",
+    );
     const startDay = Number.isInteger(input.startDay) ? input.startDay : 0;
 
     if (daysPerWeek < 1 || daysPerWeek > 7) {
@@ -69,4 +83,4 @@
   }
 
   globalScope.RedLightCalculator = api;
-}(typeof window !== "undefined" ? window : globalThis));
+})(typeof window !== "undefined" ? window : globalThis);

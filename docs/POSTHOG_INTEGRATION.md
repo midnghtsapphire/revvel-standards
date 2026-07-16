@@ -40,17 +40,17 @@ This integration ships the missing pieces so any agent or human can drop PostHog
 
 ## 2. What this integration adds
 
-| Artifact | Path | Purpose |
-|---|---|---|
-| Skill (agent-facing) | `skills/posthog/SKILL.md` | Tells any agent how to integrate PostHog correctly |
-| Skill (machine-readable) | `skills/posthog/posthog.skill.yml` | Auto-loadable spec, registered in `SKILLS_INDEX.yml` |
-| Init template (TypeScript) | `templates/standards/posthog-init.ts` | Drop-in wrapper with DNT honoring, opt-out, PII strip, session replay, feature flags |
-| Event standard | `templates/standards/posthog-events.md` | Event names, property keys, baseline catalog, PII rules, session replay, feature flags |
-| GitHub Actions — Annotations | `templates/cicd/posthog-annotations.yml` | Send annotations to PostHog on PR merges / releases |
-| GitHub Actions — Source Maps | `templates/cicd/posthog-upload-sourcemaps.yml` | Upload source maps for error tracking |
-| GitHub Actions — Send Event | `templates/cicd/posthog-send-event.yml` | Send custom events from CI/CD |
-| Env documentation | `.env.example` (ANALYTICS block) | Documents `POSTHOG_API_KEY`, `POSTHOG_PERSONAL_API_KEY`, `POSTHOG_PROJECT_ID`, `POSTHOG_API_HOST` |
-| Registry entries | `skills/REGISTRY.md`, `skills/SKILLS_INDEX.yml` | Discoverable via skill triggers (`posthog`, `session replay`, etc.) |
+| Artifact                     | Path                                            | Purpose                                                                                           |
+| ---------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Skill (agent-facing)         | `skills/posthog/SKILL.md`                       | Tells any agent how to integrate PostHog correctly                                                |
+| Skill (machine-readable)     | `skills/posthog/posthog.skill.yml`              | Auto-loadable spec, registered in `SKILLS_INDEX.yml`                                              |
+| Init template (TypeScript)   | `templates/standards/posthog-init.ts`           | Drop-in wrapper with DNT honoring, opt-out, PII strip, session replay, feature flags              |
+| Event standard               | `templates/standards/posthog-events.md`         | Event names, property keys, baseline catalog, PII rules, session replay, feature flags            |
+| GitHub Actions — Annotations | `templates/cicd/posthog-annotations.yml`        | Send annotations to PostHog on PR merges / releases                                               |
+| GitHub Actions — Source Maps | `templates/cicd/posthog-upload-sourcemaps.yml`  | Upload source maps for error tracking                                                             |
+| GitHub Actions — Send Event  | `templates/cicd/posthog-send-event.yml`         | Send custom events from CI/CD                                                                     |
+| Env documentation            | `.env.example` (ANALYTICS block)                | Documents `POSTHOG_API_KEY`, `POSTHOG_PERSONAL_API_KEY`, `POSTHOG_PROJECT_ID`, `POSTHOG_API_HOST` |
+| Registry entries             | `skills/REGISTRY.md`, `skills/SKILLS_INDEX.yml` | Discoverable via skill triggers (`posthog`, `session replay`, etc.)                               |
 
 The integration is **additive** — it does not replace, modify, or conflict with any existing skill, template, or workflow.
 
@@ -93,11 +93,11 @@ The integration is **additive** — it does not replace, modify, or conflict wit
 4. **Use it in feature code** — never call the SDK directly:
 
    ```ts
-   import { captureEvent, identify, optOut } from '@/lib/analytics-posthog';
+   import { captureEvent, identify, optOut } from "@/lib/analytics-posthog";
 
-   captureEvent('signup_completed', {
-     signup_method: 'google',
-     referrer_source: 'twitter',
+   captureEvent("signup_completed", {
+     signup_method: "google",
+     referrer_source: "twitter",
    });
    ```
 
@@ -116,7 +116,7 @@ The integration is **additive** — it does not replace, modify, or conflict wit
      disable_session_recording: false,
      session_recording: {
        maskAllInputs: true,
-       maskTextSelector: '[data-private]',
+       maskTextSelector: "[data-private]",
      },
    });
    ```
@@ -159,7 +159,7 @@ posthog.init(apiKey, {
   disable_session_recording: false,
   session_recording: {
     maskAllInputs: true,
-    maskTextSelector: '[data-private]',
+    maskTextSelector: "[data-private]",
   },
 });
 ```
@@ -180,20 +180,20 @@ PostHog automatically masks credit card numbers, SSNs, and other sensitive patte
 PostHog feature flags let you A/B test features, gradual rollouts, and kill switches:
 
 ```ts
-import { isFeatureEnabled, getFeatureFlag } from '@/lib/analytics-posthog';
+import { isFeatureEnabled, getFeatureFlag } from "@/lib/analytics-posthog";
 
 // Check if a feature is enabled for the current user
-if (isFeatureEnabled('new-checkout-flow')) {
+if (isFeatureEnabled("new-checkout-flow")) {
   // Show new checkout flow
 } else {
   // Show old checkout flow
 }
 
 // Get the variant of a multivariate flag
-const variant = getFeatureFlag('pricing-test');
-if (variant === 'variant-a') {
+const variant = getFeatureFlag("pricing-test");
+if (variant === "variant-a") {
   // Show variant A pricing
-} else if (variant === 'variant-b') {
+} else if (variant === "variant-b") {
   // Show variant B pricing
 }
 ```
@@ -207,14 +207,14 @@ Feature flags are defined in PostHog dashboard → Feature Flags → New Flag.
 PostHog error tracking integrates with session replay and source maps:
 
 ```ts
-import { captureException } from '@/lib/analytics-posthog';
+import { captureException } from "@/lib/analytics-posthog";
 
 try {
   // Your code
 } catch (error) {
   captureException(error, {
-    surface: 'checkout-page',
-    user_action: 'submit-payment',
+    surface: "checkout-page",
+    user_action: "submit-payment",
   });
 }
 ```

@@ -11,11 +11,11 @@ checklist) lives in [`docs/CLIENT_ENGAGEMENT_KIT.md`](../../docs/CLIENT_ENGAGEME
 
 ## What's in this skill
 
-| File | Purpose |
-| --- | --- |
-| `detect-stack.js` | Point at a client checkout → stack profile (language, framework, test runner, CI, package manager) + matched lane. Zero-dep, runs anywhere. |
-| `stacks/<stack>.json` | Polyglot lane packs: idiomatic prompt pack + the client's verify commands + PR-style rules per stack. |
-| `run-engagement.js` | Reference engagement runner (dry-run planner): detect → load lane → plan client-style PR → emit per-client action log (JSONL audit trail). |
+| File                  | Purpose                                                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `detect-stack.js`     | Point at a client checkout → stack profile (language, framework, test runner, CI, package manager) + matched lane. Zero-dep, runs anywhere. |
+| `stacks/<stack>.json` | Polyglot lane packs: idiomatic prompt pack + the client's verify commands + PR-style rules per stack.                                       |
+| `run-engagement.js`   | Reference engagement runner (dry-run planner): detect → load lane → plan client-style PR → emit per-client action log (JSONL audit trail).  |
 
 ## Run
 

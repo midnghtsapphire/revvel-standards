@@ -48,8 +48,11 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
-export function normalizeDosageInput(input: Partial<DosageInput>): NormalizedDosageInput {
-  const compensationProfile = input.compensationProfile ?? DEFAULTS.compensationProfile;
+export function normalizeDosageInput(
+  input: Partial<DosageInput>,
+): NormalizedDosageInput {
+  const compensationProfile =
+    input.compensationProfile ?? DEFAULTS.compensationProfile;
 
   return {
     irradianceMwPerCm2: clamp(
@@ -57,10 +60,24 @@ export function normalizeDosageInput(input: Partial<DosageInput>): NormalizedDos
       1,
       300,
     ),
-    targetDoseJPerCm2: clamp(input.targetDoseJPerCm2 ?? DEFAULTS.targetDoseJPerCm2, 1, 120),
-    treatmentAreaCm2: clamp(input.treatmentAreaCm2 ?? DEFAULTS.treatmentAreaCm2, 1, 10000),
-    sessionsPerWeek: Math.round(clamp(input.sessionsPerWeek ?? DEFAULTS.sessionsPerWeek, 1, 21)),
-    dutyCyclePercent: clamp(input.dutyCyclePercent ?? DEFAULTS.dutyCyclePercent, 5, 100),
+    targetDoseJPerCm2: clamp(
+      input.targetDoseJPerCm2 ?? DEFAULTS.targetDoseJPerCm2,
+      1,
+      120,
+    ),
+    treatmentAreaCm2: clamp(
+      input.treatmentAreaCm2 ?? DEFAULTS.treatmentAreaCm2,
+      1,
+      10000,
+    ),
+    sessionsPerWeek: Math.round(
+      clamp(input.sessionsPerWeek ?? DEFAULTS.sessionsPerWeek, 1, 21),
+    ),
+    dutyCyclePercent: clamp(
+      input.dutyCyclePercent ?? DEFAULTS.dutyCyclePercent,
+      5,
+      100,
+    ),
     compensationProfile:
       compensationProfile in COMPENSATION_MULTIPLIERS
         ? compensationProfile
@@ -71,10 +88,13 @@ export function normalizeDosageInput(input: Partial<DosageInput>): NormalizedDos
 export function calculateDosage(input: Partial<DosageInput>): DosageResult {
   const normalized = normalizeDosageInput(input);
   const dutyCycleRatio = normalized.dutyCyclePercent / 100;
-  const effectiveIrradianceMwPerCm2 = normalized.irradianceMwPerCm2 * dutyCycleRatio;
+  const effectiveIrradianceMwPerCm2 =
+    normalized.irradianceMwPerCm2 * dutyCycleRatio;
   const baseTimeSeconds =
-    (normalized.targetDoseJPerCm2 * 1000) / Math.max(effectiveIrradianceMwPerCm2, 0.001);
-  const compensationMultiplier = COMPENSATION_MULTIPLIERS[normalized.compensationProfile];
+    (normalized.targetDoseJPerCm2 * 1000) /
+    Math.max(effectiveIrradianceMwPerCm2, 0.001);
+  const compensationMultiplier =
+    COMPENSATION_MULTIPLIERS[normalized.compensationProfile];
   const adjustedTimeSeconds = baseTimeSeconds * compensationMultiplier;
 
   return {
@@ -82,8 +102,10 @@ export function calculateDosage(input: Partial<DosageInput>): DosageResult {
     baseTimeSeconds,
     adjustedTimeSeconds,
     adjustedTimeMinutes: adjustedTimeSeconds / 60,
-    totalEnergyJoules: normalized.targetDoseJPerCm2 * normalized.treatmentAreaCm2,
-    weeklyDoseJPerCm2: normalized.targetDoseJPerCm2 * normalized.sessionsPerWeek,
+    totalEnergyJoules:
+      normalized.targetDoseJPerCm2 * normalized.treatmentAreaCm2,
+    weeklyDoseJPerCm2:
+      normalized.targetDoseJPerCm2 * normalized.sessionsPerWeek,
     compensationMultiplier,
   };
 }

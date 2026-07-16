@@ -1,23 +1,27 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export default function AccessibilityControls() {
   const [highContrast, setHighContrast] = useState(() =>
-    typeof window !== 'undefined' ? window.localStorage.getItem('a11y-hc') === '1' : false,
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("a11y-hc") === "1"
+      : false,
   );
   const [largeText, setLargeText] = useState(() =>
-    typeof window !== 'undefined' ? window.localStorage.getItem('a11y-lt') === '1' : false,
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("a11y-lt") === "1"
+      : false,
   );
 
   useEffect(() => {
-    document.body.classList.toggle('high-contrast', highContrast);
-    localStorage.setItem('a11y-hc', highContrast ? '1' : '0');
+    document.body.classList.toggle("high-contrast", highContrast);
+    localStorage.setItem("a11y-hc", highContrast ? "1" : "0");
   }, [highContrast]);
 
   useEffect(() => {
-    document.body.classList.toggle('large-text', largeText);
-    localStorage.setItem('a11y-lt', largeText ? '1' : '0');
+    document.body.classList.toggle("large-text", largeText);
+    localStorage.setItem("a11y-lt", largeText ? "1" : "0");
   }, [largeText]);
 
   return (
@@ -31,14 +35,14 @@ export default function AccessibilityControls() {
         aria-pressed={highContrast}
         className="px-2 py-1 border rounded hover:bg-slate-100"
       >
-        {highContrast ? '✓' : ''} Contrast
+        {highContrast ? "✓" : ""} Contrast
       </button>
       <button
         onClick={() => setLargeText(!largeText)}
         aria-pressed={largeText}
         className="px-2 py-1 border rounded hover:bg-slate-100"
       >
-        {largeText ? '✓' : ''} Large Text
+        {largeText ? "✓" : ""} Large Text
       </button>
     </div>
   );

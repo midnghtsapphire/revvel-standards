@@ -13,22 +13,22 @@ Audrey Evans has multiple businesses spread across different niches, each with u
 
 ### Current Business Portfolio
 
-| # | Business | Purpose | Entity Type | Status |
-|---|----------|---------|------------|--------|
-| 1 | **Freedom Angel Corp** | Main holding/operations | LLC/S-corp | Active |
-| 2 | **Reese Reviews LLC** | Vine reviews | LLC | Active |
-| 3 | **Overflow/Overstock** | Sell overstock products | LLC (new) | In formation |
-| 4 | **Rental Company** | Rent costumes, heaters, catering equipment | LLC (new) | In formation |
-| 5 | **Fidelity Trust Services** | Legal doc assistance, classes, CLE sponsor | LLC (new) | In formation |
+| #   | Business                    | Purpose                                    | Entity Type | Status       |
+| --- | --------------------------- | ------------------------------------------ | ----------- | ------------ |
+| 1   | **Freedom Angel Corp**      | Main holding/operations                    | LLC/S-corp  | Active       |
+| 2   | **Reese Reviews LLC**       | Vine reviews                               | LLC         | Active       |
+| 3   | **Overflow/Overstock**      | Sell overstock products                    | LLC (new)   | In formation |
+| 4   | **Rental Company**          | Rent costumes, heaters, catering equipment | LLC (new)   | In formation |
+| 5   | **Fidelity Trust Services** | Legal doc assistance, classes, CLE sponsor | LLC (new)   | In formation |
 
 ### Credential & Compliance Status (CRITICAL)
 
-| Credential | Holder | Expiration | Renewal By |
-|------------|--------|-----------|------------|
-| Colorado Supreme Court CLE | Audrey | TBD | TBD |
-| SAM.gov Cage Code | Fidelity Trust | TBD | **May 2026** |
-| DUNS Number | TBD | N/A | N/A |
-| UEI (Unique Entity ID) | Fidelity Trust | Required for grants | TBD |
+| Credential                 | Holder         | Expiration          | Renewal By   |
+| -------------------------- | -------------- | ------------------- | ------------ |
+| Colorado Supreme Court CLE | Audrey         | TBD                 | TBD          |
+| SAM.gov Cage Code          | Fidelity Trust | TBD                 | **May 2026** |
+| DUNS Number                | TBD            | N/A                 | N/A          |
+| UEI (Unique Entity ID)     | Fidelity Trust | Required for grants | TBD          |
 
 ### Audrey's Personal Profile
 
@@ -111,12 +111,12 @@ compliance_tracker = {
 
 ### Alert System
 
-| Item | Renewal Notice | Warning Window |
-|------|--------------|----------------|
-| CLE Certification | 60 days before | CRITICAL |
-| CAGE Code (SAM.gov) | 30 days before | **MAY 2026** |
-| DUNS/UEI | 30 days before | As needed |
-| Business License | 30 days before | Per jurisdiction |
+| Item                | Renewal Notice | Warning Window   |
+| ------------------- | -------------- | ---------------- |
+| CLE Certification   | 60 days before | CRITICAL         |
+| CAGE Code (SAM.gov) | 30 days before | **MAY 2026**     |
+| DUNS/UEI            | 30 days before | As needed        |
+| Business License    | 30 days before | Per jurisdiction |
 
 ---
 
@@ -124,20 +124,20 @@ compliance_tracker = {
 
 ### Where to Find Grants
 
-| Source | URL | For What |
-|--------|-----|---------|
-| SAM.gov | sam.gov | Federal contracts |
-| Grants.gov | grants.gov | Federal grants |
-| Colorado.com | colorado.gov/grants | State grants |
-| USAspending | usaspending.gov | Contract awards |
+| Source       | URL                 | For What          |
+| ------------ | ------------------- | ----------------- |
+| SAM.gov      | sam.gov             | Federal contracts |
+| Grants.gov   | grants.gov          | Federal grants    |
+| Colorado.com | colorado.gov/grants | State grants      |
+| USAspending  | usaspending.gov     | Contract awards   |
 
 ### Grant Categories for Audrey's Businesses
 
-| Business | Potential Grants | Requirements |
-|----------|-----------------|-------------|
-| **Fidelity Trust Services** | Legal aid, community programs | CLE + UEI |
-| **Rental Company** | Small business, equipment | LLC + financials |
-| **All businesses** | R&D, disability-owned | DBE certification |
+| Business                    | Potential Grants              | Requirements      |
+| --------------------------- | ----------------------------- | ----------------- |
+| **Fidelity Trust Services** | Legal aid, community programs | CLE + UEI         |
+| **Rental Company**          | Small business, equipment     | LLC + financials  |
+| **All businesses**          | R&D, disability-owned         | DBE certification |
 
 ---
 
@@ -145,12 +145,12 @@ compliance_tracker = {
 
 ### Passive Income Classification
 
-| Income Stream | Classification | Tax to Audrey? |
-|---------------|----------------|----------------|
-| Reese Reviews (daughter does work) | **PASSIVE** | No |
-| Rental income (rental company) | **PASSIVE** | No* |
-| Freedom Angel consulting | ACTIVE/OWNER | Maybe |
-| Overflow sales | **PASSIVE** | No* |
+| Income Stream                      | Classification | Tax to Audrey? |
+| ---------------------------------- | -------------- | -------------- |
+| Reese Reviews (daughter does work) | **PASSIVE**    | No             |
+| Rental income (rental company)     | **PASSIVE**    | No*            |
+| Freedom Angel consulting           | ACTIVE/OWNER   | Maybe          |
+| Overflow sales                     | **PASSIVE**    | No*            |
 
 *If proper entity structure, income flows to LLC, not to Audrey personally
 
@@ -172,37 +172,41 @@ medicaid_watch = {
 ### How to Minimize Taxable Income
 
 ```
-Audrey purchases product → Donates to Rental LLC → 
+Audrey purchases product → Donates to Rental LLC →
     → Rental LLC gets FMV deduction
     → Audrey gets charitable deduction
     → NO income to Audrey!
 ```
 
-| Item | Cost | FMV Donation | Audrey Deduction |
-|------|------|-------------|-----------------|
-| Costume | $100 | $100 | $100 |
-| Heater | $200 | $200 | $200 |
-| Catering set | $300 | $300 | $300 |
+| Item         | Cost | FMV Donation | Audrey Deduction |
+| ------------ | ---- | ------------ | ---------------- |
+| Costume      | $100 | $100         | $100             |
+| Heater       | $200 | $200         | $200             |
+| Catering set | $300 | $300         | $300             |
 
 ---
 
 ## Implementation Phases
 
 ### Phase 1: Compliance Tracker
+
 - [ ] Input all credentials with expiration dates
 - [ ] Set up 60/30 day alerts
 - [ ] Build renewal dashboard
 
-### Phase 2: Odoo Integration  
+### Phase 2: Odoo Integration
+
 - If Odoo exists, sync business data
 - If not, build simple tracker
 
 ### Phase 3: Grant Engine
+
 - [ ] Register for SAM.gov (if not done)
 - [ ] Get DUNS/UEI
 - [ ] Set up grant opportunity alerts
 
 ### Phase 4: Tax Engine
+
 - [ ] Classify all income streams
 - [ ] Build Medicaid watch
 - [ ] Track donations
@@ -231,13 +235,13 @@ Audrey purchases product → Donates to Rental LLC →
 
 ## Risk Register
 
-| Risk | Impact | Mitigation |
-|------|-------|------------|
-| **May CAGE code expiration** | Lose grants/contracts | Set calendar alert NOW |
-| **Medicaid disqualification** | Lose all benefits | Keep income under limit |
-| **MISSING credentials** | Can't operate | Get UEI/DUNS |
+| Risk                          | Impact                | Mitigation              |
+| ----------------------------- | --------------------- | ----------------------- |
+| **May CAGE code expiration**  | Lose grants/contracts | Set calendar alert NOW  |
+| **Medicaid disqualification** | Lose all benefits     | Keep income under limit |
+| **MISSING credentials**       | Can't operate         | Get UEI/DUNS            |
 
 ---
 
-*Proposal updated by @openhands on behalf of Audrey Evans*
-*revvel-standards proposal system*
+_Proposal updated by @openhands on behalf of Audrey Evans_
+_revvel-standards proposal system_

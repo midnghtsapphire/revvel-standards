@@ -6,7 +6,16 @@ description: "Grounded operating constitution for an autonomous engineering agen
 metadata:
   author: "Revvel AI Engine"
   category: "Agent Operations"
-  tags: [agent, self-healing, operating-loop, resilience, least-privilege, learnings, governance]
+  tags:
+    [
+      agent,
+      self-healing,
+      operating-loop,
+      resilience,
+      least-privilege,
+      learnings,
+      governance,
+    ]
   created_at: "2026-06-20"
   updated_at: "2026-06-20"
 

@@ -16,27 +16,34 @@
 ## Tools Included
 
 ### For Content Creators
+
 - **Tella** ($13-$26/mo) - Best overall with AI features
 - **Supercut** ($15/mo) - Premium 4K recording
 
 ### For Product Demos
+
 - **Screen Studio** ($9-$29/mo) - Automatic cinematic cursor effects
 
 ### For Team Communication
+
 - **Loom** (Free/$15/mo) - Fastest sharing and collaboration
 
 ### For Screenshots
+
 - **CleanShot X** ($29 lifetime/$8/mo) - Best screenshot and markup tool
 
 ### Professional Tools
+
 - **Camtasia** (~$40-$600/yr) - Interactive e-learning content
 - **ScreenFlow** ($169-$259) - Hour-long recordings, professional editing
 
 ### Free Options
+
 - **OBS** (Free) - Advanced streaming and recording
 - **QuickTime Player** (Free) - Built-in Mac basic recorder
 
 ### Beginner Friendly
+
 - **Movavi** (~$30/mo or ~$230/yr) - Simple with scheduled recordings
 
 ## Tech Stack
@@ -89,25 +96,33 @@ The application runs on `http://localhost:3003` by default.
 ## Use Cases
 
 ### Quick Updates
+
 **Recommendation:** Loom (Free/$15/mo)
+
 - Record in 2 clicks
 - Instant sharing
 - Time-stamped comments
 
 ### Polished Demos
+
 **Recommendation:** Screen Studio ($9-$29/mo)
+
 - Automatic cursor zoom
 - Cinematic effects
 - Professional look
 
 ### Course Creation
+
 **Recommendation:** Tella ($13-$26/mo) or Camtasia ($40-$600/yr)
+
 - AI editing features
 - Multiple takes
 - Interactive elements
 
 ### Live Streaming
+
 **Recommendation:** OBS (Free)
+
 - Infinite customization
 - Virtual cameras
 - Scene management

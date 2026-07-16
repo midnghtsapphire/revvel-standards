@@ -27,6 +27,7 @@ I performed a comprehensive audit of all 58+ workflows in the repository:
 **FINDING #2: SECRETS WERE MISSING, BUT NOT FROM AUTOMATION** ⚠️
 
 The most likely causes were:
+
 - Manual deletion via GitHub UI
 - Secrets never synced from Doppler in the first place
 - Secret rotation failures that left gaps
@@ -60,22 +61,26 @@ On Deletion Attempt:
 ```
 
 **Protected Secrets (Cannot be deleted):**
+
 - `OPENROUTER_API_KEY`
 - `DOPPLER_TOKEN`
 - `ADMIN_GITHUB_TOKEN`
 - `GITHUB_TOKEN`
 
 **Monitored Secrets (Checked every hour):**
+
 - All protected secrets
 - `JULES_API_KEY`, `OPENAI_API_KEY`, `APP_ID`, `APP_PRIVATE_KEY`, `MABL_API_KEY`
 
 **Auto-Recovery:**
+
 1. Detects secret is missing
 2. Fetches from Doppler (if available)
 3. Syncs to GitHub repo secrets
 4. Reports success/failure
 
 **Auto-Escalation:**
+
 - Creates issue: "🚨 Secrets Missing: Manual Recovery Required"
 - Labels: `security`, `needs-human`, `goap`, `priority-p0`
 - Includes specific steps to recover each secret
@@ -100,14 +105,14 @@ Every 6 Hours:
 
 **Stuck Patterns Detected:**
 
-| Label | Threshold | Auto-Action |
-|-------|-----------|-------------|
-| `triage:in-progress` | 24 hours | Auto-classify → `triage:classified` |
-| `wr:in-progress` | 7 days | Escalate → add `needs-human` |
-| `credentials-missing` | 48 hours | Re-trigger credential-gatekeeper |
-| `openrouter:instantiating` | 2 hours | Mark failed → `openrouter:instantiation-failed` |
-| `awaiting-approval` | 72 hours | Ping reviewers |
-| `blocked` | 5 days | Request status update |
+| Label                      | Threshold | Auto-Action                                     |
+| -------------------------- | --------- | ----------------------------------------------- |
+| `triage:in-progress`       | 24 hours  | Auto-classify → `triage:classified`             |
+| `wr:in-progress`           | 7 days    | Escalate → add `needs-human`                    |
+| `credentials-missing`      | 48 hours  | Re-trigger credential-gatekeeper                |
+| `openrouter:instantiating` | 2 hours   | Mark failed → `openrouter:instantiation-failed` |
+| `awaiting-approval`        | 72 hours  | Ping reviewers                                  |
+| `blocked`                  | 5 days    | Request status update                           |
 
 **Example Flow:**
 
@@ -118,7 +123,7 @@ Hour 0:  Label applied
 Hour 48: Stuck Label Automation detects stuck state
          → Triggers credential-gatekeeper.yml
          → Posts comment explaining action
-         
+
 Hour 54: Credential-gatekeeper completes
          → If credentials ready: Changes to `credentials-ready`
          → If still missing: Escalates to human
@@ -139,12 +144,14 @@ Added to `.github/labels.yml`:
 ### 4. Comprehensive Documentation 📚
 
 Created `docs/SECRET_PERSISTENCE_AND_LABEL_AUTOMATION.md`:
+
 - Complete architecture diagrams
 - Usage instructions
 - Troubleshooting guide
 - Future enhancement roadmap
 
 Updated `docs/SECRETS_MANAGEMENT.md`:
+
 - Added protection notice at top
 - Referenced new Secret Persistence Guard
 - Listed protected and monitored secrets
@@ -196,11 +203,11 @@ Edit `.github/workflows/stuck-label-automation.yml`:
 const STUCK_PATTERNS = [
   // ... existing patterns ...
   {
-    label: 'your-label',
+    label: "your-label",
     max_age_ms: 48 * MS_PER_HOUR,
-    next_action: 'your-action',
-    next_label: 'next-label-name',
-    description: 'Description'
+    next_action: "your-action",
+    next_label: "next-label-name",
+    description: "Description",
   },
 ];
 ```
@@ -214,6 +221,7 @@ Run the validation script:
 ```
 
 Output:
+
 ```
 ✅ All validations passed!
 
@@ -228,6 +236,7 @@ Next steps:
 ## Results
 
 ### Secrets Protection
+
 - ✅ 4 critical secrets now protected from deletion
 - ✅ 8 secrets monitored every hour
 - ✅ Auto-recovery from Doppler enabled
@@ -235,6 +244,7 @@ Next steps:
 - ✅ **Result: Secrets will never "disappear" again without immediate detection and recovery**
 
 ### Label Automation
+
 - ✅ 6 stuck patterns detected automatically
 - ✅ Auto-progression every 6 hours
 - ✅ Workflow re-triggering for stalled processes
@@ -244,6 +254,7 @@ Next steps:
 ## Extreme Programming x20 Delivered
 
 You asked for:
+
 - ✅ **Autonomous operation** — Both workflows run on schedule, no human needed
 - ✅ **Self-healing** — Auto-recovery from Doppler, auto-progression of labels
 - ✅ **Escalation when needed** — P0 issues created with specific remediation steps
@@ -256,15 +267,18 @@ You asked for:
 ### What Gets Alerted
 
 **P0 Issues Created:**
+
 - 🚨 Secrets Missing: Manual Recovery Required
 - 🚨 Blocked Protected Secret Deletion
 
 **Comments Posted:**
+
 - Progress updates on stuck items
 - Credential recheck results
 - Reviewer pings
 
 **Labels Applied/Removed:**
+
 - Automatic progression through workflow states
 - Escalation labels when needed
 
@@ -290,6 +304,7 @@ You don't need to do anything. The system is now relentlessly autonomous and sel
 ---
 
 **Files Changed:**
+
 - ✅ `.github/workflows/secret-persistence-guard.yml` (new)
 - ✅ `.github/workflows/stuck-label-automation.yml` (new)
 - ✅ `.github/labels.yml` (updated with 7 new labels)

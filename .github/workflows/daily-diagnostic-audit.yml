@@ -2,7 +2,7 @@ name: Daily Diagnostic Audit
 
 on:
   schedule:
-    - cron: '40 6 * * *'
+    - cron: "40 6 * * *"
   workflow_dispatch:
 
 permissions:
@@ -20,7 +20,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Run daily diagnostic audit
         env:

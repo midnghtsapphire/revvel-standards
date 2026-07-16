@@ -8,13 +8,13 @@
 
 ## Audrey's Current Situation
 
-| Item | Amount | Notes |
-|------|--------|-------|
-| **SSDI Income** | $3,400/month | FIXED - counts as income |
-| **Colorado Medicaid Limit** | ~$1,574/month | Varies by program |
-| **Monthly Medical Costs** | $130 | Additional |
-| **In-Home Care** | TBD | DEPENDS ON MEDICAID |
-| **Housing Voucher** | TBD | DEPENDS ON MEDICAID |
+| Item                        | Amount        | Notes                    |
+| --------------------------- | ------------- | ------------------------ |
+| **SSDI Income**             | $3,400/month  | FIXED - counts as income |
+| **Colorado Medicaid Limit** | ~$1,574/month | Varies by program        |
+| **Monthly Medical Costs**   | $130          | Additional               |
+| **In-Home Care**            | TBD           | DEPENDS ON MEDICAID      |
+| **Housing Voucher**         | TBD           | DEPENDS ON MEDICAID      |
 
 ---
 
@@ -23,8 +23,9 @@
 **SSDI ($3,400) + ANY taxable income = RISK of Medicaid disqualification**
 
 If Audrey's combined income exceeds the Medicaid limit:
+
 - ❌ Lose in-home care
-- ❌ Lose housing voucher  
+- ❌ Lose housing voucher
 - ❌ Lose medical coverage
 - ❌ Lose critical disability support
 
@@ -58,14 +59,14 @@ If Audrey's combined income exceeds the Medicaid limit:
 
 ## Income Classification Matrix
 
-| Income Stream | Tax to Audrey? | Medicaid Risk | Strategy |
-|--------------|---------------|---------------|----------|
-| SSDI | YES | FIXED | Accept - can't change |
-| Reese Reviews K-1 | NO | ZERO | Flow-through loss |
-| Rental Co K-1 | NO | ZERO | Flow-through loss |
-| Overflow K-1 | NO | ZERO | Flow-through loss |
-| Freedom Angel Consulting | YES | HIGH | AVOID |
-| W-2 Wages | YES | HIGH | NEVER |
+| Income Stream            | Tax to Audrey? | Medicaid Risk | Strategy              |
+| ------------------------ | -------------- | ------------- | --------------------- |
+| SSDI                     | YES            | FIXED         | Accept - can't change |
+| Reese Reviews K-1        | NO             | ZERO          | Flow-through loss     |
+| Rental Co K-1            | NO             | ZERO          | Flow-through loss     |
+| Overflow K-1             | NO             | ZERO          | Flow-through loss     |
+| Freedom Angel Consulting | YES            | HIGH          | AVOID                 |
+| W-2 Wages                | YES            | HIGH          | NEVER                 |
 
 ---
 
@@ -74,6 +75,7 @@ If Audrey's combined income exceeds the Medicaid limit:
 ### IRS Material Participation Test (Pub 925)
 
 You DON'T materially participate if:
+
 - You don't participate regularly
 - Your participation isn't continuous
 - You don't make management decisions
@@ -94,11 +96,11 @@ Income to BUSINESS, not to AUDREY
 
 ### Thresholds (Colorado - vary by program)
 
-| Level | Income | Action |
-|-------|--------|--------|
-| 🟢 SAFE | <$1,400/mo | Normal operations |
-| 🟡 WARNING | $1,400-$1,574/mo | Monitor closely |
-| 🔴 DANGER | >$1,574/mo | **IMMEDIATE ACTION** |
+| Level      | Income           | Action               |
+| ---------- | ---------------- | -------------------- |
+| 🟢 SAFE    | <$1,400/mo       | Normal operations    |
+| 🟡 WARNING | $1,400-$1,574/mo | Monitor closely      |
+| 🔴 DANGER  | >$1,574/mo       | **IMMEDIATE ACTION** |
 
 ### Alert Triggers
 
@@ -151,6 +153,7 @@ Income to BUSINESS, not to AUDREY
 ## CPA/Attorney Coordination
 
 **Must inform:**
+
 - [ ] Any business structure changes
 - [ ] Any income changes
 - [ ] Any tax filing changes
@@ -158,4 +161,4 @@ Income to BUSINESS, not to AUDREY
 
 ---
 
-*Medicaid Watchdog - Protecting your benefits at all costs*
+_Medicaid Watchdog - Protecting your benefits at all costs_

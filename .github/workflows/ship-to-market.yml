@@ -168,7 +168,8 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       - name: Smoke-test deployed URL
-        if: steps.deploy.outputs.url != '' && !contains(steps.deploy.outputs.url,
+        if:
+          steps.deploy.outputs.url != '' && !contains(steps.deploy.outputs.url,
           'NOT_DEPLOYED')
         run: >
           URL="${{ steps.deploy.outputs.url }}"
@@ -266,7 +267,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install pandoc + LaTeX
-        run: sudo apt-get update -qq && sudo apt-get install -y pandoc texlive-xetex
+        run:
+          sudo apt-get update -qq && sudo apt-get install -y pandoc texlive-xetex
           texlive-fonts-recommended
       - name: Convert docs to PDF
         id: build_pdf
@@ -389,7 +391,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
-      - run: npm ci --if-present && (npm run build:mcp --if-present || npm run build
+      - run:
+          npm ci --if-present && (npm run build:mcp --if-present || npm run build
           --if-present)
       - name: Deploy MCP server
         id: deploy_mcp

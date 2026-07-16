@@ -57,12 +57,12 @@ The integration includes:
 
 ### Key configuration choices
 
-| Setting | Value | Rationale |
-| --- | --- | --- |
-| `files` | `'./'` | Check all Markdown files in the repository |
-| `configFile` | `'.lintmdrc'` | Use repository-level configuration for consistent rules |
-| `failOnWarnings` | `'false'` | Warnings are advisory; only errors fail the workflow |
-| `excludeFiles` | `wr/issues/**`, `node_modules/**`, `.git/**`, `dist/**` | Exclude generated WR docs and build artifacts |
+| Setting          | Value                                                   | Rationale                                               |
+| ---------------- | ------------------------------------------------------- | ------------------------------------------------------- |
+| `files`          | `'./'`                                                  | Check all Markdown files in the repository              |
+| `configFile`     | `'.lintmdrc'`                                           | Use repository-level configuration for consistent rules |
+| `failOnWarnings` | `'false'`                                               | Warnings are advisory; only errors fail the workflow    |
+| `excludeFiles`   | `wr/issues/**`, `node_modules/**`, `.git/**`, `dist/**` | Exclude generated WR docs and build artifacts           |
 
 ### Supported configuration options
 
@@ -74,16 +74,16 @@ The integration includes:
 
 Rules are set to severity levels: 0 (off), 1 (warning), 2 (error).
 
-| Rule | Severity | Description |
-| --- | --- | --- |
-| `space-around-alphabet` | 1 (warn) | Require spaces between Chinese and English text |
-| `space-around-number` | 1 (warn) | Require spaces between Chinese text and numbers |
-| `no-empty-code-lang` | 2 (error) | Code blocks must specify a language |
-| `no-empty-code` | 2 (error) | No empty code blocks |
-| `no-empty-inline-code` | 2 (error) | No empty inline code |
-| `no-empty-url` | 2 (error) | No empty links |
-| `no-empty-blockquote` | 1 (warn) | No empty blockquotes |
-| `no-empty-list` | 1 (warn) | No empty list items |
+| Rule                    | Severity  | Description                                     |
+| ----------------------- | --------- | ----------------------------------------------- |
+| `space-around-alphabet` | 1 (warn)  | Require spaces between Chinese and English text |
+| `space-around-number`   | 1 (warn)  | Require spaces between Chinese text and numbers |
+| `no-empty-code-lang`    | 2 (error) | Code blocks must specify a language             |
+| `no-empty-code`         | 2 (error) | No empty code blocks                            |
+| `no-empty-inline-code`  | 2 (error) | No empty inline code                            |
+| `no-empty-url`          | 2 (error) | No empty links                                  |
+| `no-empty-blockquote`   | 1 (warn)  | No empty blockquotes                            |
+| `no-empty-list`         | 1 (warn)  | No empty list items                             |
 
 ### Workflow file
 

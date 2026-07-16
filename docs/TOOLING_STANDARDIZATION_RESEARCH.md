@@ -3,7 +3,7 @@
 **Repository:** midnghtsapphire/revvel-standards
 **Date:** 2026-05-21
 **Status:** 🟡 Research complete — implementation pending approval
-**Trigger:** Readiness detector finding — *"No manifest found, No test runner, No build script."*
+**Trigger:** Readiness detector finding — _"No manifest found, No test runner, No build script."_
 
 ---
 
@@ -30,7 +30,7 @@ It was working because the finding is a **false negative on form, true on substa
 
 - A **manifest does exist** — root `package.json` (`name: revvel-standards`,
   `version: 2.0.0`, `private: true`). The detector likely flags it because the
-  manifest is *bare*: `engines: {}`, `dependencies: {}`, no `packageManager`,
+  manifest is _bare_: `engines: {}`, `dependencies: {}`, no `packageManager`,
   no `workspaces`, `type` unset.
 - A **test runner exists** — but it is hand-rolled. `npm test` chains ~35
   plain `#!/usr/bin/env node` scripts with `&&`:
@@ -60,29 +60,29 @@ So the repo shipped on convention, not configuration. The real costs of that:
 
 ## Current-state audit
 
-| Area | Today | Gap for S2M |
-| --- | --- | --- |
-| Manifest | Root `package.json`, bare | `engines.node` empty, no `packageManager`, no `workspaces`, `type` unset |
-| Packages | 15 manifests (monorepo in fact) | Root doesn't declare workspaces |
-| Test runner | ~35 hand-rolled node scripts via `&&` | No framework; aborts on first failure |
-| Coverage | None | 80/75 gate advertised but unenforceable |
-| Build / typecheck | None | No `tsc --checkJs`, no build for shippable sub-products |
-| Lint / format | `markdownlint-cli2` (md only) | No ESLint/Prettier/Biome for `scripts/` JS |
-| CI | Tests in CircleCI only | GitHub Actions doesn't run `npm test`; not a required check |
-| Runtime | Node 22.22 / npm 10.9 | Not pinned anywhere |
+| Area              | Today                                 | Gap for S2M                                                              |
+| ----------------- | ------------------------------------- | ------------------------------------------------------------------------ |
+| Manifest          | Root `package.json`, bare             | `engines.node` empty, no `packageManager`, no `workspaces`, `type` unset |
+| Packages          | 15 manifests (monorepo in fact)       | Root doesn't declare workspaces                                          |
+| Test runner       | ~35 hand-rolled node scripts via `&&` | No framework; aborts on first failure                                    |
+| Coverage          | None                                  | 80/75 gate advertised but unenforceable                                  |
+| Build / typecheck | None                                  | No `tsc --checkJs`, no build for shippable sub-products                  |
+| Lint / format     | `markdownlint-cli2` (md only)         | No ESLint/Prettier/Biome for `scripts/` JS                               |
+| CI                | Tests in CircleCI only                | GitHub Actions doesn't run `npm test`; not a required check              |
+| Runtime           | Node 22.22 / npm 10.9                 | Not pinned anywhere                                                      |
 
 ---
 
 ## Recommended stack (one pick per area)
 
-| Area | Recommendation | Main trade-off |
-| --- | --- | --- |
-| Test runner | **`node --test`** (built-in) | No snapshots/polished watch vs Vitest; fine for assert-style tests |
-| Coverage | **`c8`** wrapping `node --test`, threshold gate in CI | One dev dep, but stable today (native coverage is still experimental) |
-| Monorepo manifest | **Root npm `workspaces`** (stay on npm) | No remote task cache like Turborepo; unneeded at this size |
-| Version pinning | `engines.node: ">=22 <25"` + `packageManager: "npm@10.9.x"` (Corepack) | Minor CI friction enforcing Corepack |
-| Build/typecheck | **`tsc --checkJs --noEmit`** (JSDoc); `esbuild`/`tsup` only for shippable sub-products | Less safety than full TS migration |
-| CI gate | engines + `npm ci` + lint + typecheck + test+coverage as required GH checks | Coverage gate needs `c8` today |
+| Area              | Recommendation                                                                         | Main trade-off                                                        |
+| ----------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| Test runner       | **`node --test`** (built-in)                                                           | No snapshots/polished watch vs Vitest; fine for assert-style tests    |
+| Coverage          | **`c8`** wrapping `node --test`, threshold gate in CI                                  | One dev dep, but stable today (native coverage is still experimental) |
+| Monorepo manifest | **Root npm `workspaces`** (stay on npm)                                                | No remote task cache like Turborepo; unneeded at this size            |
+| Version pinning   | `engines.node: ">=22 <25"` + `packageManager: "npm@10.9.x"` (Corepack)                 | Minor CI friction enforcing Corepack                                  |
+| Build/typecheck   | **`tsc --checkJs --noEmit`** (JSDoc); `esbuild`/`tsup` only for shippable sub-products | Less safety than full TS migration                                    |
+| CI gate           | engines + `npm ci` + lint + typecheck + test+coverage as required GH checks            | Coverage gate needs `c8` today                                        |
 
 **Principle:** this is a docs + scripts + products standards repo, so optimize
 for **minimal dependencies and zero per-developer config**, not app-grade DX.
@@ -90,12 +90,12 @@ That tips nearly every choice toward built-in Node tooling.
 
 ### Test-runner BOM
 
-| Tool | Deps added | Coverage | TS support | Speed | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| `node:test` | **0** (built-in) | Built-in but **experimental** | Native type-stripping (22.6+/24) | Fast, parallel | **Best fit** — zero footprint, stable runner |
-| `node:test` + `c8` | **1** (`c8`) | Mature, lcov + threshold flags | Same | Fast | **Recommended for the gate** |
-| Vitest | meta + many transitive | v8/istanbul, thresholds built in | Native (esbuild) | Fastest watch | Overkill unless products become apps |
-| Jest | Many transitive | istanbul, thresholds built in | babel/ts-jest | Slowest | Avoid; ESM still experimental in 2026 |
+| Tool               | Deps added             | Coverage                         | TS support                       | Speed          | Verdict                                      |
+| ------------------ | ---------------------- | -------------------------------- | -------------------------------- | -------------- | -------------------------------------------- |
+| `node:test`        | **0** (built-in)       | Built-in but **experimental**    | Native type-stripping (22.6+/24) | Fast, parallel | **Best fit** — zero footprint, stable runner |
+| `node:test` + `c8` | **1** (`c8`)           | Mature, lcov + threshold flags   | Same                             | Fast           | **Recommended for the gate**                 |
+| Vitest             | meta + many transitive | v8/istanbul, thresholds built in | Native (esbuild)                 | Fastest watch  | Overkill unless products become apps         |
+| Jest               | Many transitive        | istanbul, thresholds built in    | babel/ts-jest                    | Slowest        | Avoid; ESM still experimental in 2026        |
 
 ---
 
@@ -103,14 +103,14 @@ That tips nearly every choice toward built-in Node tooling.
 
 - **Runner:** `node --test` is **Stability 2 (Stable)** since Node 20, ships
   with Node 22, adds zero dependencies, runs files in parallel, and has
-  `spec`/`tap`/`junit` reporters. Vitest/Jest are better *application* runners
+  `spec`/`tap`/`junit` reporters. Vitest/Jest are better _application_ runners
   (snapshots, fast watch, native TS) but pull large dependency trees a minimal
   standards repo is trying to avoid. Jest's ESM support is still flagged
   experimental in 2026 and fights the CommonJS-default setup.
 - **Coverage:** Node's own threshold flags (`--test-coverage-lines/-branches/-functions`,
   added in **22.8.0**) exist and fail CI on a miss, **but the feature is still
   Stability 1 (Experimental) through Node 24+** and has no "statements" metric.
-  For a *credible, stable* gate today, `c8` (same V8 engine Vitest's default
+  For a _credible, stable_ gate today, `c8` (same V8 engine Vitest's default
   provider uses) is the pragmatic pick — one dev dep, lcov output, per-metric
   thresholds. Revisit native coverage once it loses the experimental flag.
 - **Workspaces:** declaring `workspaces` is what makes the "unconfigured root"
@@ -143,9 +143,9 @@ Root `package.json` (additive):
     "test:cov": "c8 --lines 80 --functions 80 --branches 75 --check-coverage node --test tests/",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck",
-    "test:workspaces": "npm test --workspaces --if-present"
+    "test:workspaces": "npm test --workspaces --if-present",
   },
-  "devDependencies": { "c8": "^10", "typescript": "^5" }
+  "devDependencies": { "c8": "^10", "typescript": "^5" },
 }
 ```
 
@@ -159,9 +159,9 @@ Root `package.json` (additive):
     "noEmit": true,
     "strict": true,
     "module": "nodenext",
-    "target": "es2023"
+    "target": "es2023",
   },
-  "include": ["scripts/**/*.js", "tests/**/*.js"]
+  "include": ["scripts/**/*.js", "tests/**/*.js"],
 }
 ```
 
@@ -173,7 +173,7 @@ Root `package.json` (additive):
    and treats a plain script as a test that **passes on clean exit, fails on
    uncaught exception / non-zero exit**. The existing assert files that `throw`
    on failure are picked up unchanged — no rewrite needed.
-2. **Replace the `&&` chain** with `"test": "node --test tests/"`. Now *all*
+2. **Replace the `&&` chain** with `"test": "node --test tests/"`. Now _all_
    files run (no abort-on-first-failure) with proper aggregation + a real reporter.
 3. **Check for ordering/global side-effects.** The old chain ran files in one
    process sequentially; `node --test` runs each file in its own process in
@@ -217,7 +217,7 @@ Steps 1–2 are nearly risk-free and immediately satisfy "test runner found" +
 - TypeScript Handbook — JS projects (`checkJs`, `// @ts-check`, JSDoc): <https://www.typescriptlang.org/docs/handbook/intro-to-js-ts.html>
 - Unit 42 — npm supply-chain mitigations (`npm ci`, lockfile, provenance): <https://unit42.paloaltonetworks.com/monitoring-npm-supply-chain-attacks/>
 
-**Caveats:** Node's native coverage is *usable but still experimental* through
+**Caveats:** Node's native coverage is _usable but still experimental_ through
 Node 24+ — hence `c8` for a hard gate; re-verify against the API docs for the
 Node LTS you standardize on. Vitest/Jest speed claims come from secondary 2026
 benchmarks (directionally reliable, exact multipliers vary).

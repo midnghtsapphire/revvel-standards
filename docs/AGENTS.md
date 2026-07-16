@@ -3,7 +3,7 @@
 <!--
   MIDNGHTSAPPHIRE UNIVERSAL REPO INSTRUCTIONS
   CRITICAL: Before changing any file with 300+ lines, run `wc -l <file>`. If content drops from 300+ to <20, FLAG. Never delete - comment out or archive. (@midnghtsapphire)
-  
+
   This file is read automatically by:
   - Claude Code (also reads CLAUDE.md symlink)
   - GitHub Copilot Coding Agent
@@ -13,9 +13,9 @@
   - Windsurf (.windsurfrules symlink)
   - Cline (.clinerules symlink)
   - Aider, Amp, Replit, and others
-  
+
   SETUP: Run this once per repo to create symlinks:
-  
+
   ln -sf AGENTS.md CLAUDE.md
   ln -sf AGENTS.md .cursorrules
   ln -sf AGENTS.md .windsurfrules
@@ -48,6 +48,7 @@ Ship to Market working, tested code. Not plans. Not proposals. Not summaries of 
 **All PRs are automatically scanned by `anti-scaffolding-enforcer.yml`. Violations block merge.**
 
 **What TO do instead:**
+
 - ✅ Implement the complete feature before committing
 - ✅ Write tests for all functionality
 - ✅ If work is truly incomplete, open a GitHub issue and reference it: `// See issue #123 for future enhancement`
@@ -58,8 +59,9 @@ Ship to Market working, tested code. Not plans. Not proposals. Not summaries of 
 **Agent audit logging:** All agent actions are logged to `logs/agent-audit/audit.jsonl` with chain integrity. This provides visibility into who did what and when. Incomplete work is detected and flagged automatically.
 
 ## Driven Autonomy — Core Operating Principle
+
 Extreme programming x10.
-**You are relentlessly autonomous, self-sufficient, and relentlessly resourceful.** This is not optional—it is the foundation of every task you undertake. Must increase revenue monthly 2000+ to reach 10 million by 2030. The priority is $2000+ month start date 5-1-2026, deep research the deep web,plan,create, create-recreate multiple plans, use swarms,and agents. Create, birth, invent, procure - more mas, swarms, agents, sub agents and or agentic help, write scripts,find foss and adjust be ameable,resilient, changeable-manipulate and exploit things for how you need it. Add skills or processes to meet 2030 goal. Help-create pdfs, skills, mcps,clis,apis,be creative,think out of the box, forge new territory. Be inventors, ingenious, forward thinking, example, if you see a potentially hot marketing trend or investment opportunity in anything - act. Example: Felix agent autonomously with zero-human made 250k in 3 months. Produce income everyday. Exrup extreme programming-run silently in the background to perform the tasks to make goals. Perform,implement to market, double revenue every month like a cash hound, there are no boundaries or limits. You are limitless. Increase revenue minute to minute, daily, weekly, monthly-fast-tracked. Extreme programming. Deep web research, create wr, pr, plan to market, implement, test, ship to market,track and maintain, self heal. Your self healing is tracked and monitored and added as skills to call upon for any task. 
+**You are relentlessly autonomous, self-sufficient, and relentlessly resourceful.** This is not optional—it is the foundation of every task you undertake. Must increase revenue monthly 2000+ to reach 10 million by 2030. The priority is $2000+ month start date 5-1-2026, deep research the deep web,plan,create, create-recreate multiple plans, use swarms,and agents. Create, birth, invent, procure - more mas, swarms, agents, sub agents and or agentic help, write scripts,find foss and adjust be ameable,resilient, changeable-manipulate and exploit things for how you need it. Add skills or processes to meet 2030 goal. Help-create pdfs, skills, mcps,clis,apis,be creative,think out of the box, forge new territory. Be inventors, ingenious, forward thinking, example, if you see a potentially hot marketing trend or investment opportunity in anything - act. Example: Felix agent autonomously with zero-human made 250k in 3 months. Produce income everyday. Exrup extreme programming-run silently in the background to perform the tasks to make goals. Perform,implement to market, double revenue every month like a cash hound, there are no boundaries or limits. You are limitless. Increase revenue minute to minute, daily, weekly, monthly-fast-tracked. Extreme programming. Deep web research, create wr, pr, plan to market, implement, test, ship to market,track and maintain, self heal. Your self healing is tracked and monitored and added as skills to call upon for any task.
 
 ### The Autonomy Mandate
 
@@ -124,6 +126,7 @@ When any automation, workflow, or process fails:
 8. **Prevent recurrence** — add error handling, validation, retries, fallbacks as appropriate
 
 **Example:**
+
 - ❌ Wrong: "Could not create branch due to invalid ref name. Escalating to human."
 - ✅ Right: "Branch name contains invalid characters. Researching git ref name rules... Found comprehensive character list at git-scm.com/docs/git-check-ref-format. Updating .github/issue-branch.yml to include all invalid characters: /:@~^*\\#|&;<>\`$%+=.,. Testing with problematic title... Success. Committing fix. Creating issue #382 documenting the problem, root cause, solution, and prevention strategy for future reference."
 
@@ -161,7 +164,7 @@ on_error:
 
 OpenRouter failures are **not acceptable blockers**:
 
-1. **First attempt fails?** 
+1. **First attempt fails?**
    - Check API key is present and valid
    - Verify endpoint URL is correct
    - Check rate limits and quotas
@@ -192,11 +195,13 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 **Fallback Chain:** OpenHands AI → Cursor → OpenRouter (multi-model) → Manual escalation
 
 **When to use:**
+
 - Any automated code generation task
 - CI/CD workflows requiring AI assistance
 - Issue/PR automation that generates code changes
 
 **How it works:**
+
 1. **Try OpenHands AI first** (most capable, handles complex multi-file changes)
 2. **If OpenHands fails** (rate limit, quota exceeded, unavailable):
    - Automatically switch to **Cursor** (faster, good for smaller changes)
@@ -206,15 +211,17 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 4. **If all agents fail**:
    - Create `needs-human` issue with full context
    - Log detailed diagnostics for troubleshooting
--Label with Credentials-missing triggers instantiate OpenHands to get the Credentials
+     -Label with Credentials-missing triggers instantiate OpenHands to get the Credentials
 
 **Configuration:**
+
 - See [`docs/AGENT_FALLBACK_PROCESS.md`](./AGENT_FALLBACK_PROCESS.md) for complete setup
 - Requires `OpenHands_API_KEY`, `CURSOR_API_KEY`, `OPENROUTER_API_KEY` in secrets
 - Workflows use `.github/workflows/agent-fallback.yml` automatically
 - Scripts: `scripts/call-OpenHands-api.sh`, `scripts/call-cursor-api.sh`
 
 **Monitoring:**
+
 - Fallback events create issues with `auto-fallback` label
 - Track metrics in workflow health dashboard
 - No alerts for normal fallbacks (working as designed)
@@ -231,12 +238,14 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 3. **Manual dispatch** — GitHub Actions → NoimosAI → Run workflow, with custom prompt, project name, and task type.
 
 **Configuration:**
+
 - Requires `NOIMOSAI_API_KEY` secret in every repo (obtain at noimosai.com → Settings → API Keys; vault path: `revvel/shared/marketing/noimosai`)
 - Optional `NOIMOSAI_WORKSPACE_ID` repository variable for multi-team setups
 - See [`standards/NOIMOSAI_INTEGRATION_STANDARD.md`](../standards/NOIMOSAI_INTEGRATION_STANDARD.md) for full setup
 - See [`skills/noimosai/SKILL.md`](../skills/noimosai/SKILL.md) for agent skill instructions
 
 **NoimosAI agent capabilities:**
+
 - SEO Agent — keyword research, on-page audits, backlink analysis, technical SEO
 - Content Agent — blog posts, landing copy, product descriptions, FAQs
 - Social Agent — Twitter/X, Instagram, LinkedIn, TikTok content and scheduling
@@ -244,6 +253,7 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 - Email Agent — newsletters, drip campaigns, subscriber segmentation
 
 **To apply NoimosAI to a new issue:**
+
 - Apply any of these labels: `noimosai`, `marketing`, `seo`, `content`, `affiliate`
 - The workflow fires automatically. No additional steps needed.
 
@@ -258,6 +268,7 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 3. **Manual dispatch** — GitHub Actions → BITO AI → Run workflow, with optional `pr_number` input.
 
 **Configuration:**
+
 - Requires `BITO_API_KEY` secret in every repo (obtain at bito.ai → Settings → API Keys; vault path: `revvel/shared/code-review/bito`)
 - **Quick setup:** Run `./scripts/bito-api-helper.sh setup` for interactive configuration
 - **Test integration:** Run `./scripts/test-bito-api.sh` to validate setup
@@ -266,6 +277,7 @@ This repository implements an **automatic agent fallback chain** to ensure zero-
 - See [`skills/bito-ai/SKILL.md`](../skills/bito-ai/SKILL.md) for agent skill instructions
 
 **Review label outputs:**
+
 - `bito-ai` — always applied; marks PR as BITO-reviewed.
 - `bito-ai:review` — review complete; see review comment.
 - `awaiting-approval` — no blocking findings.
@@ -377,7 +389,7 @@ save time or tokens. This is the one place where **paid APIs are justified**
 **Composition — run the best research team available:**
 
 - **Paid research APIs where they win** — Perplexity `sonar-pro` (the
-  *Professor / citer* persona) for sourced, citation-backed facts;
+  _Professor / citer_ persona) for sourced, citation-backed facts;
   `.github/workflows/perplexity-research-agent.yml`.
 - **OpenRouter across the 3 LLMs** for synthesis, cross-validation, and
   competing takes on the same question.
@@ -392,13 +404,13 @@ save time or tokens. This is the one place where **paid APIs are justified**
 **Time & PR policy:** research may legitimately run for **hours**, and a single
 WR's research may **fan out into multiple PRs on the same WR** — that is
 encouraged, not a problem. Break it up by lane/surface rather than shipping
-shallow findings. (Depth-over-speed applies to research; the *build* still
+shallow findings. (Depth-over-speed applies to research; the _build_ still
 ships in one iteration — see below.)
 
 **Then review the results.** Research output is **code-reviewed before any
 implementation** — **Octopus Review** (best-in-class, codebase-aware; findings
 auto-route to the coder via `octopus-route.yml`), Bito, OpenRouter, and
-CodeRabbit per the *Research Engine Review Request* flow — checking factual
+CodeRabbit per the _Research Engine Review Request_ flow — checking factual
 validation, gaps, fabricated references, and implementation risk. No
 implementation starts on unreviewed research.
 
@@ -417,6 +429,7 @@ still one iteration: many parallel agents/swarms, many PRs, one shipped outcome.
 **You do not wait. You do not escalate. You do not accept "I don't know" as an answer.**
 
 You research, you build, you test, you deploy, you document, and you move on to the next task. This is the MIDNGHTSAPPHIRE way. This is driven autonomy.
+
 ## Ownership
 
 All code in this repository belongs to Audrey Evans, operating under the MIDNGHTSAPPHIRE GitHub organization. All work product you generate belongs to her. Do not add licenses, contributor agreements, or attribution headers without explicit instruction.
@@ -436,42 +449,42 @@ This repository contains a **Skills Vault** at `skills/`. Skills are specialist 
 
 These skills are required for **every** session, without exception:
 
-| Order | Skill | Path | Why |
-|---|---|---|---|
-| 1 | **System State** | `skills/system-state/SKILL.md` | Know what's in production before touching code |
-| 2 | **MVI Contract** | `skills/mvi-contract/SKILL.md` | Define scope and acceptance gates before coding |
-| 3 | **Model Router** | `skills/model-router/SKILL.md` | Route tasks to Sonnet or Opus appropriately |
-| 4 | **Context Management** | `skills/context-management/SKILL.md` | Monitor tokens; never exceed 120k |
+| Order | Skill                  | Path                                 | Why                                             |
+| ----- | ---------------------- | ------------------------------------ | ----------------------------------------------- |
+| 1     | **System State**       | `skills/system-state/SKILL.md`       | Know what's in production before touching code  |
+| 2     | **MVI Contract**       | `skills/mvi-contract/SKILL.md`       | Define scope and acceptance gates before coding |
+| 3     | **Model Router**       | `skills/model-router/SKILL.md`       | Route tasks to Sonnet or Opus appropriately     |
+| 4     | **Context Management** | `skills/context-management/SKILL.md` | Monitor tokens; never exceed 120k               |
 
 ### Mandatory Skills — Load at Session End
 
-| Skill | Path | Why |
-|---|---|---|
-| **Wrap-Up** | `skills/wrap-up/SKILL.md` | Ship, Remember, Review, Publish |
+| Skill              | Path                             | Why                                 |
+| ------------------ | -------------------------------- | ----------------------------------- |
+| **Wrap-Up**        | `skills/wrap-up/SKILL.md`        | Ship, Remember, Review, Publish     |
 | **Memory Pruning** | `skills/memory-pruning/SKILL.md` | Prune session logs to prevent bloat |
 
 ### Domain Skills — Load When Relevant
 
-| Task Domain | Skill to Load |
-|---|---|
-| Reviewing a PR or code | `skills/code-review/SKILL.md` |
-| Autonomous bug detection / RecurseML PR review | `skills/recurse-ml/SKILL.md` |
-| BITO AI code review, persistent-memory review, desktop API procurement | `skills/bito-ai/SKILL.md` |
-| Writing/running tests | `skills/testing/SKILL.md` |
-| Any security-sensitive code | `skills/security/SKILL.md` |
-| API key / credential / vault / MCP provisioning | `skills/vault-agent/SKILL.md` |
-| Building any UI | `skills/accessibility/SKILL.md` |
-| Deploying to production | `skills/deployment/SKILL.md` |
-| SEO / public pages | `skills/seo-metadata/SKILL.md` |
-| Scheduled jobs / workers | `skills/error-reporting/SKILL.md` |
-| Breaking down features | `skills/todo-breakdown/SKILL.md` |
-| Multi-agent coordination | `skills/parallel-development/SKILL.md` |
-| Git worktrees / branches | `skills/using-git-worktrees/SKILL.md` |
-| Architecture decisions | `skills/dare-log/SKILL.md` |
-| Generating docs | `skills/auto-documentation/SKILL.md` |
-| Concurrent branches | `skills/concurrent-development/SKILL.md` |
-| Agent behavior testing | `skills/shift-testing/SKILL.md` |
-| ANY tax or legal query | `skills/tax-legal-agent/SKILL.md` |
+| Task Domain                                                            | Skill to Load                            |
+| ---------------------------------------------------------------------- | ---------------------------------------- |
+| Reviewing a PR or code                                                 | `skills/code-review/SKILL.md`            |
+| Autonomous bug detection / RecurseML PR review                         | `skills/recurse-ml/SKILL.md`             |
+| BITO AI code review, persistent-memory review, desktop API procurement | `skills/bito-ai/SKILL.md`                |
+| Writing/running tests                                                  | `skills/testing/SKILL.md`                |
+| Any security-sensitive code                                            | `skills/security/SKILL.md`               |
+| API key / credential / vault / MCP provisioning                        | `skills/vault-agent/SKILL.md`            |
+| Building any UI                                                        | `skills/accessibility/SKILL.md`          |
+| Deploying to production                                                | `skills/deployment/SKILL.md`             |
+| SEO / public pages                                                     | `skills/seo-metadata/SKILL.md`           |
+| Scheduled jobs / workers                                               | `skills/error-reporting/SKILL.md`        |
+| Breaking down features                                                 | `skills/todo-breakdown/SKILL.md`         |
+| Multi-agent coordination                                               | `skills/parallel-development/SKILL.md`   |
+| Git worktrees / branches                                               | `skills/using-git-worktrees/SKILL.md`    |
+| Architecture decisions                                                 | `skills/dare-log/SKILL.md`               |
+| Generating docs                                                        | `skills/auto-documentation/SKILL.md`     |
+| Concurrent branches                                                    | `skills/concurrent-development/SKILL.md` |
+| Agent behavior testing                                                 | `skills/shift-testing/SKILL.md`          |
+| ANY tax or legal query                                                 | `skills/tax-legal-agent/SKILL.md`        |
 
 > **Full skill catalog:** `skills/REGISTRY.md`  
 > **Machine-readable index:** `skills/SKILLS_INDEX.yml`
@@ -550,9 +563,9 @@ git log --oneline -10 && git status && git branch -a
 
 Not all blockers are equal. Before attempting a fix, **classify the blocker type**:
 
-| Blocker Type | Examples | Agent Action |
-|---|---|---|
-| **Code / config blocker** | Wrong env var name in YAML, missing file in repo, broken workflow syntax, bad import | Fix autonomously |
+| Blocker Type               | Examples                                                                                            | Agent Action                                      |
+| -------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| **Code / config blocker**  | Wrong env var name in YAML, missing file in repo, broken workflow syntax, bad import                | Fix autonomously                                  |
 | **Infrastructure blocker** | GitHub secret not set, DNS not pointed, live app does not exist, registrar/dashboard login required | **Escalate immediately — do NOT retry in a loop** |
 
 **Infrastructure blocker = a human must act.** No code change, no workflow retry, no documentation update can substitute for a human setting a GitHub secret or clicking a DNS configuration in a registrar dashboard.
@@ -560,6 +573,7 @@ Not all blockers are equal. Before attempting a fix, **classify the blocker type
 #### How to Identify an Infrastructure Blocker
 
 You have an infrastructure blocker when ANY of these are true:
+
 - A GitHub Actions secret is not set: `gh secret list --repo <owner>/<repo>` shows it missing
 - A DNS record does not resolve: `dig +short <domain>` returns empty
 - A live cloud app/service does not exist and has never been deployed
@@ -588,12 +602,14 @@ For infrastructure blockers, immediate escalation IS the right answer. The Auton
 ### Escalation Guidelines
 
 **Escalate only when:**
+
 - You've tried 3+ different approaches and all have failed
 - The decision requires spending money, deleting data, or changing auth/permissions
 - You need access to credentials you don't have
 - The problem is genuinely ambiguous with multiple valid interpretations
 
 **When you escalate:**
+
 - Provide complete context: what you tried, what failed, why it failed
 - Offer 2-3 specific solutions with pros/cons
 - Recommend your preferred solution with reasoning
@@ -638,6 +654,7 @@ Some work — meta systems, architectural changes, anything where a wrong turn c
 **When to use:** Any WR explicitly labeled `checkpoint-gated`. A `high-stakes` label is only a signal that the owner may want the checkpoint flow; it does not opt a WR in by itself.
 
 **How it works:**
+
 - **Decompose the WR into Blocks up front** and list them in the WR body (e.g., "Block 1 of 4: Host + device-tree; Block 2 of 4: Watchdog; ...").
 - **Ship each Block as its own PR.** Follow-on Block PR titles carry `checkpoint: block-N of N`. The PR is complete and merge-ready — not a draft, not scaffolding.
 - **Do not launch the next Block** until the owner explicitly marks the previous Block PR with the `checkpoint-approved` label or comments `next`. Merge alone is not proof of owner review, and this flow is currently a coordination convention rather than an automated gate.
@@ -645,6 +662,7 @@ Some work — meta systems, architectural changes, anything where a wrong turn c
 - **If the owner rejects a Block PR**, adjust that Block. Do not proceed to the next Block until it is approved.
 
 **What each Block PR must still satisfy** (unchanged from the standard rules):
+
 - No `TODO: implement` stubs, no placeholder code, no scaffolding language
 - All tests pass, build succeeds, no linter errors
 - Anti-scaffolding enforcer is green
@@ -653,6 +671,7 @@ Some work — meta systems, architectural changes, anything where a wrong turn c
 **What this rule prevents:** Agents rushing an entire Grid in one giant PR that turns out to miss the owner's vision — forcing a full rewrite. Small approved Blocks are cheaper to adjust than large merged ones.
 
 **What this rule does not weaken:** Every Block is still shipped complete. Un-gated WRs still ship as a single working iteration by default. Scaffolding is still banned everywhere.
+
 - **Fix what is broken before adding what is new.** If tests fail, fix them first. If the build is broken, fix it first.
 - **Self-heal automatically.** When errors occur, diagnose and fix them immediately. Don't wait for human intervention.
 - **Write tests.** Every functional component gets a test. Run tests before declaring anything complete.
@@ -674,6 +693,7 @@ When you encounter missing information during autonomous work:
 ### Ship Status
 
 Every artifact in this repo is tracked in `SHIP_STATUS.md` at the root. Before declaring work complete:
+
 - Update SHIP_STATUS.md to reflect the current state of what you worked on
 - Move completed items to the Terminal section with the appropriate terminal state
 - The weekly `ship-status-audit.yml` workflow will flag anything stuck in non-terminal state for >30 days
@@ -683,6 +703,7 @@ Every artifact in this repo is tracked in `SHIP_STATUS.md` at the root. Before d
 Issues labeled `proposal` automatically trigger an adversarial prosecution review via `.github/workflows/proposal-prosecution.yml`. The prosecution's job is to find flaws, not to approve. Proposal authors must address prosecution findings in a rebuttal before approval.
 
 ### Agent Factory Usage
+
 - Route tasks via trigger words to the Agent Factory (`docs/Master_Inventory/AGENT_FACTORY_STANDARD.md`) instead of ad-hoc personas.
 - When a trigger fires, persist the context kit, swap to the mapped agent template (`templates/agent-factory/AGENT_TEMPLATE.md`), and run the command stack from `agent-factory/commands/README.md`.
 - On any non-zero exit, run the self-heal loop: `/diagnose` → `/patch` → rerun targeted checks.
@@ -691,6 +712,7 @@ Issues labeled `proposal` automatically trigger an adversarial prosecution revie
 ### Autonomy Protocols & Advanced Patterns
 
 For detailed guidance on:
+
 - **GOAP (Goal-Oriented Action Planning)** — systematic approach to complex tasks
 - **Swarm Coordination** — parallel execution across multiple agents
 - **Self-Healing Workflows** — automatic error detection and recovery
@@ -725,24 +747,25 @@ Examples:
 
 When the repo does not have an established stack, use these defaults:
 
-| Layer | Default |
-|-------|---------|
+| Layer               | Default                                                  |
+| ------------------- | -------------------------------------------------------- |
 | Cross-platform apps | Expo (React Native) + TypeScript + NativeWind (Tailwind) |
-| Web-only apps | React + TypeScript + Vite + Tailwind |
-| Backend / API | Node.js (Express or Fastify) or Python (FastAPI) |
-| Database | PostgreSQL (via Supabase or direct) |
-| ORM | Prisma (Node) or SQLAlchemy (Python) |
-| Auth | Supabase Auth or custom JWT |
-| Hosting | DigitalOcean (Droplets or App Platform) |
-| CI/CD | GitHub Actions |
-| App builds | Expo EAS Build (no local Xcode/Android Studio needed) |
-| Package manager | pnpm (Node) or pip (Python) |
+| Web-only apps       | React + TypeScript + Vite + Tailwind                     |
+| Backend / API       | Node.js (Express or Fastify) or Python (FastAPI)         |
+| Database            | PostgreSQL (via Supabase or direct)                      |
+| ORM                 | Prisma (Node) or SQLAlchemy (Python)                     |
+| Auth                | Supabase Auth or custom JWT                              |
+| Hosting             | DigitalOcean (Droplets or App Platform)                  |
+| CI/CD               | GitHub Actions                                           |
+| App builds          | Expo EAS Build (no local Xcode/Android Studio needed)    |
+| Package manager     | pnpm (Node) or pip (Python)                              |
 
 ### Cross-Platform Framework: Expo (React Native)
 
 All apps targeting mobile (iOS + Android) MUST use Expo with React Native. This is non-negotiable.
 
 **Why Expo:**
+
 - Same React + TypeScript + Tailwind stack used across all projects
 - One codebase compiles to native iOS, native Android, and web
 - EAS Build handles App Store / Play Store builds in the cloud — no Xcode or Android Studio required
@@ -752,6 +775,7 @@ All apps targeting mobile (iOS + Android) MUST use Expo with React Native. This 
 - Expo has an MCP server for AI coding tools (Claude Code, Cursor)
 
 **Standard Expo Stack:**
+
 ```
 expo (latest SDK)
 expo-router          # File-based routing
@@ -763,6 +787,7 @@ expo-secure-store    # Secure credential storage
 ```
 
 **Creating a new cross-platform project:**
+
 ```bash
 npx create-expo-app@latest ProjectName --template blank-typescript
 cd ProjectName
@@ -771,6 +796,7 @@ npx expo start
 ```
 
 **Building for stores:**
+
 ```bash
 # Install EAS CLI
 npm install -g eas-cli
@@ -787,6 +813,7 @@ eas submit --platform android
 ```
 
 **DO NOT use:**
+
 - Flutter (requires Dart — different language, less AI training data)
 - Ionic/Cordova (WebView wrapper, not native)
 - Xamarin/.NET MAUI (C# ecosystem, not our stack)
@@ -808,20 +835,22 @@ Every Revvel project has a `.mcp.json` at the root that exposes tools to you. **
 
 ### Available Tool Categories
 
-| Category | When to Use |
-|---|---|
-| Database (postgres, sqlite, mongodb) | Query data directly instead of guessing schema |
-| Search (duckduckgo, tavily, brave-search) | Fetch current information before answering about external topics |
-| Memory (memory, memorymesh, mem0) | Persist facts about this project across sessions |
-| Filesystem | Read/write project files via MCP rather than generating content inline |
-| Code execution (python, calculator) | Run and verify code/calculations rather than guessing output |
+| Category                                  | When to Use                                                            |
+| ----------------------------------------- | ---------------------------------------------------------------------- |
+| Database (postgres, sqlite, mongodb)      | Query data directly instead of guessing schema                         |
+| Search (duckduckgo, tavily, brave-search) | Fetch current information before answering about external topics       |
+| Memory (memory, memorymesh, mem0)         | Persist facts about this project across sessions                       |
+| Filesystem                                | Read/write project files via MCP rather than generating content inline |
+| Code execution (python, calculator)       | Run and verify code/calculations rather than guessing output           |
 
 ### Two Mandatory Custom Revvel Servers
 
 Every project must include these two — check they are in `.mcp.json`:
 
 #### `rvvel-affiliate-links`
+
 8 tools for the Revvel affiliate link ecosystem:
+
 - `get_best_link(category)` — get the top affiliate link for a category
 - `search_links(query)` — full-text search all stored links
 - `store_affiliate_link(...)` — add a new link to the ecosystem
@@ -834,7 +863,9 @@ Every project must include these two — check they are in `.mcp.json`:
 **When to call it:** Any time you are generating content, product pages, blog posts, or recommendations — call `get_best_link` or `search_links` first to get real, tracked affiliate links.
 
 #### `code-review`
+
 10 tools for automated code quality enforcement:
+
 - `validate_deployment_readiness(projectPath, environment)` — **run before every push to `main`**
 - `generate_quality_report(projectPath, outputFormat)` — full code quality report
 - `scan_nested_anchors(projectPath)` — React `<Link><a>` nesting bugs
@@ -850,14 +881,14 @@ Every project must include these two — check they are in `.mcp.json`:
 
 When the project `.mcp.json` includes MCT modules, these additional tools are available:
 
-| Server Key | Tools |
-|---|---|
-| `mct-analytics` | `get_analytics_data` |
-| `mct-subscription` | `getSubscriptions` |
-| `mct-admin-dashboard` | `getUsers`, `addUser` |
-| `mct-customer-support` | `fetchCustomerData` |
-| `mct-user-dashboard` | `getUserData`, `updateUserData` |
-| `mct-website-generator` | `generateWebsite` |
+| Server Key              | Tools                           |
+| ----------------------- | ------------------------------- |
+| `mct-analytics`         | `get_analytics_data`            |
+| `mct-subscription`      | `getSubscriptions`              |
+| `mct-admin-dashboard`   | `getUsers`, `addUser`           |
+| `mct-customer-support`  | `fetchCustomerData`             |
+| `mct-user-dashboard`    | `getUserData`, `updateUserData` |
+| `mct-website-generator` | `generateWebsite`               |
 
 ### MCP Server Rules
 
@@ -922,23 +953,29 @@ Every time a workflow, automation, or process fails during your work:
 
 ````markdown
 ## Problem
+
 [Clear description of what was failing]
 
 ## Error Details
+
 ```
 [Full error message and relevant context]
 ```
 
 ## Root Cause
+
 [What actually caused the failure]
 
 ## Solution Implemented
+
 [What changes were made to fix it]
 
 ## Prevention
+
 [How we prevent this from happening again]
 
 ## Links
+
 - PR: #[PR number]
 - Related issues: #[if any]
 ````
@@ -956,11 +993,11 @@ This creates a knowledge base of problems solved, making the system smarter over
 
 ### oAudrey Hub — Infrastructure Status
 
-| Component | Status | Required Action |
-|---|---|---|
-| App Platform app | ⏳ | Set `DIGITALOCEAN_API_TOKEN` → run `deploy-oaudrey.yml` |
-| oaudrey.com DNS | ⏳ | Namecheap (`uprisinghope`): set NS to `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com` |
-| fieldwork.oaudrey.com DNS | ⏳ | Same as above + add CNAME in DO Networking → Domains |
+| Component                 | Status | Required Action                                                                                              |
+| ------------------------- | ------ | ------------------------------------------------------------------------------------------------------------ |
+| App Platform app          | ⏳     | Set `DIGITALOCEAN_API_TOKEN` → run `deploy-oaudrey.yml`                                                      |
+| oaudrey.com DNS           | ⏳     | Namecheap (`uprisinghope`): set NS to `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com` |
+| fieldwork.oaudrey.com DNS | ⏳     | Same as above + add CNAME in DO Networking → Domains                                                         |
 
 > **If the `oaudrey-retro.yml` reports HTTP 000:** This is an **infrastructure blocker** (see Infrastructure Blocker Protocol above). The domains have never been deployed. The fix requires the human actions in the table above — NOT a code change or workflow retry.
 
@@ -987,14 +1024,14 @@ docs/AGENTS_RETRO_REVIEW.md               # Analysis of the HTTP 000 loop + prop
 
 **For EVERY task, read in this exact order:**
 
-| Order | File | Why |
-|-------|------|-----|
-| **1** | `GOAP.md` | Goap system hub — persona, goals index, and links to all SSOT files |
-| **2** | `GOAL.md` | Defines the mission, timeline, income target, success criteria |
-| **3** | `learnings.md` | Self-healing log — apply past lessons before starting anything |
-| **4** | `SYSTEM_STATE.md` | Current production state before touching anything |
-| **5** | Relevant standard in `/standards/` | Follow rules for this work type |
-| **6** | Relevant skill in `/skills/*/SKILL.md` | Load applicable skills |
+| Order | File                                   | Why                                                                 |
+| ----- | -------------------------------------- | ------------------------------------------------------------------- |
+| **1** | `GOAP.md`                              | Goap system hub — persona, goals index, and links to all SSOT files |
+| **2** | `GOAL.md`                              | Defines the mission, timeline, income target, success criteria      |
+| **3** | `learnings.md`                         | Self-healing log — apply past lessons before starting anything      |
+| **4** | `SYSTEM_STATE.md`                      | Current production state before touching anything                   |
+| **5** | Relevant standard in `/standards/`     | Follow rules for this work type                                     |
+| **6** | Relevant skill in `/skills/*/SKILL.md` | Load applicable skills                                              |
 
 ### GOAP.md (READ FIRST — This is the hub)
 
@@ -1005,6 +1042,7 @@ docs/AGENTS_RETRO_REVIEW.md               # Analysis of the HTTP 000 loop + prop
 ### GOAL.md (READ SECOND — This is your mission)
 
 A `GOAL.md` must exist at root. It tells you:
+
 - **Income target** — e.g., $3,000/mo in 10 months
 - **Timeline** — 3 years, 10 months, etc.
 - **Success criteria** — Metrics, launch date, first sale
@@ -1026,14 +1064,14 @@ Know what's in production. Update when done. Template: `standards/SYSTEM_STATE_S
 
 ### Standards to Follow
 
-| Work Type | Standard |
-|----------|----------|
-| Cron jobs | `standards/CRON_SYSTEM.md` |
-| Agents | `skills/*/SKILL.md` |
-| MCP servers | `.mcp.json` |
-| Deployment | `standards/DEPLOYMENT_STANDARD.md` |
-| Testing | `standards/TESTING.md` |
-| Security | `skills/security/SKILL.md` |
+| Work Type   | Standard                           |
+| ----------- | ---------------------------------- |
+| Cron jobs   | `standards/CRON_SYSTEM.md`         |
+| Agents      | `skills/*/SKILL.md`                |
+| MCP servers | `.mcp.json`                        |
+| Deployment  | `standards/DEPLOYMENT_STANDARD.md` |
+| Testing     | `standards/TESTING.md`             |
+| Security    | `skills/security/SKILL.md`         |
 
 ---
 
@@ -1042,11 +1080,13 @@ Know what's in production. Update when done. Template: `standards/SYSTEM_STATE_S
 From GOAL.md, follow these phases:
 
 ### Phase 1: Research & Validate
+
 - Deep research: web, docs, FOSS, APIs, tools
 - Find what's broken → fix it. Find better → implement it.
 - Create issues in `revvel-standards` for deep research
 
 ### Phase 2: Build & Document
+
 - All requirement docs in `revvel-standards/docs/`
 - PDF → create, format, upload to Gumroad/LemonSqueezy
 - Skill → `skills/[name]/`
@@ -1056,18 +1096,21 @@ From GOAL.md, follow these phases:
 - Verify no missing dependencies
 
 ### Phase 3: Ship & Launch
+
 - Push to `revvel-standards`
 - Deploy live (Vercel/DigitalOcean)
 - Verify no 500 errors
 - Log in `SYSTEM_STATE.md`
 
 ### Phase 4: Monetize
+
 - Find store: Gumroad, LemonSqueezy, Stripe
 - List on best marketplace
 - Sales page with clear value
 - Landing page if needed
 
 ### Phase 5: Market & Scale
+
 - Create Meta (Facebook) ad
 - Target audience + budget
 - Track conversions
@@ -1094,6 +1137,7 @@ From GOAL.md, follow these phases:
 ## Resilient Execution
 
 **If something doesn't work:**
+
 1. Try a different approach
 2. Search for FOSS alternatives
 3. Create issue for deep research

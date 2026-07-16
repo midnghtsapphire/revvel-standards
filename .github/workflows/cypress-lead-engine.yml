@@ -36,7 +36,7 @@ jobs:
         with:
           node-version: "22"
       - name: Cypress run (build + start + test)
-        continue-on-error: true  # informational while we iterate on first-run stability
+        continue-on-error: true # informational while we iterate on first-run stability
         uses: cypress-io/github-action@v7
         with:
           working-directory: products/life-insurance-lead-engine/build

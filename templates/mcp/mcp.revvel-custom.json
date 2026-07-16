@@ -1,7 +1,6 @@
 {
   "_comment": "Revvel Custom MCP Servers — all MIDNGHTSAPPHIRE custom repos. Merge into your project's .mcp.json alongside mcp.web.json or mcp.minimal.json. Requires local clones of MCT modules built with npm run build. See docs/MCP_REVVEL_CATALOG.md for setup instructions.",
   "mcpServers": {
-
     "rvvel-affiliate-links": {
       "_comment": "Mandatory in every project. No env vars needed — self-contained SQLite.",
       "command": "npx",
@@ -214,6 +213,5 @@
         "WR_DEFAULT_REPO": "${WR_DEFAULT_REPO:-midnghtsapphire/revvel-standards}"
       }
     }
-
   }
 }

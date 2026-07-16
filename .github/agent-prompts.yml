@@ -198,7 +198,7 @@ transitions:
     - wr:review
     - lifecycle:stuck
   wr:check-failed:
-    - wr:jules  # retry
+    - wr:jules # retry
     - wr:code
     - needs-human
   wr:review:

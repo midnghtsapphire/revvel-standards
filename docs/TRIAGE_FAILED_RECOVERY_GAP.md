@@ -30,7 +30,7 @@ credits), `scripts/openrouter-triage.js` labels the item
 - Success self-clear: `scripts/openrouter-triage.js:512` removes the failure
   labels once a later run succeeds.
 
-The risk is a **dead-end**: routing applies the `openrouter` label *before*
+The risk is a **dead-end**: routing applies the `openrouter` label _before_
 triage runs, and both sweep workflows use `openrouter` as their idempotency key.
 A failed item therefore still carries `openrouter` and looks "already routed"
 forever.
@@ -73,7 +73,7 @@ documents this dead-end and states it is the reason the recovery branch exists.
 The assignee workflow only **applies routing labels and assigns `@oaudrey`** — it
 does not invoke `scripts/openrouter-triage.js`. The LLM work that a parked item
 needs is performed exclusively by `.github/workflows/openrouter-triage.yml`,
-which *does* recover failed items. So the missing recovery branch in the assignee
+which _does_ recover failed items. So the missing recovery branch in the assignee
 workflow has no functional impact on whether stuck Work Requests get
 re-processed.
 

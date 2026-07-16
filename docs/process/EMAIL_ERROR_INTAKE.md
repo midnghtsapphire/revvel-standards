@@ -44,7 +44,7 @@ opens one issue each, then marks them read. Skeleton:
 name: Email Error Intake
 on:
   schedule:
-    - cron: '*/30 * * * *'   # every 30 min
+    - cron: "*/30 * * * *" # every 30 min
   workflow_dispatch:
 permissions:
   issues: write
@@ -55,7 +55,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
       - name: Read inbox and open issues
         env:
           GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}

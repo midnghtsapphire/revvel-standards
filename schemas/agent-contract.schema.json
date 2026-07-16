@@ -5,11 +5,7 @@
   "description": "Decomposition of one Work Request (Grid) into Blocks and Threads. Produced by the Host from a WR issue; consumed by agent-fallback.yml to dispatch each Thread. Every Block PR must satisfy the contract for its Block. See docs/AGENTS.md § Checkpoint-Gated Grids and docs/CUDA_AGENT_MODEL.md (arriving in Block 4).",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "contract_version",
-    "grid",
-    "blocks"
-  ],
+  "required": ["contract_version", "grid", "blocks"],
   "properties": {
     "contract_version": {
       "description": "SemVer of this schema. Bump on breaking changes.",
@@ -17,17 +13,17 @@
       "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
     },
     "generated_at": {
-      "type": [ "string", "null" ],
+      "type": ["string", "null"],
       "format": "date-time"
     },
     "generated_by": {
       "description": "Identifier of the Host run that generated this contract (workflow run URL, script hash, or model name).",
-      "type": [ "string", "null" ]
+      "type": ["string", "null"]
     },
     "grid": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "wr_number", "wr_title", "checkpoint_gated" ],
+      "required": ["wr_number", "wr_title", "checkpoint_gated"],
       "properties": {
         "wr_number": {
           "description": "GitHub issue number of the WR that spawned this Grid.",
@@ -39,7 +35,7 @@
           "minLength": 1
         },
         "wr_url": {
-          "type": [ "string", "null" ],
+          "type": ["string", "null"],
           "format": "uri"
         },
         "checkpoint_gated": {
@@ -48,8 +44,8 @@
         },
         "goal_phase": {
           "description": "Which of the five GOAL.md phases this Grid serves (Research/Build/Ship/Monetize/Market).",
-          "type": [ "string", "null" ],
-          "enum": [ "research", "build", "ship", "monetize", "market", null ]
+          "type": ["string", "null"],
+          "enum": ["research", "build", "ship", "monetize", "market", null]
         }
       }
     },
@@ -64,7 +60,7 @@
     "block": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "id", "name", "role", "status", "threads" ],
+      "required": ["id", "name", "role", "status", "threads"],
       "properties": {
         "id": {
           "description": "Stable Block id inside this Grid: block-1, block-2, ...",
@@ -78,7 +74,15 @@
         "role": {
           "description": "Fleet lane the Block belongs to. Extend the enum only via a schema version bump.",
           "type": "string",
-          "enum": [ "research", "build", "review", "testing", "deploy", "docs", "meta" ]
+          "enum": [
+            "research",
+            "build",
+            "review",
+            "testing",
+            "deploy",
+            "docs",
+            "meta"
+          ]
         },
         "depends_on": {
           "description": "Block ids that must reach status=approved before this Block launches. Empty for Block 1.",
@@ -90,10 +94,17 @@
         "status": {
           "description": "Lifecycle position. shipped = PR opened; approved = checkpoint-approved label / next comment / merged.",
           "type": "string",
-          "enum": [ "pending", "in_progress", "shipped", "approved", "rejected", "blocked" ]
+          "enum": [
+            "pending",
+            "in_progress",
+            "shipped",
+            "approved",
+            "rejected",
+            "blocked"
+          ]
         },
         "pr_number": {
-          "type": [ "integer", "null" ],
+          "type": ["integer", "null"],
           "minimum": 1
         },
         "threads": {
@@ -113,7 +124,7 @@
     "thread": {
       "type": "object",
       "additionalProperties": false,
-      "required": [ "id", "kind", "prompt" ],
+      "required": ["id", "kind", "prompt"],
       "properties": {
         "id": {
           "description": "Stable Thread id inside this Block: thread-1, thread-2, ...",
@@ -132,12 +143,12 @@
         },
         "workspace": {
           "description": "Optional path prefix that scopes this Thread's file writes. Modeled on BytedTsinghua-SIA/CUDA-Agent's agent_workdir/ convention.",
-          "type": [ "string", "null" ]
+          "type": ["string", "null"]
         },
         "prefer_agent": {
           "description": "Passed through to agent-fallback.yml. See docs/AGENT_FALLBACK_PROCESS.md.",
           "type": "string",
-          "enum": [ "openrouter", "OpenHands", "auto" ],
+          "enum": ["openrouter", "OpenHands", "auto"],
           "default": "openrouter"
         },
         "timeout_minutes": {

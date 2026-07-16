@@ -5,7 +5,7 @@
 **Created:** 2026-07-06  
 **Researcher:** Copilot + OpenRouter  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -17,12 +17,12 @@ Route tags: #tool #app
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A — new product |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value             |
+| ----------- | ----------------- |
+| Stars       | N/A — new product |
+| Open Issues | N/A               |
+| Private     | No                |
+| Archived    | No                |
 
 ## Research Checklist
 
@@ -40,15 +40,17 @@ Route tags: #tool #app
 
 ### Source Paper Summary
 
-**Gavish L, Houreld NN.** "Therapeutic Efficacy of Home-Use Photobiomodulation Devices: A Systematic Literature Review." *Photomed Laser Surg.* 2019 Jan;37(1):4-16. [doi:10.1089/pho.2018.4485](https://doi.org/10.1089/pho.2018.4485). PMID: 30418078.
+**Gavish L, Houreld NN.** "Therapeutic Efficacy of Home-Use Photobiomodulation Devices: A Systematic Literature Review." _Photomed Laser Surg._ 2019 Jan;37(1):4-16. [doi:10.1089/pho.2018.4485](https://doi.org/10.1089/pho.2018.4485). PMID: 30418078.
 
 **Key findings (11 studies reviewed):**
+
 - Technology: near-infrared pulsed LEDs and low-level lasers (~808 nm), WALT-guideline dosages
 - Therapeutic indications covered: pain management, wound healing (including diabetic foot ulcers), diabetic macular edema, cognitive dysfunction, post-procedural side effects
 - 10 of 11 studies reported positive therapeutic outcomes
 - Conclusion: home-use PBM devices are safe, effective adjuncts; more RCTs recommended
 
 **B-Cure Laser product facts:**
+
 - Wavelength: 808 nm (near-infrared), class 3B laser
 - Treatment area: 4.5 cm², session duration: 6-8 min, frequency: 2x/day
 - Regulatory: CE (Class 2a), Health Canada licensed, ANVISA (Brazil) registered
@@ -69,6 +71,7 @@ The Gavish & Houreld 2018 systematic review ([PMID 30418078](https://europepmc.o
 **Output Type (from issue tags):** `#tool` + `#app` → desktop tool + web app
 
 **Features (MVP):**
+
 1. **Condition selector** — Pain / Wound Healing / Cognitive / Post-Procedure
 2. **Device selector** — B-Cure Classic / Pro / Sport (and compatible generic devices)
 3. **Protocol engine** — JSON-driven WALT-guideline treatment plans (wavelength, dosage J/cm², duration, frequency)
@@ -83,36 +86,36 @@ The Gavish & Houreld 2018 systematic review ([PMID 30418078](https://europepmc.o
 
 ### Market Size
 
-| Metric | Value | Source |
-| --- | --- | --- |
-| PBM device market size (2024) | ~$750M | [Emergen Research](https://www.emergenresearch.com/industry-report/photobiomodulation-pbm-device-market) |
-| PBM device market projected (2034) | ~$2.5B | [Emergen Research](https://www.emergenresearch.com/industry-report/photobiomodulation-pbm-device-market) |
-| CAGR | 13.5% (estimate) | [Emergen Research](https://www.emergenresearch.com/industry-report/photobiomodulation-pbm-device-market) |
-| Light therapy market (2024) | ~$1.2B | [Strategic Market Research](https://www.strategicmarketresearch.com/market-report/light-therapy-market) |
-| B-Cure Laser global users | 350,000+ families (internal estimate) | [bcurelaser.com](https://bcurelaser.com) |
+| Metric                             | Value                                 | Source                                                                                                   |
+| ---------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| PBM device market size (2024)      | ~$750M                                | [Emergen Research](https://www.emergenresearch.com/industry-report/photobiomodulation-pbm-device-market) |
+| PBM device market projected (2034) | ~$2.5B                                | [Emergen Research](https://www.emergenresearch.com/industry-report/photobiomodulation-pbm-device-market) |
+| CAGR                               | 13.5% (estimate)                      | [Emergen Research](https://www.emergenresearch.com/industry-report/photobiomodulation-pbm-device-market) |
+| Light therapy market (2024)        | ~$1.2B                                | [Strategic Market Research](https://www.strategicmarketresearch.com/market-report/light-therapy-market)  |
+| B-Cure Laser global users          | 350,000+ families (internal estimate) | [bcurelaser.com](https://bcurelaser.com)                                                                 |
 
 ### Competitor Analysis
 
-| Competitor | Product | Price | Notes |
-| --- | --- | --- | --- |
-| Vielight | Neuro Alpha (brain PBM) + companion app | $1,749 device; app free with purchase | Bluetooth-connected, iOS/Android app |
-| Joovv | Red light therapy panels + app | $595-$999 device; app free | Consumer red/NIR panels with guided protocols |
-| Luminance RED | At-home cold sore/wound devices + app | $259-$399 device; app free | Condition-specific devices |
-| THOR Photomedicine | Clinical-grade PBM systems | Pricing data pending — competitive benchmark research required. | Primarily clinical, no consumer app |
-| LumiThera | Valeda Light Delivery System | Pricing data pending — competitive benchmark research required. | Ophthalmology-focused clinical device |
+| Competitor         | Product                                 | Price                                                           | Notes                                         |
+| ------------------ | --------------------------------------- | --------------------------------------------------------------- | --------------------------------------------- |
+| Vielight           | Neuro Alpha (brain PBM) + companion app | $1,749 device; app free with purchase                           | Bluetooth-connected, iOS/Android app          |
+| Joovv              | Red light therapy panels + app          | $595-$999 device; app free                                      | Consumer red/NIR panels with guided protocols |
+| Luminance RED      | At-home cold sore/wound devices + app   | $259-$399 device; app free                                      | Condition-specific devices                    |
+| THOR Photomedicine | Clinical-grade PBM systems              | Pricing data pending — competitive benchmark research required. | Primarily clinical, no consumer app           |
+| LumiThera          | Valeda Light Delivery System            | Pricing data pending — competitive benchmark research required. | Ophthalmology-focused clinical device         |
 
 **Gap identified:** No standalone companion app exists for B-Cure Laser specifically; WALT-protocol guidance for home users is scattered across PDFs and not in an interactive format.
 
 ### SEO Keywords
 
-| Keyword | Volume (estimated) | Intent |
-| --- | --- | --- |
-| photobiomodulation therapy app | Low-medium | Informational / download |
-| B-Cure Laser app | Low | Brand + tool |
-| LLLT home therapy tracker | Low | Transactional |
-| low level laser therapy protocol | Medium | Informational |
-| red light therapy session tracker | Medium | Transactional |
-| pain relief laser therapy app | Medium | Transactional |
+| Keyword                           | Volume (estimated) | Intent                   |
+| --------------------------------- | ------------------ | ------------------------ |
+| photobiomodulation therapy app    | Low-medium         | Informational / download |
+| B-Cure Laser app                  | Low                | Brand + tool             |
+| LLLT home therapy tracker         | Low                | Transactional            |
+| low level laser therapy protocol  | Medium             | Informational            |
+| red light therapy session tracker | Medium             | Transactional            |
+| pain relief laser therapy app     | Medium             | Transactional            |
 
 ### Community Chatter
 
@@ -130,16 +133,16 @@ The Gavish & Houreld 2018 systematic review ([PMID 30418078](https://europepmc.o
 
 ### Functional Requirements
 
-| # | Requirement | Priority |
-| --- | --- | --- |
-| F1 | User selects condition (pain / wound / cognitive / post-procedure) | Must |
-| F2 | User selects device model; app displays matching WALT-guideline protocol | Must |
-| F3 | Session logger: date/time, treatment area, VAS score (0-10), free-text notes | Must |
-| F4 | Progress chart: VAS trend line over 30/90-day periods | Must |
-| F5 | PDF export of session history (Pro tier) | Must for Pro |
-| F6 | Polar.sh subscription gating: free (1 condition) vs. Pro ($9.99/mo, all conditions + PDF export) | Must |
-| F7 | PWA installability (manifest, service worker, offline protocol access) | Should |
-| F8 | Bluetooth device sync (B-Cure API, if available) | Nice-to-have (Phase 2) |
+| #   | Requirement                                                                                      | Priority               |
+| --- | ------------------------------------------------------------------------------------------------ | ---------------------- |
+| F1  | User selects condition (pain / wound / cognitive / post-procedure)                               | Must                   |
+| F2  | User selects device model; app displays matching WALT-guideline protocol                         | Must                   |
+| F3  | Session logger: date/time, treatment area, VAS score (0-10), free-text notes                     | Must                   |
+| F4  | Progress chart: VAS trend line over 30/90-day periods                                            | Must                   |
+| F5  | PDF export of session history (Pro tier)                                                         | Must for Pro           |
+| F6  | Polar.sh subscription gating: free (1 condition) vs. Pro ($9.99/mo, all conditions + PDF export) | Must                   |
+| F7  | PWA installability (manifest, service worker, offline protocol access)                           | Should                 |
+| F8  | Bluetooth device sync (B-Cure API, if available)                                                 | Nice-to-have (Phase 2) |
 
 ### Non-Functional Requirements
 
@@ -150,16 +153,16 @@ The Gavish & Houreld 2018 systematic review ([PMID 30418078](https://europepmc.o
 
 ### BOM (Bill of Materials)
 
-| Item | Technology/Service | Cost |
-| --- | --- | --- |
-| Framework | Next.js 14 (App Router) | Free (OSS) |
-| Hosting | Vercel (Hobby tier → Pro on scale) | $0-$20/mo |
-| Database (cloud sync) | Supabase (free tier for MVP) | $0-$25/mo |
-| Charts | Recharts or Chart.js | Free (OSS) |
-| PDF export | react-pdf or pdfmake | Free (OSS) |
-| Subscription | Polar.sh | 5% platform fee on revenue |
-| Domain | Custom .app domain | ~$12-20/yr |
-| CI/CD | GitHub Actions (existing) | Free |
+| Item                  | Technology/Service                 | Cost                       |
+| --------------------- | ---------------------------------- | -------------------------- |
+| Framework             | Next.js 14 (App Router)            | Free (OSS)                 |
+| Hosting               | Vercel (Hobby tier → Pro on scale) | $0-$20/mo                  |
+| Database (cloud sync) | Supabase (free tier for MVP)       | $0-$25/mo                  |
+| Charts                | Recharts or Chart.js               | Free (OSS)                 |
+| PDF export            | react-pdf or pdfmake               | Free (OSS)                 |
+| Subscription          | Polar.sh                           | 5% platform fee on revenue |
+| Domain                | Custom .app domain                 | ~$12-20/yr                 |
+| CI/CD                 | GitHub Actions (existing)          | Free                       |
 
 ## Recommendations
 
@@ -171,18 +174,18 @@ The Gavish & Houreld 2018 systematic review ([PMID 30418078](https://europepmc.o
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Severity | Probability | Mitigation |
-| --- | --- | --- | --- |
-| Medical device regulatory exposure (FDA/CE) | High | Medium | App is informational-only, not a medical device; cites published peer-reviewed research; includes prominent disclaimers |
-| B-Cure Laser trademark / brand association | Medium | Low | Use generic "PBM Companion" branding; do not claim official affiliation; link to published paper, not vendor site |
-| Small addressable market (niche device) | Medium | High | Broaden to all home-use LLLT/PBM devices (Joovv, Vielight, generic) — B-Cure is the entry point, not the limit |
-| Bluetooth API unavailability | Low | High | Phase 2 only; MVP is protocol-guidance-only, not hardware-dependent |
-| Competing free PDF protocols from WALT | Low | Medium | App adds value through personalization, logging, and progress tracking — not just protocol lookup |
+| Risk                                        | Severity | Probability | Mitigation                                                                                                              |
+| ------------------------------------------- | -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Medical device regulatory exposure (FDA/CE) | High     | Medium      | App is informational-only, not a medical device; cites published peer-reviewed research; includes prominent disclaimers |
+| B-Cure Laser trademark / brand association  | Medium   | Low         | Use generic "PBM Companion" branding; do not claim official affiliation; link to published paper, not vendor site       |
+| Small addressable market (niche device)     | Medium   | High        | Broaden to all home-use LLLT/PBM devices (Joovv, Vielight, generic) — B-Cure is the entry point, not the limit          |
+| Bluetooth API unavailability                | Low      | High        | Phase 2 only; MVP is protocol-guidance-only, not hardware-dependent                                                     |
+| Competing free PDF protocols from WALT      | Low      | Medium      | App adds value through personalization, logging, and progress tracking — not just protocol lookup                       |

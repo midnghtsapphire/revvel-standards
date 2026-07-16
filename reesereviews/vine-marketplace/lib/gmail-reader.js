@@ -13,15 +13,13 @@
  * Returns an array of raw ParsedMail objects from mailparser.
  */
 
-'use strict';
+const Imap = require("imap");
+const { simpleParser } = require("mailparser");
 
-const Imap = require('imap');
-const { simpleParser } = require('mailparser');
-
-const IMAP_HOST = process.env.GMAIL_IMAP_HOST || 'imap.gmail.com';
-const IMAP_PORT = parseInt(process.env.GMAIL_IMAP_PORT || '993', 10);
-const GMAIL_USER = process.env.GMAIL_USER || '';
-const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || '';
+const IMAP_HOST = process.env.GMAIL_IMAP_HOST || "imap.gmail.com";
+const IMAP_PORT = parseInt(process.env.GMAIL_IMAP_PORT || "993", 10);
+const GMAIL_USER = process.env.GMAIL_USER || "";
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || "";
 
 /**
  * Build IMAP search criteria to find Amazon emails optionally filtered by date range.
@@ -34,16 +32,13 @@ function buildSearchCriteria(since = null, before = null) {
 
   // Search for Amazon emails by subject keywords
   // IMAP OR is limited; we use TEXT search for broad capture then filter in-process
-  criteria.push(['OR',
-    ['SUBJECT', 'Amazon'],
-    ['FROM', '@amazon.com'],
-  ]);
+  criteria.push(["OR", ["SUBJECT", "Amazon"], ["FROM", "@amazon.com"]]);
 
   if (since) {
-    criteria.push(['SINCE', since]);
+    criteria.push(["SINCE", since]);
   }
   if (before) {
-    criteria.push(['BEFORE', before]);
+    criteria.push(["BEFORE", before]);
   }
 
   return criteria;
@@ -61,10 +56,12 @@ function buildSearchCriteria(since = null, before = null) {
 function fetchEmails({ since = null, before = null, markRead = false } = {}) {
   return new Promise((resolve, reject) => {
     if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
-      return reject(new Error(
-        'GMAIL_USER and GMAIL_APP_PASSWORD must be set. ' +
-        'See .env.example for setup instructions.'
-      ));
+      return reject(
+        new Error(
+          "GMAIL_USER and GMAIL_APP_PASSWORD must be set. " +
+            "See .env.example for setup instructions.",
+        ),
+      );
     }
 
     const imap = new Imap({
@@ -79,26 +76,32 @@ function fetchEmails({ since = null, before = null, markRead = false } = {}) {
 
     const mails = [];
 
-    imap.once('ready', () => {
-      imap.openBox('INBOX', false, (err) => {
-        if (err) { imap.end(); return reject(err); }
+    imap.once("ready", () => {
+      imap.openBox("INBOX", false, (err) => {
+        if (err) {
+          imap.end();
+          return reject(err);
+        }
 
         const criteria = buildSearchCriteria(since, before);
 
         imap.search(criteria, (searchErr, uids) => {
-          if (searchErr) { imap.end(); return reject(searchErr); }
+          if (searchErr) {
+            imap.end();
+            return reject(searchErr);
+          }
           if (!uids || uids.length === 0) {
             imap.end();
             return resolve([]);
           }
 
-          const fetch = imap.fetch(uids, { bodies: '', struct: true });
+          const fetch = imap.fetch(uids, { bodies: "", struct: true });
 
-          fetch.on('message', (msg) => {
+          fetch.on("message", (msg) => {
             const chunks = [];
-            msg.on('body', (stream) => {
-              stream.on('data', (chunk) => chunks.push(chunk));
-              stream.on('end', async () => {
+            msg.on("body", (stream) => {
+              stream.on("data", (chunk) => chunks.push(chunk));
+              stream.on("end", async () => {
                 try {
                   const raw = Buffer.concat(chunks);
                   const parsed = await simpleParser(raw);
@@ -110,14 +113,14 @@ function fetchEmails({ since = null, before = null, markRead = false } = {}) {
             });
           });
 
-          fetch.once('error', (fetchErr) => {
+          fetch.once("error", (fetchErr) => {
             imap.end();
             reject(fetchErr);
           });
 
-          fetch.once('end', () => {
+          fetch.once("end", () => {
             if (markRead && uids.length > 0) {
-              imap.addFlags(uids, '\\Seen', () => imap.end());
+              imap.addFlags(uids, "\\Seen", () => imap.end());
             } else {
               imap.end();
             }
@@ -126,8 +129,8 @@ function fetchEmails({ since = null, before = null, markRead = false } = {}) {
       });
     });
 
-    imap.once('error', (err) => reject(err));
-    imap.once('end', () => resolve(mails));
+    imap.once("error", (err) => reject(err));
+    imap.once("end", () => resolve(mails));
 
     imap.connect();
   });
@@ -139,13 +142,13 @@ function fetchEmails({ since = null, before = null, markRead = false } = {}) {
  */
 function filterAmazonEmails(mails) {
   return mails.filter((mail) => {
-    const from = mail.from?.text || '';
+    const from = mail.from?.text || "";
     const lower = from.toLowerCase();
     const emailTokens = lower.match(/[\w.+-]+@([\w.-]+)/g) || [];
     return emailTokens.some((token) => {
-      const atIdx = token.lastIndexOf('@');
-      const domain = atIdx !== -1 ? token.slice(atIdx + 1) : '';
-      return domain === 'amazon.com' || domain.endsWith('.amazon.com');
+      const atIdx = token.lastIndexOf("@");
+      const domain = atIdx !== -1 ? token.slice(atIdx + 1) : "";
+      return domain === "amazon.com" || domain.endsWith(".amazon.com");
     });
   });
 }

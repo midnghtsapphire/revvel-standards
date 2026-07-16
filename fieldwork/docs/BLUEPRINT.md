@@ -31,12 +31,12 @@
 
 ### Risks (acknowledged, not fatal)
 
-| Risk                                         | Mitigation                                                  |
-|----------------------------------------------|-------------------------------------------------------------|
-| Offline-first requirement on job sites       | PWA + local cache; defer heavy sync to v1.1                 |
-| OCR / voice-note accuracy                    | Use hosted Whisper + cloud OCR; manual edit always allowed  |
-| Enterprise procurement cycles                | Target sole practitioners first; self-serve pricing         |
-| Commodity "AI report generator" competitors  | Vertical focus + brand + PDF fidelity as the moat           |
+| Risk                                        | Mitigation                                                 |
+| ------------------------------------------- | ---------------------------------------------------------- |
+| Offline-first requirement on job sites      | PWA + local cache; defer heavy sync to v1.1                |
+| OCR / voice-note accuracy                   | Use hosted Whisper + cloud OCR; manual edit always allowed |
+| Enterprise procurement cycles               | Target sole practitioners first; self-serve pricing        |
+| Commodity "AI report generator" competitors | Vertical focus + brand + PDF fidelity as the moat          |
 
 ### If "No" — the fallback pivot
 
@@ -72,14 +72,14 @@ Keep that in the back pocket; don't build it yet.
 
 ### 5.1 Palette
 
-| Role                 | Hex       | Usage                                     |
-|----------------------|-----------|-------------------------------------------|
-| Background — Stark   | `#FFFFFF` | Page background                           |
-| Surface — Concrete   | `#F5F5F5` | Secondary panels, "input" transformation  |
-| Border — Blueprint   | `#111418` | 1px section dividers, card borders        |
-| Text — Blueprint     | `#111418` | Body and headlines                        |
-| Text — Graphite      | `#4A4F55` | Secondary copy                            |
-| Accent — Safety      | `#FF5733` | **CTAs and critical status only**         |
+| Role               | Hex       | Usage                                    |
+| ------------------ | --------- | ---------------------------------------- |
+| Background — Stark | `#FFFFFF` | Page background                          |
+| Surface — Concrete | `#F5F5F5` | Secondary panels, "input" transformation |
+| Border — Blueprint | `#111418` | 1px section dividers, card borders       |
+| Text — Blueprint   | `#111418` | Body and headlines                       |
+| Text — Graphite    | `#4A4F55` | Secondary copy                           |
+| Accent — Safety    | `#FF5733` | **CTAs and critical status only**        |
 
 > Safety Orange is rationed. It appears **only** on: primary CTA buttons,
 > the "LIVE" / "WIP" status dots, and the pricing card's single highlight

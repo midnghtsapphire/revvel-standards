@@ -44,12 +44,12 @@ Runs at: `http://localhost:3008`
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Start dev server at `http://localhost:3008` |
-| `npm run build` | Production build |
-| `npm run start` | Serve production build on port 3008 |
-| `npm run lint` | Run ESLint |
+| Command         | Description                                 |
+| --------------- | ------------------------------------------- |
+| `npm run dev`   | Start dev server at `http://localhost:3008` |
+| `npm run build` | Production build                            |
+| `npm run start` | Serve production build on port 3008         |
+| `npm run lint`  | Run ESLint                                  |
 
 ## Deployment
 

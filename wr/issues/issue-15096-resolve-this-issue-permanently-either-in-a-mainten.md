@@ -8,8 +8,8 @@
 
 ---
 
-
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-28686025517.md`
@@ -30,6 +30,7 @@ Source packet: `docs/research-engine/run-28686025517.md`
 **Primary Audience**: Development teams and DevOps engineers managing JavaScript/Node.js projects with CI/CD pipelines experiencing markdown linting bottlenecks.
 
 **Why This Audience**:
+
 - Experiencing urgent pain from CI failures due to accumulated markdown lint violations
 - Developer productivity loss from pre-existing technical debt
 - Maintenance overhead from manual lint fixes
@@ -39,16 +40,19 @@ Source packet: `docs/research-engine/run-28686025517.md`
 ## 3. Marketing and SEO Plan
 
 **Primary Keywords**:
+
 - `npm run lint markdown errors` (Transactional)
 - `markdown linting CI pipeline failure` (Transactional)
 - `markdownlint pre-existing backlog` (Informational)
 
 **Content Strategy**:
+
 - Landing page: `/docs/markdown-linting-ci-setup`
 - Title: "Fix Markdown Linting Errors in CI/CD Pipelines - Complete Guide"
 - Meta: "Resolve npm run lint markdown failures and handle pre-existing backlogs. Step-by-step CI integration with automated fixes."
 
 **Distribution Channels**:
+
 - GitHub Marketplace
 - Dev.to, Reddit r/devops
 - Stack Overflow answers
@@ -56,14 +60,15 @@ Source packet: `docs/research-engine/run-28686025517.md`
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Tool | GitHub Stars | Approach | Notes |
-|------|-------------|----------|-------|
-| markdownlint-cli | 4.5k | Node.js CLI, autofix | Most popular, widely adopted |
-| markdownlint-cli2 | 1.1k | Improved CLI, parallel | Faster for large repos |
-| remark-lint | 1.5k | Pluggable, JS/TS | Highly configurable |
-| textlint | 2.8k | General text linting | Broader scope |
+| Tool              | GitHub Stars | Approach               | Notes                        |
+| ----------------- | ------------ | ---------------------- | ---------------------------- |
+| markdownlint-cli  | 4.5k         | Node.js CLI, autofix   | Most popular, widely adopted |
+| markdownlint-cli2 | 1.1k         | Improved CLI, parallel | Faster for large repos       |
+| remark-lint       | 1.5k         | Pluggable, JS/TS       | Highly configurable          |
+| textlint          | 2.8k         | General text linting   | Broader scope                |
 
 **Key Insights**:
+
 - All core tools are FOSS with no direct pricing
 - Market is mature with established players
 - Differentiation opportunity in developer experience and enterprise features
@@ -71,11 +76,13 @@ Source packet: `docs/research-engine/run-28686025517.md`
 ## 5. Chatter and Demand Signals
 
 **Common Pain Points**:
+
 - "CI fails due to markdownlint errors in old files"
 - "How do I suppress existing markdownlint errors?"
 - "We have thousands of markdownlint errors, how to fix incrementally?"
 
 **Evidence Sources**:
+
 - [GitHub: markdownlint-cli issues](https://github.com/DavidAnson/markdownlint-cli/issues/135)
 - [Stack Overflow: markdown lint legacy docs](https://stackoverflow.com/questions/61301344/how-to-handle-markdownlint-errors-in-legacy-docs)
 - [Azure SDK: Linting backlog workaround](https://github.com/Azure/azure-sdk-for-js/issues/11084)
@@ -83,16 +90,19 @@ Source packet: `docs/research-engine/run-28686025517.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Verified Facts**:
+
 - Markdown linting backlogs are common when introducing linters to mature codebases
 - Standard solutions include incremental linting and automated fixing
 - Community consensus favors lint-staged approach for new code
 
 **Evidence Gaps**:
+
 - Specific repository and CI configuration not provided
 - Exact error count and types unknown
 - No CI failure logs or linting output available
 
 **Required Verification**:
+
 - Run `npm run lint` to quantify backlog
 - Review package.json for linting dependencies
 - Analyze CI configuration files
@@ -100,17 +110,20 @@ Source packet: `docs/research-engine/run-28686025517.md`
 ## 7. Build Requirements and Acceptance Gates
 
 **Immediate Requirements**:
+
 1. Modify CI to lint only changed files
 2. Implement `.markdownlintignore` for legacy files
 3. Add pre-commit hooks via lint-staged
 
 **Acceptance Gates**:
+
 - [ ] CI pipeline passes without markdown lint failures
 - [ ] New markdown files pass linting by default
 - [ ] Automated fix script processes entire backlog
 - [ ] Documentation quality maintained post-cleanup
 
 **Technical Implementation**:
+
 ```yaml
 # .github/workflows/lint-incremental.yml
 name: Incremental Markdown Lint
@@ -123,7 +136,7 @@ jobs:
       - uses: tj-actions/changed-files@v44
         id: changed-files-md
         with:
-          files: '**.md'
+          files: "**.md"
       - name: Lint Changed Files
         if: steps.changed-files-md.outputs.any_changed == 'true'
         run: npx markdownlint-cli2 ${{ steps.changed-files-md.outputs.all_changed_files }}
@@ -132,24 +145,29 @@ jobs:
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 **Focus**: Analyze markdown files for common linting violations (MD013 line length, MD009 trailing spaces)
 **Action**: Generate fix recommendations for auto-fixable issues
 
 ### For OpenRouter
+
 **Focus**: Review CI configuration for optimal linting integration
 **Action**: Suggest performance improvements for large file sets
 
 ### For Coderabbit
+
 **Focus**: Validate markdown formatting changes don't break documentation
 **Action**: Flag any semantic changes in auto-fixed content
 
 ### For Ralph Loop
+
 **Focus**: Ensure incremental linting doesn't miss critical files
 **Action**: Verify coverage of all new/changed markdown files
 
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Add Incremental Linting
+
 ```json
 {
   "scripts": {
@@ -157,18 +175,23 @@ jobs:
   }
 }
 ```
+
 **Commit**: `fix: add incremental markdown linting for changed files only`
 
 ### Fix 2: Maintenance Script
+
 ```javascript
 // scripts/fix-markdown-backlog.js
-const { execSync } = require('child_process');
+const { execSync } = require("child_process");
 const BATCH_SIZE = 10;
 
 const files = execSync('find . -name "*.md" -not -path "./node_modules/*"')
-  .toString().split('\n').filter(Boolean).slice(0, BATCH_SIZE);
+  .toString()
+  .split("\n")
+  .filter(Boolean)
+  .slice(0, BATCH_SIZE);
 
-files.forEach(file => {
+files.forEach((file) => {
   try {
     execSync(`npx markdownlint-cli2-fix "${file}"`);
     console.log(`Fixed: ${file}`);
@@ -177,9 +200,11 @@ files.forEach(file => {
   }
 });
 ```
+
 **Commit**: `feat: add batch markdown fix script for backlog cleanup`
 
 ### Fix 3: Pre-commit Hook
+
 ```json
 {
   "lint-staged": {
@@ -187,6 +212,7 @@ files.forEach(file => {
   }
 }
 ```
+
 **Commit**: `chore: add pre-commit hook for markdown linting`
 
 ## 10. Labels to Apply
@@ -199,8 +225,10 @@ files.forEach(file => {
 - `developer-experience` - Impacts developer workflow
 
 **Priority Labels**:
+
 - `priority-high` - Blocking CI and development
 - `needs-triage` - Requires technical assessment
+
 ---
 
 ### Output Type (required)

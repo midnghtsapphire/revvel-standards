@@ -53,19 +53,19 @@ The `midnghtsapphire/hvac-calc-service` target repository did not exist at resea
 
 ## Artifact Engine Map
 
-| Artifact | Path |
-| --- | --- |
-| Calculation engine | `products/hvac-calc-service/app/data/calculator.ts` |
-| Constants / data | `products/hvac-calc-service/app/data/constants.ts` |
-| REST API route | `products/hvac-calc-service/app/api/calculate/route.ts` |
-| UI | `products/hvac-calc-service/app/page.tsx` |
-| Tests | `products/hvac-calc-service/tests/calculator.test.ts` |
-| README | `products/hvac-calc-service/README.md` |
+| Artifact           | Path                                                    |
+| ------------------ | ------------------------------------------------------- |
+| Calculation engine | `products/hvac-calc-service/app/data/calculator.ts`     |
+| Constants / data   | `products/hvac-calc-service/app/data/constants.ts`      |
+| REST API route     | `products/hvac-calc-service/app/api/calculate/route.ts` |
+| UI                 | `products/hvac-calc-service/app/page.tsx`               |
+| Tests              | `products/hvac-calc-service/tests/calculator.test.ts`   |
+| README             | `products/hvac-calc-service/README.md`                  |
 
 ## Agent Self-Healing Journal
 
-| Issue | Resolution |
-| --- | --- |
-| Target repo `hvac-calc-service` returned 404 | Bootstrapped as monorepo product per revvel-standards pattern |
-| OpenRouter triage failed (HTTP 402 insufficient credits) | Agent proceeded with manual research and implementation |
-| No existing codebase to maintain | New build — implemented full product from scratch |
+| Issue                                                    | Resolution                                                    |
+| -------------------------------------------------------- | ------------------------------------------------------------- |
+| Target repo `hvac-calc-service` returned 404             | Bootstrapped as monorepo product per revvel-standards pattern |
+| OpenRouter triage failed (HTTP 402 insufficient credits) | Agent proceeded with manual research and implementation       |
+| No existing codebase to maintain                         | New build — implemented full product from scratch             |

@@ -29,12 +29,12 @@ specifications, and request a demo or quote.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A — new product |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value             |
+| ----------- | ----------------- |
+| Stars       | N/A — new product |
+| Open Issues | N/A               |
+| Private     | No                |
+| Archived    | No                |
 
 ## Research Checklist
 
@@ -71,14 +71,15 @@ multi-vendor marketplace.
 
 **Primary Target: Medical Clinic Procurement Managers & Specialist Clinicians**
 
-| Segment | Pain Point | Willingness to Pay |
-|---|---|---|
+| Segment                           | Pain Point                                                           | Willingness to Pay                       |
+| --------------------------------- | -------------------------------------------------------------------- | ---------------------------------------- |
 | Dental clinic owners (US, AU, EU) | Confusing laser specs across vendors — hard to pick right wavelength | $20–$80/month for a guided selector tool |
-| Med-spa operators | No aggregated comparison tool for aesthetic diode lasers | $30–$100/month |
-| Hospital biomedical buyers | Must issue RFQs without a structured feature comparison | Enterprise tier $200+/month |
-| Distributors/resellers | No white-label tool to send clients | White-label SaaS license $500+/month |
+| Med-spa operators                 | No aggregated comparison tool for aesthetic diode lasers             | $30–$100/month                           |
+| Hospital biomedical buyers        | Must issue RFQs without a structured feature comparison              | Enterprise tier $200+/month              |
+| Distributors/resellers            | No white-label tool to send clients                                  | White-label SaaS license $500+/month     |
 
 **Why now:**
+
 - Dental diode laser market ~$316M (2024), forecast CAGR 4–6.5% through 2034 —
   [Future Market Insights](https://www.futuremarketinsights.com/reports/dental-lasers-market)
 - Procurement is still highly manual; most clinics email PDFs and compare on Excel
@@ -88,6 +89,7 @@ multi-vendor marketplace.
 ## 3. Marketing and SEO Plan
 
 **Primary Keywords (estimated monthly search volume — estimates due to lack of SEMrush/Ahrefs access; verify before paid ad spend):**
+
 - "medical laser product selector" — low volume, low competition → high conversion intent
 - "diode laser comparison dental" — ~500–1K/mo (internal estimate)
 - "best medical laser for clinic" — ~1K–5K/mo (internal estimate)
@@ -95,15 +97,18 @@ multi-vendor marketplace.
 - "surgical laser system buyer guide" — ~200–500/mo (internal estimate)
 
 **Landing Page Hook:**
+
 > "Answer 3 questions. Get the right medical laser in 60 seconds."
 
 **Content Strategy:**
+
 1. **Pillar Page:** "Complete Guide to Choosing a Medical Diode Laser for Your Clinic"
 2. **Comparison Pages:** Dental vs. surgical vs. aesthetic lasers
 3. **Buyer Guides:** 810nm vs 980nm vs 1064nm wavelength comparisons
 4. **Case Studies:** Use-case walkthroughs (perio treatment, soft-tissue surgery, dermatology)
 
 **Distribution:**
+
 - LinkedIn (targeting dental and med-spa practitioners)
 - r/Dentistry, r/medicaldevices, r/PlasticSurgery subreddits
 - Dental trade press (Dental Tribune, Dentistry.co.uk)
@@ -111,14 +116,14 @@ multi-vendor marketplace.
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Pricing | Key Features | GitHub Stars | Moat/Weakness |
-|---|---|---|---|---|
-| [Pabau](https://pabau.com) | ~$90–$150/mo (by quote) | All-in-one clinic mgmt, no laser selector | N/A (closed) | General clinic mgmt, not laser-focused |
-| [Carepatron](https://carepatron.com) | Free–$49/mo | Small clinic EHR | N/A | No device/equipment discovery |
-| [Easy Clinic (Cura AI)](https://www.easyclinic.io) | Custom quote | AI-driven workflow | N/A | No product-selection feature |
-| Manufacturer PDFs (Dimed, BIOLASE, Fotona) | Free | Static brochures | N/A | No guided filtering, no comparison |
-| [BIOLASE](https://biolase.com) | Devices $3K–$50K | Waterlase, dental focus | N/A (hardware) | No cross-vendor comparison |
-| [Fotona](https://fotona.com) | Devices $10K–$100K | Surgical + aesthetic | N/A (hardware) | No guided selector tool |
+| Competitor                                         | Pricing                 | Key Features                              | GitHub Stars   | Moat/Weakness                          |
+| -------------------------------------------------- | ----------------------- | ----------------------------------------- | -------------- | -------------------------------------- |
+| [Pabau](https://pabau.com)                         | ~$90–$150/mo (by quote) | All-in-one clinic mgmt, no laser selector | N/A (closed)   | General clinic mgmt, not laser-focused |
+| [Carepatron](https://carepatron.com)               | Free–$49/mo             | Small clinic EHR                          | N/A            | No device/equipment discovery          |
+| [Easy Clinic (Cura AI)](https://www.easyclinic.io) | Custom quote            | AI-driven workflow                        | N/A            | No product-selection feature           |
+| Manufacturer PDFs (Dimed, BIOLASE, Fotona)         | Free                    | Static brochures                          | N/A            | No guided filtering, no comparison     |
+| [BIOLASE](https://biolase.com)                     | Devices $3K–$50K        | Waterlase, dental focus                   | N/A (hardware) | No cross-vendor comparison             |
+| [Fotona](https://fotona.com)                       | Devices $10K–$100K      | Surgical + aesthetic                      | N/A (hardware) | No guided selector tool                |
 
 **Market Gap:** No OSS or affordable SaaS provides a guided, neutral medical-laser product
 selector with live comparison and quote-request capability. The space is dominated by
@@ -137,6 +142,7 @@ manufacturer brochures and generic clinic management tools.
 ## 6. Factual Validation and Evidence Gaps
 
 **Verified Facts:**
+
 - Dimed Laser: ISO 13485 + CE/EU-MDR certified, Wuhan, China, 20+ years experience —
   [dimedlaser.com/about-us/](https://dimedlaser.com/about-us/)
 - Global medical laser market ~$6.1B in 2024, ~14% CAGR —
@@ -147,6 +153,7 @@ manufacturer brochures and generic clinic management tools.
   (portable therapy laser) — [dimedlaser.com](https://dimedlaser.com)
 
 **Evidence Gaps:**
+
 - Exact buyer decision-making flow (requires user interviews or distributor feedback)
 - Specific keyword volume data (requires SEMrush/Ahrefs access)
 - Dimed Laser device pricing (not publicly listed — contact sales required)
@@ -207,48 +214,48 @@ Phase 1 → Phase 2 revenue ramp of the PRIME DIRECTIVE.
 
 ### Market Sizing
 
-| Metric | Value | Source |
-|---|---|---|
-| Global medical laser market (2024) | ~$6.1B | [ResearchAndMarkets](https://www.researchandmarkets.com/reports/5923074/medical-laser-market-analysis-and-forecast) |
-| Diode laser share | ~44% of medical laser market | [ResearchAndMarkets](https://www.researchandmarkets.com/reports/5923074/medical-laser-market-analysis-and-forecast) (estimate) |
-| CAGR (medical laser) | ~14% | [ResearchAndMarkets](https://www.researchandmarkets.com/reports/5923074/medical-laser-market-analysis-and-forecast) |
-| Dental diode laser market (2024) | ~$316M | [Future Market Insights](https://www.futuremarketinsights.com/reports/dental-lasers-market) |
-| Dental diode laser CAGR | 4–6.5% through 2034 | [Future Market Insights](https://www.futuremarketinsights.com/reports/dental-lasers-market) |
+| Metric                             | Value                        | Source                                                                                                                         |
+| ---------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Global medical laser market (2024) | ~$6.1B                       | [ResearchAndMarkets](https://www.researchandmarkets.com/reports/5923074/medical-laser-market-analysis-and-forecast)            |
+| Diode laser share                  | ~44% of medical laser market | [ResearchAndMarkets](https://www.researchandmarkets.com/reports/5923074/medical-laser-market-analysis-and-forecast) (estimate) |
+| CAGR (medical laser)               | ~14%                         | [ResearchAndMarkets](https://www.researchandmarkets.com/reports/5923074/medical-laser-market-analysis-and-forecast)            |
+| Dental diode laser market (2024)   | ~$316M                       | [Future Market Insights](https://www.futuremarketinsights.com/reports/dental-lasers-market)                                    |
+| Dental diode laser CAGR            | 4–6.5% through 2034          | [Future Market Insights](https://www.futuremarketinsights.com/reports/dental-lasers-market)                                    |
 
 ### Competitive Pricing Benchmark
 
-| Tool | Monthly Price | Notes |
-|---|---|---|
-| Pabau | ~$90–$150/mo | General clinic mgmt; no laser selector |
-| Carepatron | Free–$49/mo | Small-clinic EHR; no device discovery |
-| Easy Clinic | Custom quote | AI workflow; no product-selection |
-| Praxify | $1/user/mo | Lean EMR; no equipment search |
-| **Proposed App** | $20–$80/mo (clinic); $500+/mo (white-label) | Laser-specific selector + comparison |
+| Tool             | Monthly Price                               | Notes                                  |
+| ---------------- | ------------------------------------------- | -------------------------------------- |
+| Pabau            | ~$90–$150/mo                                | General clinic mgmt; no laser selector |
+| Carepatron       | Free–$49/mo                                 | Small-clinic EHR; no device discovery  |
+| Easy Clinic      | Custom quote                                | AI workflow; no product-selection      |
+| Praxify          | $1/user/mo                                  | Lean EMR; no equipment search          |
+| **Proposed App** | $20–$80/mo (clinic); $500+/mo (white-label) | Laser-specific selector + comparison   |
 
 ## Step 3 — Requirements
 
 ### Functional Requirements
 
-| ID | Requirement | Priority |
-|---|---|---|
-| F1 | Guided wizard: ≥ 3 specialty/need filters → product recommendation | P0 |
-| F2 | Side-by-side comparison table for ≥ 3 products | P0 |
-| F3 | Product detail pages with downloadable spec sheet links | P0 |
-| F4 | Quote/demo request form with email confirmation | P0 |
-| F5 | Email capture / waitlist for Polar.sh integration | P1 |
-| F6 | White-label theming (logo, color palette swap via config) | P1 |
-| F7 | Admin panel: add/edit product catalog entries | P2 |
-| F8 | Multi-vendor catalog expansion (beyond Dimed) | P3 |
+| ID  | Requirement                                                        | Priority |
+| --- | ------------------------------------------------------------------ | -------- |
+| F1  | Guided wizard: ≥ 3 specialty/need filters → product recommendation | P0       |
+| F2  | Side-by-side comparison table for ≥ 3 products                     | P0       |
+| F3  | Product detail pages with downloadable spec sheet links            | P0       |
+| F4  | Quote/demo request form with email confirmation                    | P0       |
+| F5  | Email capture / waitlist for Polar.sh integration                  | P1       |
+| F6  | White-label theming (logo, color palette swap via config)          | P1       |
+| F7  | Admin panel: add/edit product catalog entries                      | P2       |
+| F8  | Multi-vendor catalog expansion (beyond Dimed)                      | P3       |
 
 ### Non-Functional Requirements
 
-| ID | Requirement | Target |
-|---|---|---|
-| NF1 | Lighthouse Performance (mobile) | ≥ 90 |
-| NF2 | WCAG 2.1 AA accessibility | Pass |
-| NF3 | Time to First Byte | < 200ms (Vercel Edge) |
-| NF4 | Core Web Vitals (LCP) | < 2.5s |
-| NF5 | Zero secrets in source | Enforced by secret scanning |
+| ID  | Requirement                     | Target                      |
+| --- | ------------------------------- | --------------------------- |
+| NF1 | Lighthouse Performance (mobile) | ≥ 90                        |
+| NF2 | WCAG 2.1 AA accessibility       | Pass                        |
+| NF3 | Time to First Byte              | < 200ms (Vercel Edge)       |
+| NF4 | Core Web Vitals (LCP)           | < 2.5s                      |
+| NF5 | Zero secrets in source          | Enforced by secret scanning |
 
 ## Recommendations
 
@@ -263,33 +270,33 @@ Phase 1 → Phase 2 revenue ramp of the PRIME DIRECTIVE.
 
 ## Dependencies
 
-| Field | Value |
-|---|---|
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| Dimed Laser rebrands or changes product catalog | Low | Medium | Keep catalog in versioned JSON; update quarterly |
-| Medical device regulations restrict marketing claims | Medium | High | Avoid clinical efficacy claims; use vendor-neutral spec comparisons only |
-| Low SEO traction for niche keywords | Medium | Medium | Supplement with LinkedIn/forum distribution; focus on white-label B2B channel |
-| White-label buyers need HIPAA compliance | Medium | High | Add BAA option in Polar.sh enterprise plan; consult legal before launch |
-| Competitor (e.g., a major EMR) ships laser selector add-on | Low | High | Ship fast; establish SEO and distributor pipeline before incumbents notice |
+| Risk                                                       | Likelihood | Impact | Mitigation                                                                    |
+| ---------------------------------------------------------- | ---------- | ------ | ----------------------------------------------------------------------------- |
+| Dimed Laser rebrands or changes product catalog            | Low        | Medium | Keep catalog in versioned JSON; update quarterly                              |
+| Medical device regulations restrict marketing claims       | Medium     | High   | Avoid clinical efficacy claims; use vendor-neutral spec comparisons only      |
+| Low SEO traction for niche keywords                        | Medium     | Medium | Supplement with LinkedIn/forum distribution; focus on white-label B2B channel |
+| White-label buyers need HIPAA compliance                   | Medium     | High   | Add BAA option in Polar.sh enterprise plan; consult legal before launch       |
+| Competitor (e.g., a major EMR) ships laser selector add-on | Low        | High   | Ship fast; establish SEO and distributor pipeline before incumbents notice    |
 
 ## BOM (Bill of Materials)
 
-| Item | Cost | Notes |
-|---|---|---|
-| Vercel Hobby (dev) | $0/mo | Upgrade to Pro at $20/mo when traffic > hobby limits |
-| Vercel Pro (production) | $20/mo | Required for custom domain + bandwidth |
-| Resend (email) | $0–$20/mo | 3K emails/mo free; $20/mo for 50K |
-| Polar.sh | 5% transaction fee | No monthly fee on Hobby plan |
-| PostHog Cloud | $0–$20/mo | 1M events/mo free |
-| Domain (e.g., laserselect.io) | ~$15/yr | Optional; can use Vercel subdomain initially |
-| **Total MVP** | **~$0–$60/mo** | Scales with revenue |
+| Item                          | Cost               | Notes                                                |
+| ----------------------------- | ------------------ | ---------------------------------------------------- |
+| Vercel Hobby (dev)            | $0/mo              | Upgrade to Pro at $20/mo when traffic > hobby limits |
+| Vercel Pro (production)       | $20/mo             | Required for custom domain + bandwidth               |
+| Resend (email)                | $0–$20/mo          | 3K emails/mo free; $20/mo for 50K                    |
+| Polar.sh                      | 5% transaction fee | No monthly fee on Hobby plan                         |
+| PostHog Cloud                 | $0–$20/mo          | 1M events/mo free                                    |
+| Domain (e.g., laserselect.io) | ~$15/yr            | Optional; can use Vercel subdomain initially         |
+| **Total MVP**                 | **~$0–$60/mo**     | Scales with revenue                                  |
 
 ## Domain Strategy
 
@@ -299,13 +306,13 @@ Phase 1 → Phase 2 revenue ramp of the PRIME DIRECTIVE.
 
 ## Monetization Path
 
-| Tier | Price | Features | Target |
-|---|---|---|---|
-| Free | $0 | Wizard + 3-product comparison | Individual practitioners |
-| Pro | $29/mo | Unlimited comparisons + export PDF | Clinic buyers |
-| Team | $79/mo | Multi-user + saved comparisons | Group practices |
-| White-label | $499/mo | Custom branding + own catalog | Distributors/resellers |
-| Enterprise | Custom | HIPAA BAA + API access + SLA | Hospital systems |
+| Tier        | Price   | Features                           | Target                   |
+| ----------- | ------- | ---------------------------------- | ------------------------ |
+| Free        | $0      | Wizard + 3-product comparison      | Individual practitioners |
+| Pro         | $29/mo  | Unlimited comparisons + export PDF | Clinic buyers            |
+| Team        | $79/mo  | Multi-user + saved comparisons     | Group practices          |
+| White-label | $499/mo | Custom branding + own catalog      | Distributors/resellers   |
+| Enterprise  | Custom  | HIPAA BAA + API access + SLA       | Hospital systems         |
 
 **Revenue target:** 10 white-label clients = $5K MRR; 200 Pro users = $5.8K MRR →
 combined $10.8K MRR aligns with Phase 1 PRIME DIRECTIVE goal of $10K/month.

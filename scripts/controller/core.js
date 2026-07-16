@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
 /**
  * FLEET CONTROLLER · core — the grid-level scheduler over every orchestrator.
@@ -28,7 +28,8 @@ const DEFAULTS = Object.freeze({
   // NEVER preempt the fleet's own immune system or the controller itself — cutting
   // these would be the scheduler killing its own scheduler. Matched against a
   // run's workflow path + name.
-  protectedRe: /self-healing|repo-self-healer|fleet-controller|agent-monitor|secret-persistence-guard|biome-/i,
+  protectedRe:
+    /self-healing|repo-self-healer|fleet-controller|agent-monitor|secret-persistence-guard|biome-/i,
 });
 
 // Fallback LLM chain a cut orchestrator is reassigned through (best → next).
@@ -38,16 +39,16 @@ const DEFAULTS = Object.freeze({
 // a drift test in controller-core.test.js checks this chain against the SSOT
 // denylist so a banned model can never sneak back in.
 const DEFAULT_MODEL_CHAIN = Object.freeze([
-  'anthropic/claude-opus-4.8', // Opus twin — primary
-  'anthropic/claude-opus-4.7', // Opus twin — fallback
-  'anthropic/claude-fable-5', // reasoning-tier escalation (Claude 5 family)
+  "anthropic/claude-opus-4.8", // Opus twin — primary
+  "anthropic/claude-opus-4.7", // Opus twin — fallback
+  "anthropic/claude-fable-5", // reasoning-tier escalation (Claude 5 family)
 ]);
 
 // --- time helpers (pure) ---------------------------------------------------
 
 function parseMs(...candidates) {
   for (const c of candidates) {
-    const t = Date.parse(c || '');
+    const t = Date.parse(c || "");
     if (Number.isFinite(t)) return t;
   }
   return null;
@@ -62,7 +63,7 @@ function runUpdatedMs(run) {
 }
 
 function isProtected(run, re = DEFAULTS.protectedRe) {
-  return re.test(`${run.path || ''} ${run.name || ''}`);
+  return re.test(`${run.path || ""} ${run.name || ""}`);
 }
 
 // --- classification (pure) -------------------------------------------------
@@ -80,12 +81,24 @@ function classifyRun(run, nowMs, cfg = DEFAULTS) {
     protected: isProtected(run, cfg.protectedRe),
   };
 
-  if (run.status === 'completed') {
-    return { ...base, health: 'done', ageMs: null, sinceUpdateMs: null, reason: run.conclusion || 'completed' };
+  if (run.status === "completed") {
+    return {
+      ...base,
+      health: "done",
+      ageMs: null,
+      sinceUpdateMs: null,
+      reason: run.conclusion || "completed",
+    };
   }
-  if (run.status !== 'in_progress') {
+  if (run.status !== "in_progress") {
     // queued / waiting / pending / requested — a trigger that hasn't been picked up.
-    return { ...base, health: 'queued', ageMs: null, sinceUpdateMs: null, reason: 'awaiting a runner (trigger)' };
+    return {
+      ...base,
+      health: "queued",
+      ageMs: null,
+      sinceUpdateMs: null,
+      reason: "awaiting a runner (trigger)",
+    };
   }
 
   const start = runStartMs(run);
@@ -93,13 +106,13 @@ function classifyRun(run, nowMs, cfg = DEFAULTS) {
   const ageMs = start != null ? nowMs - start : null;
   const sinceUpdateMs = upd != null ? nowMs - upd : null;
 
-  let health = 'healthy';
-  let reason = 'running within budget';
+  let health = "healthy";
+  let reason = "running within budget";
   if (ageMs != null && ageMs >= cfg.maxRunMs) {
-    health = 'runaway';
+    health = "runaway";
     reason = `running ${Math.round(ageMs / 60000)}m ≥ ${Math.round(cfg.maxRunMs / 60000)}m budget`;
   } else if (sinceUpdateMs != null && sinceUpdateMs >= cfg.stallMs) {
-    health = 'stalled';
+    health = "stalled";
     reason = `no progress for ${Math.round(sinceUpdateMs / 60000)}m ≥ ${Math.round(cfg.stallMs / 60000)}m`;
   }
   return { ...base, health, ageMs, sinceUpdateMs, reason };
@@ -108,7 +121,9 @@ function classifyRun(run, nowMs, cfg = DEFAULTS) {
 // Which orchestrators to cut: the stalled + runaway ones, never a protected run
 // (the immune system / the controller itself). This is the eviction decision.
 function selectPreemptions(classified, cfg = DEFAULTS) {
-  return classified.filter((c) => (c.health === 'stalled' || c.health === 'runaway') && !c.protected);
+  return classified.filter(
+    (c) => (c.health === "stalled" || c.health === "runaway") && !c.protected,
+  );
 }
 
 // Next untried model in the fallback chain (null when exhausted).
@@ -129,7 +144,8 @@ function nextModel(chain, tried) {
  */
 function planPreemptions(cuts, opts = {}) {
   const chain = opts.modelChain || DEFAULT_MODEL_CHAIN;
-  const maxReassigns = opts.maxReassigns != null ? opts.maxReassigns : DEFAULTS.maxReassigns;
+  const maxReassigns =
+    opts.maxReassigns != null ? opts.maxReassigns : DEFAULTS.maxReassigns;
   const prior = opts.priorReassigns || {};
   return (cuts || []).map((c) => {
     const key = c.path || String(c.id);
@@ -138,16 +154,16 @@ function planPreemptions(cuts, opts = {}) {
     if (seen.count < maxReassigns && next) {
       return {
         ...c,
-        action: 'reassign',
+        action: "reassign",
         nextModel: next,
         reassignCount: seen.count + 1,
         triedModels: [...(seen.tried || []), next],
-        ref: c.headBranch || 'main',
+        ref: c.headBranch || "main",
       };
     }
     return {
       ...c,
-      action: 'escalate',
+      action: "escalate",
       reassignCount: seen.count,
       triedModels: seen.tried || [],
       reason: `${c.reason}; ${seen.count} reassignment(s) exhausted — handing to self-healing`,
@@ -157,14 +173,23 @@ function planPreemptions(cuts, opts = {}) {
 
 // Occupancy + status rollup across the grid.
 function summarizeFleet(classified, cfg = DEFAULTS) {
-  const counts = { total: classified.length, running: 0, queued: 0, done: 0, healthy: 0, stalled: 0, runaway: 0, protected: 0 };
+  const counts = {
+    total: classified.length,
+    running: 0,
+    queued: 0,
+    done: 0,
+    healthy: 0,
+    stalled: 0,
+    runaway: 0,
+    protected: 0,
+  };
   for (const c of classified) {
-    if (c.status === 'completed') counts.done += 1;
-    else if (c.health === 'queued') counts.queued += 1;
+    if (c.status === "completed") counts.done += 1;
+    else if (c.health === "queued") counts.queued += 1;
     else counts.running += 1; // in_progress
-    if (c.health === 'healthy') counts.healthy += 1;
-    if (c.health === 'stalled') counts.stalled += 1;
-    if (c.health === 'runaway') counts.runaway += 1;
+    if (c.health === "healthy") counts.healthy += 1;
+    if (c.health === "stalled") counts.stalled += 1;
+    if (c.health === "runaway") counts.runaway += 1;
     if (c.protected) counts.protected += 1;
   }
   return {
@@ -185,10 +210,14 @@ function buildControllerFeed(state) {
   const summary = summarizeFleet(classified, cfg);
   const preemptions = state.preemptions || [];
   return {
-    schema: 'fleet-controller/v1',
+    schema: "fleet-controller/v1",
     generated_at: state.generatedAtIso,
     preempt_enabled: Boolean(state.preemptEnabled),
-    occupancy: { running: summary.occupancy, cap: summary.occupancyCap, over_capacity: summary.overCapacity },
+    occupancy: {
+      running: summary.occupancy,
+      cap: summary.occupancyCap,
+      over_capacity: summary.overCapacity,
+    },
     counts: summary,
     orchestrators: classified.map((c) => ({
       id: c.id,
@@ -212,8 +241,10 @@ function buildControllerFeed(state) {
       next_model: p.nextModel || null,
       reassign_count: p.reassignCount || 0,
       tried_models: p.triedModels || [],
-      cut: p.cut || (state.preemptEnabled ? 'cancelled' : 'would-cancel'),
-      reassign_outcome: p.reassignOutcome || (p.action === 'reassign' && state.preemptEnabled ? 'pending' : null),
+      cut: p.cut || (state.preemptEnabled ? "cancelled" : "would-cancel"),
+      reassign_outcome:
+        p.reassignOutcome ||
+        (p.action === "reassign" && state.preemptEnabled ? "pending" : null),
       error: p.error || null,
     })),
   };
@@ -224,9 +255,11 @@ function buildControllerFeed(state) {
 // Read-only product of the scan — the self-healer consumes this, the controller
 // never files issues itself (stays a scheduler, not a healer).
 function buildIngestion(preemptions, generatedAtIso) {
-  const escalations = (preemptions || []).filter((p) => p.action === 'escalate');
+  const escalations = (preemptions || []).filter(
+    (p) => p.action === "escalate",
+  );
   return {
-    schema: 'fleet-controller-ingestion/v1',
+    schema: "fleet-controller-ingestion/v1",
     generated_at: generatedAtIso,
     needs_healing: escalations.map((p) => ({
       id: p.id,
@@ -256,7 +289,13 @@ function evaluate(runs, nowMs, opts = {}) {
   return {
     classified,
     preemptions,
-    feed: buildControllerFeed({ classified, preemptions, cfg, preemptEnabled: opts.preemptEnabled, generatedAtIso }),
+    feed: buildControllerFeed({
+      classified,
+      preemptions,
+      cfg,
+      preemptEnabled: opts.preemptEnabled,
+      generatedAtIso,
+    }),
     stop: buildStopSignal(preemptions, generatedAtIso),
     ingestion: buildIngestion(preemptions, generatedAtIso),
   };
@@ -267,9 +306,13 @@ function evaluate(runs, nowMs, opts = {}) {
 // cancellable workflow). `hasStop(stop, id)` is the reader's check.
 function buildStopSignal(preemptions, generatedAtIso) {
   return {
-    schema: 'fleet-controller-stop/v1',
+    schema: "fleet-controller-stop/v1",
     generated_at: generatedAtIso,
-    stop: (preemptions || []).map((p) => ({ id: p.id, name: p.name, reason: p.reason })),
+    stop: (preemptions || []).map((p) => ({
+      id: p.id,
+      name: p.name,
+      reason: p.reason,
+    })),
   };
 }
 

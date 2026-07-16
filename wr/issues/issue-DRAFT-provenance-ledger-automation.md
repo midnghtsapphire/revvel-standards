@@ -57,6 +57,7 @@ a "complete AI thinking dump" — it cannot be truthfully produced.
    because committing to `main` previously caused failures
    (`docs/github-project-v2-workflows.md:228`). So there is no durable in-repo file
    to read long-term.
+
 - Manual stopgaps now exist: `docs/PROVENANCE_SESSION_LOG.md` (observable trail) and
   `templates/provenance/SESSION_LOG_TEMPLATE.md` (reusable block), but they require a
   human to fill them in.

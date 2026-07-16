@@ -4,7 +4,7 @@
 **Status:** Active
 **Scope:** `midnghtsapphire/revvel-standards` (and any sibling repo that adopts the workflow)
 **Workflow:** [`.github/workflows/amplitude-events.yml`](../.github/workflows/amplitude-events.yml)
-**Registry row:** `docs/Universal-BOM_List/API_REGISTRY_BOM.md` → §9 *Analytics & Product Intelligence APIs* → **Amplitude**
+**Registry row:** `docs/Universal-BOM_List/API_REGISTRY_BOM.md` → §9 _Analytics & Product Intelligence APIs_ → **Amplitude**
 
 ---
 
@@ -26,9 +26,9 @@ This standard governs the integration of **Amplitude Analytics** (amplitude.com 
 
 ### 3.1 Secret
 
-| Name | Purpose | Vault path |
-|---|---|---|
-| `AMPLITUDE_API_KEY` | Amplitude project API key. Obtain from Amplitude UI → *Settings → Projects → \[project\] → API Key*. | `revvel/shared/analytics/amplitude` |
+| Name                | Purpose                                                                                              | Vault path                          |
+| ------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `AMPLITUDE_API_KEY` | Amplitude project API key. Obtain from Amplitude UI → _Settings → Projects → \[project\] → API Key_. | `revvel/shared/analytics/amplitude` |
 
 Provision via:
 
@@ -40,17 +40,17 @@ If the secret is missing the workflow logs a warning and exits cleanly (no faile
 
 ### 3.2 Optional repo variables
 
-Set under *Settings → Secrets and variables → Actions → Variables*:
+Set under _Settings → Secrets and variables → Actions → Variables_:
 
-| Variable | Values | Default | Purpose |
-|---|---|---|---|
-| `AMPLITUDE_REGION` | `us`, `eu` | `us` | Selects the Amplitude data-residency endpoint. Use `eu` only if the project was provisioned in Amplitude's EU data center. |
-| `AMPLITUDE_ENABLED` | `true`, `false` | `true` | Kill switch. Set `false` to disable sending without removing the workflow. |
+| Variable            | Values          | Default | Purpose                                                                                                                    |
+| ------------------- | --------------- | ------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `AMPLITUDE_REGION`  | `us`, `eu`      | `us`    | Selects the Amplitude data-residency endpoint. Use `eu` only if the project was provisioned in Amplitude's EU data center. |
+| `AMPLITUDE_ENABLED` | `true`, `false` | `true`  | Kill switch. Set `false` to disable sending without removing the workflow.                                                 |
 
 Endpoints:
 
-* US: `https://api2.amplitude.com/2/httpapi`
-* EU: `https://api.eu.amplitude.com/2/httpapi`
+- US: `https://api2.amplitude.com/2/httpapi`
+- EU: `https://api.eu.amplitude.com/2/httpapi`
 
 ---
 
@@ -58,38 +58,38 @@ Endpoints:
 
 The workflow triggers on the following GitHub events and emits one Amplitude event per trigger.
 
-| GitHub trigger | Amplitude `event_type` | Notable properties |
-|---|---|---|
-| `issues` opened/closed/reopened | `gh_issue_<action>` | `issue_number`, `issue_title`, `issue_labels`, `issue_state` |
-| `pull_request` opened/reopened/ready_for_review | `gh_pr_<action>` | `pr_number`, `pr_title`, `pr_state`, `pr_draft`, `pr_labels`, `pr_base`, `pr_head`, `pr_additions`, `pr_deletions`, `pr_changed_files` |
-| `pull_request` closed (merged) | `gh_pr_merged` | as above + `pr_merged: true` |
-| `pull_request` closed (not merged) | `gh_pr_closed` | as above + `pr_merged: false` |
-| `release` published | `gh_release_published` | `release_tag`, `release_name`, `release_prerelease` |
-| `push` to `main` | `gh_push_main` | `commit_count`, `head_commit_message`, `pusher` |
-| `workflow_dispatch` (verification) | `amplitude_workflow_verify` (or user-provided) | none beyond defaults |
+| GitHub trigger                                  | Amplitude `event_type`                         | Notable properties                                                                                                                     |
+| ----------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `issues` opened/closed/reopened                 | `gh_issue_<action>`                            | `issue_number`, `issue_title`, `issue_labels`, `issue_state`                                                                           |
+| `pull_request` opened/reopened/ready_for_review | `gh_pr_<action>`                               | `pr_number`, `pr_title`, `pr_state`, `pr_draft`, `pr_labels`, `pr_base`, `pr_head`, `pr_additions`, `pr_deletions`, `pr_changed_files` |
+| `pull_request` closed (merged)                  | `gh_pr_merged`                                 | as above + `pr_merged: true`                                                                                                           |
+| `pull_request` closed (not merged)              | `gh_pr_closed`                                 | as above + `pr_merged: false`                                                                                                          |
+| `release` published                             | `gh_release_published`                         | `release_tag`, `release_name`, `release_prerelease`                                                                                    |
+| `push` to `main`                                | `gh_push_main`                                 | `commit_count`, `head_commit_message`, `pusher`                                                                                        |
+| `workflow_dispatch` (verification)              | `amplitude_workflow_verify` (or user-provided) | none beyond defaults                                                                                                                   |
 
 Common properties on every event: `repo`, `workflow`, `run_id`, `github_event`, `github_action`, `ref`, `sha`, `actor`.
 
 `user_id` is set to `gh:<owner>/<repo>` so Amplitude groups events by repository. `insert_id` is set to `${runId}-${runNumber}-${eventName}` (that is: run id + run number + event name, with no job identifier) so deduplication/idempotency expectations match the workflow's actual payload construction.
 
-### What is *not* sent
+### What is _not_ sent
 
-* No issue/PR body text, comments, diffs, or file contents.
-* No PII is intentionally collected beyond public GitHub metadata already associated with the event.
-* Issue/PR titles and push `head_commit_message` are forwarded as-is by the workflow and may contain sensitive text, including PII, if authors include it.
-* No secret values, no environment dumps.
+- No issue/PR body text, comments, diffs, or file contents.
+- No PII is intentionally collected beyond public GitHub metadata already associated with the event.
+- Issue/PR titles and push `head_commit_message` are forwarded as-is by the workflow and may contain sensitive text, including PII, if authors include it.
+- No secret values, no environment dumps.
 
 ---
 
 ## 5. Verification
 
-Manually trigger the workflow from *Actions → Amplitude — Repo Event Telemetry → Run workflow*. The job will:
+Manually trigger the workflow from _Actions → Amplitude — Repo Event Telemetry → Run workflow_. The job will:
 
 1. Confirm `AMPLITUDE_API_KEY` and the chosen region.
 2. Build the event JSON and write it to the Action run summary.
 3. POST it to Amplitude and assert HTTP 2xx.
 
-Then confirm the event landed in Amplitude *User Lookup → search `gh:midnghtsapphire/revvel-standards`*.
+Then confirm the event landed in Amplitude _User Lookup → search `gh:midnghtsapphire/revvel-standards`_.
 
 ---
 

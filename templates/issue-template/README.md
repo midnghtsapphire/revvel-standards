@@ -30,11 +30,11 @@ Tracked by issue: _"ONE TEMPLATE ALL DEEP RESEARCH"_ in
 
 ## Files
 
-| File                          | Where it goes in your app repo                                |
-|-------------------------------|---------------------------------------------------------------|
-| `00-work-request.yml`         | `.github/ISSUE_TEMPLATE/00-work-request.yml`                  |
-| `10-OpenHands-system-wr.yml`      | `.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml`               |
-| `config.yml`                  | `.github/ISSUE_TEMPLATE/config.yml`                           |
+| File                         | Where it goes in your app repo                      |
+| ---------------------------- | --------------------------------------------------- |
+| `00-work-request.yml`        | `.github/ISSUE_TEMPLATE/00-work-request.yml`        |
+| `10-OpenHands-system-wr.yml` | `.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml` |
+| `config.yml`                 | `.github/ISSUE_TEMPLATE/config.yml`                 |
 
 Filename prefixes (`00-`, `10-`) force the chooser ordering ([per the
 docs][gh-template-order] — `.yml` before `.md`, alpha within each group):
@@ -157,6 +157,7 @@ pre-checked checkboxes.
 5. **Verify on another browser** to confirm it's not browser-specific
 
 If none of these work, check:
+
 - Is the template actually at `.github/ISSUE_TEMPLATE/issue.yml` in the repo?
 - Does it have a `value:` attribute with the markdown checklist? Look for the
   `id: scope` section (starts at line 116, checklist is lines 124–131).

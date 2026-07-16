@@ -27,6 +27,7 @@ Automatically detect agent prompts in code comments, issues, PRs, and handoff do
 ### 1. Prompt Detection
 
 Scans multiple sources for agent prompts:
+
 - **Code comments** — `// TODO @agent:`, `# FIXME @bito:`, `/* NOTE @goap: */`
 - **Issue bodies** — Agent assignment blocks in issue templates
 - **PR comments** — Direct agent mentions in discussions
@@ -35,6 +36,7 @@ Scans multiple sources for agent prompts:
 ### 2. Context Extraction
 
 For each detected prompt, extracts:
+
 - **Prompt text** — The actual task description
 - **Surrounding context** — Adjacent code, file path, line numbers
 - **Repository context** — Branch, commit SHA, related files
@@ -44,6 +46,7 @@ For each detected prompt, extracts:
 ### 3. Agent Classification
 
 Uses OpenRouter triage to classify prompts:
+
 - **Code quality** → Route to Bito AI
 - **Revenue/business** → Route to GOAP
 - **Research** → Route to Jules
@@ -53,6 +56,7 @@ Uses OpenRouter triage to classify prompts:
 ### 4. Execution Orchestration
 
 Triggers appropriate workflow:
+
 - **Bito AI** → `.github/workflows/bito-ai.yml`
 - **GOAP** → `.github/workflows/goap-executor.yml` (to be created)
 - **Jules** → `.github/workflows/jules-invoke.yml` (workflow_dispatch)
@@ -62,6 +66,7 @@ Triggers appropriate workflow:
 ### 5. Completion Tracking
 
 Marks prompts as completed:
+
 - Appends `[DONE by @agent YYYY-MM-DD]` to code comments
 - Closes issues with completion comment
 - Deletes or archives `HANDOFF.md`

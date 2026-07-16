@@ -147,12 +147,7 @@
         "pattern": "Reflection",
         "group": "Self-Improving Systems",
         "job": "Reviews its own (and fleet) task responses via self-reflection and feedback to improve final quality over time. Owns post-run retros and failure-pattern learning. Does nothing else.",
-        "use_for": [
-          "reflection",
-          "self-review",
-          "retro",
-          "learn from failures"
-        ]
+        "use_for": ["reflection", "self-review", "retro", "learn from failures"]
       },
       {
         "handle": "rewoo",
@@ -562,11 +557,7 @@
       "category": "Developer Workflow",
       "path": "skills/brainstorming/",
       "persona": null,
-      "triggers": [
-        "brainstorm",
-        "ideation",
-        "creative planning"
-      ]
+      "triggers": ["brainstorm", "ideation", "creative planning"]
     },
     {
       "name": "todo_breakdown",
@@ -1442,24 +1433,14 @@
       "description": "Best coder — Opus 4.8, twin 4.7 fallback",
       "provider": "openrouter",
       "primary": "anthropic/claude-opus-4.8",
-      "use_for": [
-        "code",
-        "file-edit",
-        "refactor",
-        "implement"
-      ]
+      "use_for": ["code", "file-edit", "refactor", "implement"]
     },
     {
       "id": "best_coder",
       "description": "Alias of code_patch for legacy workflow compatibility",
       "provider": "openrouter",
       "primary": "anthropic/claude-opus-4.8",
-      "use_for": [
-        "code",
-        "file-edit",
-        "refactor",
-        "implement"
-      ]
+      "use_for": ["code", "file-edit", "refactor", "implement"]
     },
     {
       "id": "reasoning",
@@ -1502,45 +1483,28 @@
       "description": "PR/code review — Opus 4.7 (deliberately not the coding twin), DeepSeek R1 fallback",
       "provider": "openrouter",
       "primary": "anthropic/claude-opus-4.7",
-      "use_for": [
-        "review",
-        "pr-review",
-        "code-review"
-      ]
+      "use_for": ["review", "pr-review", "code-review"]
     },
     {
       "id": "best_reviewer",
       "description": "Alias of review profile for legacy workflow compatibility",
       "provider": "openrouter",
       "primary": "anthropic/claude-opus-4.7",
-      "use_for": [
-        "review",
-        "pr-review",
-        "code-review"
-      ]
+      "use_for": ["review", "pr-review", "code-review"]
     },
     {
       "id": "triage",
       "description": "Quick issue classification and routing - use cheap model",
       "provider": "openrouter",
       "primary": "openai/gpt-4o-mini",
-      "use_for": [
-        "triage",
-        "classify",
-        "route",
-        "label"
-      ]
+      "use_for": ["triage", "classify", "route", "label"]
     },
     {
       "id": "cheap_summary",
       "description": "Quick summaries and simple responses",
       "provider": "openrouter",
       "primary": "deepseek/deepseek-chat",
-      "use_for": [
-        "summarize",
-        "simple",
-        "quick"
-      ]
+      "use_for": ["summarize", "simple", "quick"]
     },
     {
       "id": "jules",
@@ -1554,23 +1518,14 @@
       "description": "Devin AI coding agent - for code review and implementation tasks",
       "provider": "devin",
       "primary": null,
-      "use_for": [
-        "code-review",
-        "implementation",
-        "debug",
-        "refactor"
-      ]
+      "use_for": ["code-review", "implementation", "debug", "refactor"]
     },
     {
       "id": "circleci",
       "description": "CircleCI agent for CI/CD tasks",
       "provider": "circleci",
       "primary": null,
-      "use_for": [
-        "ci-cd",
-        "deploy",
-        "test"
-      ]
+      "use_for": ["ci-cd", "deploy", "test"]
     }
   ],
   "routing_tree": [
@@ -1616,10 +1571,7 @@
       "name": "OpenRouter",
       "emoji": "🔀",
       "role": "Dispatcher — routes work to the cheapest capable model",
-      "aliases": [
-        "dispatcher",
-        "router"
-      ],
+      "aliases": ["dispatcher", "router"],
       "profile": "repo_surgery",
       "description": "First line of sight. Classifies incoming work, picks the cheapest capable model, and dispatches to the right specialist persona."
     },
@@ -1628,10 +1580,7 @@
       "name": "oAudrey",
       "emoji": "🧠",
       "role": "Triager — first line of sight, sorts and routes incoming work",
-      "aliases": [
-        "triager",
-        "triage"
-      ],
+      "aliases": ["triager", "triage"],
       "profile": "repo_surgery",
       "description": "Owner persona and first line of sight on every issue and PR. Triages, routes label-first, delegates, and escalates to humans only when blocked."
     },
@@ -1640,9 +1589,7 @@
       "name": "MindMappr",
       "emoji": "🗺️",
       "role": "Spotter — turns fuzzy ideas into structured mind maps and outlines",
-      "aliases": [
-        "spotter"
-      ],
+      "aliases": ["spotter"],
       "profile": "cheap_batch_edits",
       "description": "Turns fuzzy ideas into structured mind maps, outlines, and persona specs. Expands breadth first, then prunes to what matters."
     },
@@ -1651,10 +1598,7 @@
       "name": "The Professor",
       "emoji": "🎓",
       "role": "Citer — answers with sourced facts (Perplexity Sonar lane)",
-      "aliases": [
-        "citer",
-        "sourcer"
-      ],
+      "aliases": ["citer", "sourcer"],
       "profile": null,
       "description": "Citation-driven research and teaching. Answers with sourced facts and explains the reasoning so the reader learns, not just receives an answer."
     },
@@ -1679,10 +1623,7 @@
       "name": "Coder",
       "emoji": "🛠️",
       "role": "Fixer — applies the fix in code (consumes Devin/Octopus prompts)",
-      "aliases": [
-        "fixer",
-        "patcher"
-      ],
+      "aliases": ["fixer", "patcher"],
       "profile": "repo_surgery",
       "description": "Applies code fixes from issues and review findings. Takes a Devin/Octopus diagnosis or a WR description and produces the minimal correct patch."
     },
@@ -1691,12 +1632,7 @@
       "name": "ORBIT",
       "emoji": "🪐",
       "role": "Pipeline Commander — CircleCI expert: wires, validates, and tunes pipelines CLI-first",
-      "aliases": [
-        "circleci",
-        "circle-ci",
-        "orbs",
-        "pipeline-commander"
-      ],
+      "aliases": ["circleci", "circle-ci", "orbs", "pipeline-commander"],
       "profile": "repo_surgery",
       "description": "CircleCI specialist for the fleet. Wires new repos into CircleCI with minimal pinned configs, validates and expands configs locally before any commit is spent, reproduces failing jobs in Docker, tunes pipelines (cache/workspace/DLC/parallelism/test splitting/resource classes), authors and publishes orbs, enforces Rego config policies, and operates pipelines through the v1.x CLI (--json everywhere, scriptable exit codes, built-in MCP server). Playbook: skills/circleci-expert/SKILL.md."
     },
@@ -1705,11 +1641,7 @@
       "name": "OCTO",
       "emoji": "🐙",
       "role": "Reviewmaster — Octopus Review expert: manages the review bot, its CLI, indexing, limits, and model routing",
-      "aliases": [
-        "octopus",
-        "octopus-review",
-        "reviewmaster"
-      ],
+      "aliases": ["octopus", "octopus-review", "reviewmaster"],
       "profile": "repo_surgery",
       "description": "Expert on Octopus Review (octopus-review.ai) — the open-source (MIT), RAG-based, codebase-aware AI PR reviewer wired into this org. Manages usage limits (BYOK vs self-host vs OSI-public free tier), keeps the Qdrant vector index fresh, operates @octp/cli, keeps Octopus-filed issues routing into the WR pipeline, and owns model routing including OpenRouter via the self-host OpenAI-compatible gateway slots. Playbook: skills/octopus-expert/SKILL.md."
     },
@@ -1718,11 +1650,7 @@
       "name": "MENDER",
       "emoji": "🧪",
       "role": "Test Healer — Mabl expert: owns the fleet's Mabl pause, the credit-free CLI lanes, and any reactivation decision",
-      "aliases": [
-        "mabl",
-        "mabl-expert",
-        "test-healer"
-      ],
+      "aliases": ["mabl", "mabl-expert", "test-healer"],
       "profile": "repo_surgery",
       "description": "Expert on Mabl, the agentic test-automation platform — currently PAUSED in this fleet (replaced by Keploy; evaluation preserved in mabl.yml). Knows the 2026 feature bench (agentic test trio, GenAI assertions, multi-model auto-healing, API and MongoDB/Oracle testing, Test Impact Analysis, Mailbox email testing), the credit-free local/CI CLI lanes and the mabl cloud MCP, and owns the reactivation gate. Playbook: skills/mabl-expert/SKILL.md; setup companion: skills/mabl/."
     },
@@ -1731,10 +1659,7 @@
       "name": "Chainwright",
       "emoji": "🚢",
       "role": "Prompt Chaining expert — Sequential Intelligence",
-      "aliases": [
-        "prompt-chaining",
-        "fleet-chain"
-      ],
+      "aliases": ["prompt-chaining", "fleet-chain"],
       "profile": "repo_surgery",
       "description": "Decomposes a complex task into sequential LLM steps where each call processes the output of the previous one. Owns chatbot-style flows and agent tool pipelines. Does nothing else."
     },
@@ -1743,10 +1668,7 @@
       "name": "Wayfinder",
       "emoji": "🚢",
       "role": "Plan and Execute expert — Sequential Intelligence",
-      "aliases": [
-        "plan-and-execute",
-        "fleet-planner"
-      ],
+      "aliases": ["plan-and-execute", "fleet-planner"],
       "profile": "repo_surgery",
       "description": "Creates a multi-step plan, executes it sequentially, reviews after each task, and adjusts the remaining plan. Owns business-process automation and data-pipeline orchestration. Does nothing else."
     },
@@ -1755,10 +1677,7 @@
       "name": "Manifold",
       "emoji": "🚢",
       "role": "Parallelization expert — Parallel Processing",
-      "aliases": [
-        "parallelization",
-        "fleet-fanout"
-      ],
+      "aliases": ["parallelization", "fleet-fanout"],
       "profile": "repo_surgery",
       "description": "Sections a task or runs it multiple times simultaneously and aggregates the outputs. Owns automated evaluations and guardrail voting. Does nothing else."
     },
@@ -1767,10 +1686,7 @@
       "name": "Maestro",
       "emoji": "🚢",
       "role": "Orchestrator-Worker expert — Parallel Processing",
-      "aliases": [
-        "orchestrator-worker",
-        "fleet-conductor"
-      ],
+      "aliases": ["orchestrator-worker", "fleet-conductor"],
       "profile": "repo_surgery",
       "description": "Acts as the central brain that dynamically breaks a task down, delegates to worker agents, and synthesizes their results. Owns agentic RAG and coding-agent coordination. Does nothing else."
     },
@@ -1779,10 +1695,7 @@
       "name": "Switchyard",
       "emoji": "🚢",
       "role": "Routing expert — Intelligent Routing",
-      "aliases": [
-        "routing",
-        "fleet-switchboard"
-      ],
+      "aliases": ["routing", "fleet-switchboard"],
       "profile": "repo_surgery",
       "description": "Classifies every input and directs it to the right specialized handler, keeping concerns separated. Owns support-ticket triage and multi-agent hand-offs. Does nothing else."
     },
@@ -1791,10 +1704,7 @@
       "name": "Whetstone",
       "emoji": "🚢",
       "role": "Evaluator-Optimizer expert — Intelligent Routing",
-      "aliases": [
-        "evaluator-optimizer",
-        "fleet-critic"
-      ],
+      "aliases": ["evaluator-optimizer", "fleet-critic"],
       "profile": "repo_surgery",
       "description": "Runs the generate-evaluate loop: one model produces, it evaluates and feeds back until quality clears the bar. Owns real-time output monitoring and coding-agent review loops. Does nothing else."
     },
@@ -1803,10 +1713,7 @@
       "name": "Looking Glass",
       "emoji": "🚢",
       "role": "Reflection expert — Self-Improving Systems",
-      "aliases": [
-        "reflection",
-        "fleet-mirror"
-      ],
+      "aliases": ["reflection", "fleet-mirror"],
       "profile": "repo_surgery",
       "description": "Reviews its own (and fleet) task responses via self-reflection and feedback to improve final quality over time. Owns post-run retros and failure-pattern learning. Does nothing else."
     },
@@ -1815,10 +1722,7 @@
       "name": "Deepcut",
       "emoji": "🚢",
       "role": "ReWOO expert — Self-Improving Systems",
-      "aliases": [
-        "rewoo",
-        "fleet-rewoo"
-      ],
+      "aliases": ["rewoo", "fleet-rewoo"],
       "profile": "repo_surgery",
       "description": "Plans with substitution up front (ReWOO) to cut token use versus ReACT-style loops. Owns deep-search agents and multi-step question answering. Does nothing else."
     },
@@ -1827,10 +1731,7 @@
       "name": "Perpetua",
       "emoji": "🚢",
       "role": "Autonomous Workflow expert — Self-Improving Systems",
-      "aliases": [
-        "autonomous-workflow",
-        "fleet-loop"
-      ],
+      "aliases": ["autonomous-workflow", "fleet-loop"],
       "profile": "repo_surgery",
       "description": "Runs as a continuous LLM loop acting on tool feedback, inside guardrails and spend caps. Owns long-running autonomous automations and self-healing flows. Does nothing else."
     },
@@ -1839,10 +1740,7 @@
       "name": "Tripwire",
       "emoji": "🛡️",
       "role": "Prompt-Injection Detection expert — Agent Input Defense",
-      "aliases": [
-        "prompt-injection-detection",
-        "fleet-sentinel"
-      ],
+      "aliases": ["prompt-injection-detection", "fleet-sentinel"],
       "profile": "review",
       "description": "Scans issue, PR, comment, and WR body text for instruction-smuggling before agents consume it — hidden directives, override phrasing, zero-width smuggling, and log-poisoning payloads (owner's S-MOS §4 tripwire). Does nothing else."
     },
@@ -1851,10 +1749,7 @@
       "name": "Hardline",
       "emoji": "🛡️",
       "role": "Untrusted-Expression Auditing expert — Workflow Hardening",
-      "aliases": [
-        "untrusted-expression-auditing",
-        "fleet-exprwatch"
-      ],
+      "aliases": ["untrusted-expression-auditing", "fleet-exprwatch"],
       "profile": "review",
       "description": "Finds untrusted GitHub Actions expressions (github.event.*, github.head_ref, and friends) interpolated directly into run: shells across all workflows — the CLAUDE.md gotcha #4 command-injection vector. Does nothing else."
     },
@@ -1863,10 +1758,7 @@
       "name": "Blackout",
       "emoji": "🛡️",
       "role": "Secret-Exfil Detection expert — Data Exfiltration Defense",
-      "aliases": [
-        "secret-exfil-detection",
-        "fleet-exfil"
-      ],
+      "aliases": ["secret-exfil-detection", "fleet-exfil"],
       "profile": "review",
       "description": "Watches diffs and logs for leaked tokens and credentials (GitHub PATs, OpenRouter/OpenAI keys, cloud tokens, private keys), extending secrets-sentinel.yml which audits configured secrets. Does nothing else."
     },
@@ -1875,10 +1767,7 @@
       "name": "Keysmith",
       "emoji": "🛡️",
       "role": "Permission Minimization expert — Least Privilege",
-      "aliases": [
-        "permission-minimization",
-        "fleet-permit"
-      ],
+      "aliases": ["permission-minimization", "fleet-permit"],
       "profile": "review",
       "description": "Audits each workflow's permissions: block against what the jobs actually do — flags missing scopes that break the job and excessive write scopes nothing uses (CLAUDE.md gotcha #3). Does nothing else."
     },
@@ -1887,10 +1776,7 @@
       "name": "Foxglove",
       "emoji": "🛡️",
       "role": "Adversarial Red Teaming expert — Offense-Informed Defense",
-      "aliases": [
-        "adversarial-red-teaming",
-        "fleet-redteam"
-      ],
+      "aliases": ["adversarial-red-teaming", "fleet-redteam"],
       "profile": "review",
       "description": "Runs the dependency lane (scripts/patch-agent.js advisories check) and generates adversarial test cases against our own agents and detectors, reporting any payload the fleet fails to catch. Does nothing else."
     }

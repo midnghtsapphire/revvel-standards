@@ -28,12 +28,12 @@ doppler run --project growlingeyes --config prd -- docker compose up -d
 
 ## Files
 
-| File | Purpose |
-|------|---------|
-| `docker-compose.yml` | Kong + PostgreSQL containers |
-| `.env.example` | Environment variable template |
-| `bootstrap.sh` | Register services, routes, plugins (run once) |
-| `kong.yml` | Declarative config (alternative to bootstrap.sh) |
+| File                 | Purpose                                          |
+| -------------------- | ------------------------------------------------ |
+| `docker-compose.yml` | Kong + PostgreSQL containers                     |
+| `.env.example`       | Environment variable template                    |
+| `bootstrap.sh`       | Register services, routes, plugins (run once)    |
+| `kong.yml`           | Declarative config (alternative to bootstrap.sh) |
 
 ## Common Commands
 

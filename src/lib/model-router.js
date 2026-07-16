@@ -1,17 +1,26 @@
-const fs = require('fs');
-const path = require('path');
-const { MODE_ORDER } = require('./model-routing-modes');
+const fs = require("fs");
+const path = require("path");
+const { MODE_ORDER } = require("./model-routing-modes");
 
-const enterpriseMatrixPath = path.join(__dirname, '../../config/enterprise-matrix.json');
-const enterpriseModelMatrixPath = path.join(__dirname, '../../config/enterprise-model-matrix.json');
-const domainMatrixPath = path.join(__dirname, '../../config/domain-expertise-matrix.json');
+const enterpriseMatrixPath = path.join(
+  __dirname,
+  "../../config/enterprise-matrix.json",
+);
+const enterpriseModelMatrixPath = path.join(
+  __dirname,
+  "../../config/enterprise-model-matrix.json",
+);
+const domainMatrixPath = path.join(
+  __dirname,
+  "../../config/domain-expertise-matrix.json",
+);
 
 let enterpriseMatrixCache;
 let domainMatrixCache;
 
 function loadMatrix(filePath) {
   try {
-    const data = fs.readFileSync(filePath, 'utf8');
+    const data = fs.readFileSync(filePath, "utf8");
     return JSON.parse(data);
   } catch (error) {
     console.error(`Failed to load matrix from ${filePath}:`, error);
@@ -54,11 +63,13 @@ function getBestModelsForDomain(domainName) {
   if (!domainMatrix || !Array.isArray(domainMatrix.domains)) return [];
 
   const domain = domainMatrix.domains.find(
-    (d) => d.name.toLowerCase() === domainName.toLowerCase()
+    (d) => d.name.toLowerCase() === domainName.toLowerCase(),
   );
   if (!domain) return [];
 
-  return domain.best_models.map(getModelById).filter((model) => model && model.enabled);
+  return domain.best_models
+    .map(getModelById)
+    .filter((model) => model && model.enabled);
 }
 
 function getFallbackChain() {
@@ -66,16 +77,18 @@ function getFallbackChain() {
   if (!enterpriseMatrix || !Array.isArray(enterpriseMatrix.models)) return [];
 
   const invalidModeModels = enterpriseMatrix.models.filter(
-    (m) => m.enabled && (typeof m.mode !== 'string' || !MODE_ORDER.includes(m.mode))
+    (m) =>
+      m.enabled && (typeof m.mode !== "string" || !MODE_ORDER.includes(m.mode)),
   );
   if (invalidModeModels.length > 0) {
     console.warn(
-      `Ignoring enabled models with invalid mode: ${invalidModeModels.map((model) => `${model.provider}/${model.name} (${model.mode || 'missing'})`).join(', ')}`
+      `Ignoring enabled models with invalid mode: ${invalidModeModels.map((model) => `${model.provider}/${model.name} (${model.mode || "missing"})`).join(", ")}`,
     );
   }
 
   const enabledModels = enterpriseMatrix.models.filter(
-    (m) => m.enabled && typeof m.mode === 'string' && MODE_ORDER.includes(m.mode)
+    (m) =>
+      m.enabled && typeof m.mode === "string" && MODE_ORDER.includes(m.mode),
   );
   const chain = [];
 
@@ -84,7 +97,7 @@ function getFallbackChain() {
       .filter((model) => model.mode === bucket)
       .forEach((model) => {
         chain.push({
-          type: bucket === 'no-key' ? 'no-key-perplexity' : bucket,
+          type: bucket === "no-key" ? "no-key-perplexity" : bucket,
           model,
         });
       });

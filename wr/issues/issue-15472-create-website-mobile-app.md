@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-07  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-07  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -115,18 +114,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -138,6 +138,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28862452856.md`
 
 # WR-Ready Research Packet: Create Website? Mobile App?
@@ -149,6 +150,7 @@ Source packet: `docs/research-engine/run-28862452856.md`
 Based on the mobile UI screenshots provided, this is clearly a mobile-first product concept. The user experience shown (swipe gestures, bottom navigation, mobile-optimized layouts) requires native mobile app functionality. A responsive website alone cannot deliver the intended experience.
 
 **Platform Priority:**
+
 1. **Phase 1**: Native mobile app (iOS and Android) using React Native or Flutter
 2. **Phase 2**: Marketing website for app discovery and downloads
 3. **Phase 3**: Consider Progressive Web App (PWA) for broader reach
@@ -156,11 +158,13 @@ Based on the mobile UI screenshots provided, this is clearly a mobile-first prod
 ## 2. Audience We Are Going After and Why
 
 **Primary Target**: Mobile-first users seeking social/community experiences
+
 - Age: 18-35 (based on UI design patterns)
 - Behavior: High mobile usage, social media savvy
 - Pain Points: Fragmented social experiences, lack of purpose-driven communities
 
 **Why This Audience**:
+
 - Mobile app usage dominates this demographic ([Statista: 58.33% of web traffic is mobile](https://www.statista.com/statistics/277125/share-of-website-traffic-coming-from-mobile-devices/))
 - Social/community apps show highest engagement in this age range
 - Clear monetization path through subscriptions and in-app purchases
@@ -168,32 +172,36 @@ Based on the mobile UI screenshots provided, this is clearly a mobile-first prod
 ## 3. Marketing and SEO Plan
 
 **SEO Strategy**:
+
 - **Primary Landing Page**: "Create Community App | [Product Name]"
-- **Target Keywords**: 
+- **Target Keywords**:
   - "community building app" (informational)
   - "social accountability app" (commercial)
   - "goal tracking with friends" (transactional)
 
 **Content Angles**:
+
 1. "How to Build Accountability Communities" (top-funnel)
 2. "Best Apps for Goal Setting with Friends" (comparison)
 3. "[Product] vs Competitors" (decision-stage)
 
 **Marketing Channels**:
+
 - App Store Optimization (ASO) - primary
 - Content marketing via website - secondary
 - Social proof through user testimonials
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Description | Pricing | Traction | Moat |
-|------------|-------------|---------|----------|------|
-| **Stickk** | Financial commitment contracts | Free + paid commitments | Established, B2B focus | Financial penalties |
-| **Beeminder** | Data tracking with penalties | $8-32/month | Niche but loyal | Quantified self focus |
-| **Habitica** | Gamified habit tracking | Free + $4.99/month | 500k+ downloads | RPG mechanics |
-| **Replika** | AI companion | $69.99/year | 10M+ downloads | AI conversation |
+| Competitor    | Description                    | Pricing                 | Traction               | Moat                  |
+| ------------- | ------------------------------ | ----------------------- | ---------------------- | --------------------- |
+| **Stickk**    | Financial commitment contracts | Free + paid commitments | Established, B2B focus | Financial penalties   |
+| **Beeminder** | Data tracking with penalties   | $8-32/month             | Niche but loyal        | Quantified self focus |
+| **Habitica**  | Gamified habit tracking        | Free + $4.99/month      | 500k+ downloads        | RPG mechanics         |
+| **Replika**   | AI companion                   | $69.99/year             | 10M+ downloads         | AI conversation       |
 
 **Open Source References**:
+
 - `huggingface/transformers` (125k stars) - For AI features
 - `react-native` (118k stars) - Mobile framework
 - `flutter/flutter` (165k stars) - Alternative framework
@@ -203,11 +211,13 @@ Based on the mobile UI screenshots provided, this is clearly a mobile-first prod
 ## 5. Chatter and Demand Signals
 
 **Critical Pain Points Identified**:
+
 - Users actively asking "What's the website?" - indicates demand
 - Brand confusion with similar names causing traffic/revenue loss
 - Direct financial impact: donation searches leading to wrong organization
 
 **Urgency Indicators**:
+
 - Immediate revenue loss through misdirected donations
 - Active user base seeking central platform
 - Competitors capturing search traffic
@@ -215,17 +225,20 @@ Based on the mobile UI screenshots provided, this is clearly a mobile-first prod
 ## 6. Factual Validation and Evidence Gaps
 
 **Validated**:
+
 - Mobile-first design requirement (11 UI screenshots provided)
 - Social/community features core to product
 - Subscription model indicated in UI
 
 **Evidence Gaps**:
+
 - Specific feature requirements not documented
 - Target market size unverified
 - Technical specifications missing
 - No user research data provided
 
 **Required Validation**:
+
 - User interviews to confirm feature priorities
 - Market sizing for social accountability apps
 - Technical feasibility assessment
@@ -233,6 +246,7 @@ Based on the mobile UI screenshots provided, this is clearly a mobile-first prod
 ## 7. Build Requirements and Acceptance Gates
 
 **Core Requirements**:
+
 1. **Authentication**: Social login (Google, Apple) + email
 2. **User Profiles**: Avatar, stats, social connections
 3. **Core Features**: Goal creation, progress tracking, social feed
@@ -240,6 +254,7 @@ Based on the mobile UI screenshots provided, this is clearly a mobile-first prod
 5. **Notifications**: Push notifications for accountability
 
 **Acceptance Gates**:
+
 - [ ] User can create account and complete onboarding
 - [ ] User can create and track goals/vows
 - [ ] User can invite friends and see their progress
@@ -247,6 +262,7 @@ Based on the mobile UI screenshots provided, this is clearly a mobile-first prod
 - [ ] App store submission ready
 
 **Technical Stack**:
+
 - Frontend: React Native (recommended) or Flutter
 - Backend: Firebase or Supabase
 - Authentication: Firebase Auth or Auth0
@@ -255,6 +271,7 @@ Based on the mobile UI screenshots provided, this is clearly a mobile-first prod
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 Review focus: Mobile app architecture patterns
 - Verify proper state management implementation
@@ -264,6 +281,7 @@ Review focus: Mobile app architecture patterns
 ```
 
 ### For OpenRouter
+
 ```
 Security review priorities:
 - Authentication flow vulnerabilities
@@ -273,6 +291,7 @@ Security review priorities:
 ```
 
 ### For Coderabbit
+
 ```
 Performance checks:
 - Image optimization for mobile
@@ -284,25 +303,30 @@ Performance checks:
 ### Automatic Fix Plans
 
 **Issue**: Missing platform specification
+
 - **Fix**: Add platform detection and responsive design
 - **Commit**: `feat: add platform-specific UI components and detection`
 
 **Issue**: No error boundaries
+
 - **Fix**: Wrap all screens in error boundary components
 - **Commit**: `fix: add error boundaries to prevent app crashes`
 
 **Issue**: Missing accessibility
+
 - **Fix**: Add screen reader support and contrast fixes
 - **Commit**: `fix: improve accessibility with ARIA labels and contrast`
 
 ## 9. Automatic Fix and Commit Queue
 
 1. **Priority 1**: Platform specification
+
    ```bash
    git commit -m "fix: add platform detection for web/mobile rendering"
    ```
 
 2. **Priority 2**: Authentication setup
+
    ```bash
    git commit -m "feat: implement social auth with Google and Apple"
    ```
@@ -315,6 +339,7 @@ Performance checks:
 ## 10. Labels to Apply
 
 **Required Labels**:
+
 - `mobile-app-priority`
 - `needs-technical-scope`
 - `revenue-critical`
@@ -322,28 +347,33 @@ Performance checks:
 - `needs-user-research`
 
 **Risk Labels**:
+
 - `risk-market-saturation`
 - `risk-scope-creep`
 - `risk-brand-confusion`
 
 **Status Labels**:
+
 - `blocked-incomplete-spec`
 - `needs-image-analysis`
 
 ## 11. Repository Review and Best Alternative
 
 **Recommended Framework**: **React Native**
+
 - Mature ecosystem with 118k+ stars
 - Best for rapid cross-platform development
 - Strong community and commercial support
 - Used by Facebook, Instagram, Discord
 
 **Alternative Options**:
+
 1. **Flutter** (165k stars) - Better performance, steeper learning curve
 2. **Expo** (32k stars) - Easier setup, some limitations
 3. **Ionic** (50k stars) - Web-first, may not meet native UX needs
 
 **Backend Recommendation**: **Firebase**
+
 - Fastest path to production
 - Built-in auth, real-time database, push notifications
 - Free tier suitable for MVP
@@ -353,17 +383,20 @@ Performance checks:
 **Overall Confidence: 72/100**
 
 **High Confidence (80-95)**:
+
 - Mobile-first requirement (95)
 - React Native as framework choice (85)
 - Firebase for rapid backend (85)
 - Market demand exists (80)
 
 **Medium Confidence (60-79)**:
+
 - Specific feature set (65)
 - Monetization strategy (70)
 - User acquisition cost (60)
 
 **Low Confidence (< 60)**:
+
 - Exact target market size (45)
 - Differentiation sustainability (55)
 
@@ -411,11 +444,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -431,11 +464,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

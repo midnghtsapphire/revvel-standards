@@ -64,13 +64,13 @@ as completed research.
 The example above is the textbook case of every fix-WR gate violation in
 one prompt:
 
-| Signal | What it tells the coder |
-| --- | --- |
-| `Medium (Style)` | Don't escalate; don't add scope |
-| File path + line range | Touch one file, one span — no refactor |
-| "raw template dump" + "every table cell ... `[placeholder]`" | Concrete evidence, not opinion |
-| "Per the Research Mandate quoted in this same file" | The standard being violated, cited inline |
-| "Either ... or mark the WR explicitly as `🟡 In Progress`" | Two acceptance options, no silent passes |
+| Signal                                                       | What it tells the coder                   |
+| ------------------------------------------------------------ | ----------------------------------------- |
+| `Medium (Style)`                                             | Don't escalate; don't add scope           |
+| File path + line range                                       | Touch one file, one span — no refactor    |
+| "raw template dump" + "every table cell ... `[placeholder]`" | Concrete evidence, not opinion            |
+| "Per the Research Mandate quoted in this same file"          | The standard being violated, cited inline |
+| "Either ... or mark the WR explicitly as `🟡 In Progress`"   | Two acceptance options, no silent passes  |
 
 ## Where this format is enforced
 

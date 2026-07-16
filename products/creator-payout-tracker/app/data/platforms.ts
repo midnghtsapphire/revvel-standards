@@ -87,8 +87,15 @@ export const PLATFORMS: Platform[] = [
     subPayoutPer5: null,
     platformCutPct: null,
     paymentCadence: "Monthly",
-    bestFor: ["Entertainment", "Dance", "Comedy", "Lifestyle", "Trending audio"],
-    minEligibility: "10,000 followers + 100,000 views in 30 days (Creator Rewards)",
+    bestFor: [
+      "Entertainment",
+      "Dance",
+      "Comedy",
+      "Lifestyle",
+      "Trending audio",
+    ],
+    minEligibility:
+      "10,000 followers + 100,000 views in 30 days (Creator Rewards)",
     pros: [
       "10–20× better than old Creator Fund ($0.02–$0.05)",
       "Unmatched organic reach for new creators",
@@ -170,7 +177,13 @@ export const PLATFORMS: Platform[] = [
     subPayoutPer5: 4.2,
     platformCutPct: 10,
     paymentCadence: "Rolling",
-    bestFor: ["Writers", "Journalists", "Analysts", "Niche experts", "Newsletters"],
+    bestFor: [
+      "Writers",
+      "Journalists",
+      "Analysts",
+      "Niche experts",
+      "Newsletters",
+    ],
     minEligibility: "Free to start; no follower minimum",
     pros: [
       "90% creator share (10% Substack fee)",
@@ -255,7 +268,8 @@ export const PLATFORMS: Platform[] = [
     platformCutPct: 50,
     paymentCadence: "Monthly",
     bestFor: ["Live streaming", "Gaming", "Just Chatting", "Creative"],
-    minEligibility: "50 followers + 500 total minutes broadcast + 3 avg concurrent viewers",
+    minEligibility:
+      "50 followers + 500 total minutes broadcast + 3 avg concurrent viewers",
     pros: [
       "Largest live streaming audience globally",
       "Bits, subscriptions, ad revenue, and donations all available",

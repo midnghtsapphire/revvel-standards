@@ -51,29 +51,29 @@ on:
   workflow_dispatch:
     inputs:
       deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
+        description: "Run full deep market research (keywords, BOM, chatter, domain)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
+        description: "Generate Bill of Materials (API/tool comparison table)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
+        description: "Research Reddit/forums/TrustPilot for buyer complaints"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
+        description: "Full competitor pricing + gap analysis"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       research_depth:
-        description: 'Research depth level'
+        description: "Research depth level"
         type: choice
         options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
+        default: deep # ← default to deep, not standard
 ```
 
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a _starting point_ — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
 
 ---
 
@@ -87,17 +87,17 @@ on:
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-24 |
-| Last Updated | 2026-05-24 |
-| Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | Issue #13798 intake captured below: TikTok/Amazon review generation prompts, scripts, and ad-format direction. |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Property         | Value                                                                                                          |
+| ---------------- | -------------------------------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)                        |
+| Created          | 2026-05-24                                                                                                     |
+| Last Updated     | 2026-05-24                                                                                                     |
+| Primary Language | JavaScript                                                                                                     |
+| Stars            | {STARS}                                                                                                        |
+| Open Issues      | {OPEN_ISSUES}                                                                                                  |
+| Description      | Issue #13798 intake captured below: TikTok/Amazon review generation prompts, scripts, and ad-format direction. |
+| Private          | {IS_PRIVATE}                                                                                                   |
+| Archived         | {IS_ARCHIVED}                                                                                                  |
 
 ### Issue Intake Details
 
@@ -188,86 +188,107 @@ _No response_
 - [x] If the PR is partial, the blocker must be documented.
 - [x] The PR should reflect the WR's required bundle and definition of done.
 - [x] 1. If you use a Screenshot
-You can take a screenshot of the Amazon product page (or the specific 5-star reviews) and use it in a couple of powerful ways:
-The Green Screen Effect: In TikTok or HeyGen, you can upload the screenshot as a background layer. Your AI avatar can stand right in front of it, pointing to the price or the viral reviews while talking.
-Split-Screen Editing: You can generate a beautiful, cinematic product shot using the prompts we designed, and place your screenshot side-by-side or as a "pop-up" graphic in the corner of the video to prove it's a real trending item.
+      You can take a screenshot of the Amazon product page (or the specific 5-star reviews) and use it in a couple of powerful ways:
+      The Green Screen Effect: In TikTok or HeyGen, you can upload the screenshot as a background layer. Your AI avatar can stand right in front of it, pointing to the price or the viral reviews while talking.
+      Split-Screen Editing: You can generate a beautiful, cinematic product shot using the prompts we designed, and place your screenshot side-by-side or as a "pop-up" graphic in the corner of the video to prove it's a real trending item.
+
 2. If you share the Product Link
-You can drop the link right here in our chat! While I can't directly open a clickable live window inside an AI video file, you can give me the link or tell me what the product is, and I will:
-Extract the exact technical features, materials, and selling points.
-Weave those specific details directly into a highly tailored, custom image or video prompt so the AI-generated visuals look identical to the real product.
-Write a custom, high-converting script for your HeyGen avatar tailored perfectly to that item.
-Go ahead and drop the link or describe the product, and let's build the perfect viral setup for it!Perfect—having the exact product image and link makes a massive difference!
-These are **Tigeridea Retro Hook-and-Loop Fashion Sneakers**. They perfectly hit that casual, vintage Samba/Gola look but with a modern, effortless twist (velcro straps instead of laces). This style is a massive trend right now for casual comfort, daily walking, and travel wardrobe aesthetics.
-Here are custom image/video prompts tailored specifically to match this exact shoe, followed by a high-converting script built for your HeyGen avatar.
+   You can drop the link right here in our chat! While I can't directly open a clickable live window inside an AI video file, you can give me the link or tell me what the product is, and I will:
+   Extract the exact technical features, materials, and selling points.
+   Weave those specific details directly into a highly tailored, custom image or video prompt so the AI-generated visuals look identical to the real product.
+   Write a custom, high-converting script for your HeyGen avatar tailored perfectly to that item.
+   Go ahead and drop the link or describe the product, and let's build the perfect viral setup for it!Perfect—having the exact product image and link makes a massive difference!
+   These are **Tigeridea Retro Hook-and-Loop Fashion Sneakers**. They perfectly hit that casual, vintage Samba/Gola look but with a modern, effortless twist (velcro straps instead of laces). This style is a massive trend right now for casual comfort, daily walking, and travel wardrobe aesthetics.
+   Here are custom image/video prompts tailored specifically to match this exact shoe, followed by a high-converting script built for your HeyGen avatar.
+
 ### 🎨 The Custom Visual Prompts
+
 #### Option 1: The Premium Close-Up Look (For B-Roll / Product Showcase)
+
 > **Prompt:** A vertical 9:16 cinematic close-up shot focusing on a pair of vintage-style retro fashion sneakers sitting on a minimalist, textured stone surface. The sneakers feature a premium cream-colored faux leather upper, light grey suede panels on the toe box, and a distinct black serrated wave stripe across the side. Two clean hook-and-loop velcro straps cross the tongue securely. The sole is a classic, crisp tan gum rubber material. Soft, natural morning window light sweeps across the frame, highlighting the fine stitching and material textures. The background is softly blurred with a hint of botanical greenery. Photorealistic, 8k resolution, elegant depth of field, steady tracking shot.
-> 
+
 #### Option 2: The Green Screen Background (Sleek, High-Tech Review Canvas)
+
 > **Prompt:** A vertical 9:16 cinematic studio background optimized for a fashion review overlay. The interface is highly modern and glassmorphic, featuring a floating translucent frosted glass panel in the center over a dark, moody charcoal gradient. Floating subtly beside the glass module are crisp, glowing 3D vector icons of a shopping cart, a 5-star rating badge, and a minimalist text block reading "Trending Wardrobe Find". Elegant caustics and light leaks ripple across the reflective surfaces, casting realistic physical shadows. The lower third features a glossy, semi-transparent button area designed for text overlays. Hyper-realistic, 8k, ray-traced reflections, premium UX/UI visualization, 3D glossy realism.
-> 
+
 ### 🎙️ The HeyGen / TikTok Script
-*Set your HeyGen avatar to a casual, conversational, and energetic tone. Use the Option 2 prompt or your Amazon screenshot as the background.*
+
+_Set your HeyGen avatar to a casual, conversational, and energetic tone. Use the Option 2 prompt or your Amazon screenshot as the background._
 **[0:00 - 0:02] The Hook (Stop the Scroll)**
 "Gatekeeping is over. If you love the retro Samba look but absolutely hate constantly tying your shoes, you need to see these."
 **[0:02 - 0:07] The Problem / Agitation**
 "We all want that classic, vintage sneaker aesthetic for traveling or daily walking, but finding a pair that doesn’t give you blisters or take ten minutes to lace up is impossible."
 **[0:07 - 0:12] The Solution (Show the Product Details)**
 "These Tigeridea retro sneakers just dropped on Amazon and they are perfect. Look at the detailing—you get the premium cream leather, the grey suede accents, and a classic tan gum sole."
-**[0:12 - 0:17] The Killer Feature (Why they need to buy *now*)**
+**[0:12 - 0:17] The Killer Feature (Why they need to buy _now_)**
 "But the best part? The double hook-and-loop straps. You just slip them on, strap them down, and you have instant, secure comfort. It gives off major effortless, high-fashion street-style vibes."
 **[0:17 - 0:22] Call to Action**
 "They are super lightweight, breathable, and shockingly affordable. I linked the exact pair right in my bio so you can grab your size before they go viral on the fashion feeds!"
+
 ### 💡 TikTok Pro-Tip for this Video:
+
 When you upload the generated avatar video to TikTok, use the on-screen text tool to place a bold title right at the top for the first 3 seconds: **"The Lazy Girl's Viral Amazon Shoe Hack 🤫"**. It pairs perfectly with the hook and instantly drives clicks to your affiliate link!
 Here is the master image generation prompt to create that exact 8-shot grid layout. It includes specific instructions to ensure the correct shoes and the mixture of "feet-in" and "feet-out" angles are rendered separately and clearly.
+
 ### The 8-Shot UGC Grid Master Prompt
+
 > **Prompt:** A series of eight individual, vertical (9:16) cinematic still photographs, presented as a 2x4 grid, showcasing the specific Retro Hook-and-Loop Fashion Sneakers [as seen in image_2.png and image_3.png]. The overall visual style is that of high-end User Generated Content (UGC) shot on a modern smartphone, capturing rich, tactile textures of cream leather, grey suede, and gum rubber, with a natural, diffused morning light consistency across all frames.
 > **The Grid Composition:**
 > **Row 1:**
->  * **Image 1 (Feet In):** A medium close-up shot from a front three-quarter angle, showing a woman's feet wearing the sneakers, standing naturally on textured, light grey stone pavement. Focus is sharp on the shoes, right foot slightly forward.
->  * **Image 2 (Feet In):** A sharp, top-down (flat lay) perspective of the sneakers worn by a woman with clean-pedicured feet, standing on vintage-patterned floor tiles. View is directly down onto the hook-and-loop straps.
-> **Row 2:**
->  * **Image 3 (No Feet):** A macro, detailed shot from the side profile (right shoe) without feet. The sneaker is placed on a clean white studio surface, highlighting the black serrated wave stripe, stitching, and the unique hook-and-loop straps.
->  * **Image 4 (Feet In):** A dynamic, low-angle tracking shot from behind a woman walking away, her feet wearing the sneakers on a rain-slicked pavement reflecting city lights. Focus is on the heel and gum sole pattern.
-> **Row 3:**
->  * **Image 5 (Feet In):** A three-quarter back view of the woman's feet inside the shoes, walking up wooden stairs. Focus is on the gum sole pattern and heel counter detail.
->  * **Image 6 (No Feet):** A close-up shot of the sneakers from the left side, slightly angled, sitting on a worn, dark wooden floor next to a vintage suitcase. The perspective emphasizes the materials and physical depth.
-> **Row 4:**
->  * **Image 7 (Feet In):** A direct front-on shot worn by feet, looking up from ankle height, focusing symmetrically on both sneakers on a paved pathway with fallen leaves.
->  * **Image 8 (Feet In + Action):** A detailed macro shot of a single sneaker (left shoe) on a textured linen fabric. A woman's hand is visible in the frame, adjusting one of the hook-and-loop straps, creating an authentic UGC touch.
-> Photorealistic, realistic smartphone camera quality, 9:16 aspect ratio for each panel, natural colors, authentic and relatable fashion vibe.
-> 
+>
+> - **Image 1 (Feet In):** A medium close-up shot from a front three-quarter angle, showing a woman's feet wearing the sneakers, standing naturally on textured, light grey stone pavement. Focus is sharp on the shoes, right foot slightly forward.
+> - **Image 2 (Feet In):** A sharp, top-down (flat lay) perspective of the sneakers worn by a woman with clean-pedicured feet, standing on vintage-patterned floor tiles. View is directly down onto the hook-and-loop straps.
+>   **Row 2:**
+> - **Image 3 (No Feet):** A macro, detailed shot from the side profile (right shoe) without feet. The sneaker is placed on a clean white studio surface, highlighting the black serrated wave stripe, stitching, and the unique hook-and-loop straps.
+> - **Image 4 (Feet In):** A dynamic, low-angle tracking shot from behind a woman walking away, her feet wearing the sneakers on a rain-slicked pavement reflecting city lights. Focus is on the heel and gum sole pattern.
+>   **Row 3:**
+> - **Image 5 (Feet In):** A three-quarter back view of the woman's feet inside the shoes, walking up wooden stairs. Focus is on the gum sole pattern and heel counter detail.
+> - **Image 6 (No Feet):** A close-up shot of the sneakers from the left side, slightly angled, sitting on a worn, dark wooden floor next to a vintage suitcase. The perspective emphasizes the materials and physical depth.
+>   **Row 4:**
+> - **Image 7 (Feet In):** A direct front-on shot worn by feet, looking up from ankle height, focusing symmetrically on both sneakers on a paved pathway with fallen leaves.
+> - **Image 8 (Feet In + Action):** A detailed macro shot of a single sneaker (left shoe) on a textured linen fabric. A woman's hand is visible in the frame, adjusting one of the hook-and-loop straps, creating an authentic UGC touch.
+>   Photorealistic, realistic smartphone camera quality, 9:16 aspect ratio for each panel, natural colors, authentic and relatable fashion vibe.
+
 ### 💡 Why this works for your agents/TikTok:
+
 By defining each of the eight panels separately inside the grid description, you guarantee that the final generation contains the exact variety of angles you need for creating B-roll, review overlays, or interactive "this or that" content. It ensures the AI doesn't just loop the same three angles repeatedly.
 To launch a successful Meta (Facebook/Instagram) ad campaign that drives traffic to your website or app store upload, you need visuals that instantly signal **high-end engineering, slick UI/UX, and professional credibility**.
 Because your software projects focus on highly technical tools (like automation engines, custom dashboards, or master platforms), the ads should lean hard into a **glassmorphic, premium developer aesthetic** to capture the attention of technical founders, creators, and agency owners.
 Here are the master prompts tailored specifically for Meta's core ad formats, along with the strategy to maximize your ad spend.
+
 ### Format 1: The Meta Carousel Ad (Best for Feature Breakdown)
-*Carousels are incredibly effective for apps because each card can showcase a different aspect of your platform (e.g., Card 1: Main Dashboard, Card 2: Code/Integration, Card 3: Download/Call-to-Action).*
+
+_Carousels are incredibly effective for apps because each card can showcase a different aspect of your platform (e.g., Card 1: Main Dashboard, Card 2: Code/Integration, Card 3: Download/Call-to-Action)._
+
 #### Card 1: The Core Dashboard View (The Hook)
+
 > **Prompt:** A premium 1:1 square cinematic shot of an ultra-modern website homepage displaying a powerful custom software application dashboard. The UI features layered, thick-cut glassmorphic panels floating gracefully over a dark, sleek minimalist studio background. Crisp, glowing data visualization graphs in electric cyan and emerald green trace upward across the translucent frosted glass. Sharp rim lighting and realistic shadows between layers give the software an immense 3D physical presence. Photorealistic, 8k resolution, ray-traced reflections, premium software UX/UI visualization, professional Meta ad style.
-> 
+
 #### Card 2: The Integration / Backend View (The Authority Proof)
+
 > **Prompt:** A premium 1:1 square cinematic shot of a developer-focused app feature. The interface showcases a floating glassmorphic terminal running automated scripts and crisp, glowing lines of monospaced code. Intricate, glowing neon data pathways weave across the frosted glass surface, connecting the code block to various integrated API modules and server nodes. Subtle atmospheric haze drifts behind the floating layers, catching sharp light leaks on the glossy, refractive edges. Hyper-realistic, 8k, ultra-detailed glass textures, tech-heavy premium engineering aesthetic.
-> 
+
 #### Card 3: The Download & Deploy View (The Conversion)
+
 > **Prompt:** A premium 1:1 square cinematic shot focusing on the final call-to-action screen of a software landing page. A central, layered frosted glass module floats over a deep charcoal gradient background, displaying a sleek laptop mockup next to a beautifully rendered download badge. A prominent, high-gloss glassmorphic button in the center glows with a soft accent light, showcasing the sharp text "Instant Access". Elegant depth of field, tactile glass textures, pristine UX/UI layout designed for high conversion.
-> 
+
 ### Format 2: The Meta Single Image / Story Ad (9:16 Vertical)
-*Perfect for Instagram/Facebook Stories and Reels placements where you want to capture full-screen attention.*
+
+_Perfect for Instagram/Facebook Stories and Reels placements where you want to capture full-screen attention._
+
 > **Prompt:** A vertical 9:16 cinematic hero shot of an advanced multi-agent software platform interface optimized for a premium tech ad campaign. The design features a stunning master dashboard built with stacked, semi-transparent glassmorphic panels hovering over a dark, moody luxury office background. Radiant, glowing data pipelines stream between the UI layers, symbolizing seamless workflow automation. A prominent, glossy call-to-action button reads "Get the App". Thick atmospheric fog rolls across the lower half of the frame, catching sharp beams of cool blue and warm gold rim lighting on the crisp, refractive glass edges. Photorealistic, 8k resolution, elegant 3D realism, scroll-stopping digital art.
-> 
+
 ### 📈 Meta Ad Campaign Framework (How to Target & Sell)
+
 When setting up this campaign in Meta Ads Manager, use this high-converting structure to match your premium visuals:
- * **The Campaign Objective:** Select **"Leads"** (if capturing emails on a landing page before handing over the download) or **"Sales"** (if selling a premium snapshot, template, or app directly).
- * **Targeting Strategy:** * *Interests:* "GoHighLevel", "Software as a Service (SaaS)", "Web Development", "Marketing Automation", "GitHub".
-   * *Job Titles:* "Founder", "Agency Owner", "Software Engineer", "Operations Director".
- * **The Ad Copy Formula (Short & Punchy):**
-   > **Hook:** "Stop building your workflows from scratch. I spent years perfecting this architecture so you don’t have to."
-   > **Value:** "Import my exact master engine into your account in one click. Fully automated multi-agent pipelines, smart integrations, and flawless reporting."
-   > **CTA:** "Tap 'Learn More' to deploy the snapshot instantly. 🚀"
-   >
+
+- **The Campaign Objective:** Select **"Leads"** (if capturing emails on a landing page before handing over the download) or **"Sales"** (if selling a premium snapshot, template, or app directly).
+- **Targeting Strategy:** * _Interests:_ "GoHighLevel", "Software as a Service (SaaS)", "Web Development", "Marketing Automation", "GitHub".
+  - _Job Titles:_ "Founder", "Agency Owner", "Software Engineer", "Operations Director".
+- **The Ad Copy Formula (Short & Punchy):**
+  > **Hook:** "Stop building your workflows from scratch. I spent years perfecting this architecture so you don’t have to."
+  > **Value:** "Import my exact master engine into your account in one click. Fully automated multi-agent pipelines, smart integrations, and flawless reporting."
+  > **CTA:** "Tap 'Learn More' to deploy the snapshot instantly. 🚀"
 
 ### Current Status
 
@@ -296,18 +317,18 @@ When setting up this campaign in Meta Ads Manager, use this high-converting stru
 
 ## Step 1A: Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-|--------------|-----------|-----------------|---------------------------|-------|
-| Website / app UI | [Yes/No] | [site/app] | [engine] | [notes] |
-| API | [Yes/No] | [REST/GraphQL/etc.] | [engine] | [notes] |
-| CLI | [Yes/No] | [binary/package] | [engine] | [notes] |
-| MCP | [Yes/No] | [server/router/tool manifest] | [engine] | [notes] |
-| Skill | [Yes/No] | [skill type] | [engine] | [notes] |
-| PDF | [Yes/No] | [report/guide/etc.] | [engine] | [notes] |
-| PowerPoint / deck | [Yes/No] | [sales/training/review deck] | [engine] | [notes] |
-| Video | [Yes/No] | [demo/training/review/YouTube + target length] | [engine] | [notes] |
-| Docs | [Yes/No] | [site/spec/readme] | [engine] | [notes] |
-| Agent automation | [Yes/No] | [workflow/agent/service] | [engine] | [notes] |
+| Output shape      | In scope? | Format / length                                | Primary engine / standard | Notes   |
+| ----------------- | --------- | ---------------------------------------------- | ------------------------- | ------- |
+| Website / app UI  | [Yes/No]  | [site/app]                                     | [engine]                  | [notes] |
+| API               | [Yes/No]  | [REST/GraphQL/etc.]                            | [engine]                  | [notes] |
+| CLI               | [Yes/No]  | [binary/package]                               | [engine]                  | [notes] |
+| MCP               | [Yes/No]  | [server/router/tool manifest]                  | [engine]                  | [notes] |
+| Skill             | [Yes/No]  | [skill type]                                   | [engine]                  | [notes] |
+| PDF               | [Yes/No]  | [report/guide/etc.]                            | [engine]                  | [notes] |
+| PowerPoint / deck | [Yes/No]  | [sales/training/review deck]                   | [engine]                  | [notes] |
+| Video             | [Yes/No]  | [demo/training/review/YouTube + target length] | [engine]                  | [notes] |
+| Docs              | [Yes/No]  | [site/spec/readme]                             | [engine]                  | [notes] |
+| Agent automation  | [Yes/No]  | [workflow/agent/service]                       | [engine]                  | [notes] |
 
 ### Platform Defaults & Website Requirements
 
@@ -344,18 +365,18 @@ When setting up this campaign in Meta Ads Manager, use this high-converting stru
 [Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
 
 | Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
-| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
+| ---------------- | ------------- | ------------ | ---------------- |
+| [Segment 1]      | [Trigger]     | High/Med/Low | [Size]           |
+| [Segment 2]      | [Trigger]     | High/Med/Low | [Size]           |
 
 #### SEO & Keyword Research
 
 **This section is REQUIRED for any product with a web/content component.**
 
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| Keyword             | Monthly Volume (US) | Avg CPC | Competition  | Intent                      |
+| ------------------- | ------------------- | ------- | ------------ | --------------------------- |
+| [primary keyword 1] | [volume]            | [$CPC]  | High/Med/Low | Transactional/Informational |
+| [primary keyword 2] | [volume]            | [$CPC]  | High/Med/Low | Transactional/Informational |
 
 **Long-tail / trigger-specific keywords:**
 
@@ -370,30 +391,30 @@ When setting up this campaign in Meta Ads Manager, use this high-converting stru
 
 **Category: [Primary Data Source]**
 
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
-| [Option 2] | [$] | [Coverage] | [Use case] | |
+| API / Tool | Cost | Coverage   | Best For   | Verdict                                   |
+| ---------- | ---- | ---------- | ---------- | ----------------------------------------- |
+| [Option 1] | [$]  | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
+| [Option 2] | [$]  | [Coverage] | [Use case] |                                           |
 
 **Category: [Compliance / Validation]**
 
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
+| API / Tool | Cost | Features   | Best For   | Verdict |
+| ---------- | ---- | ---------- | ---------- | ------- |
+| [Option 1] | [$]  | [Features] | [Use case] |         |
 
 **Category: [Delivery / Storefront]**
 
-| Platform | Rev Share | Best For | Verdict |
-|----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
+| Platform   | Rev Share | Best For   | Verdict |
+| ---------- | --------- | ---------- | ------- |
+| [Option 1] | [%]       | [Use case] |         |
 
 **BOM Cost Summary:**
 
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
+| Category                 | Recommended Tool | Est. Monthly Cost |
+| ------------------------ | ---------------- | ----------------- |
+| [Category 1]             | [Tool]           | $[X]              |
+| [Category 2]             | [Tool]           | $[X]              |
+| **Total Infrastructure** |                  | **$[Total]/mo**   |
 
 > **ROI Check:** [How many units/sales cover infrastructure cost?]
 
@@ -404,20 +425,20 @@ When setting up this campaign in Meta Ads Manager, use this high-converting stru
 **Shared vs. Exclusive / Tiered pricing:**
 
 | Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-|--------------|-------------|------|----------------|------------------------|
-| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+| ------------- | ------------ | ---- | --------------- | ----------------------- |
+| [Type 1]      | [Mechanics]  | [$]  | [Rate]          | [Value drivers]         |
+| [Type 2]      | [Mechanics]  | [$]  | [Rate]          | [Value drivers]         |
 
 **Why some [units] are worth more than others:**
 [Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
 
 #### Competitors & Alternatives
 
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
+| Competitor      | Type   | Cost      | Conversion/Quality | Gap / What They Don't Do |
+| --------------- | ------ | --------- | ------------------ | ------------------------ |
+| [Name 1]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| [Name 2]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| **This Engine** | [Type] | [Pricing] | [Expected]         | [Our advantage]          |
 
 #### API / Data Source BOM (REQUIRED)
 
@@ -425,10 +446,10 @@ When setting up this campaign in Meta Ads Manager, use this high-converting stru
 
 If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
 
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| Provider/API | Best For         | Data/Capability | Cost Model | Strengths  | Weaknesses/Risks | Compliance Notes  |
+| ------------ | ---------------- | --------------- | ---------- | ---------- | ---------------- | ----------------- |
+| [Provider 1] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
+| [Provider 2] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
 
 **BOM Decision:**
 
@@ -459,8 +480,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **High-value domain patterns for this niche:**
 
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
+| Pattern     | Examples   | Rationale      |
+| ----------- | ---------- | -------------- |
 | [Pattern 1] | [Examples] | [Why it works] |
 | [Pattern 2] | [Examples] | [Why it works] |
 
@@ -486,8 +507,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **This section is REQUIRED. Research current marketing strategies in this niche.**
 
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
+| Strategy     | What Works Now                 | How This WR Improves It     |
+| ------------ | ------------------------------ | --------------------------- |
 | [Strategy 1] | [Current best practice + data] | [How our product is better] |
 | [Strategy 2] | [Current best practice + data] | [How our product is better] |
 
@@ -601,17 +622,17 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Weighted Factors:**
 
-| Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| [factor] | [0.00] | [input/source] | [reason] |
+| Factor   | Weight | Source         | Why it matters |
+| -------- | -----: | -------------- | -------------- |
+| [factor] | [0.00] | [input/source] | [reason]       |
 
 **Threshold Bands:**
 
-| Score Range | Status | Action |
-|---|---|---|
-| 80-100 | eligible | [export/route/approve] |
-| 50-79 | manual_review | [review queue] |
-| 0-49 | blocked | [suppress/reject] |
+| Score Range | Status        | Action                 |
+| ----------- | ------------- | ---------------------- |
+| 80-100      | eligible      | [export/route/approve] |
+| 50-79       | manual_review | [review queue]         |
+| 0-49        | blocked       | [suppress/reject]      |
 
 **Audit Trail Required:**
 
@@ -750,9 +771,9 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Links to Add:**
 
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
+| Product/Service | Affiliate Program | Commission | Location       |
+| --------------- | ----------------- | ---------- | -------------- |
+| [Name]          | [Program]         | [Rate]     | [Where to add] |
 
 #### Payment Integration
 
@@ -847,11 +868,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
+| Feature   | Status     | URL                                       |
+| --------- | ---------- | ----------------------------------------- |
+| Homepage  | ✅ Working | https://{repo-name}.vercel.app            |
+| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard  |
+| API       | ✅ Working | https://{repo-name}.vercel.app/api/health |
 ```
 
 **Action Required:** [None / Add section / Update URLs]
@@ -943,8 +964,8 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
+| Risk     | Severity     | Probability  | Mitigation        |
+| -------- | ------------ | ------------ | ----------------- |
 | [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
 | [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
 

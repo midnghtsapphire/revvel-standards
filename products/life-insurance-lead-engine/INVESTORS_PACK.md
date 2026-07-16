@@ -12,12 +12,12 @@ B2B SaaS tool that gives independent life insurance agents a 10x edge by automat
 
 ## Traction (Projected)
 
-| Quarter | MRR | Customers |
-|---------|-----|-----------|
-| Q1 2025 | $2.4k | 25 |
-| Q2 2025 | $10.6k | 110 |
-| Q3 2025 | $31k | 320 |
-| Q4 2025 | $100k | 1,030 |
+| Quarter | MRR    | Customers |
+| ------- | ------ | --------- |
+| Q1 2025 | $2.4k  | 25        |
+| Q2 2025 | $10.6k | 110       |
+| Q3 2025 | $31k   | 320       |
+| Q4 2025 | $100k  | 1,030     |
 
 ## Why Now
 

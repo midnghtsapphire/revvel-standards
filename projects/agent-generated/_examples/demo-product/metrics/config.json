@@ -21,12 +21,7 @@
       "cac",
       "ltv"
     ],
-    "health": [
-      "uptime",
-      "error_rate",
-      "response_time_p95",
-      "support_tickets"
-    ]
+    "health": ["uptime", "error_rate", "response_time_p95", "support_tickets"]
   },
   "targets": {
     "week1": {

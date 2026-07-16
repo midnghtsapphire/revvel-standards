@@ -17,10 +17,10 @@ cd revvel-standards
 
 ## Available Scripts
 
-| Script | Purpose |
-|--------|---------|
-| `scripts/init-project.sh` | Initialize new project with full automation |
-| `scripts/setup-automation.sh` | Add automation to existing project |
+| Script                        | Purpose                                     |
+| ----------------------------- | ------------------------------------------- |
+| `scripts/init-project.sh`     | Initialize new project with full automation |
+| `scripts/setup-automation.sh` | Add automation to existing project          |
 
 ---
 
@@ -28,15 +28,15 @@ cd revvel-standards
 
 Copy from `templates/github-workflows/`:
 
-| Workflow | Use |
-|----------|-----|
-| `python-test.yml` | Python CI |
-| `typescript-test.yml` | TypeScript CI |
-| `auto-merge.yml` | Auto-merge PRs |
-| `cleanup.yml` | Clean old branches |
-| `security-audit.yml` | Security scanning |
-| `deploy.yml` | Docker deployment |
-| `daily-standup.yml` | Daily report |
+| Workflow              | Use                |
+| --------------------- | ------------------ |
+| `python-test.yml`     | Python CI          |
+| `typescript-test.yml` | TypeScript CI      |
+| `auto-merge.yml`      | Auto-merge PRs     |
+| `cleanup.yml`         | Clean old branches |
+| `security-audit.yml`  | Security scanning  |
+| `deploy.yml`          | Docker deployment  |
+| `daily-standup.yml`   | Daily report       |
 
 ---
 
@@ -57,11 +57,11 @@ Every new project gets:
 
 ## Automation Platforms
 
-| Platform | Setup |
-|----------|-------|
-| **n8n** | Import `n8n/workflows/*.json` |
-| **Zapier** | Use templates from `zapier/` |
-| **Make** | Use scenarios from `make/` |
+| Platform      | Setup                             |
+| ------------- | --------------------------------- |
+| **n8n**       | Import `n8n/workflows/*.json`     |
+| **Zapier**    | Use templates from `zapier/`      |
+| **Make**      | Use scenarios from `make/`        |
 | **OpenHands** | Use automations from `openhands/` |
 
 ---
@@ -89,7 +89,7 @@ Set these for automation:
 
 ```bash
 gh secret set SENTRY_DSN
-gh secret set OPENAI_API_KEY  
+gh secret set OPENAI_API_KEY
 gh secret set DISCORD_WEBHOOK_URL
 gh secret set SLACK_WEBHOOK_URL
 gh secret set DISPATCH_TOKEN
@@ -120,15 +120,15 @@ gh pr merge --admin --merge
 
 ## Standards by Category
 
-| Category | File |
-|-----------|------|
-| **Testing** | `standards/TESTING.md` |
-| **Security** | `standards/SECURITY.md` |
-| **Docker** | `standards/DOCKER.md` |
-| **Pricing** | `standards/PRICING.md` |
-| **Integrations** | `standards/INTEGRATIONS.md` |
-| **Automation** | `standards/ZERO_HUMAN_FRAMEWORK.md` |
-| **CLI/MCP** | `standards/CLI_MCP_AUTOMATION.md` |
+| Category         | File                                |
+| ---------------- | ----------------------------------- |
+| **Testing**      | `standards/TESTING.md`              |
+| **Security**     | `standards/SECURITY.md`             |
+| **Docker**       | `standards/DOCKER.md`               |
+| **Pricing**      | `standards/PRICING.md`              |
+| **Integrations** | `standards/INTEGRATIONS.md`         |
+| **Automation**   | `standards/ZERO_HUMAN_FRAMEWORK.md` |
+| **CLI/MCP**      | `standards/CLI_MCP_AUTOMATION.md`   |
 
 ---
 
@@ -146,4 +146,3 @@ gh pr merge --admin --merge
 
 - GitHub: https://github.com/midnghtsapphire/revvel-standards
 - Issues: https://github.com/midnghtsapphire/revvel-standards/issues
-

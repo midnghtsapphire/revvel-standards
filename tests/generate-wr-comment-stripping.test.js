@@ -64,7 +64,7 @@ function runGenerator(templateContent, titleSlug) {
         `--body-file ${JSON.stringify(bodyPath)} ` +
         `--class full`,
     ],
-    { encoding: "utf8" }
+    { encoding: "utf8" },
   );
 
   let outPath = null;
@@ -74,9 +74,16 @@ function runGenerator(templateContent, titleSlug) {
   }
 
   // Clean up
-  try { fs.rmSync(tmp, { recursive: true, force: true }); } catch (_) {}
+  try {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  } catch (_) {}
 
-  return { status: result.status, stderr: result.stderr || "", stdout: result.stdout || "", outPath };
+  return {
+    status: result.status,
+    stderr: result.stderr || "",
+    stdout: result.stdout || "",
+    outPath,
+  };
 }
 
 /**
@@ -231,19 +238,26 @@ test("single-line leading HTML comments are stripped (H1 on line 1)", () => {
 
 {RISKS}
 `;
-  const { status, stderr } = runGenerator(singleLineOnly, "single-line comment test");
-  assert.strictEqual(status, 0, `generator failed (single-line comments):\n${stderr}`);
+  const { status, stderr } = runGenerator(
+    singleLineOnly,
+    "single-line comment test",
+  );
+  assert.strictEqual(
+    status,
+    0,
+    `generator failed (single-line comments):\n${stderr}`,
+  );
 });
 
 test("multi-line leading HTML comment is stripped so H1 lands on line 1 (regression #15215)", () => {
   const { status, stderr } = runGenerator(
     MULTI_LINE_COMMENT_TEMPLATE,
-    "multi-line comment regression test"
+    "multi-line comment regression test",
   );
   assert.strictEqual(
     status,
     0,
-    `generator refused output — H1 likely not on line 1 due to un-stripped multi-line comment:\n${stderr}`
+    `generator refused output — H1 likely not on line 1 due to un-stripped multi-line comment:\n${stderr}`,
   );
 });
 
@@ -257,25 +271,34 @@ test("real WR_TEMPLATE_FULL.md generates with H1 on line 1", () => {
     "bash",
     [
       GENERATOR,
-      "--issue", "99998",
-      "--title", "integration smoke test for H1 position",
-      "--body-file", bodyPath,
-      "--class", "full",
+      "--issue",
+      "99998",
+      "--title",
+      "integration smoke test for H1 position",
+      "--body-file",
+      bodyPath,
+      "--class",
+      "full",
     ],
-    { encoding: "utf8", cwd: path.join(__dirname, "..") }
+    { encoding: "utf8", cwd: path.join(__dirname, "..") },
   );
 
   // Clean up generated file
   const generatedPath = path.join(
-    WR_DIR, "issues",
-    "issue-99998-integration-smoke-test-for-h1-position.md"
+    WR_DIR,
+    "issues",
+    "issue-99998-integration-smoke-test-for-h1-position.md",
   );
-  try { fs.unlinkSync(generatedPath); } catch (_) {}
-  try { fs.unlinkSync(bodyPath); } catch (_) {}
+  try {
+    fs.unlinkSync(generatedPath);
+  } catch (_) {}
+  try {
+    fs.unlinkSync(bodyPath);
+  } catch (_) {}
 
   assert.strictEqual(
     result.status,
     0,
-    `generator rejected real WR_TEMPLATE_FULL.md output — multi-line comment stripping broken:\n${result.stderr}`
+    `generator rejected real WR_TEMPLATE_FULL.md output — multi-line comment stripping broken:\n${result.stderr}`,
   );
 });

@@ -11,26 +11,26 @@
 
 All AI agents that need to manage the MIDNGHTSAPPHIRE droplet (164.90.148.7) use a shared `agent-access` SSH key pair. This key is stored in two places so every agent platform can retrieve it:
 
-| Agent Platform | How to Get the Key |
-|---|---|
-| **OpenHands** | `$SSH_PRIVATE_KEY` org secret (auto-injected) |
+| Agent Platform                      | How to Get the Key                                                                            |
+| ----------------------------------- | --------------------------------------------------------------------------------------------- |
+| **OpenHands**                       | `$SSH_PRIVATE_KEY` org secret (auto-injected)                                                 |
 | **Claude Code / Cursor / Windsurf** | DoppleMCP → `doppler_secrets_get(project=revvel-standards, config=prd, name=SSH_PRIVATE_KEY)` |
-| **GitHub Actions (Copilot)** | `${{ secrets.SSH_PRIVATE_KEY }}` repository secret |
-| **Any agent with shell** | `doppler secrets get SSH_PRIVATE_KEY --project revvel-standards --config prd --plain` |
+| **GitHub Actions (Copilot)**        | `${{ secrets.SSH_PRIVATE_KEY }}` repository secret                                            |
+| **Any agent with shell**            | `doppler secrets get SSH_PRIVATE_KEY --project revvel-standards --config prd --plain`         |
 
 ---
 
 ## 2. Key Details
 
-| Property | Value |
-|----------|-------|
-| **Key type** | Ed25519 |
-| **Key comment** | `agent-access@midnghtsapphire` |
-| **Droplet IP** | `164.90.148.7` |
-| **Droplet user** | `root` |
-| **Key storage (OpenHands)** | Org secret: `SSH_PRIVATE_KEY` |
-| **Key storage (Doppler)** | `revvel-standards/prd/SSH_PRIVATE_KEY` |
-| **Key storage (GitHub)** | Repository secret: `SSH_PRIVATE_KEY` |
+| Property                    | Value                                  |
+| --------------------------- | -------------------------------------- |
+| **Key type**                | Ed25519                                |
+| **Key comment**             | `agent-access@midnghtsapphire`         |
+| **Droplet IP**              | `164.90.148.7`                         |
+| **Droplet user**            | `root`                                 |
+| **Key storage (OpenHands)** | Org secret: `SSH_PRIVATE_KEY`          |
+| **Key storage (Doppler)**   | `revvel-standards/prd/SSH_PRIVATE_KEY` |
+| **Key storage (GitHub)**    | Repository secret: `SSH_PRIVATE_KEY`   |
 
 ---
 
@@ -195,8 +195,8 @@ done
 
 ## 8. Relationship to Other Standards
 
-| Standard | Relationship |
-|----------|-------------|
-| `KONG_GATEWAY.md` | SSH access needed to deploy Kong on droplet |
+| Standard                            | Relationship                                      |
+| ----------------------------------- | ------------------------------------------------- |
+| `KONG_GATEWAY.md`                   | SSH access needed to deploy Kong on droplet       |
 | `08_SECRETS_MANAGEMENT_STANDARD.md` | SSH key stored in Doppler alongside other secrets |
-| `SECURITY.md` | SSH key follows secret handling rules |
+| `SECURITY.md`                       | SSH key follows secret handling rules             |

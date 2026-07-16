@@ -7,11 +7,12 @@
 
 > ⚡ **Which workflow file runs next?**  
 > **[`START_HERE_CALL_CHAIN.md`](./START_HERE_CALL_CHAIN.md)** — human-readable call chain (issue → research → code → ship).  
-> This file (`MASTER.md`) governs *doc order*; that file governs *runtime file → next file*.
+> This file (`MASTER.md`) governs _doc order_; that file governs _runtime file → next file_.
 
 ---
 
 ## 0. THE ONE RULE
+
 A human may supply only a `[WR] <title>`. The system generates everything else, at maximum scope,
 in one iteration. Form fields (not labels) drive routing. Output must be clean (no scaffolding, no
 raw placeholders). Jules normalizes text; agents generate scope; research precedes both.
@@ -21,7 +22,7 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 ## 1. PIPELINE (the governing order)
 
 ```
-[WR title] 
+[WR title]
    │
    ▼
 (1) TITLE_TO_WR_EXPANSION.md     ← detect title-only; pick template; infer modes; generate scope
@@ -67,11 +68,13 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 ## 2. FILE REGISTRY (what each doc is, and when it governs)
 
 ### Method & governance
+
 - **MASTER.md** (this file) — system of record; pipeline order; conflict tie-breaker.
 - **UPREV_METHOD.md** — the method definition (one iteration, max over minimum, self-healing).
 - **WR_RESEARCH_MANDATE.md** — research-first WR; runs before any build/fix; SEM/SEO discovery rules.
 
 ### WR/PR machinery (in .github/ + workflows/)
+
 - **.github/ISSUE_TEMPLATE/work_request.yml** — canonical WR form/schema (the target Jules normalizes into).
 - **.github/pull_request_template.md** — PR template; mirrors the WR field-for-field.
 - **workflows/TITLE_TO_WR_EXPANSION.md** — title→full-WR generation + clean-output rules. Entry point per WR.
@@ -83,11 +86,13 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 - **wr/scripts/generate-wr.sh** — corrected WR generator; selects template by class, substitutes tokens, runs the lint gate before writing.
 
 ### Generators
+
 - **ARTIFACT_GENERATOR.md** — standing per-project spec: all artifacts across all surfaces (web, android,
   ios, cli, mcp, pdf, booklet, skills, extension).
 - **AGENT_BUILD_PROMPT.md** — the build-execution prompt (XP, one iteration, max build).
 
 ### Research orchestrator (the "build" that was missing)
+
 - **research-orchestrator/BUILD_SPEC.md** — multi-model deep-research orchestrator spec.
 - **research-orchestrator/src/core.mjs** — fan-out + judge + synthesis engine.
 - **research-orchestrator/bin/dr.mjs** — CLI face.
@@ -95,6 +100,7 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 - **research-orchestrator/mcp/manifest.json** — swarm-callable MCP tools.
 
 ### Intelligence Layer (Oz OS — separate repo)
+
 - **[midnghtsapphire/oz-os](https://github.com/midnghtsapphire/oz-os)** — Research Intelligence Operating System repo.
 - **`oz-os/intel/SCHEMA.md`** — YAML frontmatter schema for all intel entries.
 - **`oz-os/agents/`** — 6 agent specs: method-hunter, contrarian, adjacent-domain, synthesizer, verifier, archivist.
@@ -104,14 +110,17 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 - **`docs/INTELLIGENCE_LAYER_STANDARD.md`** — formal standard governing method divergence + evidence-gated autonomy.
 
 ### Infographic Engine (separate repo)
+
 - **[midnghtsapphire/bar-chart-race-engine](https://github.com/midnghtsapphire/bar-chart-race-engine)** — Animated bar-chart-race video generator.
 - 8 races: electricity access gap, literacy, life expectancy, internet, CO2, GDP per capita, renewable energy, non-HE washers.
 - Scripts: `wdi-fetch.py`, `render-race.py`, `wdi-multi-fetch.py`, `render-multi.py`, `washer-fetch.py`, `render-washers.py`.
 
 ### PR Automation
+
 - **`.github/workflows/trusted-bot-auto-approve.yml`** — auto-approves PRs from trusted bots (Devin, Jules, Copilot, Cursor, Octopus, CircleCI, Bito, OpenHands) once all CI checks pass. Feeds into `pr-state-orchestrator.yml` for label progression + auto-merge.
 
 ### Recovery Platform (worked product instance)
+
 - **RECOVERY_PLATFORM_ARTIFACTS.md** — full artifact package for the platform.
 - **artifacts/openapi/openapi.yaml** · **artifacts/mcp/manifest.json** · **artifacts/skills/** (4 SKILL.md).
 - **sar_repository_schema.json** · **sar_case_records.json** — evidence-scoring schema + worked cases.
@@ -120,6 +129,7 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 ---
 
 ## 3. CONFLICT RESOLUTION
+
 1. MASTER.md pipeline order wins over any single doc.
 2. Form fields (work_request.yml) win over labels for routing.
 3. wr-lint.mjs is a hard gate: red lint blocks merge regardless of agent claims.
@@ -127,6 +137,7 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 5. Wrong-template signal (bug WR with product sections) → switch template, do not N/A en masse.
 
 ## 4. INVARIANTS (apply everywhere)
+
 - Title-only input is valid; generate the rest. Max over minimum. One iteration, multiple PRs.
 - Deep research first; time/cost not constrained; shallow rejected; findings tiered A1/A2/B2/B3.
 - Clean output: one H1, no scaffolding, no raw placeholders, N/A must state a reason.
@@ -136,19 +147,23 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 ## 5. GAPS TO CLOSE (flagged, not yet built)
 
 Closed by PR #14227:
+
 - ~~`WR_TEMPLATE_BASIC.md`~~ — authored at `wr/WR_TEMPLATE_BASIC.md`.
 - ~~CI workflow to run wr-lint.mjs~~ — landed as `.github/workflows/wr-lint.yml`.
 
 Closed by PR #14266 + oz-os PR #2 + bar-chart-race-engine PR #2:
+
 - ~~OZ-OS-001 through OZ-OS-012~~ — 18 WR tracking docs + full oz-os repo bootstrap (27 files).
 - ~~RIS-001~~ — bar-chart-race-engine with 8 animated infographic races (electricity, literacy, life expectancy, internet, CO2, GDP, renewable energy, non-HE washers).
 - ~~`docs/INTELLIGENCE_LAYER_STANDARD.md`~~ — formal intelligence layer standard (PR #14267).
 - ~~Steps 5.5–5.8~~ — method divergence pipeline (Method Hunter → Contrarian → Adjacent Domain → Synthesis) added to §1.
 
 Closed by PR #14269:
+
 - ~~Trusted Bot Auto-Approve~~ — `.github/workflows/trusted-bot-auto-approve.yml` auto-approves PRs from Devin, Jules, Copilot, Cursor, Octopus, CircleCI, Bito, OpenHands once CI passes.
 
 Still open:
+
 - `UPREV_METHOD.md` — referenced in §2; method definition not yet authored.
 - `WR_RESEARCH_MANDATE.md` — referenced in §2; research-first mandate / SEM-SEO discovery rules not yet authored.
 - `.github/ISSUE_TEMPLATE/work_request.yml` — canonical WR form schema not yet authored.

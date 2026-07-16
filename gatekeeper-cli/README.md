@@ -113,6 +113,7 @@ gk health
 ## Architecture
 
 The CLI tool integrates with:
+
 - **Doppler API** for secret management
 - **GitHub API** for repo secret syncing
 - **MCP Server** (optional) for programmatic access

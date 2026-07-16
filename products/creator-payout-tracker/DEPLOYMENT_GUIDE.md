@@ -52,8 +52,8 @@ vercel --prod
 
 The product runs without secrets because the payout dataset is static. Configure the checkout URL to activate the paid Creator Pro CTA:
 
-| Variable | Purpose | Required |
-| --- | --- | --- |
+| Variable                         | Purpose                                   | Required |
+| -------------------------------- | ----------------------------------------- | -------- |
 | `NEXT_PUBLIC_POLAR_CHECKOUT_URL` | Public Polar checkout URL for Creator Pro | Optional |
 
 ---

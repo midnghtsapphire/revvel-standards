@@ -10,6 +10,7 @@
 ---
 
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source: MiCOM Labs medical device compliance testing guide (<https://micomlabs.com/medical-device-compliance-testing/>) — domain content inferred from publicly known MiCOM Labs services and medical device compliance testing standards; URL was inaccessible during automated research. Plus OpenRouter market research.
@@ -45,6 +46,7 @@ The medical device compliance testing space is a $35.8B+ compliance software mar
 ### 3. Marketing and SEO Plan
 
 **Primary Keyword Clusters (with estimated monthly search volumes):**
+
 - "medical device compliance software" — ~1,900 searches/month (high commercial intent)
 - "FDA 510k compliance tool" — ~800 searches/month
 - "ISO 13485 quality management software" — ~1,200 searches/month
@@ -53,16 +55,19 @@ The medical device compliance testing space is a $35.8B+ compliance software mar
 - "regulatory affairs software medical device" — ~700 searches/month
 
 **Landing Page:**
+
 - **Title:** "Medical Device Compliance Navigator | FDA 510(k), ISO 13485 & IEC 60601 Tracking"
 - **Meta Description:** "Stop losing 510(k) prep time to spreadsheets. Track FDA, ISO 13485, IEC 60601, and EU MDR compliance in one platform. Built for device startups and testing labs."
 
 **Content Strategy:**
+
 1. **Pillar:** "Complete Guide to Medical Device Compliance Testing" (mirror of MiCOM Labs guide, original research added)
 2. **Comparison pages:** vs. Greenlight Guru, vs. MasterControl, vs. Excel/manual workflows
 3. **Regulatory checklists:** Downloadable 510(k) pre-submission checklist, ISO 13485 audit readiness checklist
 4. **Case studies:** Time-to-clearance reduction for device startups
 
 **Distribution:**
+
 - LinkedIn (primary B2B channel; target Regulatory Affairs and Quality Engineering groups)
 - Medical Device & Diagnostic Industry (MD+DI) — industry publication ads/sponsored content
 - RAPS (Regulatory Affairs Professionals Society) community
@@ -73,25 +78,26 @@ The medical device compliance testing space is a $35.8B+ compliance software mar
 
 **Closed-Source Market Leaders:**
 
-| Competitor | Market Position | 2025 Pricing | Key Features | G2 Rating |
-|------------|----------------|--------------|--------------|-----------|
-| **Greenlight Guru** | SMB/mid-market leader | $25,000–$55,000/yr (rising 100%+ in 2026) ([Vendr, 2025](https://www.vendr.com/marketplace/greenlight-guru)) | QMS, design controls, complaints | 4.4/5 |
-| **MasterControl** | Enterprise QMS | ~$25,000/yr entry ([TrustRadius, 2025](https://www.trustradius.com/compare-products/greenlight-guru-vs-mastercontrol-quality-excellence)) | Document control, CAPA, training | 4.2/5 |
-| **Veeva Vault QMS** | Enterprise (pharma/medtech) | Custom enterprise quote (est. $50k+/yr) ([G2](https://www.g2.com/compare/mastercontrol-quality-management-system-vs-veeva-vault-qms)) | Full lifecycle, clinical, regulatory | 4.3/5 |
-| **ComplianceQuest** | Mid-market | $15,000–$30,000/yr (Salesforce-native, estimate) | QMS, EHS, supplier quality | 4.5/5 |
-| **SimplerQMS** | SMB-focused | $499–$999/month ([$499/mo entry](https://www.simplerqms.com/pricing)) | ISO 13485 QMS, document control | 4.6/5 |
+| Competitor          | Market Position             | 2025 Pricing                                                                                                                              | Key Features                         | G2 Rating |
+| ------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | --------- |
+| **Greenlight Guru** | SMB/mid-market leader       | $25,000–$55,000/yr (rising 100%+ in 2026) ([Vendr, 2025](https://www.vendr.com/marketplace/greenlight-guru))                              | QMS, design controls, complaints     | 4.4/5     |
+| **MasterControl**   | Enterprise QMS              | ~$25,000/yr entry ([TrustRadius, 2025](https://www.trustradius.com/compare-products/greenlight-guru-vs-mastercontrol-quality-excellence)) | Document control, CAPA, training     | 4.2/5     |
+| **Veeva Vault QMS** | Enterprise (pharma/medtech) | Custom enterprise quote (est. $50k+/yr) ([G2](https://www.g2.com/compare/mastercontrol-quality-management-system-vs-veeva-vault-qms))     | Full lifecycle, clinical, regulatory | 4.3/5     |
+| **ComplianceQuest** | Mid-market                  | $15,000–$30,000/yr (Salesforce-native, estimate)                                                                                          | QMS, EHS, supplier quality           | 4.5/5     |
+| **SimplerQMS**      | SMB-focused                 | $499–$999/month ([$499/mo entry](https://www.simplerqms.com/pricing))                                                                     | ISO 13485 QMS, document control      | 4.6/5     |
 
 **Open-Source Landscape:**
 
-| Repository | Stars (est.) | Last Update | Viability |
-|------------|--------------|-------------|-----------|
-| [MedISO](https://github.com/ilanrd/mediso) | <50 | 2023 | Limited; ISO 13485/14971 tracking only |
-| [robotframework/robotframework](https://github.com/robotframework/robotframework) | ~9,500 | Active | General-purpose; no compliance-specific UX |
-| [allure-framework/allure2](https://github.com/allure-framework/allure2) | ~4,200 | Active | Test reporting only, no regulatory context |
+| Repository                                                                        | Stars (est.) | Last Update | Viability                                  |
+| --------------------------------------------------------------------------------- | ------------ | ----------- | ------------------------------------------ |
+| [MedISO](https://github.com/ilanrd/mediso)                                        | <50          | 2023        | Limited; ISO 13485/14971 tracking only     |
+| [robotframework/robotframework](https://github.com/robotframework/robotframework) | ~9,500       | Active      | General-purpose; no compliance-specific UX |
+| [allure-framework/allure2](https://github.com/allure-framework/allure2)           | ~4,200       | Active      | Test reporting only, no regulatory context |
 
 **Key Finding:** No viable open-source medical device compliance platform exists. The closest (MedISO) is unmaintained and incomplete. This is a genuine white-space opportunity.
 
 **Competitive Moat:**
+
 1. **Standards coverage:** IEC 60601 + ISO 10993 + ISO 14971 + ISO 13485 + 510(k) pathway in one product
 2. **AI-assisted gap analysis:** Auto-generate compliance gap reports from test data
 3. **Price:** Target $299–$799/month — 60–80% below Greenlight Guru, 30–50% below SimplerQMS for comparable feature set
@@ -117,6 +123,7 @@ The medical device compliance testing space is a $35.8B+ compliance software mar
    - Contract labs (like MiCOM) manage 20–100+ concurrent client projects with no purpose-built multi-client compliance dashboard
 
 **Demand Signals:**
+
 - Search volume for "medical device compliance software" growing in parallel with FDA QMSR rollout (estimate; SEMrush confirmation recommended)
 - VC investment in medtech software tools rising; ComplianceQuest raised Series B in 2023
 - Greenlight Guru's 100%+ price increase in 2026 is driving active competitor research in the community
@@ -124,12 +131,14 @@ The medical device compliance testing space is a $35.8B+ compliance software mar
 ### 6. Factual Validation and Evidence Gaps
 
 **Verified Claims:**
+
 - SaMD market $3.81B (2025): [Mordor Intelligence](https://www.mordorintelligence.com/industry-reports/software-as-a-medical-device-market)
 - Compliance software market $35.8B: [Grand View Research](https://www.grandviewresearch.com/industry-analysis/compliance-software-market-report)
 - Greenlight Guru pricing $25k–$55k/yr: [Vendr](https://www.vendr.com/marketplace/greenlight-guru)
 - FDA QMSR effective 2026: [FDA.gov](https://www.fda.gov/medical-devices/quality-management-system-regulation-qmsr/quality-management-system-regulation-frequently-asked-questions)
 
 **Evidence Gaps (flag for research sprint):**
+
 - Exact SEMrush/Ahrefs search volume data for primary keywords (estimates above; verify before launch)
 - ComplianceQuest exact pricing (requires sales demo)
 - MiCOM Labs guide exact content structure (URL inaccessible during automated research; guide content inferred from publicly known MiCOM Labs services and medical device compliance testing domain knowledge — review guide directly when available for any gap)
@@ -139,31 +148,34 @@ The medical device compliance testing space is a $35.8B+ compliance software mar
 
 **MVP Feature Set:**
 
-| Feature | Priority | Notes |
-|---------|----------|-------|
-| Standards library (IEC 60601, ISO 10993, ISO 13485, ISO 14971, FDA QMSR) | P0 | Core navigation scaffolding |
-| Compliance gap analysis wizard | P0 | Step-by-step checklist per standard |
-| Document control (upload, version, sign) | P0 | 21 CFR Part 11 electronic records |
-| CAPA (Corrective and Preventive Action) tracking | P1 | Required for ISO 13485 audit |
-| 510(k) pre-submission checklist generator | P1 | Differentiator vs. incumbents |
-| Multi-client dashboard (for labs/consultants) | P1 | Key for testing lab segment |
-| Audit trail & export (PDF/CSV) | P0 | Required for all FDA/ISO audits |
-| AI-powered gap report generation | P2 | Differentiator; V1.1 candidate |
-| EU MDR / IVDR pathway support | P2 | Global expansion; V1.1 candidate |
+| Feature                                                                  | Priority | Notes                               |
+| ------------------------------------------------------------------------ | -------- | ----------------------------------- |
+| Standards library (IEC 60601, ISO 10993, ISO 13485, ISO 14971, FDA QMSR) | P0       | Core navigation scaffolding         |
+| Compliance gap analysis wizard                                           | P0       | Step-by-step checklist per standard |
+| Document control (upload, version, sign)                                 | P0       | 21 CFR Part 11 electronic records   |
+| CAPA (Corrective and Preventive Action) tracking                         | P1       | Required for ISO 13485 audit        |
+| 510(k) pre-submission checklist generator                                | P1       | Differentiator vs. incumbents       |
+| Multi-client dashboard (for labs/consultants)                            | P1       | Key for testing lab segment         |
+| Audit trail & export (PDF/CSV)                                           | P0       | Required for all FDA/ISO audits     |
+| AI-powered gap report generation                                         | P2       | Differentiator; V1.1 candidate      |
+| EU MDR / IVDR pathway support                                            | P2       | Global expansion; V1.1 candidate    |
 
 **Gate 1 — Foundation**
+
 - User auth with role-based access (Admin, QA Engineer, Regulatory Affairs, Auditor)
 - Standards library loaded and navigable
 - Document upload/versioning with audit trail
 - 21 CFR Part 11 compliant e-signature
 
 **Gate 2 — Core Compliance Workflows**
+
 - Gap analysis wizard covering ISO 13485 and IEC 60601 minimum
 - CAPA module with root-cause tracking and closure verification
 - 510(k) pre-submission checklist auto-populated from project data
 - PDF/CSV export for FDA submission package
 
 **Gate 3 — Production Readiness**
+
 - HIPAA/SOC 2 Type II compliance for data handling
 - Multi-tenant architecture for lab/consultant multi-client use
 - Performance: document search < 1s, gap report generation < 5s
@@ -229,12 +241,42 @@ npx create-next-app@latest . --typescript --tailwind --app
 // lib/standards/index.ts
 export const COMPLIANCE_STANDARDS = [
   { id: "iso-13485", name: "ISO 13485:2016", domain: "QMS", region: "Global" },
-  { id: "iec-60601", name: "IEC 60601-1:2005+A1:2012", domain: "Electrical Safety", region: "Global" },
-  { id: "iso-10993", name: "ISO 10993-1:2018", domain: "Biocompatibility", region: "Global" },
-  { id: "iso-14971", name: "ISO 14971:2019", domain: "Risk Management", region: "Global" },
-  { id: "fda-qmsr", name: "21 CFR Part 820 (QMSR)", domain: "QMS", region: "US" },
-  { id: "fda-510k", name: "FDA 510(k) Pre-Submission", domain: "Clearance", region: "US" },
-  { id: "eu-mdr", name: "EU MDR 2017/745", domain: "Market Authorization", region: "EU" },
+  {
+    id: "iec-60601",
+    name: "IEC 60601-1:2005+A1:2012",
+    domain: "Electrical Safety",
+    region: "Global",
+  },
+  {
+    id: "iso-10993",
+    name: "ISO 10993-1:2018",
+    domain: "Biocompatibility",
+    region: "Global",
+  },
+  {
+    id: "iso-14971",
+    name: "ISO 14971:2019",
+    domain: "Risk Management",
+    region: "Global",
+  },
+  {
+    id: "fda-qmsr",
+    name: "21 CFR Part 820 (QMSR)",
+    domain: "QMS",
+    region: "US",
+  },
+  {
+    id: "fda-510k",
+    name: "FDA 510(k) Pre-Submission",
+    domain: "Clearance",
+    region: "US",
+  },
+  {
+    id: "eu-mdr",
+    name: "EU MDR 2017/745",
+    domain: "Market Authorization",
+    region: "EU",
+  },
 ];
 ```
 
@@ -263,12 +305,14 @@ MiCOM Labs provides accredited compliance testing services for medical devices, 
 **Objective:** Replace spreadsheet-based compliance tracking for medical device startups, contract testing labs, and regulatory consultants with an affordable SaaS platform (target: $299–$799/month) that is 60–80% cheaper than Greenlight Guru.
 
 **Required Bundle:**
+
 - Next.js web app with standards library, gap analysis wizard, document control, CAPA, 510(k) checklist, audit trail
 - Multi-tenant architecture (lab/consultant multi-client dashboard)
 - 21 CFR Part 11 e-signature compliant
 - PDF/CSV export for submission packages
 
 **Definition of Done:**
+
 - Gate 1 (foundation) shipped: auth, standards library, document control, audit trail
 - Gate 2 (core workflows) shipped: gap analysis, CAPA, 510(k) checklist, export
 - Gate 3 (production): HIPAA/SOC 2 architecture, security audit passed, performance benchmarks met
@@ -281,12 +325,12 @@ MiCOM Labs provides accredited compliance testing services for medical devices, 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A — new product |
+| Property    | Value             |
+| ----------- | ----------------- |
+| Stars       | N/A — new product |
 | Open Issues | N/A — new product |
-| Private | No |
-| Archived | No |
+| Private     | No                |
+| Archived    | No                |
 
 ## Research Checklist
 
@@ -328,21 +372,21 @@ Medical device compliance is a mandatory, high-stakes workflow that costs device
 
 ### Competitor Analysis
 
-| Competitor | Pricing (2025) | Strengths | Weaknesses | Source |
-|------------|---------------|-----------|------------|--------|
-| Greenlight Guru | $25,000–$55,000/yr (rising 100%+ in 2026) | Purpose-built for medtech, strong design controls | Expensive, price shock in 2026 | [Vendr](https://www.vendr.com/marketplace/greenlight-guru) |
-| MasterControl | ~$25,000/yr entry | Mature enterprise QMS, strong compliance | Complex, overkill for startups | [TrustRadius](https://www.trustradius.com/compare-products/greenlight-guru-vs-mastercontrol-quality-excellence) |
-| Veeva Vault QMS | Custom enterprise (est. $50k+/yr) | Full lifecycle suite, pharma/medtech pedigree | Enterprise-only, no SMB tier | [G2](https://www.g2.com/compare/mastercontrol-quality-management-system-vs-veeva-vault-qms) |
-| SimplerQMS | $499–$999/month | SMB-friendly, ISO 13485 focus | Limited standards coverage vs. full medtech stack | [SimplerQMS pricing](https://www.simplerqms.com/pricing) |
-| ComplianceQuest | $15,000–$30,000/yr (estimate) | Salesforce-native, EHS + QMS | Salesforce dependency, no standalone option | Competitive estimate — benchmark research required |
+| Competitor      | Pricing (2025)                            | Strengths                                         | Weaknesses                                        | Source                                                                                                          |
+| --------------- | ----------------------------------------- | ------------------------------------------------- | ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Greenlight Guru | $25,000–$55,000/yr (rising 100%+ in 2026) | Purpose-built for medtech, strong design controls | Expensive, price shock in 2026                    | [Vendr](https://www.vendr.com/marketplace/greenlight-guru)                                                      |
+| MasterControl   | ~$25,000/yr entry                         | Mature enterprise QMS, strong compliance          | Complex, overkill for startups                    | [TrustRadius](https://www.trustradius.com/compare-products/greenlight-guru-vs-mastercontrol-quality-excellence) |
+| Veeva Vault QMS | Custom enterprise (est. $50k+/yr)         | Full lifecycle suite, pharma/medtech pedigree     | Enterprise-only, no SMB tier                      | [G2](https://www.g2.com/compare/mastercontrol-quality-management-system-vs-veeva-vault-qms)                     |
+| SimplerQMS      | $499–$999/month                           | SMB-friendly, ISO 13485 focus                     | Limited standards coverage vs. full medtech stack | [SimplerQMS pricing](https://www.simplerqms.com/pricing)                                                        |
+| ComplianceQuest | $15,000–$30,000/yr (estimate)             | Salesforce-native, EHS + QMS                      | Salesforce dependency, no standalone option       | Competitive estimate — benchmark research required                                                              |
 
 ### OSS Landscape (GitHub Stars)
 
-| Repository | Stars | Status |
-|------------|-------|--------|
-| [MedISO](https://github.com/ilanrd/mediso) | <50 | Abandoned/unmaintained |
-| [robotframework](https://github.com/robotframework/robotframework) | ~9,500 | Active but general-purpose |
-| [allure2](https://github.com/allure-framework/allure2) | ~4,200 | Active, test reporting only |
+| Repository                                                         | Stars  | Status                      |
+| ------------------------------------------------------------------ | ------ | --------------------------- |
+| [MedISO](https://github.com/ilanrd/mediso)                         | <50    | Abandoned/unmaintained      |
+| [robotframework](https://github.com/robotframework/robotframework) | ~9,500 | Active but general-purpose  |
+| [allure2](https://github.com/allure-framework/allure2)             | ~4,200 | Active, test reporting only |
 
 No OSS medical device compliance platform with meaningful traction exists. The space is open.
 
@@ -418,11 +462,11 @@ No OSS medical device compliance platform with meaningful traction exists. The s
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-'use strict';
 
 /**
  * Twin-LLM live search runner (twin_llm_adjudicated).
@@ -20,14 +19,14 @@
  * the network orchestration lives under `if (require.main === module)`.
  */
 
-const { MASTER_PROMPT } = require('./deep-search-router');
+const { MASTER_PROMPT } = require("./deep-search-router");
 
 // Frozen so a consumer mutating the shared export can't bleed into other uses;
 // the CLI spreads a copy (`{ ...DEFAULTS }`) before per-run tweaks.
 const DEFAULTS = Object.freeze({
-  modelA: process.env.TWIN_MODEL_A || 'openai/gpt-4o-search-preview',
-  modelB: process.env.TWIN_MODEL_B || 'anthropic/claude-3.5-sonnet',
-  adjudicator: process.env.TWIN_ADJUDICATOR || 'openai/gpt-4o',
+  modelA: process.env.TWIN_MODEL_A || "openai/gpt-4o-search-preview",
+  modelB: process.env.TWIN_MODEL_B || "anthropic/claude-3.5-sonnet",
+  adjudicator: process.env.TWIN_ADJUDICATOR || "openai/gpt-4o",
 });
 
 // The twin's two arms apply the SAME R&D frameworks as the deep-search lane —
@@ -48,7 +47,7 @@ function extractCitations(text) {
   const seen = new Set();
   for (const m of String(text).matchAll(URL_RE)) {
     // strip trailing punctuation that commonly clings to URLs in prose
-    const url = m[0].replace(/[.,;:)\]}>"']+$/, '');
+    const url = m[0].replace(/[.,;:)\]}>"']+$/, "");
     if (!seen.has(url)) {
       seen.add(url);
       out.push(url);
@@ -59,9 +58,9 @@ function extractCitations(text) {
 
 function domainOf(url) {
   try {
-    return new URL(url).hostname.replace(/^www\./, '').toLowerCase();
+    return new URL(url).hostname.replace(/^www\./, "").toLowerCase();
   } catch {
-    return '';
+    return "";
   }
 }
 
@@ -105,25 +104,25 @@ function parseAdjudication(content) {
   let text = String(content).trim();
   const fence = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
   if (fence) text = fence[1].trim();
-  const start = text.indexOf('{');
-  const end = text.lastIndexOf('}');
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
   if (start === -1 || end === -1 || end < start) return null;
   try {
     const obj = JSON.parse(text.slice(start, end + 1));
-    return obj && typeof obj === 'object' ? obj : null;
+    return obj && typeof obj === "object" ? obj : null;
   } catch {
     return null;
   }
 }
 
 function clamp01(n, fallback) {
-  if (typeof n !== 'number' || Number.isNaN(n)) return fallback;
+  if (typeof n !== "number" || Number.isNaN(n)) return fallback;
   return Math.max(0, Math.min(1, n));
 }
 
 function countOf(v) {
   if (Array.isArray(v)) return v.length;
-  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  if (typeof v === "number" && Number.isFinite(v)) return v;
   return 0;
 }
 
@@ -132,18 +131,41 @@ function countOf(v) {
  * runA/runB: { answer, citations, latency_ms, cost_usd }
  * adjudication: parsed adjudicator object (may be null -> fallback merge).
  */
-function buildTwinResult({ queryId, models, runA, runB, adjudication, adjudicatorLatencyMs = 0, adjudicatorCostUsd = null, error = false }) {
+function buildTwinResult({
+  queryId,
+  models,
+  runA,
+  runB,
+  adjudication,
+  adjudicatorLatencyMs = 0,
+  adjudicatorCostUsd = null,
+  error = false,
+}) {
   const adj = adjudication || {};
   const sourcesA = runA.citations || [];
   const sourcesB = runB.citations || [];
 
-  const answer = typeof adj.answer === 'string' && adj.answer.trim() ? adj.answer.trim() : runA.answer || runB.answer || '';
+  const answer =
+    typeof adj.answer === "string" && adj.answer.trim()
+      ? adj.answer.trim()
+      : runA.answer || runB.answer || "";
   const citations =
-    Array.isArray(adj.citations) && adj.citations.length ? adj.citations.slice() : unionCitations(sourcesA, sourcesB);
+    Array.isArray(adj.citations) && adj.citations.length
+      ? adj.citations.slice()
+      : unionCitations(sourcesA, sourcesB);
 
-  const latency_ms = Math.max(runA.latency_ms || 0, runB.latency_ms || 0) + (adjudicatorLatencyMs || 0);
-  const costs = [runA.cost_usd, runB.cost_usd, adjudicatorCostUsd].filter((c) => typeof c === 'number');
-  const cost_usd = costs.length ? round(costs.reduce((s, c) => s + c, 0), 6) : null;
+  const latency_ms =
+    Math.max(runA.latency_ms || 0, runB.latency_ms || 0) +
+    (adjudicatorLatencyMs || 0);
+  const costs = [runA.cost_usd, runB.cost_usd, adjudicatorCostUsd].filter(
+    (c) => typeof c === "number",
+  );
+  const cost_usd = costs.length
+    ? round(
+        costs.reduce((s, c) => s + c, 0),
+        6,
+      )
+    : null;
 
   return {
     query_id: queryId,
@@ -159,7 +181,10 @@ function buildTwinResult({ queryId, models, runA, runB, adjudication, adjudicato
       model_a: models.modelA,
       model_b: models.modelB,
       adjudicator: models.adjudicator,
-      agreement_score: clamp01(adj.agreement_score, sourceOverlapScore(sourcesA, sourcesB)),
+      agreement_score: clamp01(
+        adj.agreement_score,
+        sourceOverlapScore(sourcesA, sourcesB),
+      ),
       disagreements: countOf(adj.disagreements),
       adjudication_quality: clamp01(adj.adjudication_quality, 0.5),
       sources_a: sourcesA,
@@ -171,10 +196,10 @@ function buildTwinResult({ queryId, models, runA, runB, adjudication, adjudicato
 
 function buildTwinReport(results, models) {
   return {
-    label: 'twin_llm_adjudicated',
-    strategy: 'twin_llm_adjudicated',
-    search_prompt_version: 'twin-llm-adjudicated-v1',
-    router_profile: 'twin_dual_model_adjudicated',
+    label: "twin_llm_adjudicated",
+    strategy: "twin_llm_adjudicated",
+    search_prompt_version: "twin-llm-adjudicated-v1",
+    router_profile: "twin_dual_model_adjudicated",
     models,
     results,
   };
@@ -206,59 +231,100 @@ if (require.main === module) {
     // balance at https://openrouter.ai/credits.
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
-      throw new Error('OPENROUTER_API_KEY required (must be a funded/verified key — see https://openrouter.ai/credits)');
+      throw new Error(
+        "OPENROUTER_API_KEY required (must be a funded/verified key — see https://openrouter.ai/credits)",
+      );
     }
     const started = Date.now();
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://rnd-research-fleet',
-        'X-Title': 'R&D Research Fleet — Twin Search',
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://rnd-research-fleet",
+        "X-Title": "R&D Research Fleet — Twin Search",
       },
       // `usage: { include: true }` is OpenRouter's accounting extension — it
       // returns spend on `usage.cost` (USD) in the response. Best-effort: if the
       // field is absent, cost stays null and the eval's cost dimension is simply
       // not populated for this run (never a crash).
-      body: JSON.stringify({ model, messages, max_tokens: 4000, temperature: 0.3, usage: { include: true } }),
+      body: JSON.stringify({
+        model,
+        messages,
+        max_tokens: 4000,
+        temperature: 0.3,
+        usage: { include: true },
+      }),
     });
     const latency_ms = Date.now() - started;
     if (!res.ok) {
-      const t = await res.text().catch(() => '');
+      const t = await res.text().catch(() => "");
       // 401/402/403/429 almost always = missing/unfunded key or rate limit —
       // check the key and balance at https://openrouter.ai/credits.
-      throw new Error(`${model} -> ${res.status} ${t.slice(0, 200)} (if 401/402/403/429: check key + balance at https://openrouter.ai/credits)`);
+      throw new Error(
+        `${model} -> ${res.status} ${t.slice(0, 200)} (if 401/402/403/429: check key + balance at https://openrouter.ai/credits)`,
+      );
     }
     const data = await res.json();
-    const content = data.choices?.[0]?.message?.content || '';
-    const cost_usd = typeof data.usage?.cost === 'number' ? data.usage.cost : null;
+    const content = data.choices?.[0]?.message?.content || "";
+    const cost_usd =
+      typeof data.usage?.cost === "number" ? data.usage.cost : null;
     return { content, latency_ms, cost_usd };
   }
 
   (async () => {
-    const query = process.argv.slice(2).join(' ').trim();
+    const query = process.argv.slice(2).join(" ").trim();
     if (!query) {
       console.log('Usage: node twin-search.js "your research question"');
-      console.log('Env: TWIN_MODEL_A, TWIN_MODEL_B, TWIN_ADJUDICATOR (optional overrides)');
+      console.log(
+        "Env: TWIN_MODEL_A, TWIN_MODEL_B, TWIN_ADJUDICATOR (optional overrides)",
+      );
       process.exit(0);
     }
     const models = { ...DEFAULTS };
-    const userMsg = [{ role: 'system', content: SEARCH_SYSTEM }, { role: 'user', content: query }];
+    const userMsg = [
+      { role: "system", content: SEARCH_SYSTEM },
+      { role: "user", content: query },
+    ];
 
-    console.error(`[twin] A=${models.modelA}  B=${models.modelB}  adj=${models.adjudicator}`);
+    console.error(
+      `[twin] A=${models.modelA}  B=${models.modelB}  adj=${models.adjudicator}`,
+    );
     // Two independent runs IN PARALLEL — allSettled so a single arm failing
     // still yields an eval-compatible (error-flagged) report instead of losing
     // the whole run.
-    const settled = await Promise.allSettled([callModel(models.modelA, userMsg), callModel(models.modelB, userMsg)]);
-    const okA = settled[0].status === 'fulfilled';
-    const okB = settled[1].status === 'fulfilled';
-    if (!okA) console.error(`[twin] model A (${models.modelA}) failed: ${settled[0].reason?.message}`);
-    if (!okB) console.error(`[twin] model B (${models.modelB}) failed: ${settled[1].reason?.message}`);
-    const a = okA ? settled[0].value : { content: '', latency_ms: 0, cost_usd: null };
-    const b = okB ? settled[1].value : { content: '', latency_ms: 0, cost_usd: null };
-    const runA = { answer: a.content, citations: extractCitations(a.content), latency_ms: a.latency_ms, cost_usd: a.cost_usd };
-    const runB = { answer: b.content, citations: extractCitations(b.content), latency_ms: b.latency_ms, cost_usd: b.cost_usd };
+    const settled = await Promise.allSettled([
+      callModel(models.modelA, userMsg),
+      callModel(models.modelB, userMsg),
+    ]);
+    const okA = settled[0].status === "fulfilled";
+    const okB = settled[1].status === "fulfilled";
+    if (!okA)
+      console.error(
+        `[twin] model A (${models.modelA}) failed: ${settled[0].reason?.message}`,
+      );
+    if (!okB)
+      console.error(
+        `[twin] model B (${models.modelB}) failed: ${settled[1].reason?.message}`,
+      );
+    const a = okA
+      ? settled[0].value
+      : { content: "", latency_ms: 0, cost_usd: null };
+    const b = okB
+      ? settled[1].value
+      : { content: "", latency_ms: 0, cost_usd: null };
+    const runA = {
+      answer: a.content,
+      citations: extractCitations(a.content),
+      latency_ms: a.latency_ms,
+      cost_usd: a.cost_usd,
+    };
+    const runB = {
+      answer: b.content,
+      citations: extractCitations(b.content),
+      latency_ms: b.latency_ms,
+      cost_usd: b.cost_usd,
+    };
 
     // Adjudicate only if at least one arm produced content.
     let adjudication = null;
@@ -266,8 +332,11 @@ if (require.main === module) {
     let adjCost = null;
     if (okA || okB) {
       const adjMsg = [
-        { role: 'system', content: ADJUDICATOR_SYSTEM },
-        { role: 'user', content: `Question:\n${query}\n\n--- Answer A (${models.modelA}) ---\n${runA.answer}\n\n--- Answer B (${models.modelB}) ---\n${runB.answer}` },
+        { role: "system", content: ADJUDICATOR_SYSTEM },
+        {
+          role: "user",
+          content: `Question:\n${query}\n\n--- Answer A (${models.modelA}) ---\n${runA.answer}\n\n--- Answer B (${models.modelB}) ---\n${runB.answer}`,
+        },
       ];
       try {
         const adj = await callModel(models.adjudicator, adjMsg);
@@ -275,12 +344,14 @@ if (require.main === module) {
         adjLatency = adj.latency_ms;
         adjCost = adj.cost_usd;
       } catch (e) {
-        console.error(`[twin] adjudicator (${models.adjudicator}) failed: ${e.message}`);
+        console.error(
+          `[twin] adjudicator (${models.adjudicator}) failed: ${e.message}`,
+        );
       }
     }
 
     const result = buildTwinResult({
-      queryId: 'cli-query',
+      queryId: "cli-query",
       models,
       runA,
       runB,
@@ -294,7 +365,7 @@ if (require.main === module) {
     console.log(JSON.stringify(buildTwinReport([result], models), null, 2));
     if (!okA || !okB) process.exitCode = 1; // signal a degraded run without discarding the report
   })().catch((e) => {
-    console.error('twin-search error:', e.message);
+    console.error("twin-search error:", e.message);
     process.exit(1);
   });
 }

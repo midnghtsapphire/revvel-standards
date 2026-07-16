@@ -3,7 +3,7 @@
 **Date:** April 30, 2026  
 **Issue:** [WR] add cursor in as backup to OpenHands ai and other processes it can do. OpenHands has limits use until run out then cursor  
 **Status:** ✅ Complete  
-**Agent:** @copilot  
+**Agent:** @copilot
 
 ---
 
@@ -61,6 +61,7 @@ A comprehensive **automatic agent fallback system** that ensures zero-downtime a
 ## Key Features
 
 ### 1. Automatic Switching
+
 - Detects rate limits (429 errors)
 - Detects quota exceeded errors
 - Detects service unavailability (5xx errors)
@@ -68,24 +69,28 @@ A comprehensive **automatic agent fallback system** that ensures zero-downtime a
 - **No manual intervention required**
 
 ### 2. Health Checks
+
 - Pre-flight verification before expensive operations
 - Checks which agents are configured
 - Recommends optimal agent based on availability
 - Prevents wasted attempts on unavailable agents
 
 ### 3. Retry Logic
+
 - Exponential backoff (10s, 20s, 40s)
 - Up to 3 attempts per agent
 - Does not retry on auth errors (fails fast)
 - Circuit breaker pattern for persistent failures
 
 ### 4. Monitoring
+
 - Creates issues with `auto-fallback` label for visibility
 - Logs all fallback events with full context
 - No alerts for normal fallbacks (working as designed)
 - Alerts only when all agents fail (`needs-human` label)
 
 ### 5. Cost Optimization
+
 - Smart routing based on task complexity
 - Simple tasks → OpenRouter (cheapest)
 - Medium tasks → Cursor (balanced)
@@ -93,6 +98,7 @@ A comprehensive **automatic agent fallback system** that ensures zero-downtime a
 - Tracks usage and prevents overages
 
 ### 6. Setup Automation
+
 - One-command setup script
 - Automatic secret provisioning from Vault
 - Validates configuration
@@ -103,6 +109,7 @@ A comprehensive **automatic agent fallback system** that ensures zero-downtime a
 ## How To Use
 
 ### Quick Setup
+
 ```bash
 # 1. Run setup script
 ./scripts/setup-agent-fallback.sh midnghtsapphire/YOUR-REPO
@@ -124,6 +131,7 @@ gh secret set OPENROUTER_API_KEY
 ```
 
 ### Use In Workflows
+
 ```yaml
 # In your .github/workflows/my-workflow.yml:
 jobs:
@@ -135,6 +143,7 @@ jobs:
 ```
 
 ### Test The System
+
 ```bash
 # Create a test issue
 gh issue create --title "[TEST] Agent fallback test" \
@@ -151,6 +160,7 @@ gh issue view 123 --comments
 ```
 
 ### Monitor Fallback Events
+
 ```bash
 # View all fallback events
 gh issue list --label auto-fallback
@@ -166,15 +176,15 @@ gh issue list --label OpenHands-limit --state open
 
 ## Benefits
 
-| Benefit | Description |
-|---------|-------------|
-| **Zero Downtime** | Always have a working agent, even when primary hits limits |
-| **No Manual Work** | Automatic switching requires no human intervention |
-| **Cost Efficient** | Routes simple tasks to cheaper agents, reserves OpenHands for complex work |
-| **Observable** | Track all fallback events in GitHub issues |
-| **Reliable** | Retry logic with exponential backoff prevents transient failures |
-| **Easy Setup** | One-command setup script configures everything |
-| **Production Ready** | Built on proven OpenRouter integration already in use |
+| Benefit              | Description                                                                |
+| -------------------- | -------------------------------------------------------------------------- |
+| **Zero Downtime**    | Always have a working agent, even when primary hits limits                 |
+| **No Manual Work**   | Automatic switching requires no human intervention                         |
+| **Cost Efficient**   | Routes simple tasks to cheaper agents, reserves OpenHands for complex work |
+| **Observable**       | Track all fallback events in GitHub issues                                 |
+| **Reliable**         | Retry logic with exponential backoff prevents transient failures           |
+| **Easy Setup**       | One-command setup script configures everything                             |
+| **Production Ready** | Built on proven OpenRouter integration already in use                      |
 
 ---
 
@@ -194,7 +204,7 @@ gh issue list --label OpenHands-limit --state open
 ✅ **CodeQL Security Scan:** No vulnerabilities detected  
 ✅ **Setup Script Test:** Passed  
 ✅ **Workflow Syntax:** Valid  
-✅ **Documentation:** Complete  
+✅ **Documentation:** Complete
 
 ---
 
@@ -220,11 +230,12 @@ gh issue list --label OpenHands-limit --state open
 
 ## Owner Notes
 
-This implementation directly addresses the issue request: 
+This implementation directly addresses the issue request:
 
 > "add cursor in as backup to OpenHands ai and other processes it can do. OpenHands has limits use until run out then cursor"
 
 The system:
+
 - ✅ Uses OpenHands as primary (most capable)
 - ✅ Falls back to Cursor when OpenHands hits limits
 - ✅ Falls back to OpenRouter as final backup

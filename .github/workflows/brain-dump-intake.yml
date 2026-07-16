@@ -25,11 +25,11 @@ on:
   workflow_dispatch:
     inputs:
       brain_dump:
-        description: 'Freeform brain dump text — paste any unstructured notes here'
+        description: "Freeform brain dump text — paste any unstructured notes here"
         required: true
         type: string
       dry_run:
-        description: 'Log parsed items without creating issues'
+        description: "Log parsed items without creating issues"
         type: boolean
         default: false
   issue_comment:

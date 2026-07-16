@@ -4,7 +4,7 @@ name: Link Checker
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Daily at 6am
+    - cron: "0 6 * * *" # Daily at 6am
   workflow_dispatch:
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
             https://www.gohighlevel.com
             https://www.digitalocean.com
           "
-          
+
           WARNINGS=""
           for url in $LINKS; do
             status=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
@@ -29,11 +29,11 @@ jobs:
               WARNINGS="${WARNINGS}"$'\n'"- $url: HTTP $status"
             fi
           done
-          
+
           if [ -n "$WARNINGS" ]; then
             echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Report
         run: |
           echo "## Link Check" >> $GITHUB_STEP_SUMMARY

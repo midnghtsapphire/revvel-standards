@@ -23,17 +23,17 @@ name: VEINS Monitor — Vital Engine INtelligence Surveillance
 
 on:
   schedule:
-    - cron: '28 * * * *'   # hourly — staggered off :00 to reduce runner bursts
+    - cron: "28 * * * *" # hourly — staggered off :00 to reduce runner bursts
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Log findings without posting comments or changing labels'
+        description: "Log findings without posting comments or changing labels"
         type: boolean
         default: false
       max_age_days:
-        description: 'Alert threshold in days (default 7)'
+        description: "Alert threshold in days (default 7)"
         type: string
-        default: '7'
+        default: "7"
 
 permissions:
   issues: write

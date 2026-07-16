@@ -14,7 +14,7 @@
 **Created:** 2026-07-12  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-12  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -114,8 +114,8 @@ This project is licensed under the MIT License—see the LICENSE file for detail
 
 - name: Claude Code Action Official
   uses: anthropics/claude-code-action@v1
-Upgrading from v0.x?
-See our [Migration Guide](https://github.com/anthropics/claude-code-action/blob/main/docs/migration-guide.md) for step-by-step instructions on updating your workflows to v1.0. The new version simplifies configuration while maintaining compatibility with most existing setups.
+  Upgrading from v0.x?
+  See our [Migration Guide](https://github.com/anthropics/claude-code-action/blob/main/docs/migration-guide.md) for step-by-step instructions on updating your workflows to v1.0. The new version simplifies configuration while maintaining compatibility with most existing setups.
 
 Quickstart
 The easiest way to set up this action is through [Claude Code](https://claude.ai/code) in the terminal. Just open claude and run /install-github-app.
@@ -172,20 +172,19 @@ Each solution includes complete working examples, configuration details, and exp
 Read all links and different use cases
 name: Claude Auto Review
 on:
-  pull_request:
-    types: [opened, synchronize]
+pull_request:
+types: [opened, synchronize]
 
 jobs:
-  review:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
+review:
+runs-on: ubuntu-latest
+permissions:
+contents: read
+pull-requests: write
+id-token: write
+steps: - uses: actions/checkout@v6
+with:
+fetch-depth: 1
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -221,20 +220,19 @@ One PR
 
 name: PR Review Checklist
 on:
-  pull_request:
-    types: [opened, synchronize]
+pull_request:
+types: [opened, synchronize]
 
 jobs:
-  checklist-review:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
+checklist-review:
+runs-on: ubuntu-latest
+permissions:
+contents: read
+pull-requests: write
+id-token: write
+steps: - uses: actions/checkout@v6
+with:
+fetch-depth: 1
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -274,27 +272,26 @@ jobs:
 
           claude_args: |
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*)"
+
 name: Issue Triage
 on:
-  issues:
-    types: [opened]
+issues:
+types: [opened]
 
 jobs:
-  triage:
-    runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: anthropics/claude-code-action@v1
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+triage:
+runs-on: ubuntu-latest
+permissions:
+issues: write
+id-token: write
+steps: - uses: actions/checkout@v4 - uses: anthropics/claude-code-action@v1
+with:
+anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
             REPO: ${{ github.repository }}
-            ISSUE NUMBER: ${{ github.event.issue.number }}
+ISSUE NUMBER: ${{ github.event.issue.number }}
             TITLE: ${{ github.event.issue.title }}
-            BODY: ${{ github.event.issue.body }}
+BODY: ${{ github.event.issue.body }}
             AUTHOR: ${{ github.event.issue.user.login }}
 
             Analyze this new issue and:
@@ -316,27 +313,26 @@ jobs:
 
           claude_args: |
             --allowedTools "Bash(./scripts/gh.sh:_),Bash(./scripts/edit-issue-labels.sh:_)"
+
 name: Issue Triage
 on:
-  issues:
-    types: [opened]
+issues:
+types: [opened]
 
 jobs:
-  triage:
-    runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: anthropics/claude-code-action@v1
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+triage:
+runs-on: ubuntu-latest
+permissions:
+issues: write
+id-token: write
+steps: - uses: actions/checkout@v4 - uses: anthropics/claude-code-action@v1
+with:
+anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
             REPO: ${{ github.repository }}
-            ISSUE NUMBER: ${{ github.event.issue.number }}
+ISSUE NUMBER: ${{ github.event.issue.number }}
             TITLE: ${{ github.event.issue.title }}
-            BODY: ${{ github.event.issue.body }}
+BODY: ${{ github.event.issue.body }}
             AUTHOR: ${{ github.event.issue.user.login }}
 
             Analyze this new issue and:
@@ -358,26 +354,24 @@ jobs:
 
           claude_args: |
             --allowedTools "Bash(./scripts/gh.sh:_),Bash(./scripts/edit-issue-labels.sh:_)"
+
 name: Sync API Documentation
 on:
-  pull_request:
-    types: [opened, synchronize]
-    paths:
-      - "src/api/**/*.ts"
-      - "src/routes/**/*.ts"
+pull_request:
+types: [opened, synchronize]
+paths: - "src/api/**/\*.ts" - "src/routes/**/*.ts"
 
 jobs:
-  doc-sync:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          fetch-depth: 0
+doc-sync:
+runs-on: ubuntu-latest
+permissions:
+contents: write
+pull-requests: write
+id-token: write
+steps: - uses: actions/checkout@v6
+with:
+ref: ${{ github.event.pull_request.head.ref }}
+fetch-depth: 0
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -398,23 +392,23 @@ jobs:
 
           claude_args: |
             --allowedTools "Read,Write,Edit,Bash(git:*)
+
 name: Security Review
 on:
-  pull_request:
-    types: [opened, synchronize]
+pull_request:
+types: [opened, synchronize]
 
 jobs:
-  security:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      security-events: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
+security:
+runs-on: ubuntu-latest
+permissions:
+contents: read
+pull-requests: write
+security-events: write
+id-token: write
+steps: - uses: actions/checkout@v6
+with:
+fetch-depth: 1
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -451,23 +445,23 @@ jobs:
 
           claude_args: |
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:_),Bash(gh pr diff:_)"
+
 name: Security Review
 on:
-  pull_request:
-    types: [opened, synchronize]
+pull_request:
+types: [opened, synchronize]
 
 jobs:
-  security:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      security-events: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
+security:
+runs-on: ubuntu-latest
+permissions:
+contents: read
+pull-requests: write
+security-events: write
+id-token: write
+steps: - uses: actions/checkout@v6
+with:
+fetch-depth: 1
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -504,22 +498,22 @@ jobs:
 
           claude_args: |
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:_),Bash(gh pr diff:_)"
+
 name: Claude Auto Review with Tracking
 on:
-  pull_request:
-    types: [opened, synchronize, ready_for_review, reopened]
+pull_request:
+types: [opened, synchronize, ready_for_review, reopened]
 
 jobs:
-  review:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
+review:
+runs-on: ubuntu-latest
+permissions:
+contents: read
+pull-requests: write
+id-token: write
+steps: - uses: actions/checkout@v6
+with:
+fetch-depth: 1
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -542,20 +536,19 @@ jobs:
 
 name: Claude Auto Review with Tracking
 on:
-  pull_request:
-    types: [opened, synchronize, ready_for_review, reopened]
+pull_request:
+types: [opened, synchronize, ready_for_review, reopened]
 
 jobs:
-  review:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
+review:
+runs-on: ubuntu-latest
+permissions:
+contents: read
+pull-requests: write
+id-token: write
+steps: - uses: actions/checkout@v6
+with:
+fetch-depth: 1
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -578,21 +571,20 @@ jobs:
 
 name: External Contributor Review
 on:
-  pull_request:
-    types: [opened, synchronize]
+pull_request:
+types: [opened, synchronize]
 
 jobs:
-  external-review:
-    if: github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
+external-review:
+if: github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+runs-on: ubuntu-latest
+permissions:
+contents: read
+pull-requests: write
+id-token: write
+steps: - uses: actions/checkout@v6
+with:
+fetch-depth: 1
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -618,22 +610,20 @@ jobs:
 
 name: Weekly Maintenance
 on:
-  schedule:
-    - cron: "0 0 ** 0" # Every Sunday at midnight
-  workflow_dispatch: # Manual trigger option
+schedule: - cron: "0 0 ** 0" # Every Sunday at midnight
+workflow_dispatch: # Manual trigger option
 
 jobs:
-  maintenance:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
+maintenance:
+runs-on: ubuntu-latest
+permissions:
+contents: write
+issues: write
+pull-requests: write
+id-token: write
+steps: - uses: actions/checkout@v6
+with:
+fetch-depth: 0
 
       - uses: anthropics/claude-code-action@v1
         with:
@@ -654,6 +644,7 @@ jobs:
 
           claude_args: |
             --allowedTools "Read,Bash(npm:_),Bash(gh issue:_),Bash(git:*)"
+
 And more research attached links to fully wire in
 
 ### Purchase Validation (functions-as-purchased)
@@ -667,8 +658,8 @@ Implement Claude Actions Code Official-Test send WR and PR through and watchbbeh
 ### Validation Expectations
 
 Save money on claude as this is an action
-Track cost vs claude api, cloud, claude code 
-Communicate with Audrey Evans within WR Issues system 
+Track cost vs claude api, cloud, claude code
+Communicate with Audrey Evans within WR Issues system
 Show up in assignee
 Be reachable by an alias at anytume? Or where?
 Add him into whole system that tells me whos processing what as we go
@@ -688,18 +679,19 @@ Escalate block to me audrey evans
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -711,6 +703,7 @@ Escalate block to me audrey evans
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 N/A — pending Jules refinement
 
 ## Executive Summary
@@ -753,11 +746,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -773,11 +766,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

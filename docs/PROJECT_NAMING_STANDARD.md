@@ -11,10 +11,10 @@
 Every project picks **one** of two tiers up front. The tier determines the name
 shape, whether it gets a brand identity, and where it lives.
 
-| Tier | When to use | Name shape | Brand identity | Lives in |
-|---|---|---|---|---|
-| **Codename** | Standalone, market-facing products with their own identity/domain | Evocative, metaphor-driven coined word or compound | **Required** — `docs/<name>/BRAND.md` | Top-level dir `/<name>/` |
-| **Descriptive slug** | Internal tools, engines, and utilities | Functional kebab-case describing what it does | Not required | `products/<slug>/` |
+| Tier                 | When to use                                                       | Name shape                                         | Brand identity                        | Lives in                 |
+| -------------------- | ----------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------- | ------------------------ |
+| **Codename**         | Standalone, market-facing products with their own identity/domain | Evocative, metaphor-driven coined word or compound | **Required** — `docs/<name>/BRAND.md` | Top-level dir `/<name>/` |
+| **Descriptive slug** | Internal tools, engines, and utilities                            | Functional kebab-case describing what it does      | Not required                          | `products/<slug>/`       |
 
 If in doubt: anything that gets a domain and a launch is a **Codename**.
 Anything that is plumbing is a **Descriptive slug**.
@@ -29,19 +29,19 @@ tension of the product, then the brand fills in the rest.
 
 **Observed codenames and their logic:**
 
-| Codename | Logic |
-|---|---|
-| **GrowlingEyes** | OSINT / knowledge discovery — "the more we find out, the more our eyes narrow into a digital growl" |
-| **Neurooz** | `neuro` + `Oz` — neuro-wellness on an "Urban Oz" theme |
-| **Coldtrace** | cold-chain / cold-storage tracing |
-| **Oaudrey** | personified agent name (Audrey) |
-| **Penny-sovereign-yield-scout** | financial yield discovery (the one descriptive exception — see §4) |
+| Codename                        | Logic                                                                                               |
+| ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **GrowlingEyes**                | OSINT / knowledge discovery — "the more we find out, the more our eyes narrow into a digital growl" |
+| **Neurooz**                     | `neuro` + `Oz` — neuro-wellness on an "Urban Oz" theme                                              |
+| **Coldtrace**                   | cold-chain / cold-storage tracing                                                                   |
+| **Oaudrey**                     | personified agent name (Audrey)                                                                     |
+| **Penny-sovereign-yield-scout** | financial yield discovery (the one descriptive exception — see §4)                                  |
 
 **Rules:**
 
 1. **One or two morphemes.** Coin a word (`Neurooz`) or fuse two evocative words
    (`GrowlingEyes`, `Coldtrace`). Avoid three-plus-word literal phrases.
-2. **Metaphor over description.** The name carries a feeling; the *tagline* and
+2. **Metaphor over description.** The name carries a feeling; the _tagline_ and
    the **Revvel Emblem** carry the literal meaning. `GrowlingEyes`, not
    `osint-discovery-tool`.
 3. **Display name is `PascalCase` / coined caps.** `GrowlingEyes`, `Neurooz`,

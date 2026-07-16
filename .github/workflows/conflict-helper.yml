@@ -29,9 +29,9 @@ on:
     types: [opened, synchronize, reopened, labeled]
 
 permissions:
-  contents: write       # needed by "git push" in the commit step
+  contents: write # needed by "git push" in the commit step
   pull-requests: write
-  actions: write         # needed by "gh workflow run" to dispatch Jules
+  actions: write # needed by "gh workflow run" to dispatch Jules
 
 concurrency:
   group: conflict-helper-${{ github.event.pull_request.number }}

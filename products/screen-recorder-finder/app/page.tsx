@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo } from "react";
 
 interface ScreenRecorder {
   name: string;
@@ -11,7 +11,7 @@ interface ScreenRecorder {
   pros: string[];
   cons: string[];
   features: {
-    editing: 'none' | 'basic' | 'advanced' | 'professional';
+    editing: "none" | "basic" | "advanced" | "professional";
     webcam: boolean;
     systemAudio: boolean;
     cloudStorage: boolean;
@@ -23,311 +23,303 @@ interface ScreenRecorder {
 
 const recorders: ScreenRecorder[] = [
   {
-    name: 'Tella',
-    pricing: '$13-$26/mo',
+    name: "Tella",
+    pricing: "$13-$26/mo",
     pricePerMonth: 19.5,
-    category: 'Content Creators',
-    bestFor: ['Content creators', 'Marketers', 'Course creators'],
+    category: "Content Creators",
+    bestFor: ["Content creators", "Marketers", "Course creators"],
     pros: [
-      'Easy layout switching',
-      'Beautiful backgrounds',
-      'AI silence removal',
-      'Auto captions',
-      'Browser or app recording'
+      "Easy layout switching",
+      "Beautiful backgrounds",
+      "AI silence removal",
+      "Auto captions",
+      "Browser or app recording",
     ],
-    cons: [
-      'Subscription required',
-      'Not for advanced editing'
-    ],
+    cons: ["Subscription required", "Not for advanced editing"],
     features: {
-      editing: 'advanced',
+      editing: "advanced",
       webcam: true,
       systemAudio: true,
       cloudStorage: true,
       aiFeatures: true,
-      multiClip: true
+      multiClip: true,
     },
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Screen Studio',
-    pricing: '$9-$29/mo',
+    name: "Screen Studio",
+    pricing: "$9-$29/mo",
     pricePerMonth: 19,
-    category: 'Product Demos',
-    bestFor: ['Product demos', 'Marketing videos', 'Polished presentations'],
+    category: "Product Demos",
+    bestFor: ["Product demos", "Marketing videos", "Polished presentations"],
     pros: [
-      'Automatic cursor zoom',
-      'Cinematic effects',
-      'Professional look',
-      'Easy to use',
-      'Mac-native app'
+      "Automatic cursor zoom",
+      "Cinematic effects",
+      "Professional look",
+      "Easy to use",
+      "Mac-native app",
     ],
-    cons: [
-      'Mac only',
-      'Cannot combine clips',
-      'Single-take recording'
-    ],
+    cons: ["Mac only", "Cannot combine clips", "Single-take recording"],
     features: {
-      editing: 'basic',
+      editing: "basic",
       webcam: true,
       systemAudio: true,
       cloudStorage: false,
       aiFeatures: true,
-      multiClip: false
+      multiClip: false,
     },
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Loom',
-    pricing: 'Free / $15/mo',
+    name: "Loom",
+    pricing: "Free / $15/mo",
     pricePerMonth: 7.5,
-    category: 'Team Communication',
-    bestFor: ['Team communication', 'Quick updates', 'Async collaboration'],
+    category: "Team Communication",
+    bestFor: ["Team communication", "Quick updates", "Async collaboration"],
     pros: [
-      'Record in 2 clicks',
-      'Instant sharing',
-      'Time-stamped comments',
-      'Emoji reactions',
-      'Free tier available'
+      "Record in 2 clicks",
+      "Instant sharing",
+      "Time-stamped comments",
+      "Emoji reactions",
+      "Free tier available",
     ],
-    cons: [
-      'Minimal editing',
-      'Basic features',
-      'Not for professional content'
-    ],
+    cons: ["Minimal editing", "Basic features", "Not for professional content"],
     features: {
-      editing: 'basic',
+      editing: "basic",
       webcam: true,
       systemAudio: true,
       cloudStorage: true,
       aiFeatures: true,
-      multiClip: false
+      multiClip: false,
     },
-    url: '#'
+    url: "#",
   },
   {
-    name: 'CleanShot X',
-    pricing: '$29 lifetime / $8/mo',
+    name: "CleanShot X",
+    pricing: "$29 lifetime / $8/mo",
     pricePerMonth: 8,
-    category: 'Screenshots',
-    bestFor: ['Screenshots', 'Quick captures', 'Productivity'],
+    category: "Screenshots",
+    bestFor: ["Screenshots", "Quick captures", "Productivity"],
     pros: [
-      'Best screenshot tool',
-      'Markup features',
-      'GIF recording',
-      'One-time payment option',
-      'Lightweight'
+      "Best screenshot tool",
+      "Markup features",
+      "GIF recording",
+      "One-time payment option",
+      "Lightweight",
     ],
     cons: [
-      'Limited video editing',
-      'Basic recorder',
-      'Not for long recordings'
+      "Limited video editing",
+      "Basic recorder",
+      "Not for long recordings",
     ],
     features: {
-      editing: 'basic',
+      editing: "basic",
       webcam: false,
       systemAudio: false,
       cloudStorage: true,
       aiFeatures: false,
-      multiClip: false
+      multiClip: false,
     },
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Camtasia',
-    pricing: '~$40-$600/yr',
+    name: "Camtasia",
+    pricing: "~$40-$600/yr",
     pricePerMonth: 50,
-    category: 'Professional',
-    bestFor: ['E-learning', 'Training videos', 'Interactive content'],
+    category: "Professional",
+    bestFor: ["E-learning", "Training videos", "Interactive content"],
     pros: [
-      'Multi-track editing',
-      'Interactive hotspots',
-      'Quizzes',
-      'Professional features',
-      'Extensive effects'
+      "Multi-track editing",
+      "Interactive hotspots",
+      "Quizzes",
+      "Professional features",
+      "Extensive effects",
     ],
     cons: [
-      'Steep learning curve',
-      'Expensive',
-      'Overkill for simple tasks',
-      'Heavy software'
+      "Steep learning curve",
+      "Expensive",
+      "Overkill for simple tasks",
+      "Heavy software",
     ],
     features: {
-      editing: 'professional',
+      editing: "professional",
       webcam: true,
       systemAudio: true,
       cloudStorage: false,
       aiFeatures: false,
-      multiClip: true
+      multiClip: true,
     },
-    url: '#'
+    url: "#",
   },
   {
-    name: 'ScreenFlow',
-    pricing: '$169-$259',
+    name: "ScreenFlow",
+    pricing: "$169-$259",
     pricePerMonth: 22,
-    category: 'Professional',
-    bestFor: ['Long recordings', 'Professional editing', 'Podcasters'],
+    category: "Professional",
+    bestFor: ["Long recordings", "Professional editing", "Podcasters"],
     pros: [
-      'Handles hour-long recordings',
-      'Multi-track editing',
-      'Professional quality',
-      'One-time payment',
-      'Reliable'
+      "Handles hour-long recordings",
+      "Multi-track editing",
+      "Professional quality",
+      "One-time payment",
+      "Reliable",
     ],
-    cons: [
-      'Mac only',
-      'Steep learning curve',
-      'Expensive',
-      'Old UI'
-    ],
+    cons: ["Mac only", "Steep learning curve", "Expensive", "Old UI"],
     features: {
-      editing: 'professional',
+      editing: "professional",
       webcam: true,
       systemAudio: true,
       cloudStorage: false,
       aiFeatures: false,
-      multiClip: true
+      multiClip: true,
     },
-    url: '#'
+    url: "#",
   },
   {
-    name: 'OBS',
-    pricing: 'Free',
+    name: "OBS",
+    pricing: "Free",
     pricePerMonth: 0,
-    category: 'Streaming',
-    bestFor: ['Live streaming', 'Advanced users', 'Custom setups'],
+    category: "Streaming",
+    bestFor: ["Live streaming", "Advanced users", "Custom setups"],
     pros: [
-      'Completely free',
-      'Infinite customization',
-      'Virtual green screens',
-      'Custom layouts',
-      'Industry standard'
+      "Completely free",
+      "Infinite customization",
+      "Virtual green screens",
+      "Custom layouts",
+      "Industry standard",
     ],
     cons: [
-      'Intimidating for beginners',
-      'No built-in editor',
-      'Steep learning curve',
-      'Requires technical knowledge'
+      "Intimidating for beginners",
+      "No built-in editor",
+      "Steep learning curve",
+      "Requires technical knowledge",
     ],
     features: {
-      editing: 'none',
+      editing: "none",
       webcam: true,
       systemAudio: true,
       cloudStorage: false,
       aiFeatures: false,
-      multiClip: true
+      multiClip: true,
     },
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Supercut',
-    pricing: '$15/mo',
+    name: "Supercut",
+    pricing: "$15/mo",
     pricePerMonth: 15,
-    category: 'Premium',
-    bestFor: ['External videos', '4K recording', 'Professional quality'],
+    category: "Premium",
+    bestFor: ["External videos", "4K recording", "Professional quality"],
     pros: [
-      'Lag-free 4K',
-      'Layout editing',
-      'AI features',
-      'Native Mac app',
-      'Professional output'
+      "Lag-free 4K",
+      "Layout editing",
+      "AI features",
+      "Native Mac app",
+      "Professional output",
     ],
-    cons: [
-      'Subscription only',
-      'Newer product',
-      'Limited ecosystem'
-    ],
+    cons: ["Subscription only", "Newer product", "Limited ecosystem"],
     features: {
-      editing: 'advanced',
+      editing: "advanced",
       webcam: true,
       systemAudio: true,
       cloudStorage: true,
       aiFeatures: true,
-      multiClip: true
+      multiClip: true,
     },
-    url: '#'
+    url: "#",
   },
   {
-    name: 'QuickTime Player',
-    pricing: 'Free',
+    name: "QuickTime Player",
+    pricing: "Free",
     pricePerMonth: 0,
-    category: 'Basic',
-    bestFor: ['Simple captures', 'Beginners', 'Basic needs'],
+    category: "Basic",
+    bestFor: ["Simple captures", "Beginners", "Basic needs"],
     pros: [
-      'Built into Mac',
-      'Completely free',
-      'Simple to use',
-      'Reliable',
-      'No installation'
+      "Built into Mac",
+      "Completely free",
+      "Simple to use",
+      "Reliable",
+      "No installation",
     ],
     cons: [
-      'No simultaneous webcam/screen',
-      'No system audio',
-      'No sharing links',
-      'Very basic features'
+      "No simultaneous webcam/screen",
+      "No system audio",
+      "No sharing links",
+      "Very basic features",
     ],
     features: {
-      editing: 'none',
+      editing: "none",
       webcam: false,
       systemAudio: false,
       cloudStorage: false,
       aiFeatures: false,
-      multiClip: false
+      multiClip: false,
     },
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Movavi',
-    pricing: '~$30/mo or ~$230/yr',
+    name: "Movavi",
+    pricing: "~$30/mo or ~$230/yr",
     pricePerMonth: 30,
-    category: 'Beginner Friendly',
-    bestFor: ['Beginners', 'Scheduled recordings', 'Simple editing'],
+    category: "Beginner Friendly",
+    bestFor: ["Beginners", "Scheduled recordings", "Simple editing"],
     pros: [
-      'Beginner-friendly',
-      'Scheduled recordings',
-      'AI noise removal',
-      'Multiple formats',
-      'Good for basics'
+      "Beginner-friendly",
+      "Scheduled recordings",
+      "AI noise removal",
+      "Multiple formats",
+      "Good for basics",
     ],
     cons: [
-      'Aggressive upsells',
-      'Interrupting pop-ups',
-      'Poor trial experience',
-      'Not professional grade'
+      "Aggressive upsells",
+      "Interrupting pop-ups",
+      "Poor trial experience",
+      "Not professional grade",
     ],
     features: {
-      editing: 'basic',
+      editing: "basic",
       webcam: true,
       systemAudio: true,
       cloudStorage: false,
       aiFeatures: true,
-      multiClip: true
+      multiClip: true,
     },
-    url: '#'
-  }
+    url: "#",
+  },
 ];
 
-const categories = ['All', 'Content Creators', 'Product Demos', 'Team Communication', 'Screenshots', 'Professional', 'Streaming', 'Premium', 'Basic', 'Beginner Friendly'];
+const categories = [
+  "All",
+  "Content Creators",
+  "Product Demos",
+  "Team Communication",
+  "Screenshots",
+  "Professional",
+  "Streaming",
+  "Premium",
+  "Basic",
+  "Beginner Friendly",
+];
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [maxBudget, setMaxBudget] = useState(1000);
   const [requiredFeatures, setRequiredFeatures] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<'price' | 'name'>('price');
+  const [sortBy, setSortBy] = useState<"price" | "name">("price");
 
   const filteredRecorders = useMemo(() => {
-    let filtered = recorders.filter(recorder => {
-      const matchesCategory = selectedCategory === 'All' || recorder.category === selectedCategory;
+    const filtered = recorders.filter((recorder) => {
+      const matchesCategory =
+        selectedCategory === "All" || recorder.category === selectedCategory;
       const matchesBudget = (recorder.pricePerMonth || 0) <= maxBudget;
-      const matchesFeatures = requiredFeatures.every(feature => {
-        if (feature === 'editing') return recorder.features.editing !== 'none';
+      const matchesFeatures = requiredFeatures.every((feature) => {
+        if (feature === "editing") return recorder.features.editing !== "none";
         return recorder.features[feature as keyof typeof recorder.features];
       });
       return matchesCategory && matchesBudget && matchesFeatures;
     });
 
-    if (sortBy === 'price') {
+    if (sortBy === "price") {
       filtered.sort((a, b) => (a.pricePerMonth || 0) - (b.pricePerMonth || 0));
     } else {
       filtered.sort((a, b) => a.name.localeCompare(b.name));
@@ -337,10 +329,10 @@ export default function Home() {
   }, [selectedCategory, maxBudget, requiredFeatures, sortBy]);
 
   const toggleFeature = (feature: string) => {
-    setRequiredFeatures(prev =>
+    setRequiredFeatures((prev) =>
       prev.includes(feature)
-        ? prev.filter(f => f !== feature)
-        : [...prev, feature]
+        ? prev.filter((f) => f !== feature)
+        : [...prev, feature],
     );
   };
 
@@ -356,8 +348,9 @@ export default function Home() {
             Find Your Perfect Screen Recorder
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Compare the best Mac screen recording software. Whether you need quick team updates,
-            polished product demos, or professional tutorials, find the perfect tool for your needs.
+            Compare the best Mac screen recording software. Whether you need
+            quick team updates, polished product demos, or professional
+            tutorials, find the perfect tool for your needs.
           </p>
         </header>
 
@@ -373,8 +366,10 @@ export default function Home() {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white"
               >
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
                 ))}
               </select>
             </div>
@@ -398,7 +393,7 @@ export default function Home() {
               </label>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'price' | 'name')}
+                onChange={(e) => setSortBy(e.target.value as "price" | "name")}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white"
               >
                 <option value="price">Price (Low to High)</option>
@@ -412,17 +407,26 @@ export default function Home() {
               Required Features:
             </label>
             <div className="flex flex-wrap gap-2">
-              {['editing', 'webcam', 'systemAudio', 'cloudStorage', 'aiFeatures', 'multiClip'].map(feature => (
+              {[
+                "editing",
+                "webcam",
+                "systemAudio",
+                "cloudStorage",
+                "aiFeatures",
+                "multiClip",
+              ].map((feature) => (
                 <button
                   key={feature}
                   onClick={() => toggleFeature(feature)}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     requiredFeatures.includes(feature)
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
                   }`}
                 >
-                  {feature.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                  {feature
+                    .replace(/([A-Z])/g, " $1")
+                    .replace(/^./, (str) => str.toUpperCase())}
                 </button>
               ))}
             </div>
@@ -435,25 +439,33 @@ export default function Home() {
             <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
               {recorders.length}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Tools Compared</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">
+              Tools Compared
+            </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 text-center">
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
               2 Free
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">No Cost Options</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">
+              No Cost Options
+            </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 text-center">
             <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1">
               $8-$29
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Mid-Range Price</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">
+              Mid-Range Price
+            </div>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 text-center">
             <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-1">
               {filteredRecorders.length}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Match Criteria</div>
+            <div className="text-sm text-gray-600 dark:text-gray-300">
+              Match Criteria
+            </div>
           </div>
         </div>
 
@@ -503,8 +515,13 @@ export default function Home() {
                   </div>
                   <ul className="space-y-1">
                     {recorder.pros.slice(0, 3).map((pro, idx) => (
-                      <li key={idx} className="text-sm text-gray-600 dark:text-gray-400 flex items-start">
-                        <span className="text-green-600 dark:text-green-400 mr-1">+</span>
+                      <li
+                        key={idx}
+                        className="text-sm text-gray-600 dark:text-gray-400 flex items-start"
+                      >
+                        <span className="text-green-600 dark:text-green-400 mr-1">
+                          +
+                        </span>
                         {pro}
                       </li>
                     ))}
@@ -516,8 +533,13 @@ export default function Home() {
                   </div>
                   <ul className="space-y-1">
                     {recorder.cons.slice(0, 3).map((con, idx) => (
-                      <li key={idx} className="text-sm text-gray-600 dark:text-gray-400 flex items-start">
-                        <span className="text-red-600 dark:text-red-400 mr-1">-</span>
+                      <li
+                        key={idx}
+                        className="text-sm text-gray-600 dark:text-gray-400 flex items-start"
+                      >
+                        <span className="text-red-600 dark:text-red-400 mr-1">
+                          -
+                        </span>
                         {con}
                       </li>
                     ))}
@@ -530,23 +552,35 @@ export default function Home() {
                   Features:
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <div className={`text-xs text-center py-1 px-2 rounded ${recorder.features.editing !== 'none' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-500'}`}>
-                    {recorder.features.editing !== 'none' ? '✓' : '✗'} Editing
+                  <div
+                    className={`text-xs text-center py-1 px-2 rounded ${recorder.features.editing !== "none" ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200" : "bg-gray-100 dark:bg-gray-700 text-gray-500"}`}
+                  >
+                    {recorder.features.editing !== "none" ? "✓" : "✗"} Editing
                   </div>
-                  <div className={`text-xs text-center py-1 px-2 rounded ${recorder.features.webcam ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-500'}`}>
-                    {recorder.features.webcam ? '✓' : '✗'} Webcam
+                  <div
+                    className={`text-xs text-center py-1 px-2 rounded ${recorder.features.webcam ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200" : "bg-gray-100 dark:bg-gray-700 text-gray-500"}`}
+                  >
+                    {recorder.features.webcam ? "✓" : "✗"} Webcam
                   </div>
-                  <div className={`text-xs text-center py-1 px-2 rounded ${recorder.features.systemAudio ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-500'}`}>
-                    {recorder.features.systemAudio ? '✓' : '✗'} Audio
+                  <div
+                    className={`text-xs text-center py-1 px-2 rounded ${recorder.features.systemAudio ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200" : "bg-gray-100 dark:bg-gray-700 text-gray-500"}`}
+                  >
+                    {recorder.features.systemAudio ? "✓" : "✗"} Audio
                   </div>
-                  <div className={`text-xs text-center py-1 px-2 rounded ${recorder.features.cloudStorage ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-500'}`}>
-                    {recorder.features.cloudStorage ? '✓' : '✗'} Cloud
+                  <div
+                    className={`text-xs text-center py-1 px-2 rounded ${recorder.features.cloudStorage ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200" : "bg-gray-100 dark:bg-gray-700 text-gray-500"}`}
+                  >
+                    {recorder.features.cloudStorage ? "✓" : "✗"} Cloud
                   </div>
-                  <div className={`text-xs text-center py-1 px-2 rounded ${recorder.features.aiFeatures ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-500'}`}>
-                    {recorder.features.aiFeatures ? '✓' : '✗'} AI
+                  <div
+                    className={`text-xs text-center py-1 px-2 rounded ${recorder.features.aiFeatures ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200" : "bg-gray-100 dark:bg-gray-700 text-gray-500"}`}
+                  >
+                    {recorder.features.aiFeatures ? "✓" : "✗"} AI
                   </div>
-                  <div className={`text-xs text-center py-1 px-2 rounded ${recorder.features.multiClip ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-500'}`}>
-                    {recorder.features.multiClip ? '✓' : '✗'} Multi
+                  <div
+                    className={`text-xs text-center py-1 px-2 rounded ${recorder.features.multiClip ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200" : "bg-gray-100 dark:bg-gray-700 text-gray-500"}`}
+                  >
+                    {recorder.features.multiClip ? "✓" : "✗"} Multi
                   </div>
                 </div>
               </div>
@@ -578,17 +612,23 @@ export default function Home() {
             <div>
               <h3 className="text-xl font-semibold mb-2">Best Overall</h3>
               <p className="text-green-100 mb-2">Tella ($13-$26/mo)</p>
-              <p className="text-sm text-green-50">Perfect balance of features, ease of use, and AI capabilities</p>
+              <p className="text-sm text-green-50">
+                Perfect balance of features, ease of use, and AI capabilities
+              </p>
             </div>
             <div>
               <h3 className="text-xl font-semibold mb-2">Best Free</h3>
               <p className="text-green-100 mb-2">OBS (Free)</p>
-              <p className="text-sm text-green-50">Infinite customization for advanced users willing to learn</p>
+              <p className="text-sm text-green-50">
+                Infinite customization for advanced users willing to learn
+              </p>
             </div>
             <div>
               <h3 className="text-xl font-semibold mb-2">Best for Teams</h3>
               <p className="text-green-100 mb-2">Loom (Free/$15)</p>
-              <p className="text-sm text-green-50">Fastest way to record and share with instant collaboration</p>
+              <p className="text-sm text-green-50">
+                Fastest way to record and share with instant collaboration
+              </p>
             </div>
           </div>
         </div>
@@ -596,7 +636,8 @@ export default function Home() {
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-600 dark:text-gray-400">
           <p className="mb-4">
-            Find the perfect Mac screen recorder for your workflow. All prices and features current as of 2026.
+            Find the perfect Mac screen recorder for your workflow. All prices
+            and features current as of 2026.
           </p>
           <p className="text-sm">
             © 2026 Mac Screen Recorder Finder. All Rights Reserved.

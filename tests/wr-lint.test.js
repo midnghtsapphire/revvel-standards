@@ -25,7 +25,9 @@ function runLint(markdown) {
   const file = path.join(dir, "wr.md");
   fs.writeFileSync(file, markdown, "utf8");
   try {
-    const res = spawnSync(process.execPath, [LINTER, file], { encoding: "utf8" });
+    const res = spawnSync(process.execPath, [LINTER, file], {
+      encoding: "utf8",
+    });
     return { status: res.status, stdout: res.stdout || "" };
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
@@ -67,7 +69,11 @@ test("flags _No response_ with no space after a field-label colon", () => {
     "",
   ].join("\n");
   const { status, stdout } = runLint(md);
-  assert.strictEqual(status, 1, "punctuation-adjacent _No response_ must trip rule 7");
+  assert.strictEqual(
+    status,
+    1,
+    "punctuation-adjacent _No response_ must trip rule 7",
+  );
   assert.match(stdout, /false-completion signal/);
 });
 
@@ -103,7 +109,11 @@ test("does not flag _No response_ inside a fenced code block", () => {
     "",
   ].join("\n");
   const { status } = runLint(md);
-  assert.strictEqual(status, 0, "code-fenced _No response_ must not trip rule 7");
+  assert.strictEqual(
+    status,
+    0,
+    "code-fenced _No response_ must not trip rule 7",
+  );
 });
 
 // Rule 4 (template/type mismatch) must treat the DRAGNET fix persona
@@ -120,7 +130,11 @@ test("flags product section in a /dragnet fix WR (BASIC short-form persona)", ()
     "",
   ].join("\n");
   const { status, stdout } = runLint(md);
-  assert.strictEqual(status, 1, "dragnet-fix WR with a product section must fail rule 4");
+  assert.strictEqual(
+    status,
+    1,
+    "dragnet-fix WR with a product section must fail rule 4",
+  );
   assert.match(stdout, /wrong template; use WR_TEMPLATE_BASIC\.md/);
 });
 
@@ -134,7 +148,11 @@ test("does not flag product section for a non-fix persona slash command (FULL lo
     "",
   ].join("\n");
   const { status, stdout } = runLint(md);
-  assert.strictEqual(status, 0, `research persona WR must stay FULL, got:\n${stdout}`);
+  assert.strictEqual(
+    status,
+    0,
+    `research persona WR must stay FULL, got:\n${stdout}`,
+  );
 });
 
 // Rule 11: REVVEL-DISABLED archival comment validation
@@ -153,7 +171,11 @@ test("flags REVVEL-DISABLED block missing required metadata fields", () => {
     "",
   ].join("\n");
   const { status, stdout } = runLint(md);
-  assert.strictEqual(status, 1, "REVVEL-DISABLED block missing MODEL: and WR: must fail rule 11");
+  assert.strictEqual(
+    status,
+    1,
+    "REVVEL-DISABLED block missing MODEL: and WR: must fail rule 11",
+  );
   assert.match(stdout, /REVVEL-DISABLED block missing required field/);
 });
 
@@ -172,7 +194,11 @@ test("passes a well-formed REVVEL-DISABLED block with all required fields", () =
     "",
   ].join("\n");
   const { status, stdout } = runLint(md);
-  assert.strictEqual(status, 0, `well-formed REVVEL-DISABLED block must pass, got:\n${stdout}`);
+  assert.strictEqual(
+    status,
+    0,
+    `well-formed REVVEL-DISABLED block must pass, got:\n${stdout}`,
+  );
 });
 
 test("flags an unclosed REVVEL-DISABLED block", () => {
@@ -187,7 +213,11 @@ test("flags an unclosed REVVEL-DISABLED block", () => {
     "",
   ].join("\n");
   const { status, stdout } = runLint(md);
-  assert.strictEqual(status, 1, "unclosed REVVEL-DISABLED block must fail rule 11");
+  assert.strictEqual(
+    status,
+    1,
+    "unclosed REVVEL-DISABLED block must fail rule 11",
+  );
   assert.match(stdout, /REVVEL-DISABLED block opened but never closed/);
 });
 
@@ -213,7 +243,11 @@ test("does not treat a prose mention of REVVEL-DISABLED as a block opener", () =
     "",
   ].join("\n");
   const { status, stdout } = runLint(md);
-  assert.strictEqual(status, 0, `prose mention of REVVEL-DISABLED must not open a block, got:\n${stdout}`);
+  assert.strictEqual(
+    status,
+    0,
+    `prose mention of REVVEL-DISABLED must not open a block, got:\n${stdout}`,
+  );
 });
 
 // Rule 12: deferral placeholders must be flagged as a hard lint failure.
@@ -302,7 +336,11 @@ test("does not flag deferral phrases inside a fenced code block", () => {
     "",
   ].join("\n");
   const { status, stdout } = runLint(md);
-  assert.strictEqual(status, 0, `deferral phrases in fenced code must not trip rule 12, got:\n${stdout}`);
+  assert.strictEqual(
+    status,
+    0,
+    `deferral phrases in fenced code must not trip rule 12, got:\n${stdout}`,
+  );
 });
 
 test("deferral placeholder also triggers false-completion when checklist is checked", () => {
@@ -317,7 +355,11 @@ test("deferral placeholder also triggers false-completion when checklist is chec
     "",
   ].join("\n");
   const { status, stdout } = runLint(md);
-  assert.strictEqual(status, 1, "deferral placeholder + checked ack must fail both rule 7 and rule 12");
+  assert.strictEqual(
+    status,
+    1,
+    "deferral placeholder + checked ack must fail both rule 7 and rule 12",
+  );
   assert.match(stdout, /deferral placeholder/);
   assert.match(stdout, /false-completion signal/);
 });

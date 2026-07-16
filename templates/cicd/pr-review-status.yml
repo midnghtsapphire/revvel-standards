@@ -37,7 +37,6 @@ permissions:
   issues: write
 
 jobs:
-
   # ────────────────────────────────────────────────────────────────────────────
   # Job 1 — Apply initial "awaiting-approval" label when PR is opened
   # ────────────────────────────────────────────────────────────────────────────
@@ -114,7 +113,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const marker = '<!-- pr-review-status-badge -->';
-            
+
             // Check if status comment already exists
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
@@ -124,7 +123,7 @@ jobs:
             });
 
             const existingComment = comments.find(c => c.body && c.body.includes(marker));
-            
+
             if (!existingComment) {
               const body = [
                 marker,
@@ -163,7 +162,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = context.payload.pull_request.number;
-            
+
             // Fetch all reviews for this PR
             const { data: reviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
@@ -173,7 +172,7 @@ jobs:
 
             // Determine the current state based on the latest review from each reviewer
             const reviewerStates = new Map();
-            
+
             for (const review of reviews) {
               const reviewer = review.user.login;
               const state = review.state;

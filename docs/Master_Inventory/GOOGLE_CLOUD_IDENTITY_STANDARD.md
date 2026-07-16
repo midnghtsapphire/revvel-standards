@@ -18,6 +18,7 @@ This standard defines how to configure identity management for Google Cloud serv
 - Secure authentication to Google resources
 
 This standard covers:
+
 - Authentication framework selection criteria
 - Cloud Identity configuration (3 cases)
 - Workforce Identity Federation setup
@@ -34,6 +35,7 @@ Google Cloud supports two primary authentication frameworks for enterprise ident
 ### 2.1. Cloud Identity
 
 Use Cloud Identity when:
+
 - You already use Google Workspace or Cloud Identity as your primary IdP
 - You want to sync identities from a third-party IdP into Cloud Identity
 - You need centralized user and group management through Google Cloud
@@ -41,21 +43,25 @@ Use Cloud Identity when:
 **Three Cloud Identity Cases:**
 
 #### Case 1: Native Cloud Identity / Google Workspace
+
 - All user identities and groups are created and managed directly in Cloud Identity or Google Workspace
 - No external IdP required
 - Users authenticate directly with Google
 - **Best for:** Organizations already using Google Workspace
 
 **Resources:**
+
 - [Cloud Identity Documentation](https://cloud.google.com/identity/docs)
 
 #### Case 2: Synced Identities with Cloud Identity Authentication
+
 - You sync identities from a third-party IdP (e.g., Active Directory) into Cloud Identity
 - Users authenticate using Cloud Identity credentials
 - Identity sync keeps user/group data in sync
 - **Best for:** Organizations wanting Google as the authentication authority with directory sync
 
 #### Case 3: Synced Identities with Third-Party IdP Authentication (SSO)
+
 - You sync identities from a third-party IdP into Cloud Identity
 - Users authenticate using your existing third-party IdP (SSO configured)
 - Sign-in flow: User starts at Cloud Identity → redirected to third-party IdP → returns to Google
@@ -64,12 +70,14 @@ Use Cloud Identity when:
 ### 2.2. Workforce Identity Federation
 
 Use Workforce Identity Federation when:
+
 - You use an external IdP (Microsoft Entra ID, Ping, PingFederate, or any OIDC/SAML 2.0 IdP)
 - You **do NOT** want to sync identities into Cloud Identity
 - You want federated authentication without directory replication
 - **Best for:** Organizations with established external IdP that don't want to maintain duplicate identity stores
 
 **Supported External IdPs:**
+
 - Microsoft Entra ID (formerly Azure AD)
 - Ping Identity
 - PingFederate
@@ -77,6 +85,7 @@ Use Workforce Identity Federation when:
 - Any SAML 2.0-compliant IdP
 
 **Required Configuration:**
+
 - [Workforce Identity Federation](https://cloud.google.com/iam/docs/workforce-identity-federation) must be set up in Google Cloud
 - The `google.subject` attribute **must** map to the email address field in the external IdP
 - Only **one IdP per Google Cloud project**
@@ -89,10 +98,10 @@ When using Workforce Identity Federation, you must configure attribute mappings 
 
 ### 3.1. Critical Attribute Requirements
 
-| Google Cloud Attribute | Requirement | Description |
-|---|---|---|
-| `google.subject` | **MANDATORY** | Must map to user's email address in the IdP |
-| `google.groups` | Recommended | Maps to user's group memberships (required for group-based access control) |
+| Google Cloud Attribute | Requirement   | Description                                                                |
+| ---------------------- | ------------- | -------------------------------------------------------------------------- |
+| `google.subject`       | **MANDATORY** | Must map to user's email address in the IdP                                |
+| `google.groups`        | Recommended   | Maps to user's group memberships (required for group-based access control) |
 
 ### 3.2. Microsoft Entra ID Attribute Mappings
 
@@ -101,12 +110,14 @@ When using Workforce Identity Federation, you must configure attribute mappings 
 **Setup:** [Configure OIDC provider with Microsoft Entra ID](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id#create-oidc-provider)
 
 **Attribute Mappings:**
+
 ```
 google.subject=assertion.email
 google.groups=assertion.groups
 ```
 
 **Prerequisites:**
+
 - Add group claim to Entra ID application
 - Select "All groups" (required for NotebookLM Enterprise)
 - See: [Create a Microsoft Entra ID application](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id#create_a_microsoft_entra_id_application)
@@ -116,6 +127,7 @@ google.groups=assertion.groups
 **Setup:** [Configure SAML provider with Microsoft Entra ID](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id#create-saml-provider)
 
 **Attribute Mappings:**
+
 ```
 google.subject=assertion.attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'][0]
 google.groups=assertion.attributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups']
@@ -126,16 +138,19 @@ google.groups=assertion.attributes['http://schemas.microsoft.com/ws/2008/06/iden
 **Setup:** [Configure for large number of groups](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id-scalable-groups)
 
 **When to Use:**
+
 - Your organization has more than approximately 150 groups
 - Standard group claim would exceed token size limits
 
 **Attribute Mappings:**
+
 ```
 google.subject=user.emails[0].value.lowerAscii()
 google.groups=group.externalId
 ```
 
 **Required:**
+
 - SCIM provisioning **must** be configured
 - See Section 5 for SCIM setup
 
@@ -159,10 +174,12 @@ For other identity providers:
 Ensure **one** of the following is true before proceeding:
 
 **Option A: Cloud Identity (No Workforce Identity Federation)**
+
 - [ ] You use Cloud Identity or Google Workspace as your IdP, OR
 - [ ] You use a third-party IdP and have configured SSO with Cloud Identity
 
 **Option B: Workforce Identity Federation**
+
 - [ ] You have set up [Workforce Identity Federation](https://cloud.google.com/iam/docs/workforce-identity-federation)
 - [ ] You have followed setup instructions:
   - Standard setup: [Configure with Microsoft Entra ID](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id)
@@ -182,6 +199,7 @@ If you already have a Google Cloud project, skip to Step 2.
 4. Note the Project ID (required for configuration)
 
 **Required Roles:**
+
 - `resourcemanager.projectCreator` (to create projects)
 - `serviceusage.serviceUsageAdmin` (to enable APIs)
 
@@ -198,6 +216,7 @@ gcloud services enable \
 ```
 
 **Required APIs:**
+
 - **IAM API** (`iam.googleapis.com`) - Identity and Access Management
 - **Cloud Identity API** (`cloudidentity.googleapis.com`) - User and group management
 - **IAM Credentials API** (`iamcredentials.googleapis.com`) - Token generation
@@ -219,6 +238,7 @@ gcloud services enable \
 SCIM (System for Cross-domain Identity Management) is an open standard for automating user and group provisioning between identity systems.
 
 **When SCIM is Required:**
+
 - ✅ Microsoft Entra ID with >150 groups
 - ✅ Autocomplete of user emails and group names in NotebookLM Enterprise
 - ✅ Automatic user provisioning and deprovisioning
@@ -228,6 +248,7 @@ SCIM (System for Cross-domain Identity Management) is an open standard for autom
 **Setup Guide:** [Configure SCIM in Microsoft Entra ID](https://cloud.google.com/iam/docs/configure-scim-ms-entra)
 
 **Steps:**
+
 1. Create a Workforce Identity Federation SCIM endpoint in Google Cloud
 2. Note the SCIM endpoint URL and bearer token
 3. In Microsoft Entra ID admin center:
@@ -242,6 +263,7 @@ SCIM (System for Cross-domain Identity Management) is an open standard for autom
 6. Enable automatic provisioning
 
 **Benefits:**
+
 - Automatic user creation when assigned to app
 - Automatic user deactivation when removed from app
 - Real-time group membership updates
@@ -251,18 +273,19 @@ SCIM (System for Cross-domain Identity Management) is an open standard for autom
 
 **Recommended Mappings:**
 
-| Entra ID Attribute | SCIM Attribute | Required |
-|---|---|---|
-| `userPrincipalName` | `userName` | ✅ Yes |
-| `mail` | `emails[type eq "work"].value` | ✅ Yes |
-| `givenName` | `name.givenName` | Recommended |
-| `surname` | `name.familyName` | Recommended |
-| `displayName` | `displayName` | Recommended |
-| Group memberships | `groups` | ✅ Yes (for access control) |
+| Entra ID Attribute  | SCIM Attribute                 | Required                    |
+| ------------------- | ------------------------------ | --------------------------- |
+| `userPrincipalName` | `userName`                     | ✅ Yes                      |
+| `mail`              | `emails[type eq "work"].value` | ✅ Yes                      |
+| `givenName`         | `name.givenName`               | Recommended                 |
+| `surname`           | `name.familyName`              | Recommended                 |
+| `displayName`       | `displayName`                  | Recommended                 |
+| Group memberships   | `groups`                       | ✅ Yes (for access control) |
 
 ### 5.4. Testing SCIM Provisioning
 
 **Validation Steps:**
+
 1. Assign a test user to the application in Entra ID
 2. Wait 5-10 minutes for initial sync (or trigger manual sync)
 3. Verify user appears in Google Cloud Workforce Identity Pool
@@ -298,6 +321,7 @@ SCIM (System for Cross-domain Identity Management) is an open standard for autom
 **Important:** You can select only **one IdP per Google Cloud project**.
 
 **Implications:**
+
 - Cannot use multiple Workforce Identity Federation pools for different IdPs
 - Plan your identity architecture before deployment
 
@@ -322,14 +346,17 @@ To enable data source access control in NotebookLM Enterprise:
 For autocomplete of user emails and group names:
 
 **Cloud Identity:**
+
 - ✅ Autocomplete works automatically
 
 **Workforce Identity Federation:**
+
 - ✅ Requires SCIM provisioning (Microsoft Entra ID only)
 
 ### 7.3. Group-Based Access Control
 
 **Setup:**
+
 1. Create groups in your IdP (e.g., "Engineering", "Finance", "Marketing")
 2. Assign users to groups
 3. Ensure groups sync to Google Cloud (via SCIM or Cloud Identity sync)
@@ -337,6 +364,7 @@ For autocomplete of user emails and group names:
 5. Users inherit permissions from their group memberships
 
 **Benefits:**
+
 - Centralized access management in your IdP
 - Automatic permission updates when users join/leave groups
 - Reduced administrative overhead
@@ -349,36 +377,44 @@ For autocomplete of user emails and group names:
 ### 8.1. Common Issues
 
 #### Issue: `google.subject` is empty or incorrect
+
 **Cause:** Attribute mapping is incorrect or email claim is missing from IdP token
 
 **Solution:**
+
 1. Verify IdP is sending email claim in token
 2. Check attribute mapping syntax (case-sensitive)
 3. Test with a debug tool (e.g., jwt.io for OIDC tokens)
 4. Update attribute mapping and retest
 
 #### Issue: Groups not syncing
+
 **Cause:** Group claim not configured in IdP or SCIM not set up
 
 **Solution:**
+
 1. For OIDC/SAML: Verify group claim is enabled in IdP app
 2. For large groups (>150): Enable SCIM provisioning
 3. Check SCIM provisioning logs for errors
 4. Verify SCIM token is valid and not expired
 
 #### Issue: Authentication fails for federated users
+
 **Cause:** Workforce Identity Federation pool misconfigured or IdP certificate issues
 
 **Solution:**
+
 1. Verify workforce pool and provider are created correctly
 2. Check IdP metadata URL is accessible
 3. Verify certificate trust chain
 4. Check Cloud Audit Logs for specific error messages
 
 #### Issue: User cannot access NotebookLM Enterprise
+
 **Cause:** User not provisioned or missing group membership
 
 **Solution:**
+
 1. Verify user exists in Workforce Identity Pool (or Cloud Identity)
 2. Check user's group memberships
 3. Verify data source permissions are granted to user's groups
@@ -387,11 +423,13 @@ For autocomplete of user emails and group names:
 ### 8.2. Debugging Tools
 
 **Google Cloud Console:**
+
 - IAM & Admin → Workforce Identity Federation → View provider details
 - Cloud Identity → Users → Search and view user details
 - Logging → Logs Explorer → Filter by `protoPayload.serviceName="iam.googleapis.com"`
 
 **Command-Line Tools:**
+
 ```bash
 # Test Workforce Identity Federation
 gcloud iam workforce-pools providers describe PROVIDER_ID \
@@ -406,6 +444,7 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 ```
 
 **Third-Party Tools:**
+
 - [jwt.io](https://jwt.io) - Decode and inspect OIDC tokens
 - [SAML-tracer](https://addons.mozilla.org/en-US/firefox/addon/saml-tracer/) - Browser extension to debug SAML flows
 
@@ -414,6 +453,7 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 ## 9. Implementation Checklist
 
 ### Phase 1: Planning and Design
+
 - [ ] Determine authentication framework (Cloud Identity vs. Workforce Identity Federation)
 - [ ] Select IdP (if using Workforce Identity Federation)
 - [ ] Count groups (if >150, plan for SCIM with Entra ID)
@@ -421,6 +461,7 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 - [ ] Create Google Cloud project (or select existing)
 
 ### Phase 2: Initial Configuration
+
 - [ ] Enable required APIs in Google Cloud project
 - [ ] Configure Workforce Identity Federation pool and provider (if applicable)
 - [ ] Set up attribute mappings (`google.subject`, `google.groups`)
@@ -428,6 +469,7 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 - [ ] Test authentication with pilot user
 
 ### Phase 3: SCIM Setup (If Required)
+
 - [ ] Create SCIM endpoint in Google Cloud
 - [ ] Configure SCIM provisioning in IdP (Entra ID only)
 - [ ] Map SCIM attributes
@@ -435,6 +477,7 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 - [ ] Verify deprovisioning works correctly
 
 ### Phase 4: NotebookLM Enterprise Integration
+
 - [ ] Enable data source access control in NotebookLM Enterprise
 - [ ] Create initial data source permission groups
 - [ ] Grant permissions to pilot groups
@@ -442,6 +485,7 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 - [ ] Verify group-based access works as expected
 
 ### Phase 5: Rollout and Monitoring
+
 - [ ] Expand to additional user groups
 - [ ] Train administrators on identity management
 - [ ] Set up monitoring and alerting for auth failures
@@ -453,6 +497,7 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 ## 10. References
 
 ### Official Documentation
+
 - [Cloud Identity Documentation](https://cloud.google.com/identity/docs)
 - [Workforce Identity Federation](https://cloud.google.com/iam/docs/workforce-identity-federation)
 - [Configure Workforce Identity Federation with Microsoft Entra ID](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id)
@@ -461,6 +506,7 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 - [Workforce Identity Federation SCIM](https://cloud.google.com/iam/docs/workforce-identity-federation-scim)
 
 ### Related Revvel Standards
+
 - [SSO & SAML Identity Standard](SSO_SAML_STANDARD.md) - GitHub organization SSO and SAML identity resolution
 - [Public Identity Standard](PUBLIC_IDENTITY_STANDARD.md) - GitHub profile and public identity management
 - [Security Standard](SECURITY_STANDARD.md) - General security requirements including authentication
@@ -468,4 +514,4 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 
 ---
 
-*Part of the Revvel Master Standards. See [`README.md`](README.md) for the full inventory.*
+_Part of the Revvel Master Standards. See [`README.md`](README.md) for the full inventory._

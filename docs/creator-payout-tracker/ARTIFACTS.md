@@ -6,15 +6,15 @@
 
 ## Definition-of-Done requirements
 
-| Requirement | Status | Notes |
-| --- | :---: | --- |
-| Live deployment URL | ✅ | https://revvel-standards.vercel.app/docs/creator-payout-tracker/ |
-| README `## Live Deployment` | ✅ | present |
-| Live web test interface | ✅ | web app detected |
-| .mcp.json at root | ❌ | missing |
-| Monetization wired | ✅ | polar referenced |
-| Tests | ✅ | tests present |
-| Listed in APP_REGISTRY.md | ✅ | listed |
+| Requirement                 | Status | Notes                                                            |
+| --------------------------- | :----: | ---------------------------------------------------------------- |
+| Live deployment URL         |   ✅   | https://revvel-standards.vercel.app/docs/creator-payout-tracker/ |
+| README `## Live Deployment` |   ✅   | present                                                          |
+| Live web test interface     |   ✅   | web app detected                                                 |
+| .mcp.json at root           |   ❌   | missing                                                          |
+| Monetization wired          |   ✅   | polar referenced                                                 |
+| Tests                       |   ✅   | tests present                                                    |
+| Listed in APP_REGISTRY.md   |   ✅   | listed                                                           |
 
 _Legend: ✅ met · ❌ gap · ➖ not applicable._
 

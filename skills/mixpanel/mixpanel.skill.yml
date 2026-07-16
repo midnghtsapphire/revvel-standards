@@ -22,15 +22,15 @@ metadata:
 
 dependencies:
   skills:
-    - vault_agent       # for MIXPANEL_TOKEN and MIXPANEL_API_SECRET provisioning
-    - security          # PII rules for event properties
-    - error_reporting   # baseline 'Error Surfaced' event
+    - vault_agent # for MIXPANEL_TOKEN and MIXPANEL_API_SECRET provisioning
+    - security # PII rules for event properties
+    - error_reporting # baseline 'Error Surfaced' event
   tools:
     - nodejs
   pip_packages: []
   npm_packages:
-    - mixpanel-browser  # client / SPA / Next.js
-    - mixpanel          # Node / worker / server
+    - mixpanel-browser # client / SPA / Next.js
+    - mixpanel # Node / worker / server
 
 template_files:
   - path: "templates/standards/mixpanel-init.ts"

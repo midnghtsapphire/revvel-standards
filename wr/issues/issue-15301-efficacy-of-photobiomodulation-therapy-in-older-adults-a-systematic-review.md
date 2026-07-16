@@ -33,12 +33,12 @@ fill.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A — new product |
+| Property    | Value             |
+| ----------- | ----------------- |
+| Stars       | N/A — new product |
 | Open Issues | N/A — new product |
-| Private | No |
-| Archived | No |
+| Private     | No                |
+| Archived    | No                |
 
 ## Research Checklist
 
@@ -80,6 +80,7 @@ $20,000+ vendor-locked device bundle.
 **Secondary:** Researchers and clinical students studying PBMT who need a structured reference tool.
 
 **Why they will pay:**
+
 - PBMT hardware vendors charge $15k–$40k for systems and bundle proprietary protocol software with
   the device ([THOR pricing: $16,000–$40,000](https://www.thorlaser.com/products/)).
 - Clinicians who already own non-THOR/BioFlex devices (e.g., generic LED panels, handheld diode
@@ -90,6 +91,7 @@ $20,000+ vendor-locked device bundle.
 ## 3. Marketing and SEO Plan
 
 **Primary keywords (medium volume, low competition):**
+
 - "photobiomodulation protocol calculator" (est. <500/mo — highly targeted, clinical)
 - "PBMT dose calculator" (est. <500/mo)
 - "photobiomodulation therapy elderly" (est. 500–1,000/mo)
@@ -98,12 +100,14 @@ $20,000+ vendor-locked device bundle.
 - "photobiomodulation for seniors" (est. <500/mo)
 
 **Content strategy:**
+
 1. Landing page targeting "photobiomodulation dose calculator" and "PBMT protocol planner"
 2. Blog/resource: "Evidence-Based PBMT Protocols for Older Adults" (cites PMC11274037 directly,
    drives organic backlinks from PubMed-adjacent communities)
 3. Tool embed on clinical education sites / PT continuing-education portals
 
 **Distribution:**
+
 - Physical therapy Facebook groups and Reddit (r/physicaltherapy, r/LaserTherapy)
 - World Association for Photobiomodulation Therapy (WALT) community ([waltpbm.org](https://waltpbm.org/))
 - LinkedIn targeting geriatric care, rehabilitation, and wound-care clinicians
@@ -112,20 +116,20 @@ $20,000+ vendor-locked device bundle.
 
 ### Closed-Source / Hardware-Bundled Competitors
 
-| Competitor | Price | Model | Protocol Software | Gap |
-| --- | --- | --- | --- | --- |
-| **THOR Photomedicine** | $16,000–$40,000 | Hardware bundle | Yes — device-locked | Requires THOR hardware |
-| **BIOFLEX Laser** | Pricing data pending — competitive benchmark research required. | Hardware bundle | Yes — proprietary | Device-locked, no standalone |
-| **NovoTHOR** | Pricing data pending — competitive benchmark research required. | Full-body pod | Yes — proprietary | Clinical/institutional only |
-| **Lumaflex Body Pro** | Pricing data pending — competitive benchmark research required. | Portable hardware | Basic custom protocols | Device-locked |
+| Competitor             | Price                                                           | Model             | Protocol Software      | Gap                          |
+| ---------------------- | --------------------------------------------------------------- | ----------------- | ---------------------- | ---------------------------- |
+| **THOR Photomedicine** | $16,000–$40,000                                                 | Hardware bundle   | Yes — device-locked    | Requires THOR hardware       |
+| **BIOFLEX Laser**      | Pricing data pending — competitive benchmark research required. | Hardware bundle   | Yes — proprietary      | Device-locked, no standalone |
+| **NovoTHOR**           | Pricing data pending — competitive benchmark research required. | Full-body pod     | Yes — proprietary      | Clinical/institutional only  |
+| **Lumaflex Body Pro**  | Pricing data pending — competitive benchmark research required. | Portable hardware | Basic custom protocols | Device-locked                |
 
 ### Web / Standalone Tools
 
-| Tool | Stars | Price | Gap |
-| --- | --- | --- | --- |
+| Tool                           | Stars        | Price                 | Gap                                                                |
+| ------------------------------ | ------------ | --------------------- | ------------------------------------------------------------------ |
 | **THOR Dose Calculator** (web) | N/A — closed | Free (marketing tool) | Promotes THOR devices; no protocol templates; no older-adult focus |
-| **pbmdosage.com** | N/A | Free | Minimal UI, no evidence grounding, no geriatric protocols |
-| Generic Excel calculators | N/A | Free | No UX, no guidance, no citations |
+| **pbmdosage.com**              | N/A          | Free                  | Minimal UI, no evidence grounding, no geriatric protocols          |
+| Generic Excel calculators      | N/A          | Free                  | No UX, no guidance, no citations                                   |
 
 ### Open-Source Landscape
 
@@ -191,17 +195,18 @@ is growing at 10.2% CAGR through 2031. No standalone protocol tool exists for th
 
 ### Clinical Evidence Base (from PMC11274037)
 
-| Condition | Studies | Effective | Notes |
-| --- | --- | --- | --- |
-| Neurodegenerative diseases | 4 | 2 | Alzheimer's, Parkinson's protocols included |
-| Wounds and ulcers | 3 | 2 | Pressure ulcers, diabetic foot ulcers |
-| Macular degeneration | 1 | 1 | AMD improvement documented |
-| Hyposalivation | 1 | 1 | Xerostomia in older adults |
+| Condition                  | Studies | Effective | Notes                                       |
+| -------------------------- | ------- | --------- | ------------------------------------------- |
+| Neurodegenerative diseases | 4       | 2         | Alzheimer's, Parkinson's protocols included |
+| Wounds and ulcers          | 3       | 2         | Pressure ulcers, diabetic foot ulcers       |
+| Macular degeneration       | 1       | 1         | AMD improvement documented                  |
+| Hyposalivation             | 1       | 1         | Xerostomia in older adults                  |
 
 **Safety:** All 10 included studies reported good safety profiles and compliance. No adverse events
 documented in older adult populations.
 
 **Protocol heterogeneity (the gap our tool solves):**
+
 - Wavelengths used: 630nm, 660nm, 810nm, 830nm, 940nm (varied per study)
 - Power densities: 15–200 mW/cm² (no consensus)
 - Energy doses: 1–16 J/cm² per session
@@ -210,26 +215,26 @@ documented in older adult populations.
 
 ### Competitor Analysis (extended)
 
-| Competitor | Price | Software Model | Older Adult Focus | Open API |
-| --- | --- | --- | --- | --- |
-| THOR Photomedicine | $16,000–$40,000 (hardware) | Device-bundled | No | No |
-| BIOFLEX Laser | Pricing data pending — competitive benchmark research required. | Device-bundled | No | No |
-| NovoTHOR | Pricing data pending — competitive benchmark research required. | Device-bundled | No | No |
-| Lumaflex Body Pro | Pricing data pending — competitive benchmark research required. | Device-bundled | No | No |
-| pbmdosage.com | Free | Standalone | No | No |
-| THOR Dose Calculator | Free | Web widget | No | No |
-| **Our product** | $49–$149/mo | SaaS, device-agnostic | **Yes** | Planned |
+| Competitor           | Price                                                           | Software Model        | Older Adult Focus | Open API |
+| -------------------- | --------------------------------------------------------------- | --------------------- | ----------------- | -------- |
+| THOR Photomedicine   | $16,000–$40,000 (hardware)                                      | Device-bundled        | No                | No       |
+| BIOFLEX Laser        | Pricing data pending — competitive benchmark research required. | Device-bundled        | No                | No       |
+| NovoTHOR             | Pricing data pending — competitive benchmark research required. | Device-bundled        | No                | No       |
+| Lumaflex Body Pro    | Pricing data pending — competitive benchmark research required. | Device-bundled        | No                | No       |
+| pbmdosage.com        | Free                                                            | Standalone            | No                | No       |
+| THOR Dose Calculator | Free                                                            | Web widget            | No                | No       |
+| **Our product**      | $49–$149/mo                                                     | SaaS, device-agnostic | **Yes**           | Planned  |
 
 ### SEO Keyword Summary
 
-| Keyword | Est. Monthly Volume | Intent |
-| --- | --- | --- |
-| photobiomodulation therapy | 1,000–10,000 | Informational |
-| PBMT dose calculator | <500 | Transactional |
-| red light therapy dose calculator | 1,000–5,000 | Transactional |
-| photobiomodulation elderly | 500–1,000 | Commercial |
-| photobiomodulation protocol planner | <500 | Transactional |
-| LLLT protocol calculator | <500 | Transactional |
+| Keyword                             | Est. Monthly Volume | Intent        |
+| ----------------------------------- | ------------------- | ------------- |
+| photobiomodulation therapy          | 1,000–10,000        | Informational |
+| PBMT dose calculator                | <500                | Transactional |
+| red light therapy dose calculator   | 1,000–5,000         | Transactional |
+| photobiomodulation elderly          | 500–1,000           | Commercial    |
+| photobiomodulation protocol planner | <500                | Transactional |
+| LLLT protocol calculator            | <500                | Transactional |
 
 ### Domain Name Strategy
 
@@ -243,24 +248,24 @@ documented in older adult populations.
 
 ### BOM — APIs and Tools
 
-| Tool / API | Purpose | Est. Monthly Cost |
-| --- | --- | --- |
-| Next.js + Vercel | App framework + hosting | $0 (hobby) → $20/mo (pro) |
-| Supabase | Auth + protocol database + patient records | $0 (free tier) → $25/mo |
-| OpenRouter (claude-3.5-sonnet) | AI protocol suggestions from evidence base | ~$0.01–$0.05 per query |
-| PDF generation (puppeteer / react-pdf) | Protocol PDF export | $0 (open source) |
-| WALT guidelines API | No public API — scrape/embed from [waltpbm.org](https://waltpbm.org/) | $0 |
-| Stripe | Subscription billing | 2.9% + $0.30 per transaction |
-| Resend | Transactional email | $0 (free tier) → $20/mo |
+| Tool / API                             | Purpose                                                               | Est. Monthly Cost            |
+| -------------------------------------- | --------------------------------------------------------------------- | ---------------------------- |
+| Next.js + Vercel                       | App framework + hosting                                               | $0 (hobby) → $20/mo (pro)    |
+| Supabase                               | Auth + protocol database + patient records                            | $0 (free tier) → $25/mo      |
+| OpenRouter (claude-3.5-sonnet)         | AI protocol suggestions from evidence base                            | ~$0.01–$0.05 per query       |
+| PDF generation (puppeteer / react-pdf) | Protocol PDF export                                                   | $0 (open source)             |
+| WALT guidelines API                    | No public API — scrape/embed from [waltpbm.org](https://waltpbm.org/) | $0                           |
+| Stripe                                 | Subscription billing                                                  | 2.9% + $0.30 per transaction |
+| Resend                                 | Transactional email                                                   | $0 (free tier) → $20/mo      |
 
 ### Monetization Model
 
-| Tier | Price | Features |
-| --- | --- | --- |
-| **Free** | $0 | Basic dose calculator (formula only), 1 saved patient |
-| **Clinician** | $49/month | Full protocol library, 50 patients, PDF export, citation links |
-| **Practice** | $149/month | Unlimited patients, team seats (5), priority support, white-label PDF |
-| **Enterprise / EDU** | $499/month | API access, custom branding, LMS/CE integration, unlimited seats |
+| Tier                 | Price      | Features                                                              |
+| -------------------- | ---------- | --------------------------------------------------------------------- |
+| **Free**             | $0         | Basic dose calculator (formula only), 1 saved patient                 |
+| **Clinician**        | $49/month  | Full protocol library, 50 patients, PDF export, citation links        |
+| **Practice**         | $149/month | Unlimited patients, team seats (5), priority support, white-label PDF |
+| **Enterprise / EDU** | $499/month | API access, custom branding, LMS/CE integration, unlimited seats      |
 
 **Path to $10k/month:** ~70 Practice subscribers × $149 = $10,430/month. Achievable via physical
 therapy community outreach and WALT/APTA network.
@@ -325,18 +330,18 @@ therapy community outreach and WALT/APTA network.
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-| --- | --- | --- | --- |
-| Regulatory / FDA classification of protocol software as medical device software | Medium | High | Keep tool as "educational reference only" in ToS; consult FDA Class II SaMD guidance; do not claim diagnostic or treatment intent |
-| HIPAA liability from patient data storage | Medium | High | MVP stores no PHI; patient records are clinician-side only; add HIPAA BAA in Phase 2 |
-| Low search volume limits organic growth | Medium | Medium | Supplement with PT community outreach, WALT partnership, and content marketing |
-| Clinical community skepticism of non-peer-reviewed software | Low | Medium | Cite PMC11274037 and WALT guidelines directly; display methodology prominently |
-| Hardware vendors block or counter with free tools | Low | Low | Vendor tools are device-locked; our device-agnostic positioning is the moat |
+| Risk                                                                            | Likelihood | Impact | Mitigation                                                                                                                        |
+| ------------------------------------------------------------------------------- | ---------- | ------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| Regulatory / FDA classification of protocol software as medical device software | Medium     | High   | Keep tool as "educational reference only" in ToS; consult FDA Class II SaMD guidance; do not claim diagnostic or treatment intent |
+| HIPAA liability from patient data storage                                       | Medium     | High   | MVP stores no PHI; patient records are clinician-side only; add HIPAA BAA in Phase 2                                              |
+| Low search volume limits organic growth                                         | Medium     | Medium | Supplement with PT community outreach, WALT partnership, and content marketing                                                    |
+| Clinical community skepticism of non-peer-reviewed software                     | Low        | Medium | Cite PMC11274037 and WALT guidelines directly; display methodology prominently                                                    |
+| Hardware vendors block or counter with free tools                               | Low        | Low    | Vendor tools are device-locked; our device-agnostic positioning is the moat                                                       |

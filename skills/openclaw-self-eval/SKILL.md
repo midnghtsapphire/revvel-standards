@@ -23,17 +23,17 @@ OpenClaw Self-Eval is the **pre-flight checklist**: run it at the start of a ses
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
-| **Soul audit** | Verifies the soul file exists at the expected path, is non-empty, has a version, and a last-updated timestamp within the staleness threshold. |
-| **Memory audit** | Checks that the agent's memory store (gbrain repo, local `.memory/` dir, or configured KB) is reachable, has recent writes, and is not over the half-life pruning threshold from `skills/memory-pruning/`. |
-| **Agent manifest audit** | Confirms the `AGENTS.md` (or per-agent `*.agent.yml`) is present, lists this agent, and matches the active persona in the current session. |
-| **Skill-file audit** | Walks `skills/` (or the configured skill vault), verifies every registered skill has `SKILL.md` + `*.skill.yml` (+ `tests/` if PromptFoo is enabled), and cross-checks `REGISTRY.md` ↔ `SKILLS_INDEX.yml` ↔ directory listing. |
-| **Installer audit** | Verifies `install/mac/install-<skill>.command` and `install/windows/install-<skill>.bat` exist for every skill flagged as *installable*, and that they are executable / readable. |
-| **Persona audit** | If the agent has a persona attached (per `persona-engine`), checks the persona file exists, has a greeting + farewell, and an assigned emoji. |
-| **Secrets/vault audit** | Confirms the credentials listed in `vault-agent` metadata resolve to env-vars or vault references — without ever reading the values. |
-| **Drift audit** | Diffs the current state against the last known-good snapshot stored in the agent's memory and flags any unexpected deletions or renames. |
-| **Report** | Emits a single **markdown report** + a machine-readable JSON sidecar (`self-eval-<timestamp>.json`) to the configured output path. |
+| Task                     | Description                                                                                                                                                                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Soul audit**           | Verifies the soul file exists at the expected path, is non-empty, has a version, and a last-updated timestamp within the staleness threshold.                                                                                  |
+| **Memory audit**         | Checks that the agent's memory store (gbrain repo, local `.memory/` dir, or configured KB) is reachable, has recent writes, and is not over the half-life pruning threshold from `skills/memory-pruning/`.                     |
+| **Agent manifest audit** | Confirms the `AGENTS.md` (or per-agent `*.agent.yml`) is present, lists this agent, and matches the active persona in the current session.                                                                                     |
+| **Skill-file audit**     | Walks `skills/` (or the configured skill vault), verifies every registered skill has `SKILL.md` + `*.skill.yml` (+ `tests/` if PromptFoo is enabled), and cross-checks `REGISTRY.md` ↔ `SKILLS_INDEX.yml` ↔ directory listing. |
+| **Installer audit**      | Verifies `install/mac/install-<skill>.command` and `install/windows/install-<skill>.bat` exist for every skill flagged as _installable_, and that they are executable / readable.                                              |
+| **Persona audit**        | If the agent has a persona attached (per `persona-engine`), checks the persona file exists, has a greeting + farewell, and an assigned emoji.                                                                                  |
+| **Secrets/vault audit**  | Confirms the credentials listed in `vault-agent` metadata resolve to env-vars or vault references — without ever reading the values.                                                                                           |
+| **Drift audit**          | Diffs the current state against the last known-good snapshot stored in the agent's memory and flags any unexpected deletions or renames.                                                                                       |
+| **Report**               | Emits a single **markdown report** + a machine-readable JSON sidecar (`self-eval-<timestamp>.json`) to the configured output path.                                                                                             |
 
 ---
 
@@ -67,17 +67,17 @@ Typical runtime: **< 30 seconds** for a repo the size of `revvel-standards`.
 
 ## Inputs
 
-| Input | Required | Default | Description |
-|---|---|---|---|
-| `agent_root` | yes | `.` (cwd) | Root directory to audit. Usually a repo or a `~/.openclaw/` directory. |
-| `soul_path` | no | `SOUL.md` or `.soul.yml` at `agent_root` | Override for non-standard layouts. |
-| `memory_backend` | no | auto-detect | One of `gbrain`, `local`, `mem0`, `none`. |
-| `skill_vault` | no | `skills/` | Directory containing skill subfolders. |
-| `registry_file` | no | `skills/REGISTRY.md` | Human-readable registry. |
-| `index_file` | no | `skills/SKILLS_INDEX.yml` | Machine-readable index. |
-| `output_dir` | no | `./self-eval/` | Where the report + JSON are written. |
-| `staleness_days` | no | `30` | Max age (in days) for soul/memory before a **WARN** is raised. |
-| `fail_on_warn` | no | `false` | If `true`, exit non-zero on any **WARN** (strict mode for CI). |
+| Input            | Required | Default                                  | Description                                                            |
+| ---------------- | -------- | ---------------------------------------- | ---------------------------------------------------------------------- |
+| `agent_root`     | yes      | `.` (cwd)                                | Root directory to audit. Usually a repo or a `~/.openclaw/` directory. |
+| `soul_path`      | no       | `SOUL.md` or `.soul.yml` at `agent_root` | Override for non-standard layouts.                                     |
+| `memory_backend` | no       | auto-detect                              | One of `gbrain`, `local`, `mem0`, `none`.                              |
+| `skill_vault`    | no       | `skills/`                                | Directory containing skill subfolders.                                 |
+| `registry_file`  | no       | `skills/REGISTRY.md`                     | Human-readable registry.                                               |
+| `index_file`     | no       | `skills/SKILLS_INDEX.yml`                | Machine-readable index.                                                |
+| `output_dir`     | no       | `./self-eval/`                           | Where the report + JSON are written.                                   |
+| `staleness_days` | no       | `30`                                     | Max age (in days) for soul/memory before a **WARN** is raised.         |
+| `fail_on_warn`   | no       | `false`                                  | If `true`, exit non-zero on any **WARN** (strict mode for CI).         |
 
 ---
 
@@ -98,16 +98,16 @@ Typical runtime: **< 30 seconds** for a repo the size of `revvel-standards`.
 
 ## Summary
 
-| Audit | Status | Notes |
-|---|---|---|
-| Soul | ✅ | v1.3, updated 4 days ago |
-| Memory | ⚠️ | gbrain reachable but last write 41 days ago (> staleness_days=30) |
-| Agent manifest | ✅ | AGENTS.md lists this agent |
-| Skill files | ❌ | `skills/openclaw-self-eval/` listed in REGISTRY.md but directory missing |
-| Installers | ✅ | 18/18 installable skills have both platforms |
-| Persona | ✅ | Mirror 🪞 |
-| Vault/secrets | ✅ | 4/4 secrets resolve to env-vars |
-| Drift | ⚠️ | 2 files deleted since last snapshot |
+| Audit          | Status | Notes                                                                    |
+| -------------- | ------ | ------------------------------------------------------------------------ |
+| Soul           | ✅     | v1.3, updated 4 days ago                                                 |
+| Memory         | ⚠️     | gbrain reachable but last write 41 days ago (> staleness_days=30)        |
+| Agent manifest | ✅     | AGENTS.md lists this agent                                               |
+| Skill files    | ❌     | `skills/openclaw-self-eval/` listed in REGISTRY.md but directory missing |
+| Installers     | ✅     | 18/18 installable skills have both platforms                             |
+| Persona        | ✅     | Mirror 🪞                                                                |
+| Vault/secrets  | ✅     | 4/4 secrets resolve to env-vars                                          |
+| Drift          | ⚠️     | 2 files deleted since last snapshot                                      |
 
 ## Recommended Fixes (prioritized)
 
@@ -188,16 +188,16 @@ openclaw run-skill openclaw-self-eval \
 **Root:** /home/runner/work/revvel-standards/revvel-standards
 **Overall:** ✅ PASS
 
-| Audit | Status | Notes |
-|---|---|---|
-| Soul | ✅ | docs/AGENTS.md present, updated 2026-04-15 |
-| Memory | ✅ | gbrain reachable, last write 2026-04-18 |
-| Agent manifest | ✅ | AGENTS.md v1 |
-| Skill files | ✅ | 34/34 skills registered and present |
-| Installers | ✅ | 18/18 installable skills have mac + windows |
-| Persona | ✅ | Mirror 🪞 |
-| Vault/secrets | ✅ | 4/4 secrets resolve via env-vars |
-| Drift | ✅ | no unexpected changes since 2026-04-18 snapshot |
+| Audit          | Status | Notes                                           |
+| -------------- | ------ | ----------------------------------------------- |
+| Soul           | ✅     | docs/AGENTS.md present, updated 2026-04-15      |
+| Memory         | ✅     | gbrain reachable, last write 2026-04-18         |
+| Agent manifest | ✅     | AGENTS.md v1                                    |
+| Skill files    | ✅     | 34/34 skills registered and present             |
+| Installers     | ✅     | 18/18 installable skills have mac + windows     |
+| Persona        | ✅     | Mirror 🪞                                       |
+| Vault/secrets  | ✅     | 4/4 secrets resolve via env-vars                |
+| Drift          | ✅     | no unexpected changes since 2026-04-18 snapshot |
 
 🪞 Mirror — audit complete.
 ```
@@ -231,12 +231,12 @@ The test suite covers:
 - **[`persona-engine`](../persona-engine/SKILL.md)** — Persona existence check for agents that use one.
 - **[`vault-agent`](../vault-agent/SKILL.md)** — Read-only source for secrets/vault audit.
 - **[`testing-agent`](../testing-agent/SKILL.md)** — Runs the PromptFoo tests for this skill.
-- **[`system-state`](../system-state/SKILL.md)** — Sister skill that audits *production* state (this skill audits *agent* state).
+- **[`system-state`](../system-state/SKILL.md)** — Sister skill that audits _production_ state (this skill audits _agent_ state).
 
 ---
 
 ## Changelog
 
-| Version | Date | Change |
-|---|---|---|
-| 1.0.0 | 2026-04-19 | Initial release. Implements the 8-audit pre-flight checklist described above. |
+| Version | Date       | Change                                                                        |
+| ------- | ---------- | ----------------------------------------------------------------------------- |
+| 1.0.0   | 2026-04-19 | Initial release. Implements the 8-audit pre-flight checklist described above. |

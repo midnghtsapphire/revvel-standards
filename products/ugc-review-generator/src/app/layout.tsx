@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "UGC Review Generator",
-  description: "Generate UGC review prompts and Zeely-style local lead ad packets.",
+  description:
+    "Generate UGC review prompts and Zeely-style local lead ad packets.",
 };
 
 export default function RootLayout({

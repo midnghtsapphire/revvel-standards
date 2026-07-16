@@ -5,11 +5,11 @@ on:
   workflow_dispatch:
     inputs:
       repo:
-        description: 'Repo to bootstrap (owner/repo)'
+        description: "Repo to bootstrap (owner/repo)"
         required: false
         type: string
   schedule:
-    - cron: '0 2 * * 0'  # Weekly Sundays 2AM UTC
+    - cron: "0 2 * * 0" # Weekly Sundays 2AM UTC
 permissions:
   contents: write
   issues: write
@@ -45,7 +45,7 @@ jobs:
           node scripts/sync-secrets.js --repo="$TARGET_REPO" || {
             echo "::warning::Secrets sync failed - this is OK if no .env file"
           }
-          
+
           # Copy to target repo if file exists
           if [ -f "$TMP_ENV_FILE" ]; then
             echo "Would copy secrets template to ${{ steps.target.outputs.target_repo }}"
@@ -65,7 +65,7 @@ jobs:
         run: |
           # Verify AUTO_BOOTSTRAP_STANDARD.md exists in target
           echo "Checking for error handling docs..."
-          
+
       - name: Create WR on bootstrap failure
         if: failure()
         uses: actions/github-script@v9.0.0

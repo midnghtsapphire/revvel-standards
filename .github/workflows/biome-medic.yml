@@ -12,11 +12,11 @@ name: BIOME Medic
 
 on:
   schedule:
-    - cron: '50 */6 * * *'  # every 6 hours, offset behind sentinel/homeostat
+    - cron: "50 */6 * * *" # every 6 hours, offset behind sentinel/homeostat
   workflow_dispatch:
     inputs:
       allow_reruns:
-        description: 'Allow rule-based re-runs of failed (non-BIOME) workflow runs'
+        description: "Allow rule-based re-runs of failed (non-BIOME) workflow runs"
         type: boolean
         required: false
         default: false
@@ -46,7 +46,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Run medic
         env:

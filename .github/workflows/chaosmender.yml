@@ -17,19 +17,19 @@ name: ChaosMender
 on:
   pull_request:
     paths:
-      - '.github/workflows/**'
-      - 'scripts/**'
-      - 'config/error-ledger.json'
+      - ".github/workflows/**"
+      - "scripts/**"
+      - "config/error-ledger.json"
   schedule:
-    - cron: '0 6 * * *'
+    - cron: "0 6 * * *"
   workflow_dispatch:
     inputs:
       file_issues:
-        description: 'File GitHub issues for findings (true/false)'
+        description: "File GitHub issues for findings (true/false)"
         required: false
-        default: 'true'
+        default: "true"
         type: choice
-        options: ['true', 'false']
+        options: ["true", "false"]
 
 permissions:
   contents: read
@@ -49,7 +49,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Run ChaosMender scan
         id: scan

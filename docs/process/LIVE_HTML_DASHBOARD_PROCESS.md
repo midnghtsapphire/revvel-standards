@@ -22,13 +22,13 @@ revvel-standards and clarifies which project types should use it.
 
 ## Where this process applies
 
-| Output type / project type | Live HTML requirement |
-| --- | --- |
-| `production-app`, `desktop-tool` | **Full process required** (all 5 steps). |
-| `mcp-product` | Required companion live HTML interface to test MCP behavior end-to-end. |
-| `api-product` | Required companion live HTML console/dashboard to exercise API paths. |
-| `cli-product`, `internal-script-automation` | Required companion live HTML test surface for non-CLI users. |
-| `sellable-pdf`, documentation-only outputs | Optional unless the WR explicitly requests a live interface. |
+| Output type / project type                  | Live HTML requirement                                                   |
+| ------------------------------------------- | ----------------------------------------------------------------------- |
+| `production-app`, `desktop-tool`            | **Full process required** (all 5 steps).                                |
+| `mcp-product`                               | Required companion live HTML interface to test MCP behavior end-to-end. |
+| `api-product`                               | Required companion live HTML console/dashboard to exercise API paths.   |
+| `cli-product`, `internal-script-automation` | Required companion live HTML test surface for non-CLI users.            |
+| `sellable-pdf`, documentation-only outputs  | Optional unless the WR explicitly requests a live interface.            |
 
 This aligns with the repository rule that deliverables are only done when they are
 testable live and include a website/UI surface where needed.

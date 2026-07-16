@@ -11,7 +11,7 @@
 Agents have historically deleted or silently commented out code in order to get builds to pass, tests to go green, or PRs to merge. This produced:
 
 - **Silent regressions** — auth checks, feature flags, and guards disappeared with no trace.
-- **Zero accountability** — no record of *which* agent, *which* model, *which* work request (WR), or *why*.
+- **Zero accountability** — no record of _which_ agent, _which_ model, _which_ work request (WR), or _why_.
 - **Unrecoverable context** — reviewers couldn't tell whether a removal was intentional refactoring or a desperate attempt to pass CI.
 
 **Rule:** Agents MUST NOT delete code they cannot justify. When in doubt, **comment it out with a structured header** so humans can audit, restore, or ratify the change.
@@ -24,22 +24,22 @@ Every block of agent-disabled code MUST be wrapped in a `REVVEL-DISABLED` commen
 
 ### 2.1 Required fields
 
-| Field | Description | Example |
-|-------|-------------|---------|
-| `AGENT` | The agent/tool that made the change | `openhands`, `cursor`, `copilot`, `claude-code` |
-| `MODEL` | The underlying model | `claude-sonnet-4-5`, `gpt-5`, `gemini-2.5-pro` |
-| `WR` | Work request / issue / PR reference | `WR-1234`, `#482`, `JIRA-9001` |
-| `DATE` | ISO-8601 date (UTC) | `2025-01-15` |
-| `STATUS` | One of the status values (§2.3) | `FAILED` |
-| `REASON` | One-line human-readable reason | `Test failed under Node 20; unclear if regression or flake` |
+| Field    | Description                         | Example                                                     |
+| -------- | ----------------------------------- | ----------------------------------------------------------- |
+| `AGENT`  | The agent/tool that made the change | `openhands`, `cursor`, `copilot`, `claude-code`             |
+| `MODEL`  | The underlying model                | `claude-sonnet-4-5`, `gpt-5`, `gemini-2.5-pro`              |
+| `WR`     | Work request / issue / PR reference | `WR-1234`, `#482`, `JIRA-9001`                              |
+| `DATE`   | ISO-8601 date (UTC)                 | `2025-01-15`                                                |
+| `STATUS` | One of the status values (§2.3)     | `FAILED`                                                    |
+| `REASON` | One-line human-readable reason      | `Test failed under Node 20; unclear if regression or flake` |
 
 ### 2.2 Optional fields
 
-| Field | Description |
-|-------|-------------|
+| Field        | Description                                            |
+| ------------ | ------------------------------------------------------ |
 | `RESTORE-BY` | Date or milestone by which this block must be resolved |
-| `OWNER` | Human who should review |
-| `TICKET` | Follow-up ticket tracking the fix |
+| `OWNER`      | Human who should review                                |
+| `TICKET`     | Follow-up ticket tracking the fix                      |
 
 ### 2.3 Status values
 
@@ -119,7 +119,7 @@ Diff from a real agent run:
 @@ -14,10 +14,6 @@ export async function authMiddleware(req, res, next) {
    const token = req.headers.authorization?.split(' ')[1];
    if (!token) return res.status(401).json({ error: 'no token' });
- 
+
 -  const payload = await verifyToken(token);
 -  if (!payload.isVerified) {
 -    return res.status(403).json({ error: 'unverified user' });
@@ -139,7 +139,7 @@ The agent removed a verification check to make a test pass. No reviewer noticed.
 @@ -14,6 +14,13 @@ export async function authMiddleware(req, res, next) {
    const token = req.headers.authorization?.split(' ')[1];
    if (!token) return res.status(401).json({ error: 'no token' });
- 
+
 +  // REVVEL-DISABLED | AGENT: openhands | MODEL: claude-sonnet-4-5 | WR: WR-1234 | DATE: 2025-01-15 | STATUS: BYPASSED
 +  // REASON: test suite expects unverified users to pass through; unclear if test or check is wrong
 +  // RESTORE-BY: 2025-01-22 | OWNER: @security-team
@@ -263,13 +263,13 @@ grep -rhoE "WR: [A-Z0-9#-]+" . | sort | uniq -c | sort -rn
 
 ## 8. Summary
 
-| Do | Don't |
-|----|-------|
-| Comment out code with the `REVVEL-DISABLED` header | Delete code silently |
-| Fill in every required field | Use vague reasons like "not needed" |
-| Set a `RESTORE-BY` date | Leave disabled blocks forever |
-| Open an issue if JSON needs disabling | Strip JSON keys to pass validation |
-| Let humans ratify deletions | Let agents ratify their own deletions |
+| Do                                                 | Don't                                 |
+| -------------------------------------------------- | ------------------------------------- |
+| Comment out code with the `REVVEL-DISABLED` header | Delete code silently                  |
+| Fill in every required field                       | Use vague reasons like "not needed"   |
+| Set a `RESTORE-BY` date                            | Leave disabled blocks forever         |
+| Open an issue if JSON needs disabling              | Strip JSON keys to pass validation    |
+| Let humans ratify deletions                        | Let agents ratify their own deletions |
 
 **Standard ID:** `RVS-AGENT-001`
 **Questions / amendments:** open an issue tagged `standard:RVS-AGENT-001`.

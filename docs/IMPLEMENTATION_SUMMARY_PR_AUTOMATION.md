@@ -23,9 +23,10 @@ This implementation provides a complete, automated PR review management system f
 ### 1. GitHub Actions Workflows
 
 #### **pr-review-status.yml** (NEW)
+
 - **Location:** `.github/workflows/pr-review-status.yml`
 - **Purpose:** Automatically manages PR review status labels and status badges
-- **Triggers:** 
+- **Triggers:**
   - PR opened/reopened
   - Review submitted/edited/dismissed
   - Review comments added
@@ -38,6 +39,7 @@ This implementation provides a complete, automated PR review management system f
   - Lists all reviewers and their review states
 
 #### **Related Workflows** (Already Existed, Now Enhanced)
+
 - `arsc-labels.yml` — General label management (add/remove/set/clear)
 - `sync-labels.yml` — Syncs standard labels from labels.yml
 - `pr-labels.yml` — Label-driven CI automation
@@ -47,18 +49,19 @@ This implementation provides a complete, automated PR review management system f
 
 Four new labels added to `.github/labels.yml`:
 
-| Label | Color | Description | When Applied |
-|-------|-------|-------------|--------------|
-| `awaiting-approval` | Yellow (#fbca04) | PR needs review | PR opened, no reviews |
-| `review-started` | Blue (#0075ca) | Review in progress | First review submitted |
-| `changes-requested` | Red (#d93f0b) | Changes requested | Any reviewer requests changes |
-| `approved` | Green (#0e8a16) | PR approved | All reviews are approvals |
+| Label               | Color            | Description        | When Applied                  |
+| ------------------- | ---------------- | ------------------ | ----------------------------- |
+| `awaiting-approval` | Yellow (#fbca04) | PR needs review    | PR opened, no reviews         |
+| `review-started`    | Blue (#0075ca)   | Review in progress | First review submitted        |
+| `changes-requested` | Red (#d93f0b)    | Changes requested  | Any reviewer requests changes |
+| `approved`          | Green (#0e8a16)  | PR approved        | All reviews are approvals     |
 
 **Priority:** `changes-requested` > `approved` > `review-started` > `awaiting-approval`
 
 ### 3. Documentation
 
 #### **PR_REVIEW_STATUS_AUTOMATION.md** (NEW)
+
 - **Location:** `docs/PR_REVIEW_STATUS_AUTOMATION.md`
 - **Contents:**
   - Complete overview of the automation system
@@ -70,6 +73,7 @@ Four new labels added to `.github/labels.yml`:
   - FAQ section
 
 #### **PR_STATUS_BADGES_GUIDE.md** (NEW)
+
 - **Location:** `docs/PR_STATUS_BADGES_GUIDE.md`
 - **Contents:**
   - Badge integration examples
@@ -80,6 +84,7 @@ Four new labels added to `.github/labels.yml`:
   - Shields.io documentation
 
 #### **GITHUB_AUTOMATION_QUICKSTART.md** (NEW)
+
 - **Location:** `docs/GITHUB_AUTOMATION_QUICKSTART.md`
 - **Contents:**
   - 5-10 minute complete setup guide
@@ -90,6 +95,7 @@ Four new labels added to `.github/labels.yml`:
   - Maintenance instructions
 
 #### **GITHUB_PROJECTS_SETUP.md** (UPDATED)
+
 - **Location:** `docs/GITHUB_PROJECTS_SETUP.md`
 - **Changes:**
   - Added new Section 4: PR Review Status Automation Workflow
@@ -97,6 +103,7 @@ Four new labels added to `.github/labels.yml`:
   - Added reference to PR_REVIEW_STATUS_AUTOMATION.md
 
 #### **README.md** (UPDATED)
+
 - **Location:** `README.md`
 - **Changes:**
   - Added links to new automation documentation
@@ -106,6 +113,7 @@ Four new labels added to `.github/labels.yml`:
 ### 4. Setup Script
 
 #### **setup-github-automation.sh** (NEW)
+
 - **Location:** `scripts/setup-github-automation.sh`
 - **Purpose:** Automated setup of all PR automation in any repository
 - **Features:**
@@ -120,6 +128,7 @@ Four new labels added to `.github/labels.yml`:
 ### 5. Template Files
 
 All workflows copied to `templates/cicd/` for easy reuse:
+
 - `pr-review-status.yml`
 - (Existing: `arsc-labels.yml`, `sync-labels.yml`, `pr-labels.yml`, `ready-for-review.yml`)
 
@@ -178,6 +187,7 @@ When a PR is opened, this comment is automatically posted:
 **Current State:** Awaiting review and approval
 
 ---
+
 _This status is updated automatically by the PR Review Status Automation workflow._
 ```
 
@@ -195,6 +205,7 @@ When a review is submitted, the comment updates:
 💬 **@reviewer2** — Commented
 
 ---
+
 _This status is updated automatically by the PR Review Status Automation workflow._
 ```
 
@@ -214,6 +225,7 @@ cd /path/to/your/repo
 ### Manual Setup
 
 1. **Copy workflow files:**
+
    ```bash
    cp revvel-standards/.github/workflows/pr-review-status.yml .github/workflows/
    cp revvel-standards/.github/workflows/arsc-labels.yml .github/workflows/
@@ -222,25 +234,27 @@ cd /path/to/your/repo
    ```
 
 2. **Configure repository:**
+
    ```bash
    gh api repos/OWNER/REPO/actions/permissions \
      --method PUT -f enabled=true -f allowed_actions=all
-   
+
    gh api repos/OWNER/REPO/actions/permissions/workflow \
      --method PUT -f default_workflow_permissions=write
    ```
 
 3. **Create labels:**
+
    ```bash
    gh label create "awaiting-approval" --color "fbca04" \
      --description "PR is awaiting review and approval"
-   
+
    gh label create "changes-requested" --color "d93f0b" \
      --description "PR has changes requested by reviewers"
-   
+
    gh label create "approved" --color "0e8a16" \
      --description "PR has been approved by reviewers"
-   
+
    gh label create "review-started" --color "0075ca" \
      --description "PR review has been initiated"
    ```
@@ -259,6 +273,7 @@ cd /path/to/your/repo
 ### Test the Automation
 
 1. Create a test PR:
+
    ```bash
    git checkout -b test/automation
    echo "test" >> TEST.md
@@ -271,6 +286,7 @@ cd /path/to/your/repo
 2. Verify `awaiting-approval` label is applied automatically
 
 3. Submit a review:
+
    ```bash
    gh pr review --approve
    ```
@@ -289,16 +305,19 @@ cd /path/to/your/repo
 ## Benefits
 
 ### For PR Authors
+
 - ✅ **Visibility** — Clear status at a glance without checking review tab
 - ✅ **Notifications** — Know immediately when reviews are submitted
 - ✅ **Progress tracking** — See review state progression
 
 ### For Reviewers
+
 - ✅ **Organization** — Easy to find PRs needing review (filter by `awaiting-approval`)
 - ✅ **Status updates** — Labels update automatically without manual intervention
 - ✅ **Team coordination** — See who else has reviewed and their state
 
 ### For Project Management
+
 - ✅ **Metrics** — Track review cycle time via label timestamps
 - ✅ **Bottlenecks** — Identify PRs stuck in `changes-requested`
 - ✅ **Automation** — Integrate with other workflows (auto-merge when `approved`)
@@ -323,6 +342,7 @@ cd /path/to/your/repo
 ### With Branch Protection
 
 Configure branch protection to require:
+
 - ✅ At least 1 approval
 - ✅ Specific reviewers
 - ✅ Status checks passing
@@ -340,10 +360,12 @@ Edit `pr-review-status.yml` line ~140:
 
 ```javascript
 // Current: for-the-badge style
-statusBadge = '![Status](https://img.shields.io/badge/status-approved-green?style=for-the-badge)';
+statusBadge =
+  "![Status](https://img.shields.io/badge/status-approved-green?style=for-the-badge)";
 
 // Change to: flat-square
-statusBadge = '![Status](https://img.shields.io/badge/status-approved-green?style=flat-square)';
+statusBadge =
+  "![Status](https://img.shields.io/badge/status-approved-green?style=flat-square)";
 ```
 
 ### Require Multiple Approvals
@@ -352,12 +374,13 @@ Edit `pr-review-status.yml` line ~165:
 
 ```javascript
 // Count approvals
-const approvalCount = Array.from(reviewerStates.values())
-  .filter(r => r.state === 'APPROVED').length;
+const approvalCount = Array.from(reviewerStates.values()).filter(
+  (r) => r.state === "APPROVED",
+).length;
 
 // Require 2 approvals
 if (approvalCount >= 2 && !hasChangesRequested) {
-  targetLabel = 'approved';
+  targetLabel = "approved";
 }
 ```
 
@@ -382,6 +405,7 @@ Add to `pr-review-status.yml` after line ~310:
 ## Files Modified
 
 ### New Files
+
 - `.github/workflows/pr-review-status.yml` — Main automation workflow
 - `docs/PR_REVIEW_STATUS_AUTOMATION.md` — Complete documentation
 - `docs/PR_STATUS_BADGES_GUIDE.md` — Badge integration guide
@@ -390,6 +414,7 @@ Add to `pr-review-status.yml` after line ~310:
 - `templates/cicd/pr-review-status.yml` — Template for reuse
 
 ### Modified Files
+
 - `.github/labels.yml` — Added 4 review status labels
 - `.github/workflows/sync-labels.yml` — Added new labels to sync list
 - `docs/GITHUB_PROJECTS_SETUP.md` — Added Section 4 on PR automation
@@ -409,6 +434,7 @@ Add to `pr-review-status.yml` after line ~310:
 ### For Other Repositories
 
 1. **Run setup script:**
+
    ```bash
    ./scripts/setup-github-automation.sh midnghtsapphire/YOUR-REPO
    ```
@@ -462,10 +488,12 @@ Or update `labels.yml` and push — workflow runs automatically.
 ## Troubleshooting
 
 See the comprehensive troubleshooting sections in:
+
 - [`docs/PR_REVIEW_STATUS_AUTOMATION.md#troubleshooting`](docs/PR_REVIEW_STATUS_AUTOMATION.md#troubleshooting)
 - [`docs/GITHUB_AUTOMATION_QUICKSTART.md#troubleshooting`](docs/GITHUB_AUTOMATION_QUICKSTART.md#troubleshooting)
 
 Common issues:
+
 - **Labels not updating** → Check workflow permissions
 - **Workflow not triggering** → Verify file on default branch
 - **Badges not showing** → Check PR comments permissions
@@ -479,7 +507,7 @@ Common issues:
 ✅ **Status badges display in PR comments**  
 ✅ **Documentation is complete and clear**  
 ✅ **Setup script works on fresh repositories**  
-✅ **Integration with existing workflows**  
+✅ **Integration with existing workflows**
 
 ---
 

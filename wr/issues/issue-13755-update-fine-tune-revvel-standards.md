@@ -22,8 +22,8 @@
 - [x] **Marketing best practices** — what's working now in this niche + how our product improves it
 - [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
 - [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
-- [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped *(N/A: no dedicated A/B test hypothesis is documented in this WR.)*
-- [ ] **Affiliate / reseller program** — only if a distribution network is in scope *(N/A: no affiliate, reseller, or distribution network scope is documented in this WR.)*
+- [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped _(N/A: no dedicated A/B test hypothesis is documented in this WR.)_
+- [ ] **Affiliate / reseller program** — only if a distribution network is in scope _(N/A: no affiliate, reseller, or distribution network scope is documented in this WR.)_
 
 ---
 
@@ -108,12 +108,12 @@ A commercial product that frames intelligence gathering as a sleek, accessible t
 
 ### Risks & Considerations
 
-| Risk | Severity | Mitigation |
-| ------ | ---------- | ------------ |
-| Missing real-time data | High | Use mock data streams initially for the "Live Ticker" to validate the UX, then integrate real OSINT APIs. |
-| Meta Ad rejection | Medium | Ensure the "Live Breaking Alert" overlay complies with Meta's ad policies on simulated news. |
-| OSINT data-source ToS/licensing + CAN-SPAM exposure | High | Review each OSINT source's terms of service, licensing, attribution, rate-limit, and redistribution rules before ingestion; avoid scraping or reuse that violates provider terms; and for the Meta campaign + mandatory newsletter module, implement explicit consent capture, sender identification, unsubscribe links, suppression handling, and truthful subject/content practices to satisfy CAN-SPAM requirements. |
-| UX complexity | Medium | Ensure accessibility controls (mandatory) balance the high-contrast "hacker" aesthetic. |
+| Risk                                                | Severity | Mitigation                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Missing real-time data                              | High     | Use mock data streams initially for the "Live Ticker" to validate the UX, then integrate real OSINT APIs.                                                                                                                                                                                                                                                                                                               |
+| Meta Ad rejection                                   | Medium   | Ensure the "Live Breaking Alert" overlay complies with Meta's ad policies on simulated news.                                                                                                                                                                                                                                                                                                                            |
+| OSINT data-source ToS/licensing + CAN-SPAM exposure | High     | Review each OSINT source's terms of service, licensing, attribution, rate-limit, and redistribution rules before ingestion; avoid scraping or reuse that violates provider terms; and for the Meta campaign + mandatory newsletter module, implement explicit consent capture, sender identification, unsubscribe links, suppression handling, and truthful subject/content practices to satisfy CAN-SPAM requirements. |
+| UX complexity                                       | Medium   | Ensure accessibility controls (mandatory) balance the high-contrast "hacker" aesthetic.                                                                                                                                                                                                                                                                                                                                 |
 
 ---
 
@@ -136,18 +136,18 @@ A commercial product that frames intelligence gathering as a sleek, accessible t
 
 ### Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-| --- | --- | --- | --- | --- |
-| Website / app UI | yes | Next.js App | `scripts/ui-creation-engine.js` | The OSINT platform |
-| API | no | N/A | N/A | N/A |
-| CLI | no | N/A | N/A | N/A |
-| MCP | no | N/A | N/A | N/A |
-| Skill | no | N/A | N/A | N/A |
-| PDF | no | N/A | N/A | N/A |
-| PowerPoint / deck | no | N/A | N/A | N/A |
-| Video | yes | N/A | `music-video-creator` | Short-form video for Meta Ads |
-| Docs | yes | Ad copy & Strategy | revvel-standards baseline | The Meta Ad Campaign strategy |
-| Agent automation | yes | Workflow | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | N/A |
+| Output shape      | In scope? | Format / length    | Primary engine / standard                 | Notes                         |
+| ----------------- | --------- | ------------------ | ----------------------------------------- | ----------------------------- |
+| Website / app UI  | yes       | Next.js App        | `scripts/ui-creation-engine.js`           | The OSINT platform            |
+| API               | no        | N/A                | N/A                                       | N/A                           |
+| CLI               | no        | N/A                | N/A                                       | N/A                           |
+| MCP               | no        | N/A                | N/A                                       | N/A                           |
+| Skill             | no        | N/A                | N/A                                       | N/A                           |
+| PDF               | no        | N/A                | N/A                                       | N/A                           |
+| PowerPoint / deck | no        | N/A                | N/A                                       | N/A                           |
+| Video             | yes       | N/A                | `music-video-creator`                     | Short-form video for Meta Ads |
+| Docs              | yes       | Ad copy & Strategy | revvel-standards baseline                 | The Meta Ad Campaign strategy |
+| Agent automation  | yes       | Workflow           | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | N/A                           |
 
 ---
 
@@ -160,18 +160,18 @@ A commercial product that frames intelligence gathering as a sleek, accessible t
 
 ### Artifact Engine Map
 
-| Artifact Shape | Existing engine / standard | Status | Required action |
-| --- | --- | --- | --- |
-| Website / UI | `standards/shapes/APP.md` | Gap | Scaffold `osint-tracker-platform` |
-| API | `standards/shapes/API.md` | N/A | N/A |
-| CLI | `standards/CLI_MCP_AUTOMATION.md` | N/A | N/A |
-| MCP | `standards/shapes/MCP.md` | N/A | N/A |
-| Skill | `products/revvel-skill-runner/` | N/A | N/A |
-| PDF | `docs/playbooks/pdf-wr-playbook.md` | N/A | N/A |
-| PowerPoint / deck | N/A | N/A | N/A |
-| Video | N/A | Exists | Use existing workflows for ad creatives |
-| Docs | revvel-standards baseline | Exists | Add Meta Ad strategy and prompts to project docs |
-| Agent automation | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Exists | Scaffold product pipeline |
+| Artifact Shape    | Existing engine / standard                | Status | Required action                                  |
+| ----------------- | ----------------------------------------- | ------ | ------------------------------------------------ |
+| Website / UI      | `standards/shapes/APP.md`                 | Gap    | Scaffold `osint-tracker-platform`                |
+| API               | `standards/shapes/API.md`                 | N/A    | N/A                                              |
+| CLI               | `standards/CLI_MCP_AUTOMATION.md`         | N/A    | N/A                                              |
+| MCP               | `standards/shapes/MCP.md`                 | N/A    | N/A                                              |
+| Skill             | `products/revvel-skill-runner/`           | N/A    | N/A                                              |
+| PDF               | `docs/playbooks/pdf-wr-playbook.md`       | N/A    | N/A                                              |
+| PowerPoint / deck | N/A                                       | N/A    | N/A                                              |
+| Video             | N/A                                       | Exists | Use existing workflows for ad creatives          |
+| Docs              | revvel-standards baseline                 | Exists | Add Meta Ad strategy and prompts to project docs |
+| Agent automation  | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Exists | Scaffold product pipeline                        |
 
 ---
 

@@ -16,6 +16,7 @@
 ### 2. Profile Information
 
 #### Basic Information
+
 - **Full Name:** {{FULL_NAME}}
 - **Current Position:** {{JOB_TITLE}}
 - **Current Institution:** {{CURRENT_INSTITUTION}}
@@ -23,6 +24,7 @@
 - **Location:** {{CITY}}, {{STATE}}, {{COUNTRY}}
 
 #### Professional Summary
+
 ```
 {{BIO}}
 
@@ -33,6 +35,7 @@ Expertise:
 ```
 
 #### Profile Photo
+
 - Upload high-quality headshot (min 400×400px)
 - Professional appearance
 - Clear face visibility
@@ -41,11 +44,14 @@ Expertise:
 ### 3. Research Interests & Skills
 
 #### Research Interests (Select/Add)
+
 {{#each RESEARCH_INTERESTS}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 **Suggested interests:**
+
 - Open Source Intelligence (OSINT)
 - Geospatial Analysis
 - Threat Intelligence
@@ -55,13 +61,16 @@ Expertise:
 - Computer Science
 
 #### Skills
+
 {{#each SKILLS}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 ### 4. Institution & Positions
 
 #### Current Position
+
 - **Position:** {{CURRENT_JOB_TITLE}}
 - **Institution:** {{CURRENT_INSTITUTION}}
 - **Department:** {{DEPARTMENT}}
@@ -69,21 +78,25 @@ Expertise:
 - **Description:** {{JOB_DESCRIPTION}}
 
 #### Previous Positions
+
 {{#each PREVIOUS_POSITIONS}}
+
 - **Position:** {{title}}
 - **Institution:** {{institution}}
 - **Duration:** {{start_date}} — {{end_date}}
-{{/each}}
+  {{/each}}
 
 ### 5. Education
 
 {{#each EDUCATION}}
+
 #### {{degree}} — {{institution}}
+
 - **Field of Study:** {{field}}
 - **Start Year:** {{start_year}}
 - **End Year:** {{end_year}}
 - **Description:** {{description}}
-{{/each}}
+  {{/each}}
 
 ### 6. Publications & Projects
 
@@ -100,6 +113,7 @@ For each project, click "Add Research" → "Other":
 **Title:** {{name}}
 
 **Description:**
+
 ```
 {{description}}
 
@@ -127,10 +141,12 @@ Outcomes:
 
 **Co-authors (if applicable):**
 {{#each contributors}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 **File Attachments:**
+
 - README.md (download from {{url}}/blob/main/README.md)
 - Documentation PDF (if available)
 - Architecture diagram (if available)
@@ -141,6 +157,7 @@ Outcomes:
 
 {{#if HAS_REPORTS}}
 {{#each REPORTS}}
+
 #### {{title}}
 
 - **Type:** Technical Report / White Paper
@@ -149,22 +166,26 @@ Outcomes:
 - **File:** Upload PDF from {{file_path}}
 - **DOI:** {{doi}}
 - **External URL:** {{url}}
-{{/each}}
-{{/if}}
+  {{/each}}
+  {{/if}}
 
 ### 8. External Links & Identifiers
 
 #### ORCID iD
+
 - Link your ORCID: {{ORCID_ID}}
 - Click "Add ORCID iD" in profile settings
 - Authorize ResearchGate to read your ORCID works
 
 #### External Links
+
 {{#each EXTERNAL_LINKS}}
+
 - **{{name}}:** {{url}}
-{{/each}}
+  {{/each}}
 
 **Add these:**
+
 - GitHub: https://github.com/{{GITHUB_USERNAME}}
 - Personal Website: {{WEBSITE_URL}}
 - Wikidata: {{WIKIDATA_URL}} (after creation)
@@ -173,6 +194,7 @@ Outcomes:
 ### 9. Research Networks & Communities
 
 Join relevant groups:
+
 - OSINT Community
 - Geospatial Intelligence Network
 - AI & Machine Learning
@@ -182,6 +204,7 @@ Join relevant groups:
 ### 10. Questions & Answers
 
 Participate in Q&A to establish expertise:
+
 1. Browse questions in your research areas
 2. Provide detailed, cited answers
 3. Ask thoughtful questions in your field
@@ -189,6 +212,7 @@ Participate in Q&A to establish expertise:
 ### 11. Privacy & Visibility Settings
 
 Recommended settings:
+
 - **Profile Visibility:** Public
 - **Email Visibility:** Hidden
 - **Publication Full-Texts:** Public (for open source projects)
@@ -237,6 +261,7 @@ Before finalizing:
 ## Why ResearchGate for Non-Academic Work?
 
 **Applied Research Qualifies:**
+
 - Open-source intelligence tools (GrowlingEyes)
 - AI/ML systems development (Neurooz)
 - Search and rescue technology innovations

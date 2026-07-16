@@ -21,13 +21,13 @@ Consistent data modeling prevents the silent bugs, migration nightmares, and bro
 
 All column names use `snake_case`. This matches PostgreSQL conventions and prevents case-sensitivity bugs.
 
-| Convention | Correct | Incorrect |
-|---|---|---|
-| Column names | `user_id`, `created_at` | `userId`, `createdAt` |
-| Table names | `user_profiles`, `order_items` | `UserProfiles`, `orderItems` |
-| Boolean columns | `is_active`, `has_verified` | `active`, `verified`, `isActive` |
-| Foreign keys | `user_id` (references `users.id`) | `userId`, `user` |
-| Timestamp fields | `created_at`, `updated_at`, `deleted_at` | `createdAt`, `timestamp` |
+| Convention       | Correct                                  | Incorrect                        |
+| ---------------- | ---------------------------------------- | -------------------------------- |
+| Column names     | `user_id`, `created_at`                  | `userId`, `createdAt`            |
+| Table names      | `user_profiles`, `order_items`           | `UserProfiles`, `orderItems`     |
+| Boolean columns  | `is_active`, `has_verified`              | `active`, `verified`, `isActive` |
+| Foreign keys     | `user_id` (references `users.id`)        | `userId`, `user`                 |
+| Timestamp fields | `created_at`, `updated_at`, `deleted_at` | `createdAt`, `timestamp`         |
 
 Drizzle provides type-safe column accessors in camelCase even when the DB uses snake_case — this is the correct behavior. Do not rename columns to camelCase in the schema to match TypeScript; use Drizzle's built-in transformation.
 
@@ -38,17 +38,22 @@ Drizzle provides type-safe column accessors in camelCase even when the DB uses s
 Every table that stores user-generated or application-generated data must include these audit fields:
 
 ```ts
-import { timestamp, pgTable, uuid } from 'drizzle-orm/pg-core';
+import { timestamp, pgTable, uuid } from "drizzle-orm/pg-core";
 
 // Add these to EVERY table (except pure join/pivot tables)
 const auditFields = {
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-  deletedAt: timestamp('deleted_at', { withTimezone: true }), // null = not deleted
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }), // null = not deleted
 };
 ```
 
 **Why this is required:**
+
 - `created_at` — required for CHANGELOG compliance and debugging
 - `updated_at` — required for cache invalidation and conflict detection
 - `deleted_at` — required for soft deletes (see Section 5)
@@ -87,15 +92,16 @@ updatedAt: timestamp('updated_at', { withTimezone: true })
 Use `uuid` for all primary keys. Never use auto-increment integers as public-facing IDs.
 
 ```ts
-import { uuid, pgTable } from 'drizzle-orm/pg-core';
+import { uuid, pgTable } from "drizzle-orm/pg-core";
 
-export const users = pgTable('users', {
-  id: uuid('id').primaryKey().defaultRandom(),
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().defaultRandom(),
   // ...
 });
 ```
 
 **Why uuid over integer:**
+
 - UUIDs are safe to expose in URLs (no sequential guessing)
 - UUIDs work across distributed systems and offline-first apps
 - UUIDs allow client-side ID generation before insert
@@ -127,6 +133,7 @@ await db.delete(users).where(eq(users.id, userId));
 ```
 
 **Rules:**
+
 - All `SELECT` queries must include `WHERE deleted_at IS NULL` unless explicitly querying deleted records.
 - Create a reusable `isActive` helper to avoid forgetting this filter.
 - Admin panels may show soft-deleted records with a "Deleted" badge.
@@ -151,54 +158,79 @@ import {
   jsonb,
   index,
   uniqueIndex,
-} from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+} from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 // ── Users ────────────────────────────────────────────────
-export const users = pgTable('users', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  email: varchar('email', { length: 255 }).notNull().unique(),
-  clerkId: varchar('clerk_id', { length: 255 }).unique(), // nullable if not using Clerk
-  firstName: varchar('first_name', { length: 100 }),
-  lastName: varchar('last_name', { length: 100 }),
-  role: varchar('role', { length: 50 }).notNull().default('user'), // 'user' | 'admin'
-  isActive: boolean('is_active').notNull().default(true),
-  metadata: jsonb('metadata'), // flexible extra data, use sparingly
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdateFn(() => new Date()),
-  deletedAt: timestamp('deleted_at', { withTimezone: true }),
-}, (table) => ({
-  emailIdx: uniqueIndex('users_email_idx').on(table.email),
-  clerkIdIdx: index('users_clerk_id_idx').on(table.clerkId),
-}));
+export const users = pgTable(
+  "users",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    email: varchar("email", { length: 255 }).notNull().unique(),
+    clerkId: varchar("clerk_id", { length: 255 }).unique(), // nullable if not using Clerk
+    firstName: varchar("first_name", { length: 100 }),
+    lastName: varchar("last_name", { length: 100 }),
+    role: varchar("role", { length: 50 }).notNull().default("user"), // 'user' | 'admin'
+    isActive: boolean("is_active").notNull().default(true),
+    metadata: jsonb("metadata"), // flexible extra data, use sparingly
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdateFn(() => new Date()),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  },
+  (table) => ({
+    emailIdx: uniqueIndex("users_email_idx").on(table.email),
+    clerkIdIdx: index("users_clerk_id_idx").on(table.clerkId),
+  }),
+);
 
 // ── Products ─────────────────────────────────────────────
-export const products = pgTable('products', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  name: varchar('name', { length: 255 }).notNull(),
-  description: text('description'),
-  priceCents: integer('price_cents').notNull(), // store money as integers (cents), never floats
-  stripePriceId: varchar('stripe_price_id', { length: 255 }),
-  isPublished: boolean('is_published').notNull().default(false),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdateFn(() => new Date()),
-  deletedAt: timestamp('deleted_at', { withTimezone: true }),
+export const products = pgTable("products", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  priceCents: integer("price_cents").notNull(), // store money as integers (cents), never floats
+  stripePriceId: varchar("stripe_price_id", { length: 255 }),
+  isPublished: boolean("is_published").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdateFn(() => new Date()),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
 });
 
 // ── Orders ───────────────────────────────────────────────
-export const orders = pgTable('orders', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id),
-  stripePaymentIntentId: varchar('stripe_payment_intent_id', { length: 255 }),
-  status: varchar('status', { length: 50 }).notNull().default('pending'),
-  // 'pending' | 'paid' | 'refunded' | 'failed'
-  totalCents: integer('total_cents').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow().$onUpdateFn(() => new Date()),
-  deletedAt: timestamp('deleted_at', { withTimezone: true }),
-}, (table) => ({
-  userIdIdx: index('orders_user_id_idx').on(table.userId),
-}));
+export const orders = pgTable(
+  "orders",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id),
+    stripePaymentIntentId: varchar("stripe_payment_intent_id", { length: 255 }),
+    status: varchar("status", { length: 50 }).notNull().default("pending"),
+    // 'pending' | 'paid' | 'refunded' | 'failed'
+    totalCents: integer("total_cents").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdateFn(() => new Date()),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  },
+  (table) => ({
+    userIdIdx: index("orders_user_id_idx").on(table.userId),
+  }),
+);
 
 // ── Relations ────────────────────────────────────────────
 export const usersRelations = relations(users, ({ many }) => ({
@@ -250,6 +282,7 @@ npx drizzle-kit studio
 ```
 
 **Migration rules:**
+
 - Never edit an existing migration file — always generate a new one.
 - Migration files are committed to the repo in `drizzle/` directory.
 - All migrations must run in CI before deployment.
@@ -278,12 +311,12 @@ drizzle.config.ts      # Drizzle kit configuration
 
 ```ts
 // drizzle.config.ts
-import { defineConfig } from 'drizzle-kit';
+import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
-  schema: './db/schema.ts',
-  out: './drizzle',
-  dialect: 'postgresql',
+  schema: "./db/schema.ts",
+  out: "./drizzle",
+  dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },

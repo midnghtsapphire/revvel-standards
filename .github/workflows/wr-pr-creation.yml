@@ -59,10 +59,10 @@ jobs:
             // 2. context.payload.inputs.issue_number - for workflow_dispatch (string or number)
             // 3. Extract from run URL as last resort fallback
             let issueNumber = context.payload.issue?.number || context.payload.inputs?.issue_number;
-            
+
             // Ensure we have a string for regex operations
             const rawIssueNumber = String(issueNumber || '');
-            
+
             // If issue_number is in format "14569" (plain number string), use it directly
             // If it's in format "#14569" or "issue-14569", extract the numeric part
             const numericMatch = rawIssueNumber.match(/#?(\d+)/);
@@ -76,7 +76,7 @@ jobs:
                 core.warning(`Could not get issue number from event/inputs, falling back to run ID extraction`);
               }
             }
-            
+
             function skip(reason, { notify = context.eventName !== 'issue_comment' } = {}) {
               core.info(`Skipping WR PR creation: ${reason}`);
               core.setOutput('should_create_pr', 'false');
@@ -1095,7 +1095,7 @@ jobs:
         with:
           script: |
             const issueNumber = Number(process.env.ISSUE_NUMBER);
-            
+
             const comment = [
               '❌ **WR PR Creation Failed**',
               '',

@@ -6,8 +6,8 @@ description: >
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Every 30 minutes
-  workflow_dispatch:  # Manual trigger
+    - cron: "*/30 * * * *" # Every 30 minutes
+  workflow_dispatch: # Manual trigger
 
 permissions:
   issues: write
@@ -25,10 +25,10 @@ jobs:
           script: |
             const OWNER = context.repo.owner;
             const REPO = context.repo.repo;
-            
+
             // Find issues with triage:new label that are older than 1 hour
             const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-            
+
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: OWNER,
               repo: REPO,
@@ -37,7 +37,7 @@ jobs:
               since: oneHourAgo,
               per_page: 100,
             });
-            
+
             // Filter for self-heal related issues
             const selfHealLabels = ['auto-fix', 'ralph-loop', 'wr-stuck', 'auto-error'];
             const stuckIssues = issues.filter(issue => {
@@ -47,7 +47,7 @@ jobs:
               const isOldEnough = createdAt < new Date(Date.now() - 60 * 60 * 1000);
               return isSelfHeal && isOldEnough;
             });
-            
+
             console.log(`Found ${stuckIssues.length} stuck self-heal issues`);
             core.setOutput('count', String(stuckIssues.length));
             core.setOutput('issues', JSON.stringify(stuckIssues.map(i => i.number)));
@@ -60,9 +60,9 @@ jobs:
             const OWNER = context.repo.owner;
             const REPO = context.repo.repo;
             const SELF_HEAL_LABELS = ['auto-fix', 'ralph-loop', 'scorecard'];
-            
+
             const issueNumbers = JSON.parse('${{ steps.find-stuck.outputs.issues }}');
-            
+
             for (const issueNumber of issueNumbers) {
               console.log(`Processing issue #${issueNumber}...`);
               
@@ -128,7 +128,7 @@ jobs:
               // Small delay between issues
               await new Promise(r => setTimeout(r, 1000));
             }
-            
+
             console.log(`\n✅ Reset ${issueNumbers.length} stuck issues`);
 
       - name: Summary

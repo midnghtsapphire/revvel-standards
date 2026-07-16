@@ -1,10 +1,10 @@
 # Agent Scorecard & Self-Heal Standard
 
 Tracks **how good each agent actually is** — including visiting agents — and tries
-to *fix* their mistakes instead of just blocking them. Every PR an agent ships is
+to _fix_ their mistakes instead of just blocking them. Every PR an agent ships is
 scored; the score feeds a durable per-agent trust rating; shortfalls trigger a
 graduated self-heal loop whose **recovery** is itself rated, so we learn whether
-the weak link was the *agent* or *our prompts/scripts*.
+the weak link was the _agent_ or _our prompts/scripts_.
 
 ## Why
 
@@ -18,21 +18,20 @@ write-ups.
 
 Five dimensions, weighted (hallucination + bad code dominate):
 
-| Dimension | Weight | Signals |
-| --- | ---: | --- |
-| Hallucination | 0.30 | unresolved imports/paths/env vars, PR-body claims not backed by the diff, cross-model review flags |
-| Bad code | 0.25 | CodeQL / trivy / test / build failures |
-| Directions | 0.20 | anti-scaffolding trips, root-junk, non-conventional commits, out-of-scope files |
-| Rash | 0.15 | revert-after-merge, force-amends, large diff with no tests |
-| CI / latency | 0.10 | red runs before green, time to green |
+| Dimension     | Weight | Signals                                                                                            |
+| ------------- | -----: | -------------------------------------------------------------------------------------------------- |
+| Hallucination |   0.30 | unresolved imports/paths/env vars, PR-body claims not backed by the diff, cross-model review flags |
+| Bad code      |   0.25 | CodeQL / trivy / test / build failures                                                             |
+| Directions    |   0.20 | anti-scaffolding trips, root-junk, non-conventional commits, out-of-scope files                    |
+| Rash          |   0.15 | revert-after-merge, force-amends, large diff with no tests                                         |
+| CI / latency  |   0.10 | red runs before green, time to green                                                               |
 
-Each PR gets a 0–100 **quality** score; the agent's **trust** (0–100, starts at
-70) is an EWMA of its PR qualities. Trust maps to a grade: A `trusted` ≥90,
+Each PR gets a 0–100 **quality** score; the agent's **trust** (0–100, starts at 70) is an EWMA of its PR qualities. Trust maps to a grade: A `trusted` ≥90,
 B `reliable` ≥80, C `watch` ≥70, D `shaky` ≥55, F `quarantine` below.
 
 ## Hallucination detection (cheap → expensive)
 
-1. **Reference resolver** (`reference-resolver.js`) — scans only *added* diff
+1. **Reference resolver** (`reference-resolver.js`) — scans only _added_ diff
    lines and flags imports, relative paths, and `process.env.*` vars that don't
    resolve against the repo / `.env.example`. Catches the most common code
    hallucination with zero LLM cost.
@@ -47,11 +46,11 @@ B `reliable` ≥80, C `watch` ≥70, D `shaky` ≥55, F `quarantine` below.
 When a PR falls short (quality < 60, any hallucination, or red CI), the scorecard
 emits a graduated remediation plan (`remediate.js`):
 
-| Tier | Action | If it fixes it, the weak link was… |
-| --- | --- | --- |
-| 0 `prompt-correction` | re-run the **same** agent with a corrective prompt naming exactly what it got wrong | **our prompt/script** |
-| 1 `agent-handoff` | hand off to the next agent in the chain | **the agent** |
-| 2 `escalate-claude` | direct call to the Claude API (top model) | **task difficulty** |
+| Tier                  | Action                                                                              | If it fixes it, the weak link was… |
+| --------------------- | ----------------------------------------------------------------------------------- | ---------------------------------- |
+| 0 `prompt-correction` | re-run the **same** agent with a corrective prompt naming exactly what it got wrong | **our prompt/script**              |
+| 1 `agent-handoff`     | hand off to the next agent in the chain                                             | **the agent**                      |
+| 2 `escalate-claude`   | direct call to the Claude API (top model)                                           | **task difficulty**                |
 
 The loop records whether the re-run recovered **and which tier fixed it**. A low
 **recovery rate** on `prompt-correction` is the signal that our instructions —
@@ -59,17 +58,17 @@ not the agents — need work. That's the diagnosis you can't get from a pass/fai
 
 ## Trends & capability credit
 
-A single trust number can't tell you if an agent is *getting better* or just
-*coasting*. Because the ledger keeps per-dimension scores on every event,
+A single trust number can't tell you if an agent is _getting better_ or just
+_coasting_. Because the ledger keeps per-dimension scores on every event,
 `trends.js` computes, per agent:
 
 - **Quality trend** (`↑`/`↓`/`→`) — recent PRs vs the prior window, so you see
   improvement or regression over time.
-- **Per-dimension movement** — *where* it's improving or slipping (e.g.
+- **Per-dimension movement** — _where_ it's improving or slipping (e.g.
   "hallucination improving, rashness regressing"), not just the aggregate.
 - **Builds & net-new capability** — `feat` PRs that shipped, plus `+N` net-new
   files under `skills/ products/ engines/ scripts/ .github/workflows/` — i.e.
-  functionality you didn't have before. This credits agents that *extend* the
+  functionality you didn't have before. This credits agents that _extend_ the
   system, not only the ones that play it safe with fixes.
 
 These render into the leaderboard so the question "are my agents improving, and

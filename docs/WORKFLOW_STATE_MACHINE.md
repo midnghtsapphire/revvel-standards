@@ -7,6 +7,7 @@ This document defines the complete state machine for issue and PR labels in the 
 ## Core Principle: No Stuck States
 
 **Every label must either:**
+
 1. **Progress automatically** to the next state after a timeout
 2. **Escalate to human** if automatic progression is impossible
 3. **Complete** and reach a terminal state
@@ -164,6 +165,7 @@ This document defines the complete state machine for issue and PR labels in the 
 ## Timeout Configuration
 
 ### Before (Stuck for Too Long)
+
 - `triage:in-progress`: **24 hours** ❌
 - `credentials-missing`: **48 hours** ❌
 - `openrouter:instantiating`: **2 hours** ⚠️
@@ -172,6 +174,7 @@ This document defines the complete state machine for issue and PR labels in the 
 - `wr:in-progress`: **7 days** ❌
 
 ### After (Faster Response Times) ✅
+
 - `triage:new`: **2 hours** (new)
 - `triage:in-progress`: **4 hours** (reduced from 24h)
 - `credentials-missing`: **12 hours** (reduced from 48h)
@@ -183,46 +186,55 @@ This document defines the complete state machine for issue and PR labels in the 
 
 ## Workflows Responsible for State Transitions
 
-| Workflow | Frequency | Responsibility |
-|----------|-----------|----------------|
-| `stuck-label-automation.yml` | Every 2 hours | Detects and auto-progresses stuck labels |
-| `openrouter-triage.yml` | On issue/PR open + hourly sweep | Initial triage and classification |
-| `credential-label-router.yml` | On label + hourly sweep | Routes credential provisioning |
-| `priority-router.yml` | On events + every 6 hours | Assigns priority labels |
-| `ralph-loop.yml` | On CI failure | Self-healing CI failures |
-| `ready-for-review.yml` | On PR ready | Triggers code review |
+| Workflow                      | Frequency                       | Responsibility                           |
+| ----------------------------- | ------------------------------- | ---------------------------------------- |
+| `stuck-label-automation.yml`  | Every 2 hours                   | Detects and auto-progresses stuck labels |
+| `openrouter-triage.yml`       | On issue/PR open + hourly sweep | Initial triage and classification        |
+| `credential-label-router.yml` | On label + hourly sweep         | Routes credential provisioning           |
+| `priority-router.yml`         | On events + every 6 hours       | Assigns priority labels                  |
+| `ralph-loop.yml`              | On CI failure                   | Self-healing CI failures                 |
+| `ready-for-review.yml`        | On PR ready                     | Triggers code review                     |
 
 ## Auto-Progression Actions
 
 ### 1. Auto-Classify (`triage:in-progress` → `triage:classified`)
+
 After 4 hours in triage, automatically move to classified state and let the owner handle it.
 
 ### 2. Escalate Research (`wr:in-progress` → `needs-human`)
+
 After 3 days in research, escalate to human with priority-p1 label.
 
 ### 3. Recheck Credentials (`credentials-missing` → re-trigger gatekeeper)
+
 After 12 hours, re-run the credential gatekeeper to see if credentials are now available.
 
 ### 4. Retry Instantiation (`openrouter:instantiating` → `openrouter:instantiation-failed`)
+
 After 1 hour, mark as failed and add ralph-loop label for retry.
 
 ### 5. Ping Reviewers (`awaiting-approval` → comment + ping)
+
 After 24 hours, post a comment pinging the requested reviewers.
 
 ### 6. Recheck Blocker (`blocked` → comment asking for update)
+
 After 1 day, post a comment asking for status update.
 
 ### 7. Retry Review Fix (`review-fix:in-progress` → `review-fix:failed`)
+
 After 6 hours, mark as failed and add needs-human label.
 
 ### 8. Trigger Triage (`triage:new` → `triage:in-progress`)
+
 After 2 hours, trigger the openrouter-triage workflow.
 
 ## Third-Party PR Handling
 
 **Problem:** Fork PRs were being silently skipped by automation workflows, leaving contributors confused.
 
-**Solution:** 
+**Solution:**
+
 1. Detect fork PRs in `priority-router.yml`
 2. Add `third-party` and `external-contributor` labels for visibility
 3. Post informative comment explaining:
@@ -231,12 +243,14 @@ After 2 hours, trigger the openrouter-triage workflow.
    - Expected timeline (24-48h)
 
 **Labels:**
+
 - `third-party` - PR from forked repository
 - `external-contributor` - Contribution from outside the organization
 
 ## Label Definitions
 
 ### Lifecycle Labels
+
 - `triage:new` - Freshly opened, not yet looked at (max 2h)
 - `triage:in-progress` - A triager is actively classifying (max 4h)
 - `triage:classified` - Labeled & routed, ready for owner (terminal)
@@ -245,6 +259,7 @@ After 2 hours, trigger the openrouter-triage workflow.
 - `needs-human` - Requires human intervention (escalation state)
 
 ### Automation Labels
+
 - `openrouter:instantiating` - Instantiation in progress (max 1h)
 - `openrouter:instantiated` - API key verified, live (terminal)
 - `openrouter:instantiation-failed` - Instantiation failed (retry state)
@@ -255,11 +270,13 @@ After 2 hours, trigger the openrouter-triage workflow.
 - `review-fix:failed` - Could not auto-fix (escalation state)
 
 ### PR Review Labels
+
 - `awaiting-approval` - Awaiting review and approval (max 24h)
 - `changes-requested` - Changes requested by reviewers
 - `approved` - Approved by reviewers (terminal)
 
 ### Priority Labels
+
 - `priority-p0` - Critical priority — drop everything
 - `priority-p1` - High priority — next up
 - `priority-p2` - Medium priority — normal queue
@@ -268,23 +285,28 @@ After 2 hours, trigger the openrouter-triage workflow.
 ## Monitoring & Reporting
 
 ### Workflow Run Summary
+
 Every `stuck-label-automation.yml` run generates a summary report showing:
+
 - Total stuck items detected
 - Breakdown by issue vs PR
 - Actions taken for each stuck item
 
 ### GitHub Issues Dashboard
+
 Query for stuck items: `is:open label:"triage:in-progress" OR label:"credentials-missing" OR label:"blocked" OR label:"openrouter:instantiating"`
 
 ## Best Practices
 
 ### For Developers
+
 1. **Don't remove automation labels manually** - Let workflows manage state transitions
 2. **Add context comments** when marking as `blocked` - Explain what's blocking
 3. **Remove `blocked` label** as soon as blocker is resolved
 4. **Use `no-triage` label** to skip automation if needed
 
 ### For Maintainers
+
 1. **Monitor the stuck-label-automation runs** - Review the summary report
 2. **Act on `needs-human` labels quickly** - These are escalations
 3. **Review third-party PRs within 24h** - They're waiting for manual labels
@@ -293,21 +315,25 @@ Query for stuck items: `is:open label:"triage:in-progress" OR label:"credentials
 ## Troubleshooting
 
 ### Issue stuck in triage for hours
+
 - **Check:** Is `no-triage` label present? (Automation skips these)
 - **Check:** Did the openrouter-triage workflow fail? (Check Actions tab)
 - **Fix:** Manually trigger `openrouter-triage.yml` workflow
 
 ### Credentials still missing after 12 hours
+
 - **Check:** Is Doppler configured? (See `docs/SECRETS_MANAGEMENT.md`)
 - **Check:** Did credential-label-router workflow run? (Check Actions tab)
 - **Fix:** Manually add secrets to GitHub Actions or Doppler
 
 ### PR waiting for review too long
+
 - **Check:** Are reviewers actually assigned?
 - **Check:** Is PR in draft mode? (Draft PRs skip automation)
 - **Fix:** Manually request review or mark as ready for review
 
 ### Fork PR not getting triaged
+
 - **Expected:** Fork PRs require manual review for security reasons
 - **Fix:** Maintainer should manually add priority and routing labels
 
@@ -323,6 +349,7 @@ Query for stuck items: `is:open label:"triage:in-progress" OR label:"credentials
 ## Change Log
 
 ### 2026-05-03 - Reduced Timeouts & Added Third-Party Detection
+
 - Reduced all timeout thresholds by 50-80% for faster response
 - Added `triage:new` auto-progression (new pattern)
 - Added `review-fix:in-progress` auto-progression (new pattern)

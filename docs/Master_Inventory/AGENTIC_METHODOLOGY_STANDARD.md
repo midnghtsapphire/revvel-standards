@@ -29,54 +29,54 @@
 
 Use this openrouter combination:
 Swarms
-For deep research and swarms on OpenRouter, the Kimi K2.5 (Moonshot) is a top choice, supporting agent swarms with up to 100 sub-agents and 1,500 parallel tool calls. For advanced, multi-step research, o3-deep-research (OpenAI) excels, while OpenRouter Fusion provides superior synthesized research. 
+For deep research and swarms on OpenRouter, the Kimi K2.5 (Moonshot) is a top choice, supporting agent swarms with up to 100 sub-agents and 1,500 parallel tool calls. For advanced, multi-step research, o3-deep-research (OpenAI) excels, while OpenRouter Fusion provides superior synthesized research.
 
 Top Models for Research & Swarms (OpenRouter, April 2026 as part of self-healing always be looking to upgrade with recources):
 Best for Agentic Swarms: Kimi K2.5 excels in agentic tool-calling and managing large swarms (up to 100 sub-agents).
 Best for Deep Research & RAG: o3-deep-research (OpenAI) provides superior reasoning, specifically designed for complex, multi-step, web-searched research.
 Best for Multi-Model Research: OpenRouter Fusion queries multiple models to synthesize the best research response.
 High-Context Reasoning: Grok 4.1 Fast offers a massive 2M context window for researching large datasets.
-Best for Coding Swarms/Agents: Quazar Alpha (stealth model) is optimized for coding and complex agent tasks. 
-Swarm-based approaches (a subset of MAS) are generally better for fast, parallel exploration and creative brainstorming across large search spaces, while general Multi-Agent Systems (MAS) are superior for complex, structured, and multi-step research workflows. Swarms excel at finding optimal solutions via collective intelligence, while MAS offers more control and task prioritization. 
+Best for Coding Swarms/Agents: Quazar Alpha (stealth model) is optimized for coding and complex agent tasks.
+Swarm-based approaches (a subset of MAS) are generally better for fast, parallel exploration and creative brainstorming across large search spaces, while general Multi-Agent Systems (MAS) are superior for complex, structured, and multi-step research workflows. Swarms excel at finding optimal solutions via collective intelligence, while MAS offers more control and task prioritization.
 
 Swarm Intelligence in Research
 Best For: Broad exploration, competitive intelligence, and generating multiple hypotheses simultaneously.
 Strengths: Parallel processing, adaptability, and faster convergence on optimal decisions by mimicking natural systems.
-Weaknesses: Risk of getting trapped in local optima (incorrect, but converged solutions) and high computational resource consumption. 
+Weaknesses: Risk of getting trapped in local optima (incorrect, but converged solutions) and high computational resource consumption.
 
-Multi-Agent Systems (MAS) in Research 
-Best For: Complex, structured tasks (e.g., Question 
- 
+Multi-Agent Systems (MAS) in Research
+Best For: Complex, structured tasks (e.g., Question
+
 Strengths: Allows for heterogeneous agents with specific roles, providing better accuracy and control over the workflow.
-Weaknesses: Can be harder to manage communication among agents and ensure scalability. 
+Weaknesses: Can be harder to manage communication among agents and ensure scalability.
 
 Key Comparison
 Collaboration: Swarms often use "blackboards" or decentralized, simple interactions. MAS often uses structured, hierarchical, or communication-heavy architectures.
-Emergence: Swarm intelligence focuses on emergent behavior, while MAS allows for directed, programmed behavior. 
+Emergence: Swarm intelligence focuses on emergent behavior, while MAS allows for directed, programmed behavior.
 
-For deep, validated research, structured MAS is likely better; for rapid brainstorming or massive data scanning, a swarm approach is superior. 
+For deep, validated research, structured MAS is likely better; for rapid brainstorming or massive data scanning, a swarm approach is superior.
 Unanimous AI
 
 Research should include repositories like github, gitlab, gitee, freeCodeCamp, First Contributions: A highly popular repo focused on helping beginners make their first open-source contribution.
 TheAlgorithms: Massive collaborative efforts (Python, Java, C++) to implement algorithms, with major contributions from global communities.
 NixOS/nixpkgs: A top-tier, international repository for package management.
-LangChain: A popular framework for developing LLM applications. 
+LangChain: A popular framework for developing LLM applications.
 Other Major Repositories & Platforms:
 SourceForge: A long-standing platform hosting thousands of open-source projects.
 Gitee: A significant repository hosting platform based in China, often used as an alternative to GitHub for Chinese developers.
 GitLab: A widely used platform for hosting private and public projects, popular globally for DevOps.
-Google Monorepo: Known as one of the largest in the world, exceeding 80 terabytes. 
+Google Monorepo: Known as one of the largest in the world, exceeding 80 terabytes.
 Top International Coding Repository Hubs & Projects:
 China (Beijing): Hosts a rapidly growing number of contributors and large open-source projects (e.g., Baidu, Tencent projects on GitHub).
 India (Bengaluru): A major hub for global IT and open-source contribution, specifically in AI and AgriTech.
 Europe (London, Berlin, Paris): Significant repositories for Kubernetes, GitOps, and specialized AI frameworks.
-Singapore: A growing hub for high-tech regional infrastructure, particularly in AI. 
+Singapore: A growing hub for high-tech regional infrastructure, particularly in AI.
 
 Notable Large/International Repositories:
 open-source-projects-by-country: A repository tracking top projects by region.
 awesomedata/awesome-public-datasets: A curated list with significant international weather and climate data.
 The Arctic Code Vault: While managed by Microsoft (US), this contains snapshots of massive international repositories stored in Norway.
-GHTorrent: A project that offers datasets of all GitHub activity, mapping global contributions. 
+GHTorrent: A project that offers datasets of all GitHub activity, mapping global contributions.
 Resources For Everything:
 
 shadcn/ui — Beautifully designed components built with Radix UI and Tailwind CSS.
@@ -320,29 +320,29 @@ charmbracelet/glow — Render markdown on the CLI with high-quality styling.
 🧑‍💻 Hacker News “Show HN” — Trending open source launches.
 📰 LibHunt - Curated lists — Trending and best open source project lists.
 🤝 Contributing
-Government public databases and repositories provide free access to federal, state, and local data, spanning scientific research, economic statistics, and legislative records. Key central repositories include Data.gov for comprehensive federal datasets, GovInfo.gov for authenticated publications from all three branches, and specialized sites like Data.Census.gov. 
+Government public databases and repositories provide free access to federal, state, and local data, spanning scientific research, economic statistics, and legislative records. Key central repositories include Data.gov for comprehensive federal datasets, GovInfo.gov for authenticated publications from all three branches, and specialized sites like Data.Census.gov.
 
 Central Government Data Hubs
 Data.gov: Primary clearinghouse for U.S. Federal, State, and local government datasets.
 GovInfo.gov: Official publications from all three branches of the U.S. government.
 Catalog of U.S. Government Publications (CGP): Searches for publications from all three branches.
-RAND State Statistics Database: Covers, demographics, health, business, and education at the state and county level. 
+RAND State Statistics Database: Covers, demographics, health, business, and education at the state and county level.
 
-Scientific, Technical & Health Data 
+Scientific, Technical & Health Data
 CDC WONDER: Centers for Disease Control and Prevention data.
 DOE Data Explorer: Data from the Department of Energy.
 NASA Technical Reports Server (NTRS): Aerospace and research reports.
 EPA Science Inventory: Environmental Protection Agency research.
 MEDLINEplus: Health information from the National Library of Medicine.
 ECOTOX Knowledgebase: EPA data on environmental contaminants.
-USGCRP Global Change Information System: Climate change data. 
+USGCRP Global Change Information System: Climate change data.
 
-Economic & Legislative Data 
+Economic & Legislative Data
 FRED (Federal Reserve Economic Data): Economic time series from the Federal Reserve Bank of St. Louis.
 Congress.gov: Legislative information, bills, and laws.
 EDGAR Database: SEC filings, including corporate financial data.
 GAO Reports and Testimonies: Reports from the Government Accountability Office.
-FRASER (Federal Reserve Archival System for Economic Research): Economic history data. 
+FRASER (Federal Reserve Archival System for Economic Research): Economic history data.
 
 Demographic, Geosraphic & Specific Domains
 Data.Census.gov: U.S. Census Bureau demographic and economic data.
@@ -350,78 +350,79 @@ Geographic Names Information System (GNIS): Information on U.S. geographical pla
 Alternative Fuels Data Center: Department of Energy data on fuels.
 National Cancer Institute SEER Program: Cancer incidence and survival data.
 FEMA Data Feeds: Disaster information and public assistance data.
-General Land Office Records: Federal land records. 
+General Land Office Records: Federal land records.
 
 International & Additional Repositories
 United Nations Data: Statistical databases.
 World Bank Open Data: Development indicators.
 OECD Statistics: Economic and social data.
-Internet Archive Wayback Machine: Frequently used for 
+Internet Archive Wayback Machine: Frequently used for
 Wikipedia
 
-LiDAR (Light Detection and Ranging) repositories and data sources are rapidly expanding, driven by advancements in aerial mapping, autonomous vehicles, and archaeological discoveries. These repositories range from government-mandated elevation datasets to specialized, open-source AI processing libraries. 
+LiDAR (Light Detection and Ranging) repositories and data sources are rapidly expanding, driven by advancements in aerial mapping, autonomous vehicles, and archaeological discoveries. These repositories range from government-mandated elevation datasets to specialized, open-source AI processing libraries.
 Here is a deep research overview of the key LiDAR repositories, data portals, and processing libraries globally.
 Major Public LiDAR Data Repositories
+
 1. North America (United States)
-USGS Earth Explorer / 3DEP: The United States Inter-agency Elevation Inventory provides free access to high-resolution LiDAR data, largely driven by the 3D Elevation Program (3DEP).
-NOAA Digital Coast: Specialized in providing LiDAR data for coastal areas, crucial for sea-level rise studies and coastal management.
-National Ecological Observatory Network (NEON): Funded by the National Science Foundation, NEON offers extensive airborne LiDAR data focusing on vegetation structures, available via their open data portal.
-OpenTopography: A premier facility for accessing topographically focused LiDAR datasets, particularly useful for researchers and academic users.
-Texas Geographic Information Office (TNRIS): Offers a comprehensive DataHub for LiDAR projects in Texas, including status maps for ongoing acquisitions. 
+   USGS Earth Explorer / 3DEP: The United States Inter-agency Elevation Inventory provides free access to high-resolution LiDAR data, largely driven by the 3D Elevation Program (3DEP).
+   NOAA Digital Coast: Specialized in providing LiDAR data for coastal areas, crucial for sea-level rise studies and coastal management.
+   National Ecological Observatory Network (NEON): Funded by the National Science Foundation, NEON offers extensive airborne LiDAR data focusing on vegetation structures, available via their open data portal.
+   OpenTopography: A premier facility for accessing topographically focused LiDAR datasets, particularly useful for researchers and academic users.
+   Texas Geographic Information Office (TNRIS): Offers a comprehensive DataHub for LiDAR projects in Texas, including status maps for ongoing acquisitions.
 
-3. Europe
-National Mapping Agency Portals: Many European countries, such as the UK (via Defra), Germany, and Scandinavian countries, maintain open-access, high-resolution LiDAR data for national terrain modeling.
-Beacons of the Past (UK): A dedicated project for mapping and researching hillforts in the Chilterns landscape. 
-GIM International
-GIM International
-4. International & Archaeological Repositories
-LidArc Initiative: A dedicated initiative, often associated with Global Digital Heritage, focusing on applying LiDAR to map undocumented archaeological sites globally, especially in Latin America.
-GEDI (Global Ecosystem Dynamics Investigation): A space-based LiDAR instrument on the International Space Station (ISS) operated by NASA, providing worldwide 3D measurements of forest canopy structures, available on NASA Earthdata.
-CALIPSO (Cloud-Aerosol Lidar and Infrared Pathfinder Satellite Observation): A long-running NASA/CNES atmospheric LiDAR project. 
-NASA Earthdata (.gov)
+2. Europe
+   National Mapping Agency Portals: Many European countries, such as the UK (via Defra), Germany, and Scandinavian countries, maintain open-access, high-resolution LiDAR data for national terrain modeling.
+   Beacons of the Past (UK): A dedicated project for mapping and researching hillforts in the Chilterns landscape.
+   GIM International
+   GIM International
+3. International & Archaeological Repositories
+   LidArc Initiative: A dedicated initiative, often associated with Global Digital Heritage, focusing on applying LiDAR to map undocumented archaeological sites globally, especially in Latin America.
+   GEDI (Global Ecosystem Dynamics Investigation): A space-based LiDAR instrument on the International Space Station (ISS) operated by NASA, providing worldwide 3D measurements of forest canopy structures, available on NASA Earthdata.
+   CALIPSO (Cloud-Aerosol Lidar and Infrared Pathfinder Satellite Observation): A long-running NASA/CNES atmospheric LiDAR project.
+   NASA Earthdata (.gov)
 
-Significant LiDAR Research & "Lost City" Data 
-Recent research using LiDAR has focused on finding structures beneath dense canopy cover. 
+Significant LiDAR Research & "Lost City" Data
+Recent research using LiDAR has focused on finding structures beneath dense canopy cover.
 Bolivian Amazon: LiDAR has revealed vast pre-hispanic settlements hidden under the vegetation, uncovering complex urban structures.
 Guatemala (Maya Sites): Projects like those in the Petén region have mapped thousands of unknown Maya structures, including pyramids and causeways using LiDAR, revealing that pre-hispanic populations were much higher than previously estimated.
-Mexico (Campeche Region): Discovery of massive Maya cities like Ocomtún and Valeriana, using data processed to reveal 50-foot pyramids and dense residential areas. 
+Mexico (Campeche Region): Discovery of massive Maya cities like Ocomtún and Valeriana, using data processed to reveal 50-foot pyramids and dense residential areas.
 
-Top LiDAR Processing & Open-Source Libraries 
-These are repositories of software used to process the LiDAR data listed above. 
+Top LiDAR Processing & Open-Source Libraries
+These are repositories of software used to process the LiDAR data listed above.
 
 Point Cloud Library (PCL): A massive, popular open-source library for 2D/3D image and point cloud processing (C++).
 Open3D: A popular library for 3D data processing and visualization, supporting both C++ and Python, with a very active developer community.
 LAStools: A highly recognized C++ library for rapid processing and compression of LiDAR point clouds (.las files).
 PyTorch3d & Kaolin: Libraries designed for deep learning on 3D data, with Kaolin supported by NVIDIA for accelerating 3D research.
-pyntcloud & pointcloudset: Python-based libraries tailored for the manipulation and analysis of point cloud data. 
+pyntcloud & pointcloudset: Python-based libraries tailored for the manipulation and analysis of point cloud data.
 Emerging Trends
 Web-based 3D Viewers: Many repositories, including the USGS LidarExplorer, are moving toward Entwine Point Tile (EPT) formats to allow direct 3D visualization of massive datasets in web browsers.
 UAV LiDAR Surveys: Projects, such as those in Guatemala, are increasingly using drones (like the Quantum Systems Trinity) to conduct localized, high-density scans of remote areas, often achieving over 80 points per square meter.
 
 https://github.com/szenergy/awesome-lidar
 
-The best source for free, high-resolution old topographic maps is the USGS topoView, which contains over 185,000 maps published between 1884 and 2006. These maps, covering the entire US, are available as GeoTIFF, JPEG, and KMZ files for Google Earth, perfect for tracking landscape changes. 
+The best source for free, high-resolution old topographic maps is the USGS topoView, which contains over 185,000 maps published between 1884 and 2006. These maps, covering the entire US, are available as GeoTIFF, JPEG, and KMZ files for Google Earth, perfect for tracking landscape changes.
 
 Top Free Online Old Topo Map Sources:
 USGS topoView: The primary, comprehensive repository for searching all scales and editions of USGS historical quadrangle maps.
 USGS Historical Topographic Map Explorer: An interactive tool by Esri to easily search, visualize, and compare map layers over time.
-The National Map Downloader: A,advanced, efficient tool for bulk downloading up to 5,000 maps at once. 
+The National Map Downloader: A,advanced, efficient tool for bulk downloading up to 5,000 maps at once.
 
 Key Features of TopoView & USGS Tools:
 Coverage: Provides complete coverage of the United States, including 15-minute and 7.5-minute series maps.
 Filter Options: Search by location, then use filters to select map scale and date (1884–2006).
 File Formats: Offers high-resolution JPEG for viewing, GeoTIFF for GIS software, and KMZ for Google Earth overlay.
-No Copyright: USGS maps are in the public domain, allowing for free, unrestricted reproduction. 
+No Copyright: USGS maps are in the public domain, allowing for free, unrestricted reproduction.
 
 Alternative Regional Sources:
 UCLA Library Topo Maps: Excellent for California, including 30 and 60-minute historical maps.
-CalTopo: Useful for layering historical maps over modern terrain. 
+CalTopo: Useful for layering historical maps over modern terrain.
 
 Key Native American Record Repositories
 If you are looking for physical or digital storage of these records:
 Oklahoma Historical Society: They host a searchable Dawes Rolls Database which includes notes on specific cards.
 National Archives (NARA): NARA holds the original applications and enrollment jackets for the Five Civilized Tribes. You can browse their Native American Heritage section for guidance on locating specific files.
-FamilySearch: Offers a massive, free Native American Records Collection for those looking to avoid paywalls. 
+FamilySearch: Offers a massive, free Native American Records Collection for those looking to avoid paywalls.
 
 Main DOI Repositories & Bureaus
 Department of the Interior (Main Site): https://www.doi.gov/
@@ -429,27 +430,26 @@ Bureau of Indian Affairs (BIA): https://www.bia.gov/
 Bureau of Land Management (BLM) General Land Office Records: blm.gov (Best for land patents and survey notes).
 National Park Service (NPS) Records: nps.gov
 U.S. Geological Survey (USGS) Library: usgs.gov
-American Indian Records Repository (AIRR): doi.gov. 
-Records Held at the National Archives (NARA) 
+American Indian Records Repository (AIRR): doi.gov.
+Records Held at the National Archives (NARA)
 NARA organizes DOI records into "Record Groups" (RG). You can search for these groups on the National Archives Catalog.
 RG 48: Records of the Office of the Secretary of the Interior
 RG 75: Records of the Bureau of Indian Affairs (Includes tribal census and enrollment)
 RG 49: Records of the Bureau of Land Management
 RG 79: Records of the National Park Service
-RG 57: Records of the U.S. Geological Survey 
+RG 57: Records of the U.S. Geological Survey
 
-
-Unsecured Cloud Storage: Many massive datasets are found in public cloud storage buckets (e.g., Elasticsearch, Azure) 
+Unsecured Cloud Storage: Many massive datasets are found in public cloud storage buckets (e.g., Elasticsearch, Azure)
 Top Dark Web Search Engine:
 Haystak: Considered one of the biggest, it claims to index over 1.5 billion pages, with premium features available
 
-DarkOwl is widely considered the largest commercially available database and search engine for darknet content, featuring billions of continuously updated records from Tor, I2P, and Telegram. It offers subscription-based access for threat intelligence, monitoring, and investigation, with a focus on comprehensive, indexed dark web data. 
+DarkOwl is widely considered the largest commercially available database and search engine for darknet content, featuring billions of continuously updated records from Tor, I2P, and Telegram. It offers subscription-based access for threat intelligence, monitoring, and investigation, with a focus on comprehensive, indexed dark web data.
 
 Key Data & Subscription Providers
 DarkOwl Vision: Provides the largest database of darknet content (over 17 billion email addresses, ~825 million Tor records) for corporate and government intelligence.
 SpyCloud: Specializes in "darknet data lakes," focusing on recovering recaptured PII (Personally Identifiable Information) and credentials directly from criminal communities.
 Flare (flare.io): A top-tier monitoring tool focusing on automating the detection of leaked credentials and exposed data across the dark/clear web.
-Searchlight Cyber: Mentioned as a robust alternative for deep investigative capabilities into dark web threat intelligence. 
+Searchlight Cyber: Mentioned as a robust alternative for deep investigative capabilities into dark web threat intelligence.
 
 Key Features of Top Services
 Real-time Monitoring: Many services provide instant alerts, such as Identity Guard (which uses AI to scan for identity fraud).
@@ -469,22 +469,21 @@ LimeTorrents.
 
 https://github.com/ngosang/trackerslist
 
+Other notable services include Have I Been Pwned, which is free for personal use but has limited depth compared to commercial databases.
 
-Other notable services include Have I Been Pwned, which is free for personal use but has limited depth compared to commercial databases. 
-
-For high-stakes analysis and complex research, OpenRouter Fusion is ideal, as it trades speed for higher quality by querying multiple AI models, according to OpenRouter Labs documentation. 
+For high-stakes analysis and complex research, OpenRouter Fusion is ideal, as it trades speed for higher quality by querying multiple AI models, according to OpenRouter Labs documentation.
 
 The **Revvel Agentic Skills Framework** is a methodology for building, packaging, distributing, and monetizing **AI agent skills** — self-contained instruction files that give any AI agent expert-level capabilities in a specific domain, activated with zero configuration by the end user.
 
 Think of it as an **App Store for AI behavior**:
 
-| Traditional App | Revvel Skill |
-|---|---|
-| Code that runs on hardware | Instruction set that runs inside an LLM context |
+| Traditional App                  | Revvel Skill                                             |
+| -------------------------------- | -------------------------------------------------------- |
+| Code that runs on hardware       | Instruction set that runs inside an LLM context          |
 | Installed with a package manager | Activated by double-clicking a `.bat` or `.command` file |
-| Requires technical knowledge | Works for an 8-year-old |
-| Locked to one platform | Works across Claude, Cursor, Copilot, Windsurf, Cline |
-| Requires a server | Runs 100% locally, no internet required after install |
+| Requires technical knowledge     | Works for an 8-year-old                                  |
+| Locked to one platform           | Works across Claude, Cursor, Copilot, Windsurf, Cline    |
+| Requires a server                | Runs 100% locally, no internet required after install    |
 
 ### Why This Is Different (2040 Precog Vision)
 
@@ -535,27 +534,34 @@ RESEARCH → SPEC (SKILL.md) → BUILD (skill.yml) → TEST (promptfoo.yml)
 Derived from the [claude-code-best-practice framework](https://github.com/shanraisshan/claude-code-best-practice):
 
 ### Agents (`.claude/agents/<name>.md`)
+
 Autonomous actors in fresh isolated context. Each agent has:
+
 - Custom tools and permissions
 - Specific model assignment (Haiku for speed, Sonnet for quality, Opus for analysis)
 - Persistent identity (optional persona)
 - Memory via GBrain (optional)
 
 **Revvel Agent Types:**
-| Type | Lifecycle | Purpose |
-|---|---|---|
-| Permanent | Always active | Core system agents (System State, MVI Contract) |
-| Ephemeral | Spawned on demand | Task specialists (Testing Agent, Vault Agent) |
-| Persona | Session-scoped | User-facing guides with personality |
+
+| Type      | Lifecycle         | Purpose                                         |
+| --------- | ----------------- | ----------------------------------------------- |
+| Permanent | Always active     | Core system agents (System State, MVI Contract) |
+| Ephemeral | Spawned on demand | Task specialists (Testing Agent, Vault Agent)   |
+| Persona   | Session-scoped    | User-facing guides with personality             |
 
 ### Commands (`.claude/commands/<name>.md`)
+
 Knowledge injected into the existing context. Used for:
+
 - Workflow orchestration
 - Template application
 - Quick reference lookups
 
 ### Skills (`skills/<name>/SKILL.md`)
+
 Self-contained expert instruction sets. Each skill defines:
+
 - A specific domain of knowledge
 - Trigger keywords that activate it
 - A step-by-step workflow
@@ -621,6 +627,7 @@ skills/<skill-name>/
 ### Minimum Viable Skill (MVS) Requirements
 
 For a skill to be releasable, it must have:
+
 - [ ] `SKILL.md` with description, triggers, workflow, and examples
 - [ ] `<name>.skill.yml` with machine-readable config
 - [ ] `tests/promptfoo.yml` with at least 3 test cases (happy path, edge case, error)
@@ -637,11 +644,13 @@ The **Persona Engine** gives every skill a human face — a temporary character 
 ### Why Personas Matter
 
 Personas solve the "cold start" UX problem. Without a persona:
+
 - User doesn't know what to type
 - AI responds generically
 - Skill capabilities are invisible
 
 With a persona:
+
 - Persona introduces itself and explains what it does
 - Persona prompts the user with the right first question
 - Persona maintains a consistent tone that signals "this is a special mode"
@@ -671,14 +680,14 @@ farewell: |
 
 ### Built-In Persona Library
 
-| Persona | Skill | Voice |
-|---|---|---|
-| **Aria** | Code Review | Direct, precise, kind |
-| **Forge** | Skill Builder | Creative, hands-on, encouraging |
-| **Vault** | Security/Credentials | Serious, cautious, thorough |
-| **Scout** | Research & Brainstorming | Curious, energetic, connective |
-| **Sage** | Documentation | Patient, organized, clear |
-| **Nexus** | Deployment | Calm under pressure, systematic |
+| Persona   | Skill                    | Voice                           |
+| --------- | ------------------------ | ------------------------------- |
+| **Aria**  | Code Review              | Direct, precise, kind           |
+| **Forge** | Skill Builder            | Creative, hands-on, encouraging |
+| **Vault** | Security/Credentials     | Serious, cautious, thorough     |
+| **Scout** | Research & Brainstorming | Curious, energetic, connective  |
+| **Sage**  | Documentation            | Patient, organized, clear       |
+| **Nexus** | Deployment               | Calm under pressure, systematic |
 
 ---
 
@@ -690,13 +699,13 @@ farewell: |
 DRAFT → REVIEW → BETA → STABLE → DEPRECATED
 ```
 
-| State | Criteria |
-|---|---|
-| **DRAFT** | SKILL.md written, no tests |
-| **REVIEW** | Peer-reviewed by one other agent/human |
-| **BETA** | Tests exist, deployed to at least 3 users |
-| **STABLE** | 10+ uses, zero critical bugs, docs complete |
-| **DEPRECATED** | Replaced by newer skill, users migrated |
+| State          | Criteria                                    |
+| -------------- | ------------------------------------------- |
+| **DRAFT**      | SKILL.md written, no tests                  |
+| **REVIEW**     | Peer-reviewed by one other agent/human      |
+| **BETA**       | Tests exist, deployed to at least 3 users   |
+| **STABLE**     | 10+ uses, zero critical bugs, docs complete |
+| **DEPRECATED** | Replaced by newer skill, users migrated     |
 
 ### Quality Gates (must pass before STABLE)
 
@@ -713,12 +722,12 @@ DRAFT → REVIEW → BETA → STABLE → DEPRECATED
 
 ### Testing Stack
 
-| Layer | Tool | What It Tests |
-|---|---|---|
-| Skill behavior | PromptFoo | LLM outputs against assertions |
-| Installer | Manual / CI | Installs without errors on clean machine |
-| Persona | PromptFoo | Greeting, task handling, farewell |
-| Integration | GitHub Actions | Full end-to-end on every PR |
+| Layer          | Tool           | What It Tests                            |
+| -------------- | -------------- | ---------------------------------------- |
+| Skill behavior | PromptFoo      | LLM outputs against assertions           |
+| Installer      | Manual / CI    | Installs without errors on clean machine |
+| Persona        | PromptFoo      | Greeting, task handling, farewell        |
+| Integration    | GitHub Actions | Full end-to-end on every PR              |
 
 ### PromptFoo Skill Test Template
 
@@ -860,25 +869,25 @@ See **[docs/MARKETPLACE_GUIDE.md](../MARKETPLACE_GUIDE.md)** for the full guide,
 
 ### Where to List
 
-| Platform | Best For | Price Range |
-|---|---|---|
-| **ClawMarket** | Claude-native skills | $9–$99 |
-| **Gumroad** | Simple one-time purchases | $5–$49 |
-| **GitHub Marketplace** | Developer tools / Actions | Free–$29/mo |
-| **Hugging Face** | ML-adjacent skills | Free–donations |
-| **Itch.io** | Creative/experimental skills | $1–$20 |
-| **Product Hunt** | Launch visibility | Free |
+| Platform               | Best For                     | Price Range    |
+| ---------------------- | ---------------------------- | -------------- |
+| **ClawMarket**         | Claude-native skills         | $9–$99         |
+| **Gumroad**            | Simple one-time purchases    | $5–$49         |
+| **GitHub Marketplace** | Developer tools / Actions    | Free–$29/mo    |
+| **Hugging Face**       | ML-adjacent skills           | Free–donations |
+| **Itch.io**            | Creative/experimental skills | $1–$20         |
+| **Product Hunt**       | Launch visibility            | Free           |
 
 ### Pricing Tiers
 
-| Tier | Price | What's Included |
-|---|---|---|
-| **Free / Open Source** | $0 | Basic skill, no installer, manual setup |
-| **Starter** | $9 | Skill + Windows installer |
-| **Standard** | $19 | Skill + both installers + tests |
-| **Pro** | $49 | Skill + installers + tests + persona + docs |
-| **Bundle** | $99 | 5+ skills bundled |
-| **Enterprise** | $199+ | Custom skills + training + support |
+| Tier                   | Price | What's Included                             |
+| ---------------------- | ----- | ------------------------------------------- |
+| **Free / Open Source** | $0    | Basic skill, no installer, manual setup     |
+| **Starter**            | $9    | Skill + Windows installer                   |
+| **Standard**           | $19   | Skill + both installers + tests             |
+| **Pro**                | $49   | Skill + installers + tests + persona + docs |
+| **Bundle**             | $99   | 5+ skills bundled                           |
+| **Enterprise**         | $199+ | Custom skills + training + support          |
 
 ---
 
@@ -886,25 +895,25 @@ See **[docs/MARKETPLACE_GUIDE.md](../MARKETPLACE_GUIDE.md)** for the full guide,
 
 Every skill in the Revvel framework can be run with 100% free and open-source software:
 
-| Component | FOSS Tool | License |
-|---|---|---|
-| LLM Runtime | [Ollama](https://ollama.ai) (local models) | MIT |
-| Vector Search | [PGLite](https://github.com/electric-sql/pglite) | Apache 2.0 |
-| Memory Layer | [GBrain](https://github.com/garrytan/gbrain) | MIT |
-| Skill Testing | [PromptFoo](https://promptfoo.dev) | MIT |
-| CI/CD | [GitHub Actions](https://github.com/features/actions) | Free tier |
-| Package Runtime | [Bun](https://bun.sh) | MIT |
-| Documentation | Markdown + [MkDocs](https://mkdocs.org) | BSD |
-| API Gateway | [Caddy](https://caddyserver.com) | Apache 2.0 |
+| Component       | FOSS Tool                                             | License    |
+| --------------- | ----------------------------------------------------- | ---------- |
+| LLM Runtime     | [Ollama](https://ollama.ai) (local models)            | MIT        |
+| Vector Search   | [PGLite](https://github.com/electric-sql/pglite)      | Apache 2.0 |
+| Memory Layer    | [GBrain](https://github.com/garrytan/gbrain)          | MIT        |
+| Skill Testing   | [PromptFoo](https://promptfoo.dev)                    | MIT        |
+| CI/CD           | [GitHub Actions](https://github.com/features/actions) | Free tier  |
+| Package Runtime | [Bun](https://bun.sh)                                 | MIT        |
+| Documentation   | Markdown + [MkDocs](https://mkdocs.org)               | BSD        |
+| API Gateway     | [Caddy](https://caddyserver.com)                      | Apache 2.0 |
 
 ### Free Tier API Access (for powered features)
 
-| Provider | Free Tier | Best For |
-|---|---|---|
-| Anthropic Claude | Free with account | Skill testing, persona |
-| Google Gemini | 1M tokens/day free | High-volume testing |
-| Groq | Fast inference, free tier | Real-time skill testing |
-| OpenRouter | Pay-as-you-go, $5 credit | Model comparison |
+| Provider         | Free Tier                 | Best For                |
+| ---------------- | ------------------------- | ----------------------- |
+| Anthropic Claude | Free with account         | Skill testing, persona  |
+| Google Gemini    | 1M tokens/day free        | High-volume testing     |
+| Groq             | Fast inference, free tier | Real-time skill testing |
+| OpenRouter       | Pay-as-you-go, $5 credit  | Model comparison        |
 
 ---
 
@@ -919,35 +928,38 @@ Skill Value = (Hours Saved Per Week × Developer Hourly Rate × 52) × 0.1
 ```
 
 Example: Code Review skill saves 3 hours/week for a $75/hr developer:
+
 ```
 Value = (3 × $75 × 52) × 0.1 = $1,170/year → Price at $49–$99
 ```
 
 ### Catalog Tiers
 
-| Skill Type | Throughput Impact | Dev Time Saved | Recommended Price |
-|---|---|---|---|
-| Session startup skills | +20% | 15 min/day | $9 |
-| Code review skills | +35% | 2 hrs/day | $49 |
-| Testing automation skills | +50% | 3 hrs/day | $79 |
-| Full methodology bundle | +80% | 4 hrs/day | $199 |
-| Custom skill development | +??% | Client-specific | $500+ |
+| Skill Type                | Throughput Impact | Dev Time Saved  | Recommended Price |
+| ------------------------- | ----------------- | --------------- | ----------------- |
+| Session startup skills    | +20%              | 15 min/day      | $9                |
+| Code review skills        | +35%              | 2 hrs/day       | $49               |
+| Testing automation skills | +50%              | 3 hrs/day       | $79               |
+| Full methodology bundle   | +80%              | 4 hrs/day       | $199              |
+| Custom skill development  | +??%              | Client-specific | $500+             |
 
 ---
 
 ## 12. Implementation Checklist
 
-> **📝 NOTE:** This checklist describes *separate implementation phases* for adopting this methodology. This is **planning documentation**, not instruction to implement incrementally. Per AGENTS.md, when assigned one phase as a task, deliver it completely—don't propose sub-phases.
+> **📝 NOTE:** This checklist describes _separate implementation phases_ for adopting this methodology. This is **planning documentation**, not instruction to implement incrementally. Per AGENTS.md, when assigned one phase as a task, deliver it completely—don't propose sub-phases.
 
 When implementing this methodology for a new project:
 
 ### Phase 1: Foundation (Day 1)
+
 - [ ] Clone revvel-standards
 - [ ] Run `scripts/bootstrap-repo.sh` to set up the project
 - [ ] Load the four mandatory skills: `system-state`, `mvi-contract`, `model-router`, `context-management`
 - [ ] Set up GBrain for memory
 
 ### Phase 2: First Skill (Week 1)
+
 - [ ] Identify the single highest-value skill for the project
 - [ ] Create `skills/<name>/SKILL.md`
 - [ ] Create `skills/<name>/<name>.skill.yml`
@@ -956,6 +968,7 @@ When implementing this methodology for a new project:
 - [ ] Create Windows and Mac installers
 
 ### Phase 3: Testing & Ship (Week 2)
+
 - [ ] Run PromptFoo tests locally
 - [ ] Set up GitHub Actions CI for skill testing
 - [ ] Have one other person test the installer
@@ -963,6 +976,7 @@ When implementing this methodology for a new project:
 - [ ] List on ClawMarket or Gumroad
 
 ### Phase 4: Compound (Ongoing)
+
 - [ ] Add skills as new domains are needed
 - [ ] Update SKILLS_INDEX.yml with each new skill
 - [ ] Monitor skill usage and iterate on weak spots
@@ -970,4 +984,4 @@ When implementing this methodology for a new project:
 
 ---
 
-*This document is part of the Revvel Standards system. For skill templates and installers, see `skills/skill-forge/` and `install/`.*
+_This document is part of the Revvel Standards system. For skill templates and installers, see `skills/skill-forge/` and `install/`._

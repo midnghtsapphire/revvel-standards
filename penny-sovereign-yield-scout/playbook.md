@@ -48,6 +48,7 @@ Position value = token_price × quantity × (1 + APY)^time
 ```
 
 A 50% APY on a $0.01 token that 10x's to $0.10 delivers:
+
 - Yield gain: 50% on initial
 - Price gain: 10x on principal
 - **Combined**: ~15x effective return on capital
@@ -56,13 +57,13 @@ This is the sovereign play — not momentum trading, but **yield-enhanced price 
 
 ### Blue Ocean Criteria
 
-| Dimension | Red Ocean | Blue Ocean (Our Target) |
-|---|---|---|
-| Token price | > $1.00 | < $0.10 |
-| Protocol TVL | > $500M | $500k – $50M |
-| APY source | Inflationary emissions | Real revenue (fees, premiums) |
-| Competitor attention | High (bots, whales) | Low (under the radar) |
-| Social signal | Already viral | Emerging (< 500 mentions/day) |
+| Dimension            | Red Ocean              | Blue Ocean (Our Target)       |
+| -------------------- | ---------------------- | ----------------------------- |
+| Token price          | > $1.00                | < $0.10                       |
+| Protocol TVL         | > $500M                | $500k – $50M                  |
+| APY source           | Inflationary emissions | Real revenue (fees, premiums) |
+| Competitor attention | High (bots, whales)    | Low (under the radar)         |
+| Social signal        | Already viral          | Emerging (< 500 mentions/day) |
 
 ---
 
@@ -72,12 +73,12 @@ This is the sovereign play — not momentum trading, but **yield-enhanced price 
 
 The `listener.py` tool monitors three primary channels:
 
-| Channel | What to Look For | Signal Weight |
-|---|---|---|
-| Twitter/X | Ticker mentions + yield keywords in same tweet | 0.35 |
-| Reddit (r/defi, r/CryptoMoonShots) | Posts with APY data + low mcap | 0.30 |
-| Telegram (DeFi alpha groups) | Protocol announcements, new pool launches | 0.25 |
-| On-chain (Dune, The Graph) | New LP positions by known smart money wallets | 0.10 |
+| Channel                            | What to Look For                               | Signal Weight |
+| ---------------------------------- | ---------------------------------------------- | ------------- |
+| Twitter/X                          | Ticker mentions + yield keywords in same tweet | 0.35          |
+| Reddit (r/defi, r/CryptoMoonShots) | Posts with APY data + low mcap                 | 0.30          |
+| Telegram (DeFi alpha groups)       | Protocol announcements, new pool launches      | 0.25          |
+| On-chain (Dune, The Graph)         | New LP positions by known smart money wallets  | 0.10          |
 
 **Minimum sentiment score to trigger a full sweep: 0.65**
 
@@ -126,18 +127,18 @@ The full list lives in `config/50_apis_protocols.json`. Here is the strategic br
 
 Battle-tested protocols with real revenue and deep liquidity:
 
-| Protocol | Chain | Yield Type | Typical APY Range |
-|---|---|---|---|
-| Aave v3 | ETH, Polygon, Arbitrum | Lending/borrowing | 3–15% |
-| Compound v3 | ETH, Base | Lending | 4–12% |
-| Curve Finance | ETH, Arbitrum | Stable LP | 5–25% |
-| Convex Finance | ETH | Curve boosted | 8–35% |
-| Pendle Finance | ETH, Arbitrum | Yield tokenization | 10–115% |
-| GMX | Arbitrum, Avalanche | Perp fee sharing | 15–40% |
-| Radiant Capital | Arbitrum, BSC | Cross-chain lending | 10–30% |
-| Beefy Finance | Multi-chain | Auto-compound vaults | 10–80% |
-| Yearn Finance | ETH, Fantom | Strategy vaults | 5–30% |
-| Morpho Blue | ETH | Optimised lending | 5–20% |
+| Protocol        | Chain                  | Yield Type           | Typical APY Range |
+| --------------- | ---------------------- | -------------------- | ----------------- |
+| Aave v3         | ETH, Polygon, Arbitrum | Lending/borrowing    | 3–15%             |
+| Compound v3     | ETH, Base              | Lending              | 4–12%             |
+| Curve Finance   | ETH, Arbitrum          | Stable LP            | 5–25%             |
+| Convex Finance  | ETH                    | Curve boosted        | 8–35%             |
+| Pendle Finance  | ETH, Arbitrum          | Yield tokenization   | 10–115%           |
+| GMX             | Arbitrum, Avalanche    | Perp fee sharing     | 15–40%            |
+| Radiant Capital | Arbitrum, BSC          | Cross-chain lending  | 10–30%            |
+| Beefy Finance   | Multi-chain            | Auto-compound vaults | 10–80%            |
+| Yearn Finance   | ETH, Fantom            | Strategy vaults      | 5–30%             |
+| Morpho Blue     | ETH                    | Optimised lending    | 5–20%             |
 
 ### Tier 2 — Emerging Protocols (20 protocols)
 
@@ -158,6 +159,7 @@ opportunity_score = (apy_net / 100) × log10(tvl_usd) × (1 - il_risk_score) × 
 ```
 
 Where:
+
 - `apy_net` = APY after protocol fees and gas costs
 - `tvl_usd` = Total Value Locked in USD
 - `il_risk_score` = 0.0 (no IL) to 1.0 (max IL exposure)
@@ -215,6 +217,7 @@ Where:
 ```
 
 **Example:**
+
 - Protocol: Beefy Finance CAKE-BNB, APY 78%, rug_risk_score 0.05
 - `f* = (0.95 × 0.78 - 0.05) / 0.78 = (0.741 - 0.05) / 0.78 = 0.886`
 - Full Kelly = 88.6% allocation — this is too aggressive
@@ -222,12 +225,12 @@ Where:
 
 ### 5.2 Position Sizing Rules
 
-| Risk Tier | Max Allocation (Half-Kelly cap) |
-|---|---|
-| Tier 1 (battle-tested, audited) | 40% of yield portfolio |
-| Tier 2 (emerging, audited) | 20% of yield portfolio |
-| Tier 3 (experimental) | 5% of yield portfolio |
-| Single position max | 15% |
+| Risk Tier                       | Max Allocation (Half-Kelly cap) |
+| ------------------------------- | ------------------------------- |
+| Tier 1 (battle-tested, audited) | 40% of yield portfolio          |
+| Tier 2 (emerging, audited)      | 20% of yield portfolio          |
+| Tier 3 (experimental)           | 5% of yield portfolio           |
+| Single position max             | 15%                             |
 
 ### 5.3 Portfolio Construction Example
 
@@ -252,16 +255,17 @@ Blended APY: ~41% | Expected IL-adjusted return: ~35%
 Impermanent Loss (IL) occurs when the price ratio of tokens in a liquidity pool changes from the ratio at entry. The further prices diverge, the greater the loss relative to simply holding.
 
 **IL Formula (for 50/50 pools):**
+
 ```
 IL = 2 × sqrt(price_ratio) / (1 + price_ratio) - 1
 ```
 
-| Price Change (one token) | IL |
-|---|---|
-| No change | 0% |
-| 2× | -5.7% |
-| 5× | -25.0% |
-| 10× | -42.5% |
+| Price Change (one token) | IL     |
+| ------------------------ | ------ |
+| No change                | 0%     |
+| 2×                       | -5.7%  |
+| 5×                       | -25.0% |
+| 10×                      | -42.5% |
 
 ### 6.2 IL Shield Thresholds
 
@@ -303,6 +307,7 @@ Optimal_interval = sqrt(2 × gas_cost_usd / (position_usd × apy_daily))
 ```
 
 **Example:**
+
 - Position: $5,000 USDC lending at 12% APY
 - Daily yield: $5,000 × 0.12 / 365 = $1.64/day
 - Gas cost per compound: $0.50 (Arbitrum)
@@ -344,6 +349,7 @@ This ensures compounding is always profitable.
 ### 8.1 Why Tamper-Evident Logs Matter
 
 In DeFi:
+
 - Tax authorities require accurate yield records
 - Protocol exploits require post-mortem analysis
 - Auto-compound bots need debugging trails
@@ -371,16 +377,16 @@ python tools/verifiable_logger.py --verify ${VERIFIABLE_LOG_DIR}/audit_log.jsonl
 
 Pull liquidity immediately when **any** of these conditions is met:
 
-| Trigger | Threshold | Action |
-|---|---|---|
-| APY decay | > 30% drop from entry APY in 7 days | Review — consider exit |
-| TVL drain | > 20% TVL reduction in 24h | **Exit immediately** |
-| IL breach | Estimated IL > max_il_pct threshold | **Exit immediately** |
-| Exploit signal | On-chain anomaly or social alarm | **Exit immediately** |
-| Rug signal | Dev wallet draining | **Exit immediately** |
-| Gas spike | Gas cost > 5% of position | Hold — wait for gas normalisation |
-| Token listing | CEX listing confirmed | Take partial profit |
-| Goal reached | 2× return on position | Take partial profit (50%) |
+| Trigger        | Threshold                           | Action                            |
+| -------------- | ----------------------------------- | --------------------------------- |
+| APY decay      | > 30% drop from entry APY in 7 days | Review — consider exit            |
+| TVL drain      | > 20% TVL reduction in 24h          | **Exit immediately**              |
+| IL breach      | Estimated IL > max_il_pct threshold | **Exit immediately**              |
+| Exploit signal | On-chain anomaly or social alarm    | **Exit immediately**              |
+| Rug signal     | Dev wallet draining                 | **Exit immediately**              |
+| Gas spike      | Gas cost > 5% of position           | Hold — wait for gas normalisation |
+| Token listing  | CEX listing confirmed               | Take partial profit               |
+| Goal reached   | 2× return on position               | Take partial profit (50%)         |
 
 ### Monitoring Commands
 
@@ -428,15 +434,15 @@ python tools/blue_ocean_generator.py --type pdf --title "Weekly Yield Report" --
 
 ### 11.1 Risk Categories
 
-| Risk | Description | Mitigation |
-|---|---|---|
+| Risk                | Description             | Mitigation                     |
+| ------------------- | ----------------------- | ------------------------------ |
 | Smart contract risk | Protocol exploits, bugs | Audit score filter + TVL floor |
-| IL risk | Price divergence in LP | il_shield.py threshold |
-| Liquidity risk | Can't exit position | TVL minimum $500k |
-| Regulatory risk | DeFi regulation changes | Tax wrapper, compliance log |
-| Gas risk | High gas spikes | Gas guard in auto-compounder |
-| Social engineering | Fake protocol clones | Checksum address verification |
-| Key compromise | Private key theft | Hardware wallet, never in .env |
+| IL risk             | Price divergence in LP  | il_shield.py threshold         |
+| Liquidity risk      | Can't exit position     | TVL minimum $500k              |
+| Regulatory risk     | DeFi regulation changes | Tax wrapper, compliance log    |
+| Gas risk            | High gas spikes         | Gas guard in auto-compounder   |
+| Social engineering  | Fake protocol clones    | Checksum address verification  |
+| Key compromise      | Private key theft       | Hardware wallet, never in .env |
 
 ### 11.2 Maximum Drawdown Policy
 
@@ -458,6 +464,7 @@ python tools/listener.py --mode governance --protocols tier1
 ```
 
 Key governance signals to watch:
+
 - **Fee parameter changes** — fee increases = more yield
 - **New pool proposals** — early LP = best rewards
 - **Emergency proposals** — could indicate exploit
@@ -513,9 +520,10 @@ python tools/verifiable_logger.py --export csv --output yield_events_2026.csv
 
 ### 14.2 LinkedIn Carousel Template
 
-Located at `branding/carousel_template.psd`. 
+Located at `branding/carousel_template.psd`.
 
 10-slide format:
+
 1. Hook slide — "50 protocols. 1 scanner. $0 to start."
 2. The Blue Ocean thesis
 3. Top 5 opportunities this week (generated from sweep output)
@@ -529,12 +537,12 @@ Located at `branding/carousel_template.psd`.
 
 ### 14.3 Content Schedule
 
-| Platform | Frequency | Content Type |
-|---|---|---|
-| LinkedIn | 2×/week | Carousel from weekly sweep results |
-| Twitter/X | Daily | Top opportunity from daily scan |
-| Telegram | Weekly | Full sweep report PDF |
-| GitHub | Continuous | Audit log and code updates |
+| Platform  | Frequency  | Content Type                       |
+| --------- | ---------- | ---------------------------------- |
+| LinkedIn  | 2×/week    | Carousel from weekly sweep results |
+| Twitter/X | Daily      | Top opportunity from daily scan    |
+| Telegram  | Weekly     | Full sweep report PDF              |
+| GitHub    | Continuous | Audit log and code updates         |
 
 ---
 
@@ -567,5 +575,5 @@ Located at `branding/carousel_template.psd`.
 
 ---
 
-*End of Playbook — penny-sovereign-yield-scout v1.0.0*  
-*Copyright 2026 Freedom Angel Corp / Audrey Evans. All Rights Reserved.*
+_End of Playbook — penny-sovereign-yield-scout v1.0.0_  
+_Copyright 2026 Freedom Angel Corp / Audrey Evans. All Rights Reserved._

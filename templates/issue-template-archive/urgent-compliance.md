@@ -9,18 +9,22 @@ assignees:
 ---
 
 ## Entity
+
 - Name:
 - Record type (CAGE/DUNS/Tax/SOS/Other):
 
 ## Deadline
+
 - Due date (YYYY-MM-DD):
 - Days remaining:
 - Threshold triggered (60/30/14/7/3/1):
 
 ## Renewal Link
+
 - Portal URL:
 
 ## Resolution Checklist
+
 - [ ] Verified record details are correct
 - [ ] Renewal submitted
 - [ ] Confirmation number/screenshot captured

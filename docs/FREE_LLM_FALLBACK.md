@@ -12,24 +12,32 @@ Free models have limits! Here's the plan:
 
 ### Known Limits (Per Model)
 
-| Model | Rate Limit | Strategy |
-|-------|------------|----------|
-| `llama-3.3-70b:free` | ~50 req/min | Rotate providers |
-| `hermes-3-405b:free` | ~30 req/min | Use for complex tasks only |
-| `gemma-4-31b:free` | ~100 req/min | Primary for fast tasks |
-| `qwen3-coder:free` | ~60 req/min | Coding only |
-| `nemotron-120b:free` | ~20 req/min | Long context, low frequency |
+| Model                | Rate Limit   | Strategy                    |
+| -------------------- | ------------ | --------------------------- |
+| `llama-3.3-70b:free` | ~50 req/min  | Rotate providers            |
+| `hermes-3-405b:free` | ~30 req/min  | Use for complex tasks only  |
+| `gemma-4-31b:free`   | ~100 req/min | Primary for fast tasks      |
+| `qwen3-coder:free`   | ~60 req/min  | Coding only                 |
+| `nemotron-120b:free` | ~20 req/min  | Long context, low frequency |
 
 ### Multi-Provider Fallback Plan
 
 ```javascript
 // Round-robin through free models to avoid rate limits
 const FREE_PROVIDERS = [
-  { name: 'llama', model: 'meta-llama/llama-3.3-70b-instruct:free', rpm: 50 },
-  { name: 'hermes', model: 'nousresearch/hermes-3-llama-3.1-405b:free', rpm: 30 },
-  { name: 'gemma', model: 'google/gemma-4-31b-it:free', rpm: 100 },
-  { name: 'qwen', model: 'qwen/qwen3-coder:free', rpm: 60 },
-  { name: 'nemotron', model: 'nvidia/nemotron-3-super-120b-a12b:free', rpm: 20 },
+  { name: "llama", model: "meta-llama/llama-3.3-70b-instruct:free", rpm: 50 },
+  {
+    name: "hermes",
+    model: "nousresearch/hermes-3-llama-3.1-405b:free",
+    rpm: 30,
+  },
+  { name: "gemma", model: "google/gemma-4-31b-it:free", rpm: 100 },
+  { name: "qwen", model: "qwen/qwen3-coder:free", rpm: 60 },
+  {
+    name: "nemotron",
+    model: "nvidia/nemotron-3-super-120b-a12b:free",
+    rpm: 20,
+  },
 ];
 
 // Rate limiter state
@@ -45,20 +53,21 @@ function getAvailableModel() {
   const now = Date.now();
   for (const provider of FREE_PROVIDERS) {
     const state = rateLimitState[provider.name];
-    
+
     // Reset counter if minute passed
     if (now > state.resetAt) {
       state.count = 0;
       state.resetAt = now + 60000;
     }
-    
+
     // Use if under limit
-    if (state.count < provider.rpm * 0.8) {  // 80% threshold
+    if (state.count < provider.rpm * 0.8) {
+      // 80% threshold
       state.count++;
       return provider.model;
     }
   }
-  return null;  // All limits hit
+  return null; // All limits hit
 }
 ```
 
@@ -79,7 +88,7 @@ jobs:
         run: |
           # Check which models are available
           AVAILABLE=""
-          
+
           # Test llama
           if ! curl -s -o /dev/null -w "%{http_code}" \
             -X POST "https://openrouter.ai/api/v1/chat/completions" \
@@ -88,7 +97,7 @@ jobs:
             -d '{"model":"meta-llama/llama-3.3-70b-instruct:free","messages":[{"role":"user","content":"test"}],"max_tokens":1}' | grep -q "429"; then
             AVAILABLE="$AVAILABLE llama"
           fi
-          
+
           echo "available=$AVAILABLE" >> $GITHUB_OUTPUT
 
       - name: Call LLM with rotation
@@ -100,7 +109,7 @@ jobs:
             "qwen/qwen3-coder:free"           # 60 rpm
             "nousresearch/hermes-3-llama-3.1-405b:free"  # 30 rpm
           )
-          
+
           for MODEL in "${MODELS[@]}"; do
             echo "Trying: $MODEL"
             RESULT=$(curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
@@ -124,7 +133,7 @@ jobs:
             
             echo "❌ Failed with $MODEL: $(echo $RESULT | jq -r '.error.message' 2>/dev/null)"
           done
-          
+
           # All failed - queue for later
           echo "result=Rate limited" >> $GITHUB_OUTPUT
           echo "model=exhausted" >> $GITHUB_OUTPUT
@@ -137,13 +146,13 @@ jobs:
 
 Assuming these limits per model:
 
-| Model | RPM | Requests/Min | Requests/Hour | Requests/Day |
-|-------|-----|--------------|---------------|--------------|
-| gemma-4-31b | 100 | 100 | 6,000 | 144,000 |
-| llama-3.3-70b | 50 | 50 | 3,000 | 72,000 |
-| qwen-coder | 60 | 60 | 3,600 | 86,400 |
-| hermes-405b | 30 | 30 | 1,800 | 43,200 |
-| nemotron-120b | 20 | 20 | 1,200 | 28,800 |
+| Model         | RPM | Requests/Min | Requests/Hour | Requests/Day |
+| ------------- | --- | ------------ | ------------- | ------------ |
+| gemma-4-31b   | 100 | 100          | 6,000         | 144,000      |
+| llama-3.3-70b | 50  | 50           | 3,000         | 72,000       |
+| qwen-coder    | 60  | 60           | 3,600         | 86,400       |
+| hermes-405b   | 30  | 30           | 1,800         | 43,200       |
+| nemotron-120b | 20  | 20           | 1,200         | 28,800       |
 
 **Combined daily capacity:** ~374,400 requests/day
 
@@ -162,7 +171,7 @@ For when limits are hit, add a queue:
   run: |
     # Save request to queue file
     echo '{"prompt":"${{ inputs.prompt }}","timestamp":"'$(date -Iseconds)'"}' >> queued_requests.json
-    
+
     # If queue > 100, trigger backup workflow
     if [ $(wc -l < queued_requests.json) -gt 100 ]; then
       gh workflow run backup-llm-processing.yml
@@ -190,13 +199,13 @@ Since OpenRouter credits are exhausted, use these **FREE models first**:
 
 ### Priority Order (Best to Fastest)
 
-| Priority | Model | Context | RPM | Best For |
-|----------|-------|---------|-----|----------|
-| 1️⃣ | `google/gemma-4-31b-it:free` | 262K | 100 | Fast responses (highest limit) |
-| 2️⃣ | `meta-llama/llama-3.3-70b-instruct:free` | 131K | 50 | General tasks, balanced |
-| 3️⃣ | `qwen/qwen3-coder:free` | 32K | 60 | Coding tasks |
-| 4️⃣ | `nousresearch/hermes-3-llama-3.1-405b:free` | 131K | 30 | Complex reasoning |
-| 5️⃣ | `nvidia/nemotron-3-super-120b-a12b:free` | 1M | 20 | Long context |
+| Priority | Model                                       | Context | RPM | Best For                       |
+| -------- | ------------------------------------------- | ------- | --- | ------------------------------ |
+| 1️⃣       | `google/gemma-4-31b-it:free`                | 262K    | 100 | Fast responses (highest limit) |
+| 2️⃣       | `meta-llama/llama-3.3-70b-instruct:free`    | 131K    | 50  | General tasks, balanced        |
+| 3️⃣       | `qwen/qwen3-coder:free`                     | 32K     | 60  | Coding tasks                   |
+| 4️⃣       | `nousresearch/hermes-3-llama-3.1-405b:free` | 131K    | 30  | Complex reasoning              |
+| 5️⃣       | `nvidia/nemotron-3-super-120b-a12b:free`    | 1M      | 20  | Long context                   |
 
 ---
 
@@ -220,17 +229,17 @@ FALLBACK_4=nousresearch/hermes-3-llama-3.1-405b:free  # 30 rpm
 
 ## Available Free Models (OpenRouter)
 
-| Model ID | Context | RPM | Strengths |
-|----------|---------|-----|-----------|
-| `google/gemma-4-31b-it:free` | 262K | 100 | **Fast, high limit** |
-| `google/gemma-4-26b-a4b-it:free` | 262K | 100 | Balanced |
-| `meta-llama/llama-3.3-70b-instruct:free` | 131K | 50 | General purpose |
-| `qwen/qwen3-coder:free` | 32K | 60 | **Coding** |
-| `qwen/qwen3-next-80b-a3b-instruct:free` | 32K | 40 | Next-gen |
-| `nousresearch/hermes-3-llama-3.1-405b:free` | 131K | 30 | Reasoning |
-| `nvidia/nemotron-3-super-120b-a12b:free` | 1M | 20 | **Longest context** |
-| `cognitivecomputations/dolphin-mistral-24b:free` | 32K | 50 | Uncensored |
-| `nvidia/nemotron-3-nano-30b-a3b:free` | 256K | 80 | Small, fast |
+| Model ID                                         | Context | RPM | Strengths            |
+| ------------------------------------------------ | ------- | --- | -------------------- |
+| `google/gemma-4-31b-it:free`                     | 262K    | 100 | **Fast, high limit** |
+| `google/gemma-4-26b-a4b-it:free`                 | 262K    | 100 | Balanced             |
+| `meta-llama/llama-3.3-70b-instruct:free`         | 131K    | 50  | General purpose      |
+| `qwen/qwen3-coder:free`                          | 32K     | 60  | **Coding**           |
+| `qwen/qwen3-next-80b-a3b-instruct:free`          | 32K     | 40  | Next-gen             |
+| `nousresearch/hermes-3-llama-3.1-405b:free`      | 131K    | 30  | Reasoning            |
+| `nvidia/nemotron-3-super-120b-a12b:free`         | 1M      | 20  | **Longest context**  |
+| `cognitivecomputations/dolphin-mistral-24b:free` | 32K     | 50  | Uncensored           |
+| `nvidia/nemotron-3-nano-30b-a3b:free`            | 256K    | 80  | Small, fast          |
 
 ---
 
@@ -239,6 +248,7 @@ FALLBACK_4=nousresearch/hermes-3-llama-3.1-405b:free  # 30 rpm
 **This is the preferred free option!** Uses `helallao/perplexity-ai` fork - no API key needed.
 
 ### How it works:
+
 ```bash
 # Install the no-key fork
 pip install "perplexity-api[mcp] @ git+https://github.com/helallao/perplexity-ai.git@main"
@@ -248,6 +258,7 @@ python scripts/perplexity-research-issue.js --issue 12345
 ```
 
 ### Workflow Integration:
+
 ```yaml
 - name: Perplexity Research (no key)
   run: |
@@ -257,13 +268,14 @@ python scripts/perplexity-research-issue.js --issue 12345
 
 ### Available Models via Perplexity No-Key:
 
-| Model | Description | Best For |
-|-------|-------------|----------|
-| `sonar` | Fast web search | Quick research |
-| `sonar-pro` | Better quality | Detailed analysis |
+| Model                 | Description        | Best For               |
+| --------------------- | ------------------ | ---------------------- |
+| `sonar`               | Fast web search    | Quick research         |
+| `sonar-pro`           | Better quality     | Detailed analysis      |
 | `sonar-deep-research` | Deep research mode | Comprehensive research |
 
 ### Reference Docs:
+
 - [`docs/PERPLEXITY_NO_KEY_INTEGRATION.md`](./PERPLEXITY_NO_KEY_INTEGRATION.md)
 - [`scripts/perplexity-research-issue.js`](../scripts/perplexity-research-issue.js)
 - [helallao/perplexity-ai](https://github.com/helallao/perplexity-ai) (fork repo)

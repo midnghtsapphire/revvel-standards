@@ -17,13 +17,13 @@
 
 ## 1. Research Phase
 
-| Task | Tool | Output |
-|------|------|--------|
-| Validate agent workflow gap | Agent forums, Discord, GitHub discussions | Confirmed gap — agents struggle with this task |
-| Audit existing skills/playbooks | OpenHands skills, Claude projects, Cursor rules | `research/competitors.md` — what exists |
-| Identify target agents | Which platforms support skill files | `research/audience.md` — OpenHands (.agents/), Claude (.claude/), Cursor (.cursor/) |
-| Define skill scope | What the skill teaches vs. what it doesn't | `research/scope.md` — boundaries |
-| Determine pricing | Free / paid / bundled | `decision/pricing.json` |
+| Task                            | Tool                                            | Output                                                                              |
+| ------------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Validate agent workflow gap     | Agent forums, Discord, GitHub discussions       | Confirmed gap — agents struggle with this task                                      |
+| Audit existing skills/playbooks | OpenHands skills, Claude projects, Cursor rules | `research/competitors.md` — what exists                                             |
+| Identify target agents          | Which platforms support skill files             | `research/audience.md` — OpenHands (.agents/), Claude (.claude/), Cursor (.cursor/) |
+| Define skill scope              | What the skill teaches vs. what it doesn't      | `research/scope.md` — boundaries                                                    |
+| Determine pricing               | Free / paid / bundled                           | `decision/pricing.json`                                                             |
 
 **Gate:** `research/brief.md` must exist before proceeding.
 
@@ -59,42 +59,52 @@ build/skill/
 
 Every skill MUST follow this structure:
 
-```markdown
+````markdown
 # Skill: <Name>
 
 ## Purpose
+
 One sentence: what this skill enables an agent to do.
 
 ## Prerequisites
+
 - Required tools (installed or installable)
 - Required credentials (with Doppler paths)
 - Required repo state
 
 ## Steps
+
 1. **Step Name** — Description
    ```bash
    command to run
    ```
-   Expected output: ...
+````
+
+Expected output: ...
 
 2. **Step Name** — Description
    ...
 
 ## Verification
+
 How to confirm the skill executed correctly:
+
 - [ ] Check 1
 - [ ] Check 2
 
 ## Troubleshooting
-| Symptom | Cause | Fix |
-|---------|-------|-----|
+
+| Symptom | Cause     | Fix   |
+| ------- | --------- | ----- |
 | Error X | Missing Y | Run Z |
 
 ## Connections
-| Service | Purpose | Credential path |
-|---------|---------|-----------------|
-| ... | ... | Doppler `project/config/KEY` |
-```
+
+| Service | Purpose | Credential path              |
+| ------- | ------- | ---------------------------- |
+| ...     | ...     | Doppler `project/config/KEY` |
+
+````
 
 ### Quality Gates
 
@@ -144,29 +154,29 @@ SKILL_DIR=".agents/skills/<skill-name>"
 mkdir -p "$SKILL_DIR"
 curl -sL https://revvel.io/skills/<skill-name>/SKILL.md > "$SKILL_DIR/SKILL.md"
 echo "Skill installed to $SKILL_DIR/SKILL.md"
-```
+````
 
 ---
 
 ## 5. Connections Required
 
-| Connection | Purpose | Where stored |
-|------------|---------|--------------|
-| **GitHub token** | PR skills into repos | Already available via Git auth |
-| **npm token** | Publish skill package | Doppler `revvel-standards/prd/NPM_TOKEN` |
-| **Stripe API key** | Premium skill sales | Doppler `revvel-standards/prd/STRIPE_SECRET_KEY` |
-| **Skill-specific APIs** | Whatever the skill automates | Doppler (per-skill) |
+| Connection              | Purpose                      | Where stored                                     |
+| ----------------------- | ---------------------------- | ------------------------------------------------ |
+| **GitHub token**        | PR skills into repos         | Already available via Git auth                   |
+| **npm token**           | Publish skill package        | Doppler `revvel-standards/prd/NPM_TOKEN`         |
+| **Stripe API key**      | Premium skill sales          | Doppler `revvel-standards/prd/STRIPE_SECRET_KEY` |
+| **Skill-specific APIs** | Whatever the skill automates | Doppler (per-skill)                              |
 
 ---
 
 ## Monetization Models
 
-| Model | How | Example |
-|-------|-----|---------|
-| **Free (lead gen)** | Skill is free, sells related MCP/API/CLI | Most common |
-| **Premium skill pack** | Bundle of 5-10 related skills | Gumroad / Stripe ($19-49) |
-| **Enterprise** | Custom skills for a company's workflow | Direct sales |
-| **Subscription** | Monthly skill updates + new skills | Stripe recurring |
+| Model                  | How                                      | Example                   |
+| ---------------------- | ---------------------------------------- | ------------------------- |
+| **Free (lead gen)**    | Skill is free, sells related MCP/API/CLI | Most common               |
+| **Premium skill pack** | Bundle of 5-10 related skills            | Gumroad / Stripe ($19-49) |
+| **Enterprise**         | Custom skills for a company's workflow   | Direct sales              |
+| **Subscription**       | Monthly skill updates + new skills       | Stripe recurring          |
 
 ---
 

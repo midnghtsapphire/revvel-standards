@@ -7,6 +7,7 @@ This document shows examples of the PR status badges that will be automatically 
 ## Status Badge Styles
 
 ### Awaiting Approval (Yellow)
+
 ![Awaiting Approval](https://img.shields.io/badge/status-awaiting_approval-yellow?style=for-the-badge)
 
 **Meaning:** PR has been opened and is waiting for initial review
@@ -14,6 +15,7 @@ This document shows examples of the PR status badges that will be automatically 
 ---
 
 ### Review Started (Blue)
+
 ![Review Started](https://img.shields.io/badge/status-review_started-blue?style=for-the-badge)
 
 **Meaning:** At least one reviewer has started reviewing (submitted comments)
@@ -21,6 +23,7 @@ This document shows examples of the PR status badges that will be automatically 
 ---
 
 ### Changes Requested (Red)
+
 ![Changes Requested](https://img.shields.io/badge/status-changes_requested-red?style=for-the-badge)
 
 **Meaning:** One or more reviewers have requested changes
@@ -28,6 +31,7 @@ This document shows examples of the PR status badges that will be automatically 
 ---
 
 ### Approved (Green)
+
 ![Approved](https://img.shields.io/badge/status-approved-green?style=for-the-badge)
 
 **Meaning:** All reviews are approvals, PR is ready to merge ✅
@@ -50,6 +54,7 @@ This is what the automated comment will look like on a PR:
 > 💬 **@charlie** — Commented
 >
 > ---
+>
 > _This status is updated automatically by the PR Review Status Automation workflow._
 
 ---
@@ -57,18 +62,21 @@ This is what the automated comment will look like on a PR:
 ## Alternative Badge Styles
 
 ### Flat Style
+
 ![Awaiting](https://img.shields.io/badge/status-awaiting_approval-yellow?style=flat)
 ![Review](https://img.shields.io/badge/status-review_started-blue?style=flat)
 ![Changes](https://img.shields.io/badge/status-changes_requested-red?style=flat)
 ![Approved](https://img.shields.io/badge/status-approved-green?style=flat)
 
 ### Flat-Square Style
+
 ![Awaiting](https://img.shields.io/badge/status-awaiting_approval-yellow?style=flat-square)
 ![Review](https://img.shields.io/badge/status-review_started-blue?style=flat-square)
 ![Changes](https://img.shields.io/badge/status-changes_requested-red?style=flat-square)
 ![Approved](https://img.shields.io/badge/status-approved-green?style=flat-square)
 
 ### Plastic Style
+
 ![Awaiting](https://img.shields.io/badge/status-awaiting_approval-yellow?style=plastic)
 ![Review](https://img.shields.io/badge/status-review_started-blue?style=plastic)
 ![Changes](https://img.shields.io/badge/status-changes_requested-red?style=plastic)
@@ -80,12 +88,12 @@ This is what the automated comment will look like on a PR:
 
 The labels match the badge colors for visual consistency:
 
-| Label | Badge | Color |
-|-------|-------|-------|
+| Label             | Badge                                                        | Color            |
+| ----------------- | ------------------------------------------------------------ | ---------------- |
 | awaiting-approval | ![](https://img.shields.io/badge/-awaiting__approval-fbca04) | Yellow (#fbca04) |
-| review-started | ![](https://img.shields.io/badge/-review__started-0075ca) | Blue (#0075ca) |
-| changes-requested | ![](https://img.shields.io/badge/-changes__requested-d93f0b) | Red (#d93f0b) |
-| approved | ![](https://img.shields.io/badge/-approved-0e8a16) | Green (#0e8a16) |
+| review-started    | ![](https://img.shields.io/badge/-review__started-0075ca)    | Blue (#0075ca)   |
+| changes-requested | ![](https://img.shields.io/badge/-changes__requested-d93f0b) | Red (#d93f0b)    |
+| approved          | ![](https://img.shields.io/badge/-approved-0e8a16)           | Green (#0e8a16)  |
 
 ---
 
@@ -162,6 +170,7 @@ You can add these status indicators to your repository README:
 ![Closed PRs](https://img.shields.io/github/issues-pr-closed/midnghtsapphire/revvel-standards?style=for-the-badge&color=purple)
 
 #### Review Status Legend
+
 ![Awaiting](https://img.shields.io/badge/awaiting-3-yellow?style=for-the-badge)
 ![Approved](https://img.shields.io/badge/approved-2-green?style=for-the-badge)
 ![Changes](https://img.shields.io/badge/changes-1-red?style=for-the-badge)
@@ -173,12 +182,12 @@ You can add these status indicators to your repository README:
 
 The workflow uses these emoji icons in the comment:
 
-| State | Emoji | Meaning |
-|-------|-------|---------|
-| Approved | ✅ | Reviewer approved |
-| Changes Requested | 🔴 | Reviewer requested changes |
-| Commented | 💬 | Reviewer left comments |
-| Reviewed | 👁️ | General review (rare) |
+| State             | Emoji | Meaning                    |
+| ----------------- | ----- | -------------------------- |
+| Approved          | ✅    | Reviewer approved          |
+| Changes Requested | 🔴    | Reviewer requested changes |
+| Commented         | 💬    | Reviewer left comments     |
+| Reviewed          | 👁️    | General review (rare)      |
 
 ---
 

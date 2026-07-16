@@ -1,19 +1,24 @@
-'use client';
+"use client";
 // description: Ad creation wizard — scrape a product URL, generate AI ad copy, build static creatives, and launch campaigns.
 
-import { useState } from 'react';
-import Link from 'next/link';
-import WizardStepper from '../../components/WizardStepper';
-import ProductScrapeStep from '../../components/ProductScrapeStep';
-import AdCopyStep from '../../components/AdCopyStep';
-import CreativeStep from '../../components/CreativeStep';
-import VideoAdStep from '../../components/VideoAdStep';
-import { AdCopy, Campaign, ProductData, StaticCreative } from '../../types';
+import { useState } from "react";
+import Link from "next/link";
+import WizardStepper from "../../components/WizardStepper";
+import ProductScrapeStep from "../../components/ProductScrapeStep";
+import AdCopyStep from "../../components/AdCopyStep";
+import CreativeStep from "../../components/CreativeStep";
+import VideoAdStep from "../../components/VideoAdStep";
+import type {
+  AdCopy,
+  Campaign,
+  ProductData,
+  StaticCreative,
+} from "../../types";
 import {
   generateCampaignId,
   saveCampaign,
   seedDemoCampaigns,
-} from '../../lib/campaign-store';
+} from "../../lib/campaign-store";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -50,8 +55,8 @@ export default function CreateAdPage() {
       productData: product,
       adCopy: adCopy || undefined,
       creatives: creative ? [creative] : [],
-      platform: 'meta',
-      status: 'draft',
+      platform: "meta",
+      status: "draft",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -68,7 +73,8 @@ export default function CreateAdPage() {
           Campaign Saved!
         </h1>
         <p className="text-gray-500 mb-8">
-          Your ad assets have been saved to the campaign manager. Ready to launch!
+          Your ad assets have been saved to the campaign manager. Ready to
+          launch!
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
@@ -99,9 +105,7 @@ export default function CreateAdPage() {
       <WizardStepper currentStep={step} />
 
       <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 p-8 shadow-sm">
-        {step === 1 && (
-          <ProductScrapeStep onComplete={handleProductComplete} />
-        )}
+        {step === 1 && <ProductScrapeStep onComplete={handleProductComplete} />}
 
         {step === 2 && product && (
           <AdCopyStep

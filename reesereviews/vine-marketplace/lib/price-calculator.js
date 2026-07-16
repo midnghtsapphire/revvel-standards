@@ -9,10 +9,8 @@
  * DISCOUNT_RATE defaults to 0.20 (20% off) per owner spec.
  */
 
-'use strict';
-
-const DISCOUNT_RATE = parseFloat(process.env.LISTING_DISCOUNT_RATE || '0.20');
-const MIN_LISTING_PRICE = parseFloat(process.env.MIN_LISTING_PRICE || '1.00');
+const DISCOUNT_RATE = parseFloat(process.env.LISTING_DISCOUNT_RATE || "0.20");
+const MIN_LISTING_PRICE = parseFloat(process.env.MIN_LISTING_PRICE || "1.00");
 
 /**
  * @param {object} product
@@ -54,7 +52,10 @@ function calculateListingPrice(product) {
  * Format price as USD string for Marketplace listing.
  */
 function formatUSD(amount) {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount);
 }
 
 module.exports = { calculateListingPrice, formatUSD, DISCOUNT_RATE };

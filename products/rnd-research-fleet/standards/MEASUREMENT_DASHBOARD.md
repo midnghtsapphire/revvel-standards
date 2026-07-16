@@ -1,6 +1,6 @@
 # R&D Research Fleet - Measurement Dashboard
 
-*Track your research fleet performance in real-time*
+_Track your research fleet performance in real-time_
 
 ---
 
@@ -19,10 +19,11 @@ Your research fleet generates real-time metrics. This dashboard tracks:
 ## Key Metrics
 
 ### 1. Research Quality Score (RQS)
+
 **Target: 85+**
 
 ```
-RQS = 
+RQS =
   Source Quality (30%) +
   Methodology Adherence (25%) +
   Completeness (20%) +
@@ -31,33 +32,38 @@ RQS =
 ```
 
 ### 2. Agent Trust Score (ATS)
+
 **Target: 80+**
 
 Starts at 70. Updates after every research task.
+
 - Excellent task: +5
 - Good task: +2
 - Failed task: -10
 - Hallucination: -15
 
 ### 3. Framework Effectiveness Index (FEI)
+
 **Target: 90%+**
 
 Which frameworks produce the best results?
 
-| Framework | Best For | Success Rate |
-|-----------|----------|--------------|
-| DOE | Feasibility | 85% |
-| TRIZ | Innovation | 78% |
-| BNAT | Discovery | 72% |
-| Lead Search | Outreach | 90% |
-| Merchandise | Products | 88% |
+| Framework   | Best For    | Success Rate |
+| ----------- | ----------- | ------------ |
+| DOE         | Feasibility | 85%          |
+| TRIZ        | Innovation  | 78%          |
+| BNAT        | Discovery   | 72%          |
+| Lead Search | Outreach    | 90%          |
+| Merchandise | Products    | 88%          |
 
 ### 4. Self-Healing Rate (SHR)
+
 **Target: <5%**
 
 % of tasks that needed self-healing intervention.
 
 ### 5. Time to Insight (TTI)
+
 **Target: <5 min**
 
 Average time from query to actionable insight.
@@ -94,13 +100,13 @@ Average time from query to actionable insight.
 
 ## Score Thresholds
 
-| Score | Status | Action |
-|-------|--------|--------|
-| 90-100 | Excellent | Continue |
-| 80-89 | Good | Minor tweaks |
-| 70-79 | Acceptable | Review needed |
-| 60-69 | Warning | Self-heal triggered |
-| <60 | Critical | Immediate fix |
+| Score  | Status     | Action              |
+| ------ | ---------- | ------------------- |
+| 90-100 | Excellent  | Continue            |
+| 80-89  | Good       | Minor tweaks        |
+| 70-79  | Acceptable | Review needed       |
+| 60-69  | Warning    | Self-heal triggered |
+| <60    | Critical   | Immediate fix       |
 
 ---
 

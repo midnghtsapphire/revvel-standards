@@ -17,6 +17,7 @@ Founders, agencies, and AI builders waste 4-12 hours per project producing promp
 ## Differentiation
 
 We ship **due-diligence packets**, not prompt catalogs:
+
 1. Market facts with source URLs
 2. Competitor gap matrix
 3. Blue-ocean / red-ocean scores
@@ -55,6 +56,7 @@ We ship **due-diligence packets**, not prompt catalogs:
 1. Wire Polar.sh checkout to packet generator
 2. Add LLM-augmented source retrieval (v2)
 3. Ship `/api/packet` JSON endpoint for programmatic access ($99/mo tier)
+
 # Research Packet: Prompt Generation App
 
 **Product:** Revvel PromptForge  
@@ -80,13 +82,13 @@ Raw work requests often combine Audrey's notes, copied snippets, and LLM output.
 
 ## Market Facts and Stats
 
-| Fact | Source | How It Affects This Product |
-|---|---|---|
-| Prompt engineering market grows from $1.13B in 2025 to $1.49B in 2026, then to $4.51B by 2030 at 31.9% CAGR. | Research and Markets, Prompt Engineering Market Report 2026 | Confirms market demand, but the high CAGR also attracts many me-too prompt products. |
-| Major trends include automated prompt optimization, domain-specific prompt libraries, multi-modal prompt design, enterprise prompt management, and prompt testing/validation frameworks. | Research and Markets | PromptForge should emphasize domain-specific Revvel workflows and validation/checklist output. |
-| PromptBase advertises 270k prompts, 39k+ reviews, and 450k+ users. | PromptBase homepage | Prompt marketplaces are validated but crowded. Do not compete as a simple catalog. |
-| PromptBase visible examples show individual prompt prices around $2.99-$6.99. | PromptBase homepage | A $29 packet needs to sell a fuller outcome than a single prompt. |
-| AIPRM promotes prompt management, private prompts, lists, forking, live crawling, custom profiles, and team use. | AIPRM pricing and plan docs | Differentiation must be source-backed packet generation, not just saved prompt organization. |
+| Fact                                                                                                                                                                                     | Source                                                      | How It Affects This Product                                                                    |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Prompt engineering market grows from $1.13B in 2025 to $1.49B in 2026, then to $4.51B by 2030 at 31.9% CAGR.                                                                             | Research and Markets, Prompt Engineering Market Report 2026 | Confirms market demand, but the high CAGR also attracts many me-too prompt products.           |
+| Major trends include automated prompt optimization, domain-specific prompt libraries, multi-modal prompt design, enterprise prompt management, and prompt testing/validation frameworks. | Research and Markets                                        | PromptForge should emphasize domain-specific Revvel workflows and validation/checklist output. |
+| PromptBase advertises 270k prompts, 39k+ reviews, and 450k+ users.                                                                                                                       | PromptBase homepage                                         | Prompt marketplaces are validated but crowded. Do not compete as a simple catalog.             |
+| PromptBase visible examples show individual prompt prices around $2.99-$6.99.                                                                                                            | PromptBase homepage                                         | A $29 packet needs to sell a fuller outcome than a single prompt.                              |
+| AIPRM promotes prompt management, private prompts, lists, forking, live crawling, custom profiles, and team use.                                                                         | AIPRM pricing and plan docs                                 | Differentiation must be source-backed packet generation, not just saved prompt organization.   |
 
 ## Internal Due Diligence
 
@@ -109,13 +111,13 @@ Revvel already has research-engine logic and prompt assets, but no shipped promp
 
 ## Competitor Matrix
 
-| Competitor | Current Strength | Gap PromptForge Uses |
-|---|---|---|
-| PromptBase | Large marketplace with paid prompts, reviews, and creator economics. | Buyers still need project-specific due diligence, source logs, and implementation gates. |
-| AIPRM | ChatGPT-native prompt management, private prompts, live crawling, team features. | Strong prompt reuse, weaker WR-to-PR research packet workflow. |
-| FlowGPT | Huge community experimentation and broad prompt/character variety. | Quality variance and weak evidence packaging. |
-| PromptPerfect | Optimizes prompt wording and compares model output. | Optimizes phrasing more than product-market proof. |
-| Generic LLM chat | Flexible and immediate. | No persistent checklist, source log, competitor matrix, or review queue. |
+| Competitor       | Current Strength                                                                 | Gap PromptForge Uses                                                                     |
+| ---------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| PromptBase       | Large marketplace with paid prompts, reviews, and creator economics.             | Buyers still need project-specific due diligence, source logs, and implementation gates. |
+| AIPRM            | ChatGPT-native prompt management, private prompts, live crawling, team features. | Strong prompt reuse, weaker WR-to-PR research packet workflow.                           |
+| FlowGPT          | Huge community experimentation and broad prompt/character variety.               | Quality variance and weak evidence packaging.                                            |
+| PromptPerfect    | Optimizes prompt wording and compares model output.                              | Optimizes phrasing more than product-market proof.                                       |
+| Generic LLM chat | Flexible and immediate.                                                          | No persistent checklist, source log, competitor matrix, or review queue.                 |
 
 ## Public Chatter Summary
 
@@ -160,11 +162,11 @@ Primary copy angle:
 
 ## Offer and Pricing Tests
 
-| Offer | Price | Why |
-|---|---:|---|
-| Single exported prompt research packet | $29 | Higher value than a $3-$7 marketplace prompt because it includes research and review gates. |
-| Prompt workspace subscription | $99/month | For founders/agencies producing repeat packets. |
-| Done-with-you packet setup | $499 | Fast service offer for one product idea converted into a WR/PR-ready packet. |
+| Offer                                  |     Price | Why                                                                                         |
+| -------------------------------------- | --------: | ------------------------------------------------------------------------------------------- |
+| Single exported prompt research packet |       $29 | Higher value than a $3-$7 marketplace prompt because it includes research and review gates. |
+| Prompt workspace subscription          | $99/month | For founders/agencies producing repeat packets.                                             |
+| Done-with-you packet setup             |      $499 | Fast service offer for one product idea converted into a WR/PR-ready packet.                |
 
 ## Build Requirements Delivered
 

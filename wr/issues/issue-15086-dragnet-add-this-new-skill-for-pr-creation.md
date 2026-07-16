@@ -1,11 +1,13 @@
 # Dragnet Skill: PR Creation
 
 ## Overview
+
 This skill enables automated pull request creation with proper reviewer assignment based on CODEOWNERS configuration.
 
 ## Reviewer Assignment
 
 Reviewers are assigned dynamically based on the repository's `CODEOWNERS` file. This ensures:
+
 - Proper load distribution across the team
 - No single point of failure
 - Automatic rotation based on file ownership
@@ -14,11 +16,13 @@ Reviewers are assigned dynamically based on the repository's `CODEOWNERS` file. 
 ### Implementation
 
 The skill reads the `CODEOWNERS` file from one of these standard locations:
+
 - `.github/CODEOWNERS`
 - `CODEOWNERS`
 - `docs/CODEOWNERS`
 
 For each changed file in the PR, the skill:
+
 1. Matches the file path against CODEOWNERS patterns
 2. Collects all matching owners (users and teams)
 3. Deduplicates the reviewer list
@@ -29,9 +33,11 @@ For each changed file in the PR, the skill:
 # Skill: Dragnet PR Creation
 
 ## Overview
+
 This skill defines the automated process for creating pull requests via the Dragnet system. It ensures consistent PR metadata, proper reviewer assignment, and compliance with repository standards.
 
 ## Purpose
+
 Standardize PR creation across the organization while respecting per-repository governance rules (CODEOWNERS, branch protections, labels).
 
 ## Reviewer Assignment Policy
@@ -39,6 +45,7 @@ Standardize PR creation across the organization while respecting per-repository 
 **Authoritative source:** The `CODEOWNERS` file at the repository root (or `.github/CODEOWNERS`) is the single source of truth for reviewer assignment. The skill MUST NOT hardcode individual reviewer usernames.
 
 ### Resolution Algorithm
+
 1. Load `CODEOWNERS` from the target repository's default branch.
 2. For each file path in the PR diff, match against CODEOWNERS patterns (last matching pattern wins, per GitHub semantics).
 3. Collect the union of owners (users and teams) across all changed files.
@@ -47,12 +54,14 @@ Standardize PR creation across the organization while respecting per-repository 
 6. Respect team-level round-robin / load-balancing configured in the team's review settings.
 
 ### Prohibited
+
 - Hardcoding any specific GitHub username (e.g., `midnghtsapphire`) as a reviewer in skill logic.
 - Bypassing CODEOWNERS by injecting a static reviewer list at PR creation time.
 
 ## Skill Instructions
 
 ### Inputs
+
 - `repo`: target repository (owner/name)
 - `base_branch`: base branch for the PR
 - `head_branch`: source branch for the PR
@@ -97,14 +106,18 @@ def create_pr(repo, base_branch, head_branch, title, body, labels=None):
 
     return pr
 ```
+
 # Global fallback
-*                    @org/platform-team
+
+-                    @org/platform-team
 
 # Path-specific ownership
-/wr/                 @org/wr-team
-/skills/             @org/skills-team
-*.md                 @org/docs-team
-```
+
+/wr/ @org/wr-team
+/skills/ @org/skills-team
+*.md @org/docs-team
+
+````
 
 ### Reviewer Resolution Algorithm
 
@@ -117,7 +130,7 @@ def resolve_reviewers(changed_files, codeowners_rules):
                 reviewers.update(owners)
                 break  # Last matching rule wins
     return list(reviewers)
-```
+````
 
 ## PR Creation Flow
 
@@ -141,6 +154,7 @@ assignments MUST come from the CODEOWNERS file to ensure:
 ## Fallback Behavior
 
 If no CODEOWNERS file exists or no patterns match the changed files:
+
 1. Log a warning
 2. Fall back to the repository default reviewers (configured at repo level)
 3. Do NOT hardcode any specific username
@@ -148,6 +162,7 @@ If no CODEOWNERS file exists or no patterns match the changed files:
 ## Testing
 
 Test cases must verify:
+
 - Multiple reviewers are correctly resolved from CODEOWNERS
 - Reviewer rotation works across different file paths
 - Team-based assignments are honored
@@ -158,11 +173,14 @@ Test cases must verify:
 - [GitHub CODEOWNERS documentation](https://docs.github.com/en/repositories/managing-your-repositories-settings-and-features/customizing-your-repository/about-code-owners)
 - Related issue: #16060
 - Original PR: #15089
+
 ## Testing
+
 - Unit test `resolve_codeowners` with multiple patterns and last-match semantics.
 - Integration test: open a PR touching files owned by different teams and confirm all owners are requested.
 - Regression test: assert no test fixture or config contains a hardcoded reviewer username.
 
 ## Change Log
+
 - Removed hardcoded `midnghtsapphire` reviewer assignment.
 - Reviewer resolution is now driven exclusively by CODEOWNERS with a team-based fallback.

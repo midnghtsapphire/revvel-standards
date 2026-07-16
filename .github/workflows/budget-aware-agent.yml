@@ -43,10 +43,10 @@ jobs:
           USED=${{ env.MONTHLY_BUDGET_USED }}
           LIMIT=${{ env.MONTHLY_BUDGET_LIMIT }}
           FREE=${{ env.FREE_TIER_REMAINING }}
-          
+
           # Calculate percentage
           PERCENT=$(echo "scale=0; $USED * 100 / $LIMIT" | bc 2>/dev/null || echo "0")
-          
+
           # Budget decision tree
           if [[ "$PERCENT" -lt 50 ]]; then
             echo "status=healthy" >> $GITHUB_OUTPUT
@@ -61,7 +61,7 @@ jobs:
             echo "status=critical" >> $GITHUB_OUTPUT
             echo "budget_remaining=exhausted" >> $GITHUB_OUTPUT
           fi
-          
+
           echo "Budget: $PERCENT% used"
 
       - name: Route to appropriate agent
@@ -70,7 +70,7 @@ jobs:
           # Parse required agents
           REQUIRED="${{ github.event.inputs.required_agents || 'devin' }}"
           STATUS="${{ steps.budget.outputs.status }}"
-          
+
           # Decision tree based on budget
           case "$STATUS" in
             healthy)
@@ -94,7 +94,7 @@ jobs:
               echo "routing_reason=Budget critical - using free tier only"
               ;;
           esac
-          
+
           echo "Selected: ${{ steps.routing.outputs.agent }}"
 
   # PHASE 2: Execute with selected agent
@@ -108,12 +108,12 @@ jobs:
           AGENT="${{ needs.assess-budget.outputs.selected_agent }}"
           TASK="${{ github.event.inputs.task }}"
           REASON="${{ needs.assess-budget.outputs.routing_reason }}"
-          
+
           echo "=== BUDGET-AWARE EXECUTION ==="
           echo "Task: $TASK"
           echo "Agent: $AGENT"
           echo "Reason: $REASON"
-          
+
           # Execute based on selected agent
           case "$AGENT" in
             devin)
@@ -131,7 +131,7 @@ jobs:
               # Create WR for manual triage if task is complex
               ;;
           esac
-          
+
           echo "✅ Task executed with $AGENT"
 
   # PHASE 3: If agent fails, route to next available
@@ -150,9 +150,9 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           FAILED_AGENT="${{ needs.assess-budget.outputs.selected_agent }}"
-          
+
           echo "⚠️ $FAILED_AGENT failed - trying fallback..."
-          
+
           # NEVER block - create WR or continue
           if [[ "$FAILED_AGENT" == "free-fallback" ]]; then
             # Last resort - create WR for human

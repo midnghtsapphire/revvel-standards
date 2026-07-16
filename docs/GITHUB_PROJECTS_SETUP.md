@@ -7,6 +7,7 @@ Complete guide to setting up GitHub Projects, Labels, and Milestones for the Rev
 **Scope:** This is the standard for **all Revvel repos**. Project setup is a mandatory gate before any issue intake (including in this repo).
 
 **Enterprise-first prerequisite:** Migration to the enterprise org and global secrets/PATs are the largest prerequisite steps before project/issue intake.
+
 - See [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](../docs/Master_Inventory/REPOSITORY_PRIVACY_MIGRATION_STANDARD.md)
 - See [`SECRETS_MANAGEMENT.md`](../docs/SECRETS_MANAGEMENT.md)
 
@@ -58,27 +59,27 @@ gh label create "merge-queue-pr"  --color "c5def5" --description "Created by Mer
 
 ### Full Label Reference
 
-| Label | Color | Purpose |
-|---|---|---|
-| `bug` | `#d73a4a` | Something isn't working |
-| `enhancement` | `#a2eeef` | New feature or request |
-| `security` | `#cc0000` | Security vulnerability or concern |
-| `bom-purchase` | `#ffd700` | Requires a purchase (links to BOM.md) |
-| `design` | `#7057ff` | Design/brand work needed (Revvel Emblem, icons) |
-| `blocked` | `#e4e669` | Blocked by external dependency |
-| `triage` | `#e4e669` | Needs triage — newly opened issue awaiting classification |
-| `priority-p0` | `#b60205` | Critical priority — drop everything |
-| `priority-p1` | `#d93f0b` | High priority — next up |
-| `priority-p2` | `#fbca04` | Medium priority — normal queue |
-| `priority-p3` | `#0e8a16` | Low priority — backlog |
-| `in-review` | `#fbca04` | Linked PR is open and ready for review (set automatically) |
-| `auto-fix` | `#0075ca` | Created by auto-fix workflow |
-| `copilot` | `#0075ca` | Assigned to Copilot for fixing |
-| `documentation` | `#0075ca` | Documentation only |
-| `good-first-issue` | `#7057ff` | Good for newcomers |
-| `wontfix` | `#ffffff` | This will not be worked on |
-| `docker` | `#0db7ed` | Requires Docker-based CI checks |
-| `merge-queue-pr` | `#c5def5` | Created by Mergify merge queue (set automatically) |
+| Label              | Color     | Purpose                                                    |
+| ------------------ | --------- | ---------------------------------------------------------- |
+| `bug`              | `#d73a4a` | Something isn't working                                    |
+| `enhancement`      | `#a2eeef` | New feature or request                                     |
+| `security`         | `#cc0000` | Security vulnerability or concern                          |
+| `bom-purchase`     | `#ffd700` | Requires a purchase (links to BOM.md)                      |
+| `design`           | `#7057ff` | Design/brand work needed (Revvel Emblem, icons)            |
+| `blocked`          | `#e4e669` | Blocked by external dependency                             |
+| `triage`           | `#e4e669` | Needs triage — newly opened issue awaiting classification  |
+| `priority-p0`      | `#b60205` | Critical priority — drop everything                        |
+| `priority-p1`      | `#d93f0b` | High priority — next up                                    |
+| `priority-p2`      | `#fbca04` | Medium priority — normal queue                             |
+| `priority-p3`      | `#0e8a16` | Low priority — backlog                                     |
+| `in-review`        | `#fbca04` | Linked PR is open and ready for review (set automatically) |
+| `auto-fix`         | `#0075ca` | Created by auto-fix workflow                               |
+| `copilot`          | `#0075ca` | Assigned to Copilot for fixing                             |
+| `documentation`    | `#0075ca` | Documentation only                                         |
+| `good-first-issue` | `#7057ff` | Good for newcomers                                         |
+| `wontfix`          | `#ffffff` | This will not be worked on                                 |
+| `docker`           | `#0db7ed` | Requires Docker-based CI checks                            |
+| `merge-queue-pr`   | `#c5def5` | Created by Mergify merge queue (set automatically)         |
 
 ---
 
@@ -101,16 +102,16 @@ gh api repos/$APP_REPO/milestones -f title="Phase 7: Maintenance"  -f descriptio
 
 ### Milestone Reference (EXRUP Phases)
 
-| Milestone | Phase | Description |
-|---|---|---|
-| `Phase 0: Inception` | EXRUP Phase 0 | Idea validation, legal, entity |
-| `Phase 1: Planning` | EXRUP Phase 1 | Blueprints, architecture, BOM |
-| `Phase 2: Design` | EXRUP Phase 2 | Revvel Emblem, wireframes, brand identity |
-| `Phase 3: Development` | EXRUP Phase 3 | MVP coding sprints — MVI by MVI |
-| `Phase 4: Testing` | EXRUP Phase 4 | QA, security, field validation |
-| `Phase 5: Deployment` | EXRUP Phase 5 | Production launch, store submission |
-| `Phase 6: Compliance` | EXRUP Phase 6 | Privacy policy, SOC2, legal |
-| `Phase 7: Maintenance` | EXRUP Phase 7 | Monitoring, patches, updates |
+| Milestone              | Phase         | Description                               |
+| ---------------------- | ------------- | ----------------------------------------- |
+| `Phase 0: Inception`   | EXRUP Phase 0 | Idea validation, legal, entity            |
+| `Phase 1: Planning`    | EXRUP Phase 1 | Blueprints, architecture, BOM             |
+| `Phase 2: Design`      | EXRUP Phase 2 | Revvel Emblem, wireframes, brand identity |
+| `Phase 3: Development` | EXRUP Phase 3 | MVP coding sprints — MVI by MVI           |
+| `Phase 4: Testing`     | EXRUP Phase 4 | QA, security, field validation            |
+| `Phase 5: Deployment`  | EXRUP Phase 5 | Production launch, store submission       |
+| `Phase 6: Compliance`  | EXRUP Phase 6 | Privacy policy, SOC2, legal               |
+| `Phase 7: Maintenance` | EXRUP Phase 7 | Monitoring, patches, updates              |
 
 ---
 
@@ -123,6 +124,7 @@ gh api repos/$APP_REPO/milestones -f title="Phase 7: Maintenance"  -f descriptio
 ```
 
 **Examples:**
+
 - `GrowlingEyes — Active Development`
 - `Neurooz — Active Development`
 - `Revvel Music Studio — Active Development`
@@ -138,35 +140,35 @@ gh api repos/$APP_REPO/milestones -f title="Phase 7: Maintenance"  -f descriptio
 
 ### Standard Column Structure
 
-| Column | Purpose |
-|---|---|
-| **Backlog** | Issues not yet started — exists, prioritized, not active |
-| **In Progress** | Actively being worked on in the current sprint |
-| **In Review** | PR is open, awaiting review and merge |
-| **Blocked** | Needs external action before work can continue |
-| **Done** | PR merged and deployed to production |
+| Column          | Purpose                                                  |
+| --------------- | -------------------------------------------------------- |
+| **Backlog**     | Issues not yet started — exists, prioritized, not active |
+| **In Progress** | Actively being worked on in the current sprint           |
+| **In Review**   | PR is open, awaiting review and merge                    |
+| **Blocked**     | Needs external action before work can continue           |
+| **Done**        | PR merged and deployed to production                     |
 
 ### Column Automation Rules
 
 Set up these automation rules in GitHub Projects → Workflows:
 
-| Event | Action |
-|---|---|
-| PR opened → linked issue | Move linked issue to **In Review** |
-| PR merged → linked issue | Move linked issue to **Done** |
-| Issue labeled `blocked` | Move to **Blocked** |
-| Issue assigned | Move to **In Progress** (if in Backlog) |
-| Issue labeled `in-review` | Move to **In Review** |
+| Event                     | Action                                  |
+| ------------------------- | --------------------------------------- |
+| PR opened → linked issue  | Move linked issue to **In Review**      |
+| PR merged → linked issue  | Move linked issue to **Done**           |
+| Issue labeled `blocked`   | Move to **Blocked**                     |
+| Issue assigned            | Move to **In Progress** (if in Backlog) |
+| Issue labeled `in-review` | Move to **In Review**                   |
 
 ### ARSC Labels Automation Workflow
 
 The `arsc-labels.yml` workflow (copy from `templates/cicd/arsc-labels.yml`) manages labels on issues and pull requests with inline `actions/github-script` calls. It supports **Add**, **Remove**, **Set**, and **Clear** operations without relying on a stale third-party label action.
 
-| Trigger | Automation |
-|---|---|
-| Issue opened (no labels) | Adds `triage` label so the issue appears in the Backlog |
-| Draft PR opened | Adds `draft` label so the project board can filter draft work |
-| PR marked Ready for Review | Removes `draft` label automatically |
+| Trigger                    | Automation                                                    |
+| -------------------------- | ------------------------------------------------------------- |
+| Issue opened (no labels)   | Adds `triage` label so the issue appears in the Backlog       |
+| Draft PR opened            | Adds `draft` label so the project board can filter draft work |
+| PR marked Ready for Review | Removes `draft` label automatically                           |
 | Manual `workflow_dispatch` | Operator can run any ARSC operation on any issue or PR number |
 
 **Setup:**
@@ -188,12 +190,12 @@ No secrets or configuration changes are required — the workflow uses `GITHUB_T
 
 **Supported operations:**
 
-| Operation | Description |
-|---|---|
-| `add` | Adds the specified labels without removing existing ones |
-| `remove` | Removes the specified label(s) |
-| `set` | Replaces all existing labels with the specified set |
-| `clear` | Removes all labels |
+| Operation | Description                                              |
+| --------- | -------------------------------------------------------- |
+| `add`     | Adds the specified labels without removing existing ones |
+| `remove`  | Removes the specified label(s)                           |
+| `set`     | Replaces all existing labels with the specified set      |
+| `clear`   | Removes all labels                                       |
 
 ---
 
@@ -201,11 +203,11 @@ No secrets or configuration changes are required — the workflow uses `GITHUB_T
 
 The `priority-router.yml` workflow (copy from `templates/cicd/priority-router.yml`) assigns priority labels (`priority-p0` → `priority-p3`) and re-evaluates the open backlog whenever work is opened or completed.
 
-| Trigger | Automation |
-|---|---|
-| Issue/PR opened or closed | Sweeps the full open backlog and recalculates priority labels |
-| Issue/PR edited, labeled, or unlabeled | Re-runs priority only for the touched item |
-| 6-hour cron sweep | Re-evaluates the open backlog at 00:00/06:00/12:00/18:00 UTC |
+| Trigger                                | Automation                                                    |
+| -------------------------------------- | ------------------------------------------------------------- |
+| Issue/PR opened or closed              | Sweeps the full open backlog and recalculates priority labels |
+| Issue/PR edited, labeled, or unlabeled | Re-runs priority only for the touched item                    |
+| 6-hour cron sweep                      | Re-evaluates the open backlog at 00:00/06:00/12:00/18:00 UTC  |
 
 **Setup:**
 
@@ -215,6 +217,7 @@ cp templates/cicd/priority-router.yml .github/workflows/priority-router.yml
 ```
 
 **Configuration notes:**
+
 - Uses `OPENROUTER_API_KEY` when available; falls back to a rule-based classifier if missing.
 - Skips items labeled `needs-human` or `blocked`.
 - Tune the cron cadence by editing the `schedule:` block in the workflow (default runs at fixed UTC times).
@@ -225,12 +228,12 @@ cp templates/cicd/priority-router.yml .github/workflows/priority-router.yml
 
 The `ready-for-review.yml` workflow (copy from `templates/cicd/ready-for-review.yml`) automates the full lifecycle between an issue and a PR:
 
-| Trigger | Automation |
-|---|---|
-| PR opened (non-draft) | Adds `in-review` label to linked issues; posts review checklist comment |
-| Draft PR — all CI checks pass | Automatically promotes draft PR to **Ready for Review** |
-| PR marked Ready for Review | Adds `in-review` label to linked issues; posts review checklist comment |
-| PR closed / merged | Removes `in-review` label from linked issues |
+| Trigger                       | Automation                                                              |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| PR opened (non-draft)         | Adds `in-review` label to linked issues; posts review checklist comment |
+| Draft PR — all CI checks pass | Automatically promotes draft PR to **Ready for Review**                 |
+| PR marked Ready for Review    | Adds `in-review` label to linked issues; posts review checklist comment |
+| PR closed / merged            | Removes `in-review` label from linked issues                            |
 
 **Setup:**
 
@@ -257,19 +260,19 @@ The `pr-labels.yml` workflow (copy from `templates/cicd/pr-labels.yml`) uses [`j
 
 **How it works:** The action reads all labels on the current PR and exposes them in two ways:
 
-| Output | Format | Example |
-|---|---|---|
-| Env var `GITHUB_PR_LABEL_<NAME>` | Set to `true` when the label is present | `GITHUB_PR_LABEL_SECURITY=true` |
-| Step output `steps.pr-labels.outputs.labels` | Space-padded string of all label names | `" bug security "` |
+| Output                                       | Format                                  | Example                         |
+| -------------------------------------------- | --------------------------------------- | ------------------------------- |
+| Env var `GITHUB_PR_LABEL_<NAME>`             | Set to `true` when the label is present | `GITHUB_PR_LABEL_SECURITY=true` |
+| Step output `steps.pr-labels.outputs.labels` | Space-padded string of all label names  | `" bug security "`              |
 
 **Label-driven automations included in the template:**
 
-| Label | Automation triggered |
-|---|---|
-| `skip-tests` | Posts a `::notice` annotation — lets CI jobs gate on this output and skip test steps |
-| `security` | Posts a security review checklist comment on the PR |
-| `design` | Posts a design asset checklist comment (screenshots, Figma link, a11y check) |
-| `bom-purchase` | Posts a BOM.md update reminder comment |
+| Label          | Automation triggered                                                                 |
+| -------------- | ------------------------------------------------------------------------------------ |
+| `skip-tests`   | Posts a `::notice` annotation — lets CI jobs gate on this output and skip test steps |
+| `security`     | Posts a security review checklist comment on the PR                                  |
+| `design`       | Posts a design asset checklist comment (screenshots, Figma link, a11y check)         |
+| `bom-purchase` | Posts a BOM.md update reminder comment                                               |
 
 **Setup:**
 
@@ -317,21 +320,21 @@ The `pr-review-status.yml` workflow (copy from `templates/cicd/pr-review-status.
 
 **What it does:**
 
-| Trigger | Automation |
-|---|---|
-| PR opened (non-draft) | Adds `awaiting-approval` label and posts status badge comment |
-| Review submitted | Updates label based on review state (`approved`, `changes-requested`, `review-started`) |
-| Review dismissed | Recalculates status and updates label accordingly |
-| Multiple reviewers | Aggregates all reviews to determine overall status |
+| Trigger               | Automation                                                                              |
+| --------------------- | --------------------------------------------------------------------------------------- |
+| PR opened (non-draft) | Adds `awaiting-approval` label and posts status badge comment                           |
+| Review submitted      | Updates label based on review state (`approved`, `changes-requested`, `review-started`) |
+| Review dismissed      | Recalculates status and updates label accordingly                                       |
+| Multiple reviewers    | Aggregates all reviews to determine overall status                                      |
 
 **Review Status Labels:**
 
-| Label | Meaning | Color |
-|---|---|---|
-| `awaiting-approval` | PR needs review | Yellow (`#fbca04`) |
-| `review-started` | Review in progress | Blue (`#0075ca`) |
-| `changes-requested` | Reviewer requested changes | Red (`#d93f0b`) |
-| `approved` | PR has been approved | Green (`#0e8a16`) |
+| Label               | Meaning                    | Color              |
+| ------------------- | -------------------------- | ------------------ |
+| `awaiting-approval` | PR needs review            | Yellow (`#fbca04`) |
+| `review-started`    | Review in progress         | Blue (`#0075ca`)   |
+| `changes-requested` | Reviewer requested changes | Red (`#d93f0b`)    |
+| `approved`          | PR has been approved       | Green (`#0e8a16`)  |
 
 **Label Priority:** If multiple states exist, `changes-requested` > `approved` > `review-started` > `awaiting-approval`
 
@@ -368,23 +371,25 @@ No secrets or configuration changes are required — the workflow uses `GITHUB_T
 
 ### Required fields for control & reporting
 
-| Field | Required | Purpose |
-|---|---|---|
-| Project | Yes | Source of truth for intake and reporting |
-| Status | Yes | Backlog → In Progress → In Review → Blocked → Done |
-| Milestone | Yes | EXRUP phase tracking |
-| Labels | Yes | Type + routing (e.g., `triage`, `bug`, `enhancement`, `blocked`) |
-| Assignee | Optional | Ownership (human or orchestrator) |
+| Field     | Required | Purpose                                                          |
+| --------- | -------- | ---------------------------------------------------------------- |
+| Project   | Yes      | Source of truth for intake and reporting                         |
+| Status    | Yes      | Backlog → In Progress → In Review → Blocked → Done               |
+| Milestone | Yes      | EXRUP phase tracking                                             |
+| Labels    | Yes      | Type + routing (e.g., `triage`, `bug`, `enhancement`, `blocked`) |
+| Assignee  | Optional | Ownership (human or orchestrator)                                |
 
 | Linked PR | Required before closing | Enables automation and lifecycle transitions |
 
 ### Create from Project (preferred)
+
 1. Open the Project board
 2. **Add item** → **Create new issue**
 3. Fill in **Milestone** + **Labels** immediately
 4. Confirm **Status = Backlog**
 
 ### CLI (allowed, but still project-first)
+
 ```bash
 gh issue create \
   --title "..." \
@@ -395,6 +400,7 @@ gh issue create \
 ```
 
 ### Project gate checklist (no CLI helper for now)
+
 - Project exists and is named `{PRODUCT_NAME} — Active Development`
 - Repo is added **and set as default**
 - Standard columns present (Backlog/In Progress/In Review/Blocked/Done)
@@ -402,13 +408,16 @@ gh issue create \
 - Standard labels synced
 
 ### Guardrail workflow proposal (optional)
+
 Create a lightweight workflow that:
+
 - Triggers on **issue opened** and a **daily schedule**
 - Detects issues missing a Project
 - **Auto-adds** them to the default Project Backlog **or** applies a `needs-project`/`triage` label + comment
 - Optionally flags missing Milestone with `needs-milestone`
 
 Suggested building blocks:
+
 - `actions/add-to-project` for auto-adding issues to a Project
 - `actions/github-script` for label + comment enforcement
 

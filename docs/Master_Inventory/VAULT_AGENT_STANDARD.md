@@ -12,6 +12,7 @@
 The **Vault Agent** is a short-lived, ephemeral specialist agent that acts as the single gatekeeper for all secret provisioning across every Revvel project. Whenever a coding agent, CI pipeline, or project bootstrap needs an API key, OAuth token, database credential, MCP connection string, or any other secret, it must go through the Vault Agent — never source, hard-code, or handle credentials itself.
 
 **The Vault Agent does three things:**
+
 1. **Checks the vault first** — if the credential already exists, return the vault reference.
 2. **Provisions new credentials** — if the credential is missing, register with the external service, obtain the credential, and store it in HashiCorp Vault immediately.
 3. **Dies cleanly** — after provisioning it returns a vault path reference and terminates. It never lingers, never caches secrets in memory, and never writes secrets to disk or code.
@@ -22,15 +23,15 @@ The **Vault Agent** is a short-lived, ephemeral specialist agent that acts as th
 
 Spawn the Vault Agent (do NOT handle credentials yourself) whenever any of the following are true:
 
-| Trigger | Examples |
-|---|---|
-| A new external API needs to be connected | OpenAI, Stripe, Resend, Twilio, ElevenLabs |
-| A new OAuth app or token must be registered | GitHub App, Google OAuth, Slack App |
-| A new MCP server needs credentials | Any entry in `.mcp.json` that requires env vars |
-| A database is being provisioned for the first time | DigitalOcean Managed Postgres, PlanetScale, Supabase |
-| A CI/CD pipeline needs a service account | GitHub Actions secrets, DigitalOcean API token |
-| An existing credential has expired or been rotated | Detected by Vault TTL, CI failure, or security scan |
-| A new project is being bootstrapped | `bootstrap-new-project.sh` always invokes the Vault Agent |
+| Trigger                                            | Examples                                                  |
+| -------------------------------------------------- | --------------------------------------------------------- |
+| A new external API needs to be connected           | OpenAI, Stripe, Resend, Twilio, ElevenLabs                |
+| A new OAuth app or token must be registered        | GitHub App, Google OAuth, Slack App                       |
+| A new MCP server needs credentials                 | Any entry in `.mcp.json` that requires env vars           |
+| A database is being provisioned for the first time | DigitalOcean Managed Postgres, PlanetScale, Supabase      |
+| A CI/CD pipeline needs a service account           | GitHub Actions secrets, DigitalOcean API token            |
+| An existing credential has expired or been rotated | Detected by Vault TTL, CI failure, or security scan       |
+| A new project is being bootstrapped                | `bootstrap-new-project.sh` always invokes the Vault Agent |
 
 ---
 
@@ -77,13 +78,14 @@ Every secret stored by the Vault Agent must follow this path convention:
 revvel/apps/{APP_NAME}/{ENVIRONMENT}/{SERVICE}
 ```
 
-| Segment | Values | Example |
-|---|---|---|
-| `{APP_NAME}` | kebab-case repo name | `mind-mappr`, `growlingeyes`, `openclaw` |
-| `{ENVIRONMENT}` | `prod`, `staging`, `dev` | `prod` |
-| `{SERVICE}` | kebab-case service name | `stripe`, `openai`, `database`, `github` |
+| Segment         | Values                   | Example                                  |
+| --------------- | ------------------------ | ---------------------------------------- |
+| `{APP_NAME}`    | kebab-case repo name     | `mind-mappr`, `growlingeyes`, `openclaw` |
+| `{ENVIRONMENT}` | `prod`, `staging`, `dev` | `prod`                                   |
+| `{SERVICE}`     | kebab-case service name  | `stripe`, `openai`, `database`, `github` |
 
 **Examples:**
+
 ```
 revvel/apps/mind-mappr/prod/stripe
 revvel/apps/openclaw/staging/openai
@@ -98,6 +100,7 @@ revvel/apps/revvel-standards/prod/github
 ### 5.1. API Keys (Stripe, OpenAI, Resend, Twilio, etc.)
 
 **Check-first flow:**
+
 ```bash
 # Step 1: Check vault
 vault kv get revvel/apps/{APP}/prod/{SERVICE}
@@ -206,15 +209,15 @@ gh secret set {SECRET_NAME} --body "$SECRET_VALUE" --repo {OWNER}/{REPO}
 
 ## 6. Security Rules (Non-Negotiable)
 
-| Rule | Enforcement |
-|---|---|
-| Secrets NEVER appear in code, commits, or logs | `check-compliance.js` + TruffleHog scan in CI |
-| The Vault Agent NEVER writes secrets to disk | Enforced by agent guardrails (no file write for secret values) |
-| All vault reads use AppRole auth in CI; OIDC for humans | Vault policy enforced |
-| Minimum-privilege: request only the scopes actually needed | Vault Agent checklist gate |
-| Credentials are rotated every 90 days | Vault TTL + rotation-due metadata field |
-| Credentials are named with `revvel-{app}-{env}-{date}` | Vault Agent naming convention |
-| All provisioned credentials are logged (without values) to the DARE Log | Mandatory step in agent flow |
+| Rule                                                                    | Enforcement                                                    |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Secrets NEVER appear in code, commits, or logs                          | `check-compliance.js` + TruffleHog scan in CI                  |
+| The Vault Agent NEVER writes secrets to disk                            | Enforced by agent guardrails (no file write for secret values) |
+| All vault reads use AppRole auth in CI; OIDC for humans                 | Vault policy enforced                                          |
+| Minimum-privilege: request only the scopes actually needed              | Vault Agent checklist gate                                     |
+| Credentials are rotated every 90 days                                   | Vault TTL + rotation-due metadata field                        |
+| Credentials are named with `revvel-{app}-{env}-{date}`                  | Vault Agent naming convention                                  |
+| All provisioned credentials are logged (without values) to the DARE Log | Mandatory step in agent flow                                   |
 
 ---
 
@@ -253,6 +256,7 @@ When the Vault Agent fails to provision a credential (network error, service out
 ### What Is the Ralph Loop?
 
 The Ralph Loop is a self-healing CI/error retry mechanism that:
+
 1. **Detects** a failure (Vault Agent failure, CI failure, or any non-zero exit).
 2. **Creates a GitHub Issue** labeled `auto-fix` + `copilot`, tagged for `@copilot` to resolve.
 3. **Waits** for @copilot to open and merge a fix PR.
@@ -260,12 +264,14 @@ The Ralph Loop is a self-healing CI/error retry mechanism that:
 5. **Loops** until success, with a max retry count (`max_retries: 5`) before escalating to human.
 
 **Ralph Loop triggers for the Vault Agent:**
+
 - External service registration fails (rate limit, 2FA required, service down)
 - Vault write fails (permissions error, Vault sealed, connectivity)
 - GitHub Actions secret push fails
 - Credential validation fails after provisioning
 
 **GitHub Issue template (Vault Agent failure):**
+
 ```
 ## Vault Agent Failure — Manual Intervention Required
 
@@ -339,6 +345,7 @@ When adding a new MCP server entry to `.mcp.json`, the Vault Agent must provisio
 The Vault Agent ensures `STRIPE_SECRET_KEY` exists in vault at `revvel/apps/{APP}/prod/stripe` before this entry is committed.
 
 **Vault Agent MCP checklist:**
+
 - [ ] All `${ENV_VAR}` references in `.mcp.json` have a corresponding vault path
 - [ ] All vault paths are documented in `.env.example` (variable names only, no values)
 - [ ] All GitHub Actions secrets for CI MCP usage are set via `gh secret set`

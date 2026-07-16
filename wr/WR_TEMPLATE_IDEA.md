@@ -2,6 +2,7 @@
      Use this when you want to park an idea for later without doing a full WR.
      Fill ONLY the fields you know right now; leave the rest as-is.
      When the idea gets prioritized, promote it to WR_TEMPLATE_FULL.md. -->
+
 # IDEA: {TITLE}
 
 **Status:** Queued
@@ -15,30 +16,35 @@
 ## Summary
 
 <!-- 1-3 sentences. What is the idea? -->
+
 {SUMMARY}
 
 ## Why This Matters
 
 <!-- How does this align with the Prime Directive ($10k/month → $10M/year-3)?
      Revenue path, user pain point, or strategic advantage. -->
+
 {PRIME_DIRECTIVE_ALIGNMENT}
 
 ## Known Context
 
 <!-- Any screenshots, Reddit links, quotes, or data signals that prompted this.
      Paste links or attach files. Vague is fine — capture it now, refine later. -->
+
 {CONTEXT}
 
 ## Open Questions
 
 <!-- What needs to be answered before this can be fully scoped?
      Mark [x] as each question gets answered. -->
+
 - [ ] {QUESTION_1}
 - [ ] {QUESTION_2}
 
 ## Promote Path
 
 <!-- Leave this section as-is; it is a workflow reminder, not a placeholder. -->
+
 When this idea is ready to develop, run these steps:
 
 1. **Create a full WR** — copy `wr/WR_TEMPLATE_FULL.md` to

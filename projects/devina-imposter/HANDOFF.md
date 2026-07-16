@@ -9,6 +9,7 @@
 ## Why Manual Creation Required
 
 GitHub Copilot Coding Agent and OpenRouter workflows cannot create new GitHub repositories. Repository creation requires:
+
 - GitHub API with `repo` scope (requires PAT with elevated permissions)
 - Organization owner permissions
 - Or manual creation via GitHub web UI
@@ -16,6 +17,7 @@ GitHub Copilot Coding Agent and OpenRouter workflows cannot create new GitHub re
 ## What Was Completed
 
 ✅ **Completed by Copilot**:
+
 1. Repository specification document (`SPEC.md`)
 2. Initial README with structure and purpose
 3. Documentation of evaluation framework
@@ -35,6 +37,7 @@ GitHub Copilot Coding Agent and OpenRouter workflows cannot create new GitHub re
    - Do NOT initialize with README (we'll push our own)
 
 2. **Clone and Initialize**
+
    ```bash
    mkdir ~/devina-imposter
    cd ~/devina-imposter
@@ -43,13 +46,14 @@ GitHub Copilot Coding Agent and OpenRouter workflows cannot create new GitHub re
    ```
 
 3. **Copy Base Files**
+
    ```bash
    # Copy revvel-standards base structure
    cp -r ~/revvel-standards/.github .
    cp ~/revvel-standards/AGENTS.md .
    cp ~/revvel-standards/LICENSE .
    cp ~/revvel-standards/.gitignore .
-   
+
    # Create symlinks
    ln -sf AGENTS.md .cursorrules
    ln -sf AGENTS.md .windsurfrules
@@ -57,12 +61,14 @@ GitHub Copilot Coding Agent and OpenRouter workflows cannot create new GitHub re
    ```
 
 4. **Copy Project Files**
+
    ```bash
    cp ~/revvel-standards/projects/devina-imposter/README.md .
    mkdir -p agents benchmarks patterns reviews scripts
    ```
 
 5. **Initial Commit**
+
    ```bash
    git add .
    git commit -m "feat: initial devina-imposter structure
@@ -72,10 +78,10 @@ GitHub Copilot Coding Agent and OpenRouter workflows cannot create new GitHub re
    - Benchmark structure
    - Integration patterns directory
    - Community review process
-   
+
    Based on awesome-devins but focused on honest evaluation
    vs. catalog. Spec created in midnghtsapphire/revvel-standards"
-   
+
    git branch -M main
    git push -u origin main
    ```
@@ -85,10 +91,10 @@ GitHub Copilot Coding Agent and OpenRouter workflows cannot create new GitHub re
      - ☑ Require pull request reviews before merging (1 approval)
      - ☑ Require status checks to pass before merging
      - ☑ Require branches to be up to date before merging
-   
+
    - Settings → Secrets and variables → Actions:
      - Add `OPENROUTER_API_KEY` (copy from revvel-standards)
-   
+
    - Settings → General:
      - Add topics: `ai-agents`, `devin`, `evaluation`, `benchmarks`, `coding-agents`
      - Disable Wikis (using repo docs)
@@ -103,19 +109,20 @@ gh repo create midnghtsapphire/devina-imposter \
   --description "Honest evaluation framework and comparison list for AI coding agents" \
   --license MIT \
   --clone
-  
+
 # Then follow steps 3-6 from Option 1
 ```
 
 ### Option 3: Delegate to OpenRouter Agent
 
 1. Create new issue in revvel-standards:
+
    ```
    Title: [wr:code] Initialize devina-imposter repository
-   
+
    Body:
    Create the initial file structure for devina-imposter repository:
-   
+
    - Copy files from projects/devina-imposter/
    - Set up directory structure (agents/, benchmarks/, patterns/, reviews/, scripts/)
    - Create agent evaluation template
@@ -125,7 +132,7 @@ gh repo create midnghtsapphire/devina-imposter \
    - Add initial .gitignore
    - Create CHANGELOG.md
    - Create CONTRIBUTING.md
-   
+
    Use projects/devina-imposter/SPEC.md as reference.
    ```
 
@@ -183,16 +190,19 @@ git push
 ## Who Should Do This
 
 **Option A**: Audrey manually (recommended for first-time setup)
+
 - Full control over configuration
 - Understand structure firsthand
 - Can customize as needed
 
 **Option B**: OpenRouter agent for content, Audrey for repo creation
+
 - Audrey creates empty repo
 - OpenRouter populates initial content
 - Audrey reviews and publishes
 
 **Option C**: Fully manual
+
 - Good for learning the structure
 - More time-consuming
 
@@ -221,6 +231,7 @@ The OpenRouter workflow (`openrouter-coder.yml`) in revvel-standards could theor
 This is intentionally NOT automated currently due to security considerations.
 
 If frequent repository creation is needed, consider:
+
 - Repository template approach (GitHub template repositories)
 - Terraform/IaC for GitHub org management
 - Dedicated repository factory workflow (with manual approval gate)

@@ -27,7 +27,8 @@ async function run() {
       /Missing required environment variable: QUESTION/,
     );
     assert.throws(
-      () => script.getCompatOptions({ QUESTION: "Evaluate graphify alternatives" }),
+      () =>
+        script.getCompatOptions({ QUESTION: "Evaluate graphify alternatives" }),
       /Missing required environment variable: OUTPUT_FILE/,
     );
   });
@@ -94,7 +95,9 @@ async function run() {
   });
 
   await test("writes a visible blocked packet when the OpenRouter key is missing", async () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "research-compat-test-"));
+    const tmpDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), "research-compat-test-"),
+    );
     const outputFile = path.join(tmpDir, "packet.md");
 
     try {

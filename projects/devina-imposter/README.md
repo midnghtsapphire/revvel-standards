@@ -14,9 +14,11 @@ While awesome-devins catalogs AI agents inspired by Devin, **devina-imposter** p
 ## Motivation
 
 From `docs/neurooz/AGENT_SHIPPING_FAILURE_ANALYSIS.md`:
+
 > Repeated experience of AI coding agents (Claude, GPT, Manus, Devin, Cursor, Copilot) failing to deliver complete, production-ready applications
 
 This repository addresses the gap between:
+
 - **What agents claim** (autonomous software engineering, full-stack development)
 - **What agents deliver** (partial implementations, context loss, incomplete features)
 
@@ -48,6 +50,7 @@ devina-imposter/
 ## Initial Agents to Evaluate
 
 Based on awesome-devins:
+
 - Anterion
 - AutoCodeRover
 - AutoDev
@@ -60,6 +63,7 @@ Based on awesome-devins:
 - Sweep
 
 Plus commercial:
+
 - Devin (Cognition AI)
 - Cursor
 - GitHub Copilot
@@ -103,23 +107,29 @@ Each agent is evaluated on:
 ## Benchmark Tasks
 
 ### Task 1: Simple Feature Addition
+
 Add a new API endpoint with tests and documentation
 
 ### Task 2: Bug Fix with Root Cause Analysis
+
 Fix a bug, explain the root cause, add regression test
 
 ### Task 3: Refactoring
+
 Refactor a module while maintaining functionality
 
 ### Task 4: Integration
+
 Integrate a third-party service with proper error handling
 
 ### Task 5: Full Feature
+
 Build a complete feature from requirements to deployment
 
 ## Community Contributions
 
 We welcome:
+
 - Agent evaluations
 - New benchmark tasks
 - Integration patterns

@@ -22,14 +22,14 @@ the audited webhook trail we rely on for support tickets and refunds.
 
 ## When to Use RevenueCat
 
-| Use Case | Use RevenueCat? |
-|---|---|
-| Mobile subscriptions (iOS / Android) | **Yes** — required |
-| Mobile consumables / non-consumables (IAP) | **Yes** — required |
-| Cross-platform entitlements (mobile + web) | **Yes** — required |
-| Web-only subscriptions (no mobile app) | Optional — Stripe direct is fine; use RevenueCat Web Billing if you also have native apps |
-| One-time digital purchases on the web | Stripe direct |
-| B2B / invoice-billed contracts | Stripe direct |
+| Use Case                                   | Use RevenueCat?                                                                           |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Mobile subscriptions (iOS / Android)       | **Yes** — required                                                                        |
+| Mobile consumables / non-consumables (IAP) | **Yes** — required                                                                        |
+| Cross-platform entitlements (mobile + web) | **Yes** — required                                                                        |
+| Web-only subscriptions (no mobile app)     | Optional — Stripe direct is fine; use RevenueCat Web Billing if you also have native apps |
+| One-time digital purchases on the web      | Stripe direct                                                                             |
+| B2B / invoice-billed contracts             | Stripe direct                                                                             |
 
 ---
 
@@ -40,15 +40,15 @@ All RevenueCat keys live in HashiCorp Vault under `revvel/shared/billing/revenue
 env-var names below are the **only** names downstream Revvel apps may use —
 do not invent app-specific aliases.
 
-| Env Var | Type | Where It's Used | Notes |
-|---|---|---|---|
-| `REVENUECAT_PUBLIC_API_KEY_IOS` | Public SDK key (`appl_...`) | iOS client | Safe to ship in client bundles. One key per platform. |
-| `REVENUECAT_PUBLIC_API_KEY_ANDROID` | Public SDK key (`goog_...`) | Android client | Safe to ship in client bundles. |
-| `REVENUECAT_PUBLIC_API_KEY_AMAZON` | Public SDK key (`amzn_...`) | Amazon Appstore client | Optional — only if shipping to Amazon. |
-| `REVENUECAT_PUBLIC_API_KEY_WEB` | Public SDK key (`rcb_...`) | Web Billing client | Required for RevenueCat Web Billing. |
-| `REVENUECAT_SECRET_API_KEY` | Server REST key (`sk_...` / v2 key) | Backend services only | **Never ship to clients.** Used for REST API + webhook replay. |
-| `REVENUECAT_WEBHOOK_AUTHORIZATION` | Shared secret string | Webhook receiver | Sent by RevenueCat in the `Authorization` header. Verify on every request. |
-| `REVENUECAT_PROJECT_ID` | RevenueCat project identifier | Tooling / reporting | Required for v2 REST API calls. |
+| Env Var                             | Type                                | Where It's Used        | Notes                                                                      |
+| ----------------------------------- | ----------------------------------- | ---------------------- | -------------------------------------------------------------------------- |
+| `REVENUECAT_PUBLIC_API_KEY_IOS`     | Public SDK key (`appl_...`)         | iOS client             | Safe to ship in client bundles. One key per platform.                      |
+| `REVENUECAT_PUBLIC_API_KEY_ANDROID` | Public SDK key (`goog_...`)         | Android client         | Safe to ship in client bundles.                                            |
+| `REVENUECAT_PUBLIC_API_KEY_AMAZON`  | Public SDK key (`amzn_...`)         | Amazon Appstore client | Optional — only if shipping to Amazon.                                     |
+| `REVENUECAT_PUBLIC_API_KEY_WEB`     | Public SDK key (`rcb_...`)          | Web Billing client     | Required for RevenueCat Web Billing.                                       |
+| `REVENUECAT_SECRET_API_KEY`         | Server REST key (`sk_...` / v2 key) | Backend services only  | **Never ship to clients.** Used for REST API + webhook replay.             |
+| `REVENUECAT_WEBHOOK_AUTHORIZATION`  | Shared secret string                | Webhook receiver       | Sent by RevenueCat in the `Authorization` header. Verify on every request. |
+| `REVENUECAT_PROJECT_ID`             | RevenueCat project identifier       | Tooling / reporting    | Required for v2 REST API calls.                                            |
 
 > **Rule:** Public keys are platform-scoped and **must** be loaded from the
 > per-platform env vars above — do not reuse one key across platforms.
@@ -147,18 +147,18 @@ async def fetch_subscriber(app_user_id: str) -> dict:
 
 At minimum, every Revvel backend must handle these RevenueCat event types:
 
-| Event | What To Do |
-|---|---|
-| `INITIAL_PURCHASE` | Grant entitlement; trigger welcome email. |
-| `RENEWAL` | Refresh entitlement expiry; no user-facing message. |
-| `CANCELLATION` | Mark entitlement as `will_renew=false`; keep access until expiry. |
-| `EXPIRATION` | Revoke entitlement. |
-| `BILLING_ISSUE` | Notify user (in-app + email) to update payment method. |
-| `PRODUCT_CHANGE` | Update tier on the user record. |
-| `SUBSCRIPTION_PAUSED` | Revoke entitlement until pause ends. |
-| `UNCANCELLATION` | Restore `will_renew=true`. |
-| `TRANSFER` | Move entitlement between `app_user_id`s. |
-| `REFUND` / `SUBSCRIPTION_EXTENDED` | Adjust entitlement window; log for support. |
+| Event                              | What To Do                                                        |
+| ---------------------------------- | ----------------------------------------------------------------- |
+| `INITIAL_PURCHASE`                 | Grant entitlement; trigger welcome email.                         |
+| `RENEWAL`                          | Refresh entitlement expiry; no user-facing message.               |
+| `CANCELLATION`                     | Mark entitlement as `will_renew=false`; keep access until expiry. |
+| `EXPIRATION`                       | Revoke entitlement.                                               |
+| `BILLING_ISSUE`                    | Notify user (in-app + email) to update payment method.            |
+| `PRODUCT_CHANGE`                   | Update tier on the user record.                                   |
+| `SUBSCRIPTION_PAUSED`              | Revoke entitlement until pause ends.                              |
+| `UNCANCELLATION`                   | Restore `will_renew=true`.                                        |
+| `TRANSFER`                         | Move entitlement between `app_user_id`s.                          |
+| `REFUND` / `SUBSCRIPTION_EXTENDED` | Adjust entitlement window; log for support.                       |
 
 Webhooks **must be idempotent**. RevenueCat retries on 5xx. Use the event
 `id` as a dedupe key.
@@ -222,12 +222,12 @@ export async function initRevenueCatWeb(appUserId: string) {
 
 Entitlement IDs are shared across all Revvel apps and **must** be one of:
 
-| Entitlement ID | Meaning |
-|---|---|
-| `pro` | Standard paid tier |
-| `team` | Multi-seat tier |
-| `lifetime` | Non-expiring one-time purchase |
-| `enterprise` | Custom-billed (set manually via REST API, not in stores) |
+| Entitlement ID | Meaning                                                  |
+| -------------- | -------------------------------------------------------- |
+| `pro`          | Standard paid tier                                       |
+| `team`         | Multi-seat tier                                          |
+| `lifetime`     | Non-expiring one-time purchase                           |
+| `enterprise`   | Custom-billed (set manually via REST API, not in stores) |
 
 Custom per-app entitlements are allowed, but `pro` is the default and every
 paywall must offer it.
@@ -247,13 +247,13 @@ express the design — and that decision must be logged in `DECISIONS.md`.
 
 ## Testing
 
-| Layer | How to Test |
-|---|---|
-| Sandbox purchases (iOS) | Use a sandbox tester Apple ID; sandbox renewals are accelerated (1 week ≈ 3 min). |
-| Test purchases (Android) | Add license testers in Play Console; use `closed testing` track. |
-| Webhooks | Use the **"Test Webhook"** button in RevenueCat dashboard, or replay events from the Events tab. |
-| Backend integration tests | Stub the RevenueCat REST API with `respx` (Python) or `nock` (Node). |
-| Entitlement gating in CI | Use `REVENUECAT_SECRET_API_KEY` for a dedicated `ci` project; never test against production. |
+| Layer                     | How to Test                                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------------------ |
+| Sandbox purchases (iOS)   | Use a sandbox tester Apple ID; sandbox renewals are accelerated (1 week ≈ 3 min).                |
+| Test purchases (Android)  | Add license testers in Play Console; use `closed testing` track.                                 |
+| Webhooks                  | Use the **"Test Webhook"** button in RevenueCat dashboard, or replay events from the Events tab. |
+| Backend integration tests | Stub the RevenueCat REST API with `respx` (Python) or `nock` (Node).                             |
+| Entitlement gating in CI  | Use `REVENUECAT_SECRET_API_KEY` for a dedicated `ci` project; never test against production.     |
 
 ---
 

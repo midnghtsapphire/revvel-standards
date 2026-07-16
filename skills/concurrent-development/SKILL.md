@@ -48,6 +48,7 @@ Three teams pushed directly to `master`. Team 3 force-pushed, overwriting Teams 
 ## Conflict Resolution Protocol
 
 If a branch has diverged from `main`:
+
 ```bash
 # CORRECT: Rebase
 git fetch origin

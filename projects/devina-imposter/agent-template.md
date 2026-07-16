@@ -177,11 +177,11 @@ Use this template when evaluating a new AI coding agent.
 
 ## Comparison to Similar Agents
 
-| Feature | [This Agent] | [Competitor 1] | [Competitor 2] |
-|---------|--------------|----------------|----------------|
-| Setup   | X/5          | X/5            | X/5            |
-| Autonomy| X/5          | X/5            | X/5            |
-| Quality | X/5          | X/5            | X/5            |
+| Feature  | [This Agent] | [Competitor 1] | [Competitor 2] |
+| -------- | ------------ | -------------- | -------------- |
+| Setup    | X/5          | X/5            | X/5            |
+| Autonomy | X/5          | X/5            | X/5            |
+| Quality  | X/5          | X/5            | X/5            |
 
 ## Updates & Changelog
 
@@ -215,4 +215,4 @@ If you're affiliated with this agent and want to respond to this evaluation:
 
 ---
 
-*This evaluation is part of the devina-imposter project. It represents our honest assessment based on testing. Your experience may vary.*
+_This evaluation is part of the devina-imposter project. It represents our honest assessment based on testing. Your experience may vary._

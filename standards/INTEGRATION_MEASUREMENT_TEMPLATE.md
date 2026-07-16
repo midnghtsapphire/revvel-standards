@@ -1,6 +1,6 @@
 # Integration Measurement Template
 
-*Copy this template when creating any new Revvel product or integration*
+_Copy this template when creating any new Revvel product or integration_
 
 ---
 
@@ -14,12 +14,12 @@
 
 ## Quality Metrics
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| Research Quality Score (RQS) | 85+ | - | ⏳ |
-| Agent Trust Score (ATS) | 80+ | - | ⏳ |
-| Self-Healing Rate (SHR) | <5% | - | ⏳ |
-| Time to Value (TTV) | <5 min | - | ⏳ |
+| Metric                       | Target | Current | Status |
+| ---------------------------- | ------ | ------- | ------ |
+| Research Quality Score (RQS) | 85+    | -       | ⏳     |
+| Agent Trust Score (ATS)      | 80+    | -       | ⏳     |
+| Self-Healing Rate (SHR)      | <5%    | -       | ⏳     |
+| Time to Value (TTV)          | <5 min | -       | ⏳     |
 
 ---
 
@@ -59,24 +59,24 @@ Release:
 
 ## Scoring Dimensions
 
-| Dimension | Weight | Current Score |
-|-----------|--------|---------------|
-| Hallucination | 30% | - |
-| Bad Code/Data | 25% | - |
-| Directions | 20% | - |
-| Rash | 15% | - |
-| Latency | 10% | - |
-| **Total** | **100%** | **-** |
+| Dimension     | Weight   | Current Score |
+| ------------- | -------- | ------------- |
+| Hallucination | 30%      | -             |
+| Bad Code/Data | 25%      | -             |
+| Directions    | 20%      | -             |
+| Rash          | 15%      | -             |
+| Latency       | 10%      | -             |
+| **Total**     | **100%** | **-**         |
 
 ---
 
 ## Self-Healing Triggers
 
-| Tier | Action | Threshold |
-|------|--------|-----------|
-| 0 | Prompt Correction | Quality < 85 |
-| 1 | Agent Handoff | Quality < 75 |
-| 2 | Escalate to Claude | Quality < 60 |
+| Tier | Action             | Threshold    |
+| ---- | ------------------ | ------------ |
+| 0    | Prompt Correction  | Quality < 85 |
+| 1    | Agent Handoff      | Quality < 75 |
+| 2    | Escalate to Claude | Quality < 60 |
 
 ---
 
@@ -90,30 +90,35 @@ Release:
 **Status:** [Live/Dev/In Progress]
 
 ## Quality Metrics
+
 - RQS: [X]/100
 - ATS: [X]/100
 - SHR: [X]%
 - TTV: [X] min
 
 ## Performance
+
 - Uptime: [X]%
 - Latency: [X]ms
 - Throughput: [X]/hour
 
 ## Known Issues
+
 1. [Issue] - [Status] - [Date discovered]
 
 ## Recent Changes
+
 1. [Change] - [Date] - [Outcome]
 
 ## Trust Grade
-| Score | Grade | Status |
-|-------|-------|--------|
-| 90+ | A | Trusted |
-| 80-89 | B | Reliable |
-| 70-79 | C | Watch |
-| 60-69 | D | Shaky |
-| <60 | F | Quarantine |
+
+| Score | Grade | Status     |
+| ----- | ----- | ---------- |
+| 90+   | A     | Trusted    |
+| 80-89 | B     | Reliable   |
+| 70-79 | C     | Watch      |
+| 60-69 | D     | Shaky      |
+| <60   | F     | Quarantine |
 ```
 
 ---

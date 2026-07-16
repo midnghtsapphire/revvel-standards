@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Fleet Trust Score Engine — pure scoring logic, no IO.
@@ -20,18 +20,18 @@
  */
 
 const DIMENSION_WEIGHTS = Object.freeze({
-  hallucination: 0.30,
+  hallucination: 0.3,
   badCode: 0.25,
-  directions: 0.20,
+  directions: 0.2,
   rash: 0.15,
-  ci: 0.10,
+  ci: 0.1,
 });
 
 const DEFAULT_EWMA_ALPHA = 0.3;
 const STARTING_TRUST = 70; // neutral-positive; agents earn or lose from here
 
 function clamp01(n) {
-  if (Number.isNaN(n) || typeof n !== 'number') return 0;
+  if (Number.isNaN(n) || typeof n !== "number") return 0;
   return Math.max(0, Math.min(1, n));
 }
 
@@ -106,7 +106,7 @@ function prQualityScore(signals = {}) {
  */
 function updateTrust(previousTrust, prQuality, alpha = DEFAULT_EWMA_ALPHA) {
   const prev =
-    typeof previousTrust === 'number' && !Number.isNaN(previousTrust)
+    typeof previousTrust === "number" && !Number.isNaN(previousTrust)
       ? previousTrust
       : STARTING_TRUST;
   const a = clamp01(alpha);
@@ -117,11 +117,11 @@ function updateTrust(previousTrust, prQuality, alpha = DEFAULT_EWMA_ALPHA) {
  * A letter grade + label for a trust score, for the leaderboard and PR comments.
  */
 function grade(trust) {
-  if (trust >= 90) return { letter: 'A', label: 'trusted' };
-  if (trust >= 80) return { letter: 'B', label: 'reliable' };
-  if (trust >= 70) return { letter: 'C', label: 'watch' };
-  if (trust >= 55) return { letter: 'D', label: 'shaky' };
-  return { letter: 'F', label: 'quarantine' };
+  if (trust >= 90) return { letter: "A", label: "trusted" };
+  if (trust >= 80) return { letter: "B", label: "reliable" };
+  if (trust >= 70) return { letter: "C", label: "watch" };
+  if (trust >= 55) return { letter: "D", label: "shaky" };
+  return { letter: "F", label: "quarantine" };
 }
 
 module.exports = {

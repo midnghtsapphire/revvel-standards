@@ -21,17 +21,17 @@ name: Google Cloud Identity Verification
 on:
   # Run weekly on Mondays at 9 AM UTC
   schedule:
-    - cron: '0 9 * * 1'
-  
+    - cron: "0 9 * * 1"
+
   # Allow manual trigger
   workflow_dispatch:
     inputs:
       workforce_pool_id:
-        description: 'Workforce Pool ID to verify (optional, will discover if not provided)'
+        description: "Workforce Pool ID to verify (optional, will discover if not provided)"
         required: false
         type: string
       check_scim:
-        description: 'Check SCIM provisioning status'
+        description: "Check SCIM provisioning status"
         required: false
         type: boolean
         default: true
@@ -40,41 +40,41 @@ jobs:
   verify-identity-config:
     name: Verify Identity Configuration
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
-      id-token: write  # Required for Workload Identity Federation OIDC token exchange
-      issues: write  # To create issues if verification fails
-    
+      id-token: write # Required for Workload Identity Federation OIDC token exchange
+      issues: write # To create issues if verification fails
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_WIF_SERVICE_ACCOUNT_EMAIL }}
-      
+
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: ${{ vars.GCP_PROJECT_ID }}
-      
+
       - name: Verify required APIs are enabled
         id: check-apis
         run: |
           echo "Checking required APIs..."
-          
+
           REQUIRED_APIS=(
             "iam.googleapis.com"
             "cloudidentity.googleapis.com"
             "iamcredentials.googleapis.com"
             "sts.googleapis.com"
           )
-          
+
           MISSING_APIS=()
-          
+
           for api in "${REQUIRED_APIS[@]}"; do
             if gcloud services list --enabled --filter="name:$api" --format="value(name)" | grep -q "$api"; then
               echo "✅ $api is enabled"
@@ -83,7 +83,7 @@ jobs:
               MISSING_APIS+=("$api")
             fi
           done
-          
+
           if [ ${#MISSING_APIS[@]} -gt 0 ]; then
             echo "missing_apis=${MISSING_APIS[*]}" >> $GITHUB_OUTPUT
             echo "apis_status=failed" >> $GITHUB_OUTPUT
@@ -93,14 +93,14 @@ jobs:
             echo "apis_status=success" >> $GITHUB_OUTPUT
             echo "All required APIs are enabled"
           fi
-      
+
       - name: Discover Workforce Identity Pools
         id: discover-pools
         run: |
           echo "Discovering workforce identity pools..."
-          
+
           POOLS=$(gcloud iam workforce-pools list --location=global --format="value(name)" 2>/dev/null || echo "")
-          
+
           if [ -z "$POOLS" ]; then
             echo "pool_count=0" >> $GITHUB_OUTPUT
             echo "⚠️ No workforce identity pools found"
@@ -115,7 +115,7 @@ jobs:
             echo "Found $POOL_COUNT workforce identity pool(s):"
             echo "$POOLS"
           fi
-      
+
       - name: Verify Workforce Pool Configuration
         id: verify-pools
         if: steps.discover-pools.outputs.pool_count > 0
@@ -124,7 +124,7 @@ jobs:
           INPUT_POOL_ID: ${{ github.event.inputs.workforce_pool_id }}
         run: |
           POOL_ID="$INPUT_POOL_ID"
-          
+
           if [ -n "$POOL_ID" ]; then
             # Verify specific pool
             echo "Verifying specified pool: $POOL_ID"
@@ -134,10 +134,10 @@ jobs:
             POOL_ID=$(basename "$POOL_NAME")
             echo "Verifying first discovered pool: $POOL_ID"
           fi
-          
+
           # Get pool details
           POOL_INFO=$(gcloud iam workforce-pools describe "$POOL_ID" --location=global --format=json)
-          
+
           echo "Pool Details:"
           echo "$POOL_INFO" | jq -r '
             "Name: \(.name)",
@@ -145,7 +145,7 @@ jobs:
             "Description: \(.description)",
             "State: \(.state)"
           '
-          
+
           # Check pool state
           POOL_STATE=$(echo "$POOL_INFO" | jq -r '.state')
           if [ "$POOL_STATE" != "ACTIVE" ]; then
@@ -153,10 +153,10 @@ jobs:
             echo "pool_status=failed" >> $GITHUB_OUTPUT
             exit 1
           fi
-          
+
           echo "pool_id=$POOL_ID" >> $GITHUB_OUTPUT
           echo "pool_status=success" >> $GITHUB_OUTPUT
-      
+
       - name: Verify Providers Configuration
         id: verify-providers
         if: steps.verify-pools.outputs.pool_status == 'success'
@@ -164,24 +164,24 @@ jobs:
           POOL_ID: ${{ steps.verify-pools.outputs.pool_id }}
         run: |
           echo "Discovering providers for pool: $POOL_ID"
-          
+
           PROVIDERS=$(gcloud iam workforce-pools providers list \
             --workforce-pool="$POOL_ID" \
             --location=global \
             --format="value(name)")
-          
+
           if [ -z "$PROVIDERS" ]; then
             echo "::error::No providers found for workforce pool $POOL_ID"
             echo "providers_status=failed" >> $GITHUB_OUTPUT
             exit 1
           fi
-          
+
           PROVIDER_COUNT=$(echo "$PROVIDERS" | wc -l)
           echo "Found $PROVIDER_COUNT provider(s)"
-          
+
           # Verify each provider
           FAILED_PROVIDERS=()
-          
+
           while IFS= read -r provider_name; do
             PROVIDER_ID=$(basename "$provider_name")
             echo ""
@@ -217,7 +217,7 @@ jobs:
             fi
             
           done <<< "$PROVIDERS"
-          
+
           if [ ${#FAILED_PROVIDERS[@]} -gt 0 ]; then
             echo "failed_providers=${FAILED_PROVIDERS[*]}" >> $GITHUB_OUTPUT
             echo "providers_status=failed" >> $GITHUB_OUTPUT
@@ -227,7 +227,7 @@ jobs:
             echo "providers_status=success" >> $GITHUB_OUTPUT
             echo "✅ All providers are properly configured"
           fi
-      
+
       - name: Check SCIM Provisioning Status
         id: check-scim
         if: |
@@ -241,11 +241,11 @@ jobs:
             --workforce-pool="$POOL_ID" \
             --location=global \
             --format="value(name)")
-          
+
           echo "Checking SCIM provisioning status..."
-          
+
           SCIM_ENABLED=false
-          
+
           while IFS= read -r provider_name; do
             PROVIDER_ID=$(basename "$provider_name")
             
@@ -261,7 +261,7 @@ jobs:
               echo "Provider $PROVIDER_ID: SCIM not configured"
             fi
           done <<< "$PROVIDERS"
-          
+
           if [ "$SCIM_ENABLED" = true ]; then
             echo "scim_status=enabled" >> $GITHUB_OUTPUT
             echo "✅ SCIM provisioning is enabled"
@@ -269,14 +269,14 @@ jobs:
             echo "scim_status=not_enabled" >> $GITHUB_OUTPUT
             echo "ℹ️ SCIM provisioning is not enabled (may be expected for small group sets)"
           fi
-      
+
       - name: Create issue on verification failure
         if: failure()
         uses: actions/github-script@v8
         with:
           script: |
             const title = '🔴 Google Cloud Identity Configuration Verification Failed';
-            
+
             // Check if an open issue already exists to avoid spam
             const existingIssues = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
@@ -285,11 +285,11 @@ jobs:
               labels: 'infrastructure,identity,auto-error',
               per_page: 100
             });
-            
+
             const existingIssue = existingIssues.data.find(issue => 
               issue.title === title
             );
-            
+
             const body = [
               '## Google Cloud Identity Configuration Verification Failed',
               '',
@@ -319,7 +319,7 @@ jobs:
               '',
               '*This issue was created automatically by the Google Cloud Identity verification workflow.*'
             ].filter(Boolean).join('\n');
-            
+
             if (existingIssue) {
               // Update existing issue with a new comment
               await github.rest.issues.createComment({
@@ -340,7 +340,7 @@ jobs:
               });
               console.log('Created new issue');
             }
-      
+
       - name: Summary
         if: always()
         run: |

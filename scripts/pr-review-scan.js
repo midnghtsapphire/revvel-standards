@@ -25,7 +25,7 @@
 //         }
 // ============================================================
 
-'use strict';
+"use strict";
 
 // ─── Rule definitions ─────────────────────────────────────────
 // Each rule has:
@@ -35,18 +35,32 @@
 //                (omit to apply to every text file)
 
 const CODE_EXTENSIONS = new Set([
-  '.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs',
-  '.py', '.rb', '.go', '.java', '.kt', '.cs',
-  '.php', '.rs', '.swift', '.sh', '.bash',
+  ".js",
+  ".jsx",
+  ".ts",
+  ".tsx",
+  ".mjs",
+  ".cjs",
+  ".py",
+  ".rb",
+  ".go",
+  ".java",
+  ".kt",
+  ".cs",
+  ".php",
+  ".rs",
+  ".swift",
+  ".sh",
+  ".bash",
 ]);
 
 // Broad secret heuristics. Mirrors common patterns caught by
 // secret-scanners (AWS, GitHub PATs, Slack, private keys, and
 // literal assignments to password/secret/token/api_key).
 const SECRET_PATTERNS = [
-  /AKIA[0-9A-Z]{16}/,                                    // AWS access key
-  /gh[pousr]_[A-Za-z0-9]{36,}/,                          // GitHub fine-grained / classic tokens
-  /xox[abpr]-[A-Za-z0-9-]{10,}/,                         // Slack tokens
+  /AKIA[0-9A-Z]{16}/, // AWS access key
+  /gh[pousr]_[A-Za-z0-9]{36,}/, // GitHub fine-grained / classic tokens
+  /xox[abpr]-[A-Za-z0-9-]{10,}/, // Slack tokens
   /-----BEGIN (?:RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----/,
   // password = "literal", api_key: 'literal', secret="literal"
   /\b(?:password|passwd|pwd|secret|api[_-]?key|access[_-]?token|auth[_-]?token)\s*[:=]\s*["'][^"'\s$]{8,}["']/i,
@@ -66,13 +80,15 @@ const DANGEROUS_EVAL_PATTERNS = [
 // console.log that references an identifier whose name suggests
 // sensitive content. Extremely conservative — only flags when an
 // obvious keyword appears inside the log call.
-const CONSOLE_LOG_SENSITIVE = /\bconsole\.(?:log|debug|info|warn|error)\s*\([^)]*\b(?:password|passwd|pwd|secret|api[_-]?key|token|authorization|auth[_-]?token|credential|private[_-]?key|session|cookie)\b/i;
+const CONSOLE_LOG_SENSITIVE =
+  /\bconsole\.(?:log|debug|info|warn|error)\s*\([^)]*\b(?:password|passwd|pwd|secret|api[_-]?key|token|authorization|auth[_-]?token|credential|private[_-]?key|session|cookie)\b/i;
 
 // Raw SQL with a template-literal interpolation, e.g.
 //   `SELECT * FROM users WHERE id = ${userId}`
 // The interpolation is what makes it "user-supplied". Parameterised
 // queries (`$1`, `?`) don't match.
-const RAW_SQL_INTERP = /(?:SELECT|INSERT\s+INTO|UPDATE|DELETE\s+FROM|DROP\s+TABLE)\b[^`'"\n]*\$\{[^}]+\}/i;
+const RAW_SQL_INTERP =
+  /(?:SELECT|INSERT\s+INTO|UPDATE|DELETE\s+FROM|DROP\s+TABLE)\b[^`'"\n]*\$\{[^}]+\}/i;
 
 // ─── Diff parsing ─────────────────────────────────────────────
 /**
@@ -82,22 +98,22 @@ const RAW_SQL_INTERP = /(?:SELECT|INSERT\s+INTO|UPDATE|DELETE\s+FROM|DROP\s+TABL
  * @returns {Array<{line:number, text:string}>}
  */
 function parseAddedLines(patch) {
-  if (!patch || typeof patch !== 'string') return [];
+  if (!patch || typeof patch !== "string") return [];
 
   const added = [];
   let newLine = 0;
 
-  for (const rawLine of patch.split('\n')) {
+  for (const rawLine of patch.split("\n")) {
     const hunk = rawLine.match(/^@@\s+-\d+(?:,\d+)?\s+\+(\d+)(?:,\d+)?\s+@@/);
     if (hunk) {
       newLine = parseInt(hunk[1], 10);
       continue;
     }
-    if (rawLine.startsWith('+++') || rawLine.startsWith('---')) continue;
-    if (rawLine.startsWith('+')) {
+    if (rawLine.startsWith("+++") || rawLine.startsWith("---")) continue;
+    if (rawLine.startsWith("+")) {
       added.push({ line: newLine, text: rawLine.slice(1) });
       newLine++;
-    } else if (rawLine.startsWith('-')) {
+    } else if (rawLine.startsWith("-")) {
       // removed line — new-file line counter does not advance
     } else {
       // context line
@@ -108,8 +124,8 @@ function parseAddedLines(patch) {
 }
 
 function extensionOf(filename) {
-  const idx = filename.lastIndexOf('.');
-  return idx === -1 ? '' : filename.slice(idx).toLowerCase();
+  const idx = filename.lastIndexOf(".");
+  return idx === -1 ? "" : filename.slice(idx).toLowerCase();
 }
 
 // ─── Rule runner ──────────────────────────────────────────────
@@ -144,10 +160,10 @@ function scanDiff(files) {
   const list = Array.isArray(files) ? files : [];
   return {
     checks: {
-      secrets:       runRule(list, { patterns: SECRET_PATTERNS,       onlyCode: false }),
+      secrets: runRule(list, { patterns: SECRET_PATTERNS, onlyCode: false }),
       dangerousEval: runRule(list, { patterns: DANGEROUS_EVAL_PATTERNS }),
-      consoleLog:    runRule(list, { patterns: [CONSOLE_LOG_SENSITIVE] }),
-      rawSql:        runRule(list, { patterns: [RAW_SQL_INTERP] }),
+      consoleLog: runRule(list, { patterns: [CONSOLE_LOG_SENSITIVE] }),
+      rawSql: runRule(list, { patterns: [RAW_SQL_INTERP] }),
     },
   };
 }
@@ -161,12 +177,14 @@ function renderCheckboxLine(label, result, { maxFindings = 5 } = {}) {
   if (!result) return `- [ ] ${label}`;
   if (result.pass) return `- [x] ${label}`;
   const head = `- [ ] ⚠️ ${label}`;
-  const shown = result.findings.slice(0, maxFindings)
-    .map(f => `  - \`${f.file}:${f.line}\` — ${f.match}`);
-  const extra = result.findings.length > maxFindings
-    ? [`  - …and ${result.findings.length - maxFindings} more`]
-    : [];
-  return [head, ...shown, ...extra].join('\n');
+  const shown = result.findings
+    .slice(0, maxFindings)
+    .map((f) => `  - \`${f.file}:${f.line}\` — ${f.match}`);
+  const extra =
+    result.findings.length > maxFindings
+      ? [`  - …and ${result.findings.length - maxFindings} more`]
+      : [];
+  return [head, ...shown, ...extra].join("\n");
 }
 
 module.exports = {

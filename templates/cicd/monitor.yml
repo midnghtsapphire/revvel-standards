@@ -3,7 +3,7 @@ name: S.H.I.F.T. Self-Healing Monitor
 # Runs every 10 minutes to check the live site and self-heal on failure
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Enable pnpm via corepack
         run: |

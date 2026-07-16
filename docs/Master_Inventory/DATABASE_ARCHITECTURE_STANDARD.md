@@ -13,18 +13,18 @@ Every Revvel application uses **PostgreSQL** as its database engine. This is not
 
 ### Why PostgreSQL Over MySQL
 
-| Capability | PostgreSQL | MySQL | Impact |
-|---|---|---|---|
-| JSONB columns (indexable JSON) | ✅ Native | ⚠️ Limited | Flexible metadata, AI outputs, EDI payloads |
-| UUID primary keys | ✅ Built-in | ⚠️ Requires extension | Security — no sequential ID guessing |
-| Array column type | ✅ Native | ❌ None | Tags, categories, multi-select fields |
-| Full-text search | ✅ Strong | ⚠️ Basic | Product search, content search |
-| Decimal precision | ✅ Exact | ⚠️ Float drift | Financial data, IRS/tax fields, prices |
-| Drizzle ORM | ✅ First-class | ✅ Supported | Our ORM is optimized for Postgres |
-| Supabase compatible | ✅ Supabase IS Postgres | ❌ Supabase = Postgres only | Visual DB editor, real-time |
-| Row-level security | ✅ Native RLS | ❌ None | Multi-tenant data isolation |
-| LISTEN/NOTIFY | ✅ Real-time events | ❌ None | Webhooks, live dashboard updates |
-| `created_at` auto-trigger | ✅ Clean | ✅ Works | Audit fields |
+| Capability                     | PostgreSQL              | MySQL                       | Impact                                      |
+| ------------------------------ | ----------------------- | --------------------------- | ------------------------------------------- |
+| JSONB columns (indexable JSON) | ✅ Native               | ⚠️ Limited                  | Flexible metadata, AI outputs, EDI payloads |
+| UUID primary keys              | ✅ Built-in             | ⚠️ Requires extension       | Security — no sequential ID guessing        |
+| Array column type              | ✅ Native               | ❌ None                     | Tags, categories, multi-select fields       |
+| Full-text search               | ✅ Strong               | ⚠️ Basic                    | Product search, content search              |
+| Decimal precision              | ✅ Exact                | ⚠️ Float drift              | Financial data, IRS/tax fields, prices      |
+| Drizzle ORM                    | ✅ First-class          | ✅ Supported                | Our ORM is optimized for Postgres           |
+| Supabase compatible            | ✅ Supabase IS Postgres | ❌ Supabase = Postgres only | Visual DB editor, real-time                 |
+| Row-level security             | ✅ Native RLS           | ❌ None                     | Multi-tenant data isolation                 |
+| LISTEN/NOTIFY                  | ✅ Real-time events     | ❌ None                     | Webhooks, live dashboard updates            |
+| `created_at` auto-trigger      | ✅ Clean                | ✅ Works                    | Audit fields                                |
 
 ---
 
@@ -34,20 +34,21 @@ Every Revvel application uses **PostgreSQL** as its database engine. This is not
 
 Since all Revvel apps already run on DigitalOcean Droplets, the managed Postgres service is the natural fit.
 
-| Property | Details |
-|---|---|
-| **Provider** | DigitalOcean |
-| **Service Name** | Managed PostgreSQL |
-| **Min Plan** | $15/month (1 GB RAM, 10 GB storage) |
-| **Recommended Plan** | $50/month (2 GB RAM, 25 GB storage) for apps with >1000 users |
-| **PostgreSQL Version** | 16 (latest) |
-| **Backups** | Automatic daily backups, 7-day retention (included) |
-| **Connection Type** | Private network to Droplet — no public internet exposure |
-| **SSL** | Enforced (`sslmode=require` in connection string) |
-| **Region** | Match your Droplet region (NYC3 default) |
-| **Scaling** | Resize in control panel, no downtime |
+| Property               | Details                                                       |
+| ---------------------- | ------------------------------------------------------------- |
+| **Provider**           | DigitalOcean                                                  |
+| **Service Name**       | Managed PostgreSQL                                            |
+| **Min Plan**           | $15/month (1 GB RAM, 10 GB storage)                           |
+| **Recommended Plan**   | $50/month (2 GB RAM, 25 GB storage) for apps with >1000 users |
+| **PostgreSQL Version** | 16 (latest)                                                   |
+| **Backups**            | Automatic daily backups, 7-day retention (included)           |
+| **Connection Type**    | Private network to Droplet — no public internet exposure      |
+| **SSL**                | Enforced (`sslmode=require` in connection string)             |
+| **Region**             | Match your Droplet region (NYC3 default)                      |
+| **Scaling**            | Resize in control panel, no downtime                          |
 
 **Setup steps:**
+
 1. DigitalOcean Control Panel → Databases → Create Database Cluster
 2. Choose PostgreSQL 16
 3. Choose same region as your Droplet (NYC3)
@@ -56,6 +57,7 @@ Since all Revvel apps already run on DigitalOcean Droplets, the managed Postgres
 6. Copy the connection string → add to GitHub Secrets as `DATABASE_URL`
 
 **Connection string format:**
+
 ```
 DATABASE_URL=******db-postgresql-nyc3-xxxxx-do-user-xxxxxxx-0.b.db.ondigitalocean.com:25060/defaultdb?sslmode=require
 ```
@@ -66,25 +68,27 @@ DATABASE_URL=******db-postgresql-nyc3-xxxxx-do-user-xxxxxxx-0.b.db.ondigitalocea
 
 Supabase is PostgreSQL under the hood. Use it **in addition to** or **instead of** DigitalOcean when you want a web-based UI to browse and edit database tables without writing code.
 
-| Property | Details |
-|---|---|
-| **Provider** | Supabase |
-| **Cost** | Free (500MB, 2 projects) / $25/month Pro |
-| **PostgreSQL Version** | 15 |
-| **Visual Table Editor** | ✅ Browse, filter, edit rows in a web browser — no code |
-| **Auto-generated REST API** | ✅ Instant API from your schema |
-| **Realtime** | ✅ WebSocket subscriptions on table changes |
-| **Auth** | ✅ Built-in (optional alternative to Clerk) |
-| **File Storage** | ✅ S3-compatible (photos, uploads) |
-| **Drizzle compatible** | ✅ Connect via standard Postgres URL |
+| Property                    | Details                                                 |
+| --------------------------- | ------------------------------------------------------- |
+| **Provider**                | Supabase                                                |
+| **Cost**                    | Free (500MB, 2 projects) / $25/month Pro                |
+| **PostgreSQL Version**      | 15                                                      |
+| **Visual Table Editor**     | ✅ Browse, filter, edit rows in a web browser — no code |
+| **Auto-generated REST API** | ✅ Instant API from your schema                         |
+| **Realtime**                | ✅ WebSocket subscriptions on table changes             |
+| **Auth**                    | ✅ Built-in (optional alternative to Clerk)             |
+| **File Storage**            | ✅ S3-compatible (photos, uploads)                      |
+| **Drizzle compatible**      | ✅ Connect via standard Postgres URL                    |
 
 **When to use Supabase:**
+
 - You want to visually browse database rows (especially useful for EDI/IRS mapped data)
 - You want real-time features (live dashboard, notifications)
 - You want file/image storage included
 - Free tier is acceptable for early-stage apps
 
 **Supabase connection string format:**
+
 ```
 DATABASE_URL=******db.abcdefghijklm.supabase.co:5432/postgres
 ```
@@ -96,6 +100,7 @@ DATABASE_URL=******db.abcdefghijklm.supabase.co:5432/postgres
 Running PostgreSQL directly on the same Droplet as the app is acceptable **only for local development or a personal sandbox**. Never in production.
 
 **Why not in production:**
+
 - App and DB compete for RAM/CPU — one crash takes both down
 - No automatic backups
 - Manual patching required
@@ -106,16 +111,16 @@ Running PostgreSQL directly on the same Droplet as the app is acceptable **only 
 
 ## 3. Decision Matrix
 
-| Your Situation | Use This |
-|---|---|
-| Production app, real users, real money | DigitalOcean Managed Postgres |
-| Early stage / free tier needed | Supabase Free |
-| Want visual DB table editor (no code) | Supabase (any tier) |
-| Need real-time websocket features | Supabase |
-| Need file/image storage | Supabase |
-| Everything on one bill | DigitalOcean Managed Postgres |
-| EDI/IRS data that needs visual verification | Supabase (table editor) |
-| Local dev / sandbox | SQLite or local Postgres |
+| Your Situation                              | Use This                      |
+| ------------------------------------------- | ----------------------------- |
+| Production app, real users, real money      | DigitalOcean Managed Postgres |
+| Early stage / free tier needed              | Supabase Free                 |
+| Want visual DB table editor (no code)       | Supabase (any tier)           |
+| Need real-time websocket features           | Supabase                      |
+| Need file/image storage                     | Supabase                      |
+| Everything on one bill                      | DigitalOcean Managed Postgres |
+| EDI/IRS data that needs visual verification | Supabase (table editor)       |
+| Local dev / sandbox                         | SQLite or local Postgres      |
 
 ---
 
@@ -181,14 +186,14 @@ DATABASE_URL=******db-postgresql-nyc3-xxxxx-do-user-0.b.db.ondigitalocean.com:25
 
 ```ts
 // db/index.ts — Drizzle connection with pooling
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
-import * as schema from './schema';
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+import * as schema from "./schema";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
-  max: 10,          // max connections in pool
+  max: 10, // max connections in pool
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
 });
@@ -201,6 +206,7 @@ export const db = drizzle(pool, { schema });
 ## 7. Database-to-App Field Mapping
 
 Every database table column must be mapped to its corresponding UI field. See:
+
 - `docs/field-maps/DATABASE_TO_UI_MASTER_MAP.md` — master index of every table → every UI screen
 - `docs/field-maps/AUTH_SCREENS_FIELD_MAP.md` — users table fields
 - `docs/field-maps/ECOMMERCE_FIELD_MAP.md` — products, orders, cart fields
@@ -212,6 +218,7 @@ Every database table column must be mapped to its corresponding UI field. See:
 Once field maps are created, every field must be validated through a systematic CRUD testing process. This is a mandatory DBA step before any screen is considered production-ready.
 
 **See:** `UI_FIELD_TESTING_DBA_STANDARD.md` — the complete DBA module for field-by-field UI-to-database testing, including:
+
 - CRUD validation workflow (INSERT, SELECT, UPDATE, DELETE verification)
 - Constraint testing (NOT NULL, UNIQUE, CHECK, FK)
 - ACID property verification
@@ -226,14 +233,15 @@ Once field maps are created, every field must be validated through a systematic 
 
 ## 8. Backup and Recovery Policy
 
-| Scenario | Action |
-|---|---|
-| Accidental data deletion | Restore from DigitalOcean daily backup (up to 7 days back) |
-| Migration error | Run `drizzle-kit` rollback migration |
-| Droplet lost | Restore database from backup to new Managed Postgres instance, redeploy app |
-| Full data export | `pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql` |
+| Scenario                 | Action                                                                      |
+| ------------------------ | --------------------------------------------------------------------------- |
+| Accidental data deletion | Restore from DigitalOcean daily backup (up to 7 days back)                  |
+| Migration error          | Run `drizzle-kit` rollback migration                                        |
+| Droplet lost             | Restore database from backup to new Managed Postgres instance, redeploy app |
+| Full data export         | `pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql`                        |
 
 **Manual backup command (run before any major migration):**
+
 ```bash
 pg_dump $DATABASE_URL > backup_pre_migration_$(date +%Y%m%d_%H%M%S).sql
 ```

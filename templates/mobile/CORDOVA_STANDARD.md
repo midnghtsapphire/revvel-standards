@@ -12,6 +12,7 @@
 Apache Cordova is an open-source mobile development framework that packages web applications (HTML, CSS, JavaScript) into native mobile apps for Android and iOS using a WebView container. It provides a plugin system for accessing native device APIs (camera, GPS, contacts, push notifications, etc.).
 
 This standard defines how to integrate Apache Cordova into the Revvel CI/CD pipeline, including:
+
 - Project scaffolding and structure
 - CI/CD workflow via `templates/cicd/deploy-cordova.yml`
 - Build and signing configuration for Android and iOS
@@ -22,15 +23,15 @@ This standard defines how to integrate Apache Cordova into the Revvel CI/CD pipe
 
 ## 2. Cordova vs. Capacitor vs. Bubblewrap
 
-| Feature | Apache Cordova | Capacitor | Bubblewrap (TWA) |
-|---|---|---|---|
-| **Approach** | WebView wrapper + plugins | WebView wrapper + native layer | Chrome TWA (Android only) |
-| **Platform support** | Android, iOS | Android, iOS | Android only |
-| **Plugin ecosystem** | Mature (1,000+ plugins) | Growing (Ionic-maintained) | N/A — loads PWA directly |
-| **Native API access** | Via Cordova plugins | Via Capacitor plugins | Minimal (Web APIs only) |
-| **Framework agnostic** | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Maintenance status** | Apache Foundation (stable) | Ionic (active) | Google (active) |
-| **Best for** | Projects needing broad plugin support, legacy hybrid apps | New hybrid apps using Ionic | PWAs targeting Play Store |
+| Feature                | Apache Cordova                                            | Capacitor                      | Bubblewrap (TWA)          |
+| ---------------------- | --------------------------------------------------------- | ------------------------------ | ------------------------- |
+| **Approach**           | WebView wrapper + plugins                                 | WebView wrapper + native layer | Chrome TWA (Android only) |
+| **Platform support**   | Android, iOS                                              | Android, iOS                   | Android only              |
+| **Plugin ecosystem**   | Mature (1,000+ plugins)                                   | Growing (Ionic-maintained)     | N/A — loads PWA directly  |
+| **Native API access**  | Via Cordova plugins                                       | Via Capacitor plugins          | Minimal (Web APIs only)   |
+| **Framework agnostic** | ✅ Yes                                                    | ✅ Yes                         | ✅ Yes                    |
+| **Maintenance status** | Apache Foundation (stable)                                | Ionic (active)                 | Google (active)           |
+| **Best for**           | Projects needing broad plugin support, legacy hybrid apps | New hybrid apps using Ionic    | PWAs targeting Play Store |
 
 **Recommendation:** Use Capacitor for new projects. Use Cordova when you need a specific plugin only available in the Cordova ecosystem, or when migrating an existing Cordova-based app. The full standards-level rationale (rubric, scorecard, risks, rollout) is in [`../../docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md`](../../docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md).
 
@@ -53,12 +54,12 @@ cordova --version
 
 ### 3.2 Android Prerequisites
 
-| Requirement | Version | Install |
-|---|---|---|
-| Java JDK | 17 (LTS) | `brew install openjdk@17` / `apt install openjdk-17-jdk` |
-| Android Studio | Latest | https://developer.android.com/studio |
-| Android SDK | API 33+ | Via Android Studio SDK Manager |
-| Gradle | Bundled with Android Studio | — |
+| Requirement    | Version                     | Install                                                  |
+| -------------- | --------------------------- | -------------------------------------------------------- |
+| Java JDK       | 17 (LTS)                    | `brew install openjdk@17` / `apt install openjdk-17-jdk` |
+| Android Studio | Latest                      | https://developer.android.com/studio                     |
+| Android SDK    | API 33+                     | Via Android Studio SDK Manager                           |
+| Gradle         | Bundled with Android Studio | —                                                        |
 
 Set required environment variables:
 
@@ -71,12 +72,12 @@ export PATH=$PATH:$ANDROID_HOME/tools
 
 ### 3.3 iOS Prerequisites
 
-| Requirement | Install |
-|---|---|
-| macOS (required) | Apple hardware or macOS VM |
-| Xcode (latest) | Mac App Store |
-| Xcode Command Line Tools | `xcode-select --install` |
-| CocoaPods | `sudo gem install cocoapods` |
+| Requirement              | Install                      |
+| ------------------------ | ---------------------------- |
+| macOS (required)         | Apple hardware or macOS VM   |
+| Xcode (latest)           | Mac App Store                |
+| Xcode Command Line Tools | `xcode-select --install`     |
+| CocoaPods                | `sudo gem install cocoapods` |
 
 ---
 
@@ -221,18 +222,18 @@ cordova plugin remove cordova-plugin-camera
 
 ### 6.2 Common Revvel Plugins
 
-| Plugin | npm Package | Use Case |
-|---|---|---|
-| Camera | `cordova-plugin-camera` | Photo/video capture |
-| Device Info | `cordova-plugin-device` | Device metadata |
-| Geolocation | `cordova-plugin-geolocation` | GPS location |
-| Network | `cordova-plugin-network-information` | Connectivity detection |
-| Push Notifications | `cordova-plugin-push` | FCM / APNs push |
-| Splash Screen | `cordova-plugin-splashscreen` | Launch screen |
-| Status Bar | `cordova-plugin-statusbar` | Status bar color/style |
-| File | `cordova-plugin-file` | Filesystem access |
-| InAppBrowser | `cordova-plugin-inappbrowser` | External URLs in a WebView |
-| Vibration | `cordova-plugin-vibration` | Haptic feedback |
+| Plugin             | npm Package                          | Use Case                   |
+| ------------------ | ------------------------------------ | -------------------------- |
+| Camera             | `cordova-plugin-camera`              | Photo/video capture        |
+| Device Info        | `cordova-plugin-device`              | Device metadata            |
+| Geolocation        | `cordova-plugin-geolocation`         | GPS location               |
+| Network            | `cordova-plugin-network-information` | Connectivity detection     |
+| Push Notifications | `cordova-plugin-push`                | FCM / APNs push            |
+| Splash Screen      | `cordova-plugin-splashscreen`        | Launch screen              |
+| Status Bar         | `cordova-plugin-statusbar`           | Status bar color/style     |
+| File               | `cordova-plugin-file`                | Filesystem access          |
+| InAppBrowser       | `cordova-plugin-inappbrowser`        | External URLs in a WebView |
+| Vibration          | `cordova-plugin-vibration`           | Haptic feedback            |
 
 ### 6.3 Plugin Security Policy
 
@@ -320,13 +321,13 @@ open platforms/ios/[APP_NAME].xcworkspace
 
 ### 8.1 Required GitHub Secrets
 
-| Secret | Value | Where to Get |
-|---|---|---|
-| `KEYSTORE_BASE64` | `base64 release.keystore` | Generate with keytool (one-time) |
-| `KEYSTORE_PASSWORD` | Keystore password | Set during keytool generation |
-| `KEY_ALIAS` | Key alias (e.g., `release`) | Set during keytool generation |
-| `KEY_PASSWORD` | Key password | Set during keytool generation |
-| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | JSON key content | Google Play Console → Setup → API access |
+| Secret                             | Value                       | Where to Get                             |
+| ---------------------------------- | --------------------------- | ---------------------------------------- |
+| `KEYSTORE_BASE64`                  | `base64 release.keystore`   | Generate with keytool (one-time)         |
+| `KEYSTORE_PASSWORD`                | Keystore password           | Set during keytool generation            |
+| `KEY_ALIAS`                        | Key alias (e.g., `release`) | Set during keytool generation            |
+| `KEY_PASSWORD`                     | Key password                | Set during keytool generation            |
+| `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | JSON key content            | Google Play Console → Setup → API access |
 
 ### 8.2 Encode Keystore for GitHub Secrets
 
@@ -359,11 +360,11 @@ vault kv put revvel/apps/cordova/android/prod \
 
 ### 9.1 Required GitHub Secrets
 
-| Secret | Value | Where to Get |
-|---|---|---|
-| `APP_STORE_CONNECT_API_KEY_ID` | Key ID (10-char alphanumeric) | App Store Connect → Users → Keys |
-| `APP_STORE_CONNECT_ISSUER_ID` | Issuer UUID | App Store Connect → Users → Keys |
-| `APP_STORE_CONNECT_API_KEY_CONTENT` | `.p8` file content | Downloaded when creating key |
+| Secret                              | Value                         | Where to Get                     |
+| ----------------------------------- | ----------------------------- | -------------------------------- |
+| `APP_STORE_CONNECT_API_KEY_ID`      | Key ID (10-char alphanumeric) | App Store Connect → Users → Keys |
+| `APP_STORE_CONNECT_ISSUER_ID`       | Issuer UUID                   | App Store Connect → Users → Keys |
+| `APP_STORE_CONNECT_API_KEY_CONTENT` | `.p8` file content            | Downloaded when creating key     |
 
 ### 9.2 App Store Connect Setup (One-Time)
 
@@ -410,10 +411,10 @@ on:
 
 ### 10.3 Required Accounts and Costs
 
-| Account | Purpose | Cost | Where to Get |
-|---|---|---|---|
-| Google Play Developer | Android store deployment | $25 one-time | https://play.google.com/console/signup |
-| Apple Developer Program | iOS store deployment + TestFlight | $99/year | https://developer.apple.com/programs/ |
+| Account                 | Purpose                           | Cost         | Where to Get                           |
+| ----------------------- | --------------------------------- | ------------ | -------------------------------------- |
+| Google Play Developer   | Android store deployment          | $25 one-time | https://play.google.com/console/signup |
+| Apple Developer Program | iOS store deployment + TestFlight | $99/year     | https://developer.apple.com/programs/  |
 
 ---
 
@@ -424,6 +425,7 @@ Cordova plugins are npm packages, so they are automatically covered by the exist
 No additional Dependabot configuration is required for Cordova projects — plugin version updates will appear as standard npm PRs alongside your other dependency updates.
 
 To verify:
+
 1. Ensure `plugins/` is in `.gitignore` (Cordova restores them from `package.json`)
 2. Confirm `package.json` lists your Cordova plugins as dependencies
 3. Check that `templates/cicd/dependabot.yml` is active in your repo
@@ -528,12 +530,12 @@ cordova prepare
 
 ## 15. Related Standards
 
-| Document | Relevance |
-|---|---|
-| `templates/mobile/MOBILE_DEPLOYMENT.md` | Overall mobile deployment guide (PWA, TWA, Capacitor, Cordova) |
-| `docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md` | Standards-level evaluation that designates Capacitor as the primary PWA → native shell wrapper, with Cordova kept for legacy/migration |
-| `templates/cicd/deploy-cordova.yml` | Cordova GitHub Actions workflow template |
-| `templates/cicd/dependabot.yml` | Dependabot config (covers Cordova npm plugins automatically) |
-| `SECURITY_STANDARD.md` | Security requirements for mobile apps |
-| `docs/Master_Inventory/VAULT_AGENT_STANDARD.md` | Keystore and API key secret management |
-| `docs/Master_Inventory/DEPLOYMENT_STANDARD.md` | How releases flow through CI to the stores |
+| Document                                        | Relevance                                                                                                                              |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `templates/mobile/MOBILE_DEPLOYMENT.md`         | Overall mobile deployment guide (PWA, TWA, Capacitor, Cordova)                                                                         |
+| `docs/CAPACITOR_MOBILE_EVAL_2026-04-28.md`      | Standards-level evaluation that designates Capacitor as the primary PWA → native shell wrapper, with Cordova kept for legacy/migration |
+| `templates/cicd/deploy-cordova.yml`             | Cordova GitHub Actions workflow template                                                                                               |
+| `templates/cicd/dependabot.yml`                 | Dependabot config (covers Cordova npm plugins automatically)                                                                           |
+| `SECURITY_STANDARD.md`                          | Security requirements for mobile apps                                                                                                  |
+| `docs/Master_Inventory/VAULT_AGENT_STANDARD.md` | Keystore and API key secret management                                                                                                 |
+| `docs/Master_Inventory/DEPLOYMENT_STANDARD.md`  | How releases flow through CI to the stores                                                                                             |

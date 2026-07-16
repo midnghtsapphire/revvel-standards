@@ -32,14 +32,14 @@ revvel-standards change.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | 0 (private) |
-| Open Issues | 0 |
-| Private | Yes |
-| Archived | No |
-| Default branch | main |
-| Description | Standalone analytics/management dashboard for Audrey Evans - split from monorepo |
+| Property       | Value                                                                            |
+| -------------- | -------------------------------------------------------------------------------- |
+| Stars          | 0 (private)                                                                      |
+| Open Issues    | 0                                                                                |
+| Private        | Yes                                                                              |
+| Archived       | No                                                                               |
+| Default branch | main                                                                             |
+| Description    | Standalone analytics/management dashboard for Audrey Evans - split from monorepo |
 
 ## Research Checklist
 
@@ -60,6 +60,7 @@ the central command center for Audrey Evans' business empire. It has been split
 from the monorepo and ships with Docker + nginx for production deployments.
 
 **Tech stack:**
+
 - React 19.1 + React Router DOM 7.9
 - Vite 6.3 + Tailwind CSS 4 + Framer Motion 12
 - Recharts 2.15 for data visualization
@@ -68,6 +69,7 @@ from the monorepo and ships with Docker + nginx for production deployments.
 - pnpm 10.4 as package manager
 
 **Key modules in `src/`:**
+
 - `App.jsx` (32 KB) — monolithic router + all page components inline
 - `RealTimeAnalytics.jsx` — multi-domain tracker with simulated live data
 - `MultiDomainTracker.jsx` — domain uptime/SEO widgets
@@ -81,9 +83,11 @@ from the monorepo and ships with Docker + nginx for production deployments.
 - `AppsRepository.jsx` — external app launcher dashboard
 
 **Existing workflows (`.github/workflows/`):**
+
 - `issue-triage-labels.yml` — auto-labels new issues
 
 **Missing standard review workflows:**
+
 - `codeql.yml` ❌
 - `semgrep.yml` ❌
 - `ai-pr-review-openrouter.yml` ❌
@@ -94,11 +98,13 @@ from the monorepo and ships with Docker + nginx for production deployments.
 **1. Hardcoded development server URLs in `src/App.jsx`**
 
 The Dashboard component contains hardcoded `manus.computer` development URLs:
+
 ```
 https://3001-i97542eaxaub6sbc4d71a-aba7ea15.us2.manus.computer
 https://3000-i97542eaxaub6sbc4d71a-aba7ea15.us2.manus.computer
 https://8004-i97542eaxaub6sbc4d71a-aba7ea15.us2.manus.computer/docs
 ```
+
 These links are ephemeral development server addresses that will 404 in production.
 They should be replaced with environment variable references or real production URLs.
 
@@ -147,18 +153,20 @@ builds. No action needed.
 
 The dashboard is a well-structured, visually rich React 19 app with strong UI
 foundations. The critical gaps are: **no automated security scanning** (CodeQL
-+ Semgrep both absent), **no test suite**, and **hardcoded development URLs**
-that will break in production. Fixing these three items plus adding the standard
-review workflow jury transforms this from a demo-quality repo to a production-
-quality one. The music industry tools (stem separation, mastering, distribution
-tracking) represent a differentiated set of features that, once backed by real
-API integrations, can command $29–$99/month SaaS pricing.
+
+- Semgrep both absent), **no test suite**, and **hardcoded development URLs**
+  that will break in production. Fixing these three items plus adding the standard
+  review workflow jury transforms this from a demo-quality repo to a production-
+  quality one. The music industry tools (stem separation, mastering, distribution
+  tracking) represent a differentiated set of features that, once backed by real
+  API integrations, can command $29–$99/month SaaS pricing.
 
 ## Step 1A — Product/Output Selections
 
 **Output type:** Existing SPA — fleet maintenance pass (no new product creation)
 
 **Deliverables for draft PR on target repo:**
+
 1. `.github/workflows/codeql.yml` — CodeQL analysis (JavaScript + Actions)
 2. `.github/workflows/semgrep.yml` — Semgrep SAST
 3. `.github/workflows/ai-pr-review-openrouter.yml` — OpenRouter AI PR review
@@ -175,26 +183,28 @@ API integrations, can command $29–$99/month SaaS pricing.
 
 ### Music Dashboard / Analytics SaaS Competitors
 
-| Product | Stars / Traction | Pricing (2026) | Key differentiator |
-|---------|-----------------|----------------|--------------------|
-| **Spotify for Artists** | N/A (Spotify internal) | Free | Official Spotify analytics; no competitor to beat, but sets the bar |
-| **Chartmetric** | Private ($10M raised) | $0–$140/mo ([chartmetric.com/pricing](https://chartmetric.com/pricing)) | Deep cross-platform music analytics with playlist tracking |
-| **Soundcharts** | Private | $99–$449/mo ([soundcharts.com/pricing](https://soundcharts.com/pricing)) | Real-time chart monitoring, radio tracking |
-| **Linkfire** | ~$15M raised | $9–$39/mo ([linkfire.com](https://linkfire.com)) | Smart link landing pages with analytics |
-| **Stem.is** | ~$5M raised | 0% fee on distribution | Splits revenue among collaborators |
-| **ToneDen** | ~$2M raised | $0–$69/mo | Social media music marketing automation |
-| **Groover** | ~$3M raised | Pay-per-submission ($2–$6 per curator) | Curator outreach marketplace |
+| Product                 | Stars / Traction       | Pricing (2026)                                                           | Key differentiator                                                  |
+| ----------------------- | ---------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| **Spotify for Artists** | N/A (Spotify internal) | Free                                                                     | Official Spotify analytics; no competitor to beat, but sets the bar |
+| **Chartmetric**         | Private ($10M raised)  | $0–$140/mo ([chartmetric.com/pricing](https://chartmetric.com/pricing))  | Deep cross-platform music analytics with playlist tracking          |
+| **Soundcharts**         | Private                | $99–$449/mo ([soundcharts.com/pricing](https://soundcharts.com/pricing)) | Real-time chart monitoring, radio tracking                          |
+| **Linkfire**            | ~$15M raised           | $9–$39/mo ([linkfire.com](https://linkfire.com))                         | Smart link landing pages with analytics                             |
+| **Stem.is**             | ~$5M raised            | 0% fee on distribution                                                   | Splits revenue among collaborators                                  |
+| **ToneDen**             | ~$2M raised            | $0–$69/mo                                                                | Social media music marketing automation                             |
+| **Groover**             | ~$3M raised            | Pay-per-submission ($2–$6 per curator)                                   | Curator outreach marketplace                                        |
 
 **Opportunity:** None of the above combine music analytics + affiliate management
-+ multi-domain tracking + cybersecurity intelligence in a single ADHD-friendly
-dashboard. The differentiation is real — the gap is connecting mock data to
-actual API integrations.
+
+- multi-domain tracking + cybersecurity intelligence in a single ADHD-friendly
+  dashboard. The differentiation is real — the gap is connecting mock data to
+  actual API integrations.
 
 **Pricing data:** Based on public pricing pages as of July 2026.
 
 ### SEO Keywords (music dashboard)
 
 Top intent keywords for discoverability (internal estimate — no paid tool used):
+
 - "music artist analytics dashboard" — high commercial intent
 - "music distribution tracker" — moderate volume
 - "stem separation tool online" — high search interest (Demucs, Spleeter searches)
@@ -226,6 +236,7 @@ Top intent keywords for discoverability (internal estimate — no paid tool used
 ### Implementation Notes for the Coder
 
 **Workflow files:** Copy from `revvel-standards/.github/workflows/`:
+
 - `codeql.yml` — adapt language matrix to `['javascript-typescript', 'actions']`
   (no Python in this repo; validate.py is the only Python file, not worth scanning)
 - `semgrep.yml` — copy verbatim (already targets JS/TS projects)
@@ -236,6 +247,7 @@ Top intent keywords for discoverability (internal estimate — no paid tool used
 Replace hardcoded `https://*.manus.computer` URLs with `import.meta.env.VITE_*`
 references and add the corresponding keys to `.env.example` with placeholder values.
 Example:
+
 ```js
 // Before
 href="https://3001-i97542eaxaub6sbc4d71a-aba7ea15.us2.manus.computer"
@@ -245,6 +257,7 @@ href={import.meta.env.VITE_ALTTEXT_APP_URL || '#'}
 
 **Test setup:**
 Merge into the `scripts` object in `package.json` (partial snippet):
+
 ```json
 {
   "scripts": {
@@ -253,18 +266,21 @@ Merge into the `scripts` object in `package.json` (partial snippet):
   }
 }
 ```
+
 Merge into the exported config object in `vite.config.js` (partial snippet — add
 alongside the existing `plugins` key):
+
 ```js
 export default defineConfig({
   // …existing config…
   test: {
-    environment: 'jsdom',
+    environment: "jsdom",
     globals: true,
-    setupFiles: './src/test-setup.js',
+    setupFiles: "./src/test-setup.js",
   },
-})
+});
 ```
+
 Install dev deps: `pnpm add -D vitest @vitest/coverage-v8 jsdom @testing-library/react @testing-library/jest-dom @testing-library/user-event`
 
 **`CONTRIBUTING.md`:** Standard sections — Prerequisites, Local setup, Commit conventions, PR process.
@@ -293,25 +309,25 @@ Install dev deps: `pnpm add -D vitest @vitest/coverage-v8 jsdom @testing-library
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-| --- | --- | --- | --- |
-| OpenRouter API key not configured on target repo | Medium | Blocks OpenRouter review workflow | Add secret to target repo settings before merging PR |
-| CodeQL scan reveals JS vulnerabilities | Low | Delays merge | Address before merge; most flagged issues in React SPAs are low severity |
-| Vitest tests fail due to Framer Motion or Radix UI SSR requirements | Medium | Blocks `npm test` gate | Mock Framer Motion in test-setup.js (`vi.mock('framer-motion', ...)`) |
-| pnpm version mismatch in CI | Low | Build fails | Pin `packageManager` in `package.json` (already at `pnpm@10.4.1`) |
+| Risk                                                                | Likelihood | Impact                            | Mitigation                                                               |
+| ------------------------------------------------------------------- | ---------- | --------------------------------- | ------------------------------------------------------------------------ |
+| OpenRouter API key not configured on target repo                    | Medium     | Blocks OpenRouter review workflow | Add secret to target repo settings before merging PR                     |
+| CodeQL scan reveals JS vulnerabilities                              | Low        | Delays merge                      | Address before merge; most flagged issues in React SPAs are low severity |
+| Vitest tests fail due to Framer Motion or Radix UI SSR requirements | Medium     | Blocks `npm test` gate            | Mock Framer Motion in test-setup.js (`vi.mock('framer-motion', ...)`)    |
+| pnpm version mismatch in CI                                         | Low        | Build fails                       | Pin `packageManager` in `package.json` (already at `pnpm@10.4.1`)        |
 
 ## Superseded Content
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — new fleet maintenance pass, no prior WR |
-| Reason for replacement | N/A |
-| Archival status | NOT-APPLICABLE |
+| Field                  | Value                                         |
+| ---------------------- | --------------------------------------------- |
+| Supersedes WR/issue    | N/A — new fleet maintenance pass, no prior WR |
+| Reason for replacement | N/A                                           |
+| Archival status        | NOT-APPLICABLE                                |

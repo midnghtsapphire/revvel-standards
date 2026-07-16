@@ -30,37 +30,41 @@ It is the read-side complement to `amplitude-events.yml` (which sends GitHub eve
 ## Setup checklist
 
 1. **Provision secrets** in the target repo:
+
    ```bash
    gh secret set AMPLITUDE_API_KEY            --repo <owner>/<repo>
    gh secret set AMPLITUDE_SECRET_KEY         --repo <owner>/<repo>
    gh secret set NOTION_API_KEY               --repo <owner>/<repo>
    gh secret set NOTION_AMPLITUDE_DATABASE_ID --repo <owner>/<repo>
    ```
+
    Vault paths:
    - `revvel/shared/analytics/amplitude` — Amplitude key + secret
    - `revvel/shared/notion/standards` — Notion token + database id
 
 2. **Set the chart variable** (Settings → Variables → Actions):
+
    ```bash
    gh variable set AMPLITUDE_CHART_ID --body "<chart_id_from_amplitude_url>" --repo <owner>/<repo>
    ```
+
    Optional: `AMPLITUDE_REGION` (`us`/`eu`), `NOTION_VERSION` (default `2022-06-28`).
 
 3. **Create the Notion database** with this schema (see `standards/AMPLITUDE_NOTION_AGENT_STANDARD.md` §4):
 
-   | Property | Type |
-   |---|---|
-   | `Title` | Title |
-   | `Date` | Date |
-   | `Total Events` | Number |
-   | `Series Count` | Number |
-   | `Series Labels` | Text |
-   | `Source` | Text |
-   | `Chart ID` | Text |
+   | Property        | Type   |
+   | --------------- | ------ |
+   | `Title`         | Title  |
+   | `Date`          | Date   |
+   | `Total Events`  | Number |
+   | `Series Count`  | Number |
+   | `Series Labels` | Text   |
+   | `Source`        | Text   |
+   | `Chart ID`      | Text   |
 
-4. **Share the Notion integration with the database** (database header → ▼ → *Add connections*). This is the single most common failure mode — without it, the API returns 404 even with a valid token.
+4. **Share the Notion integration with the database** (database header → ▼ → _Add connections_). This is the single most common failure mode — without it, the API returns 404 even with a valid token.
 
-5. **Verify** via *Actions → Amplitude → Notion Agent → Run workflow* with `dry_run: true` first, then `dry_run: false`.
+5. **Verify** via _Actions → Amplitude → Notion Agent → Run workflow_ with `dry_run: true` first, then `dry_run: false`.
 
 ## Hard rules
 

@@ -3,6 +3,7 @@
 All products deploy to Vercel free tier as static exports unless otherwise noted.
 
 ## prompt-generation-app (Revvel PromptForge)
+
 This guide covers deployment of production-ready Next.js applications to Vercel and other platforms.
 
 - **Domain:** `promptforge.revvel.co`
@@ -65,12 +66,14 @@ vercel --prod
 Configure custom domains in Vercel Dashboard:
 
 ### Suggested Domains
+
 - `affiliate-hub.revvel.co` → affiliate-hub
 - `ai-video.revvel.co` → ai-video-toolkit
 - `screen-recorder.revvel.co` → screen-recorder-finder
 - `promptforge.revvel.co` → prompt-generation-app
 
 ### DNS Configuration
+
 ```
 CNAME affiliate-hub    cname.vercel-dns.com
 CNAME ai-video         cname.vercel-dns.com
@@ -81,13 +84,16 @@ CNAME promptforge      cname.vercel-dns.com
 ## Environment Variables
 
 ### Analytics (Optional)
+
 ```bash
 NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_VERCEL_ANALYTICS=1
 ```
 
 ### Affiliate Links (Update in code)
+
 Replace placeholder `#` links with actual affiliate URLs in:
+
 - `affiliate-hub/app/page.tsx`
 - `ai-video-toolkit/app/page.tsx`
 - `screen-recorder-finder/app/page.tsx`
@@ -113,14 +119,17 @@ npm run build
 ## Performance Optimization
 
 ### 1. Enable Vercel Speed Insights
+
 Add to each product:
+
 ```bash
 npm install @vercel/speed-insights
 ```
 
 Update `app/layout.tsx`:
+
 ```tsx
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function RootLayout({ children }) {
   return (
@@ -135,29 +144,36 @@ export default function RootLayout({ children }) {
 ```
 
 ### 2. Enable Vercel Analytics
+
 ```bash
 npm install @vercel/analytics
 ```
 
 ### 3. Enable Caching
+
 Already configured via `next.config.js` static export.
 
 ## Monitoring
 
 ### Vercel Dashboard
+
 - Page views
 - Load times
 - Core Web Vitals
 - Error tracking
 
 ### Google Analytics
+
 Add GA4 tracking code to each product for:
+
 - Conversion tracking
 - Affiliate link clicks
 - User behavior
 
 ### Affiliate Tracking
+
 Use UTM parameters for affiliate links:
+
 ```
 CNAME promptforge.revvel.co → cname.vercel-dns.com
 ```

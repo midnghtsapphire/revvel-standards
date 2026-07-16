@@ -4,7 +4,7 @@ Activate when any task involves setting up PostHog, instrumenting product events
 
 ## What PostHog Does
 
-PostHog is an all-in-one product analytics platform that captures **user-behavior events**, **session replays**, **feature flags**, **A/B tests**, and **error tracking** (with source map support). It lets product owners answer questions like *"how many users completed onboarding?"*, *"which feature is causing crashes?"*, *"what did the user do before encountering the error?"*, all in one platform. It's open-source and can be self-hosted or used via PostHog Cloud.
+PostHog is an all-in-one product analytics platform that captures **user-behavior events**, **session replays**, **feature flags**, **A/B tests**, and **error tracking** (with source map support). It lets product owners answer questions like _"how many users completed onboarding?"_, _"which feature is causing crashes?"_, _"what did the user do before encountering the error?"_, all in one platform. It's open-source and can be self-hosted or used via PostHog Cloud.
 
 ## Why PostHog in the Revvel Ecosystem
 
@@ -53,6 +53,7 @@ Revvel app (browser / Node / mobile)
    Vault path convention: `revvel/apps/<app>/<env>/posthog`. See `docs/SECRETS_MANAGEMENT.md`.
 
 4. **Install the SDK** in the target repo:
+
    ```bash
    # Browser / SPA / Next.js
    npm install posthog-js
@@ -62,10 +63,12 @@ Revvel app (browser / Node / mobile)
    ```
 
 5. **Drop in the initializer template:**
+
    ```bash
    cp revvel-standards/templates/standards/posthog-init.ts \
       <app>/src/lib/analytics-posthog.ts
    ```
+
    Then import `captureEvent`, `identify`, `reset`, `optOut` from `lib/analytics-posthog` everywhere instead of calling the SDK directly.
 
 6. **Adopt the event-naming and PII rules** in `templates/standards/posthog-events.md`:
@@ -78,12 +81,13 @@ Revvel app (browser / Node / mobile)
    - Provide a settings toggle that calls `optOut()` / `optIn()`.
 
 8. **Enable Session Replay** (optional):
+
    ```ts
    posthog.init(apiKey, {
      enable_recording_console_log: true,
      session_recording: {
        maskAllInputs: true,
-       maskTextSelector: '[data-private]',
+       maskTextSelector: "[data-private]",
      },
    });
    ```
@@ -103,15 +107,15 @@ Revvel app (browser / Node / mobile)
 
 Every Revvel app **must** emit these baseline events (server-side or client-side, whichever is authoritative):
 
-| Event Name | When to Fire | Required Properties |
-|---|---|---|
-| `app_loaded` | First mount of the root component | `app_version`, `platform` |
-| `user_signed_up` | Server confirms new account | `signup_method`, `referrer_source` |
-| `user_logged_in` | Server confirms session | `login_method` |
-| `user_logged_out` | User-initiated sign out | _(none)_ |
-| `feature_used` | Any non-nav user action worth tracking | `feature_name`, `surface` |
+| Event Name           | When to Fire                                | Required Properties                        |
+| -------------------- | ------------------------------------------- | ------------------------------------------ |
+| `app_loaded`         | First mount of the root component           | `app_version`, `platform`                  |
+| `user_signed_up`     | Server confirms new account                 | `signup_method`, `referrer_source`         |
+| `user_logged_in`     | Server confirms session                     | `login_method`                             |
+| `user_logged_out`    | User-initiated sign out                     | _(none)_                                   |
+| `feature_used`       | Any non-nav user action worth tracking      | `feature_name`, `surface`                  |
 | `purchase_completed` | Stripe webhook `checkout.session.completed` | `product_slug`, `amount_cents`, `currency` |
-| `error_surfaced` | User saw a non-fatal error toast / page | `error_code`, `surface` |
+| `error_surfaced`     | User saw a non-fatal error toast / page     | `error_code`, `surface`                    |
 
 Project-specific events go in the per-app `BOM.md` under §Telemetry.
 
@@ -179,20 +183,20 @@ See `templates/cicd/posthog-send-event.yml`.
 PostHog feature flags let you A/B test features, gradual rollouts, and kill switches:
 
 ```ts
-import { posthog } from '@/lib/analytics-posthog';
+import { posthog } from "@/lib/analytics-posthog";
 
 // Check if a feature is enabled for the current user
-if (posthog.isFeatureEnabled('new-checkout-flow')) {
+if (posthog.isFeatureEnabled("new-checkout-flow")) {
   // Show new checkout flow
 } else {
   // Show old checkout flow
 }
 
 // Get the variant of a multivariate flag
-const variant = posthog.getFeatureFlag('pricing-test');
-if (variant === 'variant-a') {
+const variant = posthog.getFeatureFlag("pricing-test");
+if (variant === "variant-a") {
   // Show variant A pricing
-} else if (variant === 'variant-b') {
+} else if (variant === "variant-b") {
   // Show variant B pricing
 }
 ```

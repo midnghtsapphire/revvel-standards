@@ -11,14 +11,14 @@ has no personal-account listing API and bot-posting violates its ToS.
 
 ## Pipeline
 
-| Step | Lane (agent-models.yml) | What happens |
-| --- | --- | --- |
-| 1. Parse | deterministic | CSV/links → `items[]` {title, ASIN/link, price paid, date} |
-| 2. Enrich | `vision` | public product page → official images, specs, category |
-| 3. Images | `image_gen` | 3 or 5 casual "normal person's photo" shots, **image-to-image conditioned on the real product photos** (new/sealed items only) |
-| 4. Copy | `cheap_summary` | title, description, condition; suggested price = paid × margin (deterministic — no research) |
-| 5. Pack | — | one folder per item (`images/` + `listing.json`) + `review-dashboard.html` |
-| 6. Post | **human** | manual 30-second copy-paste from the pack |
+| Step      | Lane (agent-models.yml) | What happens                                                                                                                   |
+| --------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 1. Parse  | deterministic           | CSV/links → `items[]` {title, ASIN/link, price paid, date}                                                                     |
+| 2. Enrich | `vision`                | public product page → official images, specs, category                                                                         |
+| 3. Images | `image_gen`             | 3 or 5 casual "normal person's photo" shots, **image-to-image conditioned on the real product photos** (new/sealed items only) |
+| 4. Copy   | `cheap_summary`         | title, description, condition; suggested price = paid × margin (deterministic — no research)                                   |
+| 5. Pack   | —                       | one folder per item (`images/` + `listing.json`) + `review-dashboard.html`                                                     |
+| 6. Post   | **human**               | manual 30-second copy-paste from the pack                                                                                      |
 
 ## Usage
 

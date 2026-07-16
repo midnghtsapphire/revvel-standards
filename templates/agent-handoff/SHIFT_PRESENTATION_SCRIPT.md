@@ -57,13 +57,13 @@ But the framework is evaluated across five dimensions of agent behavior, which I
 
 The key mindset shift is this: we are not testing software. We are evaluating an agent's decision-making quality. That requires a different kind of test."
 
-| Pillar | What It Means |
-|---|---|
-| **S — Spec-First** | Every task starts with a Technical Design Spec the agent writes first |
-| **H — Handoff Contracts** | Every boundary between agents is treated as a rigid API contract |
-| **I — Intent Validation** | Test what the user wanted, not just what the code did |
-| **F — Feedback Loop** | When an agent fails, it must reflect and update its own instructions |
-| **T — Tiered Oversight** | Humans stay in the loop for high-stakes decisions; automation handles the rest |
+| Pillar                    | What It Means                                                                  |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| **S — Spec-First**        | Every task starts with a Technical Design Spec the agent writes first          |
+| **H — Handoff Contracts** | Every boundary between agents is treated as a rigid API contract               |
+| **I — Intent Validation** | Test what the user wanted, not just what the code did                          |
+| **F — Feedback Loop**     | When an agent fails, it must reflect and update its own instructions           |
+| **T — Tiered Oversight**  | Humans stay in the loop for high-stakes decisions; automation handles the rest |
 
 ---
 
@@ -171,12 +171,12 @@ Thank you. I am happy to take questions."
 
 The following questions are likely to arise and should be prepared for:
 
-| Likely Question | Prepared Answer |
-|---|---|
-| How is this different from prompt engineering? | Prompt engineering is how you write the instructions. S.H.I.F.T. is how you test whether those instructions produced the right behavior. They are complementary, not the same. |
-| What model do you use for the Evaluator agent? | Any model with strong instruction-following works. We use lightweight models to keep cost low — the Evaluator prompt does the heavy lifting, not the model size. |
-| How do you handle non-determinism in the tests? | We run each test scenario multiple times and evaluate the distribution of outputs, not a single output. A pass requires consistent behavior across runs, not just one correct response. |
-| Does this work for multi-agent pipelines? | Yes — the Handoff Contract pillar is specifically designed for multi-agent chains. Each handoff point gets its own contract and its own Evaluator check. |
+| Likely Question                                  | Prepared Answer                                                                                                                                                                                                         |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| How is this different from prompt engineering?   | Prompt engineering is how you write the instructions. S.H.I.F.T. is how you test whether those instructions produced the right behavior. They are complementary, not the same.                                          |
+| What model do you use for the Evaluator agent?   | Any model with strong instruction-following works. We use lightweight models to keep cost low — the Evaluator prompt does the heavy lifting, not the model size.                                                        |
+| How do you handle non-determinism in the tests?  | We run each test scenario multiple times and evaluate the distribution of outputs, not a single output. A pass requires consistent behavior across runs, not just one correct response.                                 |
+| Does this work for multi-agent pipelines?        | Yes — the Handoff Contract pillar is specifically designed for multi-agent chains. Each handoff point gets its own contract and its own Evaluator check.                                                                |
 | How long does this add to the development cycle? | The WoZ roleplay and guardrail definition typically adds two to four hours per agent. The Evaluator pattern adds one to two days. The time saved in debugging and rework is significantly higher than the upfront cost. |
 
 ---

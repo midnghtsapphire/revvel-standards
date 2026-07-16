@@ -32,25 +32,27 @@ voices/                    # Voice repository
 
 ## Video Types & Duration
 
-| Platform/Type | Duration | Unit | Monetization |
-|--------------|----------|------|--------------|
-| LinkedIn | 30-60 sec | - | Lead generation |
-| Facebook | 1-3 min | - | Ads, reels |
-| YouTube | 1-10 min | - | Ad revenue, sponsors |
-| TikTok | 15-60 sec | - | Brand deals |
-| CLE Training | 1 hour | 1 CLE unit | Course sales |
-| Music Video | 3-5 min | - | Streaming, sales |
-| Movie | 90-120 min | - | Streaming, sales |
+| Platform/Type | Duration   | Unit       | Monetization         |
+| ------------- | ---------- | ---------- | -------------------- |
+| LinkedIn      | 30-60 sec  | -          | Lead generation      |
+| Facebook      | 1-3 min    | -          | Ads, reels           |
+| YouTube       | 1-10 min   | -          | Ad revenue, sponsors |
+| TikTok        | 15-60 sec  | -          | Brand deals          |
+| CLE Training  | 1 hour     | 1 CLE unit | Course sales         |
+| Music Video   | 3-5 min    | -          | Streaming, sales     |
+| Movie         | 90-120 min | -          | Streaming, sales     |
 
 ## CLE Training (Colorado Rules)
 
 ### Requirements
+
 - 1 hour of instruction = 1 CLE credit unit
 - Must include attendance verification
 - Certificate of completion required
 - Subject matter must be approved CLE content
 
 ### Colorado Supreme Court Rules
+
 - Accredited provider status required
 - Quality assurance standards apply
 - Reporting deadlines must be met
@@ -67,6 +69,7 @@ voices/                    # Voice repository
 ## Automation
 
 See `docs/video-production/` for:
+
 - Automated upload workflows
 - Cross-platform monetization setup
 - Analytics and tracking
@@ -75,6 +78,7 @@ See `docs/video-production/` for:
 ## Legal & Compliance
 
 Each video type has compliance requirements:
+
 - **Social Media**: FTC disclosure, platform TOS
 - **CLE Training**: Colorado Bar accreditation, attendance tracking
 - **Music**: Copyright, royalty clearance

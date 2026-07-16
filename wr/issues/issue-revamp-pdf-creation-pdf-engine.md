@@ -107,10 +107,10 @@ We need to scaffold a new `production-app` using `scripts/init-product.sh` that 
 
 ### Risks & Considerations
 
-| Risk | Severity | Mitigation |
-| ------ | ---------- | ------------ |
-| Lovable CLI limitations | Medium | If Lovable cannot achieve the exact 3D glossy effect, fallback to generating standard Tailwind glassmorphism classes and manually refining. |
-| Video API Costs | High | Video generation APIs are expensive. Implement strict rate limiting and caching. |
+| Risk                    | Severity | Mitigation                                                                                                                                  |
+| ----------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lovable CLI limitations | Medium   | If Lovable cannot achieve the exact 3D glossy effect, fallback to generating standard Tailwind glassmorphism classes and manually refining. |
+| Video API Costs         | High     | Video generation APIs are expensive. Implement strict rate limiting and caching.                                                            |
 
 ---
 
@@ -134,18 +134,18 @@ We need to scaffold a new `production-app` using `scripts/init-product.sh` that 
 
 ### Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-| --- | --- | --- | --- | --- |
-| Website / app UI | yes | Next.js / Tailwind | `scripts/ui-creation-engine.js` | Glassmorphic checkout UI via Lovable |
-| API | yes | REST | `standards/shapes/API.md` | Core PDF/Video generation endpoints |
-| CLI | yes | `pdf-engine-cli` | `standards/CLI_MCP_AUTOMATION.md` | Local generation triggers |
-| MCP | yes | Server | `standards/shapes/MCP.md` | AI agent hooks |
-| Skill | yes | Execution | `products/revvel-skill-runner/` | PDF generation skill |
-| PDF | yes | Digital Product | `docs/playbooks/pdf-wr-playbook.md` | The actual generated reports |
-| PowerPoint / deck | no | N/A | N/A | N/A |
-| Video | yes | Promo Videos | Video Creation Engine | HeyGen/Runway integration |
-| Docs | yes | Architecture spec | revvel-standards docs | Documentation of the engine |
-| Agent automation | yes | Workflow | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | N/A |
+| Output shape      | In scope? | Format / length    | Primary engine / standard                 | Notes                                |
+| ----------------- | --------- | ------------------ | ----------------------------------------- | ------------------------------------ |
+| Website / app UI  | yes       | Next.js / Tailwind | `scripts/ui-creation-engine.js`           | Glassmorphic checkout UI via Lovable |
+| API               | yes       | REST               | `standards/shapes/API.md`                 | Core PDF/Video generation endpoints  |
+| CLI               | yes       | `pdf-engine-cli`   | `standards/CLI_MCP_AUTOMATION.md`         | Local generation triggers            |
+| MCP               | yes       | Server             | `standards/shapes/MCP.md`                 | AI agent hooks                       |
+| Skill             | yes       | Execution          | `products/revvel-skill-runner/`           | PDF generation skill                 |
+| PDF               | yes       | Digital Product    | `docs/playbooks/pdf-wr-playbook.md`       | The actual generated reports         |
+| PowerPoint / deck | no        | N/A                | N/A                                       | N/A                                  |
+| Video             | yes       | Promo Videos       | Video Creation Engine                     | HeyGen/Runway integration            |
+| Docs              | yes       | Architecture spec  | revvel-standards docs                     | Documentation of the engine          |
+| Agent automation  | yes       | Workflow           | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | N/A                                  |
 
 ---
 
@@ -158,18 +158,18 @@ We need to scaffold a new `production-app` using `scripts/init-product.sh` that 
 
 ### Artifact Engine Map
 
-| Artifact Shape | Existing engine / standard | Status | Required action |
-| --- | --- | --- | --- |
-| Website / UI | `standards/shapes/APP.md` | Gap | Generate with Lovable CLI |
-| API | `standards/shapes/API.md` | Gap | Build API |
-| CLI | `standards/CLI_MCP_AUTOMATION.md` | Gap | Build CLI |
-| MCP | `standards/shapes/MCP.md` | Gap | Build MCP |
-| Skill | `products/revvel-skill-runner/` | Exists | Add PDF skill |
-| PDF | `docs/playbooks/pdf-wr-playbook.md` | Exists | N/A |
-| PowerPoint / deck | N/A | Exists | N/A |
-| Video | N/A | Gap | Integrate Video API |
-| Docs | revvel-standards baseline | Exists | Add docs |
-| Agent automation | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Exists | Scaffold product pipeline |
+| Artifact Shape    | Existing engine / standard                | Status | Required action           |
+| ----------------- | ----------------------------------------- | ------ | ------------------------- |
+| Website / UI      | `standards/shapes/APP.md`                 | Gap    | Generate with Lovable CLI |
+| API               | `standards/shapes/API.md`                 | Gap    | Build API                 |
+| CLI               | `standards/CLI_MCP_AUTOMATION.md`         | Gap    | Build CLI                 |
+| MCP               | `standards/shapes/MCP.md`                 | Gap    | Build MCP                 |
+| Skill             | `products/revvel-skill-runner/`           | Exists | Add PDF skill             |
+| PDF               | `docs/playbooks/pdf-wr-playbook.md`       | Exists | N/A                       |
+| PowerPoint / deck | N/A                                       | Exists | N/A                       |
+| Video             | N/A                                       | Gap    | Integrate Video API       |
+| Docs              | revvel-standards baseline                 | Exists | Add docs                  |
+| Agent automation  | `standards/AUTOMATED_PRODUCT_PIPELINE.md` | Exists | Scaffold product pipeline |
 
 ---
 

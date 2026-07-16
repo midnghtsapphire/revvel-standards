@@ -13,7 +13,9 @@ Fill out the 7-section MVI Contract before every coding session to define scope,
 ## The 7-Section MVI Contract
 
 ### Section 1: Context Check
+
 Read `SYSTEM_STATE.md` before writing a single line of code.
+
 ```
 Previous session completed: [describe what was finished]
 Current production state: [what is live and working]
@@ -22,12 +24,14 @@ SYSTEM_STATE.md last updated: [date]
 ```
 
 ### Section 2: Feature Definition
+
 ```
 Feature: [One clear sentence describing the user-observable outcome]
 User story: As a [role], I can [action], so that [outcome].
 ```
 
 ### Section 3: Dependency Map
+
 ```
 Database tables required: [list]
 API routes required: [list]
@@ -37,6 +41,7 @@ Other features that must be complete first: [list or "none"]
 ```
 
 ### Section 4: Acceptance Gates
+
 ```
 [ ] pnpm check — TypeScript compilation passes with zero errors
 [ ] pnpm test — All Vitest unit + integration tests pass
@@ -47,15 +52,18 @@ Other features that must be complete first: [list or "none"]
 ```
 
 ### Section 5: Out of Scope
+
 List everything intentionally deferred. Anything not listed is out of scope by default.
 
 ### Section 6: Files to Touch
+
 ```
 New files: [path/to/new-file.ts]
 Modified files: [path/to/existing-file.ts] — reason
 ```
 
 ### Section 7: Rollback Plan
+
 ```
 Rollback steps:
 1. git revert <commit-hash> and push
@@ -67,6 +75,7 @@ Rollback risk: [low/medium/high]
 ```
 
 ## Sign-Off (End of Session)
+
 ```
 [ ] All acceptance gates passed
 [ ] SYSTEM_STATE.md updated

@@ -4,9 +4,7 @@
   "default_framework": "jvm",
   "package_manager": "maven-or-gradle",
   "test_runner": "mvn test / gradle test",
-  "verify": [
-    "if [ -f pom.xml ]; then mvn -B verify; else ./gradlew build; fi"
-  ],
+  "verify": ["if [ -f pom.xml ]; then mvn -B verify; else ./gradlew build; fi"],
   "format": "if [ -f pom.xml ]; then mvn -B spotless:check || true; else ./gradlew spotlessCheck || true; fi",
   "prompt_pack": {
     "idioms": [

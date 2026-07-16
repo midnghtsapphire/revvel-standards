@@ -11,6 +11,7 @@ Execute the following workflow for each repository in the midnghtsapphire organi
 ## Step 0: Route the request before doing any work
 
 Read these required fields from the work request:
+
 - OUTPUT_TYPE
 - RESEARCH_MODE
 - DELIVERY_MODE
@@ -20,6 +21,7 @@ Read these required fields from the work request:
 - DEPLOYMENT_TARGET
 
 Rules:
+
 - RESEARCH_MODE controls research depth only. It does not change the deliverable.
 - OUTPUT_TYPE is the hard constraint on the deliverable.
 - Every request must pass viability scoring before implementation.
@@ -130,6 +132,7 @@ EVERY project MUST have:
 ALL projects MUST have in README.md:
 
 ### Test Section
+
 ```
 ## Test
 
@@ -141,6 +144,7 @@ ALL projects MUST have in README.md:
 ```
 
 ### Deployment Section
+
 ```
 ## Deployment
 
@@ -154,6 +158,7 @@ ALL projects MUST have in README.md:
 ## Step 7: Save This Prompt
 
 Save this prompt to:
+
 1. `/workspace/project/promptforproject.md` (local)
 2. Push to the prompts repository in midnghtsapphire org
 

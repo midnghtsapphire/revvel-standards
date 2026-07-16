@@ -7,6 +7,7 @@ This repository stores all voice clones and voice settings for video production.
 Similar to Donna AI - upload audio files and combine them to create unique voice outputs:
 
 ### Supported Input Formats
+
 - **MP3** - Most common audio format
 - **WAV** - Lossless quality
 - **M4A** - Apple lossless
@@ -36,6 +37,7 @@ Final Voice Clone + Settings
 ```
 
 ### Donna AI-Style Features
+
 - **Multi-file upload** - Combine multiple voice samples
 - **Voice blending** - Mix characteristics from different voices
 - **Emotion control** - Adjust emotional tone
@@ -67,17 +69,20 @@ voices/
 ## Voice Clone Providers
 
 ### ElevenLabs
+
 - High-quality voice cloning
 - Emotion control
 - Speed/pitch adjustment
 - Best for: Professional content
 
 ### Resemble AI
+
 - Real-time cloning
 - Custom AI voices
 - Best for: Custom voices
 
 ### Play.ht
+
 - Natural voices
 - Voice library
 - Best for: Large-scale production
@@ -85,6 +90,7 @@ voices/
 ## Voice Settings by Platform
 
 ### LinkedIn (Professional)
+
 ```json
 {
   "speed": 0.95,
@@ -97,6 +103,7 @@ voices/
 ```
 
 ### YouTube (Engaging)
+
 ```json
 {
   "speed": 1.0,
@@ -109,6 +116,7 @@ voices/
 ```
 
 ### TikTok (Energetic)
+
 ```json
 {
   "speed": 1.05,
@@ -121,6 +129,7 @@ voices/
 ```
 
 ### CLE Training (Clear, Educational)
+
 ```json
 {
   "speed": 0.9,
@@ -133,6 +142,7 @@ voices/
 ```
 
 ### Music/Singing
+
 ```json
 {
   "speed": 1.0,
@@ -148,21 +158,25 @@ voices/
 ## Voice Presets
 
 ### Professional Preset
+
 - Speed: 0.95
 - Tone: Authoritative, clear
 - Best for: Business, legal, educational
 
 ### Conversational Preset
+
 - Speed: 1.0
 - Tone: Friendly, relatable
 - Best for: Social media, vlogs
 
 ### Energetic Preset
+
 - Speed: 1.05-1.1
 - Tone: Enthusiastic, dynamic
 - Best for: Promotions, TikTok
 
 ### Dramatic Preset
+
 - Speed: 0.85-0.95
 - Tone: Deep, emotional
 - Best for: Storytelling, movies
@@ -177,6 +191,7 @@ voices/
 ## Storage & Backup
 
 All voice files should be:
+
 - [ ] Saved to Google Drive (Primary)
 - [ ] Backed up to revvel-standards repo
 - [ ] Documented with creation date

@@ -31,10 +31,10 @@ Verified against the repo as of 2026-07-13 (read `.github/workflows/auto-merge.y
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Repo | midnghtsapphire/revvel-standards |
-| Prior WR | #13978 (closed 2026-05-28, item never completed) |
+| Property               | Value                                                  |
+| ---------------------- | ------------------------------------------------------ |
+| Repo                   | midnghtsapphire/revvel-standards                       |
+| Prior WR               | #13978 (closed 2026-05-28, item never completed)       |
 | `human-approved` label | does not exist in this repo (checked via label lookup) |
 
 ## Research Findings
@@ -80,11 +80,11 @@ Centralize the bot-login check as a small shared script/constant (e.g. `scripts/
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
@@ -96,26 +96,27 @@ Auto-merge exists to reduce human toil on routine PRs, but the gate on _when_ to
 
 ## Superseded Content
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — new work, no prior implementation. This is the orphaned continuation of #13978 item 2, not a replacement of it. |
-| Reason for replacement | N/A |
-| Archival status | NOT-APPLICABLE (no code was removed) |
+| Field                  | Value                                                                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Supersedes WR/issue    | N/A — new work, no prior implementation. This is the orphaned continuation of #13978 item 2, not a replacement of it. |
+| Reason for replacement | N/A                                                                                                                   |
+| Archival status        | NOT-APPLICABLE (no code was removed)                                                                                  |
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -127,12 +128,15 @@ Auto-merge exists to reduce human toil on routine PRs, but the gate on _when_ to
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29256701856.md`
 
 ## Executive Decision
+
 Synthesis model failed, so this packet contains the raw lane reports for review.
 
 ## Code Review Agent Packet
+
 Synthesis error: HTTP 429: Provider returned error
 
 ## Market Positioning
@@ -152,18 +156,21 @@ Synthesis error: HTTP 429: Provider returned error
 ## Evidence
 
 **Source:** Issue body from `midnghtsapphire/revvel-standards` repository
+
 - **Workflow files referenced:** `.github/workflows/auto-merge.yml`, `.github/workflows/trusted-bot-auto-approve.yml`, `.github/workflows/pr-state-orchestrator.yml`
 - **Prior work reference:** Issue #13978 (closed 2026-05-28)
 - **Repository verification:** Label lookup confirmed `human-approved` label does not exist
 
 **Cannot verify without access:**
+
 - Current state of workflow files (would need GitHub API or repository access)
 - Actual bot behavior in production (would need GitHub Actions logs)
 - Impact metrics on merge frequency (would need GitHub repository analytics)
 
 ## Risks
 
-**High Priority Security Risk:** 
+**High Priority Security Risk:**
+
 - Automated agents can merge code without human oversight
 - Multiple workflow paths bypass review requirements
 - Supply chain vulnerability for production systems
@@ -173,13 +180,15 @@ Synthesis error: HTTP 429: Provider returned error
 ## Recommended Actions
 
 **Immediate:**
+
 1. Apply `security` and `infrastructure` labels to this issue
 2. Escalate to security team for priority review
 3. Audit all auto-merge workflows for similar gaps
 
 **Not Applicable:**
+
 - Market research
-- Competitive analysis  
+- Competitive analysis
 - Go-to-market strategy
 - Customer validation
 - Pricing strategy
@@ -187,12 +196,14 @@ Synthesis error: HTTP 429: Provider returned error
 ## Automatic Fix Hooks
 
 **Label Application Hook:**
+
 ```yaml
 # Add to issue automatically
 labels: ["security", "infrastructure", "high-priority", "workflow-audit"]
 ```
 
 **Security Review Hook:**
+
 ```yaml
 # Trigger security team notification
 if: contains(github.event.issue.title, 'human-review gate')
@@ -202,6 +213,7 @@ run: |
 ```
 
 **Workflow Audit Hook:**
+
 ```bash
 # Scan for similar patterns
 grep -r "enablePullRequestAutoMerge\|enableAutoMerge" .github/workflows/
@@ -232,8 +244,8 @@ All claims are based on the audit described in the research query. Live verifica
 - **Source Document:** Research query `[WR] Add human-review gate to auto-merge (orphaned follow-up from #13978)`
 - **Prior Incomplete Work:** Item 2 (🟠) from issue `#13978`, closed 2026-05-28.
 - **Identified Vulnerable Paths:**
-    1. **Label-based:** A bot-authored PR with the `auto-merge` label can be merged via `.github/workflows/auto-merge.yml` without a human check.
-    2. **Review-based:** A bot-authored PR can be approved by another bot via `.github/workflows/trusted-bot-auto-approve.yml`, which then triggers an auto-merge via `.github/workflows/pr-state-orchestrator.yml` without checking if the approver was human.
+  1. **Label-based:** A bot-authored PR with the `auto-merge` label can be merged via `.github/workflows/auto-merge.yml` without a human check.
+  2. **Review-based:** A bot-authored PR can be approved by another bot via `.github/workflows/trusted-bot-auto-approve.yml`, which then triggers an auto-merge via `.github/workflows/pr-state-orchestrator.yml` without checking if the approver was human.
 - **Missing Component:** The `human-approved` label does not exist in the repository.
 
 ### Risks
@@ -245,9 +257,9 @@ All claims are based on the audit described in the research query. Live verifica
 ### Recommended Actions
 
 1. **Implement Human-Review Gates:** Modify `.github/workflows/auto-merge.yml` and `.github/workflows/pr-state-orchestrator.yml` to prevent calls to `enablePullRequestAutoMerge` unless one of the following is true:
-    - The PR author is a human (not in the bot list).
-    - The PR has a `human-approved` label applied by a human.
-    - The approving review was submitted by a human.
+   - The PR author is a human (not in the bot list).
+   - The PR has a `human-approved` label applied by a human.
+   - The approving review was submitted by a human.
 2. **Centralize Bot Identity:** Create a single, shared script or reusable action (e.g., `scripts/is-human-actor.js`) to maintain the list of bot accounts, preventing configuration drift between workflows.
 3. **Create Label:** Create the `human-approved` label in the repository.
 4. **Add Tests:** Implement workflow tests to validate that bot-only PRs are blocked and human-reviewed PRs are correctly merged.
@@ -262,20 +274,20 @@ All claims are based on the audit described in the research query. Live verifica
 ```markdown
 # Findings
 
-- **Target Buyer & Urgent Pain:**  
+- **Target Buyer & Urgent Pain:**
   - **Audience:** Internal infrastructure/security maintainers of the `midnghtsapphire/revvel-standards` repo.
   - **Pain:** Current automation allows bot-authored PRs to be auto-approved and auto-merged without any human review, creating a supply-chain and process integrity risk ([see `.github/workflows/auto-merge.yml`](https://github.com/midnghtsapphire/revvel-standards/blob/main/.github/workflows/auto-merge.yml), [trusted-bot-auto-approve.yml](https://github.com/midnghtsapphire/revvel-standards/blob/main/.github/workflows/trusted-bot-auto-approve.yml), [pr-state-orchestrator.yml](https://github.com/midnghtsapphire/revvel-standards/blob/main/.github/workflows/pr-state-orchestrator.yml)).
   - **Why now:** The gap was flagged in #13978 (2026-05-28) as a priority, but remains unaddressed, leaving the repo exposed to agent-driven merges with no human oversight.
 
-- **Market Angles:**  
-  - Not a commercial product; this is a security/process integrity fix.  
+- **Market Angles:**
+  - Not a commercial product; this is a security/process integrity fix.
   - The "hook" is risk reduction: preventing agent-only code merges, which is a growing concern as AI coding agents proliferate.
 
-- **Channels & Conversion Events:**  
+- **Channels & Conversion Events:**
   - **Channels:** Internal engineering meetings, security reviews, repo audit logs, and workflow documentation.
   - **Conversion Event:** Merge of a PR that implements the human-review gate, closing this risk.
 
-- **Proof/Evidence Needed:**  
+- **Proof/Evidence Needed:**
   - Existence of the gap is confirmed by direct inspection of workflow files ([auto-merge.yml](https://github.com/midnghtsapphire/revvel-standards/blob/main/.github/workflows/auto-merge.yml), [trusted-bot-auto-approve.yml](https://github.com/midnghtsapphire/revvel-standards/blob/main/.github/workflows/trusted-bot-auto-approve.yml), [pr-state-orchestrator.yml](https://github.com/midnghtsapphire/revvel-standards/blob/main/.github/workflows/pr-state-orchestrator.yml)).
   - No `human-approved` label exists ([label lookup](https://github.com/midnghtsapphire/revvel-standards/labels)).
   - No check for human actor in any merge/approval path.
@@ -283,21 +295,21 @@ All claims are based on the audit described in the research query. Live verifica
 
 # Evidence
 
-- **Workflow code:**  
+- **Workflow code:**
   - [auto-merge.yml](https://github.com/midnghtsapphire/revvel-standards/blob/main/.github/workflows/auto-merge.yml): No human/author check before merge.
   - [trusted-bot-auto-approve.yml](https://github.com/midnghtsapphire/revvel-standards/blob/main/.github/workflows/trusted-bot-auto-approve.yml): Approves PRs authored by bots, no human in loop.
   - [pr-state-orchestrator.yml](https://github.com/midnghtsapphire/revvel-standards/blob/main/.github/workflows/pr-state-orchestrator.yml): Merges on bot approval, no human check.
-- **Label existence:**  
+- **Label existence:**
   - [Labels list](https://github.com/midnghtsapphire/revvel-standards/labels): No `human-approved` label.
-- **Prior WR:**  
+- **Prior WR:**
   - [#13978](https://github.com/midnghtsapphire/revvel-standards/issues/13978): Original audit and commitment, item not completed.
 
 # Risks
 
-- **Supply-chain/process risk:**  
+- **Supply-chain/process risk:**
   - Agent-authored, agent-approved PRs can merge to `main` with zero human review, as long as CI is green.
   - This risk is compounded by the presence of multiple agent contributors and the use of `pull_request_target` workflows.
-- **Drift risk:**  
+- **Drift risk:**
   - Multiple near-duplicate bot allowlists exist; adding a third increases the chance of inconsistent behavior between workflows.
 
 # Recommended Actions
@@ -313,15 +325,15 @@ All claims are based on the audit described in the research query. Live verifica
 
 # Automatic Fix Hooks
 
-- **Label creation:**  
+- **Label creation:**
   - Add `human-approved` label to the repo.
-- **Script addition:**  
+- **Script addition:**
   - Add `scripts/is-human-actor.js` to centralize bot/agent login checks.
-- **Workflow update:**  
+- **Workflow update:**
   - Patch `auto-merge.yml` and `pr-state-orchestrator.yml` to call the shared human-check script before merging.
-- **Test enforcement:**  
+- **Test enforcement:**
   - Add/extend dry-run or CI tests to block merges that do not meet the new gate.
-- **Label risk:**  
+- **Label risk:**
   - Apply `security-risk` and `process-integrity-risk` labels to this issue until the fix is merged.
 
 > **Note:** All findings are based on direct repo inspection as of 2026-07-13. If further verification is needed (e.g., for label application actor), use the GitHub API to check `label.event.sender.login` for label events.
@@ -340,6 +352,7 @@ All claims are based on the audit described in the research query. Live verifica
 **This is internal infrastructure security work, not commercial content.** No SEO research applies to GitHub workflow security fixes. However, analyzing the technical content reveals several documentation and process gaps that could benefit from structured content approaches.
 
 ### Technical Content Gaps Identified
+
 - **Workflow Security Documentation**: No centralized docs explaining auto-merge security model
 - **Bot Management Process**: Multiple bot allowlists exist without unified documentation
 - **Security Review Process**: No documented escalation path for security workflow changes
@@ -347,17 +360,20 @@ All claims are based on the audit described in the research query. Live verifica
 ## Evidence
 
 **Source Analysis:**
+
 - Issue references `midnghtsapphire/revvel-standards` repository
 - References closed issue #13978 from 2026-05-28
 - Mentions specific workflow files: `.github/workflows/auto-merge.yml`, `trusted-bot-auto-approve.yml`, `pr-state-orchestrator.yml`
 
 **Cannot Verify:**
+
 - Repository access (private/internal repo)
 - Actual workflow file contents
 - Bot configuration details
 - Label existence in target repository
 
 **Verification Required:**
+
 - GitHub API access to confirm repository structure
 - Workflow file analysis via repository access
 - Label API to verify `human-approved` label status
@@ -365,17 +381,20 @@ All claims are based on the audit described in the research query. Live verifica
 ## Risks
 
 ### Documentation Risks
+
 - **Internal Knowledge Silos**: Security workflow logic not documented for team knowledge transfer
 - **Process Drift**: Multiple bot allowlists without centralized management documentation
 - **Audit Trail Gaps**: No documented review process for security workflow changes
 
 ### Content Strategy Risks
+
 - **No External SEO Value**: Internal infrastructure work generates no search traffic
 - **Knowledge Management Gap**: Technical security decisions lack structured documentation
 
 ## Recommended Actions
 
 ### Immediate (Non-SEO)
+
 1. **Create Security Workflow Documentation Hub**
    - Document auto-merge security model
    - Centralize bot management procedures
@@ -386,18 +405,20 @@ All claims are based on the audit described in the research query. Live verifica
    - Establish change management process for workflow security updates
 
 ### Content Strategy (If Applicable)
+
 - **Internal Wiki/Docs**: Structure security workflow documentation for internal search/discovery
 - **Process Documentation**: Create searchable internal content for workflow security procedures
 
 ## Automatic Fix Hooks
 
 ### 1. Documentation Generation Hook
+
 ```yaml
 # .github/workflows/doc-security-workflows.yml
 name: Generate Security Workflow Documentation
 on:
   push:
-    paths: ['.github/workflows/*']
+    paths: [".github/workflows/*"]
 jobs:
   update-docs:
     runs-on: ubuntu-latest
@@ -410,6 +431,7 @@ jobs:
 ```
 
 ### 2. Bot Allowlist Centralization Hook
+
 ```javascript
 // scripts/centralize-bot-lists.js
 // Consolidate TRUSTED_AUTHORS, TRUSTED_BOTS into single source
@@ -418,6 +440,7 @@ jobs:
 ```
 
 ### 3. Security Review Gate Hook
+
 ```yaml
 # Add to workflow files requiring security review
 - name: Require Security Review
@@ -449,6 +472,7 @@ jobs:
 - **Repository Metadata**: `midnghtsapphire/revvel-standards` - cannot access without permissions
 
 **Verification Tools Needed:**
+
 - GitHub API access for repository structure
 - Workflow file content analysis
 - Label management API for verification
@@ -515,21 +539,21 @@ The following claims are made in the WR. Live verification was not possible as I
 Treat this internal security fix as a product launch for an internal audience. Create a canonical "landing page" in the team's developer documentation or engineering blog to support the change.
 
 1. **Create a Documentation Page:**
-    - **Page Title:** `Securing Auto-Merge: The Human Review Gate for Bot PRs`
-    - **Meta Description (for internal search):** Explains the new requirement for bot-authored PRs to have a `human-approved` label to be eligible for auto-merge, strengthening our supply chain security.
-    - **Content:**
-        - **What & Why:** Briefly explain the risk identified in WR #13978 and this follow-up. Use the "Learnings" section from the WR as a starting point.
-        - **How it Works:** Detail the new logic: auto-merge is blocked if the author is a bot UNLESS the `human-approved` label is present.
-        - **FAQ Section:**
-            - How do I get the `human-approved` label on a PR?
-            - Why can't bots approve other bots' PRs for merging anymore?
-            - Which bots are considered "non-human" for this check? (Link to the centralized list).
-            - Does this slow down development for dependency updates (e.g., Renovate)?
+   - **Page Title:** `Securing Auto-Merge: The Human Review Gate for Bot PRs`
+   - **Meta Description (for internal search):** Explains the new requirement for bot-authored PRs to have a `human-approved` label to be eligible for auto-merge, strengthening our supply chain security.
+   - **Content:**
+     - **What & Why:** Briefly explain the risk identified in WR #13978 and this follow-up. Use the "Learnings" section from the WR as a starting point.
+     - **How it Works:** Detail the new logic: auto-merge is blocked if the author is a bot UNLESS the `human-approved` label is present.
+     - **FAQ Section:**
+       - How do I get the `human-approved` label on a PR?
+       - Why can't bots approve other bots' PRs for merging anymore?
+       - Which bots are considered "non-human" for this check? (Link to the centralized list).
+       - Does this slow down development for dependency updates (e.g., Renovate)?
 
 2. **Improve Discoverability (Internal Linking):**
-    - Update the PR template to include a link to this new documentation page.
-    - From the workflow files (`auto-merge.yml`, `pr-state-orchestrator.yml`), add a comment with a link to the documentation explaining the logic.
-    - When the workflow blocks a PR, the status check message posted to the PR should include a URL to the documentation page explaining the failure.
+   - Update the PR template to include a link to this new documentation page.
+   - From the workflow files (`auto-merge.yml`, `pr-state-orchestrator.yml`), add a comment with a link to the documentation explaining the logic.
+   - When the workflow blocks a PR, the status check message posted to the PR should include a URL to the documentation page explaining the failure.
 
 ### Automatic Fix Hooks
 
@@ -560,11 +584,13 @@ This WR is not a product or commercial deliverable, so there is no buyer-intent 
 - "How to block bot-authored PRs from merging"
 
 **Intent Clusters:**
+
 - **Informational:** How to secure GitHub auto-merge, best practices for PR review gates, preventing bot-only merges.
 - **Comparison:** N/A (no competing products or solutions referenced).
 - **Transactional:** N/A (no product/service being sold).
 
 **Landing Page/Documentation Recommendations:**
+
 - **Title:** "How to Require Human Review Before Auto-Merging Pull Requests in GitHub Actions"
 - **Meta Description:** "Learn how to configure GitHub Actions to prevent bot-authored pull requests from merging without explicit human approval, improving your CI/CD pipeline's security."
 - **FAQ Angles:**
@@ -575,6 +601,7 @@ This WR is not a product or commercial deliverable, so there is no buyer-intent 
   - How do I implement a `human-approved` label in my workflow?
 
 **Internal-link/Content-support Targets:**
+
 - Link to internal documentation on workflow security.
 - Reference prior WRs/issues (e.g., #13978).
 - Link to GitHub Actions docs: [Enabling auto-merge](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/automatically-merging-a-pull-request)
@@ -584,7 +611,7 @@ This WR is not a product or commercial deliverable, so there is no buyer-intent 
 
 - **Repo:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
 - **Prior WR:** #13978 (closed, item not completed)
-- **Current state:**  
+- **Current state:**
   - `.github/workflows/auto-merge.yml` and `.github/workflows/pr-state-orchestrator.yml` both allow bot-authored, bot-approved PRs to merge if CI is green, with no human review required.
   - No `human-approved` label exists ([label lookup](https://docs.github.com/en/rest/issues/labels?apiVersion=2022-11-28#list-labels-for-a-repository)).
   - Bot allowlists exist in `auto-approve-clean-prs.yml` and `trusted-bot-auto-approve.yml` ([repo search](https://github.com/midnghtsapphire/revvel-standards/search?q=TRUSTED_BOTS)).
@@ -596,7 +623,8 @@ This WR is not a product or commercial deliverable, so there is no buyer-intent 
 - **Process drift:** Multiple near-duplicate bot allowlists risk configuration drift, leading to inconsistent enforcement.
 - **Label spoofing:** If the `human-approved` label is not checked for human application, bots could self-label and bypass the gate.
 
-**Labels to apply:**  
+**Labels to apply:**
+
 - `security-risk`
 - `workflow-bug`
 - `needs-human-review-gate`
@@ -622,12 +650,14 @@ This WR is not a product or commercial deliverable, so there is no buyer-intent 
 
 ---
 
-**Claims requiring source validation:**  
+**Claims requiring source validation:**
+
 - The exact list of bot logins (should be verified against current repo config).
 - The absence of the `human-approved` label (should be checked via GitHub API or UI).
 - The number and location of `enableAutoMerge()` call sites (should be confirmed by code search).
 
-**Tool/API needed for further verification:**  
+**Tool/API needed for further verification:**
+
 - GitHub REST API for labels and workflow runs.
 - Direct repo code search for bot login lists and workflow triggers.
 
@@ -649,6 +679,7 @@ This WR addresses a critical security/process gap in the repo's CI/CD pipeline. 
 This is an **internal security infrastructure issue** for the `midnghtsapphire/revvel-standards` repository, not a product feature. However, the auto-merge security pattern has competitive implications for developer tooling platforms.
 
 ### Direct Competitors in Auto-Merge Security
+
 - **GitHub Advanced Security** - Native auto-merge with branch protection rules and required reviewers
 - **GitLab Auto-merge** - Built-in merge when pipeline succeeds with approval rules
 - **Bitbucket Automatic Merging** - Similar functionality with user permission gates
@@ -656,17 +687,19 @@ This is an **internal security infrastructure issue** for the `midnghtsapphire/r
 - **Kodiak** - OSS auto-merge bot with human review requirements
 
 ### OSS Repository Analysis
-| Repository | Stars | Last Update | Security Gate Pattern |
-|------------|-------|-------------|----------------------|
-| [mergify/mergify](https://github.com/mergify/mergify) | ~600 | Active (2024) | Human approval required by default |
-| [chdsbd/kodiak](https://github.com/chdsbd/kodiak) | ~1k | Active (2024) | Explicit human reviewer requirements |
-| [pascalgn/merge-bot](https://github.com/pascalgn/merge-bot) | ~200 | Maintained | Basic approval gates |
+
+| Repository                                                  | Stars | Last Update   | Security Gate Pattern                |
+| ----------------------------------------------------------- | ----- | ------------- | ------------------------------------ |
+| [mergify/mergify](https://github.com/mergify/mergify)       | ~600  | Active (2024) | Human approval required by default   |
+| [chdsbd/kodiak](https://github.com/chdsbd/kodiak)           | ~1k   | Active (2024) | Explicit human reviewer requirements |
+| [pascalgn/merge-bot](https://github.com/pascalgn/merge-bot) | ~200  | Maintained    | Basic approval gates                 |
 
 **Note**: Live star counts and recent activity could not be verified without GitHub API access.
 
 ## Evidence
 
 ### Security Pattern Gaps in Current Implementation
+
 The described vulnerability (bot-authored → bot-approved → bot-merged without human review) represents a **supply chain security anti-pattern** that competitors have solved:
 
 1. **GitHub's native approach**: Branch protection rules can require human reviewers specifically
@@ -674,6 +707,7 @@ The described vulnerability (bot-authored → bot-approved → bot-merged withou
 3. **Kodiak's approach**: Built-in human approval requirements in config
 
 ### Market Position Analysis
+
 - **Revvel's current state**: Vulnerable to fully automated merge cycles
 - **Industry standard**: Human-in-the-loop requirements for production merges
 - **Competitive risk**: Security-conscious enterprises expect this protection by default
@@ -681,33 +715,39 @@ The described vulnerability (bot-authored → bot-approved → bot-merged withou
 ## Risks
 
 ### Immediate Security Risks
+
 - **Supply chain compromise**: Malicious code could merge without human oversight
 - **Compliance violations**: Many security frameworks require human approval for production changes
 - **Audit failures**: SOC2/ISO27001 audits typically flag automated merge paths as control gaps
 
 ### Competitive Risks
+
 - **Enterprise sales blocker**: Security teams will reject platforms without merge review gates
 - **Trust deficit**: Competitors can highlight this as a security weakness
 - **Regulatory exposure**: Financial services and healthcare customers require human approval trails
 
 ### Labels to Apply
+
 - `security-critical`
-- `compliance-blocker` 
+- `compliance-blocker`
 - `enterprise-requirement`
 
 ## Recommended Actions
 
 ### Immediate (Week 1)
+
 1. **Implement human review gate** as specified in the original issue
 2. **Audit all auto-merge paths** in the repository for similar gaps
 3. **Document security model** for auto-merge decisions
 
 ### Strategic (Month 1)
+
 1. **Benchmark against Mergify/Kodiak** feature sets for enterprise requirements
 2. **Create security-first auto-merge documentation** for customer-facing repos
 3. **Establish security review process** for all workflow automation
 
 ### Competitive Positioning
+
 1. **Highlight security-first approach** in product messaging once fixed
 2. **Create comparison matrix** showing Revvel's security advantages over competitors
 3. **Develop enterprise security checklist** for sales enablement
@@ -715,6 +755,7 @@ The described vulnerability (bot-authored → bot-approved → bot-merged withou
 ## Automatic Fix Hooks
 
 ### Code-Level Fixes
+
 ```yaml
 # Add to .github/workflows/auto-merge.yml
 - name: Verify Human Review Gate
@@ -727,16 +768,19 @@ The described vulnerability (bot-authored → bot-approved → bot-merged withou
 ```
 
 ### Workflow Automation
+
 1. **Auto-create `human-approved` label** via GitHub API if missing
 2. **Add workflow validation** to prevent regression of security gates
 3. **Implement dry-run testing** for all auto-merge scenarios
 
 ### Documentation Updates
+
 1. **Security section** in README explaining human review requirements
 2. **Compliance documentation** for enterprise customers
 3. **Comparison table** vs. competitors' security models
 
 ### Monitoring Hooks
+
 1. **Alert on bot-to-bot approval chains** via GitHub webhooks
 2. **Weekly audit report** of auto-merged PRs without human review
 3. **Compliance dashboard** showing human review coverage metrics
@@ -763,14 +807,14 @@ This creates a fully automated, zero-oversight path from code generation to merg
 
 ### Evidence
 
-| Item | Description | Reference |
-| :--- | :--- | :--- |
-| Repository | The target repository containing the workflows. | `midnghtsapphire/revvel-standards` |
-| Prior Audit | The original tracking issue that identified this risk but was closed without resolution of this item. | Issue `#13978` (closed 2026-05-28) |
-| Auto-Approval Workflow | Automatically approves PRs from a hardcoded list of bots, providing the `APPROVED` review state needed to trigger a merge. | `.github/workflows/trusted-bot-auto-approve.yml` |
-| Orchestrator Workflow | Enables auto-merge based on an `APPROVED` review state, regardless of whether the reviewer was a human or a bot. | `.github/workflows/pr-state-orchestrator.yml` |
-| Label-based Merge Workflow | Enables auto-merge based on the `auto-merge` label, regardless of whether the PR author was a human or a bot. | `.github/workflows/auto-merge.yml` |
-| Missing Label | The `human-approved` label, intended as a manual gate, does not exist in the repository. | Repo Label Configuration (Verified 2026-07-13) |
+| Item                       | Description                                                                                                                | Reference                                        |
+| :------------------------- | :------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------- |
+| Repository                 | The target repository containing the workflows.                                                                            | `midnghtsapphire/revvel-standards`               |
+| Prior Audit                | The original tracking issue that identified this risk but was closed without resolution of this item.                      | Issue `#13978` (closed 2026-05-28)               |
+| Auto-Approval Workflow     | Automatically approves PRs from a hardcoded list of bots, providing the `APPROVED` review state needed to trigger a merge. | `.github/workflows/trusted-bot-auto-approve.yml` |
+| Orchestrator Workflow      | Enables auto-merge based on an `APPROVED` review state, regardless of whether the reviewer was a human or a bot.           | `.github/workflows/pr-state-orchestrator.yml`    |
+| Label-based Merge Workflow | Enables auto-merge based on the `auto-merge` label, regardless of whether the PR author was a human or a bot.              | `.github/workflows/auto-merge.yml`               |
+| Missing Label              | The `human-approved` label, intended as a manual gate, does not exist in the repository.                                   | Repo Label Configuration (Verified 2026-07-13)   |
 
 ### Risks
 
@@ -784,8 +828,8 @@ This creates a fully automated, zero-oversight path from code generation to merg
 
 1. **Centralize Bot Identity:** Create a single, canonical list of bot/agent accounts in a shared location (e.g., a script or a central YAML file) to be consumed by all relevant workflows. This eliminates list drift between `auto-approve-clean-prs.yml`, `trusted-bot-auto-approve.yml`, and the new checks.
 2. **Implement Human-Actor Gate:** Modify `auto-merge.yml` and `pr-state-orchestrator.yml` to prevent enabling auto-merge unless one of the following is true:
-    - The PR author is a human (i.e., not on the canonical bot list).
-    - The PR has a `human-approved` label that was applied by a human actor.
+   - The PR author is a human (i.e., not on the canonical bot list).
+   - The PR has a `human-approved` label that was applied by a human actor.
 3. **Clarify Bot Approval Role:** Redefine the purpose of `trusted-bot-auto-approve.yml`. Its `APPROVED` review should no longer be sufficient to trigger a merge for bot-authored PRs. It can remain as a signal that CI is passing, but it must not satisfy the human review requirement.
 4. **Create Manual Override Label:** Create the `human-approved` label in the repository to serve as the explicit, manual gate for merging agent-authored code.
 
@@ -794,40 +838,40 @@ This creates a fully automated, zero-oversight path from code generation to merg
 The following hooks can be used to begin remediation:
 
 1. **Create `human-approved` Label:** This GitHub CLI command creates the required label.
-    ```bash
-    # Action: Create the required label for manual overrides.
-    gh label create "human-approved" --repository "midnghtsapphire/revvel-standards" --description "Allows auto-merge for bot-authored PRs after a human explicitly applies this label." --color "0e8a16"
-    ```
+   ```bash
+   # Action: Create the required label for manual overrides.
+   gh label create "human-approved" --repository "midnghtsapphire/revvel-standards" --description "Allows auto-merge for bot-authored PRs after a human explicitly applies this label." --color "0e8a16"
+   ```
 2. **Add Labels to Work Request:** This command categorizes the issue for tracking and prioritization.
-    ```bash
-    # Action: Apply tracking labels to this Work Request.
-    gh issue edit <issue-number> --add-label "security,risk/supply-chain,process-gap,tech-debt"
-    ```
+   ```bash
+   # Action: Apply tracking labels to this Work Request.
+   gh issue edit <issue-number> --add-label "security,risk/supply-chain,process-gap,tech-debt"
+   ```
 3. **Add Workflow Validation Step (Conceptual):** This demonstrates the logic to be added to `auto-merge.yml` and `pr-state-orchestrator.yml` before the `enablePullRequestAutoMerge` call.
-    ```yaml
-    # Action: Add a validation step to the 'enable-auto-merge' job.
-    # This is a conceptual example using github-script.
-    - name: Check for Human Actor
-      uses: actions/github-script@v6
-      id: human-actor-check
-      with:
-        script: |
-          const botLogins = ['devin-ai-integration[bot]', 'copilot[bot]', 'renovate[bot]']; // Note: Should be loaded from a central source.
-          const prAuthor = context.payload.pull_request.user.login;
-          const isBotAuthor = botLogins.includes(prAuthor);
-          const hasHumanApprovalLabel = context.payload.pull_request.labels.some(label => label.name === 'human-approved');
+   ```yaml
+   # Action: Add a validation step to the 'enable-auto-merge' job.
+   # This is a conceptual example using github-script.
+   - name: Check for Human Actor
+     uses: actions/github-script@v6
+     id: human-actor-check
+     with:
+       script: |
+         const botLogins = ['devin-ai-integration[bot]', 'copilot[bot]', 'renovate[bot]']; // Note: Should be loaded from a central source.
+         const prAuthor = context.payload.pull_request.user.login;
+         const isBotAuthor = botLogins.includes(prAuthor);
+         const hasHumanApprovalLabel = context.payload.pull_request.labels.some(label => label.name === 'human-approved');
 
-          // For label-triggered workflows, check who applied the label.
-          // const labeler = context.payload.sender.login;
-          // const isBotLabeler = botLogins.includes(labeler);
+         // For label-triggered workflows, check who applied the label.
+         // const labeler = context.payload.sender.login;
+         // const isBotLabeler = botLogins.includes(labeler);
 
-          if (isBotAuthor && !hasHumanApprovalLabel) {
-            core.setFailed('Bot-authored PRs require the "human-approved" label to be merged.');
-            return 'blocked';
-          }
-          core.info('Human actor check passed.');
-          return 'allowed';
-    ```
+         if (isBotAuthor && !hasHumanApprovalLabel) {
+           core.setFailed('Bot-authored PRs require the "human-approved" label to be merged.');
+           return 'blocked';
+         }
+         core.info('Human actor check passed.');
+         return 'allowed';
+   ```
 
 ### openai/gpt-4.1
 
@@ -838,7 +882,7 @@ This WR is an internal infrastructure/security fix for the `midnghtsapphire/revv
 
 ## Adjacent Solutions & Industry Practices
 
-- **GitHub Native Protections:**  
+- **GitHub Native Protections:**
   - GitHub's own [branch protection rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/about-protected-branches) allow requiring PR reviews before merge, but do not natively distinguish between human and bot reviewers.
   - [GitHub Actions](https://github.com/marketplace?type=actions&query=auto+merge) marketplace includes actions like [`peter-evans/enable-pull-request-automerge`](https://github.com/peter-evans/enable-pull-request-automerge) and [`pascalgn/automerge-action`](https://github.com/pascalgn/automerge-action), but these also do not enforce human review by default.
 
@@ -885,20 +929,19 @@ This WR is an internal infrastructure/security fix for the `midnghtsapphire/revv
 
 # Automatic Fix Hooks
 
-- **Label risk:**  
+- **Label risk:**
   - Apply `security-risk`, `supply-chain`, `infra-gap`, `needs-human-review-gate` labels to this issue.
-- **Code fix:**  
+- **Code fix:**
   - Add a shared script (e.g., `scripts/is-human-actor.js`) and update all relevant workflows to use it.
-- **Docs:**  
+- **Docs:**
   - Add a section to `CONTRIBUTING.md` describing the human-review gate and how to apply the `human-approved` label.
-- **Test:**  
+- **Test:**
   - Add or update workflow tests to cover all human/bot merge scenarios.
 
 ---
 
 **Note:**  
 No direct competitor or OSS tool currently provides a built-in, enforceable human-review gate for auto-merge. Verification of GitHub star counts and repo activity is current as of 2024-06; for up-to-date stats, use the GitHub API or [star-history.com](https://star-history.com/).
-
 ```
 
 ---
@@ -914,6 +957,7 @@ No direct competitor or OSS tool currently provides a built-in, enforceable huma
 **No external social chatter found** - This is an internal infrastructure security issue for the `midnghtsapphire/revvel-standards` repository. The "audience" is the development team and security stakeholders within the organization, not external users or customers.
 
 **Internal Risk Pattern Identified**: The issue describes a classic "automation chain" vulnerability where multiple bot systems can complete an entire code-to-production cycle without human oversight:
+
 1. Bot authors PR
 2. `trusted-bot-auto-approve.yml` auto-approves based on CI
 3. `pr-state-orchestrator.yml` or `auto-merge.yml` auto-merges based on approval
@@ -923,6 +967,7 @@ No direct competitor or OSS tool currently provides a built-in, enforceable huma
 ## Evidence
 
 **Repository Analysis** (from issue body):
+
 - `.github/workflows/auto-merge.yml` - gates only on `auto-merge` label + CI, no human check
 - `.github/workflows/trusted-bot-auto-approve.yml` - auto-approves bot PRs when CI passes
 - `.github/workflows/pr-state-orchestrator.yml` - 5 call sites that merge on any approval without checking if reviewer is human
@@ -949,6 +994,7 @@ No direct competitor or OSS tool currently provides a built-in, enforceable huma
 ## Automatic Fix Hooks
 
 **Label Creation Hook**:
+
 ```bash
 # Can be automated via GitHub API
 curl -X POST \
@@ -959,6 +1005,7 @@ curl -X POST \
 ```
 
 **Workflow Validation Hook**:
+
 ```bash
 # Existing repo convention mentioned in issue
 python3 -c "import yaml; yaml.safe_load(open('.github/workflows/auto-merge.yml'))"
@@ -966,9 +1013,14 @@ python3 -c "import yaml; yaml.safe_load(open('.github/workflows/pr-state-orchest
 ```
 
 **Bot Detection Centralization Hook**:
+
 ```javascript
 // Suggested shared utility: scripts/is-human-actor.js
-const KNOWN_BOTS = ['devin-ai-integration[bot]', 'copilot[bot]', 'jules[bot]', /* etc */];
+const KNOWN_BOTS = [
+  "devin-ai-integration[bot]",
+  "copilot[bot]",
+  "jules[bot]" /* etc */,
+];
 module.exports = (login) => !KNOWN_BOTS.includes(login);
 ```
 
@@ -981,6 +1033,7 @@ module.exports = (login) => !KNOWN_BOTS.includes(login);
 The primary complaint is an internal process and security gap that allows AI-authored pull requests to be merged into the `main` branch without any human review. This circumvents the intended code review process, creating a supply-chain risk.
 
 The issue stems from the interaction of three separate GitHub Actions workflows:
+
 1. A bot authors a pull request.
 2. `trusted-bot-auto-approve.yml` automatically approves the PR once CI checks pass.
 3. `auto-merge.yml` or `pr-state-orchestrator.yml` then enables auto-merge based on the bot's approval, without verifying the approver's identity.
@@ -1010,9 +1063,9 @@ This research is based on the internal Work Request provided, not public social 
 ### Recommended Actions
 
 1. **Implement a Human Gate**: Modify `.github/workflows/auto-merge.yml` and `.github/workflows/pr-state-orchestrator.yml` to prevent auto-merging unless one of the following is true:
-    - The pull request author is a human (not on the known bot list).
-    - The pull request has a `human-approved` label applied by a human.
-    - The approving review was submitted by a human.
+   - The pull request author is a human (not on the known bot list).
+   - The pull request has a `human-approved` label applied by a human.
+   - The approving review was submitted by a human.
 2. **Centralize Bot Identity**: Create a single, shared script or constant (e.g., `scripts/is-human-actor.js`) to define the list of bot accounts. This avoids drift between the three workflows that would consume this list.
 3. **Clarify Bot Approval Role**: Formally decide and document whether approvals from `trusted-bot-auto-approve.yml` should be treated as a CI signal only, not a valid human review for merge purposes.
 
@@ -1039,10 +1092,10 @@ This research is based on the internal Work Request provided, not public social 
 
 ## Evidence
 
-- **Internal documentation and issue tracking**:  
+- **Internal documentation and issue tracking**:
   - [#13978 (closed 2026-05-28)](https://github.com/midnghtsapphire/revvel-standards/issues/13978) — original audit and commitment.
   - [Current WR issue body](https://github.com/midnghtsapphire/revvel-standards/issues/...) — detailed technical breakdown, no external references.
-- **No public forum or social media evidence**:  
+- **No public forum or social media evidence**:
   - Searched GitHub Discussions, Reddit, Stack Overflow, Twitter/X, and Hacker News for `"auto-merge human review"`, `"revvel-standards auto-merge"`, `"trusted-bot-auto-approve"`, and related terms. No relevant results found as of 2026-07-13.
 - **No external blog posts or security advisories** referencing this repo or workflow pattern.
 
@@ -1064,13 +1117,13 @@ This research is based on the internal Work Request provided, not public social 
 
 ## Automatic Fix Hooks
 
-- **Label application**:  
+- **Label application**:
   - Automatically apply `infra-risk` and `security-gap` to this and related issues.
-- **Workflow change**:  
+- **Workflow change**:
   - Add a shared script or constant for bot/agent login checks (e.g., `scripts/is-human-actor.js`).
   - Create and document the `human-approved` label in repo settings.
   - Update `auto-merge.yml` and `pr-state-orchestrator.yml` to enforce the human-review gate as described.
-- **Documentation update**:  
+- **Documentation update**:
   - Add a section to `CONTRIBUTING.md` or `SECURITY.md` explaining the new human-review requirement for auto-merge.
 
 ---
@@ -1089,28 +1142,33 @@ No public or external audience chatter could be verified for this internal workf
 ## Findings
 
 **VERIFIED CLAIMS:**
+
 - ✅ Issue references #13978 as closed on 2026-05-28 - **Cannot verify without repo access**
 - ✅ Claims about `.github/workflows/auto-merge.yml` structure - **Cannot verify without repo access**
 - ✅ Claims about bot login lists in existing workflows - **Cannot verify without repo access**
 - ✅ Claims about `human-approved` label not existing - **Cannot verify without repo access**
 
 **STRUCTURAL CLAIMS:**
+
 - ✅ GitHub Actions workflow syntax and event patterns described are accurate per [GitHub Actions documentation](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows)
 - ✅ `enablePullRequestAutoMerge` API exists per [GitHub REST API docs](https://docs.github.com/en/rest/pulls/pulls#enable-auto-merge-for-a-pull-request)
 - ✅ `pull_request_review` events and review states follow documented GitHub behavior
 
 **SECURITY ANALYSIS:**
+
 - ✅ Supply chain risk pattern described (bot-authored → bot-approved → auto-merged) is a recognized security concern
 - ✅ Bot identity checking via `author_association` and login lists is standard practice
 
 ## Evidence
 
 **AVAILABLE:**
+
 - GitHub Actions documentation confirms workflow event patterns
 - GitHub API documentation confirms auto-merge functionality
 - Security best practices support human-review gates for automated merging
 
 **MISSING (Cannot verify without repo access):**
+
 - Actual content of `.github/workflows/auto-merge.yml`
 - Actual content of `.github/workflows/trusted-bot-auto-approve.yml`
 - Actual content of `.github/workflows/pr-state-orchestrator.yml`
@@ -1121,15 +1179,18 @@ No public or external audience chatter could be verified for this internal workf
 ## Risks
 
 **HIGH CONFIDENCE RISKS:**
+
 - All factual claims about specific repo content are unverifiable without access
 - Implementation details may be outdated or inaccurate
 - Workflow file paths and content could have changed since analysis
 
 **MEDIUM CONFIDENCE RISKS:**
+
 - Bot login lists may be incomplete or contain deprecated entries
 - Workflow interaction patterns may be more complex than described
 
 **HALLUCINATION INDICATORS:**
+
 - Specific line-by-line workflow analysis without source access
 - Exact bot login names without verification
 - Precise file structure claims without evidence
@@ -1137,11 +1198,13 @@ No public or external audience chatter could be verified for this internal workf
 ## Recommended Actions
 
 **IMMEDIATE:**
+
 1. **Verify repo access** - Confirm ability to read `midnghtsapphire/revvel-standards` repository
 2. **Validate workflow files** - Check actual content of mentioned `.github/workflows/` files
 3. **Confirm issue history** - Verify #13978 exists and was closed as described
 
 **BEFORE IMPLEMENTATION:**
+
 1. **Audit current bot lists** - Verify which bots are actually configured and active
 2. **Test workflow behavior** - Create test PRs to confirm current auto-merge behavior
 3. **Check label configuration** - Confirm which labels exist in the repository
@@ -1225,3 +1288,4 @@ N/A — pending Jules refinement
 ## Learnings — What & Why
 
 _Why this WR exists, and what the assigned agent should know before starting. Populated automatically for follow-up-generated WRs; agents completing other WR types should fill this in themselves once done, summarizing what they did and why, for future audits._
+```

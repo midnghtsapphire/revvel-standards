@@ -3,12 +3,14 @@
 ## WEEK 1: $2,201
 
 ### Product 1: AI Agent Starter Kit
+
 - **Price:** $97
 - **Where:** Gumroad
 - **Action:** Create listing now. Include skills from revvel-standards/skills/
 - **Target:** 13 sales = $1,261
 
-### Product 2: Claude Code Setup Guide  
+### Product 2: Claude Code Setup Guide
+
 - **Price:** $47
 - **Where:** Gumroad
 - **Action:** Create PDF guide now.
@@ -19,6 +21,7 @@
 ## WEEK 2: $1,970
 
 ### Product 3: Agent Swarm Blueprint
+
 - **Price:** $197
 - **Where:** Gumroad
 - **Action:** Document swarm architecture from wr/agents/
@@ -29,6 +32,7 @@
 ## WEEK 3: $2,079
 
 ### Product 4: Zero-Human Company Template
+
 - **Price:** $297
 - **Where:** Gumroad
 - **Action:** Bundle all templates + skills + docs
@@ -39,6 +43,7 @@
 ## WEEK 4: $3,750
 
 ### Service: Custom Agent Setup
+
 - **Price:** $750/setup
 - **Where:** Direct outreach
 - **Action:** Message 5 past clients
@@ -68,10 +73,10 @@
 
 # METRICS
 
-| Week | Target | Actual | Delta |
-|------|--------|--------|-------|
-| 1 | $2,201 | | |
-| 2 | $1,970 | | |
-| 3 | $2,079 | | |
-| 4 | $3,750 | | |
-| **Total** | **$10,000** | | |
+| Week      | Target      | Actual | Delta |
+| --------- | ----------- | ------ | ----- |
+| 1         | $2,201      |        |       |
+| 2         | $1,970      |        |       |
+| 3         | $2,079      |        |       |
+| 4         | $3,750      |        |       |
+| **Total** | **$10,000** |        |       |

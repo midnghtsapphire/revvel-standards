@@ -8,7 +8,6 @@
 
 ---
 
-
 # Otherwise, use WR_TEMPLATE_BASIC.md instead (recommended)
 
 #
@@ -60,29 +59,29 @@ on:
   workflow_dispatch:
     inputs:
       deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
+        description: "Run full deep market research (keywords, BOM, chatter, domain)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
+        description: "Generate Bill of Materials (API/tool comparison table)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
+        description: "Research Reddit/forums/TrustPilot for buyer complaints"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
+        description: "Full competitor pricing + gap analysis"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       research_depth:
-        description: 'Research depth level'
+        description: "Research depth level"
         type: choice
         options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
+        default: deep # ← default to deep, not standard
 ```
 
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a _starting point_ — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
 
 ---
 
@@ -96,31 +95,34 @@ on:
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-30 |
-| Last Updated | 2026-05-30 |
-| Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | ## Summary
-The NPPES provider lookup test asserts that results must always be non-empty, which causes a misleading test failure when a valid ZIP code with zero registered providers is used. This creates a false negative that obscures whether the API itself is working correctly versus simply returning no matching data.
+| Property                                                                                                                                                                                                                                                                                                             | Value                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Repository                                                                                                                                                                                                                                                                                                           | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created                                                                                                                                                                                                                                                                                                              | 2026-05-30                                                                              |
+| Last Updated                                                                                                                                                                                                                                                                                                         | 2026-05-30                                                                              |
+| Primary Language                                                                                                                                                                                                                                                                                                     | JavaScript                                                                              |
+| Stars                                                                                                                                                                                                                                                                                                                | {STARS}                                                                                 |
+| Open Issues                                                                                                                                                                                                                                                                                                          | {OPEN_ISSUES}                                                                           |
+| Description                                                                                                                                                                                                                                                                                                          | ## Summary                                                                              |
+| The NPPES provider lookup test asserts that results must always be non-empty, which causes a misleading test failure when a valid ZIP code with zero registered providers is used. This creates a false negative that obscures whether the API itself is working correctly versus simply returning no matching data. |
 
 ## Details
+
 The assertion `pm.expect(j.results.length).to.be.above(0)` unconditionally requires at least one result. NPPES legitimately returns an empty results array for sparsely populated or rural ZIP codes — this is a valid API response, not an error condition. The current default ZIP (90210) masks this fragility since it reliably returns providers. However, any contributor who substitutes a low-density ZIP code during local testing will encounter a test failure that incorrectly implies an API malfunction rather than a data absence. The test should distinguish between a healthy API response with zero results and a genuine failure such as a non-200 status or malformed response body.
 
 ## Location
+
 File: postman/revvel-collections.postman_collection.json, line 43
 PR: Postman starter collection + setup doc (manual API exploration) (#13973)
 URL: https://github.com/midnghtsapphire/revvel-standards/pull/13973
 
 ## Suggested Action
+
 1. Replace the unconditional length assertion with a guard that first validates the response structure (status 200, body is valid JSON, results property is an array).
 2. Add a conditional or informational log when results.length equals 0, such as `console.warn('No providers found for this ZIP — valid sparse area response')`, rather than a hard assertion failure.
 3. Reserve strict length assertions only for tests that use a known-populated fixture ZIP, and document that assumption explicitly in a comment within the test script. |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+   | Private | {IS_PRIVATE} |
+   | Archived | {IS_ARCHIVED} |
 
 ### Current Status
 
@@ -149,18 +151,18 @@ URL: https://github.com/midnghtsapphire/revvel-standards/pull/13973
 
 ## Step 1A: Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-|--------------|-----------|-----------------|---------------------------|-------|
-| Website / app UI | [Yes/No] | [site/app] | [engine] | [notes] |
-| API | [Yes/No] | [REST/GraphQL/etc.] | [engine] | [notes] |
-| CLI | [Yes/No] | [binary/package] | [engine] | [notes] |
-| MCP | [Yes/No] | [server/router/tool manifest] | [engine] | [notes] |
-| Skill | [Yes/No] | [skill type] | [engine] | [notes] |
-| PDF | [Yes/No] | [report/guide/etc.] | [engine] | [notes] |
-| PowerPoint / deck | [Yes/No] | [sales/training/review deck] | [engine] | [notes] |
-| Video | [Yes/No] | [demo/training/review/YouTube + target length] | [engine] | [notes] |
-| Docs | [Yes/No] | [site/spec/readme] | [engine] | [notes] |
-| Agent automation | [Yes/No] | [workflow/agent/service] | [engine] | [notes] |
+| Output shape      | In scope? | Format / length                                | Primary engine / standard | Notes   |
+| ----------------- | --------- | ---------------------------------------------- | ------------------------- | ------- |
+| Website / app UI  | [Yes/No]  | [site/app]                                     | [engine]                  | [notes] |
+| API               | [Yes/No]  | [REST/GraphQL/etc.]                            | [engine]                  | [notes] |
+| CLI               | [Yes/No]  | [binary/package]                               | [engine]                  | [notes] |
+| MCP               | [Yes/No]  | [server/router/tool manifest]                  | [engine]                  | [notes] |
+| Skill             | [Yes/No]  | [skill type]                                   | [engine]                  | [notes] |
+| PDF               | [Yes/No]  | [report/guide/etc.]                            | [engine]                  | [notes] |
+| PowerPoint / deck | [Yes/No]  | [sales/training/review deck]                   | [engine]                  | [notes] |
+| Video             | [Yes/No]  | [demo/training/review/YouTube + target length] | [engine]                  | [notes] |
+| Docs              | [Yes/No]  | [site/spec/readme]                             | [engine]                  | [notes] |
+| Agent automation  | [Yes/No]  | [workflow/agent/service]                       | [engine]                  | [notes] |
 
 ### Platform Defaults & Website Requirements
 
@@ -197,18 +199,18 @@ URL: https://github.com/midnghtsapphire/revvel-standards/pull/13973
 [Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
 
 | Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
-| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
+| ---------------- | ------------- | ------------ | ---------------- |
+| [Segment 1]      | [Trigger]     | High/Med/Low | [Size]           |
+| [Segment 2]      | [Trigger]     | High/Med/Low | [Size]           |
 
 #### SEO & Keyword Research
 
 **This section is REQUIRED for any product with a web/content component.**
 
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| Keyword             | Monthly Volume (US) | Avg CPC | Competition  | Intent                      |
+| ------------------- | ------------------- | ------- | ------------ | --------------------------- |
+| [primary keyword 1] | [volume]            | [$CPC]  | High/Med/Low | Transactional/Informational |
+| [primary keyword 2] | [volume]            | [$CPC]  | High/Med/Low | Transactional/Informational |
 
 **Long-tail / trigger-specific keywords:**
 
@@ -223,30 +225,30 @@ URL: https://github.com/midnghtsapphire/revvel-standards/pull/13973
 
 **Category: [Primary Data Source]**
 
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
-| [Option 2] | [$] | [Coverage] | [Use case] | |
+| API / Tool | Cost | Coverage   | Best For   | Verdict                                   |
+| ---------- | ---- | ---------- | ---------- | ----------------------------------------- |
+| [Option 1] | [$]  | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
+| [Option 2] | [$]  | [Coverage] | [Use case] |                                           |
 
 **Category: [Compliance / Validation]**
 
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
+| API / Tool | Cost | Features   | Best For   | Verdict |
+| ---------- | ---- | ---------- | ---------- | ------- |
+| [Option 1] | [$]  | [Features] | [Use case] |         |
 
 **Category: [Delivery / Storefront]**
 
-| Platform | Rev Share | Best For | Verdict |
-|----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
+| Platform   | Rev Share | Best For   | Verdict |
+| ---------- | --------- | ---------- | ------- |
+| [Option 1] | [%]       | [Use case] |         |
 
 **BOM Cost Summary:**
 
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
+| Category                 | Recommended Tool | Est. Monthly Cost |
+| ------------------------ | ---------------- | ----------------- |
+| [Category 1]             | [Tool]           | $[X]              |
+| [Category 2]             | [Tool]           | $[X]              |
+| **Total Infrastructure** |                  | **$[Total]/mo**   |
 
 > **ROI Check:** [How many units/sales cover infrastructure cost?]
 
@@ -257,20 +259,20 @@ URL: https://github.com/midnghtsapphire/revvel-standards/pull/13973
 **Shared vs. Exclusive / Tiered pricing:**
 
 | Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-|--------------|-------------|------|----------------|------------------------|
-| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+| ------------- | ------------ | ---- | --------------- | ----------------------- |
+| [Type 1]      | [Mechanics]  | [$]  | [Rate]          | [Value drivers]         |
+| [Type 2]      | [Mechanics]  | [$]  | [Rate]          | [Value drivers]         |
 
 **Why some [units] are worth more than others:**
 [Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
 
 #### Competitors & Alternatives
 
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
+| Competitor      | Type   | Cost      | Conversion/Quality | Gap / What They Don't Do |
+| --------------- | ------ | --------- | ------------------ | ------------------------ |
+| [Name 1]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| [Name 2]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| **This Engine** | [Type] | [Pricing] | [Expected]         | [Our advantage]          |
 
 #### API / Data Source BOM (REQUIRED)
 
@@ -278,10 +280,10 @@ URL: https://github.com/midnghtsapphire/revvel-standards/pull/13973
 
 If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
 
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| Provider/API | Best For         | Data/Capability | Cost Model | Strengths  | Weaknesses/Risks | Compliance Notes  |
+| ------------ | ---------------- | --------------- | ---------- | ---------- | ---------------- | ----------------- |
+| [Provider 1] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
+| [Provider 2] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
 
 **BOM Decision:**
 
@@ -312,8 +314,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **High-value domain patterns for this niche:**
 
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
+| Pattern     | Examples   | Rationale      |
+| ----------- | ---------- | -------------- |
 | [Pattern 1] | [Examples] | [Why it works] |
 | [Pattern 2] | [Examples] | [Why it works] |
 
@@ -339,8 +341,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **This section is REQUIRED. Research current marketing strategies in this niche.**
 
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
+| Strategy     | What Works Now                 | How This WR Improves It     |
+| ------------ | ------------------------------ | --------------------------- |
 | [Strategy 1] | [Current best practice + data] | [How our product is better] |
 | [Strategy 2] | [Current best practice + data] | [How our product is better] |
 
@@ -454,17 +456,17 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Weighted Factors:**
 
-| Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| [factor] | [0.00] | [input/source] | [reason] |
+| Factor   | Weight | Source         | Why it matters |
+| -------- | -----: | -------------- | -------------- |
+| [factor] | [0.00] | [input/source] | [reason]       |
 
 **Threshold Bands:**
 
-| Score Range | Status | Action |
-|---|---|---|
-| 80-100 | eligible | [export/route/approve] |
-| 50-79 | manual_review | [review queue] |
-| 0-49 | blocked | [suppress/reject] |
+| Score Range | Status        | Action                 |
+| ----------- | ------------- | ---------------------- |
+| 80-100      | eligible      | [export/route/approve] |
+| 50-79       | manual_review | [review queue]         |
+| 0-49        | blocked       | [suppress/reject]      |
 
 **Audit Trail Required:**
 
@@ -603,9 +605,9 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 **Links to Add:**
 
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
+| Product/Service | Affiliate Program | Commission | Location       |
+| --------------- | ----------------- | ---------- | -------------- |
+| [Name]          | [Program]         | [Rate]     | [Where to add] |
 
 #### Payment Integration
 
@@ -700,11 +702,11 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
+| Feature   | Status     | URL                                       |
+| --------- | ---------- | ----------------------------------------- |
+| Homepage  | ✅ Working | https://{repo-name}.vercel.app            |
+| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard  |
+| API       | ✅ Working | https://{repo-name}.vercel.app/api/health |
 ```
 
 **Action Required:** [None / Add section / Update URLs]
@@ -796,8 +798,8 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
+| Risk     | Severity     | Probability  | Mitigation        |
+| -------- | ------------ | ------------ | ----------------- |
 | [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
 | [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
 

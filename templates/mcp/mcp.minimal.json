@@ -1,7 +1,6 @@
 {
   "_comment": "Revvel Minimal MCP Config — 8 essential servers: DB, search, memory, filesystem, coding. For lightweight CLIs, scripts, and utilities. Copy to .mcp.json at project root.",
   "mcpServers": {
-
     "postgres": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
@@ -9,7 +8,12 @@
 
     "sqlite": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "${SQLITE_DB_PATH}"]
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sqlite",
+        "--db-path",
+        "${SQLITE_DB_PATH}"
+      ]
     },
 
     "duckduckgo": {
@@ -41,7 +45,11 @@
 
     "filesystem": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${PROJECT_ROOT}"]
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "${PROJECT_ROOT}"
+      ]
     },
 
     "python": {
@@ -53,6 +61,5 @@
       "command": "npx",
       "args": ["-y", "mcp-server-calculator"]
     }
-
   }
 }

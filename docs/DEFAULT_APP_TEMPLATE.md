@@ -80,20 +80,20 @@ This file must be automatically updated on every push to the `main` branch via a
 
 Every application must include the following modules and features without exception.
 
-| Module / Feature | Description |
-| :--- | :--- |
-| **Authentication** | Google OAuth, Apple Sign-In, and standard email/password with JWT. |
-| **Billing** | Stripe integration for both subscriptions and one-time payments. Must support both test and live keys. |
-| **Customer Service** | A built-in layer for customer support, including a text agent, call agent, and self-service for refunds, returns, and cancellations. |
-| **Payment Dunning** | Automated handling of payment failures, including dunning emails, payment retry logic, and grace periods. |
+| Module / Feature        | Description                                                                                                                                |
+| :---------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Authentication**      | Google OAuth, Apple Sign-In, and standard email/password with JWT.                                                                         |
+| **Billing**             | Stripe integration for both subscriptions and one-time payments. Must support both test and live keys.                                     |
+| **Customer Service**    | A built-in layer for customer support, including a text agent, call agent, and self-service for refunds, returns, and cancellations.       |
+| **Payment Dunning**     | Automated handling of payment failures, including dunning emails, payment retry logic, and grace periods.                                  |
 | **Accessibility Modes** | Five mandatory, user-toggleable accessibility modes: **WCAG AAA**, **ECO CODE**, **NEURO CODE**, **DYSLEXIC MODE**, and **NO BLUE LIGHT**. |
-| **Error Recovery** | Self-healing mechanisms to gracefully handle and recover from unexpected errors. |
-| **Analytics** | An integrated dashboard to display key application metrics. |
-| **Token Economy** | A credit/token-based system with a free tier and paid tokens for overage or premium features. |
-| **AI Assistants** | An AI-powered text/chat assistant and an AI-powered phone answering service. |
-| **SEO** | Minimum of 1000+ backlinks, full Schema.org JSON-LD implementation, and comprehensive meta tags on all pages. |
-| **Affiliate Engine** | Built-in affiliate marketing system with support for 20, 50, 100, 200, and 500 campaign buttons. |
-| **Email Marketing** | Automated email collection and integration with an auto-newsletter system. |
+| **Error Recovery**      | Self-healing mechanisms to gracefully handle and recover from unexpected errors.                                                           |
+| **Analytics**           | An integrated dashboard to display key application metrics.                                                                                |
+| **Token Economy**       | A credit/token-based system with a free tier and paid tokens for overage or premium features.                                              |
+| **AI Assistants**       | An AI-powered text/chat assistant and an AI-powered phone answering service.                                                               |
+| **SEO**                 | Minimum of 1000+ backlinks, full Schema.org JSON-LD implementation, and comprehensive meta tags on all pages.                              |
+| **Affiliate Engine**    | Built-in affiliate marketing system with support for 20, 50, 100, 200, and 500 campaign buttons.                                           |
+| **Email Marketing**     | Automated email collection and integration with an auto-newsletter system.                                                                 |
 
 ## 5. Pricing and Business Model
 

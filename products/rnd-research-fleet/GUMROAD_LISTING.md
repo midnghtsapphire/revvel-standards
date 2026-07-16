@@ -10,11 +10,11 @@
 
 ## Pricing Tiers
 
-| Product | Price |
-|---------|-------|
-| **Single Persona** - Drop into any LLM | $99 |
-| **Research Fleet Bundle** - 6 Personas + Master Prompt | $199 |
-| **Self-Exploding Fleet** - Everything, auto-install, auto-run | $399 |
+| Product                                                       | Price |
+| ------------------------------------------------------------- | ----- |
+| **Single Persona** - Drop into any LLM                        | $99   |
+| **Research Fleet Bundle** - 6 Personas + Master Prompt        | $199  |
+| **Self-Exploding Fleet** - Everything, auto-install, auto-run | $399  |
 
 ---
 
@@ -37,7 +37,9 @@ The R&D Research Fleet transforms any LLM into an autonomous deep research engin
 ## What You Get
 
 ### 🔬 Single Persona - $99
+
 Pick ONE research mode:
+
 - DOE Screener (evaluation)
 - TRIZ Specialist (problem solving)
 - BNAT Hunter (technology scouting)
@@ -46,7 +48,9 @@ Pick ONE research mode:
 - Merchandise Search (find products to sell)
 
 ### 🚀 Research Fleet Bundle - $199 (Most Popular)
+
 Everything you need for deep research:
+
 - ✅ All 6 Personas (drop into any LLM)
 - ✅ Master Prompt (7 frameworks: DOE + TRIZ + MEErP + LCA + BNAT + Lead + Merchandise)
 - ✅ Lead Search Persona - Find customers, partners, investors
@@ -55,7 +59,9 @@ Everything you need for deep research:
 - Paste into any LLM - no scripts needed!
 
 ### 💥 Self-Exploding Fleet - $399 (Maximum Power)
+
 The full automation suite - runs itself:
+
 - ✅ Everything in Bundle PLUS:
 - ✅ Perplexity Research Agent - No API key needed (FREE!)
 - ✅ Auto-Install Script (one command: `curl | bash`)

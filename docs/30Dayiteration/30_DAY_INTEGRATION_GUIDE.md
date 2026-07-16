@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0  
 **Date:** 2026-05-02  
-**Status:** ACTIVE  
+**Status:** ACTIVE
 
 ---
 
@@ -16,22 +16,24 @@ This guide explains how the 30-Day Autonomous Product Launch framework integrate
 
 The 30-day blueprint is a **fast-track variant** of the full `AUTOMATED_PRODUCT_PIPELINE.md`:
 
-| Feature | Full Pipeline | 30-Day Blueprint |
-|---------|--------------|------------------|
-| **Duration** | Ongoing (daily cron) | 30 days (one-shot) |
-| **Research** | Automated social listening | Manual + quick validation |
-| **ROI Gate** | Automated with human override | Implicit in MVP choice |
-| **Build** | Agent-generated per shape | Template-based MVP |
-| **Deploy** | Multiple marketplaces | Single platform first |
-| **Marketing** | Full SEO/SEM/ads pipeline | Community-first launch |
-| **Metrics** | Comprehensive tracking | Essential metrics only |
+| Feature       | Full Pipeline                 | 30-Day Blueprint          |
+| ------------- | ----------------------------- | ------------------------- |
+| **Duration**  | Ongoing (daily cron)          | 30 days (one-shot)        |
+| **Research**  | Automated social listening    | Manual + quick validation |
+| **ROI Gate**  | Automated with human override | Implicit in MVP choice    |
+| **Build**     | Agent-generated per shape     | Template-based MVP        |
+| **Deploy**    | Multiple marketplaces         | Single platform first     |
+| **Marketing** | Full SEO/SEM/ads pipeline     | Community-first launch    |
+| **Metrics**   | Comprehensive tracking        | Essential metrics only    |
 
 **Use the 30-day blueprint when:**
+
 - Validating a new product idea quickly
 - Testing market demand before full automation
 - Learning what works before scaling
 
 **Use the full pipeline when:**
+
 - Scaling validated products
 - Running multiple products simultaneously
 - Automating long-term operations
@@ -39,6 +41,7 @@ The 30-day blueprint is a **fast-track variant** of the full `AUTOMATED_PRODUCT_
 ### 2. Product Shapes
 
 Both systems use the same product shapes:
+
 - PDF / Booklet
 - CLI Tool
 - MCP Server
@@ -54,6 +57,7 @@ The 30-day blueprint adds simplified build templates for each shape.
 ### 3. BOM Gatekeeper
 
 Both systems use the same BOM (Bill of Materials) validation:
+
 - Same `BOM.md` format
 - Same credential provisioning
 - Same Doppler/secrets integration
@@ -66,6 +70,7 @@ Both systems use the same BOM (Bill of Materials) validation:
 The 30-day blueprint uses a **simplified metrics subset**:
 
 **Primary (30-day):**
+
 - Signups
 - Conversions
 - Revenue
@@ -73,6 +78,7 @@ The 30-day blueprint uses a **simplified metrics subset**:
 - Refund Rate
 
 **Full Pipeline (additional):**
+
 - SEO rankings
 - Ad performance (by channel/creative)
 - LTV cohorts
@@ -82,6 +88,7 @@ The 30-day blueprint uses a **simplified metrics subset**:
 ### 5. Payment Integration
 
 Same platforms supported:
+
 - LemonSqueezy
 - Gumroad
 - Stripe
@@ -91,6 +98,7 @@ Same platforms supported:
 ### 6. Deployment
 
 Both use existing deploy workflows:
+
 - GitHub Actions for CI/CD
 - Vercel for web apps
 - DigitalOcean for APIs
@@ -133,6 +141,7 @@ projects/agent-generated/<product-slug>/
 **Path:** `skills/product-launch-30day/` (planned for future release)
 
 **Trigger keywords:**
+
 - "30 day launch"
 - "quick product launch"
 - "MVP launch"
@@ -140,6 +149,7 @@ projects/agent-generated/<product-slug>/
 - "rapid product ship"
 
 **What it will provide:**
+
 - 30-day timeline execution
 - MVP validation checklist
 - Simplified metrics tracking
@@ -150,12 +160,15 @@ projects/agent-generated/<product-slug>/
 ## Workflow Integration
 
 ### Existing Workflows (Used)
+
 - `.github/workflows/credential-gatekeeper.yml` — BOM validation
 - `.github/workflows/deploy-*.yml` — Deployment per shape (if available)
 - CI/CD testing — Use existing test workflows in the repository
 
 ### Planned Workflows (30-Day Specific)
+
 The following workflows are planned for future releases:
+
 - `30day-metrics.yml` — Daily metrics collection (planned)
 - `30day-reminder.yml` — Timeline milestone alerts (planned)
 
@@ -164,17 +177,20 @@ For now, metrics tracking and reminders are manual processes.
 ## Script Integration
 
 ### New Scripts
+
 - `scripts/autonomous-product-launcher.sh` — Main launcher
 - Future planned:
   - `research-automation.sh` — Automated research (planned)
   - `metrics-dashboard.sh` — Generate metrics dashboard (planned)
 
 ### Existing Scripts (Used)
+
 - `scripts/init-product.sh` — Product scaffolding (called by launcher)
 
 ## Standards Integration
 
 ### Existing Standards (Applied)
+
 - `AUTOMATED_PRODUCT_PIPELINE.md` — Full pipeline reference
 - `SAAS_PRODUCTS.md` — SaaS-specific guidance
 - `PRICING.md` — Pricing strategies
@@ -182,6 +198,7 @@ For now, metrics tracking and reminders are manual processes.
 - `OAUDREY_DEPLOYMENT_STANDARD.md` — Deployment
 
 ### New Standards
+
 - `docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md` — This blueprint
 
 ## Agent Instructions Integration
@@ -194,6 +211,7 @@ Add to the "Your Mission" section:
 ### Quick Product Launch (30 Days)
 
 When asked to "launch a new product" or "validate an idea":
+
 1. Load skill: `product-launch-30day`
 2. Run: `scripts/autonomous-product-launcher.sh <name> --shape <type>`
 3. Follow: `docs/30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md`
@@ -204,6 +222,7 @@ When asked to "launch a new product" or "validate an idea":
 ### GOAP Integration
 
 The 30-day blueprint complements GOAP (Goal-Oriented Action Planning):
+
 - **GOAP handles:** Long-term goal decomposition, multi-project orchestration
 - **30-day handles:** Single-product focused execution, rapid iteration
 
@@ -214,6 +233,7 @@ The 30-day blueprint complements GOAP (Goal-Oriented Action Planning):
 The 30-day blueprint directly supports GOAL.md targets:
 
 **Month 1 Goal:** $0 → $3,000
+
 - Week 1: Deploy Reese-Reviews dashboard → $500
 - Week 2: Finish video pipeline → $500
 - Week 3: Launch PDF guides (5 × $100) → $500
@@ -226,6 +246,7 @@ The 30-day blueprint directly supports GOAL.md targets:
 The blueprint aligns with `docs/PROJECTS_TO_SHIP.md`:
 
 **Priority 1 (Next 30 Days):**
+
 - Vine review optimization → Use 30-day blueprint for dashboard
 - Product rental → Use 30-day blueprint for booking system
 - Overflow sales → Use 30-day blueprint for marketplace
@@ -236,6 +257,7 @@ The blueprint aligns with `docs/PROJECTS_TO_SHIP.md`:
 ### From 30-Day to Full Pipeline
 
 After validation (30 days):
+
 1. **Metrics validated?** → Keep running, add full pipeline automation
 2. **ROI positive?** → Graduate to multi-platform deployment
 3. **Scaling needed?** → Add full marketing automation
@@ -244,6 +266,7 @@ After validation (30 days):
 ### From Full Pipeline to 30-Day
 
 For new product ideas:
+
 1. Use 30-day blueprint first (validate demand)
 2. If validated, add to full pipeline (automate operations)
 
@@ -280,12 +303,14 @@ cat projects/agent-generated/test-mvp/metrics/config.json
 ## Success Metrics
 
 ### Integration Success
+
 - 30-day products can graduate to full pipeline seamlessly
 - No duplicate work between systems
 - Consistent metrics across both
 - Agents understand when to use each
 
 ### Product Success (via 30-Day)
+
 - MVP validated within 30 days
 - First paying customer by day 22
 - $500+ revenue or clear pivot signal by day 30
@@ -294,6 +319,7 @@ cat projects/agent-generated/test-mvp/metrics/config.json
 ## Troubleshooting
 
 ### Script Errors
+
 **Problem:** Script fails with "command not found"  
 **Solution:** Check dependencies: `git`, `jq`, `python3`, `curl`
 
@@ -301,6 +327,7 @@ cat projects/agent-generated/test-mvp/metrics/config.json
 **Solution:** Choose different name or delete existing folder
 
 ### Integration Issues
+
 **Problem:** BOM validation fails  
 **Solution:** Ensure BOM.md format matches `standards/GATEKEEPER.md`
 
@@ -308,6 +335,7 @@ cat projects/agent-generated/test-mvp/metrics/config.json
 **Solution:** Verify analytics integration in `metrics/config.json`
 
 ### Agent Confusion
+
 **Problem:** Agent uses full pipeline when 30-day is better  
 **Solution:** Clarify in prompt: "quick validation" or "30-day launch"
 
@@ -317,18 +345,21 @@ cat projects/agent-generated/test-mvp/metrics/config.json
 ## Roadmap
 
 ### Phase 1: Core Framework (Current)
+
 - [x] Blueprint document
 - [x] Launcher script
 - [x] Integration guide
 - [x] Example projects
 
 ### Phase 2: Automation (Next)
+
 - [ ] Automated research script
 - [ ] Metrics dashboard generator
 - [ ] GitHub Actions workflows
 - [ ] Email automation templates
 
 ### Phase 3: Advanced Features
+
 - [ ] A/B testing framework
 - [ ] Multi-variant launches
 - [ ] Cohort analysis
@@ -365,6 +396,6 @@ cat projects/agent-generated/<slug>/launch/30-day-plan.md
 
 ---
 
-*Integration guide for the 30-Day Autonomous Product Launch framework*  
-*Part of the revvel-standards ecosystem*  
-*Version 1.0.0 — 2026-05-02*
+_Integration guide for the 30-Day Autonomous Product Launch framework_  
+_Part of the revvel-standards ecosystem_  
+_Version 1.0.0 — 2026-05-02_

@@ -1,7 +1,7 @@
 name: Workflow Monitor (Real-Time)
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: "*/15 * * * *"
   workflow_dispatch:
     inputs:
       workflow_run_id:

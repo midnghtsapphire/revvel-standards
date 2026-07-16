@@ -1,7 +1,7 @@
 # R&D Research Fleet - Search Evaluation Standard
 
-*How to measure whether a new search prompt / routing change is actually better
-than the previous one - offline, repeatable, and without paid APIs.*
+_How to measure whether a new search prompt / routing change is actually better
+than the previous one - offline, repeatable, and without paid APIs._
 
 ---
 
@@ -39,17 +39,17 @@ candidate run JSON     ┘
 
 ## Metrics measured
 
-| Metric | Meaning | Direction |
-| --- | --- | --- |
-| **Rubric mean** | Fraction of each query's `expected_qualities` present in the answer | higher better |
-| **Error rate** | Share of queries that errored or returned nothing | lower better |
-| **Citation coverage** | Share of queries that met their `min_citations` | higher better |
-| **Domain diversity** | Unique citation domains / total citations | higher better |
-| **Duplicate rate** | Duplicate citations / total citations | lower better |
-| **Freshness satisfaction** | Of freshness-required queries, share with recent sources | higher better |
-| **Mean latency (ms)** | Mean `latency_ms` if runs provide it | lower better |
-| **Total cost (USD)** | Sum of `cost_usd` if runs provide it | lower better |
-| **Downstream usefulness** | Free-text `usefulness_note` per query, surfaced in the report | qualitative |
+| Metric                     | Meaning                                                             | Direction     |
+| -------------------------- | ------------------------------------------------------------------- | ------------- |
+| **Rubric mean**            | Fraction of each query's `expected_qualities` present in the answer | higher better |
+| **Error rate**             | Share of queries that errored or returned nothing                   | lower better  |
+| **Citation coverage**      | Share of queries that met their `min_citations`                     | higher better |
+| **Domain diversity**       | Unique citation domains / total citations                           | higher better |
+| **Duplicate rate**         | Duplicate citations / total citations                               | lower better  |
+| **Freshness satisfaction** | Of freshness-required queries, share with recent sources            | higher better |
+| **Mean latency (ms)**      | Mean `latency_ms` if runs provide it                                | lower better  |
+| **Total cost (USD)**       | Sum of `cost_usd` if runs provide it                                | lower better  |
+| **Downstream usefulness**  | Free-text `usefulness_note` per query, surfaced in the report       | qualitative   |
 
 Latency, cost, and tokens are **optional** - they are scored only when the run
 files provide them, so offline fixture runs work without timing or billing data.
@@ -78,12 +78,12 @@ Fixture categories (see `eval/fixtures/queries.json`):
 
 The comparator emits exactly one decision:
 
-| Decision | When |
-| --- | --- |
-| `keep_candidate` | Candidate matches or beats baseline on rubric, errors, and citations, with no duplicate-rate spike. Safe to ship the new prompt. |
-| `tune_candidate` | No hard regression, but the candidate is not a clean win (small rubric dip, extra duplicates, etc.). Iterate on the prompt/routing and re-run. |
-| `rollback_candidate` | A hard regression: rubric drop, error-rate rise, citation-coverage drop, or freshness drop beyond threshold. Keep the previous prompt. |
-| `needs_human_review` | Not enough signal (too few queries) or ambiguous data. A person decides. |
+| Decision             | When                                                                                                                                           |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `keep_candidate`     | Candidate matches or beats baseline on rubric, errors, and citations, with no duplicate-rate spike. Safe to ship the new prompt.               |
+| `tune_candidate`     | No hard regression, but the candidate is not a clean win (small rubric dip, extra duplicates, etc.). Iterate on the prompt/routing and re-run. |
+| `rollback_candidate` | A hard regression: rubric drop, error-rate rise, citation-coverage drop, or freshness drop beyond threshold. Keep the previous prompt.         |
+| `needs_human_review` | Not enough signal (too few queries) or ambiguous data. A person decides.                                                                       |
 
 Thresholds live in one place - `THRESHOLDS` in `eval/search-eval.js` - so the
 rubric stays transparent:
@@ -182,12 +182,12 @@ deep-search / Perplexity wiring:
 The evaluator recognizes named **search strategies**, compared offline against
 the same fixture set:
 
-| Strategy | Meaning |
-| --- | --- |
-| `baseline` | Current production search prompt / routing (`v1`). |
-| `candidate` | A proposed single-path change (the new search prompt). |
-| `fable` | The Fable single-model search path - the bar a fancier strategy must clear. |
-| `twin_llm` | Send the SAME query to two independent model/search paths, then synthesize one source-backed answer. |
+| Strategy               | Meaning                                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `baseline`             | Current production search prompt / routing (`v1`).                                                            |
+| `candidate`            | A proposed single-path change (the new search prompt).                                                        |
+| `fable`                | The Fable single-model search path - the bar a fancier strategy must clear.                                   |
+| `twin_llm`             | Send the SAME query to two independent model/search paths, then synthesize one source-backed answer.          |
 | `twin_llm_adjudicated` | `twin_llm` plus an explicit third adjudicator model that resolves disagreements and drops unsupported claims. |
 
 `baseline` vs `candidate` uses the original 2-way comparator. `fable`,
@@ -223,28 +223,28 @@ A twin-LLM run is **not** "ask one model twice." It is:
 
 Computed per run when results carry a `twin` block (see schema below):
 
-| Dimension | Meaning |
-| --- | --- |
-| `model_pair` | The two model/search paths used. |
-| `agreement_score` | Mean how-much-the-two-runs-agreed (0..1). |
-| `disagreement_count` | Total substantive disagreements across queries. |
-| `adjudication_quality` | Mean quality of the synthesizer's merge (0..1). |
-| `source_overlap` | Mean domain overlap between the two runs' sources (lower = more diverse). |
-| `unique_sources_added` | Distinct domains the second run added beyond the first. |
-| `hallucination_or_unsupported_claim_flags` | Total unsupported/hallucinated claims flagged. |
-| `cost_delta_vs_fable` | Twin total cost minus Fable total cost (USD). |
-| `latency_delta_vs_fable` | Twin mean latency minus Fable mean latency (ms). |
+| Dimension                                  | Meaning                                                                   |
+| ------------------------------------------ | ------------------------------------------------------------------------- |
+| `model_pair`                               | The two model/search paths used.                                          |
+| `agreement_score`                          | Mean how-much-the-two-runs-agreed (0..1).                                 |
+| `disagreement_count`                       | Total substantive disagreements across queries.                           |
+| `adjudication_quality`                     | Mean quality of the synthesizer's merge (0..1).                           |
+| `source_overlap`                           | Mean domain overlap between the two runs' sources (lower = more diverse). |
+| `unique_sources_added`                     | Distinct domains the second run added beyond the first.                   |
+| `hallucination_or_unsupported_claim_flags` | Total unsupported/hallucinated claims flagged.                            |
+| `cost_delta_vs_fable`                      | Twin total cost minus Fable total cost (USD).                             |
+| `latency_delta_vs_fable`                   | Twin mean latency minus Fable mean latency (ms).                          |
 
 ### Twin decision rubric
 
 The twin comparator emits exactly one decision:
 
-| Decision | When |
-| --- | --- |
-| `keep_twin` | Twin beats Fable/baseline on rubric by `>= minQualityGain`, with no error/citation regression, adjudication quality above floor, no unsupported-claim flags, and cost/latency within budget. Twin earns its place. |
-| `tune_twin` | Better quality but cost/latency over budget, or the two runs are largely redundant (`source_overlap` too high), or the gain is positive but below the keep threshold. De-dupe models, trim the second run, or cache shared sources, then re-run. |
-| `rollback_twin` | Twin does **not** beat Fable/baseline on rubric, or it regresses error rate / citation coverage beyond threshold. Not worth its extra cost/latency - stay on Fable/baseline. |
-| `needs_human_review` | Too few queries to decide. |
+| Decision             | When                                                                                                                                                                                                                                             |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `keep_twin`          | Twin beats Fable/baseline on rubric by `>= minQualityGain`, with no error/citation regression, adjudication quality above floor, no unsupported-claim flags, and cost/latency within budget. Twin earns its place.                               |
+| `tune_twin`          | Better quality but cost/latency over budget, or the two runs are largely redundant (`source_overlap` too high), or the gain is positive but below the keep threshold. De-dupe models, trim the second run, or cache shared sources, then re-run. |
+| `rollback_twin`      | Twin does **not** beat Fable/baseline on rubric, or it regresses error rate / citation coverage beyond threshold. Not worth its extra cost/latency - stay on Fable/baseline.                                                                     |
+| `needs_human_review` | Too few queries to decide.                                                                                                                                                                                                                       |
 
 Twin thresholds live in `TWIN_THRESHOLDS` in `eval/search-eval.js`:
 
@@ -313,7 +313,7 @@ the default — the runner produces the data; the eval makes the call.
 
 A triplet generalizes the twin to **N independent models** (default 3) with
 **k-of-n majority consensus** (k = ⌊n/2⌋+1, i.e. 2-of-3). The extra arm buys
-robustness — a claim corroborated by a *majority* of independent models is
+robustness — a claim corroborated by a _majority_ of independent models is
 stronger than a 2-of-2 agreement — at ~N× cost/latency. Like the twin, it only
 earns its place if it **beats its reference on measured quality**. The reference
 is the **twin** when one is provided (the bar the triplet must raise), else Fable.
@@ -325,22 +325,22 @@ is the **twin** when one is provided (the bar the triplet must raise), else Fabl
 Each result carries an `nplet` block; the comparator (`npletMetricsFor` /
 `compareNpletToReference` / `decideNplet`) rolls these up:
 
-| Field | Meaning |
-|-------|---------|
-| `models` / `n` / `k` | the N model ids, N, and the majority threshold k |
-| `agreement_score` | adjudicator's agreement (falls back to `consensus_score`) |
-| `consensus_score` | fraction of distinct source-domains cited by ≥ k arms |
-| `adjudication_quality` | adjudicator confidence in the merge |
-| `disagreements` / `unsupported_claims` | resolved conflicts / dropped unsourced claims |
-| `sources` | per-model source arrays (`sources[i]` = model i's citations) |
+| Field                                  | Meaning                                                      |
+| -------------------------------------- | ------------------------------------------------------------ |
+| `models` / `n` / `k`                   | the N model ids, N, and the majority threshold k             |
+| `agreement_score`                      | adjudicator's agreement (falls back to `consensus_score`)    |
+| `consensus_score`                      | fraction of distinct source-domains cited by ≥ k arms        |
+| `adjudication_quality`                 | adjudicator confidence in the merge                          |
+| `disagreements` / `unsupported_claims` | resolved conflicts / dropped unsourced claims                |
+| `sources`                              | per-model source arrays (`sources[i]` = model i's citations) |
 
 ### Triplet decision rubric (`NPLET_THRESHOLDS`)
 
-| Decision | When |
-|----------|------|
-| `keep_triplet` | beats the reference rubric by ≥ `minQualityGain`, within `maxCostRatio` (3.5×) / `maxLatencyRatio` (2.5×), with `consensus_score` ≥ `minConsensus`, adjudication above floor, no unsupported-claim flags, no error/citation regression. |
-| `tune_triplet` | better quality but over cost/latency budget, or `consensus_score` too low (the arms rarely corroborate the same sources), or gain positive but below keep. |
-| `rollback_triplet` | does not beat the reference rubric, or regresses error/citation coverage. Not worth ~N× — stay on the twin/Fable. |
+| Decision           | When                                                                                                                                                                                                                                    |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `keep_triplet`     | beats the reference rubric by ≥ `minQualityGain`, within `maxCostRatio` (3.5×) / `maxLatencyRatio` (2.5×), with `consensus_score` ≥ `minConsensus`, adjudication above floor, no unsupported-claim flags, no error/citation regression. |
+| `tune_triplet`     | better quality but over cost/latency budget, or `consensus_score` too low (the arms rarely corroborate the same sources), or gain positive but below keep.                                                                              |
+| `rollback_triplet` | does not beat the reference rubric, or regresses error/citation coverage. Not worth ~N× — stay on the twin/Fable.                                                                                                                       |
 
 ### Running the triplet
 
@@ -362,8 +362,8 @@ node eval/search-eval.js --fixtures eval/fixtures/queries.json \
 
 Decision on the bundled fixtures: **`rollback_triplet`** — the example triplet
 reuses the twin's answers, so it shows no rubric gain over the twin and is
-correctly rejected at ~3× cost. That is the point: a third arm must *measurably
-improve* the answer (not just echo the twin) to earn `keep_triplet`.
+correctly rejected at ~3× cost. That is the point: a third arm must _measurably
+improve_ the answer (not just echo the twin) to earn `keep_triplet`.
 
 ### Twin run JSON schema (per result)
 

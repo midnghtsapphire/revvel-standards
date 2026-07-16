@@ -4,13 +4,13 @@
 
 ## Metadata
 
-| Field | Value |
-|-------|-------|
-| **ID** | P### |
-| **Title** | [Your title] |
-| **Author** | @author |
-| **Date** | YYYY-MM-DD |
-| **Status** | active |
+| Field      | Value        |
+| ---------- | ------------ |
+| **ID**     | P###         |
+| **Title**  | [Your title] |
+| **Author** | @author      |
+| **Date**   | YYYY-MM-DD   |
+| **Status** | active       |
 
 ---
 
@@ -24,11 +24,11 @@
 
 ## Alternatives Considered
 
-| Option | Pros | Cons |
-|--------|-----|-----|
-| A | ... | ... |
-| B | ... | ... |
-| C (this) | ... | ... |
+| Option   | Pros | Cons |
+| -------- | ---- | ---- |
+| A        | ...  | ...  |
+| B        | ...  | ...  |
+| C (this) | ...  | ...  |
 
 ---
 

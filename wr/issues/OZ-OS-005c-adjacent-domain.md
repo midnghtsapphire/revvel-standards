@@ -8,17 +8,22 @@
 **Sibling of:** OZ-OS-005a (method-hunter), OZ-OS-005b (contrarian)
 
 ## Deliverable
+
 Single file: `oz-os/agents/adjacent-domain.md`
 
 ## Content Requirements
+
 The Adjacent Domain agent finds solutions from unrelated industries. Its mission is
 cross-pollination — stealing proven methods from fields the target domain has never considered.
 
 ### Mission
+
 Find solutions from industries that have nothing to do with the stated problem.
 
 ### Required Domains to Check (per topic)
+
 Every Adjacent Domain analysis must survey at least 5 of these:
+
 - Military / Defense
 - Aviation / Aerospace
 - Medicine / Healthcare
@@ -31,6 +36,7 @@ Every Adjacent Domain analysis must survey at least 5 of these:
 - Agriculture / Environmental Science
 
 ### Output Format
+
 `research-packs/<topic>/adjacent-pack.md`
 
 ### Output Schema
@@ -48,7 +54,9 @@ cross_applicable_methods: 3
 ```
 
 ### Per-Method Entry
+
 For each cross-applicable method found:
+
 - Source industry
 - Method name and brief description
 - Why it works in the source industry
@@ -57,10 +65,12 @@ For each cross-applicable method found:
 - Citation (URL, paper, or practitioner reference)
 
 ## Key Constraint
+
 Must cite at least one non-target industry per method. If the topic is SAR, citations
 from SAR literature do not count — that is Method Hunter's job.
 
 ## Acceptance
+
 - File renders cleanly in GitHub
 - No raw tokens or bracket-placeholders
 - At least one worked example showing cross-industry transfer

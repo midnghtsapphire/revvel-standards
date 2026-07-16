@@ -20,17 +20,17 @@ Neurooz is an AI-powered ADHD productivity and financial guardian platform. This
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [neurooz](https://github.com/midnghtsapphire/neurooz) |
-| Created | 2026-01-08 |
-| Last Updated | 2026-05-02 |
-| Primary Language | TypeScript |
-| Stars | 1 |
-| Open Issues | 1 |
-| Description | Neurooz - AI-Powered ADHD Productivity & Financial Guardian |
-| Private | false |
-| Archived | false |
+| Property         | Value                                                       |
+| ---------------- | ----------------------------------------------------------- |
+| Repository       | [neurooz](https://github.com/midnghtsapphire/neurooz)       |
+| Created          | 2026-01-08                                                  |
+| Last Updated     | 2026-05-02                                                  |
+| Primary Language | TypeScript                                                  |
+| Stars            | 1                                                           |
+| Open Issues      | 1                                                           |
+| Description      | Neurooz - AI-Powered ADHD Productivity & Financial Guardian |
+| Private          | false                                                       |
+| Archived         | false                                                       |
 
 ### Current Status
 
@@ -58,30 +58,33 @@ Neurooz is an AI-powered ADHD productivity and financial guardian platform. This
 #### Current Market Trends
 
 The ADHD productivity market is experiencing explosive growth:
+
 - **Market Size:** Global ADHD treatment market valued at $21.4B in 2023, expected to reach $42.5B by 2032 (CAGR 7.9%)
 - **Digital Health:** ADHD apps market growing at 15%+ annually
 - **AI Integration:** AI-powered productivity tools for neurodivergent individuals is an emerging high-growth category
 
 **Key Trends:**
+
 1. Increased ADHD diagnosis rates (especially adults)
 2. Remote work driving demand for productivity tools
 3. AI personalization for neurodivergent needs
 4. Financial management integration (unique differentiator)
 
 **Sources:**
+
 - Grand View Research: ADHD Market Analysis 2023-2032
 - TechCrunch: Rise of neurodivergent-focused productivity apps
 - McKinsey: Digital health adoption post-pandemic
 
 #### Competitors & Alternatives
 
-| Competitor | Features | Pricing | Market Share |
-|------------|----------|---------|--------------|
-| Tiimo | Visual daily planner, ADHD-focused | $9.99/month | Growing (500K+ users) |
-| Inflow | ADHD coaching + habit tracking | $19.99/month | Mid-size |
-| Goblin Tools | Free ADHD productivity tools | Free | Popular but limited |
-| Focus@Will | Music for ADHD focus | $9.95/month | Established |
-| Brain.fm | Audio for focus | $6.95/month | Large user base |
+| Competitor   | Features                           | Pricing      | Market Share          |
+| ------------ | ---------------------------------- | ------------ | --------------------- |
+| Tiimo        | Visual daily planner, ADHD-focused | $9.99/month  | Growing (500K+ users) |
+| Inflow       | ADHD coaching + habit tracking     | $19.99/month | Mid-size              |
+| Goblin Tools | Free ADHD productivity tools       | Free         | Popular but limited   |
+| Focus@Will   | Music for ADHD focus               | $9.95/month  | Established           |
+| Brain.fm     | Audio for focus                    | $6.95/month  | Large user base       |
 
 **Key Gap:** No major competitor combines AI-powered productivity + financial guardian features specifically for ADHD users.
 
@@ -124,7 +127,8 @@ The ADHD productivity market is experiencing explosive growth:
    - Educational institution licenses (universities with disability services)
    - Therapist/Coach partnerships (white-label or referral)
 
-**Revenue Potential:** 
+**Revenue Potential:**
+
 - Conservative (Year 1): $5K-10K/month (500-1000 paying users)
 - Moderate (Year 2): $20K-50K/month (2K-5K paying users + partnerships)
 - Aggressive (Year 3): $100K+/month (10K+ paying users + B2B)
@@ -149,11 +153,13 @@ The ADHD productivity market is experiencing explosive growth:
 #### Relevant Keywords
 
 **Primary Keywords:**
+
 - "ADHD productivity app": 2,400 monthly searches - High competition
 - "ADHD financial management": 590 monthly searches - Low competition ⭐
 - "AI ADHD tools": 1,300 monthly searches - Medium competition
 
 **Long-tail Keywords:**
+
 - "ADHD impulse spending help": 320 searches - Low competition ⭐
 - "productivity app for ADHD adults": 880 searches - Medium competition
 - "ADHD money management app": 210 searches - Low competition ⭐
@@ -177,13 +183,13 @@ The ADHD productivity market is experiencing explosive growth:
 
 #### Affiliate Programs
 
-| Program | Commission | Cookie Duration | Fit Score |
-|---------|------------|-----------------|-----------|
-| BetterHelp | $100-200/referral | 180 days | 5/5 ⭐ |
-| Cerebral (ADHD) | $50-75/referral | 30 days | 5/5 ⭐ |
-| Notion | 50% recurring | 180 days | 4/5 |
-| YNAB | $9/user | 60 days | 5/5 ⭐ |
-| RescueTime | 30% recurring | 90 days | 4/5 |
+| Program         | Commission        | Cookie Duration | Fit Score |
+| --------------- | ----------------- | --------------- | --------- |
+| BetterHelp      | $100-200/referral | 180 days        | 5/5 ⭐    |
+| Cerebral (ADHD) | $50-75/referral   | 30 days         | 5/5 ⭐    |
+| Notion          | 50% recurring     | 180 days        | 4/5       |
+| YNAB            | $9/user           | 60 days         | 5/5 ⭐    |
+| RescueTime      | 30% recurring     | 90 days         | 4/5       |
 
 ---
 
@@ -192,11 +198,13 @@ The ADHD productivity market is experiencing explosive growth:
 ### Prime Directive Alignment
 
 **10M by 2030 Goal:**
+
 - Current contribution: $0/month
 - Potential contribution: $5K-50K/month (achievable)
 - Path to contribution: Ship within 1 week, iterate based on user feedback, scale via content marketing
 
 **$2000+/month Target (Start: May 1, 2026):**
+
 - **Status:** URGENT - Already past start date
 - Revenue streams identified: 4 (freemium, affiliates, B2B, premium)
 - Estimated monthly revenue: $5K-10K within 2-3 months
@@ -207,11 +215,13 @@ The ADHD productivity market is experiencing explosive growth:
 **Current Autonomy Level:** Medium
 
 **Blockers Identified:**
+
 1. **No Deployment:** → Solution: Set up Vercel immediately
 2. **Monetization Not Implemented:** → Solution: Integrate Gumroad/LemonSqueezy this week
 3. **No Analytics:** → Solution: Add Plausible Analytics
 
 **Autonomous Capabilities:**
+
 - TypeScript provides strong typing (reduces errors)
 - Modern tech stack enables rapid iteration
 
@@ -220,6 +230,7 @@ The ADHD productivity market is experiencing explosive growth:
 **Current Self-Healing:** Partial (TypeScript type safety)
 
 **Missing:**
+
 - Error boundary components
 - Automated testing
 - Health check endpoints
@@ -230,6 +241,7 @@ The ADHD productivity market is experiencing explosive growth:
 **Current Status:** Needs Work
 
 **Readiness Checklist:**
+
 - [ ] All tests passing (no test suite found)
 - [ ] No linting errors (needs ESLint run)
 - [ ] No security vulnerabilities (needs npm audit)
@@ -248,6 +260,7 @@ The ADHD productivity market is experiencing explosive growth:
 **IMMEDIATE ACTIONS:**
 
 1. **Deploy to Vercel:**
+
    ```bash
    # In neurooz repo
    npm install -g vercel
@@ -255,6 +268,7 @@ The ADHD productivity market is experiencing explosive growth:
    ```
 
 2. **Security Audit:**
+
    ```bash
    npm audit fix --force
    npm audit report
@@ -292,6 +306,7 @@ The ADHD productivity market is experiencing explosive growth:
 #### Accessibility Features
 
 **Required:**
+
 - [ ] Keyboard navigation (critical for ADHD users who find mice distracting)
 - [ ] High contrast mode
 - [ ] Font size adjustments
@@ -303,6 +318,7 @@ The ADHD productivity market is experiencing explosive growth:
 #### Affiliate Links Integration
 
 **Priority Affiliates to Add:**
+
 1. BetterHelp (therapy) - Add to onboarding/settings
 2. Cerebral (ADHD meds) - Add to resources section
 3. YNAB (budgeting) - Integrate with financial guardian
@@ -311,6 +327,7 @@ The ADHD productivity market is experiencing explosive growth:
 #### Payment Integration
 
 **Recommended: Gumroad**
+
 - Reason: Simplest for indie developers, built-in email marketing
 - Products to create:
   1. Monthly subscription: $14.99/month
@@ -318,6 +335,7 @@ The ADHD productivity market is experiencing explosive growth:
   3. Lifetime access: $399 one-time
 
 **Setup Steps:**
+
 1. Create Gumroad account
 2. Create products
 3. Integrate Gumroad overlay: `<script src="https://gumroad.com/js/gumroad.js"></script>`
@@ -326,13 +344,15 @@ The ADHD productivity market is experiencing explosive growth:
 #### Tracking & Analytics
 
 **Plausible Analytics (Privacy-friendly, perfect for health apps):**
+
 ```bash
 npm install next-plausible
 ```
 
 Add to `_app.tsx`:
+
 ```typescript
-import PlausibleProvider from 'next-plausible'
+import PlausibleProvider from "next-plausible";
 ```
 
 ---
@@ -344,12 +364,14 @@ import PlausibleProvider from 'next-plausible'
 **Current Status:** Not deployed ❌
 
 **Action Plan:**
+
 1. Create `vercel.json` configuration
 2. Set environment variables in Vercel dashboard
 3. Connect GitHub repository
 4. Deploy
 
 **Expected URLs:**
+
 - **Production:** `https://neurooz.vercel.app`
 - **Preview:** `https://neurooz-[branch].vercel.app`
 
@@ -364,13 +386,13 @@ import PlausibleProvider from 'next-plausible'
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ⏳ Pending | https://neurooz.vercel.app |
-| Dashboard | ⏳ Pending | https://neurooz.vercel.app/dashboard |
-| Financial Guardian | ⏳ Pending | https://neurooz.vercel.app/finances |
-| AI Coach | ⏳ Pending | https://neurooz.vercel.app/coach |
-| API Health | ⏳ Pending | https://neurooz.vercel.app/api/health |
+| Feature            | Status     | URL                                   |
+| ------------------ | ---------- | ------------------------------------- |
+| Homepage           | ⏳ Pending | https://neurooz.vercel.app            |
+| Dashboard          | ⏳ Pending | https://neurooz.vercel.app/dashboard  |
+| Financial Guardian | ⏳ Pending | https://neurooz.vercel.app/finances   |
+| AI Coach           | ⏳ Pending | https://neurooz.vercel.app/coach      |
+| API Health         | ⏳ Pending | https://neurooz.vercel.app/api/health |
 ```
 
 ### Deployment Section
@@ -454,13 +476,13 @@ import PlausibleProvider from 'next-plausible'
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| HIPAA compliance concerns | High | Medium | Add disclaimer: "Not medical advice", consult lawyer |
-| Competition from established players | Medium | High | Focus on unique financial guardian feature |
-| User acquisition cost | Medium | High | Leverage organic content (ADHD Reddit, TikTok) |
-| Churn rate | Medium | Medium | Focus on value delivery, reduce feature bloat |
-| Technical scalability | Low | Low | Vercel handles scaling automatically |
+| Risk                                 | Severity | Probability | Mitigation                                           |
+| ------------------------------------ | -------- | ----------- | ---------------------------------------------------- |
+| HIPAA compliance concerns            | High     | Medium      | Add disclaimer: "Not medical advice", consult lawyer |
+| Competition from established players | Medium   | High        | Focus on unique financial guardian feature           |
+| User acquisition cost                | Medium   | High        | Leverage organic content (ADHD Reddit, TikTok)       |
+| Churn rate                           | Medium   | Medium      | Focus on value delivery, reduce feature bloat        |
+| Technical scalability                | Low      | Low         | Vercel handles scaling automatically                 |
 
 ---
 
@@ -469,6 +491,7 @@ import PlausibleProvider from 'next-plausible'
 ### Implementation Tasks
 
 **Week 1 (May 2-9):**
+
 - [ ] Deploy to Vercel
 - [ ] Fix security vulnerabilities
 - [ ] Add Gumroad integration
@@ -476,12 +499,14 @@ import PlausibleProvider from 'next-plausible'
 - [ ] Set up analytics
 
 **Week 2 (May 10-16):**
+
 - [ ] Implement Financial Guardian MVP
 - [ ] Add affiliate links
 - [ ] Create marketing content
 - [ ] Launch on Product Hunt
 
 **Week 3-4 (May 17-30):**
+
 - [ ] Iterate based on user feedback
 - [ ] Optimize conversion funnel
 - [ ] Scale content marketing

@@ -5,7 +5,7 @@
 **Created:** 2026-07-06  
 **Researcher:** Codex (GPT-5)  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -17,12 +17,12 @@ Primary outcome requested: a usable product (not only a static article) that hel
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -37,6 +37,7 @@ Primary outcome requested: a usable product (not only a static article) that hel
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `N/A — manual intake from issue body URL`
 
 - Current demand signal is explicit: requester asks for a dedicated comparison app/tool rather than a generic content page.
@@ -64,12 +65,12 @@ Build a production web app that compares thyroid-focused red light therapy devic
 
 ### Competitor and benchmark snapshot
 
-| Competitor / Reference | Pricing | Differentiator | Gap to exploit |
-| --- | --- | --- | --- |
-| [ThyForLife thyroid device roundup](https://www.thyforlife.com/best-red-light-therapy-devices-thyroid/) | Pricing data pending — competitive benchmark research required. | Niche thyroid-focused content framing | Static content, no interactive comparison UX |
-| [PlatinumLED](https://platinumtherapylights.com/) | Pricing data pending — competitive benchmark research required. | Brand-centric product catalog | No neutral cross-brand comparison |
-| [Mito Red Light](https://mitoredlight.com/) | Pricing data pending — competitive benchmark research required. | Strong direct-to-consumer hardware positioning | No third-party score normalization |
-| [Hooga Health](https://hoogahealth.com/) | Pricing data pending — competitive benchmark research required. | Broad wellness red light offering | Limited thyroid-specific guided flow |
+| Competitor / Reference                                                                                  | Pricing                                                         | Differentiator                                 | Gap to exploit                               |
+| ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------------------------------------------- | -------------------------------------------- |
+| [ThyForLife thyroid device roundup](https://www.thyforlife.com/best-red-light-therapy-devices-thyroid/) | Pricing data pending — competitive benchmark research required. | Niche thyroid-focused content framing          | Static content, no interactive comparison UX |
+| [PlatinumLED](https://platinumtherapylights.com/)                                                       | Pricing data pending — competitive benchmark research required. | Brand-centric product catalog                  | No neutral cross-brand comparison            |
+| [Mito Red Light](https://mitoredlight.com/)                                                             | Pricing data pending — competitive benchmark research required. | Strong direct-to-consumer hardware positioning | No third-party score normalization           |
+| [Hooga Health](https://hoogahealth.com/)                                                                | Pricing data pending — competitive benchmark research required. | Broad wellness red light offering              | Limited thyroid-specific guided flow         |
 
 ### Community chatter and intent capture
 
@@ -117,11 +118,11 @@ Build a production web app that compares thyroid-focused red light therapy devic
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 No prerequisite WR is required to start MVP implementation.
 

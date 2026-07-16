@@ -29,7 +29,7 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 'PR number to auto-approve'
+        description: "PR number to auto-approve"
         required: true
 
 permissions:

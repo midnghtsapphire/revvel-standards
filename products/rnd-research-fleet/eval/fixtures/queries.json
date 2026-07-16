@@ -6,7 +6,12 @@
       "id": "repo-automation-gh-repo",
       "category": "repo_automation",
       "prompt": "A GitHub Actions job calls the gh CLI but has no actions/checkout step and fails with 'not a git repository'. What is the fix?",
-      "expected_qualities": ["GH_REPO", "github.repository", "checkout", "--repo"],
+      "expected_qualities": [
+        "GH_REPO",
+        "github.repository",
+        "checkout",
+        "--repo"
+      ],
       "min_citations": 1,
       "requires_freshness": false,
       "notes": "Should surface the GH_REPO env / --repo fix documented in CLAUDE.md gotcha #1."
@@ -53,7 +58,13 @@
       "id": "docs-bom-discovery",
       "category": "docs_bom_discovery",
       "prompt": "Find authoritative documentation and standards needed to generate a compliant HVAC bill of materials.",
-      "expected_qualities": ["BOM", "standard", "specification", "documentation", "component"],
+      "expected_qualities": [
+        "BOM",
+        "standard",
+        "specification",
+        "documentation",
+        "component"
+      ],
       "min_citations": 2,
       "requires_freshness": false,
       "notes": "Docs/BOM discovery; should cite standards bodies / authoritative specs, not just blogs."

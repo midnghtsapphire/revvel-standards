@@ -3,6 +3,7 @@
 **Status:** ACTIVE  
 **Related Issues:** #15279, #16114  
 **Related Documents:**
+
 - `wr/issues/issue-15279-hipaa-compliance-addendum.md` (HIPAA — separate track)
 - `wr/issues/issue-15279-hipaa-compliance-clarification.md`
 - `wr/issues/issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md`
@@ -52,11 +53,13 @@ The following disclaimer must appear on every screen where health-related recomm
 **SaMD Risk Level:** LOW
 
 The current product provides:
+
 - A mathematical dosage-time calculator based on the universal formula `time = (dose × 1000) / irradiance`
 - Session logging and weekly dose tracking
 - Educational information about photobiomodulation
 
 **Mitigations applied:**
+
 - [x] All output labeled as "Estimated" or "Calculated" — never "Recommended" or "Prescribed"
 - [x] Required wellness disclaimer displayed on output screens
 - [x] No diagnostic claims in UI copy, protocol guides, or metadata
@@ -70,6 +73,7 @@ The current product provides:
 If the AI analysis output can be interpreted as a diagnostic claim (e.g., "your skin shows signs of condition X" or "this protocol will treat Y"), the product crosses into SaMD territory.
 
 **Required before shipping Phase 2:**
+
 - [ ] Conduct formal FDA SaMD classification review with regulatory counsel
 - [ ] Evaluate 510(k) vs. De Novo pathway if diagnostic claims cannot be fully removed
 - [ ] If staying in general wellness: ensure AI output is strictly informational/educational with no condition-specific claims
@@ -81,18 +85,18 @@ If the AI analysis output can be interpreted as a diagnostic claim (e.g., "your 
 
 All in-app copy, protocol guides, marketing materials, and metadata must be audited for the following prohibited terms and replaced with compliant alternatives:
 
-| Prohibited Language | Compliant Alternative |
-| --- | --- |
+| Prohibited Language     | Compliant Alternative                                 |
+| ----------------------- | ----------------------------------------------------- |
 | "Recommended dose/time" | "Estimated session time" or "Calculated session time" |
-| "Treatment" | "Session" or "Routine" |
-| "Treats [condition]" | "Supports general wellness" |
-| "Diagnoses" | "Provides information" |
-| "Cures" | (Remove entirely) |
-| "Prevents [condition]" | "Promotes healthy habits" |
-| "Prescribed" | "User-configured" |
-| "Medical advice" | "Educational information" |
-| "Dosage recommendation" | "Dose calculation based on your inputs" |
-| "Therapeutic protocol" | "Session plan" |
+| "Treatment"             | "Session" or "Routine"                                |
+| "Treats [condition]"    | "Supports general wellness"                           |
+| "Diagnoses"             | "Provides information"                                |
+| "Cures"                 | (Remove entirely)                                     |
+| "Prevents [condition]"  | "Promotes healthy habits"                             |
+| "Prescribed"            | "User-configured"                                     |
+| "Medical advice"        | "Educational information"                             |
+| "Dosage recommendation" | "Dose calculation based on your inputs"               |
+| "Therapeutic protocol"  | "Session plan"                                        |
 
 ---
 

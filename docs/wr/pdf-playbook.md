@@ -8,12 +8,12 @@ This playbook defines how Work Request (WR) PDFs are produced, batched, and dist
 
 ## Phases & Revenue Mapping
 
-| Phase | Target | Timeline | WR PDF Focus |
-|-------|--------|----------|--------------|
-| 1 | $10k/month | Month 1–6 | Polar.sh funding tiers, OSINT starter reports |
-| 2 | $30k/month | Month 6–18 | Productized OSINT subscriptions, automated PDF delivery |
-| 3 | $100k/month | Month 18–30 | Enterprise batch reports, white-label playbooks |
-| 4 | $10M total | Month 30–36 | Platform-scale pipeline, multi-tenant PDF batching |
+| Phase | Target      | Timeline    | WR PDF Focus                                            |
+| ----- | ----------- | ----------- | ------------------------------------------------------- |
+| 1     | $10k/month  | Month 1–6   | Polar.sh funding tiers, OSINT starter reports           |
+| 2     | $30k/month  | Month 6–18  | Productized OSINT subscriptions, automated PDF delivery |
+| 3     | $100k/month | Month 18–30 | Enterprise batch reports, white-label playbooks         |
+| 4     | $10M total  | Month 30–36 | Platform-scale pipeline, multi-tenant PDF batching      |
 
 ## PDF Generation Flow
 

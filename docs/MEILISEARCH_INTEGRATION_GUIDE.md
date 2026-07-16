@@ -54,6 +54,7 @@ MEILI_KEY=yourMasterKey
 The MeiliSearch MCP server is already configured in `.mcp.json`. Enable it by:
 
 1. Installing dependencies:
+
    ```bash
    cd mcp-servers/meilisearch-mcp
    pip install -e .
@@ -131,7 +132,7 @@ print(f'Indexed {len(products)} products')
 #### Next.js API Route (`pages/api/search.ts`)
 
 ```typescript
-import MeiliSearch from 'meilisearch';
+import MeiliSearch from "meilisearch";
 
 const client = new MeiliSearch({
   host: process.env.MEILI_HOST!,
@@ -139,15 +140,15 @@ const client = new MeiliSearch({
 });
 
 export default async function handler(req, res) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { q, category, maxPrice, limit = 20 } = req.query;
 
   try {
-    const index = client.index('products');
-    
+    const index = client.index("products");
+
     const searchParams = {
       limit: Number(limit),
       filter: [],
@@ -161,7 +162,7 @@ export default async function handler(req, res) {
       searchParams.filter.push(`price <= ${maxPrice}`);
     }
 
-    const results = await index.search(q || '', searchParams);
+    const results = await index.search(q || "", searchParams);
 
     res.status(200).json({
       hits: results.hits,
@@ -170,8 +171,8 @@ export default async function handler(req, res) {
       estimatedTotalHits: results.estimatedTotalHits,
     });
   } catch (error) {
-    console.error('Search error:', error);
-    res.status(500).json({ error: 'Search failed' });
+    console.error("Search error:", error);
+    res.status(500).json({ error: "Search failed" });
   }
 }
 ```
@@ -181,11 +182,11 @@ export default async function handler(req, res) {
 #### React Component with Instant Search
 
 ```tsx
-import { useState, useEffect } from 'react';
-import { debounce } from 'lodash';
+import { useState, useEffect } from "react";
+import { debounce } from "lodash";
 
 export function SearchBar() {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -200,12 +201,12 @@ export function SearchBar() {
       setLoading(true);
       try {
         const response = await fetch(
-          `/api/search?q=${encodeURIComponent(query)}`
+          `/api/search?q=${encodeURIComponent(query)}`,
         );
         const data = await response.json();
         setResults(data.hits);
       } catch (error) {
-        console.error('Search failed:', error);
+        console.error("Search failed:", error);
       } finally {
         setLoading(false);
       }
@@ -224,9 +225,9 @@ export function SearchBar() {
         placeholder="Search products..."
         className="search-input"
       />
-      
+
       {loading && <div className="search-loading">Searching...</div>}
-      
+
       {results.length > 0 && (
         <div className="search-results">
           {results.map((product) => (
@@ -251,14 +252,14 @@ export function SearchBar() {
 
 ```typescript
 // Filter by category and price range
-const results = await index.search('bowl', {
-  filter: ['category = "entree"', 'price >= 1000 AND price <= 2000'],
-  sort: ['price:asc'],
+const results = await index.search("bowl", {
+  filter: ['category = "entree"', "price >= 1000 AND price <= 2000"],
+  sort: ["price:asc"],
 });
 
 // Filter by multiple values (OR)
-const results = await index.search('', {
-  filter: ['category IN [entree, side]'],
+const results = await index.search("", {
+  filter: ["category IN [entree, side]"],
 });
 ```
 
@@ -267,11 +268,11 @@ const results = await index.search('', {
 ```typescript
 // Get facet counts
 await index.updateSettings({
-  filterableAttributes: ['category', 'tags', 'inStock'],
+  filterableAttributes: ["category", "tags", "inStock"],
 });
 
-const results = await index.search('', {
-  facets: ['category', 'tags', 'inStock'],
+const results = await index.search("", {
+  facets: ["category", "tags", "inStock"],
 });
 
 console.log(results.facetDistribution);
@@ -286,21 +287,21 @@ console.log(results.facetDistribution);
 ```typescript
 // Enable geo search
 await index.updateSettings({
-  sortableAttributes: ['_geo'],
+  sortableAttributes: ["_geo"],
 });
 
 // Add location data to documents
 const products = [
   {
     id: 1,
-    name: 'Soul Bowl - Downtown',
-    _geo: { lat: 38.6270, lng: -90.1994 }, // St. Louis
+    name: "Soul Bowl - Downtown",
+    _geo: { lat: 38.627, lng: -90.1994 }, // St. Louis
   },
 ];
 
 // Search by proximity
-const results = await index.search('soul bowl', {
-  sort: ['_geo(38.6270, -90.1994):asc'],
+const results = await index.search("soul bowl", {
+  sort: ["_geo(38.6270, -90.1994):asc"],
 });
 ```
 
@@ -310,8 +311,8 @@ const results = await index.search('soul bowl', {
 // Configure synonyms
 await index.updateSettings({
   synonyms: {
-    'chicken': ['chkn', 'poultry'],
-    'rice': ['fried rice', 'white rice'],
+    chicken: ["chkn", "poultry"],
+    rice: ["fried rice", "white rice"],
   },
 });
 
@@ -331,19 +332,19 @@ async function syncProductToMeili(product) {
     host: process.env.MEILI_HOST!,
     apiKey: process.env.MEILI_KEY!,
   });
-  
-  const index = client.index('products');
-  await index.addDocuments([product], { primaryKey: 'id' });
+
+  const index = client.index("products");
+  await index.addDocuments([product], { primaryKey: "id" });
 }
 
 // In your API route
 export default async function handler(req, res) {
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     const product = await db.products.create(req.body);
-    
+
     // Sync to MeiliSearch (fire-and-forget)
     syncProductToMeili(product).catch(console.error);
-    
+
     return res.status(201).json(product);
   }
 }
@@ -358,8 +359,8 @@ export default async function handler(req, res) {
 
 ```typescript
 // pages/api/admin/sync-meili.ts
-import { PrismaClient } from '@prisma/client';
-import MeiliSearch from 'meilisearch';
+import { PrismaClient } from "@prisma/client";
+import MeiliSearch from "meilisearch";
 
 const prisma = new PrismaClient();
 const client = new MeiliSearch({
@@ -368,14 +369,14 @@ const client = new MeiliSearch({
 });
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   // Verify admin auth
   const authHeader = req.headers.authorization;
   if (authHeader !== `Bearer ${process.env.ADMIN_SECRET}`) {
-    return res.status(401).json({ error: 'Unauthorized' });
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
@@ -383,9 +384,9 @@ export default async function handler(req, res) {
       where: { published: true },
     });
 
-    const index = client.index('products');
-    const task = await index.addDocuments(products, { primaryKey: 'id' });
-    
+    const index = client.index("products");
+    const task = await index.addDocuments(products, { primaryKey: "id" });
+
     await task.wait();
 
     res.status(200).json({
@@ -393,8 +394,8 @@ export default async function handler(req, res) {
       synced: products.length,
     });
   } catch (error) {
-    console.error('Sync error:', error);
-    res.status(500).json({ error: 'Sync failed' });
+    console.error("Sync error:", error);
+    res.status(500).json({ error: "Sync failed" });
   }
 }
 ```
@@ -478,14 +479,14 @@ sudo certbot --nginx -d search.yourdomain.com
 
 ```typescript
 // __tests__/search.test.ts
-import { createMocks } from 'node-mocks-http';
-import handler from '@/pages/api/search';
+import { createMocks } from "node-mocks-http";
+import handler from "@/pages/api/search";
 
-describe('/api/search', () => {
-  it('searches products', async () => {
+describe("/api/search", () => {
+  it("searches products", async () => {
     const { req, res } = createMocks({
-      method: 'GET',
-      query: { q: 'soul bowl' },
+      method: "GET",
+      query: { q: "soul bowl" },
     });
 
     await handler(req, res);
@@ -496,17 +497,17 @@ describe('/api/search', () => {
     expect(data.hits.length).toBeGreaterThan(0);
   });
 
-  it('filters by category', async () => {
+  it("filters by category", async () => {
     const { req, res } = createMocks({
-      method: 'GET',
-      query: { q: '', category: 'entree' },
+      method: "GET",
+      query: { q: "", category: "entree" },
     });
 
     await handler(req, res);
 
     expect(res._getStatusCode()).toBe(200);
     const data = JSON.parse(res._getData());
-    expect(data.hits.every(h => h.category === 'entree')).toBe(true);
+    expect(data.hits.every((h) => h.category === "entree")).toBe(true);
   });
 });
 ```
@@ -519,7 +520,7 @@ describe('/api/search', () => {
 
 ```typescript
 // pages/api/health/meili.ts
-import MeiliSearch from 'meilisearch';
+import MeiliSearch from "meilisearch";
 
 export default async function handler(req, res) {
   try {
@@ -529,14 +530,14 @@ export default async function handler(req, res) {
     });
 
     const health = await client.health();
-    
+
     res.status(200).json({
       status: health.status,
       uptime: process.uptime(),
     });
   } catch (error) {
     res.status(503).json({
-      status: 'unhealthy',
+      status: "unhealthy",
       error: error.message,
     });
   }
@@ -551,7 +552,7 @@ const results = await index.search(query);
 
 // Log to analytics
 await analytics.track({
-  event: 'product_search',
+  event: "product_search",
   properties: {
     query,
     results: results.hits.length,
@@ -584,10 +585,10 @@ await index.updateSettings({
   typoTolerance: {
     enabled: true,
     minWordSizeForTypos: {
-      oneTypo: 5,   // Default: 4
-      twoTypos: 9,  // Default: 8
+      oneTypo: 5, // Default: 4
+      twoTypos: 9, // Default: 8
     },
-    disableOnWords: ['id', 'sku', 'code'],  // Exact match only
+    disableOnWords: ["id", "sku", "code"], // Exact match only
   },
 });
 ```
@@ -598,16 +599,16 @@ await index.updateSettings({
 
 Use these tools via your AI coding agent when MeiliSearch MCP is enabled:
 
-| Tool | Description | Example |
-|------|-------------|---------|
-| `meili_index_create` | Create a new search index | `{ "index_uid": "products", "primary_key": "id" }` |
-| `meili_index_list` | List all indexes | `{}` |
-| `meili_index_delete` | Delete an index | `{ "index_uid": "products" }` |
-| `meili_documents_add` | Bulk add/update documents | `{ "index_uid": "products", "documents": "[...]" }` |
-| `meili_documents_search` | Search with filters | `{ "index_uid": "products", "query": "bowl", "limit": 20 }` |
-| `meili_documents_get` | Get document by ID | `{ "index_uid": "products", "document_id": "123" }` |
-| `meili_settings_update` | Configure search behavior | `{ "index_uid": "products", "settings": {...} }` |
-| `meili_health` | Check MeiliSearch health | `{}` |
+| Tool                     | Description               | Example                                                     |
+| ------------------------ | ------------------------- | ----------------------------------------------------------- |
+| `meili_index_create`     | Create a new search index | `{ "index_uid": "products", "primary_key": "id" }`          |
+| `meili_index_list`       | List all indexes          | `{}`                                                        |
+| `meili_index_delete`     | Delete an index           | `{ "index_uid": "products" }`                               |
+| `meili_documents_add`    | Bulk add/update documents | `{ "index_uid": "products", "documents": "[...]" }`         |
+| `meili_documents_search` | Search with filters       | `{ "index_uid": "products", "query": "bowl", "limit": 20 }` |
+| `meili_documents_get`    | Get document by ID        | `{ "index_uid": "products", "document_id": "123" }`         |
+| `meili_settings_update`  | Configure search behavior | `{ "index_uid": "products", "settings": {...} }`            |
+| `meili_health`           | Check MeiliSearch health  | `{}`                                                        |
 
 ---
 
@@ -624,6 +625,7 @@ Use these tools via your AI coding agent when MeiliSearch MCP is enabled:
 ## Support
 
 For MeiliSearch integration issues:
+
 1. Check this guide
 2. Review MeiliSearch docs
 3. Ask in #revvel-dev Slack channel

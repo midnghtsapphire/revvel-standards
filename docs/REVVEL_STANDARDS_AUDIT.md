@@ -11,8 +11,8 @@
 
 You have built a large amount of **real** machinery. The problem is not that the
 agents are weak — and it is **not** that they fail to produce docs. The agents
-**do** generate elaborate, useful design docs, often proposing a *better /
-reimagined* app than what was there. The failure is downstream: **what they
+**do** generate elaborate, useful design docs, often proposing a _better /
+reimagined_ app than what was there. The failure is downstream: **what they
 design is never implemented.** The pieces are **not wired to each other**, the
 orchestrator is **prose with no code behind it**, and the review "jury" is set up
 to **never block**. Concretely, across four investigations:
@@ -57,13 +57,13 @@ Per `engines/CONTRACT.md`, `promptforproject.md`, `wr/WR_TEMPLATE_FULL.md`,
 
 ## The actual pipeline (reality)
 
-| Stage | Wired? | Reality |
-| --- | --- | --- |
-| Intake / routing | ✅ runs | `openrouter-assignee.yml` applies labels + `@oaudrey` + a comment. Labels/comments only — no work. |
-| Research | ✅ runs | `research-engine.yml` → `scripts/research-engine.js` writes `docs/research-engine/<stamp>.md`, commits it, requests review, dispatches `wr-pr-creation.yml`. Genuinely productive. |
-| Doc PR | ✅ runs | `wr-pr-creation.yml` copies a WR template into `wr/issues/issue-N-*.md` (not `docs/`), opens a `[WR]` PR, asks Jules to "make it ship-to-market ready." |
-| Implementation | ⚠️ stub | `openrouter-coder.yml` + `.github/scripts/openrouter_coder.py` is the **only** workflow that writes code with no external app. `jules-coding-agent.yml` is an admitted stub that creates an **empty branch → no PR**. |
-| Delivery | ✅ runs (post-merge) | `ship-to-market.yml` (988 lines) deploys/publishes **already-merged** code (Vercel/Railway/npm/PDF/Docker/marketplace). It assumes implementation already happened. |
+| Stage            | Wired?               | Reality                                                                                                                                                                                                               |
+| ---------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Intake / routing | ✅ runs              | `openrouter-assignee.yml` applies labels + `@oaudrey` + a comment. Labels/comments only — no work.                                                                                                                    |
+| Research         | ✅ runs              | `research-engine.yml` → `scripts/research-engine.js` writes `docs/research-engine/<stamp>.md`, commits it, requests review, dispatches `wr-pr-creation.yml`. Genuinely productive.                                    |
+| Doc PR           | ✅ runs              | `wr-pr-creation.yml` copies a WR template into `wr/issues/issue-N-*.md` (not `docs/`), opens a `[WR]` PR, asks Jules to "make it ship-to-market ready."                                                               |
+| Implementation   | ⚠️ stub              | `openrouter-coder.yml` + `.github/scripts/openrouter_coder.py` is the **only** workflow that writes code with no external app. `jules-coding-agent.yml` is an admitted stub that creates an **empty branch → no PR**. |
+| Delivery         | ✅ runs (post-merge) | `ship-to-market.yml` (988 lines) deploys/publishes **already-merged** code (Vercel/Railway/npm/PDF/Docker/marketplace). It assumes implementation already happened.                                                   |
 
 ---
 
@@ -118,18 +118,18 @@ merge.
 
 ### Finding 5 — Product S2M readiness is thin
 
-| Product | Code | Tests | Deploy/store | Verdict |
-| --- | --- | --- | --- | --- |
-| creator-payout-tracker | ✅ | ✅ | vercel.json | Most complete — only product with code+tests+deploy |
-| revvel-skill-runner | ✅ | ❌ | vercel.json | Real app; "skill execution engine missing" per its own WR |
-| screen-recorder-finder | ✅ | ❌ | vercel.json | Real app, no tests |
-| affiliate-hub | ✅ | ❌ | vercel.json | Real landing app, no tests |
-| ai-video-toolkit | ✅ | ❌ | vercel.json | Real app, no tests |
-| prompt-generation-app | ✅ | ❌ | vercel.json | Modest app + deploy |
-| music-video-creator | ✅ | ❌ | none | Real app, no deploy config |
-| life-insurance-lead-engine | ✅ (in `build/`) | ❌ | stub | Real nested app; outer dirs empty |
-| openmythos | thin | ❌ | none | Scaffold |
-| graphify-evaluator | thin | ❌ | none | Docs-heavy scaffold |
+| Product                    | Code             | Tests | Deploy/store | Verdict                                                   |
+| -------------------------- | ---------------- | ----- | ------------ | --------------------------------------------------------- |
+| creator-payout-tracker     | ✅               | ✅    | vercel.json  | Most complete — only product with code+tests+deploy       |
+| revvel-skill-runner        | ✅               | ❌    | vercel.json  | Real app; "skill execution engine missing" per its own WR |
+| screen-recorder-finder     | ✅               | ❌    | vercel.json  | Real app, no tests                                        |
+| affiliate-hub              | ✅               | ❌    | vercel.json  | Real landing app, no tests                                |
+| ai-video-toolkit           | ✅               | ❌    | vercel.json  | Real app, no tests                                        |
+| prompt-generation-app      | ✅               | ❌    | vercel.json  | Modest app + deploy                                       |
+| music-video-creator        | ✅               | ❌    | none         | Real app, no deploy config                                |
+| life-insurance-lead-engine | ✅ (in `build/`) | ❌    | stub         | Real nested app; outer dirs empty                         |
+| openmythos                 | thin             | ❌    | none         | Scaffold                                                  |
+| graphify-evaluator         | thin             | ❌    | none         | Docs-heavy scaffold                                       |
 
 Only **1/10** has tests. Store deploy (`auto-deploy-to-stores.yml`: Expo EAS /
 Fastlane) exists but is unproven and secret-gated.
@@ -168,7 +168,7 @@ revenue unblock comes first.
 - **4. Fix or quarantine `perplexity-research-issue.js`** and add it to
   `npm test` so breakage can't hide again (Finding 3).
 
-*Outcome:* an opened issue actually produces a researched doc **and** an
+_Outcome:_ an opened issue actually produces a researched doc **and** an
 implementation PR without manual steps.
 
 ### Phase 1 — Make quality trustworthy (1–2 weeks)
@@ -181,7 +181,7 @@ implementation PR without manual steps.
   reviewers actually run on PR (Finding 4).
 - **7.** Backfill tests for the **two products closest to revenue** first.
 
-*Outcome:* the jury you pay for can stop a bad merge; coverage gate is real.
+_Outcome:_ the jury you pay for can stop a bad merge; coverage gate is real.
 
 ### Phase 2 — One engine that truly "does work" (2–4 weeks)
 
@@ -194,7 +194,7 @@ implementation PR without manual steps.
 - **9.** Add per-project artifact generation (skill / runner / MCP / CLI / API) as
   engine sub-commands — the "create all those" capability.
 
-*Outcome:* a request goes intake → research → state → ship with no glue by hand.
+_Outcome:_ a request goes intake → research → state → ship with no glue by hand.
 
 ### Phase 3 — Monetization rails ($10k/mo path)
 

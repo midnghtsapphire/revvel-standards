@@ -7,7 +7,7 @@
 
 A failing test on `main` is a fleet emergency, not background noise. The
 moment the suite is allowed to stay red, every agent and reviewer learns the
-same wrong lesson: *"failures are normal here."* From then on, real
+same wrong lesson: _"failures are normal here."_ From then on, real
 breakage hides inside the noise — reviews approve on top of red, coding
 agents patch the same file blindly, and the gate that exists to catch
 collisions catches nothing.

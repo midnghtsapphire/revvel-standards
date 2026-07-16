@@ -7,9 +7,11 @@
 **Tracks:** OZ-OS-001
 
 ## Deliverable
+
 Single file: `revvel-standards/docs/INTELLIGENCE_LAYER_STANDARD.md`
 
 ## Content Requirements
+
 A formal standard that codifies the intelligence layer methodology for all repos
 in the MIDNGHTSAPPHIRE ecosystem. This is the rulebook entry for Oz OS.
 
@@ -27,11 +29,13 @@ in the MIDNGHTSAPPHIRE ecosystem. This is the rulebook entry for Oz OS.
 10. **Integration with MASTER.md** — reference to steps 5.5–5.8
 
 ### Relationship to Existing Standards
+
 - Extends `PROVENANCE_STANDARD.md` (PR #13975) with research-specific provenance
 - Extends `CODE_REVIEW_STANDARD.md` with agent review requirements
 - Does NOT replace any existing standard — it adds a new layer
 
 ## Acceptance
+
 - File follows the structure of existing standards in `docs/`
 - All 10 sections present
 - No raw tokens or bracket-placeholders

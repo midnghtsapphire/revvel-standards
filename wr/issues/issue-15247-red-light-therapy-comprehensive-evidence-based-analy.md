@@ -10,6 +10,7 @@
 ---
 
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-28770027472.md`
@@ -23,6 +24,7 @@ Source packet: `docs/research-engine/run-28770027472.md`
 The red light therapy (RLT) / photobiomodulation (PBM) market is a high-growth wellness vertical with strong consumer demand, limited open-source tooling, and clear affiliate monetization paths. Lumaflex's clinical evidence blog post (https://www.lumaflex.com/blogs/clinical-trials/red-light-therapy-comprehensive) serves as the content seed and reference anchor. The recommended build is a **web-based Evidence-Based Red Light Therapy Companion Tool** — combining a clinical evidence aggregator, protocol calculator, session tracker, and affiliate comparison engine — positioned to rank for evidence-oriented search queries and convert through device affiliate links.
 
 **Why Build:**
+
 - The RLT device market reached $362.4M in 2024 and is growing at 8.4% CAGR ([Navistrat Analytics](https://navistratanalytics.com/report_store/red-light-therapy-market/))
 - Lumaflex already has a companion app but lacks an independent, evidence-first web tool
 - No dominant open-source or freemium evidence aggregator exists in this space
@@ -34,11 +36,13 @@ The red light therapy (RLT) / photobiomodulation (PBM) market is a high-growth w
 ### Primary Audience: Health-Conscious Consumers Researching RLT
 
 **Profile:**
+
 - Ages 30–55, wellness-aware, pre-purchase research phase
 - Pain points: information overload, hard to separate marketing from science
 - Willingness to pay: $9–29/month for a credible, evidence-backed protocol planner
 
 **Evidence of Demand:**
+
 - Reddit r/redlighttherapy has 45K+ subscribers discussing protocols, devices, and research ([Reddit](https://www.reddit.com/r/redlighttherapy/))
 - "Is red light therapy real" and "red light therapy evidence" show strong search intent signals (estimate: 22K+ monthly searches combined; unverified — needs Semrush confirmation)
 - r/biohacking frequently discusses RLT protocols and dosing ([Reddit r/biohacking](https://www.reddit.com/r/biohacking/))
@@ -46,6 +50,7 @@ The red light therapy (RLT) / photobiomodulation (PBM) market is a high-growth w
 ### Secondary Audience: Practitioners and Wellness Clinics
 
 **Profile:**
+
 - Physical therapists, chiropractors, aestheticians adopting PBM devices
 - Need: quick patient-facing evidence summaries, dosing protocols, outcome tracking
 - Monetization: B2B subscription at $49–149/month per clinic
@@ -59,18 +64,18 @@ The red light therapy (RLT) / photobiomodulation (PBM) market is a high-growth w
 
 ### Primary SEO Keyword Clusters
 
-| Keyword | Volume (est.) | Intent |
-|---------|--------------|--------|
-| red light therapy evidence | 10K–50K/mo | Research |
-| photobiomodulation benefits | 5K–20K/mo | Research |
-| best red light therapy app | 1K–10K/mo | Commercial |
-| red light therapy tracker | 1K–5K/mo | Commercial |
-| red light therapy protocol calculator | 500–2K/mo | Transactional |
-| Lumaflex review | 1K–5K/mo | Commercial |
-| red light therapy for pain evidence | 5K–20K/mo | Research |
-| is red light therapy FDA approved | 5K–20K/mo | Informational |
+| Keyword                               | Volume (est.) | Intent        |
+| ------------------------------------- | ------------- | ------------- |
+| red light therapy evidence            | 10K–50K/mo    | Research      |
+| photobiomodulation benefits           | 5K–20K/mo     | Research      |
+| best red light therapy app            | 1K–10K/mo     | Commercial    |
+| red light therapy tracker             | 1K–5K/mo      | Commercial    |
+| red light therapy protocol calculator | 500–2K/mo     | Transactional |
+| Lumaflex review                       | 1K–5K/mo      | Commercial    |
+| red light therapy for pain evidence   | 5K–20K/mo     | Research      |
+| is red light therapy FDA approved     | 5K–20K/mo     | Informational |
 
-*Volume estimates are unverified — competitive benchmark research required via Semrush/Ahrefs*
+_Volume estimates are unverified — competitive benchmark research required via Semrush/Ahrefs_
 
 ### Content Strategy
 
@@ -97,22 +102,22 @@ The red light therapy (RLT) / photobiomodulation (PBM) market is a high-growth w
 
 ### Direct Competitors (Apps & Web Tools)
 
-| Competitor | Type | Pricing | Features | Gap |
-|------------|------|---------|----------|-----|
-| **Joovv App** | Device companion | Free with $695–$5,995 device | Session tracking, protocols | Closed, Joovv-only |
-| **Lumaflex App** | Device companion | Free with $399–$689 device | Session tracking, coaching, gamification ([Google Play](https://play.google.com/store/apps/details?id=com.nooancehelmet.lumaflex&hl=en-US)) | Lumaflex-only, no evidence database |
-| **Celluma Control App** | Clinical device companion | Included with $1,895+ device | Treatment logging, FDA-cleared protocols | Clinical only, very expensive |
-| **RedTimer** | Basic iOS/Android timer | Free | Timer only | No evidence, no tracking |
-| **Vielight App** | Wearable companion | Free with $700+ device | Neural PBM protocols | Device-specific |
-| **LumiTrack** (none found) | — | — | — | Opportunity: independent tracker |
+| Competitor                 | Type                      | Pricing                      | Features                                                                                                                                    | Gap                                 |
+| -------------------------- | ------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| **Joovv App**              | Device companion          | Free with $695–$5,995 device | Session tracking, protocols                                                                                                                 | Closed, Joovv-only                  |
+| **Lumaflex App**           | Device companion          | Free with $399–$689 device   | Session tracking, coaching, gamification ([Google Play](https://play.google.com/store/apps/details?id=com.nooancehelmet.lumaflex&hl=en-US)) | Lumaflex-only, no evidence database |
+| **Celluma Control App**    | Clinical device companion | Included with $1,895+ device | Treatment logging, FDA-cleared protocols                                                                                                    | Clinical only, very expensive       |
+| **RedTimer**               | Basic iOS/Android timer   | Free                         | Timer only                                                                                                                                  | No evidence, no tracking            |
+| **Vielight App**           | Wearable companion        | Free with $700+ device       | Neural PBM protocols                                                                                                                        | Device-specific                     |
+| **LumiTrack** (none found) | —                         | —                            | —                                                                                                                                           | Opportunity: independent tracker    |
 
-*Pricing data confirmed for Lumaflex; others may require verification*
+_Pricing data confirmed for Lumaflex; others may require verification_
 
 ### Open-Source Landscape
 
-| Repository | Stars | Status | Notes |
-|------------|-------|--------|-------|
-| No dominant OSS RLT app found | — | — | Clear gap for open/freemium tool |
+| Repository                    | Stars | Status | Notes                            |
+| ----------------------------- | ----- | ------ | -------------------------------- |
+| No dominant OSS RLT app found | —     | —      | Clear gap for open/freemium tool |
 
 **Key Finding:** No independent, device-agnostic, evidence-first red light therapy tool exists. All apps are manufacturer-locked. This is the primary competitive moat opportunity.
 
@@ -135,6 +140,7 @@ The red light therapy (RLT) / photobiomodulation (PBM) market is a high-growth w
 ### Product Opportunity
 
 A device-agnostic, evidence-first tool that:
+
 - Aggregates and summarizes clinical evidence by condition
 - Provides dosing/protocol calculators based on published research
 - Tracks sessions and correlates with user-reported outcomes
@@ -162,6 +168,7 @@ A device-agnostic, evidence-first tool that:
 ### MVP Feature Set
 
 **Phase 1 (4–6 weeks): Evidence Web Tool**
+
 - [ ] Clinical evidence database (conditions → PubMed-linked studies)
 - [ ] Protocol calculator (condition + body area → wavelength + duration + frequency)
 - [ ] Device comparison table with affiliate links (Lumaflex, Joovv, Mito Red Light, PlatinumLED)
@@ -169,6 +176,7 @@ A device-agnostic, evidence-first tool that:
 - [ ] SEO landing pages for top 10 conditions
 
 **Phase 2 (6–10 weeks): App / Monetization Layer**
+
 - [ ] User accounts with session history
 - [ ] Progress charts (outcomes over time)
 - [ ] Email digest / weekly research newsletter
@@ -176,6 +184,7 @@ A device-agnostic, evidence-first tool that:
 - [ ] Affiliate link integration and click tracking
 
 **Phase 3 (10–16 weeks): Community / Practitioner Tier**
+
 - [ ] Practitioner dashboard (B2B $49–149/month)
 - [ ] Patient-facing evidence summaries (exportable)
 - [ ] Community Q&A / protocol sharing
@@ -183,16 +192,19 @@ A device-agnostic, evidence-first tool that:
 ### Acceptance Gates
 
 **Gate 1: Evidence Database Live**
+
 - 50+ condition-study pairs sourced from PubMed
 - Protocol calculator returns valid recommendations for at least 10 conditions
 - All citations are direct PubMed links
 
 **Gate 2: Session Tracker + Affiliate Links**
+
 - Session logging functional (date, duration, area, outcome score)
 - Device comparison table with at least 5 devices and verified affiliate links
 - Freemium gate in place
 
 **Gate 3: SEO Launch**
+
 - 10 SEO-optimized condition pages indexed
 - Core Web Vitals passing
 - Email capture + first 100 subscribers
@@ -209,6 +221,7 @@ A device-agnostic, evidence-first tool that:
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 CONTEXT: Evidence-based red light therapy web app (Next.js, Postgres, Stripe)
 FOCUS AREAS:
@@ -224,6 +237,7 @@ CRITICAL PATHS TO REVIEW:
 ```
 
 ### For OpenRouter Review
+
 ```
 REVIEW PRIORITY: HIGH — monetizable product
 FOCUS:
@@ -236,7 +250,9 @@ FOCUS:
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Create Product Scaffold
+
 **Path:** `products/rlt-evidence-tool/`
+
 ```
 products/rlt-evidence-tool/
 ├── app/
@@ -254,9 +270,11 @@ products/rlt-evidence-tool/
 ├── next.config.js
 └── .env.example
 ```
+
 **Commit Message:** `feat: scaffold rlt-evidence-tool product`
 
 ### Fix 2: Add to Port Table in AGENTS.md
+
 **File:** `docs/AGENTS.md`
 **Change:** Add `| RLT Evidence Tool | products/rlt-evidence-tool | 3007 | Next.js. Evidence-based RLT companion tool with affiliate monetization. |`
 **Commit Message:** `docs: register rlt-evidence-tool port 3007 in AGENTS.md`
@@ -264,16 +282,19 @@ products/rlt-evidence-tool/
 ## 10. Labels to Apply
 
 ### Immediate
+
 - `work-request` — this is a confirmed WR
 - `deliver:app` — building a web app
 - `deliver:web` — web-first delivery
 - `research:complete` — research phase done
 
 ### Revenue
+
 - `priority-p1` — high-revenue potential, clear path to $1K+/month from affiliate alone
 - `affiliate-opportunity` — Lumaflex + Joovv + Mito Red Light affiliate programs
 
 ### Domain
+
 - `health-tech` — health/wellness domain
 - `evidence-based` — evidence-first positioning
 
@@ -294,6 +315,7 @@ Build an evidence-based red light therapy companion web tool + app. The tool agg
 Reference: https://www.lumaflex.com/blogs/clinical-trials/red-light-therapy-comprehensive
 
 Create a device-agnostic, evidence-first red light therapy tool that:
+
 1. Aggregates and summarizes peer-reviewed clinical evidence by condition
 2. Provides dosing/protocol calculators based on published research
 3. Tracks sessions and correlates with user-reported outcomes
@@ -328,12 +350,12 @@ Create a device-agnostic, evidence-first red light therapy tool that:
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
@@ -372,15 +394,15 @@ The global red light therapy device market reached approximately **$362.4 millio
 
 ### Competitive Intelligence
 
-| Competitor | Type | Pricing | Gap |
-|------------|------|---------|-----|
-| Lumaflex App | Device companion | Free with $399–$689 device ([Lumaflex](https://www.lumaflex.com/)) | Lumaflex-only, no evidence aggregation |
-| Joovv App | Device companion | Free with $695–$5,995 device | Joovv-only, no independent evidence |
-| Celluma Control | Clinical companion | Included with $1,895+ device | Clinical-only, very expensive |
-| RedTimer | Basic timer | Free | Timer only, no evidence, no tracking |
-| Vielight App | Wearable companion | Free with $700+ device | Device-specific |
+| Competitor      | Type               | Pricing                                                            | Gap                                    |
+| --------------- | ------------------ | ------------------------------------------------------------------ | -------------------------------------- |
+| Lumaflex App    | Device companion   | Free with $399–$689 device ([Lumaflex](https://www.lumaflex.com/)) | Lumaflex-only, no evidence aggregation |
+| Joovv App       | Device companion   | Free with $695–$5,995 device                                       | Joovv-only, no independent evidence    |
+| Celluma Control | Clinical companion | Included with $1,895+ device                                       | Clinical-only, very expensive          |
+| RedTimer        | Basic timer        | Free                                                               | Timer only, no evidence, no tracking   |
+| Vielight App    | Wearable companion | Free with $700+ device                                             | Device-specific                        |
 
-*No independent, device-agnostic, evidence-first RLT tool currently exists — confirmed gap*
+_No independent, device-agnostic, evidence-first RLT tool currently exists — confirmed gap_
 
 ### SEO Keywords
 
@@ -412,18 +434,21 @@ The global red light therapy device market reached approximately **$362.4 millio
 ## Recommendations
 
 ### Immediate Actions (Week 1)
+
 1. Scaffold `products/rlt-evidence-tool/` as a Next.js app (port 3007)
 2. Register port in `docs/AGENTS.md` port table
 3. Create evidence database schema (condition, study_title, pubmed_url, wavelength_nm, dose_j_cm2, outcome, year)
 4. Seed with 20 high-evidence conditions from Lumaflex's clinical blog and PubMed
 
 ### Short-Term (Weeks 2–4)
+
 1. Launch protocol calculator with 10 conditions
 2. Build device comparison table with affiliate links
 3. Publish 5 SEO condition pages
 4. Connect Stripe for Pro subscription
 
 ### Long-Term (Months 2–3)
+
 1. Session tracker with outcome charts
 2. Email newsletter (weekly RLT research digest)
 3. B2B practitioner plan
@@ -431,20 +456,20 @@ The global red light therapy device market reached approximately **$362.4 millio
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 No blocking dependencies — this is a greenfield product.
 
 ## Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| Affiliate programs reject application | Low | Medium | Apply to multiple programs (Joovv, Mito, PlatinumLED as fallbacks) |
-| Clinical evidence claims attract regulatory scrutiny | Medium | High | Add clear disclaimer: "For informational purposes only; not medical advice" |
-| SEO competition from established health sites | High | Medium | Focus on evidence-first niche content; avoid broad health keywords |
-| Lumaflex app already covers same use case | Low | Low | We build device-agnostic tool; Lumaflex is locked to their hardware |
-| Search volumes lower than estimated | Medium | Medium | Validate with Semrush before full SEO investment; pivot to affiliate-first if needed |
+| Risk                                                 | Likelihood | Impact | Mitigation                                                                           |
+| ---------------------------------------------------- | ---------- | ------ | ------------------------------------------------------------------------------------ |
+| Affiliate programs reject application                | Low        | Medium | Apply to multiple programs (Joovv, Mito, PlatinumLED as fallbacks)                   |
+| Clinical evidence claims attract regulatory scrutiny | Medium     | High   | Add clear disclaimer: "For informational purposes only; not medical advice"          |
+| SEO competition from established health sites        | High       | Medium | Focus on evidence-first niche content; avoid broad health keywords                   |
+| Lumaflex app already covers same use case            | Low        | Low    | We build device-agnostic tool; Lumaflex is locked to their hardware                  |
+| Search volumes lower than estimated                  | Medium     | Medium | Validate with Semrush before full SEO investment; pivot to affiliate-first if needed |

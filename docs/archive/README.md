@@ -5,7 +5,7 @@ that used to clutter the repository root. They're kept for history and provenanc
 but are **not active docs** — don't link to them from current documentation, and
 don't treat them as the source of truth for how anything works today.
 
-If you need the *current* state of something, start from
+If you need the _current_ state of something, start from
 [`README.md`](../../README.md), [`AGENTS.md`](../../AGENTS.md), or the relevant
 standard under [`docs/`](../).
 

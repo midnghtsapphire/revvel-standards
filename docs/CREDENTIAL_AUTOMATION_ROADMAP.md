@@ -15,14 +15,14 @@ order to fill in the gaps.
 
 ## What's already wired (the easy half — restore + persist)
 
-| Layer | What it does | File |
-| --- | --- | --- |
-| **Sentinel** | Audits 5 critical secrets daily, files one tracked issue when something's missing (dedup by title — fix in #13948). | `secrets-sentinel.yml` |
-| **Secret Persistence Guard** | Hourly; alerts when secrets *disappear* from the repo. | `secret-persistence-guard.yml` |
-| **Credential Backup Harness** | Restores secrets from any of 8 sources (Doppler, JSON, SOPS, pass, Bitwarden, 1Password, Infisical, Vault). | `scripts/credential-backup-harness.js` |
-| **Gatekeeper Sync** | Pulls from a source and `gh secret set`s back into the repo. | `scripts/gatekeeper-sync.sh` |
+| Layer                         | What it does                                                                                                        | File                                   |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| **Sentinel**                  | Audits 5 critical secrets daily, files one tracked issue when something's missing (dedup by title — fix in #13948). | `secrets-sentinel.yml`                 |
+| **Secret Persistence Guard**  | Hourly; alerts when secrets _disappear_ from the repo.                                                              | `secret-persistence-guard.yml`         |
+| **Credential Backup Harness** | Restores secrets from any of 8 sources (Doppler, JSON, SOPS, pass, Bitwarden, 1Password, Infisical, Vault).         | `scripts/credential-backup-harness.js` |
+| **Gatekeeper Sync**           | Pulls from a source and `gh secret set`s back into the repo.                                                        | `scripts/gatekeeper-sync.sh`           |
 
-**Net:** once a secret exists *somewhere we own* (Doppler, JSON, 1Password,
+**Net:** once a secret exists _somewhere we own_ (Doppler, JSON, 1Password,
 etc.), the pipeline can keep it in GitHub secrets indefinitely. That's the
 "backup → persistence → auto-restore" half.
 
@@ -30,16 +30,16 @@ etc.), the pipeline can keep it in GitHub secrets indefinitely. That's the
 
 ## What's still manual (the hard half — auto-generate from a provider)
 
-| Step | Today | What Manus-style would do |
-| --- | --- | --- |
-| 1. Provider account exists | Manual | Same — accounts are still human-created |
-| 2. Generate a new API key | **Manual** (UI click on the provider's site) | Pipeline calls the provider's *admin/OAuth* endpoint to mint a new key |
-| 3. Store key in a backup source | Manual | Pipeline writes to Doppler / `CREDENTIAL_BACKUP_JSON` |
-| 4. Sync to GitHub secret | ✅ auto (gatekeeper-sync) | Same |
-| 5. Rotate on expiry | Manual reminder | Pipeline detects expiry → repeats steps 2–4 |
+| Step                            | Today                                        | What Manus-style would do                                              |
+| ------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------- |
+| 1. Provider account exists      | Manual                                       | Same — accounts are still human-created                                |
+| 2. Generate a new API key       | **Manual** (UI click on the provider's site) | Pipeline calls the provider's _admin/OAuth_ endpoint to mint a new key |
+| 3. Store key in a backup source | Manual                                       | Pipeline writes to Doppler / `CREDENTIAL_BACKUP_JSON`                  |
+| 4. Sync to GitHub secret        | ✅ auto (gatekeeper-sync)                    | Same                                                                   |
+| 5. Rotate on expiry             | Manual reminder                              | Pipeline detects expiry → repeats steps 2–4                            |
 
 **The blocker:** step 2 needs the provider's admin API to mint keys, and
-authenticating to *that* needs a higher-tier credential (an OAuth admin token).
+authenticating to _that_ needs a higher-tier credential (an OAuth admin token).
 Chicken-and-egg until the first admin token is set up.
 
 ---
@@ -47,7 +47,9 @@ Chicken-and-egg until the first admin token is set up.
 ## Phased plan
 
 ### Phase 1 — Make manual key insertion 1-step (DOABLE NOW)
+
 Today when you generate a key from a provider, you:
+
 1. Copy it.
 2. Open repo settings → secrets → new secret → name + paste → save.
 
@@ -62,6 +64,7 @@ Build `scripts/secret-set.sh` that wraps `gh secret set` + writes to
 Tiny effort, big QoL win, no new permissions needed.
 
 ### Phase 2 — Per-provider mint adapters (one provider at a time)
+
 For each SaaS where we want auto-mint, add a small adapter that calls that
 provider's "create API key" endpoint and stores the result. Start with the
 providers where this is documented and we already have admin auth:
@@ -78,7 +81,9 @@ documented in `engines/CONTRACT.md`.
 (Jules, OpenRouter, Keploy, Mabl — these are manual-only at the provider end).
 
 ### Phase 3 — Watchdog ties it all together
+
 A scheduled workflow that:
+
 1. Reads `docs/TOOL_COST_INDEX.md` to know which providers we use.
 2. For each, checks if the secret is present + valid (calling the provider's
    "whoami" endpoint).
@@ -106,8 +111,9 @@ A scheduled workflow that:
 
 ## What this serves (the enterprise pitch angle)
 
-Same as `docs/API_LIMIT_AUTO_UPGRADE.md`: a buyer asks *"how do you manage
-credentials at scale?"* and you point at:
+Same as `docs/API_LIMIT_AUTO_UPGRADE.md`: a buyer asks _"how do you manage
+credentials at scale?"_ and you point at:
+
 - This roadmap (the phased plan + hard rules)
 - `docs/UPGRADE_LOG.md` (the audit trail)
 - `docs/TOOL_COST_INDEX.md` (the inventory)

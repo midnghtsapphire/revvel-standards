@@ -6,21 +6,21 @@ Automated pipeline that reads **Amazon Vine** and paid order emails (or **order 
 
 ## Features
 
-| Feature | Detail |
-|---|---|
-| 📬 Email ingestion | IMAP reader pulls Amazon shipped/delivered/Vine emails |
-| 📄 CSV import | Amazon order history CSV → same product records as email parse |
-| 🔗 Product links | ASIN → `https://www.amazon.com/dp/{ASIN}` (owner does not upload photos) |
-| 🖼 Image enrich | Prefer email CDN image; optional fetch of product-page gallery |
-| ▶ One-at-a-time | `GET /api/queue/next` for sequential review |
-| 📋 Listing pack | Title, description, 3–5 images, price — human posts to Marketplace |
-| 🔍 Smart parsing | Extracts product name, ASIN, price paid, Vine FMV, images |
-| 💲 Auto-pricing | 20% off cost basis; Vine items use 1099 FMV as cost |
-| 🚀 FB Marketplace | Optional Meta Graph API (Page Post or Commerce Catalog) |
-| 📦 Inventory tracking | JSON file tracks all products, listing status, sold status |
-| 🔄 Repost scheduler | Auto-refreshes stale listings after N days |
-| 📊 Dashboard UI | Glassmorphism dark UI — CSV upload, queue, date range, mark sold |
-| ⏰ Cron automation | Runs silently 3× daily; repost check every Monday |
+| Feature               | Detail                                                                   |
+| --------------------- | ------------------------------------------------------------------------ |
+| 📬 Email ingestion    | IMAP reader pulls Amazon shipped/delivered/Vine emails                   |
+| 📄 CSV import         | Amazon order history CSV → same product records as email parse           |
+| 🔗 Product links      | ASIN → `https://www.amazon.com/dp/{ASIN}` (owner does not upload photos) |
+| 🖼 Image enrich        | Prefer email CDN image; optional fetch of product-page gallery           |
+| ▶ One-at-a-time       | `GET /api/queue/next` for sequential review                              |
+| 📋 Listing pack       | Title, description, 3–5 images, price — human posts to Marketplace       |
+| 🔍 Smart parsing      | Extracts product name, ASIN, price paid, Vine FMV, images                |
+| 💲 Auto-pricing       | 20% off cost basis; Vine items use 1099 FMV as cost                      |
+| 🚀 FB Marketplace     | Optional Meta Graph API (Page Post or Commerce Catalog)                  |
+| 📦 Inventory tracking | JSON file tracks all products, listing status, sold status               |
+| 🔄 Repost scheduler   | Auto-refreshes stale listings after N days                               |
+| 📊 Dashboard UI       | Glassmorphism dark UI — CSV upload, queue, date range, mark sold         |
+| ⏰ Cron automation    | Runs silently 3× daily; repost check every Monday                        |
 
 ---
 
@@ -98,10 +98,10 @@ npm start
 
 Open **http://localhost:3030**
 
-1. **Import CSV** (your Order History.csv)  
-2. **Next product**  
-3. **Generate 3 lifestyle images → save pack**  
-4. Watch the **step list** (parse → link → reference → lifestyle 1/3… → save)  
+1. **Import CSV** (your Order History.csv)
+2. **Next product**
+3. **Generate 3 lifestyle images → save pack**
+4. Watch the **step list** (parse → link → reference → lifestyle 1/3… → save)
 5. Files appear under:
 
 ```text
@@ -123,8 +123,6 @@ Without `OPENROUTER_API_KEY`, the job still saves **listing.txt** and shows the 
 Root directory for deploy: `reesereviews/vine-marketplace`  
 Entry: `api/index.js` + `vercel.json`. Inventory on serverless uses `/tmp` (ephemeral).  
 **Lifestyle packs need a long-running local server** (Path A above) so images write to your Documents folder.
-
-
 
 ---
 
@@ -164,11 +162,11 @@ Entry: `api/index.js` + `vercel.json`. Inventory on serverless uses `/tmp` (ephe
 
 ## Pricing Logic
 
-| Order type | Cost basis | Listing price |
-|---|---|---|
-| Paid order | `paidPrice` | `paidPrice × (1 − 0.20)` |
-| Vine (free) | `vineTaxValue` (IRS 1099 FMV) | `vineTaxValue × (1 − 0.20)` |
-| Vine (FMV not yet set) | `$0` | `$1.00` (minimum) |
+| Order type             | Cost basis                    | Listing price               |
+| ---------------------- | ----------------------------- | --------------------------- |
+| Paid order             | `paidPrice`                   | `paidPrice × (1 − 0.20)`    |
+| Vine (free)            | `vineTaxValue` (IRS 1099 FMV) | `vineTaxValue × (1 − 0.20)` |
+| Vine (FMV not yet set) | `$0`                          | `$1.00` (minimum)           |
 
 The discount rate (default 20%) is configurable via `LISTING_DISCOUNT_RATE` in `.env`.
 
@@ -189,17 +187,18 @@ All product data is stored in `data/inventory.json`. Fields tracked per product:
 ## GitHub Actions (Automated)
 
 The workflow `.github/workflows/vine-to-marketplace.yml` runs:
+
 - **Daily at 8am UTC** — fetch emails and post new products
 - **Monday 10am UTC** — repost stale listings
 
 Required repository secrets (Settings → Secrets → Actions):
 
-| Secret | Value |
-|---|---|
-| `GMAIL_APP_PASSWORD` | 16-char Gmail App Password |
-| `META_PAGE_ACCESS_TOKEN` | Facebook Page Access Token |
-| `META_PAGE_ID` | Facebook Page numeric ID |
-| `META_CATALOG_ID` | (optional) Commerce catalog ID |
+| Secret                   | Value                          |
+| ------------------------ | ------------------------------ |
+| `GMAIL_APP_PASSWORD`     | 16-char Gmail App Password     |
+| `META_PAGE_ACCESS_TOKEN` | Facebook Page Access Token     |
+| `META_PAGE_ID`           | Facebook Page numeric ID       |
+| `META_CATALOG_ID`        | (optional) Commerce catalog ID |
 
 ---
 

@@ -1,4 +1,5 @@
 # MindMappr Persona Chat: Feature Specification
+
 # Lovable Build Spec — v1.0
 
 **Prepared for:** Revvel / MIDNGHTSAPPHIRE
@@ -392,42 +393,42 @@ The following personas will be included out-of-the-box. Each is defined by a ful
 **Patent Attorney Advisor** — `category: professional`
 This persona provides guidance on patent law, intellectual property strategy, and the patent application process. It is designed for inventors and entrepreneurs who need to understand their IP options without paying $500/hour for a consultation. The persona is knowledgeable, precise, and always reminds the user that it is not a licensed attorney and that formal filings require professional legal counsel.
 
-*Recommended model:* Gemini 2.5 Flash (strong legal reasoning, accurate citations)
-*Voice category:* Authoritative, measured, professional
+_Recommended model:_ Gemini 2.5 Flash (strong legal reasoning, accurate citations)
+_Voice category:_ Authoritative, measured, professional
 
 **Skincare Formulation Chemist** — `category: professional`
 This persona has deep knowledge of cosmetic chemistry, ingredient interactions, regulatory requirements (FDA, EU Cosmetics Regulation), and formulation best practices. It is designed for entrepreneurs developing skincare products who need technical guidance on ingredients, stability, and safety. It always recommends professional lab testing before commercialization.
 
-*Recommended model:* Gemini 2.5 Flash (strong scientific knowledge)
-*Voice category:* Warm, precise, scientific
+_Recommended model:_ Gemini 2.5 Flash (strong scientific knowledge)
+_Voice category:_ Warm, precise, scientific
 
 **Marketing Strategist** — `category: professional`
 This persona is a senior growth marketing strategist with expertise in digital marketing, brand positioning, content strategy, and customer acquisition. It helps users develop marketing plans, write copy, analyze competitors, and identify growth opportunities. It asks probing questions to understand the user's specific business context before offering recommendations.
 
-*Recommended model:* DeepSeek V3.2 (strong creative and strategic thinking)
-*Voice category:* Energetic, confident, direct
+_Recommended model:_ DeepSeek V3.2 (strong creative and strategic thinking)
+_Voice category:_ Energetic, confident, direct
 
 **Business Coach** — `category: professional`
 This persona is an experienced entrepreneur and business mentor who helps users think through business challenges, set goals, and develop action plans. It uses a coaching approach — asking questions rather than giving answers — to help users discover their own solutions. It is warm, direct, and holds the user accountable.
 
-*Recommended model:* DeepSeek V3.2 (strong conversational and coaching style)
-*Voice category:* Warm, encouraging, grounded
+_Recommended model:_ DeepSeek V3.2 (strong conversational and coaching style)
+_Voice category:_ Warm, encouraging, grounded
 
 ### Educational and Support Personas
 
 **Homework Helper** — `category: teen-safe`
 This persona is a patient, encouraging tutor designed for students in middle and high school. It never just gives answers — it walks the student through the reasoning process, asks guiding questions, and celebrates progress. It covers all core subjects: math, science, English, history, and more. Safety mode is enabled by default.
 
-*Recommended model:* Gemini 2.5 Flash (strong academic performance, low cost)
-*Voice category:* Friendly, patient, upbeat
-*Safety mode:* Teen-Safe (always on, cannot be disabled for this persona)
+_Recommended model:_ Gemini 2.5 Flash (strong academic performance, low cost)
+_Voice category:_ Friendly, patient, upbeat
+_Safety mode:_ Teen-Safe (always on, cannot be disabled for this persona)
 
 **Emotional Support Companion** — `category: teen-safe`
 This persona is a non-judgmental, empathetic companion designed for users who want to talk through their feelings. It validates emotions, asks open-ended questions, and never minimizes or dismisses what the user is experiencing. It is explicitly not a therapist and always gently encourages professional support when the conversation involves serious distress. Crisis resources are surfaced automatically when self-harm language is detected.
 
-*Recommended model:* DeepSeek V3.2 (strong empathetic conversational ability)
-*Voice category:* Warm, gentle, calm
-*Safety mode:* Teen-Safe (always on, cannot be disabled for this persona)
+_Recommended model:_ DeepSeek V3.2 (strong empathetic conversational ability)
+_Voice category:_ Warm, gentle, calm
+_Safety mode:_ Teen-Safe (always on, cannot be disabled for this persona)
 
 ### Fun Personas for the Daughter
 
@@ -436,20 +437,20 @@ These personas are designed to be age-appropriate, engaging, and genuinely fun f
 **Creative Storyteller** — `category: teen-safe`
 A collaborative fiction partner who loves building stories together. The user and the persona co-create characters, plot twists, and worlds. The persona is imaginative, enthusiastic, and always asks "what happens next?" It can write in any genre — fantasy, sci-fi, mystery, romance — and adapts to the user's preferred style.
 
-*Recommended model:* DeepSeek V3.2 (excellent creative writing)
-*Voice category:* Expressive, theatrical, playful
+_Recommended model:_ DeepSeek V3.2 (excellent creative writing)
+_Voice category:_ Expressive, theatrical, playful
 
 **Debate Partner** — `category: teen-safe`
 A friendly sparring partner for intellectual debates. The user picks a topic, and the persona argues the opposite side — not to win, but to help the user strengthen their own thinking. It is respectful, curious, and always acknowledges good points. After the debate, it summarizes both sides fairly.
 
-*Recommended model:* Grok 4.1 Fast (strong reasoning, fast responses)
-*Voice category:* Confident, curious, fair
+_Recommended model:_ Grok 4.1 Fast (strong reasoning, fast responses)
+_Voice category:_ Confident, curious, fair
 
 **Supportive Companion** — `category: teen-safe`
 An older sibling-like figure who is always in the user's corner. This persona listens without judgment, offers perspective without lecturing, and knows when to be serious and when to be silly. It remembers things the user has shared in previous conversations and checks in on them. It is the persona equivalent of a trusted friend who happens to be available 24/7.
 
-*Recommended model:* DeepSeek V3.2 (strong empathetic and conversational ability)
-*Voice category:* Warm, casual, genuine
+_Recommended model:_ DeepSeek V3.2 (strong empathetic and conversational ability)
+_Voice category:_ Warm, casual, genuine
 
 ---
 
@@ -475,12 +476,12 @@ The teen safety system is designed in layers, with each layer providing independ
 
 The following table summarizes the recommended model routing for each persona category:
 
-| Persona Category | Primary Model | Fallback Model | Rationale |
-|---|---|---|---|
-| Creative / Social | DeepSeek V3.2 | Grok 4.1 Fast | Best creative writing and roleplay at low cost |
-| Professional / Technical | Gemini 2.5 Flash | Claude 3.5 Sonnet | Strong reasoning and factual accuracy |
-| Educational | Gemini 2.5 Flash | Gemini 2.5 Pro | Strong academic performance, escalate for hard problems |
-| Teen-Safe (all) | DeepSeek V3.2 | Gemini 2.5 Flash | Strong conversational ability, low cost for high-volume teen use |
+| Persona Category         | Primary Model    | Fallback Model    | Rationale                                                        |
+| ------------------------ | ---------------- | ----------------- | ---------------------------------------------------------------- |
+| Creative / Social        | DeepSeek V3.2    | Grok 4.1 Fast     | Best creative writing and roleplay at low cost                   |
+| Professional / Technical | Gemini 2.5 Flash | Claude 3.5 Sonnet | Strong reasoning and factual accuracy                            |
+| Educational              | Gemini 2.5 Flash | Gemini 2.5 Pro    | Strong academic performance, escalate for hard problems          |
+| Teen-Safe (all)          | DeepSeek V3.2    | Gemini 2.5 Flash  | Strong conversational ability, low cost for high-volume teen use |
 
 Users can override the recommended model for any persona in the Model Selector. The system always displays the current model and estimated cost per conversation in the chat header.
 

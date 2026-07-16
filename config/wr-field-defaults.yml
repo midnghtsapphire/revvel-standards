@@ -94,7 +94,15 @@ fields:
   - heading: "Commercial Mode"
     kind: dropdown
     required: false
-    allowed: [digital-product, saas-app, api-usage, license, client-billable, internal-only]
+    allowed:
+      [
+        digital-product,
+        saas-app,
+        api-usage,
+        license,
+        client-billable,
+        internal-only,
+      ]
     default_by: output_type
     depends_on: Output Type (required)
     defaults:
@@ -247,5 +255,5 @@ fields:
       - "After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue."
     default_by: always
     defaults:
-      "*": "all"   # tick every acknowledgement box
+      "*": "all" # tick every acknowledgement box
     fallback: all

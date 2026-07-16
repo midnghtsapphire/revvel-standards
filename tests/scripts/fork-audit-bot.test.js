@@ -5,12 +5,12 @@
 // Keeps to the same style as tests/scripts/check-compliance.test.js:
 // plain `assert`, no framework dependency.
 
-'use strict';
+"use strict";
 
-const assert = require('assert');
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+const assert = require("assert");
+const path = require("path");
+const fs = require("fs");
+const os = require("os");
 
 // Prevent main() from executing when required.
 const originalMain = require.main;
@@ -23,7 +23,7 @@ const {
   loadConfig,
   ROUTING_LABELS,
   MIRROR_LABELS,
-} = require('../../scripts/fork-audit-bot.js');
+} = require("../../scripts/fork-audit-bot.js");
 require.main = originalMain;
 
 let passed = 0;
@@ -41,51 +41,51 @@ function test(name, fn) {
 
 // ─── scoreRepo ───────────────────────────────────────────────
 
-test('scoreRepo throws on invalid repo', () => {
+test("scoreRepo throws on invalid repo", () => {
   assert.throws(() => scoreRepo(null, {}), /repo must be an object/);
-  assert.throws(() => scoreRepo('not-an-object', {}), /repo must be an object/);
+  assert.throws(() => scoreRepo("not-an-object", {}), /repo must be an object/);
 });
 
-test('scoreRepo returns clamped total between 0 and 100', () => {
+test("scoreRepo returns clamped total between 0 and 100", () => {
   // Absurdly large repo — still must clamp.
   const repo = {
     stargazers_count: 1e9,
     forks_count: 1e9,
     open_issues_count: 0,
-    license: { spdx_id: 'MIT' },
+    license: { spdx_id: "MIT" },
     pushed_at: new Date().toISOString(),
-    topics: ['secrets', 'vault', 'dx'],
-    description: 'secrets vault dx',
+    topics: ["secrets", "vault", "dx"],
+    description: "secrets vault dx",
   };
-  const r = scoreRepo(repo, { strategic_value: 10, goal_tags: ['secrets'] });
+  const r = scoreRepo(repo, { strategic_value: 10, goal_tags: ["secrets"] });
   assert.ok(r.total <= 100, `total ${r.total} must be <= 100`);
   assert.ok(r.total >= 0, `total ${r.total} must be >= 0`);
-  assert.strictEqual(r.band, 'A — upstream PR');
+  assert.strictEqual(r.band, "A — upstream PR");
 });
 
-test('scoreRepo applies archived penalty', () => {
+test("scoreRepo applies archived penalty", () => {
   const base = {
     stargazers_count: 500,
     forks_count: 100,
     open_issues_count: 5,
-    license: { spdx_id: 'MIT' },
+    license: { spdx_id: "MIT" },
     pushed_at: new Date().toISOString(),
   };
   const live = scoreRepo(base, { strategic_value: 5 });
   const archived = scoreRepo(Object.assign({}, base, { archived: true }), {
     strategic_value: 5,
   });
-  assert.ok(archived.total < live.total, 'archived repo should score lower');
+  assert.ok(archived.total < live.total, "archived repo should score lower");
   assert.strictEqual(archived.breakdown.archivedPenalty, -25);
 });
 
-test('scoreRepo treats NOASSERTION as unlicensed', () => {
+test("scoreRepo treats NOASSERTION as unlicensed", () => {
   const r = scoreRepo(
     {
       stargazers_count: 100,
       forks_count: 10,
       open_issues_count: 1,
-      license: { spdx_id: 'NOASSERTION' },
+      license: { spdx_id: "NOASSERTION" },
       pushed_at: new Date().toISOString(),
     },
     { strategic_value: 3 },
@@ -93,114 +93,122 @@ test('scoreRepo treats NOASSERTION as unlicensed', () => {
   assert.strictEqual(r.breakdown.license, 0);
 });
 
-test('scoreRepo handles missing fields gracefully', () => {
+test("scoreRepo handles missing fields gracefully", () => {
   const r = scoreRepo({}, {});
   assert.strictEqual(Number.isFinite(r.total), true);
   assert.ok(r.total >= 0 && r.total <= 100);
-  assert.ok(typeof r.band === 'string' && r.band.length > 0);
+  assert.ok(typeof r.band === "string" && r.band.length > 0);
 });
 
-test('scoreRepo band thresholds', () => {
+test("scoreRepo band thresholds", () => {
   // Force a low-score repo: old, unlicensed, zero strategic.
   const low = scoreRepo(
     {
       stargazers_count: 1,
       forks_count: 0,
       open_issues_count: 200,
-      pushed_at: '2018-01-01T00:00:00Z',
+      pushed_at: "2018-01-01T00:00:00Z",
     },
     { strategic_value: 0 },
   );
   assert.ok(
-    low.band === 'D — skip' || low.band === 'C — mirror issue only',
+    low.band === "D — skip" || low.band === "C — mirror issue only",
     `unexpected band ${low.band}`,
   );
 });
 
 // ─── recencyScore ────────────────────────────────────────────
 
-test('recencyScore — recent push scores 15', () => {
+test("recencyScore — recent push scores 15", () => {
   assert.strictEqual(recencyScore(new Date().toISOString()), 15);
 });
 
-test('recencyScore — missing / invalid returns 0', () => {
+test("recencyScore — missing / invalid returns 0", () => {
   assert.strictEqual(recencyScore(undefined), 0);
-  assert.strictEqual(recencyScore('not-a-date'), 0);
+  assert.strictEqual(recencyScore("not-a-date"), 0);
 });
 
-test('recencyScore — old push returns 0', () => {
-  assert.strictEqual(recencyScore('2010-01-01T00:00:00Z'), 0);
+test("recencyScore — old push returns 0", () => {
+  assert.strictEqual(recencyScore("2010-01-01T00:00:00Z"), 0);
 });
 
 // ─── goalTagAlignmentBonus ───────────────────────────────────
 
-test('goalTagAlignmentBonus — no tags = 0', () => {
+test("goalTagAlignmentBonus — no tags = 0", () => {
   assert.strictEqual(goalTagAlignmentBonus({}, {}), 0);
   assert.strictEqual(goalTagAlignmentBonus({}, { goal_tags: [] }), 0);
 });
 
-test('goalTagAlignmentBonus — capped at 15', () => {
+test("goalTagAlignmentBonus — capped at 15", () => {
   const bonus = goalTagAlignmentBonus(
     {
-      description: 'ai ml llm copilot vault secrets dx',
-      topics: ['ai', 'ml', 'llm'],
+      description: "ai ml llm copilot vault secrets dx",
+      topics: ["ai", "ml", "llm"],
     },
-    { goal_tags: ['ai', 'ml', 'llm', 'copilot', 'vault', 'secrets', 'dx'] },
+    { goal_tags: ["ai", "ml", "llm", "copilot", "vault", "secrets", "dx"] },
   );
   assert.strictEqual(bonus, 15);
 });
 
-test('goalTagAlignmentBonus — partial match', () => {
+test("goalTagAlignmentBonus — partial match", () => {
   const bonus = goalTagAlignmentBonus(
-    { description: 'a secrets manager', topics: [] },
-    { goal_tags: ['secrets', 'spaceships'] },
+    { description: "a secrets manager", topics: [] },
+    { goal_tags: ["secrets", "spaceships"] },
   );
   assert.strictEqual(bonus, 5);
 });
 
 // ─── buildAuditBody ──────────────────────────────────────────
 
-test('buildAuditBody contains required routing references', () => {
+test("buildAuditBody contains required routing references", () => {
   const body = buildAuditBody({
-    cand: { repo: 'foo/bar', goal_tags: ['x'], notes: 'nb', strategic_value: 7 },
+    cand: {
+      repo: "foo/bar",
+      goal_tags: ["x"],
+      notes: "nb",
+      strategic_value: 7,
+    },
     repo: {
       stargazers_count: 10,
       forks_count: 1,
       open_issues_count: 0,
-      pushed_at: '2026-04-01T00:00:00Z',
-      license: { spdx_id: 'MIT' },
-      default_branch: 'main',
+      pushed_at: "2026-04-01T00:00:00Z",
+      license: { spdx_id: "MIT" },
+      default_branch: "main",
     },
     score: scoreRepo(
       {
         stargazers_count: 10,
         forks_count: 1,
         open_issues_count: 0,
-        pushed_at: '2026-04-01T00:00:00Z',
-        license: { spdx_id: 'MIT' },
+        pushed_at: "2026-04-01T00:00:00Z",
+        license: { spdx_id: "MIT" },
       },
       { strategic_value: 7 },
     ),
   });
-  assert.ok(body.includes('Fork-Audit Report'));
-  assert.ok(body.includes('foo/bar'));
-  assert.ok(body.includes('OPENROUTER_ASSIGNEE_PROCESS.md'));
-  assert.ok(body.includes('Rubric breakdown'));
+  assert.ok(body.includes("Fork-Audit Report"));
+  assert.ok(body.includes("foo/bar"));
+  assert.ok(body.includes("OPENROUTER_ASSIGNEE_PROCESS.md"));
+  assert.ok(body.includes("Rubric breakdown"));
   // Footer must reference @oaudrey, not stale @Copilot (see issue #14523).
-  assert.ok(body.includes('@oaudrey'), 'footer must reference @oaudrey');
-  assert.ok(!body.includes('@Copilot'), 'footer must not contain stale @Copilot reference');
+  assert.ok(body.includes("@oaudrey"), "footer must reference @oaudrey");
+  assert.ok(
+    !body.includes("@Copilot"),
+    "footer must not contain stale @Copilot reference",
+  );
 });
 
 // ─── ROUTING_LABELS ──────────────────────────────────────────
 
-test('ROUTING_LABELS includes every required routing signal', () => {
+test("ROUTING_LABELS includes every required routing signal", () => {
   // These are consumed by openrouter-assignee.yml / ralph-loop.yml.
   for (const required of [
-    'openrouter',
-    'auto-fix',
-    'copilot',
-    'role:orchestrator',
-    'fork-audit',
+    "openrouter",
+    "auto-fix",
+    "copilot",
+    "role:orchestrator",
+    "fork-audit",
   ]) {
     assert.ok(
       ROUTING_LABELS.includes(required),
@@ -209,7 +217,7 @@ test('ROUTING_LABELS includes every required routing signal', () => {
   }
 });
 
-test('ROUTING_LABELS is frozen', () => {
+test("ROUTING_LABELS is frozen", () => {
   assert.ok(Object.isFrozen(ROUTING_LABELS));
 });
 
@@ -219,47 +227,53 @@ test('ROUTING_LABELS is frozen', () => {
 // if present it skips the issue entirely, leaving it unassigned and
 // unprocessed ("the slip" — see issue #14523).
 
-test('MIRROR_LABELS excludes openrouter so openrouter-assignee.yml routes the issue', () => {
+test("MIRROR_LABELS excludes openrouter so openrouter-assignee.yml routes the issue", () => {
   assert.ok(
-    !MIRROR_LABELS.includes('openrouter'),
-    'MIRROR_LABELS must NOT contain openrouter — it is the idempotency key in openrouter-assignee.yml',
+    !MIRROR_LABELS.includes("openrouter"),
+    "MIRROR_LABELS must NOT contain openrouter — it is the idempotency key in openrouter-assignee.yml",
   );
 });
 
-test('MIRROR_LABELS includes fork-audit and upstream-contribution', () => {
-  assert.ok(MIRROR_LABELS.includes('fork-audit'), 'MIRROR_LABELS must include fork-audit');
-  assert.ok(MIRROR_LABELS.includes('upstream-contribution'), 'MIRROR_LABELS must include upstream-contribution');
+test("MIRROR_LABELS includes fork-audit and upstream-contribution", () => {
+  assert.ok(
+    MIRROR_LABELS.includes("fork-audit"),
+    "MIRROR_LABELS must include fork-audit",
+  );
+  assert.ok(
+    MIRROR_LABELS.includes("upstream-contribution"),
+    "MIRROR_LABELS must include upstream-contribution",
+  );
 });
 
-test('MIRROR_LABELS is frozen', () => {
+test("MIRROR_LABELS is frozen", () => {
   assert.ok(Object.isFrozen(MIRROR_LABELS));
 });
 
-test('MIRROR_LABELS is a proper subset of ROUTING_LABELS plus upstream-contribution', () => {
+test("MIRROR_LABELS is a proper subset of ROUTING_LABELS plus upstream-contribution", () => {
   // Every label in MIRROR_LABELS (except upstream-contribution) must exist in ROUTING_LABELS.
   const nonRouting = MIRROR_LABELS.filter(
-    (l) => l !== 'upstream-contribution' && !ROUTING_LABELS.includes(l),
+    (l) => l !== "upstream-contribution" && !ROUTING_LABELS.includes(l),
   );
   assert.strictEqual(
     nonRouting.length,
     0,
-    `MIRROR_LABELS contains unknown labels not in ROUTING_LABELS: ${nonRouting.join(', ')}`,
+    `MIRROR_LABELS contains unknown labels not in ROUTING_LABELS: ${nonRouting.join(", ")}`,
   );
 });
 
 // ─── loadConfig ──────────────────────────────────────────────
 
-test('loadConfig parses the shipped candidates.json', () => {
+test("loadConfig parses the shipped candidates.json", () => {
   const cfg = loadConfig(
-    path.join(__dirname, '..', '..', 'fork-audit', 'candidates.json'),
+    path.join(__dirname, "..", "..", "fork-audit", "candidates.json"),
   );
   assert.ok(Array.isArray(cfg.candidates));
   assert.ok(cfg.candidates.length > 0);
   assert.ok(Number.isFinite(cfg.defaults.mirror_issue_when_score_gte));
 });
 
-test('loadConfig rejects missing candidates[]', () => {
-  const tmp = path.join(os.tmpdir(), 'fork-audit-bad.json');
+test("loadConfig rejects missing candidates[]", () => {
+  const tmp = path.join(os.tmpdir(), "fork-audit-bad.json");
   fs.writeFileSync(tmp, JSON.stringify({ defaults: {} }));
   try {
     assert.throws(() => loadConfig(tmp), /missing candidates/);

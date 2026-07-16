@@ -40,85 +40,93 @@ skills/
 
 ### Required Files (Every Skill Must Have)
 
-| File | Purpose |
-|---|---|
-| `SKILL.md` | Human-readable spec: purpose, workflow, agent instructions, examples |
-| `<skill-name>.skill.yml` | Machine-readable config: triggers, models, persona, dependencies |
+| File                     | Purpose                                                              |
+| ------------------------ | -------------------------------------------------------------------- |
+| `SKILL.md`               | Human-readable spec: purpose, workflow, agent instructions, examples |
+| `<skill-name>.skill.yml` | Machine-readable config: triggers, models, persona, dependencies     |
 
 ### Optional Files
 
-| File | Purpose |
-|---|---|
-| `persona.yml` | Ephemeral persona (name, voice, greeting, farewell) |
-| `README.md` | Simple user guide — must pass the "8-year-old test" |
-| `tests/promptfoo.yml` | PromptFoo LLM assertion tests for this skill |
-| `install/windows/*.bat` | Windows one-click installer |
-| `install/mac/*.command` | macOS one-click installer |
+| File                    | Purpose                                             |
+| ----------------------- | --------------------------------------------------- |
+| `persona.yml`           | Ephemeral persona (name, voice, greeting, farewell) |
+| `README.md`             | Simple user guide — must pass the "8-year-old test" |
+| `tests/promptfoo.yml`   | PromptFoo LLM assertion tests for this skill        |
+| `install/windows/*.bat` | Windows one-click installer                         |
+| `install/mac/*.command` | macOS one-click installer                           |
 
 ---
 
 ## Skills by Category
 
 ### Agent Operations
-| Skill | Description |
-|---|---|
-| [`model-router`](model-router/) | Route tasks to Sonnet vs Opus based on complexity |
-| [`context-management`](context-management/) | Manage token budgets and context handoffs |
-| [`memory-pruning`](memory-pruning/) | Prune session logs with half-life retention |
-| [`persona-engine`](persona-engine/) | Attach ephemeral personas to skill sessions |
-| [`gbrain`](gbrain/) | Persistent AI memory via markdown brain repo + PGLite/pgvector |
-| [`openrouter-swarms`](openrouter-swarms/) | OpenRouter model routing, MAS/swarm topology, agent naming |
+
+| Skill                                       | Description                                                    |
+| ------------------------------------------- | -------------------------------------------------------------- |
+| [`model-router`](model-router/)             | Route tasks to Sonnet vs Opus based on complexity              |
+| [`context-management`](context-management/) | Manage token budgets and context handoffs                      |
+| [`memory-pruning`](memory-pruning/)         | Prune session logs with half-life retention                    |
+| [`persona-engine`](persona-engine/)         | Attach ephemeral personas to skill sessions                    |
+| [`gbrain`](gbrain/)                         | Persistent AI memory via markdown brain repo + PGLite/pgvector |
+| [`openrouter-swarms`](openrouter-swarms/)   | OpenRouter model routing, MAS/swarm topology, agent naming     |
 
 ### Developer Workflow
-| Skill | Description |
-|---|---|
-| [`skill-forge`](skill-forge/) | Meta-skill: builds new skills from scratch |
-| [`brainstorming`](brainstorming/) | Structured ideation and creative problem solving |
-| [`todo-breakdown`](todo-breakdown/) | Break requirements into atomic implementable TODOs |
-| [`parallel-development`](parallel-development/) | Coordinate multiple agents working simultaneously |
-| [`using-git-worktrees`](using-git-worktrees/) | Manage parallel branches with git worktrees |
-| [`wrap-up`](wrap-up/) | Four-phase session close: Ship, Remember, Review, Publish |
-| [`code-review`](code-review/) | Enforce Revvel code review standards |
-| [`testing`](testing/) | Apply Revvel testing standards (Vitest, Playwright, coverage) |
-| [`mvi-contract`](mvi-contract/) | Fill the MVI Contract before every coding session |
-| [`system-state`](system-state/) | Maintain SYSTEM_STATE.md as production source of truth |
-| [`dare-log`](dare-log/) | Track decisions and risks with DARE framework |
-| [`auto-documentation`](auto-documentation/) | Auto-generate docs, changelogs, and API references |
-| [`concurrent-development`](concurrent-development/) | Coordinate concurrent branches with safe merging |
-| [`shift-testing`](shift-testing/) | Evaluate AI agent quality with S.H.I.F.T. methodology |
+
+| Skill                                               | Description                                                   |
+| --------------------------------------------------- | ------------------------------------------------------------- |
+| [`skill-forge`](skill-forge/)                       | Meta-skill: builds new skills from scratch                    |
+| [`brainstorming`](brainstorming/)                   | Structured ideation and creative problem solving              |
+| [`todo-breakdown`](todo-breakdown/)                 | Break requirements into atomic implementable TODOs            |
+| [`parallel-development`](parallel-development/)     | Coordinate multiple agents working simultaneously             |
+| [`using-git-worktrees`](using-git-worktrees/)       | Manage parallel branches with git worktrees                   |
+| [`wrap-up`](wrap-up/)                               | Four-phase session close: Ship, Remember, Review, Publish     |
+| [`code-review`](code-review/)                       | Enforce Revvel code review standards                          |
+| [`testing`](testing/)                               | Apply Revvel testing standards (Vitest, Playwright, coverage) |
+| [`mvi-contract`](mvi-contract/)                     | Fill the MVI Contract before every coding session             |
+| [`system-state`](system-state/)                     | Maintain SYSTEM_STATE.md as production source of truth        |
+| [`dare-log`](dare-log/)                             | Track decisions and risks with DARE framework                 |
+| [`auto-documentation`](auto-documentation/)         | Auto-generate docs, changelogs, and API references            |
+| [`concurrent-development`](concurrent-development/) | Coordinate concurrent branches with safe merging              |
+| [`shift-testing`](shift-testing/)                   | Evaluate AI agent quality with S.H.I.F.T. methodology         |
 
 ### DevOps & Deployment
-| Skill | Description |
-|---|---|
-| [`deployment`](deployment/) | Deploy to DigitalOcean with PM2, Nginx, and GitHub Actions |
-| [`error-reporting`](error-reporting/) | Three-tier error reporting: console → email → GitHub Issue |
-| [`ralph-loop`](ralph-loop/) | Self-healing CI: auto-trigger @copilot on failure, loop until fixed |
-| [`recurse-ml`](recurse-ml/) | Autonomous PR review and bug detection via RecurseML |
+
+| Skill                                 | Description                                                         |
+| ------------------------------------- | ------------------------------------------------------------------- |
+| [`deployment`](deployment/)           | Deploy to DigitalOcean with PM2, Nginx, and GitHub Actions          |
+| [`error-reporting`](error-reporting/) | Three-tier error reporting: console → email → GitHub Issue          |
+| [`ralph-loop`](ralph-loop/)           | Self-healing CI: auto-trigger @copilot on failure, loop until fixed |
+| [`recurse-ml`](recurse-ml/)           | Autonomous PR review and bug detection via RecurseML                |
 
 ### Security & Compliance
-| Skill | Description |
-|---|---|
-| [`vault-agent`](vault-agent/) | Ephemeral gatekeeper for all secrets and credentials |
-| [`security`](security/) | OWASP protections, secret management, input sanitization |
+
+| Skill                         | Description                                              |
+| ----------------------------- | -------------------------------------------------------- |
+| [`vault-agent`](vault-agent/) | Ephemeral gatekeeper for all secrets and credentials     |
+| [`security`](security/)       | OWASP protections, secret management, input sanitization |
 
 ### Accessibility & Compliance
-| Skill | Description |
-|---|---|
+
+| Skill                             | Description                                      |
+| --------------------------------- | ------------------------------------------------ |
 | [`accessibility`](accessibility/) | WCAG 2.2 AA/AAA, TTY/TDD support, ADA compliance |
 
 ### Content & Marketing
-| Skill | Description |
-|---|---|
+
+| Skill                           | Description                                                 |
+| ------------------------------- | ----------------------------------------------------------- |
 | [`seo-metadata`](seo-metadata/) | SEO metadata, Open Graph, JSON-LD, targeting Lighthouse 90+ |
 
 ### Tax & Legal
-| Skill | Description |
-|---|---|
+
+| Skill                                 | Description                                     |
+| ------------------------------------- | ----------------------------------------------- |
 | [`tax-legal-agent`](tax-legal-agent/) | Tax returns, IRS, legal research, court filings |
 
 ### Testing & Quality
-| Skill | Description |
-|---|---|
+
+| Skill                             | Description                                                  |
+| --------------------------------- | ------------------------------------------------------------ |
 | [`testing-agent`](testing-agent/) | Ephemeral agent that generates and runs skill/unit/E2E tests |
 
 ---
@@ -128,7 +136,7 @@ skills/
 Load these at the **start** of every agent session:
 
 1. **`system-state`** — Read `SYSTEM_STATE.md` before writing any code
-2. **`mvi-contract`** — Fill the MVI Contract before starting work  
+2. **`mvi-contract`** — Fill the MVI Contract before starting work
 3. **`model-router`** — Route tasks to the correct model
 4. **`context-management`** — Monitor token usage
 
@@ -167,16 +175,16 @@ Load these at the **end** of every session:
 
 Skills are primarily **instruction files for AI agents** (markdown + YAML). However, some skills include supporting code:
 
-| File Type | Location | Purpose |
-|---|---|---|
-| Agent instructions | `SKILL.md` | Primary skill spec (markdown) |
-| Machine config | `<name>.skill.yml` | Triggers, models, metadata |
-| Test configs | `tests/promptfoo.yml` | LLM assertion tests |
-| Install scripts | `install/windows/*.bat` | Windows installer |
-| Install scripts | `install/mac/*.command` | macOS installer |
-| TypeScript utilities | `src/<name>.ts` | Only if skill has code helpers |
-| Unit tests | `src/<name>.test.ts` | Tests for any TypeScript code |
-| GitHub Actions | Reference only — place in `.github/workflows/` | CI/CD workflows |
+| File Type            | Location                                       | Purpose                        |
+| -------------------- | ---------------------------------------------- | ------------------------------ |
+| Agent instructions   | `SKILL.md`                                     | Primary skill spec (markdown)  |
+| Machine config       | `<name>.skill.yml`                             | Triggers, models, metadata     |
+| Test configs         | `tests/promptfoo.yml`                          | LLM assertion tests            |
+| Install scripts      | `install/windows/*.bat`                        | Windows installer              |
+| Install scripts      | `install/mac/*.command`                        | macOS installer                |
+| TypeScript utilities | `src/<name>.ts`                                | Only if skill has code helpers |
+| Unit tests           | `src/<name>.test.ts`                           | Tests for any TypeScript code  |
+| GitHub Actions       | Reference only — place in `.github/workflows/` | CI/CD workflows                |
 
 > **Rule:** If a skill references a GitHub Actions workflow or TypeScript helper,
 > the actual file lives in `.github/workflows/` or the project's `src/` directory.
@@ -204,4 +212,4 @@ done
 
 ---
 
-*Maintained by Audrey Evans (MIDNGHTSAPPHIRE). See [`REGISTRY.md`](REGISTRY.md) for the full skill catalog.*
+_Maintained by Audrey Evans (MIDNGHTSAPPHIRE). See [`REGISTRY.md`](REGISTRY.md) for the full skill catalog._

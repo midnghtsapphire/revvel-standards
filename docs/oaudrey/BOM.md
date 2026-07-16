@@ -16,11 +16,11 @@ This BOM lists every credential, API, service, and tool the BOM team needs to im
 
 ## P0 — Required Before First Deploy
 
-| Item | Provider | Cost | Purpose | Secret Name | Status |
-|---|---|---|---|---|---|
-| DigitalOcean API Token | DigitalOcean | $0 (included) | `doctl` authentication for App Platform deploy | `DIGITALOCEAN_API_TOKEN` | ❌ Not provisioned |
-| Doppler Service Token | Doppler | $0 (free tier) | Inject secrets into GitHub Actions | `DOPPLER_TOKEN` | ❌ Not provisioned |
-| `oaudrey.com` domain | Namecheap | ~$15/yr | Apex domain for the hub | — | ❌ Verify active |
+| Item                   | Provider     | Cost           | Purpose                                        | Secret Name              | Status             |
+| ---------------------- | ------------ | -------------- | ---------------------------------------------- | ------------------------ | ------------------ |
+| DigitalOcean API Token | DigitalOcean | $0 (included)  | `doctl` authentication for App Platform deploy | `DIGITALOCEAN_API_TOKEN` | ❌ Not provisioned |
+| Doppler Service Token  | Doppler      | $0 (free tier) | Inject secrets into GitHub Actions             | `DOPPLER_TOKEN`          | ❌ Not provisioned |
+| `oaudrey.com` domain   | Namecheap    | ~$15/yr        | Apex domain for the hub                        | —                        | ❌ Verify active   |
 
 ### How to provision DigitalOcean API Token
 
@@ -35,38 +35,38 @@ This BOM lists every credential, API, service, and tool the BOM team needs to im
 
 ## P1 — Required for Full Operations
 
-| Item | Provider | Cost | Purpose | Secret Name | Status |
-|---|---|---|---|---|---|
-| Namecheap API Key | Namecheap | $0 | Automated DNS record management | `NAMECHEAP_API_KEY` | ❌ Not provisioned |
-| Namecheap Username | Namecheap | — | API authentication | `NAMECHEAP_USERNAME` | `uprisinghope` (known) |
-| UptimeRobot monitors | UptimeRobot | $0 (free: 50 monitors) | Uptime alerts for oaudrey.com and subdomains | — | ❌ Not configured |
-| Sentry / GlitchTip | Self-hosted or Sentry | $0 free tier | Error tracking for any server-side components | `SENTRY_DSN` | ❌ Not configured |
-| Resend API Key | Resend | $0 (3k/mo free) | Alert emails for deployment failures and retro reports | `RESEND_API_KEY` | ❌ Not provisioned if not set |
+| Item                 | Provider              | Cost                   | Purpose                                                | Secret Name          | Status                        |
+| -------------------- | --------------------- | ---------------------- | ------------------------------------------------------ | -------------------- | ----------------------------- |
+| Namecheap API Key    | Namecheap             | $0                     | Automated DNS record management                        | `NAMECHEAP_API_KEY`  | ❌ Not provisioned            |
+| Namecheap Username   | Namecheap             | —                      | API authentication                                     | `NAMECHEAP_USERNAME` | `uprisinghope` (known)        |
+| UptimeRobot monitors | UptimeRobot           | $0 (free: 50 monitors) | Uptime alerts for oaudrey.com and subdomains           | —                    | ❌ Not configured             |
+| Sentry / GlitchTip   | Self-hosted or Sentry | $0 free tier           | Error tracking for any server-side components          | `SENTRY_DSN`         | ❌ Not configured             |
+| Resend API Key       | Resend                | $0 (3k/mo free)        | Alert emails for deployment failures and retro reports | `RESEND_API_KEY`     | ❌ Not provisioned if not set |
 
 ---
 
 ## P2 — Nice to Have
 
-| Item | Provider | Cost | Purpose | Secret Name | Status |
-|---|---|---|---|---|---|
-| Plausible Analytics | Plausible | $9/mo | Privacy-first web analytics (no cookies) for oaudrey.com | — | — Optional |
-| GlitchTip (self-hosted) | Self-hosted | $0 | Open-source Sentry alternative on existing DO droplet | `GLITCHTIP_DSN` | — Optional |
+| Item                    | Provider    | Cost  | Purpose                                                  | Secret Name     | Status     |
+| ----------------------- | ----------- | ----- | -------------------------------------------------------- | --------------- | ---------- |
+| Plausible Analytics     | Plausible   | $9/mo | Privacy-first web analytics (no cookies) for oaudrey.com | —               | — Optional |
+| GlitchTip (self-hosted) | Self-hosted | $0    | Open-source Sentry alternative on existing DO droplet    | `GLITCHTIP_DSN` | — Optional |
 
 ---
 
 ## Infrastructure Inventory
 
-| Service | Value | Notes |
-|---|---|---|
-| DigitalOcean region | `nyc` | App Platform free tier — `nyc` is default |
-| App Platform tier | Static site (free) | ≤3 free static sites per account |
-| Domain registrar | Namecheap (`uprisinghope`) | Set nameservers to DO (`ns1–3.digitalocean.com`) |
-| Apex domain | `oaudrey.com` | Verify registration is active |
-| Hub subdomain | `oaudrey.com` (apex) | App Platform handles SSL via Let's Encrypt |
-| FieldWork subdomain | `fieldwork.oaudrey.com` | CNAME → App Platform URL |
-| CI/CD | GitHub Actions | `deploy-oaudrey.yml` — triggered on push to `main` |
-| Secrets management | Doppler | Project: `revvel-standards`, environment: `production` |
-| Deploy spec | `oaudrey/.do/app.yaml` | Committed to repo |
+| Service             | Value                      | Notes                                                  |
+| ------------------- | -------------------------- | ------------------------------------------------------ |
+| DigitalOcean region | `nyc`                      | App Platform free tier — `nyc` is default              |
+| App Platform tier   | Static site (free)         | ≤3 free static sites per account                       |
+| Domain registrar    | Namecheap (`uprisinghope`) | Set nameservers to DO (`ns1–3.digitalocean.com`)       |
+| Apex domain         | `oaudrey.com`              | Verify registration is active                          |
+| Hub subdomain       | `oaudrey.com` (apex)       | App Platform handles SSL via Let's Encrypt             |
+| FieldWork subdomain | `fieldwork.oaudrey.com`    | CNAME → App Platform URL                               |
+| CI/CD               | GitHub Actions             | `deploy-oaudrey.yml` — triggered on push to `main`     |
+| Secrets management  | Doppler                    | Project: `revvel-standards`, environment: `production` |
+| Deploy spec         | `oaudrey/.do/app.yaml`     | Committed to repo                                      |
 
 ---
 
@@ -88,6 +88,7 @@ gh secret list --repo midnghtsapphire/revvel-standards
 The **Credential Gatekeeper** workflow (`.github/workflows/credential-gatekeeper.yml`) auto-detects credential needs from issue text. Label any implementation issue with `ready-to-implement` to trigger it.
 
 Keywords that trigger detection for oAudrey work:
+
 - `digitalocean`, `doctl`, `app platform` → `DIGITALOCEAN_API_TOKEN`
 - `namecheap`, `dns`, `domain` → `NAMECHEAP_API_KEY`
 - `doppler`, `secrets sync` → `DOPPLER_TOKEN`

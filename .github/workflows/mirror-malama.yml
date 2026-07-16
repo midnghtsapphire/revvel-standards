@@ -11,7 +11,7 @@
 name: Mirror Mālama Engine
 
 on:
-  workflow_dispatch: {}        # manual trigger
+  workflow_dispatch: {} # manual trigger
   push:
     branches: [main]
     paths: ["skills/malama/**"]
@@ -54,7 +54,7 @@ jobs:
         if: steps.gate.outputs.go == 'true'
         env:
           TOKEN: ${{ secrets.MALAMA_MIRROR_TOKEN }}
-          TARGET: ${{ vars.MALAMA_MIRROR_REPO }}   # e.g. midnghtsapphire/malama
+          TARGET: ${{ vars.MALAMA_MIRROR_REPO }} # e.g. midnghtsapphire/malama
         run: |
           set -euo pipefail
           tmp="$(mktemp -d)"

@@ -17,11 +17,11 @@ This allows non-technical stakeholders (or developers who prefer clicking over t
 
 ## 2. Why Use It?
 
-| Problem | Without labels-as-parameters | With labels-as-parameters |
-|---|---|---|
-| Targeting a specific environment | Edit the workflow file or trigger `workflow_dispatch` manually | Apply `environment:production` label to the PR |
-| Deploying a subset of microservices | Hard-code the project name or maintain multiple workflow files | Apply `project:api` label to the PR |
-| Emergency test bypass | Comment out test steps (risky) | Apply `skip-tests:true` label (audit trail in Git) |
+| Problem                             | Without labels-as-parameters                                   | With labels-as-parameters                          |
+| ----------------------------------- | -------------------------------------------------------------- | -------------------------------------------------- |
+| Targeting a specific environment    | Edit the workflow file or trigger `workflow_dispatch` manually | Apply `environment:production` label to the PR     |
+| Deploying a subset of microservices | Hard-code the project name or maintain multiple workflow files | Apply `project:api` label to the PR                |
+| Emergency test bypass               | Comment out test steps (risky)                                 | Apply `skip-tests:true` label (audit trail in Git) |
 
 ---
 
@@ -56,23 +56,23 @@ Use these standard label names across all Revvel repos. Create them with the boo
 
 ### Deployment environment
 
-| Label | Meaning |
-|---|---|
-| `environment:staging` | Deploy to the staging droplet |
+| Label                    | Meaning                          |
+| ------------------------ | -------------------------------- |
+| `environment:staging`    | Deploy to the staging droplet    |
 | `environment:production` | Deploy to the production droplet |
 
 ### Project / microservice targeting
 
-| Label | Meaning |
-|---|---|
-| `project:api` | Deploy the API service only |
-| `project:web` | Deploy the web front-end only |
+| Label            | Meaning                           |
+| ---------------- | --------------------------------- |
+| `project:api`    | Deploy the API service only       |
+| `project:web`    | Deploy the web front-end only     |
 | `project:worker` | Deploy the background worker only |
 
 ### Control flags
 
-| Label | Meaning |
-|---|---|
+| Label             | Meaning                                                |
+| ----------------- | ------------------------------------------------------ |
 | `skip-tests:true` | Skip test suite — requires a second approving reviewer |
 
 ### Bootstrap commands
@@ -143,7 +143,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       environment: ${{ steps.parameters.outputs.environment }}
-      project:     ${{ steps.parameters.outputs.project }}
+      project: ${{ steps.parameters.outputs.project }}
 
     steps:
       - name: Extract labels as parameters
@@ -180,20 +180,20 @@ jobs:
 
 ## 7. Action Inputs
 
-| Input | Description | Default |
-|---|---|---|
-| `separator` | Character that splits the label key from its value | `:` |
+| Input                | Description                                                                        | Default                   |
+| -------------------- | ---------------------------------------------------------------------------------- | ------------------------- |
+| `separator`          | Character that splits the label key from its value                                 | `:`                       |
 | `requiredParameters` | Comma-separated list of keys that must be present; action fails if any are missing | _(empty — none required)_ |
 
 ---
 
 ## 8. Known Limitations
 
-| Limitation | Details |
-|---|---|
-| **`push` event after rebase** | The action cannot retrieve PR labels when the merge strategy is `rebase` and the commit message does not contain the PR number. Use merge or squash merge instead. |
-| **Multi-value parameters** | If two labels share the same key (e.g. `project:api` and `project:web`), `contains()` must be used carefully — a prefix match (`project:api`) will also match `project:internal-api`. |
-| **No typed outputs** | All outputs are strings. Cast to boolean/number in your workflow if needed. |
+| Limitation                    | Details                                                                                                                                                                               |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`push` event after rebase** | The action cannot retrieve PR labels when the merge strategy is `rebase` and the commit message does not contain the PR number. Use merge or squash merge instead.                    |
+| **Multi-value parameters**    | If two labels share the same key (e.g. `project:api` and `project:web`), `contains()` must be used carefully — a prefix match (`project:api`) will also match `project:internal-api`. |
+| **No typed outputs**          | All outputs are strings. Cast to boolean/number in your workflow if needed.                                                                                                           |
 
 ---
 

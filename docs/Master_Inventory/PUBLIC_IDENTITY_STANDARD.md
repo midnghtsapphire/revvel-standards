@@ -63,4 +63,4 @@ Some technical scenarios require your permanent numerical User ID (stable across
 
 ---
 
-*Part of the Revvel Master Standards. See [`README.md`](README.md) for the full inventory.*
+_Part of the Revvel Master Standards. See [`README.md`](README.md) for the full inventory._

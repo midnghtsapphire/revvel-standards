@@ -17,13 +17,13 @@
 
 **Replacement Stack:**
 
-| Layer | FOSS Tool | What It Replaces |
-|-------|-----------|-----------------|
-| API Gateway / Access Control | **Kong Gateway OSS** | StrongDM resource proxying, routing, zero-trust access |
-| Secret & Key Management | **Infisical** (MIT) | StrongDM API key vault, SCIM provisioning |
-| Audit Logging | **Kong file-log + Loki** | StrongDM session/query audit logs |
-| Dynamic Secret Injection | **Infisical SDK / CLI** | StrongDM SDK (Python, Go, Java, Ruby) |
-| Secret Rotation | **Gatekeeper CLI + Doppler** | StrongDM token lifecycle management |
+| Layer                        | FOSS Tool                    | What It Replaces                                       |
+| ---------------------------- | ---------------------------- | ------------------------------------------------------ |
+| API Gateway / Access Control | **Kong Gateway OSS**         | StrongDM resource proxying, routing, zero-trust access |
+| Secret & Key Management      | **Infisical** (MIT)          | StrongDM API key vault, SCIM provisioning              |
+| Audit Logging                | **Kong file-log + Loki**     | StrongDM session/query audit logs                      |
+| Dynamic Secret Injection     | **Infisical SDK / CLI**      | StrongDM SDK (Python, Go, Java, Ruby)                  |
+| Secret Rotation              | **Gatekeeper CLI + Doppler** | StrongDM token lifecycle management                    |
 
 All tools above are open-source, self-hostable, and already wired into the Revvel ecosystem.
 
@@ -35,27 +35,27 @@ All tools above are open-source, self-hostable, and already wired into the Revve
 
 ### 1.1 What StrongDM Provides
 
-| Capability | StrongDM Feature | Revvel FOSS Equivalent |
-|-----------|-----------------|----------------------|
-| **Programmatic Access** | REST API + SDKs (Go, Java, Python, Ruby) | Kong Admin API + Infisical SDK |
-| **Infrastructure Management** | Proxy to databases, servers, K8s, web services | Kong Gateway OSS (proxy layer) |
-| **CRUD Automation** | SDK-based Create/Read/Update/Delete for resources | Kong Admin API (`curl` / Python) |
-| **Audit Logging** | Query-level session logs for compliance | Kong `file-log` plugin + Loki |
-| **API Key Generation** | Admin UI → Principals → Tokens | Infisical service tokens + Doppler |
-| **User Provisioning (SCIM)** | SCIM 2.0 API for IdP integration | Infisical user management + GitHub SSO/SAML |
-| **Just-in-Time Access** | Dynamic approval workflows | Gatekeeper `credentials-ready` label workflow |
-| **Zero-Trust Network Access** | mTLS proxy, never expose backend directly | Kong Gateway (never exposes backends directly) |
+| Capability                    | StrongDM Feature                                  | Revvel FOSS Equivalent                         |
+| ----------------------------- | ------------------------------------------------- | ---------------------------------------------- |
+| **Programmatic Access**       | REST API + SDKs (Go, Java, Python, Ruby)          | Kong Admin API + Infisical SDK                 |
+| **Infrastructure Management** | Proxy to databases, servers, K8s, web services    | Kong Gateway OSS (proxy layer)                 |
+| **CRUD Automation**           | SDK-based Create/Read/Update/Delete for resources | Kong Admin API (`curl` / Python)               |
+| **Audit Logging**             | Query-level session logs for compliance           | Kong `file-log` plugin + Loki                  |
+| **API Key Generation**        | Admin UI → Principals → Tokens                    | Infisical service tokens + Doppler             |
+| **User Provisioning (SCIM)**  | SCIM 2.0 API for IdP integration                  | Infisical user management + GitHub SSO/SAML    |
+| **Just-in-Time Access**       | Dynamic approval workflows                        | Gatekeeper `credentials-ready` label workflow  |
+| **Zero-Trust Network Access** | mTLS proxy, never expose backend directly         | Kong Gateway (never exposes backends directly) |
 
 ### 1.2 Why StrongDM is NOT Recommended for Revvel
 
-| Criterion | StrongDM | Assessment |
-|-----------|----------|-----------|
-| **License** | Proprietary | ❌ Not FOSS — conflicts with Revvel FOSS-first mandate |
-| **Cost** | $50–200/user/month | ❌ Enterprise pricing incompatible with lean, open projects |
-| **Self-Hosted** | No (SaaS-only) | ❌ Vendor dependency; data leaves the network |
-| **Vendor Lock-In** | Proprietary API/SDKs | ❌ SDK coupling prevents portability |
-| **Scale Fit** | Designed for Fortune 500 infra teams | ❌ Overkill for Revvel's current project scale |
-| **Open Community** | Closed roadmap | ❌ No community contribution model |
+| Criterion          | StrongDM                             | Assessment                                                  |
+| ------------------ | ------------------------------------ | ----------------------------------------------------------- |
+| **License**        | Proprietary                          | ❌ Not FOSS — conflicts with Revvel FOSS-first mandate      |
+| **Cost**           | $50–200/user/month                   | ❌ Enterprise pricing incompatible with lean, open projects |
+| **Self-Hosted**    | No (SaaS-only)                       | ❌ Vendor dependency; data leaves the network               |
+| **Vendor Lock-In** | Proprietary API/SDKs                 | ❌ SDK coupling prevents portability                        |
+| **Scale Fit**      | Designed for Fortune 500 infra teams | ❌ Overkill for Revvel's current project scale              |
+| **Open Community** | Closed roadmap                       | ❌ No community contribution model                          |
 
 **Verdict:** StrongDM does not pass the FOSS-first gate. All functionality it offers is covered by the tools already deployed in the Revvel ecosystem.
 
@@ -101,6 +101,7 @@ The following architecture provides **equivalent or superior** control to Strong
 ### 3.1 Generating API Keys (replaces StrongDM "Principals → Tokens")
 
 **Via Infisical:**
+
 ```bash
 # Create a service token scoped to a single environment
 infisical service-token create \
@@ -116,6 +117,7 @@ doppler secrets set INFISICAL_TOKEN_GE_PROD="st.abc123..." \
 ```
 
 **Via Kong (consumer API keys):**
+
 ```bash
 # Create a consumer (represents a service or agent)
 curl -s -X POST http://localhost:8001/consumers \
@@ -134,6 +136,7 @@ doppler secrets set KONG_API_KEY_OPENROUTER="${API_KEY}" \
 ### 3.2 SDK-Based Programmatic Access (replaces StrongDM SDKs)
 
 **Python — Infisical SDK:**
+
 ```python
 from infisical_sdk import InfisicalSDKClient
 
@@ -159,6 +162,7 @@ client.secrets.update_secret_by_name(
 ```
 
 **JavaScript / Node.js:**
+
 ```javascript
 import InfisicalClient from "@infisical/sdk";
 
@@ -297,6 +301,7 @@ for log in logs:
 ### 5.3 GitHub Actions Audit via Workflow Dispatch Logs
 
 All automated secret operations triggered by GitHub Actions are audited in:
+
 - `wr/memory/secret-rotations.md` — rotation history per secret
 - GitHub Actions run logs — full execution history
 - Doppler activity log — all set/get/delete operations
@@ -312,6 +317,7 @@ StrongDM supports SCIM 2.0 for syncing users from identity providers (Okta, Azur
 See [`SSO_SAML_STANDARD.md`](SSO_SAML_STANDARD.md) for full SAML configuration.
 
 GitHub team membership controls access to repos and secrets:
+
 - `team/maintainers` → admin access to GitHub secrets and Actions
 - `team/developers` → write access to repos, read-only Actions
 - `team/readers` → read-only
@@ -455,7 +461,7 @@ name: API Key Rotation
 
 on:
   schedule:
-    - cron: "0 2 * * 1"  # Weekly, Monday 02:00 UTC
+    - cron: "0 2 * * 1" # Weekly, Monday 02:00 UTC
   workflow_dispatch:
     inputs:
       consumer:
@@ -517,13 +523,13 @@ keywords:
 
 ## 10. Decision Log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2026-04-29 | Evaluated StrongDM for Revvel | Issue `[WR] integrate strongdm for api control mgt` |
-| 2026-04-29 | **Rejected StrongDM** | Proprietary, $50-200/user/mo, SaaS-only, vendor lock-in |
-| 2026-04-29 | Selected Infisical (MIT) | FOSS, self-hostable, API-first, 15k+ GitHub stars |
-| 2026-04-29 | Kong OSS as proxy layer | Already deployed, Apache 2.0, full Admin API |
-| 2026-04-30 | This standard created | Formal documentation of WR decision |
+| Date       | Decision                      | Rationale                                               |
+| ---------- | ----------------------------- | ------------------------------------------------------- |
+| 2026-04-29 | Evaluated StrongDM for Revvel | Issue `[WR] integrate strongdm for api control mgt`     |
+| 2026-04-29 | **Rejected StrongDM**         | Proprietary, $50-200/user/mo, SaaS-only, vendor lock-in |
+| 2026-04-29 | Selected Infisical (MIT)      | FOSS, self-hostable, API-first, 15k+ GitHub stars       |
+| 2026-04-29 | Kong OSS as proxy layer       | Already deployed, Apache 2.0, full Admin API            |
+| 2026-04-30 | This standard created         | Formal documentation of WR decision                     |
 
 ---
 
@@ -544,15 +550,15 @@ keywords:
 
 ## 12. Related Standards
 
-| Standard | Relationship |
-|----------|-------------|
-| [`API_GATEKEEPER_STANDARD.md`](API_GATEKEEPER_STANDARD.md) | Parent standard — overall API security architecture |
-| [`SECRET_MANAGEMENT_STANDARD.md`](SECRET_MANAGEMENT_STANDARD.md) | Secret management tooling (Infisical, Vault/OpenBao, SOPS) |
-| [`KONG_GATEWAY.md`](../../standards/KONG_GATEWAY.md) | Kong Gateway OSS — Layer 2 API proxy implementation |
-| [`SSO_SAML_STANDARD.md`](SSO_SAML_STANDARD.md) | User provisioning via GitHub SSO/SAML |
-| [`SELF_HEALING_SECRET_ROTATION.md`](../SELF_HEALING_SECRET_ROTATION.md) | Automated secret rotation with retry + escalation |
-| [`VAULT_AGENT_STANDARD.md`](VAULT_AGENT_STANDARD.md) | HashiCorp Vault for enterprise secret management |
-| [`SECURITY_STANDARD.md`](SECURITY_STANDARD.md) | Overall security posture and tooling |
+| Standard                                                                | Relationship                                               |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------- |
+| [`API_GATEKEEPER_STANDARD.md`](API_GATEKEEPER_STANDARD.md)              | Parent standard — overall API security architecture        |
+| [`SECRET_MANAGEMENT_STANDARD.md`](SECRET_MANAGEMENT_STANDARD.md)        | Secret management tooling (Infisical, Vault/OpenBao, SOPS) |
+| [`KONG_GATEWAY.md`](../../standards/KONG_GATEWAY.md)                    | Kong Gateway OSS — Layer 2 API proxy implementation        |
+| [`SSO_SAML_STANDARD.md`](SSO_SAML_STANDARD.md)                          | User provisioning via GitHub SSO/SAML                      |
+| [`SELF_HEALING_SECRET_ROTATION.md`](../SELF_HEALING_SECRET_ROTATION.md) | Automated secret rotation with retry + escalation          |
+| [`VAULT_AGENT_STANDARD.md`](VAULT_AGENT_STANDARD.md)                    | HashiCorp Vault for enterprise secret management           |
+| [`SECURITY_STANDARD.md`](SECURITY_STANDARD.md)                          | Overall security posture and tooling                       |
 
 ---
 

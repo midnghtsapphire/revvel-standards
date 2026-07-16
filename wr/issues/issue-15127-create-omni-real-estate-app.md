@@ -9,8 +9,8 @@
 
 ---
 
-
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-28695285876.md`
@@ -21,9 +21,10 @@ Source packet: `docs/research-engine/run-28695285876.md`
 
 **DECISION: BLOCK - DO NOT PROCEED**
 
-This work request is critically incomplete and cannot be executed. The primary specification document ("Omni Agent Real Estate.pdf") failed to upload, leaving the entire project undefined. All critical fields (Summary, Objective, Definition of Done, Expected Scope) are empty. 
+This work request is critically incomplete and cannot be executed. The primary specification document ("Omni Agent Real Estate.pdf") failed to upload, leaving the entire project undefined. All critical fields (Summary, Objective, Definition of Done, Expected Scope) are empty.
 
 **Immediate Actions Required:**
+
 1. Re-upload the specification document
 2. Complete all required fields in the work request
 3. Define target market segment (agents vs. consumers vs. investors)
@@ -36,6 +37,7 @@ This work request is critically incomplete and cannot be executed. The primary s
 Without the specification document, the target audience cannot be determined. Market research indicates three possible segments:
 
 ### Potential Target Segments:
+
 1. **Real Estate Agents/Brokerages** (Most Likely)
    - Pain Point: Tool fragmentation - agents use 5-10+ disconnected apps
    - Market Size: 1.5M licensed agents in US ([NAR 2023](https://www.nar.realtor/membership/nar-member-count))
@@ -52,6 +54,7 @@ Without the specification document, the target audience cannot be determined. Ma
    - Less competition than consumer space
 
 **Evidence of Agent Tool Fatigue:**
+
 - Reddit r/realtors discussions about managing multiple subscriptions ([source](https://www.reddit.com/r/realtors/comments/10j5s9m/what_software_do_you_use_to_run_your_business/))
 - Industry surveys cite tool fragmentation as top 3 pain point ([NAR 2023 Technology Survey](https://www.nar.realtor/reports/real-estate-in-a-digital-age))
 
@@ -60,21 +63,25 @@ Without the specification document, the target audience cannot be determined. Ma
 ### SEO Strategy (Pending Audience Definition)
 
 **Primary Keyword Clusters:**
+
 - "all-in-one real estate platform" (higher volume than "omni")
 - "real estate app development" (1K-10K monthly searches)
 - "real estate CRM software" (10K-100K monthly searches)
 
 **Landing Page Recommendations:**
+
 - **Title:** "All-in-One Real Estate Platform | CRM, MLS & Marketing Tools"
 - **Meta Description:** "Replace 5+ tools with one platform. Streamline listings, client management, and transactions. Built for modern real estate professionals."
 
 **Content Strategy:**
+
 1. **Pillar Content:** "Complete Guide to All-in-One Real Estate Platforms"
 2. **Comparison Pages:** vs. kvCORE, BoomTown, Follow Up Boss
 3. **Feature Guides:** MLS integration, transaction management, lead nurturing
 4. **Case Studies:** Time/cost savings for real brokerages
 
 **Distribution Channels:**
+
 - LinkedIn (primary B2B channel for agents)
 - Industry publications (Inman News, RISMedia)
 - Real estate conferences (Inman Connect, NAR events)
@@ -84,24 +91,25 @@ Without the specification document, the target audience cannot be determined. Ma
 
 ### Market Leaders (Closed Source)
 
-| Competitor | Market Position | Pricing | Key Features | G2 Rating |
-|------------|----------------|---------|--------------|-----------|
-| **kvCORE** | Market leader | $500-1,500/mo | All-in-one platform | [4.3/5](https://www.g2.com/products/kvcore-platform/reviews) |
-| **BoomTown** | Lead gen focus | $1,000+/mo | Team management | [4.3/5](https://www.g2.com/products/boomtown-boomtown/reviews) |
-| **Follow Up Boss** | Best CRM | $69/user/mo | Integration-focused | [4.6/5](https://www.g2.com/products/follow-up-boss/reviews) |
-| **Chime** | Modern UI | $450+/mo | AI marketing | [4.5/5](https://www.g2.com/products/chime-chime/reviews) |
+| Competitor         | Market Position | Pricing       | Key Features        | G2 Rating                                                      |
+| ------------------ | --------------- | ------------- | ------------------- | -------------------------------------------------------------- |
+| **kvCORE**         | Market leader   | $500-1,500/mo | All-in-one platform | [4.3/5](https://www.g2.com/products/kvcore-platform/reviews)   |
+| **BoomTown**       | Lead gen focus  | $1,000+/mo    | Team management     | [4.3/5](https://www.g2.com/products/boomtown-boomtown/reviews) |
+| **Follow Up Boss** | Best CRM        | $69/user/mo   | Integration-focused | [4.6/5](https://www.g2.com/products/follow-up-boss/reviews)    |
+| **Chime**          | Modern UI       | $450+/mo      | AI marketing        | [4.5/5](https://www.g2.com/products/chime-chime/reviews)       |
 
 ### Open Source Landscape
 
-| Repository | Stars | Last Update | Viability |
-|------------|-------|-------------|-----------|
-| PropertyWebBuilder | 1.1k | 6 months ago | Limited, Ruby-based |
-| OpenEstate | 100+ | 2024 | Java, limited features |
-| EstateCloud | 300+ | 2022 | Abandoned |
+| Repository         | Stars | Last Update  | Viability              |
+| ------------------ | ----- | ------------ | ---------------------- |
+| PropertyWebBuilder | 1.1k  | 6 months ago | Limited, Ruby-based    |
+| OpenEstate         | 100+  | 2024         | Java, limited features |
+| EstateCloud        | 300+  | 2022         | Abandoned              |
 
 **Key Finding:** No viable open-source competitor exists. OSS projects lack critical features (MLS integration, modern UI, mobile support).
 
 ### Competitive Moats
+
 1. **MLS Integration:** Expensive, fragmented across 600+ regional boards
 2. **Lead Source APIs:** Zillow, Realtor.com integrations require partnerships
 3. **Compliance:** State-specific real estate regulations
@@ -128,6 +136,7 @@ Without the specification document, the target audience cannot be determined. Ma
    - Lost leads due to poor handoffs
 
 ### Demand Signals
+
 - Search volume for "real estate CRM" growing 15% YoY (unverified - needs SEMrush)
 - VC funding in proptech: $9.7B in 2021 (source needed)
 - Industry shift to cloud-based tools accelerating post-COVID
@@ -152,6 +161,7 @@ Without the specification document, the target audience cannot be determined. Ma
    - Infrastructure needs not scoped
 
 ### Required Validation Tools
+
 - Google Keyword Planner (search volumes)
 - SEMrush/Ahrefs (competitor analysis)
 - GitHub API (OSS momentum tracking)
@@ -162,15 +172,17 @@ Without the specification document, the target audience cannot be determined. Ma
 **STATUS: CANNOT DEFINE - BLOCKED BY MISSING REQUIREMENTS**
 
 ### Minimum Required Information Before Development
+
 Expand the OSS analysis with a brief table for each project:
 
-| Project | Final Commit | Status | Key Features | Why It Failed |
-|---------|--------------|--------|--------------|---------------|
-| PropertyWebBuilder | 2019 | Abandoned | Multi-listing mgmt, basic CRM | Lack of MLS integration, limited mobile support |
-| OpenEstate | 2018 | Unmaintained | Property search, contact mgmt | No cloud version, complex deployment |
-| EstateCloud | 2020 | Archived | Workflow automation | Scaled too early, insufficient funding |
+| Project            | Final Commit | Status       | Key Features                  | Why It Failed                                   |
+| ------------------ | ------------ | ------------ | ----------------------------- | ----------------------------------------------- |
+| PropertyWebBuilder | 2019         | Abandoned    | Multi-listing mgmt, basic CRM | Lack of MLS integration, limited mobile support |
+| OpenEstate         | 2018         | Unmaintained | Property search, contact mgmt | No cloud version, complex deployment            |
+| EstateCloud        | 2020         | Archived     | Workflow automation           | Scaled too early, insufficient funding          |
 
 This provides downstream teams with architectural lessons and informs what MVP features are essential vs. optional.
+
 1. **Target User Definition**
    - Primary persona (agent, buyer, seller, investor)
    - User journey maps
@@ -190,17 +202,20 @@ This provides downstream teams with architectural lessons and informs what MVP f
 ### Proposed Acceptance Gates (Pending Requirements)
 
 **Gate 1: Authentication & User Management**
+
 - Multi-role support (agents, clients, admins)
 - SSO integration
 - Role-based permissions
 
 **Gate 2: Core Functionality**
+
 - Property search with filters
 - MLS data display
 - Lead capture forms
 - Basic CRM features
 
 **Gate 3: Production Readiness**
+
 - Performance benchmarks met
 - Security audit passed
 - Compliance requirements satisfied
@@ -209,6 +224,7 @@ This provides downstream teams with architectural lessons and informs what MVP f
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 CONTEXT: Real estate app with undefined requirements
 FOCUS AREAS:
@@ -225,6 +241,7 @@ BLOCKING ISSUES TO FLAG:
 ```
 
 ### For OpenRouter Review
+
 ```
 REVIEW PRIORITY: BLOCKED - Requirements missing
 When unblocked, focus on:
@@ -235,6 +252,7 @@ When unblocked, focus on:
 ```
 
 ### For Coderabbit
+
 ```yaml
 review_config:
   blocking_rules:
@@ -244,7 +262,7 @@ review_config:
         - api_key_exposure
         - rate_limiting
         - data_validation
-    
+
     - name: "PII Protection"
       pattern: "*/user/*"
       checks:
@@ -257,6 +275,7 @@ severity_threshold: "medium"
 ```
 
 ### For Ralph Loop
+
 ```
 DOMAIN: Real Estate SaaS
 CRITICAL PATHS:
@@ -273,7 +292,9 @@ PERFORMANCE REQUIREMENTS:
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Block Work Request
+
 **File:** `.github/workflows/wr-validation.yml`
+
 ```yaml
 name: WR Validation
 on:
@@ -292,89 +313,107 @@ jobs:
               --add-label "status:blocked,needs:requirements"
           fi
 ```
+
 **Commit Message:** `fix: add WR validation to block incomplete requests`
 
 ### Fix 2: Add Requirements Template
+
 **File:** `docs/templates/real-estate-app-requirements.md`
+
 ```markdown
 # Real Estate App Requirements Template
 
 ## Target Audience
+
 - [ ] Real Estate Agents
-- [ ] Home Buyers/Sellers  
+- [ ] Home Buyers/Sellers
 - [ ] Property Investors
 - [ ] Property Managers
 
 ## Core Features
+
 ### Must Have
+
 - [ ] User authentication
 - [ ] Property search
 - [ ] MLS integration
 - [ ] Contact management
 
 ### Nice to Have
+
 - [ ] AI-powered insights
 - [ ] Virtual tours
 - [ ] Mortgage calculator
 
 ## Technical Requirements
+
 - Platform: [Web/iOS/Android]
 - MLS Boards: [List regions]
 - Integrations: [List third-party services]
 
 ## Compliance
+
 - [ ] Fair Housing Act
 - [ ] GDPR/CCPA
 - [ ] State licensing requirements
 ```
+
 **Commit Message:** `docs: add real estate app requirements template`
 
 ### Fix 3: Auto-Label Incomplete WRs
+
 **File:** `.github/labeler.yml`
+
 ```yaml
 status:blocked:
   - any:
-    - body-includes: ["Failed to upload", "_No response_"]
-    
+      - body-includes: ["Failed to upload", "_No response_"]
+
 needs:requirements:
   - all:
-    - body-includes: ["_No response_"]
-    - title-includes: ["[WR]"]
+      - body-includes: ["_No response_"]
+      - title-includes: ["[WR]"]
 
 high-risk:
   - any:
-    - body-includes: ["production-app"]
-    - body-not-includes: ["Definition of Done"]
+      - body-includes: ["production-app"]
+      - body-not-includes: ["Definition of Done"]
 ```
+
 **Commit Message:** `feat: auto-label incomplete work requests`
 
 ## 10. Labels to Apply
 
 ### Immediate (Blocking)
+
 - `status:blocked` - Cannot proceed without requirements
 - `needs:requirements` - Missing core specification document
 - `needs:clarification` - Undefined scope and objectives
 - `high-risk` - Production app without specifications
 
 ### Risk Labels
+
 - `risk:scope-undefined` - No boundaries or MVP definition
 - `risk:market-unclear` - Target audience not specified
 - `risk:compliance-unknown` - Real estate regulations not addressed
 - `risk:integration-complexity` - MLS/API requirements undefined
 
 ### Process Labels
+
 - `missing-upload` - PDF specification failed to upload
 - `incomplete-template` - Required fields not filled
 - `needs:market-research` - Audience validation required
 - `needs:technical-spec` - Architecture decisions missing
 
 ### Next Step Labels
+
 - `awaiting:author-response` - Blocked on requester input
 - `requires:pdf-upload` - Specification document needed
 - `needs:scoping-session` - Too many unknowns for async work
+
 ---
 
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -456,17 +495,18 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -512,11 +552,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 

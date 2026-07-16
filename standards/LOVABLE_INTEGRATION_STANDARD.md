@@ -21,11 +21,13 @@ Lovable is an AI-powered builder that creates production-ready websites and web 
 ### Option 1: GitHub Connector (Recommended)
 
 Lovable has a native GitHub connector that:
+
 - Syncs generated code to GitHub repos
 - Creates branches for iterations
 - Supports code review workflow
 
 **Setup:**
+
 1. Go to Lovable → Connectors → Chat connectors
 2. Click "GitHub"
 3. Authorize with GitHub
@@ -71,7 +73,7 @@ curl -X POST "https://api.lovable.dev/v1/projects" \
 ### WR Processing with Lovable
 
 ```
-Issue Opened → Triage (Perplexity No-Key fallback) → 
+Issue Opened → Triage (Perplexity No-Key fallback) →
   ↓ If area:ui or output-type:production-app
 Lovable Build → GitHub Sync → Code Review → Deploy
 ```
@@ -125,41 +127,42 @@ jobs:
 
 ## Available Connectors in Lovable
 
-| Category | Tools |
-|----------|-------|
-| **Project Management** | Linear, Jira, Asana, Notion |
-| **Design** | Figma, Miro, Paper |
-| **Analytics** | Amplitude, PostHog |
-| **Communication** | Slack, Telegram, Granola |
-| **CMS** | Contentful, Sanity, WordPress, Storyblok |
-| **eCommerce** | Shopify, Stripe |
-| **Database** | Supabase, Snowflake, BigQuery |
-| **AI** | Perplexity, Gemini Enterprise |
+| Category               | Tools                                    |
+| ---------------------- | ---------------------------------------- |
+| **Project Management** | Linear, Jira, Asana, Notion              |
+| **Design**             | Figma, Miro, Paper                       |
+| **Analytics**          | Amplitude, PostHog                       |
+| **Communication**      | Slack, Telegram, Granola                 |
+| **CMS**                | Contentful, Sanity, WordPress, Storyblok |
+| **eCommerce**          | Shopify, Stripe                          |
+| **Database**           | Supabase, Snowflake, BigQuery            |
+| **AI**                 | Perplexity, Gemini Enterprise            |
 
 ---
 
 ## Lovable Plans
 
-| Feature | Free | Hobby ($19/mo) | Pro ($49/mo) | Business ($99/mo) |
-|---------|------|----------------|--------------|-------------------|
-| Projects | 3 | Unlimited | Unlimited | Unlimited |
-| Credits | Limited | 10,000/mo | 25,000/mo | 100,000/mo |
-| GitHub Sync | ✅ | ✅ | ✅ | ✅ |
-| Custom MCP | ✅ | ✅ | ✅ | ✅ |
-| Team workspace | ❌ | ❌ | ✅ | ✅ |
-| SSO | ❌ | ❌ | ❌ | ✅ |
+| Feature        | Free    | Hobby ($19/mo) | Pro ($49/mo) | Business ($99/mo) |
+| -------------- | ------- | -------------- | ------------ | ----------------- |
+| Projects       | 3       | Unlimited      | Unlimited    | Unlimited         |
+| Credits        | Limited | 10,000/mo      | 25,000/mo    | 100,000/mo        |
+| GitHub Sync    | ✅      | ✅             | ✅           | ✅                |
+| Custom MCP     | ✅      | ✅             | ✅           | ✅                |
+| Team workspace | ❌      | ❌             | ✅           | ✅                |
+| SSO            | ❌      | ❌             | ❌           | ✅                |
 
 ---
 
 ## For Issue #14626 (CL4R1T4S Dashboard)
 
 **Recommended approach:**
+
 1. Copy the issue description and requirements
 2. Go to https://lovable.dev
 3. Create new project with prompt:
    ```
    Create a live-type dashboard that repurposes data from https://github.com/elder-plinius/CL4R1T4S
-   
+
    Requirements:
    - Real-time data display
    - Interactive visualizations

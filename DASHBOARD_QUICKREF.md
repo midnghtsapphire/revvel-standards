@@ -3,6 +3,7 @@
 ## Problem Solved
 
 **Before:** No visibility into projects without "looking in folders"
+
 - BOM inventory scattered across files
 - Test URLs hidden in README files
 - Project status unclear
@@ -10,6 +11,7 @@
 - Handoff docs hard to find
 
 **After:** Centralized dashboard with all project data
+
 - Single HTML page with everything
 - CLI tool for terminal access
 - Auto-updates every 4 hours
@@ -19,11 +21,13 @@
 ## Quick Access
 
 ### View in Browser
+
 ```bash
 npm run dashboard open
 ```
 
 ### CLI Commands
+
 ```bash
 npm run dashboard                     # Show summary
 npm run dashboard projects            # List all projects
@@ -33,6 +37,7 @@ npm run dashboard search <term>       # Search everything
 ```
 
 ### Direct Files
+
 - **HTML:** `dashboard.html` (open in browser)
 - **JSON:** `dashboard-data.json` (for programmatic access)
 
@@ -55,28 +60,29 @@ npm run agent-creator:data            # Rebuild catalog from the registries
 
 ## What's Tracked
 
-| Category | Count | Source |
-|---|---|---|
-| Projects | 33 | PROJECTS_TO_SHIP.md, PROJECT_CATALOG.md |
-| Active Services | 124 | _MASTER_INVENTORY.md |
-| Test URLs | 29 | **/README.md files |
-| Domains | 12 | oaudrey/index.html, hardcoded list |
-| BOM Items | — | _MASTER_BOM.md |
+| Category        | Count | Source                                  |
+| --------------- | ----- | --------------------------------------- |
+| Projects        | 33    | PROJECTS_TO_SHIP.md, PROJECT_CATALOG.md |
+| Active Services | 124   | _MASTER_INVENTORY.md                    |
+| Test URLs       | 29    | **/README.md files                      |
+| Domains         | 12    | oaudrey/index.html, hardcoded list      |
+| BOM Items       | —     | _MASTER_BOM.md                          |
 
 ## Key Domains
 
-| Domain | Status | Purpose |
-|---|---|---|
-| oaudrey.com | ✅ Active | Freedom Angel Hub |
-| soup2bowl.com | 🔵 In Development | Catering platform |
-| revvel.co | ✅ Active | Portfolio site |
-| freedomangel.org | 🟡 Research | Nonprofit |
-| sam.gov | 🌐 External | Gov registration |
-| grants.gov | 🌐 External | Grant search |
+| Domain           | Status            | Purpose           |
+| ---------------- | ----------------- | ----------------- |
+| oaudrey.com      | ✅ Active         | Freedom Angel Hub |
+| soup2bowl.com    | 🔵 In Development | Catering platform |
+| revvel.co        | ✅ Active         | Portfolio site    |
+| freedomangel.org | 🟡 Research       | Nonprofit         |
+| sam.gov          | 🌐 External       | Gov registration  |
+| grants.gov       | 🌐 External       | Grant search      |
 
 ## Examples
 
 ### Find All Projects
+
 ```bash
 $ npm run dashboard projects
 
@@ -97,6 +103,7 @@ Found 33 projects
 ```
 
 ### Search for oaudrey
+
 ```bash
 $ npm run dashboard search oaudrey
 
@@ -110,6 +117,7 @@ Domains (7):
 ```
 
 ### Find Test URLs
+
 ```bash
 $ npm run dashboard urls vercel
 
@@ -126,6 +134,7 @@ Found 15 URLs
 ## Auto-Updates
 
 Dashboard updates automatically:
+
 - **Every 4 hours** via GitHub Actions cron
 - **On file changes** to inventory, BOM, README files
 - **Manual:** `npm run dashboard:generate`
@@ -135,28 +144,31 @@ Dashboard updates automatically:
 ```
 Data Sources               Aggregator                Output
 ─────────────             ────────────              ──────
-├─ _MASTER_INVENTORY.md   
-├─ _MASTER_BOM.md         
+├─ _MASTER_INVENTORY.md
+├─ _MASTER_BOM.md
 ├─ PROJECTS_TO_SHIP.md     ──────►  aggregate-      ──────►  dashboard.html
 ├─ PROJECT_CATALOG.md              project-                  dashboard-data.json
 ├─ **/README.md                    dashboard.js              CLI (dashboard-cli.js)
-└─ oaudrey/index.html     
+└─ oaudrey/index.html
 ```
 
 ## Troubleshooting
 
 ### Dashboard data is stale
+
 ```bash
 npm run dashboard refresh
 ```
 
 ### CLI not working
+
 ```bash
 npm install
 chmod +x scripts/dashboard-cli.js
 ```
 
 ### Can't open browser
+
 ```bash
 # Manual paths:
 # macOS:    open dashboard.html
@@ -166,14 +178,14 @@ chmod +x scripts/dashboard-cli.js
 
 ## Files
 
-| File | Purpose | Auto-Generated |
-|---|---|---|
-| `dashboard.html` | Visual dashboard | ✅ Yes |
-| `dashboard-data.json` | Raw data | ✅ Yes |
-| `scripts/aggregate-project-dashboard.js` | Generator script | ❌ No |
-| `scripts/dashboard-cli.js` | CLI tool | ❌ No |
-| `.github/workflows/update-project-dashboard.yml` | Auto-update workflow | ❌ No |
-| `docs/PROJECT_DASHBOARD.md` | Full docs | ❌ No |
+| File                                             | Purpose              | Auto-Generated |
+| ------------------------------------------------ | -------------------- | -------------- |
+| `dashboard.html`                                 | Visual dashboard     | ✅ Yes         |
+| `dashboard-data.json`                            | Raw data             | ✅ Yes         |
+| `scripts/aggregate-project-dashboard.js`         | Generator script     | ❌ No          |
+| `scripts/dashboard-cli.js`                       | CLI tool             | ❌ No          |
+| `.github/workflows/update-project-dashboard.yml` | Auto-update workflow | ❌ No          |
+| `docs/PROJECT_DASHBOARD.md`                      | Full docs            | ❌ No          |
 
 ## Full Documentation
 

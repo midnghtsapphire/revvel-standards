@@ -43,15 +43,15 @@ NoimosAI Autonomous Agent Fleet
 
 ### 3.1 Secrets (Settings → Secrets and variables → Actions → Secrets)
 
-| Name | Purpose | Where to obtain |
-|---|---|---|
+| Name               | Purpose                                                                    | Where to obtain                                            |
+| ------------------ | -------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | `NOIMOSAI_API_KEY` | Authenticates all API calls. Server-only — never expose in client bundles. | [noimosai.com](https://noimosai.com) → Settings → API Keys |
 
 ### 3.2 Repository Variables (Settings → Variables → Actions)
 
-| Name | Purpose | Required? |
-|---|---|---|
-| `NOIMOSAI_WORKSPACE_ID` | Multi-team workspace identifier. Leave empty for single-team setups. | Optional |
+| Name                    | Purpose                                                              | Required? |
+| ----------------------- | -------------------------------------------------------------------- | --------- |
+| `NOIMOSAI_WORKSPACE_ID` | Multi-team workspace identifier. Leave empty for single-team setups. | Optional  |
 
 ### 3.3 Vault Path
 
@@ -73,23 +73,23 @@ File: `.github/workflows/noimosai.yml`
 
 The workflow has three jobs:
 
-| Job | Trigger | Purpose |
-|---|---|---|
-| `dispatch` | `workflow_dispatch` | Ad-hoc marketing task with custom prompt, project, and task type |
-| `invoke-on-issue` | `issues: [opened, reopened]` | Auto-route marketing issues to NoimosAI when labels match |
-| `daily-refresh` | `schedule: 0 8 * * *` | Daily SEO audit, content ideas, and affiliate health-check |
+| Job               | Trigger                      | Purpose                                                          |
+| ----------------- | ---------------------------- | ---------------------------------------------------------------- |
+| `dispatch`        | `workflow_dispatch`          | Ad-hoc marketing task with custom prompt, project, and task type |
+| `invoke-on-issue` | `issues: [opened, reopened]` | Auto-route marketing issues to NoimosAI when labels match        |
+| `daily-refresh`   | `schedule: 0 8 * * *`        | Daily SEO audit, content ideas, and affiliate health-check       |
 
 ### Issue Labels That Trigger NoimosAI
 
 The `invoke-on-issue` job fires when **any** of these labels is present:
 
-| Label | NoimosAI task type |
-|---|---|
-| `noimosai` | general |
-| `marketing` | general |
-| `seo` | seo |
-| `content` | content |
-| `affiliate` | affiliate |
+| Label       | NoimosAI task type |
+| ----------- | ------------------ |
+| `noimosai`  | general            |
+| `marketing` | general            |
+| `seo`       | seo                |
+| `content`   | content            |
+| `affiliate` | affiliate          |
 
 ---
 
@@ -97,12 +97,12 @@ The `invoke-on-issue` job fires when **any** of these labels is present:
 
 Add the following labels to every Revvel repository. They are the entry point for NoimosAI automation:
 
-| Label | Hex color | Purpose |
-|---|---|---|
-| `noimosai` | `#7C5CFF` | Direct NoimosAI routing |
-| `marketing` | `#FF6B6B` | General marketing task |
-| `seo` | `#3DDCFF` | SEO and keyword task |
-| `content` | `#F7C948` | Content creation task |
+| Label       | Hex color | Purpose                    |
+| ----------- | --------- | -------------------------- |
+| `noimosai`  | `#7C5CFF` | Direct NoimosAI routing    |
+| `marketing` | `#FF6B6B` | General marketing task     |
+| `seo`       | `#3DDCFF` | SEO and keyword task       |
+| `content`   | `#F7C948` | Content creation task      |
 | `affiliate` | `#4CAF50` | Affiliate and revenue task |
 
 Add them to `.github/labels.yml` so `sync-labels.yml` propagates them automatically.
@@ -186,14 +186,14 @@ Follow these steps when adding NoimosAI to a new repository:
 
 ## 8. Revvel Project Inventory
 
-| Project | Domain | Primary NoimosAI use cases |
-|---|---|---|
-| Reese Reviews | reesereviews.com | Amazon Vine product SEO, affiliate optimization, review content |
-| GrowlingEyes | growlingeyes.oaudrey.com | Product discovery, influencer SEO, social content |
-| FieldWork | fieldwork.oaudrey.com | B2B landing-page copy, LinkedIn posts |
-| Soul2Bowl | soul2bowl.com | Local SEO, community newsletter, event content |
-| ColdTrace | coldtrace.oaudrey.com | Technical content marketing, case studies |
-| Penny Sovereign | penny-sovereign.oaudrey.com | Financial content SEO, newsletter |
+| Project         | Domain                      | Primary NoimosAI use cases                                      |
+| --------------- | --------------------------- | --------------------------------------------------------------- |
+| Reese Reviews   | reesereviews.com            | Amazon Vine product SEO, affiliate optimization, review content |
+| GrowlingEyes    | growlingeyes.oaudrey.com    | Product discovery, influencer SEO, social content               |
+| FieldWork       | fieldwork.oaudrey.com       | B2B landing-page copy, LinkedIn posts                           |
+| Soul2Bowl       | soul2bowl.com               | Local SEO, community newsletter, event content                  |
+| ColdTrace       | coldtrace.oaudrey.com       | Technical content marketing, case studies                       |
+| Penny Sovereign | penny-sovereign.oaudrey.com | Financial content SEO, newsletter                               |
 
 ---
 
@@ -212,26 +212,26 @@ Before marking NoimosAI as wired in for a project, confirm all of the following:
 
 ## 10. Troubleshooting
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| Workflow skipped with warning "NOIMOSAI_API_KEY is not set" | Secret not provisioned | Settings → Secrets → New secret: `NOIMOSAI_API_KEY` |
-| HTTP 401 response | Invalid or expired API key | Re-generate at noimosai.com; update the secret |
-| HTTP 429 rate limit | Too many simultaneous tasks | Add jitter/delay in dispatch; reduce `max-parallel` in matrix jobs |
-| Workflow file not found | Workflow not copied to target repo | Copy `.github/workflows/noimosai.yml` from revvel-standards |
-| No comment posted | `issues: write` permission not granted | Add `permissions: issues: write` to the `invoke-on-issue` job |
+| Symptom                                                     | Cause                                  | Fix                                                                |
+| ----------------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------ |
+| Workflow skipped with warning "NOIMOSAI_API_KEY is not set" | Secret not provisioned                 | Settings → Secrets → New secret: `NOIMOSAI_API_KEY`                |
+| HTTP 401 response                                           | Invalid or expired API key             | Re-generate at noimosai.com; update the secret                     |
+| HTTP 429 rate limit                                         | Too many simultaneous tasks            | Add jitter/delay in dispatch; reduce `max-parallel` in matrix jobs |
+| Workflow file not found                                     | Workflow not copied to target repo     | Copy `.github/workflows/noimosai.yml` from revvel-standards        |
+| No comment posted                                           | `issues: write` permission not granted | Add `permissions: issues: write` to the `invoke-on-issue` job      |
 
 ---
 
 ## 11. Related Files
 
-| File | Purpose |
-|---|---|
-| `.github/workflows/noimosai.yml` | The automation workflow |
-| `skills/noimosai/SKILL.md` | Agent skill instructions |
-| `.env.example` | `NOIMOSAI_API_KEY` and `NOIMOSAI_WORKSPACE_ID` documented |
-| `skills/REGISTRY.md` | NoimosAI entry in the skills registry |
-| `docs/AGENTS.md` | Automation routing section references NoimosAI |
+| File                             | Purpose                                                   |
+| -------------------------------- | --------------------------------------------------------- |
+| `.github/workflows/noimosai.yml` | The automation workflow                                   |
+| `skills/noimosai/SKILL.md`       | Agent skill instructions                                  |
+| `.env.example`                   | `NOIMOSAI_API_KEY` and `NOIMOSAI_WORKSPACE_ID` documented |
+| `skills/REGISTRY.md`             | NoimosAI entry in the skills registry                     |
+| `docs/AGENTS.md`                 | Automation routing section references NoimosAI            |
 
 ---
 
-*Part of the Revvel Standards ecosystem. See `standards/` for other integration standards.*
+_Part of the Revvel Standards ecosystem. See `standards/` for other integration standards._

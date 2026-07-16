@@ -1,4 +1,4 @@
-# WR: [WR]  please evaluate for use in revvel-standards this or one like it? https://github.com/PaddlePaddle/PaddleOCR
+# WR: [WR] please evaluate for use in revvel-standards this or one like it? https://github.com/PaddlePaddle/PaddleOCR
 
 **Issue:** #13653  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -47,29 +47,29 @@ on:
   workflow_dispatch:
     inputs:
       deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
+        description: "Run full deep market research (keywords, BOM, chatter, domain)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
+        description: "Generate Bill of Materials (API/tool comparison table)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
+        description: "Research Reddit/forums/TrustPilot for buyer complaints"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
+        description: "Full competitor pricing + gap analysis"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       research_depth:
-        description: 'Research depth level'
+        description: "Research depth level"
         type: choice
         options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
+        default: deep # ← default to deep, not standard
 ```
 
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a _starting point_ — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
 
 ---
 
@@ -83,15 +83,15 @@ on:
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-21 |
-| Last Updated | 2026-05-21 |
-| Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | ### Output Type (required)
+| Property         | Value                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created          | 2026-05-21                                                                              |
+| Last Updated     | 2026-05-21                                                                              |
+| Primary Language | JavaScript                                                                              |
+| Stars            | {STARS}                                                                                 |
+| Open Issues      | {OPEN_ISSUES}                                                                           |
+| Description      | ### Output Type (required)                                                              |
 
 production-app
 
@@ -161,8 +161,8 @@ please evaluate for use in revvel-standards this or one like it? https://github.
 - [x] Explicitly requested secondary items should not be silently deferred.
 - [x] If the PR is partial, the blocker must be documented.
 - [x] The PR should reflect the WR's required bundle and definition of done. |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+      | Private | {IS_PRIVATE} |
+      | Archived | {IS_ARCHIVED} |
 
 ### Current Status
 
@@ -192,6 +192,7 @@ please evaluate for use in revvel-standards this or one like it? https://github.
 ## Step 2: Deep Web Research
 
 > **Research Mandate:** Every WR MUST include ALL of the following subsections before implementation begins. Shallow research is insufficient. Discovery requires:
+>
 > - **(1) What is being used now** — existing solutions, pricing, mechanics
 > - **(2) What problem are we solving** — specific pain points from community research
 > - **(3) How much do people pay** — keyword CPCs, lead prices, subscription rates
@@ -208,6 +209,7 @@ please evaluate for use in revvel-standards this or one like it? https://github.
 [Research findings about market trends in this domain — include data points, stats, and growth signals]
 
 **Sources:**
+
 - [Link 1]: [Description]
 - [Link 2]: [Description]
 
@@ -216,20 +218,21 @@ please evaluate for use in revvel-standards this or one like it? https://github.
 [Who buys this product/uses this service? What specific life events or triggers drive purchase intent? Include audience segments with size estimates.]
 
 | Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| [Segment 1] | [Trigger] | High/Med/Low | [Size] |
-| [Segment 2] | [Trigger] | High/Med/Low | [Size] |
+| ---------------- | ------------- | ------------ | ---------------- |
+| [Segment 1]      | [Trigger]     | High/Med/Low | [Size]           |
+| [Segment 2]      | [Trigger]     | High/Med/Low | [Size]           |
 
 #### SEO & Keyword Research
 
 **This section is REQUIRED for any product with a web/content component.**
 
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| [primary keyword 1] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
-| [primary keyword 2] | [volume] | [$CPC] | High/Med/Low | Transactional/Informational |
+| Keyword             | Monthly Volume (US) | Avg CPC | Competition  | Intent                      |
+| ------------------- | ------------------- | ------- | ------------ | --------------------------- |
+| [primary keyword 1] | [volume]            | [$CPC]  | High/Med/Low | Transactional/Informational |
+| [primary keyword 2] | [volume]            | [$CPC]  | High/Med/Low | Transactional/Informational |
 
 **Long-tail / trigger-specific keywords:**
+
 - [keyword]: [volume] — [why it matters]
 - [keyword]: [volume] — [why it matters]
 
@@ -241,30 +244,30 @@ please evaluate for use in revvel-standards this or one like it? https://github.
 
 **Category: [Primary Data Source]**
 
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
-| [Option 2] | [$] | [Coverage] | [Use case] | |
+| API / Tool | Cost | Coverage   | Best For   | Verdict                                   |
+| ---------- | ---- | ---------- | ---------- | ----------------------------------------- |
+| [Option 1] | [$]  | [Coverage] | [Use case] | ⭐ Recommended / ✅ Acceptable / ❌ Avoid |
+| [Option 2] | [$]  | [Coverage] | [Use case] |                                           |
 
 **Category: [Compliance / Validation]**
 
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| [Option 1] | [$] | [Features] | [Use case] | |
+| API / Tool | Cost | Features   | Best For   | Verdict |
+| ---------- | ---- | ---------- | ---------- | ------- |
+| [Option 1] | [$]  | [Features] | [Use case] |         |
 
 **Category: [Delivery / Storefront]**
 
-| Platform | Rev Share | Best For | Verdict |
-|----------|-----------|----------|---------|
-| [Option 1] | [%] | [Use case] | |
+| Platform   | Rev Share | Best For   | Verdict |
+| ---------- | --------- | ---------- | ------- |
+| [Option 1] | [%]       | [Use case] |         |
 
 **BOM Cost Summary:**
 
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| [Category 1] | [Tool] | $[X] |
-| [Category 2] | [Tool] | $[X] |
-| **Total Infrastructure** | | **$[Total]/mo** |
+| Category                 | Recommended Tool | Est. Monthly Cost |
+| ------------------------ | ---------------- | ----------------- |
+| [Category 1]             | [Tool]           | $[X]              |
+| [Category 2]             | [Tool]           | $[X]              |
+| **Total Infrastructure** |                  | **$[Total]/mo**   |
 
 > **ROI Check:** [How many units/sales cover infrastructure cost?]
 
@@ -275,20 +278,20 @@ please evaluate for use in revvel-standards this or one like it? https://github.
 **Shared vs. Exclusive / Tiered pricing:**
 
 | Solution Type | How It Works | Cost | Conversion Rate | Why Some Are Worth More |
-|--------------|-------------|------|----------------|------------------------|
-| [Type 1] | [Mechanics] | [$] | [Rate] | [Value drivers] |
-| [Type 2] | [Mechanics] | [$] | [Rate] | [Value drivers] |
+| ------------- | ------------ | ---- | --------------- | ----------------------- |
+| [Type 1]      | [Mechanics]  | [$]  | [Rate]          | [Value drivers]         |
+| [Type 2]      | [Mechanics]  | [$]  | [Rate]          | [Value drivers]         |
 
 **Why some [units] are worth more than others:**
 [Enumerate the specific factors that increase value — recency, exclusivity, intent signal, geography, verification, compliance documentation, etc. with % premium estimates where available]
 
 #### Competitors & Alternatives
 
-| Competitor | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|------------|------|------|-------------------|--------------------------|
-| [Name 1] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| [Name 2] | [Type] | [Pricing] | [Quality/rate] | [Gap] |
-| **This Engine** | [Type] | [Pricing] | [Expected] | [Our advantage] |
+| Competitor      | Type   | Cost      | Conversion/Quality | Gap / What They Don't Do |
+| --------------- | ------ | --------- | ------------------ | ------------------------ |
+| [Name 1]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| [Name 2]        | [Type] | [Pricing] | [Quality/rate]     | [Gap]                    |
+| **This Engine** | [Type] | [Pricing] | [Expected]         | [Our advantage]          |
 
 #### API / Data Source BOM (REQUIRED)
 
@@ -296,12 +299,13 @@ please evaluate for use in revvel-standards this or one like it? https://github.
 
 If the WR involves outreach, messaging, or lead/contact data, the BOM must also define a **lookup-backed contactability model** (do not rely on a single yes/no compliance flag). Show which source types can start as contact-eligible, which require manual review, and which require pre-contact suppression/DNC checks.
 
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| [Provider 1] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
-| [Provider 2] | [Job-to-be-done] | [Output] | [Pricing] | [Strength] | [Risk] | [ToS/legal notes] |
+| Provider/API | Best For         | Data/Capability | Cost Model | Strengths  | Weaknesses/Risks | Compliance Notes  |
+| ------------ | ---------------- | --------------- | ---------- | ---------- | ---------------- | ----------------- |
+| [Provider 1] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
+| [Provider 2] | [Job-to-be-done] | [Output]        | [Pricing]  | [Strength] | [Risk]           | [ToS/legal notes] |
 
 **BOM Decision:**
+
 - Primary provider stack: [choice + reason]
 - Secondary/fallback stack: [choice + reason]
 - Why this BOM is superior for this WR: [evidence]
@@ -317,6 +321,7 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 3. **[Complaint 3]:** [Quote or paraphrase from community research]
 
 **What users/buyers actually want (opportunity signals):**
+
 - [Want 1]: [Why this is an opening]
 - [Want 2]: [Why this is an opening]
 
@@ -328,8 +333,8 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **High-value domain patterns for this niche:**
 
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
+| Pattern     | Examples   | Rationale      |
+| ----------- | ---------- | -------------- |
 | [Pattern 1] | [Examples] | [Why it works] |
 | [Pattern 2] | [Examples] | [Why it works] |
 
@@ -355,12 +360,13 @@ If the WR involves outreach, messaging, or lead/contact data, the BOM must also 
 
 **This section is REQUIRED. Research current marketing strategies in this niche.**
 
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
+| Strategy     | What Works Now                 | How This WR Improves It     |
+| ------------ | ------------------------------ | --------------------------- |
 | [Strategy 1] | [Current best practice + data] | [How our product is better] |
 | [Strategy 2] | [Current best practice + data] | [How our product is better] |
 
 **Inbound vs. Outbound ROI comparison:**
+
 - Inbound ROI: [Data + timeframe]
 - Outbound ROI: [Data + timeframe]
 - Recommended approach for this WR: [Recommendation with rationale]
@@ -375,6 +381,7 @@ Define a layered research engine using two AI fleets:
 **Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
 
 **Minimum pass criteria (required):**
+
 - All REQUIRED sections in Step 2 are present and non-empty
 - Zero unsupported factual claims in sampled checks
 - Citation coverage for factual claims ≥ 90% (factual claim = any specific statistic, price, market-size number, conversion-rate figure, or legal/compliance assertion)
@@ -385,6 +392,7 @@ Define a layered research engine using two AI fleets:
 **How to measure citation coverage:** use a simple review scorecard (`factual_claim_count`, `claims_with_source`, `coverage_percent`) in the WR or PR comment. Until automation exists, this remains a permanent manual checkpoint owned by the WR author and verified by the PR reviewer.
 
 **Counting example:**
+
 - Claim requiring citation: "LinkedIn paid API costs ~$100/mo" → must include source
 - Claim requiring citation: "Exclusive leads convert at 10–20%+" → must include source
 - Opinion/strategy statement: "This approach is better for SMB agencies" → citation optional (label as opinion)
@@ -396,6 +404,7 @@ Define a layered research engine using two AI fleets:
 #### Instruction Normalization (REQUIRED)
 
 User prompts and brainstorms are inputs, not immutable specs. Record:
+
 - What was accepted as-is
 - What was corrected/pivoted based on standards or evidence
 - What was rejected and why
@@ -409,11 +418,13 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### Prime Directive Alignment
 
 **10M by 2030 Goal:**
+
 - Current contribution: [$amount/month or $0]
 - Potential contribution: [$amount/month]
 - Path to contribution: [Strategy]
 
 **$2000+/month Target (Start: May 1, 2026):**
+
 - Revenue streams identified: [Count]
 - Estimated monthly revenue: [$amount]
 - Time to first revenue: [Weeks/months]
@@ -423,10 +434,12 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Autonomy Level:** [Low/Medium/High]
 
 **Blockers Identified:**
+
 1. [Blocker 1]: [Impact] → [Solution]
 2. [Blocker 2]: [Impact] → [Solution]
 
 **Autonomous Capabilities:**
+
 - [Capability 1]: [Status]
 - [Capability 2]: [Status]
 
@@ -435,10 +448,12 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Self-Healing:** [None/Partial/Full]
 
 **Implemented:**
+
 - [Feature 1]: [Description]
 - [Feature 2]: [Description]
 
 **Missing:**
+
 - [Feature 1]: [Description and priority]
 - [Feature 2]: [Description and priority]
 
@@ -452,6 +467,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Model Name:** [e.g., contactability_v1, seo_opportunity_v1, product_viability_v1]
 
 **Status Values:**
+
 - [ ] `eligible`
 - [ ] `manual_review`
 - [ ] `blocked`
@@ -461,18 +477,21 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Score Range:** 0-100
 
 **Weighted Factors:**
-| Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| [factor] | [0.00] | [input/source] | [reason] |
+
+| Factor   | Weight | Source         | Why it matters |
+| -------- | -----: | -------------- | -------------- |
+| [factor] | [0.00] | [input/source] | [reason]       |
 
 **Threshold Bands:**
-| Score Range | Status | Action |
-|---|---|---|
-| 80-100 | eligible | [export/route/approve] |
-| 50-79 | manual_review | [review queue] |
-| 0-49 | blocked | [suppress/reject] |
+
+| Score Range | Status        | Action                 |
+| ----------- | ------------- | ---------------------- |
+| 80-100      | eligible      | [export/route/approve] |
+| 50-79       | manual_review | [review queue]         |
+| 0-49        | blocked       | [suppress/reject]      |
 
 **Audit Trail Required:**
+
 - [ ] Model version recorded
 - [ ] Factor values recorded
 - [ ] Explanation trail recorded
@@ -482,6 +501,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Async Safety Rule:** If the decision writes audit logs, calls APIs, or routes manual review, evaluate with `Promise.all` or `for...of` before filtering. Do not call async eligibility functions directly inside `Array.prototype.filter`.
 
 **Tenant / Client Separation:**
+
 - **Organization boundary:** [Audrey-owned / client / partner]
 - **Project boundary:** [project/workstream ID]
 - **Data domain:** [enterprise / client / product / research]
@@ -492,6 +512,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Status:** [Not Ready / Needs Work / Ready / Deployed]
 
 **Readiness Checklist:**
+
 - [ ] All tests passing
 - [ ] No linting errors
 - [ ] No security vulnerabilities
@@ -512,6 +533,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Status:** [Pass/Fail/No tests]
 
 **Failures Identified:**
+
 1. [Test 1]: [Issue] → [Fix]
 2. [Test 2]: [Issue] → [Fix]
 
@@ -520,12 +542,14 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Status:** [Pass/Fail/No linter]
 
 **Errors Identified:**
+
 1. [Error 1]: [Location] → [Fix]
 2. [Error 2]: [Location] → [Fix]
 
 #### Security Vulnerabilities
 
 **Critical:** [Count]
+
 1. [Vulnerability]: [Impact] → [Fix]
 
 **High:** [Count]
@@ -537,6 +561,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Status:** [Working/Broken/Not configured]
 
 **Issues Identified:**
+
 1. [Issue 1]: [Impact] → [Fix]
 2. [Issue 2]: [Impact] → [Fix]
 
@@ -559,6 +584,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current UX Score:** [Rating/10]
 
 **Improvements:**
+
 1. [Improvement 1]: [Issue] → [Solution] → [Impact]
 2. [Improvement 2]: [Issue] → [Solution] → [Impact]
 
@@ -567,6 +593,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Accessibility:** [WCAG level]
 
 **Required:**
+
 - [ ] Keyboard navigation
 - [ ] Screen reader support
 - [ ] Color contrast (WCAG AA)
@@ -577,11 +604,13 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 #### Performance Optimization
 
 **Current Performance:**
+
 - Lighthouse Score: [Rating/100]
 - Load Time: [Seconds]
 - Bundle Size: [KB]
 
 **Optimizations:**
+
 1. [Optimization 1]: [Improvement] → [Expected gain]
 2. [Optimization 2]: [Improvement] → [Expected gain]
 
@@ -590,25 +619,29 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 #### Affiliate Links Integration
 
 **revvel-affiliate-links MCP:**
+
 - [ ] MCP server configured
 - [ ] Affiliate links identified
 - [ ] Links integrated in content
 - [ ] Tracking configured
 
 **Links to Add:**
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
+
+| Product/Service | Affiliate Program | Commission | Location       |
+| --------------- | ----------------- | ---------- | -------------- |
+| [Name]          | [Program]         | [Rate]     | [Where to add] |
 
 #### Payment Integration
 
 **Gumroad:**
+
 - [ ] Account setup
 - [ ] Products created
 - [ ] Integration implemented
 - [ ] Checkout tested
 
 **LemonSqueezy:**
+
 - [ ] Account setup
 - [ ] Products created
 - [ ] Integration implemented
@@ -621,6 +654,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Analytics:** [None/Partial/Full]
 
 **To Implement:**
+
 - [ ] Google Analytics 4
 - [ ] Plausible Analytics (privacy-friendly alternative)
 - [ ] Revenue tracking
@@ -637,6 +671,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current Status:** [Deployed/Not deployed/Needs fix]
 
 **Configuration:**
+
 - [ ] `vercel.json` configured
 - [ ] Environment variables set
 - [ ] Build command correct
@@ -644,6 +679,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 - [ ] Deployment protection configured
 
 **URLs:**
+
 - **Production:** [URL or "Not deployed"]
 - **Preview:** [URL or "Not configured"]
 
@@ -653,6 +689,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### UI Verification
 
 **Verification Checklist:**
+
 - [ ] Homepage renders correctly
 - [ ] All pages render correctly
 - [ ] All forms work
@@ -667,6 +704,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 - [ ] Links work correctly
 
 **Issues Found:**
+
 1. [Issue 1]: [Description] → [Fix]
 2. [Issue 2]: [Description] → [Fix]
 
@@ -682,14 +720,15 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current README Status:** [Has TEST section / Missing / Needs update]
 
 **Required Format:**
+
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
+| Feature   | Status     | URL                                       |
+| --------- | ---------- | ----------------------------------------- |
+| Homepage  | ✅ Working | https://{repo-name}.vercel.app            |
+| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard  |
+| API       | ✅ Working | https://{repo-name}.vercel.app/api/health |
 ```
 
 **Action Required:** [None / Add section / Update URLs]
@@ -699,6 +738,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 **Current README Status:** [Has deployment section / Missing / Needs update]
 
 **Required Format:**
+
 ```markdown
 ## Deployment
 
@@ -712,6 +752,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### Additional Documentation
 
 **Existing Documentation:**
+
 - [ ] README.md
 - [ ] CONTRIBUTING.md
 - [ ] LICENSE
@@ -737,6 +778,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### Implementation Tasks Created
 
 **Issues Created:**
+
 1. [Issue #X]: [Title] - [Priority]
 2. [Issue #Y]: [Title] - [Priority]
 
@@ -778,8 +820,8 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
+| Risk     | Severity     | Probability  | Mitigation        |
+| -------- | ------------ | ------------ | ----------------- |
 | [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
 | [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
 
@@ -790,10 +832,12 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### Alternative 1: [Name]
 
 **Pros:**
+
 - [Pro 1]
 - [Pro 2]
 
 **Cons:**
+
 - [Con 1]
 - [Con 2]
 
@@ -802,10 +846,12 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ### Alternative 2: [Name]
 
 **Pros:**
+
 - [Pro 1]
 - [Pro 2]
 
 **Cons:**
+
 - [Con 1]
 - [Con 2]
 
@@ -816,18 +862,22 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 ## References
 
 ### Documentation
+
 - [AGENTS.md](/docs/AGENTS.md)
 - [WEEKLY_RESEARCH_PROCESS.md](/docs/WEEKLY_RESEARCH_PROCESS.md)
 - [promptforproject.md](/promptforproject.md)
 
 ### External Resources
+
 - [Resource 1]: [Description]
 - [Resource 2]: [Description]
 - [Resource 3]: [Description]
 
 ### Research Sources
+
 - [Source 1]: [Description]
 - [Source 2]: [Description]
+
 # WR: [WR] evaluate PaddleOCR for use in revvel-standards
 
 **Issue:** #13653
@@ -874,12 +924,12 @@ JSON) which is critical for the LLM era.
 
 ### Bill of Materials (BOM) — APIs & Tools
 
-| API / Tool | Cost | Coverage | Best For | Verdict |
-| ---------- | ---- | -------- | -------- | ------- |
-| **PaddleOCR** | Free (Open Source) | 100+ languages, Document parsing to Markdown/JSON | High-speed scene OCR, complex documents, RAG pipelines | ⭐ Recommended |
-| **EasyOCR** | Free (Open Source) | 80+ languages | Simple implementation, lightweight apps | ✅ Acceptable |
-| **Tesseract** | Free (Open Source) | 100+ languages | Legacy systems, simple text | ❌ Avoid (slower, less accurate on complex layouts) |
-| **AWS Textract** | ~$1.50/1k pages | High | Enterprise-grade document analysis | ❌ Avoid (cost-prohibitive for large scale open-source) |
+| API / Tool       | Cost               | Coverage                                          | Best For                                               | Verdict                                                 |
+| ---------------- | ------------------ | ------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------- |
+| **PaddleOCR**    | Free (Open Source) | 100+ languages, Document parsing to Markdown/JSON | High-speed scene OCR, complex documents, RAG pipelines | ⭐ Recommended                                          |
+| **EasyOCR**      | Free (Open Source) | 80+ languages                                     | Simple implementation, lightweight apps                | ✅ Acceptable                                           |
+| **Tesseract**    | Free (Open Source) | 100+ languages                                    | Legacy systems, simple text                            | ❌ Avoid (slower, less accurate on complex layouts)     |
+| **AWS Textract** | ~$1.50/1k pages    | High                                              | Enterprise-grade document analysis                     | ❌ Avoid (cost-prohibitive for large scale open-source) |
 
 ### Community Chatter & Competitor Analysis
 
@@ -892,11 +942,11 @@ JSON) which is critical for the LLM era.
 
 ### Files Delivered
 
-| File | Purpose |
-| ---- | ------- |
-| `products/revvel-skill-runner/app/api/ocr/route.ts` | Cloud OCR endpoint (OpenRouter vision model → Markdown) |
-| `products/revvel-skill-runner/app/page.tsx` | OCR Document Parser skill card with image URL input |
-| `scripts/ocr-service.py` | Local PaddleOCR CLI — PP-Structure for Markdown/JSON extraction |
+| File                                                | Purpose                                                         |
+| --------------------------------------------------- | --------------------------------------------------------------- |
+| `products/revvel-skill-runner/app/api/ocr/route.ts` | Cloud OCR endpoint (OpenRouter vision model → Markdown)         |
+| `products/revvel-skill-runner/app/page.tsx`         | OCR Document Parser skill card with image URL input             |
+| `scripts/ocr-service.py`                            | Local PaddleOCR CLI — PP-Structure for Markdown/JSON extraction |
 
 ### Cloud Path (Immediate — no Python install needed)
 
@@ -916,7 +966,10 @@ Content-Type: application/json
 Response:
 
 ```json
-{ "output": "## Invoice\n\n| Item | Price |\n|------|-------|\n...", "model": "..." }
+{
+  "output": "## Invoice\n\n| Item | Price |\n|------|-------|\n...",
+  "model": "..."
+}
 ```
 
 ### Local / Edge Path (PaddleOCR)
@@ -935,11 +988,11 @@ python scripts/ocr-service.py --input ./invoice.png --format json
 
 Environment variables:
 
-| Variable | Default | Description |
-| -------- | ------- | ----------- |
-| `OCR_LANG` | `en` | Target language code (e.g. `ch`, `fr`, `ja`) |
-| `OCR_GPU` | `0` | Set to `1` to enable GPU inference |
-| `OCR_ANGLE_CLS` | `1` | Set to `0` to skip angle classification |
+| Variable        | Default | Description                                  |
+| --------------- | ------- | -------------------------------------------- |
+| `OCR_LANG`      | `en`    | Target language code (e.g. `ch`, `fr`, `ja`) |
+| `OCR_GPU`       | `0`     | Set to `1` to enable GPU inference           |
+| `OCR_ANGLE_CLS` | `1`     | Set to `0` to skip angle classification      |
 
 ### RAG Pipeline Integration
 
@@ -975,9 +1028,15 @@ markdown_content = result.stdout
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
 
 # ─────────────────────────────────────────────────────────────────────────────
+
 # END ADVANCED TEMPLATE
-# 
+
+#
+
 # For advanced users who want full control
+
 # Use WR_TEMPLATE_BASIC.md for simple WRs (recommended)
+
 # ─────────────────────────────────────────────────────────────────────────────
+
 **Last Updated:** 2026-05-21

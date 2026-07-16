@@ -22,21 +22,26 @@ A complete E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) a
 ## Files Created (8 files, 52 KB)
 
 ### Core Skill
+
 - `skills/eeat-trust-authority/SKILL.md` (17.7 KB)
 - `skills/eeat-trust-authority/eeat-trust-authority.skill.yml` (3.2 KB)
 - `skills/eeat-trust-authority/README.md` (2.3 KB)
 - `skills/eeat-trust-authority/QUICK_REFERENCE.md` (1.8 KB)
 
 ### Automation
+
 - `.github/workflows/eeat-trust-cron.yml` (11.4 KB)
 
 ### Documentation
+
 - `docs/EEAT_AUTOMATION.md` (12.9 KB)
 
 ### Templates
+
 - `templates/brand/BRAND_STATEMENT_AUDREY_EVANS.md` (3.5 KB)
 
 ### Registry
+
 - `skills/REGISTRY.md` (updated)
 
 ---
@@ -78,6 +83,7 @@ ls -lt docs/reports/eeat-health-*.md | head -1
 ## What TrustForge Does
 
 ### Daily Tasks (Automated)
+
 - ✅ Verify schema markup on all properties
 - ✅ Check HTTPS certificates
 - ✅ Validate canonical URLs
@@ -86,6 +92,7 @@ ls -lt docs/reports/eeat-health-*.md | head -1
 - ✅ Generate health report
 
 ### Weekly Tasks
+
 - Audit NAP (Name, Address, Phone) consistency
 - Review brand statement
 - Check ORCID for new publications
@@ -93,12 +100,14 @@ ls -lt docs/reports/eeat-health-*.md | head -1
 - Review backlink profile
 
 ### Monthly Tasks
+
 - Full Lighthouse SEO audit
 - Update schema.org markup
 - Review Google Business Profile
 - Audit social media consistency
 
 ### Quarterly Tasks
+
 - Citation network expansion
 - Knowledge Panel optimization
 - Content E-E-A-T audit
@@ -115,11 +124,13 @@ ls -lt docs/reports/eeat-health-*.md | head -1
 **Location:** Northern Colorado
 
 **Properties:**
+
 1. [GrowlingEyes](https://growlingeyes.com/) — Threat intelligence
 2. [Neurooz](https://neurooz.com/) — Neurodivergent UX app
 3. [Fidelity Trust Services](https://fidelitytrustservices.com/) — Legal consulting
 
 **Professional Affiliations:**
+
 - American Legion: Member ID 302393962
 - PMI: ID 593830
 - SBA Certified: Minority-Owned, Veteran-Connected
@@ -132,29 +143,29 @@ Add this to every page `<head>`:
 
 ```html
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "[Your App Name]",
-  "url": "[Your App URL]",
-  "logo": "[Your Logo URL]",
-  "foundingDate": "2010",
-  "founder": {
-    "@type": "Person",
-    "name": "Audrey Evans",
-    "sameAs": [
-      "https://orcid.org/0009-0005-0663-7832",
-      "https://github.com/midnghtsapphire",
-      "https://github.com/MIDNGHTSAPPHIRE"
-    ]
-  },
-  "parentOrganization": {
+  {
+    "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Freedom Angel Corp",
+    "name": "[Your App Name]",
+    "url": "[Your App URL]",
+    "logo": "[Your Logo URL]",
     "foundingDate": "2010",
-    "taxID": "86-1209156"
+    "founder": {
+      "@type": "Person",
+      "name": "Audrey Evans",
+      "sameAs": [
+        "https://orcid.org/0009-0005-0663-7832",
+        "https://github.com/midnghtsapphire",
+        "https://github.com/MIDNGHTSAPPHIRE"
+      ]
+    },
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "Freedom Angel Corp",
+      "foundingDate": "2010",
+      "taxID": "86-1209156"
+    }
   }
-}
 </script>
 ```
 
@@ -163,11 +174,13 @@ Add this to every page `<head>`:
 ## Enable/Disable Control
 
 ### Enable
+
 ```bash
 gh issue create --title "exit-quiet-mode"
 ```
 
 ### Disable
+
 ```bash
 # Find the issue number
 gh issue list --search "exit-quiet-mode in:title" --state open
@@ -177,6 +190,7 @@ gh issue close <issue-number>
 ```
 
 ### Manual Run (Bypass Quiet Mode)
+
 ```bash
 # Dry run (report only)
 gh workflow run eeat-trust-cron.yml -f dry_run=true
@@ -189,16 +203,16 @@ gh workflow run eeat-trust-cron.yml
 
 ## Success Metrics
 
-| Metric | Target |
-|--------|--------|
-| Schema markup coverage | 100% |
-| Lighthouse SEO score | ≥ 90 |
-| Google Knowledge Panel | Active |
-| ORCID backlinks | ≥ 5 |
-| Authority backlinks | +10/quarter |
-| NAP consistency | 100% |
-| HTTPS coverage | 100% |
-| Broken links | 0 |
+| Metric                 | Target      |
+| ---------------------- | ----------- |
+| Schema markup coverage | 100%        |
+| Lighthouse SEO score   | ≥ 90        |
+| Google Knowledge Panel | Active      |
+| ORCID backlinks        | ≥ 5         |
+| Authority backlinks    | +10/quarter |
+| NAP consistency        | 100%        |
+| HTTPS coverage         | 100%        |
+| Broken links           | 0           |
 
 ---
 
@@ -220,12 +234,14 @@ gh workflow run eeat-trust-cron.yml
 **Answer:** Doppler provides secrets management. TrustForge implements E-E-A-T strategy. Both are needed.
 
 **Doppler manages:**
+
 - ✅ OPENROUTER_API_KEY (already configured)
 - ✅ GITHUB_TOKEN (already configured)
 - ⚠️ GOOGLE_SEARCH_CONSOLE_KEY (add this)
 - ⚠️ GOOGLE_BUSINESS_PROFILE_KEY (add this)
 
 **TrustForge manages:**
+
 - ✅ E-E-A-T strategy
 - ✅ Schema.org markup
 - ✅ Brand consistency
@@ -248,6 +264,7 @@ gh workflow run eeat-trust-cron.yml
 ## Support
 
 For questions about TrustForge:
+
 1. Read `skills/eeat-trust-authority/SKILL.md` (complete documentation)
 2. Check `QUICK_REFERENCE.md` (one-page reference)
 3. Review health reports in `docs/reports/eeat-health-*.md`
@@ -255,6 +272,6 @@ For questions about TrustForge:
 
 ---
 
-*TrustForge v1.0.0 — E-E-A-T Trust Authority Agent*  
-*Created: April 30, 2026*  
-*Status: Ready to use*
+_TrustForge v1.0.0 — E-E-A-T Trust Authority Agent_  
+_Created: April 30, 2026_  
+_Status: Ready to use_

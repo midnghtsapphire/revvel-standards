@@ -9,6 +9,7 @@ This directory contains n8n workflow templates for automation.
 **File**: `pdf-product-creation.json`
 
 **Purpose**: Automate the complete 6-step process for creating and marketing PDF products:
+
 1. Identify profitable emotional problems
 2. Generate catchy titles with Claude AI
 3. Create PDF content with Claude AI
@@ -17,6 +18,7 @@ This directory contains n8n workflow templates for automation.
 6. Prepare YouTube influencer marketing campaign
 
 **Import Instructions**:
+
 1. Install n8n (Docker or npm)
 2. Open n8n at http://localhost:5678
 3. Go to Workflows → Import from File
@@ -28,6 +30,7 @@ This directory contains n8n workflow templates for automation.
 **Documentation**: See `../PDF_AUTOMATION_GUIDE.md` for complete setup guide.
 
 **Quick Test**:
+
 ```bash
 curl -X POST <your-webhook-url> \
   -H "Content-Type: application/json" \
@@ -95,6 +98,7 @@ For the PDF Product Creation workflow, you'll need:
 ## Support
 
 For detailed setup instructions, troubleshooting, and advanced features:
+
 - **PDF Automation**: `../PDF_AUTOMATION_GUIDE.md`
 - **Setup Script**: `../setup-pdf-automation.sh n8n`
 - **Test Script**: `../test-workflow.sh <webhook-url>`

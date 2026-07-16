@@ -74,7 +74,8 @@ const CHANNEL_TO_RUNNER = {
 /** Map an intake to a ship-to-market deliver channel. */
 function deliverChannelFor({ output_type, shape } = {}) {
   if (shape && SHAPE_TO_CHANNEL[shape]) return SHAPE_TO_CHANNEL[shape];
-  if (output_type && OUTPUT_TYPE_TO_CHANNEL[output_type]) return OUTPUT_TYPE_TO_CHANNEL[output_type];
+  if (output_type && OUTPUT_TYPE_TO_CHANNEL[output_type])
+    return OUTPUT_TYPE_TO_CHANNEL[output_type];
   return "docs"; // safe default: ship docs rather than fail
 }
 
@@ -95,8 +96,13 @@ function parseIntake(jsonContent) {
 
 function normalizeIntake(raw = {}) {
   const intake = { ...raw };
-  if (intake.revenue_target_monthly_usd !== undefined && intake.revenue_target_monthly_usd !== null) {
-    intake.revenue_target_monthly_usd = Number(intake.revenue_target_monthly_usd);
+  if (
+    intake.revenue_target_monthly_usd !== undefined &&
+    intake.revenue_target_monthly_usd !== null
+  ) {
+    intake.revenue_target_monthly_usd = Number(
+      intake.revenue_target_monthly_usd,
+    );
   }
   const phase = Number(intake.goal_phase);
   intake.goal_phase = [1, 2, 3, 4].includes(phase) ? phase : 1;
@@ -131,7 +137,12 @@ function buildState(intake) {
         artifacts: [],
         evidence: [],
       },
-      { step_id: "research", engine: "research-engine", status: "pending", runner_target: null },
+      {
+        step_id: "research",
+        engine: "research-engine",
+        status: "pending",
+        runner_target: null,
+      },
       {
         step_id: `deliver-${channel}`,
         engine: "ship-to-market",
@@ -173,7 +184,7 @@ function orchestrate(intake, opts = {}) {
     Number.isNaN(intake.revenue_target_monthly_usd)
   ) {
     throw new Error(
-      "Refusing intake: no revenue_target_monthly_usd declared (engines/CONTRACT.md Rule 4)."
+      "Refusing intake: no revenue_target_monthly_usd declared (engines/CONTRACT.md Rule 4).",
     );
   }
   if (!intake.product_slug) {
@@ -185,21 +196,35 @@ function orchestrate(intake, opts = {}) {
   // CONTRACT Rule 3 — never write state that fails the schema.
   const { valid, errors } = validateState(state);
   if (!valid) {
-    throw new Error(`State failed schema validation: ${JSON.stringify(errors)}`);
+    throw new Error(
+      `State failed schema validation: ${JSON.stringify(errors)}`,
+    );
   }
 
   const channel = deliverChannelFor(intake);
   const deliverLabel = `deliver:${channel}`;
   const outPath = opts.outPath
     ? path.resolve(opts.outPath)
-    : path.join(REPO_ROOT, "projects", "agent-generated", intake.product_slug, "state.json");
+    : path.join(
+        REPO_ROOT,
+        "projects",
+        "agent-generated",
+        intake.product_slug,
+        "state.json",
+      );
 
   if (!opts.dryRun) {
     fs.mkdirSync(path.dirname(outPath), { recursive: true });
     fs.writeFileSync(outPath, JSON.stringify(state, null, 2) + "\n");
   }
 
-  return { state, deliverLabel, channel, outPath: opts.dryRun ? null : outPath, status: state.status };
+  return {
+    state,
+    deliverLabel,
+    channel,
+    outPath: opts.dryRun ? null : outPath,
+    status: state.status,
+  };
 }
 
 /**
@@ -225,21 +250,31 @@ const DEFAULT_REGISTRY = {
               category: "credential",
               cost_usd: 0,
               source: "https://openrouter.ai/keys",
-              acquisition: "Create an OpenRouter account, generate a key, and add OPENROUTER_API_KEY to repo secrets.",
+              acquisition:
+                "Create an OpenRouter account, generate a key, and add OPENROUTER_API_KEY to repo secrets.",
               blocking: true,
             },
           ],
         },
       };
     }
-    return { step_id: "research", engine_label: "research-engine", status: "ok", next_engine: "deliver" };
+    return {
+      step_id: "research",
+      engine_label: "research-engine",
+      status: "ok",
+      next_engine: "deliver",
+    };
   },
 
   // Deliver lane. Produces the deliver:<channel> label artifact that
   // ship-to-market.yml consumes, then finishes (no next_engine -> done).
   deliver: ({ state }) => {
-    const deliverStep = state.steps.find((s) => s.step_id.startsWith("deliver-"));
-    const channel = deliverStep ? deliverStep.step_id.slice("deliver-".length) : "docs";
+    const deliverStep = state.steps.find((s) =>
+      s.step_id.startsWith("deliver-"),
+    );
+    const channel = deliverStep
+      ? deliverStep.step_id.slice("deliver-".length)
+      : "docs";
     return {
       step_id: `deliver-${channel}`,
       engine_label: "ship-to-market",
@@ -262,7 +297,7 @@ function writeBom(dir, bom) {
     "| --- | --- | --- | --- | --- | --- |",
     ...bom.items.map(
       (i) =>
-        `| ${i.name} | ${i.category || ""} | ${i.cost_usd ?? ""} | ${i.source || ""} | ${i.acquisition || ""} | ${i.blocking ? "yes" : "no"} |`
+        `| ${i.name} | ${i.category || ""} | ${i.cost_usd ?? ""} | ${i.source || ""} | ${i.acquisition || ""} | ${i.blocking ? "yes" : "no"} |`,
     ),
     "",
   ];
@@ -303,7 +338,11 @@ function runEngineLoop(state, opts = {}) {
 
     let step = state.steps.find((s) => s.step_id === stepId);
     if (!step) {
-      step = { step_id: stepId, engine: result.engine_label || engineName, status: "pending" };
+      step = {
+        step_id: stepId,
+        engine: result.engine_label || engineName,
+        status: "pending",
+      };
       state.steps.push(step);
     }
     step.engine = result.engine_label || step.engine || engineName;
@@ -311,7 +350,8 @@ function runEngineLoop(state, opts = {}) {
     step.finished_at = now;
     step.artifacts = result.artifacts || step.artifacts || [];
     step.evidence = result.evidence || step.evidence || [];
-    if (result.runner_target !== undefined) step.runner_target = result.runner_target;
+    if (result.runner_target !== undefined)
+      step.runner_target = result.runner_target;
     if (result.error) step.error = result.error;
     if (result.bom_ref) step.bom_ref = result.bom_ref;
     state.updated_at = now;
@@ -319,7 +359,9 @@ function runEngineLoop(state, opts = {}) {
     // Rule 3: never advance on a state that violates the schema.
     const { valid, errors } = validateState(state);
     if (!valid) {
-      throw new Error(`State failed schema validation after ${engineName}: ${JSON.stringify(errors)}`);
+      throw new Error(
+        `State failed schema validation after ${engineName}: ${JSON.stringify(errors)}`,
+      );
     }
 
     if (result.bom) {
@@ -350,7 +392,10 @@ function runResearch(intake) {
     ISSUE_TITLE: intake.title || intake.product_slug,
     ISSUE_BODY: intake.body || "",
   };
-  const result = spawnSync("node", [RESEARCH_SCRIPT], { env, stdio: "inherit" });
+  const result = spawnSync("node", [RESEARCH_SCRIPT], {
+    env,
+    stdio: "inherit",
+  });
   return result.status === 0;
 }
 
@@ -360,7 +405,12 @@ function parseArgs(argv) {
     const a = argv[i];
     if (!a.startsWith("--")) continue;
     const key = a.slice(2);
-    if (key === "run" || key === "research" || key === "dry-run" || key === "help") {
+    if (
+      key === "run" ||
+      key === "research" ||
+      key === "dry-run" ||
+      key === "help"
+    ) {
       flags[key] = true;
     } else {
       flags[key] = argv[i + 1];
@@ -373,7 +423,10 @@ function parseArgs(argv) {
 function intakeFromFlags(flags) {
   const intake = {};
   if (flags.wr) {
-    Object.assign(intake, parseIntake(fs.readFileSync(path.resolve(flags.wr), "utf8")));
+    Object.assign(
+      intake,
+      parseIntake(fs.readFileSync(path.resolve(flags.wr), "utf8")),
+    );
   }
   if (flags.slug) intake.product_slug = flags.slug;
   if (flags.revenue) intake.revenue_target_monthly_usd = flags.revenue;
@@ -414,13 +467,23 @@ function main() {
     return;
   }
   const intake = intakeFromFlags(flags);
-  const result = orchestrate(intake, { outPath: flags.out, dryRun: flags["dry-run"] });
+  const result = orchestrate(intake, {
+    outPath: flags.out,
+    dryRun: flags["dry-run"],
+  });
 
-  console.log(`🎯 intake: ${intake.product_slug} · $${intake.revenue_target_monthly_usd}/mo · phase ${intake.goal_phase}`);
-  console.log(`📦 deliver channel: ${result.channel} → label ${result.deliverLabel}`);
-  if (result.outPath) console.log(`💾 state.json: ${path.relative(REPO_ROOT, result.outPath)}`);
+  console.log(
+    `🎯 intake: ${intake.product_slug} · $${intake.revenue_target_monthly_usd}/mo · phase ${intake.goal_phase}`,
+  );
+  console.log(
+    `📦 deliver channel: ${result.channel} → label ${result.deliverLabel}`,
+  );
+  if (result.outPath)
+    console.log(`💾 state.json: ${path.relative(REPO_ROOT, result.outPath)}`);
   else console.log("💡 dry-run: no files written");
-  console.log(`➡️  next: apply ${result.deliverLabel} to the PR (ship-to-market.yml will ship it)`);
+  console.log(
+    `➡️  next: apply ${result.deliverLabel} to the PR (ship-to-market.yml will ship it)`,
+  );
 
   if (flags.run) {
     const { state, status, bomPath } = runEngineLoop(result.state, {
@@ -428,17 +491,25 @@ function main() {
       bomDir: result.outPath ? path.dirname(result.outPath) : process.cwd(),
       dryRun: Boolean(flags["dry-run"]),
     });
-    if (result.outPath) fs.writeFileSync(result.outPath, JSON.stringify(state, null, 2) + "\n");
-    const trail = state.steps.map((s) => `${s.step_id}:${s.status}`).join(" → ");
+    if (result.outPath)
+      fs.writeFileSync(result.outPath, JSON.stringify(state, null, 2) + "\n");
+    const trail = state.steps
+      .map((s) => `${s.step_id}:${s.status}`)
+      .join(" → ");
     console.log(`🔁 engine loop: ${trail}`);
     console.log(`🏁 status: ${status}`);
-    if (bomPath) console.log(`🧾 procurement BOM written: ${path.relative(REPO_ROOT, bomPath)}`);
+    if (bomPath)
+      console.log(
+        `🧾 procurement BOM written: ${path.relative(REPO_ROOT, bomPath)}`,
+      );
   }
 
   if (flags.research && !flags["dry-run"]) {
     console.log("🔬 running research engine...");
     const ok = runResearch(intake);
-    console.log(ok ? "✅ research complete" : "⚠️ research engine exited non-zero");
+    console.log(
+      ok ? "✅ research complete" : "⚠️ research engine exited non-zero",
+    );
   }
 }
 

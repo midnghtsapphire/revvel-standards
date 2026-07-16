@@ -12,6 +12,7 @@
 Single Sign-On (SSO) via SAML 2.0 is the **required** login method for all Revvel and MIDNGHTSAPPHIRE applications that serve internal users or operate under a GitHub organization with SSO enabled. SSO must be offered as a login option in every app and used wherever a user's corporate identity needs to be resolved.
 
 This standard covers:
+
 - When and how to offer SSO login in applications
 - How to resolve a GitHub username to its SAML/SSO email identity in CI/CD
 - GitHub organization SSO enforcement requirements
@@ -30,20 +31,20 @@ Clerk supports SAML SSO natively for enterprise plans. Enable it in every app:
 3. Supply the IdP metadata URL or XML to Clerk
 4. Map IdP attributes to Clerk user fields:
 
-   | IdP Attribute | Clerk Field |
-   |---|---|
-   | `email` | `emailAddress` |
-   | `firstName` | `firstName` |
-   | `lastName` | `lastName` |
-   | `groups` | `organizationMemberships` |
+   | IdP Attribute | Clerk Field               |
+   | ------------- | ------------------------- |
+   | `email`       | `emailAddress`            |
+   | `firstName`   | `firstName`               |
+   | `lastName`    | `lastName`                |
+   | `groups`      | `organizationMemberships` |
 
 5. Set SSO as the **default** login method for organization members.
 
 ```ts
 // Next.js — enforce SSO on protected routes via Clerk middleware
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const isProtected = createRouteMatcher(['/dashboard(.*)', '/admin(.*)']);
+const isProtected = createRouteMatcher(["/dashboard(.*)", "/admin(.*)"]);
 
 export default clerkMiddleware((auth, req) => {
   if (isProtected(req)) {
@@ -51,7 +52,7 @@ export default clerkMiddleware((auth, req) => {
   }
 });
 
-export const config = { matcher: ['/((?!.*\\..*|_next).*)', '/'] };
+export const config = { matcher: ["/((?!.*\\..*|_next).*)", "/"] };
 ```
 
 ### 2.2. Offering SSO as a Login Option
@@ -60,14 +61,14 @@ Every app that has a login page must present SSO alongside other methods:
 
 ```tsx
 // components/LoginPage.tsx (example pattern)
-import { SignIn } from '@clerk/nextjs';
+import { SignIn } from "@clerk/nextjs";
 
 export default function LoginPage() {
   return (
     <SignIn
       appearance={{
         elements: {
-          socialButtonsBlockButton: 'sso-button',
+          socialButtonsBlockButton: "sso-button",
         },
       }}
     />
@@ -76,6 +77,7 @@ export default function LoginPage() {
 ```
 
 **Rules:**
+
 - SSO must appear as the **first** login option for users accessing from an organization domain.
 - Password-only login is **forbidden** for admin accounts — SSO or MFA is required.
 - SSO session tokens must be stored in `httpOnly` cookies, not `localStorage`.
@@ -98,8 +100,8 @@ GitHub Actions exposes `github.actor` (the GitHub username), but not the user's 
 
 The token used to query SAML identities **must** have the `admin:org` scope. This is not available via the default `GITHUB_TOKEN` — it requires a dedicated secret.
 
-| Secret | Description |
-|---|---|
+| Secret            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
 | `ORG_ADMIN_TOKEN` | A GitHub PAT or App installation token with `admin:org` scope |
 
 Store this secret in GitHub → Settings → Secrets → Actions → `ORG_ADMIN_TOKEN`.
@@ -162,11 +164,11 @@ For the full reusable template, see `templates/cicd/get-saml-identity.yml`.
 Not every GitHub user in an organization will have a linked SAML identity (e.g., bot accounts, external collaborators without SSO). Always guard against an empty output:
 
 ```yaml
-      - name: Fail if no SSO identity found
-        if: ${{ steps.saml.outputs.identity == '' }}
-        run: |
-          echo "::error::No SAML/SSO identity found for ${{ github.actor }}. Ensure SSO is configured."
-          exit 1
+- name: Fail if no SSO identity found
+  if: ${{ steps.saml.outputs.identity == '' }}
+  run: |
+    echo "::error::No SAML/SSO identity found for ${{ github.actor }}. Ensure SSO is configured."
+    exit 1
 ```
 
 ---
@@ -198,12 +200,12 @@ gh api graphql -f query='
 
 ## 5. Secret Management for SSO Credentials
 
-| Secret | Vault Path | GitHub Secret Name |
-|---|---|---|
-| SAML IdP metadata URL | `revvel/sso/prod/idp_metadata_url` | `SAML_IDP_METADATA_URL` |
-| SAML certificate | `revvel/sso/prod/saml_certificate` | `SAML_CERTIFICATE` |
-| Org admin token (for SAML queries) | `revvel/sso/prod/org_admin_token` | `ORG_ADMIN_TOKEN` |
-| Clerk SAML connection ID | `revvel/sso/prod/clerk_saml_connection_id` | `CLERK_SAML_CONNECTION_ID` |
+| Secret                             | Vault Path                                 | GitHub Secret Name         |
+| ---------------------------------- | ------------------------------------------ | -------------------------- |
+| SAML IdP metadata URL              | `revvel/sso/prod/idp_metadata_url`         | `SAML_IDP_METADATA_URL`    |
+| SAML certificate                   | `revvel/sso/prod/saml_certificate`         | `SAML_CERTIFICATE`         |
+| Org admin token (for SAML queries) | `revvel/sso/prod/org_admin_token`          | `ORG_ADMIN_TOKEN`          |
+| Clerk SAML connection ID           | `revvel/sso/prod/clerk_saml_connection_id` | `CLERK_SAML_CONNECTION_ID` |
 
 All secrets follow the Vault Agent Standard (`VAULT_AGENT_STANDARD.md`).
 

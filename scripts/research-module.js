@@ -5,7 +5,9 @@ let engine;
 try {
   engine = require("./research-engine.js");
 } catch (error) {
-  const compatError = new Error(`Unable to load scripts/research-engine.js: ${error.message}`);
+  const compatError = new Error(
+    `Unable to load scripts/research-engine.js: ${error.message}`,
+  );
   compatError.cause = error;
   throw compatError;
 }
@@ -15,7 +17,7 @@ function getRequiredCompatEnvVar(name, env = process.env) {
   if (typeof value !== "string" || value.trim() === "") {
     throw new Error(
       `Missing required environment variable: ${name}. ` +
-      `Set ${name} before running scripts/research-module.js.`,
+        `Set ${name} before running scripts/research-module.js.`,
     );
   }
   return value.trim();
@@ -39,7 +41,10 @@ function getCompatOptions(env = process.env) {
   };
 }
 
-async function runCompatibilityResearch(env = process.env, runner = engine.runResearchEngine) {
+async function runCompatibilityResearch(
+  env = process.env,
+  runner = engine.runResearchEngine,
+) {
   const options = getCompatOptions(env);
   return await runner(options);
 }
@@ -66,7 +71,9 @@ if (require.main === module) {
       engine && typeof engine.truncateForComment === "function"
         ? engine.truncateForComment
         : (value) => String(value || "");
-    console.error(`Research module failed: ${truncate(error.stack || error.message)}`);
+    console.error(
+      `Research module failed: ${truncate(error.stack || error.message)}`,
+    );
     process.exit(1);
   });
 }

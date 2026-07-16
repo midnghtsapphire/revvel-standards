@@ -8,21 +8,25 @@
 
 ---
 
-**WR Status:** {STATUS}  
+**WR Status:** {STATUS}
 
 ## Issue Context
+
 {ISSUE_BODY}
 
 ## Repository Metadata
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
+
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -31,19 +35,25 @@
 - [ ] Monetization
 
 ## Executive Summary
+
 {EXECUTIVE_SUMMARY}
 
 ## Step 1A — Product/Output Selections
+
 {PRODUCT_SELECTIONS}
 
 ## Step 2 — Deep Web Research
+
 {DEEP_WEB_RESEARCH}
 
 ## Step 3 — Requirements
+
 {REQUIREMENTS}
 
 ## Recommendations
+
 {RECOMMENDATIONS}
 
 ## Risks
+
 {RISKS}

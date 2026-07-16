@@ -12,23 +12,23 @@ human owner does not have to add region/palette/prompt guidance mid-PR.
 
 ## When to use these packs
 
-| WR Output Type | Apply packs? | Which ones |
-| --- | --- | --- |
-| `merchandise`, `logo`, `branded-asset`, `apparel`, `sticker-pack`, `print-collateral` | **Required** | All three |
-| `web`, `mobile`, `api` with a brand-identity scope | **Required if regional/local audience** | Regional + Palette |
-| `pdf`, `sellable-pdf` with cover design | **Required** | Palette + Prompt-pack |
-| `research`, `cli`, anything non-visual | Skip | — |
+| WR Output Type                                                                        | Apply packs?                            | Which ones            |
+| ------------------------------------------------------------------------------------- | --------------------------------------- | --------------------- |
+| `merchandise`, `logo`, `branded-asset`, `apparel`, `sticker-pack`, `print-collateral` | **Required**                            | All three             |
+| `web`, `mobile`, `api` with a brand-identity scope                                    | **Required if regional/local audience** | Regional + Palette    |
+| `pdf`, `sellable-pdf` with cover design                                               | **Required**                            | Palette + Prompt-pack |
+| `research`, `cli`, anything non-visual                                                | Skip                                    | —                     |
 
 The research orchestrator decides via the WR's Output Type field. When in
 doubt — include them; redundant context is cheaper than a second iteration.
 
 ## The three packs
 
-| File | What it forces the research lane to produce |
-| --- | --- |
-| [`regional-cultural-motif-template.md`](./regional-cultural-motif-template.md) | A ranked motif shortlist for the WR's target region, with a licensing-risk + cultural-fit gate, derived from the actual local landmarks / traditions / colors. |
-| [`color-palette-template.md`](./color-palette-template.md) | At least three candidate palettes (official, traditional accent, natural-environment), each with hex codes + the story that justifies them. |
-| [`prompt-pack-template.md`](./prompt-pack-template.md) | Reusable image-generation prompts (multi-palette concept grids, hero composition, alt compositions) parameterized for the WR's subject so the artifact step doesn't start from scratch. |
+| File                                                                           | What it forces the research lane to produce                                                                                                                                             |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`regional-cultural-motif-template.md`](./regional-cultural-motif-template.md) | A ranked motif shortlist for the WR's target region, with a licensing-risk + cultural-fit gate, derived from the actual local landmarks / traditions / colors.                          |
+| [`color-palette-template.md`](./color-palette-template.md)                     | At least three candidate palettes (official, traditional accent, natural-environment), each with hex codes + the story that justifies them.                                             |
+| [`prompt-pack-template.md`](./prompt-pack-template.md)                         | Reusable image-generation prompts (multi-palette concept grids, hero composition, alt compositions) parameterized for the WR's subject so the artifact step doesn't start from scratch. |
 
 ## Master output contract (what every pack delivers)
 

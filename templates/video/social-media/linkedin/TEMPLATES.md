@@ -5,6 +5,7 @@ Ready-to-use script templates for LinkedIn videos using HeyGen avatars.
 ## Template Structure
 
 Each template includes:
+
 - **Hook** - Opening that grabs attention (0-3 seconds)
 - **Body** - Main content (30-90 seconds)
 - **CTA** - Call to action with link (5-10 seconds)
@@ -83,18 +84,21 @@ Learn the tips and tricks that top-tier companies are using to optimize their st
 ## LinkedIn Best Practices
 
 ### Video Specs
+
 - **Aspect Ratio:** 16:9 or 1:1 (square)
 - **Duration:** 30 seconds to 3 minutes (optimal engagement at 45-60 sec)
 - **Resolution:** 1080p minimum
 - **Format:** MP4
 
 ### Engagement Tips
+
 - Add captions (80% watch without sound)
 - Front-load the hook (first 3 seconds are crucial)
 - Include a clear CTA
 - Post during business hours (Tue-Thu, 8-10am or 5-6pm)
 
 ### Hashtag Strategy
+
 ```
 Industry: #SoftwareEngineering #DevOps #CloudComputing
 Trend: #GreenTech #SustainableTech #EcoCode

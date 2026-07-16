@@ -22,21 +22,21 @@ of them.
 
 ## Inventory
 
-| # | Action | Marketplace | Template | Active here? | Purpose |
-|---|---|---|---|---|---|
-| 1 | Weekly Changelog via OpenRouter | [marketplace](https://github.com/marketplace/actions/weekly-changelog-via-openrouter) — [`fridzema/ai-weekly-changelog-action`](https://github.com/fridzema/ai-weekly-changelog-action) | [`ai-weekly-changelog.yml`](../templates/cicd/ai-weekly-changelog.yml) | ✅ | AI-generated weekly commit changelog → `CHANGELOG.md` |
-| 2 | AI PR Review via OpenRouter | [marketplace](https://github.com/marketplace/actions/ai-pr-review-via-openrouter) — [`maxlim0/AI-PR-Reviewer`](https://github.com/maxlim0/AI-PR-Reviewer) | [`ai-pr-review-openrouter.yml`](../templates/cicd/ai-pr-review-openrouter.yml) | ✅ | Per-PR diff analysis as a sticky comment |
-| 3 | GitPolyglot — AI Readme Translator | [marketplace](https://github.com/marketplace/actions/gitpolyglot-ai-readme-translator) — [`aboutexo04/git-polyglot`](https://github.com/aboutexo04/git-polyglot) | [`ai-readme-translator.yml`](../templates/cicd/ai-readme-translator.yml) | — | `README.md` → `README.<lang>.md` (ko, ja, zh-CN, …) |
-| 4 | AI CI Failure Helper | [marketplace](https://github.com/marketplace/actions/ai-ci-failure-helper) — [`maxlim0/actions-progci-fail`](https://github.com/maxlim0/actions-progci-fail) | [`ai-ci-failure-helper.yml`](../templates/cicd/ai-ci-failure-helper.yml) | ✅ | Post-failure root-cause analysis in a PR comment |
-| 5 | AI Code Reviewer Pro | [marketplace](https://github.com/marketplace/actions/ai-code-reviewer-pro) — [`VIVAAN-DHAWAN/ai-code-reviewer`](https://github.com/VIVAAN-DHAWAN/ai-code-reviewer) | [`ai-code-reviewer-pro.yml`](../templates/cicd/ai-code-reviewer-pro.yml) | ✅ | Inline review comments on changed lines + summary table |
-| 6 | Android Resource Translator | [marketplace](https://github.com/marketplace/actions/android-resource-translator) — [`duartebarbosadev/AndroidResourceTranslator`](https://github.com/duartebarbosadev/AndroidResourceTranslator) | [`android-resource-translator.yml`](../templates/cicd/android-resource-translator.yml) | — | `strings.xml` missing-translation → auto-PR |
-| 7 | MCP Server Evals | [marketplace](https://github.com/marketplace/actions/mcp-server-evals) — [`mcp-use/eval-action`](https://github.com/mcp-use/eval-action) | [`mcp-server-evals.yml`](../templates/cicd/mcp-server-evals.yml) | — | LLM-as-judge evaluations for MCP servers |
-| 8 | GASS — GitHub Activity Scoring | [marketplace](https://github.com/marketplace/actions/gass-github-activity-scoring-system) — [`michael-bey/gass`](https://github.com/michael-bey/gass) | [`gass-scoring.yml`](../templates/cicd/gass-scoring.yml) | — | On-chain PR quality score via O2 Oracle |
-| 9 | Iara Code Reviewer | [marketplace](https://github.com/marketplace/actions/iara-code-reviewer) — [`felipefernandes/iara`](https://github.com/felipefernandes/iara) | [`iara-code-reviewer.yml`](../templates/cicd/iara-code-reviewer.yml) | — | PR review for bugs / SAST / performance (CLI-based) |
-| 10 | Business Central AI Code Reviewer | [marketplace](https://github.com/marketplace/actions/business-central-ai-code-reviewer) — [`ACSG-BizApps/bc-ai-reviewer`](https://github.com/ACSG-BizApps/bc-ai-reviewer) | [`bc-ai-code-reviewer.yml`](../templates/cicd/bc-ai-code-reviewer.yml) | — | BC-specific AL review (AppSource, permissions, posting routines) |
-| 11 | PostHog Annotations | [marketplace](https://github.com/marketplace/actions/posthog-annotations) — [`PostHog/posthog-annotations-github-action`](https://github.com/PostHog/posthog-annotations-github-action) | [`posthog-annotations.yml`](../templates/cicd/posthog-annotations.yml) | — | Send deployment annotations to PostHog on PR merges / releases |
-| 12 | PostHog Upload Source Maps | [marketplace](https://github.com/marketplace/actions/posthog-upload-source-maps) — [`PostHog/upload-source-maps`](https://github.com/PostHog/upload-source-maps) | [`posthog-upload-sourcemaps.yml`](../templates/cicd/posthog-upload-sourcemaps.yml) | — | Upload JavaScript source maps to PostHog for readable error stack traces |
-| 13 | Send Event to PostHog | [marketplace](https://github.com/marketplace/actions/send-event-to-posthog) — [`daun/posthog-event-action`](https://github.com/daun/posthog-event-action) | [`posthog-send-event.yml`](../templates/cicd/posthog-send-event.yml) | — | Send custom events to PostHog from CI/CD pipelines |
+| #   | Action                             | Marketplace                                                                                                                                                                                       | Template                                                                               | Active here? | Purpose                                                                  |
+| --- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------ |
+| 1   | Weekly Changelog via OpenRouter    | [marketplace](https://github.com/marketplace/actions/weekly-changelog-via-openrouter) — [`fridzema/ai-weekly-changelog-action`](https://github.com/fridzema/ai-weekly-changelog-action)           | [`ai-weekly-changelog.yml`](../templates/cicd/ai-weekly-changelog.yml)                 | ✅           | AI-generated weekly commit changelog → `CHANGELOG.md`                    |
+| 2   | AI PR Review via OpenRouter        | [marketplace](https://github.com/marketplace/actions/ai-pr-review-via-openrouter) — [`maxlim0/AI-PR-Reviewer`](https://github.com/maxlim0/AI-PR-Reviewer)                                         | [`ai-pr-review-openrouter.yml`](../templates/cicd/ai-pr-review-openrouter.yml)         | ✅           | Per-PR diff analysis as a sticky comment                                 |
+| 3   | GitPolyglot — AI Readme Translator | [marketplace](https://github.com/marketplace/actions/gitpolyglot-ai-readme-translator) — [`aboutexo04/git-polyglot`](https://github.com/aboutexo04/git-polyglot)                                  | [`ai-readme-translator.yml`](../templates/cicd/ai-readme-translator.yml)               | —            | `README.md` → `README.<lang>.md` (ko, ja, zh-CN, …)                      |
+| 4   | AI CI Failure Helper               | [marketplace](https://github.com/marketplace/actions/ai-ci-failure-helper) — [`maxlim0/actions-progci-fail`](https://github.com/maxlim0/actions-progci-fail)                                      | [`ai-ci-failure-helper.yml`](../templates/cicd/ai-ci-failure-helper.yml)               | ✅           | Post-failure root-cause analysis in a PR comment                         |
+| 5   | AI Code Reviewer Pro               | [marketplace](https://github.com/marketplace/actions/ai-code-reviewer-pro) — [`VIVAAN-DHAWAN/ai-code-reviewer`](https://github.com/VIVAAN-DHAWAN/ai-code-reviewer)                                | [`ai-code-reviewer-pro.yml`](../templates/cicd/ai-code-reviewer-pro.yml)               | ✅           | Inline review comments on changed lines + summary table                  |
+| 6   | Android Resource Translator        | [marketplace](https://github.com/marketplace/actions/android-resource-translator) — [`duartebarbosadev/AndroidResourceTranslator`](https://github.com/duartebarbosadev/AndroidResourceTranslator) | [`android-resource-translator.yml`](../templates/cicd/android-resource-translator.yml) | —            | `strings.xml` missing-translation → auto-PR                              |
+| 7   | MCP Server Evals                   | [marketplace](https://github.com/marketplace/actions/mcp-server-evals) — [`mcp-use/eval-action`](https://github.com/mcp-use/eval-action)                                                          | [`mcp-server-evals.yml`](../templates/cicd/mcp-server-evals.yml)                       | —            | LLM-as-judge evaluations for MCP servers                                 |
+| 8   | GASS — GitHub Activity Scoring     | [marketplace](https://github.com/marketplace/actions/gass-github-activity-scoring-system) — [`michael-bey/gass`](https://github.com/michael-bey/gass)                                             | [`gass-scoring.yml`](../templates/cicd/gass-scoring.yml)                               | —            | On-chain PR quality score via O2 Oracle                                  |
+| 9   | Iara Code Reviewer                 | [marketplace](https://github.com/marketplace/actions/iara-code-reviewer) — [`felipefernandes/iara`](https://github.com/felipefernandes/iara)                                                      | [`iara-code-reviewer.yml`](../templates/cicd/iara-code-reviewer.yml)                   | —            | PR review for bugs / SAST / performance (CLI-based)                      |
+| 10  | Business Central AI Code Reviewer  | [marketplace](https://github.com/marketplace/actions/business-central-ai-code-reviewer) — [`ACSG-BizApps/bc-ai-reviewer`](https://github.com/ACSG-BizApps/bc-ai-reviewer)                         | [`bc-ai-code-reviewer.yml`](../templates/cicd/bc-ai-code-reviewer.yml)                 | —            | BC-specific AL review (AppSource, permissions, posting routines)         |
+| 11  | PostHog Annotations                | [marketplace](https://github.com/marketplace/actions/posthog-annotations) — [`PostHog/posthog-annotations-github-action`](https://github.com/PostHog/posthog-annotations-github-action)           | [`posthog-annotations.yml`](../templates/cicd/posthog-annotations.yml)                 | —            | Send deployment annotations to PostHog on PR merges / releases           |
+| 12  | PostHog Upload Source Maps         | [marketplace](https://github.com/marketplace/actions/posthog-upload-source-maps) — [`PostHog/upload-source-maps`](https://github.com/PostHog/upload-source-maps)                                  | [`posthog-upload-sourcemaps.yml`](../templates/cicd/posthog-upload-sourcemaps.yml)     | —            | Upload JavaScript source maps to PostHog for readable error stack traces |
+| 13  | Send Event to PostHog              | [marketplace](https://github.com/marketplace/actions/send-event-to-posthog) — [`daun/posthog-event-action`](https://github.com/daun/posthog-event-action)                                         | [`posthog-send-event.yml`](../templates/cicd/posthog-send-event.yml)                   | —            | Send custom events to PostHog from CI/CD pipelines                       |
 
 "Active here?" = ✅ means the workflow is also installed in
 [`.github/workflows/`](../.github/workflows/) of this repo. The others are
@@ -56,23 +56,23 @@ template-only because they're only useful in repos with matching stacks
 
 Some actions require additional secrets:
 
-| Template | Extra secrets |
-|---|---|
-| `gass-scoring.yml` | `O2_EMAIL`, `O2_PASSWORD`, `O2_APP_ID`, `O2_PROP_LIST_ID` |
+| Template                  | Extra secrets                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------------- |
+| `gass-scoring.yml`        | `O2_EMAIL`, `O2_PASSWORD`, `O2_APP_ID`, `O2_PROP_LIST_ID`                                   |
 | `bc-ai-code-reviewer.yml` | (Optional) `AZURE_OPENAI_KEY` or `OPENAI_API_KEY` if you switch providers in `MODELS_BLOCK` |
 
 ---
 
 ## How this fits with the rest of Revvel's AI automation
 
-| Workflow | Trigger | Role |
-|---|---|---|
-| `openrouter-assignee.yml` | New issue / PR, hourly cron | Routes work **to** `@Copilot` (first line of sight) |
-| `ai-pr-review-openrouter.yml` | PR opened / sync | Summary-style PR comment review |
-| `ai-code-reviewer-pro.yml` | PR opened / sync | Inline line-level review comments |
-| `ai-ci-failure-helper.yml` | Manual / chained after a failure | Root-cause comment on the PR that broke |
-| `ralph-loop.yml` | CI failure on a PR | Opens an auto-fix issue and pings the orchestrator |
-| `ai-weekly-changelog.yml` | Mondays 06:00 UTC | Commits weekly `CHANGELOG.md` update |
+| Workflow                      | Trigger                          | Role                                                |
+| ----------------------------- | -------------------------------- | --------------------------------------------------- |
+| `openrouter-assignee.yml`     | New issue / PR, hourly cron      | Routes work **to** `@Copilot` (first line of sight) |
+| `ai-pr-review-openrouter.yml` | PR opened / sync                 | Summary-style PR comment review                     |
+| `ai-code-reviewer-pro.yml`    | PR opened / sync                 | Inline line-level review comments                   |
+| `ai-ci-failure-helper.yml`    | Manual / chained after a failure | Root-cause comment on the PR that broke             |
+| `ralph-loop.yml`              | CI failure on a PR               | Opens an auto-fix issue and pings the orchestrator  |
+| `ai-weekly-changelog.yml`     | Mondays 06:00 UTC                | Commits weekly `CHANGELOG.md` update                |
 
 The AI review actions (`ai-pr-review-openrouter`, `ai-code-reviewer-pro`,
 `iara-code-reviewer`, `bc-ai-code-reviewer`, `gass-scoring`) all trigger

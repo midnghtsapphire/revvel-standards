@@ -14,12 +14,14 @@
 An MVI is a single coding session that delivers exactly one feature, fully wired end-to-end. It is the fundamental unit of work in the EXRUP methodology.
 
 **Constraints of a valid MVI:**
+
 - Fits within a single agent session (typically 1–4 hours of work)
 - Delivers one complete, user-observable feature (not a partial implementation)
 - Passes all acceptance gates before the session is closed
 - Has zero dangling TODOs that would cause the app to be in a broken state
 
 **An MVI is NOT:**
+
 - A spike or exploration (use a separate research session for that)
 - Multiple features bundled together
 - A refactor session that doesn't change observable behavior (unless that is explicitly the stated goal)
@@ -154,17 +156,20 @@ Use this checklist for every MVI. Adjust the specific commands to match your pro
 ## Acceptance Gates — [FEATURE_NAME]
 
 ### Local Gates (run before pushing)
+
 - [ ] `pnpm check` — TypeScript compilation passes with zero errors
 - [ ] `pnpm test` — All Vitest unit + integration tests pass
 - [ ] `pnpm test:e2e` — Playwright E2E test for this feature passes
 - [ ] Manual smoke test in local browser — feature works as expected
 
 ### CI Gates (run automatically on push)
+
 - [ ] GitHub Actions CI workflow passes (all jobs green)
 - [ ] Coverage thresholds maintained (see TESTING_STANDARD.md)
 - [ ] Security scan passes (see security.yml)
 
 ### Production Gates (run after deployment)
+
 - [ ] Production deployment completes without error
 - [ ] Live URL verification: [specific page/action]
 - [ ] Error monitoring shows no new errors (check SYSTEM_STATE.md Known Bugs)

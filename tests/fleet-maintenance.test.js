@@ -14,8 +14,14 @@ const {
 let passed = 0;
 let failed = 0;
 function test(name, fn) {
-  try { fn(); console.log(`PASS: ${name}`); passed++; }
-  catch (e) { console.log(`FAIL: ${name}\n    ${e.stack || e.message}`); failed++; }
+  try {
+    fn();
+    console.log(`PASS: ${name}`);
+    passed++;
+  } catch (e) {
+    console.log(`FAIL: ${name}\n    ${e.stack || e.message}`);
+    failed++;
+  }
 }
 
 test("empty input -> empty", () => {
@@ -47,32 +53,52 @@ test("isoWeek returns a sane week number", () => {
 });
 
 test("hasOpenWorkRequest returns true when a matching open WR exists", () => {
-  const found = hasOpenWorkRequest("midnghtsapphire/revvel-standards", "midnghtsapphire", "target", () => (
-    JSON.stringify([{ number: 123 }])
-  ));
+  const found = hasOpenWorkRequest(
+    "midnghtsapphire/revvel-standards",
+    "midnghtsapphire",
+    "target",
+    () => JSON.stringify([{ number: 123 }]),
+  );
 
   assert.strictEqual(found, true);
 });
 
 test("hasOpenWorkRequest returns false when no matching open WR exists", () => {
-  const found = hasOpenWorkRequest("midnghtsapphire/revvel-standards", "midnghtsapphire", "target", () => "[]");
+  const found = hasOpenWorkRequest(
+    "midnghtsapphire/revvel-standards",
+    "midnghtsapphire",
+    "target",
+    () => "[]",
+  );
 
   assert.strictEqual(found, false);
 });
 
 test("hasOpenWorkRequest fails closed when gh issue list fails", () => {
   assert.throws(
-    () => hasOpenWorkRequest("midnghtsapphire/revvel-standards", "midnghtsapphire", "target", () => {
-      throw new Error("gh auth failed");
-    }),
-    /refusing to file a duplicate.*gh auth failed/
+    () =>
+      hasOpenWorkRequest(
+        "midnghtsapphire/revvel-standards",
+        "midnghtsapphire",
+        "target",
+        () => {
+          throw new Error("gh auth failed");
+        },
+      ),
+    /refusing to file a duplicate.*gh auth failed/,
   );
 });
 
 test("hasOpenWorkRequest fails closed when gh returns malformed JSON", () => {
   assert.throws(
-    () => hasOpenWorkRequest("midnghtsapphire/revvel-standards", "midnghtsapphire", "target", () => "{"),
-    /refusing to file a duplicate/
+    () =>
+      hasOpenWorkRequest(
+        "midnghtsapphire/revvel-standards",
+        "midnghtsapphire",
+        "target",
+        () => "{",
+      ),
+    /refusing to file a duplicate/,
   );
 });
 
@@ -80,16 +106,27 @@ test("fileWorkRequest does not create an issue when open-WR lookup fails", () =>
   const calls = [];
 
   assert.throws(
-    () => fileWorkRequest("midnghtsapphire/revvel-standards", "midnghtsapphire", "target", false, (args) => {
-      calls.push(args);
-      if (args[1] === "list") throw new Error("rate limit exceeded");
-      if (args[1] === "create") return "https://github.com/example/issues/1\n";
-      throw new Error(`unexpected gh call: ${args.join(" ")}`);
-    }),
-    /refusing to file a duplicate.*rate limit exceeded/
+    () =>
+      fileWorkRequest(
+        "midnghtsapphire/revvel-standards",
+        "midnghtsapphire",
+        "target",
+        false,
+        (args) => {
+          calls.push(args);
+          if (args[1] === "list") throw new Error("rate limit exceeded");
+          if (args[1] === "create")
+            return "https://github.com/example/issues/1\n";
+          throw new Error(`unexpected gh call: ${args.join(" ")}`);
+        },
+      ),
+    /refusing to file a duplicate.*rate limit exceeded/,
   );
 
-  assert.strictEqual(calls.some((args) => args[1] === "create"), false);
+  assert.strictEqual(
+    calls.some((args) => args[1] === "create"),
+    false,
+  );
 });
 
 console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);

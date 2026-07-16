@@ -15,11 +15,16 @@ export interface PlatformEstimate {
   fitScore: number;
 }
 
-export function normalizeMetrics(metrics: Partial<CreatorMetrics>): CreatorMetrics {
+export function normalizeMetrics(
+  metrics: Partial<CreatorMetrics>,
+): CreatorMetrics {
   return {
     monthlyViews: clampNonNegative(metrics.monthlyViews ?? 100000),
     monthlySubscribers: clampNonNegative(metrics.monthlySubscribers ?? 100),
-    subscriptionPrice: Math.max(1, clampNonNegative(metrics.subscriptionPrice ?? 5)),
+    subscriptionPrice: Math.max(
+      1,
+      clampNonNegative(metrics.subscriptionPrice ?? 5),
+    ),
   };
 }
 
@@ -29,12 +34,15 @@ export function estimatePlatform(
 ): PlatformEstimate {
   const monthlyAdRevenue =
     platform.rpmMin !== null && platform.rpmMax !== null
-      ? (((platform.rpmMin + platform.rpmMax) / 2) * metrics.monthlyViews) / 1000
+      ? (((platform.rpmMin + platform.rpmMax) / 2) * metrics.monthlyViews) /
+        1000
       : null;
 
   const monthlySubscriptionRevenue =
     platform.subPayoutPer5 !== null
-      ? platform.subPayoutPer5 * (metrics.subscriptionPrice / 5) * metrics.monthlySubscribers
+      ? platform.subPayoutPer5 *
+        (metrics.subscriptionPrice / 5) *
+        metrics.monthlySubscribers
       : null;
 
   const blendedMonthlyRevenue =

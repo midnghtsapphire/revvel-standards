@@ -19,9 +19,9 @@ updates:
       - "dependencies"
       - "automated"
     assignees:
-      - "OWNER_USERNAME"                    # CONFIGURE: replace with your GitHub username
+      - "OWNER_USERNAME" # CONFIGURE: replace with your GitHub username
     reviewers:
-      - "OWNER_USERNAME"                    # CONFIGURE: replace with your GitHub username
+      - "OWNER_USERNAME" # CONFIGURE: replace with your GitHub username
     commit-message:
       prefix: "chore"
       prefix-development: "chore"

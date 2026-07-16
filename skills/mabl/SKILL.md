@@ -63,6 +63,7 @@ If fail → Ralph Loop triggers @copilot for fix + re-run
    - `MABL_WORKSPACE_ID`
 
 7. **Copy workflow template to target repo:**
+
    ```bash
    cp revvel-standards/templates/cicd/mabl.yml .github/workflows/mabl.yml
    ```
@@ -119,14 +120,14 @@ When a Mabl test fails in CI:
 
 ## Mabl vs Playwright — When to Use Which
 
-| Scenario | Tool |
-|---|---|
-| Scripted, code-owned E2E tests | Playwright |
-| AI-maintained UI tests (self-healing) | Mabl |
-| Cross-browser parallel cloud testing | Mabl |
-| API contract testing | Mabl |
-| Component-level browser testing | Playwright |
-| Full Revvel S.H.I.F.T. behavioral tests | Both |
+| Scenario                                | Tool       |
+| --------------------------------------- | ---------- |
+| Scripted, code-owned E2E tests          | Playwright |
+| AI-maintained UI tests (self-healing)   | Mabl       |
+| Cross-browser parallel cloud testing    | Mabl       |
+| API contract testing                    | Mabl       |
+| Component-level browser testing         | Playwright |
+| Full Revvel S.H.I.F.T. behavioral tests | Both       |
 
 ## Cost & Pricing
 

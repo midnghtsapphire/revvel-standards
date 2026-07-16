@@ -7,9 +7,11 @@
 **Tracks:** OZ-OS-001
 
 ## Deliverable
+
 Single file: `oz-os/NULL_RESULT_SCHEMA.md`
 
 ## Content Requirements
+
 Define what counts as "searched thoroughly and found nothing." This is the antidote to
 placeholder-leakage culture — agents currently fake completion rather than admitting they
 found nothing (see PR #14184, research checklist all checked with empty sections).
@@ -28,6 +30,7 @@ confidence_in_absence: 0.0–1.0
 ```
 
 ### Required Fields
+
 1. **Queries tried** — exact search strings used, minimum 10
 2. **Sources checked** — databases, APIs, repositories, forums consulted
 3. **Time spent** — wall-clock time the agent spent researching
@@ -41,15 +44,18 @@ confidence_in_absence: 0.0–1.0
    - `scope_too_narrow` — broadening the query might help
 
 ### Anti-Pattern
+
 A NULL_RESULT with fewer than 10 queries tried is not a null result — it is quitting early.
 The agent must retry with broader terms before declaring null.
 
 ## Key Insight
+
 `NULL_RESULT` is a valid and respected output. Fake completion is not.
 An honest "I found nothing after 10 queries" is infinitely more valuable than
 a fabricated "here are 5 methods" with hallucinated citations.
 
 ## Acceptance
+
 - Schema is complete and machine-parseable
 - Required fields are documented with examples
 - No raw tokens or bracket-placeholders

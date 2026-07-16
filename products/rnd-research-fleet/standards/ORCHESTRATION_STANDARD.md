@@ -35,10 +35,10 @@ pause — a Manus-style monitor layer over the runners.
 
 This split is why the same core serves both runtimes:
 
-| Runtime | `onCheckpoint` | `onSoftBudget` |
-| --- | --- | --- |
-| **In-session / sandbox** (Manus-style) | write to workspace + commit | the agent genuinely asks the human and waits |
-| **Headless (CI / cron)** | commit-if-changed to the repo | post a "continue? 👍" comment; auto-continue (default) or stop; resume from checkpoint next run |
+| Runtime                                | `onCheckpoint`                | `onSoftBudget`                                                                                  |
+| -------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------------------- |
+| **In-session / sandbox** (Manus-style) | write to workspace + commit   | the agent genuinely asks the human and waits                                                    |
+| **Headless (CI / cron)**               | commit-if-changed to the repo | post a "continue? 👍" comment; auto-continue (default) or stop; resume from checkpoint next run |
 
 ## Checkpoint schema (`research-checkpoint/v1`)
 
@@ -46,12 +46,36 @@ This split is why the same core serves both runtimes:
 {
   "schema": "research-checkpoint/v1",
   "query": "…",
-  "started_at": "<ISO>", "updated_at": "<ISO>",
-  "soft_budget_ms": 900000, "budget_state": "within | soft-exceeded",
-  "progress": { "total": 3, "running": 1, "done": 1, "stalled": 0, "failed": 0, "reassigned": 1 },
-  "arms": [{ "id": "arm-1", "model": "…", "status": "running|done|failed|stalled",
-             "tried_models": ["…"], "last_progress_at": 0, "has_result": true, "error": null }],
-  "synthesis": { "completed": 1, "pending": 1, "answers": [], "citations": [], "note": "…" }
+  "started_at": "<ISO>",
+  "updated_at": "<ISO>",
+  "soft_budget_ms": 900000,
+  "budget_state": "within | soft-exceeded",
+  "progress": {
+    "total": 3,
+    "running": 1,
+    "done": 1,
+    "stalled": 0,
+    "failed": 0,
+    "reassigned": 1
+  },
+  "arms": [
+    {
+      "id": "arm-1",
+      "model": "…",
+      "status": "running|done|failed|stalled",
+      "tried_models": ["…"],
+      "last_progress_at": 0,
+      "has_result": true,
+      "error": null
+    }
+  ],
+  "synthesis": {
+    "completed": 1,
+    "pending": 1,
+    "answers": [],
+    "citations": [],
+    "note": "…"
+  }
 }
 ```
 

@@ -36,29 +36,33 @@ Load this skill when the task involves:
 NoimosAI is **always-on** in every Revvel project via three entry points:
 
 ### 1. Label-triggered (instant)
+
 Any issue with labels `noimosai`, `marketing`, `seo`, `content`, or `affiliate` automatically invokes NoimosAI within seconds of being opened. The workflow posts an acknowledgment comment and queues the task.
 
 ### 2. Daily schedule (08:00 UTC)
+
 `.github/workflows/noimosai.yml` runs three daily tasks automatically:
+
 - SEO audit across active projects
 - Content idea generation
 - Affiliate link health-check
 
 ### 3. Workflow dispatch (manual/ad-hoc)
+
 Operators can trigger NoimosAI directly from GitHub Actions → NoimosAI → Run workflow with a custom prompt, project name, and task type.
 
 ---
 
 ## Task Types
 
-| Type | Description |
-|---|---|
-| `general` | Any marketing task not covered by the others |
-| `seo` | Keyword research, on-page audit, backlink analysis, technical SEO |
-| `content` | Blog posts, landing page copy, product descriptions, FAQs |
-| `social` | Twitter/X, Instagram, LinkedIn, TikTok posts and scheduling |
-| `affiliate` | Amazon affiliate links, commission rate auditing, link refresh |
-| `email` | Newsletter drafts, drip campaigns, subscriber segmentation |
+| Type        | Description                                                       |
+| ----------- | ----------------------------------------------------------------- |
+| `general`   | Any marketing task not covered by the others                      |
+| `seo`       | Keyword research, on-page audit, backlink analysis, technical SEO |
+| `content`   | Blog posts, landing page copy, product descriptions, FAQs         |
+| `social`    | Twitter/X, Instagram, LinkedIn, TikTok posts and scheduling       |
+| `affiliate` | Amazon affiliate links, commission rate auditing, link refresh    |
+| `email`     | Newsletter drafts, drip campaigns, subscriber segmentation        |
 
 ---
 
@@ -66,14 +70,14 @@ Operators can trigger NoimosAI directly from GitHub Actions → NoimosAI → Run
 
 ### Secrets
 
-| Secret | Purpose | Where to get it |
-|---|---|---|
+| Secret             | Purpose                              | Where to get it                                            |
+| ------------------ | ------------------------------------ | ---------------------------------------------------------- |
 | `NOIMOSAI_API_KEY` | Authenticates all NoimosAI API calls | [noimosai.com](https://noimosai.com) → Settings → API Keys |
 
 ### Repository Variables (optional)
 
-| Variable | Purpose |
-|---|---|
+| Variable                | Purpose                                              |
+| ----------------------- | ---------------------------------------------------- |
 | `NOIMOSAI_WORKSPACE_ID` | Multi-team NoimosAI setups; identifies the workspace |
 
 ### Vault Path
@@ -88,13 +92,13 @@ revvel/shared/marketing/noimosai
 
 Add these labels to the repository (`.github/labels.yml` should include them):
 
-| Label | Color | Meaning |
-|---|---|---|
-| `noimosai` | `#7C5CFF` | Route this issue to NoimosAI |
+| Label       | Color     | Meaning                                  |
+| ----------- | --------- | ---------------------------------------- |
+| `noimosai`  | `#7C5CFF` | Route this issue to NoimosAI             |
 | `marketing` | `#FF6B6B` | Marketing task — auto-routed to NoimosAI |
-| `seo` | `#3DDCFF` | SEO task |
-| `content` | `#F7C948` | Content creation task |
-| `affiliate` | `#4CAF50` | Affiliate link / revenue task |
+| `seo`       | `#3DDCFF` | SEO task                                 |
+| `content`   | `#F7C948` | Content creation task                    |
+| `affiliate` | `#4CAF50` | Affiliate link / revenue task            |
 
 ---
 
@@ -118,12 +122,14 @@ Submit a new marketing task to the autonomous team.
 ```
 
 **Headers:**
+
 ```
 Authorization: Bearer NOIMOSAI_API_KEY
 Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "task_id": "task_abc123",
@@ -166,13 +172,13 @@ Results published to project (Notion, GitHub comment, or direct deploy)
 
 ## Revvel Projects Using NoimosAI
 
-| Project | Domain | Primary NoimosAI tasks |
-|---|---|---|
-| Reese Reviews | reesereviews.com | Amazon Vine SEO, affiliate link optimization, review content |
-| GrowlingEyes | growlingeyes.oaudrey.com | Product reviews, social content, influencer SEO |
-| FieldWork | fieldwork.oaudrey.com | B2B content, LinkedIn posts, landing-page copy |
-| Soul2Bowl | soul2bowl.com | Local SEO, community content, email campaigns |
-| ColdTrace | coldtrace.oaudrey.com | Content marketing, case studies, technical blogs |
+| Project       | Domain                   | Primary NoimosAI tasks                                       |
+| ------------- | ------------------------ | ------------------------------------------------------------ |
+| Reese Reviews | reesereviews.com         | Amazon Vine SEO, affiliate link optimization, review content |
+| GrowlingEyes  | growlingeyes.oaudrey.com | Product reviews, social content, influencer SEO              |
+| FieldWork     | fieldwork.oaudrey.com    | B2B content, LinkedIn posts, landing-page copy               |
+| Soul2Bowl     | soul2bowl.com            | Local SEO, community content, email campaigns                |
+| ColdTrace     | coldtrace.oaudrey.com    | Content marketing, case studies, technical blogs             |
 
 ---
 
@@ -198,13 +204,13 @@ Results published to project (Notion, GitHub comment, or direct deploy)
 
 ## Troubleshooting
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| Workflow skipped with "NOIMOSAI_API_KEY is not set" | Secret not provisioned | Settings → Secrets → New secret: `NOIMOSAI_API_KEY` |
-| HTTP 401 from NoimosAI | Invalid API key | Re-generate at noimosai.com → Settings → API Keys |
-| HTTP 429 rate limit | Too many tasks submitted | Reduce label-triggered submissions; increase dispatch rate limits |
-| No comment posted on issue | `issues: write` permission missing | Check workflow `permissions:` block |
+| Symptom                                             | Cause                              | Fix                                                               |
+| --------------------------------------------------- | ---------------------------------- | ----------------------------------------------------------------- |
+| Workflow skipped with "NOIMOSAI_API_KEY is not set" | Secret not provisioned             | Settings → Secrets → New secret: `NOIMOSAI_API_KEY`               |
+| HTTP 401 from NoimosAI                              | Invalid API key                    | Re-generate at noimosai.com → Settings → API Keys                 |
+| HTTP 429 rate limit                                 | Too many tasks submitted           | Reduce label-triggered submissions; increase dispatch rate limits |
+| No comment posted on issue                          | `issues: write` permission missing | Check workflow `permissions:` block                               |
 
 ---
 
-*Part of the Revvel Standards skills vault. See `skills/REGISTRY.md` for the full catalog.*
+_Part of the Revvel Standards skills vault. See `skills/REGISTRY.md` for the full catalog._

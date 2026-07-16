@@ -19,11 +19,11 @@ This document defines the standard configuration, integration patterns, and best
 
 Dependabot is a GitHub-native tool that does three things:
 
-| Feature | What It Does |
-|---|---|
-| **Dependabot Alerts** | Scans your dependency graph for known CVEs (Common Vulnerabilities and Exposures) and notifies you |
-| **Dependabot Security Updates** | Automatically opens PRs to patch vulnerable dependencies |
-| **Dependabot Version Updates** | Automatically opens PRs to bump dependencies to their latest versions on a schedule |
+| Feature                         | What It Does                                                                                       |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Dependabot Alerts**           | Scans your dependency graph for known CVEs (Common Vulnerabilities and Exposures) and notifies you |
+| **Dependabot Security Updates** | Automatically opens PRs to patch vulnerable dependencies                                           |
+| **Dependabot Version Updates**  | Automatically opens PRs to bump dependencies to their latest versions on a schedule                |
 
 ### How It Works
 
@@ -64,12 +64,12 @@ Dependabot runs **in parallel** with your CI/CD pipelines. It is not a step insi
 
 Before Dependabot can work, enable these settings in **Repository Settings → Code security and analysis**:
 
-| Setting | Required For | How to Enable |
-|---|---|---|
-| **Dependency graph** | All Dependabot features | Always on for public repos; toggle on for private repos |
-| **Dependabot alerts** | Security CVE notifications | Enable after Dependency graph |
-| **Dependabot security updates** | Auto-PRs for security patches | Enable after Dependabot alerts |
-| **Dependabot version updates** | Scheduled version bump PRs | Configured via `.github/dependabot.yml` |
+| Setting                         | Required For                  | How to Enable                                           |
+| ------------------------------- | ----------------------------- | ------------------------------------------------------- |
+| **Dependency graph**            | All Dependabot features       | Always on for public repos; toggle on for private repos |
+| **Dependabot alerts**           | Security CVE notifications    | Enable after Dependency graph                           |
+| **Dependabot security updates** | Auto-PRs for security patches | Enable after Dependabot alerts                          |
+| **Dependabot version updates**  | Scheduled version bump PRs    | Configured via `.github/dependabot.yml`                 |
 
 > **Note for private repositories:** The dependency graph and Dependabot alerts require GitHub Advanced Security for private repos on certain plans. Check your organization's GitHub plan at `https://github.com/organizations/midnghtsapphire/settings/billing`.
 
@@ -103,8 +103,8 @@ cp templates/cicd/dependabot.yml .github/dependabot.yml
 
 Then replace the placeholders:
 
-| Placeholder | Replace With |
-|---|---|
+| Placeholder      | Replace With                                   |
+| ---------------- | ---------------------------------------------- |
 | `OWNER_USERNAME` | Your GitHub username (e.g., `midnghtsapphire`) |
 
 ### 4.3. Full Configuration Reference
@@ -115,19 +115,19 @@ version: 2
 updates:
   # ── npm / pnpm / yarn ──────────────────────────────────────────────────────
   - package-ecosystem: "npm"
-    directory: "/"                          # Root package.json
+    directory: "/" # Root package.json
     schedule:
       interval: "weekly"
       day: "monday"
       time: "06:00"
       timezone: "America/New_York"
-    open-pull-requests-limit: 10            # Max open PRs at once
+    open-pull-requests-limit: 10 # Max open PRs at once
     target-branch: "main"
     labels:
       - "dependencies"
       - "automated"
     assignees:
-      - "OWNER_USERNAME"                    # Replace with your GitHub username
+      - "OWNER_USERNAME" # Replace with your GitHub username
     reviewers:
       - "OWNER_USERNAME"
     commit-message:
@@ -190,29 +190,29 @@ updates:
 
 ### 4.4. Schedule Options
 
-| Interval | When It Runs | Use Case |
-|---|---|---|
-| `daily` | Every day at the configured time | Fast-moving projects, high security requirements |
-| `weekly` | Once per week (default: Monday) | **Standard Revvel recommendation** |
-| `monthly` | First weekday of the month | Stable / low-churn projects |
+| Interval  | When It Runs                     | Use Case                                         |
+| --------- | -------------------------------- | ------------------------------------------------ |
+| `daily`   | Every day at the configured time | Fast-moving projects, high security requirements |
+| `weekly`  | Once per week (default: Monday)  | **Standard Revvel recommendation**               |
+| `monthly` | First weekday of the month       | Stable / low-churn projects                      |
 
 > **Recommendation:** Use `weekly` for all production Revvel apps. Daily is noisy; monthly means you fall behind.
 
 ### 4.5. Supported Package Ecosystems
 
-| Ecosystem | `package-ecosystem` Value | Manifest File |
-|---|---|---|
-| npm / pnpm / yarn | `npm` | `package.json` |
-| Python pip | `pip` | `requirements.txt`, `Pipfile`, `pyproject.toml` |
-| Docker | `docker` | `Dockerfile` |
-| GitHub Actions | `github-actions` | `.github/workflows/*.yml` |
-| Go modules | `gomod` | `go.mod` |
-| Ruby gems | `bundler` | `Gemfile` |
-| Rust cargo | `cargo` | `Cargo.toml` |
-| Java/Kotlin (Maven) | `maven` | `pom.xml` |
-| Java/Kotlin (Gradle) | `gradle` | `build.gradle` |
-| .NET (NuGet) | `nuget` | `*.csproj`, `packages.config` |
-| Terraform | `terraform` | `*.tf` |
+| Ecosystem            | `package-ecosystem` Value | Manifest File                                   |
+| -------------------- | ------------------------- | ----------------------------------------------- |
+| npm / pnpm / yarn    | `npm`                     | `package.json`                                  |
+| Python pip           | `pip`                     | `requirements.txt`, `Pipfile`, `pyproject.toml` |
+| Docker               | `docker`                  | `Dockerfile`                                    |
+| GitHub Actions       | `github-actions`          | `.github/workflows/*.yml`                       |
+| Go modules           | `gomod`                   | `go.mod`                                        |
+| Ruby gems            | `bundler`                 | `Gemfile`                                       |
+| Rust cargo           | `cargo`                   | `Cargo.toml`                                    |
+| Java/Kotlin (Maven)  | `maven`                   | `pom.xml`                                       |
+| Java/Kotlin (Gradle) | `gradle`                  | `build.gradle`                                  |
+| .NET (NuGet)         | `nuget`                   | `*.csproj`, `packages.config`                   |
+| Terraform            | `terraform`               | `*.tf`                                          |
 
 ---
 
@@ -255,6 +255,7 @@ The `actions/dependency-review-action` compares dependency changes between the b
 ```
 
 **When NOT to use `dependency-review-action`:**
+
 - Private repos without GitHub Advanced Security enabled
 - Repositories on the free GitHub plan
 - When `pnpm audit` in `security.yml` already provides equivalent coverage
@@ -312,12 +313,12 @@ groups:
   production-dependencies:
     dependency-type: "production"
     update-types: ["minor", "patch"]
-  
+
   # All non-major dev dep updates → 1 PR
   development-dependencies:
     dependency-type: "development"
     update-types: ["minor", "patch"]
-  
+
   # Linting tools together
   linting:
     patterns:
@@ -390,6 +391,7 @@ If any gate fails, investigate the breaking change before merging.
 ### 7.2. When to Close a Dependabot PR
 
 Close (don't merge) a Dependabot PR when:
+
 - The new version is incompatible with your current architecture
 - The update is blocked by another dependency (lock contention)
 - You need to delay for a planned migration sprint
@@ -405,6 +407,7 @@ Always leave a comment explaining why it was closed.
 **Cause:** `actions/dependency-review-action` requires GitHub Advanced Security and Dependency Graph.
 
 **Fix Options:**
+
 1. Enable GitHub Advanced Security in **Repository Settings → Code security and analysis**
 2. Remove `dependency-review-action` from `ci.yml` — your `security.yml` `pnpm audit` provides equivalent coverage without the prerequisite
 3. Keep the job but add `continue-on-error: true` to prevent it from blocking PRs
@@ -412,12 +415,14 @@ Always leave a comment explaining why it was closed.
 ### 8.2. Dependabot PRs Not Appearing
 
 **Check:**
+
 - Is `.github/dependabot.yml` present and valid YAML?
 - Is the `package-ecosystem` value spelled correctly?
 - Is the `directory` path correct? (Use `/` for root, `/packages/app` for monorepos)
 - Are Dependabot version updates enabled in **Repository Settings → Code security and analysis**?
 
 **Validate your config:**
+
 ```bash
 # Install and run the dependabot-config validator
 npx @dependabot/config-validator .github/dependabot.yml
@@ -428,8 +433,9 @@ npx @dependabot/config-validator .github/dependabot.yml
 **Cause:** `open-pull-requests-limit` not set, or grouping not configured.
 
 **Fix:**
+
 ```yaml
-open-pull-requests-limit: 10   # Hard cap on concurrent Dependabot PRs
+open-pull-requests-limit: 10 # Hard cap on concurrent Dependabot PRs
 
 groups:
   all-non-major:
@@ -476,14 +482,14 @@ git push --force-with-lease
 
 ## 9. Dependabot vs. Other Security Tools in the Revvel Stack
 
-| Tool | What It Catches | When It Runs |
-|---|---|---|
-| **Dependabot Alerts** | Known CVEs in dependencies | Continuously (real-time) |
-| **Dependabot Security Updates** | Same CVEs — but opens a PR fix | Immediately on CVE publication |
-| **`pnpm audit`** (security.yml) | Known CVEs in dependencies | Every push + PR + weekly |
-| **TruffleHog** (security.yml) | Leaked secrets in git history | Every push + PR + weekly |
-| **OWASP ZAP** (optional) | Runtime application vulnerabilities | Pre-production releases |
-| **Snyk** (optional) | CVEs + license issues + code issues | CI / continuous |
+| Tool                            | What It Catches                     | When It Runs                   |
+| ------------------------------- | ----------------------------------- | ------------------------------ |
+| **Dependabot Alerts**           | Known CVEs in dependencies          | Continuously (real-time)       |
+| **Dependabot Security Updates** | Same CVEs — but opens a PR fix      | Immediately on CVE publication |
+| **`pnpm audit`** (security.yml) | Known CVEs in dependencies          | Every push + PR + weekly       |
+| **TruffleHog** (security.yml)   | Leaked secrets in git history       | Every push + PR + weekly       |
+| **OWASP ZAP** (optional)        | Runtime application vulnerabilities | Pre-production releases        |
+| **Snyk** (optional)             | CVEs + license issues + code issues | CI / continuous                |
 
 **Recommendation:** Use Dependabot + `pnpm audit` + TruffleHog as the baseline. Add Snyk or OWASP ZAP for high-compliance or fintech/healthtech projects.
 
@@ -507,10 +513,10 @@ Run this checklist when bootstrapping a new Revvel project:
 
 ## 11. Related Standards
 
-| Document | Relevance |
-|---|---|
-| `docs/Master_Inventory/SECURITY_STANDARD.md` | Overall security requirements; Section 8 covers dependency scanning |
-| `templates/cicd/security.yml` | The `pnpm audit` workflow that complements Dependabot |
-| `templates/cicd/ci.yml` | The CI workflow that Dependabot PRs trigger |
-| `docs/GITHUB_PROJECTS_SETUP.md` | Label setup for `dependencies` and `automated` labels |
-| `docs/Master_Inventory/DEPLOYMENT_STANDARD.md` | How vetted dependency updates flow through to production |
+| Document                                       | Relevance                                                           |
+| ---------------------------------------------- | ------------------------------------------------------------------- |
+| `docs/Master_Inventory/SECURITY_STANDARD.md`   | Overall security requirements; Section 8 covers dependency scanning |
+| `templates/cicd/security.yml`                  | The `pnpm audit` workflow that complements Dependabot               |
+| `templates/cicd/ci.yml`                        | The CI workflow that Dependabot PRs trigger                         |
+| `docs/GITHUB_PROJECTS_SETUP.md`                | Label setup for `dependencies` and `automated` labels               |
+| `docs/Master_Inventory/DEPLOYMENT_STANDARD.md` | How vetted dependency updates flow through to production            |

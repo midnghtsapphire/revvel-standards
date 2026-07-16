@@ -35,7 +35,7 @@
 }
 
 .dyslexic-mode body {
-  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  font-family: "OpenDyslexic", "Comic Sans MS", sans-serif !important;
   line-height: 1.9 !important;
   letter-spacing: 0.2em !important;
 }

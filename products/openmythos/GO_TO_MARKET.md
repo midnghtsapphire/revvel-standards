@@ -12,11 +12,11 @@
 
 ## Revenue Model
 
-| Offer | Price | Value |
-|---|---|---|
-| Starter | $19 one-time | Template pack + launch page |
-| Pro | $79/month | Myth workspace + automation prompts |
-| Studio | $399 sprint | Done-with-you ship-to-market setup |
+| Offer   | Price        | Value                               |
+| ------- | ------------ | ----------------------------------- |
+| Starter | $19 one-time | Template pack + launch page         |
+| Pro     | $79/month    | Myth workspace + automation prompts |
+| Studio  | $399 sprint  | Done-with-you ship-to-market setup  |
 
 ## Launch Plan
 

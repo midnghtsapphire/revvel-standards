@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       issue_number:
-        description: 'Issue number to prosecute'
+        description: "Issue number to prosecute"
         required: true
         type: string
 

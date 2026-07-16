@@ -19,7 +19,11 @@ const Stripe = require("stripe");
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // never hard-code the key
 
 // amount and destination come from your app; feePercent from monetize/links.json
-async function chargeWithPlatformFee({ amountCents, connectedAccountId, feePercent }) {
+async function chargeWithPlatformFee({
+  amountCents,
+  connectedAccountId,
+  feePercent,
+}) {
   const applicationFee = Math.round(amountCents * (feePercent / 100));
 
   return stripe.paymentIntents.create({

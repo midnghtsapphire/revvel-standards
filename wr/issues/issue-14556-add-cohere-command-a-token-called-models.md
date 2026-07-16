@@ -5,7 +5,7 @@
 **Created:** 2026-06-15  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-06-15  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -13,16 +13,17 @@ See #14556 for the original request.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | N/A |
-| Archived | N/A |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | N/A   |
+| Archived    | N/A   |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter

@@ -16,6 +16,7 @@ data-combination strategies to inform enhancements to the `vine-marketplace` too
 ## 1. Browser Extensions (Chrome / Firefox)
 
 ### 1.1 Vine Helper
+
 - **URL:** https://vinehelper.ovh / https://chromewebstore.google.com (search "Vine Helper")
 - **Maintainer:** Community open-source
 - **Key features:**
@@ -31,11 +32,13 @@ data-combination strategies to inform enhancements to the `vine-marketplace` too
 - **Compatibility note:** Works on the Amazon Vine web portal at `amazon.com/vine/`
 
 ### 1.2 VineVin / Vine Companion (Tampermonkey scripts)
+
 - Various community Tampermonkey user-scripts circulate on Reddit r/AmazonVine
 - Typical features: ETV calculator, RFY sort by ETV, color-coded tier badges
 - Data format: no standardised export; inline DOM data only
 
 ### 1.3 Vine Crawler (unofficial)
+
 - Python-based local script — reads cookies from browser to poll Vine API endpoints
 - Stores results in SQLite; exports to CSV
 - **Status:** Unofficial / fragile — Amazon's internal API endpoints change without notice
@@ -44,12 +47,12 @@ data-combination strategies to inform enhancements to the `vine-marketplace` too
 
 ## 2. Companion Apps
 
-| App / Tool | Platform | Notes |
-|---|---|---|
-| **steel-white** (this org) | Node.js server | Tracks Vine ETV, affiliate links, inventory |
-| **vine-marketplace** (this repo) | Node.js server | Email-ingestion pipeline → FB Marketplace |
-| **Grapevine** (third-party) | iOS / Android | Unofficial; scrapes Vine portal via WebView |
-| **Vine Notifier** (community) | Web / Telegram bot | Pushes new RFY items to Telegram |
+| App / Tool                       | Platform           | Notes                                       |
+| -------------------------------- | ------------------ | ------------------------------------------- |
+| **steel-white** (this org)       | Node.js server     | Tracks Vine ETV, affiliate links, inventory |
+| **vine-marketplace** (this repo) | Node.js server     | Email-ingestion pipeline → FB Marketplace   |
+| **Grapevine** (third-party)      | iOS / Android      | Unofficial; scrapes Vine portal via WebView |
+| **Vine Notifier** (community)    | Web / Telegram bot | Pushes new RFY items to Telegram            |
 
 ---
 
@@ -57,42 +60,48 @@ data-combination strategies to inform enhancements to the `vine-marketplace` too
 
 ### 3.1 What data exists per Vine item
 
-| Source | ASIN | Title | ETV | Queue | Seen-date | Ordered | Status |
-|---|---|---|---|---|---|---|---|
-| Vine email (current) | ✅ | ✅ | ✅ | ✗ | ✅ (via email date) | ✅ | delivered/vine |
-| RFY watchlist (new) | opt. | ✅ | opt. | opt. | ✅ | link to order | watching/ordered/missed/passed |
-| Vine Helper CSV | ✅ | ✅ | ✅ | ✅ | ✅ | ✗ | hid/pinned |
+| Source               | ASIN | Title | ETV  | Queue | Seen-date           | Ordered       | Status                         |
+| -------------------- | ---- | ----- | ---- | ----- | ------------------- | ------------- | ------------------------------ |
+| Vine email (current) | ✅   | ✅    | ✅   | ✗     | ✅ (via email date) | ✅            | delivered/vine                 |
+| RFY watchlist (new)  | opt. | ✅    | opt. | opt.  | ✅                  | link to order | watching/ordered/missed/passed |
+| Vine Helper CSV      | ✅   | ✅    | ✅   | ✅    | ✅                  | ✗             | hid/pinned                     |
 
 ### 3.2 Join strategy
+
 - Primary key: **ASIN** — present in both email-ingested products and Vine Helper export
 - Secondary key: title fuzzy match (for items without ASIN in RFY tracker)
 - A `JOIN` on ASIN produces a unified record with: queue origin, ETV, email-ingested product data, listing/sold status
 
 ### 3.3 Implemented: RFY Watchlist + Inventory
+
 The `rfy-tracker` module (added in this PR) provides the watchlist side of the join:
+
 - `rfyId`, `asin`, `productTitle`, `estPrice`, `status` (watching / ordered / missed / passed)
 - `inventory.getSummary()` now merges RFY stats so the dashboard shows combined metrics:
   - `totalRFY`, `rfyOrdered`, `rfyMissed`, `rfyPassed`, `rfyConversionRate`
 
 ### 3.4 Future: Vine Helper CSV import
+
 To import Vine Helper CSV into the RFY watchlist, add an endpoint:
+
 ```
 POST /api/rfy/import-csv
 Body: multipart/form-data with CSV file
 ```
+
 CSV columns expected: `asin`, `title`, `etv`, `queue`, `date_seen`
 
 ---
 
 ## 4. Key Metrics to Track
 
-| Metric | Definition | Where |
-|---|---|---|
-| **RFY Conversion Rate** | `ordered / (ordered + missed + passed)` | `rfyConversionRate` in summary |
-| **Miss Rate** | `missed / (ordered + missed + passed)` | derived from summary |
-| **ETV-to-Listing Ratio** | `listingPrice / vineTaxValue` | `price-calculator.js` |
-| **Sell-Through Rate** | `sold / listed` | `totalSold / totalListed` |
-| **Stale Rate** | `staleListings / totalListed` | `staleListings / totalListed` |
+| Metric                   | Definition                              | Where                          |
+| ------------------------ | --------------------------------------- | ------------------------------ |
+| **RFY Conversion Rate**  | `ordered / (ordered + missed + passed)` | `rfyConversionRate` in summary |
+| **Miss Rate**            | `missed / (ordered + missed + passed)`  | derived from summary           |
+| **ETV-to-Listing Ratio** | `listingPrice / vineTaxValue`           | `price-calculator.js`          |
+| **Sell-Through Rate**    | `sold / listed`                         | `totalSold / totalListed`      |
+| **Stale Rate**           | `staleListings / totalListed`           | `staleListings / totalListed`  |
 
 ---
 
@@ -113,6 +122,7 @@ Based on community reports and the issue description:
 ## 6. Note on Scraping Chrome Extensions
 
 Direct scraping of Chrome extensions is not feasible without:
+
 1. A live authenticated browser session on `amazon.com/vine/`
 2. Chrome extension permissions to read extension storage
 

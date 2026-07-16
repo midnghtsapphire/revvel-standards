@@ -5,7 +5,7 @@
 **Author:** revvel engine-spine agent (claude-code) · **Added:** 2026-06-25
 **Applies to:** All AI and human reviewers operating on Revvel pull requests.
 
-> This standard is **additive**. It defines *who reviews what and how* for the
+> This standard is **additive**. It defines _who reviews what and how_ for the
 > Revvel automation fleet. It does **not** wire any live review bot, change any
 > workflow, or require any new secret. Implementation is a separate follow-up
 > (see [Section 10](#10-implementation-follow-up-not-in-this-pr)).
@@ -18,7 +18,7 @@
 > It also builds on the existing per-coder syntax/self-review checklist in
 > [`docs/CHECKLISTS/PRIMARY_CODER_CODE_REVIEW_CHECKLIST.md`](../docs/CHECKLISTS/PRIMARY_CODER_CODE_REVIEW_CHECKLIST.md)
 > — the **Syntax / Final Gate** persona ([Section 5.9](#59-syntax--final-gate-reviewer))
-> *reuses and references* that checklist rather than replacing it — and on the
+> _reuses and references_ that checklist rather than replacing it — and on the
 > engine-spine context in [`docs/ENGINE_INVENTORY.md`](../docs/ENGINE_INVENTORY.md),
 > [`MVI_CONTRACT_STANDARD.md`](MVI_CONTRACT_STANDARD.md) (engine contract),
 > [`docs/standards/RUNNER_TARGETS.md`](../docs/standards/RUNNER_TARGETS.md) (runner
@@ -59,11 +59,11 @@ workflow, an OpenRouter-routed reviewer, a local CLI) must satisfy.
 
 ## 3. Finding severities
 
-| Severity | Meaning | Effect on merge |
-| --- | --- | --- |
+| Severity   | Meaning                                                          | Effect on merge                                                   |
+| ---------- | ---------------------------------------------------------------- | ----------------------------------------------------------------- |
 | `blocking` | Violates an absolute constraint or introduces a real defect/vuln | Blocks merge until resolved or explicitly waived by a human owner |
-| `advisory` | Worth knowing; improvement, risk, or out-of-scope note | Does not block; recorded for follow-up |
-| `bom` | Access/tooling/budget needed to complete a check | Does not block; routed to procurement/follow-up |
+| `advisory` | Worth knowing; improvement, risk, or out-of-scope note           | Does not block; recorded for follow-up                            |
+| `bom`      | Access/tooling/budget needed to complete a check                 | Does not block; routed to procurement/follow-up                   |
 
 Only the **Security**, **No-delete/goals**, **Compliance**, and **Syntax / Final
 Gate** personas may emit `blocking` findings by default. Other personas escalate to
@@ -240,8 +240,8 @@ and **blocking rule**.
 ### 5.9 Syntax / Final Gate reviewer
 
 The **last** reviewer to run on every PR. Where the other personas reason about
-*meaning* (is this safe, does it preserve goals, does it advance a product), the
-Final Gate confirms the change is mechanically *sound and shippable* — it is the
+_meaning_ (is this safe, does it preserve goals, does it advance a product), the
+Final Gate confirms the change is mechanically _sound and shippable_ — it is the
 end-of-run validation pass each coder is expected to clear before a PR is marked
 ready.
 
@@ -251,9 +251,9 @@ ready.
   Markdown, JS/Node, Python, shell), test-runner literacy, diff inventory.
 - **Allowed tools/connectors:** read-only repo, the repo's own validators/linters/
   test runner via local CLI (`npm test`, `markdownlint-cli2`, `python3 -c "import
-  yaml…"`, `node --check`, `bash -n`). No write or paid connectors.
+yaml…"`, `node --check`, `bash -n`). No write or paid connectors.
 - **Review scope:** the **entire** changed-file set of the PR (diff-wide), run last.
-- **Inherited checklist (preserve, do not replace):** This persona *executes* the
+- **Inherited checklist (preserve, do not replace):** This persona _executes_ the
   existing per-coder checklist in
   [`docs/CHECKLISTS/PRIMARY_CODER_CODE_REVIEW_CHECKLIST.md`](../docs/CHECKLISTS/PRIMARY_CODER_CODE_REVIEW_CHECKLIST.md)
   (syntax & structure, git/GitHub, YAML/workflow, dependencies, testing, docs). That
@@ -291,7 +291,7 @@ ready.
   changed-Markdown lint, failing unit/smoke test, a workflow that cannot run
   unattended, or any detected `eval`/user-input shell interpolation. The no-delete,
   goals, and external-action **scans** are reported by this persona but the
-  *blocking* authority for them rests with the No-delete/goals and Compliance
+  _blocking_ authority for them rests with the No-delete/goals and Compliance
   personas (this persona's scan result is `advisory` when those personas also run,
   `blocking` if the Final Gate is the only persona executing). Everything else
   (style, optional coverage, non-CI-scope lint) is `advisory`.
@@ -306,27 +306,27 @@ Each connector lists how a reviewer should treat it and what a BOM line looks li
 when access is missing. **Read-only/observation scopes are preferred for review;
 no reviewer mutates external state.**
 
-| Connector | Review use (read-only) | If access missing → BOM line |
-| --- | --- | --- |
-| GitHub | Inspect PR, checks, labels, workflow runs | GitHub token with `repo:read`/`actions:read` for the review env |
-| Vercel | Read deployment/build status, env var names (not values) | Vercel read token + project ID |
-| Supabase | Read schema/migration diffs, RLS policy presence | Supabase service read key (review project) |
-| Firebase | Read rules files, project config presence | Firebase viewer credentials |
-| OpenRouter | Verify model routing/fallback config | Funded OpenRouter account + `OPENROUTER_API_KEY` (read) |
-| Zapier | Read Zap definitions referenced by the change | Zapier read API key |
-| Make | Read scenario blueprints referenced by the change | Make API token (read) |
-| n8n | Read workflow JSON referenced by the change | n8n API key + instance URL |
-| Gumloop | Read flow definitions referenced by the change | Gumloop API key |
-| Browser automation | Render/check a deployed page (read-only) | Headless browser in review env (Playwright) |
-| Local CLI | Run repo's own tests/linters/validators | None — always available in sandbox |
+| Connector          | Review use (read-only)                                   | If access missing → BOM line                                    |
+| ------------------ | -------------------------------------------------------- | --------------------------------------------------------------- |
+| GitHub             | Inspect PR, checks, labels, workflow runs                | GitHub token with `repo:read`/`actions:read` for the review env |
+| Vercel             | Read deployment/build status, env var names (not values) | Vercel read token + project ID                                  |
+| Supabase           | Read schema/migration diffs, RLS policy presence         | Supabase service read key (review project)                      |
+| Firebase           | Read rules files, project config presence                | Firebase viewer credentials                                     |
+| OpenRouter         | Verify model routing/fallback config                     | Funded OpenRouter account + `OPENROUTER_API_KEY` (read)         |
+| Zapier             | Read Zap definitions referenced by the change            | Zapier read API key                                             |
+| Make               | Read scenario blueprints referenced by the change        | Make API token (read)                                           |
+| n8n                | Read workflow JSON referenced by the change              | n8n API key + instance URL                                      |
+| Gumloop            | Read flow definitions referenced by the change           | Gumloop API key                                                 |
+| Browser automation | Render/check a deployed page (read-only)                 | Headless browser in review env (Playwright)                     |
+| Local CLI          | Run repo's own tests/linters/validators                  | None — always available in sandbox                              |
 
 Rule: a reviewer **never** blocks a PR because a connector is unreachable. It emits
-the matching `bom` finding and continues with the checks it *can* perform.
+the matching `bom` finding and continues with the checks it _can_ perform.
 
 ## 7. Canned GitHub apps and external review tools
 
-The original design question was: *do we build a Revvel reviewer persona, or buy a
-canned GitHub app / Marketplace bot?* The answer is **both, in layers** — canned
+The original design question was: _do we build a Revvel reviewer persona, or buy a
+canned GitHub app / Marketplace bot?_ The answer is **both, in layers** — canned
 apps **augment** the Revvel personas; they do **not** replace the internal personas
 or the Syntax / Final Gate.
 
@@ -348,13 +348,13 @@ insurance/compliance context. So:
 
 ### 7.2 Buy/use vs. keep-the-persona decision criteria
 
-| Use a canned app when… | Keep / require the Revvel persona when… |
-| --- | --- |
+| Use a canned app when…                                                                                                         | Keep / require the Revvel persona when…                                               |
+| ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
 | It provides strong, specialized coverage (CVE DB, SAST corpus, secret-scanning entropy models) that would be costly to rebuild | The check depends on **project-specific goals** (`$10M`/Phase targets, pricing tiers) |
-| The check is generic and language-standard (lint, dependency audit) | The **no-delete / archive-don't-delete** rule must be enforced (RVS-PRESERVE-001) |
-| It runs read-only and posts advisory comments | **Runner-procurement BOM** reasoning is needed (what access/tooling to buy) |
-| Its output can be consumed by a Revvel persona as input | **Connector-aware** fail-soft behavior must be judged per integration |
-| | **Insurance / compliance** context governs the change |
+| The check is generic and language-standard (lint, dependency audit)                                                            | The **no-delete / archive-don't-delete** rule must be enforced (RVS-PRESERVE-001)     |
+| It runs read-only and posts advisory comments                                                                                  | **Runner-procurement BOM** reasoning is needed (what access/tooling to buy)           |
+| Its output can be consumed by a Revvel persona as input                                                                        | **Connector-aware** fail-soft behavior must be judged per integration                 |
+|                                                                                                                                | **Insurance / compliance** context governs the change                                 |
 
 When a canned app overlaps a persona, run both: the app for breadth, the persona
 for Revvel-specific judgment and the final `blocking` call.
@@ -367,18 +367,18 @@ is a **non-binding catalog**, not an install list — nothing here is wired, fun
 or installed by this standard). Pricing URLs are placeholders to be confirmed at
 procurement time.
 
-| App | Purpose | Pricing URL (confirm) | Credential / install needed | Repo permissions | Risk | Approval required |
-| --- | --- | --- | --- | --- | --- | --- |
-| CodeQL | Deep SAST / dataflow | `https://github.com/github/codeql` (GH Advanced Security) | GHAS entitlement; workflow | `security-events: write`, `contents: read` | False positives; runtime cost | Repo owner |
-| Semgrep | Rule-based SAST | `https://semgrep.dev/pricing` | App install or CI token | `contents: read`, checks | Rule tuning; noise | Repo owner |
-| Trivy | Dependency / container CVE scan | `https://github.com/aquasecurity/trivy` (OSS) | CI step only | `contents: read` | CVE noise | Lead |
-| GitGuardian | Secret detection | `https://www.gitguardian.com/pricing` | App install + API key | `contents: read`, checks | Sends diffs to vendor | Repo owner |
-| Vercel Agent Review | Deploy-aware AI review | `https://vercel.com/pricing` (confirm) | Vercel app + project link | PR read, checks | Vendor data sharing; cost | Repo owner |
-| Octopus (review bot) | AI PR review | placeholder — confirm at procurement | App install | PR read/comment | Vendor data sharing | Repo owner |
-| Cubic | AI PR review | `https://cubic.dev` (confirm) | App install | PR read/comment | Vendor data sharing | Repo owner |
-| BITO | AI PR review / dev agent | `https://bito.ai/pricing` | App install + API key | PR read/comment | Vendor data sharing; cost | Repo owner |
-| RecurseML | ML-based regression review | placeholder — confirm at procurement | App install | PR read/comment | Vendor data sharing | Repo owner |
-| Coderabbit | AI PR review (already in flow) | `https://coderabbit.ai/pricing` | App install | PR read/comment | Vendor data sharing; cost | Repo owner |
+| App                  | Purpose                         | Pricing URL (confirm)                                     | Credential / install needed | Repo permissions                           | Risk                          | Approval required |
+| -------------------- | ------------------------------- | --------------------------------------------------------- | --------------------------- | ------------------------------------------ | ----------------------------- | ----------------- |
+| CodeQL               | Deep SAST / dataflow            | `https://github.com/github/codeql` (GH Advanced Security) | GHAS entitlement; workflow  | `security-events: write`, `contents: read` | False positives; runtime cost | Repo owner        |
+| Semgrep              | Rule-based SAST                 | `https://semgrep.dev/pricing`                             | App install or CI token     | `contents: read`, checks                   | Rule tuning; noise            | Repo owner        |
+| Trivy                | Dependency / container CVE scan | `https://github.com/aquasecurity/trivy` (OSS)             | CI step only                | `contents: read`                           | CVE noise                     | Lead              |
+| GitGuardian          | Secret detection                | `https://www.gitguardian.com/pricing`                     | App install + API key       | `contents: read`, checks                   | Sends diffs to vendor         | Repo owner        |
+| Vercel Agent Review  | Deploy-aware AI review          | `https://vercel.com/pricing` (confirm)                    | Vercel app + project link   | PR read, checks                            | Vendor data sharing; cost     | Repo owner        |
+| Octopus (review bot) | AI PR review                    | placeholder — confirm at procurement                      | App install                 | PR read/comment                            | Vendor data sharing           | Repo owner        |
+| Cubic                | AI PR review                    | `https://cubic.dev` (confirm)                             | App install                 | PR read/comment                            | Vendor data sharing           | Repo owner        |
+| BITO                 | AI PR review / dev agent        | `https://bito.ai/pricing`                                 | App install + API key       | PR read/comment                            | Vendor data sharing; cost     | Repo owner        |
+| RecurseML            | ML-based regression review      | placeholder — confirm at procurement                      | App install                 | PR read/comment                            | Vendor data sharing           | Repo owner        |
+| Coderabbit           | AI PR review (already in flow)  | `https://coderabbit.ai/pricing`                           | App install                 | PR read/comment                            | Vendor data sharing; cost     | Repo owner        |
 
 Rule: a reviewer **never** installs, authenticates, or funds any of these as part
 of running a review. Adopting one is a separate, human-approved procurement step;
@@ -390,29 +390,29 @@ An implementation should select personas by changed paths. **Security**,
 **No-delete/goals**, **Compliance**, and the **Syntax / Final Gate** run on every
 PR (the Final Gate always runs **last**).
 
-| Changed path glob | Personas to run (in addition to the always-on set) |
-| --- | --- |
-| `.github/workflows/**` | Workflow |
-| `scripts/**`, `**/*.js`, `**/*.ts` | Implementation |
-| `**/*.md` | Docs/contracts |
-| integration/connector code | Connector |
-| product copy, `standards/`, PR scope | Product/process |
+| Changed path glob                    | Personas to run (in addition to the always-on set) |
+| ------------------------------------ | -------------------------------------------------- |
+| `.github/workflows/**`               | Workflow                                           |
+| `scripts/**`, `**/*.js`, `**/*.ts`   | Implementation                                     |
+| `**/*.md`                            | Docs/contracts                                     |
+| integration/connector code           | Connector                                          |
+| product copy, `standards/`, PR scope | Product/process                                    |
 
 ### 8.1 Required reviewers by PR type
 
 Path globs select the mechanical personas; the **PR type** determines which
-reviewers are *required* (and may therefore block). The always-on set
+reviewers are _required_ (and may therefore block). The always-on set
 (Security, No-delete/goals, Compliance, Syntax / Final Gate) is required on every
 type below.
 
-| PR type | Additionally required reviewers | A single reviewer may block when… |
-| --- | --- | --- |
-| Workflow / CI change | Workflow | invalid YAML or a `gh` job that can't run unattended |
-| Regulated / insurance domain | Compliance, Product/process | a compliance or audit-trail regression is found |
-| Engine / engine-spine change | Implementation, Workflow, Product/process | a defect breaks the unattended spine loop |
-| App / deploy change | Implementation, Connector, Security | a security or deploy-safety defect is found |
-| Docs-only | Docs/contracts | changed Markdown fails the CI lint scope |
-| Integration / connector | Connector, Security | a connector failure can hard-break the loop with no fail-soft path |
+| PR type                      | Additionally required reviewers           | A single reviewer may block when…                                  |
+| ---------------------------- | ----------------------------------------- | ------------------------------------------------------------------ |
+| Workflow / CI change         | Workflow                                  | invalid YAML or a `gh` job that can't run unattended               |
+| Regulated / insurance domain | Compliance, Product/process               | a compliance or audit-trail regression is found                    |
+| Engine / engine-spine change | Implementation, Workflow, Product/process | a defect breaks the unattended spine loop                          |
+| App / deploy change          | Implementation, Connector, Security       | a security or deploy-safety defect is found                        |
+| Docs-only                    | Docs/contracts                            | changed Markdown fails the CI lint scope                           |
+| Integration / connector      | Connector, Security                       | a connector failure can hard-break the loop with no fail-soft path |
 
 ## 9. Merge decision
 
@@ -427,11 +427,11 @@ PR thread for the audit trail.
 Each persona returns a recommendation; the aggregate decision is the strictest one
 present.
 
-| Aggregate recommendation | Condition | Effect |
-| --- | --- | --- |
-| **approve** | No `blocking` finding open across all selected personas; Final Gate passed | Eligible to merge (subject to CircleCI/`wr-lint` gate) |
-| **request-changes** | One or more `blocking` findings open | Blocked until resolved or a human owner records a waiver |
-| **needs-discussion** | Personas conflict, or an `advisory` finding has merge-relevant ambiguity (e.g. scope vs. goal tension) | Hold for human owner decision; no auto-merge |
+| Aggregate recommendation | Condition                                                                                              | Effect                                                   |
+| ------------------------ | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| **approve**              | No `blocking` finding open across all selected personas; Final Gate passed                             | Eligible to merge (subject to CircleCI/`wr-lint` gate)   |
+| **request-changes**      | One or more `blocking` findings open                                                                   | Blocked until resolved or a human owner records a waiver |
+| **needs-discussion**     | Personas conflict, or an `advisory` finding has merge-relevant ambiguity (e.g. scope vs. goal tension) | Hold for human owner decision; no auto-merge             |
 
 When-one-reviewer-blocks rule: **any** persona with `blocking` authority for the PR
 type (always-on set, plus the type-required reviewers in
@@ -466,14 +466,14 @@ own — it is data, not an action.
 ## 11. PR-prep agents (pre-review readiness)
 
 The reviewer personas in [Section 5](#5-reviewer-personas) judge a PR; the
-**PR-prep agents** get a PR *ready to be judged*. They run **before** (or
+**PR-prep agents** get a PR _ready to be judged_. They run **before** (or
 alongside) the review fleet to clear mechanical blockers — failing checks, scope
 drift, conflicts — so a human or the review fleet spends its attention on
 substance, not on a red CI badge or a mistitled PR.
 
 This is the same "who does what and how" contract style as the reviewer personas:
 Revvel **owns the PR-prep contract** (the two roles, their checks, their output
-schema). A *runner* executes a role. **Jules is one such runner — not the standard
+schema). A _runner_ executes a role. **Jules is one such runner — not the standard
 itself.** Any runner that satisfies the contract below is acceptable:
 
 - **Jules** (the runner the original question referred to),
@@ -497,12 +497,12 @@ itself.** Any runner that satisfies the contract below is acceptable:
 - **Role:** Get the PR's automated checks green (or honestly accounted for) so the
   review fleet and merge gate aren't blocked by mechanical failures.
 - **Persona:** CI mechanic / build-cop; trusts nothing it cannot reproduce locally;
-  distinguishes a *real* failure from an *environmental* one (missing token, paid
+  distinguishes a _real_ failure from an _environmental_ one (missing token, paid
   connector, sandbox limit).
 - **Allowed tools/connectors:** repo read/write **on the PR branch only**, the
   repo's own validators/linters/test runner via local CLI (`npm test`,
   `markdownlint-cli2`, `python3 -c "import yaml…"`, `node --check`, `bash -n`),
-  GitHub (read checks; re-run *safe* checks). No write connectors, no paid APIs, no
+  GitHub (read checks; re-run _safe_ checks). No write connectors, no paid APIs, no
   secret changes.
 - **must_check / must_do:**
   - Validate workflow YAML for every changed/added `*.yml`/`*.yaml`
@@ -523,17 +523,17 @@ itself.** Any runner that satisfies the contract below is acceptable:
   to silence a failure; do not change goal values; do not wire/authenticate paid
   services; do not re-run unsafe/mutating/charging checks; do not expand scope
   beyond making checks honest.
-- **Blocking rule:** Recommends **hold** while a *real, in-scope* check is red and
+- **Blocking rule:** Recommends **hold** while a _real, in-scope_ check is red and
   fixable; records `external_blockers` as `bom` follow-ups that do **not** block.
 
 ### 11.2 PR Prep Agent B — Merge-Readiness Prep
 
-- **Role:** Get the PR's *metadata and merge posture* ready — scope, title, body,
+- **Role:** Get the PR's _metadata and merge posture_ ready — scope, title, body,
   conflict status, checklist, labels/reviews — and produce a merge recommendation.
 - **Persona:** Release manager / merge-coordinator; cares that the PR is correctly
   scoped, correctly described, and sequenced safely against sibling PRs.
 - **Allowed tools/connectors:** repo read, git history (read), GitHub (read PR
-  scope, labels, reviews, conflict/mergeability, sibling PRs). May *propose* title/
+  scope, labels, reviews, conflict/mergeability, sibling PRs). May _propose_ title/
   body/label edits; applies metadata-only edits on the PR (never code, never
   deletes).
 - **must_check:**
@@ -559,12 +559,12 @@ itself.** Any runner that satisfies the contract below is acceptable:
 - **Blocking rule:** Recommends **hold** or **request-changes** while a no-delete /
   goal-change / unresolved-conflict / missing-required-review condition is open.
 
-| Recommendation | When | Effect |
-| --- | --- | --- |
-| **merge** | Scope/title/body sound, no conflicts, not superseded, checklist satisfied, Agent A green or only `external_blockers`, no open `blocking` review finding | Eligible to merge (subject to CircleCI/`wr-lint` + human/auto-merge gate) |
-| **close** | PR is fully superseded by another merged PR, or its goal is already met elsewhere | Recommend close (a human/automerge actor closes); never auto-deletes the branch |
-| **split** | PR mixes unrelated concerns or exceeds reviewable scope | Recommend splitting into follow-up PRs (listed in `follow_up_prs`) |
-| **hold** | A real check is red (Agent A), a conflict is unresolved, or a `blocking` review finding is open | Blocked until resolved or a human owner waives |
+| Recommendation | When                                                                                                                                                    | Effect                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| **merge**      | Scope/title/body sound, no conflicts, not superseded, checklist satisfied, Agent A green or only `external_blockers`, no open `blocking` review finding | Eligible to merge (subject to CircleCI/`wr-lint` + human/auto-merge gate)       |
+| **close**      | PR is fully superseded by another merged PR, or its goal is already met elsewhere                                                                       | Recommend close (a human/automerge actor closes); never auto-deletes the branch |
+| **split**      | PR mixes unrelated concerns or exceeds reviewable scope                                                                                                 | Recommend splitting into follow-up PRs (listed in `follow_up_prs`)              |
+| **hold**       | A real check is red (Agent A), a conflict is unresolved, or a `blocking` review finding is open                                                         | Blocked until resolved or a human owner waives                                  |
 
 ### 11.3 Output schema (both PR-prep agents)
 
@@ -590,12 +590,24 @@ finding objects from [Section 4](#4-shared-output-schema) inside `findings`.
     }
   ],
   "checks_run": [
-    { "name": "npm test", "result": "pass", "evidence": "node --test: 0 failures" },
-    { "name": "markdownlint-cli2 (changed)", "result": "fixed", "evidence": "MD040 added language to fence" }
+    {
+      "name": "npm test",
+      "result": "pass",
+      "evidence": "node --test: 0 failures"
+    },
+    {
+      "name": "markdownlint-cli2 (changed)",
+      "result": "fixed",
+      "evidence": "MD040 added language to fence"
+    }
   ],
   "files_changed": ["standards/REVVEL_CODE_REVIEW_FLEET.md"],
   "external_blockers": [
-    { "check": "vercel-deploy-preview", "reason": "No Vercel token in sandbox", "bom": "Vercel read token + project ID" }
+    {
+      "check": "vercel-deploy-preview",
+      "reason": "No Vercel token in sandbox",
+      "bom": "Vercel read token + project ID"
+    }
   ],
   "safe_to_merge": false,
   "recommended_action": "hold",
@@ -605,17 +617,17 @@ finding objects from [Section 4](#4-shared-output-schema) inside `findings`.
 
 Field contract:
 
-| Field | Type | Meaning |
-| --- | --- | --- |
-| `agent` | string | `pr-prep-ci-checks` (A) or `pr-prep-merge-readiness` (B) |
-| `pr` | number | PR number under prep |
-| `findings` | array | [Section 4](#4-shared-output-schema) finding objects |
-| `checks_run` | array | `{name, result: pass\|fixed\|failing\|skipped, evidence}` |
-| `files_changed` | array | Files the agent touched (additive only) |
-| `external_blockers` | array | `{check, reason, bom}` — token/connector/sandbox blocks; never PR defects |
-| `safe_to_merge` | boolean | Agent's machine-readable readiness verdict |
-| `recommended_action` | string | A: `hold`/`ready`; B: `merge`/`close`/`split`/`hold` |
-| `follow_up_prs` | array | Suggested follow-up PRs (e.g. from a `split`) |
+| Field                | Type    | Meaning                                                                   |
+| -------------------- | ------- | ------------------------------------------------------------------------- |
+| `agent`              | string  | `pr-prep-ci-checks` (A) or `pr-prep-merge-readiness` (B)                  |
+| `pr`                 | number  | PR number under prep                                                      |
+| `findings`           | array   | [Section 4](#4-shared-output-schema) finding objects                      |
+| `checks_run`         | array   | `{name, result: pass\|fixed\|failing\|skipped, evidence}`                 |
+| `files_changed`      | array   | Files the agent touched (additive only)                                   |
+| `external_blockers`  | array   | `{check, reason, bom}` — token/connector/sandbox blocks; never PR defects |
+| `safe_to_merge`      | boolean | Agent's machine-readable readiness verdict                                |
+| `recommended_action` | string  | A: `hold`/`ready`; B: `merge`/`close`/`split`/`hold`                      |
+| `follow_up_prs`      | array   | Suggested follow-up PRs (e.g. from a `split`)                             |
 
 ### 11.4 Routing the PR-prep agents
 

@@ -6,13 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type NodeType = typeof NodeType[keyof typeof NodeType];
-
+export type NodeType = (typeof NodeType)[keyof typeof NodeType];
 
 export const NodeType = {
-  start: 'start',
-  check: 'check',
-  success: 'success',
-  failure: 'failure',
-  warning: 'warning',
+  start: "start",
+  check: "check",
+  success: "success",
+  failure: "failure",
+  warning: "warning",
 } as const;

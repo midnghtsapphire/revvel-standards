@@ -24,14 +24,15 @@
 **Reviewer/Agent:** <name (Publisher) — what it is / its scope>
 **Head SHA reviewed:** `<full commit sha>`
 
-| # | Claim under review | Tool / source used | Verified result + citation |
-| --- | --- | --- | --- |
-| 1 | <the specific question/claim> | <direct file read / DeepWiki / grep / external tool, named per standard> | <conclusion> + `path/to/file.ext:line` |
-| 2 | | | |
+| #   | Claim under review            | Tool / source used                                                       | Verified result + citation             |
+| --- | ----------------------------- | ------------------------------------------------------------------------ | -------------------------------------- |
+| 1   | <the specific question/claim> | <direct file read / DeepWiki / grep / external tool, named per standard> | <conclusion> + `path/to/file.ext:line` |
+| 2   |                               |                                                                          |                                        |
 
 **Honest meta-note for this session:** <any stale/uncertain/unverifiable findings; flag tool confidence that was NOT independently verified>
 
 **Tools used this session (named per `docs/PROVENANCE_STANDARD.md`):**
+
 - <Tool name> (<Publisher / Sponsor>) via `<package@version or path>` — <what it does, and its known limits e.g. "indexed snapshot, can lag head SHA">
 
 ## Copy to here ↑

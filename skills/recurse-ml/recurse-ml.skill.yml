@@ -16,7 +16,7 @@ metadata:
     - github-actions
   created_at: "2026-04-14"
   updated_at: "2026-04-14"
-  trial_expires: "2026-04-28"   # 14-day trial — renew decision due by this date
+  trial_expires: "2026-04-28" # 14-day trial — renew decision due by this date
   annual_cost_usd: 250
   trial_decision_gate: "docs/DARE_LOG.md"
 
@@ -24,7 +24,7 @@ dependencies:
   skills:
     - code_review
     - error_reporting
-    - vault_agent     # for RECURSE_ML_API_KEY provisioning
+    - vault_agent # for RECURSE_ML_API_KEY provisioning
   tools:
     - github_actions
   pip_packages: []

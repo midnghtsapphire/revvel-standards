@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-07  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-07  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -105,18 +104,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -128,6 +128,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28757727765.md`
 
 # WR-Ready Research Packet: Notebook Process API Integration
@@ -137,6 +138,7 @@ Source packet: `docs/research-engine/run-28757727765.md`
 **BLOCK IMPLEMENTATION** - This work request is critically incomplete and poses significant security risks. All required fields are empty despite acknowledgment checkboxes being marked. The informal title suggests unauthorized system access ("implant notebook") without proper specification, authentication framework, or security review.
 
 **Required Actions Before Proceeding:**
+
 1. Complete all WR template fields with specific technical requirements
 2. Define target notebook platform (Jupyter, Colab, Observable, etc.)
 3. Document authentication/cookie security requirements
@@ -146,12 +148,14 @@ Source packet: `docs/research-engine/run-28757727765.md`
 ## 2. Audience We Are Going After and Why
 
 **Cannot Determine** - The WR lacks fundamental market positioning:
+
 - No target buyer persona identified
 - No pain point articulated
 - No user validation or demand signals
 - Informal language ("lmao") suggests internal developer shorthand rather than customer-driven requirement
 
 **Inferred Possibilities:**
+
 - Data scientists needing embedded notebook functionality
 - ML engineers requiring API-driven notebook automation
 - SaaS companies wanting to add interactive data features
@@ -161,11 +165,13 @@ Source packet: `docs/research-engine/run-28757727765.md`
 ## 3. Marketing and SEO Plan
 
 **Search Intent Clusters Identified:**
+
 - **Informational:** "how to embed jupyter notebook", "notebook API authentication", "interactive notebook security"
 - **Transactional:** "embedded analytics platform", "white-label data notebooks"
 - **Comparison:** "jupyter vs observable embedding", "notebook platform API comparison"
 
 **Landing Page Strategy:**
+
 - **Title:** "How to Securely Embed Interactive Notebooks in Your Application"
 - **Meta Description:** "Developer's guide to embedding computational notebooks with secure API integration and authentication"
 - **FAQ Angles:**
@@ -177,24 +183,26 @@ Source packet: `docs/research-engine/run-28757727765.md`
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Platform | GitHub Stars | Pricing | Process API | Cookie/Session | Key Differentiator |
-|----------|-------------|---------|-------------|----------------|-------------------|
-| Jupyter | 11.7k | Free/OSS | Kernel subprocesses only | No native API | Most adopted, extensible |
-| Google Colab | N/A | Free/$9.99/mo Pro | Limited subprocess | Google-managed | Easy ML onboarding |
-| Deepnote | 1.1k (archived) | Free/$12/mo Pro | No process API | No native API | Good UX, less active |
-| Observable | N/A | Freemium model | JavaScript runtime | Browser-managed | Real-time collaboration |
-| n8n | 34.3k | Free/$20/mo Cloud | Full workflow API | HTTP node support | Fastest growing |
+| Platform     | GitHub Stars    | Pricing           | Process API              | Cookie/Session    | Key Differentiator       |
+| ------------ | --------------- | ----------------- | ------------------------ | ----------------- | ------------------------ |
+| Jupyter      | 11.7k           | Free/OSS          | Kernel subprocesses only | No native API     | Most adopted, extensible |
+| Google Colab | N/A             | Free/$9.99/mo Pro | Limited subprocess       | Google-managed    | Easy ML onboarding       |
+| Deepnote     | 1.1k (archived) | Free/$12/mo Pro   | No process API           | No native API     | Good UX, less active     |
+| Observable   | N/A             | Freemium model    | JavaScript runtime       | Browser-managed   | Real-time collaboration  |
+| n8n          | 34.3k           | Free/$20/mo Cloud | Full workflow API        | HTTP node support | Fastest growing          |
 
 **Moat Gap:** No major platform offers unified process API with programmable cookie/session management - potential differentiator if security is addressed.
 
 ## 5. Chatter and Demand Signals
 
 **Evidence Sources:**
+
 - Stack Overflow: Multiple questions on notebook embedding and authentication
 - GitHub Issues: Recurring complaints about unclear API authentication in Jupyter
 - Reddit: User confusion about session management and security
 
 **Key Pain Points:**
+
 - Lack of clear documentation for notebook API integration
 - Security concerns around embedded notebook authentication
 - No unified approach to process/session management
@@ -204,12 +212,14 @@ Source packet: `docs/research-engine/run-28757727765.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Cannot Verify:**
+
 - Specific notebook platform (Jupyter, Colab, Observable, custom)
 - "Process API" definition - no standard exists across platforms
 - Authentication requirements and security boundaries
 - Legitimate business purpose for "implanting" notebooks
 
 **Missing Evidence:**
+
 - API documentation references
 - Security/compliance requirements
 - User consent model
@@ -243,20 +253,22 @@ Source packet: `docs/research-engine/run-28757727765.md`
 ## 8. Code Review Agent Packet
 
 ### Bito AI Review Points
+
 ```yaml
 security_checks:
   - Verify all cookie attributes (HttpOnly, Secure, SameSite)
   - Check for authentication token exposure in logs
   - Validate user session isolation
-  
+
 automatic_fix:
   if: cookie_missing_secure_attributes
-  then: 
+  then:
     add: "HttpOnly=true, Secure=true, SameSite=Strict"
     commit: "security: enforce secure cookie attributes"
 ```
 
 ### OpenRouter Review Points
+
 ```yaml
 api_design:
   - Ensure RESTful conventions for process API
@@ -271,6 +283,7 @@ automatic_fix:
 ```
 
 ### Coderabbit Review Points
+
 ```yaml
 code_quality:
   - Check for proper error handling in API routes
@@ -285,6 +298,7 @@ automatic_fix:
 ```
 
 ### Ralph Loop Review Points
+
 ```yaml
 architecture:
   - Verify separation of concerns (auth, API, notebook logic)
@@ -301,7 +315,9 @@ automatic_fix:
 ## 9. Automatic Fix and Commit Queue
 
 ### Priority 1: Template Enforcement
+
 **File:** `.github/workflows/wr-validation.yml`
+
 ```yaml
 name: Validate WR Completeness
 on:
@@ -321,10 +337,13 @@ jobs:
             exit 1
           fi
 ```
+
 **Commit:** `ci: enforce WR template completion validation`
 
 ### Priority 2: Security Review Trigger
+
 **File:** `.github/workflows/security-review.yml`
+
 ```yaml
 name: Security Review Required
 on:
@@ -344,14 +363,18 @@ jobs:
           gh issue assign ${{ github.event.issue.number }} \
             --add-assignee "@security-team"
 ```
+
 **Commit:** `security: auto-flag cookie/auth issues for review`
 
 ### Priority 3: Documentation Requirements
+
 **File:** `docs/notebook-integration-requirements.md`
+
 ```markdown
 # Notebook Integration Requirements
 
 ## Required Documentation Before Implementation
+
 - [ ] Target notebook platform specification
 - [ ] API endpoint documentation
 - [ ] Authentication flow diagram
@@ -359,29 +382,34 @@ jobs:
 - [ ] User consent workflow
 - [ ] Data privacy impact assessment
 ```
+
 **Commit:** `docs: add notebook integration requirements checklist`
 
 ## 10. Labels to Apply
 
 ### Immediate (Blocking)
+
 - `blocked-incomplete-spec` - Missing required WR fields
 - `security-review-required` - Cookie/auth handling needs review
 - `needs-clarification` - Ambiguous requirements
 - `risk-high-ambiguity` - Undefined scope and objectives
 
 ### Risk Assessment
+
 - `risk-security` - Potential authentication vulnerabilities
 - `risk-scope-creep` - Unbounded requirements
 - `risk-technical-debt` - No architectural specification
 - `risk-compliance` - Missing privacy/consent framework
 
 ### Process
+
 - `template-incomplete` - WR template not properly filled
 - `needs-market-research` - No user validation
 - `needs-platform-clarification` - Notebook platform undefined
 - `documentation-needed` - Missing technical specs
 
 ### Next Steps
+
 - `awaiting-author-response` - Blocked on clarification
 - `pre-development-hold` - Cannot start until requirements clear
 
@@ -425,11 +453,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -445,11 +473,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

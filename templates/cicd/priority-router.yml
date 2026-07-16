@@ -9,7 +9,8 @@ on:
   issues:
     types: [opened, reopened, edited, labeled, unlabeled, closed]
   pull_request_target:
-    types: [opened, reopened, edited, labeled, unlabeled, ready_for_review, closed]
+    types:
+      [opened, reopened, edited, labeled, unlabeled, ready_for_review, closed]
   schedule:
     # Runs at fixed UTC times: 00:00, 06:00, 12:00, 18:00.
     - cron: "0 */6 * * *"

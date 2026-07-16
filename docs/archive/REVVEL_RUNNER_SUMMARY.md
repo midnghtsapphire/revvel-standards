@@ -5,28 +5,31 @@
 
 ## The Shift
 
-| Before | After |
-|--------|-------|
-| Revvel produced **standards, plans, goals** | Revvel produces **shipped artifacts** |
-| Failures were vague ("configure X") | Failures emit a **Procurement BOM** |
-| Engines wrote prose | Engines write **code, deploys, API calls** |
-| State was implicit | State is `state.json`, schema-enforced |
-| One layer (engine) | Three layers: **Orchestrator → Engine → Runner** |
+| Before                                      | After                                            |
+| ------------------------------------------- | ------------------------------------------------ |
+| Revvel produced **standards, plans, goals** | Revvel produces **shipped artifacts**            |
+| Failures were vague ("configure X")         | Failures emit a **Procurement BOM**              |
+| Engines wrote prose                         | Engines write **code, deploys, API calls**       |
+| State was implicit                          | State is `state.json`, schema-enforced           |
+| One layer (engine)                          | Three layers: **Orchestrator → Engine → Runner** |
 
 ## The Three Layers
 
 ### 1. Orchestrator
+
 - Owns `state.json`.
 - Routes intake from `docs/inbox/` to engines.
 - Refuses intake without `revenue_target_monthly_usd` + `goal_phase`.
 - Halts on `needs_procurement`.
 
 ### 2. Engines
+
 - Stateless; called by the orchestrator.
 - Either produce artifacts or invoke runners.
 - Forbidden from descriptive-only output.
 
 ### 3. Runners
+
 - Execute on a closed set of targets: `github`, `vercel`, `supabase`, `zapier`, `make`, `n8n`, `gumloop`, `polar`, `cli`, `browser`.
 - On missing access → emit **Procurement BOM**.
 

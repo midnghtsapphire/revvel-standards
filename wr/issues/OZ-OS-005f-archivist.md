@@ -8,14 +8,17 @@
 **Depends on:** OZ-OS-003 (intel schema), OZ-OS-005d (synthesizer)
 
 ## Deliverable
+
 Single file: `oz-os/agents/archivist.md`
 
 ## Content Requirements
+
 The Archivist writes the final intel.md entry so research compounds. Without the
 Archivist, research is done and forgotten. This agent ensures every completed
 research cycle produces a permanent intelligence record.
 
 ### Mission
+
 After synthesis is complete, write the `intel.md` entry. Block PR close if the
 entry is missing.
 
@@ -32,17 +35,21 @@ entry is missing.
 ```
 
 ### Output Format
+
 New file: `oz-os/intel/INTEL-YYYY-NNN.md` following the SCHEMA.md frontmatter.
 
 ### Integration with PR Workflow
+
 - Archivist runs as a required check before PR merge on `oz-os` repo
 - If no `intel/INTEL-*.md` file is added or modified in the PR, the check fails
 - Escape hatch: PR label `no-intel-required` with a written justification in the PR body
 
 ## Key Constraint
+
 Writes `intel.md` entry and blocks PR close if missing. NULL_RESULT research still gets an entry.
 
 ## Acceptance
+
 - File renders cleanly in GitHub
 - No raw tokens or bracket-placeholders
 - Documents the PR-blocking behavior

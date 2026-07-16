@@ -1,4 +1,4 @@
-import { defineConfig, InputTransformerFn } from "orval";
+import { defineConfig, type InputTransformerFn } from "orval";
 import path from "path";
 
 const root = path.resolve(__dirname, "..", "..");
@@ -58,10 +58,10 @@ export default defineConfig({
       override: {
         zod: {
           coerce: {
-            query: ['boolean', 'number', 'string'],
-            param: ['boolean', 'number', 'string'],
-            body: ['bigint', 'date'],
-            response: ['bigint', 'date'],
+            query: ["boolean", "number", "string"],
+            param: ["boolean", "number", "string"],
+            body: ["bigint", "date"],
+            response: ["bigint", "date"],
           },
         },
         useDates: true,

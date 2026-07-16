@@ -25,15 +25,15 @@ Content drives organic traffic, builds trust, and creates affiliate link placeme
 
 Every app blog must cover these content categories from launch. Content is AI-generated (OpenRouter LLM) at launch, then grown weekly:
 
-| Category | Slug | What's In It | Min Posts at Launch |
-|---|---|---|---|
-| **How-To Guides** | `/blog/how-to` | Step-by-step instructions using the app's subject area | 5 |
-| **Use Cases** | `/blog/use-cases` | Real-world examples of who uses it and why | 4 |
-| **Industry News** | `/blog/industry-news` | Trends, updates, and news in the app's subject area | 3 |
-| **Product Updates** | `/blog/updates` | New features, improvements, announcements | 2 |
-| **Tips & Tricks** | `/blog/tips` | Quick wins, shortcuts, expert advice | 3 |
-| **Case Studies** | `/blog/case-studies` | Before/after stories, results, outcomes | 2 |
-| **About the Author** | `/blog/author` | Personal story and perspective posts | 1 |
+| Category             | Slug                  | What's In It                                           | Min Posts at Launch |
+| -------------------- | --------------------- | ------------------------------------------------------ | ------------------- |
+| **How-To Guides**    | `/blog/how-to`        | Step-by-step instructions using the app's subject area | 5                   |
+| **Use Cases**        | `/blog/use-cases`     | Real-world examples of who uses it and why             | 4                   |
+| **Industry News**    | `/blog/industry-news` | Trends, updates, and news in the app's subject area    | 3                   |
+| **Product Updates**  | `/blog/updates`       | New features, improvements, announcements              | 2                   |
+| **Tips & Tricks**    | `/blog/tips`          | Quick wins, shortcuts, expert advice                   | 3                   |
+| **Case Studies**     | `/blog/case-studies`  | Before/after stories, results, outcomes                | 2                   |
+| **About the Author** | `/blog/author`        | Personal story and perspective posts                   | 1                   |
 
 **Minimum at launch: 20 blog posts.** Auto-generated weekly thereafter, targeting 2–4 new posts per week.
 
@@ -111,21 +111,26 @@ blog_post_tags:
 Every app includes an **AI Content Generator** in the admin panel that creates blog posts automatically:
 
 **Trigger options:**
+
 - On app launch: Generate 20 seed posts
 - Weekly cron job: Generate 2–4 new posts
 - Manual: Admin clicks "Generate Post" with a topic prompt
 
 **Generation payload sent to OpenRouter:**
+
 ```json
 {
   "model": "deepseek/deepseek-chat",
-  "messages": [{
-    "role": "system",
-    "content": "You are an expert content writer for [APP NAME], a [APP CATEGORY] application. Write SEO-optimized blog posts that rank on Google and help real users. Always include: an engaging title (50-60 chars), meta description (150-160 chars), H2 subheadings, internal links to app features, and a clear call-to-action at the end. The audience is [TARGET AUDIENCE]."
-  }, {
-    "role": "user",
-    "content": "Write a 1200-word [CATEGORY] blog post about: [TOPIC]. Include the keyword '[PRIMARY_KEYWORD]' in the title and naturally 3-5 times throughout. Suggest 5 related tags."
-  }]
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an expert content writer for [APP NAME], a [APP CATEGORY] application. Write SEO-optimized blog posts that rank on Google and help real users. Always include: an engaging title (50-60 chars), meta description (150-160 chars), H2 subheadings, internal links to app features, and a clear call-to-action at the end. The audience is [TARGET AUDIENCE]."
+    },
+    {
+      "role": "user",
+      "content": "Write a 1200-word [CATEGORY] blog post about: [TOPIC]. Include the keyword '[PRIMARY_KEYWORD]' in the title and naturally 3-5 times throughout. Suggest 5 related tags."
+    }
+  ]
 }
 ```
 
@@ -147,17 +152,21 @@ export async function GET() {
     <description>${APP_DESCRIPTION}</description>
     <language>en-us</language>
     <atom:link href="${APP_URL}/blog/rss.xml" rel="self" type="application/rss+xml"/>
-    ${posts.map(post => `
+    ${posts
+      .map(
+        (post) => `
     <item>
       <title><![CDATA[${post.title}]]></title>
       <link>${APP_URL}/blog/${post.category}/${post.slug}</link>
       <guid>${APP_URL}/blog/${post.category}/${post.slug}</guid>
       <pubDate>${new Date(post.published_at).toUTCString()}</pubDate>
       <description><![CDATA[${post.excerpt}]]></description>
-    </item>`).join('')}
+    </item>`,
+      )
+      .join("")}
   </channel>
 </rss>`;
-  return new Response(feed, { headers: { 'Content-Type': 'application/xml' } });
+  return new Response(feed, { headers: { "Content-Type": "application/xml" } });
 }
 ```
 
@@ -171,14 +180,14 @@ The newsletter is an email broadcast sent to everyone who has subscribed. It is 
 
 **Mandatory newsletter types every app sends:**
 
-| Newsletter Type | Trigger | Frequency | Content |
-|---|---|---|---|
-| **Welcome** | New subscriber signs up | Immediately | Welcome message, what to expect, affiliate link |
-| **Weekly Digest** | Every Monday | Weekly | Top blog posts, new app features, tips, affiliate deals |
-| **New Post Alert** | New blog post published | Immediate or batched | Post excerpt, link to full article |
-| **Product/Feature Update** | New feature launched | On launch | What's new, how to use it |
-| **Monthly Roundup** | 1st of every month | Monthly | Best of the month, stats, deals |
-| **Re-engagement** | No open in 60 days | Once | "We miss you" + best content |
+| Newsletter Type            | Trigger                 | Frequency            | Content                                                 |
+| -------------------------- | ----------------------- | -------------------- | ------------------------------------------------------- |
+| **Welcome**                | New subscriber signs up | Immediately          | Welcome message, what to expect, affiliate link         |
+| **Weekly Digest**          | Every Monday            | Weekly               | Top blog posts, new app features, tips, affiliate deals |
+| **New Post Alert**         | New blog post published | Immediate or batched | Post excerpt, link to full article                      |
+| **Product/Feature Update** | New feature launched    | On launch            | What's new, how to use it                               |
+| **Monthly Roundup**        | 1st of every month      | Monthly              | Best of the month, stats, deals                         |
+| **Re-engagement**          | No open in 60 days      | Once                 | "We miss you" + best content                            |
 
 ### 3.2. Newsletter Database Schema
 
@@ -240,24 +249,24 @@ newsletter_sends:
 
 Every app must have a subscription form. Placement options (use at least 2):
 
-| Placement | When to Use |
-|---|---|
-| **Site footer** (always) | Every page, every app |
-| **Homepage hero** | Large call-to-action on the main landing page |
-| **Blog sidebar / after post** | Below or beside every blog article |
-| **Exit-intent popup** | Fires when the user moves to close the tab |
-| **Dedicated `/newsletter` page** | For direct link sharing |
-| **Lead form thank-you page** | After a lead submits, offer newsletter |
+| Placement                        | When to Use                                   |
+| -------------------------------- | --------------------------------------------- |
+| **Site footer** (always)         | Every page, every app                         |
+| **Homepage hero**                | Large call-to-action on the main landing page |
+| **Blog sidebar / after post**    | Below or beside every blog article            |
+| **Exit-intent popup**            | Fires when the user moves to close the tab    |
+| **Dedicated `/newsletter` page** | For direct link sharing                       |
+| **Lead form thank-you page**     | After a lead submits, offer newsletter        |
 
 **Minimum subscribe form fields:**
 
-| Field ID | Label | DB Column | Required | Notes |
-|---|---|---|---|---|
-| FM-NEWS-001 | Email Address | `newsletter_subscribers.email` | ✅ | Primary field |
-| FM-NEWS-002 | First Name | `newsletter_subscribers.first_name` | No | Personalizes greeting |
-| FM-NEWS-003 | Interests (checkboxes) | `newsletter_subscribers.interests` | No | Only show if 3+ topics available |
-| FM-NEWS-004 | (hidden) Source App | `newsletter_subscribers.source_app` | Auto | Which app they're on |
-| FM-NEWS-005 | (hidden) Source Page | `newsletter_subscribers.source_page` | Auto | URL they subscribed from |
+| Field ID    | Label                  | DB Column                            | Required | Notes                            |
+| ----------- | ---------------------- | ------------------------------------ | -------- | -------------------------------- |
+| FM-NEWS-001 | Email Address          | `newsletter_subscribers.email`       | ✅       | Primary field                    |
+| FM-NEWS-002 | First Name             | `newsletter_subscribers.first_name`  | No       | Personalizes greeting            |
+| FM-NEWS-003 | Interests (checkboxes) | `newsletter_subscribers.interests`   | No       | Only show if 3+ topics available |
+| FM-NEWS-004 | (hidden) Source App    | `newsletter_subscribers.source_app`  | Auto     | Which app they're on             |
+| FM-NEWS-005 | (hidden) Source Page   | `newsletter_subscribers.source_page` | Auto     | URL they subscribed from         |
 
 **After submission:** Send double opt-in confirmation email. Subscriber stays `status: 'pending'` until they click the link. This is required for GDPR and CAN-SPAM compliance.
 
@@ -267,25 +276,28 @@ Use **Resend** as the primary email delivery service (free: 3,000 emails/month):
 
 ```ts
 // lib/email/send-newsletter.ts
-import { Resend } from 'resend';
+import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function sendNewsletter(campaign: NewsletterCampaign, subscribers: Subscriber[]) {
+export async function sendNewsletter(
+  campaign: NewsletterCampaign,
+  subscribers: Subscriber[],
+) {
   // Batch in groups of 100 (Resend batch limit)
   const batches = chunk(subscribers, 100);
   for (const batch of batches) {
     await resend.batch.send(
-      batch.map(sub => ({
+      batch.map((sub) => ({
         from: `${APP_NAME} <newsletter@${APP_DOMAIN}>`,
         to: sub.email,
         subject: campaign.subject_line,
         html: injectPersonalization(campaign.body_html, sub),
         text: injectPersonalization(campaign.body_text, sub),
         headers: {
-          'List-Unsubscribe': `<https://${APP_DOMAIN}/unsubscribe?token=${sub.id}>`,
-          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          "List-Unsubscribe": `<https://${APP_DOMAIN}/unsubscribe?token=${sub.id}>`,
+          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
         },
-      }))
+      })),
     );
   }
 }
@@ -295,20 +307,20 @@ export async function sendNewsletter(campaign: NewsletterCampaign, subscribers: 
 
 Every newsletter email must include:
 
-| Element | Purpose | Required? |
-|---|---|---|
-| From name | `[App Name] by Audrey Evans` | ✅ |
-| Subject line | Clear, benefit-focused, 40–60 chars | ✅ |
-| Preview text | 80–100 chars, extends subject | ✅ |
-| Greeting | `Hi [first_name],` or `Hi there,` | ✅ |
-| Logo / header image | Branded header with alt text | ✅ |
-| Main content | Article, tip, or update | ✅ |
-| Affiliate link | At least 1 relevant affiliate link | ✅ |
-| CTA button | Link back to app or blog post | ✅ |
-| Social links | Icons for all active social profiles | ✅ |
-| Unsubscribe link | `Unsubscribe` or `Manage Preferences` | ✅ LEGAL |
-| Physical address | Your business mailing address | ✅ LEGAL (CAN-SPAM) |
-| Disclosure | "Some links are affiliate links." | ✅ FTC |
+| Element             | Purpose                               | Required?           |
+| ------------------- | ------------------------------------- | ------------------- |
+| From name           | `[App Name] by Audrey Evans`          | ✅                  |
+| Subject line        | Clear, benefit-focused, 40–60 chars   | ✅                  |
+| Preview text        | 80–100 chars, extends subject         | ✅                  |
+| Greeting            | `Hi [first_name],` or `Hi there,`     | ✅                  |
+| Logo / header image | Branded header with alt text          | ✅                  |
+| Main content        | Article, tip, or update               | ✅                  |
+| Affiliate link      | At least 1 relevant affiliate link    | ✅                  |
+| CTA button          | Link back to app or blog post         | ✅                  |
+| Social links        | Icons for all active social profiles  | ✅                  |
+| Unsubscribe link    | `Unsubscribe` or `Manage Preferences` | ✅ LEGAL            |
+| Physical address    | Your business mailing address         | ✅ LEGAL (CAN-SPAM) |
+| Disclosure          | "Some links are affiliate links."     | ✅ FTC              |
 
 ---
 
@@ -318,18 +330,18 @@ Every newsletter email must include:
 
 Every app must have a full About section with dedicated sub-pages. This is not just an "About Us" paragraph — it is a multi-page hub that builds trust and SEO.
 
-| Route | Page Title | Content |
-|---|---|---|
-| `/about` | About [App Name] | Overview: what it is, who it's for, the origin story |
-| `/about/our-story` | Our Story | Audrey's personal story — founding, challenges, mission |
-| `/about/mission` | Our Mission | Why this app exists. Who it serves. Social impact. |
-| `/about/team` | Meet the Team | Founder bio (Audrey), any team members, AI agents credited |
-| `/about/technology` | How It Works | Non-technical explanation of the tech. No jargon. |
-| `/about/partners` | Our Partners | Affiliate partners, integrations, collaborators |
-| `/about/accessibility` | Accessibility | WCAG AAA commitment, TTY line, 7 UI modes, ADA |
-| `/about/press` | Press & Media | Press releases, media mentions, downloadable press kit |
-| `/about/contact` | Contact Us | Form, email, phone, TTY number, social links, hours |
-| `/about/testimonials` | Success Stories | User reviews, quotes, before/after stories |
+| Route                  | Page Title       | Content                                                    |
+| ---------------------- | ---------------- | ---------------------------------------------------------- |
+| `/about`               | About [App Name] | Overview: what it is, who it's for, the origin story       |
+| `/about/our-story`     | Our Story        | Audrey's personal story — founding, challenges, mission    |
+| `/about/mission`       | Our Mission      | Why this app exists. Who it serves. Social impact.         |
+| `/about/team`          | Meet the Team    | Founder bio (Audrey), any team members, AI agents credited |
+| `/about/technology`    | How It Works     | Non-technical explanation of the tech. No jargon.          |
+| `/about/partners`      | Our Partners     | Affiliate partners, integrations, collaborators            |
+| `/about/accessibility` | Accessibility    | WCAG AAA commitment, TTY line, 7 UI modes, ADA             |
+| `/about/press`         | Press & Media    | Press releases, media mentions, downloadable press kit     |
+| `/about/contact`       | Contact Us       | Form, email, phone, TTY number, social links, hours        |
+| `/about/testimonials`  | Success Stories  | User reviews, quotes, before/after stories                 |
 
 ### 4.2. About Page Database Schema
 
@@ -398,12 +410,13 @@ Every app must have a **Use Cases** section at `/use-cases` with individual page
 
 ### 5.1. Use Case Page Structure
 
-| Route | Example Content |
-|---|---|
-| `/use-cases` | Index of all use cases |
+| Route                        | Example Content                     |
+| ---------------------------- | ----------------------------------- |
+| `/use-cases`                 | Index of all use cases              |
 | `/use-cases/[audience-slug]` | Detailed page for one audience type |
 
 **Example audience slugs for a burial insurance app:**
+
 - `/use-cases/seniors-planning-ahead`
 - `/use-cases/adult-children-helping-parents`
 - `/use-cases/veterans-final-expense`
@@ -413,6 +426,7 @@ Every app must have a **Use Cases** section at `/use-cases` with individual page
 ### 5.2. Use Case Page Template
 
 Each use case page must follow this structure:
+
 1. **Headline** — "How [Audience] Uses [App Name] to [Achieve Outcome]"
 2. **The challenge** — What problem this audience faces
 3. **The solution** — How the app solves it step by step
@@ -426,12 +440,12 @@ Each use case page must follow this structure:
 
 Every app follows this content production schedule after launch:
 
-| Week | Content |
-|---|---|
-| Launch | 20 AI-generated seed blog posts + all About pages |
-| Week 1 | 3 blog posts: 1 how-to, 1 use case, 1 industry news |
-| Week 2 | 3 blog posts: 1 tips & tricks, 1 case study, 1 author post |
-| Week 3+ | Repeat cycle. Add newsletter content from blog. |
+| Week    | Content                                                               |
+| ------- | --------------------------------------------------------------------- |
+| Launch  | 20 AI-generated seed blog posts + all About pages                     |
+| Week 1  | 3 blog posts: 1 how-to, 1 use case, 1 industry news                   |
+| Week 2  | 3 blog posts: 1 tips & tricks, 1 case study, 1 author post            |
+| Week 3+ | Repeat cycle. Add newsletter content from blog.                       |
 | Monthly | 1 long-form pillar post (2,500+ words) targeting a high-value keyword |
 
 ---
@@ -440,27 +454,27 @@ Every app follows this content production schedule after launch:
 
 Every piece of content must follow these internal linking rules (critical for SEO):
 
-| Rule | Requirement |
-|---|---|
-| Every blog post → 2–3 links to app feature pages | Drives traffic to conversion pages |
-| Every blog post → 2–3 links to other relevant blog posts | Reduces bounce rate |
-| Every app feature page → 1–2 links to supporting blog posts | Adds context and SEO depth |
-| Every About page → 1 link to a relevant blog post | Connects the story to content |
-| Every use case page → 1 link to the pricing/signup page | Conversion path |
-| Homepage → links to top 5 blog posts | Shows content freshness |
-| No orphan pages | Every page must be linked from at least one other page |
+| Rule                                                        | Requirement                                            |
+| ----------------------------------------------------------- | ------------------------------------------------------ |
+| Every blog post → 2–3 links to app feature pages            | Drives traffic to conversion pages                     |
+| Every blog post → 2–3 links to other relevant blog posts    | Reduces bounce rate                                    |
+| Every app feature page → 1–2 links to supporting blog posts | Adds context and SEO depth                             |
+| Every About page → 1 link to a relevant blog post           | Connects the story to content                          |
+| Every use case page → 1 link to the pricing/signup page     | Conversion path                                        |
+| Homepage → links to top 5 blog posts                        | Shows content freshness                                |
+| No orphan pages                                             | Every page must be linked from at least one other page |
 
 ---
 
 ## 8. Legal Requirements for Content
 
-| Requirement | Where |
-|---|---|
-| **Copyright notice** | Footer of every page: "© 2026 Freedom Angel Corp / [App Name]" |
-| **Privacy Policy** | `/privacy` route — required by Google, Meta, Apple |
-| **Terms of Service** | `/terms` route |
-| **Affiliate disclosure** | On every page and post with affiliate links: "This page contains affiliate links." |
-| **Newsletter CAN-SPAM** | Physical mailing address in every email footer |
-| **GDPR cookie notice** | Cookie consent banner on first visit (EU users) |
-| **Accessibility statement** | `/about/accessibility` page |
-| **TTY contact info** | On contact page and footer: "TTY: [number]" |
+| Requirement                 | Where                                                                              |
+| --------------------------- | ---------------------------------------------------------------------------------- |
+| **Copyright notice**        | Footer of every page: "© 2026 Freedom Angel Corp / [App Name]"                     |
+| **Privacy Policy**          | `/privacy` route — required by Google, Meta, Apple                                 |
+| **Terms of Service**        | `/terms` route                                                                     |
+| **Affiliate disclosure**    | On every page and post with affiliate links: "This page contains affiliate links." |
+| **Newsletter CAN-SPAM**     | Physical mailing address in every email footer                                     |
+| **GDPR cookie notice**      | Cookie consent banner on first visit (EU users)                                    |
+| **Accessibility statement** | `/about/accessibility` page                                                        |
+| **TTY contact info**        | On contact page and footer: "TTY: [number]"                                        |

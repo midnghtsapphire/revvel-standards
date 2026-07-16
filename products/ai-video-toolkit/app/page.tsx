@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 interface Tool {
   name: string;
@@ -14,331 +14,334 @@ interface Tool {
 
 const tools: Tool[] = [
   {
-    name: 'Katalist.ai',
-    category: 'All-in-One',
-    pricing: 'Subscription',
-    description: 'Complete pipeline from script generation to final video export',
-    bestFor: ['Beginners', 'One-stop solution seekers'],
+    name: "Katalist.ai",
+    category: "All-in-One",
+    pricing: "Subscription",
+    description:
+      "Complete pipeline from script generation to final video export",
+    bestFor: ["Beginners", "One-stop solution seekers"],
     features: [
-      'Script generation',
-      'Storyboard creation',
-      'AI voiceovers',
-      'Animated video export',
-      'Single interface workflow'
+      "Script generation",
+      "Storyboard creation",
+      "AI voiceovers",
+      "Animated video export",
+      "Single interface workflow",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'ChatGPT',
-    category: 'Scriptwriting',
-    pricing: 'Free / $20/mo',
-    description: 'Industry standard for brainstorming and script generation',
-    bestFor: ['Content creators', 'Researchers'],
+    name: "ChatGPT",
+    category: "Scriptwriting",
+    pricing: "Free / $20/mo",
+    description: "Industry standard for brainstorming and script generation",
+    bestFor: ["Content creators", "Researchers"],
     features: [
-      'Brainstorming ideas',
-      'Research assistance',
-      'Structured scripts',
-      'Content outlines',
-      'SEO optimization'
+      "Brainstorming ideas",
+      "Research assistance",
+      "Structured scripts",
+      "Content outlines",
+      "SEO optimization",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Jasper',
-    category: 'Scriptwriting',
-    pricing: 'From $49/mo',
-    description: 'Marketing-focused AI writing assistant',
-    bestFor: ['Marketers', 'Professional creators'],
+    name: "Jasper",
+    category: "Scriptwriting",
+    pricing: "From $49/mo",
+    description: "Marketing-focused AI writing assistant",
+    bestFor: ["Marketers", "Professional creators"],
     features: [
-      'Long-form content',
-      'Marketing copy',
-      'Video scripts',
-      'Brand voice',
-      'Templates'
+      "Long-form content",
+      "Marketing copy",
+      "Video scripts",
+      "Brand voice",
+      "Templates",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Claude',
-    category: 'Scriptwriting',
-    pricing: 'Free / $20/mo',
-    description: 'Advanced AI for research and detailed scripts',
-    bestFor: ['Complex topics', 'Educational content'],
+    name: "Claude",
+    category: "Scriptwriting",
+    pricing: "Free / $20/mo",
+    description: "Advanced AI for research and detailed scripts",
+    bestFor: ["Complex topics", "Educational content"],
     features: [
-      'Deep research',
-      'Nuanced writing',
-      'Long context',
-      'Fact-checking',
-      'Citations'
+      "Deep research",
+      "Nuanced writing",
+      "Long context",
+      "Fact-checking",
+      "Citations",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Perplexity',
-    category: 'Scriptwriting',
-    pricing: 'Free / $20/mo',
-    description: 'AI-powered research engine with citations',
-    bestFor: ['Research-heavy content', 'Fact-based videos'],
+    name: "Perplexity",
+    category: "Scriptwriting",
+    pricing: "Free / $20/mo",
+    description: "AI-powered research engine with citations",
+    bestFor: ["Research-heavy content", "Fact-based videos"],
     features: [
-      'Web research',
-      'Source citations',
-      'Current information',
-      'Topic exploration',
-      'Fact verification'
+      "Web research",
+      "Source citations",
+      "Current information",
+      "Topic exploration",
+      "Fact verification",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'ElevenLabs',
-    category: 'Voiceovers',
-    pricing: 'From $5/mo',
-    description: 'Industry leader for realistic AI voiceovers',
-    bestFor: ['Professional narration', 'Multiple voices'],
+    name: "ElevenLabs",
+    category: "Voiceovers",
+    pricing: "From $5/mo",
+    description: "Industry leader for realistic AI voiceovers",
+    bestFor: ["Professional narration", "Multiple voices"],
     features: [
-      'Ultra-realistic voices',
-      'Voice cloning',
-      'Multiple languages',
-      'Emotion control',
-      'Custom voices'
+      "Ultra-realistic voices",
+      "Voice cloning",
+      "Multiple languages",
+      "Emotion control",
+      "Custom voices",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Murf.ai',
-    category: 'Voiceovers',
-    pricing: 'From $19/mo',
-    description: 'Professional text-to-speech with studio features',
-    bestFor: ['Business presentations', 'E-learning'],
+    name: "Murf.ai",
+    category: "Voiceovers",
+    pricing: "From $19/mo",
+    description: "Professional text-to-speech with studio features",
+    bestFor: ["Business presentations", "E-learning"],
     features: [
-      'Studio-quality voices',
-      'Pitch control',
-      'Speed adjustment',
-      'Emphasis options',
-      'Multi-speaker'
+      "Studio-quality voices",
+      "Pitch control",
+      "Speed adjustment",
+      "Emphasis options",
+      "Multi-speaker",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Play.ht',
-    category: 'Voiceovers',
-    pricing: 'From $19/mo',
-    description: 'Natural-sounding AI voices with emotion',
-    bestFor: ['Storytelling', 'Audiobooks'],
+    name: "Play.ht",
+    category: "Voiceovers",
+    pricing: "From $19/mo",
+    description: "Natural-sounding AI voices with emotion",
+    bestFor: ["Storytelling", "Audiobooks"],
     features: [
-      'Natural prosody',
-      'Emotional range',
-      'Voice styles',
-      'Long-form audio',
-      'API access'
+      "Natural prosody",
+      "Emotional range",
+      "Voice styles",
+      "Long-form audio",
+      "API access",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Pictory',
-    category: 'Video Assembly',
-    pricing: 'From $19/mo',
-    description: 'Turn scripts into videos with stock footage',
-    bestFor: ['Quick video creation', 'Social media'],
+    name: "Pictory",
+    category: "Video Assembly",
+    pricing: "From $19/mo",
+    description: "Turn scripts into videos with stock footage",
+    bestFor: ["Quick video creation", "Social media"],
     features: [
-      'Script to video',
-      'Auto B-roll',
-      'Auto captions',
-      'Stock footage',
-      'Music library'
+      "Script to video",
+      "Auto B-roll",
+      "Auto captions",
+      "Stock footage",
+      "Music library",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Runway',
-    category: 'Video Assembly',
-    pricing: 'From $12/mo',
-    description: 'AI video generation and editing suite',
-    bestFor: ['Creative videos', 'AI effects'],
+    name: "Runway",
+    category: "Video Assembly",
+    pricing: "From $12/mo",
+    description: "AI video generation and editing suite",
+    bestFor: ["Creative videos", "AI effects"],
     features: [
-      'AI video generation',
-      'Green screen removal',
-      'Motion tracking',
-      'AI effects',
-      'Professional editing'
+      "AI video generation",
+      "Green screen removal",
+      "Motion tracking",
+      "AI effects",
+      "Professional editing",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Kling AI',
-    category: 'Video Assembly',
-    pricing: 'Subscription',
-    description: 'AI-powered video creation platform',
-    bestFor: ['Animated content', 'AI-generated visuals'],
+    name: "Kling AI",
+    category: "Video Assembly",
+    pricing: "Subscription",
+    description: "AI-powered video creation platform",
+    bestFor: ["Animated content", "AI-generated visuals"],
     features: [
-      'AI video generation',
-      'Text to video',
-      'Style transfer',
-      'Animation tools',
-      'Fast rendering'
+      "AI video generation",
+      "Text to video",
+      "Style transfer",
+      "Animation tools",
+      "Fast rendering",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Zebracat',
-    category: 'Video Assembly',
-    pricing: 'From $29/mo',
-    description: 'AI video creator with marketing focus',
-    bestFor: ['Marketing videos', 'Ads'],
+    name: "Zebracat",
+    category: "Video Assembly",
+    pricing: "From $29/mo",
+    description: "AI video creator with marketing focus",
+    bestFor: ["Marketing videos", "Ads"],
     features: [
-      'Marketing templates',
-      'AI scenes',
-      'Brand customization',
-      'Multiple formats',
-      'Fast export'
+      "Marketing templates",
+      "AI scenes",
+      "Brand customization",
+      "Multiple formats",
+      "Fast export",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'AutoShorts.ai',
-    category: 'Video Assembly',
-    pricing: 'From $19/mo',
-    description: 'Automated short-form video creation',
-    bestFor: ['YouTube Shorts', 'TikTok'],
+    name: "AutoShorts.ai",
+    category: "Video Assembly",
+    pricing: "From $19/mo",
+    description: "Automated short-form video creation",
+    bestFor: ["YouTube Shorts", "TikTok"],
     features: [
-      'Auto video creation',
-      'Viral templates',
-      'Captions',
-      'Music sync',
-      'Batch creation'
+      "Auto video creation",
+      "Viral templates",
+      "Captions",
+      "Music sync",
+      "Batch creation",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Opus Clip',
-    category: 'Short-Form',
-    pricing: 'From $9/mo',
-    description: 'AI-powered long-form to short-form converter',
-    bestFor: ['Repurposing content', 'Social clips'],
+    name: "Opus Clip",
+    category: "Short-Form",
+    pricing: "From $9/mo",
+    description: "AI-powered long-form to short-form converter",
+    bestFor: ["Repurposing content", "Social clips"],
     features: [
-      'Auto clip detection',
-      'Viral score',
-      'Auto captions',
-      'Multiple clips',
-      'Scheduler'
+      "Auto clip detection",
+      "Viral score",
+      "Auto captions",
+      "Multiple clips",
+      "Scheduler",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Vizard.ai',
-    category: 'Short-Form',
-    pricing: 'From $15/mo',
-    description: 'AI video repurposing for social media',
-    bestFor: ['Podcasters', 'Webinars'],
+    name: "Vizard.ai",
+    category: "Short-Form",
+    pricing: "From $15/mo",
+    description: "AI video repurposing for social media",
+    bestFor: ["Podcasters", "Webinars"],
     features: [
-      'AI clipping',
-      'Auto subtitles',
-      'Layouts',
-      'Brand templates',
-      'Bulk export'
+      "AI clipping",
+      "Auto subtitles",
+      "Layouts",
+      "Brand templates",
+      "Bulk export",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Submagic',
-    category: 'Short-Form',
-    pricing: 'From $20/mo',
-    description: 'Auto captions and shorts optimization',
-    bestFor: ['Caption creators', 'Engagement'],
+    name: "Submagic",
+    category: "Short-Form",
+    pricing: "From $20/mo",
+    description: "Auto captions and shorts optimization",
+    bestFor: ["Caption creators", "Engagement"],
     features: [
-      'Animated captions',
-      'Emoji injection',
-      'B-roll suggestions',
-      'Engagement hooks',
-      'Viral templates'
+      "Animated captions",
+      "Emoji injection",
+      "B-roll suggestions",
+      "Engagement hooks",
+      "Viral templates",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Canva AI',
-    category: 'Thumbnails',
-    pricing: 'Free / $13/mo',
-    description: 'Easy design tool with AI features',
-    bestFor: ['Beginners', 'Quick designs'],
+    name: "Canva AI",
+    category: "Thumbnails",
+    pricing: "Free / $13/mo",
+    description: "Easy design tool with AI features",
+    bestFor: ["Beginners", "Quick designs"],
     features: [
-      'Drag-and-drop',
-      'AI image generation',
-      'Templates',
-      'Brand kits',
-      'Stock photos'
+      "Drag-and-drop",
+      "AI image generation",
+      "Templates",
+      "Brand kits",
+      "Stock photos",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Midjourney',
-    category: 'Thumbnails',
-    pricing: 'From $10/mo',
-    description: 'Advanced AI image generation',
-    bestFor: ['Custom art', 'Unique styles'],
+    name: "Midjourney",
+    category: "Thumbnails",
+    pricing: "From $10/mo",
+    description: "Advanced AI image generation",
+    bestFor: ["Custom art", "Unique styles"],
     features: [
-      'High-quality images',
-      'Artistic styles',
-      'Custom prompts',
-      'Variations',
-      'Upscaling'
+      "High-quality images",
+      "Artistic styles",
+      "Custom prompts",
+      "Variations",
+      "Upscaling",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Leonardo AI',
-    category: 'Thumbnails',
-    pricing: 'Free / $10/mo',
-    description: 'AI art generator with control',
-    bestFor: ['Consistent style', 'Game art'],
+    name: "Leonardo AI",
+    category: "Thumbnails",
+    pricing: "Free / $10/mo",
+    description: "AI art generator with control",
+    bestFor: ["Consistent style", "Game art"],
     features: [
-      'Style consistency',
-      'Character creation',
-      'Fast generation',
-      'Multiple styles',
-      'Fine-tuning'
+      "Style consistency",
+      "Character creation",
+      "Fast generation",
+      "Multiple styles",
+      "Fine-tuning",
     ],
-    url: '#'
+    url: "#",
   },
   {
-    name: 'Freepik AI',
-    category: 'Thumbnails',
-    pricing: 'Free / $10/mo',
-    description: 'Stock photos with AI generation',
-    bestFor: ['Professional looks', 'Stock + AI'],
+    name: "Freepik AI",
+    category: "Thumbnails",
+    pricing: "Free / $10/mo",
+    description: "Stock photos with AI generation",
+    bestFor: ["Professional looks", "Stock + AI"],
     features: [
-      'Stock library',
-      'AI generation',
-      'Templates',
-      'Commercial use',
-      'Easy editing'
+      "Stock library",
+      "AI generation",
+      "Templates",
+      "Commercial use",
+      "Easy editing",
     ],
-    url: '#'
-  }
+    url: "#",
+  },
 ];
 
 const categories = [
-  'All Tools',
-  'All-in-One',
-  'Scriptwriting',
-  'Voiceovers',
-  'Video Assembly',
-  'Short-Form',
-  'Thumbnails'
+  "All Tools",
+  "All-in-One",
+  "Scriptwriting",
+  "Voiceovers",
+  "Video Assembly",
+  "Short-Form",
+  "Thumbnails",
 ];
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState('All Tools');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("All Tools");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredTools = tools.filter(tool => {
-    const matchesCategory = selectedCategory === 'All Tools' || tool.category === selectedCategory;
-    const matchesSearch = tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tool.description.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredTools = tools.filter((tool) => {
+    const matchesCategory =
+      selectedCategory === "All Tools" || tool.category === selectedCategory;
+    const matchesSearch =
+      tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      tool.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
-  const toolsByCategory = categories.slice(1).map(category => ({
+  const toolsByCategory = categories.slice(1).map((category) => ({
     category,
-    tools: tools.filter(t => t.category === category)
+    tools: tools.filter((t) => t.category === category),
   }));
 
   return (
@@ -353,8 +356,9 @@ export default function Home() {
             AI Video Toolkit
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            Your complete automation stack for creating faceless YouTube videos. From scriptwriting
-            to thumbnails, find the perfect AI tools for every step of your workflow.
+            Your complete automation stack for creating faceless YouTube videos.
+            From scriptwriting to thumbnails, find the perfect AI tools for
+            every step of your workflow.
           </p>
         </header>
 
@@ -373,8 +377,10 @@ export default function Home() {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
             >
-              {categories.map(cat => (
-                <option key={cat} value={cat}>{cat}</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
@@ -383,11 +389,16 @@ export default function Home() {
         {/* Workflow Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {toolsByCategory.map(({ category, tools: categoryTools }) => (
-            <div key={category} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 text-center">
+            <div
+              key={category}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 text-center"
+            >
               <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1">
                 {categoryTools.length}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-300">{category}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                {category}
+              </div>
             </div>
           ))}
         </div>
@@ -400,21 +411,24 @@ export default function Home() {
               <div className="text-6xl mb-2">1️⃣</div>
               <h3 className="text-xl font-semibold mb-2">Research & Script</h3>
               <p className="text-purple-100">
-                Use ChatGPT, Claude, or Perplexity to research topics and generate structured video scripts
+                Use ChatGPT, Claude, or Perplexity to research topics and
+                generate structured video scripts
               </p>
             </div>
             <div>
               <div className="text-6xl mb-2">2️⃣</div>
               <h3 className="text-xl font-semibold mb-2">Create Video</h3>
               <p className="text-purple-100">
-                Turn scripts into videos with Pictory or Runway, add voiceovers with ElevenLabs
+                Turn scripts into videos with Pictory or Runway, add voiceovers
+                with ElevenLabs
               </p>
             </div>
             <div>
               <div className="text-6xl mb-2">3️⃣</div>
               <h3 className="text-xl font-semibold mb-2">Optimize & Publish</h3>
               <p className="text-purple-100">
-                Create thumbnails with Midjourney, repurpose to Shorts with Opus Clip
+                Create thumbnails with Midjourney, repurpose to Shorts with Opus
+                Clip
               </p>
             </div>
           </div>
@@ -424,10 +438,13 @@ export default function Home() {
         <div className="mb-12">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-              {selectedCategory === 'All Tools' ? 'All Tools' : selectedCategory + ' Tools'}
+              {selectedCategory === "All Tools"
+                ? "All Tools"
+                : selectedCategory + " Tools"}
             </h2>
             <div className="text-gray-600 dark:text-gray-400">
-              {filteredTools.length} {filteredTools.length === 1 ? 'tool' : 'tools'}
+              {filteredTools.length}{" "}
+              {filteredTools.length === 1 ? "tool" : "tools"}
             </div>
           </div>
 
@@ -472,8 +489,13 @@ export default function Home() {
                   </div>
                   <ul className="space-y-1">
                     {tool.features.slice(0, 3).map((feature, idx) => (
-                      <li key={idx} className="text-sm text-gray-600 dark:text-gray-400 flex items-start">
-                        <span className="text-purple-600 dark:text-purple-400 mr-2">✓</span>
+                      <li
+                        key={idx}
+                        className="text-sm text-gray-600 dark:text-gray-400 flex items-start"
+                      >
+                        <span className="text-purple-600 dark:text-purple-400 mr-2">
+                          ✓
+                        </span>
                         {feature}
                       </li>
                     ))}
@@ -512,8 +534,8 @@ export default function Home() {
             Ready to Build Your Faceless Channel?
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
-            Start with our complete toolkit and build a successful automated YouTube channel.
-            All tools tested and recommended for 2026.
+            Start with our complete toolkit and build a successful automated
+            YouTube channel. All tools tested and recommended for 2026.
           </p>
           <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-lg text-lg transition-all transform hover:scale-105">
             Get the Complete Guide

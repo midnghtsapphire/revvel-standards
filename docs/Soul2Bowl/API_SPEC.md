@@ -24,6 +24,7 @@
 ## Authentication Endpoints
 
 ### `POST /api/auth/webhook`
+
 Clerk webhook — handles user creation/update/deletion events. Syncs Clerk user to `users` table.  
 **Auth:** Clerk webhook secret (not user JWT)
 
@@ -32,9 +33,11 @@ Clerk webhook — handles user creation/update/deletion events. Syncs Clerk user
 ## Menu Endpoints
 
 ### `GET /api/menu`
+
 Returns all active menu items grouped by category.
 
 **Response:**
+
 ```json
 {
   "entrees": [...],
@@ -46,9 +49,11 @@ Returns all active menu items grouped by category.
 ```
 
 ### `GET /api/menu/:slug`
+
 Returns a single menu item by slug.
 
 ### `GET /api/menu?category=entree&keto=true`
+
 Filtered menu — supports query params: `category`, `keto`, `vegan`, `gluten_free`, `featured`.
 
 ---
@@ -56,9 +61,11 @@ Filtered menu — supports query params: `category`, `keto`, `vegan`, `gluten_fr
 ## Calendar / Availability Endpoints
 
 ### `GET /api/calendar?month=2026-05&service_type=individual`
+
 Returns available calendar slots for a given month and service type.
 
 **Response:**
+
 ```json
 {
   "slots": [
@@ -75,6 +82,7 @@ Returns available calendar slots for a given month and service type.
 ```
 
 ### `GET /api/calendar/:slot_id`
+
 Returns details for a specific slot (availability, cutoff time, service type).
 
 ---
@@ -82,11 +90,13 @@ Returns details for a specific slot (availability, cutoff time, service type).
 ## Order Endpoints
 
 ### `POST /api/orders`
+
 Creates a new order (moves to `pending_payment` state). Returns Stripe Checkout Session URL.
 
 **Auth:** Optional (guest checkout allowed)
 
 **Request:**
+
 ```json
 {
   "calendar_slot_id": "uuid",
@@ -104,6 +114,7 @@ Creates a new order (moves to `pending_payment` state). Returns Stripe Checkout 
 ```
 
 **Response:**
+
 ```json
 {
   "order_id": "uuid",
@@ -113,23 +124,29 @@ Creates a new order (moves to `pending_payment` state). Returns Stripe Checkout 
 ```
 
 ### `GET /api/orders/:id`
+
 Get order details. Auth required — customer can only view their own orders; admin can view any.
 
 ### `GET /api/orders`
+
 **Admin only.** List all orders. Supports filters: `status`, `service_type`, `date`, `page`, `limit`.
 
 ### `PATCH /api/orders/:id/status`
+
 **Admin only.** Update order status.
 
 **Request:**
+
 ```json
 { "status": "ready" }
 ```
 
 ### `POST /api/orders/:id/refund`
+
 **Admin only.** Trigger Stripe refund for an order.
 
 **Request:**
+
 ```json
 { "amount_cents": 1400, "reason": "customer_request" }
 ```
@@ -139,9 +156,11 @@ Get order details. Auth required — customer can only view their own orders; ad
 ## Stripe Webhook
 
 ### `POST /api/webhooks/stripe`
+
 Handles Stripe events. Signature verified via `stripe.webhooks.constructEvent`.
 
 **Events handled:**
+
 - `checkout.session.completed` → confirm order, send confirmation email, decrement slot availability
 - `invoice.paid` → renew meal prep subscription record
 - `invoice.payment_failed` → send dunning email, update subscription status to `past_due`
@@ -152,9 +171,11 @@ Handles Stripe events. Signature verified via `stripe.webhooks.constructEvent`.
 ## Subscription Endpoints (Meal Prep × 7)
 
 ### `POST /api/subscriptions`
+
 Creates a Stripe subscription for weekly Meal Prep × 7. Auth required.
 
 **Request:**
+
 ```json
 {
   "dietary_preferences": { "keto": false, "vegan": true, "gluten_free": false },
@@ -163,6 +184,7 @@ Creates a Stripe subscription for weekly Meal Prep × 7. Auth required.
 ```
 
 **Response:**
+
 ```json
 {
   "subscription_id": "uuid",
@@ -172,9 +194,11 @@ Creates a Stripe subscription for weekly Meal Prep × 7. Auth required.
 ```
 
 ### `GET /api/subscriptions/portal`
+
 Returns Stripe Customer Portal URL for managing/cancelling subscription.
 
 ### `DELETE /api/subscriptions/:id`
+
 Cancels subscription at period end (sets `cancel_at_period_end: true` in Stripe).
 
 ---
@@ -182,9 +206,11 @@ Cancels subscription at period end (sets `cancel_at_period_end: true` in Stripe)
 ## Catering Endpoints
 
 ### `POST /api/catering/inquiries`
+
 Submit a catering inquiry. Auth optional.
 
 **Request:**
+
 ```json
 {
   "contact_name": "Jane Smith",
@@ -194,7 +220,12 @@ Submit a catering inquiry. Auth optional.
   "event_time": "18:00",
   "guest_count": 50,
   "event_type": "birthday party",
-  "venue_address": { "line1": "123 Main St", "city": "St. Louis", "state": "MO", "zip": "63101" },
+  "venue_address": {
+    "line1": "123 Main St",
+    "city": "St. Louis",
+    "state": "MO",
+    "zip": "63101"
+  },
   "dietary_requirements": "Vegan options needed for 10 guests",
   "custom_menu_request": "BBQ + Hawaiian theme",
   "estimated_budget_cents": 200000
@@ -202,9 +233,11 @@ Submit a catering inquiry. Auth optional.
 ```
 
 ### `GET /api/catering/inquiries`
+
 **Admin only.** List all catering inquiries.
 
 ### `PATCH /api/catering/inquiries/:id`
+
 **Admin only.** Update inquiry status, add quote, add admin notes.
 
 ---
@@ -212,18 +245,23 @@ Submit a catering inquiry. Auth optional.
 ## Blog Endpoints
 
 ### `GET /api/blog?category=recipes&page=1&limit=10`
+
 Returns published blog posts. Public endpoint.
 
 ### `GET /api/blog/:slug`
+
 Returns a single blog post by slug.
 
 ### `POST /api/blog` (Admin only)
+
 Create a new blog post.
 
 ### `PATCH /api/blog/:id` (Admin only)
+
 Update a blog post.
 
 ### `DELETE /api/blog/:id` (Admin only)
+
 Soft-delete a blog post.
 
 ---
@@ -231,17 +269,21 @@ Soft-delete a blog post.
 ## Admin Config (CMS) Endpoints
 
 ### `GET /api/admin/config?page=homepage`
+
 **Admin only.** Returns all config keys for a page.
 
 ### `PATCH /api/admin/config/:key`
+
 **Admin only.** Update a single config value (text, HTML, image URL, etc.).
 
 **Request:**
+
 ```json
 { "value": "New hero headline text!" }
 ```
 
 ### `POST /api/admin/upload`
+
 **Admin only.** Upload image to DigitalOcean Spaces CDN. Returns CDN URL.
 
 ---
@@ -249,9 +291,11 @@ Soft-delete a blog post.
 ## Admin Dashboard Endpoints
 
 ### `GET /api/admin/analytics`
+
 **Admin only.** Returns summary metrics.
 
 **Response:**
+
 ```json
 {
   "revenue_today_cents": 28600,
@@ -269,9 +313,11 @@ Soft-delete a blog post.
 ## Testimonial Endpoints
 
 ### `GET /api/testimonials`
+
 Returns published testimonials. Public.
 
 ### `POST /api/testimonials` (Admin only)
+
 Create/approve a testimonial.
 
 ---
@@ -279,4 +325,5 @@ Create/approve a testimonial.
 ## Health Check
 
 ### `GET /api/health`
+
 Returns `{ "status": "ok", "timestamp": "..." }`. Used by DigitalOcean health checks.

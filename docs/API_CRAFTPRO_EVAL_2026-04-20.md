@@ -10,8 +10,8 @@
 
 ## Summary
 
-| Tool | Tagline | Fit | Recommendation |
-|---|---|---|---|
+| Tool                                                        | Tagline                                                                                                                                                       | Fit                                                                                                                                                           | Recommendation                                                                                            |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | [API CraftPro](https://github.com/marketplace/api-craftpro) | Auto-generates a full backend REST API (Go + Gin) from a SQL schema; pushes the generated repo to GitHub with tests, CI/CD, Docker, and a Postman collection. | ⭐⭐ Interesting for one-off prototyping, but the generated stack (Go + Gin) does not match Revvel's Node/TypeScript + Next.js + managed MySQL default stack. | **Defer (P3) — no permanent adoption.** Keep listed as a 🟡 Research Topic for ad-hoc prototype use only. |
 
 Tracked in [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md) §1.11 and [`_MASTER_BOM.md`](./_MASTER_BOM.md) §🤖 AI Code Quality & Autonomy as 🟡 Research Topic. This document captures the reasoning behind that status.
@@ -43,15 +43,15 @@ The triggering issue asked to "add API CraftPro to revvel-standards and evaluate
 
 ### Fit with Revvel stack
 
-| Dimension | Assessment |
-|---|---|
-| Replaces | Nothing currently in production. Could in principle replace the **initial scaffold** of a new backend, but not the day-to-day maintenance workflow. |
-| Complements | Could be used alongside `scripts/bootstrap-repo.sh` as an optional "generate-from-schema" path for greenfield prototypes. |
-| Conflicts with | **Revvel default stack.** Most Revvel apps (GrowlingEyes, Neurooz, Soul2Bowl, The Alt Text, Universal SAR App) are Node/TypeScript + Next.js, not Go. Adopting a Go + Gin generator would introduce a second runtime, second dependency manager, and second testing toolchain to maintain. |
-| Database coupling | Generates code against a single SQL schema. Our managed MySQL is shared across apps and evolves via migrations — re-running the generator would overwrite hand-written logic every time the schema changes. |
-| Agent compatibility | The generated repo includes GitHub Actions, but the vendor workflow is not our [`RecurseML` + Copilot coding-agent pipeline](./_MASTER_INVENTORY.md) (§1.11 Code Quality & Autonomous Review). We would need to reconcile the two or strip the generated workflow. |
-| Security / secret handling | SaaS receives the user's SQL schema (potentially sensitive column names / business logic) and installs a GitHub App with write access to repos. Must be reviewed against [`SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md) before any production use. |
-| Cost | Free trial covers evaluation; paid tier required for ongoing use (verify current pricing at adoption time). |
+| Dimension                  | Assessment                                                                                                                                                                                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Replaces                   | Nothing currently in production. Could in principle replace the **initial scaffold** of a new backend, but not the day-to-day maintenance workflow.                                                                                                                                        |
+| Complements                | Could be used alongside `scripts/bootstrap-repo.sh` as an optional "generate-from-schema" path for greenfield prototypes.                                                                                                                                                                  |
+| Conflicts with             | **Revvel default stack.** Most Revvel apps (GrowlingEyes, Neurooz, Soul2Bowl, The Alt Text, Universal SAR App) are Node/TypeScript + Next.js, not Go. Adopting a Go + Gin generator would introduce a second runtime, second dependency manager, and second testing toolchain to maintain. |
+| Database coupling          | Generates code against a single SQL schema. Our managed MySQL is shared across apps and evolves via migrations — re-running the generator would overwrite hand-written logic every time the schema changes.                                                                                |
+| Agent compatibility        | The generated repo includes GitHub Actions, but the vendor workflow is not our [`RecurseML` + Copilot coding-agent pipeline](./_MASTER_INVENTORY.md) (§1.11 Code Quality & Autonomous Review). We would need to reconcile the two or strip the generated workflow.                         |
+| Security / secret handling | SaaS receives the user's SQL schema (potentially sensitive column names / business logic) and installs a GitHub App with write access to repos. Must be reviewed against [`SECRETS_MANAGEMENT.md`](./SECRETS_MANAGEMENT.md) before any production use.                                     |
+| Cost                       | Free trial covers evaluation; paid tier required for ongoing use (verify current pricing at adoption time).                                                                                                                                                                                |
 
 ### Risks / Unknowns
 
@@ -82,8 +82,8 @@ The triggering issue asked to "add API CraftPro to revvel-standards and evaluate
 
 ## 2. Crosswalk to existing tracking docs
 
-| Tool | `_MASTER_INVENTORY.md` | `_MASTER_BOM.md` | Priority |
-|---|---|---|---|
+| Tool         | `_MASTER_INVENTORY.md`                                    | `_MASTER_BOM.md`                                 | Priority                                    |
+| ------------ | --------------------------------------------------------- | ------------------------------------------------ | ------------------------------------------- |
 | API CraftPro | §1.11 Code Quality & Autonomous Review (added in this PR) | 🤖 AI Code Quality & Autonomy (added in this PR) | **P3 — defer; prototype-only if ever used** |
 
 ---

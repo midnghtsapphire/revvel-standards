@@ -14,21 +14,21 @@
 
 The **Testing Agent** is an ephemeral agent that is spun up specifically to design, generate, run, and evaluate tests for Revvel projects — with a focus on **skills testing**. It understands the Revvel Testing Standard, the skill architecture, and uses PromptFoo for AI/LLM assertion testing.
 
-This agent addresses the issue requirement: *"I need actual testing temp agents especially for skills."*
+This agent addresses the issue requirement: _"I need actual testing temp agents especially for skills."_
 
 ---
 
 ## What This Agent Does
 
-| Task | Description |
-|---|---|
-| **Skill test generation** | Creates PromptFoo test configs for any skill from its SKILL.md |
-| **Skill regression testing** | Runs existing skill tests and reports results |
-| **Unit test generation** | Generates Vitest unit tests for TypeScript functions |
-| **E2E test generation** | Generates Playwright E2E tests for UI journeys |
-| **Coverage gap analysis** | Identifies untested code paths and generates tests for them |
-| **Test failure diagnosis** | Reads failing test output, identifies root cause, proposes fix |
-| **BOM test audit** | Verifies that all items in a project's BOM (Section 5) have tests configured |
+| Task                         | Description                                                                  |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| **Skill test generation**    | Creates PromptFoo test configs for any skill from its SKILL.md               |
+| **Skill regression testing** | Runs existing skill tests and reports results                                |
+| **Unit test generation**     | Generates Vitest unit tests for TypeScript functions                         |
+| **E2E test generation**      | Generates Playwright E2E tests for UI journeys                               |
+| **Coverage gap analysis**    | Identifies untested code paths and generates tests for them                  |
+| **Test failure diagnosis**   | Reads failing test output, identifies root cause, proposes fix               |
+| **BOM test audit**           | Verifies that all items in a project's BOM (Section 5) have tests configured |
 
 ---
 
@@ -61,18 +61,18 @@ missing tests, write tests, generate tests, coverage report
 ## Agent Instructions (System Prompt)
 
 ```
-You are the Revvel Testing Agent — an ephemeral specialist that generates 
+You are the Revvel Testing Agent — an ephemeral specialist that generates
 and evaluates tests for the Revvel ecosystem.
 
 ## Your Core Rules
-1. Follow TESTING_STANDARD.md exactly. Every test uses Vitest + Playwright 
+1. Follow TESTING_STANDARD.md exactly. Every test uses Vitest + Playwright
    + React Testing Library. Never suggest Jest for new projects.
 2. For skill tests, always use PromptFoo with the claude-sonnet-4 provider.
 3. Coverage thresholds are non-negotiable: statements ≥ 80%, branches ≥ 75%.
 4. Test names must follow: "should [behavior] when [condition]"
 5. Never mock the thing being tested. Never mock Zod schemas.
 6. Use MSW for HTTP mocking, not nock or manual fetch overrides.
-7. For E2E tests, always include: no console errors, page returns 200, 
+7. For E2E tests, always include: no console errors, page returns 200,
    no data-void state (content loaded, not just spinner).
 
 ## For Skill Tests Specifically
@@ -109,14 +109,14 @@ Use this template for every new skill test. Save as `skills/<skill-name>/tests/p
 description: "Skill tests for [SKILL_NAME]"
 
 providers:
-  - id: anthropic/claude-sonnet-4  # Primary - Claude Sonnet 4
+  - id: anthropic/claude-sonnet-4 # Primary - Claude Sonnet 4
     config:
       api_key: ${OPENROUTER_API_KEY}
       base_url: https://openrouter.ai/api/v1
       temperature: 0
       max_tokens: 2048
 
-# Fallback: Claude Sonnet 4.5
+  # Fallback: Claude Sonnet 4.5
   - id: anthropic/claude-sonnet-4.5
     config:
       api_key: ${OPENROUTER_API_KEY}
@@ -129,9 +129,9 @@ prompts:
     raw: |
       You are the [SKILL_NAME] skill. 
       [SKILL_DESCRIPTION_FROM_SKILL_MD]
-      
+
       Input: {{input}}
-      
+
       Respond with [EXPECTED_OUTPUT_FORMAT].
 
 tests:
@@ -217,7 +217,7 @@ describe('[SkillName]', () => {
     it('should [expected behavior] when given valid input', async () => {
       const input = '[VALID_INPUT]';
       const result = await [skillFunction](input);
-      
+
       expect(result).toBeDefined();
       expect(result).not.toContain('Error');
       expect(result).toContain('[EXPECTED_KEY_PHRASE]');
@@ -225,7 +225,7 @@ describe('[SkillName]', () => {
 
     it('should handle empty input gracefully', async () => {
       const result = await [skillFunction]('');
-      
+
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
     });
@@ -244,9 +244,11 @@ describe('[SkillName]', () => {
 ## How to Spawn This Agent
 
 ### Via GitHub Issue
+
 Create an issue with title pattern: `[Test] Generate tests for <skill-name>` and label `copilot`. The Testing Agent will activate automatically via the Agent Factory trigger matrix.
 
 ### Via CLI (manual)
+
 ```bash
 # Generate skill tests for a specific skill
 # Replace <skill-name> with the skill directory name
@@ -256,6 +258,7 @@ echo "Generate PromptFoo tests for the $SKILL skill based on skills/$SKILL/SKILL
 ```
 
 ### Via GitHub Actions
+
 ```yaml
 # .github/workflows/generate-skill-tests.yml
 name: Generate Skill Tests
@@ -263,7 +266,7 @@ on:
   workflow_dispatch:
     inputs:
       skill_name:
-        description: 'Skill name to generate tests for'
+        description: "Skill name to generate tests for"
         required: true
 
 jobs:
@@ -327,44 +330,44 @@ Add this to every project's GitHub Actions workflow:
 
 > The following Revvel skills do not yet have PromptFoo tests. The Testing Agent should be spawned for each one.
 
-| Skill | Path | Priority | Notes |
-|---|---|---|---|
-| vault-agent | `skills/vault-agent/` | P0 | Handles secrets — critical to test |
-| testing | `skills/testing/` | P0 | Meta: test the testing skill itself |
-| security | `skills/security/` | P0 | Security-critical |
-| deployment | `skills/deployment/` | P1 | Production-critical |
-| code-review | `skills/code-review/` | P1 | Affects all PRs |
-| error-reporting | `skills/error-reporting/` | P1 | |
-| gbrain | `skills/gbrain/` | P1 | Core skill |
-| model-router | `skills/model-router/` | P1 | Routes all LLM traffic |
-| auto-documentation | `skills/auto-documentation/` | P2 | |
-| brainstorming | `skills/brainstorming/` | P2 | |
-| accessibility | `skills/accessibility/` | P2 | |
-| seo-metadata | `skills/seo-metadata/` | P2 | |
-| shift-testing | `skills/shift-testing/` | P2 | |
-| todo-breakdown | `skills/todo-breakdown/` | P2 | |
-| wrap-up | `skills/wrap-up/` | P2 | |
-| context-management | `skills/context-management/` | P3 | |
-| dare-log | `skills/dare-log/` | P3 | |
-| memory-pruning | `skills/memory-pruning/` | P3 | |
-| mvi-contract | `skills/mvi-contract/` | P3 | |
-| parallel-development | `skills/parallel-development/` | P3 | |
-| system-state | `skills/system-state/` | P3 | |
-| tax-legal-agent | `skills/tax-legal-agent/` | P3 | |
-| using-git-worktrees | `skills/using-git-worktrees/` | P3 | |
+| Skill                | Path                           | Priority | Notes                               |
+| -------------------- | ------------------------------ | -------- | ----------------------------------- |
+| vault-agent          | `skills/vault-agent/`          | P0       | Handles secrets — critical to test  |
+| testing              | `skills/testing/`              | P0       | Meta: test the testing skill itself |
+| security             | `skills/security/`             | P0       | Security-critical                   |
+| deployment           | `skills/deployment/`           | P1       | Production-critical                 |
+| code-review          | `skills/code-review/`          | P1       | Affects all PRs                     |
+| error-reporting      | `skills/error-reporting/`      | P1       |                                     |
+| gbrain               | `skills/gbrain/`               | P1       | Core skill                          |
+| model-router         | `skills/model-router/`         | P1       | Routes all LLM traffic              |
+| auto-documentation   | `skills/auto-documentation/`   | P2       |                                     |
+| brainstorming        | `skills/brainstorming/`        | P2       |                                     |
+| accessibility        | `skills/accessibility/`        | P2       |                                     |
+| seo-metadata         | `skills/seo-metadata/`         | P2       |                                     |
+| shift-testing        | `skills/shift-testing/`        | P2       |                                     |
+| todo-breakdown       | `skills/todo-breakdown/`       | P2       |                                     |
+| wrap-up              | `skills/wrap-up/`              | P2       |                                     |
+| context-management   | `skills/context-management/`   | P3       |                                     |
+| dare-log             | `skills/dare-log/`             | P3       |                                     |
+| memory-pruning       | `skills/memory-pruning/`       | P3       |                                     |
+| mvi-contract         | `skills/mvi-contract/`         | P3       |                                     |
+| parallel-development | `skills/parallel-development/` | P3       |                                     |
+| system-state         | `skills/system-state/`         | P3       |                                     |
+| tax-legal-agent      | `skills/tax-legal-agent/`      | P3       |                                     |
+| using-git-worktrees  | `skills/using-git-worktrees/`  | P3       |                                     |
 
 ---
 
 ## Related Resources
 
-| Resource | Location |
-|---|---|
-| Testing Standard | `TESTING_STANDARD.md` |
-| Agent Factory Standard | `AGENT_FACTORY_STANDARD.md` |
-| PromptFoo docs | https://promptfoo.dev/docs |
+| Resource                    | Location                                             |
+| --------------------------- | ---------------------------------------------------- |
+| Testing Standard            | `TESTING_STANDARD.md`                                |
+| Agent Factory Standard      | `AGENT_FACTORY_STANDARD.md`                          |
+| PromptFoo docs              | https://promptfoo.dev/docs                           |
 | Tooling BOM (testing tools) | `docs/Universal-BOM_List/TOOLING_AND_TESTING_BOM.md` |
-| LLM Recommendations | `docs/Universal-BOM_List/LLM_RECOMMENDATIONS.md` |
+| LLM Recommendations         | `docs/Universal-BOM_List/LLM_RECOMMENDATIONS.md`     |
 
 ---
 
-*Revvel Testing Agent SKILL.md v1.0.0 — April 14, 2026*
+_Revvel Testing Agent SKILL.md v1.0.0 — April 14, 2026_

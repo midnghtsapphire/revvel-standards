@@ -5,12 +5,14 @@ All midnghtsapphire projects MUST follow these Docker standards.
 ## Quick Start
 
 ### Backend (Python/FastAPI)
+
 ```bash
 docker build -t thealttext-api .
 docker run -p 8080:8080 thealttext-api
 ```
 
 ### Local Development
+
 ```bash
 docker-compose up
 ```
@@ -20,13 +22,16 @@ docker-compose up
 ## Requirements
 
 ### Dockerfile
+
 - Use `python:3.12-slim` for Python projects
 - Use multi-stage builds for production
 - Install dependencies before copying code
 - Use `--no-cache-dir` for pip
 
 ### Health Checks
+
 Every container MUST have health checks:
+
 ```dockerfile
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
@@ -57,7 +62,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
 ## docker-compose.yml
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   api:

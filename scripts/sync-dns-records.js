@@ -75,7 +75,7 @@ function loadRecords(yamlText, { appTarget } = {}) {
     if (!val.includes("{{APP_TARGET}}")) return val;
     if (!appTarget) {
       throw new Error(
-        "loadRecords: record references {{APP_TARGET}} but no appTarget was provided"
+        "loadRecords: record references {{APP_TARGET}} but no appTarget was provided",
       );
     }
     return val.replace(/\{\{APP_TARGET\}\}/g, appTarget);
@@ -108,7 +108,10 @@ function loadRecords(yamlText, { appTarget } = {}) {
  * with a complete credential set, or null if none match.
  */
 function detectProvider(env = process.env) {
-  if (env.NAMECHEAP_API_KEY && (env.NAMECHEAP_API_USER || env.NAMECHEAP_USERNAME)) {
+  if (
+    env.NAMECHEAP_API_KEY &&
+    (env.NAMECHEAP_API_USER || env.NAMECHEAP_USERNAME)
+  ) {
     return "namecheap";
   }
   if (env.GODADDY_API_KEY && env.GODADDY_API_SECRET) {
@@ -175,7 +178,7 @@ function buildNamecheapRequest({ domain, records, credentials }) {
     if (r.type === "ALIAS" && r.host === "@") {
       throw new Error(
         "buildNamecheapRequest: Namecheap API does not support ALIAS at the apex; " +
-          "host the apex on Porkbun or use DigitalOcean nameservers instead."
+          "host the apex on Porkbun or use DigitalOcean nameservers instead.",
       );
     }
     const recordType = r.type === "ALIAS" ? "CNAME" : r.type;
@@ -215,10 +218,15 @@ function buildGodaddyRequest({ domain, records, credentials }) {
       if (!isIp(r.value)) {
         throw new Error(
           "buildGodaddyRequest: GoDaddy does not support ALIAS; resolve " +
-            `APP_TARGET to an IP before syncing (got value='${r.value}' for host='${r.host}')`
+            `APP_TARGET to an IP before syncing (got value='${r.value}' for host='${r.host}')`,
         );
       }
-      return { type: "A", name: r.host, data: r.value, ttl: r.ttl || DEFAULT_TTL };
+      return {
+        type: "A",
+        name: r.host,
+        data: r.value,
+        ttl: r.ttl || DEFAULT_TTL,
+      };
     }
     return {
       type: r.type,
@@ -261,7 +269,12 @@ function buildGodaddyRequest({ domain, records, credentials }) {
  * Porkbun supports ALIAS at the apex natively, so apex CNAME inputs are
  * translated to ALIAS for comparison and creation.
  */
-function buildPorkbunCreateRequests({ domain, records, credentials, existingRecords }) {
+function buildPorkbunCreateRequests({
+  domain,
+  records,
+  credentials,
+  existingRecords,
+}) {
   if (!credentials || !credentials.apiKey || !credentials.secretApiKey) {
     throw new Error("buildPorkbunCreateRequests: missing apiKey/secretApiKey");
   }
@@ -335,7 +348,8 @@ function buildPorkbunCreateRequests({ domain, records, credentials, existingReco
     .filter((record) => record && record.id != null)
     .map((record) => {
       const host = normalizeExistingHost(record.name);
-      const type = record.type === "CNAME" && host === "@" ? "ALIAS" : record.type;
+      const type =
+        record.type === "CNAME" && host === "@" ? "ALIAS" : record.type;
       return {
         id: record.id,
         host,
@@ -365,7 +379,7 @@ function buildPorkbunCreateRequests({ domain, records, credentials, existingReco
 function buildSyncRequests({ provider, domain, records, env = process.env }) {
   if (!SUPPORTED_PROVIDERS.includes(provider)) {
     throw new Error(
-      `buildSyncRequests: unsupported provider '${provider}' (supported: ${SUPPORTED_PROVIDERS.join(", ")})`
+      `buildSyncRequests: unsupported provider '${provider}' (supported: ${SUPPORTED_PROVIDERS.join(", ")})`,
     );
   }
 
@@ -420,7 +434,9 @@ function executeRequest(req) {
     try {
       url = new URL(req.url);
     } catch (e) {
-      return reject(new Error(`executeRequest: invalid url '${req.url}': ${e.message}`));
+      return reject(
+        new Error(`executeRequest: invalid url '${req.url}': ${e.message}`),
+      );
     }
 
     const options = {
@@ -434,9 +450,7 @@ function executeRequest(req) {
     const r = https.request(options, (res) => {
       let data = "";
       res.on("data", (chunk) => (data += chunk));
-      res.on("end", () =>
-        resolve({ statusCode: res.statusCode, body: data })
-      );
+      res.on("end", () => resolve({ statusCode: res.statusCode, body: data }));
     });
     r.on("error", reject);
     if (req.body) r.write(req.body);
@@ -485,7 +499,7 @@ async function main() {
   const provider = env.DNS_PROVIDER || detectProvider(env);
   if (!provider) {
     console.error(
-      "::error::No registrar credentials detected. Provision NAMECHEAP_*, GODADDY_*, or PORKBUN_* secrets via the Credential Gatekeeper."
+      "::error::No registrar credentials detected. Provision NAMECHEAP_*, GODADDY_*, or PORKBUN_* secrets via the Credential Gatekeeper.",
     );
     process.exit(2);
   }
@@ -504,7 +518,7 @@ async function main() {
 
   console.log(
     `Syncing ${records.length} record(s) for ${domain} via ${provider}` +
-      (env.DRY_RUN === "true" ? " (DRY RUN)" : "")
+      (env.DRY_RUN === "true" ? " (DRY RUN)" : ""),
   );
 
   const requests = buildSyncRequests({ provider, domain, records, env });

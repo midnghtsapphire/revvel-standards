@@ -17,7 +17,7 @@ jobs:
       - name: Enforce fix-WR includes a real fix or is labeled tracking-only
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BODY:  ${{ github.event.pull_request.body }}
+          PR_BODY: ${{ github.event.pull_request.body }}
           PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
           # Use event-payload SHAs — `origin/${BASE}` is unreliable when
           # actions/checkout uses the PR merge ref. Per Copilot review on

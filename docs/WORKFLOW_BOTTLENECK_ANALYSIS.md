@@ -36,6 +36,7 @@ This document analyzes why PRs (Pull Requests) and WRs (Work Requests) are getti
 ### PR-Triggered Workflows (28 total)
 
 #### High-Impact (Run on Every PR Event)
+
 - `ai-pr-review-openrouter.yml` - OpenRouter AI review
 - `bito-ai.yml` - Bito AI review
 - `pr-review-status.yml` - Status badge updates
@@ -45,17 +46,20 @@ This document analyzes why PRs (Pull Requests) and WRs (Work Requests) are getti
 - `noimosai.yml` - NoiMos AI review
 
 #### Security & Compliance
+
 - `credential-gatekeeper.yml` - Credential checks
 - `compliance-check.yml` - Standards compliance
 - `secret-persistence-guard.yml` - Secret validation
 
 #### Label & State Management
+
 - `arsc-labels.yml` - ARSC label application
 - `match-labels.yml` - Label matching
 - `pr-labels.yml` - PR label reading
 - `auto-merge.yml` - Auto-merge on labels
 
 #### Integration & Automation
+
 - `create-issue-branch.yml` - Branch creation
 - `close-linked-issue.yml` - Issue closure
 - `agent-fallback.yml` - Agent routing
@@ -64,21 +68,25 @@ This document analyzes why PRs (Pull Requests) and WRs (Work Requests) are getti
 ### Scheduled Workflows (15+ total)
 
 #### Hourly
+
 - `commit-queue-monitor.yml` - Queue depth monitoring
 - `credential-label-router.yml` - Credential routing
 - `secrets-health-check.yml` - Secret validation
 
 #### Every 6 Hours
+
 - `stuck-label-automation.yml` - Stuck label detection
 - `deployment-health-check.yml` - Deployment monitoring
 
 #### Daily
+
 - `compliance-check.yml` - Standards compliance
 - `eeat-trust-cron.yml` - E-E-A-T validation
 - `daily-wr-summary.yml` - Daily summaries
 - `triage-cron.yml` - Issue triage
 
 #### Weekly
+
 - `ai-weekly-changelog.yml` - Changelog generation
 - `workflow-health-dashboard.yml` - Workflow health report
 - `weekly-research.yml` - Research compilation
@@ -90,17 +98,20 @@ This document analyzes why PRs (Pull Requests) and WRs (Work Requests) are getti
 ### Problem 1: Workflow Concurrency Explosion
 
 **Issue:** When a PR is updated, up to 28 workflows fire simultaneously, each consuming:
+
 - Compute minutes (GitHub Actions quota)
 - API rate limits (GitHub REST/GraphQL API)
 - External API quotas (OpenRouter, Claude, Bito, etc.)
 
 **Impact:**
+
 - Workflows queue behind each other
 - API rate limits are hit (5000 req/hr for authenticated users)
 - PRs stuck in "checking" for 30+ minutes
 - Duplicate work when PR is updated multiple times rapidly
 
 **Evidence:**
+
 ```bash
 # 28 workflows trigger on PR events
 $ grep -l "pull_request" .github/workflows/*.yml | wc -l
@@ -118,6 +129,7 @@ $ grep -l "concurrency:" .github/workflows/*.yml | wc -l
 **Issue:** No centralized workflow orchestration exists. Each workflow is independent.
 
 **Impact:**
+
 - No priority system (urgent fixes vs. routine checks)
 - No workflow dependencies (X must complete before Y)
 - No resource pooling (share API quotas across workflows)
@@ -126,11 +138,13 @@ $ grep -l "concurrency:" .github/workflows/*.yml | wc -l
 ### Problem 3: Reactive vs. Proactive Monitoring
 
 **Issue:** Current monitoring is reactive:
+
 - `stuck-label-automation.yml` runs every 6 hours
 - `workflow-health-dashboard.yml` runs weekly
 - `commit-queue-monitor.yml` runs hourly
 
 **Impact:**
+
 - Issues take 1-6 hours to detect
 - No real-time alerts
 - No auto-remediation for transient failures
@@ -138,6 +152,7 @@ $ grep -l "concurrency:" .github/workflows/*.yml | wc -l
 ### Problem 4: External API Dependencies
 
 **Issue:** Many workflows depend on external APIs:
+
 - OpenRouter (Claude, GPT models)
 - Bito AI
 - Google Jules (Gemini)
@@ -146,6 +161,7 @@ $ grep -l "concurrency:" .github/workflows/*.yml | wc -l
 - Notion
 
 **Impact:**
+
 - External API failures block PR merges
 - Rate limits cause cascading delays
 - No fallback mechanisms
@@ -160,6 +176,7 @@ $ grep -l "concurrency:" .github/workflows/*.yml | wc -l
 **Create:** `.github/workflows/workflow-queue-manager.yml`
 
 **Purpose:** Central orchestrator that:
+
 1. Receives PR events
 2. Queues workflows by priority
 3. Enforces global concurrency limits
@@ -167,6 +184,7 @@ $ grep -l "concurrency:" .github/workflows/*.yml | wc -l
 5. Provides real-time status dashboard
 
 **Implementation:**
+
 ```yaml
 name: Workflow Queue Manager
 on:
@@ -190,26 +208,27 @@ jobs:
             // P0 (required): Security, compliance, basic validation
             // P1 (recommended): AI reviews, label management
             // P2 (optional): Analytics, reporting
-            
+
             const pr = context.payload.pull_request;
-            
+
             // Dispatch P0 workflows first
             await dispatchWorkflow('pr-review-status.yml', pr.number);
             await dispatchWorkflow('credential-gatekeeper.yml', pr.number);
-            
+
             // Wait for P0 to complete before P1
             await waitForWorkflows(['pr-review-status', 'credential-gatekeeper']);
-            
+
             // Dispatch P1 workflows with stagger (avoid API stampede)
             await dispatchWithDelay('ai-pr-review-openrouter.yml', pr.number, 0);
             await dispatchWithDelay('bito-ai.yml', pr.number, 30000); // 30s delay
             await dispatchWithDelay('jules-pr-reviewer.yml', pr.number, 60000); // 60s delay
-            
+
             // P2 workflows run async (don't block PR merge)
             await dispatchAsync(['amplitude-events', 'panda-ops']);
 ```
 
 **Benefits:**
+
 - Reduces peak concurrency from 28 to 3-5 workflows
 - Prevents API rate limit exhaustion
 - Critical checks complete faster (no queue jumping)
@@ -220,47 +239,51 @@ jobs:
 **Create:** `scripts/workflow-retry.js`
 
 **Purpose:** Automatically retry failed workflows with:
+
 - Exponential backoff (1min, 2min, 4min, 8min)
 - Jitter (randomize retry timing)
 - Circuit breaker (stop after 3 failures)
 - Transient failure detection
 
 **Implementation:**
+
 ```javascript
 #!/usr/bin/env node
 // Usage: node scripts/workflow-retry.js <workflow-run-id>
 
-const { Octokit } = require('@octokit/rest');
+const { Octokit } = require("@octokit/rest");
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
 async function retryWorkflow(runId, attempt = 1, maxAttempts = 3) {
   const backoffMs = Math.min(60000 * Math.pow(2, attempt - 1), 480000); // Max 8min
   const jitterMs = Math.random() * 10000; // Random 0-10s jitter
-  
-  console.log(`Attempt ${attempt}/${maxAttempts} - waiting ${(backoffMs + jitterMs) / 1000}s`);
+
+  console.log(
+    `Attempt ${attempt}/${maxAttempts} - waiting ${(backoffMs + jitterMs) / 1000}s`,
+  );
   await sleep(backoffMs + jitterMs);
-  
+
   // Re-run workflow
   await octokit.rest.actions.reRunWorkflow({
     owner: context.repo.owner,
     repo: context.repo.repo,
     run_id: runId,
   });
-  
+
   // Monitor for completion
   const result = await monitorWorkflowRun(runId, 600000); // 10min timeout
-  
-  if (result.conclusion === 'success') {
-    console.log('✅ Workflow succeeded on retry');
+
+  if (result.conclusion === "success") {
+    console.log("✅ Workflow succeeded on retry");
     return true;
-  } else if (result.conclusion === 'failure' && isTransientFailure(result)) {
+  } else if (result.conclusion === "failure" && isTransientFailure(result)) {
     if (attempt < maxAttempts) {
-      console.log('⚠️ Transient failure detected, retrying...');
+      console.log("⚠️ Transient failure detected, retrying...");
       return retryWorkflow(runId, attempt + 1, maxAttempts);
     }
   }
-  
-  console.log('❌ Workflow failed after max retries');
+
+  console.log("❌ Workflow failed after max retries");
   return false;
 }
 
@@ -270,15 +293,18 @@ function isTransientFailure(workflowRun) {
   // - Timeouts (504, 524)
   // - Network errors (ECONNRESET, ETIMEDOUT)
   // - External service unavailable (503)
-  const logs = workflowRun.logs || '';
-  return logs.includes('rate limit') || 
-         logs.includes('timeout') ||
-         logs.includes('503 Service Unavailable') ||
-         logs.includes('ECONNRESET');
+  const logs = workflowRun.logs || "";
+  return (
+    logs.includes("rate limit") ||
+    logs.includes("timeout") ||
+    logs.includes("503 Service Unavailable") ||
+    logs.includes("ECONNRESET")
+  );
 }
 ```
 
 **Benefits:**
+
 - Recovers from 70-80% of transient failures automatically
 - Reduces human intervention
 - Prevents stuck workflows
@@ -289,11 +315,13 @@ function isTransientFailure(workflowRun) {
 **Status:** CircleCI is currently disabled, but can be re-enabled for specific workflows
 
 **Strategy:** Use CircleCI for:
+
 1. **Non-blocking checks** (AI reviews, analytics, reporting)
 2. **Resource-intensive jobs** (full test suites, E2E tests)
 3. **Scheduled jobs** (daily/weekly reports)
 
 **Keep on GitHub Actions:**
+
 1. **Required status checks** (security, compliance)
 2. **Label management** (ARSC, PR status)
 3. **Auto-merge** (needs GitHub API access)
@@ -301,6 +329,7 @@ function isTransientFailure(workflowRun) {
 **Implementation:**
 
 1. **Update `.circleci/config.yml`:**
+
 ```yaml
 version: 2.1
 
@@ -327,7 +356,7 @@ jobs:
           no_output_timeout: 15m
       - store_artifacts:
           path: review-output.json
-  
+
   # Analytics (Non-blocking)
   analytics:
     executor: node-executor
@@ -336,7 +365,7 @@ jobs:
       - run:
           name: Track PR Events
           command: node scripts/amplitude-events.js
-  
+
   # Scheduled Reports
   weekly-report:
     executor: node-executor
@@ -359,11 +388,11 @@ workflows:
       - analytics:
           requires:
             - ai-review
-  
+
   scheduled:
     triggers:
       - schedule:
-          cron: "0 10 * * 1"  # Monday 10:00 UTC
+          cron: "0 10 * * 1" # Monday 10:00 UTC
           filters:
             branches:
               only: main
@@ -377,6 +406,7 @@ workflows:
    - CircleCI will auto-detect `.circleci/config.yml`
 
 **Benefits:**
+
 - Offloads 10-15 non-critical workflows from GitHub Actions
 - Separate compute quotas (GitHub + CircleCI)
 - Parallel execution across both platforms
@@ -387,21 +417,23 @@ workflows:
 **Create:** `.github/labels.yml` (extend existing)
 
 **Add priority labels:**
+
 ```yaml
 - name: "workflow-priority:p0"
   color: "d93f0b"
   description: "Critical workflow - must complete before PR merge"
-  
+
 - name: "workflow-priority:p1"
   color: "fbca04"
   description: "Important workflow - should complete but not blocking"
-  
+
 - name: "workflow-priority:p2"
   color: "0e8a16"
   description: "Optional workflow - runs async, doesn't block merge"
 ```
 
 **Update workflows to respect priorities:**
+
 ```yaml
 # Example: bito-ai.yml (P1 - important but not blocking)
 name: Bito AI Review
@@ -420,7 +452,7 @@ jobs:
             // Wait for P0 workflows before starting P1
             const pr = context.payload.pull_request;
             const requiredChecks = ['credential-gatekeeper', 'pr-review-status'];
-            
+
             for (const check of requiredChecks) {
               const status = await waitForCheck(check, pr.head.sha);
               if (status !== 'success') {
@@ -428,12 +460,13 @@ jobs:
                 return;
               }
             }
-      
+
       - name: Run Bito AI Review
         run: node scripts/bito-ai-review.js
 ```
 
 **Benefits:**
+
 - Clear distinction between blocking and non-blocking checks
 - PRs can merge without waiting for all 28 workflows
 - Reduces "stuck in checking" perception
@@ -446,12 +479,13 @@ jobs:
 **Purpose:** Real-time monitoring with instant alerts
 
 **Implementation:**
+
 ```yaml
 name: Workflow Monitor (Real-Time)
 
 on:
   workflow_run:
-    workflows: ["*"]  # Monitor all workflows
+    workflows: ["*"] # Monitor all workflows
     types: [completed, requested, in_progress]
 
 jobs:
@@ -465,7 +499,7 @@ jobs:
             const run = context.payload.workflow_run;
             const duration = Date.now() - new Date(run.created_at).getTime();
             const maxDuration = 15 * 60 * 1000; // 15 minutes
-            
+
             // Alert on stuck workflows
             if (run.status === 'in_progress' && duration > maxDuration) {
               await github.rest.issues.create({
@@ -503,7 +537,7 @@ jobs:
                 run_id: run.id,
               });
             }
-            
+
             // Alert on failures
             if (run.conclusion === 'failure') {
               // Check if transient or persistent failure
@@ -526,6 +560,7 @@ jobs:
 ```
 
 **Benefits:**
+
 - Instant detection of stuck workflows (no 6-hour delay)
 - Auto-remediation for transient failures
 - Real-time alerts via GitHub Issues
@@ -601,6 +636,7 @@ jobs:
 ### Current State (Baseline)
 
 **Costs:**
+
 - GitHub Actions: ~50,000 minutes/month (included in Pro plan)
 - OpenRouter API: ~$200/month (28 workflows × avg 10 PRs/day)
 - Bito AI: $50/month (subscription)
@@ -611,6 +647,7 @@ jobs:
 ### Proposed State (After Implementation)
 
 **Costs:**
+
 - GitHub Actions: ~30,000 minutes/month (40% reduction)
 - CircleCI: Free tier (6,000 minutes/month)
 - OpenRouter API: ~$120/month (40% reduction via priority system)
@@ -632,6 +669,7 @@ jobs:
 **Risk:** Maintaining two CI platforms increases complexity
 
 **Mitigation:**
+
 - Start with 3-5 workflows only
 - Use same scripts (just different triggers)
 - Document migration process
@@ -642,6 +680,7 @@ jobs:
 **Risk:** If queue manager fails, all workflows stop
 
 **Mitigation:**
+
 - Implement queue manager with fallback
 - If queue manager fails, workflows run independently (degraded mode)
 - Add health checks and auto-restart
@@ -651,6 +690,7 @@ jobs:
 **Risk:** Changes could break working workflows
 
 **Mitigation:**
+
 - Test in separate branch first
 - Incremental rollout (5 workflows at a time)
 - Feature flags for easy rollback
@@ -685,6 +725,7 @@ jobs:
 ### Dashboard
 
 Create real-time dashboard showing:
+
 - Active PRs and their check status
 - Workflow queue depth
 - Failed workflows (last 24h)

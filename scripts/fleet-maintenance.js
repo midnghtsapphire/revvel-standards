@@ -41,11 +41,21 @@ function gh(args) {
 }
 
 function isoWeek(date = new Date()) {
-  const d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const d = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
   const dayNum = (d.getUTCDay() + 6) % 7;
   d.setUTCDate(d.getUTCDate() - dayNum + 3);
   const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
-  return 1 + Math.round(((d - firstThursday) / 86400000 - 3 + ((firstThursday.getUTCDay() + 6) % 7)) / 7);
+  return (
+    1 +
+    Math.round(
+      ((d - firstThursday) / 86400000 -
+        3 +
+        ((firstThursday.getUTCDay() + 6) % 7)) /
+        7,
+    )
+  );
 }
 
 /**
@@ -71,9 +81,15 @@ function selectRepos(repoNames, week, max) {
 
 function listRepos(owner) {
   const raw = gh([
-    "repo", "list", owner,
-    "--no-archived", "--source", "--limit", "1000",
-    "--json", "name,isFork,isArchived",
+    "repo",
+    "list",
+    owner,
+    "--no-archived",
+    "--source",
+    "--limit",
+    "1000",
+    "--json",
+    "name,isFork,isArchived",
   ]);
   const repos = JSON.parse(raw || "[]");
   return repos.filter((r) => !r.isFork && !r.isArchived).map((r) => r.name);
@@ -87,8 +103,16 @@ function hasOpenWorkRequest(centralRepo, owner, repo, ghRunner = gh) {
   const searchMarker = marker(owner, repo);
   try {
     const raw = ghRunner([
-      "issue", "list", "--repo", centralRepo,
-      "--state", "open", "--search", searchMarker, "--json", "number",
+      "issue",
+      "list",
+      "--repo",
+      centralRepo,
+      "--state",
+      "open",
+      "--search",
+      searchMarker,
+      "--json",
+      "number",
     ]);
     const issues = JSON.parse(raw || "[]");
     if (!Array.isArray(issues)) {
@@ -98,14 +122,16 @@ function hasOpenWorkRequest(centralRepo, owner, repo, ghRunner = gh) {
   } catch (err) {
     throw new Error(
       `Unable to verify open fleet Work Requests for ${owner}/${repo} in ${centralRepo} ` +
-      `(${searchMarker}); refusing to file a duplicate. ${err.message}`
+        `(${searchMarker}); refusing to file a duplicate. ${err.message}`,
     );
   }
 }
 
 function fileWorkRequest(centralRepo, owner, repo, dryRun, ghRunner = gh) {
   if (hasOpenWorkRequest(centralRepo, owner, repo, ghRunner)) {
-    console.log(`• ${repo}: open fleet Work Request already exists — skipping.`);
+    console.log(
+      `• ${repo}: open fleet Work Request already exists — skipping.`,
+    );
     return false;
   }
   if (dryRun) {
@@ -138,9 +164,18 @@ function fileWorkRequest(centralRepo, owner, repo, dryRun, ghRunner = gh) {
   const tmp = `/tmp/fleet-wr-${repo}.md`;
   fs.writeFileSync(tmp, body);
   const out = ghRunner([
-    "issue", "create", "--repo", centralRepo,
-    "--title", title, "--body-file", tmp,
-    "--label", "work-request", "--label", "openrouter",
+    "issue",
+    "create",
+    "--repo",
+    centralRepo,
+    "--title",
+    title,
+    "--body-file",
+    tmp,
+    "--label",
+    "work-request",
+    "--label",
+    "openrouter",
   ]);
   console.log(`• ${repo}: filed ${out.trim()}`);
   return true;
@@ -149,7 +184,9 @@ function fileWorkRequest(centralRepo, owner, repo, dryRun, ghRunner = gh) {
 function main() {
   const token = env("FLEET_TOKEN");
   if (!token) {
-    console.log("::warning::FLEET_TOKEN not set — fleet maintenance skipped (no failure).");
+    console.log(
+      "::warning::FLEET_TOKEN not set — fleet maintenance skipped (no failure).",
+    );
     return 0;
   }
   process.env.GH_TOKEN = token;
@@ -163,7 +200,7 @@ function main() {
   const selected = selectRepos(repos, isoWeek(), maxRepos);
   console.log(
     `${repos.length} repo(s) in ${owner}; sweeping ${selected.length} this run ` +
-    `(DRY_RUN=${dryRun}) -> Work Requests into ${centralRepo}: ${selected.join(", ")}`
+      `(DRY_RUN=${dryRun}) -> Work Requests into ${centralRepo}: ${selected.join(", ")}`,
   );
 
   let filed = 0;
@@ -188,4 +225,10 @@ if (require.main === module) {
   }
 }
 
-module.exports = { selectRepos, isoWeek, hasOpenWorkRequest, fileWorkRequest, marker };
+module.exports = {
+  selectRepos,
+  isoWeek,
+  hasOpenWorkRequest,
+  fileWorkRequest,
+  marker,
+};

@@ -23,21 +23,21 @@ export interface AdCopyVariant {
   headline: string;
   body: string;
   cta: string;
-  hook?: string;       // attention-grabbing opener for video ads
-  framework: 'AIDA' | 'PAS' | 'BAB' | 'Direct';
+  hook?: string; // attention-grabbing opener for video ads
+  framework: "AIDA" | "PAS" | "BAB" | "Direct";
 }
 
 export interface AdCopy {
   productTitle: string;
   primaryHeadline: string;
-  script: string;       // full UGC-style video script
-  variants: AdCopyVariant[];   // 3 static ad copy variants
+  script: string; // full UGC-style video script
+  variants: AdCopyVariant[]; // 3 static ad copy variants
   hashtags: string[];
   generatedAt: string;
-  model: string;        // which AI model produced this
+  model: string; // which AI model produced this
 }
 
-export type AdTemplateId = 'bold' | 'minimal' | 'ugc' | 'sale' | 'story';
+export type AdTemplateId = "bold" | "minimal" | "ugc" | "sale" | "story";
 
 export interface AdTemplateConfig {
   id: AdTemplateId;
@@ -46,7 +46,7 @@ export interface AdTemplateConfig {
   bgColor: string;
   textColor: string;
   accentColor: string;
-  layout: 'image-top' | 'image-left' | 'image-bg' | 'split';
+  layout: "image-top" | "image-left" | "image-bg" | "split";
 }
 
 export interface StaticCreative {
@@ -57,14 +57,14 @@ export interface StaticCreative {
   imageUrl?: string;
   /** Base64 data URI. Check `mimeType` to determine if it's PNG or SVG fallback. */
   imageData: string;
-  mimeType: 'image/png' | 'image/svg+xml';
+  mimeType: "image/png" | "image/svg+xml";
   width: number;
   height: number;
   generatedAt: string;
 }
 
-export type CampaignStatus = 'draft' | 'active' | 'paused' | 'completed';
-export type CampaignPlatform = 'meta' | 'tiktok' | 'google' | 'twitter';
+export type CampaignStatus = "draft" | "active" | "paused" | "completed";
+export type CampaignPlatform = "meta" | "tiktok" | "google" | "twitter";
 
 export interface Campaign {
   id: string;
@@ -91,8 +91,8 @@ export interface AnalyticsData {
   conversions: number;
   spend: number;
   revenue: number;
-  ctr: number;   // clicks/impressions * 100
-  roas: number;  // revenue/spend
+  ctr: number; // clicks/impressions * 100
+  roas: number; // revenue/spend
 }
 
 // API response shapes

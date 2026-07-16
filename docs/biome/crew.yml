@@ -9,14 +9,14 @@ description: >-
   Biomimetic Independent Operations & Monitoring Engine — a credit-free, additive
   self-healing crew that keeps running when AI-lane keys are wiped by Doppler.
 credit_free: true
-preserves_history: true   # COMMENT-DONT-DELETE / PRESERVE_GOALS_AND_HISTORY
+preserves_history: true # COMMENT-DONT-DELETE / PRESERVE_GOALS_AND_HISTORY
 
 workers:
   - name: biome-sentinel
     role: Nociceptor — rule-based fleet failure detection
     workflow: .github/workflows/biome-sentinel.yml
     script: scripts/biome/sentinel.js
-    models: []              # none — deterministic rules only
+    models: [] # none — deterministic rules only
     tools: [github-rest-read, github-issues-write]
     triggers: [schedule:every-2h, workflow_dispatch]
     inputs: recent workflow runs, open issues (GitHub API)

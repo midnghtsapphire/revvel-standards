@@ -2,9 +2,25 @@ name: PR Lifecycle
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, closed]
+    types:
+      [
+        opened,
+        synchronize,
+        reopened,
+        ready_for_review,
+        converted_to_draft,
+        closed,
+      ]
   pull_request_target:
-    types: [opened, synchronize, reopened, ready_for_review, converted_to_draft, closed]
+    types:
+      [
+        opened,
+        synchronize,
+        reopened,
+        ready_for_review,
+        converted_to_draft,
+        closed,
+      ]
   check_suite:
     types: [completed]
   # NOTE: workflow_run's `workflows:` filter matches the `name:` field of a

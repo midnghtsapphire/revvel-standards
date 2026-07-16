@@ -9,13 +9,13 @@ let real work stall behind noise. This policy draws the line.
 
 ## TL;DR
 
-| Situation | Can you merge? | How |
-| --- | --- | --- |
-| `ci/circleci: lint-and-test` is **green** | ✅ Yes | Normal merge |
-| PR state is `blocked` (required review/check pending, cosmetic jobs running) | ✅ Yes | Admin override is acceptable |
-| PR is a **draft** | ❌ No | Mark "Ready for review" first — no override exists |
-| PR has **conflicts** (`dirty`) | ❌ No | Resolve the conflict — no override exists |
-| `ci/circleci: lint-and-test` is **red** | ⛔ No | Fix the failure. Do **not** override |
+| Situation                                                                    | Can you merge? | How                                                |
+| ---------------------------------------------------------------------------- | -------------- | -------------------------------------------------- |
+| `ci/circleci: lint-and-test` is **green**                                    | ✅ Yes         | Normal merge                                       |
+| PR state is `blocked` (required review/check pending, cosmetic jobs running) | ✅ Yes         | Admin override is acceptable                       |
+| PR is a **draft**                                                            | ❌ No          | Mark "Ready for review" first — no override exists |
+| PR has **conflicts** (`dirty`)                                               | ❌ No          | Resolve the conflict — no override exists          |
+| `ci/circleci: lint-and-test` is **red**                                      | ⛔ No          | Fix the failure. Do **not** override               |
 
 ## Required check (the only true gate)
 
@@ -41,7 +41,7 @@ These appear as checks but are orchestration, not quality gates. A pending or
 ## When admin override (force-merge) is acceptable
 
 Force-merge means merging while branch protection reports `blocked` — via the
-GitHub *"Merge without waiting for requirements to be met"* button or the merge
+GitHub _"Merge without waiting for requirements to be met"_ button or the merge
 API. It is acceptable when **all** of these hold:
 
 1. `ci/circleci: lint-and-test` is **green** (or genuinely not relevant to the change).

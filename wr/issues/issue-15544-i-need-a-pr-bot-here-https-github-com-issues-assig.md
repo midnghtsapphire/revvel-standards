@@ -14,7 +14,7 @@
 **Created:** 2026-07-08  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-08  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -104,18 +104,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -127,6 +128,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28965709802.md`
 
 ## WR-Ready Research Packet: PR Bot Implementation
@@ -136,6 +138,7 @@ Source packet: `docs/research-engine/run-28965709802.md`
 **DO NOT PROCEED** with implementation. The work request is critically incomplete with an invalid repository URL and undefined requirements. The request must be clarified before any development begins.
 
 **Immediate Actions Required:**
+
 1. Obtain valid GitHub repository URL (current URL `https://github.com/issues/assigned?issue=midnghtsapphire` is malformed)
 2. Define specific PR bot functionality requirements
 3. Clarify permission model and security requirements
@@ -146,17 +149,20 @@ Source packet: `docs/research-engine/run-28965709802.md`
 **Primary Target:** Individual GitHub repository administrators and maintainers who need automated PR management
 
 **User Profile:**
+
 - GitHub user `midnghtsapphire` with admin rights
 - Managing personal or small team repositories
 - Experiencing manual overhead in PR review and assignment
 - Seeking automation without complex setup
 
 **Why This Audience:**
+
 - Common pain point across GitHub's 100M+ developers
 - Gateway to broader team/enterprise adoption
 - Low barrier to entry for SaaS conversion
 
 **Marketing Channels:**
+
 - GitHub Marketplace (primary distribution)
 - Developer forums (Reddit r/github, Stack Overflow)
 - GitHub Discussions and community spaces
@@ -164,15 +170,18 @@ Source packet: `docs/research-engine/run-28965709802.md`
 ## 3. Marketing and SEO Plan
 
 **Landing Page Strategy:**
+
 - **Title:** "Automate Your GitHub Workflow with a PR Bot: Assign, Review, and Merge Pull Requests"
 - **Meta Description:** "Discover how to set up a PR bot for GitHub to automate pull request assignment and management. Learn about permissions, security, and the best bots for your repo."
 
 **Keyword Clusters:**
+
 - **Transactional:** "GitHub PR bot", "automated pull request management", "PR assignment bot"
 - **Informational:** "How to automate PR assignment on GitHub", "GitHub bot permissions"
 - **Comparison:** "Best PR bots for GitHub", "PR bot vs manual review"
 
 **Content Angles:**
+
 - Step-by-step setup guides
 - Security best practices for bot permissions
 - Feature comparison tables
@@ -180,29 +189,32 @@ Source packet: `docs/research-engine/run-28965709802.md`
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Stars | Activity | Pricing | Key Differentiator |
-|------------|-------|----------|---------|-------------------|
-| **Renovate** | 16.8k | Daily commits | Free OSS | Dependency updates focus |
-| **Probot** | 8.5k | Active | Free OSS | Framework for custom bots |
-| **Danger** | 6.2k | Active | Free OSS | Code review automation |
-| **Mergify** | 2.6k | Active | $8-25/mo per repo | Advanced merge rules |
-| **Kodiak** | 1k | Moderate | Free OSS, $19/mo hosted | Merge queue management |
-| **GitHub Actions** | N/A | Native | Free tier + usage | Platform integration |
+| Competitor         | Stars | Activity      | Pricing                 | Key Differentiator        |
+| ------------------ | ----- | ------------- | ----------------------- | ------------------------- |
+| **Renovate**       | 16.8k | Daily commits | Free OSS                | Dependency updates focus  |
+| **Probot**         | 8.5k  | Active        | Free OSS                | Framework for custom bots |
+| **Danger**         | 6.2k  | Active        | Free OSS                | Code review automation    |
+| **Mergify**        | 2.6k  | Active        | $8-25/mo per repo       | Advanced merge rules      |
+| **Kodiak**         | 1k    | Moderate      | Free OSS, $19/mo hosted | Merge queue management    |
+| **GitHub Actions** | N/A   | Native        | Free tier + usage       | Platform integration      |
 
 **Market Position:** Highly saturated space dominated by free/OSS solutions and GitHub native features.
 
 ## 5. Chatter and Demand Signals
 
 **User Language:**
+
 - "allows me to look over pr and assign it or not"
 - "needs writes to create a wr or a pr with my rights as admin?"
 
 **Unmet Needs:**
+
 - Simple, plug-and-play PR assignment without scripting
 - Clear guidance on secure permission models
 - Integration with existing admin workflows
 
 **Communities to Monitor:**
+
 - GitHub Discussions
 - Stack Overflow #github-actions
 - Reddit r/github
@@ -211,12 +223,14 @@ Source packet: `docs/research-engine/run-28965709802.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Critical Failures:**
+
 - ❌ Invalid GitHub URL format (not a repository URL)
 - ❌ Cannot verify repository existence or permissions
 - ❌ No concrete technical requirements provided
 - ❌ Missing Definition of Done and Expected Scope
 
 **Evidence Gaps Requiring Verification:**
+
 - Repository URL and access permissions
 - Current automation setup
 - Specific PR workflow requirements
@@ -225,12 +239,14 @@ Source packet: `docs/research-engine/run-28965709802.md`
 ## 7. Build Requirements and Acceptance Gates
 
 **Cannot Define Until Clarified:**
+
 - Target repository URL
 - Specific bot functionality
 - Permission requirements
 - Integration points
 
 **Proposed Acceptance Gates (pending clarification):**
+
 1. Bot authenticates with repository
 2. Responds to PR events within 30 seconds
 3. Correctly assigns PRs based on rules
@@ -238,6 +254,7 @@ Source packet: `docs/research-engine/run-28965709802.md`
 5. Respects permission boundaries
 
 **Technical Stack Options:**
+
 - GitHub Apps (recommended for security)
 - GitHub Actions (for simple automation)
 - Probot framework (for complex logic)
@@ -245,6 +262,7 @@ Source packet: `docs/research-engine/run-28965709802.md`
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```yaml
 # Security Review Required
 - Check for hardcoded credentials
@@ -254,6 +272,7 @@ Source packet: `docs/research-engine/run-28965709802.md`
 ```
 
 ### For OpenRouter
+
 ```yaml
 # Architecture Review
 - Verify event-driven design patterns
@@ -263,6 +282,7 @@ Source packet: `docs/research-engine/run-28965709802.md`
 ```
 
 ### For Coderabbit
+
 ```yaml
 # Code Quality Review
 - Check test coverage for PR event handlers
@@ -272,6 +292,7 @@ Source packet: `docs/research-engine/run-28965709802.md`
 ```
 
 ### For Ralph Loop
+
 ```yaml
 # Performance Review
 - Analyze GitHub API call efficiency
@@ -283,7 +304,9 @@ Source packet: `docs/research-engine/run-28965709802.md`
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Add URL Validation
+
 **File:** `.github/ISSUE_TEMPLATE/work_request.yml`
+
 ```yaml
 - type: input
   attributes:
@@ -294,10 +317,13 @@ Source packet: `docs/research-engine/run-28965709802.md`
     required: true
     pattern: '^https://github\.com/[^/]+/[^/]+$'
 ```
+
 **Commit Message:** `fix: add repository URL validation to work request template`
 
 ### Fix 2: Add Requirements Clarification
+
 **File:** `.github/workflows/validate-wr.yml`
+
 ```yaml
 name: Validate Work Request
 on:
@@ -321,10 +347,13 @@ jobs:
               --add-label "blocked-invalid-url,needs-clarification"
           fi
 ```
+
 **Commit Message:** `feat: add work request validation workflow`
 
 ### Fix 3: Auto-Comment for Clarification
+
 **Action:** Post clarification request
+
 ```markdown
 Thanks for requesting a PR bot! To proceed, we need:
 
@@ -376,6 +405,7 @@ Have you considered using [Auto Assign Action](https://github.com/marketplace/ac
 **Overall Confidence: 25/100**
 
 **Lane Confidence Scores:**
+
 - Market Positioning: 65/100 (clear need, saturated market)
 - SEO Demand: 70/100 (strong search intent identified)
 - Competitor Intelligence: 85/100 (comprehensive market analysis)
@@ -388,6 +418,7 @@ Have you considered using [Auto Assign Action](https://github.com/marketplace/ac
 **Decision Rationale:** The extremely low factual validation and technical delivery scores, combined with the invalid repository URL and missing requirements, make this work request impossible to implement as-is. While market demand exists and alternatives are well-documented, the request itself requires fundamental clarification before any development can begin.
 
 **Recommended Path Forward:**
+
 1. Block all implementation work
 2. Apply clarification labels
 3. Request specific repository and requirements
@@ -434,11 +465,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -454,11 +485,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

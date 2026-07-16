@@ -9,14 +9,14 @@ name: Self-Healing Agent
 on:
   # Run daily to check system health
   schedule:
-    - cron: '0 */4 * * *'  # Every 4 hours
+    - cron: "0 */4 * * *" # Every 4 hours
   # Can be manually triggered
   workflow_dispatch:
 
 permissions:
   contents: read
-  issues: write        # self-heal job re-labels stuck issues + files healing journal
-  actions: write       # self-heal job re-runs failed workflow runs
+  issues: write # self-heal job re-labels stuck issues + files healing journal
+  actions: write # self-heal job re-runs failed workflow runs
   pull-requests: write # update-main job adds auto-merge label to qualifying PRs
 
 env:
@@ -48,14 +48,14 @@ jobs:
           # Get recent workflow runs
           gh api repos/midnghtsapphire/revvel-standards/actions/runs \
             --jq '.workflow_runs[:10] | .[] | {name: .name, status: .status, conclusion: .conclusion}' 2>/dev/null > /tmp/actions.json
-          
+
           FAILED=0
           while read -r line; do
             if echo "$line" | grep -q '"failure"'; then
               FAILED=$((FAILED+1))
             fi
           done < /tmp/actions.json
-          
+
           echo "failed_count=$FAILED" >> $GITHUB_OUTPUT
           echo "Total recent runs: $(wc -l < /tmp/actions.json)"
 
@@ -64,7 +64,7 @@ jobs:
         run: |
           STUCK=$(gh api repos/midnghtsapphire/revvel-standards/issues \
             --state open --jq '.[] | select(.labels[].name | contains("stuck") or contains("checking")) | .number' 2>/dev/null | wc -w)
-          
+
           echo "stuck_count=$STUCK" >> $GITHUB_OUTPUT
           echo "Found $STUCK stuck issues"
 
@@ -132,7 +132,7 @@ jobs:
               MISSING+=("$wf")
             fi
           done
-          
+
           if [[ ${#MISSING[@]} -eq 0 ]]; then
             echo "agent_workflows=healthy" >> $GITHUB_OUTPUT
           else
@@ -169,15 +169,15 @@ jobs:
           GATE_FAILED: ${{ steps.grounding_gate.outputs.grounding_gate_failed }}
         run: |
           BROKEN=()
-          
+
           if [[ "$ACTIONS_FAILED" -gt "$FAILED_ACTIONS_THRESHOLD" ]]; then
             BROKEN+=("GitHub Actions: $ACTIONS_FAILED recent failures")
           fi
-          
+
           if [[ "$STUCK" -gt "$STUCK_ISSUES_THRESHOLD" ]]; then
             BROKEN+=("Stuck issues: $STUCK open")
           fi
-          
+
           if ! echo "$AGENTS" | grep -q "healthy"; then
             BROKEN+=("Missing workflows: $AGENTS")
           fi
@@ -235,9 +235,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
-      contents: write   # commits the healing memory ledger to main
-      issues: write     # re-labels stuck issues, closes/updates [SELF-HEAL] issues
-      actions: write    # re-runs failed workflow runs
+      contents: write # commits the healing memory ledger to main
+      issues: write # re-labels stuck issues, closes/updates [SELF-HEAL] issues
+      actions: write # re-runs failed workflow runs
     steps:
       # Checkout is required here (unlike the other jobs) because this job
       # commits wr/memory/healing.jsonl back to the default branch.

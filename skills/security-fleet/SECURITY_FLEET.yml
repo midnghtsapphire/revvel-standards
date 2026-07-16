@@ -62,7 +62,14 @@ agents:
       before agents consume it — hidden directives, override phrasing,
       zero-width smuggling, and log-poisoning payloads (owner's S-MOS §4
       tripwire). Does nothing else.
-    use_for: ["prompt injection", "instruction smuggling", "log poisoning", "jailbreak text", "hidden directive"]
+    use_for:
+      [
+        "prompt injection",
+        "instruction smuggling",
+        "log poisoning",
+        "jailbreak text",
+        "hidden directive",
+      ]
 
   - handle: exprwatch
     name: Hardline
@@ -73,7 +80,13 @@ agents:
       github.head_ref, and friends) interpolated directly into run: shells
       across all workflows — the CLAUDE.md gotcha #4 command-injection
       vector. Does nothing else.
-    use_for: ["expression injection", "untrusted interpolation", "run shell injection", "workflow audit"]
+    use_for:
+      [
+        "expression injection",
+        "untrusted interpolation",
+        "run shell injection",
+        "workflow audit",
+      ]
 
   - handle: exfil
     name: Blackout
@@ -84,7 +97,8 @@ agents:
       OpenRouter/OpenAI keys, cloud tokens, private keys), extending
       secrets-sentinel.yml which audits configured secrets. Does nothing
       else.
-    use_for: ["leaked token", "secret in diff", "credential in logs", "exfiltration"]
+    use_for:
+      ["leaked token", "secret in diff", "credential in logs", "exfiltration"]
 
   - handle: permit
     name: Keysmith
@@ -94,7 +108,13 @@ agents:
       Audits each workflow's permissions: block against what the jobs
       actually do — flags missing scopes that break the job and excessive
       write scopes nothing uses (CLAUDE.md gotcha #3). Does nothing else.
-    use_for: ["permissions audit", "least privilege", "token scope", "missing permissions"]
+    use_for:
+      [
+        "permissions audit",
+        "least privilege",
+        "token scope",
+        "missing permissions",
+      ]
 
   - handle: redteam
     name: Foxglove
@@ -104,4 +124,11 @@ agents:
       Runs the dependency lane (scripts/patch-agent.js advisories check) and
       generates adversarial test cases against our own agents and detectors,
       reporting any payload the fleet fails to catch. Does nothing else.
-    use_for: ["red team", "adversarial tests", "dependency vulnerability", "patch agent", "detector coverage"]
+    use_for:
+      [
+        "red team",
+        "adversarial tests",
+        "dependency vulnerability",
+        "patch agent",
+        "detector coverage",
+      ]

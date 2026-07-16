@@ -40,7 +40,7 @@ permissions:
 
 concurrency:
   group: posthog-sourcemaps-${{ github.ref }}
-  cancel-in-progress: true  # Cancel previous runs for the same ref
+  cancel-in-progress: true # Cancel previous runs for the same ref
 
 jobs:
   upload-sourcemaps:

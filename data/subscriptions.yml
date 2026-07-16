@@ -38,7 +38,7 @@ subscriptions:
     type: github_app
     status: trial
     trial_start: 2026-06-13
-    trial_end: 2026-06-27        # 14-day free trial that began 2026-06-13
+    trial_end: 2026-06-27 # 14-day free trial that began 2026-06-13
     renewal_date: null
     billing_cycle: annual
     cost: 250

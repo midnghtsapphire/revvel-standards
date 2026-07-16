@@ -20,10 +20,10 @@ metadata:
 
 dependencies:
   skills:
-    - vault_agent       # for the four secrets
-    - security          # PII / data-exposure rules
+    - vault_agent # for the four secrets
+    - security # PII / data-exposure rules
   tools:
-    - nodejs            # >= 20, no npm deps (uses Node built-in https)
+    - nodejs # >= 20, no npm deps (uses Node built-in https)
   pip_packages: []
   npm_packages: []
 

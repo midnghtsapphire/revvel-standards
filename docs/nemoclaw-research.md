@@ -39,26 +39,28 @@ of it branded for `freedomangelcorps` (enterprise / sellable) and reused by
 
 ## 2. What NemoClaw Actually Is (vs. OpenClaw)
 
-| Layer | OpenClaw (base) | NemoClaw (NVIDIA) |
-| :--- | :--- | :--- |
-| Agent platform | ✅ Core agent runtime, skills, memory | Uses OpenClaw unchanged |
-| Orchestration | ✅ Multi-agent, skills, MCP | Uses OpenClaw unchanged |
-| Execution sandbox | ⚠️ Bring-your-own / partial | ✅ **OpenShell** — policy-based sandbox |
-| Inference routing | ⚠️ Direct to provider | ✅ **Privacy Router** (local-first, cloud on policy) |
-| Network control | ❌ Open egress | ✅ **Default-deny + audit** |
-| Local model | Optional | ✅ Nemotron (NVIDIA local LLM) |
-| Install / ops CLI | Varies | ✅ One-line install; Linux / WSL2 / macOS (Colima) |
-| Agent marketplace / rental | ❌ | ❌ (still a blue-ocean opportunity for us) |
-| Accessibility / non-coder UI | ❌ | ❌ (still a blue-ocean opportunity for us) |
+| Layer                        | OpenClaw (base)                       | NemoClaw (NVIDIA)                                    |
+| :--------------------------- | :------------------------------------ | :--------------------------------------------------- |
+| Agent platform               | ✅ Core agent runtime, skills, memory | Uses OpenClaw unchanged                              |
+| Orchestration                | ✅ Multi-agent, skills, MCP           | Uses OpenClaw unchanged                              |
+| Execution sandbox            | ⚠️ Bring-your-own / partial           | ✅ **OpenShell** — policy-based sandbox              |
+| Inference routing            | ⚠️ Direct to provider                 | ✅ **Privacy Router** (local-first, cloud on policy) |
+| Network control              | ❌ Open egress                        | ✅ **Default-deny + audit**                          |
+| Local model                  | Optional                              | ✅ Nemotron (NVIDIA local LLM)                       |
+| Install / ops CLI            | Varies                                | ✅ One-line install; Linux / WSL2 / macOS (Colima)   |
+| Agent marketplace / rental   | ❌                                    | ❌ (still a blue-ocean opportunity for us)           |
+| Accessibility / non-coder UI | ❌                                    | ❌ (still a blue-ocean opportunity for us)           |
 
 **What changed vs. plain OpenClaw:**
-- NemoClaw does **not** replace the agent framework — it *wraps* it.
+
+- NemoClaw does **not** replace the agent framework — it _wraps_ it.
 - It adds the security/privacy posture that the "OpenClaw Incident" (see
   §4 of `openclaw-blue-ocean-research.md`) specifically called out.
 - It assumes NVIDIA hardware/drivers are available for best local
   performance, but it can fall back to cloud inference.
 
 **What's still missing (our differentiation space):**
+
 - No marketplace, no rental, no reputation/insurance, no skill antivirus,
   no voice-first/accessibility UI, no cross-agent social graph.
   All of these remain open for us to build on top.
@@ -70,6 +72,7 @@ of it branded for `freedomangelcorps` (enterprise / sellable) and reused by
 We can do **both**, in this order:
 
 ### 3a. Phase 1 — Consume NemoClaw as a **module / runtime**
+
 - Treat NemoClaw as a dependency of our OpenClaw-based services.
 - Our agents keep being built against the OpenClaw contract; NemoClaw
   provides the sandbox + privacy router underneath them.
@@ -77,6 +80,7 @@ We can do **both**, in this order:
   deploy scripts select when a host has the NemoClaw CLI present.
 
 ### 3b. Phase 2 — Ship a **standalone wrapper app**
+
 - A thin product ("agent team console") that bundles:
   - NemoClaw runtime (secure sandbox + privacy router)
   - OpenClaw agent framework
@@ -90,8 +94,9 @@ We can do **both**, in this order:
     onboarding, non-coder UI.
 
 ### Why both
+
 The module gets us hardened agents **this sprint**. The wrapper is what we
-actually *sell* and is where our differentiation (marketplace, rental,
+actually _sell_ and is where our differentiation (marketplace, rental,
 accessibility) lives. Building the wrapper without first consuming the
 module means we'd be shipping the same security gaps the OpenClaw incident
 exposed.
@@ -114,6 +119,7 @@ team is expressible as:
   OpenRouter/Anthropic/OpenAI within policy.
 
 Minimum viable team for v1:
+
 1. **Researcher** (cloud egress allowed, read-only FS)
 2. **Editor/Writer** (local-only inference, scoped FS write)
 3. **Dispatcher** (no egress, coordinates the other two)
@@ -134,7 +140,7 @@ treat the answers below as final until a maintainer signs off:
       commercial redistribution of the runtime, or only of a wrapper that
       links to it.
 - [ ] Confirm Nemotron model license — commercial redistribution vs.
-      commercial *use* are different grants.
+      commercial _use_ are different grants.
 - [ ] Confirm trademark policy — our sellable SKU must not imply NVIDIA
       endorsement; use "Powered by NemoClaw" phrasing only if permitted.
 - [ ] Confirm that telemetry in the NemoClaw CLI can be disabled for the

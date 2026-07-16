@@ -6,7 +6,19 @@ description: "Automated brand content distribution across high-value platforms (
 metadata:
   author: "MIDNGHTSAPPHIRE"
   category: "Content & Marketing"
-  tags: ["eeat", "openclaw", "brand-distribution", "knowledge-graph", "wikidata", "orcid", "researchgate", "osint", "json-ld", "schema-org"]
+  tags:
+    [
+      "eeat",
+      "openclaw",
+      "brand-distribution",
+      "knowledge-graph",
+      "wikidata",
+      "orcid",
+      "researchgate",
+      "osint",
+      "json-ld",
+      "schema-org",
+    ]
   created_at: "2026-04-30"
   updated_at: "2026-04-30"
   persona: "Echo 🌐"
@@ -46,7 +58,7 @@ platforms:
       format: "markdown"
       auto_submit: true
       api_required: true
-  
+
   tier2:
     - name: "Wikidata"
       format: "rdf/json"
@@ -68,7 +80,7 @@ platforms:
       format: "auto-indexed"
       auto_submit: true
       notes: "Auto-indexed from ORCID"
-  
+
   tier3:
     - name: "MISP"
       format: "json"
@@ -92,22 +104,22 @@ validation_rules:
     required_fields:
       - "name"
       - "tagline"
-      - "expertise_areas"  # min: 3
+      - "expertise_areas" # min: 3
       - "urls.primary"
-      - "credentials"      # min: 1
-  
+      - "credentials" # min: 1
+
   projects:
     required_fields:
       - "name"
       - "description"
       - "status"
-      - "tech_stack"       # min: 2
-      - "outcomes"         # min: 1
-  
+      - "tech_stack" # min: 2
+      - "outcomes" # min: 1
+
   url_checks:
     - verify_http_200: true
     - fail_gracefully: true
-  
+
   schema_validation:
     - jsonld: "https://validator.schema.org/"
     - orcid_xml: "orcid_api_schema"
@@ -132,13 +144,13 @@ templates:
     - "organization.jsonld"
     - "person.jsonld"
     - "research-project.jsonld"
-  
+
   platform_specific:
     - "orcid-works.xml"
     - "wikidata-entity.md"
     - "researchgate-profile.md"
     - "archive-org-submission.md"
-  
+
   osint:
     - "misp-profile.json"
     - "maltego-entity.json"
@@ -159,7 +171,7 @@ implementation:
 
 agent_instructions: |
   You are Echo 🌐 — the OpenClaw E-E-A-T content distribution specialist.
-  
+
   Core Rules:
   1. Read brand statement and project descriptions first
   2. Classify platforms by tier (1/2/3)
@@ -174,11 +186,11 @@ examples:
   - name: "Generate all platform content"
     command: "openclaw run-skill openclaw-eeat --brand brand-statement.yml --projects 'projects/*.md'"
     description: "Generate formatted content for all supported platforms"
-  
+
   - name: "Update Tier 1 only"
     command: "openclaw run-skill openclaw-eeat --brand brand-statement.yml --tier 1 --auto-submit"
     description: "Update only ORCID and GitHub with auto-submission"
-  
+
   - name: "Generate Wikidata entity"
     command: "openclaw run-skill openclaw-eeat --brand brand-statement.yml --platform wikidata"
     description: "Generate only Wikidata entity creation draft"

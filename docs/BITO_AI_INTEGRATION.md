@@ -43,13 +43,13 @@ BITO AI is an **agentic code review and developer productivity platform** purpos
 4. **GitHub Actions integration** — `bito-core/bito-github-action` wires BITO into any CI pipeline with a single step.
 5. **Review label automation** — BITO can add, remove, and set GitHub labels based on review outcomes, composing directly with the ARSC label system already in use.
 
-| Capability | Covered today | What BITO adds |
-|---|---|---|
-| Stateless PR diff review | `ai-pr-review-openrouter.yml` (Claude Sonnet 4) | **Persistent-memory** review that learns repo conventions and enforces them consistently. |
-| Review labels | `pr-review-status.yml` (human review events only) | **Automated** label updates on AI review outcomes — `awaiting-approval`, `changes-requested`, `approved`. |
-| Desktop API/secret procurement | Manual (browser, 1Password, Vault CLI) | **BITO CLI desktop agent** assists in retrieving and wiring secrets from the local Vault client or keychain. |
-| Repository knowledge base | None (each agent session starts cold) | **Indexed repo memory** — agents inherit full context instantly. |
-| Multi-model agentic review | OpenRouter (server-side) | **BITO's own model router** selects the best model for each review sub-task client-side. |
+| Capability                     | Covered today                                     | What BITO adds                                                                                               |
+| ------------------------------ | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Stateless PR diff review       | `ai-pr-review-openrouter.yml` (Claude Sonnet 4)   | **Persistent-memory** review that learns repo conventions and enforces them consistently.                    |
+| Review labels                  | `pr-review-status.yml` (human review events only) | **Automated** label updates on AI review outcomes — `awaiting-approval`, `changes-requested`, `approved`.    |
+| Desktop API/secret procurement | Manual (browser, 1Password, Vault CLI)            | **BITO CLI desktop agent** assists in retrieving and wiring secrets from the local Vault client or keychain. |
+| Repository knowledge base      | None (each agent session starts cold)             | **Indexed repo memory** — agents inherit full context instantly.                                             |
+| Multi-model agentic review     | OpenRouter (server-side)                          | **BITO's own model router** selects the best model for each review sub-task client-side.                     |
 
 ---
 
@@ -163,10 +163,10 @@ bito ask "How does the OpenRouter assignee workflow route issues?"
 
 BITO AI introduces three new labels (added to `.github/labels.yml`):
 
-| Label | Color | Meaning |
-|---|---|---|
-| `bito-ai` | `#0B6FFF` | PR or issue touched by BITO AI review |
-| `bito-ai:review` | `#4D94FF` | BITO AI review complete — see review comment |
+| Label                    | Color     | Meaning                                           |
+| ------------------------ | --------- | ------------------------------------------------- |
+| `bito-ai`                | `#0B6FFF` | PR or issue touched by BITO AI review             |
+| `bito-ai:review`         | `#4D94FF` | BITO AI review complete — see review comment      |
 | `bito-ai:changes-needed` | `#D93F0B` | BITO found blocking issues — address before merge |
 
 These compose with the existing review status labels (`awaiting-approval`, `changes-requested`, `approved`) so GitKraken Launchpad, project boards, and OpenRouter downstream routing see the same unified signal.
@@ -177,8 +177,8 @@ These compose with the existing review status labels (`awaiting-approval`, `chan
 
 ### 5.1. GitHub Actions secret
 
-| Name | Purpose | Where to obtain |
-|---|---|---|
+| Name           | Purpose                                  | Where to obtain                                  |
+| -------------- | ---------------------------------------- | ------------------------------------------------ |
 | `BITO_API_KEY` | Authenticates all BITO API calls from CI | [bito.ai](https://bito.ai) → Settings → API Keys |
 
 Add the secret at: **Settings → Secrets and variables → Actions → New repository secret → `BITO_API_KEY`**
@@ -207,25 +207,25 @@ BITO_API_KEY=$(vault kv get -field=api_key revvel/shared/code-review/bito)
 
 ## 6. Interaction with existing automation lanes
 
-| Concern | Existing lane | BITO AI composition |
-|---|---|---|
-| Stateless diff review | `ai-pr-review-openrouter.yml` | Runs in parallel; BITO adds persistent-memory depth; OpenRouter review adds stateless speed. Both post to the same PR. |
-| Review labels | `pr-review-status.yml` | Complementary — `pr-review-status.yml` tracks human reviewer events; `bito-ai.yml` tracks BITO review outcomes. Both use the same label set. |
-| First-line-of-sight routing | `openrouter-assignee.yml` | Unchanged — BITO review is additive. The `openrouter` + `role:orchestrator` labels still fire on PR open. |
-| Merge control | `auto-merge.yml` | The `bito-ai:changes-needed` label can be added to the "block auto-merge" list alongside `won't-merge`. |
-| Desktop workstation | Antigravity IDE | Complementary — Antigravity is the interactive IDE surface; BITO is the always-on code reviewer and API-procurement assistant within any editor. |
+| Concern                     | Existing lane                 | BITO AI composition                                                                                                                              |
+| --------------------------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Stateless diff review       | `ai-pr-review-openrouter.yml` | Runs in parallel; BITO adds persistent-memory depth; OpenRouter review adds stateless speed. Both post to the same PR.                           |
+| Review labels               | `pr-review-status.yml`        | Complementary — `pr-review-status.yml` tracks human reviewer events; `bito-ai.yml` tracks BITO review outcomes. Both use the same label set.     |
+| First-line-of-sight routing | `openrouter-assignee.yml`     | Unchanged — BITO review is additive. The `openrouter` + `role:orchestrator` labels still fire on PR open.                                        |
+| Merge control               | `auto-merge.yml`              | The `bito-ai:changes-needed` label can be added to the "block auto-merge" list alongside `won't-merge`.                                          |
+| Desktop workstation         | Antigravity IDE               | Complementary — Antigravity is the interactive IDE surface; BITO is the always-on code reviewer and API-procurement assistant within any editor. |
 
 ---
 
 ## 7. BOM
 
-| Item | Tier | Cost |
-|---|---|---|
-| BITO AI Team plan | SaaS | Starts at $15/user/month; free tier available for public repos |
-| `bito-core/bito-github-action` | Open-source (GitHub Actions) | Free |
-| BITO CLI | Open-source | Free |
-| VS Code / JetBrains extension | Free | Free |
-| `BITO_API_KEY` GitHub secret | Zero cost | Free |
+| Item                           | Tier                         | Cost                                                           |
+| ------------------------------ | ---------------------------- | -------------------------------------------------------------- |
+| BITO AI Team plan              | SaaS                         | Starts at $15/user/month; free tier available for public repos |
+| `bito-core/bito-github-action` | Open-source (GitHub Actions) | Free                                                           |
+| BITO CLI                       | Open-source                  | Free                                                           |
+| VS Code / JetBrains extension  | Free                         | Free                                                           |
+| `BITO_API_KEY` GitHub secret   | Zero cost                    | Free                                                           |
 
 ---
 
@@ -250,4 +250,4 @@ For automated setup and testing:
 
 ---
 
-*Part of the Revvel Standards tooling layer. See [`skills/bito-ai/SKILL.md`](../skills/bito-ai/SKILL.md) and [`standards/BITO_AI_INTEGRATION_STANDARD.md`](../standards/BITO_AI_INTEGRATION_STANDARD.md) for agent-ready instructions.*
+_Part of the Revvel Standards tooling layer. See [`skills/bito-ai/SKILL.md`](../skills/bito-ai/SKILL.md) and [`standards/BITO_AI_INTEGRATION_STANDARD.md`](../standards/BITO_AI_INTEGRATION_STANDARD.md) for agent-ready instructions._

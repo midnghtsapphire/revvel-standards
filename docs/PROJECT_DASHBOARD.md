@@ -5,6 +5,7 @@
 ## Problem Statement
 
 No visibility into:
+
 - BOM (Bill of Materials) inventory across projects
 - Handoff documents and project status
 - Test URLs scattered in folders
@@ -52,6 +53,7 @@ npm run dashboard search oaudrey  # Search everything
 ### Automated Updates
 
 The dashboard auto-updates hourly via GitHub Actions:
+
 - Workflow: `.github/workflows/update-project-dashboard.yml`
 - Runs on schedule (hourly) and on relevant file changes
 - Commits updated `dashboard.html` and `dashboard-data.json`
@@ -65,6 +67,7 @@ The dashboard auto-updates hourly via GitHub Actions:
 ## Dashboard Features
 
 ### 📊 Summary Card
+
 - Total projects count
 - Active services count
 - Test URLs count
@@ -72,6 +75,7 @@ The dashboard auto-updates hourly via GitHub Actions:
 - Last updated timestamp
 
 ### 📦 Projects Table
+
 - All projects from `PROJECTS_TO_SHIP.md` and `PROJECT_CATALOG.md`
 - Status badges (Active, Dev, Research, etc.)
 - Descriptions and links
@@ -79,6 +83,7 @@ The dashboard auto-updates hourly via GitHub Actions:
 - Search and filter functionality
 
 ### 🔗 Test URLs Table
+
 - All test URLs extracted from README files
 - Vercel URLs automatically detected
 - Project association
@@ -86,17 +91,20 @@ The dashboard auto-updates hourly via GitHub Actions:
 - Direct links to test sites
 
 ### 🌐 Domains Table
+
 - Key domains (oaudrey.com, soup2bowl.com, revvel.co, etc.)
 - Domain status (Active, In Development, Research)
 - Purpose and notes
 - Subdomain tracking
 
 ### ⚙️ Active Services Table
+
 - Services from `_MASTER_INVENTORY.md`
 - Status, description, and usage
 - Tracks APIs, subscriptions, tools
 
 ### 🔍 Live Search
+
 - Search across all projects, URLs, domains, and services
 - Real-time filtering
 - Instant results
@@ -133,9 +141,11 @@ The dashboard aggregates data from:
 ## CLI Commands
 
 ### `npm run dashboard` or `npm run dashboard summary`
+
 Shows summary with counts, key domains, and recent projects.
 
 **Example output:**
+
 ```
 ============================================================
   📊 MIDNGHTSAPPHIRE Project Dashboard Summary
@@ -155,9 +165,11 @@ Key Domains:
 ```
 
 ### `npm run dashboard projects [filter]`
+
 Lists all projects with status, description, and links.
 
 **Examples:**
+
 ```bash
 npm run dashboard projects           # All projects
 npm run dashboard projects Active    # Filter by status
@@ -165,9 +177,11 @@ npm run dashboard projects soul      # Filter by name
 ```
 
 ### `npm run dashboard urls [filter]`
+
 Lists all test URLs with project association and source.
 
 **Examples:**
+
 ```bash
 npm run dashboard urls               # All URLs
 npm run dashboard urls vercel        # Filter Vercel URLs
@@ -175,9 +189,11 @@ npm run dashboard urls soul2bowl     # Filter by project
 ```
 
 ### `npm run dashboard domains [filter]`
+
 Lists all tracked domains with status and purpose.
 
 **Examples:**
+
 ```bash
 npm run dashboard domains            # All domains
 npm run dashboard domains Active     # Filter by status
@@ -185,9 +201,11 @@ npm run dashboard domains oaudrey    # Filter by name
 ```
 
 ### `npm run dashboard search <term>`
+
 Searches across all data (projects, URLs, domains, services).
 
 **Examples:**
+
 ```bash
 npm run dashboard search oaudrey
 npm run dashboard search vercel
@@ -196,9 +214,11 @@ npm run dashboard search API
 ```
 
 ### `npm run dashboard refresh`
+
 Regenerates dashboard data from all sources.
 
 ### `npm run dashboard open`
+
 Generates dashboard and opens in browser.
 
 ---
@@ -206,6 +226,7 @@ Generates dashboard and opens in browser.
 ## Files Created
 
 ### `dashboard.html`
+
 - Centralized HTML dashboard
 - Beautiful glassmorphism UI
 - Live search functionality
@@ -213,24 +234,28 @@ Generates dashboard and opens in browser.
 - Auto-generated, don't edit manually
 
 ### `dashboard-data.json`
+
 - Raw aggregated data in JSON format
 - Used by CLI and other tools
 - Contains all projects, URLs, domains, inventory
 - Auto-generated, don't edit manually
 
 ### `scripts/aggregate-project-dashboard.js`
+
 - Main aggregation script
 - Parses markdown files and extracts data
 - Generates dashboard HTML and JSON
 - Run via `npm run dashboard:generate`
 
 ### `scripts/dashboard-cli.js`
+
 - Interactive CLI tool
 - Quick access to project info
 - Search functionality
 - Run via `npm run dashboard`
 
 ### `.github/workflows/update-project-dashboard.yml`
+
 - GitHub Actions workflow
 - Runs hourly (cron: `0 * * * *`)
 - Auto-commits updates
@@ -246,16 +271,18 @@ The dashboard auto-updates every 4 hours via GitHub Actions:
 
 ```yaml
 schedule:
-  - cron: '0 */4 * * *'  # Every 4 hours
+  - cron: "0 */4 * * *" # Every 4 hours
 ```
 
 **What it does:**
+
 1. Checks out repository
 2. Runs aggregation script
 3. Commits `dashboard.html` and `dashboard-data.json` if changed
 4. (Optional) Deploys to GitHub Pages
 
 **Manual trigger:**
+
 ```bash
 # Via GitHub Actions UI
 gh workflow run update-project-dashboard.yml
@@ -272,11 +299,11 @@ Dashboard also updates when relevant files change:
 on:
   push:
     paths:
-      - 'docs/_MASTER_INVENTORY.md'
-      - 'docs/_MASTER_BOM.md'
-      - 'docs/PROJECTS_TO_SHIP.md'
-      - 'docs/PROJECT_CATALOG.md'
-      - '**/README.md'
+      - "docs/_MASTER_INVENTORY.md"
+      - "docs/_MASTER_BOM.md"
+      - "docs/PROJECTS_TO_SHIP.md"
+      - "docs/PROJECT_CATALOG.md"
+      - "**/README.md"
 ```
 
 ---
@@ -307,16 +334,17 @@ npm run dashboard:generate
 
 ## Key Domains Tracked
 
-| Domain | Status | Purpose | Notes |
-|---|---|---|---|
-| oaudrey.com | Active | Freedom Angel Hub | Main automation hub |
-| soup2bowl.com | In Development | Catering | St. Louis fusion cuisine |
-| revvel.co | Active | Portfolio | Main portfolio site |
-| freedomangel.org | Research | Nonprofit | Anti-trafficking initiative |
-| sam.gov | External | Gov Registration | Federal contracting |
-| grants.gov | External | Grant Search | Federal grants |
+| Domain           | Status         | Purpose           | Notes                       |
+| ---------------- | -------------- | ----------------- | --------------------------- |
+| oaudrey.com      | Active         | Freedom Angel Hub | Main automation hub         |
+| soup2bowl.com    | In Development | Catering          | St. Louis fusion cuisine    |
+| revvel.co        | Active         | Portfolio         | Main portfolio site         |
+| freedomangel.org | Research       | Nonprofit         | Anti-trafficking initiative |
+| sam.gov          | External       | Gov Registration  | Federal contracting         |
+| grants.gov       | External       | Grant Search      | Federal grants              |
 
 **Subdomains (oaudrey.com):**
+
 - fieldwork.oaudrey.com
 - growlingeyes.oaudrey.com
 - penny.oaudrey.com
@@ -351,11 +379,13 @@ xdg-open dashboard.html # Linux
 ### GitHub Actions workflow not running
 
 Check workflow status:
+
 ```bash
 gh workflow view update-project-dashboard.yml
 ```
 
 Enable if disabled:
+
 ```bash
 gh workflow enable update-project-dashboard.yml
 ```

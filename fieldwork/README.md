@@ -63,17 +63,17 @@ Or open `index.html` directly in a browser.
 
 ## Design System (Summary)
 
-| Token        | Value                                          |
-|--------------|------------------------------------------------|
-| Background   | `#FFFFFF` (stark white)                        |
-| Text         | `#111418` ("Blueprint" charcoal)               |
-| Muted        | `#E5E5E5` (light concrete grey)                |
-| Accent       | `#FF5733` (Vivid Safety Orange — CTAs only)    |
-| Type         | Inter (sans), JetBrains Mono (metadata/WIP)    |
-| Grid         | Swiss 12-col, visible 1px `#111418` borders    |
-| Radius       | `0px` everywhere                               |
-| Section gap  | `80px` minimum vertical whitespace             |
-| Transitions  | Subtle, linear, non-bouncy                     |
+| Token       | Value                                       |
+| ----------- | ------------------------------------------- |
+| Background  | `#FFFFFF` (stark white)                     |
+| Text        | `#111418` ("Blueprint" charcoal)            |
+| Muted       | `#E5E5E5` (light concrete grey)             |
+| Accent      | `#FF5733` (Vivid Safety Orange — CTAs only) |
+| Type        | Inter (sans), JetBrains Mono (metadata/WIP) |
+| Grid        | Swiss 12-col, visible 1px `#111418` borders |
+| Radius      | `0px` everywhere                            |
+| Section gap | `80px` minimum vertical whitespace          |
+| Transitions | Subtle, linear, non-bouncy                  |
 
 ---
 

@@ -8,7 +8,7 @@
 
 ---
 
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -58,13 +58,9 @@ Animation Engines:
 
 1. HTML5 Canvas API (2D Context) for lightweight, ultra-fast 2D rendering.
 
-
 2. Three.js (WebGL) utilizing Points, BufferGeometry, or custom shader materials for a 3D depth-mapped network.
 
-
-
 Vector Utilities: Bezier curve computation, mathematical graph networks (nodes/edges), pixel-threshold processing.
-
 
 Key Features & Implementation Mechanics
 
@@ -76,7 +72,6 @@ Implement a unified state manager or toggle to cleanly switch between the two re
 
 3D WebGL Mode: Maps the 2D network paths into a 3D space by introducing procedural Z-depth coordinates (creating a dimensional, organic root structure). Utilize glowing particle shaders or additive blending (Three.AdditiveBlending) to make the particles look self-illuminated.
 
-
 2. Network Path Mapping & Steering Constraints
 
 Create a logical mathematical graph model (nodes and branching edges) that mirrors the exact layout topology of "veins-hero-live.jpg", radiating from a central brain/gear hub out to branching root systems.
@@ -84,7 +79,6 @@ Create a logical mathematical graph model (nodes and branching edges) that mirro
 Constraint Rule: Particles must be rigidly bound to these mapped lines. Implement path-following steering behaviors (e.g., Craig Reynolds' steering algorithms) that pull particles back onto the center of the vector paths if they drift.
 
 Flow Direction: All particles must actively cycle or pump from the central core outward into the branching terminals, cycling back to the core upon expiration.
-
 
 3. UI Controls & Visual Aesthetic
 
@@ -94,7 +88,6 @@ High-gloss aesthetics, frosted glass backgrounds (backdrop-blur), and crisp, sem
 
 Deep charcoal or dark neon-green tinted backdrops matching the visual theme of "veins-hero-live.jpg".
 
-
 Provide interactive controls:
 
 Engine Switch: Toggle between [2D Canvas] and [3D WebGL].
@@ -102,8 +95,6 @@ Engine Switch: Toggle between [2D Canvas] and [3D WebGL].
 Simulation Tuning: Sliders for Particle Speed, Flow Density, Particle Size, and Z-Depth Intensity (for 3D mode).
 
 Map Visibility: A toggle to fade the underlying template image ("veins-hero-live.jpg") in and out behind the live simulation.
-
-
 
 Code Generation Guidelines
 
@@ -154,16 +145,17 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter

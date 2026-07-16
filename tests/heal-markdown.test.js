@@ -14,7 +14,8 @@ const {
 } = require("../scripts/heal-markdown.js");
 
 test("convertSetextToAtx: = underline becomes H1, - underline becomes H2", () => {
-  const input = "Intro Title\n===========\n\nSection Name\n------------\n\nbody";
+  const input =
+    "Intro Title\n===========\n\nSection Name\n------------\n\nbody";
   const out = convertSetextToAtx(input);
   assert.equal(out, "# Intro Title\n\n## Section Name\n\nbody");
 });
@@ -52,15 +53,23 @@ test("convertSetextToAtx: content inside code fences is untouched", () => {
 });
 
 test("demoteExtraH1s: keeps first H1, demotes later ones to H2", () => {
-  const input = "# WR: Title\n\nbody\n\n# Research Packet\n\n## sub\n\n# Another";
+  const input =
+    "# WR: Title\n\nbody\n\n# Research Packet\n\n## sub\n\n# Another";
   const out = demoteExtraH1s(input);
-  assert.equal(out, "# WR: Title\n\nbody\n\n## Research Packet\n\n## sub\n\n## Another");
+  assert.equal(
+    out,
+    "# WR: Title\n\nbody\n\n## Research Packet\n\n## sub\n\n## Another",
+  );
 });
 
 test("demoteExtraH1s: ignores # lines inside code fences", () => {
-  const input = "# Real Title\n\n```bash\n# comment not a heading\n```\n\n# Second";
+  const input =
+    "# Real Title\n\n```bash\n# comment not a heading\n```\n\n# Second";
   const out = demoteExtraH1s(input);
-  assert.equal(out, "# Real Title\n\n```bash\n# comment not a heading\n```\n\n## Second");
+  assert.equal(
+    out,
+    "# Real Title\n\n```bash\n# comment not a heading\n```\n\n## Second",
+  );
 });
 
 test("demoteExtraH1s: demotes missing-space H1 variants so MD018 fix cannot resurrect a second H1", () => {
@@ -115,8 +124,10 @@ test("parseArgs separates flags from files", () => {
 test("mapFences: a ``` line inside a ~~~ block does not close it (marker tracking)", () => {
   const input = "~~~\n```\nFake Heading\n====\n~~~\ntext";
   assert.equal(convertSetextToAtx(input), input);
-  assert.equal(demoteExtraH1s(`# Real\n~~~\n# not a heading\n\`\`\`\n# also not\n~~~`),
-    "# Real\n~~~\n# not a heading\n```\n# also not\n~~~");
+  assert.equal(
+    demoteExtraH1s(`# Real\n~~~\n# not a heading\n\`\`\`\n# also not\n~~~`),
+    "# Real\n~~~\n# not a heading\n```\n# also not\n~~~",
+  );
 });
 
 test("mapFences: a longer same-char fence closes; a shorter one does not", () => {
@@ -132,10 +143,19 @@ test("demoteExtraH1s: indented (≤3 spaces) H1s are demoted with indentation pr
 });
 
 test("globToRegExp + isIgnored honour .markdownlintignore-style patterns", () => {
-  const patterns = ["docs/MASTER_AUDIT_PROMPTS/**", "docs/research-drafts/**"].map(globToRegExp);
+  const patterns = [
+    "docs/MASTER_AUDIT_PROMPTS/**",
+    "docs/research-drafts/**",
+  ].map(globToRegExp);
   const root = require("path").resolve(__dirname, "..");
-  assert.equal(isIgnored("docs/MASTER_AUDIT_PROMPTS/session.md", patterns, root), true);
-  assert.equal(isIgnored("docs/research-drafts/deep/nested/dump.md", patterns, root), true);
+  assert.equal(
+    isIgnored("docs/MASTER_AUDIT_PROMPTS/session.md", patterns, root),
+    true,
+  );
+  assert.equal(
+    isIgnored("docs/research-drafts/deep/nested/dump.md", patterns, root),
+    true,
+  );
   assert.equal(isIgnored("wr/issues/issue-1-x.md", patterns, root), false);
   assert.equal(isIgnored("CLAUDE.md", patterns, root), false);
 });

@@ -38,7 +38,7 @@ test("generate-wr strips leading multi-line template comments", () => {
     fs.writeFileSync(
       bodyFile,
       "https://www.nad.com/news/fda-greenlights-life-biosciences-human-study-setting-up-pivotal-test-for-aging-theory-from-harvards-david-sinclair\n",
-      "utf8"
+      "utf8",
     );
 
     const script = path.join(sandbox, "wr", "scripts", "generate-wr.sh");
@@ -53,10 +53,14 @@ test("generate-wr strips leading multi-line template comments", () => {
         "--body-file",
         bodyFile,
       ],
-      { cwd: sandbox, encoding: "utf8" }
+      { cwd: sandbox, encoding: "utf8" },
     );
 
-    assert.strictEqual(result.status, 0, `expected success, got:\n${result.stdout}\n${result.stderr}`);
+    assert.strictEqual(
+      result.status,
+      0,
+      `expected success, got:\n${result.stdout}\n${result.stderr}`,
+    );
     const generatedDir = path.join(sandbox, "wr", "issues");
     const generated = fs
       .readdirSync(generatedDir)
@@ -66,7 +70,10 @@ test("generate-wr strips leading multi-line template comments", () => {
     const text = fs.readFileSync(path.join(generatedDir, generated), "utf8");
     const [firstLine] = text.split("\n");
     assert.match(firstLine, /^# WR: FDA Greenlights Life Biosciences/);
-    assert.ok(!text.startsWith("<!--"), "rendered WR must not keep template comments above the H1");
+    assert.ok(
+      !text.startsWith("<!--"),
+      "rendered WR must not keep template comments above the H1",
+    );
   } finally {
     fs.rmSync(sandbox, { recursive: true, force: true });
   }

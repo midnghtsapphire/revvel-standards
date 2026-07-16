@@ -25,16 +25,16 @@ The engine runs eight specialized agents. Each agent is asked the same
 question through up to `RESEARCH_MAX_MODELS_PER_AGENT` OpenRouter models
 and the answers are consensus-merged.
 
-| Agent              | Focus                                              |
-| ------------------ | -------------------------------------------------- |
-| Source Map         | Authoritative sources, docs, repos                 |
-| Competitors        | Direct/indirect competitors and positioning        |
-| Marketing / SEO    | Channels, keywords, content angles                 |
-| Audience           | Personas, pains, jobs-to-be-done                   |
-| Chatter            | Reddit/HN/X/forums sentiment and quotes            |
-| Security           | Risks, compliance, threat surface                  |
-| Cost               | Build/run cost, pricing benchmarks                 |
-| Implementation     | Concrete build plan and milestones                 |
+| Agent           | Focus                                       |
+| --------------- | ------------------------------------------- |
+| Source Map      | Authoritative sources, docs, repos          |
+| Competitors     | Direct/indirect competitors and positioning |
+| Marketing / SEO | Channels, keywords, content angles          |
+| Audience        | Personas, pains, jobs-to-be-done            |
+| Chatter         | Reddit/HN/X/forums sentiment and quotes     |
+| Security        | Risks, compliance, threat surface           |
+| Cost            | Build/run cost, pricing benchmarks          |
+| Implementation  | Concrete build plan and milestones          |
 
 ## Environment Variables
 

@@ -1,4 +1,5 @@
 # LinkedIn Avatar Video Scripts
+
 # Template collection for HeyGen avatar videos
 
 ## Overview
@@ -10,6 +11,7 @@ This directory contains script templates for creating LinkedIn avatar videos usi
 ## Script Templates
 
 ### Template 1: "Cutting Edge Tech" Hook
+
 **Best for:** Getting quick attention, driving immediate clicks
 **Tone:** Energetic & Direct
 
@@ -28,6 +30,7 @@ Click the link in my bio to get started today. See you in the next video."
 ```
 
 ### Template 2: "Problem-Solution" Hook
+
 **Best for:** Technical audience, problem-solvers
 **Tone:** Analytical & Informative
 
@@ -52,6 +55,7 @@ Check the link in my bio for the free certification program. Let's build a more 
 ```
 
 ### Template 3: "Storytelling" Hook
+
 **Best for:** Building personal brand, connecting emotionally
 **Tone:** Conversational & Relatable
 

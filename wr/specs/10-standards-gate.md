@@ -3,6 +3,7 @@
 Every project must pass Standards Gate before Ship Now or migration to Freedom-Angel-Corp.
 
 ## Required checks
+
 1. `MONETIZATION.md` answers who pays/how much/when (or explicit `creative`/`nonprofit` tag).
 2. `README.md` includes purpose and status.
 3. License file exists.

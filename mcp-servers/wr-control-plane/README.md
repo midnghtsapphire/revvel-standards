@@ -64,11 +64,11 @@ WR_DEFAULT_REPO=midnghtsapphire/revvel-standards
 
 ### Research provider matrix
 
-| Provider | Strength | When the server selects it |
-|---|---|---|
-| **Jules** | Deep multi-step research inside the existing GitHub-native pipeline | Always (current research layer) |
-| **Firecrawl** | Deterministic crawl / scrape / PDF / structured extraction | When the WR contains URLs, especially PDFs |
-| **Tavily** | Fast LLM-optimized topical search and clean content extraction | When the WR contains URLs and Tavily is configured |
+| Provider      | Strength                                                            | When the server selects it                         |
+| ------------- | ------------------------------------------------------------------- | -------------------------------------------------- |
+| **Jules**     | Deep multi-step research inside the existing GitHub-native pipeline | Always (current research layer)                    |
+| **Firecrawl** | Deterministic crawl / scrape / PDF / structured extraction          | When the WR contains URLs, especially PDFs         |
+| **Tavily**    | Fast LLM-optimized topical search and clean content extraction      | When the WR contains URLs and Tavily is configured |
 
 The `_control_plane_readiness` tool returns one of these `research_mode` values to make the routing explicit:
 
@@ -110,18 +110,18 @@ The `_control_plane_readiness` tool returns one of these `research_mode` values 
 
 ## Tools
 
-| Tool | Description |
-|---|---|
-| `control_plane_status` | Show which providers and credentials are configured |
-| `build_wr_issue_packet` | Fetch a WR issue and produce a structured research/orchestration packet |
-| `detect_wr_credential_requirements` | Identify missing credentials for a specific WR |
-| `render_control_plane_mcp_entry` | Generate a ready-to-paste MCP config snippet |
+| Tool                                | Description                                                             |
+| ----------------------------------- | ----------------------------------------------------------------------- |
+| `control_plane_status`              | Show which providers and credentials are configured                     |
+| `build_wr_issue_packet`             | Fetch a WR issue and produce a structured research/orchestration packet |
+| `detect_wr_credential_requirements` | Identify missing credentials for a specific WR                          |
+| `render_control_plane_mcp_entry`    | Generate a ready-to-paste MCP config snippet                            |
 
 ## Resources
 
-| Resource | Description |
-|---|---|
-| `data://wr-control-plane/env-schema` | Required/optional env vars |
+| Resource                               | Description                                      |
+| -------------------------------------- | ------------------------------------------------ |
+| `data://wr-control-plane/env-schema`   | Required/optional env vars                       |
 | `data://wr-control-plane/architecture` | Canonical Revvel interpretation of the blueprint |
 
 ## Smoke test without FastMCP
@@ -149,11 +149,11 @@ PY
 
 These are deliberate choices for the first slice. Each is tracked for the next iteration so consumers can plan around them:
 
-| # | Behaviour | Why it's intentional | What replaces it |
-|---|---|---|---|
-| 1 | `_detect_requested_integrations` uses a permissive substring match (e.g. the literal string `github` matches in nearly every WR body since GitHub URLs are common). | `requested_integrations` is an *informational* hint that helps route research/orchestration. It does **not** flip `required` flags in the credential matrix — that signal comes from `Composio` scope, which is unconditionally required when Composio is in play. False positives are safe. | A stop-word / URL-host-aware tokenizer in v0.2.0. |
-| 2 | `_github_get` does not paginate the GitHub REST API. The default page size of 30 comments is honoured. | At the WR intake stage almost all issues have far fewer than 30 comments. Pagination adds round-trips and is best implemented once Composio's GitHub toolkit handles auth + rate limiting in one place. | Composio GitHub toolkit pagination wired into the `build_wr_issue_packet` path. |
-| 3 | `ControlPlaneConfig.from_env()` is called once per tool invocation rather than memoised at module load. | Each tool stays independently importable for the regression test suite, and per-call env reads are trivially auditable when running under Obot DLP. | A process-wide config cache shared with the OAuth refresh path when Composio wires in. |
-| 4 | The control-plane MCP server is shipped `disabled: true` in `.mcp.json`. | Downstream clones must opt in *after* installing the local Python dependencies (`uv pip install -e .`) and provisioning their own credentials. Defaulting to enabled would break clones that don't yet have Composio / Firecrawl / Tavily / Obot keys. | The `disabled` flag flips to `false` in repos that pass the credential check inside `setup-mcp.sh`. |
+| #   | Behaviour                                                                                                                                                           | Why it's intentional                                                                                                                                                                                                                                                                         | What replaces it                                                                                    |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| 1   | `_detect_requested_integrations` uses a permissive substring match (e.g. the literal string `github` matches in nearly every WR body since GitHub URLs are common). | `requested_integrations` is an _informational_ hint that helps route research/orchestration. It does **not** flip `required` flags in the credential matrix — that signal comes from `Composio` scope, which is unconditionally required when Composio is in play. False positives are safe. | A stop-word / URL-host-aware tokenizer in v0.2.0.                                                   |
+| 2   | `_github_get` does not paginate the GitHub REST API. The default page size of 30 comments is honoured.                                                              | At the WR intake stage almost all issues have far fewer than 30 comments. Pagination adds round-trips and is best implemented once Composio's GitHub toolkit handles auth + rate limiting in one place.                                                                                      | Composio GitHub toolkit pagination wired into the `build_wr_issue_packet` path.                     |
+| 3   | `ControlPlaneConfig.from_env()` is called once per tool invocation rather than memoised at module load.                                                             | Each tool stays independently importable for the regression test suite, and per-call env reads are trivially auditable when running under Obot DLP.                                                                                                                                          | A process-wide config cache shared with the OAuth refresh path when Composio wires in.              |
+| 4   | The control-plane MCP server is shipped `disabled: true` in `.mcp.json`.                                                                                            | Downstream clones must opt in _after_ installing the local Python dependencies (`uv pip install -e .`) and provisioning their own credentials. Defaulting to enabled would break clones that don't yet have Composio / Firecrawl / Tavily / Obot keys.                                       | The `disabled` flag flips to `false` in repos that pass the credential check inside `setup-mcp.sh`. |
 
-*The `data://wr-control-plane/architecture` resource also exposes a machine-readable `v0_1_0_trade_offs` field so downstream agents can surface these in their own UIs.*
+_The `data://wr-control-plane/architecture` resource also exposes a machine-readable `v0_1_0_trade_offs` field so downstream agents can surface these in their own UIs._

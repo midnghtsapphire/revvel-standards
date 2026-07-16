@@ -1,7 +1,7 @@
 # VINES — the system
 
 **One-line summary:** A real-time self-correcting system: it detects and fixes
-errors *as they happen* and should be continuously improving. Evolved from VSPR
+errors _as they happen_ and should be continuously improving. Evolved from VSPR
 (its precursor) by adding a research "brain" and "the infinity gap".
 
 **Intended project / outcome:** Rebuild the app here (Claude Code) while Lovable
@@ -16,10 +16,10 @@ actually does vs. what VINES is supposed to do. May need Supabase.
 
 VINES is **not** a learner. Two different things:
 
-| | Behavior |
-| --- | --- |
-| **Perplexity-style "brain" (a learner)** | Accumulates knowledge; uses what it learned to solve recurring problems *faster*. Reactive. Gets better at answering — does not fix itself mid-run. |
-| **VINES (real-time self-corrector)** | **Corrects errors in real time. Constantly improving by design** — a live healing loop, not a smarter lookup. |
+|                                          | Behavior                                                                                                                                            |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Perplexity-style "brain" (a learner)** | Accumulates knowledge; uses what it learned to solve recurring problems _faster_. Reactive. Gets better at answering — does not fix itself mid-run. |
+| **VINES (real-time self-corrector)**     | **Corrects errors in real time. Constantly improving by design** — a live healing loop, not a smarter lookup.                                       |
 
 Combining VINES with a Perplexity brain was hard precisely because "Perplexity
 isn't really a self-healer in real time" — so the brain is at best a component,

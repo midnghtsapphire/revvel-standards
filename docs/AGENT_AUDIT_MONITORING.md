@@ -7,6 +7,7 @@ This system provides comprehensive logging, monitoring, and enforcement to ensur
 ## Problem Addressed
 
 Previously, agents were producing:
+
 - ❌ Scaffolding and blueprints instead of working code
 - ❌ TODOs and placeholders
 - ❌ "Phase 1/2/3" incomplete implementations
@@ -18,6 +19,7 @@ Previously, agents were producing:
 ### 1. Agent Audit Logger (`.github/workflows/agent-audit-logger.yml`)
 
 **What it does:**
+
 - Logs every agent action to `logs/agent-audit/audit.jsonl`
 - Creates tamper-evident chain with SHA-256 hashing
 - Runs health checks every hour
@@ -25,12 +27,14 @@ Previously, agents were producing:
 - Automatically creates issues when critical problems detected
 
 **Events logged:**
+
 - Issue opened/edited/closed/labeled
 - PR opened/edited/labeled/reviewed
 - Workflow runs
 - Agent assignments
 
 **Features:**
+
 - Chain integrity verification (prev_hash linking)
 - Actor type tracking (bot vs human)
 - Resource association (issue/PR numbers)
@@ -39,12 +43,14 @@ Previously, agents were producing:
 ### 2. Anti-Scaffolding Enforcer (`.github/workflows/anti-scaffolding-enforcer.yml`)
 
 **What it does:**
+
 - Scans every PR for scaffolding language
 - Blocks merge if violations found
 - Posts detailed comments explaining violations
 - Adds labels: `scaffolding-detected`, `needs-completion`
 
 **Violations detected:**
+
 - `TODO` without GitHub issue reference
 - `FIXME` comments
 - "scaffold" or "scaffolding" in code
@@ -55,6 +61,7 @@ Previously, agents were producing:
 - "MVP first" or "will implement later"
 
 **What to do instead:**
+
 1. Implement the complete feature before committing
 2. Write tests for all functionality
 3. Reference future work in GitHub issues: `// See issue #123`
@@ -63,6 +70,7 @@ Previously, agents were producing:
 ### 3. Updated AGENTS.md
 
 Added strong anti-scaffolding rules to the Prime Directive:
+
 - Clear list of banned patterns
 - Enforcement via automated checks
 - Guidance on what to do instead
@@ -92,6 +100,7 @@ node scripts/agent-activity-monitor.js help
 ```
 
 **Report includes:**
+
 - Total events by actor (bot vs human)
 - Events by type
 - Most active resources (issues/PRs)
@@ -101,6 +110,7 @@ node scripts/agent-activity-monitor.js help
 ### 5. New Labels
 
 Added to `sync-labels.yml`:
+
 - `scaffolding-detected` - PR contains scaffolding language
 - `needs-completion` - Work is incomplete
 - `agent-health-alert` - Health check detected issues
@@ -125,24 +135,27 @@ Added to `sync-labels.yml`:
 ### For Humans
 
 1. **Monitor agent health:**
+
    ```bash
    # Quick report
    node scripts/agent-activity-monitor.js report
-   
+
    # Check what happened today
    node scripts/agent-activity-monitor.js report 24
    ```
 
 2. **Review audit logs:**
+
    ```bash
    # View raw log
    cat logs/agent-audit/audit.jsonl | jq
-   
+
    # See recent activity
    tail -20 logs/agent-audit/audit.jsonl | jq -r '"\(.timestamp) | \(.actor) | \(.event_type)"'
    ```
 
 3. **Verify integrity:**
+
    ```bash
    node scripts/agent-activity-monitor.js verify
    ```
@@ -191,6 +204,7 @@ Each entry in `logs/agent-audit/audit.jsonl`:
 ## Chain Integrity
 
 Uses blockchain-style chaining:
+
 1. Each entry contains hash of previous entry (`prev_hash`)
 2. Each entry has its own hash (`entry_hash`)
 3. First entry has `prev_hash: "0000000000000000"`
@@ -200,6 +214,7 @@ Uses blockchain-style chaining:
 ## Integration with Existing Workflows
 
 This system integrates with:
+
 - **recurse-rules.md**: Enforces "No TODO or FIXME" rule
 - **Ralph Loop**: Logs when auto-fixes occur
 - **OpenRouter workflows**: Tracks agent assignments
@@ -209,25 +224,32 @@ This system integrates with:
 ## Addressing Original Concerns
 
 ### "I NEED A LOG OF WHO IS DOING WHAT"
+
 ✅ **Solved:** Every action logged to `logs/agent-audit/audit.jsonl` with chain integrity
 
 ### "EVERY SINGLE PROJECT IS NOT GETTING DONE. I AM ONLY GETTING SCAFFOLDING"
+
 ✅ **Solved:** Anti-scaffolding enforcer blocks incomplete PRs automatically
 
 ### "NEED MONITORING WHEN AN AGENT ISN'T WORKING, OUT OF TOKENS"
-✅ **Solved:** 
+
+✅ **Solved:**
+
 - Hourly health checks detect issues
 - Token usage logging available
 - Auto-creates issues when problems found
 
 ### "NEED TRIGGERS FOR AN ACTION SO WE CAN CONTINUE ON WITH THE PROCESS"
+
 ✅ **Solved:**
+
 - Health check workflow runs every hour
 - Creates `agent-health-alert` issues automatically
 - Provides actionable recommendations
 
 ### "CANNOT BE CALLING THAT MANY IPS IN TEST"
-⚠️  **Partial:** Logged for review - use `agent-activity-monitor.js` to analyze API call patterns
+
+⚠️ **Partial:** Logged for review - use `agent-activity-monitor.js` to analyze API call patterns
 
 ## Next Steps
 

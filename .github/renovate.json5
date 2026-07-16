@@ -23,7 +23,7 @@
 // Full option reference: https://docs.renovatebot.com/configuration-options/
 // ═══════════════════════════════════════════════════════════════════════════
 {
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
 
   // ─── BASE PRESET ────────────────────────────────────────────────────────
   // config:recommended is Renovate's maintained "sane defaults" preset:
@@ -31,9 +31,7 @@
   // lock-file updates alongside version bumps, major/minor/patch separated
   // into distinct PRs by default. Everything below either layers on top of
   // it or explicitly overrides a default to match this repo's conventions.
-  extends: [
-    'config:recommended',
-  ],
+  extends: ["config:recommended"],
 
   // ─── SCOPE ──────────────────────────────────────────────────────────────
   // This repo's dependency surfaces today: npm (package.json) and GitHub
@@ -41,10 +39,7 @@
   // managers detected. Being explicit here means adding a new manager
   // (e.g. a future Dockerfile) is a deliberate opt-in, not a silent
   // auto-enable next time Renovate's own defaults change.
-  enabledManagers: [
-    'npm',
-    'github-actions',
-  ],
+  enabledManagers: ["npm", "github-actions"],
 
   // ─── SCHEDULING ─────────────────────────────────────────────────────────
   // dependency-update-checker.yml already runs Monday 09:00 UTC and files a
@@ -54,10 +49,8 @@
   // report before automated PRs actually land. All times are UTC to match
   // the cron schedules already used elsewhere in .github/workflows/*.yml
   // (GitHub Actions cron is always UTC).
-  timezone: 'Etc/UTC',
-  schedule: [
-    'before 6am on wednesday',
-  ],
+  timezone: "Etc/UTC",
+  schedule: ["before 6am on wednesday"],
   // Cap batch size so a fresh install (or a big backlog) doesn't dump dozens
   // of PRs at once — consistent with this repo's demonstrated aversion to
   // noisy automation (see CLAUDE.md's gotchas about noisy/broken checks).
@@ -72,19 +65,15 @@
   // work. Majors get an approval checkbox (see packageRules below) so the
   // dashboard doubles as the review queue for changes that need a human.
   dependencyDashboard: true,
-  dependencyDashboardTitle: 'Renovate Dependency Dashboard',
-  dependencyDashboardLabels: [
-    'dependencies',
-  ],
+  dependencyDashboardTitle: "Renovate Dependency Dashboard",
+  dependencyDashboardLabels: ["dependencies"],
 
   // ─── LABELS ─────────────────────────────────────────────────────────────
   // 'dependencies' is already the label dependency-update-checker.yml uses
   // for its weekly report issues — reuse it so all dependency-tracking
   // items (manual report + Renovate PRs/dashboard) are discoverable under
   // one label instead of inventing a second taxonomy.
-  labels: [
-    'dependencies',
-  ],
+  labels: ["dependencies"],
 
   // ─── COMMIT MESSAGE / PR TITLE CONVENTIONS ─────────────────────────────
   // This repo's commit history and .github/pull_request_template.md both
@@ -93,9 +82,9 @@
   // semantic-commits feature produces exactly that shape; pin the type/scope
   // so output reads as `chore(deps): update dependency X to vY` for npm and
   // is overridden to `chore(actions): ...` for GitHub Actions below.
-  semanticCommits: 'enabled',
-  semanticCommitType: 'chore',
-  semanticCommitScope: 'deps',
+  semanticCommits: "enabled",
+  semanticCommitType: "chore",
+  semanticCommitScope: "deps",
 
   // ─── VULNERABILITY ALERTS ───────────────────────────────────────────────
   // Separate lane from the scheduled Wednesday batch: Renovate treats
@@ -112,10 +101,7 @@
   // Dependabot advisory feed by also querying the OSV database directly.
   vulnerabilityAlerts: {
     enabled: true,
-    labels: [
-      'dependencies',
-      'security',
-    ],
+    labels: ["dependencies", "security"],
   },
   osvVulnerabilityAlerts: true,
 
@@ -127,10 +113,8 @@
   // there's one predictable "dependency day" instead of two.
   lockFileMaintenance: {
     enabled: true,
-    schedule: [
-      'before 6am on wednesday',
-    ],
-    commitMessageAction: 'Lock file maintenance',
+    schedule: ["before 6am on wednesday"],
+    commitMessageAction: "Lock file maintenance",
   },
 
   // ─── GROUPING + AUTO-MERGE POLICY ───────────────────────────────────────
@@ -160,107 +144,65 @@
   packageRules: [
     // GitHub Actions — group all non-major bumps into one PR.
     {
-      matchManagers: [
-        'github-actions',
-      ],
-      matchUpdateTypes: [
-        'minor',
-        'patch',
-        'digest',
-      ],
-      groupName: 'GitHub Actions (non-major)',
-      semanticCommitScope: 'actions',
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["minor", "patch", "digest"],
+      groupName: "GitHub Actions (non-major)",
+      semanticCommitScope: "actions",
       automerge: true,
-      automergeType: 'pr',
+      automergeType: "pr",
       platformAutomerge: true,
     },
     // GitHub Actions — major bumps stay isolated and manual.
     {
-      matchManagers: [
-        'github-actions',
-      ],
-      matchUpdateTypes: [
-        'major',
-      ],
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["major"],
       groupName: null, // one PR per action, never grouped
-      semanticCommitScope: 'actions',
+      semanticCommitScope: "actions",
       automerge: false,
       dependencyDashboardApproval: true,
-      labels: [
-        'dependencies',
-        'major-update',
-      ],
+      labels: ["dependencies", "major-update"],
     },
     // npm devDependencies — group all non-major bumps into one PR.
     {
-      matchManagers: [
-        'npm',
-      ],
-      matchDepTypes: [
-        'devDependencies',
-      ],
-      matchUpdateTypes: [
-        'minor',
-        'patch',
-      ],
-      groupName: 'npm devDependencies (non-major)',
-      semanticCommitScope: 'deps-dev',
+      matchManagers: ["npm"],
+      matchDepTypes: ["devDependencies"],
+      matchUpdateTypes: ["minor", "patch"],
+      groupName: "npm devDependencies (non-major)",
+      semanticCommitScope: "deps-dev",
       automerge: true,
-      automergeType: 'pr',
+      automergeType: "pr",
       platformAutomerge: true,
     },
     // npm production dependencies — visible, grouped for readability, but
     // NEVER auto-merged (any bump type). Currently a no-op (no `dependencies`
     // block in package.json today) — defined proactively for when one exists.
     {
-      matchManagers: [
-        'npm',
-      ],
-      matchDepTypes: [
-        'dependencies',
-      ],
-      matchUpdateTypes: [
-        'minor',
-        'patch',
-      ],
-      groupName: 'npm production dependencies (non-major)',
-      semanticCommitScope: 'deps',
+      matchManagers: ["npm"],
+      matchDepTypes: ["dependencies"],
+      matchUpdateTypes: ["minor", "patch"],
+      groupName: "npm production dependencies (non-major)",
+      semanticCommitScope: "deps",
       automerge: false,
     },
     // ANY manager, major bump — always isolated, always manual, always
     // gated behind dashboard approval so majors don't storm the PR list.
     {
-      matchUpdateTypes: [
-        'major',
-      ],
+      matchUpdateTypes: ["major"],
       groupName: null,
       automerge: false,
       dependencyDashboardApproval: true,
-      labels: [
-        'dependencies',
-        'major-update',
-      ],
+      labels: ["dependencies", "major-update"],
     },
     // npm production dependencies, major — belt-and-suspenders: covered by
     // the two rules above already, but stated explicitly so the "never
     // auto-merge production majors" policy isn't implicit/inferred.
     {
-      matchManagers: [
-        'npm',
-      ],
-      matchDepTypes: [
-        'dependencies',
-      ],
-      matchUpdateTypes: [
-        'major',
-      ],
+      matchManagers: ["npm"],
+      matchDepTypes: ["dependencies"],
+      matchUpdateTypes: ["major"],
       automerge: false,
       dependencyDashboardApproval: true,
-      labels: [
-        'dependencies',
-        'major-update',
-        'production-dependency',
-      ],
+      labels: ["dependencies", "major-update", "production-dependency"],
     },
   ],
 
@@ -280,7 +222,7 @@
   // trailing `# vX.Y.Z` comment in sync automatically — no extra config
   // needed for that half; it is default behavior for any ref Renovate
   // recognizes as digest-pinned.
-  'github-actions': {
+  "github-actions": {
     pinDigests: false,
   },
 
@@ -288,7 +230,7 @@
   // Leave Renovate's default ("auto": replace for pinned exact versions,
   // widen for ranges) — package.json already mixes caret ranges (`^22`)
   // and this avoids fighting the existing convention.
-  rangeStrategy: 'auto',
+  rangeStrategy: "auto",
 
   // ─── PR QUALITY GATE ────────────────────────────────────────────────────
   // Require CI status checks to be green before Renovate treats a branch as

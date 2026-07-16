@@ -39,15 +39,15 @@ contact_links:
   - name: 🤖 AI-Powered Triage
     url: https://github.com/midnghtsapphire/revvel-standards/actions/workflows/triage-cron.yml
     about: Let AI analyze and label your issue automatically
-  
+
   - name: 🔍 Search Similar Issues
     url: https://github.com/midnghtsapphire/revvel-standards/issues?q=is%3Aissue
     about: Check if your issue already exists
-  
+
   - name: 📊 Issues Dashboard
     url: https://midnghtsapphire.github.io/revvel-standards/ui/issues-board/
     about: Interactive issues management dashboard
-  
+
   - name: 🎯 Quick Actions CLI
     url: https://github.com/midnghtsapphire/revvel-standards/wiki/Issues-CLI-Guide
     about: Use GitHub CLI for faster issue management
@@ -76,7 +76,7 @@ body:
         - Question
     validations:
       required: true
-  
+
   - type: dropdown
     id: priority
     attributes:
@@ -90,7 +90,7 @@ body:
         - 🔵 Nice to have
     validations:
       required: true
-  
+
   - type: dropdown
     id: assign-to
     attributes:
@@ -103,7 +103,7 @@ body:
         - "Team member"
         - "Let triage decide"
       default: 4
-  
+
   - type: checkboxes
     id: automation
     attributes:
@@ -115,7 +115,7 @@ body:
         - label: Add to project board
         - label: Send Slack notification
         - label: Run automated tests
-  
+
   - type: textarea
     id: description
     attributes:
@@ -123,19 +123,19 @@ body:
       description: Describe the issue in detail
     validations:
       required: true
-  
+
   - type: textarea
     id: context
     attributes:
       label: Current Context
       description: What's the current state? Include error logs, screenshots, etc.
-  
+
   - type: textarea
     id: expected
     attributes:
       label: Expected Behavior
       description: What should happen instead?
-  
+
   - type: input
     id: ai-hint
     attributes:
@@ -162,14 +162,17 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { Octokit } from "@octokit/rest";
 
-const server = new Server({
-  name: "github-issues-enhanced",
-  version: "1.0.0",
-}, {
-  capabilities: {
-    tools: {},
+const server = new Server(
+  {
+    name: "github-issues-enhanced",
+    version: "1.0.0",
   },
-});
+  {
+    capabilities: {
+      tools: {},
+    },
+  },
+);
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
@@ -245,7 +248,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "auto_triage_issue",
-        description: "Automatically triage issue with labels, assignee, priority",
+        description:
+          "Automatically triage issue with labels, assignee, priority",
         inputSchema: {
           type: "object",
           properties: {
@@ -263,7 +267,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 // Implement tool handlers
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
-  
+
   switch (name) {
     case "create_issue_with_automation": {
       const issue = await octokit.issues.create({
@@ -274,21 +278,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         labels: args.labels,
         assignees: args.assignees,
       });
-      
+
       // Trigger automation workflows
       if (args.automation?.createBranch) {
         await octokit.git.createRef({
           owner: args.owner,
           repo: args.repo,
           ref: `refs/heads/issue-${issue.data.number}`,
-          sha: (await octokit.repos.getBranch({
-            owner: args.owner,
-            repo: args.repo,
-            branch: "main",
-          })).data.commit.sha,
+          sha: (
+            await octokit.repos.getBranch({
+              owner: args.owner,
+              repo: args.repo,
+              branch: "main",
+            })
+          ).data.commit.sha,
         });
       }
-      
+
       return {
         content: [
           {
@@ -298,7 +304,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         ],
       };
     }
-    
+
     case "bulk_label_issues": {
       const results = await Promise.all(
         args.issueNumbers.map((num: number) =>
@@ -307,10 +313,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             repo: args.repo,
             issue_number: num,
             labels: args.labels,
-          })
-        )
+          }),
+        ),
       );
-      
+
       return {
         content: [
           {
@@ -320,22 +326,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         ],
       };
     }
-    
+
     case "smart_issue_search": {
       const issues = await octokit.issues.listForRepo({
         owner: args.owner,
         repo: args.repo,
         state: "all",
       });
-      
+
       // Simple semantic matching (in production, use vector embeddings)
       const queryLower = args.query.toLowerCase();
       const matches = issues.data.filter((issue) => {
         const titleMatch = issue.title.toLowerCase().includes(queryLower);
-        const bodyMatch = issue.body?.toLowerCase().includes(queryLower) || false;
+        const bodyMatch =
+          issue.body?.toLowerCase().includes(queryLower) || false;
         return titleMatch || bodyMatch;
       });
-      
+
       return {
         content: [
           {
@@ -345,20 +352,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         ],
       };
     }
-    
+
     case "issue_timeline_summary": {
       const timeline = await octokit.issues.listEvents({
         owner: args.owner,
         repo: args.repo,
         issue_number: args.issueNumber,
       });
-      
+
       const summary = timeline.data.map((event) => ({
         type: event.event,
         actor: event.actor?.login,
         created: event.created_at,
       }));
-      
+
       return {
         content: [
           {
@@ -368,19 +375,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         ],
       };
     }
-    
+
     case "auto_triage_issue": {
       const issue = await octokit.issues.get({
         owner: args.owner,
         repo: args.repo,
         issue_number: args.issueNumber,
       });
-      
+
       // Simple triage logic (in production, use AI)
       const labels: string[] = [];
       const title = issue.data.title.toLowerCase();
       const body = issue.data.body?.toLowerCase() || "";
-      
+
       if (title.includes("bug") || body.includes("error")) {
         labels.push("bug");
       }
@@ -390,14 +397,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       if (title.includes("doc")) {
         labels.push("documentation");
       }
-      
+
       await octokit.issues.addLabels({
         owner: args.owner,
         repo: args.repo,
         issue_number: args.issueNumber,
         labels,
       });
-      
+
       return {
         content: [
           {
@@ -407,7 +414,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         ],
       };
     }
-    
+
     default:
       throw new Error(`Unknown tool: ${name}`);
   }
@@ -536,196 +543,278 @@ Create a web-based dashboard for enhanced issue management (similar to ops-board
 <!-- ui/issues-board/index.html -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Revvel Issues Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
-    body { font-family: 'Space Mono', monospace; background: #0a0a0f; color: #e0e0e0; }
-    .card { background: linear-gradient(145deg, #12121a, #0f0f14); border: 1px solid #1f1f2e; }
-    .issue-card { transition: all 0.2s; cursor: pointer; }
-    .issue-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
-    .label-badge { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; margin-right: 0.25rem; }
-  </style>
-</head>
-<body class="min-h-screen p-8">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-purple-400 mb-2">🎯 ISSUES COMMAND CENTER</h1>
-      <p class="text-gray-500">Enhanced GitHub Issues UI with automation</p>
-    </div>
-
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-5 gap-4 mb-8">
-      <div class="card rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-red-400" id="stat-open">0</div>
-        <div class="text-sm text-gray-500">Open</div>
-      </div>
-      <div class="card rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-green-400" id="stat-closed">0</div>
-        <div class="text-sm text-gray-500">Closed</div>
-      </div>
-      <div class="card rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-yellow-400" id="stat-in-progress">0</div>
-        <div class="text-sm text-gray-500">In Progress</div>
-      </div>
-      <div class="card rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-blue-400" id="stat-needs-triage">0</div>
-        <div class="text-sm text-gray-500">Needs Triage</div>
-      </div>
-      <div class="card rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-purple-400" id="stat-ai-assigned">0</div>
-        <div class="text-sm text-gray-500">AI Assigned</div>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="card rounded-xl p-6 mb-8">
-      <h2 class="text-xl font-bold text-purple-400 mb-4">⚡ Quick Actions</h2>
-      <div class="grid grid-cols-4 gap-3">
-        <button onclick="createIssue()" class="bg-purple-600 hover:bg-purple-700 rounded-lg p-3 text-center transition">
-          <div class="font-bold">➕ New Issue</div>
-        </button>
-        <button onclick="bulkLabel()" class="bg-cyan-600 hover:bg-cyan-700 rounded-lg p-3 text-center transition">
-          <div class="font-bold">🏷️ Bulk Label</div>
-        </button>
-        <button onclick="aiTriage()" class="bg-green-600 hover:bg-green-700 rounded-lg p-3 text-center transition">
-          <div class="font-bold">🤖 AI Triage</div>
-        </button>
-        <button onclick="exportIssues()" class="bg-yellow-600 hover:bg-yellow-700 rounded-lg p-3 text-center transition">
-          <div class="font-bold">📥 Export</div>
-        </button>
-      </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="card rounded-xl p-6 mb-8">
-      <h2 class="text-xl font-bold text-cyan-400 mb-4">🔍 Filters</h2>
-      <div class="grid grid-cols-4 gap-4">
-        <div>
-          <label class="text-sm text-gray-400">State</label>
-          <select id="filter-state" class="w-full bg-gray-800 rounded p-2 mt-1" onchange="applyFilters()">
-            <option value="all">All</option>
-            <option value="open" selected>Open</option>
-            <option value="closed">Closed</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-sm text-gray-400">Label</label>
-          <select id="filter-label" class="w-full bg-gray-800 rounded p-2 mt-1" onchange="applyFilters()">
-            <option value="">All Labels</option>
-            <option value="bug">Bug</option>
-            <option value="enhancement">Enhancement</option>
-            <option value="documentation">Documentation</option>
-            <option value="needs-triage">Needs Triage</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-sm text-gray-400">Assignee</label>
-          <select id="filter-assignee" class="w-full bg-gray-800 rounded p-2 mt-1" onchange="applyFilters()">
-            <option value="">All Assignees</option>
-            <option value="copilot">@copilot</option>
-            <option value="openrouter">@openrouter</option>
-            <option value="none">Unassigned</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-sm text-gray-400">Sort</label>
-          <select id="filter-sort" class="w-full bg-gray-800 rounded p-2 mt-1" onchange="applyFilters()">
-            <option value="created">Created</option>
-            <option value="updated">Updated</option>
-            <option value="comments">Comments</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Issues List -->
-    <div class="card rounded-xl p-6">
-      <h2 class="text-xl font-bold text-green-400 mb-4">📋 Issues</h2>
-      <div id="issues-container" class="space-y-3">
-        <!-- Issues will be loaded here -->
-        <div class="text-center text-gray-500 py-8">Loading issues...</div>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const GITHUB_API = 'https://api.github.com';
-    const REPO_OWNER = 'midnghtsapphire';
-    const REPO_NAME = 'revvel-standards';
-    let allIssues = [];
-
-    async function loadIssues() {
-      try {
-        const response = await fetch(`${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/issues?state=all&per_page=100`);
-        allIssues = await response.json();
-        updateStats();
-        applyFilters();
-      } catch (error) {
-        document.getElementById('issues-container').innerHTML = '<div class="text-red-400">Error loading issues</div>';
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Revvel Issues Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
+      body {
+        font-family: "Space Mono", monospace;
+        background: #0a0a0f;
+        color: #e0e0e0;
       }
-    }
+      .card {
+        background: linear-gradient(145deg, #12121a, #0f0f14);
+        border: 1px solid #1f1f2e;
+      }
+      .issue-card {
+        transition: all 0.2s;
+        cursor: pointer;
+      }
+      .issue-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      }
+      .label-badge {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 0.25rem;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen p-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-purple-400 mb-2">
+          🎯 ISSUES COMMAND CENTER
+        </h1>
+        <p class="text-gray-500">Enhanced GitHub Issues UI with automation</p>
+      </div>
 
-    function updateStats() {
-      const open = allIssues.filter(i => i.state === 'open').length;
-      const closed = allIssues.filter(i => i.state === 'closed').length;
-      const inProgress = allIssues.filter(i => i.labels.some(l => l.name === 'in-progress')).length;
-      const needsTriage = allIssues.filter(i => i.labels.some(l => l.name === 'needs-triage')).length;
-      const aiAssigned = allIssues.filter(i => i.assignees.some(a => a.login === 'copilot')).length;
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-5 gap-4 mb-8">
+        <div class="card rounded-xl p-6 text-center">
+          <div class="text-3xl font-bold text-red-400" id="stat-open">0</div>
+          <div class="text-sm text-gray-500">Open</div>
+        </div>
+        <div class="card rounded-xl p-6 text-center">
+          <div class="text-3xl font-bold text-green-400" id="stat-closed">
+            0
+          </div>
+          <div class="text-sm text-gray-500">Closed</div>
+        </div>
+        <div class="card rounded-xl p-6 text-center">
+          <div class="text-3xl font-bold text-yellow-400" id="stat-in-progress">
+            0
+          </div>
+          <div class="text-sm text-gray-500">In Progress</div>
+        </div>
+        <div class="card rounded-xl p-6 text-center">
+          <div class="text-3xl font-bold text-blue-400" id="stat-needs-triage">
+            0
+          </div>
+          <div class="text-sm text-gray-500">Needs Triage</div>
+        </div>
+        <div class="card rounded-xl p-6 text-center">
+          <div class="text-3xl font-bold text-purple-400" id="stat-ai-assigned">
+            0
+          </div>
+          <div class="text-sm text-gray-500">AI Assigned</div>
+        </div>
+      </div>
 
-      document.getElementById('stat-open').textContent = open;
-      document.getElementById('stat-closed').textContent = closed;
-      document.getElementById('stat-in-progress').textContent = inProgress;
-      document.getElementById('stat-needs-triage').textContent = needsTriage;
-      document.getElementById('stat-ai-assigned').textContent = aiAssigned;
-    }
+      <!-- Quick Actions -->
+      <div class="card rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-bold text-purple-400 mb-4">⚡ Quick Actions</h2>
+        <div class="grid grid-cols-4 gap-3">
+          <button
+            onclick="createIssue()"
+            class="bg-purple-600 hover:bg-purple-700 rounded-lg p-3 text-center transition"
+          >
+            <div class="font-bold">➕ New Issue</div>
+          </button>
+          <button
+            onclick="bulkLabel()"
+            class="bg-cyan-600 hover:bg-cyan-700 rounded-lg p-3 text-center transition"
+          >
+            <div class="font-bold">🏷️ Bulk Label</div>
+          </button>
+          <button
+            onclick="aiTriage()"
+            class="bg-green-600 hover:bg-green-700 rounded-lg p-3 text-center transition"
+          >
+            <div class="font-bold">🤖 AI Triage</div>
+          </button>
+          <button
+            onclick="exportIssues()"
+            class="bg-yellow-600 hover:bg-yellow-700 rounded-lg p-3 text-center transition"
+          >
+            <div class="font-bold">📥 Export</div>
+          </button>
+        </div>
+      </div>
 
-    function applyFilters() {
-      const state = document.getElementById('filter-state').value;
-      const label = document.getElementById('filter-label').value;
-      const assignee = document.getElementById('filter-assignee').value;
-      const sort = document.getElementById('filter-sort').value;
+      <!-- Filters -->
+      <div class="card rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-bold text-cyan-400 mb-4">🔍 Filters</h2>
+        <div class="grid grid-cols-4 gap-4">
+          <div>
+            <label class="text-sm text-gray-400">State</label>
+            <select
+              id="filter-state"
+              class="w-full bg-gray-800 rounded p-2 mt-1"
+              onchange="applyFilters()"
+            >
+              <option value="all">All</option>
+              <option value="open" selected>Open</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm text-gray-400">Label</label>
+            <select
+              id="filter-label"
+              class="w-full bg-gray-800 rounded p-2 mt-1"
+              onchange="applyFilters()"
+            >
+              <option value="">All Labels</option>
+              <option value="bug">Bug</option>
+              <option value="enhancement">Enhancement</option>
+              <option value="documentation">Documentation</option>
+              <option value="needs-triage">Needs Triage</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm text-gray-400">Assignee</label>
+            <select
+              id="filter-assignee"
+              class="w-full bg-gray-800 rounded p-2 mt-1"
+              onchange="applyFilters()"
+            >
+              <option value="">All Assignees</option>
+              <option value="copilot">@copilot</option>
+              <option value="openrouter">@openrouter</option>
+              <option value="none">Unassigned</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-sm text-gray-400">Sort</label>
+            <select
+              id="filter-sort"
+              class="w-full bg-gray-800 rounded p-2 mt-1"
+              onchange="applyFilters()"
+            >
+              <option value="created">Created</option>
+              <option value="updated">Updated</option>
+              <option value="comments">Comments</option>
+            </select>
+          </div>
+        </div>
+      </div>
 
-      let filtered = allIssues.filter(issue => {
-        if (state !== 'all' && issue.state !== state) return false;
-        if (label && !issue.labels.some(l => l.name === label)) return false;
-        if (assignee === 'none' && issue.assignees.length > 0) return false;
-        if (assignee && assignee !== 'none' && !issue.assignees.some(a => a.login === assignee)) return false;
-        return true;
-      });
+      <!-- Issues List -->
+      <div class="card rounded-xl p-6">
+        <h2 class="text-xl font-bold text-green-400 mb-4">📋 Issues</h2>
+        <div id="issues-container" class="space-y-3">
+          <!-- Issues will be loaded here -->
+          <div class="text-center text-gray-500 py-8">Loading issues...</div>
+        </div>
+      </div>
+    </div>
 
-      // Sort
-      filtered.sort((a, b) => {
-        if (sort === 'created') return new Date(b.created_at) - new Date(a.created_at);
-        if (sort === 'updated') return new Date(b.updated_at) - new Date(a.updated_at);
-        if (sort === 'comments') return b.comments - a.comments;
-        return 0;
-      });
+    <script>
+      const GITHUB_API = "https://api.github.com";
+      const REPO_OWNER = "midnghtsapphire";
+      const REPO_NAME = "revvel-standards";
+      let allIssues = [];
 
-      renderIssues(filtered);
-    }
-
-    function renderIssues(issues) {
-      const container = document.getElementById('issues-container');
-      
-      if (issues.length === 0) {
-        container.innerHTML = '<div class="text-center text-gray-500 py-8">No issues found</div>';
-        return;
+      async function loadIssues() {
+        try {
+          const response = await fetch(
+            `${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/issues?state=all&per_page=100`,
+          );
+          allIssues = await response.json();
+          updateStats();
+          applyFilters();
+        } catch (error) {
+          document.getElementById("issues-container").innerHTML =
+            '<div class="text-red-400">Error loading issues</div>';
+        }
       }
 
-      container.innerHTML = issues.map(issue => {
-        const labels = issue.labels.map(l => 
-          `<span class="label-badge" style="background: #${l.color}; color: #000;">${l.name}</span>`
-        ).join('');
-        
-        const assignees = issue.assignees.map(a => a.login).join(', ') || 'Unassigned';
-        const stateColor = issue.state === 'open' ? 'text-green-400' : 'text-purple-400';
-        const stateIcon = issue.state === 'open' ? '🟢' : '🟣';
+      function updateStats() {
+        const open = allIssues.filter((i) => i.state === "open").length;
+        const closed = allIssues.filter((i) => i.state === "closed").length;
+        const inProgress = allIssues.filter((i) =>
+          i.labels.some((l) => l.name === "in-progress"),
+        ).length;
+        const needsTriage = allIssues.filter((i) =>
+          i.labels.some((l) => l.name === "needs-triage"),
+        ).length;
+        const aiAssigned = allIssues.filter((i) =>
+          i.assignees.some((a) => a.login === "copilot"),
+        ).length;
 
-        return `
+        document.getElementById("stat-open").textContent = open;
+        document.getElementById("stat-closed").textContent = closed;
+        document.getElementById("stat-in-progress").textContent = inProgress;
+        document.getElementById("stat-needs-triage").textContent = needsTriage;
+        document.getElementById("stat-ai-assigned").textContent = aiAssigned;
+      }
+
+      function applyFilters() {
+        const state = document.getElementById("filter-state").value;
+        const label = document.getElementById("filter-label").value;
+        const assignee = document.getElementById("filter-assignee").value;
+        const sort = document.getElementById("filter-sort").value;
+
+        let filtered = allIssues.filter((issue) => {
+          if (state !== "all" && issue.state !== state) return false;
+          if (label && !issue.labels.some((l) => l.name === label))
+            return false;
+          if (assignee === "none" && issue.assignees.length > 0) return false;
+          if (
+            assignee &&
+            assignee !== "none" &&
+            !issue.assignees.some((a) => a.login === assignee)
+          )
+            return false;
+          return true;
+        });
+
+        // Sort
+        filtered.sort((a, b) => {
+          if (sort === "created")
+            return new Date(b.created_at) - new Date(a.created_at);
+          if (sort === "updated")
+            return new Date(b.updated_at) - new Date(a.updated_at);
+          if (sort === "comments") return b.comments - a.comments;
+          return 0;
+        });
+
+        renderIssues(filtered);
+      }
+
+      function renderIssues(issues) {
+        const container = document.getElementById("issues-container");
+
+        if (issues.length === 0) {
+          container.innerHTML =
+            '<div class="text-center text-gray-500 py-8">No issues found</div>';
+          return;
+        }
+
+        container.innerHTML = issues
+          .map((issue) => {
+            const labels = issue.labels
+              .map(
+                (l) =>
+                  `<span class="label-badge" style="background: #${l.color}; color: #000;">${l.name}</span>`,
+              )
+              .join("");
+
+            const assignees =
+              issue.assignees.map((a) => a.login).join(", ") || "Unassigned";
+            const stateColor =
+              issue.state === "open" ? "text-green-400" : "text-purple-400";
+            const stateIcon = issue.state === "open" ? "🟢" : "🟣";
+
+            return `
           <div class="issue-card bg-gray-900 rounded-lg p-4" onclick="window.open('${issue.html_url}', '_blank')">
             <div class="flex justify-between items-start mb-2">
               <div class="flex-1">
@@ -745,41 +834,54 @@ Create a web-based dashboard for enhanced issue management (similar to ops-board
             </div>
           </div>
         `;
-      }).join('');
-    }
+          })
+          .join("");
+      }
 
-    function createIssue() {
-      window.open(`https://github.com/${REPO_OWNER}/${REPO_NAME}/issues/new/choose`, '_blank');
-    }
+      function createIssue() {
+        window.open(
+          `https://github.com/${REPO_OWNER}/${REPO_NAME}/issues/new/choose`,
+          "_blank",
+        );
+      }
 
-    function bulkLabel() {
-      alert('Bulk label functionality requires GitHub CLI or API token. See docs/GITHUB_ISSUES_UI_ENHANCEMENTS.md');
-    }
+      function bulkLabel() {
+        alert(
+          "Bulk label functionality requires GitHub CLI or API token. See docs/GITHUB_ISSUES_UI_ENHANCEMENTS.md",
+        );
+      }
 
-    function aiTriage() {
-      window.open(`https://github.com/${REPO_OWNER}/${REPO_NAME}/actions/workflows/triage-cron.yml`, '_blank');
-    }
+      function aiTriage() {
+        window.open(
+          `https://github.com/${REPO_OWNER}/${REPO_NAME}/actions/workflows/triage-cron.yml`,
+          "_blank",
+        );
+      }
 
-    function exportIssues() {
-      const csv = 'Number,Title,State,Labels,Assignees,Comments,Created,Updated\n' + 
-        allIssues.map(i => 
-          `${i.number},"${i.title}",${i.state},"${i.labels.map(l => l.name).join(';')}","${i.assignees.map(a => a.login).join(';')}",${i.comments},${i.created_at},${i.updated_at}`
-        ).join('\n');
-      
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `issues-${REPO_NAME}-${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-    }
+      function exportIssues() {
+        const csv =
+          "Number,Title,State,Labels,Assignees,Comments,Created,Updated\n" +
+          allIssues
+            .map(
+              (i) =>
+                `${i.number},"${i.title}",${i.state},"${i.labels.map((l) => l.name).join(";")}","${i.assignees.map((a) => a.login).join(";")}",${i.comments},${i.created_at},${i.updated_at}`,
+            )
+            .join("\n");
 
-    // Load issues on page load
-    loadIssues();
-    // Refresh every 60 seconds to respect GitHub API rate limits
-    setInterval(loadIssues, 60000);
-  </script>
-</body>
+        const blob = new Blob([csv], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `issues-${REPO_NAME}-${new Date().toISOString().split("T")[0]}.csv`;
+        a.click();
+      }
+
+      // Load issues on page load
+      loadIssues();
+      // Refresh every 60 seconds to respect GitHub API rate limits
+      setInterval(loadIssues, 60000);
+    </script>
+  </body>
 </html>
 ```
 
@@ -870,7 +972,7 @@ jobs:
           script: |
             const issue = context.payload.issue;
             const branchName = `issue-${issue.number}-${issue.title.toLowerCase().replace(/[^a-z0-9]/g, '-').substring(0, 40)}`;
-            
+
             const mainBranch = await github.rest.repos.getBranch({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -904,7 +1006,7 @@ name: Issue Metrics
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Daily at midnight
+    - cron: "0 0 * * *" # Daily at midnight
   workflow_dispatch:
 
 jobs:
@@ -941,15 +1043,15 @@ jobs:
 
             const report = `
             # Issue Metrics Report
-            
+
             **Generated:** ${new Date().toISOString()}
-            
+
             ## Summary
             - Open Issues: ${open}
             - Closed Issues: ${closed}
             - Average Days to Close: ${avgCloseDays.toFixed(1)}
             - Total Issues: ${issues.length}
-            
+
             ## Labels
             ${Object.entries(labelCounts)
               .sort((a, b) => b[1] - a[1])
@@ -972,14 +1074,14 @@ jobs:
 
 ### Recommended Extensions
 
-| Extension | Purpose | Cost | Link |
-|-----------|---------|------|------|
-| **GitHub CLI** | Command-line issues management | Free | [cli.github.com](https://cli.github.com) |
-| **Probot** | GitHub Apps for automation | Free (OSS) | [probot.github.io](https://probot.github.io) |
-| **Refined GitHub** | Browser extension for enhanced UI | Free | [github.com/refined-github](https://github.com/refined-github/refined-github) |
-| **OctoLinker** | Navigate code like an IDE | Free | [octolinker.now.sh](https://octolinker.now.sh) |
-| **ZenHub** | Project management inside GitHub | Free tier | [zenhub.com](https://www.zenhub.com) |
-| **GitKraken Launchpad** | Visual issue management | Free | [gitkraken.com](https://www.gitkraken.com) |
+| Extension               | Purpose                           | Cost       | Link                                                                          |
+| ----------------------- | --------------------------------- | ---------- | ----------------------------------------------------------------------------- |
+| **GitHub CLI**          | Command-line issues management    | Free       | [cli.github.com](https://cli.github.com)                                      |
+| **Probot**              | GitHub Apps for automation        | Free (OSS) | [probot.github.io](https://probot.github.io)                                  |
+| **Refined GitHub**      | Browser extension for enhanced UI | Free       | [github.com/refined-github](https://github.com/refined-github/refined-github) |
+| **OctoLinker**          | Navigate code like an IDE         | Free       | [octolinker.now.sh](https://octolinker.now.sh)                                |
+| **ZenHub**              | Project management inside GitHub  | Free tier  | [zenhub.com](https://www.zenhub.com)                                          |
+| **GitKraken Launchpad** | Visual issue management           | Free       | [gitkraken.com](https://www.gitkraken.com)                                    |
 
 ---
 
@@ -1064,18 +1166,20 @@ The branch name sanitization logic is intentionally duplicated across three file
 3. `.github/workflows/issue-auto-triage.yml` (line 73-77) - GitHub Actions context
 
 **Standard Pattern:**
+
 ```
 issue-{number}-{title-lowercase-alphanumeric-only-40-chars-no-trailing-hyphens}
 ```
 
 **Implementation:**
+
 ```javascript
 // JavaScript/Node.js
 const branchName = `issue-${issueNumber}-${title
   .toLowerCase()
-  .replace(/[^a-z0-9]/g, '-')
+  .replace(/[^a-z0-9]/g, "-")
   .substring(0, 40)
-  .replace(/-+$/, '')}`;
+  .replace(/-+$/, "")}`;
 ```
 
 ```bash
@@ -1084,6 +1188,7 @@ BRANCH="issue-$ISSUE-$(echo "$title" | tr '[:upper:]' '[:lower:]' | tr -cd '[:al
 ```
 
 **Rationale for Duplication:**
+
 - Each file operates in a different runtime environment
 - Extracting to a shared function would require additional infrastructure
 - Pattern is simple (4 lines) and stable
@@ -1109,9 +1214,10 @@ issue_batch_close not_planned 100 101 102
 ```
 
 **Supported reasons:**
-| Reason | GitHub state_reason | When to use |
-|--------|-------------------|-------------|
-| `not_planned` | not_planned | Issue is not needed right now |
+
+| Reason        | GitHub state_reason | When to use                   |
+| ------------- | ------------------- | ----------------------------- |
+| `not_planned` | not_planned         | Issue is not needed right now |
 
 A confirmation prompt is shown before any issues are closed.
 

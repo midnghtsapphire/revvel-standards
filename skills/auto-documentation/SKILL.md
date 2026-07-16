@@ -31,6 +31,7 @@ on:
 ### Deploy Report (`DEPLOY_REPORT.md`)
 
 Every deployment must produce a `DEPLOY_REPORT.md` documenting:
+
 - What was deployed
 - TypeScript check result
 - Test suite result
@@ -45,6 +46,7 @@ Every deployment must produce a `DEPLOY_REPORT.md` documenting:
 `INFRASTRUCTURE_MAP.md` in `revvel-standards` is the absolute single source of truth for all infrastructure, domains, and server configurations.
 
 Any script or pipeline that:
+
 - Provisions a new droplet
 - Updates a DNS record
 - Changes a deployment port
@@ -54,6 +56,7 @@ Any script or pipeline that:
 ### Sprint State and Handoffs
 
 `SPRINT_STATE.md` (or project-specific `/docs` equivalent) should auto-pull:
+
 - Number of commits since last sprint
 - Open issues count
 - Recent deployments
@@ -68,6 +71,7 @@ Any script or pipeline that:
 ## Compliance
 
 Every repo in the organization must have:
+
 - [ ] `CHANGELOG.md` in root directory
 - [ ] Automated changelog update GitHub Action
 - [ ] API documentation generation configured (Swagger/TypeDoc)

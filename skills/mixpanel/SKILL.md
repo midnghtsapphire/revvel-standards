@@ -4,7 +4,7 @@ Activate when any task involves setting up Mixpanel, instrumenting product event
 
 ## What Mixpanel Does
 
-Mixpanel is a product-analytics platform that captures **user-behavior events** (not page views) and lets product owners answer questions like *"how many users completed onboarding?"*, *"what's the day-7 retention of cohort X?"*, *"which feature caused the drop-off?"*. It complements Umami / GA (page-level web analytics) by focusing on **action-level events** in the application itself.
+Mixpanel is a product-analytics platform that captures **user-behavior events** (not page views) and lets product owners answer questions like _"how many users completed onboarding?"_, _"what's the day-7 retention of cohort X?"_, _"which feature caused the drop-off?"_. It complements Umami / GA (page-level web analytics) by focusing on **action-level events** in the application itself.
 
 ## Why Mixpanel in the Revvel Ecosystem
 
@@ -47,6 +47,7 @@ Revvel app (browser / Node / mobile)
    Vault path convention: `revvel/apps/<app>/<env>/mixpanel`. See `docs/SECRETS_MANAGEMENT.md`.
 
 4. **Install the SDK** in the target repo:
+
    ```bash
    # Browser / SPA / Next.js
    npm install mixpanel-browser
@@ -56,10 +57,12 @@ Revvel app (browser / Node / mobile)
    ```
 
 5. **Drop in the initializer template:**
+
    ```bash
    cp revvel-standards/templates/standards/mixpanel-init.ts \
       <app>/src/lib/analytics.ts
    ```
+
    Then import `track`, `identify`, `reset`, `optOut` from `lib/analytics` everywhere instead of calling the SDK directly.
 
 6. **Adopt the event-naming and PII rules** in `templates/standards/mixpanel-events.md`:
@@ -78,15 +81,15 @@ Revvel app (browser / Node / mobile)
 
 Every Revvel app **must** emit these baseline events (server-side or client-side, whichever is authoritative):
 
-| Event Name | When to Fire | Required Properties |
-|---|---|---|
-| `App Loaded` | First mount of the root component | `app_version`, `platform` |
-| `User Signed Up` | Server confirms new account | `signup_method`, `referrer_source` |
-| `User Logged In` | Server confirms session | `login_method` |
-| `User Logged Out` | User-initiated sign out | _(none)_ |
-| `Feature Used` | Any non-nav user action worth tracking | `feature_name`, `surface` |
+| Event Name           | When to Fire                                | Required Properties                        |
+| -------------------- | ------------------------------------------- | ------------------------------------------ |
+| `App Loaded`         | First mount of the root component           | `app_version`, `platform`                  |
+| `User Signed Up`     | Server confirms new account                 | `signup_method`, `referrer_source`         |
+| `User Logged In`     | Server confirms session                     | `login_method`                             |
+| `User Logged Out`    | User-initiated sign out                     | _(none)_                                   |
+| `Feature Used`       | Any non-nav user action worth tracking      | `feature_name`, `surface`                  |
 | `Purchase Completed` | Stripe webhook `checkout.session.completed` | `product_slug`, `amount_cents`, `currency` |
-| `Error Surfaced` | User saw a non-fatal error toast / page | `error_code`, `surface` |
+| `Error Surfaced`     | User saw a non-fatal error toast / page     | `error_code`, `surface`                    |
 
 Project-specific events go in the per-app `BOM.md` under §Telemetry.
 
@@ -104,36 +107,39 @@ Full rules: `templates/standards/mixpanel-events.md`.
 
 ```ts
 // Browser / Next.js client
-import { track, identify, reset, optOut, optIn } from '@/lib/analytics';
+import { track, identify, reset, optOut, optIn } from "@/lib/analytics";
 
-track('Signup Completed', { signup_method: 'google', referrer_source: 'twitter' });
-identify('hashed-user-uuid');
-optOut();   // settings toggle
-optIn();    // settings toggle
-reset();    // call on logout to clear distinct_id
+track("Signup Completed", {
+  signup_method: "google",
+  referrer_source: "twitter",
+});
+identify("hashed-user-uuid");
+optOut(); // settings toggle
+optIn(); // settings toggle
+reset(); // call on logout to clear distinct_id
 ```
 
 ```ts
 // Node / worker / server
-import Mixpanel from 'mixpanel';
+import Mixpanel from "mixpanel";
 const mp = Mixpanel.init(process.env.MIXPANEL_TOKEN!);
-mp.track('Purchase Completed', {
+mp.track("Purchase Completed", {
   distinct_id: hashedUserId,
-  product_slug: 'asset-donation-engine',
+  product_slug: "asset-donation-engine",
   amount_cents: 4900,
-  currency: 'usd',
+  currency: "usd",
 });
 ```
 
 ## Mixpanel vs PostHog vs Umami — When to Use Which
 
-| Scenario | Tool |
-|---|---|
-| Action-level user-behavior funnels & retention | **Mixpanel** |
-| Open-source, self-hosted, page-view web analytics | Umami |
-| All-in-one (events + session replay + feature flags), self-hostable | PostHog |
-| Marketing-site SEO/page traffic | Umami or GA4 |
-| Heatmaps & user recordings | Hotjar |
+| Scenario                                                            | Tool         |
+| ------------------------------------------------------------------- | ------------ |
+| Action-level user-behavior funnels & retention                      | **Mixpanel** |
+| Open-source, self-hosted, page-view web analytics                   | Umami        |
+| All-in-one (events + session replay + feature flags), self-hostable | PostHog      |
+| Marketing-site SEO/page traffic                                     | Umami or GA4 |
+| Heatmaps & user recordings                                          | Hotjar       |
 
 For shipped Revvel products the default is **Mixpanel for product events + Umami for marketing-site traffic**, unless the per-app `BOM.md` overrides it.
 

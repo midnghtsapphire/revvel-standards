@@ -38,7 +38,6 @@ permissions:
   pull-requests: read
 
 jobs:
-
   # ────────────────────────────────────────────────────────────────────────────
   # Job 1 — Extract labels and validate required parameters
   # ────────────────────────────────────────────────────────────────────────────
@@ -49,7 +48,7 @@ jobs:
     # Expose outputs so dependent jobs can read them
     outputs:
       environment: ${{ steps.parameters.outputs.environment }}
-      project:     ${{ steps.parameters.outputs.project }}
+      project: ${{ steps.parameters.outputs.project }}
 
     steps:
       - name: Extract labels as parameters

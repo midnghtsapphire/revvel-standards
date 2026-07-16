@@ -14,7 +14,7 @@
 **Created:** 2026-07-12  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-12  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -78,23 +78,22 @@ lidR R Package: A FOSS package in R Studio (v4.3.1) widely used in forestry and 
 . It is utilized to merge multiple scans, run Statistical Outlier Removal (SOR) filters, and execute ground-filtering algorithms like Cloth Simulation Filtering (CSF) or Progressive Morphological Filters (PMF)
 .
 RGPR and ridal (GPR Software): Open-source GPR processing packages available on GitHub (emanuelhuber/RGPR and erikmannerfelt/ridal) written in R and Python respectively, allowing researchers to visualize and process electromagnetic subsurface radargrams free of commercial software constraints
-.
-2. How Researchers Process Point Clouds to Reveal Hidden Ground Features
+. 2. How Researchers Process Point Clouds to Reveal Hidden Ground Features
 Raw airborne laser scanning (ALS) datasets contain millions of unordered 3D coordinates representing every leaf, branch, structure, and ground bounce the laser pulse encounters
 . To reveal microtopographic earthworks, mine workings, or grave features hidden under dense forest canopies, researchers execute a strict ground-filtering and gridding pipeline
 :
-[ Raw Point Cloud ] 
-        │
-        ▼ (Statistical Outlier Removal / Low-Pass Filters)
-[ Noise-Cleaned Cloud ] 
-        │
-        ▼ (Ground Point Filtering: CSF, PMF, or MCC Algorithms)
-[ Ground-Classified Points (Class 2) ] 
-        │
-        ▼ (Interpolation: Kriging, Spline, or IDW Gridding)
-[ Bare-Earth DTM / DEM ] 
-        │
-        ▼ (Relief Visualization: Hillshade, Slope, Sky-View Factor)
+[ Raw Point Cloud ]
+│
+▼ (Statistical Outlier Removal / Low-Pass Filters)
+[ Noise-Cleaned Cloud ]
+│
+▼ (Ground Point Filtering: CSF, PMF, or MCC Algorithms)
+[ Ground-Classified Points (Class 2) ]
+│
+▼ (Interpolation: Kriging, Spline, or IDW Gridding)
+[ Bare-Earth DTM / DEM ]
+│
+▼ (Relief Visualization: Hillshade, Slope, Sky-View Factor)
 [ Visualized Subsurface/Microtopographic Features ]
 Step 1: Outlier and Noise Filtering
 Raw data is run through statistical cleaning filters (such as SOR or high/low pass filters) to purge atmospheric dust, birds, and sensor noise
@@ -130,8 +129,7 @@ Seasonal Canopy Effects (Phenology)
 The success of this vegetation-removal process is heavily dependent on the time of year the data is acquired
 . During winter (leaf-off conditions), laser beams penetrate deciduous canopies easily, yielding a high ground point density of 0.84 points/m²
 . In summer (leaf-on conditions), canopy foliage scatters and absorbs the laser pulses, reducing ground point density to 0.55 points/m², which significantly degrades the resolution of the bare-earth DTM and masks subtle ground features
-.
-3. Expansion on the 2023 Sale of Zorro Ranch to San Rafael Ranch LLC
+. 3. Expansion on the 2023 Sale of Zorro Ranch to San Rafael Ranch LLC
 The sale of Jeffrey Epstein's Zorro Ranch in Stanley, New Mexico, represents one of the most high-profile and controversial real estate transactions in recent state history
 :
 The Listing History: Following Epstein's death in August 2019, the 7,500/8,000-acre property was placed on the market by his estate executors, Darren Indyke and Richard Kahn, to pay creditor claims and estate administration fees
@@ -151,12 +149,11 @@ Planned Christian Retreat: Upon acquiring the property, the Huffines family rena
 .
 The Tax Assessment Dispute: Following the purchase, San Rafael Ranch LLC filed a lawsuit in Santa Fe County District Court contesting the county's 2023 property tax valuation
 . Santa Fe County Assessor Isaiah Romero had valued the ranch at $21,130,201 (resulting in an annual tax of 151,475)
-.TheHuffinesfamilyarguedthattheproperty 
+.TheHuffinesfamilyarguedthattheproperty
 ′
- struefairmarketvaluewasonly∗∗9 million**
+struefairmarketvaluewasonly∗∗9 million**
 . They contended that the severe reputational stigma of Epstein’s historical activities on the property drastically reduced its liquidity and fair market value, and they demanded a tax refund of approximately $151,475
-.
-4. Geological and Hydrogeological Setting of Stanley, New Mexico
+. 4. Geological and Hydrogeological Setting of Stanley, New Mexico
 The Zorro Ranch property is situated in a geologically complex transition zone that severely constrains local water access and quality:
 Geological Formations
 The ranch is located on the northern margin of the ~5,000 km² Estancia topographic basin at an average elevation of 6,750 feet, while the northeastern section drains into the southern Galisteo valley
@@ -236,18 +233,19 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -259,6 +257,7 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29156682822.md`
 
 ## Executive Decision
@@ -266,6 +265,7 @@ Source packet: `docs/research-engine/run-29156682822.md`
 **REJECT AND REFACTOR**: This WR contains critical scope issues that prevent implementation. The request mixes legitimate LiDAR/GPR tool research with unrelated content about Zorro Ranch property transactions and geological surveys. Two claimed repositories (LIDARLearn and OpenLiDARViewer) cannot be verified to exist at the specified GitHub paths.
 
 **Required Actions Before Proceeding**:
+
 1. Split into focused WRs: one for tool research, one for implementation
 2. Remove ~70% unrelated content about real estate and geology
 3. Verify repository existence or provide alternatives
@@ -278,6 +278,7 @@ Source packet: `docs/research-engine/run-29156682822.md`
 **Market Size**: Professional geospatial analysis services market valued at $6.2B globally with 15% CAGR ([Grand View Research, 2023](https://www.grandviewresearch.com/industry-analysis/geospatial-analytics-market))
 
 **Why This Audience**:
+
 - High-value applications with budget for specialized tools ($10K-50K+ annual licensing for commercial alternatives)
 - Technical expertise to appreciate open-source solutions
 - Urgent need for unified workflows across fragmented toolchain
@@ -288,18 +289,21 @@ Source packet: `docs/research-engine/run-29156682822.md`
 ## Primary Keyword Clusters
 
 **High Commercial Intent** (Monthly Search Volume):
+
 - "lidar processing software" (1,300/mo)
 - "ground penetrating radar software" (880/mo)
 - "point cloud processing tools" (720/mo)
 - "archaeological survey software" (320/mo)
 
 **Content Strategy**:
+
 1. **Hero Landing Page**: "Open Source LiDAR Processing Tools: Complete Implementation Guide"
 2. **Comparison Content**: "CloudCompare vs PDAL vs lidR: Which Tool for Your Workflow?"
 3. **Technical Deep-Dives**: Algorithm guides for CSF, PMF, MCC ground filtering
 4. **Case Studies**: Archaeological discoveries, forensic applications (avoiding sensitive topics)
 
 **SEO Requirements**:
+
 - Verify all search volumes via Google Keyword Planner
 - Create tool comparison matrix with features/capabilities
 - Build FAQ section addressing implementation questions
@@ -309,36 +313,38 @@ Source packet: `docs/research-engine/run-29156682822.md`
 
 ## Open Source Landscape
 
-| Tool | GitHub Stars | Status | License | Pricing |
-|------|-------------|---------|---------|---------|
-| Point Cloud Library (PCL) | ~9.8k | Highly Active | BSD | Free |
-| CloudCompare | ~3.8k | Active | GPL-2.0 | Free |
-| PDAL | ~1.0k | Active | BSD | Free |
-| lidR | ~650 | Active | GPL-3.0 | Free |
-| LIDARLearn | **UNVERIFIED** | Unknown | MIT (claimed) | Free |
-| OpenLiDARViewer | **UNVERIFIED** | Unknown | Unknown | Free |
-| RGPR | ~150 | Active | GPL-3.0 | Free |
+| Tool                      | GitHub Stars   | Status        | License       | Pricing |
+| ------------------------- | -------------- | ------------- | ------------- | ------- |
+| Point Cloud Library (PCL) | ~9.8k          | Highly Active | BSD           | Free    |
+| CloudCompare              | ~3.8k          | Active        | GPL-2.0       | Free    |
+| PDAL                      | ~1.0k          | Active        | BSD           | Free    |
+| lidR                      | ~650           | Active        | GPL-3.0       | Free    |
+| LIDARLearn                | **UNVERIFIED** | Unknown       | MIT (claimed) | Free    |
+| OpenLiDARViewer           | **UNVERIFIED** | Unknown       | Unknown       | Free    |
+| RGPR                      | ~150           | Active        | GPL-3.0       | Free    |
 
 ## Commercial Competitors
 
-| Product | Pricing | Market Position |
-|---------|---------|-----------------|
-| Bentley MicroStation | $5,000-$15,000/year | Enterprise CAD with LiDAR modules |
-| Trimble RealWorks | $10,000-$25,000/year | Professional survey-grade processing |
-| Leica Cyclone | $15,000-$50,000/year | Industry standard for large projects |
-| Autodesk ReCap | $300-$500/month | Cloud-based processing |
+| Product              | Pricing              | Market Position                      |
+| -------------------- | -------------------- | ------------------------------------ |
+| Bentley MicroStation | $5,000-$15,000/year  | Enterprise CAD with LiDAR modules    |
+| Trimble RealWorks    | $10,000-$25,000/year | Professional survey-grade processing |
+| Leica Cyclone        | $15,000-$50,000/year | Industry standard for large projects |
+| Autodesk ReCap       | $300-$500/month      | Cloud-based processing               |
 
 **Market Gap**: No unified platform combining all open-source tools with user-friendly interface
 
 ## Chatter and Demand Signals
 
 ## Key Pain Points from Community
+
 - "Why is there no single pipeline that just works for ground filtering?"
 - "CloudCompare is great, but the plugins are a nightmare to install"
 - "PDAL is powerful, but the documentation is overwhelming for beginners"
 - "Leaf-on data is basically useless for archaeology—why isn't this flagged at acquisition?"
 
 ## Unmet Needs
+
 1. **Unified workflow documentation** across multiple tools
 2. **Automated, reproducible pipelines** in Python/R
 3. **Clear tool selection guidance** based on use case
@@ -350,11 +356,13 @@ Source packet: `docs/research-engine/run-29156682822.md`
 ## Factual Validation and Evidence Gaps
 
 ## Verified Claims ✓
+
 - CloudCompare, PDAL, lidR existence and capabilities
 - Standard LiDAR processing pipeline methodology
 - Ground filtering algorithms (CSF, PMF, MCC) are established
 
 ## Critical Evidence Gaps ❌
+
 - **LIDARLearn** repository at `said-ohamouddou/LIDARLearn` - **NOT FOUND**
 - **OpenLiDARViewer** at `Aurtechmx/openlidarviewer` - **NOT FOUND**
 - Specific performance metrics lack citations
@@ -362,6 +370,7 @@ Source packet: `docs/research-engine/run-29156682822.md`
 - "2026 primary for Texas State Comptroller" - **TEMPORAL IMPOSSIBILITY**
 
 ## Required Verification
+
 - GitHub API checks for missing repositories
 - Google Ads API for search volumes
 - Academic citations for algorithm effectiveness
@@ -370,6 +379,7 @@ Source packet: `docs/research-engine/run-29156682822.md`
 ## Build Requirements and Acceptance Gates
 
 ## Technical Stack Requirements
+
 ```yaml
 environments:
   - Python 3.8+ with PDAL bindings
@@ -380,12 +390,14 @@ environments:
 ```
 
 ## Implementation Pipeline
+
 ```
-Raw Point Cloud → Noise Filtering (SOR) → Ground Classification (CSF/PMF/MCC) → 
+Raw Point Cloud → Noise Filtering (SOR) → Ground Classification (CSF/PMF/MCC) →
 Gridding (Kriging/IDW) → Visualization (Hillshade/SVF)
 ```
 
 ## Acceptance Gates
+
 1. **Tool Verification**: Each tool processes sample dataset successfully
 2. **Output Validation**: Ground-classified points match expected density
 3. **Performance Baseline**: Process 1M, 10M, 100M points within SLA
@@ -393,6 +405,7 @@ Gridding (Kriging/IDW) → Visualization (Hillshade/SVF)
 5. **Documentation**: Step-by-step guides with screenshots/code examples
 
 ## Missing Specifications
+
 - Hardware requirements for production scale
 - Data format compatibility matrix
 - API design for unified access
@@ -403,18 +416,23 @@ Gridding (Kriging/IDW) → Visualization (Hillshade/SVF)
 ## Blocking Issues
 
 ### Issue 1: Unverified Repository Dependencies
+
 **Finding**: Code references `said-ohamouddou/LIDARLearn` and `Aurtechmx/openlidarviewer` which do not exist
 **Automatic Fix**:
+
 ```bash
 # Replace with verified alternatives
 sed -i 's/said-ohamouddou\/LIDARLearn/isl-org\/Open3D/g' requirements.txt
 sed -i 's/Aurtechmx\/openlidarviewer/potree\/potree/g' docker-compose.yml
 ```
+
 **Commit Message**: `fix: replace unverified repos with active alternatives`
 
 ### Issue 2: Missing License Compatibility Check
+
 **Finding**: Mixed GPL/MIT/BSD licenses without compatibility analysis
 **Automatic Fix**:
+
 ```python
 # scripts/license_check.py
 LICENSES = {
@@ -427,22 +445,27 @@ def check_compatibility():
     if 'GPL' in LICENSES.values() and not os.path.exists('LICENSE'):
         raise Exception("GPL dependency requires license disclosure")
 ```
+
 **Commit Message**: `feat: add license compatibility validation`
 
 ### Issue 3: No Dependency Version Pinning
+
 **Finding**: Requirements lack version constraints
 **Automatic Fix**:
+
 ```yaml
 # requirements.txt
 pdal>=3.2.0,<4.0.0
 open3d>=0.17.0
 rasterio>=1.3.0
 ```
+
 **Commit Message**: `fix: pin dependency versions for reproducibility`
 
 ## Automatic Fix and Commit Queue
 
 ## Priority 1: Repository Verification
+
 ```yaml
 name: verify-repositories
 on: [push, pull_request]
@@ -457,6 +480,7 @@ jobs:
 ```
 
 ## Priority 2: Split Mixed Content
+
 ```bash
 # Create focused issues
 gh issue create --title "[WR] LiDAR Tool Research and Evaluation" \
@@ -467,6 +491,7 @@ gh issue create --title "[WR] LiDAR Implementation Pipeline" \
 ```
 
 ## Priority 3: Documentation Generation
+
 ```python
 # generate_tool_docs.py
 tools = ['CloudCompare', 'PDAL', 'lidR', 'Open3D', 'Potree']
@@ -481,18 +506,21 @@ for tool in tools:
 ## Labels to Apply
 
 **Blocking Labels** (Must Fix):
+
 - `needs-clarification`
 - `scope-refinement-required`
 - `repository-missing`
 - `temporal-contradiction`
 
 **Advisory Labels**:
+
 - `technical-requirements-missing`
 - `license-review-needed`
 - `market-research-needed`
 - `documentation-gap`
 
 **Domain Labels**:
+
 - `lidar-domain`
 - `geospatial`
 - `open-source-tools`
@@ -500,17 +528,20 @@ for tool in tools:
 ## Repository Review and Best Alternative
 
 ## Verified Active Repositories
+
 1. **CloudCompare/CloudCompare** - Desktop processing (GPL-2.0)
 2. **PDAL/PDAL** - Pipeline automation (BSD)
 3. **r-lidar/lidR** - R-based analysis (GPL-3.0)
 4. **PointCloudLibrary/pcl** - Core algorithms (BSD)
 
 ## Recommended Alternatives for Missing Tools
+
 - **LIDARLearn** → **Open3D** (10.8k stars, MIT) + scikit-learn
 - **OpenLiDARViewer** → **Potree** (4.4k stars, BSD) for web viewing
 - **ridal** → **rasterio** + scipy for GPR processing
 
 ## Implementation Architecture
+
 ```
 ┌─────────────────┐     ┌──────────────┐     ┌─────────────┐
 │   Data Input    │────▶│  Processing  │────▶│   Output    │
@@ -528,6 +559,7 @@ for tool in tools:
 ## Overall Confidence: 85/100
 
 ### Score Breakdown by Lane
+
 - **Market Positioning** (Echo): 85/100 - Strong market opportunity identified
 - **SEO Demand** (Noimos): 80/100 - Good keyword research, needs API verification
 - **Competitor Intelligence** (Iris): 90/100 - Comprehensive competitive analysis
@@ -538,11 +570,13 @@ for tool in tools:
 - **Repository Review** (Scout-Web): 85/100 - Good alternative recommendations
 
 ### Key Confidence Detractors
+
 1. Two primary repositories cannot be verified (-10 points)
 2. Mixed scope with unrelated content (-5 points)
 3. Missing technical specifications (-5 points)
 
 ### Recommendation
+
 Despite repository issues, the core concept is sound. Refactor the WR to focus on verified tools (CloudCompare, PDAL, lidR) and established alternatives (Open3D, Potree). The market opportunity for unified LiDAR/GPR processing workflows is validated at $6.2B with strong growth. Proceed with caution after addressing blocking issues.
 
 ## Executive Summary
@@ -585,11 +619,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -605,11 +639,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

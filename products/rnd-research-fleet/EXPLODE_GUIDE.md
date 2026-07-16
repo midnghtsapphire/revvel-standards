@@ -44,12 +44,12 @@ curl -L -o rnd-research-fleet-v1.0.0.tar.gz \
 
 Put the file **anywhere you want to work from.** Recommended locations:
 
-| Platform | Recommended path |
-|---|---|
-| **macOS / Linux** | `~/projects/rnd-research-fleet-v1.0.0.tar.gz` |
-| **Windows (WSL)** | `/mnt/c/Users/<YourName>/projects/rnd-research-fleet-v1.0.0.tar.gz` |
-| **Windows (native)** | `C:\Users\<YourName>\projects\rnd-research-fleet-v1.0.0.tar.gz` |
-| **Server / VPS** | `/opt/rnd-research-fleet-v1.0.0.tar.gz` |
+| Platform             | Recommended path                                                    |
+| -------------------- | ------------------------------------------------------------------- |
+| **macOS / Linux**    | `~/projects/rnd-research-fleet-v1.0.0.tar.gz`                       |
+| **Windows (WSL)**    | `/mnt/c/Users/<YourName>/projects/rnd-research-fleet-v1.0.0.tar.gz` |
+| **Windows (native)** | `C:\Users\<YourName>\projects\rnd-research-fleet-v1.0.0.tar.gz`     |
+| **Server / VPS**     | `/opt/rnd-research-fleet-v1.0.0.tar.gz`                             |
 
 The installer creates a `rnd-research-fleet/` subfolder in the same
 directory you run the extract command from.
@@ -148,6 +148,7 @@ node auto-github-join.js
 ```
 
 You will need:
+
 - A **free GitHub account** — create one at https://github.com/join
 - A **GitHub personal access token** (classic) with the `repo` and
   `workflow` scopes (add `admin:org` only if you fork into an
@@ -237,33 +238,33 @@ Get a key (free tier available) at https://openrouter.ai/keys.
 
 ## Requirements
 
-| Tool | Minimum version | Where to get it |
-|---|---|---|
-| Node.js | 18.x LTS | https://nodejs.org |
-| Git | 2.x | https://git-scm.com |
-| Python 3 | 3.8+ | https://python.org (for Perplexity bridge) |
-| GitHub account | — | https://github.com/join (free) |
-| OpenRouter key | — | https://openrouter.ai/keys (optional) |
+| Tool           | Minimum version | Where to get it                            |
+| -------------- | --------------- | ------------------------------------------ |
+| Node.js        | 18.x LTS        | https://nodejs.org                         |
+| Git            | 2.x             | https://git-scm.com                        |
+| Python 3       | 3.8+            | https://python.org (for Perplexity bridge) |
+| GitHub account | —               | https://github.com/join (free)             |
+| OpenRouter key | —               | https://openrouter.ai/keys (optional)      |
 
 ---
 
 ## What Gets Activated After Explode
 
-| Feature | Status after `install.sh` | Status after `auto-github-join.js` |
-|---|---|---|
-| Master Prompt (copy-paste) | ✅ Ready | ✅ Ready |
-| Perplexity Research (free) | ✅ Ready | ✅ Ready |
-| Deep Search Router | ✅ Ready (free lane) | ✅ Ready + Sonnet 3.5 with key |
-| 6 Research Personas | ✅ Ready | ✅ Ready |
-| GitHub Actions Workflows | ❌ | ✅ Activated in your fork |
-| Upstream Sync | ❌ | ✅ Auto-syncs on push |
-| Team Access (share fork) | ❌ | ✅ Invite collaborators |
+| Feature                    | Status after `install.sh` | Status after `auto-github-join.js` |
+| -------------------------- | ------------------------- | ---------------------------------- |
+| Master Prompt (copy-paste) | ✅ Ready                  | ✅ Ready                           |
+| Perplexity Research (free) | ✅ Ready                  | ✅ Ready                           |
+| Deep Search Router         | ✅ Ready (free lane)      | ✅ Ready + Sonnet 3.5 with key     |
+| 6 Research Personas        | ✅ Ready                  | ✅ Ready                           |
+| GitHub Actions Workflows   | ❌                        | ✅ Activated in your fork          |
+| Upstream Sync              | ❌                        | ✅ Auto-syncs on push              |
+| Team Access (share fork)   | ❌                        | ✅ Invite collaborators            |
 
 ---
 
 ## Support
 
-- Email: support@freedomangelcorp.com  
+- Email: support@freedomangelcorp.com
 - GitHub: https://github.com/midnghtsapphire/revvel-standards/discussions
 
 **Built by Audrey Evans / MIDNGHTSAPPHIRE**

@@ -9,7 +9,7 @@
 **oAudrey** is the public-facing **Automation Software Hub** for
 **Freedom Angel Corp** — an autonomous umbrella over a growing family of
 software, mobile apps, autonomous systems, marketing and ecommerce products.
-Its purpose is to *fill the gaps that need filling* with self-running,
+Its purpose is to _fill the gaps that need filling_ with self-running,
 forward-looking automation.
 
 This directory holds the **concept landing page** for the hub — a single
@@ -45,15 +45,15 @@ hub landing page.
 > still reference `openaudrey.com` — `oaudrey.com` is the correct apex for
 > this hub and all product subdomains.
 
-| Product (tab) | Subdomain | Source in this repo |
-|---|---|---|
-| **FieldWork** | `fieldwork.oaudrey.com` | [`/fieldwork`](../fieldwork) |
-| GrowlingEyes | `growlingeyes.oaudrey.com` | *(external repo)* |
-| Penny Sovereign Yield Scout | `penny.oaudrey.com` | [`/penny-sovereign-yield-scout`](../penny-sovereign-yield-scout) |
-| Agent Factory | `agents.oaudrey.com` | [`/agent-factory`](../agent-factory) |
-| Marketing & Ecommerce | `market.oaudrey.com` | *(external repo)* |
-| **ColdTrace** | `coldtrace.oaudrey.com` | [`/coldtrace`](../coldtrace) |
-| **Reese Reviews** | `reesereviews.com` | *(external repo: steel-white)* |
+| Product (tab)               | Subdomain                  | Source in this repo                                              |
+| --------------------------- | -------------------------- | ---------------------------------------------------------------- |
+| **FieldWork**               | `fieldwork.oaudrey.com`    | [`/fieldwork`](../fieldwork)                                     |
+| GrowlingEyes                | `growlingeyes.oaudrey.com` | _(external repo)_                                                |
+| Penny Sovereign Yield Scout | `penny.oaudrey.com`        | [`/penny-sovereign-yield-scout`](../penny-sovereign-yield-scout) |
+| Agent Factory               | `agents.oaudrey.com`       | [`/agent-factory`](../agent-factory)                             |
+| Marketing & Ecommerce       | `market.oaudrey.com`       | _(external repo)_                                                |
+| **ColdTrace**               | `coldtrace.oaudrey.com`    | [`/coldtrace`](../coldtrace)                                     |
+| **Reese Reviews**           | `reesereviews.com`         | _(external repo: steel-white)_                                   |
 
 ---
 
@@ -92,11 +92,11 @@ The oAudrey hub deploys automatically to **DigitalOcean App Platform** on every 
 
 ### CI/CD Pipeline
 
-| Step | Workflow | Trigger |
-|---|---|---|
-| Deploy | `.github/workflows/deploy-oaudrey.yml` | push to `main` |
-| DNS Sync | `.github/workflows/sync-oaudrey-dns.yml` | after deploy; weekly Monday; manual |
-| Health-check + retro | `.github/workflows/oaudrey-retro.yml` | after deploy; weekly Monday |
+| Step                 | Workflow                                 | Trigger                             |
+| -------------------- | ---------------------------------------- | ----------------------------------- |
+| Deploy               | `.github/workflows/deploy-oaudrey.yml`   | push to `main`                      |
+| DNS Sync             | `.github/workflows/sync-oaudrey-dns.yml` | after deploy; weekly Monday; manual |
+| Health-check + retro | `.github/workflows/oaudrey-retro.yml`    | after deploy; weekly Monday         |
 
 ### Required Secret
 
@@ -136,11 +136,11 @@ holding the domain — no code changes when you migrate.
 3. The workflow also runs automatically after every successful deploy and
    weekly on Mondays as a drift-correction sweep.
 
-| Registrar | Credentials needed                                 | Apex strategy |
-|-----------|----------------------------------------------------|---------------|
+| Registrar | Credentials needed                                                                     | Apex strategy                                                               |
+| --------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | Namecheap | `NAMECHEAP_API_KEY`, `NAMECHEAP_API_USER`, `NAMECHEAP_USERNAME`, `NAMECHEAP_CLIENT_IP` | move apex to DigitalOcean nameservers (Namecheap API rejects ALIAS at apex) |
-| GoDaddy   | `GODADDY_API_KEY`, `GODADDY_API_SECRET`            | resolve `APP_TARGET` to an IP — sync auto-translates apex `ALIAS` → `A` |
-| Porkbun   | `PORKBUN_API_KEY`, `PORKBUN_SECRET_API_KEY`        | native `ALIAS` at apex |
+| GoDaddy   | `GODADDY_API_KEY`, `GODADDY_API_SECRET`                                                | resolve `APP_TARGET` to an IP — sync auto-translates apex `ALIAS` → `A`     |
+| Porkbun   | `PORKBUN_API_KEY`, `PORKBUN_SECRET_API_KEY`                                            | native `ALIAS` at apex                                                      |
 
 Local dry-run (no API calls):
 
@@ -180,16 +180,16 @@ python3 -m http.server 8080
 
 ## Design System (Summary)
 
-| Token        | Value                                          |
-|--------------|------------------------------------------------|
-| Background   | `#0B0F1A` (void)                               |
-| Surface      | `#121828` (carbon) / `#1E2638` (steel)         |
-| Text         | `#E7ECF5` (ice) / `#8A93A6` (mist)             |
-| Accent 1     | `#7C5CFF` (iris — autonomy / automation)       |
-| Accent 2     | `#3DDCFF` (cyan — signal / data)               |
-| Mission      | `#F7C948` (gold — giving pledge)               |
-| Advocacy     | `#FF6B6B` (ember — restoration)                |
-| Type         | Inter (sans), JetBrains Mono (metadata)        |
+| Token      | Value                                    |
+| ---------- | ---------------------------------------- |
+| Background | `#0B0F1A` (void)                         |
+| Surface    | `#121828` (carbon) / `#1E2638` (steel)   |
+| Text       | `#E7ECF5` (ice) / `#8A93A6` (mist)       |
+| Accent 1   | `#7C5CFF` (iris — autonomy / automation) |
+| Accent 2   | `#3DDCFF` (cyan — signal / data)         |
+| Mission    | `#F7C948` (gold — giving pledge)         |
+| Advocacy   | `#FF6B6B` (ember — restoration)          |
+| Type       | Inter (sans), JetBrains Mono (metadata)  |
 
 Forward-looking posture: aurora gradients, subtle circuit grid, glass
 surfaces. Accessible tabs with full keyboard support

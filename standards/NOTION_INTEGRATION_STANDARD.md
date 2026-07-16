@@ -40,12 +40,14 @@
 ## Notion + Lovable Integration
 
 ### Connect Notion to Lovable
+
 1. Go to **Lovable → Connectors → Chat connectors**
 2. Click **Notion**
 3. Authorize with Notion
 4. Now Lovable can read your Notion workspace!
 
 ### Build from Notion Docs
+
 ```
 Notion PRD page
   ↓ (Lovable reads)
@@ -57,6 +59,7 @@ Jules reviews + refines
 ```
 
 ### Example Prompt
+
 ```
 Build a dashboard based on the requirements in our Notion workspace:
 - PRDs are in /Projects/CL4R1T4S Dashboard
@@ -69,6 +72,7 @@ Build a dashboard based on the requirements in our Notion workspace:
 ## Notion Templates for WR Processing
 
 ### 1. Work Request Template
+
 ```notion
 ┌─────────────────────────────────────────┐
 │ Work Request                            │
@@ -92,6 +96,7 @@ Build a dashboard based on the requirements in our Notion workspace:
 ```
 
 ### 2. Project Wiki Template
+
 ```notion
 ┌─────────────────────────────────────────┐
 │ Project: [Name]                         │
@@ -119,6 +124,7 @@ Build a dashboard based on the requirements in our Notion workspace:
 ```
 
 ### 3. Sprint Retrospective Template
+
 ```notion
 ┌─────────────────────────────────────────┐
 │ Sprint Retrospective - [Date]           │
@@ -142,20 +148,22 @@ Build a dashboard based on the requirements in our Notion workspace:
 ## Notion Database for WR Tracking
 
 ### Properties
-| Property | Type | Description |
-|----------|------|-------------|
-| Title | Title | WR name |
-| Status | Select | Backlog, Todo, In Progress, Review, Done |
-| Type | Select | production-app, feature, fix, research |
-| Priority | Select | Urgent, High, Medium, Low |
-| Area | Multi-select | UI, Backend, API, Docs |
-| GitHub Issue | URL | Link to GitHub issue |
-| Linear Issue | URL | Link to Linear issue |
-| Assignee | Person | Owner |
-| Due Date | Date | Target date |
-| Tags | Multi-select | Various tags |
+
+| Property     | Type         | Description                              |
+| ------------ | ------------ | ---------------------------------------- |
+| Title        | Title        | WR name                                  |
+| Status       | Select       | Backlog, Todo, In Progress, Review, Done |
+| Type         | Select       | production-app, feature, fix, research   |
+| Priority     | Select       | Urgent, High, Medium, Low                |
+| Area         | Multi-select | UI, Backend, API, Docs                   |
+| GitHub Issue | URL          | Link to GitHub issue                     |
+| Linear Issue | URL          | Link to Linear issue                     |
+| Assignee     | Person       | Owner                                    |
+| Due Date     | Date         | Target date                              |
+| Tags         | Multi-select | Various tags                             |
 
 ### Views
+
 - **Board**: Kanban by Status
 - **Table**: Full list with all properties
 - **Calendar**: By Due Date
@@ -166,6 +174,7 @@ Build a dashboard based on the requirements in our Notion workspace:
 ## Workflow: Notion → Lovable → GitHub → Linear
 
 ### Step 1: Create WR in Notion
+
 ```
 Notion database → New entry
   ↓
@@ -175,6 +184,7 @@ GitHub Actions detects new entry
 ```
 
 ### Step 2: Trigger Lovable Build
+
 ```yaml
 # .github/workflows/notion-to-lovable.yml
 name: Notion → Lovable
@@ -215,6 +225,7 @@ jobs:
 ```
 
 ### Step 3: Lovable Generates Code
+
 ```
 Lovable reads Notion requirements
   ↓
@@ -226,6 +237,7 @@ Opens PR
 ```
 
 ### Step 4: Jules Reviews
+
 ```
 PR opened
   ↓
@@ -237,6 +249,7 @@ Human approves
 ```
 
 ### Step 5: Merge → Update Linear + Notion
+
 ```
 PR merged
   ↓
@@ -251,6 +264,7 @@ GitHub Actions:
 ## Notion + Amplitude Integration (Active)
 
 Already configured in `.github/workflows/amplitude-to-notion.yml`:
+
 ```yaml
 # Daily sync at 13:07 UTC
 schedule:
@@ -258,6 +272,7 @@ schedule:
 ```
 
 Syncs:
+
 - Product analytics from Amplitude
 - To Notion database for tracking
 - Dashboard metrics
@@ -267,6 +282,7 @@ Syncs:
 ## Getting Started with Notion
 
 ### 1. Create Notion Integration
+
 1. Go to https://www.notion.so/my-integrations
 2. Click **New integration**
 3. Name it (e.g., "Revvel Standards")
@@ -274,16 +290,19 @@ Syncs:
 5. Copy the integration token
 
 ### 2. Add to GitHub Secrets
+
 ```
 NOTION_API_KEY = ntn_xxxxxxxxxxxxxxxxxxxx
 ```
 
 ### 3. Share Notion Pages
+
 1. Open the page/database in Notion
 2. Click **...** menu → **Add connections**
 3. Select your integration
 
 ### 4. Get Database ID
+
 ```
 Notion database URL: https://notion.so/workspace/DATABASE_ID?v=...
 Database ID: DATABASE_ID (32 chars, with hyphens)

@@ -34,12 +34,12 @@ Vercel will assign a preview URL such as `https://cli-engine.vercel.app` on firs
 
 No environment variables are required for the static landing page. When wiring the waitlist form and Stripe checkout, add:
 
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key for checkout sessions |
-| `STRIPE_SECRET_KEY` | Stripe secret key (server-side only, never expose client-side) |
-| `NEXT_PUBLIC_POLAR_CHECKOUT_URL` | Polar.sh checkout URL (alternative to Stripe) |
-| `WAITLIST_WEBHOOK_URL` | Webhook endpoint for CRM / email marketing on waitlist signup |
+| Variable                             | Description                                                    |
+| ------------------------------------ | -------------------------------------------------------------- |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key for checkout sessions                   |
+| `STRIPE_SECRET_KEY`                  | Stripe secret key (server-side only, never expose client-side) |
+| `NEXT_PUBLIC_POLAR_CHECKOUT_URL`     | Polar.sh checkout URL (alternative to Stripe)                  |
+| `WAITLIST_WEBHOOK_URL`               | Webhook endpoint for CRM / email marketing on waitlist signup  |
 
 ## Production Checklist
 

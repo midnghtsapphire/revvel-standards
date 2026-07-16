@@ -41,29 +41,29 @@ GitHub events ── amplitude-events.yml ──▶ Amplitude
 
 ### 3.1 Secrets (Settings → Secrets and variables → Actions → Secrets)
 
-| Name | Purpose | Vault path |
-|---|---|---|
-| `AMPLITUDE_API_KEY` | Amplitude project API key. *Settings → Projects → \[project\] → API Key.* | `revvel/shared/analytics/amplitude` |
-| `AMPLITUDE_SECRET_KEY` | Amplitude project **secret** key. The Dashboard REST API uses HTTP Basic auth (`api_key:secret_key`). | `revvel/shared/analytics/amplitude` |
-| `NOTION_API_KEY` | Notion internal-integration token (`secret_…`). Create at https://www.notion.so/my-integrations. | `revvel/shared/notion/standards` |
-| `NOTION_AMPLITUDE_DATABASE_ID` | The 32-char database ID of the target Notion database. **Share the integration with the database** in Notion (▼ menu → *Add connections*). | `revvel/shared/notion/standards` |
+| Name                           | Purpose                                                                                                                                    | Vault path                          |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------- |
+| `AMPLITUDE_API_KEY`            | Amplitude project API key. _Settings → Projects → \[project\] → API Key._                                                                  | `revvel/shared/analytics/amplitude` |
+| `AMPLITUDE_SECRET_KEY`         | Amplitude project **secret** key. The Dashboard REST API uses HTTP Basic auth (`api_key:secret_key`).                                      | `revvel/shared/analytics/amplitude` |
+| `NOTION_API_KEY`               | Notion internal-integration token (`secret_…`). Create at https://www.notion.so/my-integrations.                                           | `revvel/shared/notion/standards`    |
+| `NOTION_AMPLITUDE_DATABASE_ID` | The 32-char database ID of the target Notion database. **Share the integration with the database** in Notion (▼ menu → _Add connections_). | `revvel/shared/notion/standards`    |
 
 ### 3.2 Repo variables (Settings → Variables → Actions)
 
-| Variable | Required? | Default | Purpose |
-|---|---|---|---|
-| `AMPLITUDE_CHART_ID` | yes | — | Saved Amplitude chart to query. Copy from the chart URL: `…/chart/<id>`. |
-| `AMPLITUDE_REGION` | no | `us` | `us` or `eu`. Use `eu` only if the project is provisioned in Amplitude EU. |
-| `NOTION_VERSION` | no | `2022-06-28` | Notion API version header. |
+| Variable             | Required? | Default      | Purpose                                                                    |
+| -------------------- | --------- | ------------ | -------------------------------------------------------------------------- |
+| `AMPLITUDE_CHART_ID` | yes       | —            | Saved Amplitude chart to query. Copy from the chart URL: `…/chart/<id>`.   |
+| `AMPLITUDE_REGION`   | no        | `us`         | `us` or `eu`. Use `eu` only if the project is provisioned in Amplitude EU. |
+| `NOTION_VERSION`     | no        | `2022-06-28` | Notion API version header.                                                 |
 
 If any required secret/var is missing, the agent logs `::warning::` and exits 0 (no failed runs, no leaked data). Same convention as `amplitude-events.yml`.
 
 ### 3.3 Endpoints
 
-| Region | Amplitude Dashboard host |
-|---|---|
-| `us` | `https://amplitude.com/api/3/chart/<id>/query` |
-| `eu` | `https://analytics.eu.amplitude.com/api/3/chart/<id>/query` |
+| Region | Amplitude Dashboard host                                    |
+| ------ | ----------------------------------------------------------- |
+| `us`   | `https://amplitude.com/api/3/chart/<id>/query`              |
+| `eu`   | `https://analytics.eu.amplitude.com/api/3/chart/<id>/query` |
 
 Notion: `POST https://api.notion.com/v1/pages`.
 
@@ -73,15 +73,15 @@ Notion: `POST https://api.notion.com/v1/pages`.
 
 The target database must contain these properties (case-sensitive):
 
-| Property | Type |
-|---|---|
-| `Title` | Title |
-| `Date` | Date |
-| `Total Events` | Number |
-| `Series Count` | Number |
-| `Series Labels` | Text |
-| `Source` | Text |
-| `Chart ID` | Text |
+| Property        | Type   |
+| --------------- | ------ |
+| `Title`         | Title  |
+| `Date`          | Date   |
+| `Total Events`  | Number |
+| `Series Count`  | Number |
+| `Series Labels` | Text   |
+| `Source`        | Text   |
+| `Chart ID`      | Text   |
 
 A new row is created per run with:
 
@@ -97,14 +97,14 @@ A new row is created per run with:
 
 ## 5. Verification
 
-1. *Settings → Secrets and variables → Actions* — confirm all four secrets exist and `AMPLITUDE_CHART_ID` is set.
-2. In Notion: open the target database → ▼ → *Add connections* → select the integration tied to `NOTION_API_KEY`.
-3. *Actions → Amplitude → Notion Agent → Run workflow* with `dry_run: true`. Confirm the job logs the would-be Notion payload and exits 0 without writing.
+1. _Settings → Secrets and variables → Actions_ — confirm all four secrets exist and `AMPLITUDE_CHART_ID` is set.
+2. In Notion: open the target database → ▼ → _Add connections_ → select the integration tied to `NOTION_API_KEY`.
+3. _Actions → Amplitude → Notion Agent → Run workflow_ with `dry_run: true`. Confirm the job logs the would-be Notion payload and exits 0 without writing.
 4. Re-run with `dry_run: false`. Confirm a new row appears in the Notion database titled `YYYY-MM-DD — midnghtsapphire/revvel-standards`.
 
 ---
 
-## 6. What is *not* sent
+## 6. What is _not_ sent
 
 - **No event-level Amplitude data** is forwarded to Notion. Only aggregate counts and the series labels you defined in your saved chart.
 - No raw issue/PR titles, commit messages, comments, diffs, file contents.
@@ -127,10 +127,10 @@ No code changes required. The `Source` column will reflect the sibling repo auto
 
 ## 8. Failure modes
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| Workflow logs `amplitude-to-notion skipped — missing env: …` | Secret/var not provisioned | See §3 |
-| `Amplitude chart fetch failed: HTTP 401` | Wrong API/secret key, or chart in another project | Verify both keys belong to the project that owns the chart |
-| `Amplitude chart fetch failed: HTTP 404` | Wrong `AMPLITUDE_CHART_ID` or wrong region | Re-copy chart id from URL; check `AMPLITUDE_REGION` |
-| `Notion page create failed: HTTP 404` | Integration not shared with the database, or wrong DB id | In Notion: database → ▼ → *Add connections* |
-| `Notion page create failed: HTTP 400 … property … does not exist` | DB schema missing a required property | Add the property per §4 |
+| Symptom                                                           | Cause                                                    | Fix                                                        |
+| ----------------------------------------------------------------- | -------------------------------------------------------- | ---------------------------------------------------------- |
+| Workflow logs `amplitude-to-notion skipped — missing env: …`      | Secret/var not provisioned                               | See §3                                                     |
+| `Amplitude chart fetch failed: HTTP 401`                          | Wrong API/secret key, or chart in another project        | Verify both keys belong to the project that owns the chart |
+| `Amplitude chart fetch failed: HTTP 404`                          | Wrong `AMPLITUDE_CHART_ID` or wrong region               | Re-copy chart id from URL; check `AMPLITUDE_REGION`        |
+| `Notion page create failed: HTTP 404`                             | Integration not shared with the database, or wrong DB id | In Notion: database → ▼ → _Add connections_                |
+| `Notion page create failed: HTTP 400 … property … does not exist` | DB schema missing a required property                    | Add the property per §4                                    |

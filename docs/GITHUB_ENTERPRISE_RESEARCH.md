@@ -1,4 +1,5 @@
 # GitHub Enterprise vs. Personal GitHub: Deep Research
+
 ## Integration Options for midnghtsapphire & Freedom Angel Corps
 
 **Version:** 1.0.0
@@ -29,19 +30,20 @@ midnghtsapphire currently operates personal repositories on GitHub.com under the
 **What it is:** A GitHub App registered at `https://github.com/settings/apps` under the `midnghtsapphire` personal account.
 
 **How cross-account access works:** The app can be installed on any account that trusts it. midnghtsapphire registers the app, then installs it on:
+
 1. Their personal account (access to personal repos)
 2. The Freedom Angel Corps org (access to FAC repos — requires org admin approval)
 
-| Aspect | Assessment |
-|---|---|
-| Setup complexity | Low — 15-minute setup |
-| Cost | Free (GitHub Apps are free) |
-| Personal repo access | ✅ Full |
-| FAC org access | ✅ After org admin installs it |
-| Enterprise audit logs | ❌ Not included |
-| SSO/SAML enforcement | ❌ Not required or enforced |
-| Survives account changes | ⚠️ App is tied to midnghtsapphire's account |
-| Best for | Solo developers, side projects, cross-account automation |
+| Aspect                   | Assessment                                               |
+| ------------------------ | -------------------------------------------------------- |
+| Setup complexity         | Low — 15-minute setup                                    |
+| Cost                     | Free (GitHub Apps are free)                              |
+| Personal repo access     | ✅ Full                                                  |
+| FAC org access           | ✅ After org admin installs it                           |
+| Enterprise audit logs    | ❌ Not included                                          |
+| SSO/SAML enforcement     | ❌ Not required or enforced                              |
+| Survives account changes | ⚠️ App is tied to midnghtsapphire's account              |
+| Best for                 | Solo developers, side projects, cross-account automation |
 
 **Verdict:** Best for solo/small team work where midnghtsapphire needs access to both personal and FAC repos.
 
@@ -53,17 +55,17 @@ midnghtsapphire currently operates personal repositories on GitHub.com under the
 
 **How cross-account access works:** Same install-on-any-account model, but the app's ownership belongs to the org, not a personal account. Any org admin can manage it. midnghtsapphire installs it on their personal account to gain access.
 
-| Aspect | Assessment |
-|---|---|
-| Setup complexity | Low-Medium — requires org admin access |
-| Cost | Free (GitHub Apps are free) |
-| Personal repo access | ✅ After installing on personal account |
-| FAC org access | ✅ Native — already org-owned |
-| Enterprise audit logs | ✅ App actions logged in org audit log |
-| SSO/SAML enforcement | Optional |
-| Survives account changes | ✅ App owned by org, not individual |
-| Team scalability | ✅ Other FAC team members can manage the app |
-| Best for | Team environments, production automations, org-wide policies |
+| Aspect                   | Assessment                                                   |
+| ------------------------ | ------------------------------------------------------------ |
+| Setup complexity         | Low-Medium — requires org admin access                       |
+| Cost                     | Free (GitHub Apps are free)                                  |
+| Personal repo access     | ✅ After installing on personal account                      |
+| FAC org access           | ✅ Native — already org-owned                                |
+| Enterprise audit logs    | ✅ App actions logged in org audit log                       |
+| SSO/SAML enforcement     | Optional                                                     |
+| Survives account changes | ✅ App owned by org, not individual                          |
+| Team scalability         | ✅ Other FAC team members can manage the app                 |
+| Best for                 | Team environments, production automations, org-wide policies |
 
 **Verdict:** **Recommended for production and team work.** The app is org-owned so it doesn't disappear if midnghtsapphire's personal account is suspended or changes.
 
@@ -73,18 +75,18 @@ midnghtsapphire currently operates personal repositories on GitHub.com under the
 
 **What it is:** Freedom Angel Corps upgrades to a paid GitHub Enterprise Cloud plan (not EMU). Members keep their personal GitHub accounts.
 
-| Aspect | Assessment |
-|---|---|
-| Cost | $21/user/month (as of 2026) |
-| Personal accounts preserved | ✅ Members use existing GitHub accounts |
-| Advanced security features | ✅ Secret scanning, code scanning, dependency review |
-| Audit log retention | ✅ 180-day retention (vs. 90 days on free) |
-| GitHub Advanced Security | Available as add-on ($49/user/month) |
-| SAML SSO | ✅ |
-| IP allow lists | ✅ |
-| Private repos | Unlimited |
-| GitHub Connect | ✅ (for GitHub Enterprise Server integration) |
-| Best for | Organizations needing compliance, audits, advanced security |
+| Aspect                      | Assessment                                                  |
+| --------------------------- | ----------------------------------------------------------- |
+| Cost                        | $21/user/month (as of 2026)                                 |
+| Personal accounts preserved | ✅ Members use existing GitHub accounts                     |
+| Advanced security features  | ✅ Secret scanning, code scanning, dependency review        |
+| Audit log retention         | ✅ 180-day retention (vs. 90 days on free)                  |
+| GitHub Advanced Security    | Available as add-on ($49/user/month)                        |
+| SAML SSO                    | ✅                                                          |
+| IP allow lists              | ✅                                                          |
+| Private repos               | Unlimited                                                   |
+| GitHub Connect              | ✅ (for GitHub Enterprise Server integration)               |
+| Best for                    | Organizations needing compliance, audits, advanced security |
 
 **Verdict:** Appropriate if FAC needs SAML SSO, compliance-grade audit logs, or advanced security scanning. Not required purely for cross-account GitHub App access.
 
@@ -94,15 +96,15 @@ midnghtsapphire currently operates personal repositories on GitHub.com under the
 
 **What it is:** A specialized GitHub Enterprise Cloud variant where all member accounts are **provisioned and controlled by the enterprise's identity provider** (Okta, Azure AD, etc.). Members cannot use or link their personal GitHub accounts.
 
-| Aspect | Assessment |
-|---|---|
-| Personal account compatibility | ❌ INCOMPATIBLE — managed accounts are separate from personal accounts |
-| midnghtsapphire can contribute from personal | ❌ Must use the managed identity only |
-| Setup complexity | Very High — requires IdP configuration |
-| Cost | Same as GHEC ($21/user/month) |
-| Security/compliance | ✅ Maximum enterprise control |
-| Suitable for freelancers/solo devs | ❌ Extremely restrictive |
-| Best for | Large regulated enterprises (finance, government, healthcare) |
+| Aspect                                       | Assessment                                                             |
+| -------------------------------------------- | ---------------------------------------------------------------------- |
+| Personal account compatibility               | ❌ INCOMPATIBLE — managed accounts are separate from personal accounts |
+| midnghtsapphire can contribute from personal | ❌ Must use the managed identity only                                  |
+| Setup complexity                             | Very High — requires IdP configuration                                 |
+| Cost                                         | Same as GHEC ($21/user/month)                                          |
+| Security/compliance                          | ✅ Maximum enterprise control                                          |
+| Suitable for freelancers/solo devs           | ❌ Extremely restrictive                                               |
+| Best for                                     | Large regulated enterprises (finance, government, healthcare)          |
 
 **Verdict:** ❌ **NOT recommended for Freedom Angel Corps + midnghtsapphire.** EMU would prevent midnghtsapphire from using their personal GitHub account to work on FAC repositories. This is a deal-breaker for a freelancer/small team scenario.
 
@@ -112,13 +114,13 @@ midnghtsapphire currently operates personal repositories on GitHub.com under the
 
 **What it is:** Using only the built-in `GITHUB_TOKEN` that GitHub Actions provides per-workflow run.
 
-| Aspect | Assessment |
-|---|---|
-| Setup | Zero — automatic |
-| Cross-repo access | ❌ Limited to the repo the workflow runs in |
+| Aspect                   | Assessment                                     |
+| ------------------------ | ---------------------------------------------- |
+| Setup                    | Zero — automatic                               |
+| Cross-repo access        | ❌ Limited to the repo the workflow runs in    |
 | External webhook trigger | ❌ Cannot receive webhooks from outside GitHub |
-| Long-lived automation | ❌ Token expires with the workflow run |
-| Best for | Simple same-repo CI/CD only |
+| Long-lived automation    | ❌ Token expires with the workflow run         |
+| Best for                 | Simple same-repo CI/CD only                    |
 
 **Verdict:** Insufficient for the requirements. Use as a supplement, not a replacement.
 
@@ -156,12 +158,12 @@ The issue referenced needing "all access." Here is what that means concretely an
 
 ```yaml
 permissions:
-  contents: write          # read/write files and commits
-  issues: write            # create and manage issues
-  pull_requests: write     # open, update, merge PRs
-  metadata: read           # always required
-  checks: write            # create check runs (for CI status)
-  statuses: write          # set commit status
+  contents: write # read/write files and commits
+  issues: write # create and manage issues
+  pull_requests: write # open, update, merge PRs
+  metadata: read # always required
+  checks: write # create check runs (for CI status)
+  statuses: write # set commit status
 ```
 
 ### Extended Permissions (Full Automation Suite)
@@ -173,8 +175,8 @@ permissions:
   issues: write
   pull_requests: write
   metadata: read
-  workflows: write          # manage Actions workflow files
-  secrets: write            # manage repository secrets
+  workflows: write # manage Actions workflow files
+  secrets: write # manage repository secrets
   checks: write
   statuses: write
   deployments: write
@@ -193,14 +195,14 @@ permissions:
 
 ## 5. Cost Analysis
 
-| Scenario | Monthly Cost | Notes |
-|---|---|---|
-| GitHub App on free accounts | $0 | GitHub Apps are always free |
-| GitHub App on GitHub Team org | $4/user/month | Team features for FAC |
-| GitHub App on GitHub Enterprise Cloud | $21/user/month | Compliance, SAML, advanced security |
-| GitHub Enterprise EMU | $21/user/month | + restrictions on personal accounts |
-| GitHub Advanced Security add-on | $49/user/month | Code scanning, secret scanning at scale |
-| OpenRouter for AI research | ~$0.10–$2.00 per research run | Depends on models used |
+| Scenario                              | Monthly Cost                  | Notes                                   |
+| ------------------------------------- | ----------------------------- | --------------------------------------- |
+| GitHub App on free accounts           | $0                            | GitHub Apps are always free             |
+| GitHub App on GitHub Team org         | $4/user/month                 | Team features for FAC                   |
+| GitHub App on GitHub Enterprise Cloud | $21/user/month                | Compliance, SAML, advanced security     |
+| GitHub Enterprise EMU                 | $21/user/month                | + restrictions on personal accounts     |
+| GitHub Advanced Security add-on       | $49/user/month                | Code scanning, secret scanning at scale |
+| OpenRouter for AI research            | ~$0.10–$2.00 per research run | Depends on models used                  |
 
 **Recommendation for current stage:** Start with free GitHub + free GitHub App. Upgrade to GitHub Team ($4/user) when the FAC team exceeds 3 active contributors. Graduate to Enterprise Cloud only when SAML SSO or compliance audit logs are required.
 
@@ -215,6 +217,7 @@ permissions:
 - **Auditability:** Actions taken by the app may not appear in org audit logs
 
 **Mitigations:**
+
 - Store private key in HashiCorp Vault (see `VAULT_AGENT_STANDARD.md`)
 - Enable GitHub audit log streaming to external SIEM if needed
 - Document the app registration in org runbooks
@@ -225,6 +228,7 @@ permissions:
 - **Slightly higher setup complexity:** Must coordinate with org admin
 
 **Mitigations:**
+
 - Document the app in `RUNBOOK_STANDARD.md`
 - Give midnghtsapphire org admin role on FAC
 
@@ -247,12 +251,12 @@ permissions:
 
 For completeness, here are non-GitHub alternatives if the GitHub ecosystem were ever reconsidered:
 
-| Platform | API Integration | Webhook Support | Self-Hosted | Cost |
-|---|---|---|---|---|
-| **GitLab** | GitLab Service Accounts + Tokens | ✅ Native | ✅ GitLab CE | Free–$29/user |
-| **Bitbucket Cloud** | Bitbucket Connect Apps | ✅ | ❌ | Free–$15/user |
-| **Gitea** | API tokens, OAuth Apps | ✅ | ✅ Always | Free (self-hosted) |
-| **Azure DevOps** | Service Connections + PATs | ✅ | ✅ | $6/user |
+| Platform            | API Integration                  | Webhook Support | Self-Hosted  | Cost               |
+| ------------------- | -------------------------------- | --------------- | ------------ | ------------------ |
+| **GitLab**          | GitLab Service Accounts + Tokens | ✅ Native       | ✅ GitLab CE | Free–$29/user      |
+| **Bitbucket Cloud** | Bitbucket Connect Apps           | ✅              | ❌           | Free–$15/user      |
+| **Gitea**           | API tokens, OAuth Apps           | ✅              | ✅ Always    | Free (self-hosted) |
+| **Azure DevOps**    | Service Connections + PATs       | ✅              | ✅           | $6/user            |
 
 **Assessment:** For the Revvel + MIDNGHTSAPPHIRE ecosystem, GitHub is the correct platform. The ecosystem lock-in is acceptable given the heavy use of GitHub Actions, GitHub Copilot, and the GitHub API throughout the stack. No migration to an alternative is recommended.
 

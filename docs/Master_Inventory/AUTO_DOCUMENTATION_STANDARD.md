@@ -27,9 +27,9 @@ A `CHANGELOG.md` file is strictly mandatory in the root directory of every singl
 1.  **Format:** The file must adhere to the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and utilize Semantic Versioning.
 2.  **Automation:** The `CHANGELOG.md` must be automatically updated by a GitHub Action upon every push to the `main` branch.
 3.  **Content Requirements:** The automated logging process must capture and record the following information for every change:
-    *   **Timestamp:** The exact date and time the change was committed and merged.
-    *   **Description:** A clear summary of what was changed (derived from the commit message or PR title).
-    *   **Author:** The identity of the user, developer, or AI agent (e.g., Venice AI, Claude) that authored and pushed the change.
+    - **Timestamp:** The exact date and time the change was committed and merged.
+    - **Description:** A clear summary of what was changed (derived from the commit message or PR title).
+    - **Author:** The identity of the user, developer, or AI agent (e.g., Venice AI, Claude) that authored and pushed the change.
 
 ### 3.2. Automated API Documentation
 

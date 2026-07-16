@@ -13,10 +13,12 @@ Automated brand content distribution across high-value platforms to establish E-
 ## Supported Platforms
 
 ### Tier 1 — Already Have Foothold
+
 - ✅ **ORCID** — Auto-submit with API token
 - ✅ **GitHub** — Auto-update via API
 
 ### Tier 2 — High-Value Deep Web (Manual)
+
 - ⚠️ **Wikidata** — Highest priority, direct Google Knowledge Graph feed
 - ⚠️ **ResearchGate** — Even non-academic work qualifies
 - ⚠️ **Internet Archive** — Citable permanent URLs
@@ -25,6 +27,7 @@ Automated brand content distribution across high-value platforms to establish E-
 - ✅ **Semantic Scholar** — Auto-indexed from ORCID
 
 ### Tier 3 — OSINT & Intelligence (Conditional)
+
 - ⚠️ **MISP** — Threat intelligence communities
 - ⚠️ **IntelligenceX** — OSINT researcher profiles
 - ⚠️ **Maltego** — Entity and transform definitions

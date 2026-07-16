@@ -12,11 +12,11 @@ Brand home: **[truthslayer.com](https://truthslayer.com)** — Audrey's fact-che
 
 ## What lives here
 
-| Path | Purpose |
-|---|---|
-| `index.json`                       | Machine-readable manifest of every published audit. Read this from the truthslayer.com badge widget and any creator/influencer surface. |
-| `audits/<slug>/truthslayer-report.md`   | Human-readable markdown report for one audit. |
-| `audits/<slug>/truthslayer-report.json` | Structured JSON sidecar (schema: `truthslayer-audit/v1.1`). |
+| Path                                    | Purpose                                                                                                                                 |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `index.json`                            | Machine-readable manifest of every published audit. Read this from the truthslayer.com badge widget and any creator/influencer surface. |
+| `audits/<slug>/truthslayer-report.md`   | Human-readable markdown report for one audit.                                                                                           |
+| `audits/<slug>/truthslayer-report.json` | Structured JSON sidecar (schema: `truthslayer-audit/v1.1`).                                                                             |
 
 Each `<slug>` is the kebab-case target name (e.g., `revvel-standards`).
 Audits are **append-only** — re-audits create a new dated sub-entry under the
@@ -26,9 +26,11 @@ preserved.
 ## Published audits
 
 <!-- trust-community:index:start -->
-| Target | Score | Grade | Badge | Confidence | Date (UTC) | Self-audit | Report |
-|---|---:|:---:|---|:---:|---|:---:|---|
-| [`midnghtsapphire/revvel-standards`](https://github.com/midnghtsapphire/revvel-standards) | **78** | **B** | TruthSlayer Verified — Bronze | high | 2026-04-20 | ✓ | [`audits/revvel-standards/`](audits/revvel-standards/) |
+
+| Target                                                                                    |  Score | Grade | Badge                         | Confidence | Date (UTC) | Self-audit | Report                                                 |
+| ----------------------------------------------------------------------------------------- | -----: | :---: | ----------------------------- | :--------: | ---------- | :--------: | ------------------------------------------------------ |
+| [`midnghtsapphire/revvel-standards`](https://github.com/midnghtsapphire/revvel-standards) | **78** | **B** | TruthSlayer Verified — Bronze |    high    | 2026-04-20 |     ✓      | [`audits/revvel-standards/`](audits/revvel-standards/) |
+
 <!-- trust-community:index:end -->
 
 ## How an audit gets here

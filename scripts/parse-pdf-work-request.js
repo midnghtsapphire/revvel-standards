@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Parse GitHub Work Request issue bodies for sellable-pdf routing.
@@ -7,18 +7,18 @@
  */
 
 function escapeRegex(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function parseSection(body, label) {
-  if (!body || typeof body !== 'string') return null;
+  if (!body || typeof body !== "string") return null;
   const re = new RegExp(
     `(?:^|\\n)###\\s+${escapeRegex(label)}(?:\\s*\\([^)]*\\))?\\s*\\n+([\\s\\S]*?)(?=\\n###|\\n*$)`,
-    'm'
+    "m",
   );
   const m = body.match(re);
   if (!m) return null;
-  let chunk = m[1].trim();
+  const chunk = m[1].trim();
   if (!chunk || /^_?no response_?$/i.test(chunk)) return null;
   const firstLine = chunk
     .split(/\r?\n/)
@@ -27,7 +27,11 @@ function parseSection(body, label) {
   return firstLine || null;
 }
 
-const BATCH_VALUES = new Set(['Not applicable', 'Autocreate 3', 'Autocreate 20']);
+const BATCH_VALUES = new Set([
+  "Not applicable",
+  "Autocreate 3",
+  "Autocreate 20",
+]);
 
 /**
  * @param {string} body Issue body (markdown from GitHub).
@@ -49,21 +53,21 @@ function parsePdfWorkRequest(body, opts = {}) {
     validBatch: false,
   };
 
-  const ot = parseSection(body, 'Output Type');
+  const ot = parseSection(body, "Output Type");
   if (ot) out.outputType = ot;
 
-  if (ot === 'sellable-pdf' || opts.forceSellablePdf) {
+  if (ot === "sellable-pdf" || opts.forceSellablePdf) {
     out.isSellablePdf = true;
   }
 
-  const batch = parseSection(body, 'PDF pipeline batch');
+  const batch = parseSection(body, "PDF pipeline batch");
   if (batch) out.pdfPipelineBatch = batch;
 
   if (batch && BATCH_VALUES.has(batch)) {
     out.validBatch = true;
-    if (batch === 'Not applicable') out.autocreateCount = 1;
-    else if (batch === 'Autocreate 3') out.autocreateCount = 3;
-    else if (batch === 'Autocreate 20') out.autocreateCount = 20;
+    if (batch === "Not applicable") out.autocreateCount = 1;
+    else if (batch === "Autocreate 3") out.autocreateCount = 3;
+    else if (batch === "Autocreate 20") out.autocreateCount = 20;
   }
 
   return out;
@@ -72,8 +76,8 @@ function parsePdfWorkRequest(body, opts = {}) {
 module.exports = { parsePdfWorkRequest, parseSection, BATCH_VALUES };
 
 if (require.main === module) {
-  const body = process.env.ISSUE_BODY || '';
-  const force = process.env.FORCE_SELLABLE_PDF === 'true';
+  const body = process.env.ISSUE_BODY || "";
+  const force = process.env.FORCE_SELLABLE_PDF === "true";
   const result = parsePdfWorkRequest(body, { forceSellablePdf: force });
   process.stdout.write(JSON.stringify(result));
 }

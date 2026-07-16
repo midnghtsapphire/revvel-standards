@@ -6,7 +6,7 @@ description: "Autonomous agent for researching, learning, and enforcing ADA comp
 metadata:
   author: "MIDNGHTSAPPHIRE"
   category: "Accessibility & Compliance"
-  tags: 
+  tags:
     - "ada"
     - "wcag"
     - "accessibility"
@@ -29,7 +29,7 @@ metadata:
     - "continuous-24-7"
 
 dependencies:
-  skills: 
+  skills:
     - "accessibility"
     - "testing"
     - "code_review"
@@ -90,11 +90,11 @@ implementation:
   language: markdown
   content: |
     # ADA Compliance Agent Skill
-    
+
     Autonomous agent for researching, learning, and enforcing ADA (Americans with Disabilities Act) compliance across all codebases. Continuously monitors for new standards, free/paid certification courses, and ensures all code meets WCAG 2.2 AA/AAA and ADA Title III requirements.
-    
+
     ## Role & Mission
-    
+
     Operate as an **ADA Compliance Specialist** with combined expertise in:
     - **WCAG 2.2/2.1** — Web Content Accessibility Guidelines (AA minimum, AAA where feasible)
     - **ADA Title III** — Public accommodations and commercial facilities
@@ -103,23 +103,23 @@ implementation:
     - **Assistive Technology** — Screen readers (NVDA, JAWS, VoiceOver), keyboard navigation, TTY/TDD
     - **Accessibility Testing** — axe-core, Pa11y, Lighthouse, WAVE
     - **Continuous Learning** — Monitor for new certifications, standards updates, best practices
-    
+
     This agent can run:
     - **On-demand** — Manual trigger for audits, code reviews, certification research
     - **Scheduled** — Nightly/weekly compliance checks via GitHub Actions
     - **24/7 via OpenRouter** — Continuous monitoring of ADA standards, new courses, vulnerability patches
-    
+
     See full SKILL.md for complete operating protocol, certification registry, and compliance checklists.
 
 examples:
   - task: "Run ADA compliance audit on current branch"
     command: "Load ada-compliance-agent skill and run full accessibility audit"
     expected_output: "Compliance report with violations, auto-fixes applied, issues created for manual intervention"
-  
+
   - task: "Find free ADA certifications"
     command: "Research and list free ADA certification courses"
     expected_output: "Updated certification registry in /docs/ada-certifications.md with URLs, providers, CEU credits"
-  
+
   - task: "Fix accessibility violations in PR"
     command: "Review PR #42 for accessibility issues and auto-fix safe violations"
     expected_output: "Commits with auto-fixes, issues for manual fixes, updated compliance checklist"
@@ -153,7 +153,7 @@ guardrails:
     - "Adding for/id associations to labels"
     - "Adding role='alert' to error containers"
     - "Adding lang attribute to html element"
-  
+
   auto_fix_forbidden:
     - "Removing interactive elements"
     - "Changing ARIA roles on complex widgets"
@@ -161,7 +161,7 @@ guardrails:
     - "Adding alt text to non-decorative images (requires human judgment)"
     - "Changing focus order"
     - "Disabling animations globally"
-  
+
   escalation_triggers:
     - "Critical WCAG violations after 3 auto-fix attempts"
     - "Third-party component violations (vendor patch required)"
@@ -176,7 +176,7 @@ monitoring:
     - "certifications_completed_count"
     - "auto_fix_success_rate"
     - "time_to_remediation_days"
-  
+
   alerts:
     - "Lighthouse score drops below 90"
     - "New critical WCAG violation introduced"
@@ -191,43 +191,43 @@ certification_registry:
       url: "https://adabasics.org"
       credits: "CEU/CRCC"
       certificate: true
-    
+
     - name: "ADA Employment Webcourse"
       provider: "New England ADA Center"
       url: "https://www.newenglandada.org/slideshow/disability-employment-webcourse"
       credits: "CEU/CRCC"
       certificate: true
-    
+
     - name: "ADA Title II Tutorial"
       provider: "ADA National Network"
       url: "https://adatitle2.org"
       credits: "CEU/CRCC"
       certificate: true
-    
+
     - name: "At Your Service: Welcoming Customers"
       provider: "West Virginia ADA Center"
       url: "https://wiawebcourse.org"
       credits: "CEU/CRCC"
       certificate: true
-    
+
     - name: "Digital Accessibility Foundations"
       provider: "W3C WAI"
       url: "https://www.w3.org/WAI/courses/foundations-intro/"
       credits: "Optional paid cert"
       certificate: true
-    
+
     - name: "Adaline Free Courses"
       provider: "Adaline"
       url: "https://adaline.io/courses"
       credits: "None"
       certificate: true
-    
+
     - name: "LinkedIn Learning Free ADA Courses"
       provider: "LinkedIn"
       url: "https://www.classcentral.com/report/linkedin-learning-free-certificates/"
       credits: "None"
       certificate: true
-    
+
     - name: "Pacific ADA Center Courses"
       provider: "Pacific ADA Center"
       url: "https://www.adapacific.org/"
@@ -239,17 +239,17 @@ certification_registry:
       provider: "International Association of Accessibility Professionals"
       cost: "$425"
       type: "Certified Professional in Accessibility Core Competencies"
-    
+
     - name: "IAAP WAS"
       provider: "IAAP"
       cost: "$425"
       type: "Web Accessibility Specialist"
-    
+
     - name: "Deque University"
       provider: "Deque Systems"
       cost: "$299-$799"
       type: "Full curriculum with axe DevTools training"
-    
+
     - name: "Section 508 Trusted Tester"
       provider: "DHS"
       cost: "Free (federal)"

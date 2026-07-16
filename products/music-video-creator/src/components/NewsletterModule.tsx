@@ -1,9 +1,10 @@
-'use client';
-import React, { useState } from 'react';
-import { Send } from 'lucide-react';
+"use client";
+import type React from "react";
+import { useState } from "react";
+import { Send } from "lucide-react";
 
 export default function NewsletterModule() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
   const handleSubscribe = (e: React.FormEvent) => {
@@ -11,13 +12,15 @@ export default function NewsletterModule() {
     if (!email) return;
     // In a real app, send to API route -> database / CRM
     setSubscribed(true);
-    setEmail('');
+    setEmail("");
   };
 
   return (
     <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-6 rounded-2xl shadow-sm text-white">
       <h3 className="text-xl font-bold mb-2">Join the Creator Club</h3>
-      <p className="text-indigo-100 text-sm mb-4">Get the latest AI video tips and exclusive deals sent to your inbox.</p>
+      <p className="text-indigo-100 text-sm mb-4">
+        Get the latest AI video tips and exclusive deals sent to your inbox.
+      </p>
 
       {subscribed ? (
         <div className="bg-white/20 p-3 rounded-lg text-center font-medium">

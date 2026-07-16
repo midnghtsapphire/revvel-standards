@@ -42,17 +42,17 @@ The core of the system is an OpenRouter-driven multi-agent architecture featurin
 
 ### Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-25 |
-| Last Updated | 2026-05-25 |
-| Primary Language | TypeScript / Node.js / Python |
-| Stars | 0 |
-| Open Issues | Active |
-| Description | SELF-HEAL OPS Production App |
-| Private | False |
-| Archived | False |
+| Property         | Value                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created          | 2026-05-25                                                                              |
+| Last Updated     | 2026-05-25                                                                              |
+| Primary Language | TypeScript / Node.js / Python                                                           |
+| Stars            | 0                                                                                       |
+| Open Issues      | Active                                                                                  |
+| Description      | SELF-HEAL OPS Production App                                                            |
+| Private          | False                                                                                   |
+| Archived         | False                                                                                   |
 
 ### Current Status
 
@@ -85,20 +85,20 @@ products/self-heal-ops/
 
 ### Competitive Analysis
 
-| Competitor | Price | Core Strengths | Weaknesses | Our Advantage |
-| --- | --- | --- | --- | --- |
-| CAMEO/ALOHA | Free (Gov) | Established, trusted, offline | Legacy UI, no AI synthesis, slow | Multi-agent AI reasoning, real-time synthesis across domains |
-| CHEMTREC | High (Service) | Human expertise, authoritative | Expensive, not a software platform | Instant software-driven intelligence, self-healing audits |
+| Competitor  | Price          | Core Strengths                 | Weaknesses                         | Our Advantage                                                |
+| ----------- | -------------- | ------------------------------ | ---------------------------------- | ------------------------------------------------------------ |
+| CAMEO/ALOHA | Free (Gov)     | Established, trusted, offline  | Legacy UI, no AI synthesis, slow   | Multi-agent AI reasoning, real-time synthesis across domains |
+| CHEMTREC    | High (Service) | Human expertise, authoritative | Expensive, not a software platform | Instant software-driven intelligence, self-healing audits    |
 
 ### Bill of Materials (BOM)
 
-| Tool/API | Category | Cost | Justification |
-| --- | --- | --- | --- |
-| Vercel | Hosting | $20/mo | Platform default for Next.js apps |
-| Supabase | Database | $25/mo | Postgres + Vector DB for SDS/EPA docs |
-| OpenRouter | LLM Gateway | Variable | Required central model gateway for multi-agent |
-| Mapbox / ArcGIS | Mapping | Free tier | Essential for plume and terrain visualization |
-| NOAA / EPA APIs | Data feeds | Free | Authoritative weather and contamination data |
+| Tool/API        | Category    | Cost      | Justification                                  |
+| --------------- | ----------- | --------- | ---------------------------------------------- |
+| Vercel          | Hosting     | $20/mo    | Platform default for Next.js apps              |
+| Supabase        | Database    | $25/mo    | Postgres + Vector DB for SDS/EPA docs          |
+| OpenRouter      | LLM Gateway | Variable  | Required central model gateway for multi-agent |
+| Mapbox / ArcGIS | Mapping     | Free tier | Essential for plume and terrain visualization  |
+| NOAA / EPA APIs | Data feeds  | Free      | Authoritative weather and contamination data   |
 
 ### Community Chatter
 

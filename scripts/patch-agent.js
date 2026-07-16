@@ -19,30 +19,32 @@
  *   node scripts/patch-agent.js --check --strict   # exit 1 if anything vulnerable
  *   node scripts/patch-agent.js --fix              # raise vulnerable declared ranges
  */
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const path = require('path');
-const semver = require('semver');
+const fs = require("fs");
+const path = require("path");
+const semver = require("semver");
 
-const REPO_ROOT = path.resolve(__dirname, '..');
-const ADVISORY_FILE = path.join(REPO_ROOT, 'data', 'security-advisories.json');
-const SKIP_DIRS = new Set(['node_modules', '.git', '.github']);
+const REPO_ROOT = path.resolve(__dirname, "..");
+const ADVISORY_FILE = path.join(REPO_ROOT, "data", "security-advisories.json");
+const SKIP_DIRS = new Set(["node_modules", ".git", ".github"]);
 
 function loadAdvisories(file = ADVISORY_FILE) {
-  const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+  const data = JSON.parse(fs.readFileSync(file, "utf8"));
   return data.advisories || [];
 }
 
 // Verdict for a single resolved version against an advisory. Pure.
 // Returns 'vulnerable' | 'safe' | 'unknown'.
 function classify(resolvedVersion, advisory) {
-  if (resolvedVersion == null) return 'unknown';
+  if (resolvedVersion == null) return "unknown";
   const v = semver.coerce(resolvedVersion);
-  if (!v) return 'unknown';
-  return semver.satisfies(v, advisory.vulnerableRange, { includePrerelease: true })
-    ? 'vulnerable'
-    : 'safe';
+  if (!v) return "unknown";
+  return semver.satisfies(v, advisory.vulnerableRange, {
+    includePrerelease: true,
+  })
+    ? "vulnerable"
+    : "safe";
 }
 
 // Lowest patched version that is >= the resolved version's major line, so the
@@ -63,7 +65,7 @@ function findPackageJsons(root = REPO_ROOT) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       if (entry.isDirectory()) {
         if (!SKIP_DIRS.has(entry.name)) walk(path.join(dir, entry.name));
-      } else if (entry.name === 'package.json') {
+      } else if (entry.name === "package.json") {
         out.push(path.join(dir, entry.name));
       }
     }
@@ -73,17 +75,22 @@ function findPackageJsons(root = REPO_ROOT) {
 
 // Resolved version of a package from the nearest lockfile next to a package.json.
 function resolvedFromLock(pkgJsonPath, pkgName) {
-  const lock = path.join(path.dirname(pkgJsonPath), 'package-lock.json');
+  const lock = path.join(path.dirname(pkgJsonPath), "package-lock.json");
   if (!fs.existsSync(lock)) return null;
-  const data = JSON.parse(fs.readFileSync(lock, 'utf8'));
+  const data = JSON.parse(fs.readFileSync(lock, "utf8"));
   const packages = data.packages || {};
   const node = packages[`node_modules/${pkgName}`];
   return node && node.version ? node.version : null;
 }
 
 function declaredRange(pkgJson, pkgName) {
-  for (const field of ['dependencies', 'devDependencies', 'optionalDependencies']) {
-    if (pkgJson[field] && pkgJson[field][pkgName]) return { field, range: pkgJson[field][pkgName] };
+  for (const field of [
+    "dependencies",
+    "devDependencies",
+    "optionalDependencies",
+  ]) {
+    if (pkgJson[field] && pkgJson[field][pkgName])
+      return { field, range: pkgJson[field][pkgName] };
   }
   return null;
 }
@@ -92,7 +99,7 @@ function declaredRange(pkgJson, pkgName) {
 function scan(advisory, root = REPO_ROOT) {
   const findings = [];
   for (const pkgPath of findPackageJsons(root)) {
-    const pkgJson = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+    const pkgJson = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
     const declared = declaredRange(pkgJson, advisory.package);
     if (!declared) continue;
     const resolved = resolvedFromLock(pkgPath, advisory.package);
@@ -109,17 +116,17 @@ function scan(advisory, root = REPO_ROOT) {
 }
 
 function applyFix(pkgPath, advisory, finding) {
-  const pkgJson = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+  const pkgJson = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
   const floor = finding.recommended;
   pkgJson[finding.field][advisory.package] = `^${floor}`;
-  fs.writeFileSync(pkgPath, JSON.stringify(pkgJson, null, 2) + '\n');
+  fs.writeFileSync(pkgPath, JSON.stringify(pkgJson, null, 2) + "\n");
   return floor;
 }
 
 function main(argv) {
   const args = new Set(argv.slice(2));
-  const fix = args.has('--fix');
-  const strict = args.has('--strict');
+  const fix = args.has("--fix");
+  const strict = args.has("--strict");
   const advisories = loadAdvisories();
 
   let vulnerableCount = 0;
@@ -133,9 +140,16 @@ function main(argv) {
       continue;
     }
     for (const f of findings) {
-      const tag = f.verdict === 'vulnerable' ? '❌ VULNERABLE' : f.verdict === 'safe' ? '✅ safe' : '⚠️ unknown';
-      console.log(`• ${header}\n    ${f.file} (${f.field}): declared ${f.declared}, resolved ${f.resolved || '?'} → ${tag}`);
-      if (f.verdict === 'vulnerable') {
+      const tag =
+        f.verdict === "vulnerable"
+          ? "❌ VULNERABLE"
+          : f.verdict === "safe"
+            ? "✅ safe"
+            : "⚠️ unknown";
+      console.log(
+        `• ${header}\n    ${f.file} (${f.field}): declared ${f.declared}, resolved ${f.resolved || "?"} → ${tag}`,
+      );
+      if (f.verdict === "vulnerable") {
         vulnerableCount++;
         if (fix) {
           const floor = applyFix(path.join(REPO_ROOT, f.file), adv, f);
@@ -147,7 +161,9 @@ function main(argv) {
     }
   }
 
-  console.log(`\n${vulnerableCount === 0 ? '✅ No vulnerable declared dependencies found.' : `❌ ${vulnerableCount} vulnerable dependency declaration(s).`}`);
+  console.log(
+    `\n${vulnerableCount === 0 ? "✅ No vulnerable declared dependencies found." : `❌ ${vulnerableCount} vulnerable dependency declaration(s).`}`,
+  );
   if (strict && vulnerableCount > 0) process.exit(1);
 }
 
@@ -159,4 +175,10 @@ if (require.main === module) {
   main(process.argv);
 }
 
-module.exports = { loadAdvisories, classify, recommendedFloor, scan, declaredRange };
+module.exports = {
+  loadAdvisories,
+  classify,
+  recommendedFloor,
+  scan,
+  declaredRange,
+};

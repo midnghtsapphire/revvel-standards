@@ -20,6 +20,7 @@
 ## Context: What Are "OpenHands's Comment Prompts"?
 
 Based on research, this refers to:
+
 1. **TODO/FIXME comments in code** tagged for agent execution (e.g., `TODO @agent: implement retry logic`)
 2. **GitHub issue/PR comments** requesting agent action (e.g., "Agent: please review this PR")
 3. **Workflow prompts** left by previous agents for continuation
@@ -36,11 +37,13 @@ The question is: **which agent platform should pick up and execute these prompts
 **Status:** Currently disabled in this repository (`.circleci/config.yml` is a no-op)
 
 **Capabilities:**
+
 - CI/CD pipeline execution
 - Can integrate with OpenRouter for AI failure analysis
 - Template exists (`templates/cicd/circleci-openrouter.yml`)
 
 **Evaluation:**
+
 - ❌ Not suitable for executing agent prompts
 - ❌ Limited to CI/CD context only
 - ❌ Repository already standardized on GitHub Actions
@@ -55,6 +58,7 @@ The question is: **which agent platform should pick up and execute these prompts
 **Status:** Already evaluated and integrated (`skills/bito-ai/`, `IMPLEMENTATION_SUMMARY_BITO_AI.md`)
 
 **Capabilities:**
+
 - AI-powered code review
 - Static analysis and security scanning
 - Technical debt identification
@@ -62,6 +66,7 @@ The question is: **which agent platform should pick up and execute these prompts
 - Supports GitHub Actions workflow
 
 **Evaluation:**
+
 - ✅ Excellent for code review prompts
 - ✅ Already has workflow template (`.github/workflows/bito-ai.yml`)
 - ✅ API key configured via GitHub secrets
@@ -71,6 +76,7 @@ The question is: **which agent platform should pick up and execute these prompts
 **Recommendation:** **Use for code quality prompts** — When comments request code review, security scan, or technical debt analysis.
 
 **Example prompts Bito should handle:**
+
 ```javascript
 // TODO @bito: review this function for security vulnerabilities
 // FIXME @bito: suggest performance optimizations for this loop
@@ -83,6 +89,7 @@ The question is: **which agent platform should pick up and execute these prompts
 **Status:** Not yet integrated. Open-source VS Code extension.
 
 **Capabilities:**
+
 - Autonomous coding agent in VS Code
 - Create/edit files, run terminal commands
 - Multiple modes: Code, Architect, Ask, Debug
@@ -93,11 +100,13 @@ The question is: **which agent platform should pick up and execute these prompts
 - Open source (Apache 2.0)
 
 **Key Repositories:**
+
 - https://github.com/marco-altran/Roo-Cline
 - https://github.com/OSL-Ai/Roo-Cline
 - Parent: https://github.com/RooCodeInc/Roo-Code
 
 **Evaluation:**
+
 - ✅ Excellent for local development prompts
 - ✅ Autonomous file operations
 - ✅ Terminal command execution
@@ -109,12 +118,14 @@ The question is: **which agent platform should pick up and execute these prompts
 **Recommendation:** **Use for local development** — When Audrey or developers work locally on complex features requiring autonomous coding assistance.
 
 **Example prompts Roo-Cline should handle:**
+
 ```javascript
 // TODO @roo: refactor this module to use async/await
 // TODO @roo: add comprehensive error handling to this function
 ```
 
 **Integration Plan:**
+
 1. Document Roo-Cline setup in `docs/ROO_CLINE_SETUP.md`
 2. Add `@roo` tag convention to `docs/AGENTS.md`
 3. Create skill manifest: `skills/roo-cline/SKILL.md`
@@ -127,6 +138,7 @@ The question is: **which agent platform should pick up and execute these prompts
 **Status:** Fully defined (`GOAP.md`, `GOAP_AGENT_PROMPT.md`). Implementation pending.
 
 **Capabilities:**
+
 - Relentlessly autonomous goal-oriented action planner
 - Revenue-focused task execution
 - Self-healing with `learnings.md` loop
@@ -138,6 +150,7 @@ The question is: **which agent platform should pick up and execute these prompts
 **Target:** $10M by 2030, $2000+/month revenue growth
 
 **Evaluation:**
+
 - ✅ Perfect for revenue-generating prompts
 - ✅ Autonomous and self-healing
 - ✅ Personal agent for Audrey's goals
@@ -147,6 +160,7 @@ The question is: **which agent platform should pick up and execute these prompts
 **Recommendation:** **Use for revenue and business prompts** — When prompts relate to monetization, business strategy, or Audrey's personal goals.
 
 **Example prompts GOAP should handle:**
+
 ```markdown
 TODO @goap: Research top 5 Amazon Vine alternatives for revenue diversification
 TODO @goap: Automate Reese-Reviews email parsing workflow
@@ -154,6 +168,7 @@ TODO @goap: Find and evaluate 3 grant opportunities for Tikiwash bot
 ```
 
 **Integration Plan:**
+
 1. Deploy GOAP agent via OpenRouter with canonical prompt
 2. Add `@goap` tag detection to workflow
 3. Route GOAP-tagged issues to dedicated workflow
@@ -166,6 +181,7 @@ TODO @goap: Find and evaluate 3 grant opportunities for Tikiwash bot
 **Status:** Active. 58 GitHub Actions workflows. Primary automation backbone.
 
 **Capabilities:**
+
 - Multi-model AI orchestration
 - Triage and classification
 - Code review and generation
@@ -176,6 +192,7 @@ TODO @goap: Find and evaluate 3 grant opportunities for Tikiwash bot
 - Scheduled jobs (cron)
 
 **Evaluation:**
+
 - ✅ **Already the primary automation system**
 - ✅ Comprehensive workflow coverage
 - ✅ Multi-agent routing capability
@@ -229,14 +246,14 @@ TODO @goap: Find and evaluate 3 grant opportunities for Tikiwash bot
 
 ### Tag Convention
 
-| Tag | Agent | Use Case |
-|-----|-------|----------|
-| `@agent` | OpenRouter | General AI task (auto-routed) |
-| `@bito` | Bito AI | Code review, security scan, tech debt |
-| `@goap` | GOAP | Revenue, business, Audrey's personal goals |
-| `@roo` | Roo-Cline | Local development (manual invocation) |
-| `@jules` | Jules | Google Gemini specialist tasks |
-| `@copilot` | GitHub Copilot | This agent (manual invocation) |
+| Tag        | Agent          | Use Case                                   |
+| ---------- | -------------- | ------------------------------------------ |
+| `@agent`   | OpenRouter     | General AI task (auto-routed)              |
+| `@bito`    | Bito AI        | Code review, security scan, tech debt      |
+| `@goap`    | GOAP           | Revenue, business, Audrey's personal goals |
+| `@roo`     | Roo-Cline      | Local development (manual invocation)      |
+| `@jules`   | Jules          | Google Gemini specialist tasks             |
+| `@copilot` | GitHub Copilot | This agent (manual invocation)             |
 
 ### Implementation Files
 
@@ -249,24 +266,25 @@ TODO @goap: Find and evaluate 3 grant opportunities for Tikiwash bot
 
 ## Comparison Matrix
 
-| Feature | CircleCI | Bito AI | Roo-Cline | GOAP | OpenRouter |
-|---------|----------|---------|-----------|------|------------|
-| **Already Integrated** | ❌ No | ✅ Yes | ❌ No | ⚠️ Partial | ✅ Yes |
-| **GitHub Actions Native** | ❌ No | ✅ Yes | ❌ No | ✅ Yes | ✅ Yes |
-| **Code Quality Focus** | ❌ No | ✅ Yes | ⚠️ Partial | ❌ No | ⚠️ Partial |
-| **Revenue Focus** | ❌ No | ❌ No | ❌ No | ✅ Yes | ⚠️ Partial |
-| **Autonomous Execution** | ⚠️ Partial | ⚠️ Partial | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Local Development** | ❌ No | ❌ No | ✅ Yes | ❌ No | ❌ No |
-| **Self-Healing** | ❌ No | ❌ No | ⚠️ Partial | ✅ Yes | ✅ Yes |
-| **Multi-Agent Orchestration** | ❌ No | ❌ No | ❌ No | ❌ No | ✅ Yes |
-| **Deep Research** | ❌ No | ❌ No | ⚠️ Partial | ✅ Yes | ✅ Yes |
-| **Cost** | 💰 Paid | 💰 Paid | 🆓 Free | 💰 API | 💰 API |
+| Feature                       | CircleCI   | Bito AI    | Roo-Cline  | GOAP       | OpenRouter |
+| ----------------------------- | ---------- | ---------- | ---------- | ---------- | ---------- |
+| **Already Integrated**        | ❌ No      | ✅ Yes     | ❌ No      | ⚠️ Partial | ✅ Yes     |
+| **GitHub Actions Native**     | ❌ No      | ✅ Yes     | ❌ No      | ✅ Yes     | ✅ Yes     |
+| **Code Quality Focus**        | ❌ No      | ✅ Yes     | ⚠️ Partial | ❌ No      | ⚠️ Partial |
+| **Revenue Focus**             | ❌ No      | ❌ No      | ❌ No      | ✅ Yes     | ⚠️ Partial |
+| **Autonomous Execution**      | ⚠️ Partial | ⚠️ Partial | ✅ Yes     | ✅ Yes     | ✅ Yes     |
+| **Local Development**         | ❌ No      | ❌ No      | ✅ Yes     | ❌ No      | ❌ No      |
+| **Self-Healing**              | ❌ No      | ❌ No      | ⚠️ Partial | ✅ Yes     | ✅ Yes     |
+| **Multi-Agent Orchestration** | ❌ No      | ❌ No      | ❌ No      | ❌ No      | ✅ Yes     |
+| **Deep Research**             | ❌ No      | ❌ No      | ⚠️ Partial | ✅ Yes     | ✅ Yes     |
+| **Cost**                      | 💰 Paid    | 💰 Paid    | 🆓 Free    | 💰 API     | 💰 API     |
 
 ---
 
 ## Implementation Priority
 
 ### Phase 1: Immediate (This PR)
+
 - [ ] Document agent tag convention in `docs/AGENT_PROMPT_CONVENTION.md`
 - [ ] Update `docs/AGENTS.md` with tag system
 - [ ] Add Roo-Cline setup guide: `docs/ROO_CLINE_SETUP.md`
@@ -274,6 +292,7 @@ TODO @goap: Find and evaluate 3 grant opportunities for Tikiwash bot
 - [ ] Update `skills/REGISTRY.md`
 
 ### Phase 2: Core Workflow (Next PR)
+
 - [ ] Create `scripts/detect-agent-prompts.js`
 - [ ] Create `.github/workflows/agent-prompt-detector.yml`
 - [ ] Integrate with existing `openrouter-triage.yml`
@@ -281,12 +300,14 @@ TODO @goap: Find and evaluate 3 grant opportunities for Tikiwash bot
 - [ ] Test with sample TODOs in code
 
 ### Phase 3: GOAP Deployment (Separate PR)
+
 - [ ] Deploy GOAP agent via OpenRouter
 - [ ] Create `@goap` routing workflow
 - [ ] Test with revenue-focused prompts
 - [ ] Validate `learnings.md` self-healing loop
 
 ### Phase 4: Roo-Cline Integration (Documentation Only)
+
 - [ ] Document VS Code setup instructions
 - [ ] Create example prompts and workflows
 - [ ] Add to developer onboarding docs

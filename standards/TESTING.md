@@ -5,6 +5,7 @@ All midnghtsapphire projects MUST follow these testing standards.
 ## Quick Start
 
 ### Python/FastAPI Projects
+
 ```bash
 # Install test deps
 pip install pytest pytest-asyncio httpx
@@ -14,6 +15,7 @@ pytest
 ```
 
 ### TypeScript/React Projects
+
 ```bash
 # Install test deps
 npm install vitest @testing-library/react @playwright/test
@@ -28,15 +30,17 @@ npm run test:e2e   # E2E tests
 ## Requirements
 
 ### Python (FastAPI/Flask)
+
 - **Unit Tests**: pytest + pytest-asyncio
 - **HTTP Testing**: httpx (ASGITransport)
 - **Coverage**: 80% minimum
 - **CI**: GitHub Actions
 
 ### TypeScript (React)
+
 - **Unit Tests**: Vitest + @testing-library/react
 - **E2E Tests**: Playwright
-- **Coverage**: 80% minimum  
+- **Coverage**: 80% minimum
 - **CI**: GitHub Actions
 
 ---
@@ -82,14 +86,14 @@ Every frontend MUST have E2E tests:
 
 ```typescript
 // e2e/homepage.spec.ts
-import { test, expect } from '@playwright/test'
+import { test, expect } from "@playwright/test";
 
-test.describe('Homepage', () => {
-  test('should load', async ({ page }) => {
-    await page.goto('/')
-    await expect(page.locator('body')).toBeVisible()
-  })
-})
+test.describe("Homepage", () => {
+  test("should load", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator("body")).toBeVisible();
+  });
+});
 ```
 
 ---
@@ -107,21 +111,21 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          
+          python-version: "3.12"
+
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
+
       - name: Run tests
         run: pytest --cov
-        
+
       - name: Upload coverage
         uses: codecov/codecov-action@v4
 ```
@@ -130,18 +134,19 @@ jobs:
 
 ## Coverage Requirements
 
-| Type | Minimum |
-|------|--------|
-| Statements | 80% |
-| Branches | 80% |
-| Functions | 80% |
-| Lines | 80% |
+| Type       | Minimum |
+| ---------- | ------- |
+| Statements | 80%     |
+| Branches   | 80%     |
+| Functions  | 80%     |
+| Lines      | 80%     |
 
 ---
 
 ## Dependencies
 
 ### Python
+
 ```txt
 pytest==8.0.0
 pytest-asyncio==0.23.0
@@ -150,6 +155,7 @@ httpx==0.27.0
 ```
 
 ### TypeScript
+
 ```json
 {
   "devDependencies": {

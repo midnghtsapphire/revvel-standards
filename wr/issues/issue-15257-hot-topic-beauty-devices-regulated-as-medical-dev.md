@@ -15,17 +15,18 @@
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
@@ -62,6 +63,7 @@ The reclassification of beauty devices as medical devices in China — now sprea
 **Opportunity:** Build a **beauty-device regulatory compliance tool/app** — a SaaS that helps brands navigate NMPA, FDA 510(k)/PMA, EU MDR/CE, and UKCA requirements from a single dashboard. The market is underserved, the regulatory pressure is immediate, and the SEO surface for compliance content is wide open.
 
 **North Star Revenue Path:**
+
 - Phase 1: $10k/month — SEO-led content + freemium compliance checklist tool
 - Phase 2: $30k/month — Paid subscription tiers (SME starter, growth, enterprise)
 - Phase 3: $100k/month — Partner channel (regulatory consultants, testing labs, ODM/OEM)
@@ -70,9 +72,10 @@ The reclassification of beauty devices as medical devices in China — now sprea
 
 ### Primary Output: Compliance Tool / SaaS App
 
-**Product concept:** *BeautyReg* (working name) — A multi-market beauty device regulatory compliance tracker and submission-prep tool.
+**Product concept:** _BeautyReg_ (working name) — A multi-market beauty device regulatory compliance tracker and submission-prep tool.
 
 **Core feature set:**
+
 1. **Device Classification Wizard** — Input device type → get classification under NMPA / FDA / EU MDR / UKCA
 2. **Compliance Checklist Generator** — Market-specific, editable checklists downloadable as PDF
 3. **Regulation Feed** — Real-time alerts when NMPA, FDA, or CE rules update
@@ -82,81 +85,85 @@ The reclassification of beauty devices as medical devices in China — now sprea
 7. **Submission Draft Generator** — AI-assisted draft of cover letters and technical summaries
 
 **Secondary Output: SEO Content Hub**
+
 - Long-form guides targeting "beauty device FDA approval," "RF device NMPA registration," "beauty device CE marking cost"
 - Positioned as the free-tier entry point funneling users to paid features
 
 ### Delivery Shape
 
-| Layer | Tech |
-| --- | --- |
-| Frontend | Next.js 14 + Tailwind + shadcn/ui |
-| Backend | Node.js / Supabase (DB + auth) |
-| AI layer | OpenRouter → Claude 3.5 Sonnet or GPT-4.1 |
-| PDF export | React-pdf or Puppeteer |
-| Hosting | Vercel (frontend) + Supabase (data) |
-| Payments | Stripe Billing |
+| Layer      | Tech                                      |
+| ---------- | ----------------------------------------- |
+| Frontend   | Next.js 14 + Tailwind + shadcn/ui         |
+| Backend    | Node.js / Supabase (DB + auth)            |
+| AI layer   | OpenRouter → Claude 3.5 Sonnet or GPT-4.1 |
+| PDF export | React-pdf or Puppeteer                    |
+| Hosting    | Vercel (frontend) + Supabase (data)       |
+| Payments   | Stripe Billing                            |
 
 ## Step 2 — Deep Web Research
 
 ### Regulatory Landscape Summary
 
-| Jurisdiction | Regulator | Key Rule | Effective Date |
-| --- | --- | --- | --- |
-| China | NMPA | RF beauty devices → Class III medical device | April 1, 2024 |
-| European Union | European Commission | EU MDR 2017/745 | May 2021 (rolling) |
-| United States | FDA | 510(k) / De Novo / PMA pathway | Ongoing |
-| United Kingdom | MHRA | UKCA marking | 2025 |
-| South Korea | MFDS | Evolving aesthetic device rules | 2024–2025 |
+| Jurisdiction   | Regulator           | Key Rule                                     | Effective Date     |
+| -------------- | ------------------- | -------------------------------------------- | ------------------ |
+| China          | NMPA                | RF beauty devices → Class III medical device | April 1, 2024      |
+| European Union | European Commission | EU MDR 2017/745                              | May 2021 (rolling) |
+| United States  | FDA                 | 510(k) / De Novo / PMA pathway               | Ongoing            |
+| United Kingdom | MHRA                | UKCA marking                                 | 2025               |
+| South Korea    | MFDS                | Evolving aesthetic device rules              | 2024–2025          |
 
 **Trend signal:** China's NMPA MDAL (August 2024 draft) and the EU MDR both represent a broader global movement to apply **full-lifecycle medical-grade scrutiny** to consumer beauty technology. ([Chambers Global Practice Guides](https://practiceguides.chambers.com/practice-guides/healthcare-medical-devices-2025/china/trends-and-developments))
 
 ### SEO & Keyword Research
 
-| Keyword | Intent | Volume Estimate |
-| --- | --- | --- |
-| beauty device regulations | Informational | High |
-| medical device compliance software | Transactional | Medium-High |
-| FDA beauty device approval | Informational/Transactional | High |
-| NMPA registration beauty device | Informational | Medium |
-| RF device NMPA China regulation | Informational | Medium |
-| CE marking beauty devices | Informational | Medium-High |
-| beauty device regulatory compliance tool | Transactional | Low-Medium (low competition) |
-| cosmetic device classification guide | Informational | Medium |
-| beauty tech startup compliance | Informational | Low (blue-ocean) |
+| Keyword                                  | Intent                      | Volume Estimate              |
+| ---------------------------------------- | --------------------------- | ---------------------------- |
+| beauty device regulations                | Informational               | High                         |
+| medical device compliance software       | Transactional               | Medium-High                  |
+| FDA beauty device approval               | Informational/Transactional | High                         |
+| NMPA registration beauty device          | Informational               | Medium                       |
+| RF device NMPA China regulation          | Informational               | Medium                       |
+| CE marking beauty devices                | Informational               | Medium-High                  |
+| beauty device regulatory compliance tool | Transactional               | Low-Medium (low competition) |
+| cosmetic device classification guide     | Informational               | Medium                       |
+| beauty tech startup compliance           | Informational               | Low (blue-ocean)             |
 
-*Volume estimates are internal — validate with Ahrefs or SEMrush before content investment.*
+_Volume estimates are internal — validate with Ahrefs or SEMrush before content investment._
 
 **Recommended landing-page title:** "Beauty Device Regulatory Compliance — FDA, NMPA, CE Marking in One Dashboard"
 **Recommended meta description:** "Navigate beauty device regulations globally. Get classification guidance, compliance checklists, and submission prep for NMPA, FDA 510(k), and CE marking — built for beauty-tech brands."
 
 ### Competitor Analysis
 
-| Competitor | Focus | GitHub Stars | Pricing |
-| --- | --- | --- | --- |
-| [Greenlight Guru](https://www.greenlight.guru) | Medical device QMS/SaaS | N/A (private) | ~$1,000–$3,000/month (enterprise) |
-| [MasterControl](https://www.mastercontrol.com) | QMS/regulatory affairs | N/A (private) | $2,000–$5,000+/month |
-| [Rimsys](https://www.rimsys.io) | MDR/510(k) submissions | N/A (private) | Pricing data pending — competitive benchmark research required. |
-| [Qualio](https://www.qualio.com) | Life-science QMS | N/A (private) | ~$1,500–$4,000/month |
-| [Veeva Vault RIM](https://www.veeva.com) | Regulatory information mgmt | N/A (private) | Enterprise-only |
-| **BeautyReg (proposed)** | Beauty-device-specific compliance | N/A (new) | $49–$499/month (proposed) |
+| Competitor                                     | Focus                             | GitHub Stars  | Pricing                                                         |
+| ---------------------------------------------- | --------------------------------- | ------------- | --------------------------------------------------------------- |
+| [Greenlight Guru](https://www.greenlight.guru) | Medical device QMS/SaaS           | N/A (private) | ~$1,000–$3,000/month (enterprise)                               |
+| [MasterControl](https://www.mastercontrol.com) | QMS/regulatory affairs            | N/A (private) | $2,000–$5,000+/month                                            |
+| [Rimsys](https://www.rimsys.io)                | MDR/510(k) submissions            | N/A (private) | Pricing data pending — competitive benchmark research required. |
+| [Qualio](https://www.qualio.com)               | Life-science QMS                  | N/A (private) | ~$1,500–$4,000/month                                            |
+| [Veeva Vault RIM](https://www.veeva.com)       | Regulatory information mgmt       | N/A (private) | Enterprise-only                                                 |
+| **BeautyReg (proposed)**                       | Beauty-device-specific compliance | N/A (new)     | $49–$499/month (proposed)                                       |
 
 **Gap:** No existing SaaS is tailored specifically to the **consumer beauty device** segment. All incumbents target large medtech/pharma with enterprise pricing and steep onboarding. A purpose-built, affordable tool for beauty-tech SMEs has **no direct competitor** at the $49–$499/month tier.
 
 ### Audience and Chatter
 
 **Where the audience talks:**
+
 - LinkedIn groups: "Beauty Tech Founders," "Medical Aesthetics Business"
 - Reddit: r/MedSpa, r/BeautyBusiness, r/regulatory
 - Slack/Discord: Beauty tech founder communities
 - Industry associations: CISEMA, Personal Care Products Council, CTFA
 
 **Exact phrases and pain:**
+
 - "I have no idea if my RF device needs FDA clearance"
 - "NMPA registration is insane — 2 years and $200k in clinical data"
 - "Our distributor in China told us we need a Class III license now?"
 - "We launched in EU under old MDD and now MDR transition is killing us"
 
 **Payable problems:**
+
 - Classification uncertainty (is my device a medical device or cosmetic?)
 - Document preparation cost (regulatory consultants charge $150–$400/hr)
 - Keeping up with changing rules across markets
@@ -166,14 +173,14 @@ The reclassification of beauty devices as medical devices in China — now sprea
 
 ### Factual Validation
 
-| Claim | Status | Source |
-| --- | --- | --- |
-| RF devices → Class III NMPA from April 2024 | ✅ Verified | [ChemLinked](https://cosmetic.chemlinked.com/news/cosmetic-news/china-releases-guidelines-for-review-of-registration-of-radio-frequency-beauty-devices) |
-| China medical device market >1.35T RMB by 2024 | ✅ Verified | [Ci-Process](https://www.ciprocess.com/china-medical-devices-market-and-NMPA-approval.htm) |
-| 6,000+ imported devices approved 2025 (+6.5% YoY) | ✅ Verified | [Navigator Global](https://navigator.global/gb/library/china-nmpa-releases-2025-medical-device-registration-data-report) |
-| Beauty device market >$50B by 2025 | ⚠️ Internal estimate | Benchmark required (Euromonitor/Mordor) |
-| RegTech SaaS >20% CAGR | ⚠️ Internal estimate | Benchmark required (Gartner/Verdantix) |
-| MDAL draft published August 2024 | ✅ Verified | [Chambers 2025](https://practiceguides.chambers.com/practice-guides/healthcare-medical-devices-2025/china/trends-and-developments) |
+| Claim                                             | Status               | Source                                                                                                                                                  |
+| ------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| RF devices → Class III NMPA from April 2024       | ✅ Verified          | [ChemLinked](https://cosmetic.chemlinked.com/news/cosmetic-news/china-releases-guidelines-for-review-of-registration-of-radio-frequency-beauty-devices) |
+| China medical device market >1.35T RMB by 2024    | ✅ Verified          | [Ci-Process](https://www.ciprocess.com/china-medical-devices-market-and-NMPA-approval.htm)                                                              |
+| 6,000+ imported devices approved 2025 (+6.5% YoY) | ✅ Verified          | [Navigator Global](https://navigator.global/gb/library/china-nmpa-releases-2025-medical-device-registration-data-report)                                |
+| Beauty device market >$50B by 2025                | ⚠️ Internal estimate | Benchmark required (Euromonitor/Mordor)                                                                                                                 |
+| RegTech SaaS >20% CAGR                            | ⚠️ Internal estimate | Benchmark required (Gartner/Verdantix)                                                                                                                  |
+| MDAL draft published August 2024                  | ✅ Verified          | [Chambers 2025](https://practiceguides.chambers.com/practice-guides/healthcare-medical-devices-2025/china/trends-and-developments)                      |
 
 ## Step 3 — Requirements
 
@@ -225,18 +232,18 @@ The reclassification of beauty devices as medical devices in China — now sprea
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Severity | Probability | Mitigation |
-| --- | --- | --- | --- |
-| Regulations change faster than the product updates | High | High | Automated regulation feeds + monthly content audits |
-| Incumbents (Greenlight Guru, MasterControl) launch a beauty-focused tier | Medium | Low | First-mover + price moat ($49 vs $1,000+/month) |
-| Customer acquisition cost too high if SEO doesn't take off | High | Medium | Pair SEO with direct founder outreach and Reddit presence |
-| Regulatory advice liability risk | High | Medium | Disclaim "informational only, not legal/regulatory advice" on every page; partner with licensed consultants for paid tiers |
-| Market too small at beauty-device tier | Low | Low | Adjacent expansion to cosmetics, supplements, aesthetics equipment is large and contiguous |
+| Risk                                                                     | Severity | Probability | Mitigation                                                                                                                 |
+| ------------------------------------------------------------------------ | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Regulations change faster than the product updates                       | High     | High        | Automated regulation feeds + monthly content audits                                                                        |
+| Incumbents (Greenlight Guru, MasterControl) launch a beauty-focused tier | Medium   | Low         | First-mover + price moat ($49 vs $1,000+/month)                                                                            |
+| Customer acquisition cost too high if SEO doesn't take off               | High     | Medium      | Pair SEO with direct founder outreach and Reddit presence                                                                  |
+| Regulatory advice liability risk                                         | High     | Medium      | Disclaim "informational only, not legal/regulatory advice" on every page; partner with licensed consultants for paid tiers |
+| Market too small at beauty-device tier                                   | Low      | Low         | Adjacent expansion to cosmetics, supplements, aesthetics equipment is large and contiguous                                 |

@@ -18,7 +18,7 @@ to trust it on autopilot vs. verify.
   orphan YAML keys at the bottom of `jules-pr-reviewer.yml`.
 - **Pre-existing dead code.** Calls out things like `force_recovery`
   inputs that are defined but never referenced, and `event_name ==
-  'schedule'` branches that can never fire after a cron is paused.
+'schedule'` branches that can never fire after a cron is paused.
   Marks them explicitly as "Info" / "out of scope" so they don't
   block merge.
 - **`AGENTS.md` enforcement.** Cross-checks commit messages against the
@@ -41,11 +41,11 @@ to trust it on autopilot vs. verify.
 
 Devin uses three severities visible on PR threads:
 
-| Marker | Behavior |
-|---|---|
-| 🚩 / 🟡 / High / Bug | Real defect or near-defect. Apply or rebut. |
-| 📝 Info | Worth knowing, not blocking. Often pre-existing or "becomes relevant when X is re-enabled." Safe to acknowledge and skip. |
-| ✅ Resolved | Devin's self-reconciliation when a follow-up commit lands. **Verify** — Devin has hallucinated this confirmation at least once. |
+| Marker               | Behavior                                                                                                                        |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 🚩 / 🟡 / High / Bug | Real defect or near-defect. Apply or rebut.                                                                                     |
+| 📝 Info              | Worth knowing, not blocking. Often pre-existing or "becomes relevant when X is re-enabled." Safe to acknowledge and skip.       |
+| ✅ Resolved          | Devin's self-reconciliation when a follow-up commit lands. **Verify** — Devin has hallucinated this confirmation at least once. |
 
 ## Cost / availability
 
@@ -79,7 +79,7 @@ Devin uses three severities visible on PR threads:
 
 - **One-off doc edits.** Overkill; Octopus + cubic are free and
   sufficient.
-- **Anything where you need to be *certain* the fix landed** — verify
+- **Anything where you need to be _certain_ the fix landed** — verify
   the diff yourself; don't take Devin's "✅ Resolved" comment as proof.
 - **Bulk WR generation / template scaffolding.** Use the Coder/Fixer
   persona (`scripts/openrouter-personas.js`) instead — cheaper per call

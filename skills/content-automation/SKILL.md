@@ -38,14 +38,14 @@ Load this skill when the task involves:
 
 ## What This Skill Does
 
-| Stage | Action | Tools Used |
-|---|---|---|
-| **Topic Ideation** | Research audience needs, trends, and validate topic demand | OpenRouter (ChatGPT/Perplexity prompts), TubeBuddy/VidIQ APIs (optional) |
-| **Content Briefing** | Generate structured outlines with key points, SEO keywords, target audience | OpenRouter (Claude Opus 4 for research) |
-| **Script Generation** | Create first drafts of articles, video scripts, social posts | OpenRouter (DeepSeek/Claude for generation) |
-| **Content Refinement** | Fact-check, add conversational language, improve pacing, verify SEO | Human-in-loop + AI editing passes |
-| **Multi-Format Export** | Convert content to blog HTML, video script, social posts, email | Template engine + format adapters |
-| **Publishing** | Auto-commit to content repos, trigger deployment workflows | GitHub API, content management integration |
+| Stage                   | Action                                                                      | Tools Used                                                               |
+| ----------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| **Topic Ideation**      | Research audience needs, trends, and validate topic demand                  | OpenRouter (ChatGPT/Perplexity prompts), TubeBuddy/VidIQ APIs (optional) |
+| **Content Briefing**    | Generate structured outlines with key points, SEO keywords, target audience | OpenRouter (Claude Opus 4 for research)                                  |
+| **Script Generation**   | Create first drafts of articles, video scripts, social posts                | OpenRouter (DeepSeek/Claude for generation)                              |
+| **Content Refinement**  | Fact-check, add conversational language, improve pacing, verify SEO         | Human-in-loop + AI editing passes                                        |
+| **Multi-Format Export** | Convert content to blog HTML, video script, social posts, email             | Template engine + format adapters                                        |
+| **Publishing**          | Auto-commit to content repos, trigger deployment workflows                  | GitHub API, content management integration                               |
 
 ---
 
@@ -129,26 +129,26 @@ Auto-Publish or Stage for Review
 
 ### Required Secrets
 
-| Secret | Purpose | Where to get it |
-|---|---|---|
-| `OPENROUTER_API_KEY` | AI content generation | [openrouter.ai](https://openrouter.ai) → Keys |
-| `GITHUB_TOKEN` | Auto-commit generated content | Automatically provided in Actions |
+| Secret               | Purpose                       | Where to get it                               |
+| -------------------- | ----------------------------- | --------------------------------------------- |
+| `OPENROUTER_API_KEY` | AI content generation         | [openrouter.ai](https://openrouter.ai) → Keys |
+| `GITHUB_TOKEN`       | Auto-commit generated content | Automatically provided in Actions             |
 
 ### Optional Secrets (for validation)
 
-| Secret | Purpose |
-|---|---|
+| Secret              | Purpose                                 |
+| ------------------- | --------------------------------------- |
 | `TUBEBUDDY_API_KEY` | YouTube keyword research and validation |
-| `VIDIQ_API_KEY` | Video SEO and competition analysis |
+| `VIDIQ_API_KEY`     | Video SEO and competition analysis      |
 
 ### Repository Variables
 
-| Variable | Purpose | Default |
-|---|---|---|
-| `CONTENT_TARGET_AUDIENCE` | Define who the content is for | "general audience" |
-| `CONTENT_BRAND_VOICE` | Tone guidelines (professional/casual/technical) | "professional yet approachable" |
-| `CONTENT_PRIMARY_KEYWORDS` | Core SEO keywords to target | "" |
-| `CONTENT_AUTO_PUBLISH` | Auto-commit without human review | "false" |
+| Variable                   | Purpose                                         | Default                         |
+| -------------------------- | ----------------------------------------------- | ------------------------------- |
+| `CONTENT_TARGET_AUDIENCE`  | Define who the content is for                   | "general audience"              |
+| `CONTENT_BRAND_VOICE`      | Tone guidelines (professional/casual/technical) | "professional yet approachable" |
+| `CONTENT_PRIMARY_KEYWORDS` | Core SEO keywords to target                     | ""                              |
+| `CONTENT_AUTO_PUBLISH`     | Auto-commit without human review                | "false"                         |
 
 ---
 
@@ -161,6 +161,7 @@ Any issue with labels `content-automation`, `content`, `writing`, or `blog` auto
 ### 2. Scheduled (weekly)
 
 `.github/workflows/content-automation.yml` runs weekly (Sunday 09:00 UTC) to:
+
 - Generate 2-4 new blog post ideas
 - Create content calendar for next week
 - Refresh existing content based on trends
@@ -168,6 +169,7 @@ Any issue with labels `content-automation`, `content`, `writing`, or `blog` auto
 ### 3. Manual Dispatch
 
 GitHub Actions → Content Automation → Run workflow
+
 - Custom topic input
 - Target format (blog/video/social)
 - Urgency (draft/final/publish)
@@ -180,12 +182,12 @@ All AI generation uses OpenRouter with model selection based on task:
 
 ### Model Selection Strategy
 
-| Task | Model | Why |
-|---|---|---|
-| Topic ideation & research | `anthropic/claude-opus-4` | Best reasoning and research |
-| Content generation (first draft) | `deepseek/deepseek-chat` | Cost-effective, good quality |
-| Editing & refinement | `anthropic/claude-sonnet-4.6` | Excellent editing, tone control |
-| Fact-checking | `openai/gpt-5.4` | Strong at verification |
+| Task                             | Model                         | Why                             |
+| -------------------------------- | ----------------------------- | ------------------------------- |
+| Topic ideation & research        | `anthropic/claude-opus-4`     | Best reasoning and research     |
+| Content generation (first draft) | `deepseek/deepseek-chat`      | Cost-effective, good quality    |
+| Editing & refinement             | `anthropic/claude-sonnet-4.6` | Excellent editing, tone control |
+| Fact-checking                    | `openai/gpt-5.4`              | Strong at verification          |
 
 ### Sample API Call
 
@@ -212,6 +214,7 @@ curl https://openrouter.ai/api/v1/chat/completions \
 Every piece of content must pass these automated checks before publishing:
 
 ### 1. SEO Quality
+
 - [ ] Title 50-60 characters
 - [ ] Meta description 150-160 characters
 - [ ] Primary keyword appears in title
@@ -222,6 +225,7 @@ Every piece of content must pass these automated checks before publishing:
 - [ ] Image alt text provided
 
 ### 2. Readability
+
 - [ ] Flesch reading ease score > 60
 - [ ] Average sentence length < 20 words
 - [ ] Paragraph length < 150 words
@@ -229,6 +233,7 @@ Every piece of content must pass these automated checks before publishing:
 - [ ] Active voice > 80%
 
 ### 3. Content Structure
+
 - [ ] Clear introduction with hook
 - [ ] Logical flow between sections
 - [ ] Strong conclusion with CTA
@@ -236,6 +241,7 @@ Every piece of content must pass these automated checks before publishing:
 - [ ] No orphaned sections
 
 ### 4. Technical Quality
+
 - [ ] No broken links
 - [ ] Images optimized (< 200KB)
 - [ ] Markdown/HTML valid
@@ -273,14 +279,14 @@ content-automation-output/
 
 The skill includes pre-built templates for common content types:
 
-| Template | Use Case | Structure |
-|---|---|---|
-| `how-to-guide` | Step-by-step tutorials | Problem → Solution → Steps → Conclusion |
-| `product-review` | Product analysis | Overview → Specs → Pros/Cons → Verdict |
-| `comparison` | "X vs Y" articles | Intro → Feature comparison table → Winner |
-| `listicle` | "Top 10" style posts | Intro → Numbered list → Summary |
-| `case-study` | Success stories | Challenge → Solution → Results → Takeaways |
-| `news-analysis` | Industry news | What happened → Why it matters → Impact |
+| Template         | Use Case               | Structure                                  |
+| ---------------- | ---------------------- | ------------------------------------------ |
+| `how-to-guide`   | Step-by-step tutorials | Problem → Solution → Steps → Conclusion    |
+| `product-review` | Product analysis       | Overview → Specs → Pros/Cons → Verdict     |
+| `comparison`     | "X vs Y" articles      | Intro → Feature comparison table → Winner  |
+| `listicle`       | "Top 10" style posts   | Intro → Numbered list → Summary            |
+| `case-study`     | Success stories        | Challenge → Solution → Results → Takeaways |
+| `news-analysis`  | Industry news          | What happened → Why it matters → Impact    |
 
 ---
 
@@ -365,15 +371,15 @@ Total time: 10-15 minutes (vs 4-6 hours manually)
 
 Add these labels to the repository (`.github/labels.yml`):
 
-| Label | Color | Meaning |
-|---|---|---|
+| Label                | Color     | Meaning                             |
+| -------------------- | --------- | ----------------------------------- |
 | `content-automation` | `#00D4AA` | Trigger content automation pipeline |
-| `content` | `#F7C948` | General content task |
-| `writing` | `#FF69B4` | Writing/copywriting task |
-| `blog` | `#7B68EE` | Blog post creation |
-| `seo-content` | `#3DDCFF` | SEO-focused content |
-| `content:draft` | `#FFA500` | Draft stage, needs review |
-| `content:final` | `#00FF00` | Final, ready to publish |
+| `content`            | `#F7C948` | General content task                |
+| `writing`            | `#FF69B4` | Writing/copywriting task            |
+| `blog`               | `#7B68EE` | Blog post creation                  |
+| `seo-content`        | `#3DDCFF` | SEO-focused content                 |
+| `content:draft`      | `#FFA500` | Draft stage, needs review           |
+| `content:final`      | `#00FF00` | Final, ready to publish             |
 
 ---
 
@@ -392,21 +398,25 @@ Content Automation works alongside:
 ## Troubleshooting
 
 ### "Content is too generic"
+
 - Add more specific context in the brief
 - Include target keywords explicitly
 - Run a second refinement pass with brand voice guidelines
 
 ### "Facts are incorrect"
+
 - Enable fact-checking gate
 - Add authoritative sources to brief
 - Use GPT-5.4 for verification pass
 
 ### "SEO score is low"
+
 - Run keyword research before generation
 - Specify primary and secondary keywords
 - Use SEO-focused templates
 
 ### "Tone doesn't match brand"
+
 - Update `CONTENT_BRAND_VOICE` variable
 - Include example content in brief
 - Add editing pass with tone guidelines
@@ -417,12 +427,12 @@ Content Automation works alongside:
 
 Based on OpenRouter pricing (as of May 2026):
 
-| Content Type | Tokens | Model | Cost | Time |
-|---|---|---|---|---|
-| Blog post (1500 words) | ~10k | Claude Opus 4 | ~$0.30 | 10-15 min |
-| Video script (10 min) | ~5k | DeepSeek | ~$0.05 | 5-8 min |
-| Social thread (10 tweets) | ~2k | Claude Sonnet 4.6 | ~$0.02 | 2-3 min |
-| Email newsletter | ~4k | DeepSeek | ~$0.03 | 5 min |
+| Content Type              | Tokens | Model             | Cost   | Time      |
+| ------------------------- | ------ | ----------------- | ------ | --------- |
+| Blog post (1500 words)    | ~10k   | Claude Opus 4     | ~$0.30 | 10-15 min |
+| Video script (10 min)     | ~5k    | DeepSeek          | ~$0.05 | 5-8 min   |
+| Social thread (10 tweets) | ~2k    | Claude Sonnet 4.6 | ~$0.02 | 2-3 min   |
+| Email newsletter          | ~4k    | DeepSeek          | ~$0.03 | 5 min     |
 
 **Monthly cost for 20 blog posts + 40 social posts + 4 newsletters:** ~$10-15
 
@@ -432,34 +442,37 @@ Based on OpenRouter pricing (as of May 2026):
 
 Track these KPIs to measure content automation effectiveness:
 
-| Metric | Target | How to Measure |
-|---|---|---|
-| Content generation time | < 15 min per piece | Workflow duration |
-| Cost per content piece | < $0.50 | OpenRouter API costs |
-| First-draft quality score | > 70/100 | Internal quality rubric |
-| SEO readiness | 100% pass gates | Automated checks |
-| Human edit time saved | > 80% reduction | Before/after comparison |
-| Content publish rate | 10+ pieces/week | GitHub commits |
+| Metric                    | Target             | How to Measure          |
+| ------------------------- | ------------------ | ----------------------- |
+| Content generation time   | < 15 min per piece | Workflow duration       |
+| Cost per content piece    | < $0.50            | OpenRouter API costs    |
+| First-draft quality score | > 70/100           | Internal quality rubric |
+| SEO readiness             | 100% pass gates    | Automated checks        |
+| Human edit time saved     | > 80% reduction    | Before/after comparison |
+| Content publish rate      | 10+ pieces/week    | GitHub commits          |
 
 ---
 
 ## Maintenance
 
 ### Weekly
+
 - Review generated content quality
 - Update templates based on performance
 - Refresh keyword lists
 
-### Monthly  
+### Monthly
+
 - Audit AI model selection (cost vs quality)
 - Update brand voice guidelines
 - Review and improve automation rules
 
 ### Quarterly
+
 - Analyze content performance (traffic, engagement)
 - Optimize prompts and templates
 - Update OpenRouter model selections
 
 ---
 
-*This skill was created to solve the content creation automation challenge outlined in issue [WR] Add to revvel-standards to create automation. It implements both the planning phase (research and ideation) and production phase (script generation and refinement) using AI-powered automation while maintaining quality through validation gates and human-in-loop review options.*
+_This skill was created to solve the content creation automation challenge outlined in issue [WR] Add to revvel-standards to create automation. It implements both the planning phase (research and ideation) and production phase (script generation and refinement) using AI-powered automation while maintaining quality through validation gates and human-in-loop review options._

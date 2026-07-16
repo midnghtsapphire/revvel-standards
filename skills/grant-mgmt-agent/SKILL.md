@@ -21,18 +21,18 @@ This skill automates the complete grant management pipeline from discovery throu
 
 ## What This Skill Does
 
-| Stage | Action | Tools Used |
-|---|---|---|
-| **Discovery** | Automated daily search for matching grant opportunities | Instrumentl API, Grants.gov API, SAM.gov API |
-| **Eligibility** | Validate organization eligibility and compliance status | SAM.gov Entity API, automated compliance checks |
-| **Research** | Deep analysis of RFP requirements, funder priorities, competitive landscape | OpenRouter (Claude Opus 4), web research APIs |
-| **Proposal Writing** | AI-assisted proposal generation with human-in-loop review | OpenRouter (Claude Sonnet 4.5), structured prompts |
-| **Document Automation** | Auto-fill standardized forms and attachments | DocSpring, Anvil, doqs.dev PDF APIs |
-| **Submission** | Submit applications via API or generate submission-ready packages | Grants.gov API, platform-specific APIs |
-| **Tracking** | Centralized tracking of all applications, deadlines, and requirements | Airtable/Supabase database with automated updates |
-| **Workflow Orchestration** | Coordinate all stages with automated notifications and approvals | n8n, Zapier, Make workflows |
-| **Compliance & Reporting** | Track milestones, expenses, and generate compliance reports | Automated report generation, expense tracking |
-| **Analytics** | Success rate analysis, ROI tracking, continuous improvement | Dashboard with metrics and insights |
+| Stage                      | Action                                                                      | Tools Used                                         |
+| -------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------- |
+| **Discovery**              | Automated daily search for matching grant opportunities                     | Instrumentl API, Grants.gov API, SAM.gov API       |
+| **Eligibility**            | Validate organization eligibility and compliance status                     | SAM.gov Entity API, automated compliance checks    |
+| **Research**               | Deep analysis of RFP requirements, funder priorities, competitive landscape | OpenRouter (Claude Opus 4), web research APIs      |
+| **Proposal Writing**       | AI-assisted proposal generation with human-in-loop review                   | OpenRouter (Claude Sonnet 4.5), structured prompts |
+| **Document Automation**    | Auto-fill standardized forms and attachments                                | DocSpring, Anvil, doqs.dev PDF APIs                |
+| **Submission**             | Submit applications via API or generate submission-ready packages           | Grants.gov API, platform-specific APIs             |
+| **Tracking**               | Centralized tracking of all applications, deadlines, and requirements       | Airtable/Supabase database with automated updates  |
+| **Workflow Orchestration** | Coordinate all stages with automated notifications and approvals            | n8n, Zapier, Make workflows                        |
+| **Compliance & Reporting** | Track milestones, expenses, and generate compliance reports                 | Automated report generation, expense tracking      |
+| **Analytics**              | Success rate analysis, ROI tracking, continuous improvement                 | Dashboard with metrics and insights                |
 
 ---
 
@@ -52,24 +52,28 @@ grant reporting, rfp automation, proposal automation, grant ai
 ### 1. Grant Discovery Layer
 
 **Primary: Instrumentl API**
+
 - Automated daily searches based on organization profile
 - Match scoring based on eligibility, award size, and mission fit
 - Real-time notifications for new opportunities
 - Integration via REST API or webhook automation
 
 **Secondary: Grants.gov API**
+
 - Direct access to federal grant opportunities
 - Advanced search with filters (keywords, agency, eligibility)
 - Opportunity details extraction and parsing
 - API endpoint: `GET /rest/opportunities/search`
 
 **Tertiary: SAM.gov API**
+
 - Organization registration validation
 - Compliance status monitoring
 - UEI/DUNS verification
 - API endpoint: `GET /entity-information/v2/entities`
 
 **Workflow:**
+
 ```javascript
 // Daily grant discovery automation
 1. Query Instrumentl for new matches
@@ -87,6 +91,7 @@ grant reporting, rfp automation, proposal automation, grant ai
 **OpenRouter Integration** for multi-model LLM access:
 
 **Model Selection Strategy:**
+
 - **Claude Sonnet 4.5** — Primary proposal drafting (balanced cost/quality)
 - **Claude Opus 4** — Complex technical sections, innovation narratives
 - **GPT-5.4** — Alternative for specific writing styles
@@ -101,8 +106,8 @@ const openrouter = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
   defaultHeaders: {
     "HTTP-Referer": "https://github.com/midnghtsapphire",
-    "X-Title": "Revvel Grant Management Agent"
-  }
+    "X-Title": "Revvel Grant Management Agent",
+  },
 });
 
 async function generateProposalSection({ rfp, section, orgData, model }) {
@@ -126,17 +131,17 @@ Write a ${section} section that:
 5. Aligns with funder's mission and priorities
 
 Length: ${rfp.limits[section]} words
-Tone: ${rfp.tone || 'professional, confident, evidence-based'}
+Tone: ${rfp.tone || "professional, confident, evidence-based"}
 `;
 
   const response = await openrouter.chat.completions.create({
     model: model || "anthropic/claude-sonnet-4.5",
     messages: [
       { role: "system", content: systemPrompt },
-      { role: "user", content: userPrompt }
+      { role: "user", content: userPrompt },
     ],
     temperature: 0.7,
-    max_tokens: 4000
+    max_tokens: 4000,
   });
 
   return response.choices[0].message.content;
@@ -181,6 +186,7 @@ Tone: ${rfp.tone || 'professional, confident, evidence-based'}
 **PDF Form Automation Options:**
 
 **Recommended: DocSpring API**
+
 - Visual template editor for mapping fields
 - JSON-based data input
 - Fast rendering (seconds per document)
@@ -188,7 +194,7 @@ Tone: ${rfp.tone || 'professional, confident, evidence-based'}
 
 ```javascript
 // DocSpring integration example
-const docspring = require('docspring');
+const docspring = require("docspring");
 
 const client = new docspring.Client(process.env.DOCSPRING_API_TOKEN);
 
@@ -202,7 +208,7 @@ async function fillGrantForm(templateId, applicationData) {
       project_title: applicationData.project.title,
       amount_requested: applicationData.budget.total,
       // ... map all form fields
-    }
+    },
   });
 
   return submission.download_url;
@@ -210,6 +216,7 @@ async function fillGrantForm(templateId, applicationData) {
 ```
 
 **Alternatives:**
+
 - **Anvil** — Best for rapid template setup with Document AI
 - **doqs.dev** — Free tier, simple API
 - **Instafill.ai** — AI-powered bulk form filling
@@ -222,6 +229,7 @@ async function fillGrantForm(templateId, applicationData) {
 **Recommended: n8n (Self-Hosted)**
 
 Benefits:
+
 - Open source, self-hosted (data privacy)
 - Visual workflow builder
 - 350+ integrations
@@ -236,7 +244,7 @@ name: Grant Application Automation
 trigger:
   type: webhook
   path: /grant/new-opportunity
-  
+
 nodes:
   - name: Parse Opportunity Data
     type: Code
@@ -249,18 +257,18 @@ nodes:
         amount: opportunity.amount,
         eligibility: opportunity.eligibility
       };
-  
+
   - name: Check Eligibility
     type: HTTP Request
     url: https://api.sam.gov/entity-information/v2/entities
     params:
       uei: ${process.env.ORGANIZATION_UEI}
-  
+
   - name: Store in Database
     type: Supabase
     operation: insert
     table: grant_opportunities
-  
+
   - name: Notify Team
     type: Slack
     message: |
@@ -268,9 +276,9 @@ nodes:
       Funder: {{$node.Parse.funder}}
       Amount: ${{$node.Parse.amount}}
       Deadline: {{$node.Parse.deadline}}
-      
+
       Review in dashboard: {{$node.Store.dashboard_url}}
-  
+
   - name: Auto-Generate Brief
     type: HTTP Request
     url: https://openrouter.ai/api/v1/chat/completions
@@ -282,11 +290,13 @@ nodes:
 ```
 
 **Alternative: Zapier** (Faster setup, no self-hosting)
+
 - Pre-built templates for common workflows
 - Easier for non-technical users
 - Higher cost at scale
 
 **Alternative: Make (Integromat)** (Visual + Advanced)
+
 - Advanced data transformation
 - Good for complex multi-step workflows
 - Fair pricing
@@ -469,6 +479,7 @@ CREATE TRIGGER applications_audit
 **Alternative: Airtable** (No-code option)
 
 Benefits:
+
 - No SQL knowledge required
 - Built-in forms and views
 - Native automation features
@@ -487,27 +498,27 @@ Schema similar to above but using Airtable's linked records instead of foreign k
 async function searchGrantsGov(criteria) {
   const response = await fetch(
     `https://www.grants.gov/rest/opportunities/search?` +
-    new URLSearchParams({
-      keyword: criteria.keywords,
-      fundingAgency: criteria.agency,
-      eligibility: criteria.eligibility,
-      limit: 100
-    }),
+      new URLSearchParams({
+        keyword: criteria.keywords,
+        fundingAgency: criteria.agency,
+        eligibility: criteria.eligibility,
+        limit: 100,
+      }),
     {
       headers: {
-        'Accept': 'application/json'
-      }
-    }
+        Accept: "application/json",
+      },
+    },
   );
 
   const data = await response.json();
-  return data.opportunities.map(opp => ({
+  return data.opportunities.map((opp) => ({
     id: opp.id,
     title: opp.title,
     agency: opp.agency,
-    amount: opp.awardFloor + '-' + opp.awardCeiling,
+    amount: opp.awardFloor + "-" + opp.awardCeiling,
     deadline: opp.closeDate,
-    url: opp.url
+    url: opp.url,
   }));
 }
 ```
@@ -521,21 +532,21 @@ async function validateSAMEntity(uei) {
     `https://api.sam.gov/entity-information/v2/entities?uei=${uei}`,
     {
       headers: {
-        'X-Api-Key': process.env.SAM_API_KEY
-      }
-    }
+        "X-Api-Key": process.env.SAM_API_KEY,
+      },
+    },
   );
 
   const data = await response.json();
   const entity = data.entityData[0];
 
   return {
-    registered: entity.registrationStatus === 'Active',
+    registered: entity.registrationStatus === "Active",
     expirationDate: entity.registrationExpirationDate,
     legalName: entity.legalBusinessName,
     physicalAddress: entity.physicalAddress,
     entityType: entity.entityTypes,
-    delinquentFederalDebt: entity.hasDelinquentFederalDebt === 'Y'
+    delinquentFederalDebt: entity.hasDelinquentFederalDebt === "Y",
   };
 }
 ```
@@ -546,22 +557,19 @@ async function validateSAMEntity(uei) {
 // Instrumentl grant matching
 async function searchInstrumentl(profile) {
   // Note: Instrumentl API may require enterprise plan
-  const response = await fetch(
-    'https://api.instrumentl.com/v1/grants/search',
-    {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.INSTRUMENTL_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        organizationType: profile.type,
-        focusAreas: profile.focusAreas,
-        location: profile.location,
-        budgetRange: profile.budgetRange
-      })
-    }
-  );
+  const response = await fetch("https://api.instrumentl.com/v1/grants/search", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.INSTRUMENTL_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      organizationType: profile.type,
+      focusAreas: profile.focusAreas,
+      location: profile.location,
+      budgetRange: profile.budgetRange,
+    }),
+  });
 
   return await response.json();
 }
@@ -722,18 +730,18 @@ vault kv put revvel/shared/grant-mgmt \
 ```javascript
 // Use appropriate model for each task
 const modelStrategy = {
-  quickSummary: "anthropic/claude-haiku-4.5",      // $0.25/$1.25 per MTok
-  proposalDraft: "anthropic/claude-sonnet-4.5",   // $3/$15 per MTok
-  complexSection: "anthropic/claude-opus-4",      // $15/$75 per MTok
-  fallback: "openai/gpt-4.1"                      // $2.50/$10 per MTok
+  quickSummary: "anthropic/claude-haiku-4.5", // $0.25/$1.25 per MTok
+  proposalDraft: "anthropic/claude-sonnet-4.5", // $3/$15 per MTok
+  complexSection: "anthropic/claude-opus-4", // $15/$75 per MTok
+  fallback: "openai/gpt-4.1", // $2.50/$10 per MTok
 };
 
 // Estimated costs per proposal
 const estimatedCost = {
-  briefGeneration: "$0.10",    // Haiku
-  proposalSections: "$2-5",    // Sonnet (8-10 sections × ~2K tokens)
-  reviewIterations: "$1-2",    // Additional refinements
-  totalPerProposal: "$3-8"     // Full automation
+  briefGeneration: "$0.10", // Haiku
+  proposalSections: "$2-5", // Sonnet (8-10 sections × ~2K tokens)
+  reviewIterations: "$1-2", // Additional refinements
+  totalPerProposal: "$3-8", // Full automation
 };
 ```
 
@@ -766,29 +774,34 @@ const estimatedCost = {
 Track these KPIs in your analytics dashboard:
 
 ### Discovery Metrics
+
 - Opportunities discovered per week
 - Match quality score distribution
 - Time from discovery to decision
 
 ### Application Metrics
+
 - Applications submitted per month
 - Average time to complete application
 - Proposal quality scores
 - Submission success rate
 
 ### Success Metrics
+
 - Award rate (%)
 - Total funding secured
 - Average award size
 - Cost per successful application
 
 ### Efficiency Metrics
+
 - Hours saved vs. manual process
 - AI-generated content vs. human-written
 - Automation uptime %
 - Error rate in submissions
 
 ### Compliance Metrics
+
 - On-time deliverable rate
 - Budget compliance %
 - Report submission timeliness
@@ -798,9 +811,10 @@ Track these KPIs in your analytics dashboard:
 
 ## Implementation Roadmap
 
-> **📝 NOTE:** This roadmap describes multiple *future implementation phases* that would be executed as separate tasks/PRs. This is **planning documentation**, not instruction to implement incrementally. Per AGENTS.md, when an agent is assigned one of these phases as a task, it must deliver that phase completely—not propose sub-phases within it.
+> **📝 NOTE:** This roadmap describes multiple _future implementation phases_ that would be executed as separate tasks/PRs. This is **planning documentation**, not instruction to implement incrementally. Per AGENTS.md, when an agent is assigned one of these phases as a task, it must deliver that phase completely—not propose sub-phases within it.
 
 ### Phase 1: Foundation (Week 1-2)
+
 - [ ] Set up database (Supabase or Airtable)
 - [ ] Configure OpenRouter API access
 - [ ] Connect to Grants.gov API
@@ -808,6 +822,7 @@ Track these KPIs in your analytics dashboard:
 - [ ] Create initial proposal templates
 
 ### Phase 2: Discovery & Tracking (Week 3-4)
+
 - [ ] Implement daily grant discovery
 - [ ] Build opportunity scoring algorithm
 - [ ] Create team notification system
@@ -815,6 +830,7 @@ Track these KPIs in your analytics dashboard:
 - [ ] Test discovery-to-tracking pipeline
 
 ### Phase 3: Proposal Automation (Week 5-6)
+
 - [ ] Build AI proposal generation system
 - [ ] Create section-by-section templates
 - [ ] Implement human review workflow
@@ -822,6 +838,7 @@ Track these KPIs in your analytics dashboard:
 - [ ] Test with sample RFPs
 
 ### Phase 4: Submission & Docs (Week 7-8)
+
 - [ ] Integrate document automation API
 - [ ] Build form mapping templates
 - [ ] Create submission package generator
@@ -829,6 +846,7 @@ Track these KPIs in your analytics dashboard:
 - [ ] Refine based on feedback
 
 ### Phase 5: Compliance & Reporting (Week 9-10)
+
 - [ ] Build milestone tracking
 - [ ] Create expense tracking workflow
 - [ ] Automate compliance report generation
@@ -836,6 +854,7 @@ Track these KPIs in your analytics dashboard:
 - [ ] Test full lifecycle with pilot grant
 
 ### Phase 6: Optimization (Week 11-12)
+
 - [ ] Analyze success metrics
 - [ ] Optimize AI prompts based on results
 - [ ] Refine scoring algorithms
@@ -861,12 +880,14 @@ Track these KPIs in your analytics dashboard:
 ### Common Issues
 
 **Discovery not finding matches:**
+
 - Verify API credentials are current
 - Check organization profile completeness
 - Review search criteria (may be too narrow)
 - Confirm SAM.gov registration is active
 
 **AI proposals low quality:**
+
 - Provide more organizational context
 - Use higher-quality model (Opus vs Sonnet)
 - Increase temperature for creativity
@@ -874,18 +895,21 @@ Track these KPIs in your analytics dashboard:
 - Ensure RFP parsing is accurate
 
 **Document automation errors:**
+
 - Verify template field mappings
 - Check for missing required data
 - Validate data types and formats
 - Test with sample data first
 
 **Workflow failures:**
+
 - Check webhook URLs are reachable
 - Verify API rate limits not exceeded
 - Review error logs in automation platform
 - Test each step individually
 
 **Database performance:**
+
 - Add indexes on frequently queried columns
 - Archive old opportunities quarterly
 - Optimize query patterns
@@ -975,32 +999,32 @@ grant-mgmt report --type "quarterly" --output "reports/Q1-2026.pdf"
 ### API Usage
 
 ```javascript
-const grantMgmt = require('@revvel/grant-mgmt-agent');
+const grantMgmt = require("@revvel/grant-mgmt-agent");
 
 // Discover opportunities
 const opportunities = await grantMgmt.discover({
-  keywords: ['technology', 'education'],
+  keywords: ["technology", "education"],
   amountMin: 50000,
-  deadline: '2026-12-31'
+  deadline: "2026-12-31",
 });
 
 // Create application
 const app = await grantMgmt.createApplication({
   opportunityId: opportunities[0].id,
-  amountRequested: 100000
+  amountRequested: 100000,
 });
 
 // Generate proposal
 const proposal = await grantMgmt.generateProposal({
   applicationId: app.id,
-  sections: ['need', 'approach', 'evaluation'],
-  model: 'anthropic/claude-sonnet-4.5'
+  sections: ["need", "approach", "evaluation"],
+  model: "anthropic/claude-sonnet-4.5",
 });
 
 // Submit application
 const submission = await grantMgmt.submit({
   applicationId: app.id,
-  method: 'api' // or 'manual'
+  method: "api", // or 'manual'
 });
 ```
 
@@ -1034,6 +1058,7 @@ const submission = await grantMgmt.submit({
 ## Changelog
 
 ### v1.0.0 (2026-04-30)
+
 - Initial release
 - Complete grant management automation stack
 - Integration with Instrumentl, Grants.gov, SAM.gov

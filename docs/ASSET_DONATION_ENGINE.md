@@ -27,26 +27,26 @@ AUDREY BUYS → AUDREY DONATES → BUSINESS RECEIVES → DEDUCTION CLAIMED
 
 ### 1. Product Donations (Primary)
 
-| What | How It Works | Deduction |
-|------|-------------|----------|
-| Vine products | Buy → Donate to Reese Reviews | FMV |
-| Inventory | Donate to Overflow LLC | FMV |
-| Rental items | Donate to Rental Co | FMV |
+| What          | How It Works                  | Deduction |
+| ------------- | ----------------------------- | --------- |
+| Vine products | Buy → Donate to Reese Reviews | FMV       |
+| Inventory     | Donate to Overflow LLC        | FMV       |
+| Rental items  | Donate to Rental Co           | FMV       |
 
 ### 2. Asset Contributions
 
-| What | How It Works | Deduction |
-|------|-------------|----------|
-| Equipment | Donate to business | FMV |
-| Vehicles | Donate to rental | FMV |
-| Furniture | Donate to office | FMV |
+| What      | How It Works       | Deduction |
+| --------- | ------------------ | --------- |
+| Equipment | Donate to business | FMV       |
+| Vehicles  | Donate to rental   | FMV       |
+| Furniture | Donate to office   | FMV       |
 
 ### 3. Cash Donations (Limited)
 
-| What | Why Limited | Impact |
-|------|------------|--------|
-| Cash to charity | Counts as income | Reduces SSDI buffer |
-| Cash to businesses | Taxable | BAD for Medicaid |
+| What               | Why Limited      | Impact              |
+| ------------------ | ---------------- | ------------------- |
+| Cash to charity    | Counts as income | Reduces SSDI buffer |
+| Cash to businesses | Taxable          | BAD for Medicaid    |
 
 ---
 
@@ -70,12 +70,12 @@ AUDREY BUYS → AUDREY DONATES → BUSINESS RECEIVES → DEDUCTION CLAIMED
 
 ### Example Entries
 
-| Date | Item | Purchase | FMV | To Business | Use |
-|------|------|---------|-----|-------------|-----|
-| 2026-01-15 | Costume | $100 | $100 | Rental Co | Rent out |
-| 2026-02-20 | Heater | $200 | $200 | Rental Co | Rent out |
-| 2026-03-10 | Product | $50 | $50 | Reese Reviews | Review |
-| 2026-04-01 | Camera | $300 | $250 | Overflow | Inventory |
+| Date       | Item    | Purchase | FMV  | To Business   | Use       |
+| ---------- | ------- | -------- | ---- | ------------- | --------- |
+| 2026-01-15 | Costume | $100     | $100 | Rental Co     | Rent out  |
+| 2026-02-20 | Heater  | $200     | $200 | Rental Co     | Rent out  |
+| 2026-03-10 | Product | $50      | $50  | Reese Reviews | Review    |
+| 2026-04-01 | Camera  | $300     | $250 | Overflow      | Inventory |
 
 ---
 
@@ -111,21 +111,25 @@ FMV = Replacement cost - depreciation
 ## Donation Process
 
 ### Step 1: Purchase
+
 - [ ] Audrey buys item
 - [ ] Keep receipt
 - [ ] Note purchase price
 
 ### Step 2: Document
+
 - [ ] Photograph item
 - [ ] Note condition
 - [ ] Research FMV
 
 ### Step 3: Donate
+
 - [ ] Transfer to business
 - [ ] Get donation receipt
 - [ ] Business acknowledges receipt
 
 ### Step 4: Deduct
+
 - [ ] Record on Schedule A
 - [ ] K-1 shows basis
 - [ ] Business depreciates asset
@@ -174,12 +178,14 @@ Example:
 ## Tax Filing Checklist
 
 ### Audrey's Personal Return
+
 - [ ] Schedule A - Charitable deductions
 - [ ] All donation receipts
 - [ ] FMV documentation
 - [ ] K-1s from businesses
 
 ### Business Returns
+
 - [ ] Depreciation schedules
 - [ ] Asset basis (FMV at donation)
 - [ ] Form 4562 - Depreciation
@@ -209,12 +215,12 @@ Donations = DEDUCTIONS = LOWER TAXABLE INCOME
 ## Monthly Donation Log
 
 | Week | Item | Cost | FMV | Business | Receipt |
-|------|------|------|-----|---------|---------|
-| 1 | | | | | |
-| 2 | | | | | |
-| 3 | | | | | |
-| 4 | | | | | |
+| ---- | ---- | ---- | --- | -------- | ------- |
+| 1    |      |      |     |          |         |
+| 2    |      |      |     |          |         |
+| 3    |      |      |     |          |         |
+| 4    |      |      |     |          |         |
 
 ---
 
-*Asset Donation Engine - Turn purchases into deductions*
+_Asset Donation Engine - Turn purchases into deductions_

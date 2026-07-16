@@ -28,17 +28,17 @@ The safest fix is to treat deep research as the default gate for WR PR creation:
 
 ### Repository Metadata
 
-| Property | Value |
-| ---------- | ------- |
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-02-20 |
-| Last Updated | 2026-05-18 |
-| Primary Language | JavaScript |
-| Stars | 1 |
-| Open Issues | 6,339 |
-| Description | Single source of truth for all Revvel and MIDNGHTSAPPHIRE standards, processes, and specifications. |
-| Private | False |
-| Archived | False |
+| Property         | Value                                                                                               |
+| ---------------- | --------------------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)             |
+| Created          | 2026-02-20                                                                                          |
+| Last Updated     | 2026-05-18                                                                                          |
+| Primary Language | JavaScript                                                                                          |
+| Stars            | 1                                                                                                   |
+| Open Issues      | 6,339                                                                                               |
+| Description      | Single source of truth for all Revvel and MIDNGHTSAPPHIRE standards, processes, and specifications. |
+| Private          | False                                                                                               |
+| Archived         | False                                                                                               |
 
 ### Current Status
 
@@ -92,32 +92,32 @@ GitHub documents a **5,000 requests/hour** REST core limit per installation for 
 
 ### Target Audience & Trigger Events
 
-| Audience Segment | Trigger Event | Intent Level | Value of Fix |
-| ----------------- | --------------- | -------------- | -------------- |
-| Repo owner / operators | Merge blocked, labels drift, blank WR created | High | Immediate unblock and less manual cleanup |
-| Review agents / coding agents | Research packet exists but PR lacks findings/labels | High | Cleaner downstream review routing |
-| Future repos adopting standards | Need a reusable WR pipeline | Medium | Turns this repo into a workflow-hardening reference |
+| Audience Segment                | Trigger Event                                       | Intent Level | Value of Fix                                        |
+| ------------------------------- | --------------------------------------------------- | ------------ | --------------------------------------------------- |
+| Repo owner / operators          | Merge blocked, labels drift, blank WR created       | High         | Immediate unblock and less manual cleanup           |
+| Review agents / coding agents   | Research packet exists but PR lacks findings/labels | High         | Cleaner downstream review routing                   |
+| Future repos adopting standards | Need a reusable WR pipeline                         | Medium       | Turns this repo into a workflow-hardening reference |
 
 ### SEO & Keyword Research
 
 This WR is for internal automation, so public SEO volumes are not the decision driver. The right high-intent keywords to anchor documentation, searchability, and future productization are:
 
-| Keyword | Intent | Why It Matters |
-| --------- | -------- | ---------------- |
-| GitHub Actions rate limit | Transactional / debugging | Directly matches the failure mode seen in run `26061851461` |
-| PR state orchestrator | Navigational / implementation | Matches the user-reported failing engine |
-| GitHub merge automation | Commercial / comparative | Useful if Revvel turns this hardening work into reusable automation |
-| research packet workflow | Informational | Matches the repository's research-engine handoff model |
-| GitHub workflow reprocessing | Informational / debugging | Exactly describes the blank-template rerun problem |
+| Keyword                      | Intent                        | Why It Matters                                                      |
+| ---------------------------- | ----------------------------- | ------------------------------------------------------------------- |
+| GitHub Actions rate limit    | Transactional / debugging     | Directly matches the failure mode seen in run `26061851461`         |
+| PR state orchestrator        | Navigational / implementation | Matches the user-reported failing engine                            |
+| GitHub merge automation      | Commercial / comparative      | Useful if Revvel turns this hardening work into reusable automation |
+| research packet workflow     | Informational                 | Matches the repository's research-engine handoff model              |
+| GitHub workflow reprocessing | Informational / debugging     | Exactly describes the blank-template rerun problem                  |
 
 ### Bill of Materials (BOM) — APIs & Tools
 
-| Category | Tool / Option | Cost | Signal | Best For | Verdict |
-| ---------- | --------------- | ------ | -------- | ---------- | --------- |
-| GitHub workflow scripting | `actions/github-script` | $0 incremental | 4,953 GitHub stars | Labeling, comments, repo-content fetches, GraphQL helpers | ⭐ Recommended |
-| Repository checkout | `actions/checkout` | $0 incremental | 7,903 GitHub stars | Branch/file mutation inside Actions jobs | ⭐ Recommended |
-| Native merge orchestration | GitHub PR events + checks + auto-merge | Included in GitHub plan | First-party platform capability | Lowest-friction state machine inside the repo | ⭐ Recommended |
-| General automation benchmark | `renovatebot/renovate` | OSS / self-hostable | 21,549 GitHub stars | Reference point for resilient PR automation patterns | ✅ Useful reference |
+| Category                     | Tool / Option                          | Cost                    | Signal                          | Best For                                                  | Verdict             |
+| ---------------------------- | -------------------------------------- | ----------------------- | ------------------------------- | --------------------------------------------------------- | ------------------- |
+| GitHub workflow scripting    | `actions/github-script`                | $0 incremental          | 4,953 GitHub stars              | Labeling, comments, repo-content fetches, GraphQL helpers | ⭐ Recommended      |
+| Repository checkout          | `actions/checkout`                     | $0 incremental          | 7,903 GitHub stars              | Branch/file mutation inside Actions jobs                  | ⭐ Recommended      |
+| Native merge orchestration   | GitHub PR events + checks + auto-merge | Included in GitHub plan | First-party platform capability | Lowest-friction state machine inside the repo             | ⭐ Recommended      |
+| General automation benchmark | `renovatebot/renovate`                 | OSS / self-hostable     | 21,549 GitHub stars             | Reference point for resilient PR automation patterns      | ✅ Useful reference |
 
 **BOM Decision:**
 
@@ -138,12 +138,12 @@ Reliable PR-state automation generally uses three rules:
 
 ### Competitors & Alternatives
 
-| Option | Type | Strengths | Weaknesses | Gap vs. Needed Fix |
-| ------- | ------ | ----------- | ------------ | -------------------- |
-| Current repo-native WR flow | First-party automation | No extra vendor cost, fully editable | Created blank PR before research was ready | Needs stricter creation gate + packet import |
-| GitHub merge queue / native gating | Platform capability | Excellent for merge serialization | Does not solve WR research handoff by itself | Complement, not replacement |
-| External merge bots (e.g. Mergify class tools) | SaaS automation | Rich policy controls | Extra dependency and pricing layer | Overkill for this specific WR bug |
-| Renovate-style resilient automation patterns | OSS reference | Battle-tested rate-limit/backoff patterns | Not a direct WR engine | Good reference for hardening behavior |
+| Option                                         | Type                   | Strengths                                 | Weaknesses                                   | Gap vs. Needed Fix                           |
+| ---------------------------------------------- | ---------------------- | ----------------------------------------- | -------------------------------------------- | -------------------------------------------- |
+| Current repo-native WR flow                    | First-party automation | No extra vendor cost, fully editable      | Created blank PR before research was ready   | Needs stricter creation gate + packet import |
+| GitHub merge queue / native gating             | Platform capability    | Excellent for merge serialization         | Does not solve WR research handoff by itself | Complement, not replacement                  |
+| External merge bots (e.g. Mergify class tools) | SaaS automation        | Rich policy controls                      | Extra dependency and pricing layer           | Overkill for this specific WR bug            |
+| Renovate-style resilient automation patterns   | OSS reference          | Battle-tested rate-limit/backoff patterns | Not a direct WR engine                       | Good reference for hardening behavior        |
 
 ### Community Chatter / Operator Signals
 

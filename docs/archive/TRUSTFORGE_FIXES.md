@@ -23,6 +23,7 @@
 ### 1. Real Schema Validation ✅
 
 **Before:**
+
 ```bash
 # Placeholder checklist
 echo "  - [ ] Organization schema present" >> "$REPORT_FILE"
@@ -30,6 +31,7 @@ echo "  - [ ] Person schema (if author page)" >> "$REPORT_FILE"
 ```
 
 **After:**
+
 ```bash
 # Actual HTML fetching and parsing
 html=$(curl -sSL -m 10 "$url" 2>/dev/null || echo "")
@@ -56,6 +58,7 @@ fi
 ### 2. Real Link Checking ✅
 
 **Before:**
+
 ```bash
 # Placeholder checklist
 echo "- [ ] GrowlingEyes landing page" >> "$REPORT_FILE"
@@ -63,6 +66,7 @@ echo "- [ ] Neurooz landing page" >> "$REPORT_FILE"
 ```
 
 **After:**
+
 ```bash
 # Actual linkchecker execution
 link_output=$(linkchecker --no-warnings --timeout=10 --recursion-level=1 "$url" 2>&1 || true)
@@ -83,12 +87,14 @@ fi
 ### 3. Real Lighthouse Audits ✅
 
 **Before:**
+
 ```bash
 # No Lighthouse execution, just reminder
 echo "- [ ] Run Lighthouse audit manually" >> "$REPORT_FILE"
 ```
 
 **After:**
+
 ```bash
 # Actual Lighthouse execution
 lighthouse "$url" \
@@ -114,6 +120,7 @@ fi
 ### 4. Configuration File for Properties ✅
 
 **Before:**
+
 ```bash
 # Hardcoded in workflow
 PROPERTIES=(
@@ -124,6 +131,7 @@ PROPERTIES=(
 ```
 
 **After:**
+
 ```bash
 # Load from config file
 CONFIG_FILE: ${{ steps.config.outputs.config_file }}
@@ -131,6 +139,7 @@ PROPERTIES=$(jq -r '.properties[] | .url' "$CONFIG_FILE")
 ```
 
 **Config file:** `.github/trustforge-config.json`
+
 ```json
 {
   "properties": [
@@ -151,6 +160,7 @@ PROPERTIES=$(jq -r '.properties[] | .url' "$CONFIG_FILE")
 ### 5. Run Number Instead of Date ✅
 
 **Before:**
+
 ```bash
 # Date-based naming (can conflict)
 REPORT_FILE="docs/reports/eeat-health-$(date +%Y-%m-%d).md"
@@ -158,6 +168,7 @@ branch: trustforge/eeat-health-$(date +%Y-%m-%d)
 ```
 
 **After:**
+
 ```bash
 # Run number-based naming (always unique)
 RUN_NUMBER: ${{ github.run_number }}
@@ -172,6 +183,7 @@ branch: trustforge/eeat-health-run-${{ steps.trustforge.outputs.run_number }}
 ### 6. Conditional Output Checks ✅
 
 **Before:**
+
 ```bash
 # No validation before reference
 body: |
@@ -179,6 +191,7 @@ body: |
 ```
 
 **After:**
+
 ```bash
 # Validate output exists
 if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trustforge.outputs.report_path != ''
@@ -191,10 +204,12 @@ if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trus
 ### 7. Credential Gatekeeper Integration ✅
 
 **Before:**
+
 - No E-E-A-T secrets in gatekeeper patterns
 - Manual secret provisioning required
 
 **After:**
+
 ```javascript
 // Added to credential-gatekeeper.yml
 {
@@ -230,6 +245,7 @@ if: steps.quiet.outputs.active == 'true' && inputs.dry_run != true && steps.trus
 ### 8. Error Summary Reporting ✅
 
 **Added:**
+
 ```bash
 # Count errors across all checks
 total_issues=$((schema_errors + ssl_errors + link_errors))
@@ -267,16 +283,16 @@ echo "total_issues=$total_issues" >> $GITHUB_OUTPUT
 
 ## Production Readiness
 
-| Feature | Before | After |
-|---------|--------|-------|
-| Schema validation | ❌ Placeholder | ✅ Real HTML parsing |
-| Link checking | ❌ Placeholder | ✅ linkchecker tool |
+| Feature           | Before             | After                        |
+| ----------------- | ------------------ | ---------------------------- |
+| Schema validation | ❌ Placeholder     | ✅ Real HTML parsing         |
+| Link checking     | ❌ Placeholder     | ✅ linkchecker tool          |
 | Lighthouse audits | ❌ Not implemented | ✅ Headless Chrome execution |
-| Property config | ❌ Hardcoded | ✅ JSON config file |
-| Unique IDs | ❌ Date-based | ✅ Run number |
-| Output validation | ❌ Missing | ✅ Conditional checks |
-| Gatekeeper | ❌ Not integrated | ✅ Auto-provision |
-| Error reporting | ❌ No counts | ✅ Total + breakdown |
+| Property config   | ❌ Hardcoded       | ✅ JSON config file          |
+| Unique IDs        | ❌ Date-based      | ✅ Run number                |
+| Output validation | ❌ Missing         | ✅ Conditional checks        |
+| Gatekeeper        | ❌ Not integrated  | ✅ Auto-provision            |
+| Error reporting   | ❌ No counts       | ✅ Total + breakdown         |
 
 **Status:** ✅ PRODUCTION-READY
 
@@ -285,6 +301,6 @@ Gap between promised functionality and actual implementation eliminated.
 
 ---
 
-*TrustForge v1.0.0*  
-*Commit: a30960c*  
-*Date: April 30, 2026*
+_TrustForge v1.0.0_  
+_Commit: a30960c_  
+_Date: April 30, 2026_

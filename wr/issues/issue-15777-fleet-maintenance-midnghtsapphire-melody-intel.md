@@ -14,7 +14,7 @@
 **Created:** 2026-07-13  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-13  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 **Issue:** #15777
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
@@ -37,6 +37,7 @@ The resulting PR must pass the **full code review** — OpenRouter
 revvel-standards change.
 
 ## Tasks
+
 - [ ] Update / refresh the docs (README, overview, contributing).
 - [ ] Research concrete improvements (deps, security, tests, DX, performance).
 - [ ] Ensure the target repo has the standard review workflows (OpenRouter code
@@ -47,18 +48,19 @@ revvel-standards change.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -70,6 +72,7 @@ revvel-standards change.
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29241583061.md`
 
 ## WR-Ready Research Packet: Fleet Maintenance — midnghtsapphire/melody-intel
@@ -79,6 +82,7 @@ Source packet: `docs/research-engine/run-29241583061.md`
 **BLOCK**: Repository `midnghtsapphire/melody-intel` is inaccessible (404 error). Fleet maintenance cannot proceed without repository access. Immediate action required to verify repository location or select alternative target.
 
 **Critical Finding**: All research lanes confirm repository unavailability. This appears to be either:
+
 - Private repository requiring access permissions
 - Deleted/renamed repository
 - Incorrect repository path
@@ -90,11 +94,13 @@ Source packet: `docs/research-engine/run-29241583061.md`
 Based on repository name analysis ("melody-intel"), the likely target audiences are:
 
 **Primary Audience**: Music technology developers and data scientists
+
 - **Pain Point**: Difficulty extracting actionable insights from audio/music data
 - **Urgent Need**: Automated music analysis and intelligence pipelines
 - **Why Now**: Explosion of audio content and demand for AI-driven music analytics
 
 **Secondary Audience**: Fleet management professionals (if "melody" is a codename)
+
 - **Pain Point**: Manual fleet maintenance tracking and inefficient operations
 - **Urgent Need**: Automated maintenance scheduling and cost optimization
 - **Why Now**: Rising operational costs and regulatory compliance requirements
@@ -106,16 +112,19 @@ Based on repository name analysis ("melody-intel"), the likely target audiences 
 ### SEO Strategy (Music Intelligence Interpretation)
 
 **Primary Keywords**:
+
 - "music intelligence API" (est. 500-1000 searches/month)
 - "audio analysis Python" (est. 1000-2000 searches/month)
 - "melody detection library" (est. 200-500 searches/month)
 
 **Landing Page Structure**:
+
 ```markdown
 Title: Melody Intel - Open Source Music Intelligence Platform
 Meta: Extract insights from audio with Melody Intel's Python library. Free music analysis, melody detection, and audio intelligence APIs.
 
 ## Key Sections:
+
 1. Getting Started (quickstart guide)
 2. API Documentation
 3. Use Cases (music recommendation, audio analysis)
@@ -125,11 +134,13 @@ Meta: Extract insights from audio with Melody Intel's Python library. Free music
 ### SEO Strategy (Fleet Maintenance Interpretation)
 
 **Primary Keywords**:
+
 - "fleet maintenance software" (est. 2000-5000 searches/month)
 - "open source fleet management" (est. 500-1000 searches/month)
 - "fleet maintenance automation" (est. 300-800 searches/month)
 
 **Content Recommendations**:
+
 - Tutorial: "Automating Fleet Maintenance with Melody Intel"
 - Comparison: "Melody Intel vs Commercial Fleet Solutions"
 - Case Study: "Reducing Fleet Downtime by 40% with Automated Maintenance"
@@ -138,21 +149,21 @@ Meta: Extract insights from audio with Melody Intel's Python library. Free music
 
 ### Music Intelligence Competitors
 
-| Repository | Stars | Last Commit | Pricing | Key Differentiator |
-|------------|-------|-------------|---------|-------------------|
-| librosa/librosa | 7,000+ | Active | Free (OSS) | Comprehensive audio analysis |
-| spotify/basic-pitch | 3,000+ | Active | Free (OSS) | ML-based pitch detection |
-| Tonejs/Tone.js | 13,000+ | Active | Free (OSS) | Browser-based audio |
-| Spotify Web API | N/A | Active | Free tier + rate limits | Official Spotify data |
+| Repository          | Stars   | Last Commit | Pricing                 | Key Differentiator           |
+| ------------------- | ------- | ----------- | ----------------------- | ---------------------------- |
+| librosa/librosa     | 7,000+  | Active      | Free (OSS)              | Comprehensive audio analysis |
+| spotify/basic-pitch | 3,000+  | Active      | Free (OSS)              | ML-based pitch detection     |
+| Tonejs/Tone.js      | 13,000+ | Active      | Free (OSS)              | Browser-based audio          |
+| Spotify Web API     | N/A     | Active      | Free tier + rate limits | Official Spotify data        |
 
 ### Fleet Maintenance Competitors
 
-| Repository | Stars | Last Commit | Pricing | Key Differentiator |
-|------------|-------|-------------|---------|-------------------|
-| fleetdm/fleet | 1,700+ | June 2024 | Free (OSS) + Enterprise | osquery-based management |
-| traccar/traccar | 5,700+ | June 2024 | Free (OSS) | GPS tracking focus |
-| Fleetio | N/A | Active | $3-7/vehicle/month | Full-service SaaS |
-| Samsara | N/A | Active | Custom enterprise pricing | IoT integration |
+| Repository      | Stars  | Last Commit | Pricing                   | Key Differentiator       |
+| --------------- | ------ | ----------- | ------------------------- | ------------------------ |
+| fleetdm/fleet   | 1,700+ | June 2024   | Free (OSS) + Enterprise   | osquery-based management |
+| traccar/traccar | 5,700+ | June 2024   | Free (OSS)                | GPS tracking focus       |
+| Fleetio         | N/A    | Active      | $3-7/vehicle/month        | Full-service SaaS        |
+| Samsara         | N/A    | Active      | Custom enterprise pricing | IoT integration          |
 
 **Market Gap**: Open-source solutions lack user-friendly interfaces and comprehensive integrations compared to commercial offerings.
 
@@ -161,11 +172,13 @@ Meta: Extract insights from audio with Melody Intel's Python library. Free music
 ### Identified Pain Points (from general market research)
 
 **Music Intelligence Domain**:
+
 - "Documentation is always outdated in audio libraries"
 - "Hard to get started without audio engineering background"
 - "Need better integration with streaming services"
 
 **Fleet Maintenance Domain**:
+
 - "Our fleet data is scattered across multiple systems"
 - "Manual maintenance scheduling is killing our efficiency"
 - "Compliance reporting takes forever"
@@ -175,17 +188,20 @@ Meta: Extract insights from audio with Melody Intel's Python library. Free music
 ## 6. Factual Validation and Evidence Gaps
 
 ### Verified Facts
+
 - ✅ Repository returns 404 error (verified by all research lanes)
 - ✅ GitHub user `midnghtsapphire` also returns 404
 - ✅ No public references to this repository found
 
 ### Unverified Claims
+
 - ❌ Repository purpose (music vs fleet maintenance)
 - ❌ Technology stack
 - ❌ Current maintenance status
 - ❌ User base or adoption metrics
 
 ### Evidence Gaps
+
 - No access to codebase for security audit
 - No documentation to verify features
 - No commit history to assess maintenance
@@ -196,6 +212,7 @@ Meta: Extract insights from audio with Melody Intel's Python library. Free music
 ### If Repository Becomes Accessible
 
 **Required Workflows**:
+
 ```yaml
 .github/workflows/
 ├── ai-pr-review-openrouter.yml
@@ -205,12 +222,14 @@ Meta: Extract insights from audio with Melody Intel's Python library. Free music
 ```
 
 **Documentation Requirements**:
+
 - README.md with setup instructions
 - CONTRIBUTING.md with development guidelines
 - SECURITY.md with vulnerability disclosure process
 - API documentation (if applicable)
 
 **Acceptance Criteria**:
+
 - [ ] All four review workflows passing
 - [ ] Documentation coverage > 80%
 - [ ] Security vulnerabilities addressed
@@ -220,6 +239,7 @@ Meta: Extract insights from audio with Melody Intel's Python library. Free music
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 Review focus: Repository accessibility and alternative selection
 - Verify if midnghtsapphire/melody-intel exists in any form
@@ -228,6 +248,7 @@ Review focus: Repository accessibility and alternative selection
 ```
 
 ### For OpenRouter
+
 ```
 Task: Analyze repository naming convention
 - Is "melody-intel" likely music or fleet related?
@@ -236,6 +257,7 @@ Task: Analyze repository naming convention
 ```
 
 ### For Coderabbit
+
 ```
 If repository becomes accessible:
 1. Check for missing standard files (LICENSE, .gitignore)
@@ -244,6 +266,7 @@ If repository becomes accessible:
 ```
 
 ### For Ralph Loop
+
 ```
 Architecture review needed:
 - Assess if project structure follows language best practices
@@ -254,6 +277,7 @@ Architecture review needed:
 ### Blocking Findings and Automatic Fixes
 
 **BLOCKER 1**: Repository not found
+
 ```bash
 # Automatic fix
 git remote add upstream https://github.com/midnghtsapphire/melody-intel
@@ -268,13 +292,14 @@ fix: verify repository accessibility for fleet maintenance
 ```
 
 **BLOCKER 2**: Missing review workflows (if repo becomes accessible)
+
 ```bash
 # Automatic fix
 mkdir -p .github/workflows
 curl -o .github/workflows/ai-pr-review-openrouter.yml \
   https://raw.githubusercontent.com/revvel/standards/main/workflows/ai-pr-review-openrouter.yml
 
-# Commit message  
+# Commit message
 feat: add required review workflows for revvel-standards compliance
 
 - Add OpenRouter AI review workflow
@@ -285,6 +310,7 @@ feat: add required review workflows for revvel-standards compliance
 ## 9. Automatic Fix and Commit Queue
 
 ### Priority 1: Repository Verification
+
 ```yaml
 - action: verify_repository
   command: |
@@ -294,15 +320,17 @@ feat: add required review workflows for revvel-standards compliance
 ```
 
 ### Priority 2: Alternative Selection (if needed)
+
 ```yaml
 - action: select_alternative
   condition: repository_not_found
-  recommendation: librosa/librosa  # for music intelligence
-  alternative: fleetdm/fleet       # for fleet maintenance
+  recommendation: librosa/librosa # for music intelligence
+  alternative: fleetdm/fleet # for fleet maintenance
   labels: ["alternative-selected", "needs-confirmation"]
 ```
 
 ### Priority 3: Standard Setup (once accessible)
+
 ```yaml
 - action: setup_workflows
   files:
@@ -315,12 +343,14 @@ feat: add required review workflows for revvel-standards compliance
 ## 10. Labels to Apply
 
 ### Immediate Labels
+
 - `blocked-repository-access` 🔴
-- `fleet-maintenance` 
+- `fleet-maintenance`
 - `needs-verification`
 - `repository-not-found`
 
 ### Conditional Labels (if accessible)
+
 - `needs-docs` (if README missing)
 - `needs-workflows` (if review workflows missing)
 - `security-review-required` (if vulnerabilities found)
@@ -329,11 +359,13 @@ feat: add required review workflows for revvel-standards compliance
 ## 11. Repository Review and Best Alternative
 
 ### Current Status
+
 **Primary Target**: `midnghtsapphire/melody-intel` - **INACCESSIBLE**
 
 ### Recommended Alternatives
 
 **For Music Intelligence**:
+
 1. **librosa/librosa** (RECOMMENDED)
    - 7,000+ stars, active maintenance
    - Comprehensive feature set
@@ -341,6 +373,7 @@ feat: add required review workflows for revvel-standards compliance
    - MIT license
 
 **For Fleet Maintenance**:
+
 1. **fleetdm/fleet** (RECOMMENDED)
    - 1,700+ stars, enterprise-ready
    - Modern architecture
@@ -348,6 +381,7 @@ feat: add required review workflows for revvel-standards compliance
    - Good documentation
 
 ### Selection Criteria
+
 - Active maintenance (commits within 30 days)
 - Permissive license (MIT/Apache preferred)
 - Community size (>1000 stars)
@@ -358,17 +392,17 @@ feat: add required review workflows for revvel-standards compliance
 
 ### Per-Lane Confidence Scores
 
-| Research Lane | Confidence | Key Finding |
-|---------------|------------|-------------|
-| Market Positioning (Echo) | 20% | Repository inaccessible |
-| SEO Demand (Noimos) | 40% | Keywords identified but can't verify fit |
-| Competitor Intelligence (Iris) | 85% | Strong alternative analysis |
-| Audience & Chatter (Scout) | 30% | No specific project chatter found |
-| Factual Validation (Mirror) | 95% | Confirmed repository unavailable |
-| Technical Delivery (Forge) | 25% | Cannot assess without code access |
-| Revenue Mechanics (Ledger) | 35% | Hypothetical models only |
-| Research Review (Aria) | 90% | Clear blocking issues identified |
-| Repository Review (Scout-Web) | 95% | Definitive 404 status |
+| Research Lane                  | Confidence | Key Finding                              |
+| ------------------------------ | ---------- | ---------------------------------------- |
+| Market Positioning (Echo)      | 20%        | Repository inaccessible                  |
+| SEO Demand (Noimos)            | 40%        | Keywords identified but can't verify fit |
+| Competitor Intelligence (Iris) | 85%        | Strong alternative analysis              |
+| Audience & Chatter (Scout)     | 30%        | No specific project chatter found        |
+| Factual Validation (Mirror)    | 95%        | Confirmed repository unavailable         |
+| Technical Delivery (Forge)     | 25%        | Cannot assess without code access        |
+| Revenue Mechanics (Ledger)     | 35%        | Hypothetical models only                 |
+| Research Review (Aria)         | 90%        | Clear blocking issues identified         |
+| Repository Review (Scout-Web)  | 95%        | Definitive 404 status                    |
 
 ### Overall Confidence: 25%
 
@@ -377,11 +411,13 @@ feat: add required review workflows for revvel-standards compliance
 ### Best-Scoring Recommendation
 
 **If music intelligence**: Migrate to or fork `librosa/librosa`
+
 - Mature, well-documented alternative
 - Active community would welcome contributions
 - Clear upgrade path from custom solution
 
 **If fleet maintenance**: Adopt `fleetdm/fleet`
+
 - Modern, actively maintained
 - Enterprise features available
 - Strong security focus
@@ -428,11 +464,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -448,11 +484,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),
@@ -474,24 +510,24 @@ Branch: `fleet-maintenance/revvel-standards-15777`
 
 ### Files added to melody-intel
 
-| File | Purpose |
-| --- | --- |
-| `.github/workflows/ai-pr-review-openrouter.yml` | OpenRouter AI PR review (advisory, `maxlim0/AI-PR-Reviewer@v0.3`) |
-| `.github/workflows/codeql.yml` | CodeQL static analysis — `actions` + `javascript-typescript` |
-| `.github/workflows/semgrep.yml` | Semgrep SAST — secrets, OWASP top 10, CWE top 25, TypeScript |
-| `.github/workflows/jules-pr-reviewer.yml` | Jules PR reviewer — design and correctness |
-| `CONTRIBUTING.md` | Contributor guide — branch conventions, PR flow, secrets table, kill-switch guidance |
+| File                                            | Purpose                                                                              |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `.github/workflows/ai-pr-review-openrouter.yml` | OpenRouter AI PR review (advisory, `maxlim0/AI-PR-Reviewer@v0.3`)                    |
+| `.github/workflows/codeql.yml`                  | CodeQL static analysis — `actions` + `javascript-typescript`                         |
+| `.github/workflows/semgrep.yml`                 | Semgrep SAST — secrets, OWASP top 10, CWE top 25, TypeScript                         |
+| `.github/workflows/jules-pr-reviewer.yml`       | Jules PR reviewer — design and correctness                                           |
+| `CONTRIBUTING.md`                               | Contributor guide — branch conventions, PR flow, secrets table, kill-switch guidance |
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | 0 |
-| Open Issues | 2 |
-| Private | No (public) |
-| Archived | No |
+| Property       | Value                                                                     |
+| -------------- | ------------------------------------------------------------------------- |
+| Stars          | 0                                                                         |
+| Open Issues    | 2                                                                         |
+| Private        | No (public)                                                               |
+| Archived       | No                                                                        |
 | Default branch | `master` (repo predates the `main` rename convention; unchanged in scope) |
-| Description | clean up routine for manus |
+| Description    | clean up routine for manus                                                |
 
 ## Research Findings
 
@@ -522,19 +558,19 @@ Slack, Gmail (draft), Airtable.
 
 ### 2. Gap Analysis — What Was Missing Before This PR
 
-| Gap | Severity | Remediation |
-| --- | --- | --- |
-| No CodeQL workflow | High — zero static analysis coverage | Added `codeql.yml` targeting `actions` + `javascript-typescript` |
-| No Semgrep SAST | High — no secrets/OWASP scanning | Added `semgrep.yml` with `p/secrets`, `p/security-audit`, `p/typescript` |
-| No OpenRouter AI review | Medium — no automated code review on PRs | Added `ai-pr-review-openrouter.yml` |
-| No Jules review | Medium — no design/correctness review on PRs | Added `jules-pr-reviewer.yml` |
-| No CONTRIBUTING.md | Low-medium — contributor expectations undocumented | Added `CONTRIBUTING.md` with branch conventions, secrets table, kill-switch guidance |
+| Gap                     | Severity                                           | Remediation                                                                          |
+| ----------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| No CodeQL workflow      | High — zero static analysis coverage               | Added `codeql.yml` targeting `actions` + `javascript-typescript`                     |
+| No Semgrep SAST         | High — no secrets/OWASP scanning                   | Added `semgrep.yml` with `p/secrets`, `p/security-audit`, `p/typescript`             |
+| No OpenRouter AI review | Medium — no automated code review on PRs           | Added `ai-pr-review-openrouter.yml`                                                  |
+| No Jules review         | Medium — no design/correctness review on PRs       | Added `jules-pr-reviewer.yml`                                                        |
+| No CONTRIBUTING.md      | Low-medium — contributor expectations undocumented | Added `CONTRIBUTING.md` with branch conventions, secrets table, kill-switch guidance |
 
 ### 3. Existing Workflows (Unchanged)
 
-| File | Status | Notes |
-| --- | --- | --- |
-| `.github/workflows/melody-recon.yml` | ✅ Healthy | Daily 07:00 MT scan, kill-switch aware, Opus 4.7 |
+| File                                      | Status     | Notes                                                               |
+| ----------------------------------------- | ---------- | ------------------------------------------------------------------- |
+| `.github/workflows/melody-recon.yml`      | ✅ Healthy | Daily 07:00 MT scan, kill-switch aware, Opus 4.7                    |
 | `.github/workflows/melody-synthesize.yml` | ✅ Healthy | Push-triggered dispatch, loop guard via `[dispatch]` commit message |
 
 No modifications were made to existing workflows. The PR is purely additive.
@@ -595,25 +631,25 @@ and focused on the fleet maintenance gates:
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Likelihood | Mitigation |
-| --- | --- | --- |
-| `OPENROUTER_API_KEY` not set in melody-intel | Medium | Workflow emits `::warning::` and skips gracefully — never hard-fails PR |
-| `JULES_API_KEY` not set in melody-intel | Medium | Workflow marks status as `success/skipped` — never blocks merge |
-| CodeQL SARIF upload conflict (default setup enabled) | Low | `upload: never` + manual upload step with `continue-on-error: true` |
-| Semgrep finds existing secrets in repo | Low | Repo has no committed secrets; `p/secrets` scan is additive |
+| Risk                                                 | Likelihood | Mitigation                                                              |
+| ---------------------------------------------------- | ---------- | ----------------------------------------------------------------------- |
+| `OPENROUTER_API_KEY` not set in melody-intel         | Medium     | Workflow emits `::warning::` and skips gracefully — never hard-fails PR |
+| `JULES_API_KEY` not set in melody-intel              | Medium     | Workflow marks status as `success/skipped` — never blocks merge         |
+| CodeQL SARIF upload conflict (default setup enabled) | Low        | `upload: never` + manual upload step with `continue-on-error: true`     |
+| Semgrep finds existing secrets in repo               | Low        | Repo has no committed secrets; `p/secrets` scan is additive             |
 
 ## Superseded Content
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — new work, no prior implementation |
-| Reason for replacement | N/A |
-| Archival status | NOT-APPLICABLE |
+| Field                  | Value                                   |
+| ---------------------- | --------------------------------------- |
+| Supersedes WR/issue    | N/A — new work, no prior implementation |
+| Reason for replacement | N/A                                     |
+| Archival status        | NOT-APPLICABLE                          |

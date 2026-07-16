@@ -6,28 +6,29 @@ Closes #15233
 **Created:** 2026-07-06  
 **Researcher:** N/A  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
 https://lymphoedemaeducation.com.au/wp-content/uploads/2025/04/Photochem-Photobiology-2025-Wang-From-molecular-mechanisms-to-clinical-applications-A-comprehensive-review-of-1.pdf
 
-**Reference Paper:** Wang et al. (2025). *From molecular mechanisms to clinical applications: A comprehensive review of photobiomodulation*. Photochemistry and Photobiology.
+**Reference Paper:** Wang et al. (2025). _From molecular mechanisms to clinical applications: A comprehensive review of photobiomodulation_. Photochemistry and Photobiology.
 
 **Request:** Identify and build the best app or tool inspired by / serving the clinical and research community around **Photobiomodulation (PBM) / Low-Level Laser Therapy (LLLT)** — a field that currently lacks a unified, practitioner-friendly SaaS tool.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | N/A |
-| Archived | N/A |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | N/A   |
+| Archived    | N/A   |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
@@ -42,7 +43,7 @@ https://lymphoedemaeducation.com.au/wp-content/uploads/2025/04/Photochem-Photobi
 
 ### Paper Summary
 
-Wang et al. (2025) published in *Photochemistry and Photobiology* provides a comprehensive review of **Photobiomodulation (PBM)** — the therapeutic use of non-ionizing light (typically 600–1100 nm wavelengths, including red and near-infrared) to modulate biological processes. Key topics covered:
+Wang et al. (2025) published in _Photochemistry and Photobiology_ provides a comprehensive review of **Photobiomodulation (PBM)** — the therapeutic use of non-ionizing light (typically 600–1100 nm wavelengths, including red and near-infrared) to modulate biological processes. Key topics covered:
 
 - **Molecular targets:** Cytochrome c oxidase (Complex IV), reactive oxygen species (ROS), ATP production, mitochondrial membrane potential
 - **Signaling pathways:** NF-κB, MAPK/ERK, Nrf2/HO-1, PI3K/Akt
@@ -58,6 +59,7 @@ Wang et al. (2025) published in *Photochemistry and Photobiology* provides a com
 The Wang 2025 review confirms that photobiomodulation is a scientifically mature therapy with a documented clinical evidence base, yet the practitioner ecosystem is severely under-tooled. Clinicians using LLLT/PBM devices must manually calculate treatment parameters (wavelength selection, dose, fluence, beam area, treatment time) from scattered research literature — a process that is error-prone and time-consuming.
 
 **LuminaCalc** is a SaaS web app that:
+
 1. Takes patient inputs (condition, tissue depth, skin type, body region)
 2. Outputs an evidence-based treatment protocol (wavelength, power, fluence, time, frequency)
 3. Generates a printable/shareable clinical report
@@ -70,15 +72,15 @@ The Wang 2025 review confirms that photobiomodulation is a scientifically mature
 
 ## Step 1A — Product/Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-| --- | --- | --- | --- | --- |
-| Website / app UI | **Yes** | Next.js SaaS app | `products/` convention | Core product — protocol builder UI |
-| API | **Yes** | REST endpoint `/api/protocol` | `standards/shapes/API.md` | Allows device manufacturers to embed |
-| PDF report | **Yes** | Printable treatment report | `pandoc` / `@react-pdf/renderer` | Clinician hands to patient |
-| CLI | No | N/A | N/A | No practitioner need |
-| MCP | **Yes** | Tool server | `standards/shapes/MCP.md` | Agent access for future automation |
-| Skill | No | N/A | N/A | Defer to v2 |
-| Mobile app | No | N/A | N/A | Web-first; PWA if needed |
+| Output shape     | In scope? | Format / length               | Primary engine / standard        | Notes                                |
+| ---------------- | --------- | ----------------------------- | -------------------------------- | ------------------------------------ |
+| Website / app UI | **Yes**   | Next.js SaaS app              | `products/` convention           | Core product — protocol builder UI   |
+| API              | **Yes**   | REST endpoint `/api/protocol` | `standards/shapes/API.md`        | Allows device manufacturers to embed |
+| PDF report       | **Yes**   | Printable treatment report    | `pandoc` / `@react-pdf/renderer` | Clinician hands to patient           |
+| CLI              | No        | N/A                           | N/A                              | No practitioner need                 |
+| MCP              | **Yes**   | Tool server                   | `standards/shapes/MCP.md`        | Agent access for future automation   |
+| Skill            | No        | N/A                           | N/A                              | Defer to v2                          |
+| Mobile app       | No        | N/A                           | N/A                              | Web-first; PWA if needed             |
 
 **Product name options:** LuminaCalc · PhotoDose · LuminaPro · LLLTguide
 
@@ -94,14 +96,14 @@ The Wang 2025 review confirms that photobiomodulation is a scientifically mature
 
 ### SEO Keywords
 
-| Keyword | Monthly Searches (est.) | Intent |
-| --- | --- | --- |
-| LLLT dosage calculator | 500–1,000 | High buying intent |
-| photobiomodulation protocol | 1,000–2,500 | Research + clinical |
-| laser therapy dose calculator | 400–800 | Clinical tool |
-| PBM treatment calculator | 200–500 | Clinical tool |
-| low level laser therapy calculator | 300–700 | Clinical tool |
-| photobiomodulation clinical software | 100–300 | High intent |
+| Keyword                              | Monthly Searches (est.) | Intent              |
+| ------------------------------------ | ----------------------- | ------------------- |
+| LLLT dosage calculator               | 500–1,000               | High buying intent  |
+| photobiomodulation protocol          | 1,000–2,500             | Research + clinical |
+| laser therapy dose calculator        | 400–800                 | Clinical tool       |
+| PBM treatment calculator             | 200–500                 | Clinical tool       |
+| low level laser therapy calculator   | 300–700                 | Clinical tool       |
+| photobiomodulation clinical software | 100–300                 | High intent         |
 
 ### Community Chatter
 
@@ -113,37 +115,37 @@ The Wang 2025 review confirms that photobiomodulation is a scientifically mature
 
 ### Competitor Analysis
 
-| Tool | Description | Price | Gaps |
-| --- | --- | --- | --- |
-| Thor Laser — LaserDose | Dose calculator from Thor Lasers (UK device maker) | **Free** (web) — [thorlaser.com](https://www.thorlaser.com/lllt-calculator/) | Device-locked, no patient tracking, no PDF reports, no outcomes tracking |
-| BioPhotonic Calculator (Excel sheet) | Community-shared spreadsheet | **Free** | Not web-based, no updates, no evidence links |
-| Enraf-Nonius Dose Calculator | Embedded in device software | **Bundled with device ($5,000+)** | Locked to Enraf hardware, no portability |
-| PBM Foundation resources | Educational PDFs and tables | **Free** — [pbm.world](https://pbm.world) | Static PDFs, no interactive calculator |
-| LiteCure / Companion Therapy | Veterinary + human protocol guides | Pricing data pending — competitive benchmark research required. | Vet-focused; human protocols incomplete |
-| Joovv App | Consumer-facing timer/protocol app | **Free with device ($595+)** | Consumer-only, no clinical dosimetry |
+| Tool                                 | Description                                        | Price                                                                        | Gaps                                                                     |
+| ------------------------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Thor Laser — LaserDose               | Dose calculator from Thor Lasers (UK device maker) | **Free** (web) — [thorlaser.com](https://www.thorlaser.com/lllt-calculator/) | Device-locked, no patient tracking, no PDF reports, no outcomes tracking |
+| BioPhotonic Calculator (Excel sheet) | Community-shared spreadsheet                       | **Free**                                                                     | Not web-based, no updates, no evidence links                             |
+| Enraf-Nonius Dose Calculator         | Embedded in device software                        | **Bundled with device ($5,000+)**                                            | Locked to Enraf hardware, no portability                                 |
+| PBM Foundation resources             | Educational PDFs and tables                        | **Free** — [pbm.world](https://pbm.world)                                    | Static PDFs, no interactive calculator                                   |
+| LiteCure / Companion Therapy         | Veterinary + human protocol guides                 | Pricing data pending — competitive benchmark research required.              | Vet-focused; human protocols incomplete                                  |
+| Joovv App                            | Consumer-facing timer/protocol app                 | **Free with device ($595+)**                                                 | Consumer-only, no clinical dosimetry                                     |
 
 **Gap:** No independent, clinician-grade, device-agnostic SaaS protocol builder exists. Thor Laser is the closest — but it's device-locked, has no patient records, generates no PDF reports, and hasn't been updated to reflect 2023–2025 research.
 
 ### API / BOM
 
-| Provider/API | Purpose | Cost Model | Notes |
-| --- | --- | --- | --- |
-| Vercel | Hosting + serverless functions | Free tier / $20/month Pro | Standard Next.js deployment |
-| PlanetScale / Supabase | Patient record storage | Free tier / $25/month | HIPAA-adjacent: use Supabase with RLS |
-| OpenRouter (Claude/GPT) | Protocol recommendation reasoning | ~$0.002–0.005/request | For AI-assisted parameter suggestions |
-| PubMed E-utilities API | Literature citation retrieval | **Free** — [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) | Cite evidence for each protocol |
-| Polar.sh | Subscription billing | 5% transaction fee | Per-seat SaaS billing |
-| @react-pdf/renderer | PDF report generation | **Free** (MIT) | Client-side PDF generation |
+| Provider/API            | Purpose                           | Cost Model                                                                  | Notes                                 |
+| ----------------------- | --------------------------------- | --------------------------------------------------------------------------- | ------------------------------------- |
+| Vercel                  | Hosting + serverless functions    | Free tier / $20/month Pro                                                   | Standard Next.js deployment           |
+| PlanetScale / Supabase  | Patient record storage            | Free tier / $25/month                                                       | HIPAA-adjacent: use Supabase with RLS |
+| OpenRouter (Claude/GPT) | Protocol recommendation reasoning | ~$0.002–0.005/request                                                       | For AI-assisted parameter suggestions |
+| PubMed E-utilities API  | Literature citation retrieval     | **Free** — [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) | Cite evidence for each protocol       |
+| Polar.sh                | Subscription billing              | 5% transaction fee                                                          | Per-seat SaaS billing                 |
+| @react-pdf/renderer     | PDF report generation             | **Free** (MIT)                                                              | Client-side PDF generation            |
 
 **BOM Cost Summary (Monthly at launch):**
 
-| Category | Tool | Est. Monthly Cost |
-| --- | --- | --- |
-| Hosting | Vercel Pro | $20 |
-| Database | Supabase Pro | $25 |
-| AI (protocol suggestions) | OpenRouter | ~$10 |
-| Email (patient reports) | Resend | $0–$20 |
-| **Total Infrastructure** | | **~$55–$75/month** |
+| Category                  | Tool         | Est. Monthly Cost  |
+| ------------------------- | ------------ | ------------------ |
+| Hosting                   | Vercel Pro   | $20                |
+| Database                  | Supabase Pro | $25                |
+| AI (protocol suggestions) | OpenRouter   | ~$10               |
+| Email (patient reports)   | Resend       | $0–$20             |
+| **Total Infrastructure**  |              | **~$55–$75/month** |
 
 > **ROI Check:** 3 paying clinicians at $29/month covers full infrastructure overhead.
 
@@ -218,18 +220,18 @@ The Wang 2025 review confirms that photobiomodulation is a scientifically mature
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
-| Risk | Likelihood | Mitigation |
-| --- | --- | --- |
-| Thor Laser updates their free calculator to add features | Medium | Differentiate on device-agnosticism, patient tracking, PDF reports — Thor's tool will remain device-locked |
-| Regulatory: calculating medical device dose parameters could attract FDA/CE scrutiny | Medium | Clearly label as "clinical decision support tool, not a medical device"; include disclaimer; do not make diagnostic claims |
-| Market too niche for $10k/month solo | Medium | White-label licensing to device manufacturers (Joovv, Theralight, BTL) multiplies revenue without needing individual clinician sign-ups |
-| PubMed API rate limits | Low | Cache citations; 3 requests/second limit is sufficient for prototype scale |
-| Domain squatting on preferred names | Low | Register domain as first action; fallback names available |
+| Risk                                                                                 | Likelihood | Mitigation                                                                                                                              |
+| ------------------------------------------------------------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Thor Laser updates their free calculator to add features                             | Medium     | Differentiate on device-agnosticism, patient tracking, PDF reports — Thor's tool will remain device-locked                              |
+| Regulatory: calculating medical device dose parameters could attract FDA/CE scrutiny | Medium     | Clearly label as "clinical decision support tool, not a medical device"; include disclaimer; do not make diagnostic claims              |
+| Market too niche for $10k/month solo                                                 | Medium     | White-label licensing to device manufacturers (Joovv, Theralight, BTL) multiplies revenue without needing individual clinician sign-ups |
+| PubMed API rate limits                                                               | Low        | Cache citations; 3 requests/second limit is sufficient for prototype scale                                                              |
+| Domain squatting on preferred names                                                  | Low        | Register domain as first action; fallback names available                                                                               |

@@ -15,21 +15,21 @@
 
 This skill defines the **UI Creation Engine** — a comprehensive, autonomous system for creating cutting-edge website and mobile app interfaces that compete with top vendors in the USA. It combines competitive research, AI-powered design analysis, image optimization, SEO metadata generation, and OpenRouter swarm orchestration to ensure every digital product created meets the highest standards.
 
-**Requirements Reference:** GitHub Issue — *"create engine for website ui creation using openrouter or open hands Orchestrator use swarms for research"*
+**Requirements Reference:** GitHub Issue — _"create engine for website ui creation using openrouter or open hands Orchestrator use swarms for research"_
 
 ---
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
-| **Competitive Research** | Analyze top 10+ competitors in target industry using swarm of Scout agents |
-| **UI/UX Pattern Analysis** | Identify cutting-edge design patterns, features, and innovations |
-| **Image Optimization** | Standardize images, add alt text, optimize for SEO, convert to WebP |
-| **SEO Metadata Generation** | Generate comprehensive metadata that achieves Lighthouse scores 95+ |
-| **Differentiation Strategy** | Identify unique value propositions and competitive advantages |
-| **Autonomous Report Generation** | Create detailed analysis reports with actionable recommendations |
-| **Full Scaffolding** | Generate complete front-to-back implementation including UI, API, and database |
+| Task                             | Description                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------ |
+| **Competitive Research**         | Analyze top 10+ competitors in target industry using swarm of Scout agents     |
+| **UI/UX Pattern Analysis**       | Identify cutting-edge design patterns, features, and innovations               |
+| **Image Optimization**           | Standardize images, add alt text, optimize for SEO, convert to WebP            |
+| **SEO Metadata Generation**      | Generate comprehensive metadata that achieves Lighthouse scores 95+            |
+| **Differentiation Strategy**     | Identify unique value propositions and competitive advantages                  |
+| **Autonomous Report Generation** | Create detailed analysis reports with actionable recommendations               |
+| **Full Scaffolding**             | Generate complete front-to-back implementation including UI, API, and database |
 
 ---
 
@@ -39,9 +39,9 @@ This skill activates when these phrases appear:
 
 ```
 ui creation, website creation, app design, competitive analysis,
-cutting edge design, top vendor analysis, seo research, 
+cutting edge design, top vendor analysis, seo research,
 image optimization, metadata generation, design research,
-ui engine, create website, create app, modern ui, 
+ui engine, create website, create app, modern ui,
 competitor research, market analysis, design standards
 ```
 
@@ -96,6 +96,7 @@ research_swarm:
 ```
 
 Each Scout returns:
+
 - **Sources**: URLs, screenshots, data points
 - **Findings**: Structured observations
 - **Rankings**: Top performers and why
@@ -154,7 +155,7 @@ Pixel + Forge agents generate:
 ```javascript
 // For every image in the UI:
 1. Analyze subject/content
-2. Generate descriptive SEO filename: 
+2. Generate descriptive SEO filename:
    - Bad: IMG_1234.jpg
    - Good: st-louis-catering-fusion-bowl-hero.webp
 3. Convert to WebP format (maintain quality)
@@ -207,39 +208,41 @@ For each page, generate:
 ```typescript
 export const metadata: Metadata = {
   // Auto-generated from business profile + competitive research
-  title: '[Business] — [Primary Value Prop] | [Location]', // Max 60 chars
-  description: '[One compelling sentence with keywords]',    // 150-160 chars
-  keywords: '[top-10-researched-keywords]',
-  
+  title: "[Business] — [Primary Value Prop] | [Location]", // Max 60 chars
+  description: "[One compelling sentence with keywords]", // 150-160 chars
+  keywords: "[top-10-researched-keywords]",
+
   // Canonical URL (no duplicates)
-  alternates: { 
-    canonical: 'https://[domain].com/[path]' 
+  alternates: {
+    canonical: "https://[domain].com/[path]",
   },
-  
+
   // OpenGraph for social sharing
   openGraph: {
-    title: '[Business] — [Hook]',
-    description: '[Compelling description]',
-    url: 'https://[domain].com/[path]',
-    siteName: '[Business Name]',
-    images: [{
-      url: 'https://[domain].com/[seo-optimized-filename].webp',
-      width: 1200,
-      height: 630,
-      alt: '[Descriptive alt text with keywords]'
-    }],
-    locale: 'en_US',
-    type: 'website',
+    title: "[Business] — [Hook]",
+    description: "[Compelling description]",
+    url: "https://[domain].com/[path]",
+    siteName: "[Business Name]",
+    images: [
+      {
+        url: "https://[domain].com/[seo-optimized-filename].webp",
+        width: 1200,
+        height: 630,
+        alt: "[Descriptive alt text with keywords]",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
   },
-  
+
   // Twitter Cards
   twitter: {
-    card: 'summary_large_image',
-    title: '[Business] — [Hook]',
-    description: '[150 char description]',
+    card: "summary_large_image",
+    title: "[Business] — [Hook]",
+    description: "[150 char description]",
     images: {
-      url: 'https://[domain].com/[og-image].webp',
-      alt: '[Same as OG alt]'
+      url: "https://[domain].com/[og-image].webp",
+      alt: "[Same as OG alt]",
     },
   },
 };
@@ -286,13 +289,13 @@ export const metadata: Metadata = {
 
 Each competitor is scored across:
 
-| Category | Weight | Criteria |
-|---|---|---|
-| **Design Quality** | 25% | Modern, professional, cohesive brand |
-| **Features** | 25% | Core features + differentiators |
-| **SEO/Metadata** | 20% | Lighthouse score, meta tags, schema |
-| **Performance** | 15% | Load time, Core Web Vitals |
-| **Conversion UX** | 15% | CTA clarity, booking flow, trust signals |
+| Category           | Weight | Criteria                                 |
+| ------------------ | ------ | ---------------------------------------- |
+| **Design Quality** | 25%    | Modern, professional, cohesive brand     |
+| **Features**       | 25%    | Core features + differentiators          |
+| **SEO/Metadata**   | 20%    | Lighthouse score, meta tags, schema      |
+| **Performance**    | 15%    | Load time, Core Web Vitals               |
+| **Conversion UX**  | 15%    | CTA clarity, booking flow, trust signals |
 
 ### Output Format
 
@@ -302,6 +305,7 @@ Each competitor is scored across:
 ## Top 10 Competitors
 
 ### 1. [Competitor Name] (Score: 92/100)
+
 - **Website**: [URL]
 - **Strengths**: Modern design, clear CTAs, fast load times
 - **Features**: Online ordering, catering calculator, dietary filters
@@ -327,18 +331,21 @@ Each competitor is scored across:
 ## Recommendations
 
 ### Baseline Features (Required)
+
 - [ ] Online ordering system
 - [ ] Mobile-responsive design
 - [ ] Fast load times (<2s)
 - [ ] Clear pricing/menu
 
 ### Competitive Features (Match Leaders)
+
 - [ ] Dietary filters (vegan, GF, keto)
 - [ ] Catering calculator
 - [ ] Customer testimonials
 - [ ] Social proof (orders/reviews)
 
 ### Breakthrough Features (Exceed Leaders)
+
 - [ ] [Unique feature 1 based on gaps]
 - [ ] [Unique feature 2 based on research]
 - [ ] [Innovative UX pattern]
@@ -352,19 +359,19 @@ Each competitor is scored across:
 
 ```yaml
 research_swarm:
-  scouts: "anthropic/claude-sonnet-4"      # Fast, accurate research
-  synthesizer: "anthropic/claude-opus-4"   # Deep reasoning for analysis
+  scouts: "anthropic/claude-sonnet-4" # Fast, accurate research
+  synthesizer: "anthropic/claude-opus-4" # Deep reasoning for analysis
 
 design_generation:
   ui_patterns: "anthropic/claude-sonnet-4" # Code + design quality
-  copy: "openai/gpt-4.1"                   # Marketing copy
+  copy: "openai/gpt-4.1" # Marketing copy
 
 image_processing:
-  alt_text: "anthropic/claude-haiku-4-5"   # Fast, cheap for batch processing
+  alt_text: "anthropic/claude-haiku-4-5" # Fast, cheap for batch processing
   seo_filenames: "anthropic/claude-haiku-4-5"
 
 metadata_generation:
-  seo: "anthropic/claude-sonnet-4"         # Structured output quality
+  seo: "anthropic/claude-sonnet-4" # Structured output quality
 ```
 
 ### Cost Management
@@ -381,6 +388,7 @@ metadata_generation:
 ### Example 1: New Catering Website
 
 **Input:**
+
 ```bash
 npm run ui-engine -- \
   --business="Soul2Bowl" \
@@ -390,6 +398,7 @@ npm run ui-engine -- \
 ```
 
 **Output:**
+
 1. Competitive analysis report (15 competitors analyzed)
 2. UI component library (Next.js + Tailwind)
 3. 5 page layouts (home, menu, order, about, contact)
@@ -401,6 +410,7 @@ npm run ui-engine -- \
 ### Example 2: Mobile App Design
 
 **Input:**
+
 ```bash
 npm run ui-engine -- \
   --business="FitTracker Pro" \
@@ -410,6 +420,7 @@ npm run ui-engine -- \
 ```
 
 **Output:**
+
 1. Competitive feature analysis (gaps identified)
 2. UI/UX patterns for top fitness apps
 3. Screen designs (onboarding, dashboard, tracking, social)
@@ -437,6 +448,7 @@ Every UI creation must pass:
 ## Output Artifacts
 
 ### 1. Research Report
+
 ```
 research/
   competitive-analysis.md    # Top 10 competitors scored
@@ -446,6 +458,7 @@ research/
 ```
 
 ### 2. UI Components
+
 ```
 src/
   components/
@@ -457,6 +470,7 @@ src/
 ```
 
 ### 3. Page Layouts
+
 ```
 src/app/
   page.tsx              # Homepage
@@ -467,6 +481,7 @@ src/app/
 ```
 
 ### 4. Optimized Images
+
 ```
 public/images/
   [business]-hero-1920x1080.webp
@@ -476,6 +491,7 @@ public/images/
 ```
 
 ### 5. SEO Package
+
 ```
 src/lib/
   metadata.ts          # All page metadata
@@ -518,12 +534,12 @@ Sign off with: "UI creation complete. Lighthouse SEO: [score]/100. 🎨 Pixel si
 
 ## Dependencies
 
-| Dependency | Required? | Purpose | Install |
-|---|---|---|---|
+| Dependency             | Required?   | Purpose                                | Install                                          |
+| ---------------------- | ----------- | -------------------------------------- | ------------------------------------------------ |
 | **OpenRouter API Key** | ✅ Required | Multi-model routing for research swarm | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| **Sharp** | ✅ Required | Image optimization and WebP conversion | `npm install sharp` |
-| **Playwright** | ⭕ Optional | Competitor screenshot capture | `npm install playwright` |
-| **Lighthouse CI** | ⭕ Optional | Automated SEO/performance scoring | `npm install @lhci/cli` |
+| **Sharp**              | ✅ Required | Image optimization and WebP conversion | `npm install sharp`                              |
+| **Playwright**         | ⭕ Optional | Competitor screenshot capture          | `npm install playwright`                         |
+| **Lighthouse CI**      | ⭕ Optional | Automated SEO/performance scoring      | `npm install @lhci/cli`                          |
 
 ---
 
@@ -560,5 +576,5 @@ npx lhci autorun --config=lighthouserc.json
 
 ---
 
-*"Every digital product should compete with the top vendors in the USA."*  
-*— MIDNGHTSAPPHIRE*
+_"Every digital product should compete with the top vendors in the USA."_  
+_— MIDNGHTSAPPHIRE_

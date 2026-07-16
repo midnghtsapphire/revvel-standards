@@ -43,8 +43,8 @@ npm run dev    # starts on http://localhost:3005
 
 ## Runtime Configuration
 
-| Variable | Required | Description |
-| --- | --- | --- |
+| Variable                         | Required | Description                                                               |
+| -------------------------------- | -------- | ------------------------------------------------------------------------- |
 | `NEXT_PUBLIC_POLAR_CHECKOUT_URL` | Optional | Creator Pro checkout URL. Falls back to an email contact link when unset. |
 
 Create local config:
@@ -82,14 +82,14 @@ Response shape:
 
 ## Stack
 
-| Layer | Technology |
-| --- | --- |
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS |
-| Deploy | Vercel |
-| Data | Curated static dataset (quarterly refresh) |
-| Port | 3005 |
+| Layer     | Technology                                 |
+| --------- | ------------------------------------------ |
+| Framework | Next.js 16 (App Router)                    |
+| Language  | TypeScript                                 |
+| Styling   | Tailwind CSS                               |
+| Deploy    | Vercel                                     |
+| Data      | Curated static dataset (quarterly refresh) |
+| Port      | 3005                                       |
 
 ---
 

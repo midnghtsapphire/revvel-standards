@@ -1,4 +1,4 @@
-# WR: [WR] add - name: Automatic Versioning Tag   uses: nerdtronik/auto-versioning@latest
+# WR: [WR] add - name: Automatic Versioning Tag uses: nerdtronik/auto-versioning@latest
 
 **Issue:** #15866  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -51,7 +51,7 @@ orchestrator
 
 ### Summary
 
-add - name: Automatic Versioning Tag   uses: nerdtronik/auto-versioning@latest
+add - name: Automatic Versioning Tag uses: nerdtronik/auto-versioning@latest
 
 ### Objective
 
@@ -60,199 +60,313 @@ This actions calculates your repo versioning tags based on Semantic Versioning 2
 Note: This doesn't follow the SemVer parameters to increase a version (breaking changes, API compatibility changes, etc), this action is based only in changes percentages between commits
 
 Usage
+
 - uses: nerdtronik/auto-versioning@v2
   with:
+
   ## Commit to compare changes against (usually branch merging to or pr target)
+
   ## This uses the commit id/sha
+
   ##
+
   ## Default: "${{ github.event.pull_request.base.sha || github.event.before }}
-    target-commit: ${{ github.event.pull_request.base.sha || github.event.before }}
+
+  target-commit: ${{ github.event.pull_request.base.sha || github.event.before }}
 
   ## Commit to compare changes to target-commit (usually pr branch to merge)
+
   ## This uses the commit id/sha
+
   ##
+
   ## Default: "${{ github.event.pull_request.head.sha || github.event.after }}
-    source-commit: ${{ github.event.pull_request.head.sha || github.event.after }}
+
+  source-commit: ${{ github.event.pull_request.head.sha || github.event.after }}
 
   ## Top limit to increase the patch version vA.B.(C+1)
+
   ## If the changes are under this limit (0 < change % <= patch-limit)
+
   ## it will only increase the patch version
+
   ##
+
   ## Default: 10
-    patch-limit: 10
+
+  patch-limit: 10
 
   ## Top limit to increase the minor version vA.(B+1).C
+
   ## If the changes are under this limit and over the patch-limit (patch-limit < change % <= minor-limit)
+
   ## it will only increase the minor version and set patch version to 0
+
   ##
+
   ## Default: 75
-    minor-limit: 75
+
+  minor-limit: 75
 
   ## Base directory to check the changes, the script will cd to this dir and check the changes there
+
   ##
+
   ## Default
-    directory: "."
+
+  directory: "."
 
   ## List of files, paths, patterns (./_path_) to exclude from changes checking
+
   ## (comma separated)
+
   ##
+
   ## Default
-    exclude: ""
+
+  exclude: ""
 
   ## List of files, paths, patterns (./_path_) to include only for changes checking
+
   ## (comma separated)
+
   ## This will avoid any file that doesn't match the list
+
   ##
+
   ## Default
-    include: ""
+
+  include: ""
 
   ## Exclude files included in the .gitigore file
+
   ##
+
   ## Default: true
-    exclude-gitignore: true
+
+  exclude-gitignore: true
 
   ## Include the 'v' prefix in the version tag -> vX.Y.Z
+
   ##
+
   ## Default: true
-    v-prefix: true
+
+  v-prefix: true
 
   ## Mark this version as an alpha version
+
   ## This will add the suffix '-alpha' to the version and will increase only
+
   ## the minor and major versions, also, handles multiple subversions
+
   ## with '-alpha.X' every time following alpha versions are published without big changes
+
   ##
+
   ## Default: false
-    is-alpha: false
+
+  is-alpha: false
 
   ## Mark this version as a beta version
+
   ## This will add the suffix '-beta' to the version and will increase only
+
   ## the minor and major versions, also, handles multiple subversions
+
   ## with '-beta.X' every time following beta versions are published without big changes
+
   ##
+
   ## Default: false
-    is-beta: false
+
+  is-beta: false
 
   ## Mark this version as a release candidate version
+
   ## This will add the suffix '-rc' to the version and will increase only
+
   ## the minor and major versions, also, handles multiple subversions
+
   ## with '-rc.X' every time following release candidate versions
+
   ## are published without big changes
+
   ##
+
   ## Default: false
-    is-rc: false
+
+  is-rc: false
 
   ## Key to use when version is Alpha version
+
   ## For example, if this value is 'a', the version will be 'vA.B.C-a'
+
   ## instead of 'vA.B.C-alpha'
+
   ##
+
   ## Default: "alpha
-    alpha-key: alpha
+
+  alpha-key: alpha
 
   ## Key to use when version is Beta version
+
   ## For example, if this value is 'b', the version will be 'vA.B.C-b'
+
   ## instead of 'vA.B.C-beta'
+
   ##
+
   ## Default: "beta
-    beta-key: beta
+
+  beta-key: beta
 
   ## Key to use when version is Rc version
+
   ## For example, if this value is 'r', the version will be 'vA.B.C-r'
+
   ## instead of 'vA.B.C-rc'
+
   ##
+
   ## Default: "rc
-    rc-key: rc
+
+  rc-key: rc
 
   ## Mark this version as a draft
+
   ##
+
   ## Default: false
-    is-draft: false
+
+  is-draft: false
 
   ## Mark this version as a prerelease
+
   ##
+
   ## Default: false
-    is-prerelease: false
+
+  is-prerelease: false
 
   ## Show debug messages
+
   ##
+
   ## Default: false
-    debug: false
+
+  debug: false
 
   ## Create GitHub release tag on finish
+
   ##
+
   ## Default: true
-    create-tag: true
+
+  create-tag: true
 
   ## Create GitHub release tag on finish with only the major version (vA)
+
   ##
+
   ## Default: true
-    create-major-tag: true
+
+  create-major-tag: true
 
   ## Create GitHub release tag on finish with only the major and minor version (vA.B)
+
   ##
+
   ## Default: true
-    create-minor-tag: true
+
+  create-minor-tag: true
 
   ## Create GitHub latest release tag on finish
+
   ##
+
   ## Default: true
-    create-latest-tag: true
+
+  create-latest-tag: true
 
   ## Prerelease info to add at the end of the version tag
+
   ## This is added as a suffix as '-prerelease-tag'
+
   ##
+
   ## Default
-    prerelease-tag: ""
+
+  prerelease-tag: ""
 
   ## Build metadata to add at the end of the version tag
+
   ## This is added as a suffix as '+build-metadata'
+
   ##
+
   ## Default
-    build-metadata: ""
+
+  build-metadata: ""
 
   ## Separator to use with the prerelease tag (alpha,beta,rc)
+
   ## For example: 'vA.B.C<sep>alpha'
+
   ##
+
   ## Default: "-
-    prerelease-separator: "-"
+
+  prerelease-separator: "-"
 
   ## Separator to use with the build-metadata tag
+
   ## For example: 'vA.B.C<sep><build-metadata>>'
+
   ##
+
   ## Default: "+
-    build-separator: "+"
+
+  build-separator: "+"
 
   ## Separator tu use in between the version string (vA<sep>B<sep>C)
+
   ## Example: with this defined as '_' the version will be 'vA_B_C'
+
   ##
+
   ## Default
-    version-separator: "."
+
+  version-separator: "."
 
   ## Github Token to create the tag at the end of the process
+
   ## (required if want to create tag at the end)
+
   ##
+
   ## Default: ${{ github.token }}
-    github-token: ${{ github.token }}
-Scenarios
-Pull Request
-Push
-Static commit merge
-Pull Request
-on:
+
+  github-token: ${{ github.token }}
+  Scenarios
+  Pull Request
+  Push
+  Static commit merge
+  Pull Request
+  on:
   pull_request:
-    branches: ["main"]
-jobs:
+  branches: ["main"]
+  jobs:
   pr-workflow:
-    runs-on: ubuntu-latest
-    permissions:
-      contents:
-        write # This is required if you don't set 'github-token'
-        # and you want to create the tag release
-    steps:
-      # This step is required
-      - name: checkout source
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2 # Fetch enough history to compare commits
+  runs-on: ubuntu-latest
+  permissions:
+  contents:
+  write # This is required if you don't set 'github-token' # and you want to create the tag release
+  steps: # This step is required - name: checkout source
+  uses: actions/checkout@v4
+  with:
+  fetch-depth: 2 # Fetch enough history to compare commits
 
       - name: Calculate Next Version
         uses: nerdtronik/auto-versioning@v2
@@ -266,23 +380,21 @@ jobs:
 
       - name: Show Output
         run: echo '${{ toJson(steps.versioning.outputs) }}'
+
 Push
 on:
-  push:
-    branches: ["main"]
+push:
+branches: ["main"]
 jobs:
-  push-workflow:
-    runs-on: ubuntu-latest
-    permissions:
-      contents:
-        write # This is required if you don't set 'github-token'
-        # and you want to create the tag release
-    steps:
-      # This step is required
-      - name: checkout source
-        uses: actions/checkout@master
-        with:
-          fetch-depth: 2 # Fetch enough history to compare commits
+push-workflow:
+runs-on: ubuntu-latest
+permissions:
+contents:
+write # This is required if you don't set 'github-token' # and you want to create the tag release
+steps: # This step is required - name: checkout source
+uses: actions/checkout@master
+with:
+fetch-depth: 2 # Fetch enough history to compare commits
 
       - name: Total Changes
         uses: HenryCabarcas/auto-versioning@v1.0.15
@@ -290,22 +402,20 @@ jobs:
 
       - name: Show Output
         run: echo '${{ toJson(steps.versioning.outputs) }}'
+
 Static commit merge
 on:
-  push:
-    branches: ["main"]
+push:
+branches: ["main"]
 jobs:
-  push-workflow:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # This is required if you don't set 'github-token'
-                      # and you want to create the tag release
-    steps:
-      # This step is required
-      - name: checkout source
-        uses: actions/checkout@master
-        with:
-          fetch-depth: 0  # Fetch all history to compare commits
+push-workflow:
+runs-on: ubuntu-latest
+permissions:
+contents: write # This is required if you don't set 'github-token' # and you want to create the tag release
+steps: # This step is required - name: checkout source
+uses: actions/checkout@master
+with:
+fetch-depth: 0 # Fetch all history to compare commits
 
       - name: Total Changes
         uses: HenryCabarcas/auto-versioning@v1.0.15
@@ -318,6 +428,7 @@ jobs:
 
       - name: Show Output
         run: echo '${{ toJson(steps.versioning.outputs) }}'
+
 Inputs
 Field Default Description
 target-commit ${{ github.event.pull_request.base.sha || github.event.before }} Commit to compare changes against (usually branch merging to)
@@ -416,18 +527,19 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -439,6 +551,7 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29267498566.md`
 
 ## Executive Decision
@@ -452,6 +565,7 @@ Source packet: `docs/research-engine/run-29267498566.md`
 **Primary Target**: DevOps engineers and CI/CD pipeline maintainers at mid-size software companies (50-500 developers) who prioritize automation but need reliable, standards-compliant versioning.
 
 **Why This Matters Now**:
+
 - Trunk-based development adoption increasing
 - Manual versioning creates 2-4 hour bottlenecks per release cycle
 - GitHub Actions is now default CI/CD for many projects
@@ -462,38 +576,43 @@ Source packet: `docs/research-engine/run-29267498566.md`
 ## Marketing and SEO Plan
 
 ## Primary Keywords (High Commercial Intent)
-- "github actions automatic versioning" 
+
+- "github actions automatic versioning"
 - "semantic versioning automation"
 - "auto version tagging github"
 
 ## Content Strategy
+
 1. **Tutorial**: "Setting Up Automatic Semantic Versioning in GitHub Actions"
 2. **Comparison**: "Why Conventional Commits Beat Percentage-Based Versioning"
 3. **Best Practices**: "GitHub Actions Versioning Workflow Optimization"
 
 ## Landing Page Structure
+
 **Title**: "Automate GitHub Versioning with True Semantic Versioning | [Brand]"  
 **Meta**: "Implement automatic semantic versioning in GitHub Actions using conventional commits. Maintain compatibility while eliminating manual version bumps."
 
 ## Competitor and GitHub Star Intelligence
 
-| Action | Stars | Approach | Pricing | Moat |
-|--------|-------|----------|---------|------|
-| semantic-release | 20,000+ | Conventional commits | Free/OSS | Industry standard, ecosystem |
-| nerdtronik/auto-versioning | 26 (unverified) | % change | Free/OSS | Weak - easily replicated |
-| anothrNick/github-tag-action | 1,400+ | Commit keywords | Free/OSS | Simple, established |
-| release-please (Google) | 4,000+ | Conventional commits | Free/OSS | Google backing |
+| Action                       | Stars           | Approach             | Pricing  | Moat                         |
+| ---------------------------- | --------------- | -------------------- | -------- | ---------------------------- |
+| semantic-release             | 20,000+         | Conventional commits | Free/OSS | Industry standard, ecosystem |
+| nerdtronik/auto-versioning   | 26 (unverified) | % change             | Free/OSS | Weak - easily replicated     |
+| anothrNick/github-tag-action | 1,400+          | Commit keywords      | Free/OSS | Simple, established          |
+| release-please (Google)      | 4,000+          | Conventional commits | Free/OSS | Google backing               |
 
 **Key Finding**: The requested action has minimal adoption (26 stars if it exists) versus 20,000+ for semantic-release.
 
 ## Chatter and Demand Signals
 
 ## Community Objections
+
 - "I'm not sure I want a major version bump just because I reformat code" - Reddit r/github
 - "Doesn't follow SemVer rules" - Common complaint
 - "Major version bump for non-breaking changes" - Stack Overflow discussions
 
 ## Unmet Needs
+
 - Automated versioning that maintains semantic meaning
 - Integration without breaking existing workflows
 - Clear documentation on versioning strategy implications
@@ -501,11 +620,13 @@ Source packet: `docs/research-engine/run-29267498566.md`
 ## Factual Validation and Evidence Gaps
 
 ## Critical Issues
+
 1. **Repository Unverified**: `nerdtronik/auto-versioning` returns 404 errors
 2. **Version Conflicts**: WR references three different versions (@latest, @v2, HenryCabarcas@v1.0.15)
 3. **Threshold Inconsistencies**: Documentation states 10%/75% but examples show 30%
 
 ## Evidence Gaps
+
 - No GitHub API verification possible for repository existence
 - No security audit available for third-party action
 - No adoption metrics or user testimonials found
@@ -513,12 +634,14 @@ Source packet: `docs/research-engine/run-29267498566.md`
 ## Build Requirements and Acceptance Gates
 
 ## Requirements
+
 1. GitHub Action that automates semantic versioning
 2. Permissions: `contents: write` for tag creation
 3. Workflow triggers: PR and push to main
 4. Git history: `fetch-depth: 2` minimum
 
 ## Acceptance Gates
+
 - [ ] Action repository verified to exist and be maintained
 - [ ] Security review completed for third-party code
 - [ ] Test workflow validates version calculations
@@ -529,6 +652,7 @@ Source packet: `docs/research-engine/run-29267498566.md`
 ## Code Review Agent Packet
 
 ## For Bito AI
+
 ```yaml
 # BLOCKING: Repository does not exist
 # Replace with semantic-release implementation
@@ -541,19 +665,23 @@ Source packet: `docs/research-engine/run-29267498566.md`
 ```
 
 ## For Coderabbit
+
 - **Issue**: Using non-existent action `nerdtronik/auto-versioning`
 - **Fix**: Replace with `semantic-release` for standards compliance
 - **Commit**: `fix: replace non-existent versioning action with semantic-release`
 
 ## For Ralph Loop
+
 - **Security Risk**: Unverified third-party action requests write permissions
 - **Recommendation**: Use established action with 20k+ stars and security track record
 
 ## Automatic Fix and Commit Queue
 
 ## Fix 1: Replace Non-Existent Action
+
 **File**: `.github/workflows/auto-version.yml`  
 **Commit**: `fix: replace non-existent nerdtronik action with semantic-release`
+
 ```yaml
 - name: Semantic Release
   uses: cycjimmy/semantic-release-action@v4
@@ -565,8 +693,10 @@ Source packet: `docs/research-engine/run-29267498566.md`
 ```
 
 ## Fix 2: Add Repository Verification
+
 **File**: `.github/workflows/verify-dependencies.yml`  
 **Commit**: `ci: add third-party action verification workflow`
+
 ```yaml
 - name: Verify Action Exists
   run: |
@@ -574,13 +704,17 @@ Source packet: `docs/research-engine/run-29267498566.md`
 ```
 
 ## Fix 3: Document Versioning Strategy
+
 **File**: `docs/VERSIONING.md`  
 **Commit**: `docs: add semantic versioning strategy documentation`
+
 ```markdown
 ## Versioning Strategy
+
 This project uses Conventional Commits for semantic versioning:
+
 - `fix:` = patch version
-- `feat:` = minor version  
+- `feat:` = minor version
 - `BREAKING CHANGE:` = major version
 ```
 
@@ -595,16 +729,20 @@ This project uses Conventional Commits for semantic versioning:
 ## Repository Review and Best Alternative
 
 ## Primary Issue
+
 The requested `nerdtronik/auto-versioning` repository returns 404 errors and cannot be verified to exist on GitHub.
 
 ## Best Alternative: semantic-release
+
 **Repository**: `semantic-release/semantic-release` via `cycjimmy/semantic-release-action`
+
 - **Stars**: 20,000+
 - **Approach**: Conventional commits (industry standard)
 - **Benefits**: True semantic versioning, automated changelogs, wide ecosystem support
 - **Implementation**: Drop-in replacement with better reliability
 
 ## Alternative Rankings
+
 1. **semantic-release** - Industry standard, massive adoption
 2. **anothrNick/github-tag-action** - Simple, 1.4k stars
 3. **release-please** - Google-backed, 4k stars
@@ -614,6 +752,7 @@ The requested `nerdtronik/auto-versioning` repository returns 404 errors and can
 ## Overall Confidence: 15/100
 
 ### Breakdown by Lane
+
 - **Market Positioning**: 20/100 - Unverified repository, conflicts with SemVer
 - **SEO Demand**: 25/100 - Keywords exist but action doesn't
 - **Competitor Intelligence**: 10/100 - 26 stars vs 20,000 for alternatives
@@ -624,6 +763,7 @@ The requested `nerdtronik/auto-versioning` repository returns 404 errors and can
 - **Repository Review**: 85/100 - Strong alternatives identified
 
 ### Decision Rationale
+
 The confidence score is critically low because the requested action cannot be verified to exist. Even if it did exist, the percentage-based versioning approach violates semantic versioning principles that downstream consumers rely on. The semantic-release alternative scores 85/100 confidence as a mature, widely-adopted solution that maintains compatibility while providing the requested automation.
 
 ## Executive Summary
@@ -666,11 +806,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -686,11 +826,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

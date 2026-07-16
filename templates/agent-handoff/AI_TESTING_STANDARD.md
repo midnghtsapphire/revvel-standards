@@ -7,7 +7,7 @@
 
 Traditional software testing focuses on binary pass/fail outcomes (e.g., "Did the code execute without throwing a 500 error?"). For autonomous AI agents, "zero code errors" does not guarantee functional success. An agent can execute flawlessly but still fail to solve the user's actual problem or violate the user's intent. [1, 2]
 
-To solve this, Revvel applications mandate **Behavioral Validation** using the **S.H.I.F.T.** (Self-Healing Intent-Focused Tasks) framework. We test *intent*, not just execution.
+To solve this, Revvel applications mandate **Behavioral Validation** using the **S.H.I.F.T.** (Self-Healing Intent-Focused Tasks) framework. We test _intent_, not just execution.
 
 ## 2. The Five Dimensions of Agent Evaluation
 
@@ -24,26 +24,28 @@ Every AI agent must be evaluated across these five dimensions to ensure it is ac
 Before writing code for a new agent workflow, developers must define the agent's behavior using the Wizard of Oz method to create high-quality "Few-Shot" examples for the system prompt. [4, 5]
 
 1. **Simulate the Scenario:** The developer manually writes out the exact input a user would give.
-2. **Roleplay the Agent:** The developer manually types out the *ideal* response, tool call sequence, and reasoning process the agent should follow.
-3. **Inject as Few-Shot Data:** These manually crafted, ideal interactions are injected directly into the agent's system prompt as few-shot examples. This ensures the agent learns the *intent* and *tone* directly from the developer's manual roleplay.
+2. **Roleplay the Agent:** The developer manually types out the _ideal_ response, tool call sequence, and reasoning process the agent should follow.
+3. **Inject as Few-Shot Data:** These manually crafted, ideal interactions are injected directly into the agent's system prompt as few-shot examples. This ensures the agent learns the _intent_ and _tone_ directly from the developer's manual roleplay.
 
 ## 4. Agent Persona Guardrails
 
 Agents must have explicitly defined identities and strict behavioral guardrails to prevent erratic behavior or assumptions. [6]
 
-* **Define the Identity:** State the role clearly in the prompt (e.g., "You are an Executive Function routing agent responsible for parsing incoming webhooks and categorizing them by priority").
-* **Reasoning Loops:** Force the agent to output its reasoning *before* taking action. (e.g., Prompt the agent to output `<thought>...</thought>` blocks before executing a tool call).
-* **Explicit Forbiddances:** Define what the agent *cannot* do (e.g., "You MUST NOT generate a response without first verifying the data via the Search tool").
+- **Define the Identity:** State the role clearly in the prompt (e.g., "You are an Executive Function routing agent responsible for parsing incoming webhooks and categorizing them by priority").
+- **Reasoning Loops:** Force the agent to output its reasoning _before_ taking action. (e.g., Prompt the agent to output `<thought>...</thought>` blocks before executing a tool call).
+- **Explicit Forbiddances:** Define what the agent _cannot_ do (e.g., "You MUST NOT generate a response without first verifying the data via the Search tool").
 
 ## 5. Self-Healing and Evaluator Agents
 
 If an agent task fails functionally (even if the code ran without errors), the system must attempt to self-heal. [7]
 
-* **Evaluator Agent Pattern:** Implement a secondary "Evaluator" prompt or lightweight agent that reviews the primary agent's output against the success criteria.
-* **Feedback Loop:** If the Evaluator scores the output poorly, it generates a specific critique (e.g., "You missed step 3 of the instructions"). This critique is fed back to the primary agent to retry the task.
+- **Evaluator Agent Pattern:** Implement a secondary "Evaluator" prompt or lightweight agent that reviews the primary agent's output against the success criteria.
+- **Feedback Loop:** If the Evaluator scores the output poorly, it generates a specific critique (e.g., "You missed step 3 of the instructions"). This critique is fed back to the primary agent to retry the task.
 
 ---
+
 ### References
+
 [1] Galileo AI: The AI Agent Behavioral Validation Testing Playbook - https://www.galileo.ai/learn/ai-observability/ai-agent-testing-behavioral-validation
 [2] LinkedIn: Writing Acceptance Criteria for AI Products - https://www.linkedin.com/pulse/writing-acceptance-criteria-ai-products-product-managers-aruna-singh-iw7uc
 [3] Leantime: Adapting Project Management Techniques - https://leantime.io/adhd-and-project-management-techniques-for-focus-and-organization/

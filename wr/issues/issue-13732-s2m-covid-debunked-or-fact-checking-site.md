@@ -4,7 +4,7 @@
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
 **Research Date:** 2026-05-22  
 **Researcher:** Copilot Coding Agent  
-**WR Status:** ✅ Complete  
+**WR Status:** ✅ Complete
 
 ---
 
@@ -31,17 +31,17 @@ under-scoping to a single fact-check entry.
 
 ### Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-02-20 |
-| Last Updated | 2026-05-22 |
-| Primary Language | JavaScript |
-| Stars | 1 |
-| Open Issues | 6405 |
-| Description | Single source of truth for Revvel standards, processes, and specifications |
-| Private | No |
-| Archived | No |
+| Property         | Value                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created          | 2026-02-20                                                                              |
+| Last Updated     | 2026-05-22                                                                              |
+| Primary Language | JavaScript                                                                              |
+| Stars            | 1                                                                                       |
+| Open Issues      | 6405                                                                                    |
+| Description      | Single source of truth for Revvel standards, processes, and specifications              |
+| Private          | No                                                                                      |
+| Archived         | No                                                                                      |
 
 ### Current Repo Capabilities Relevant to This WR
 
@@ -87,18 +87,18 @@ and PDF bundle.
 
 ## Step 1A: Product / Output Selections
 
-| Output shape | In scope? | Format / length | Primary engine / standard | Notes |
-| --- | --- | --- | --- | --- |
-| Website / app UI | Yes | Next.js trust site + authenticated dashboard | `scripts/ui-creation-engine.js`, `standards/shapes/APP.md` | Public myth pages plus admin/editor workflow |
-| API | Yes | REST JSON | `standards/shapes/API.md` | Claim lookup, evidence bundle, and PDF job endpoints |
-| CLI | Yes | npm package | `standards/CLI_MCP_AUTOMATION.md` | Researcher / newsroom command line verification |
-| MCP | Yes | stdio server | `standards/shapes/MCP.md` | Agent-facing tools for claim verification and export |
-| Skill | Yes | Revvel skill | `products/revvel-skill-runner/README.md` | Internal and customer-facing guided verification workflows |
-| PDF | Yes | 1-3 page brief + source appendix | `docs/playbooks/pdf-wr-playbook.md` | Shareable evidence packs for schools, clinics, and journalists |
-| PowerPoint / deck | No | N/A | N/A | Not required for the canonical product |
-| Video | No | N/A | N/A | Optional marketing asset, not part of the required bundle |
-| Docs | Yes | README, GTM, security, deployment | revvel-standards baseline docs | Required for market handoff |
-| Agent automation | Yes | GitHub Actions / launch orchestration | `standards/AUTOMATED_PRODUCT_PIPELINE.md`, `scripts/autonomous-product-launcher.sh` | Required for repeatable S2M shipping |
+| Output shape      | In scope? | Format / length                              | Primary engine / standard                                                           | Notes                                                          |
+| ----------------- | --------- | -------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Website / app UI  | Yes       | Next.js trust site + authenticated dashboard | `scripts/ui-creation-engine.js`, `standards/shapes/APP.md`                          | Public myth pages plus admin/editor workflow                   |
+| API               | Yes       | REST JSON                                    | `standards/shapes/API.md`                                                           | Claim lookup, evidence bundle, and PDF job endpoints           |
+| CLI               | Yes       | npm package                                  | `standards/CLI_MCP_AUTOMATION.md`                                                   | Researcher / newsroom command line verification                |
+| MCP               | Yes       | stdio server                                 | `standards/shapes/MCP.md`                                                           | Agent-facing tools for claim verification and export           |
+| Skill             | Yes       | Revvel skill                                 | `products/revvel-skill-runner/README.md`                                            | Internal and customer-facing guided verification workflows     |
+| PDF               | Yes       | 1-3 page brief + source appendix             | `docs/playbooks/pdf-wr-playbook.md`                                                 | Shareable evidence packs for schools, clinics, and journalists |
+| PowerPoint / deck | No        | N/A                                          | N/A                                                                                 | Not required for the canonical product                         |
+| Video             | No        | N/A                                          | N/A                                                                                 | Optional marketing asset, not part of the required bundle      |
+| Docs              | Yes       | README, GTM, security, deployment            | revvel-standards baseline docs                                                      | Required for market handoff                                    |
+| Agent automation  | Yes       | GitHub Actions / launch orchestration        | `standards/AUTOMATED_PRODUCT_PIPELINE.md`, `scripts/autonomous-product-launcher.sh` | Required for repeatable S2M shipping                           |
 
 ### Platform Defaults & Website Requirements
 
@@ -132,13 +132,13 @@ generic AI answers.
 
 ### Target Audience & Trigger Events
 
-| Audience Segment | Trigger Event | Intent Level | Why they buy / use |
-| --- | --- | --- | --- |
-| Parents and caregivers | Viral post claims a vaccine or treatment is dangerous | High | Need plain-language debunk fast |
-| Journalists and moderators | Need a sourced answer before publishing or moderating | High | Need repeatable verification workflow |
-| Clinics, schools, NGOs | Need printable evidence handouts | High | Need branded, shareable PDF output |
-| Researchers and policy teams | Track recurring misinformation narratives | Medium | Need API, batch lookup, and source audit trail |
-| AI agents / internal automations | Need structured verification tools | Medium | Need MCP + API, not manual browsing |
+| Audience Segment                 | Trigger Event                                         | Intent Level | Why they buy / use                             |
+| -------------------------------- | ----------------------------------------------------- | ------------ | ---------------------------------------------- |
+| Parents and caregivers           | Viral post claims a vaccine or treatment is dangerous | High         | Need plain-language debunk fast                |
+| Journalists and moderators       | Need a sourced answer before publishing or moderating | High         | Need repeatable verification workflow          |
+| Clinics, schools, NGOs           | Need printable evidence handouts                      | High         | Need branded, shareable PDF output             |
+| Researchers and policy teams     | Track recurring misinformation narratives             | Medium       | Need API, batch lookup, and source audit trail |
+| AI agents / internal automations | Need structured verification tools                    | Medium       | Need MCP + API, not manual browsing            |
 
 ### SEO / Keyword Direction
 
@@ -158,13 +158,13 @@ export a one-page brief or call the API immediately.
 
 ### Competitor / Gap Analysis
 
-| Competitor / source | What it does well | Gap we can ship against |
-| --- | --- | --- |
-| Reuters Fact Check | High trust, fast debunks | Not productized for API / CLI / PDF self-service |
-| Full Fact | Strong methodology and deepfake tracking | Less focused on turnkey export and agent tooling |
-| WHO / CDC myth pages | Authoritative guidance | Harder to search by claim variant or operationalize |
-| Newsroom fact-checks broadly | Editorial rigor | Slow reuse across teams and no developer surface |
-| Generic LLM chatbots | Instant answers | Weak source discipline and unstable trust posture |
+| Competitor / source          | What it does well                        | Gap we can ship against                             |
+| ---------------------------- | ---------------------------------------- | --------------------------------------------------- |
+| Reuters Fact Check           | High trust, fast debunks                 | Not productized for API / CLI / PDF self-service    |
+| Full Fact                    | Strong methodology and deepfake tracking | Less focused on turnkey export and agent tooling    |
+| WHO / CDC myth pages         | Authoritative guidance                   | Harder to search by claim variant or operationalize |
+| Newsroom fact-checks broadly | Editorial rigor                          | Slow reuse across teams and no developer surface    |
+| Generic LLM chatbots         | Instant answers                          | Weak source discipline and unstable trust posture   |
 
 ### Community / Industry Signal
 
@@ -180,15 +180,15 @@ export a one-page brief or call the API immediately.
 
 ### BOM (Bill of Materials)
 
-| Category | Recommended tool / source | Cost | Why it wins |
-| --- | --- | --- | --- |
-| Public evidence sources | WHO, CDC, HHS, PAHO, Reuters/Full Fact source citations | Free | Trustworthy source chain for debunks |
-| Website hosting | Vercel | From $20/mo | Fast website-in-test and deployment standard |
-| API runtime | DigitalOcean App Platform | From $5-12/mo | Default backend runtime in this repo |
-| App auth + DB | Supabase or Neon + auth layer | From free tier | Fits app standard and claim storage |
-| LLM summarization | OpenRouter | Usage-based | Helps turn evidence into readable summaries |
-| PDF rendering | Pandoc / WeasyPrint / Typst | Free | Matches PDF playbook |
-| Payments | Polar.sh or Stripe | Rev share / transaction fees | Required for S2M checkout path |
+| Category                | Recommended tool / source                               | Cost                         | Why it wins                                  |
+| ----------------------- | ------------------------------------------------------- | ---------------------------- | -------------------------------------------- |
+| Public evidence sources | WHO, CDC, HHS, PAHO, Reuters/Full Fact source citations | Free                         | Trustworthy source chain for debunks         |
+| Website hosting         | Vercel                                                  | From $20/mo                  | Fast website-in-test and deployment standard |
+| API runtime             | DigitalOcean App Platform                               | From $5-12/mo                | Default backend runtime in this repo         |
+| App auth + DB           | Supabase or Neon + auth layer                           | From free tier               | Fits app standard and claim storage          |
+| LLM summarization       | OpenRouter                                              | Usage-based                  | Helps turn evidence into readable summaries  |
+| PDF rendering           | Pandoc / WeasyPrint / Typst                             | Free                         | Matches PDF playbook                         |
+| Payments                | Polar.sh or Stripe                                      | Rev share / transaction fees | Required for S2M checkout path               |
 
 **Estimated monthly infra floor:** roughly $25-$60 before usage-based LLM
 costs.  
@@ -225,13 +225,13 @@ designed to ship.
 
 ### Contribution to the $10M in 3 Years Goal
 
-| Revenue surface | Offer | Initial pricing idea |
-| --- | --- | --- |
-| Public website | Free SEO acquisition | Free |
-| PDF export | Pay-per-brief or bundle | $19-$49 |
-| Team dashboard | Subscription for saved searches, history, exports | $29-$99/mo |
-| API | Usage-based or seat-based | $49-$299/mo |
-| White-label / enterprise | Branded clinic, newsroom, NGO deployment | Custom |
+| Revenue surface          | Offer                                             | Initial pricing idea |
+| ------------------------ | ------------------------------------------------- | -------------------- |
+| Public website           | Free SEO acquisition                              | Free                 |
+| PDF export               | Pay-per-brief or bundle                           | $19-$49              |
+| Team dashboard           | Subscription for saved searches, history, exports | $29-$99/mo           |
+| API                      | Usage-based or seat-based                         | $49-$299/mo          |
+| White-label / enterprise | Branded clinic, newsroom, NGO deployment          | Custom               |
 
 ### Decision
 
@@ -319,30 +319,30 @@ intent is urgent verification, not passive reading.
 
 ## Risks & Mitigations
 
-| Risk | Severity | Mitigation |
-| --- | --- | --- |
-| Product looks like medical advice | High | Use disclaimer, cite sources, avoid diagnosis language |
-| AI summary drifts from source evidence | High | Keep source-first display and human-auditable citations |
-| Scope collapses back to one article | High | Treat all output shapes above as required bundle |
-| Trust is damaged by stale claim pages | High | Add last-reviewed date and editorial review queue |
-| Paid product has weak conversion | Medium | Use free SEO pages to drive upgrades to PDF/API/team plans |
+| Risk                                   | Severity | Mitigation                                                 |
+| -------------------------------------- | -------- | ---------------------------------------------------------- |
+| Product looks like medical advice      | High     | Use disclaimer, cite sources, avoid diagnosis language     |
+| AI summary drifts from source evidence | High     | Keep source-first display and human-auditable citations    |
+| Scope collapses back to one article    | High     | Treat all output shapes above as required bundle           |
+| Trust is damaged by stale claim pages  | High     | Add last-reviewed date and editorial review queue          |
+| Paid product has weak conversion       | Medium   | Use free SEO pages to drive upgrades to PDF/API/team plans |
 
 ---
 
 ## Artifact Engine Map
 
-| Artifact Shape | Existing engine / standard | Status | Required action |
-| --- | --- | --- | --- |
-| Website / UI | `scripts/ui-creation-engine.js`, `standards/shapes/APP.md` | Exists | Use for public site + dashboard + admin |
-| API | `standards/shapes/API.md` | Exists | Implement claim/evidence endpoints |
-| CLI | `standards/CLI_MCP_AUTOMATION.md`, `scripts/init-product.sh --shape cli` | Exists | Package newsroom/research commands |
-| MCP | `standards/shapes/MCP.md` | Exists | Publish verification tools for agents |
-| Skill | `products/revvel-skill-runner/` | Exists | Add guided verification skill |
-| PDF | `docs/playbooks/pdf-wr-playbook.md` | Exists | Render exportable debunk briefs |
-| PowerPoint / deck | No engine required | Out of scope | Do not expand scope here |
-| Video | No engine required | Out of scope | Do not expand scope here |
-| Docs | revvel-standards baseline repo docs | Exists | Ship README, GTM, deployment, security docs |
-| Agent automation | `standards/AUTOMATED_PRODUCT_PIPELINE.md`, `scripts/autonomous-product-launcher.sh` | Exists | Use for repeatable S2M launch flow |
+| Artifact Shape    | Existing engine / standard                                                          | Status       | Required action                             |
+| ----------------- | ----------------------------------------------------------------------------------- | ------------ | ------------------------------------------- |
+| Website / UI      | `scripts/ui-creation-engine.js`, `standards/shapes/APP.md`                          | Exists       | Use for public site + dashboard + admin     |
+| API               | `standards/shapes/API.md`                                                           | Exists       | Implement claim/evidence endpoints          |
+| CLI               | `standards/CLI_MCP_AUTOMATION.md`, `scripts/init-product.sh --shape cli`            | Exists       | Package newsroom/research commands          |
+| MCP               | `standards/shapes/MCP.md`                                                           | Exists       | Publish verification tools for agents       |
+| Skill             | `products/revvel-skill-runner/`                                                     | Exists       | Add guided verification skill               |
+| PDF               | `docs/playbooks/pdf-wr-playbook.md`                                                 | Exists       | Render exportable debunk briefs             |
+| PowerPoint / deck | No engine required                                                                  | Out of scope | Do not expand scope here                    |
+| Video             | No engine required                                                                  | Out of scope | Do not expand scope here                    |
+| Docs              | revvel-standards baseline repo docs                                                 | Exists       | Ship README, GTM, deployment, security docs |
+| Agent automation  | `standards/AUTOMATED_PRODUCT_PIPELINE.md`, `scripts/autonomous-product-launcher.sh` | Exists       | Use for repeatable S2M launch flow          |
 
 ---
 

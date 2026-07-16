@@ -46,8 +46,9 @@ export default function Home() {
           </span>
         </h1>
         <p className="mt-6 max-w-3xl text-lg text-slate-200">
-          This UI ships with a glassmorphic visual system and template-first workflow so teams can
-          create mythic product experiences, publish faster, and monetize from day one.
+          This UI ships with a glassmorphic visual system and template-first
+          workflow so teams can create mythic product experiences, publish
+          faster, and monetize from day one.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <a
@@ -72,7 +73,9 @@ export default function Home() {
             className="rounded-3xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-md"
           >
             <h2 className="text-xl font-bold text-white">{card.title}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-slate-100">{card.description}</p>
+            <p className="mt-3 text-sm leading-relaxed text-slate-100">
+              {card.description}
+            </p>
           </article>
         ))}
       </section>
@@ -100,8 +103,12 @@ export default function Home() {
                 key={tier.name}
                 className="rounded-2xl border border-white/20 bg-slate-900/50 p-4"
               >
-                <p className="text-sm font-semibold text-cyan-200">{tier.name}</p>
-                <p className="mt-1 text-2xl font-black text-white">{tier.price}</p>
+                <p className="text-sm font-semibold text-cyan-200">
+                  {tier.name}
+                </p>
+                <p className="mt-1 text-2xl font-black text-white">
+                  {tier.price}
+                </p>
                 <p className="mt-2 text-sm text-slate-200">{tier.value}</p>
               </div>
             ))}
@@ -113,8 +120,8 @@ export default function Home() {
         <div className="rounded-3xl border border-fuchsia-200/30 bg-fuchsia-400/10 p-8 backdrop-blur-md">
           <h2 className="text-2xl font-bold text-white">OpenMythos Waitlist</h2>
           <p className="mt-3 max-w-2xl text-slate-100">
-            Collect qualified creators before full launch. Connect this form to your CRM webhook for
-            segmented onboarding and paid-plan conversion.
+            Collect qualified creators before full launch. Connect this form to
+            your CRM webhook for segmented onboarding and paid-plan conversion.
           </p>
           <p id="waitlist-email-hint" className="mt-4 text-sm text-cyan-100">
             Use your creator email to join early access.

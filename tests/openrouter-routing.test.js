@@ -3,7 +3,7 @@
 
 /**
  * Unit tests for openrouter-routing.js
- * 
+ *
  * Tests routing profile selection and request construction.
  * Does not make actual API calls unless OPENROUTER_API_KEY is set.
  */
@@ -70,7 +70,7 @@ async function runTests() {
   assertEqual(
     Object.keys(profiles).sort(),
     ["cheap_batch_edits", "deep_search", "hard_debug", "repo_surgery"],
-    "Should have expected routing profiles"
+    "Should have expected routing profiles",
   );
 
   // Test 2: Verify repo_surgery profile
@@ -78,12 +78,16 @@ async function runTests() {
   const repoSurgeryModels = getProfileModels("repo_surgery");
   assertEqual(
     repoSurgeryModels,
-    ["anthropic/claude-sonnet-4", "deepseek/deepseek-v3.2", "openai/gpt-5.2-codex"],
-    "repo_surgery should have correct model fallback chain"
+    [
+      "anthropic/claude-sonnet-4",
+      "deepseek/deepseek-v3.2",
+      "openai/gpt-5.2-codex",
+    ],
+    "repo_surgery should have correct model fallback chain",
   );
   assertTrue(
     profiles.repo_surgery.description.includes("Multi-file edits"),
-    "repo_surgery should have correct description"
+    "repo_surgery should have correct description",
   );
 
   // Test 3: Verify cheap_batch_edits profile
@@ -92,11 +96,11 @@ async function runTests() {
   assertEqual(
     cheapBatchModels,
     ["deepseek/deepseek-v3.2", "anthropic/claude-sonnet-4"],
-    "cheap_batch_edits should have correct model fallback chain"
+    "cheap_batch_edits should have correct model fallback chain",
   );
   assertTrue(
     profiles.cheap_batch_edits.description.includes("Repetitive transforms"),
-    "cheap_batch_edits should have correct description"
+    "cheap_batch_edits should have correct description",
   );
 
   // Test 4: Verify hard_debug profile
@@ -104,12 +108,16 @@ async function runTests() {
   const hardDebugModels = getProfileModels("hard_debug");
   assertEqual(
     hardDebugModels,
-    ["openai/gpt-5.2-codex", "anthropic/claude-sonnet-4", "deepseek/deepseek-v3.2"],
-    "hard_debug should have correct model fallback chain"
+    [
+      "openai/gpt-5.2-codex",
+      "anthropic/claude-sonnet-4",
+      "deepseek/deepseek-v3.2",
+    ],
+    "hard_debug should have correct model fallback chain",
   );
   assertTrue(
     profiles.hard_debug.description.includes("Difficult failures"),
-    "hard_debug should have correct description"
+    "hard_debug should have correct description",
   );
 
   // Test 5: Verify deep_search profile
@@ -118,18 +126,18 @@ async function runTests() {
   assertEqual(
     deepSearchModels,
     ["anthropic/claude-3.5-sonnet", "openrouter/fusion"],
-    "deep_search should have Sonnet 3.5 + Fusion chain"
+    "deep_search should have Sonnet 3.5 + Fusion chain",
   );
   assertTrue(
     profiles.deep_search.description.includes("Deep R&D research"),
-    "deep_search should have correct description"
+    "deep_search should have correct description",
   );
 
   // Test 6: Error handling for unknown profile
   console.log("\nTest Group: Error Handling");
   assertThrows(
     () => getProfileModels("invalid_profile"),
-    "Should throw error for unknown profile with available profiles listed"
+    "Should throw error for unknown profile with available profiles listed",
   );
 
   // Test 7: Silent mode
@@ -141,15 +149,15 @@ async function runTests() {
       messages: [{ role: "user", content: "test" }],
       silent: true,
     }),
-    "Should work in silent mode (no console output)"
+    "Should work in silent mode (no console output)",
   );
 
   // Test 8: routedChat validation
   console.log("\nTest Group: routedChat Validation");
-  
+
   // Save original API key
   const originalApiKey = process.env.OPENROUTER_API_KEY;
-  
+
   // Test without API key
   delete process.env.OPENROUTER_API_KEY;
   await assertRejects(
@@ -157,7 +165,7 @@ async function runTests() {
       profile: "repo_surgery",
       messages: [{ role: "user", content: "test" }],
     }),
-    "Should reject when OPENROUTER_API_KEY is not set"
+    "Should reject when OPENROUTER_API_KEY is not set",
   );
 
   // Test with invalid profile
@@ -167,7 +175,7 @@ async function runTests() {
       profile: "invalid_profile",
       messages: [{ role: "user", content: "test" }],
     }),
-    "Should reject with invalid profile"
+    "Should reject with invalid profile",
   );
 
   // Test with missing messages
@@ -176,7 +184,7 @@ async function runTests() {
       profile: "repo_surgery",
       messages: [],
     }),
-    "Should reject with empty messages array"
+    "Should reject with empty messages array",
   );
 
   // Restore original API key
@@ -189,8 +197,12 @@ async function runTests() {
   // Test 9: Integration test (only if API key is available)
   if (process.env.OPENROUTER_API_KEY) {
     console.log("\nTest Group: Integration Tests (with API key)");
-    console.log("⚠️  Skipping live API tests to avoid costs. To test manually, run:");
-    console.log("    node scripts/openrouter-routing-example.js repo_surgery \"Hello, world!\"");
+    console.log(
+      "⚠️  Skipping live API tests to avoid costs. To test manually, run:",
+    );
+    console.log(
+      '    node scripts/openrouter-routing-example.js repo_surgery "Hello, world!"',
+    );
   } else {
     console.log("\nTest Group: Integration Tests");
     console.log("ℹ️  Skipped (OPENROUTER_API_KEY not set)");

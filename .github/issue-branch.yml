@@ -23,8 +23,8 @@ mode: immediate
 # characters like `#`, `|`, `&`, `;`, `<`, `>`, `` ` ``, `$`, `%`, `+`, `=`,
 # and `,` are replaced here as an extra safety/usability measure.
 
-branchName: 'issue-${issue.number}-${issue.title,}'
-gitSafeReplacementChar: '-'
+branchName: "issue-${issue.number}-${issue.title,}"
+gitSafeReplacementChar: "-"
 # Note: Period (.) is included even though it's only invalid at the END of refs
 # This is intentional to prevent any edge cases with trailing periods
 # File extensions in branch names are preserved in the middle (e.g., config-yaml)
@@ -48,7 +48,7 @@ branches:
   - label: dependencies
     prefix: chore/
   # Fallback — issues with no matching label get a plain "issue/" prefix
-  - label: '*'
+  - label: "*"
     prefix: issue/
 
 # ── Source branch ─────────────────────────────────────────────────────────────

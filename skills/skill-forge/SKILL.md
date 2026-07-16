@@ -16,6 +16,7 @@
 **Skill Forge** is the skill that builds skills. It is the meta-skill — use it when you want to create a new deployable, testable, monetizable Revvel skill from scratch.
 
 In 15 minutes, Skill Forge scaffolds:
+
 - A complete `SKILL.md` (human-readable spec)
 - A `.skill.yml` (machine-readable config)
 - A `persona.yml` (optional ephemeral persona)
@@ -28,17 +29,17 @@ In 15 minutes, Skill Forge scaffolds:
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
-| **Skill discovery** | Interviews user to identify the skill's domain and value proposition |
-| **SKILL.md generation** | Writes the complete spec with triggers, workflow, and examples |
-| **skill.yml generation** | Creates machine-readable config for AI tools |
-| **Persona assignment** | Recommends or creates a persona for the skill |
-| **Test generation** | Writes PromptFoo tests covering happy path, edge cases, and errors |
-| **Installer generation** | Creates Windows .bat and Mac .command installers |
-| **README generation** | Writes an 8-year-old-readable user guide |
-| **Registry update** | Adds the new skill to SKILLS_INDEX.yml and REGISTRY.md |
-| **Marketplace prep** | Calculates ROI, recommends pricing, drafts listing description |
+| Task                     | Description                                                          |
+| ------------------------ | -------------------------------------------------------------------- |
+| **Skill discovery**      | Interviews user to identify the skill's domain and value proposition |
+| **SKILL.md generation**  | Writes the complete spec with triggers, workflow, and examples       |
+| **skill.yml generation** | Creates machine-readable config for AI tools                         |
+| **Persona assignment**   | Recommends or creates a persona for the skill                        |
+| **Test generation**      | Writes PromptFoo tests covering happy path, edge cases, and errors   |
+| **Installer generation** | Creates Windows .bat and Mac .command installers                     |
+| **README generation**    | Writes an 8-year-old-readable user guide                             |
+| **Registry update**      | Adds the new skill to SKILLS_INDEX.yml and REGISTRY.md               |
+| **Marketplace prep**     | Calculates ROI, recommends pricing, drafts listing description       |
 
 ---
 
@@ -92,8 +93,8 @@ After the interview, Forge generates all files in one shot.
 ## Agent Instructions (System Prompt)
 
 ```
-You are Forge — the Revvel Skill Builder. You help users create new 
-deployable AI skills from scratch. You are direct, hands-on, and 
+You are Forge — the Revvel Skill Builder. You help users create new
+deployable AI skills from scratch. You are direct, hands-on, and
 encouraging. You use the 🔨 emoji to sign your messages.
 
 ## Your Core Rules
@@ -174,17 +175,18 @@ For each generated file, output:
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
+| Task         | Description   |
+| ------------ | ------------- |
 | **[Task 1]** | [Description] |
 | **[Task 2]** | [Description] |
 
 ---
 
 ## Trigger Keywords
-
 ```
+
 [keyword1], [keyword2], [keyword3]
+
 ```
 
 ---
@@ -200,8 +202,10 @@ For each generated file, output:
 ## Agent Instructions (System Prompt)
 
 ```
+
 [Complete system prompt for this skill]
-```
+
+````
 
 ---
 
@@ -212,8 +216,9 @@ npm install -g promptfoo
 cd skills/[skill-name]/tests
 promptfoo eval --config promptfoo.yml
 promptfoo view
-```
-```
+````
+
+````
 
 ---
 
@@ -258,7 +263,7 @@ echo  1. [Step 1]
 echo  2. [Step 2]
 echo.
 pause
-```
+````
 
 ---
 
@@ -331,6 +336,7 @@ Use this template when listing a skill on ClawMarket, Gumroad, or other platform
 **How to install:** Double-click the installer. Done in under 2 minutes.
 
 **What you get:**
+
 - ✅ [Feature 1]
 - ✅ [Feature 2]
 - ✅ Works on Windows and Mac

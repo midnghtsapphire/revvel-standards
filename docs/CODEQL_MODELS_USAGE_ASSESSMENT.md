@@ -19,7 +19,7 @@ Assessment date: 2026-07-11.
   - CodeQL is **not** an LLM "model": it does not appear in any model routing
     config (`.github/agent-models.yml`, `config/model-lookup.json`,
     `config/enterprise-model-matrix.json`, `MODEL_CONFIG.md`). It is cataloged
-    only as an external SAST *app* in `config/review-fleet-personas.yml`
+    only as an external SAST _app_ in `config/review-fleet-personas.yml`
     (`external_apps_catalog.canned_apps`).
   - The only `models/` **directory** in the repo is
     `coldtrace/backend/models/` (Python / Pydantic models). It **was not
@@ -31,16 +31,16 @@ Assessment date: 2026-07-11.
 
 ### 1.1 Workflow: `.github/workflows/codeql.yml`
 
-| Aspect | Value |
-| --- | --- |
-| Setup type | Advanced (workflow-based), not GitHub default setup |
-| Action | `github/codeql-action/init@v3` + `analyze@v3` |
-| Languages | `actions`, `javascript-typescript`, `python` |
-| Build mode | `none` |
-| Triggers | `push` (main), `pull_request` (main), weekly `schedule` (Mon 03:20 UTC), `workflow_dispatch` |
-| Query suites | Default (no `queries:` input, no custom `.ql`/`.qls` files in the repo) |
-| Path filters | None — scans the whole repository for the configured languages |
-| Permissions | `security-events: write` (SARIF upload enabled) |
+| Aspect          | Value                                                                                                                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Setup type      | Advanced (workflow-based), not GitHub default setup                                                                                                                                               |
+| Action          | `github/codeql-action/init@v3` + `analyze@v3`                                                                                                                                                     |
+| Languages       | `actions`, `javascript-typescript`, `python`                                                                                                                                                      |
+| Build mode      | `none`                                                                                                                                                                                            |
+| Triggers        | `push` (main), `pull_request` (main), weekly `schedule` (Mon 03:20 UTC), `workflow_dispatch`                                                                                                      |
+| Query suites    | Default (no `queries:` input, no custom `.ql`/`.qls` files in the repo)                                                                                                                           |
+| Path filters    | None — scans the whole repository for the configured languages                                                                                                                                    |
+| Permissions     | `security-events: write` (SARIF upload enabled)                                                                                                                                                   |
 | Failure posture | `analyze` runs with `continue-on-error: true` to tolerate post-processing/upload API failures after SARIF export, while `Verify SARIF was generated` fails the run if analysis did not emit SARIF |
 
 There is **no** `codeql-config.yml`, no custom queries (`*.ql`), and no custom
@@ -64,14 +64,14 @@ Conclusion: **CodeQL scanning is active and healthy**, not dormant.
 
 - `config/review-fleet-personas.yml` → `external_apps_catalog.canned_apps`
   lists `{ name: CodeQL, purpose: deep-sast, feeds: security, approval:
-  repo-owner }`. This is a *catalog entry* describing CodeQL's role in the
+repo-owner }`. This is a _catalog entry_ describing CodeQL's role in the
   review fleet, not a runtime integration.
 - The Copilot coding agent's `parallel_validation` step runs a CodeQL security
   scan on agent-authored PR diffs — an additional, less obvious integration
   layer on top of the repo workflow.
 - Companion scanners `semgrep.yml` and `trivy.yml` run alongside CodeQL and
   upload SARIF to the same **Security → Code scanning** tab. (Note:
-  `docs/github-project-v2-workflows.md` describes a *different* stack where
+  `docs/github-project-v2-workflows.md` describes a _different_ stack where
   CodeQL was removed in favor of Semgrep/Trivy — that description does not
   reflect this repo, where all three run.)
 
@@ -128,23 +128,23 @@ All four recommendations were implemented in this PR at the maintainer's
 explicit request (PR comment on 2026-07-11), overriding the original
 assessment-only scope.
 
-| # | Gap | Recommendation | Status |
-| --- | --- | --- | --- |
-| 1 | Python (incl. `coldtrace/backend/models/`) not in the CodeQL matrix | Add `python` to `strategy.matrix.language` in `codeql.yml` (build-mode `none` works for Python) | ✅ Done — matrix is now `actions`, `javascript-typescript`, `python` |
-| 2 | `continue-on-error: true` on `analyze` can hide real scan failures | Tighten to fail on analysis errors while tolerating only upload conflicts | ✅ Done — analysis (`upload: never`) now fails the run on real errors; a separate `upload-sarif` step keeps `continue-on-error: true` for default-setup upload conflicts only |
-| 3 | No documented alert-triage cadence for CodeQL findings | Fold code-scanning alert review into the self-healing loop | ✅ Done — new weekly `alert-triage` job in `codeql.yml` files/refreshes a `[SELF-HEAL]` issue (labels `security`, `self-heal`) for open critical/high alerts and auto-closes it on recovery |
-| 4 | `docs/github-project-v2-workflows.md` says CodeQL "was removed" (describing another stack), which can mislead readers about this repo | Clarify that note's scope | ✅ Done — note now states removal applies to the Project v2 bundle's target repos, not `revvel-standards` |
+| #   | Gap                                                                                                                                   | Recommendation                                                                                  | Status                                                                                                                                                                                      |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Python (incl. `coldtrace/backend/models/`) not in the CodeQL matrix                                                                   | Add `python` to `strategy.matrix.language` in `codeql.yml` (build-mode `none` works for Python) | ✅ Done — matrix is now `actions`, `javascript-typescript`, `python`                                                                                                                        |
+| 2   | `continue-on-error: true` on `analyze` can hide real scan failures                                                                    | Tighten to fail on analysis errors while tolerating only upload conflicts                       | ✅ Done — analysis (`upload: never`) now fails the run on real errors; a separate `upload-sarif` step keeps `continue-on-error: true` for default-setup upload conflicts only               |
+| 3   | No documented alert-triage cadence for CodeQL findings                                                                                | Fold code-scanning alert review into the self-healing loop                                      | ✅ Done — new weekly `alert-triage` job in `codeql.yml` files/refreshes a `[SELF-HEAL]` issue (labels `security`, `self-heal`) for open critical/high alerts and auto-closes it on recovery |
+| 4   | `docs/github-project-v2-workflows.md` says CodeQL "was removed" (describing another stack), which can mislead readers about this repo | Clarify that note's scope                                                                       | ✅ Done — note now states removal applies to the Project v2 bundle's target repos, not `revvel-standards`                                                                                   |
 
 ## 5. Definition-of-done mapping
 
-| WR requirement | Status |
-| --- | --- |
-| Documented implementation status | ✅ Section 1 |
-| Configuration details | ✅ Sections 1.1, 1.3 |
-| Active-scan confirmation | ✅ Section 1.2 (2,381 runs, recent successes) |
-| Models-directory coverage assessment | ✅ Section 2 (initially not covered; now covered after the `python` matrix update in this PR) |
-| Scan-results review | ✅ Section 3 (upload path verified; alert listing requires admin access — noted) |
-| Gaps + actionable next steps | ✅ Section 4 (all four implemented per maintainer request) |
+| WR requirement                               | Status                                                                                                                                       |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Documented implementation status             | ✅ Section 1                                                                                                                                 |
+| Configuration details                        | ✅ Sections 1.1, 1.3                                                                                                                         |
+| Active-scan confirmation                     | ✅ Section 1.2 (2,381 runs, recent successes)                                                                                                |
+| Models-directory coverage assessment         | ✅ Section 2 (initially not covered; now covered after the `python` matrix update in this PR)                                                |
+| Scan-results review                          | ✅ Section 3 (upload path verified; alert listing requires admin access — noted)                                                             |
+| Gaps + actionable next steps                 | ✅ Section 4 (all four implemented per maintainer request)                                                                                   |
 | No code/config changes (Explicit Exclusions) | ⚠️ Superseded — the maintainer explicitly requested the §4 fixes in PR review, so this PR now includes the `codeql.yml` and doc-note changes |
 
 ## 6. What you (the human) actually need to do — plain English
@@ -155,7 +155,7 @@ repo admin can do in the browser. Here they are, click by click:
 ### Check 1 — make sure GitHub's "default setup" scanning is OFF (2 minutes)
 
 Why: this repo uses its own CodeQL workflow file. If GitHub's built-in
-scanner is *also* turned on, the two fight and results silently stop
+scanner is _also_ turned on, the two fight and results silently stop
 uploading.
 
 1. Open <https://github.com/midnghtsapphire/revvel-standards/settings/security_analysis>

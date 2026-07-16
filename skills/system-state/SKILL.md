@@ -18,27 +18,27 @@ The "brain handoff" document between sessions. Reflects **what is actually worki
 
 ### 1. Infrastructure
 
-| Component | Status | Details |
-|---|---|---|
-| Production server | ✅/⚠️/❌ | IP, PM2 process name, uptime |
-| Database | ✅/⚠️/❌ | Host, DB name, migration version |
-| CI/CD | ✅/⚠️/❌ | Last deploy date, last successful run |
-| DNS | ✅/⚠️/❌ | Domain, registrar, pointing to |
-| SSL | ✅/⚠️/❌ | Cert expiry, provider |
+| Component         | Status   | Details                               |
+| ----------------- | -------- | ------------------------------------- |
+| Production server | ✅/⚠️/❌ | IP, PM2 process name, uptime          |
+| Database          | ✅/⚠️/❌ | Host, DB name, migration version      |
+| CI/CD             | ✅/⚠️/❌ | Last deploy date, last successful run |
+| DNS               | ✅/⚠️/❌ | Domain, registrar, pointing to        |
+| SSL               | ✅/⚠️/❌ | Cert expiry, provider                 |
 
 Status: ✅ = working as expected | ⚠️ = working with known issue | ❌ = not working / not deployed
 
 ### 2. Domain Pages
 
-| Page / Route | Status | Last Verified | Notes |
-|---|---|---|---|
-| `/` | ✅ | [date] | Home page loads, no console errors |
+| Page / Route | Status | Last Verified | Notes                              |
+| ------------ | ------ | ------------- | ---------------------------------- |
+| `/`          | ✅     | [date]        | Home page loads, no console errors |
 
 ### 3. Known Bugs
 
-| ID | Description | Severity | Status | Reported |
-|---|---|---|---|---|
-| BUG-001 | [desc] | high | open | [date] |
+| ID      | Description | Severity | Status | Reported |
+| ------- | ----------- | -------- | ------ | -------- |
+| BUG-001 | [desc]      | high     | open   | [date]   |
 
 **Never delete bug rows — set status to `resolved` with date.**
 
@@ -49,7 +49,7 @@ Status: ✅ = working as expected | ⚠️ = working with known issue | ❌ = no
 ### 5. Environment Variables
 
 | Variable | Production | Staging | Notes |
-|---|---|---|---|
+| -------- | ---------- | ------- | ----- |
 
 **Never put actual values — only ✅/❌ status. Keep in sync with `.env.example`.**
 

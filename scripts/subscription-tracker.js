@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 // Subscription & repository tracker.
 //
@@ -10,15 +10,15 @@
 // Everything here is pure and clock-injectable so the logic is unit-testable;
 // the workflow (.github/workflows/subscription-tracker.yml) wires it to GitHub.
 
-const fs = require('fs');
-const path = require('path');
-const YAML = require('yaml');
+const fs = require("fs");
+const path = require("path");
+const YAML = require("yaml");
 
 // Default warning window: surface anything due within this many days.
 const DEFAULT_WARN_WITHIN_DAYS = 7;
 
 // Where the SSOT lives, relative to the repo root.
-const DEFAULT_SUBSCRIPTIONS_FILE = path.join('data', 'subscriptions.yml');
+const DEFAULT_SUBSCRIPTIONS_FILE = path.join("data", "subscriptions.yml");
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
@@ -44,38 +44,46 @@ function daysUntil(dateStr, now = Date.now()) {
 // trial, otherwise the renewal date. Returns { kind, date } with date possibly
 // null when unknown.
 function effectiveDueDate(sub) {
-  if (sub && sub.status === 'trial' && sub.trial_end) {
-    return { kind: 'trial', date: sub.trial_end };
+  if (sub && sub.status === "trial" && sub.trial_end) {
+    return { kind: "trial", date: sub.trial_end };
   }
   if (sub && sub.renewal_date) {
-    return { kind: 'renewal', date: sub.renewal_date };
+    return { kind: "renewal", date: sub.renewal_date };
   }
   // A trial with no end date is still a trial, just an unknown one.
-  if (sub && sub.status === 'trial') {
-    return { kind: 'trial', date: sub.trial_end || null };
+  if (sub && sub.status === "trial") {
+    return { kind: "trial", date: sub.trial_end || null };
   }
-  return { kind: 'renewal', date: null };
+  return { kind: "renewal", date: null };
 }
 
 // Verdict on a single subscription relative to `now`.
 //   status: 'expired' | 'due_soon' | 'ok' | 'unknown' | 'cancelled'
-function subscriptionVerdict(sub, { now = Date.now(), warnWithinDays = DEFAULT_WARN_WITHIN_DAYS } = {}) {
-  if (sub && sub.status === 'cancelled') {
-    return { status: 'cancelled', kind: null, dueDate: null, daysRemaining: null };
+function subscriptionVerdict(
+  sub,
+  { now = Date.now(), warnWithinDays = DEFAULT_WARN_WITHIN_DAYS } = {},
+) {
+  if (sub && sub.status === "cancelled") {
+    return {
+      status: "cancelled",
+      kind: null,
+      dueDate: null,
+      daysRemaining: null,
+    };
   }
   const { kind, date } = effectiveDueDate(sub);
   const daysRemaining = daysUntil(date, now);
 
   if (daysRemaining == null) {
-    return { status: 'unknown', kind, dueDate: date, daysRemaining: null };
+    return { status: "unknown", kind, dueDate: date, daysRemaining: null };
   }
   if (daysRemaining < 0) {
-    return { status: 'expired', kind, dueDate: date, daysRemaining };
+    return { status: "expired", kind, dueDate: date, daysRemaining };
   }
   if (daysRemaining <= warnWithinDays) {
-    return { status: 'due_soon', kind, dueDate: date, daysRemaining };
+    return { status: "due_soon", kind, dueDate: date, daysRemaining };
   }
-  return { status: 'ok', kind, dueDate: date, daysRemaining };
+  return { status: "ok", kind, dueDate: date, daysRemaining };
 }
 
 // Normalise the repositories field into an array of strings. "all" stays as
@@ -89,14 +97,17 @@ function reposForSubscription(sub) {
 
 // Load and shallow-validate the subscriptions file.
 function loadSubscriptions(file = DEFAULT_SUBSCRIPTIONS_FILE) {
-  const raw = fs.readFileSync(file, 'utf8');
+  const raw = fs.readFileSync(file, "utf8");
   const doc = YAML.parse(raw);
   const list = doc && Array.isArray(doc.subscriptions) ? doc.subscriptions : [];
   return list.filter((entry) => entry && entry.name);
 }
 
 // Build a full report over a list of subscriptions.
-function buildReport(subscriptions, { now = Date.now(), warnWithinDays = DEFAULT_WARN_WITHIN_DAYS } = {}) {
+function buildReport(
+  subscriptions,
+  { now = Date.now(), warnWithinDays = DEFAULT_WARN_WITHIN_DAYS } = {},
+) {
   const items = subscriptions.map((sub) => ({
     sub,
     repos: reposForSubscription(sub),
@@ -104,95 +115,110 @@ function buildReport(subscriptions, { now = Date.now(), warnWithinDays = DEFAULT
   }));
 
   const alerts = items.filter(
-    (item) => item.verdict.status === 'expired' || item.verdict.status === 'due_soon'
+    (item) =>
+      item.verdict.status === "expired" || item.verdict.status === "due_soon",
   );
-  const needsAttention = items.filter((item) => item.verdict.status === 'unknown');
+  const needsAttention = items.filter(
+    (item) => item.verdict.status === "unknown",
+  );
 
   return { items, alerts, needsAttention, now, warnWithinDays };
 }
 
 const STATUS_EMOJI = {
-  expired: '🔴',
-  due_soon: '🟠',
-  unknown: '⚪',
-  ok: '🟢',
-  cancelled: '⚫',
+  expired: "🔴",
+  due_soon: "🟠",
+  unknown: "⚪",
+  ok: "🟢",
+  cancelled: "⚫",
 };
 
 function describeDays(verdict) {
-  if (verdict.daysRemaining == null) return '—';
-  if (verdict.daysRemaining < 0) return `${Math.abs(verdict.daysRemaining)}d overdue`;
-  if (verdict.daysRemaining === 0) return 'today';
+  if (verdict.daysRemaining == null) return "—";
+  if (verdict.daysRemaining < 0)
+    return `${Math.abs(verdict.daysRemaining)}d overdue`;
+  if (verdict.daysRemaining === 0) return "today";
   return `${verdict.daysRemaining}d`;
 }
 
 // Render a Markdown body suitable for a GitHub tracking issue.
-function renderIssueBody(report, { marker = '<!-- subscription-tracker -->' } = {}) {
+function renderIssueBody(
+  report,
+  { marker = "<!-- subscription-tracker -->" } = {},
+) {
   const lines = [];
   lines.push(marker);
-  lines.push('## 📅 Subscription & Trial Tracker');
-  lines.push('');
+  lines.push("## 📅 Subscription & Trial Tracker");
+  lines.push("");
   lines.push(
-    `Generated ${new Date(report.now).toISOString().slice(0, 10)} · warning window: **${report.warnWithinDays} days** · source: \`data/subscriptions.yml\``
+    `Generated ${new Date(report.now).toISOString().slice(0, 10)} · warning window: **${report.warnWithinDays} days** · source: \`data/subscriptions.yml\``,
   );
-  lines.push('');
+  lines.push("");
 
   if (report.alerts.length > 0) {
-    lines.push('### ⚠️ Action needed');
-    lines.push('');
+    lines.push("### ⚠️ Action needed");
+    lines.push("");
     for (const { sub, verdict } of report.alerts) {
-      const what = verdict.kind === 'trial' ? 'trial ends' : 'renews';
+      const what = verdict.kind === "trial" ? "trial ends" : "renews";
       const when =
-        verdict.status === 'expired'
+        verdict.status === "expired"
           ? `**${what} ${describeDays(verdict)}** (was ${verdict.dueDate})`
           : `**${what} in ${describeDays(verdict)}** (${verdict.dueDate})`;
-      lines.push(`- ${STATUS_EMOJI[verdict.status]} **${sub.name}** — ${when}.`);
+      lines.push(
+        `- ${STATUS_EMOJI[verdict.status]} **${sub.name}** — ${when}.`,
+      );
     }
-    lines.push('');
+    lines.push("");
   } else {
-    lines.push('✅ No trials expiring or subscriptions renewing inside the warning window.');
-    lines.push('');
+    lines.push(
+      "✅ No trials expiring or subscriptions renewing inside the warning window.",
+    );
+    lines.push("");
   }
 
-  lines.push('### Inventory');
-  lines.push('');
-  lines.push('| Status | Name | Kind | Due | When | Cost | Repos |');
-  lines.push('|---|---|---|---|---|---|---|');
+  lines.push("### Inventory");
+  lines.push("");
+  lines.push("| Status | Name | Kind | Due | When | Cost | Repos |");
+  lines.push("|---|---|---|---|---|---|---|");
   for (const { sub, verdict, repos } of report.items) {
     const cost =
       sub.cost == null
-        ? '—'
-        : `${sub.cost} ${sub.currency || ''}/${sub.billing_cycle || ''}`.trim();
-    const repoLabel = repos.length === 0 ? '—' : repos.join(', ');
-    const kind = verdict.kind || '—';
+        ? "—"
+        : `${sub.cost} ${sub.currency || ""}/${sub.billing_cycle || ""}`.trim();
+    const repoLabel = repos.length === 0 ? "—" : repos.join(", ");
+    const kind = verdict.kind || "—";
     lines.push(
-      `| ${STATUS_EMOJI[verdict.status] || ''} ${verdict.status} | ${sub.name} | ${kind} | ${verdict.dueDate || '—'} | ${describeDays(verdict)} | ${cost} | ${repoLabel} |`
+      `| ${STATUS_EMOJI[verdict.status] || ""} ${verdict.status} | ${sub.name} | ${kind} | ${verdict.dueDate || "—"} | ${describeDays(verdict)} | ${cost} | ${repoLabel} |`,
     );
   }
-  lines.push('');
+  lines.push("");
 
   if (report.needsAttention.length > 0) {
-    lines.push('### ⚪ Missing dates (fill in `data/subscriptions.yml`)');
-    lines.push('');
+    lines.push("### ⚪ Missing dates (fill in `data/subscriptions.yml`)");
+    lines.push("");
     for (const { sub } of report.needsAttention) {
       lines.push(`- ${sub.name}`);
     }
-    lines.push('');
+    lines.push("");
   }
 
-  lines.push('---');
-  lines.push('_Maintained by `.github/workflows/subscription-tracker.yml`. Edit `data/subscriptions.yml` to update._');
-  return lines.join('\n');
+  lines.push("---");
+  lines.push(
+    "_Maintained by `.github/workflows/subscription-tracker.yml`. Edit `data/subscriptions.yml` to update._",
+  );
+  return lines.join("\n");
 }
 
 // CLI: print the report. Exits non-zero only with --check when something is
 // expired/due-soon, so it can optionally gate other automation.
 function main(argv = process.argv.slice(2)) {
-  const checkMode = argv.includes('--check');
-  const fileArg = argv.find((a) => a.startsWith('--file='));
-  const file = fileArg ? fileArg.split('=')[1] : DEFAULT_SUBSCRIPTIONS_FILE;
-  const warnArg = argv.find((a) => a.startsWith('--warn-within-days='));
-  const warnWithinDays = warnArg ? parseInt(warnArg.split('=')[1], 10) : DEFAULT_WARN_WITHIN_DAYS;
+  const checkMode = argv.includes("--check");
+  const fileArg = argv.find((a) => a.startsWith("--file="));
+  const file = fileArg ? fileArg.split("=")[1] : DEFAULT_SUBSCRIPTIONS_FILE;
+  const warnArg = argv.find((a) => a.startsWith("--warn-within-days="));
+  const warnWithinDays = warnArg
+    ? parseInt(warnArg.split("=")[1], 10)
+    : DEFAULT_WARN_WITHIN_DAYS;
 
   const subscriptions = loadSubscriptions(file);
   const report = buildReport(subscriptions, { warnWithinDays });

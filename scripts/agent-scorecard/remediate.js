@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Self-heal remediation loop.
@@ -21,13 +21,13 @@
 
 // Next-agent chain, aligned with scripts/agent-self-heal.js.
 const HANDOFF_CHAIN = {
-  openrouter: 'openhands',
-  openhands: 'claude-direct',
-  cursor: 'openrouter',
-  default: 'openrouter',
+  openrouter: "openhands",
+  openhands: "claude-direct",
+  cursor: "openrouter",
+  default: "openrouter",
 };
 
-const TIERS = ['prompt-correction', 'agent-handoff', 'escalate-claude'];
+const TIERS = ["prompt-correction", "agent-handoff", "escalate-claude"];
 
 /**
  * Turn failed dimensions into a human-and-model-readable list of what to fix.
@@ -35,17 +35,28 @@ const TIERS = ['prompt-correction', 'agent-handoff', 'escalate-claude'];
 function diagnose(signals = {}) {
   const problems = [];
   if (signals.unresolvedRefs > 0)
-    problems.push(`${signals.unresolvedRefs} reference(s) point to things that don't exist (hallucinated imports/paths/env).`);
+    problems.push(
+      `${signals.unresolvedRefs} reference(s) point to things that don't exist (hallucinated imports/paths/env).`,
+    );
   if (signals.unbackedClaims > 0)
-    problems.push(`${signals.unbackedClaims} PR claim(s) are not backed by the diff.`);
+    problems.push(
+      `${signals.unbackedClaims} PR claim(s) are not backed by the diff.`,
+    );
   if (signals.crossModelHallucinationFlags > 0)
-    problems.push(`Independent review flagged ${signals.crossModelHallucinationFlags} hallucination(s).`);
-  if (signals.testFailures > 0) problems.push(`${signals.testFailures} test(s) failing.`);
+    problems.push(
+      `Independent review flagged ${signals.crossModelHallucinationFlags} hallucination(s).`,
+    );
+  if (signals.testFailures > 0)
+    problems.push(`${signals.testFailures} test(s) failing.`);
   if (signals.buildFailures > 0) problems.push(`Build is failing.`);
-  if (signals.scaffoldingHits > 0) problems.push(`Scaffolding/placeholder code was added.`);
-  if (signals.rootJunkHits > 0) problems.push(`Stray files were added to the repo root.`);
+  if (signals.scaffoldingHits > 0)
+    problems.push(`Scaffolding/placeholder code was added.`);
+  if (signals.rootJunkHits > 0)
+    problems.push(`Stray files were added to the repo root.`);
   if (signals.outOfScopeFiles > 0)
-    problems.push(`${signals.outOfScopeFiles} file(s) changed outside the work-request scope.`);
+    problems.push(
+      `${signals.outOfScopeFiles} file(s) changed outside the work-request scope.`,
+    );
   return problems;
 }
 
@@ -67,11 +78,11 @@ function nextAgent(agent) {
 function correctivePrompt(agent, problems) {
   return [
     `You are re-running a task that the agent "${agent}" did not complete correctly.`,
-    'Fix EXACTLY these problems and change nothing unrelated:',
+    "Fix EXACTLY these problems and change nothing unrelated:",
     ...problems.map((p, i) => `  ${i + 1}. ${p}`),
-    'Ship working code only — no placeholders. Verify every import, path, and env var resolves.',
-    'If you reference a file, function, or API, it must already exist or be created in this same change.',
-  ].join('\n');
+    "Ship working code only — no placeholders. Verify every import, path, and env var resolves.",
+    "If you reference a file, function, or API, it must already exist or be created in this same change.",
+  ].join("\n");
 }
 
 /**
@@ -92,8 +103,9 @@ function planRemediation({ agent, signals, attempt = 0 }) {
     problems,
     correctivePrompt: correctivePrompt(agent, problems),
   };
-  if (tier === 'agent-handoff') plan.handoffTo = nextAgent(agent);
-  if (tier === 'escalate-claude') plan.escalateModel = 'anthropic/claude-sonnet-4';
+  if (tier === "agent-handoff") plan.handoffTo = nextAgent(agent);
+  if (tier === "escalate-claude")
+    plan.escalateModel = "anthropic/claude-sonnet-4";
   return plan;
 }
 
@@ -107,14 +119,14 @@ function planRemediation({ agent, signals, attempt = 0 }) {
  */
 function recordOutcome({ tier, postPassed }) {
   if (!postPassed) {
-    return { recovered: false, weakLink: 'unresolved' };
+    return { recovered: false, weakLink: "unresolved" };
   }
   const weakLink =
-    tier === 'prompt-correction'
-      ? 'prompt' // our instructions were the problem — improve the prompt/script
-      : tier === 'agent-handoff'
-        ? 'agent' // the original agent couldn't do it — another could
-        : 'task-difficulty'; // only the top model could — genuinely hard task
+    tier === "prompt-correction"
+      ? "prompt" // our instructions were the problem — improve the prompt/script
+      : tier === "agent-handoff"
+        ? "agent" // the original agent couldn't do it — another could
+        : "task-difficulty"; // only the top model could — genuinely hard task
   return { recovered: true, weakLink, tier };
 }
 

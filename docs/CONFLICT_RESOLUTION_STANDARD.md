@@ -18,11 +18,11 @@ free-tier auto-resolver + the LLM hand-off for genuinely ambiguous cases.
 
 Every PR with conflicts gets routed through this ladder. Cheapest first.
 
-| Lane | What handles it | Cost | Patterns |
-| --- | --- | --- | --- |
-| **Mechanical** | `scripts/auto-resolve-mechanical-conflicts.js` (deterministic, free) | **Free** — runs in GH Actions on every PR with conflicts | Version bumps in `uses:` lines, additive table rows / list items |
-| **Semantic** | Jules via `jules-coding-agent.yml` | Already covered by the Jules API key — **no per-PR add-on** | Value swaps, function-signature changes, prose edits in the same paragraph |
-| **Human** | The owner | Time | Anything Jules also can't decide (label `conflicts:needs-human` if Jules surrenders) |
+| Lane           | What handles it                                                      | Cost                                                        | Patterns                                                                             |
+| -------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| **Mechanical** | `scripts/auto-resolve-mechanical-conflicts.js` (deterministic, free) | **Free** — runs in GH Actions on every PR with conflicts    | Version bumps in `uses:` lines, additive table rows / list items                     |
+| **Semantic**   | Jules via `jules-coding-agent.yml`                                   | Already covered by the Jules API key — **no per-PR add-on** | Value swaps, function-signature changes, prose edits in the same paragraph           |
+| **Human**      | The owner                                                            | Time                                                        | Anything Jules also can't decide (label `conflicts:needs-human` if Jules surrenders) |
 
 Explicitly **not** used:
 
@@ -62,7 +62,7 @@ And no single line appears on both sides (no duplicate row). When the
 test passes, current + incoming are concatenated in that order so the
 diff baseline is preserved.
 
-**Conservative on purpose**: arbitrary one-liners that just *happen* to
+**Conservative on purpose**: arbitrary one-liners that just _happen_ to
 not overlap (`foo = "a"` vs `foo = "b"`) do NOT match this pattern.
 They're value swaps and only Jules / a human should resolve them.
 
@@ -103,10 +103,10 @@ PR comment trail shows which hunks ran which rule.
 
 ## 5. Originating case + the gap it closes
 
-| Date | PR | Conflict | Old path | New path |
-| --- | --- | --- | --- | --- |
-| 2026-05-29 | `jules-affiliate-engine-…` (TikTok affiliate engine branch) | `uses: peter-evans/create-pull-request@v7` vs `@SHA # v8.1.1` | Owner had to manually pick "incoming" in the web UI for every PR that hit this | Auto-resolved by the script the next time the workflow runs |
-| 2026-05-29 | (general) | "I never know if I need both" | One-by-one human decision | Script handles two safe cases; Jules handles the rest; human only sees architecturally significant ambiguities |
+| Date       | PR                                                          | Conflict                                                      | Old path                                                                       | New path                                                                                                       |
+| ---------- | ----------------------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| 2026-05-29 | `jules-affiliate-engine-…` (TikTok affiliate engine branch) | `uses: peter-evans/create-pull-request@v7` vs `@SHA # v8.1.1` | Owner had to manually pick "incoming" in the web UI for every PR that hit this | Auto-resolved by the script the next time the workflow runs                                                    |
+| 2026-05-29 | (general)                                                   | "I never know if I need both"                                 | One-by-one human decision                                                      | Script handles two safe cases; Jules handles the rest; human only sees architecturally significant ambiguities |
 
 ## 6. When to extend the rules
 
@@ -130,9 +130,9 @@ posts the annotation comment from Phase 1.
 
 ## Quick reference
 
-| Phase | When it fires | What it does |
-| --- | --- | --- |
-| **Phase 1: Annotate** | Always when `mergeable_state: dirty` | Posts a sticky comment naming current vs incoming with PR provenance |
-| **Phase 2: Mechanical** | After Phase 1 | Runs the script; resolves version bumps + additive blocks; pushes a single audit-trail commit |
-| **Phase 3: Jules** | If Phase 2 left anything ambiguous | Applies `conflicts:needs-jules` and dispatches `jules-coding-agent.yml` |
-| **Phase 4: Human** | If Phase 3 surrenders (`conflicts:needs-human`) | The owner takes over |
+| Phase                   | When it fires                                   | What it does                                                                                  |
+| ----------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Phase 1: Annotate**   | Always when `mergeable_state: dirty`            | Posts a sticky comment naming current vs incoming with PR provenance                          |
+| **Phase 2: Mechanical** | After Phase 1                                   | Runs the script; resolves version bumps + additive blocks; pushes a single audit-trail commit |
+| **Phase 3: Jules**      | If Phase 2 left anything ambiguous              | Applies `conflicts:needs-jules` and dispatches `jules-coding-agent.yml`                       |
+| **Phase 4: Human**      | If Phase 3 surrenders (`conflicts:needs-human`) | The owner takes over                                                                          |

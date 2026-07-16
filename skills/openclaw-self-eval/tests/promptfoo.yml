@@ -134,10 +134,10 @@ tests:
         drift: matches snapshot
     assert:
       - type: icontains
-        value: "\"timestamp\""
+        value: '"timestamp"'
       - type: icontains
-        value: "\"overall\""
+        value: '"overall"'
       - type: icontains
-        value: "\"audits\""
+        value: '"audits"'
       - type: icontains
-        value: "\"status\""
+        value: '"status"'

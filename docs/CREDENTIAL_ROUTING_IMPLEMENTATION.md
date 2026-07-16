@@ -14,6 +14,7 @@ Issues labeled `credentials-missing` were getting stuck with no automatic routin
 ## Solution Implemented
 
 Created a comprehensive automatic routing system that:
+
 1. Detects when issues need credentials
 2. Routes to appropriate agents based on availability
 3. Provides clear manual instructions as fallback
@@ -24,22 +25,25 @@ Created a comprehensive automatic routing system that:
 ## Files Changed
 
 ### 1. Labels Definition
+
 **File:** `.github/labels.yml`  
 **Changes:** Added 4 new labels to canonical list
 
-| Label | Color | Purpose |
-|---|---|---|
-| `credentials-missing` | `d93f0b` (red) | Issues blocked by missing API keys/secrets |
-| `credentials-ready` | `0e8a16` (green) | All required credentials provisioned |
+| Label                     | Color             | Purpose                                        |
+| ------------------------- | ----------------- | ---------------------------------------------- |
+| `credentials-missing`     | `d93f0b` (red)    | Issues blocked by missing API keys/secrets     |
+| `credentials-ready`       | `0e8a16` (green)  | All required credentials provisioned           |
 | `desktop-access-required` | `fbca04` (orange) | Requires desktop agent with file system access |
-| `flexina` | `9b59b6` (purple) | Route to Flexina desktop automation agent |
+| `flexina`                 | `9b59b6` (purple) | Route to Flexina desktop automation agent      |
 
 ### 2. New Workflow
+
 **File:** `.github/workflows/credential-label-router.yml`  
 **Size:** 393 lines, 15.5 KB  
 **Purpose:** Automatic routing and escalation
 
 **Key Jobs:**
+
 - `route` - Detects and routes credentials-missing issues
   - Sub-step: `check` - Validates label status
   - Sub-step: `trigger-agent-hq` - Calls Agent HQ API (if configured)
@@ -49,15 +53,18 @@ Created a comprehensive automatic routing system that:
 - `sweep-stale` - Hourly cron to find forgotten issues
 
 **Triggers:**
+
 - Issue labeled with `credentials-missing`
 - Issue reopened
 - Hourly cron (`0 * * * *`)
 - Manual `workflow_dispatch`
 
 ### 3. Process Documentation
+
 **File:** `docs/CREDENTIAL_ROUTING_PROCESS.md`  
 **Size:** 19.3 KB  
 **Sections:**
+
 - Overview and problem statement
 - Detailed process flow with ASCII diagram
 - Label reference tables
@@ -68,6 +75,7 @@ Created a comprehensive automatic routing system that:
 - Related workflows and skills
 
 ### 4. Updated Documentation
+
 **File:** `docs/SECRETS_MANAGEMENT.md`  
 **Changes:** Added section referencing new credential routing process
 
@@ -79,11 +87,13 @@ Created a comprehensive automatic routing system that:
 ## How It Works
 
 ### Detection Phase
+
 1. `credential-gatekeeper.yml` scans new issues for credential keywords
 2. Generates Bill of Materials (BOM) listing required secrets
 3. Applies `credentials-missing` label if any are missing
 
-### Routing Phase  
+### Routing Phase
+
 1. `credential-label-router.yml` triggers on label
 2. **Priority 1:** Calls Agent HQ API (if `AGENT_HQ_TOKEN` exists)
    - Desktop agent retrieves credentials from local vault/keychain
@@ -99,6 +109,7 @@ Created a comprehensive automatic routing system that:
    - Posts escalation comment with context
 
 ### Completion Phase
+
 1. When all credentials provisioned:
 2. Remove `credentials-missing` label
 3. Add `credentials-ready` label
@@ -109,12 +120,16 @@ Created a comprehensive automatic routing system that:
 ## Validation Results
 
 ### Code Review
+
 ✅ **Passed** - 1 minor issue found and fixed
+
 - Issue: Comment said "30 minutes" but code uses 24 hours
 - Fixed: Updated comment to match implementation
 
 ### CodeQL Security Scan
+
 ✅ **Passed** - 0 alerts
+
 - No security vulnerabilities detected
 - All credential handling follows best practices
 - No hardcoded secrets or unsafe patterns
@@ -124,6 +139,7 @@ Created a comprehensive automatic routing system that:
 ## Configuration Required
 
 ### Optional (Enables Automatic Provisioning)
+
 ```bash
 # Add to repository secrets
 gh secret set AGENT_HQ_TOKEN --body "your-agent-hq-token"
@@ -131,6 +147,7 @@ gh secret set AGENT_HQ_URL --body "https://your-agent-hq.com"
 ```
 
 ### Optional (Enables Doppler Sync)
+
 ```bash
 # Add to repository secrets (if not already present)
 gh secret set DOPPLER_TOKEN --body "your-doppler-service-token"
@@ -142,6 +159,7 @@ gh secret set ADMIN_GITHUB_TOKEN --body "your-fine-grained-pat"
 ## Testing Plan
 
 ### Manual Test 1: Basic Routing
+
 ```bash
 # Create test issue
 gh issue create \
@@ -157,6 +175,7 @@ gh issue create \
 ```
 
 ### Manual Test 2: Agent HQ Routing (if configured)
+
 ```bash
 # Create test issue
 gh issue create \
@@ -173,6 +192,7 @@ gh issue create \
 ```
 
 ### Manual Test 3: Stale Detection
+
 ```bash
 # Create old test issue (manual simulation)
 gh issue create \
@@ -194,6 +214,7 @@ gh workflow run credential-label-router.yml
 ## Metrics to Monitor
 
 After deployment, track:
+
 - Number of issues labeled `credentials-missing` per week
 - Average time from `credentials-missing` to `credentials-ready`
 - Percentage resolved automatically (via Agent HQ) vs manually
@@ -205,21 +226,25 @@ After deployment, track:
 ## Related Files
 
 ### Workflows
+
 - `.github/workflows/credential-gatekeeper.yml` - Detects credential requirements
 - `.github/workflows/credential-label-router.yml` - Routes and escalates
 - `.github/workflows/doppler-secrets-sync.yml` - Bulk sync from Doppler
 - `.github/workflows/openrouter-triage.yml` - AI-powered triage
 
 ### Documentation
+
 - `docs/CREDENTIAL_ROUTING_PROCESS.md` - Complete process guide
 - `docs/SECRETS_MANAGEMENT.md` - Secrets management strategy
 - `docs/AUTOMATION_AUDIT.md` - Workflow inventory
 
 ### Skills
+
 - `skills/vault-agent/SKILL.md` - Vault Agent provisioning skill
 - `skills/REGISTRY.md` - Skills registry
 
 ### Standards
+
 - `standards/CREDENTIAL_AUDIT_SYSTEM.md` - Credential audit and rotation
 - `standards/GATEKEEPER.md` - Gatekeeper system overview
 
@@ -228,6 +253,7 @@ After deployment, track:
 ## Future Enhancements
 
 Planned:
+
 - [ ] Flexina desktop agent integration
 - [ ] 1Password CLI support
 - [ ] AWS Secrets Manager / Azure Key Vault support
@@ -235,6 +261,7 @@ Planned:
 - [ ] Slack notifications for escalations
 
 Considered:
+
 - BITO CLI integration (may be redundant with Agent HQ)
 - Manual credential wiring UI (out of scope)
 
@@ -264,6 +291,7 @@ Considered:
 ## Success Criteria
 
 ✅ **Completed:**
+
 - [x] Labels defined in canonical labels.yml
 - [x] Workflow created and validated
 - [x] Comprehensive documentation written
@@ -271,6 +299,7 @@ Considered:
 - [x] Security scan passed (0 alerts)
 
 🔄 **Pending (post-merge):**
+
 - [ ] Workflow runs successfully in production
 - [ ] Test issue routed correctly
 - [ ] Escalation path verified
@@ -285,6 +314,7 @@ Considered:
 **Escalation:** Manual intervention required if Agent HQ/Doppler not configured
 
 **Common Issues:**
+
 - If routing fails, check `AGENT_HQ_TOKEN` is configured
 - If Doppler sync fails, check `ADMIN_GITHUB_TOKEN` scopes
 - If labels don't sync, manually run `sync-labels.yml` workflow

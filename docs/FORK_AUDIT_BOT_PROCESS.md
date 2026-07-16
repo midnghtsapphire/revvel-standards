@@ -1,16 +1,16 @@
 # Fork-Audit Bot — Process
 
-**Issue reference:** *"Improving my trust and presence I want to create an auto
+**Issue reference:** _"Improving my trust and presence I want to create an auto
 system that forks existing github repositories, emphasising ones with high
 value to my goals to assist and run through my process and create evals and
 audits based on what is good and what is bad. Assign a score... create an Issue
 in their system or PR... update my authority in github and www the world using
 the metrics they use to up my presence... use a swarm... what ever is required
-for this cron job?"*
+for this cron job?"_
 
-**Follow-up comment:** *"I am wondering if you handle the pull request with
+**Follow-up comment:** _"I am wondering if you handle the pull request with
 required label and create the compliant PR can you then assign to openrouter
-so it actually works."* — yes, see §Compliant-PR routing below.
+so it actually works."_ — yes, see §Compliant-PR routing below.
 
 ---
 
@@ -78,27 +78,27 @@ Deterministic, pure-function, unit-tested in
 [`tests/scripts/fork-audit-bot.test.js`](../tests/scripts/fork-audit-bot.test.js).
 Each signal is capped so no single metric can dominate.
 
-| Signal | Max | Source |
-|---|---:|---|
-| Stars (÷100) | 20 | `stargazers_count` |
-| Forks (÷50) | 10 | `forks_count` |
-| Issue health | 10 | `open_issues_count` (inverted, capped) |
-| OSS license | 10 | `license.spdx_id` (zero if `NOASSERTION`) |
-| Recency of push | 15 | `pushed_at` (15 ≤ 30 d, 10 ≤ 90 d, 5 ≤ 365 d) |
-| Strategic value | 20 | `candidates.json` × 2 |
-| Goal-tag alignment | 15 | overlap of `goal_tags` with topics / description |
-| Archived penalty | −25 | `archived === true` |
-| Fork-of-fork penalty | −10 | `fork === true` |
-| Disabled penalty | −25 | `disabled === true` |
+| Signal               | Max | Source                                           |
+| -------------------- | --: | ------------------------------------------------ |
+| Stars (÷100)         |  20 | `stargazers_count`                               |
+| Forks (÷50)          |  10 | `forks_count`                                    |
+| Issue health         |  10 | `open_issues_count` (inverted, capped)           |
+| OSS license          |  10 | `license.spdx_id` (zero if `NOASSERTION`)        |
+| Recency of push      |  15 | `pushed_at` (15 ≤ 30 d, 10 ≤ 90 d, 5 ≤ 365 d)    |
+| Strategic value      |  20 | `candidates.json` × 2                            |
+| Goal-tag alignment   |  15 | overlap of `goal_tags` with topics / description |
+| Archived penalty     | −25 | `archived === true`                              |
+| Fork-of-fork penalty | −10 | `fork === true`                                  |
+| Disabled penalty     | −25 | `disabled === true`                              |
 
 Final total is clamped to 0‑100 and placed in one of four bands:
 
-| Band | Score | Action |
-|---|---|---|
-| A | ≥ 80 | Mirror audit issue **+ upstream PR/issue** |
-| B | 70‑79 | Mirror audit issue **+ upstream issue** |
-| C | 40‑69 | Mirror audit issue only |
-| D | < 40 | Skip |
+| Band | Score | Action                                     |
+| ---- | ----- | ------------------------------------------ |
+| A    | ≥ 80  | Mirror audit issue **+ upstream PR/issue** |
+| B    | 70‑79 | Mirror audit issue **+ upstream issue**    |
+| C    | 40‑69 | Mirror audit issue only                    |
+| D    | < 40  | Skip                                       |
 
 Bands A and B are the two that generate upstream contributions — the
 presence-boost half of the task.
@@ -107,8 +107,8 @@ presence-boost half of the task.
 
 ## Compliant-PR routing (answering the issue comment)
 
-> *"if you handle the pull request with required label and create the
-> compliant PR can you then assign to openrouter so it actually works."*
+> _"if you handle the pull request with required label and create the
+> compliant PR can you then assign to openrouter so it actually works."_
 
 Yes. The chain is:
 
@@ -150,19 +150,19 @@ cross-repo writes) is all the bot uses.
 
 ## GitHub Presence & Authority — metrics this bot moves
 
-The user mentioned *"we just built it in yesterday and I forgot what we
-called it"* — none of these are **one** name, they're a family of signals
+The user mentioned _"we just built it in yesterday and I forgot what we
+called it"_ — none of these are **one** name, they're a family of signals
 that collectively define "GitHub authority". This bot moves them all:
 
-| Signal | What it is | How this bot moves it |
-|---|---|---|
-| **Contribution graph** | Daily commit / issue / PR squares on `github.com/<user>` | Every mirror + upstream issue = a square |
-| **GitHub Achievements** | Badges like *Pull Shark*, *Galaxy Brain*, *Pair Extraordinaire*, *Quickdraw*, *YOLO*, *Public Sponsor* ([ref](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile/personalizing-your-profile#displaying-badges-on-your-profile)) | Upstream merged PRs → *Pull Shark*; answering upstream issues → *Galaxy Brain*; fast responses from the bot → *Quickdraw* |
-| **Followers / Stars received** | First-order social signal | Upstream activity surfaces you in the "Contributors" sidebar of each target repo |
-| **[OpenRank](https://open-digger.x-lab.info/openrank)** (X-lab, CHAOSS) | Network-effect authority score derived from commits, PRs, issues, reviews across repos | Contributions across many repos compound the OpenRank graph |
-| **[GitRank](https://gitrank.io/)** | Third-party dev-rank service | Driven by public contribution volume + reach |
-| **[CHAOSS Community Health](https://chaoss.community/metrics/)** metrics | Academic standard for open-source contribution quality | Our scoring rubric above is deliberately aligned |
-| **Search ranking (github.com code/issue search)** | Influenced by activity recency + breadth | Daily cron keeps both fresh |
+| Signal                                                                   | What it is                                                                                                                                                                                                                                                                                       | How this bot moves it                                                                                                     |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| **Contribution graph**                                                   | Daily commit / issue / PR squares on `github.com/<user>`                                                                                                                                                                                                                                         | Every mirror + upstream issue = a square                                                                                  |
+| **GitHub Achievements**                                                  | Badges like _Pull Shark_, _Galaxy Brain_, _Pair Extraordinaire_, _Quickdraw_, _YOLO_, _Public Sponsor_ ([ref](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile/personalizing-your-profile#displaying-badges-on-your-profile)) | Upstream merged PRs → _Pull Shark_; answering upstream issues → _Galaxy Brain_; fast responses from the bot → _Quickdraw_ |
+| **Followers / Stars received**                                           | First-order social signal                                                                                                                                                                                                                                                                        | Upstream activity surfaces you in the "Contributors" sidebar of each target repo                                          |
+| **[OpenRank](https://open-digger.x-lab.info/openrank)** (X-lab, CHAOSS)  | Network-effect authority score derived from commits, PRs, issues, reviews across repos                                                                                                                                                                                                           | Contributions across many repos compound the OpenRank graph                                                               |
+| **[GitRank](https://gitrank.io/)**                                       | Third-party dev-rank service                                                                                                                                                                                                                                                                     | Driven by public contribution volume + reach                                                                              |
+| **[CHAOSS Community Health](https://chaoss.community/metrics/)** metrics | Academic standard for open-source contribution quality                                                                                                                                                                                                                                           | Our scoring rubric above is deliberately aligned                                                                          |
+| **Search ranking (github.com code/issue search)**                        | Influenced by activity recency + breadth                                                                                                                                                                                                                                                         | Daily cron keeps both fresh                                                                                               |
 
 **Attribution.** Every issue / PR the bot opens is authored by the
 `GITHUB_ACTOR` whose token runs the workflow — i.e. you (or a machine user
@@ -185,12 +185,12 @@ was produced, which is also good-faith etiquette.
 
 Cadence suggestions:
 
-| Goal | Cron expression |
-|---|---|
-| **Default — daily, budget safe** | `"15 13 * * *"` |
-| Weekly audit (very cheap) | `"15 13 * * 1"` |
-| Twice a day | `"15 1,13 * * *"` |
-| Every 4h (aggressive presence-boost) | `"15 */4 * * *"` |
+| Goal                                 | Cron expression   |
+| ------------------------------------ | ----------------- |
+| **Default — daily, budget safe**     | `"15 13 * * *"`   |
+| Weekly audit (very cheap)            | `"15 13 * * 1"`   |
+| Twice a day                          | `"15 1,13 * * *"` |
+| Every 4h (aggressive presence-boost) | `"15 */4 * * *"`  |
 
 ---
 
@@ -232,14 +232,14 @@ Malformed entries are logged and skipped; the run continues.
 
 ## Escalation & failure modes
 
-| Symptom | What the bot does | Your action |
-|---|---|---|
-| `GITHUB_TOKEN` missing | Hard-exits with `::error::` | Re-run via `workflow_dispatch` once configured |
-| Upstream repo 404 | Logs, skips, moves on | Remove or fix the candidate entry |
-| Upstream repo archived | Scored + mirrored, `archivedPenalty=-25` | Usually band D → skipped automatically |
-| Label 404 upstream | Swallowed warning; issue still created | Optionally sync labels upstream via `sync-labels.yml` |
-| Duplicate mirror | Detected via search; second run is a no-op | None |
-| Search rate-limit during dedup | Dedup skipped, issue may be reopened | Raise `max_candidates_per_run` only after confirming quota |
+| Symptom                        | What the bot does                          | Your action                                                |
+| ------------------------------ | ------------------------------------------ | ---------------------------------------------------------- |
+| `GITHUB_TOKEN` missing         | Hard-exits with `::error::`                | Re-run via `workflow_dispatch` once configured             |
+| Upstream repo 404              | Logs, skips, moves on                      | Remove or fix the candidate entry                          |
+| Upstream repo archived         | Scored + mirrored, `archivedPenalty=-25`   | Usually band D → skipped automatically                     |
+| Label 404 upstream             | Swallowed warning; issue still created     | Optionally sync labels upstream via `sync-labels.yml`      |
+| Duplicate mirror               | Detected via search; second run is a no-op | None                                                       |
+| Search rate-limit during dedup | Dedup skipped, issue may be reopened       | Raise `max_candidates_per_run` only after confirming quota |
 
 For any anomaly not covered above, the existing
 [`ralph-loop.yml`](../.github/workflows/ralph-loop.yml) escalates after 5

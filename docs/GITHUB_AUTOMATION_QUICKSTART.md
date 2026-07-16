@@ -309,6 +309,7 @@ chmod +x setup-github-automation.sh
 **Issue:** Workflows don't trigger on PR events
 
 **Solution:**
+
 1. Check Actions are enabled: Settings → Actions → General
 2. Verify workflow files are on the default branch (`main`)
 3. Check workflow syntax with: `gh workflow view pr-review-status.yml`
@@ -318,6 +319,7 @@ chmod +x setup-github-automation.sh
 **Issue:** Labels don't change when reviews are submitted
 
 **Solution:**
+
 1. Check workflow permissions: Settings → Actions → Workflow permissions → Read and write
 2. Verify labels exist: Settings → Issues → Labels
 3. Check workflow run logs: Actions tab → Select workflow run
@@ -327,6 +329,7 @@ chmod +x setup-github-automation.sh
 **Issue:** Can't push to main due to branch protection
 
 **Solution:**
+
 1. Disable branch protection temporarily
 2. Push your changes
 3. Re-enable branch protection
@@ -337,6 +340,7 @@ chmod +x setup-github-automation.sh
 **Issue:** GitHub API rate limit exceeded
 
 **Solution:**
+
 1. Wait 1 hour for rate limit reset
 2. Use a personal access token with higher limits
 3. Reduce frequency of workflow triggers
@@ -350,10 +354,10 @@ Edit `pr-review-status.yml` to add custom review logic:
 ```yaml
 # Require 2 approvals for approved status
 const approvalCount = Array.from(reviewerStates.values())
-  .filter(r => r.state === 'APPROVED').length;
+.filter(r => r.state === 'APPROVED').length;
 
 if (approvalCount >= 2) {
-  targetLabel = 'approved';
+targetLabel = 'approved';
 }
 ```
 
@@ -379,7 +383,8 @@ Modify badge URLs in the workflow:
 
 ```javascript
 // Change from for-the-badge to flat-square
-statusBadge = '![Status](https://img.shields.io/badge/status-approved-green?style=flat-square)';
+statusBadge =
+  "![Status](https://img.shields.io/badge/status-approved-green?style=flat-square)";
 ```
 
 ## Maintenance

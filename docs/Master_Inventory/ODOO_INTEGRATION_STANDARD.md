@@ -21,16 +21,16 @@ Buying one SaaS subscription per entity (QuickBooks + HubSpot + Shopify admin + 
 
 ### 1.1 Decision
 
-| Decision | Value |
-|---|---|
-| **Platform** | Odoo Community Edition (CE), latest LTS (18.0 at the time of writing) |
-| **Licence** | LGPL-3.0 (FOSS, no per-user fees) |
-| **Deployment** | Self-hosted on the existing Revvel DigitalOcean droplet ecosystem (PM2-sibling container), behind Nginx |
-| **Database** | Managed PostgreSQL (shared Revvel instance) — see [`DATABASE_ARCHITECTURE_STANDARD.md`](DATABASE_ARCHITECTURE_STANDARD.md) |
-| **Multi-business model** | One Odoo database, **multiple companies** (multi-company feature), one chart of accounts per legal entity |
-| **Accounting module** | Odoo `account` (CE) — invoicing, bills, bank reconciliation, journals, tax reports. Zero licence cost. |
-| **CRM module** | Odoo `crm` (CE) — pipelines align 1:1 with [`LEADS_STANDARD.md`](LEADS_STANDARD.md) stages |
-| **ERP modules** | `sale`, `purchase`, `stock`, `mrp`, `project`, `hr`, `hr_expense` (all CE) |
+| Decision                 | Value                                                                                                                      |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| **Platform**             | Odoo Community Edition (CE), latest LTS (18.0 at the time of writing)                                                      |
+| **Licence**              | LGPL-3.0 (FOSS, no per-user fees)                                                                                          |
+| **Deployment**           | Self-hosted on the existing Revvel DigitalOcean droplet ecosystem (PM2-sibling container), behind Nginx                    |
+| **Database**             | Managed PostgreSQL (shared Revvel instance) — see [`DATABASE_ARCHITECTURE_STANDARD.md`](DATABASE_ARCHITECTURE_STANDARD.md) |
+| **Multi-business model** | One Odoo database, **multiple companies** (multi-company feature), one chart of accounts per legal entity                  |
+| **Accounting module**    | Odoo `account` (CE) — invoicing, bills, bank reconciliation, journals, tax reports. Zero licence cost.                     |
+| **CRM module**           | Odoo `crm` (CE) — pipelines align 1:1 with [`LEADS_STANDARD.md`](LEADS_STANDARD.md) stages                                 |
+| **ERP modules**          | `sale`, `purchase`, `stock`, `mrp`, `project`, `hr`, `hr_expense` (all CE)                                                 |
 
 > **Why not Odoo.sh / Enterprise?** Enterprise adds closed modules (e.g. advanced accounting reports, studio, marketing automation) that we do **not** need — Revvel already has marketing automation and BI standards. CE + a small number of OCA modules covers 100 % of our requirements at $0 licence cost.
 
@@ -52,14 +52,14 @@ Odoo has **first-class multi-company support** — one database can host many co
 
 We map **one Odoo company per MIDNGHTSAPPHIRE legal entity or brand**:
 
-| Odoo Company Code | Legal Entity / Brand | Purpose |
-|---|---|---|
-| `MIDNGHTSAPPHIRE` | MIDNGHTSAPPHIRE (parent) | Consolidation, inter-company services |
-| `VINE_HOUSE` | Vine House (products LLC) | Product manufacturing, sales, inventory |
-| `VINE_HOUSE_CAPITAL` | Vine House Capital (rental LLC) | Property ledger, tenant invoicing, rent receipts |
-| `REVVEL_TECH` | Revvel Tech operating entity | SaaS revenue, OpenAI/AWS/DO expenses for all Revvel apps |
-| `REESE_REVIEWS` | reese-reviews (brand) | Review-business revenue and expenses |
-| `FREEDOM_ANGEL_CORPS` | Enterprise org (see [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](REPOSITORY_PRIVACY_MIGRATION_STANDARD.md)) | Future consolidated entity |
+| Odoo Company Code     | Legal Entity / Brand                                                                                        | Purpose                                                  |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `MIDNGHTSAPPHIRE`     | MIDNGHTSAPPHIRE (parent)                                                                                    | Consolidation, inter-company services                    |
+| `VINE_HOUSE`          | Vine House (products LLC)                                                                                   | Product manufacturing, sales, inventory                  |
+| `VINE_HOUSE_CAPITAL`  | Vine House Capital (rental LLC)                                                                             | Property ledger, tenant invoicing, rent receipts         |
+| `REVVEL_TECH`         | Revvel Tech operating entity                                                                                | SaaS revenue, OpenAI/AWS/DO expenses for all Revvel apps |
+| `REESE_REVIEWS`       | reese-reviews (brand)                                                                                       | Review-business revenue and expenses                     |
+| `FREEDOM_ANGEL_CORPS` | Enterprise org (see [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](REPOSITORY_PRIVACY_MIGRATION_STANDARD.md)) | Future consolidated entity                               |
 
 Inter-company rules (`purchase_sale` chain) are enabled so a sale from `VINE_HOUSE` to `REVVEL_TECH` (e.g. internal product use) automatically creates the mirrored bill on the other side. This gives us auditable, GAAP-clean inter-entity books with no manual duplication.
 
@@ -69,24 +69,24 @@ Full hierarchy rationale is maintained in [`ENTITY_HIERARCHY.md`](ENTITY_HIERARC
 
 ## 3. Module Matrix — What We Turn On, What We Don't
 
-| Module | Role | Status | Replaces / Supersedes |
-|---|---|---|---|
-| `base`, `mail`, `web` | Core | ✅ Always on | — |
-| `contacts` | Unified contact book across companies | ✅ Always on | Airtable / Notion contact sheets |
-| `crm` | Sales pipelines, leads, opportunities | ✅ Always on | Manual spreadsheets; aligns with [`LEADS_STANDARD.md`](LEADS_STANDARD.md) |
-| `sale`, `sale_management` | Quotes → sales orders → invoices | ✅ Always on | Custom invoicing scripts |
-| `purchase` | Vendor bills, POs | ✅ Always on | Manual invoice tracking |
-| `account` (CE accounting) | Journals, bank statements, tax reports | ✅ Always on — **free model** | QuickBooks, FreshBooks (both deferred) |
-| `stock` | Warehouses, inventory, lots/serials | ✅ Always on for Vine House | inFlow, Airtable inventory |
-| `mrp` | Manufacturing (coffee blends, specialty items) | 🔵 Configure when Vine House production starts | — |
-| `project` | Tasks, timesheets, project profitability | ✅ Always on | GitHub Projects for non-code work |
-| `hr`, `hr_expense` | Employees, expense reimbursement | 🟡 Enable on first hire | — |
-| `hr_payroll` | Payroll runs | ❌ CE version is limited — use Gusto / Wave Payroll instead |
-| `website`, `website_sale` | Public storefront | ❌ **Do not use** — our storefronts are Shopify / custom Next.js per [`_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md §4). Odoo stays headless. |
-| `point_of_sale` | Retail POS | 🟡 Evaluate only if in-person Vine House events happen |
-| `marketing_automation` | Drip campaigns | ❌ **Do not use** — Enterprise-only; use Loops / Mailchimp per [`MARKETING_AUTOMATION_STANDARD.md`](MARKETING_AUTOMATION_STANDARD.md) |
-| OCA `account_financial_report` | Replaces Enterprise advanced reports | ✅ Install from OCA | Odoo Enterprise financial reports |
-| OCA `mis_builder` | Custom KPIs / dashboards | 🟡 Evaluate in Phase 3 | Metabase for some views |
+| Module                         | Role                                           | Status                                                                                                                                          | Replaces / Supersedes                                                     |
+| ------------------------------ | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `base`, `mail`, `web`          | Core                                           | ✅ Always on                                                                                                                                    | —                                                                         |
+| `contacts`                     | Unified contact book across companies          | ✅ Always on                                                                                                                                    | Airtable / Notion contact sheets                                          |
+| `crm`                          | Sales pipelines, leads, opportunities          | ✅ Always on                                                                                                                                    | Manual spreadsheets; aligns with [`LEADS_STANDARD.md`](LEADS_STANDARD.md) |
+| `sale`, `sale_management`      | Quotes → sales orders → invoices               | ✅ Always on                                                                                                                                    | Custom invoicing scripts                                                  |
+| `purchase`                     | Vendor bills, POs                              | ✅ Always on                                                                                                                                    | Manual invoice tracking                                                   |
+| `account` (CE accounting)      | Journals, bank statements, tax reports         | ✅ Always on — **free model**                                                                                                                   | QuickBooks, FreshBooks (both deferred)                                    |
+| `stock`                        | Warehouses, inventory, lots/serials            | ✅ Always on for Vine House                                                                                                                     | inFlow, Airtable inventory                                                |
+| `mrp`                          | Manufacturing (coffee blends, specialty items) | 🔵 Configure when Vine House production starts                                                                                                  | —                                                                         |
+| `project`                      | Tasks, timesheets, project profitability       | ✅ Always on                                                                                                                                    | GitHub Projects for non-code work                                         |
+| `hr`, `hr_expense`             | Employees, expense reimbursement               | 🟡 Enable on first hire                                                                                                                         | —                                                                         |
+| `hr_payroll`                   | Payroll runs                                   | ❌ CE version is limited — use Gusto / Wave Payroll instead                                                                                     |
+| `website`, `website_sale`      | Public storefront                              | ❌ **Do not use** — our storefronts are Shopify / custom Next.js per [`_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md §4). Odoo stays headless. |
+| `point_of_sale`                | Retail POS                                     | 🟡 Evaluate only if in-person Vine House events happen                                                                                          |
+| `marketing_automation`         | Drip campaigns                                 | ❌ **Do not use** — Enterprise-only; use Loops / Mailchimp per [`MARKETING_AUTOMATION_STANDARD.md`](MARKETING_AUTOMATION_STANDARD.md)           |
+| OCA `account_financial_report` | Replaces Enterprise advanced reports           | ✅ Install from OCA                                                                                                                             | Odoo Enterprise financial reports                                         |
+| OCA `mis_builder`              | Custom KPIs / dashboards                       | 🟡 Evaluate in Phase 3                                                                                                                          | Metabase for some views                                                   |
 
 Principle: **Odoo is our back-office system of record**. Public-facing customer experience stays on the existing Next.js / Shopify storefronts; those systems push data into Odoo via the integration layer in §5 rather than being replaced.
 
@@ -139,24 +139,24 @@ erDiagram
 
 ### 4.1 Entity Cheat Sheet
 
-| Odoo Model | What it stores | Who writes to it |
-|---|---|---|
-| `res.company` | Legal entity / brand | Admin only, one-time per entity |
-| `res.users` | System users (internal + portal) | Admin; SCIM from SSO when that lands |
-| `res.partner` | Contacts, customers, vendors, tenants | CRM, leads sync, Shopify webhook |
-| `crm.lead` | Lead / opportunity | Marketing site forms, Revvel app signup webhook |
-| `crm.stage` | Pipeline stages | Matches [`LEADS_STANDARD.md`](LEADS_STANDARD.md) stage codes exactly |
-| `product.template` / `product.product` | SKUs (products, services, subscriptions) | Vine House catalog, Revvel SaaS plans |
-| `sale.order` | Quote → confirmed sale | CRM conversion, Shopify webhook, Stripe checkout |
-| `account.move` | Any accounting document (invoice, bill, journal entry) | `sale`, `purchase`, bank imports |
-| `account.move.line` | Individual debit/credit line | Always via `account.move`, never directly |
-| `account.journal` | Sales / purchase / bank / cash journals | Admin setup per company |
-| `account.account` | Chart of accounts | Localised per company (US CoA + IRS mappings) |
-| `stock.picking` | Delivery / receipt order | `sale` and `purchase` |
-| `stock.quant` | On-hand quantities | Computed from pickings |
-| `project.project`, `project.task` | Internal work tracking | Revvel engineers, GrowlingEyes operations |
-| `account.analytic.line` | Timesheet / cost entry | `project` + `hr_expense` |
-| `hr.employee` | Staff records | HR admin |
+| Odoo Model                             | What it stores                                         | Who writes to it                                                     |
+| -------------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------------- |
+| `res.company`                          | Legal entity / brand                                   | Admin only, one-time per entity                                      |
+| `res.users`                            | System users (internal + portal)                       | Admin; SCIM from SSO when that lands                                 |
+| `res.partner`                          | Contacts, customers, vendors, tenants                  | CRM, leads sync, Shopify webhook                                     |
+| `crm.lead`                             | Lead / opportunity                                     | Marketing site forms, Revvel app signup webhook                      |
+| `crm.stage`                            | Pipeline stages                                        | Matches [`LEADS_STANDARD.md`](LEADS_STANDARD.md) stage codes exactly |
+| `product.template` / `product.product` | SKUs (products, services, subscriptions)               | Vine House catalog, Revvel SaaS plans                                |
+| `sale.order`                           | Quote → confirmed sale                                 | CRM conversion, Shopify webhook, Stripe checkout                     |
+| `account.move`                         | Any accounting document (invoice, bill, journal entry) | `sale`, `purchase`, bank imports                                     |
+| `account.move.line`                    | Individual debit/credit line                           | Always via `account.move`, never directly                            |
+| `account.journal`                      | Sales / purchase / bank / cash journals                | Admin setup per company                                              |
+| `account.account`                      | Chart of accounts                                      | Localised per company (US CoA + IRS mappings)                        |
+| `stock.picking`                        | Delivery / receipt order                               | `sale` and `purchase`                                                |
+| `stock.quant`                          | On-hand quantities                                     | Computed from pickings                                               |
+| `project.project`, `project.task`      | Internal work tracking                                 | Revvel engineers, GrowlingEyes operations                            |
+| `account.analytic.line`                | Timesheet / cost entry                                 | `project` + `hr_expense`                                             |
+| `hr.employee`                          | Staff records                                          | HR admin                                                             |
 
 ### 4.2 Cross-System Identifiers
 
@@ -201,16 +201,16 @@ All external systems talk to Odoo **through a single bridge service**, never by 
 
 ### 5.3 Webhook Sources (Phase 1 scope)
 
-| Source | Odoo action | Model(s) touched |
-|---|---|---|
-| Shopify `orders/create` | Upsert partner, upsert sale order, confirm, create delivery | `res.partner`, `sale.order`, `stock.picking` |
-| Shopify `refunds/create` | Credit note on matching invoice | `account.move` |
-| Stripe `invoice.paid` | Register payment on customer invoice | `account.payment`, `account.move` |
-| Stripe `charge.refunded` | Refund payment + reconcile | `account.payment` |
-| Revvel Lead form (`LEADS_STANDARD.md`) | Upsert `crm.lead` in the lead's company scope | `crm.lead`, `res.partner` |
-| `reese-reviews` completed review | Create project task + timesheet entry + optional vendor bill | `project.task`, `account.move` |
-| GrowlingEyes subscription event | Upsert subscription product + sale order | `product.product`, `sale.order` |
-| Vine House Capital rent paid | Create customer invoice + payment reconciliation | `account.move`, `account.payment` |
+| Source                                 | Odoo action                                                  | Model(s) touched                             |
+| -------------------------------------- | ------------------------------------------------------------ | -------------------------------------------- |
+| Shopify `orders/create`                | Upsert partner, upsert sale order, confirm, create delivery  | `res.partner`, `sale.order`, `stock.picking` |
+| Shopify `refunds/create`               | Credit note on matching invoice                              | `account.move`                               |
+| Stripe `invoice.paid`                  | Register payment on customer invoice                         | `account.payment`, `account.move`            |
+| Stripe `charge.refunded`               | Refund payment + reconcile                                   | `account.payment`                            |
+| Revvel Lead form (`LEADS_STANDARD.md`) | Upsert `crm.lead` in the lead's company scope                | `crm.lead`, `res.partner`                    |
+| `reese-reviews` completed review       | Create project task + timesheet entry + optional vendor bill | `project.task`, `account.move`               |
+| GrowlingEyes subscription event        | Upsert subscription product + sale order                     | `product.product`, `sale.order`              |
+| Vine House Capital rent paid           | Create customer invoice + payment reconciliation             | `account.move`, `account.payment`            |
 
 ### 5.4 `revvel_odoo_bridge` Custom Module
 
@@ -226,11 +226,11 @@ This module is the **only** place in Odoo where Revvel-specific logic lives. No 
 
 Odoo is the source of truth for **accounting, inventory on hand, and company-level contact records**. When those change, Odoo emits events through an outgoing webhook queue:
 
-| Odoo trigger | Event | Consumers |
-|---|---|---|
-| `account.move` posted (invoice/bill) | `accounting.invoice.posted` | Revvel BI warehouse, customer portal notifier |
-| `stock.quant` change on a tracked SKU | `inventory.level.changed` | Shopify (stock sync), Vine House admin dashboard |
-| `res.partner` create/update | `contact.upserted` | CRM mirror caches, marketing automation |
+| Odoo trigger                          | Event                       | Consumers                                        |
+| ------------------------------------- | --------------------------- | ------------------------------------------------ |
+| `account.move` posted (invoice/bill)  | `accounting.invoice.posted` | Revvel BI warehouse, customer portal notifier    |
+| `stock.quant` change on a tracked SKU | `inventory.level.changed`   | Shopify (stock sync), Vine House admin dashboard |
+| `res.partner` create/update           | `contact.upserted`          | CRM mirror caches, marketing automation          |
 
 Outbound events go through the same bridge, signed with HMAC-SHA256 (secret from Vault), and are consumed by each target per its own runbook.
 
@@ -263,11 +263,11 @@ Each company gets a US chart of accounts loaded from Odoo's `l10n_us` module, th
 
 ### 6.3 What We Still Pay For
 
-| Capability | Why Odoo CE doesn't fully cover it | Supplement |
-|---|---|---|
-| Payroll tax filing | CE `hr_payroll` is generic | Gusto ($40/mo + $6/employee) when we hire W-2 |
-| US bank auto-feed | CE requires manual OFX/CSV import | Optional Plaid bridge ($0 dev, metered prod) |
-| Advanced financial reports | Some reports are Enterprise-only | OCA `account_financial_report` (free) |
+| Capability                 | Why Odoo CE doesn't fully cover it | Supplement                                    |
+| -------------------------- | ---------------------------------- | --------------------------------------------- |
+| Payroll tax filing         | CE `hr_payroll` is generic         | Gusto ($40/mo + $6/employee) when we hire W-2 |
+| US bank auto-feed          | CE requires manual OFX/CSV import  | Optional Plaid bridge ($0 dev, metered prod)  |
+| Advanced financial reports | Some reports are Enterprise-only   | OCA `account_financial_report` (free)         |
 
 Everything else — invoicing, bill entry, bank reconciliation, tax reports, inter-company — runs on CE at $0 licence cost.
 
@@ -276,11 +276,13 @@ Everything else — invoicing, bill entry, bank reconciliation, tax reports, int
 ## 7. Rollout Plan
 
 ### Phase 0 — Decision & Audit (week 1)
+
 - [ ] Land this standard (this PR).
 - [ ] Audit `reese-reviews` for any pre-existing Odoo glue code. If found, extract it into `revvel_odoo_bridge` and document divergences from this standard.
 - [ ] Add Odoo rows to [`_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md) and [`_MASTER_BOM.md`](../_MASTER_BOM.md) (done in this PR).
 
 ### Phase 1 — Minimum Viable Back Office (weeks 2–3)
+
 - [ ] Stand up Odoo 18 CE via Docker Compose on the shared DO droplet, behind Nginx with TLS.
 - [ ] Point Odoo at the managed Postgres cluster (its own DB, same pg server).
 - [ ] Create the four Phase-1 companies: `MIDNGHTSAPPHIRE`, `VINE_HOUSE`, `VINE_HOUSE_CAPITAL`, `REVVEL_TECH`.
@@ -289,17 +291,20 @@ Everything else — invoicing, bill entry, bank reconciliation, tax reports, int
 - [ ] Ship `revvel_odoo_bridge` v0.1 with the external-ID fields + inbound webhook handler for Shopify and Stripe.
 
 ### Phase 2 — CRM & Leads Unification (weeks 4–5)
+
 - [ ] Map `crm.stage` records to the stage codes in [`LEADS_STANDARD.md`](LEADS_STANDARD.md).
 - [ ] Migrate existing lead data (currently spreadsheets) via `base_import` CSV.
 - [ ] Wire Revvel product landing pages to post leads into Odoo through the bridge.
 
 ### Phase 3 — reese-reviews & Remaining Brands (weeks 6–7)
+
 - [ ] Add `REESE_REVIEWS` and any remaining companies.
 - [ ] Migrate reese-reviews invoices + contacts.
 - [ ] Enable outbound events (§5.5).
 - [ ] Dashboards: install `mis_builder`, build a consolidated P&L across all companies.
 
 ### Phase 4 — Steady State (week 8 onward)
+
 - [ ] Dependabot-equivalent process for Odoo + OCA modules (pinned versions, monthly upgrade window).
 - [ ] Nightly full backup (pg dump + Odoo filestore tarball) to DO Spaces, 30-day retention.
 - [ ] Add Odoo to uptime monitoring and Sentry error forwarding per [`SECURITY_STANDARD.md`](SECURITY_STANDARD.md).
@@ -321,14 +326,14 @@ Everything else — invoicing, bill entry, bank reconciliation, tax reports, int
 
 These are the Odoo-specific checks added to the compliance rubric ([`COMPLIANCE_RUBRIC.md`](COMPLIANCE_RUBRIC.md)). Category: **I — Back-Office Integration**.
 
-| ID | Check | Priority |
-|---|---|---|
-| I1 | `ODOO_INTEGRATION_STANDARD.md` is referenced from any project that posts invoices, sales orders, leads, or inventory to an external system | P1 |
-| I2 | Any new webhook/consumer that writes accounting or inventory data routes through the bridge service (no direct XML-RPC from app code) | P0 |
-| I3 | Every Odoo record mirrored from an external system has `x_external_system` + `x_external_id` populated | P1 |
-| I4 | Odoo backups (DB + filestore) run nightly and are stored encrypted in DO Spaces | P0 |
-| I5 | Secrets for Odoo are stored in Vault, not in repository config | P0 |
-| I6 | New Odoo companies added to the instance are also reflected in [`ENTITY_HIERARCHY.md`](ENTITY_HIERARCHY.md) | P2 |
+| ID  | Check                                                                                                                                      | Priority |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| I1  | `ODOO_INTEGRATION_STANDARD.md` is referenced from any project that posts invoices, sales orders, leads, or inventory to an external system | P1       |
+| I2  | Any new webhook/consumer that writes accounting or inventory data routes through the bridge service (no direct XML-RPC from app code)      | P0       |
+| I3  | Every Odoo record mirrored from an external system has `x_external_system` + `x_external_id` populated                                     | P1       |
+| I4  | Odoo backups (DB + filestore) run nightly and are stored encrypted in DO Spaces                                                            | P0       |
+| I5  | Secrets for Odoo are stored in Vault, not in repository config                                                                             | P0       |
+| I6  | New Odoo companies added to the instance are also reflected in [`ENTITY_HIERARCHY.md`](ENTITY_HIERARCHY.md)                                | P2       |
 
 ---
 
@@ -350,20 +355,20 @@ No. That code is the reference implementation we pull forward. This standard tel
 
 ## 11. Related Standards
 
-| Standard | Relationship |
-|---|---|
-| [`LEADS_STANDARD.md`](LEADS_STANDARD.md) | CRM stage codes in Odoo must equal the codes here |
-| [`DATABASE_ARCHITECTURE_STANDARD.md`](DATABASE_ARCHITECTURE_STANDARD.md) | Odoo DB lives on the shared managed Postgres |
-| [`API_GATEKEEPER_STANDARD.md`](API_GATEKEEPER_STANDARD.md) | Bridge traffic must pass API Gatekeeper rules |
-| [`VAULT_AGENT_STANDARD.md`](VAULT_AGENT_STANDARD.md) | All Odoo and bridge secrets via Vault |
-| [`SECURITY_STANDARD.md`](SECURITY_STANDARD.md) | Backups, retention, audit |
-| [`MARKETING_AUTOMATION_STANDARD.md`](MARKETING_AUTOMATION_STANDARD.md) | Marketing automation stays out of Odoo |
-| [`AFFILIATE_MARKETING_STANDARD.md`](AFFILIATE_MARKETING_STANDARD.md) | IRS $600 threshold tagging on `res.partner` |
-| [`ENTITY_HIERARCHY.md`](ENTITY_HIERARCHY.md) | Source of truth for the company list |
-| [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](REPOSITORY_PRIVACY_MIGRATION_STANDARD.md) | Bridge addon repo privacy |
-| [`TEST_ENVIRONMENTS_STANDARD.md`](TEST_ENVIRONMENTS_STANDARD.md) | Staging → live-test → prod pipeline for Odoo upgrades |
-| [`COMPLIANCE_RUBRIC.md`](COMPLIANCE_RUBRIC.md) | Category I checks listed in §9 |
+| Standard                                                                               | Relationship                                          |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [`LEADS_STANDARD.md`](LEADS_STANDARD.md)                                               | CRM stage codes in Odoo must equal the codes here     |
+| [`DATABASE_ARCHITECTURE_STANDARD.md`](DATABASE_ARCHITECTURE_STANDARD.md)               | Odoo DB lives on the shared managed Postgres          |
+| [`API_GATEKEEPER_STANDARD.md`](API_GATEKEEPER_STANDARD.md)                             | Bridge traffic must pass API Gatekeeper rules         |
+| [`VAULT_AGENT_STANDARD.md`](VAULT_AGENT_STANDARD.md)                                   | All Odoo and bridge secrets via Vault                 |
+| [`SECURITY_STANDARD.md`](SECURITY_STANDARD.md)                                         | Backups, retention, audit                             |
+| [`MARKETING_AUTOMATION_STANDARD.md`](MARKETING_AUTOMATION_STANDARD.md)                 | Marketing automation stays out of Odoo                |
+| [`AFFILIATE_MARKETING_STANDARD.md`](AFFILIATE_MARKETING_STANDARD.md)                   | IRS $600 threshold tagging on `res.partner`           |
+| [`ENTITY_HIERARCHY.md`](ENTITY_HIERARCHY.md)                                           | Source of truth for the company list                  |
+| [`REPOSITORY_PRIVACY_MIGRATION_STANDARD.md`](REPOSITORY_PRIVACY_MIGRATION_STANDARD.md) | Bridge addon repo privacy                             |
+| [`TEST_ENVIRONMENTS_STANDARD.md`](TEST_ENVIRONMENTS_STANDARD.md)                       | Staging → live-test → prod pipeline for Odoo upgrades |
+| [`COMPLIANCE_RUBRIC.md`](COMPLIANCE_RUBRIC.md)                                         | Category I checks listed in §9                        |
 
 ---
 
-*Maintained by the Revvel coding agent. This document is the authoritative specification for all Odoo-related work across MIDNGHTSAPPHIRE businesses. Changes require a PR that updates this file **and** the related standards above in the same commit.*
+_Maintained by the Revvel coding agent. This document is the authoritative specification for all Odoo-related work across MIDNGHTSAPPHIRE businesses. Changes require a PR that updates this file **and** the related standards above in the same commit._

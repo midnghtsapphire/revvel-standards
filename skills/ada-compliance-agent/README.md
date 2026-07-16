@@ -30,6 +30,7 @@ Making your website accessible isn't just nice—it's the law! The ADA (American
 ### 1. **Automatic Scans** 🔍
 
 Every time you change your website code, the agent checks:
+
 - ✅ All images have descriptions
 - ✅ Colors are easy to read (high contrast)
 - ✅ Forms are properly labeled
@@ -39,6 +40,7 @@ Every time you change your website code, the agent checks:
 ### 2. **Smart Fixes** 🔧
 
 The agent automatically fixes easy problems like:
+
 - Adding "alt text" to decorative images
 - Darkening text that's too light to read
 - Adding labels to form fields
@@ -47,6 +49,7 @@ The agent automatically fixes easy problems like:
 ### 3. **Learning & Certifications** 🎓
 
 The agent regularly takes free courses from:
+
 - **W3C** (the organization that makes web standards)
 - **ADA National Network** (official ADA training)
 - **LinkedIn Learning** (professional courses)
@@ -55,6 +58,7 @@ The agent regularly takes free courses from:
 ### 4. **Reports & Updates** 📊
 
 You get regular reports showing:
+
 - Your accessibility score (goal: 90+)
 - What got fixed automatically
 - What needs a human to review
@@ -70,6 +74,7 @@ Load the ada-compliance-agent skill and audit the current codebase
 ```
 
 The agent will:
+
 1. Scan all your pages
 2. Fix what it can automatically
 3. Create a report with remaining issues
@@ -78,6 +83,7 @@ The agent will:
 ### Option 2: Run It Automatically (Scheduled)
 
 Set it up to run every night or every week. The agent will:
+
 - Scan your website regularly
 - Catch accessibility issues before they reach customers
 - Keep your accessibility score high
@@ -86,6 +92,7 @@ Set it up to run every night or every week. The agent will:
 ### Option 3: Run It 24/7 (Continuous Monitoring)
 
 For serious compliance needs, run it non-stop via OpenRouter. It will:
+
 - Watch for new ADA rules and lawsuits
 - Monitor for new free certification courses
 - Scan for new accessibility testing tools
@@ -107,6 +114,7 @@ The agent knows about these free courses and can take them:
 ### Paid Certifications 💰
 
 For advanced certification, the agent also tracks:
+
 - **IAAP CPACC** ($425) - Professional accessibility certification
 - **IAAP WAS** ($425) - Web accessibility specialist
 - **Deque University** ($299-$799) - Complete accessibility curriculum
@@ -121,6 +129,7 @@ Some things need a human to review:
 - **Third-party tools** - Plugins and widgets from other companies might have their own issues
 
 When the agent can't fix something, it will:
+
 1. Create a GitHub issue explaining the problem
 2. Suggest how to fix it
 3. Mark it for human review
@@ -129,6 +138,7 @@ When the agent can't fix something, it will:
 ## Success Metrics 📊
 
 The agent tracks:
+
 - **Lighthouse Score** (goal: 95+)
 - **WCAG Success Rate** (goal: 100% of required criteria)
 - **Violations** (goal: 0 critical, fewer than 5 moderate)
@@ -140,12 +150,14 @@ The agent tracks:
 ### For Developers:
 
 1. **Add to your project:**
+
    ```bash
    # Install testing tools
    npm install --save-dev @axe-core/cli pa11y-ci @lhci/cli
    ```
 
 2. **Run your first audit:**
+
    ```bash
    Load ada-compliance-agent and run compliance audit
    ```
@@ -157,7 +169,7 @@ The agent tracks:
 
 1. **Ask your developer** to set up the agent
 2. **Check the reports** in the `/docs/` folder regularly
-3. **Review GitHub issues** labeled "accessibility" 
+3. **Review GitHub issues** labeled "accessibility"
 4. **Celebrate improvements** as your score goes up!
 
 ## FAQ
@@ -190,6 +202,7 @@ A: No—this is a tool to help you, not a replacement for expert humans. For leg
 ## Legal Note
 
 This tool helps identify and fix accessibility issues, but **using it does not guarantee legal compliance** with the ADA. Always:
+
 - Test with real users who have disabilities
 - Consult legal counsel for compliance questions
 - Follow official ADA and WCAG guidelines

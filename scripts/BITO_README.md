@@ -11,6 +11,7 @@ This directory contains helper scripts for managing BITO AI integration in the R
 ```
 
 This wizard will guide you through:
+
 - Checking prerequisites (Vault CLI, GitHub CLI)
 - Storing your BITO API key securely
 - Wiring the key to GitHub Actions
@@ -52,13 +53,15 @@ export BITO_API_KEY="your-key-from-bito.ai"
 ## 📋 Prerequisites
 
 ### Required
+
 - **BITO API Key** — Get it from [bito.ai](https://bito.ai) → Settings → API Keys
 
 ### Optional (for full automation)
+
 - **HashiCorp Vault CLI** — For secure secret storage
   - macOS: `brew install vault`
   - Linux: [vaultproject.io/downloads](https://www.vaultproject.io/downloads)
-  
+
 - **GitHub CLI** — For wiring secrets to Actions
   - macOS: `brew install gh`
   - Linux: [cli.github.com](https://cli.github.com/manual/installation)
@@ -125,6 +128,7 @@ The `bito-ai.yml` workflow automatically runs on every PR. To trigger manually:
 **Problem:** The workflow skips with a warning about missing API key.
 
 **Solution:**
+
 1. Verify the secret exists: Settings → Secrets and variables → Actions
 2. Check the secret name is exactly `BITO_API_KEY` (case-sensitive)
 3. Re-run the workflow
@@ -134,6 +138,7 @@ The `bito-ai.yml` workflow automatically runs on every PR. To trigger manually:
 **Problem:** API key is invalid or expired.
 
 **Solution:**
+
 1. Generate a new key at [bito.ai](https://bito.ai) → Settings → API Keys
 2. Update the GitHub secret
 3. If using Vault, update there too: `./scripts/bito-api-helper.sh store`
@@ -143,6 +148,7 @@ The `bito-ai.yml` workflow automatically runs on every PR. To trigger manually:
 **Problem:** Workflow runs but no comment appears.
 
 **Possible causes:**
+
 1. **Permissions:** Workflow needs `pull-requests: write` permission
    - Check `.github/workflows/bito-ai.yml` has correct permissions
 2. **API issue:** Check the workflow logs for errors
@@ -153,6 +159,7 @@ The `bito-ai.yml` workflow automatically runs on every PR. To trigger manually:
 **Problem:** BITO reviews the PR but labels aren't added.
 
 **Solution:**
+
 1. Ensure labels exist: Run "Sync Standard Labels" workflow
 2. Check workflow has `issues: write` permission
 3. Verify labels are defined in `.github/labels.yml`
@@ -185,10 +192,10 @@ The `bito-ai.yml` workflow automatically runs on every PR. To trigger manually:
 
 ## 📝 Scripts Overview
 
-| Script | Purpose | Usage |
-|--------|---------|-------|
-| `bito-api-helper.sh` | All-in-one API management tool | `./bito-api-helper.sh [command]` |
-| `test-bito-api.sh` | Integration testing | `BITO_API_KEY=xxx ./test-bito-api.sh` |
+| Script               | Purpose                        | Usage                                 |
+| -------------------- | ------------------------------ | ------------------------------------- |
+| `bito-api-helper.sh` | All-in-one API management tool | `./bito-api-helper.sh [command]`      |
+| `test-bito-api.sh`   | Integration testing            | `BITO_API_KEY=xxx ./test-bito-api.sh` |
 
 ## 🤝 Integration with Other Tools
 
@@ -202,10 +209,11 @@ BITO AI complements existing automation:
 ## 📞 Support
 
 For issues or questions:
+
 1. Check [BITO AI documentation](https://bito.ai/docs)
 2. Review workflow logs in GitHub Actions
 3. Open an issue in this repository with the `bito-ai` label
 
 ---
 
-*Part of the Revvel Standards tooling layer. See [`AGENTS.md`](../docs/AGENTS.md) for agent-specific instructions.*
+_Part of the Revvel Standards tooling layer. See [`AGENTS.md`](../docs/AGENTS.md) for agent-specific instructions._

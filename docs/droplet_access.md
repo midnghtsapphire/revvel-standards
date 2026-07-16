@@ -1,6 +1,7 @@
 # Droplet Access Credentials
 
 ## MindMappr Droplet (Primary)
+
 - **IP**: 164.90.148.7
 - **SSH**: `ssh root@164.90.148.7`
 - **Password**: [REDACTED — stored in vault]
@@ -12,11 +13,13 @@
 - **Bot Username**: @googlieeyes_bot
 
 ## Old Dashboard Droplet (SSH locked — key-only auth)
+
 - **IP**: 147.182.211.246
 - **Status**: SSH access lost (key-only auth, unknown key)
 - **Note**: Can be destroyed once new dashboard is confirmed working
 
 ## Discord Bot (MindMappr)
+
 - **Application Name**: MindMappr
 - **Application ID**: 1490049282525630464
 - **Public Key**: 6706fa6b815e5cc7242122afcdbd96684ad725b6da9c65db09c114bf58306053
@@ -28,6 +31,7 @@
 - **Created**: 2026-04-04
 
 ## DigitalOcean API
+
 - **Token**: [REDACTED — see vault]
 - **MindMappr App Env Vars** (set via DO dashboard or doctl):
   - `DISCORD_BOT_TOKEN` = [set in DO App Platform environment variables]
@@ -35,6 +39,7 @@
   - `DISCORD_PUBLIC_KEY` = 6706fa6b815e5cc7242122afcdbd96684ad725b6da9c65db09c114bf58306053
 
 ## GitHub
+
 - **Org**: MIDNGHTSAPPHIRE
 - **Repos**:
   - MIDNGHTSAPPHIRE/mindmappr — Bot backend
@@ -43,10 +48,12 @@
   - MIDNGHTSAPPHIRE/revvel-standards — Master standards template
 
 ## Slack
+
 - **Workspace**: RISINGALOHA
 - **Token**: [REDACTED — see vault]
 
 ## Namecheap (Domain Registrar)
+
 - **Username**: uprisinghope
 - **Password**: [REDACTED — stored in vault]
 - **Login URL**: https://www.namecheap.com/myaccount/login/

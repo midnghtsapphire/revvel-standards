@@ -10,6 +10,7 @@
 ## 1. What This Guide Is For
 
 You do not need to write code to work effectively with a Revvel application. You do need to understand how the pieces fit together so you can:
+
 - Catch errors and bugs before users do
 - Describe problems clearly so developers or AI agents can fix them instantly
 - Read documentation and understand what it means
@@ -23,17 +24,18 @@ This guide teaches you exactly that.
 
 Think of a web application like a restaurant:
 
-| Restaurant | Web App |
-|---|---|
-| Customer (diner) | User |
-| The menu | The UI (what you see on screen) |
-| Waiter | The API (carries requests between kitchen and table) |
-| Kitchen | The Backend (server — processes requests) |
-| Pantry / Refrigerator | The Database (stores all the data) |
-| Health code | Security rules |
-| Receipt | The response / confirmation |
+| Restaurant            | Web App                                              |
+| --------------------- | ---------------------------------------------------- |
+| Customer (diner)      | User                                                 |
+| The menu              | The UI (what you see on screen)                      |
+| Waiter                | The API (carries requests between kitchen and table) |
+| Kitchen               | The Backend (server — processes requests)            |
+| Pantry / Refrigerator | The Database (stores all the data)                   |
+| Health code           | Security rules                                       |
+| Receipt               | The response / confirmation                          |
 
 **When a user logs in:**
+
 1. The user fills in email and password on the screen (UI).
 2. The browser sends those values to the backend via an API request (the waiter takes the order).
 3. The backend looks up the email in the database (the kitchen checks the pantry).
@@ -50,6 +52,7 @@ Think of a web application like a restaurant:
 This is the screen — buttons, text boxes, dropdowns, images.
 
 **What to look for:**
+
 - Does the right label appear next to each field?
 - Does the placeholder text (hint text inside the box) make sense?
 - Does validation feedback appear when you type something wrong?
@@ -60,6 +63,7 @@ This is the screen — buttons, text boxes, dropdowns, images.
 - Is there a loading indicator when the app is fetching data?
 
 **How to report a UI bug:**
+
 > "On the [Page Name] screen, the [Field Name] field (FM-ID if known) shows [what you see] but I expected to see [what you expected]. Steps to reproduce: 1. Go to [URL]. 2. [Action]. 3. [What happened]."
 
 ---
@@ -67,11 +71,13 @@ This is the screen — buttons, text boxes, dropdowns, images.
 ### Layer 2: The API (The Waiter Between UI and Database)
 
 You can't see the API directly, but you can observe its effects. When you submit a form, the API either:
+
 - Returns success → the UI shows a confirmation
 - Returns an error → the UI shows an error message
 - Times out → the UI shows a loading spinner forever, or an error
 
 **What to look for:**
+
 - Does submitting a form give you a response (either success or an error)?
 - Is the error message on screen clear and specific?
 - Does the browser's URL change after a successful submit?
@@ -80,6 +86,7 @@ You can't see the API directly, but you can observe its effects. When you submit
 **How to see API errors without coding knowledge:**
 
 On any modern browser (Chrome, Firefox, Edge):
+
 1. Press `F12` to open Developer Tools
 2. Click the **Network** tab
 3. Perform the action that seems broken (submit form, load page)
@@ -102,6 +109,7 @@ You can't access this directly without a database tool, but you can detect datab
 ## 4. Reading a Field Map (No Code Required)
 
 The field map is your rosetta stone. When something looks wrong in the app, find the field in the field map and you instantly know:
+
 - What variable name the developer used
 - What the database column is called
 - What API endpoint handles it
@@ -132,7 +140,7 @@ The `CHANGELOG.md` in every repo is your history book. It tells you what changed
 - Stripe subscription management page
 - Admin can toggle user roles
 
-### Fixed  
+### Fixed
 - Cart total was displaying in dollars instead of cents (divided by 100 now correct)
 - Email validation was not rejecting .con typos
 
@@ -144,6 +152,7 @@ The `CHANGELOG.md` in every repo is your history book. It tells you what changed
 ```
 
 **What each section means:**
+
 - **Added** → New features that didn't exist before
 - **Fixed** → Bugs that were broken and are now working correctly
 - **Changed** → Existing behavior that works differently now
@@ -164,16 +173,17 @@ DELETE /api/orders/:id
 ```
 
 **Decoding this:**
+
 - The first word (`POST`, `GET`, `PUT`, `DELETE`) is the **HTTP Method** — the type of action
 - The path after it (`/api/auth/register`) is the **endpoint** — the specific address
 
-| Method | What It Does | Real-World Analogy |
-|---|---|---|
-| `GET` | Fetch / read data | Looking something up in a filing cabinet |
-| `POST` | Create new data | Filing a new document |
-| `PUT` | Replace an entire record | Swapping out a whole document |
-| `PATCH` | Update part of a record | Editing just one field in a document |
-| `DELETE` | Remove a record | Shredding a document |
+| Method   | What It Does             | Real-World Analogy                       |
+| -------- | ------------------------ | ---------------------------------------- |
+| `GET`    | Fetch / read data        | Looking something up in a filing cabinet |
+| `POST`   | Create new data          | Filing a new document                    |
+| `PUT`    | Replace an entire record | Swapping out a whole document            |
+| `PATCH`  | Update part of a record  | Editing just one field in a document     |
+| `DELETE` | Remove a record          | Shredding a document                     |
 
 `:id` means "replace this with an actual ID". So `/api/users/abc123` means "the user with ID abc123."
 
@@ -194,6 +204,7 @@ users table:
 ```
 
 **Plain English translation:**
+
 - `id` — every user has a unique random ID (like a social security number that's never reused)
 - `email` — stored text, max 255 characters, must be unique (no two users with the same email), required
 - `first_name` — stored text, max 100 characters, optional
@@ -206,21 +217,25 @@ users table:
 ## 8. How to Read an Error Message
 
 **Frontend validation error** (appears on the form):
+
 - Location: directly under the field that failed
 - Meaning: the data you typed doesn't meet the rules
 - What to do: read the message and fix the input
 
 **Toast error** (appears briefly in a corner):
+
 - "Something went wrong" → The server returned an unexpected error. Check the Network tab.
 - "Session expired" → Log out and log back in.
 - "Already exists" → You tried to create a duplicate (e.g., an email already registered).
 
 **Browser console error** (F12 → Console tab):
+
 - Red text starting with `Error:` or `TypeError:` → A JavaScript error in the frontend code
 - `Failed to fetch` or `NetworkError` → The browser couldn't reach the backend. Check if the server is running.
 - `401 Unauthorized` → The auth token is missing or expired
 
 **Server log error** (SSH → PM2 logs):
+
 - `Cannot read property of undefined` → A variable was expected to have a value but was null
 - `relation "table_name" does not exist` → A database table is missing (migration not run)
 - `ECONNREFUSED` → The app can't connect to the database
@@ -235,7 +250,7 @@ When something goes wrong, use this template to file a bug report (in GitHub Iss
 ```
 **Bug Title:** [Short description — max 10 words]
 
-**Severity:** 
+**Severity:**
   [ ] P0 — App is unusable / data is being lost or corrupted
   [ ] P1 — Major feature broken / significant user impact
   [ ] P2 — Minor issue / workaround exists
@@ -274,12 +289,12 @@ FM-[SCREEN]-[NUMBER]
 
 The compliance rubric (`COMPLIANCE_RUBRIC.md`) is a scored checklist of everything a Revvel app must have. Think of it as a home inspection checklist.
 
-| Score | Meaning | What It Means for You |
-|---|---|---|
-| 90–100 | ✅ Compliant | App is ready to ship |
-| 70–89 | ⚠️ Conditional | App can run but has issues to fix |
-| 50–69 | 🔴 Non-Compliant | App is blocked from going live |
-| < 50 | 🚫 Critical | Immediate attention needed |
+| Score  | Meaning          | What It Means for You             |
+| ------ | ---------------- | --------------------------------- |
+| 90–100 | ✅ Compliant     | App is ready to ship              |
+| 70–89  | ⚠️ Conditional   | App can run but has issues to fix |
+| 50–69  | 🔴 Non-Compliant | App is blocked from going live    |
+| < 50   | 🚫 Critical      | Immediate attention needed        |
 
 **P0 items** are non-negotiable. If even one P0 item fails, the app cannot be deployed.
 
@@ -287,16 +302,16 @@ The compliance rubric (`COMPLIANCE_RUBRIC.md`) is a scored checklist of everythi
 
 ## 11. Quick Reference: Where to Find Everything
 
-| What You Need | Where to Find It |
-|---|---|
-| What does this word mean? | `docs/DATA_DICTIONARY.md` |
-| What fields are on this screen? | `docs/field-maps/[SCREEN]_FIELD_MAP.md` |
-| What changed in the last update? | `CHANGELOG.md` (root of repo) |
-| Why was this decision made? | `docs/adr/ADR-XXXX-*.md` |
-| How do I restart the app? | `docs/runbooks/[app-name].md` |
-| What are all the rules for this app? | `MASTER_APP_TEMPLATE.md` |
-| How do I report a bug? | Section 9 of this document |
-| How do I audit this app for compliance? | `COMPLIANCE_RUBRIC.md` |
-| What tests exist? | `tests/` directory, `TESTING_STANDARD.md` |
-| What security rules apply? | `SECURITY_STANDARD.md` |
-| How is the database structured? | `DATA_MODEL_STANDARD.md`, `db/schema.ts` |
+| What You Need                           | Where to Find It                          |
+| --------------------------------------- | ----------------------------------------- |
+| What does this word mean?               | `docs/DATA_DICTIONARY.md`                 |
+| What fields are on this screen?         | `docs/field-maps/[SCREEN]_FIELD_MAP.md`   |
+| What changed in the last update?        | `CHANGELOG.md` (root of repo)             |
+| Why was this decision made?             | `docs/adr/ADR-XXXX-*.md`                  |
+| How do I restart the app?               | `docs/runbooks/[app-name].md`             |
+| What are all the rules for this app?    | `MASTER_APP_TEMPLATE.md`                  |
+| How do I report a bug?                  | Section 9 of this document                |
+| How do I audit this app for compliance? | `COMPLIANCE_RUBRIC.md`                    |
+| What tests exist?                       | `tests/` directory, `TESTING_STANDARD.md` |
+| What security rules apply?              | `SECURITY_STANDARD.md`                    |
+| How is the database structured?         | `DATA_MODEL_STANDARD.md`, `db/schema.ts`  |

@@ -17,12 +17,12 @@ Every Revvel application ships with comprehensive automated tests. Testing is no
 
 The following coverage minimums are enforced by CI. A build that falls below any threshold fails and blocks deployment.
 
-| Metric | Minimum | Enforcement |
-|---|---|---|
-| **Statements** | 80% | CI fails below this |
-| **Branches** | 75% | CI fails below this |
-| **Functions** | 80% | CI fails below this |
-| **Lines** | 80% | CI fails below this |
+| Metric         | Minimum | Enforcement         |
+| -------------- | ------- | ------------------- |
+| **Statements** | 80%     | CI fails below this |
+| **Branches**   | 75%     | CI fails below this |
+| **Functions**  | 80%     | CI fails below this |
+| **Lines**      | 80%     | CI fails below this |
 
 These are minimums. Strive for 90%+ on all core business logic modules.
 
@@ -31,13 +31,13 @@ These are minimums. Strive for 90%+ on all core business logic modules.
 Every repo must include this coverage configuration in `vitest.config.ts`. Copy from `templates/cicd/vitest.config.ts`.
 
 ```ts
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'lcov', 'html'],
+      provider: "v8",
+      reporter: ["text", "json", "lcov", "html"],
       thresholds: {
         statements: 80,
         branches: 75,
@@ -45,13 +45,13 @@ export default defineConfig({
         lines: 80,
       },
       exclude: [
-        'node_modules/**',
-        'dist/**',
-        '.next/**',
-        '**/*.config.*',
-        '**/*.d.ts',
-        '**/types/**',
-        'tests/**',
+        "node_modules/**",
+        "dist/**",
+        ".next/**",
+        "**/*.config.*",
+        "**/*.d.ts",
+        "**/types/**",
+        "tests/**",
       ],
     },
   },
@@ -73,12 +73,14 @@ Run coverage locally: `npx vitest run --coverage`
 **Location:** `tests/unit/` or co-located as `*.test.ts` next to the source file.
 
 **What to cover:**
+
 - Happy path (valid inputs, expected outputs)
 - Edge cases (empty inputs, null, undefined, boundary values)
 - Error paths (invalid inputs, thrown exceptions)
 - Each branch of conditional logic
 
 **What NOT to test with unit tests:**
+
 - Database connections
 - HTTP endpoints (use integration tests)
 - Full rendered UIs (use E2E or component tests)
@@ -92,6 +94,7 @@ Run coverage locally: `npx vitest run --coverage`
 **Location:** `tests/integration/`
 
 **What to cover:**
+
 - Each HTTP method and route
 - Authentication/authorization checks (authenticated vs. unauthenticated requests)
 - Input validation rejection (malformed request bodies)
@@ -104,15 +107,15 @@ Run coverage locally: `npx vitest run --coverage`
 
 **Rule:** The following journeys are mandatory E2E tests for every Revvel application:
 
-| Journey | Description |
-|---|---|
-| **Auth — Sign Up** | New user creates an account successfully |
-| **Auth — Sign In** | Returning user logs in and sees their dashboard |
-| **Auth — Sign Out** | User signs out and is redirected to home |
-| **Checkout — Add to Cart** | User adds an item and views the cart |
-| **Checkout — Complete Purchase** | User completes Stripe checkout (test mode) |
-| **Admin — Access Panel** | Admin user accesses the admin panel |
-| **Admin — Toggle Feature Flag** | Admin enables/disables a feature |
+| Journey                          | Description                                     |
+| -------------------------------- | ----------------------------------------------- |
+| **Auth — Sign Up**               | New user creates an account successfully        |
+| **Auth — Sign In**               | Returning user logs in and sees their dashboard |
+| **Auth — Sign Out**              | User signs out and is redirected to home        |
+| **Checkout — Add to Cart**       | User adds an item and views the cart            |
+| **Checkout — Complete Purchase** | User completes Stripe checkout (test mode)      |
+| **Admin — Access Panel**         | Admin user accesses the admin panel             |
+| **Admin — Toggle Feature Flag**  | Admin enables/disables a feature                |
 | **Accessibility — Keyboard Nav** | All interactive elements reachable via keyboard |
 
 **Location:** `tests/e2e/`
@@ -128,12 +131,14 @@ Run coverage locally: `npx vitest run --coverage`
 **Location:** Co-located as `ComponentName.test.tsx` or in `tests/components/`.
 
 **What to cover:**
+
 - Renders without crashing (smoke test)
 - Conditional rendering branches (loading state, error state, success state)
 - User interaction handlers (click, input, form submit)
 - Accessibility attributes (aria labels, roles)
 
 **Snapshot testing policy:**
+
 - Snapshots are **PROHIBITED** for components that change frequently (navigation, forms, layouts).
 - Snapshots are **PERMITTED ONLY** for stable, leaf-level display components (icons, badges, static content blocks) where the visual output should never change unexpectedly.
 - Never commit an auto-generated snapshot without reviewing it first.
@@ -146,6 +151,7 @@ Run coverage locally: `npx vitest run --coverage`
 **Rule:** Any frontend-to-backend API call that crosses a service boundary (e.g., a Next.js frontend calling a separate Express API) requires a contract test.
 
 **Recommended tools:**
+
 - **Pact** (https://pact.io) — consumer-driven contract testing
 - **openapi-fetch + zod** — validate responses match the OpenAPI schema at runtime in tests
 
@@ -167,6 +173,7 @@ describe('ModuleName or ComponentName', () => {
 ```
 
 **Examples (correct):**
+
 ```ts
 describe('calculateTotal', () => {
   it('should return the sum of all item prices', () => { ... });
@@ -176,6 +183,7 @@ describe('calculateTotal', () => {
 ```
 
 **Examples (incorrect — do not use):**
+
 ```ts
 it('test 1', () => { ... });
 it('works', () => { ... });
@@ -188,14 +196,14 @@ it('calculateTotal', () => { ... });
 
 ### 5.1. What to Mock
 
-| Thing to Mock | Tool | Notes |
-|---|---|---|
-| External HTTP APIs | `vi.mock` + `msw` (Mock Service Worker) | Mock at the network layer, not the code layer |
-| Database | In-memory SQLite for integration tests, `vi.mock` for unit tests | Never connect to the real production DB in tests |
-| Time / Date | `vi.useFakeTimers()` | Always reset after the test with `vi.useRealTimers()` |
-| File system | `memfs` or `vi.mock('fs')` | Do not read/write real files in unit tests |
-| Auth (Clerk) | Mock the Clerk auth helper, not the entire SDK | |
-| Environment variables | Set in `vitest.config.ts` `env` block | Never read `.env` files in tests |
+| Thing to Mock         | Tool                                                             | Notes                                                 |
+| --------------------- | ---------------------------------------------------------------- | ----------------------------------------------------- |
+| External HTTP APIs    | `vi.mock` + `msw` (Mock Service Worker)                          | Mock at the network layer, not the code layer         |
+| Database              | In-memory SQLite for integration tests, `vi.mock` for unit tests | Never connect to the real production DB in tests      |
+| Time / Date           | `vi.useFakeTimers()`                                             | Always reset after the test with `vi.useRealTimers()` |
+| File system           | `memfs` or `vi.mock('fs')`                                       | Do not read/write real files in unit tests            |
+| Auth (Clerk)          | Mock the Clerk auth helper, not the entire SDK                   |                                                       |
+| Environment variables | Set in `vitest.config.ts` `env` block                            | Never read `.env` files in tests                      |
 
 ### 5.2. What NOT to Mock
 
@@ -209,21 +217,21 @@ Mock Service Worker (MSW) is the mandatory tool for intercepting HTTP requests i
 
 ```ts
 // tests/mocks/handlers.ts
-import { http, HttpResponse } from 'msw';
+import { http, HttpResponse } from "msw";
 
 export const handlers = [
-  http.get('/api/products', () => {
-    return HttpResponse.json([{ id: 1, name: 'Test Product', price: 100 }]);
+  http.get("/api/products", () => {
+    return HttpResponse.json([{ id: 1, name: "Test Product", price: 100 }]);
   }),
 ];
 
 // tests/mocks/setup.ts
-import { setupServer } from 'msw/node';
-import { handlers } from './handlers';
+import { setupServer } from "msw/node";
+import { handlers } from "./handlers";
 
 export const server = setupServer(...handlers);
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 ```
@@ -234,12 +242,12 @@ afterAll(() => server.close());
 
 Every Revvel web application must meet the following Lighthouse scores on every deployment. Lighthouse CI is configured as a required GitHub Actions check.
 
-| Category | Minimum Score | Notes |
-|---|---|---|
-| **Performance** | 90 | Measured on a simulated 4G connection |
-| **Accessibility** | 95 | See `ACCESSIBILITY_STANDARD.md` for detail |
-| **Best Practices** | 90 | |
-| **SEO** | 95 | Required for organic growth strategy |
+| Category           | Minimum Score | Notes                                      |
+| ------------------ | ------------- | ------------------------------------------ |
+| **Performance**    | 90            | Measured on a simulated 4G connection      |
+| **Accessibility**  | 95            | See `ACCESSIBILITY_STANDARD.md` for detail |
+| **Best Practices** | 90            |                                            |
+| **SEO**            | 95            | Required for organic growth strategy       |
 
 **Configuration:** Add `.lighthouserc.json` to repo root:
 
@@ -343,6 +351,7 @@ The following test patterns have been proven in the GrowlingEyes project and are
 ### 10.1. Field Validation Tests
 
 Every database table must have a corresponding field validation test that checks:
+
 - Required field presence (null/empty rejection)
 - Range validation (lat/lon, scores, numeric bounds)
 - Timestamp validity
@@ -352,17 +361,18 @@ Every database table must have a corresponding field validation test that checks
 **Template:** `templates/testing/field-validation.test.ts`
 
 **Example pattern (from GrowlingEyes):**
+
 ```ts
-describe('reports field validation', () => {
-  it('should reject insert when title is null', async () => {
+describe("reports field validation", () => {
+  it("should reject insert when title is null", async () => {
     await expect(
-      db.insert(reports).values({ title: null, ...otherFields })
+      db.insert(reports).values({ title: null, ...otherFields }),
     ).rejects.toThrow();
   });
 
-  it('should reject severity outside valid enum values', () => {
-    const VALID_SEVERITIES = ['low', 'medium', 'high', 'critical'];
-    expect(VALID_SEVERITIES.includes('invalid')).toBe(false);
+  it("should reject severity outside valid enum values", () => {
+    const VALID_SEVERITIES = ["low", "medium", "high", "critical"];
+    expect(VALID_SEVERITIES.includes("invalid")).toBe(false);
   });
 });
 ```
@@ -370,6 +380,7 @@ describe('reports field validation', () => {
 ### 10.2. UI-to-DB Shape Validation Tests
 
 Every API endpoint or tRPC procedure must have a shape validation test that:
+
 - Mocks the database layer
 - Asserts the response shape matches exactly what the UI components expect
 - Verifies authentication guards (unauthenticated → 401)
@@ -382,6 +393,7 @@ Every API endpoint or tRPC procedure must have a shape validation test that:
 ### 10.3. E2E Data-Void Tests (Playwright)
 
 Every page must have an E2E test that verifies:
+
 - The page returns HTTP 200
 - No JavaScript console errors on load
 - The main content panel is visible and NOT showing "Loading..."
@@ -424,19 +436,20 @@ The **Human Testing API** is an AI-powered behavioral testing layer that simulat
 
 The Human Testing API dispatches 5 parallel S.H.I.F.T.-aligned AI agents, each evaluating a distinct dimension:
 
-| Agent | Dimension | Evaluates |
-|---|---|---|
-| **Functional** | Feature correctness | Page loads, auth flow, happy-path journeys, API response times |
-| **Accessibility** | Neuro-inclusive design | WCAG 2.2 AA, predictability, sensory control, calm microcopy |
-| **Resilience** | Fault tolerance | API outage handling, empty states, slow network, session expiry |
-| **Behavioral** | S.H.I.F.T. compliance | Memory, Reflection, Planning, Action, System Reliability |
-| **Performance** | Lighthouse budget | Core Web Vitals, LCP/CLS/INP, Lighthouse score thresholds |
+| Agent             | Dimension              | Evaluates                                                       |
+| ----------------- | ---------------------- | --------------------------------------------------------------- |
+| **Functional**    | Feature correctness    | Page loads, auth flow, happy-path journeys, API response times  |
+| **Accessibility** | Neuro-inclusive design | WCAG 2.2 AA, predictability, sensory control, calm microcopy    |
+| **Resilience**    | Fault tolerance        | API outage handling, empty states, slow network, session expiry |
+| **Behavioral**    | S.H.I.F.T. compliance  | Memory, Reflection, Planning, Action, System Reliability        |
+| **Performance**   | Lighthouse budget      | Core Web Vitals, LCP/CLS/INP, Lighthouse score thresholds       |
 
 A synthesizer agent aggregates all findings into a single structured report with a PASS / FAIL / NEEDS_WORK verdict, prioritized fix list, and re-test checklist.
 
 ### 11.2. When to Run
 
 Run the Human Testing API:
+
 - Before any production deployment of a new major feature
 - After significant UI or API changes
 - When the S.H.I.F.T. Monitor detects recurring failures
@@ -445,10 +458,12 @@ Run the Human Testing API:
 ### 11.3. Setup
 
 **Requirements:**
+
 - `OPENROUTER_API_KEY` GitHub Secret (get key at https://openrouter.ai)
 - The `scripts/run-human-testing-api.js` script in your repo
 
 **One-time setup for any Revvel app:**
+
 ```bash
 # Copy the workflow template
 cp node_modules/@revvel/standards/templates/cicd/run-human-testing-api.yml .github/workflows/
@@ -468,18 +483,21 @@ Then add your `OPENROUTER_API_KEY` to GitHub Secrets:
 ### 11.4. Running the Human Testing API
 
 **Via GitHub Actions (recommended):**
+
 1. Go to `Actions → Human Testing API → Run workflow`
 2. Enter your target URL (e.g., `https://yourapp.com`)
 3. Enter the app name and output file path
 4. Click **Run workflow**
 
 The workflow will:
+
 1. Run 5 AI test agents in parallel (~60–120 seconds)
 2. Synthesize findings into a structured Markdown report
 3. Commit the report to your repository
 4. Optionally open a GitHub Issue with a summary
 
 **Via command line:**
+
 ```bash
 OPENROUTER_API_KEY=sk-or-... \
 TARGET_URL="https://yourapp.com" \
@@ -504,11 +522,11 @@ The Human Testing API produces a report at the specified `OUTPUT_FILE` with thes
 
 ### 11.6. Workflow and Script Locations
 
-| File | Purpose |
-|---|---|
-| `scripts/run-human-testing-api.js` | Core script — calls OpenRouter AI agents |
-| `.github/workflows/run-human-testing-api.yml` | Workflow for this standards repo |
-| `templates/cicd/run-human-testing-api.yml` | Template to copy into any app repo |
+| File                                          | Purpose                                  |
+| --------------------------------------------- | ---------------------------------------- |
+| `scripts/run-human-testing-api.js`            | Core script — calls OpenRouter AI agents |
+| `.github/workflows/run-human-testing-api.yml` | Workflow for this standards repo         |
+| `templates/cicd/run-human-testing-api.yml`    | Template to copy into any app repo       |
 
 ---
 
@@ -518,13 +536,13 @@ The Human Testing API produces a report at the specified `OUTPUT_FILE` with thes
 
 ### 12.1. Why mabl
 
-| Capability | Detail |
-|---|---|
-| AI-generated tests | mabl auto-generates and self-heals tests as the UI changes |
-| E2E browser testing | Chrome, Firefox, WebKit, Edge — cloud-parallel execution |
-| API testing | REST/GraphQL test plans triggered by CI/CD events |
-| Visual regression | Screenshot diffing with AI-powered dynamic-area detection |
-| GitHub integration | PR status checks, deployment events, test result comments |
+| Capability          | Detail                                                     |
+| ------------------- | ---------------------------------------------------------- |
+| AI-generated tests  | mabl auto-generates and self-heals tests as the UI changes |
+| E2E browser testing | Chrome, Firefox, WebKit, Edge — cloud-parallel execution   |
+| API testing         | REST/GraphQL test plans triggered by CI/CD events          |
+| Visual regression   | Screenshot diffing with AI-powered dynamic-area detection  |
+| GitHub integration  | PR status checks, deployment events, test result comments  |
 
 ### 12.2. Required Secrets and Variables
 
@@ -532,17 +550,17 @@ The workflow uses the **shared Revvel GitHub App** for GitHub authentication, co
 
 **Repository Secrets:**
 
-| Secret Name | Where to Get It |
-|---|---|
-| `APP_ID` | Shared Revvel GitHub App — already used by other workflows |
-| `APP_PRIVATE_KEY` | Shared Revvel GitHub App — already used by other workflows |
-| `MABL_API_KEY` | [mabl API Settings](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis) → Create a **"CI/CD Integration"** key |
+| Secret Name       | Where to Get It                                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `APP_ID`          | Shared Revvel GitHub App — already used by other workflows                                                                         |
+| `APP_PRIVATE_KEY` | Shared Revvel GitHub App — already used by other workflows                                                                         |
+| `MABL_API_KEY`    | [mabl API Settings](https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis) → Create a **"CI/CD Integration"** key |
 
 **Repository Variables:**
 
-| Variable Name | Where to Get It |
-|---|---|
-| `MABL_APPLICATION_ID` | mabl Dashboard → Applications → select app → copy ID |
+| Variable Name         | Where to Get It                                              |
+| --------------------- | ------------------------------------------------------------ |
+| `MABL_APPLICATION_ID` | mabl Dashboard → Applications → select app → copy ID         |
 | `MABL_ENVIRONMENT_ID` | mabl Dashboard → Environments → select environment → copy ID |
 
 > **Note:** `APP_ID` and `APP_PRIVATE_KEY` are already in place if other Revvel workflows (Research Module, Human Testing API) are active. Either `MABL_APPLICATION_ID` or `MABL_ENVIRONMENT_ID` must be set. The workflow gracefully skips (exit 0) if `MABL_API_KEY` is absent.
@@ -566,10 +584,10 @@ The workflow installs the mabl CLI (`npm install -g @mablhq/mabl-cli`), authenti
 
 ### 12.5. Workflow and Dashboard Links
 
-| Resource | URL |
-|---|---|
-| mabl Workspace | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w |
-| mabl Agent Tasks | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks |
+| Resource          | URL                                                                    |
+| ----------------- | ---------------------------------------------------------------------- |
+| mabl Workspace    | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w               |
+| mabl Agent Tasks  | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks  |
 | mabl API Settings | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis |
-| mabl CLI (npm) | https://www.npmjs.com/package/@mablhq/mabl-cli |
-| Workflow file | `.github/workflows/mabl.yml` |
+| mabl CLI (npm)    | https://www.npmjs.com/package/@mablhq/mabl-cli                         |
+| Workflow file     | `.github/workflows/mabl.yml`                                           |

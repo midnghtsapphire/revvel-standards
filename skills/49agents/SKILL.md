@@ -16,6 +16,7 @@ This skill enables AI agents to integrate with **49Agents**, an open-source "age
 ## When to Load This Skill
 
 Load this skill when:
+
 - Setting up 49Agents integration
 - Configuring visual agent dashboards
 - Implementing parallel research workflows

@@ -25,25 +25,25 @@ Each of those requires a separate delivery workflow wired to the same WR trigger
 
 ## Delivery Matrix
 
-| Output type | Trigger label | Agent action | Key toolchain | Auto or manual | Failure signal |
-|---|---|---|---|---|---|
-| **PDF / Report** | `deliver:pdf` | Render markdown/HTML to PDF, attach to PR or release | `pandoc`, `weasyprint`, `puppeteer`, GitHub Release asset | Auto | Missing release asset → comment on PR |
-| **API (REST/GraphQL)** | `deliver:api` | Deploy to cloud, run smoke test, return live URL | Vercel, Railway, Render, Fly.io, AWS Lambda | Auto | Health check fails → comment + block merge |
-| **App (web)** | `deliver:app` | Build bundle, deploy to CDN or hosting, return preview URL | Vercel, Netlify, Cloudflare Pages, Firebase Hosting | Auto | Deploy fails or build errors → comment on PR |
-| **App (mobile)** | `deliver:mobile` | Build iOS/Android, upload to TestFlight / Play internal | Fastlane, Expo EAS, Bitrise | Semi-auto | Build failure → comment, human submits to store |
-| **CLI tool** | `deliver:cli` | Build binary, publish to npm/PyPI/Homebrew, or attach to GitHub Release | `pkg`, `pyinstaller`, `ncc`, `oclif`, npm publish | Auto | Publish fails → comment with error |
-| **npm / PyPI package** | `deliver:package` | Bump version, tag release, publish to registry | `semantic-release`, `release-please`, `twine`, `npm publish` | Auto | Registry auth fails → comment, human publishes |
-| **PowerPoint / Deck** | `deliver:deck` | Generate PPTX/slide deck, export PDF if needed, attach artifact or publish deck link | `pptxgenjs`, Google Slides API, Marp/Reveal export | Auto | Deck render/export fails → comment with artifact gap |
-| **Video / Demo** | `deliver:video` | Record screen or render from script, upload to YouTube/S3 | `ffmpeg`, `playwright` screen recording, `remotion`, `manim` | Semi-auto | Render fails → comment, human records |
-| **MCP server** | `deliver:mcp` | Package server, register with MCP registry or deploy as endpoint, update manifest | Docker, Fly.io, MCP SDK, `mcp.json` manifest | Auto | Registration fails → comment with manifest diff |
-| **Chrome extension** | `deliver:extension` | Zip, validate manifest, upload to Chrome Web Store draft | `web-ext`, CWS Upload API | Semi-auto | Validation fails → comment with lint output |
-| **VS Code extension** | `deliver:vscode` | Build VSIX, publish to VS Marketplace | `vsce`, `@vscode/vsce` | Auto | Publish fails → comment with VSCE output |
-| **GitHub Action** | `deliver:action` | Tag release, update `action.yml`, publish to GitHub Marketplace | `release-please`, GitHub Release | Auto | Missing `action.yml` → comment |
-| **Docker image** | `deliver:docker` | Build image, push to registry (GHCR, Docker Hub, ECR) | `docker buildx`, `ghcr.io`, `docker push` | Auto | Push fails → comment with build log |
-| **Documentation site** | `deliver:docs` | Build from markdown/JSDoc/OpenAPI spec, deploy to GitHub Pages or Vercel | `docusaurus`, `mintlify`, `nextra`, `mkdocs` | Auto | Build fails or broken links → comment |
-| **OpenAPI spec** | `deliver:openapi` | Generate/validate spec, publish to API gateway or docs | `swagger-ui`, `redoc`, `zod-to-openapi`, `openapi-generator` | Auto | Spec validation errors → comment |
-| **Database migration** | `deliver:migration` | Run migration in staging, validate schema, await human approval for prod | `prisma migrate`, `alembic`, `flyway` | Semi-auto | Migration fails → block deploy, comment |
-| **Marketplace listing** | `deliver:marketplace` | Draft listing copy, screenshots, metadata — human reviews and publishes | Notion/Linear draft, store-specific tools | Manual | N/A — human always reviews before submit |
+| Output type             | Trigger label         | Agent action                                                                         | Key toolchain                                                | Auto or manual | Failure signal                                       |
+| ----------------------- | --------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------ | -------------- | ---------------------------------------------------- |
+| **PDF / Report**        | `deliver:pdf`         | Render markdown/HTML to PDF, attach to PR or release                                 | `pandoc`, `weasyprint`, `puppeteer`, GitHub Release asset    | Auto           | Missing release asset → comment on PR                |
+| **API (REST/GraphQL)**  | `deliver:api`         | Deploy to cloud, run smoke test, return live URL                                     | Vercel, Railway, Render, Fly.io, AWS Lambda                  | Auto           | Health check fails → comment + block merge           |
+| **App (web)**           | `deliver:app`         | Build bundle, deploy to CDN or hosting, return preview URL                           | Vercel, Netlify, Cloudflare Pages, Firebase Hosting          | Auto           | Deploy fails or build errors → comment on PR         |
+| **App (mobile)**        | `deliver:mobile`      | Build iOS/Android, upload to TestFlight / Play internal                              | Fastlane, Expo EAS, Bitrise                                  | Semi-auto      | Build failure → comment, human submits to store      |
+| **CLI tool**            | `deliver:cli`         | Build binary, publish to npm/PyPI/Homebrew, or attach to GitHub Release              | `pkg`, `pyinstaller`, `ncc`, `oclif`, npm publish            | Auto           | Publish fails → comment with error                   |
+| **npm / PyPI package**  | `deliver:package`     | Bump version, tag release, publish to registry                                       | `semantic-release`, `release-please`, `twine`, `npm publish` | Auto           | Registry auth fails → comment, human publishes       |
+| **PowerPoint / Deck**   | `deliver:deck`        | Generate PPTX/slide deck, export PDF if needed, attach artifact or publish deck link | `pptxgenjs`, Google Slides API, Marp/Reveal export           | Auto           | Deck render/export fails → comment with artifact gap |
+| **Video / Demo**        | `deliver:video`       | Record screen or render from script, upload to YouTube/S3                            | `ffmpeg`, `playwright` screen recording, `remotion`, `manim` | Semi-auto      | Render fails → comment, human records                |
+| **MCP server**          | `deliver:mcp`         | Package server, register with MCP registry or deploy as endpoint, update manifest    | Docker, Fly.io, MCP SDK, `mcp.json` manifest                 | Auto           | Registration fails → comment with manifest diff      |
+| **Chrome extension**    | `deliver:extension`   | Zip, validate manifest, upload to Chrome Web Store draft                             | `web-ext`, CWS Upload API                                    | Semi-auto      | Validation fails → comment with lint output          |
+| **VS Code extension**   | `deliver:vscode`      | Build VSIX, publish to VS Marketplace                                                | `vsce`, `@vscode/vsce`                                       | Auto           | Publish fails → comment with VSCE output             |
+| **GitHub Action**       | `deliver:action`      | Tag release, update `action.yml`, publish to GitHub Marketplace                      | `release-please`, GitHub Release                             | Auto           | Missing `action.yml` → comment                       |
+| **Docker image**        | `deliver:docker`      | Build image, push to registry (GHCR, Docker Hub, ECR)                                | `docker buildx`, `ghcr.io`, `docker push`                    | Auto           | Push fails → comment with build log                  |
+| **Documentation site**  | `deliver:docs`        | Build from markdown/JSDoc/OpenAPI spec, deploy to GitHub Pages or Vercel             | `docusaurus`, `mintlify`, `nextra`, `mkdocs`                 | Auto           | Build fails or broken links → comment                |
+| **OpenAPI spec**        | `deliver:openapi`     | Generate/validate spec, publish to API gateway or docs                               | `swagger-ui`, `redoc`, `zod-to-openapi`, `openapi-generator` | Auto           | Spec validation errors → comment                     |
+| **Database migration**  | `deliver:migration`   | Run migration in staging, validate schema, await human approval for prod             | `prisma migrate`, `alembic`, `flyway`                        | Semi-auto      | Migration fails → block deploy, comment              |
+| **Marketplace listing** | `deliver:marketplace` | Draft listing copy, screenshots, metadata — human reviews and publishes              | Notion/Linear draft, store-specific tools                    | Manual         | N/A — human always reviews before submit             |
 
 ---
 
@@ -133,14 +133,14 @@ Label: `deliver:video`. Failure path: workflow comments with recording checklist
 
 Most WR routing profiles map naturally to one or more delivery types:
 
-| Routing profile | Most likely delivery types |
-|---|---|
-| `repo_surgery` | `deliver:api`, `deliver:docker`, `deliver:migration` |
-| `cheap_batch_edits` | `deliver:package`, `deliver:docs`, `deliver:openapi` |
-| `hard_debug` | `deliver:api` (re-deploy after fix), `deliver:pdf` (incident report) |
-| New feature | `deliver:app`, `deliver:api`, `deliver:docs`, `deliver:video` |
-| CLI tool | `deliver:cli`, `deliver:package`, `deliver:docs` |
-| MCP integration | `deliver:mcp`, `deliver:docs`, `deliver:openapi` |
+| Routing profile     | Most likely delivery types                                           |
+| ------------------- | -------------------------------------------------------------------- |
+| `repo_surgery`      | `deliver:api`, `deliver:docker`, `deliver:migration`                 |
+| `cheap_batch_edits` | `deliver:package`, `deliver:docs`, `deliver:openapi`                 |
+| `hard_debug`        | `deliver:api` (re-deploy after fix), `deliver:pdf` (incident report) |
+| New feature         | `deliver:app`, `deliver:api`, `deliver:docs`, `deliver:video`        |
+| CLI tool            | `deliver:cli`, `deliver:package`, `deliver:docs`                     |
+| MCP integration     | `deliver:mcp`, `deliver:docs`, `deliver:openapi`                     |
 
 ---
 
@@ -150,7 +150,9 @@ Add this section to the existing WR template to capture delivery intent at the t
 
 ```markdown
 ## Delivery targets
+
 <!-- Check all that apply — these labels will trigger the matching delivery workflows after merge -->
+
 - [ ] `deliver:api` — deploy live endpoint, return URL
 - [ ] `deliver:app` — deploy web app, return preview URL
 - [ ] `deliver:cli` — publish binary or npm/PyPI package
@@ -168,6 +170,7 @@ Add this section to the existing WR template to capture delivery intent at the t
 - [ ] `deliver:migration` — run and validate database migration
 
 **If `deliver:video` is selected:**
+
 - format: demo / training / review / YouTube / news-brand
 - target length: <60s / 1–5 min / 5–15 min / 15+ min
 

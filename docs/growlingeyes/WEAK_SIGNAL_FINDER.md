@@ -164,13 +164,13 @@ python growlingeyes/tools/weak_signal_finder.py --daemon --interval 21600
 
 ### CLI Options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `--domains` | list | all | Intelligence domains to scan |
-| `--threshold` | int | 2 | Minimum word frequency to include |
-| `--output` | str | auto | Output JSON file path |
-| `--daemon` | flag | false | Run continuously in daemon mode |
-| `--interval` | int | 3600 | Seconds between scans in daemon mode |
+| Option        | Type | Default | Description                          |
+| ------------- | ---- | ------- | ------------------------------------ |
+| `--domains`   | list | all     | Intelligence domains to scan         |
+| `--threshold` | int  | 2       | Minimum word frequency to include    |
+| `--output`    | str  | auto    | Output JSON file path                |
+| `--daemon`    | flag | false   | Run continuously in daemon mode      |
+| `--interval`  | int  | 3600    | Seconds between scans in daemon mode |
 
 ---
 
@@ -211,16 +211,16 @@ python growlingeyes/tools/weak_signal_finder.py --daemon --interval 21600
 
 ### Field Reference
 
-| Field | Type | Description |
-|---|---|---|
-| `domain` | string | Intelligence domain (cyber, maritime, etc.) |
-| `signal_timestamp` | string | ISO 8601 timestamp of signal detection |
-| `signal_score` | float | Signal strength score (0-100) |
-| `article_count` | int | Number of articles analyzed |
-| `job_id` | string | Unique job identifier (YYYYMMDDHHMMSS) |
-| `top_emerging_themes` | array | Top 10 most frequent terms |
-| `intensity_words` | object | Word frequency scores (top 30) |
-| `contextual_pairs` | array | Word pairs that co-occur frequently |
+| Field                 | Type   | Description                                 |
+| --------------------- | ------ | ------------------------------------------- |
+| `domain`              | string | Intelligence domain (cyber, maritime, etc.) |
+| `signal_timestamp`    | string | ISO 8601 timestamp of signal detection      |
+| `signal_score`        | float  | Signal strength score (0-100)               |
+| `article_count`       | int    | Number of articles analyzed                 |
+| `job_id`              | string | Unique job identifier (YYYYMMDDHHMMSS)      |
+| `top_emerging_themes` | array  | Top 10 most frequent terms                  |
+| `intensity_words`     | object | Word frequency scores (top 30)              |
+| `contextual_pairs`    | array  | Word pairs that co-occur frequently         |
 
 ---
 
@@ -299,7 +299,7 @@ Add domain-specific stopwords to filter out noise:
 STOPWORDS = {
     # Default stopwords
     "a", "an", "the", "and", "or", ...
-    
+
     # Add your custom stopwords
     "custom_word_1",
     "custom_word_2",
@@ -357,6 +357,7 @@ def score_signal_strength(intensity: dict[str, int], pairs: list[tuple[str, str]
 **Symptoms:** Output shows "No weak signals detected"
 
 **Solutions:**
+
 - Lower the `--threshold` parameter (try `--threshold 1`)
 - Check that RSS feeds are accessible (network connectivity)
 - Verify feed URLs are returning valid RSS/XML
@@ -367,6 +368,7 @@ def score_signal_strength(intensity: dict[str, int], pairs: list[tuple[str, str]
 **Symptoms:** All signals have scores below 20
 
 **Solutions:**
+
 - Increase the number of feeds per domain
 - Adjust the scoring algorithm weights
 - Lower the threshold to include more terms
@@ -377,6 +379,7 @@ def score_signal_strength(intensity: dict[str, int], pairs: list[tuple[str, str]
 **Symptoms:** High memory usage or crashes
 
 **Solutions:**
+
 - Process domains sequentially instead of in parallel
 - Reduce the number of articles fetched per feed
 - Clear logs periodically
@@ -387,6 +390,7 @@ def score_signal_strength(intensity: dict[str, int], pairs: list[tuple[str, str]
 **Symptoms:** Errors in logs about unreachable feeds
 
 **Solutions:**
+
 - Check network connectivity
 - Verify feed URLs are still valid (sites may have changed URLs)
 - Add retry logic with exponential backoff
@@ -398,15 +402,15 @@ def score_signal_strength(intensity: dict[str, int], pairs: list[tuple[str, str]
 
 The GrowlingEyes implementation differs from the original in several ways:
 
-| Feature | Original | GrowlingEyes |
-|---|---|---|
-| **Language support** | Multi-language (spaCy models) | English-focused (simplified) |
-| **Database** | SQLite with full history | JSON output (optionally to PostgreSQL) |
-| **NLP library** | spaCy with lemmatization | Basic text processing (no external NLP) |
-| **Feed sources** | User-configured JSON | Pre-configured OSINT domains |
-| **Output format** | Newline-delimited JSON | Single JSON array |
-| **Scheduling** | Manual runs | Built-in daemon mode |
-| **Focus** | Generic weak signal detection | Intelligence-specific domains |
+| Feature              | Original                      | GrowlingEyes                            |
+| -------------------- | ----------------------------- | --------------------------------------- |
+| **Language support** | Multi-language (spaCy models) | English-focused (simplified)            |
+| **Database**         | SQLite with full history      | JSON output (optionally to PostgreSQL)  |
+| **NLP library**      | spaCy with lemmatization      | Basic text processing (no external NLP) |
+| **Feed sources**     | User-configured JSON          | Pre-configured OSINT domains            |
+| **Output format**    | Newline-delimited JSON        | Single JSON array                       |
+| **Scheduling**       | Manual runs                   | Built-in daemon mode                    |
+| **Focus**            | Generic weak signal detection | Intelligence-specific domains           |
 
 **Why the differences?**
 

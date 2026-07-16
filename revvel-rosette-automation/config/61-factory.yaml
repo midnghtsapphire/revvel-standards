@@ -4,7 +4,7 @@
 factory:
   name: "Revvel Rosette Agent Factory"
   version: "1.0.0"
-  
+
   # Orchestrator settings
   orchestrator:
     enabled: true
@@ -12,7 +12,7 @@ factory:
     task_timeout_minutes: 30
     retry_attempts: 3
     retry_delay_seconds: 60
-    
+
   # Agent types and their configurations
   agents:
     - name: orchestrator
@@ -25,7 +25,7 @@ factory:
         - task_dispatch
         - resource_allocation
         - reporting
-        
+
     - name: scheduler
       type: automation
       model: gpt-4.1
@@ -35,7 +35,7 @@ factory:
         - cron_management
         - task_scheduling
         - queue_management
-        
+
     - name: gatekeeper
       type: security
       model: claude-sonnet-4
@@ -45,7 +45,7 @@ factory:
         - secret_management
         - access_control
         - credential_rotation
-        
+
     - name: self-healer
       type: monitoring
       model: gpt-4.1
@@ -55,7 +55,7 @@ factory:
         - error_detection
         - auto_remediation
         - health_checks
-        
+
     - name: researcher
       type: research
       model: claude-opus-4.5
@@ -65,7 +65,7 @@ factory:
         - market_research
         - technology_evaluation
         - competitive_analysis
-        
+
     - name: blueprint-generator
       type: design
       model: claude-sonnet-4.5
@@ -75,7 +75,7 @@ factory:
         - architecture_design
         - documentation_generation
         - diagram_creation
-        
+
     - name: marketing
       type: marketing
       model: gpt-5.5
@@ -95,13 +95,13 @@ factory:
       - "anthropic/claude-sonnet-4.5"
       - "openai/gpt-4.1"
       - "google/gemini-2.5-pro"
-    
+
   # Resource limits
   resources:
     max_tokens_per_request: 8000
     max_requests_per_minute: 60
     max_cost_per_day_usd: 50.00
-    
+
   # Logging and monitoring
   logging:
     level: INFO

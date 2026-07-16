@@ -27,7 +27,7 @@ scripts/subscription-tracker.js   ← pure verdict engine (trial-expiry / renewa
   repositories it applies to, and where to manage it. See the field reference at
   the top of that file.
 - **`scripts/subscription-tracker.js`** — computes, per subscription, the
-  *effective due date* (a trial's `trial_end` while on trial, otherwise
+  _effective due date_ (a trial's `trial_end` while on trial, otherwise
   `renewal_date`) and a verdict: `ok`, `due_soon`, `expired`, `unknown`, or
   `cancelled`. All logic is pure and clock-injectable, and is unit-tested in
   `tests/subscription-tracker.test.js`.

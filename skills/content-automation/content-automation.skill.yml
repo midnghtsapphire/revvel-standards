@@ -43,7 +43,7 @@ triggers:
     - content:draft
     - content:final
   schedule:
-    - cron: "0 9 * * 0"  # Weekly Sunday 09:00 UTC
+    - cron: "0 9 * * 0" # Weekly Sunday 09:00 UTC
       description: "Generate weekly content ideas and calendar"
 
 dependencies:

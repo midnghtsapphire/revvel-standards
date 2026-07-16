@@ -13,30 +13,32 @@ For autonomous agents (like the "Scarecrow" persona) or human developers, the DA
 
 Every major issue, decision, or agent failure must be tracked using the DARE format:
 
-* **D - Define:** Clearly state the problem or decision needed. (e.g., "The Plaid API integration is timing out during the sync phase.")
-* **A - Assess:** Evaluate potential outcomes and impacts of different choices. (e.g., "Impact: High. If Plaid fails, the Tin Man agent cannot assess financial stress. Option 1: Increase timeout. Option 2: Implement retry logic.")
-* **R - Respond:** Implement the chosen action or solution. (e.g., "Implemented exponential backoff retry logic for the Plaid API call.")
-* **E - Evaluate:** Reflect on the decision afterward to improve future choices. (e.g., "Retry logic solved 95% of timeouts. Need to add a graceful degradation UI state for the remaining 5%.") [1]
+- **D - Define:** Clearly state the problem or decision needed. (e.g., "The Plaid API integration is timing out during the sync phase.")
+- **A - Assess:** Evaluate potential outcomes and impacts of different choices. (e.g., "Impact: High. If Plaid fails, the Tin Man agent cannot assess financial stress. Option 1: Increase timeout. Option 2: Implement retry logic.")
+- **R - Respond:** Implement the chosen action or solution. (e.g., "Implemented exponential backoff retry logic for the Plaid API call.")
+- **E - Evaluate:** Reflect on the decision afterward to improve future choices. (e.g., "Retry logic solved 95% of timeouts. Need to add a graceful degradation UI state for the remaining 5%.") [1]
 
 ## 3. Integration with Task Management (e.g., monday.com)
 
 Modern platforms like monday.com have moved away from rigid acronyms (like "User Stories") in favor of flexible terminology. [3]
 
-* **Custom Terminology:** Do not use outdated terms like "User Stories." Customize your board terminology to reflect actual workflow items (e.g., "Tasks," "Tickets," "Sprints," or "Agent Runs"). [4]
-* **Kanban Flow:** Track DARE items on a Kanban board focusing on the flow of resolution (To-Do, Doing, Done) rather than maintaining a static list.
+- **Custom Terminology:** Do not use outdated terms like "User Stories." Customize your board terminology to reflect actual workflow items (e.g., "Tasks," "Tickets," "Sprints," or "Agent Runs"). [4]
+- **Kanban Flow:** Track DARE items on a Kanban board focusing on the flow of resolution (To-Do, Doing, Done) rather than maintaining a static list.
 
 ## 4. The S.M.A.R.T.E.R. Agent Management Approach
 
 When assigning tasks to agents, hitting "0 errors" is not enough if the actual functionality is missing. To prevent agents from missing steps or failing at handoffs, use the **S.H.I.F.T.** (Self-Healing Intent-Focused Tasks) methodology, supported by these principles: [5]
 
-* **S - Spec-First:** Every task starts with a Technical Design Spec written by the agent first, ensuring it understands the "why" before the "how".
-* **H - Handoff Contracts:** Treat the boundary between tasks (or between different agents) like a rigid API contract to prevent "missed steps". Most failures occur at the handoff layer. [6]
-* **I - Intent Validation:** Don't just test if it runs (0 errors); test if it did what the user wanted (Behavioral Evaluation).
-* **F - Feedback Loop:** When an agent fails, it must Reflect on the error and update the prompt/instruction for the next run.
-* **T - Tiered Oversight:** Use Human-in-the-Loop (HITL) for complex steps, while automating the simple ones. [7]
+- **S - Spec-First:** Every task starts with a Technical Design Spec written by the agent first, ensuring it understands the "why" before the "how".
+- **H - Handoff Contracts:** Treat the boundary between tasks (or between different agents) like a rigid API contract to prevent "missed steps". Most failures occur at the handoff layer. [6]
+- **I - Intent Validation:** Don't just test if it runs (0 errors); test if it did what the user wanted (Behavioral Evaluation).
+- **F - Feedback Loop:** When an agent fails, it must Reflect on the error and update the prompt/instruction for the next run.
+- **T - Tiered Oversight:** Use Human-in-the-Loop (HITL) for complex steps, while automating the simple ones. [7]
 
 ---
+
 ### References
+
 [1] Study.com: The DARE Decision Making Model - https://study.com/academy/lesson/the-dare-decision-making-model.html
 [2] Wikipedia: Extreme Programming - https://en.wikipedia.org/wiki/Extreme_programming
 [3] Monday.com Blog: Full Project Management Glossary - https://monday.com/blog/project-management/project-management-glossary/

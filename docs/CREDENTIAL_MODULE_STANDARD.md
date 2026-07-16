@@ -3,11 +3,11 @@
 The credential subsystem is split into **three independently flippable
 modules**:
 
-| ID | What it does | Default |
-|----|--------------|---------|
-| `credential-gate` | Blocks deletion of critical secrets; logs audit issues. | `enabled: true` |
-| `doppler-recover` | Pulls missing secrets from Doppler. **Off until Doppler is reconciled.** | `enabled: false` |
-| `credential-backup-harness` | Non-Doppler fallback: `CREDENTIAL_BACKUP_JSON` / SOPS / pass / Bitwarden / 1Password / Infisical / Vault. | `enabled: true` |
+| ID                          | What it does                                                                                              | Default          |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------- |
+| `credential-gate`           | Blocks deletion of critical secrets; logs audit issues.                                                   | `enabled: true`  |
+| `doppler-recover`           | Pulls missing secrets from Doppler. **Off until Doppler is reconciled.**                                  | `enabled: false` |
+| `credential-backup-harness` | Non-Doppler fallback: `CREDENTIAL_BACKUP_JSON` / SOPS / pass / Bitwarden / 1Password / Infisical / Vault. | `enabled: true`  |
 
 ## Where the flag lives
 
@@ -35,11 +35,11 @@ first active step:
 
 `scripts/credential-module-check.sh` returns:
 
-| Exit | Meaning |
-|------|---------|
-| `0` | Module enabled — proceed. |
+| Exit | Meaning                         |
+| ---- | ------------------------------- |
+| `0`  | Module enabled — proceed.       |
 | `78` | Module disabled — skip cleanly. |
-| `2` | Usage error (bad arg). |
+| `2`  | Usage error (bad arg).          |
 
 If `config/credential-modules.yml` is missing the helper **fails open**
 (treats the module as enabled) so a corrupted config never silently

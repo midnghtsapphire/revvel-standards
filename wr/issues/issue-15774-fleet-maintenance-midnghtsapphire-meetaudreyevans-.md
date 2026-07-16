@@ -14,7 +14,7 @@
 **Created:** 2026-07-13  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-13  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -28,6 +28,7 @@ The resulting PR must pass the **full code review** — OpenRouter
 revvel-standards change.
 
 ## Tasks
+
 - [ ] Update / refresh the docs (README, overview, contributing).
 - [ ] Research concrete improvements (deps, security, tests, DX, performance).
 - [ ] Ensure the target repo has the standard review workflows (OpenRouter code
@@ -38,18 +39,19 @@ revvel-standards change.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -61,6 +63,7 @@ revvel-standards change.
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29241576889.md`
 
 ## Fleet Maintenance Research Packet: midnghtsapphire/meetaudreyevans-archive
@@ -70,6 +73,7 @@ Source packet: `docs/research-engine/run-29241576889.md`
 **HALT WORKFLOW** - This repository is an archived personal portfolio website that is either inaccessible or inappropriate for fleet maintenance. The repository appears to be a 7-year-old Jekyll-based personal website archive with no commercial purpose, no active maintenance, and potentially restricted access.
 
 **Key Decision Points:**
+
 - Repository may not exist or is private/inaccessible (conflicting evidence across lanes)
 - If accessible, it's a personal archive with no commercial viability
 - Outdated toolchain (Ruby 2.3.1 EOL, Jekyll 3.3.1 from 2016) poses security risks
@@ -93,6 +97,7 @@ Source packet: `docs/research-engine/run-29241576889.md`
 **Not Applicable** - Personal archives should not be marketed.
 
 The repository represents someone's personal portfolio history and should not be:
+
 - Optimized for search engines beyond basic archival discovery
 - Marketed to any audience
 - Positioned as a product or service
@@ -103,12 +108,12 @@ The repository represents someone's personal portfolio history and should not be
 
 **Finding:** Zero competitive relevance.
 
-| Metric | Value | Evidence |
-|--------|-------|----------|
-| GitHub Stars | 0-10 | Multiple lanes report minimal/no stars |
-| Competitors | None | Personal archive, not a product |
-| Market Position | N/A | Not in any market |
-| Similar Tools | Jekyll, Hugo, ArchiveBox | For reference only, not competitors |
+| Metric          | Value                    | Evidence                               |
+| --------------- | ------------------------ | -------------------------------------- |
+| GitHub Stars    | 0-10                     | Multiple lanes report minimal/no stars |
+| Competitors     | None                     | Personal archive, not a product        |
+| Market Position | N/A                      | Not in any market                      |
+| Similar Tools   | Jekyll, Hugo, ArchiveBox | For reference only, not competitors    |
 
 **Competitive Risk:** None. This is not a product competing in any space.
 
@@ -146,6 +151,7 @@ The repository represents someone's personal portfolio history and should not be
 **BLOCKING REQUIREMENTS:**
 
 1. **Repository Access Verification** (Critical)
+
    ```bash
    gh repo view midnghtsapphire/meetaudreyevans-archive || exit 1
    ```
@@ -162,6 +168,7 @@ The repository represents someone's personal portfolio history and should not be
    - Run `bundle update` for all dependencies
 
 **Acceptance Gates:**
+
 - [ ] Repository accessibility confirmed
 - [ ] All four review workflows added and passing
 - [ ] Ruby/Jekyll updated to supported versions
@@ -170,6 +177,7 @@ The repository represents someone's personal portfolio history and should not be
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 CONTEXT: Reviewing fleet maintenance for an archived personal portfolio site.
 CRITICAL: Check for Ruby 2.3.1 (EOL) and outdated Jekyll 3.3.1.
@@ -178,6 +186,7 @@ SKIP: Performance optimizations, feature additions, marketing improvements
 ```
 
 ### For OpenRouter
+
 ```yaml
 review_focus:
   - security: "Ruby 2.3.1 is EOL - must update"
@@ -190,6 +199,7 @@ skip:
 ```
 
 ### For Coderabbit
+
 ```
 Repository Type: Archived Personal Portfolio
 Priority: Security updates only
@@ -199,6 +209,7 @@ Note: This is a historical archive - maintain but don't enhance
 ```
 
 ### For Ralph Loop
+
 ```
 VALIDATION_RULES:
 - assert: .github/workflows/ contains 4 required YAMLs
@@ -210,37 +221,47 @@ VALIDATION_RULES:
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Add Required Workflows
+
 ```bash
 mkdir -p .github/workflows
 curl -o .github/workflows/ai-pr-review-openrouter.yml https://raw.githubusercontent.com/revvel/standards/main/.github/workflows/ai-pr-review-openrouter.yml
 # Repeat for jules.yml, semgrep.yml, codeql.yml
 ```
+
 **Commit:** `ci: add required revvel-standards review workflows`
 
 ### Fix 2: Update Ruby Version (CRITICAL SECURITY)
+
 ```ruby
 # Gemfile
 ruby "3.1.2"  # Update from 2.3.1
 ```
+
 **Commit:** `fix(security): update Ruby from EOL 2.3.1 to 3.1.2`
 
 ### Fix 3: Update Dependencies
+
 ```bash
 bundle update
 ```
+
 **Commit:** `chore(deps): update all dependencies for security`
 
 ### Fix 4: Add Archive Notice to README
+
 ```markdown
 # ⚠️ ARCHIVED PROJECT
-This repository is an archived personal portfolio from 2018. 
+
+This repository is an archived personal portfolio from 2018.
 It is maintained for historical purposes only.
 ```
+
 **Commit:** `docs: add archive notice to README`
 
 ## 10. Labels to Apply
 
 **Required Labels:**
+
 - `fleet-maintenance`
 - `archived-project`
 - `non-commercial-asset`
@@ -251,12 +272,14 @@ It is maintained for historical purposes only.
 - `lane-skip:seo`
 
 **Conditional Labels:**
+
 - `repository-not-found` (if inaccessible)
 - `needs-verification` (if access unclear)
 
 ## 11. Repository Review and Best Alternative
 
 **Current Repository Assessment:**
+
 - **Purpose:** Personal portfolio archive
 - **Viability:** Not viable for commercialization or community building
 - **Maintenance Burden:** High due to EOL toolchain
@@ -284,6 +307,7 @@ It is maintained for historical purposes only.
 **Overall Confidence: 95/100**
 
 **Per-Lane Breakdown:**
+
 - Repository Status: 95% (high confidence it's archived/inaccessible)
 - Market Positioning: N/A (correctly identified as non-applicable)
 - SEO Demand: N/A (correctly skipped)
@@ -293,6 +317,7 @@ It is maintained for historical purposes only.
 - Revenue Mechanics: 100% (correctly identified as non-commercial)
 
 **Best Idea Selection:** The unanimous finding across all lanes is that this repository should be excluded from fleet maintenance or receive minimal security-only updates. The high confidence comes from consistent evidence that this is a personal archive with:
+
 - No commercial purpose
 - No active users
 - Significant security risks from EOL dependencies
@@ -340,11 +365,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -360,11 +385,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

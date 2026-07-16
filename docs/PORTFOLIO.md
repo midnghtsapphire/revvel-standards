@@ -37,51 +37,51 @@ All Revvel applications inherit their corporate identity and SEO authority from 
 
 ### Parent Entity: Freedom Angel Corp (2010)
 
-| Field | Value |
-|---|---|
-| **Legal Name** | Freedom Angel Corp. |
-| **Type** | Non-Profit Corporation |
-| **EIN** | 86-1209156 |
-| **Founded** | 2010 |
-| **State** | Colorado |
-| **Founder/CEO** | Audrey Evans |
-| **SBA Certified** | Yes (Zonehub) |
-| **Motto 1** | "Home of the Free Because of The Brave" |
-| **Motto 2** | "End Trafficking and Violence of All Living Things In Mortal Danger of Extinction. Even A Spider In Sudan, Ooray" |
-| **American Legion** | Member #302393962 |
-| **PMI** | Membership ID #593830 |
-| **Colorado Supreme Court** | CLE Training — Moniker: ANGEL |
-| **Classification** | Minority-owned, veteran-connected, multi-tiered business corporation |
+| Field                      | Value                                                                                                             |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Legal Name**             | Freedom Angel Corp.                                                                                               |
+| **Type**                   | Non-Profit Corporation                                                                                            |
+| **EIN**                    | 86-1209156                                                                                                        |
+| **Founded**                | 2010                                                                                                              |
+| **State**                  | Colorado                                                                                                          |
+| **Founder/CEO**            | Audrey Evans                                                                                                      |
+| **SBA Certified**          | Yes (Zonehub)                                                                                                     |
+| **Motto 1**                | "Home of the Free Because of The Brave"                                                                           |
+| **Motto 2**                | "End Trafficking and Violence of All Living Things In Mortal Danger of Extinction. Even A Spider In Sudan, Ooray" |
+| **American Legion**        | Member #302393962                                                                                                 |
+| **PMI**                    | Membership ID #593830                                                                                             |
+| **Colorado Supreme Court** | CLE Training — Moniker: ANGEL                                                                                     |
+| **Classification**         | Minority-owned, veteran-connected, multi-tiered business corporation                                              |
 
 ### Divisions & Sub-Brands
 
-| Entity | Type | Focus | Parent |
-|---|---|---|---|
-| **Freedom Angel Fighters** | Program | Advocacy & Anti-Trafficking | Freedom Angel Corp |
-| **Angel Reporter(s)** | Brand | Investigative Journalism | Freedom Angel Corp |
-| **Aloha Notary & Copies** | Service | Notary for Native Hawaiian Veterans & Military | Freedom Angel Corp |
+| Entity                     | Type    | Focus                                          | Parent             |
+| -------------------------- | ------- | ---------------------------------------------- | ------------------ |
+| **Freedom Angel Fighters** | Program | Advocacy & Anti-Trafficking                    | Freedom Angel Corp |
+| **Angel Reporter(s)**      | Brand   | Investigative Journalism                       | Freedom Angel Corp |
+| **Aloha Notary & Copies**  | Service | Notary for Native Hawaiian Veterans & Military | Freedom Angel Corp |
 
 ### Information Technology Entities (All Under Freedom Angel Corp)
 
-| Entity | Type | Focus | Copyright |
-|---|---|---|---|
-| **Angel Reporter LLC** | LLC (CA) | Media & Reporting Technology | 2010, 2018 |
-| **XI Website Solutions LLC** | LLC | Web Development & Design | 2010 |
-| **Spiderwebz Designs** | DBA | Creative Design & Branding | 2010 |
-| **Evans Digital** | DBA | Digital Marketing & Technology | 2010 |
-| **Fast Macros** | DBA | Automation & Productivity Tools | 2010 |
+| Entity                       | Type     | Focus                           | Copyright  |
+| ---------------------------- | -------- | ------------------------------- | ---------- |
+| **Angel Reporter LLC**       | LLC (CA) | Media & Reporting Technology    | 2010, 2018 |
+| **XI Website Solutions LLC** | LLC      | Web Development & Design        | 2010       |
+| **Spiderwebz Designs**       | DBA      | Creative Design & Branding      | 2010       |
+| **Evans Digital**            | DBA      | Digital Marketing & Technology  | 2010       |
+| **Fast Macros**              | DBA      | Automation & Productivity Tools | 2010       |
 
 ### Modern Product Brands (Under IT Entities)
 
-| Brand | Focus | Domain |
-|---|---|---|
-| **Audrey Evans Official / GlowStarLabs** | Umbrella for all tech products | glowstarlabs.com |
-| **Revvel / Hailstorm** | Music artist brand (music only) | — |
-| **Reese Reviews** | Product review & Vine business | reesereviews.com |
-| **MeetAudreyEvans** | Personal hub & portfolio | meetaudreyevans.com |
-| **YumYumCode** | Developer tools & coding | yumyumcode.com |
-| **GrowlingEyes** | Security & surveillance | growlingeyes.com |
-| **TruthSlayer** | Fact-checking & investigation | truthslayer.com |
+| Brand                                    | Focus                           | Domain              |
+| ---------------------------------------- | ------------------------------- | ------------------- |
+| **Audrey Evans Official / GlowStarLabs** | Umbrella for all tech products  | glowstarlabs.com    |
+| **Revvel / Hailstorm**                   | Music artist brand (music only) | —                   |
+| **Reese Reviews**                        | Product review & Vine business  | reesereviews.com    |
+| **MeetAudreyEvans**                      | Personal hub & portfolio        | meetaudreyevans.com |
+| **YumYumCode**                           | Developer tools & coding        | yumyumcode.com      |
+| **GrowlingEyes**                         | Security & surveillance         | growlingeyes.com    |
+| **TruthSlayer**                          | Fact-checking & investigation   | truthslayer.com     |
 
 ### Schema.org Implementation (MANDATORY)
 
@@ -107,18 +107,46 @@ Every Revvel application MUST include the following JSON-LD in the `<head>` of e
   "taxID": "86-1209156",
   "nonprofitStatus": "NonprofitType",
   "memberOf": [
-    {"@type": "Organization", "name": "American Legion", "membershipNumber": "302393962"},
-    {"@type": "Organization", "name": "Project Management Institute", "membershipNumber": "593830"},
-    {"@type": "Organization", "name": "Small Business Administration", "description": "SBA Certified, Zonehub"}
+    {
+      "@type": "Organization",
+      "name": "American Legion",
+      "membershipNumber": "302393962"
+    },
+    {
+      "@type": "Organization",
+      "name": "Project Management Institute",
+      "membershipNumber": "593830"
+    },
+    {
+      "@type": "Organization",
+      "name": "Small Business Administration",
+      "description": "SBA Certified, Zonehub"
+    }
   ],
   "slogan": "Home of the Free Because of The Brave",
   "description": "A minority-owned, veteran-connected, multi-tiered business corporation supporting disabled veterans, at-risk seniors, and underserved communities.",
   "subOrganization": [
-    {"@type": "Organization", "name": "Angel Reporter LLC", "foundingDate": "2010"},
-    {"@type": "Organization", "name": "XI Website Solutions LLC", "foundingDate": "2010"},
-    {"@type": "Organization", "name": "Evans Digital", "foundingDate": "2010"},
-    {"@type": "Organization", "name": "Fast Macros", "foundingDate": "2010"},
-    {"@type": "Organization", "name": "Spiderwebz Designs", "foundingDate": "2010"}
+    {
+      "@type": "Organization",
+      "name": "Angel Reporter LLC",
+      "foundingDate": "2010"
+    },
+    {
+      "@type": "Organization",
+      "name": "XI Website Solutions LLC",
+      "foundingDate": "2010"
+    },
+    {
+      "@type": "Organization",
+      "name": "Evans Digital",
+      "foundingDate": "2010"
+    },
+    { "@type": "Organization", "name": "Fast Macros", "foundingDate": "2010" },
+    {
+      "@type": "Organization",
+      "name": "Spiderwebz Designs",
+      "foundingDate": "2010"
+    }
   ]
 }
 ```
@@ -161,6 +189,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 ### Online Learning Platforms
 
 **Comprehensive Courses:**
+
 - **Frontend Masters** (https://frontendmasters.com) - In-depth web development courses ($39/month)
 - **Egghead.io** (https://egghead.io) - Concise programming tutorials
 - **Pluralsight** (https://pluralsight.com) - Technology skills platform
@@ -169,6 +198,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 - **edX** (https://edx.org) - University courses from MIT, Harvard, etc.
 
 **Free Learning Resources:**
+
 - **freeCodeCamp** (https://freecodecamp.org) - Free coding bootcamp with certifications
 - **The Odin Project** (https://theodinproject.com) - Free full-stack curriculum
 - **MDN Web Docs** (https://developer.mozilla.org) - Definitive web platform documentation
@@ -178,6 +208,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 - **Roadmap.sh** (https://roadmap.sh) - Developer roadmaps and learning paths
 
 **Video Learning:**
+
 - **YouTube Channels:**
   - **Fireship** (https://youtube.com/@fireship) - 100-second tech explainers
   - **Traversy Media** - Web development tutorials
@@ -188,6 +219,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
   - **Jack Herrington** - Advanced TypeScript and React
 
 **Interactive Platforms:**
+
 - **Scrimba** (https://scrimba.com) - Interactive coding screencasts
 - **Exercism** (https://exercism.org) - Code practice with mentorship (FREE)
 - **LeetCode** (https://leetcode.com) - Coding interview preparation
@@ -198,6 +230,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 ### Documentation & References
 
 **Official Documentation:**
+
 - **React Docs** (https://react.dev)
 - **Vue Docs** (https://vuejs.org/guide)
 - **Node.js Docs** (https://nodejs.org/docs)
@@ -207,6 +240,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 - **Go Documentation** (https://go.dev/doc)
 
 **Cheat Sheets & Quick References:**
+
 - **DevDocs** (https://devdocs.io) - Searchable documentation browser
 - **Devhints** (https://devhints.io) - Cheat sheets for developers
 - **OverAPI** (https://overapi.com) - Collecting all cheat sheets
@@ -214,6 +248,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 - **TLDR Pages** (https://tldr.sh) - Simplified man pages
 
 **Books & Deep Dives:**
+
 - **You Don't Know JS** (https://github.com/getify/You-Dont-Know-JS) - JavaScript deep dive (FREE)
 - **Eloquent JavaScript** (https://eloquentjavascript.net) - Modern JS introduction (FREE)
 - **Clean Code** by Robert C. Martin - Software craftsmanship
@@ -224,6 +259,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
 ### Community & Support
 
 **Forums & Q&A:**
+
 - **Stack Overflow** (https://stackoverflow.com) - Programming Q&A
 - **Reddit** - r/webdev, r/javascript, r/reactjs, r/programming
 - **Discord Communities:**
@@ -233,6 +269,7 @@ Continuous learning is essential for maintaining cutting-edge expertise. These r
   - Tailwind CSS - Tailwind community
 
 **Professional Networks:**
+
 - **GitHub** (https://github.com) - Code hosting and collaboration
 - **LinkedIn** (https://linkedin.com) - Professional networking
 - **Twitter/X** - Follow tech leaders and stay updated
@@ -247,6 +284,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 ### Technology Radar & Trend Platforms
 
 **Industry Technology Radars:**
+
 - **ThoughtWorks Technology Radar** (https://thoughtworks.com/radar) - Quarterly assessments of tools, techniques, platforms
 - **InfoQ Trends** (https://infoq.com/presentations) - Software architecture and development trends
 - **Gartner Hype Cycle** (https://gartner.com) - Enterprise technology maturity tracking
@@ -256,6 +294,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **DB-Engines** (https://db-engines.com) - Database popularity and trend tracking
 
 **Developer Communities:**
+
 - **Hacker News** (https://news.ycombinator.com) - Tech industry pulse, daily updates
 - **Reddit** - r/programming, r/webdev, r/MachineLearning, r/artificial
 - **Dev.to** (https://dev.to) - Developer community and tutorials
@@ -263,6 +302,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Stack Overflow Trends** (https://insights.stackoverflow.com/trends) - Technology adoption data
 
 **GitHub & Open Source:**
+
 - **GitHub Trending** (https://github.com/trending) - Daily/weekly trending repositories
 - **GitHub Topics** (https://github.com/topics) - Curated technology collections
 - **Awesome Lists** (https://github.com/sindresorhus/awesome) - Curated lists of resources
@@ -270,6 +310,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Libraries.io** (https://libraries.io) - Open source discovery across package managers
 
 **AI & Machine Learning:**
+
 - **Papers with Code** (https://paperswithcode.com) - Latest ML research with implementations
 - **Hugging Face** (https://huggingface.co) - ML models, datasets, and demos
 - **AI Index** (https://aiindex.stanford.edu) - Stanford's annual AI progress report
@@ -281,6 +322,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 ### Technology Newsletters & Aggregators
 
 **Weekly/Daily Digests:**
+
 - **TLDR Newsletter** (https://tldr.tech) - Daily tech news in 5 minutes
 - **Changelog** (https://changelog.com) - Open source and developer news
 - **JavaScript Weekly** (https://javascriptweekly.com) - JS ecosystem updates
@@ -293,6 +335,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **AI Weekly** (https://aiweekly.co) - Artificial intelligence developments
 
 **Podcasts:**
+
 - **Changelog** - Developer stories and open source
 - **Syntax.fm** - Web development topics
 - **JS Party** - JavaScript community discussions
@@ -344,6 +387,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 ### Specific Cutting-Edge Areas to Watch (2026+)
 
 **Web & Frontend:**
+
 - **Astro** (https://astro.build) - Multi-framework static site generation
 - **Qwik** (https://qwik.builder.io) - Resumability-based framework (instant loading)
 - **Solid.js** (https://solidjs.com) - Fine-grained reactivity (faster than React)
@@ -353,6 +397,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Alpine.js** (https://alpinejs.dev) - Lightweight JavaScript framework
 
 **Backend & APIs:**
+
 - **Bun** (https://bun.sh) - All-in-one JavaScript runtime (faster than Node.js)
 - **Deno 2.0** (https://deno.com) - Secure TypeScript runtime with built-in tools
 - **Hono** (https://hono.dev) - Ultrafast web framework for edge computing
@@ -362,6 +407,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Encore** (https://encore.dev) - Backend development platform with infrastructure automation
 
 **Databases & Data:**
+
 - **Turso** (https://turso.tech) - Edge-hosted SQLite (libSQL)
 - **Neon** (https://neon.tech) - Serverless Postgres with autoscaling
 - **PlanetScale** (https://planetscale.com) - MySQL-compatible serverless database
@@ -372,6 +418,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **LanceDB** (https://lancedb.com) - Vector database for AI applications
 
 **AI & Machine Learning:**
+
 - **Ollama** (https://ollama.ai) - Run LLMs locally (Llama, Mistral, etc.)
 - **LangChain** (https://langchain.com) - Framework for LLM applications
 - **LlamaIndex** (https://llamaindex.ai) - Data framework for LLM applications
@@ -382,6 +429,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Langfuse** (https://langfuse.com) - LLM engineering platform (observability)
 
 **DevOps & Infrastructure:**
+
 - **Coolify** (https://coolify.io) - Self-hostable Heroku/Vercel alternative
 - **Kamal** (https://kamal-deploy.org) - Deploy web apps anywhere with Docker
 - **Pulumi** (https://pulumi.com) - Infrastructure as code using real programming languages
@@ -391,6 +439,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Temporal** (https://temporal.io) - Durable execution for workflows
 
 **Testing & Quality:**
+
 - **Playwright** (https://playwright.dev) - Modern end-to-end testing (faster than Selenium)
 - **Vitest** (https://vitest.dev) - Next-generation testing framework (Vite-native)
 - **Testing Library** (https://testing-library.com) - User-centric testing utilities
@@ -398,6 +447,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **Chromatic** (https://chromatic.com) - Visual testing and review
 
 **Developer Experience:**
+
 - **Biome** (https://biomejs.dev) - Fast formatter/linter (Rust-based, replaces ESLint+Prettier)
 - **Bun** package manager - Faster than npm/pnpm
 - **Turbo** (https://turbo.build) - Incremental bundler and build system
@@ -406,6 +456,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - **swc** (https://swc.rs) - Rust-based JavaScript/TypeScript compiler
 
 **Mobile & Cross-Platform:**
+
 - **Expo** (https://expo.dev) - React Native framework with managed workflow
 - **Tamagui** (https://tamagui.dev) - Universal UI kit for React Native and Web
 - **Flutter 3.x** (https://flutter.dev) - Google's cross-platform framework
@@ -424,6 +475,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 6. **Standardize (Month 6+):** Add to official tech stack if proven valuable
 
 **Red Flags to Avoid:**
+
 - ❌ No commits in 6+ months
 - ❌ Major unresolved security vulnerabilities
 - ❌ Frequent breaking changes with no migration guides
@@ -433,6 +485,7 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 - ❌ Requires extensive custom tooling or workarounds
 
 **Green Flags to Prioritize:**
+
 - ✅ Active development with regular releases
 - ✅ Responsive maintainers and community
 - ✅ Comprehensive documentation and examples
@@ -448,16 +501,16 @@ Staying ahead requires systematic discovery and evaluation of emerging technolog
 
 Every active Revvel project has a dedicated docs directory with a Bill of Materials (BOM), brand identity document, and sprint log.
 
-| Project | Docs Directory | BOM | Brand |
-|---|---|---|---|
-| GrowlingEyes | [`docs/growlingeyes/`](../docs/growlingeyes/) | [BOM.md](../docs/growlingeyes/BOM.md) | [BRAND.md](../docs/growlingeyes/BRAND.md) |
-| Neurooz | [`docs/neurooz/`](../docs/neurooz/) | [BOM.md](../docs/neurooz/BOM.md) | — |
-| Revvel Music Studio | [`docs/revvel-music-studio/`](../docs/revvel-music-studio/) | [BOM.md](../docs/revvel-music-studio/BOM.md) | — |
-| Universal SAR App | [`docs/universal-sar-app/`](../docs/universal-sar-app/) | [BOM.md](../docs/universal-sar-app/BOM.md) | — |
-| Premolt | [`docs/premolt/`](../docs/premolt/) | [BOM.md](../docs/premolt/BOM.md) · [PLAN.md](../docs/premolt/PLAN.md) | — |
-| penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](../penny-sovereign-yield-scout/) | [CHANGELOG.md](../penny-sovereign-yield-scout/CHANGELOG.md) | [branding/](../penny-sovereign-yield-scout/branding/) |
-| Oz OS | [midnghtsapphire/oz-os](https://github.com/midnghtsapphire/oz-os) | Research Intelligence Operating System — intel.md, research-packs, method-packs, 6 agent specs, autonomy tiers | — |
-| Bar Chart Race Engine | [midnghtsapphire/bar-chart-race-engine](https://github.com/midnghtsapphire/bar-chart-race-engine) | Animated infographic video generator (8 races: electricity, literacy, life expectancy, internet, CO2, GDP, renewable energy, non-HE washers) | — |
+| Project                     | Docs Directory                                                                                    | BOM                                                                                                                                          | Brand                                                 |
+| --------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| GrowlingEyes                | [`docs/growlingeyes/`](../docs/growlingeyes/)                                                     | [BOM.md](../docs/growlingeyes/BOM.md)                                                                                                        | [BRAND.md](../docs/growlingeyes/BRAND.md)             |
+| Neurooz                     | [`docs/neurooz/`](../docs/neurooz/)                                                               | [BOM.md](../docs/neurooz/BOM.md)                                                                                                             | —                                                     |
+| Revvel Music Studio         | [`docs/revvel-music-studio/`](../docs/revvel-music-studio/)                                       | [BOM.md](../docs/revvel-music-studio/BOM.md)                                                                                                 | —                                                     |
+| Universal SAR App           | [`docs/universal-sar-app/`](../docs/universal-sar-app/)                                           | [BOM.md](../docs/universal-sar-app/BOM.md)                                                                                                   | —                                                     |
+| Premolt                     | [`docs/premolt/`](../docs/premolt/)                                                               | [BOM.md](../docs/premolt/BOM.md) · [PLAN.md](../docs/premolt/PLAN.md)                                                                        | —                                                     |
+| penny-sovereign-yield-scout | [`penny-sovereign-yield-scout/`](../penny-sovereign-yield-scout/)                                 | [CHANGELOG.md](../penny-sovereign-yield-scout/CHANGELOG.md)                                                                                  | [branding/](../penny-sovereign-yield-scout/branding/) |
+| Oz OS                       | [midnghtsapphire/oz-os](https://github.com/midnghtsapphire/oz-os)                                 | Research Intelligence Operating System — intel.md, research-packs, method-packs, 6 agent specs, autonomy tiers                               | —                                                     |
+| Bar Chart Race Engine       | [midnghtsapphire/bar-chart-race-engine](https://github.com/midnghtsapphire/bar-chart-race-engine) | Animated infographic video generator (8 races: electricity, literacy, life expectancy, internet, CO2, GDP, renewable energy, non-HE washers) | —                                                     |
 
 **Master shopping list (all outstanding purchases):** [`docs/_MASTER_BOM.md`](_MASTER_BOM.md)
 
@@ -482,16 +535,16 @@ Every Revvel project derives its visual identity from the **Revvel Emblem Standa
 
 All CI/CD workflows for Revvel applications. Copy from `templates/cicd/` into `.github/workflows/` of every app repo.
 
-| Workflow | File | Purpose |
-|---|---|---|
-| Deploy | `deploy.yml` | Auto-deploy to DigitalOcean on push to `main`; **includes DeployBot tracking** |
-| CI | `ci.yml` | TypeScript check + Vitest tests + Playwright E2E |
-| Auto-Fix | `auto-fix.yml` | Creates GitHub Issue + Copilot instructions on CI failure |
-| Security | `security.yml` | `pnpm audit` + TruffleHog secret scanning |
-| PandaOps AI Review | `panda-ops.yml` | OpenAI-powered inline PR feedback on every pull request |
-| Deploy Android | `deploy-android.yml` | Manual PWA → Play Store (inactive until account ready) |
-| Deploy iOS | `deploy-ios.yml` | Manual PWA → App Store (inactive until account ready) |
-| Monitor | `monitor.yml` | Uptime/health-check monitoring |
+| Workflow           | File                 | Purpose                                                                        |
+| ------------------ | -------------------- | ------------------------------------------------------------------------------ |
+| Deploy             | `deploy.yml`         | Auto-deploy to DigitalOcean on push to `main`; **includes DeployBot tracking** |
+| CI                 | `ci.yml`             | TypeScript check + Vitest tests + Playwright E2E                               |
+| Auto-Fix           | `auto-fix.yml`       | Creates GitHub Issue + Copilot instructions on CI failure                      |
+| Security           | `security.yml`       | `pnpm audit` + TruffleHog secret scanning                                      |
+| PandaOps AI Review | `panda-ops.yml`      | OpenAI-powered inline PR feedback on every pull request                        |
+| Deploy Android     | `deploy-android.yml` | Manual PWA → Play Store (inactive until account ready)                         |
+| Deploy iOS         | `deploy-ios.yml`     | Manual PWA → App Store (inactive until account ready)                          |
+| Monitor            | `monitor.yml`        | Uptime/health-check monitoring                                                 |
 
 **DeployBot** ([deploybot.app](https://deploybot.app/)) is integrated into `deploy.yml` — it tracks every GitHub Deployment across all Revvel repos automatically once installed at the organisation level. Install once at: `github.com/apps/deploybot-app → Install → midnghtsapphire`.
 
@@ -505,11 +558,11 @@ Full README: [`templates/cicd/README.md`](../templates/cicd/README.md)
 
 Stack-agnostic test templates proven in GrowlingEyes. Copy and adapt for every project.
 
-| Template | Type | Purpose |
-|---|---|---|
-| `field-validation.test.ts` | Vitest unit | Validates database field constraints |
-| `ui-db-map.test.ts` | Vitest integration | Validates API response shapes match DB |
-| `panel-data-void.spec.ts` | Playwright E2E | Validates pages load with real data |
+| Template                   | Type               | Purpose                                |
+| -------------------------- | ------------------ | -------------------------------------- |
+| `field-validation.test.ts` | Vitest unit        | Validates database field constraints   |
+| `ui-db-map.test.ts`        | Vitest integration | Validates API response shapes match DB |
+| `panel-data-void.spec.ts`  | Playwright E2E     | Validates pages load with real data    |
 
 Instructions: [`templates/testing/README.md`](../templates/testing/README.md)
 
@@ -528,6 +581,7 @@ bash ../revvel-standards/scripts/bootstrap-new-project.sh neurooz 164.90.148.7 n
 ```
 
 This creates:
+
 - `SYSTEM_STATE.md` + `CONTEXT_PRIMER.md` (session state standards)
 - `.github/workflows/` (7 CI/CD workflows: ci, auto-fix, security, deploy, syntax-check, deploy-android, deploy-ios)
 - `scripts/pwa-audit.sh` (PWA readiness checker)

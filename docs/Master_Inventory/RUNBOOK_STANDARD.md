@@ -19,7 +19,7 @@ Copy this template for every deployed service. Fill in all sections before the f
 
 ---
 
-```markdown
+````markdown
 # Runbook: [APP_NAME]
 
 **Service:** [App name and brief description]  
@@ -46,8 +46,10 @@ curl -s https://[your-domain].com/api/health
 # Check Nginx is serving traffic
 curl -I https://[your-domain].com
 ```
+````
 
 Expected healthy state:
+
 - PM2 shows `online` status for `[pm2-process-name]`
 - `/api/health` returns `{ "status": "ok" }` with HTTP 200
 - Nginx returns HTTP 200 or 301 (not 502 Bad Gateway)
@@ -193,14 +195,14 @@ nginx -t && systemctl reload nginx
 
 ## Common Error Patterns
 
-| Error | Likely Cause | Fix |
-|---|---|---|
-| `502 Bad Gateway` | PM2 process crashed or not running | `pm2 restart [name]` |
-| `ERR_CONNECTION_REFUSED` | Nginx not running | `systemctl restart nginx` |
-| `ECONNREFUSED` in logs | Database connection failed | Check `DATABASE_URL` env var, verify DB is running |
-| `Module not found` | Dependencies not installed after deploy | `cd /app && pnpm install` |
-| `Port already in use` | Old process still running | `pm2 delete [name] && pm2 start` |
-| High memory usage | Memory leak | `pm2 restart [name]` + investigate recent code changes |
+| Error                    | Likely Cause                            | Fix                                                    |
+| ------------------------ | --------------------------------------- | ------------------------------------------------------ |
+| `502 Bad Gateway`        | PM2 process crashed or not running      | `pm2 restart [name]`                                   |
+| `ERR_CONNECTION_REFUSED` | Nginx not running                       | `systemctl restart nginx`                              |
+| `ECONNREFUSED` in logs   | Database connection failed              | Check `DATABASE_URL` env var, verify DB is running     |
+| `Module not found`       | Dependencies not installed after deploy | `cd /app && pnpm install`                              |
+| `Port already in use`    | Old process still running               | `pm2 delete [name] && pm2 start`                       |
+| High memory usage        | Memory leak                             | `pm2 restart [name]` + investigate recent code changes |
 
 ---
 
@@ -223,15 +225,15 @@ When something is broken, follow this order:
 
 ## Environment Variables
 
-| Variable | Description | Required |
-|---|---|---|
-| `DATABASE_URL` | PostgreSQL connection string | Yes |
-| `NODE_ENV` | `production` | Yes |
-| `PORT` | App port (default: 3000) | No |
-| `JWT_SECRET` | JWT signing secret (32+ chars) | Yes |
-| `STRIPE_SECRET_KEY` | Stripe live secret key | If using Stripe |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | If using Stripe |
-| [Add app-specific vars here] | | |
+| Variable                     | Description                    | Required        |
+| ---------------------------- | ------------------------------ | --------------- |
+| `DATABASE_URL`               | PostgreSQL connection string   | Yes             |
+| `NODE_ENV`                   | `production`                   | Yes             |
+| `PORT`                       | App port (default: 3000)       | No              |
+| `JWT_SECRET`                 | JWT signing secret (32+ chars) | Yes             |
+| `STRIPE_SECRET_KEY`          | Stripe live secret key         | If using Stripe |
+| `STRIPE_WEBHOOK_SECRET`      | Stripe webhook signing secret  | If using Stripe |
+| [Add app-specific vars here] |                                |                 |
 
 ```
 
@@ -240,10 +242,12 @@ When something is broken, follow this order:
 ## 3. Runbook Location
 
 ```
+
 your-app-repo/
 └── docs/
-    └── runbooks/
-        └── [app-name].md    # The runbook for this app
+└── runbooks/
+└── [app-name].md # The runbook for this app
+
 ```
 
 ---
@@ -258,3 +262,4 @@ A runbook must be updated whenever:
 - The database or PM2 process name changes
 
 Runbooks are committed to the repo alongside code changes. A PR that changes infrastructure without updating the runbook will be flagged in code review.
+```

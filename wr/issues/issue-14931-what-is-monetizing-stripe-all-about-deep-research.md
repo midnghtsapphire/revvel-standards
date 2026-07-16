@@ -30,12 +30,12 @@ half; the companion scaffold lives at
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A — internal automation repo, not public product |
-| Open Issues | N/A — tracked in GitHub Issues on this repo |
-| Private | No |
-| Archived | No |
+| Property    | Value                                              |
+| ----------- | -------------------------------------------------- |
+| Stars       | N/A — internal automation repo, not public product |
+| Open Issues | N/A — tracked in GitHub Issues on this repo        |
+| Private     | No                                                 |
+| Archived    | No                                                 |
 
 ## Research Checklist
 
@@ -49,8 +49,8 @@ half; the companion scaffold lives at
 ## Executive Summary
 
 "Monetizing Stripe" is Stripe's own go-to-market phrase for **embedded payments +
-platform economics**: instead of a business only *paying* Stripe to accept money,
-the business *becomes a mini payments company* and earns a cut of every transaction
+platform economics**: instead of a business only _paying_ Stripe to accept money,
+the business _becomes a mini payments company_ and earns a cut of every transaction
 that flows through its software. Stripe packages four monetization surfaces —
 **Connect** (marketplace/platform fees), **Billing** (recurring/usage revenue),
 **Issuing** (interchange revenue share on branded cards), and **Terminal**
@@ -81,12 +81,12 @@ template so this becomes copy-paste, not a research project.
 
 ### The four monetization models (what the ad actually means)
 
-| Stripe product | Revenue source for the platform | Typical take | Best-fit revvel use case |
-| --- | --- | --- | --- |
-| Connect | Application/platform fee on each transaction | 0.5–3% SaaS, 5–15% marketplace | Creator payout tracker, service marketplaces, gig payouts |
-| Billing | Markup on recurring/usage-based subscriptions | You set customer price; Stripe takes 0.7% of billed volume | SaaS tools, metered API products |
-| Issuing | Interchange revenue share on branded cards | Share of ~1–2% interchange | Embedded finance, expense/payout cards |
-| Terminal | Upcharge on in-person card-present transactions | Platform-set per-transaction upcharge | HVAC/field-service POS, local retail |
+| Stripe product | Revenue source for the platform                 | Typical take                                               | Best-fit revvel use case                                  |
+| -------------- | ----------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------- |
+| Connect        | Application/platform fee on each transaction    | 0.5–3% SaaS, 5–15% marketplace                             | Creator payout tracker, service marketplaces, gig payouts |
+| Billing        | Markup on recurring/usage-based subscriptions   | You set customer price; Stripe takes 0.7% of billed volume | SaaS tools, metered API products                          |
+| Issuing        | Interchange revenue share on branded cards      | Share of ~1–2% interchange                                 | Embedded finance, expense/payout cards                    |
+| Terminal       | Upcharge on in-person card-present transactions | Platform-set per-transaction upcharge                      | HVAC/field-service POS, local retail                      |
 
 Sources: [Stripe Connect](https://stripe.com/connect),
 [Stripe Connect pricing](https://stripe.com/connect/pricing),
@@ -120,16 +120,16 @@ landing page.
 
 ### Competitor & GitHub-star intelligence (data collected 2026-07-03)
 
-| Tool | Category | GitHub stars | Note |
-| --- | --- | --- | --- |
-| [medusajs/medusa](https://github.com/medusajs/medusa) | Commerce platform w/ Stripe module | 34,883 | Headless commerce; Stripe payment provider built in |
-| [getlago/lago](https://github.com/getlago/lago) | Open-source metering & usage billing | 10,168 | Self-host alternative to Stripe Billing |
-| [killbill/killbill](https://github.com/killbill/killbill) | Open-source subscription billing | 5,612 | Stripe plugin available |
-| [stripe/stripe-node](https://github.com/stripe/stripe-node) | Official Node SDK | 4,456 | Reference implementation for Connect/Billing |
-| [openmeterio/openmeter](https://github.com/openmeterio/openmeter) | Usage metering for usage-based billing | 2,090 | Pairs with Stripe for AI/API metering |
+| Tool                                                              | Category                               | GitHub stars | Note                                                |
+| ----------------------------------------------------------------- | -------------------------------------- | ------------ | --------------------------------------------------- |
+| [medusajs/medusa](https://github.com/medusajs/medusa)             | Commerce platform w/ Stripe module     | 34,883       | Headless commerce; Stripe payment provider built in |
+| [getlago/lago](https://github.com/getlago/lago)                   | Open-source metering & usage billing   | 10,168       | Self-host alternative to Stripe Billing             |
+| [killbill/killbill](https://github.com/killbill/killbill)         | Open-source subscription billing       | 5,612        | Stripe plugin available                             |
+| [stripe/stripe-node](https://github.com/stripe/stripe-node)       | Official Node SDK                      | 4,456        | Reference implementation for Connect/Billing        |
+| [openmeterio/openmeter](https://github.com/openmeterio/openmeter) | Usage metering for usage-based billing | 2,090        | Pairs with Stripe for AI/API metering               |
 
-Read: the *billing* layer has strong open-source substitutes (Lago, Kill Bill,
-OpenMeter), but the *money-movement + application-fee* layer (Connect/Issuing) has
+Read: the _billing_ layer has strong open-source substitutes (Lago, Kill Bill,
+OpenMeter), but the _money-movement + application-fee_ layer (Connect/Issuing) has
 no realistic open-source substitute — that is Stripe's moat and the surface worth
 building on.
 

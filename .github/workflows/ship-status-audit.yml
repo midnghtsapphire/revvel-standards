@@ -2,8 +2,8 @@ name: Ship Status Audit
 
 on:
   schedule:
-    - cron: '0 14 * * 1'
-    - cron: '0 15 * * 1'
+    - cron: "0 14 * * 1"
+    - cron: "0 15 * * 1"
   workflow_dispatch:
 
 permissions:

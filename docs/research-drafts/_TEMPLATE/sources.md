@@ -3,9 +3,9 @@
 Provenance for everything in `NOTEBOOK.md` and `data/`. One row per source.
 A missing source is fine as `TODO`; an invented one is not.
 
-| ID | Source (URL / file / session) | Type | Date pulled | Confidence | Notes |
-| --- | --- | --- | --- | --- | --- |
-| S1 | <https://…> or `data/<file>` | web / paper / dataset / LLM-session / internal | YYYY-MM-DD | verified / plausible / unverified | <what it backs up> |
+| ID  | Source (URL / file / session) | Type                                           | Date pulled | Confidence                        | Notes              |
+| --- | ----------------------------- | ---------------------------------------------- | ----------- | --------------------------------- | ------------------ |
+| S1  | <https://…> or `data/<file>`  | web / paper / dataset / LLM-session / internal | YYYY-MM-DD  | verified / plausible / unverified | <what it backs up> |
 
 ## Notes on LLM-generated sources
 

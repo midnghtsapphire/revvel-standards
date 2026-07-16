@@ -4,6 +4,7 @@
 **Supersedes:** HIPAA guidance in `wr/issues/issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md` (line 190)
 **Related Issues:** #16058, #16065, #16075, #15279
 **PR:** #15280
+
 # HIPAA Compliance Addendum — Issue #15279 (Red Light Therapy Stretch Marks App)
 
 **Status:** Corrective addendum to WR for issue #15279
@@ -123,11 +124,11 @@ Disclaimers + educational framing help keep the app in **general wellness** terr
 
 The following statements in `issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md` around line 190 must be revised:
 
-| Original (incorrect) framing | Corrected framing |
-|---|---|
-| "Client-side storage avoids HIPAA" | Storage architecture does not determine HIPAA applicability. Covered-entity status does. |
-| "Disclaimers exempt us from HIPAA" | Disclaimers address FDA SaMD and tort liability, not HIPAA. |
-| "Encryption = HIPAA compliance" | Encryption is one Security Rule safeguard among many; full compliance requires BAAs, audit logs, training, breach procedures, etc. |
+| Original (incorrect) framing                              | Corrected framing                                                                                                                                                                  |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Client-side storage avoids HIPAA"                        | Storage architecture does not determine HIPAA applicability. Covered-entity status does.                                                                                           |
+| "Disclaimers exempt us from HIPAA"                        | Disclaimers address FDA SaMD and tort liability, not HIPAA.                                                                                                                        |
+| "Encryption = HIPAA compliance"                           | Encryption is one Security Rule safeguard among many; full compliance requires BAAs, audit logs, training, breach procedures, etc.                                                 |
 | "We are HIPAA-safe because we don't store on our servers" | Restate as: "We are not a HIPAA covered entity or business associate; therefore HIPAA does not apply. We comply with FTC HBNR, MHMDA, CCPA/CPRA instead." (pending legal sign-off) |
 
 ---
@@ -227,12 +228,12 @@ Even without HIPAA, we still owe users:
 
 These are **independent** regulatory tracks and must be assessed separately.
 
-| Concern | Regulator | Trigger | Mitigation |
-|---|---|---|---|
-| PHI handling | HHS / OCR (HIPAA) | Being a CE or BA | Full Security Rule + BAAs |
-| Consumer health data | FTC + State AGs | D2C collection of health data | Privacy policy, MHMD, breach rule |
-| Medical device software | FDA (SaMD) | Diagnosing, treating, or informing clinical decisions | Wellness/educational framing, no diagnostic claims, disclaimers |
-| EU health data | EU DPAs (GDPR Art. 9) | EU user data | Explicit consent, DPO, SCCs |
+| Concern                 | Regulator             | Trigger                                               | Mitigation                                                      |
+| ----------------------- | --------------------- | ----------------------------------------------------- | --------------------------------------------------------------- |
+| PHI handling            | HHS / OCR (HIPAA)     | Being a CE or BA                                      | Full Security Rule + BAAs                                       |
+| Consumer health data    | FTC + State AGs       | D2C collection of health data                         | Privacy policy, MHMD, breach rule                               |
+| Medical device software | FDA (SaMD)            | Diagnosing, treating, or informing clinical decisions | Wellness/educational framing, no diagnostic claims, disclaimers |
+| EU health data          | EU DPAs (GDPR Art. 9) | EU user data                                          | Explicit consent, DPO, SCCs                                     |
 
 **Disclaimers reduce FDA risk only.** They have zero effect on HIPAA, FTC, or state privacy law obligations.
 

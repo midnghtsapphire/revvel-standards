@@ -8,6 +8,7 @@
 ---
 
 ## Table of Contents
+
 1. [What Is GBrain?](#1-what-is-gbrain)
 2. [The Problem It Solves](#2-the-problem-it-solves)
 3. [What It Is Derived From](#3-what-it-is-derived-from)
@@ -33,6 +34,7 @@ With GBrain, the AI has a brain: a structured knowledge base of markdown files i
 ### In Plain Language
 
 Think of GBrain as a notebook that:
+
 - Your AI reads **before** every answer (so it always has context)
 - Your AI **writes into** after every conversation (so it keeps getting smarter)
 - **You can also read and edit** (it's just plain text files)
@@ -60,24 +62,24 @@ This means users must constantly re-explain context. It means AI responses lack 
 
 Without persistent memory, AI tools are powerful but not **personal**. They can answer general questions but not questions like:
 
-- *"Who should I loop in on this deal based on my past conversations?"*
-- *"What did I learn about this person last time we met?"*
-- *"What have I said about the relationship between X and Y over the past year?"*
-- *"Prep me for my meeting with Sarah — pull everything you know about her."*
+- _"Who should I loop in on this deal based on my past conversations?"_
+- _"What did I learn about this person last time we met?"_
+- _"What have I said about the relationship between X and Y over the past year?"_
+- _"Prep me for my meeting with Sarah — pull everything you know about her."_
 
 These questions require the agent to know YOUR world. GBrain is how the agent learns your world and keeps learning it.
 
 ### What GBrain Delivers
 
-| Problem | GBrain Solution |
-|---|---|
-| Agent forgets between sessions | Permanent local knowledge base |
-| Agent doesn't know your contacts | People pages with full dossiers |
-| Agent can't search your past | Hybrid keyword + vector search |
-| Knowledge is locked in chat logs | Structured markdown, human-readable |
-| AI is generic, not personal | Brain grows with your actual life |
-| Multi-source data is siloed | Integrations: email, calendar, voice, Twitter |
-| Agent needs to be re-briefed | Brain-agent loop: read before, write after |
+| Problem                          | GBrain Solution                               |
+| -------------------------------- | --------------------------------------------- |
+| Agent forgets between sessions   | Permanent local knowledge base                |
+| Agent doesn't know your contacts | People pages with full dossiers               |
+| Agent can't search your past     | Hybrid keyword + vector search                |
+| Knowledge is locked in chat logs | Structured markdown, human-readable           |
+| AI is generic, not personal      | Brain grows with your actual life             |
+| Multi-source data is siloed      | Integrations: email, calendar, voice, Twitter |
+| Agent needs to be re-briefed     | Brain-agent loop: read before, write after    |
 
 ---
 
@@ -102,6 +104,7 @@ GBrain is the retrieval engine that makes this brain searchable and actionable. 
 ### Technical Foundation
 
 GBrain builds on:
+
 - **PGLite** — embedded Postgres (WebAssembly) with pgvector. No server, no subscription, no setup. Runs in the process.
 - **pgvector** — vector similarity search for semantic/embedding-based retrieval
 - **Hybrid search (RRF)** — combines keyword (BM25) and vector search using Reciprocal Rank Fusion for best results
@@ -112,11 +115,11 @@ GBrain builds on:
 
 GBrain is the **knowledge layer**. OpenClaw/Hermes are the **agent execution layer**. They are complementary:
 
-| Layer | What It Stores | How to Query |
-|---|---|---|
-| GBrain | People, companies, meetings, ideas, media | `gbrain search`, `gbrain query`, `gbrain get` |
-| Agent memory | Preferences, decisions, operational config | `memory_search` |
-| Session context | Current conversation | Automatic |
+| Layer           | What It Stores                             | How to Query                                  |
+| --------------- | ------------------------------------------ | --------------------------------------------- |
+| GBrain          | People, companies, meetings, ideas, media  | `gbrain search`, `gbrain query`, `gbrain get` |
+| Agent memory    | Preferences, decisions, operational config | `memory_search`                               |
+| Session context | Current conversation                       | Automatic                                     |
 
 ---
 
@@ -137,22 +140,22 @@ GBrain is the memory layer that makes the EXRUP methodology sustainable over tim
 
 ### Connection to Existing Revvel Skills
 
-| Revvel Skill | How GBrain Extends It |
-|---|---|
-| `context-management` | GBrain is the cross-session memory store. Context handoffs become brain write operations. |
-| `memory-pruning` | GBrain's dream cycle handles archival and consolidation. Pruned items can be archived to brain instead of deleted. |
-| `model-router` | GBrain queries (`gbrain query`) use LLM-powered synthesis — the model router can optimize which model handles these. |
-| `wrap-up` | The "Remember It" phase maps directly to a brain write operation (`gbrain sync`). |
-| `todo-breakdown` | Project context and past decisions live in the brain, informing better TODO analysis. |
+| Revvel Skill         | How GBrain Extends It                                                                                                |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `context-management` | GBrain is the cross-session memory store. Context handoffs become brain write operations.                            |
+| `memory-pruning`     | GBrain's dream cycle handles archival and consolidation. Pruned items can be archived to brain instead of deleted.   |
+| `model-router`       | GBrain queries (`gbrain query`) use LLM-powered synthesis — the model router can optimize which model handles these. |
+| `wrap-up`            | The "Remember It" phase maps directly to a brain write operation (`gbrain sync`).                                    |
+| `todo-breakdown`     | Project context and past decisions live in the brain, informing better TODO analysis.                                |
 
 ### Connection to Revvel Standards Documents
 
-| Standard | GBrain Role |
-|---|---|
-| `AGENT_FACTORY_STANDARD.md` | GBrain is the memory backend for agent factories |
-| `AUDREY_AUTONOMOUS_AGENT_STANDARD.md` | Brain-agent loop is the persistence mechanism for autonomous agents |
-| `MCP_STANDARD.md` | GBrain registers as an MCP server in `.mcp.json` |
-| `CONCURRENT_DEVELOPMENT_STANDARD.md` | Shared brain enables context sharing across parallel agent instances |
+| Standard                              | GBrain Role                                                          |
+| ------------------------------------- | -------------------------------------------------------------------- |
+| `AGENT_FACTORY_STANDARD.md`           | GBrain is the memory backend for agent factories                     |
+| `AUDREY_AUTONOMOUS_AGENT_STANDARD.md` | Brain-agent loop is the persistence mechanism for autonomous agents  |
+| `MCP_STANDARD.md`                     | GBrain registers as an MCP server in `.mcp.json`                     |
+| `CONCURRENT_DEVELOPMENT_STANDARD.md`  | Shared brain enables context sharing across parallel agent instances |
 
 ---
 
@@ -208,16 +211,17 @@ Next conversation:
 
 ### Storage Options
 
-| Option | When to Use | Setup |
-|---|---|---|
-| **PGLite (default)** | <1000 files, single device | `gbrain init` — zero config |
-| **Supabase** | 1000+ files, multi-device, remote MCP | `gbrain migrate --to supabase` |
+| Option               | When to Use                           | Setup                          |
+| -------------------- | ------------------------------------- | ------------------------------ |
+| **PGLite (default)** | <1000 files, single device            | `gbrain init` — zero config    |
+| **Supabase**         | 1000+ files, multi-device, remote MCP | `gbrain migrate --to supabase` |
 
 ---
 
 ## 6. Complete Dependency Map
 
 ### Required
+
 ```
 Bun >= 1.0
   └── GBrain CLI (github:garrytan/gbrain)
@@ -226,6 +230,7 @@ Bun >= 1.0
 ```
 
 ### Optional (unlock features)
+
 ```
 OpenAI API Key
   └── text-embedding-3-large (vector embeddings — better search)
@@ -257,6 +262,7 @@ Circleback (meeting sync)
 ```
 
 ### Installation Environment
+
 ```
 Mac: macOS 10.15+ (Catalina or newer)
      curl (built into macOS)
@@ -274,6 +280,7 @@ Windows: Windows 10 version 1803+ (or Windows 11)
 ## 7. Scripts and Automation
 
 ### Core CLI Commands
+
 ```bash
 gbrain init                    # Initialize local database
 gbrain import <path>           # Index markdown files
@@ -292,6 +299,7 @@ gbrain integrations doctor     # Health check all integrations
 ```
 
 ### Cron Schedule (Dream Cycle)
+
 ```bash
 # Live sync every 15 minutes
 */15 * * * * gbrain sync --repo ~/brain && gbrain embed --stale
@@ -308,6 +316,7 @@ gbrain integrations doctor     # Health check all integrations
 ```
 
 ### Upgrade
+
 ```bash
 cd ~/gbrain && git pull origin main && bun install
 ```
@@ -322,19 +331,20 @@ MCP (Model Context Protocol) is Anthropic's open standard for connecting AI agen
 
 ### The 30 MCP Tools GBrain Exposes
 
-| Category | Tools |
-|---|---|
-| **Reading** | `get_page`, `search`, `query`, `traverse_graph` |
-| **Writing** | `put_page`, `add_link`, `file_upload` |
-| **Sync** | `sync_brain`, `import_directory` |
-| **Health** | `doctor`, `check_update` |
-| **Integrations** | `list_integrations`, `integrations_doctor` |
-| **Schema** | `list_pages`, `get_schema`, `describe_graph` |
-| + 18 more | Run `gbrain --help` for full list |
+| Category         | Tools                                           |
+| ---------------- | ----------------------------------------------- |
+| **Reading**      | `get_page`, `search`, `query`, `traverse_graph` |
+| **Writing**      | `put_page`, `add_link`, `file_upload`           |
+| **Sync**         | `sync_brain`, `import_directory`                |
+| **Health**       | `doctor`, `check_update`                        |
+| **Integrations** | `list_integrations`, `integrations_doctor`      |
+| **Schema**       | `list_pages`, `get_schema`, `describe_graph`    |
+| + 18 more        | Run `gbrain --help` for full list               |
 
 ### Adding to `.mcp.json` (Revvel Standard)
 
 For any Revvel project, add GBrain to the project's `.mcp.json`:
+
 ```json
 {
   "mcpServers": {
@@ -347,7 +357,9 @@ For any Revvel project, add GBrain to the project's `.mcp.json`:
 ```
 
 ### Remote MCP (Multi-Device)
+
 For access across devices or from Claude Desktop:
+
 ```bash
 # Run gbrain serve behind an HTTP tunnel
 gbrain serve --http   # or: ngrok http 8787
@@ -361,18 +373,21 @@ gbrain auth create "my-client-name"
 ## 9. Installation Summary
 
 ### Mac (Double-Click Installer)
+
 1. Download `install/mac/install-gbrain.command`
 2. Right-click → Open → Open (bypass Gatekeeper)
 3. Follow the prompts in Terminal
 4. Takes ~5-10 minutes
 
 ### Windows (Double-Click Installer)
+
 1. Download `install/windows/install-gbrain.bat`
 2. Double-click → "More info" → "Run anyway" (bypass SmartScreen)
 3. Follow the prompts in Command Prompt
 4. Takes ~5-10 minutes
 
 ### Manual Install (Any Platform)
+
 ```bash
 # Install Bun
 curl -fsSL https://bun.sh/install | bash    # Mac/Linux
@@ -473,4 +488,4 @@ Revvel Standards Ecosystem
 
 ---
 
-*GBrain is derived from [garrytan/gbrain](https://github.com/garrytan/gbrain). Packaged as part of [Revvel Standards](https://github.com/midnghtsapphire/revvel-standards) by Audrey Evans (MIDNGHTSAPPHIRE).*
+_GBrain is derived from [garrytan/gbrain](https://github.com/garrytan/gbrain). Packaged as part of [Revvel Standards](https://github.com/midnghtsapphire/revvel-standards) by Audrey Evans (MIDNGHTSAPPHIRE)._

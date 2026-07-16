@@ -16,7 +16,8 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     title: "Revvel CLI Engine",
-    description: "Execute. Generate. Export. The premium CLI agent for production-grade automation.",
+    description:
+      "Execute. Generate. Export. The premium CLI agent for production-grade automation.",
     type: "website",
   },
 };

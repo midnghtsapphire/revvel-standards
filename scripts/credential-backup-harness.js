@@ -21,23 +21,24 @@
  *   node scripts/credential-backup-harness.js --report
  */
 
-'use strict';
+"use strict";
 
-const crypto = require('crypto');
-const fs = require('fs');
-const { spawnSync } = require('child_process');
+const crypto = require("crypto");
+const fs = require("fs");
+const { spawnSync } = require("child_process");
 
-const DEFAULT_CLI_TIMEOUT_MS = Number.parseInt(
-  process.env.CREDENTIAL_BACKUP_CLI_TIMEOUT_MS || '15000',
-  10
-) || 15000;
+const DEFAULT_CLI_TIMEOUT_MS =
+  Number.parseInt(
+    process.env.CREDENTIAL_BACKUP_CLI_TIMEOUT_MS || "15000",
+    10,
+  ) || 15000;
 
 const DEFAULT_KEYS = [
-  'OPENROUTER_API_KEY',
-  'OPENAI_API_KEY',
-  'ANTHROPIC_API_KEY',
-  'POLAR_ACCESS_TOKEN',
-  'GITHUB_TOKEN',
+  "OPENROUTER_API_KEY",
+  "OPENAI_API_KEY",
+  "ANTHROPIC_API_KEY",
+  "POLAR_ACCESS_TOKEN",
+  "GITHUB_TOKEN",
 ];
 
 function usage(exitCode = 0) {
@@ -68,60 +69,67 @@ Options:
 function parseArgs(argv) {
   const args = {
     keys: null,
-    format: 'json',
+    format: "json",
     report: false,
     quiet: false,
-    secretsCsv: '',
-    repo: process.env.GITHUB_REPOSITORY || '',
-    project: 'revvel-standards',
-    config: 'prd',
+    secretsCsv: "",
+    repo: process.env.GITHUB_REPOSITORY || "",
+    project: "revvel-standards",
+    config: "prd",
     json: false,
-    dryRun: /^(1|true|yes)$/i.test(process.env.DRY_RUN || ''),
+    dryRun: /^(1|true|yes)$/i.test(process.env.DRY_RUN || ""),
     catalog: false,
   };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
-    if (a === '-h' || a === '--help') {
+    if (a === "-h" || a === "--help") {
       usage(0);
-    } else if (a === '--keys' && argv[i + 1]) {
-      args.keys = argv[i + 1].split(',').map((k) => k.trim()).filter(Boolean);
+    } else if (a === "--keys" && argv[i + 1]) {
+      args.keys = argv[i + 1]
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean);
       i += 1;
-    } else if (a.startsWith('--keys=')) {
-      args.keys = a.slice('--keys='.length).split(',').map((k) => k.trim()).filter(Boolean);
-    } else if (a === '--format' && argv[i + 1]) {
+    } else if (a.startsWith("--keys=")) {
+      args.keys = a
+        .slice("--keys=".length)
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean);
+    } else if (a === "--format" && argv[i + 1]) {
       args.format = argv[i + 1];
       i += 1;
-    } else if (a.startsWith('--format=')) {
-      args.format = a.slice('--format='.length);
-    } else if (a === '--secrets' && argv[i + 1]) {
+    } else if (a.startsWith("--format=")) {
+      args.format = a.slice("--format=".length);
+    } else if (a === "--secrets" && argv[i + 1]) {
       args.secretsCsv = argv[i + 1];
       i += 1;
-    } else if (a.startsWith('--secrets=')) {
-      args.secretsCsv = a.slice('--secrets='.length);
-    } else if (a === '--repo' && argv[i + 1]) {
+    } else if (a.startsWith("--secrets=")) {
+      args.secretsCsv = a.slice("--secrets=".length);
+    } else if (a === "--repo" && argv[i + 1]) {
       args.repo = argv[i + 1];
       i += 1;
-    } else if (a.startsWith('--repo=')) {
-      args.repo = a.slice('--repo='.length);
-    } else if (a === '--project' && argv[i + 1]) {
+    } else if (a.startsWith("--repo=")) {
+      args.repo = a.slice("--repo=".length);
+    } else if (a === "--project" && argv[i + 1]) {
       args.project = argv[i + 1];
       i += 1;
-    } else if (a.startsWith('--project=')) {
-      args.project = a.slice('--project='.length);
-    } else if (a === '--config' && argv[i + 1]) {
+    } else if (a.startsWith("--project=")) {
+      args.project = a.slice("--project=".length);
+    } else if (a === "--config" && argv[i + 1]) {
       args.config = argv[i + 1];
       i += 1;
-    } else if (a.startsWith('--config=')) {
-      args.config = a.slice('--config='.length);
-    } else if (a === '--json') {
+    } else if (a.startsWith("--config=")) {
+      args.config = a.slice("--config=".length);
+    } else if (a === "--json") {
       args.json = true;
-    } else if (a === '--dry-run') {
+    } else if (a === "--dry-run") {
       args.dryRun = true;
-    } else if (a === '--catalog') {
+    } else if (a === "--catalog") {
       args.catalog = true;
-    } else if (a === '--report') {
+    } else if (a === "--report") {
       args.report = true;
-    } else if (a === '--quiet') {
+    } else if (a === "--quiet") {
       args.quiet = true;
     } else {
       throw new Error(`unknown arg: ${a}`);
@@ -131,30 +139,55 @@ function parseArgs(argv) {
 }
 
 function safeSpawn(cmd, args, opts = {}) {
-  const allowedCmds = ['gh', 'git', 'mkdir', 'tar', 'rm', 'doppler', 'op', 'node', 'sh', 'bash'];
-  if (!allowedCmds.includes(cmd) && !cmd.endsWith('node') && !cmd.endsWith('doppler')) throw new Error('Unsafe command: ' + cmd);
+  const allowedCmds = [
+    "gh",
+    "git",
+    "mkdir",
+    "tar",
+    "rm",
+    "doppler",
+    "op",
+    "node",
+    "sh",
+    "bash",
+  ];
+  if (
+    !allowedCmds.includes(cmd) &&
+    !cmd.endsWith("node") &&
+    !cmd.endsWith("doppler")
+  )
+    throw new Error("Unsafe command: " + cmd);
   try {
     const { maxBuffer, stdio, timeout, ...rest } = opts;
     // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process
     const result = spawnSync(cmd, args, {
-      encoding: 'utf8',
+      encoding: "utf8",
       maxBuffer: maxBuffer || 1024 * 1024,
-      stdio: stdio || (Object.prototype.hasOwnProperty.call(rest, 'input')
-        ? ['pipe', 'pipe', 'pipe']
-        : ['ignore', 'pipe', 'pipe']),
+      stdio:
+        stdio ||
+        (Object.hasOwn(rest, "input")
+          ? ["pipe", "pipe", "pipe"]
+          : ["ignore", "pipe", "pipe"]),
       timeout: timeout ?? DEFAULT_CLI_TIMEOUT_MS,
       ...rest,
     });
     if (result.error) {
-      if (result.error.code === 'ETIMEDOUT') {
-        return { ok: false, error: `timeout after ${timeout ?? DEFAULT_CLI_TIMEOUT_MS}ms`, timedOut: true };
+      if (result.error.code === "ETIMEDOUT") {
+        return {
+          ok: false,
+          error: `timeout after ${timeout ?? DEFAULT_CLI_TIMEOUT_MS}ms`,
+          timedOut: true,
+        };
       }
       return { ok: false, error: result.error.message };
     }
     if (result.status !== 0) {
-      return { ok: false, error: (result.stderr || '').trim() || `exit ${result.status}` };
+      return {
+        ok: false,
+        error: (result.stderr || "").trim() || `exit ${result.status}`,
+      };
     }
-    return { ok: true, stdout: (result.stdout || '').replace(/\n$/, '') };
+    return { ok: true, stdout: (result.stdout || "").replace(/\n$/, "") };
   } catch (err) {
     return { ok: false, error: err.message };
   }
@@ -165,17 +198,21 @@ function shellQuote(value) {
 }
 
 function hasBinary(bin) {
-  const probe = process.platform === 'win32'
-    ? safeSpawn('where', [bin])
-    : safeSpawn('sh', ['-c', `command -v ${shellQuote(bin)}`]);
+  const probe =
+    process.platform === "win32"
+      ? safeSpawn("where", [bin])
+      : safeSpawn("sh", ["-c", `command -v ${shellQuote(bin)}`]);
   return probe.ok && Boolean(probe.stdout);
 }
 
 // Source 1+2: GitHub Actions secrets are exported as env, so env covers both.
 function fromEnv(key) {
   const v = process.env[key];
-  if (typeof v === 'string' && v.length > 0) {
-    return { value: v, source: process.env.GITHUB_ACTIONS ? 'github-secrets' : 'env' };
+  if (typeof v === "string" && v.length > 0) {
+    return {
+      value: v,
+      source: process.env.GITHUB_ACTIONS ? "github-secrets" : "env",
+    };
   }
   return null;
 }
@@ -187,22 +224,28 @@ function loadJsonBackup() {
   jsonCache = {};
   const inline = process.env.CREDENTIAL_BACKUP_JSON;
   if (inline) {
-    try { Object.assign(jsonCache, JSON.parse(inline)); } catch (_) { /* ignore */ }
+    try {
+      Object.assign(jsonCache, JSON.parse(inline));
+    } catch (_) {
+      /* ignore */
+    }
   }
   const file = process.env.CREDENTIAL_BACKUP_JSON_FILE;
   if (file && fs.existsSync(file)) {
     try {
-      const parsed = JSON.parse(fs.readFileSync(file, 'utf8'));
+      const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
       Object.assign(jsonCache, parsed);
-    } catch (_) { /* ignore */ }
+    } catch (_) {
+      /* ignore */
+    }
   }
   return jsonCache;
 }
 
 function fromJsonBackup(key) {
   const data = loadJsonBackup();
-  if (data && typeof data[key] === 'string' && data[key].length > 0) {
-    return { value: data[key], source: 'json-backup' };
+  if (data && typeof data[key] === "string" && data[key].length > 0) {
+    return { value: data[key], source: "json-backup" };
   }
   return null;
 }
@@ -213,8 +256,8 @@ function loadSopsBackup() {
   if (sopsCache !== null) return sopsCache;
   sopsCache = {};
   const file = process.env.CREDENTIAL_BACKUP_SOPS_FILE;
-  if (!file || !fs.existsSync(file) || !hasBinary('sops')) return sopsCache;
-  const out = safeSpawn('sops', ['-d', file]);
+  if (!file || !fs.existsSync(file) || !hasBinary("sops")) return sopsCache;
+  const out = safeSpawn("sops", ["-d", file]);
   if (!out.ok) return sopsCache;
   try {
     sopsCache = JSON.parse(out.stdout);
@@ -230,8 +273,8 @@ function loadSopsBackup() {
 
 function fromSops(key) {
   const data = loadSopsBackup();
-  if (data && typeof data[key] === 'string' && data[key].length > 0) {
-    return { value: data[key], source: 'sops' };
+  if (data && typeof data[key] === "string" && data[key].length > 0) {
+    return { value: data[key], source: "sops" };
   }
   return null;
 }
@@ -239,57 +282,66 @@ function fromSops(key) {
 // Source 5: pass
 function fromPass(key) {
   const prefix = process.env.CREDENTIAL_BACKUP_PASS_PREFIX;
-  if (!prefix || !hasBinary('pass')) return null;
-  const entry = `${prefix.replace(/\/$/, '')}/${key}`;
-  const out = safeSpawn('pass', ['show', entry]);
-  if (out.ok && out.stdout) return { value: out.stdout.split(/\r?\n/)[0], source: 'pass' };
+  if (!prefix || !hasBinary("pass")) return null;
+  const entry = `${prefix.replace(/\/$/, "")}/${key}`;
+  const out = safeSpawn("pass", ["show", entry]);
+  if (out.ok && out.stdout)
+    return { value: out.stdout.split(/\r?\n/)[0], source: "pass" };
   return null;
 }
 
 // Source 6: Bitwarden CLI
 function fromBitwarden(key) {
   const prefix = process.env.CREDENTIAL_BACKUP_BW_PREFIX;
-  if (!prefix || !process.env.BW_SESSION || !hasBinary('bw')) return null;
+  if (!prefix || !process.env.BW_SESSION || !hasBinary("bw")) return null;
   const item = `${prefix}${key}`;
-  const out = safeSpawn('bw', ['get', 'password', item, '--session', process.env.BW_SESSION]);
-  if (out.ok && out.stdout) return { value: out.stdout, source: 'bitwarden' };
+  const out = safeSpawn("bw", [
+    "get",
+    "password",
+    item,
+    "--session",
+    process.env.BW_SESSION,
+  ]);
+  if (out.ok && out.stdout) return { value: out.stdout, source: "bitwarden" };
   return null;
 }
 
 // Source 7: 1Password CLI
 function from1Password(key) {
   const template = process.env.CREDENTIAL_BACKUP_1PASSWORD_TEMPLATE;
-  if (!template || !hasBinary('op')) return null;
+  if (!template || !hasBinary("op")) return null;
   const ref = template.replace(/\{KEY\}/g, key);
-  const args = ['read', ref];
+  const args = ["read", ref];
   const env = { ...process.env };
-  if (process.env.OP_SERVICE_ACCOUNT_TOKEN) env.OP_SERVICE_ACCOUNT_TOKEN = process.env.OP_SERVICE_ACCOUNT_TOKEN;
-  const out = safeSpawn('op', args, { env });
-  if (out.ok && out.stdout) return { value: out.stdout, source: '1password' };
+  if (process.env.OP_SERVICE_ACCOUNT_TOKEN)
+    env.OP_SERVICE_ACCOUNT_TOKEN = process.env.OP_SERVICE_ACCOUNT_TOKEN;
+  const out = safeSpawn("op", args, { env });
+  if (out.ok && out.stdout) return { value: out.stdout, source: "1password" };
   return null;
 }
 
 // Source 8: Infisical / Vault direct CLI lookups.
 function fromInfisical(key) {
-  if (!process.env.INFISICAL_TOKEN || !hasBinary('infisical')) return null;
-  const out = safeSpawn('infisical', ['secrets', 'get', key, '--plain']);
-  if (out.ok && out.stdout) return { value: out.stdout, source: 'infisical' };
+  if (!process.env.INFISICAL_TOKEN || !hasBinary("infisical")) return null;
+  const out = safeSpawn("infisical", ["secrets", "get", key, "--plain"]);
+  if (out.ok && out.stdout) return { value: out.stdout, source: "infisical" };
   return null;
 }
 
 function fromVault(key) {
-  if (!process.env.VAULT_ADDR || !hasBinary('vault')) return null;
-  const pathRef = process.env.CREDENTIAL_BACKUP_VAULT_PATH || 'secret/data/credentials';
-  const out = safeSpawn('vault', ['kv', 'get', '-field', key, pathRef]);
-  if (out.ok && out.stdout) return { value: out.stdout, source: 'vault' };
+  if (!process.env.VAULT_ADDR || !hasBinary("vault")) return null;
+  const pathRef =
+    process.env.CREDENTIAL_BACKUP_VAULT_PATH || "secret/data/credentials";
+  const out = safeSpawn("vault", ["kv", "get", "-field", key, pathRef]);
+  if (out.ok && out.stdout) return { value: out.stdout, source: "vault" };
   return null;
 }
 
 // Source 9: Doppler (optional)
 function fromDoppler(key) {
-  if (!hasBinary('doppler')) return null;
-  const out = safeSpawn('doppler', ['secrets', 'get', key, '--plain']);
-  if (out.ok && out.stdout) return { value: out.stdout, source: 'doppler' };
+  if (!hasBinary("doppler")) return null;
+  const out = safeSpawn("doppler", ["secrets", "get", key, "--plain"]);
+  if (out.ok && out.stdout) return { value: out.stdout, source: "doppler" };
   return null;
 }
 
@@ -306,16 +358,42 @@ const RESOLVERS = [
 ];
 
 const SOURCE_CATALOG = [
-  { id: 'github-secrets', description: 'Repo secrets already present in GitHub Actions.' },
-  { id: 'env', description: 'Environment variables exported into the current process.' },
-  { id: 'json-backup', description: 'CREDENTIAL_BACKUP_JSON or CREDENTIAL_BACKUP_JSON_FILE.' },
-  { id: 'sops', description: 'SOPS/age file from CREDENTIAL_BACKUP_SOPS_FILE.' },
-  { id: 'pass', description: 'UNIX pass entries under CREDENTIAL_BACKUP_PASS_PREFIX.' },
-  { id: 'bitwarden', description: 'Bitwarden CLI with CREDENTIAL_BACKUP_BW_PREFIX and BW_SESSION.' },
-  { id: '1password', description: '1Password CLI references from CREDENTIAL_BACKUP_1PASSWORD_TEMPLATE.' },
-  { id: 'infisical', description: 'Infisical CLI with INFISICAL_TOKEN.' },
-  { id: 'vault', description: 'Vault CLI with VAULT_ADDR and Vault authentication.' },
-  { id: 'doppler', description: 'Optional Doppler CLI fallback.' },
+  {
+    id: "github-secrets",
+    description: "Repo secrets already present in GitHub Actions.",
+  },
+  {
+    id: "env",
+    description: "Environment variables exported into the current process.",
+  },
+  {
+    id: "json-backup",
+    description: "CREDENTIAL_BACKUP_JSON or CREDENTIAL_BACKUP_JSON_FILE.",
+  },
+  {
+    id: "sops",
+    description: "SOPS/age file from CREDENTIAL_BACKUP_SOPS_FILE.",
+  },
+  {
+    id: "pass",
+    description: "UNIX pass entries under CREDENTIAL_BACKUP_PASS_PREFIX.",
+  },
+  {
+    id: "bitwarden",
+    description:
+      "Bitwarden CLI with CREDENTIAL_BACKUP_BW_PREFIX and BW_SESSION.",
+  },
+  {
+    id: "1password",
+    description:
+      "1Password CLI references from CREDENTIAL_BACKUP_1PASSWORD_TEMPLATE.",
+  },
+  { id: "infisical", description: "Infisical CLI with INFISICAL_TOKEN." },
+  {
+    id: "vault",
+    description: "Vault CLI with VAULT_ADDR and Vault authentication.",
+  },
+  { id: "doppler", description: "Optional Doppler CLI fallback." },
 ];
 
 function resolveKey(key, resolvers = RESOLVERS) {
@@ -323,9 +401,11 @@ function resolveKey(key, resolvers = RESOLVERS) {
     try {
       const hit = fn(key);
       if (hit && hit.value) return hit;
-    } catch (_) { /* keep going */ }
+    } catch (_) {
+      /* keep going */
+    }
   }
-  return { value: null, source: 'missing' };
+  return { value: null, source: "missing" };
 }
 
 function resolveAll(keys, resolvers = RESOLVERS) {
@@ -342,22 +422,31 @@ function resetCaches() {
 function sourcesAvailable() {
   return {
     env: true,
-    jsonBackup: Boolean(process.env.CREDENTIAL_BACKUP_JSON || process.env.CREDENTIAL_BACKUP_JSON_FILE),
-    sops: Boolean(process.env.CREDENTIAL_BACKUP_SOPS_FILE) && hasBinary('sops'),
-    pass: Boolean(process.env.CREDENTIAL_BACKUP_PASS_PREFIX) && hasBinary('pass'),
-    bitwarden: Boolean(process.env.CREDENTIAL_BACKUP_BW_PREFIX && process.env.BW_SESSION) && hasBinary('bw'),
-    onePassword: Boolean(process.env.CREDENTIAL_BACKUP_1PASSWORD_TEMPLATE) && hasBinary('op'),
-    infisical: Boolean(process.env.INFISICAL_TOKEN) && hasBinary('infisical'),
-    vault: Boolean(process.env.VAULT_ADDR) && hasBinary('vault'),
-    doppler: hasBinary('doppler'),
+    jsonBackup: Boolean(
+      process.env.CREDENTIAL_BACKUP_JSON ||
+      process.env.CREDENTIAL_BACKUP_JSON_FILE,
+    ),
+    sops: Boolean(process.env.CREDENTIAL_BACKUP_SOPS_FILE) && hasBinary("sops"),
+    pass:
+      Boolean(process.env.CREDENTIAL_BACKUP_PASS_PREFIX) && hasBinary("pass"),
+    bitwarden:
+      Boolean(
+        process.env.CREDENTIAL_BACKUP_BW_PREFIX && process.env.BW_SESSION,
+      ) && hasBinary("bw"),
+    onePassword:
+      Boolean(process.env.CREDENTIAL_BACKUP_1PASSWORD_TEMPLATE) &&
+      hasBinary("op"),
+    infisical: Boolean(process.env.INFISICAL_TOKEN) && hasBinary("infisical"),
+    vault: Boolean(process.env.VAULT_ADDR) && hasBinary("vault"),
+    doppler: hasBinary("doppler"),
   };
 }
 
 function githubEnvEntry(key, value) {
   const digest = crypto
-    .createHash('sha256')
+    .createHash("sha256")
     .update(`${key}\0${value}`)
-    .digest('hex')
+    .digest("hex")
     .slice(0, 16);
   let delimiter = `__CBH_${key}_${digest}__`;
   let counter = 0;
@@ -369,22 +458,22 @@ function githubEnvEntry(key, value) {
 }
 
 function formatOutput(resolved, format) {
-  if (format === 'env') {
+  if (format === "env") {
     return Object.entries(resolved)
       .filter(([, v]) => v.value)
       .map(([k, v]) => `${k}=${v.value}`)
-      .join('\n');
+      .join("\n");
   }
-  if (format === 'github-actions') {
+  if (format === "github-actions") {
     // Emit only GITHUB_ENV-compatible heredocs. Workflow commands such as
     // ::add-mask:: belong on stdout, not inside the env file.
     return Object.entries(resolved)
       .filter(([, v]) => v.value)
       .map(([k, v]) => githubEnvEntry(k, v.value))
-      .join('\n');
+      .join("\n");
   }
   // default: json with metadata, values redacted unless explicitly requested via --format json-secrets
-  if (format === 'json-secrets') {
+  if (format === "json-secrets") {
     return JSON.stringify(resolved, null, 2);
   }
   const redacted = {};
@@ -395,26 +484,42 @@ function formatOutput(resolved, format) {
 }
 
 function normalizeSecrets(csv) {
-  return [...new Set(String(csv || '')
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean))];
+  return [
+    ...new Set(
+      String(csv || "")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  ];
 }
 
 function githubSecretSet(repo) {
   if (process.env.MOCK_GITHUB_SECRETS) {
-    return new Set(process.env.MOCK_GITHUB_SECRETS
-      .split(',')
-      .map((item) => item.trim())
-      .filter(Boolean));
+    return new Set(
+      process.env.MOCK_GITHUB_SECRETS.split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+    );
   }
-  if (!repo || !hasBinary('gh')) return new Set();
+  if (!repo || !hasBinary("gh")) return new Set();
   if (!process.env.GH_TOKEN && !process.env.GITHUB_TOKEN) return new Set();
 
-  const result = safeSpawn('gh', ['secret', 'list', '--repo', repo, '--json', 'name']);
+  const result = safeSpawn("gh", [
+    "secret",
+    "list",
+    "--repo",
+    repo,
+    "--json",
+    "name",
+  ]);
   if (!result.ok) return new Set();
   try {
-    return new Set(JSON.parse(result.stdout).map((entry) => entry.name).filter(Boolean));
+    return new Set(
+      JSON.parse(result.stdout)
+        .map((entry) => entry.name)
+        .filter(Boolean),
+    );
   } catch (_) {
     return new Set();
   }
@@ -424,31 +529,35 @@ function setGithubSecret(name, value, repo, dryRun) {
   // CRITICAL: Never overwrite with empty values - protects against Doppler sync failures
   if (dryRun) return { ok: true, dryRun: true };
   if (!value || String(value).trim().length === 0) {
-    console.error(`[gatekeeper] SKIP ${name}: value is empty, preserving existing secret`);
-    return { ok: false, reason: 'empty-value-skipped' };
+    console.error(
+      `[gatekeeper] SKIP ${name}: value is empty, preserving existing secret`,
+    );
+    return { ok: false, reason: "empty-value-skipped" };
   }
-  if (!hasBinary('gh')) return { ok: false, reason: 'gh CLI not found' };
-  const result = safeSpawn('gh', ['secret', 'set', name, '--repo', repo], {
+  if (!hasBinary("gh")) return { ok: false, reason: "gh CLI not found" };
+  const result = safeSpawn("gh", ["secret", "set", name, "--repo", repo], {
     input: String(value),
   });
   if (result.ok) return { ok: true };
-  return { ok: false, reason: result.error || 'gh secret set failed' };
+  return { ok: false, reason: result.error || "gh secret set failed" };
 }
 
 function syncSecrets(opts) {
   if (!opts.secretsCsv) {
-    throw new Error('--secrets is required');
+    throw new Error("--secrets is required");
   }
-  if (!opts.repo || !opts.repo.includes('/')) {
-    throw new Error('--repo must be owner/repo');
+  if (!opts.repo || !opts.repo.includes("/")) {
+    throw new Error("--repo must be owner/repo");
   }
 
   const secrets = normalizeSecrets(opts.secretsCsv);
   if (secrets.length === 0) {
-    throw new Error('no valid secret names parsed from --secrets');
+    throw new Error("no valid secret names parsed from --secrets");
   }
 
-  const strictSourceCheck = /^(1|true|yes)$/i.test(process.env.STRICT_SOURCE_CHECK || '');
+  const strictSourceCheck = /^(1|true|yes)$/i.test(
+    process.env.STRICT_SOURCE_CHECK || "",
+  );
   const existingSecrets = githubSecretSet(opts.repo);
   const summary = {
     repo: opts.repo,
@@ -469,32 +578,38 @@ function syncSecrets(opts) {
   for (const name of secrets) {
     const resolved = resolveKey(name);
     if (resolved && resolved.value) {
-      const written = setGithubSecret(name, resolved.value, opts.repo, opts.dryRun);
+      const written = setGithubSecret(
+        name,
+        resolved.value,
+        opts.repo,
+        opts.dryRun,
+      );
       if (written.ok) {
         summary.synced.push(name);
         summary.sources[name] = resolved.source;
       } else {
         summary.failed.push(name);
-        summary.sources[name] = `${resolved.source}:write-failed:${written.reason}`;
+        summary.sources[name] =
+          `${resolved.source}:write-failed:${written.reason}`;
       }
       continue;
     }
 
     if (existingSecrets.has(name)) {
       summary.already_present.push(name);
-      summary.sources[name] = 'github-secrets';
+      summary.sources[name] = "github-secrets";
       continue;
     }
 
     if (opts.dryRun && !strictSourceCheck) {
       summary.synced.push(name);
-      summary.sources[name] = 'dry-run';
+      summary.sources[name] = "dry-run";
       continue;
     }
 
     summary.missing.push(name);
     summary.missing_in_doppler.push(name);
-    summary.sources[name] = 'missing';
+    summary.sources[name] = "missing";
   }
 
   return summary;
@@ -535,8 +650,12 @@ function main() {
       if (args.json) {
         process.stdout.write(`${JSON.stringify(summary)}\n`);
       } else {
-        process.stdout.write(`Credential backup harness checked ${summary.requested.length} secret(s).\n`);
-        process.stdout.write(`Synced: ${summary.synced.length}; already present: ${summary.already_present.length}; missing: ${summary.missing.length}; failed: ${summary.failed.length}\n`);
+        process.stdout.write(
+          `Credential backup harness checked ${summary.requested.length} secret(s).\n`,
+        );
+        process.stdout.write(
+          `Synced: ${summary.synced.length}; already present: ${summary.already_present.length}; missing: ${summary.missing.length}; failed: ${summary.failed.length}\n`,
+        );
       }
     } catch (err) {
       process.stderr.write(`error: ${err.message}\n`);

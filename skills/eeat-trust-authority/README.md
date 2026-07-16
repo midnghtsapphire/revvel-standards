@@ -42,6 +42,7 @@ gh workflow run eeat-trust-cron.yml
 ## What Is E-E-A-T?
 
 Google's quality framework:
+
 - **E**xperience — First-hand experience with the topic
 - **E**xpertise — Recognized knowledge and skill
 - **A**uthoritativeness — Recognition by others
@@ -90,16 +91,18 @@ Google's quality framework:
 ## Enable/Disable
 
 **Enable:**
+
 ```bash
 gh issue create --title "exit-quiet-mode"
 ```
 
 **Disable:**
+
 ```bash
 gh issue close <exit-quiet-mode issue number>
 ```
 
 ---
 
-*Agent: TrustForge v1.0.0*  
-*Skill Path: `skills/eeat-trust-authority/`*
+_Agent: TrustForge v1.0.0_  
+_Skill Path: `skills/eeat-trust-authority/`_

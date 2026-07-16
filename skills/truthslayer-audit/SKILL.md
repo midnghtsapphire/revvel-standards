@@ -37,16 +37,16 @@ Every TruthSlayer Score must be:
 
 The TruthSlayer Score is a **weighted sum of eight sub-scores**, each on a 0–10 scale. The final score is scaled to 0–100.
 
-| # | Factor | Weight | What it measures |
-|---|---|---:|---|
-| 1 | **Security** | 20% | Hardcoded secrets, vulnerable dependencies, dangerous primitives (`eval`, `exec`, raw SQL), auth/authorization on endpoints, input validation, CORS posture. |
-| 2 | **Authenticity & Provenance** | 15% | Real author identity, commit-signature coverage, plausible commit history (not a dump), matches claimed origin, no plagiarism / LLM-slop markers, declared license matches contents. |
-| 3 | **Help-Intent & Honesty** | 10% | Does it actually do what the README/listing promises? No dark patterns, no hidden telemetry, no upsell traps, no malware disguised as a helper. |
-| 4 | **Maintainability** | 10% | Readable structure, reasonable file sizes, named modules, consistent style, linters configured, docstrings/comments where non-obvious. |
-| 5 | **Test Coverage & CI Health** | 15% | Presence and quality of tests, coverage thresholds met (≥80% stmts/functions/lines, ≥75% branches per Revvel standard), CI green on default branch, tests actually exercise behavior (not just `expect(true).toBe(true)`). |
-| 6 | **Documentation** | 10% | README with install + usage + example, API surface documented, CHANGELOG present, licensing clear, contact/support path visible. |
-| 7 | **Community & Activity** | 10% | Recent commit cadence, issue response time, contributor count, star/fork signal *adjusted* for age and niche (not gamed). |
-| 8 | **Accessibility & Compliance** | 10% | For anything with a UI: WCAG 2.2 AA baseline, keyboard navigation, color contrast, ARIA correctness. For libraries: n/a — redistribute the 10% equally across factors 1, 4, 5, 6. |
+| #   | Factor                         | Weight | What it measures                                                                                                                                                                                                           |
+| --- | ------------------------------ | -----: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Security**                   |    20% | Hardcoded secrets, vulnerable dependencies, dangerous primitives (`eval`, `exec`, raw SQL), auth/authorization on endpoints, input validation, CORS posture.                                                               |
+| 2   | **Authenticity & Provenance**  |    15% | Real author identity, commit-signature coverage, plausible commit history (not a dump), matches claimed origin, no plagiarism / LLM-slop markers, declared license matches contents.                                       |
+| 3   | **Help-Intent & Honesty**      |    10% | Does it actually do what the README/listing promises? No dark patterns, no hidden telemetry, no upsell traps, no malware disguised as a helper.                                                                            |
+| 4   | **Maintainability**            |    10% | Readable structure, reasonable file sizes, named modules, consistent style, linters configured, docstrings/comments where non-obvious.                                                                                     |
+| 5   | **Test Coverage & CI Health**  |    15% | Presence and quality of tests, coverage thresholds met (≥80% stmts/functions/lines, ≥75% branches per Revvel standard), CI green on default branch, tests actually exercise behavior (not just `expect(true).toBe(true)`). |
+| 6   | **Documentation**              |    10% | README with install + usage + example, API surface documented, CHANGELOG present, licensing clear, contact/support path visible.                                                                                           |
+| 7   | **Community & Activity**       |    10% | Recent commit cadence, issue response time, contributor count, star/fork signal _adjusted_ for age and niche (not gamed).                                                                                                  |
+| 8   | **Accessibility & Compliance** |    10% | For anything with a UI: WCAG 2.2 AA baseline, keyboard navigation, color contrast, ARIA correctness. For libraries: n/a — redistribute the 10% equally across factors 1, 4, 5, 6.                                          |
 
 **Weighted Score Formula**
 
@@ -62,10 +62,10 @@ TruthSlayerScore = round(raw * 10)   // 0–100
 Every audit must declare an overall **confidence level** alongside the score,
 matching the Revvel-standard research convention (`AI_RESEARCH_MODULE_STANDARD.md §8`):
 
-| Confidence | When to use |
-|---|---|
-| **high**   | All eight factors scored with direct, first-hand evidence (files read, scanners run, commits inspected). No material gaps. |
-| **medium** | ≥ 6 of 8 factors scored from direct evidence; the remainder scored from secondary signals (README claims, CI badges, activity graphs) that were not independently verified. |
+| Confidence | When to use                                                                                                                                                                                                                  |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **high**   | All eight factors scored with direct, first-hand evidence (files read, scanners run, commits inspected). No material gaps.                                                                                                   |
+| **medium** | ≥ 6 of 8 factors scored from direct evidence; the remainder scored from secondary signals (README claims, CI badges, activity graphs) that were not independently verified.                                                  |
 | **low**    | ≤ 5 of 8 factors have direct evidence, or the auditor could not access the artifact at the declared ref, or key scanners failed to run. A `low` audit is publishable but must be re-run before being used as a trust signal. |
 
 Individual sub-scores may also carry their own per-factor confidence in the JSON
@@ -74,14 +74,14 @@ to be precise about which factors are well-evidenced and which are not.
 
 **Grade Bands**
 
-| Score | Grade | Badge Label |
-|---:|:---:|---|
-| 90–100 | **A+** | TruthSlayer Verified — Gold |
-| 80–89  | **A**  | TruthSlayer Verified — Silver |
-| 70–79  | **B**  | TruthSlayer Verified — Bronze |
-| 60–69  | **C**  | Conditional — Fix Required |
-| 40–59  | **D**  | Not Recommended |
-|  0–39  | **F**  | Avoid — Material Issues |
+|  Score | Grade  | Badge Label                   |
+| -----: | :----: | ----------------------------- |
+| 90–100 | **A+** | TruthSlayer Verified — Gold   |
+|  80–89 | **A**  | TruthSlayer Verified — Silver |
+|  70–79 | **B**  | TruthSlayer Verified — Bronze |
+|  60–69 | **C**  | Conditional — Fix Required    |
+|  40–59 | **D**  | Not Recommended               |
+|   0–39 | **F**  | Avoid — Material Issues       |
 
 A repo with **any** P0 finding (active secret leak, malware, license fraud, exfiltration) is **capped at F** regardless of other sub-scores.
 
@@ -183,37 +183,42 @@ Emit **both** a human-readable markdown report and a machine-readable JSON sidec
 - **Self-audit:** <true|false>
 - **Confidence:** <high | medium | low>
 
-## TruthSlayer Score: <0–100>  ·  Grade: <A+|A|B|C|D|F>
+## TruthSlayer Score: <0–100> · Grade: <A+|A|B|C|D|F>
+
 Badge: **<TruthSlayer Verified — Gold | Silver | Bronze | Conditional | Not Recommended | Avoid>**
 
 ### Sub-scores
 
-| Factor | Score (0–10) | Weight | Weighted |
-|---|---:|---:|---:|
-| Security               | x | 20% | x.xx |
-| Authenticity           | x | 15% | x.xx |
-| Help-Intent            | x | 10% | x.xx |
-| Maintainability        | x | 10% | x.xx |
-| Tests & CI             | x | 15% | x.xx |
-| Documentation          | x | 10% | x.xx |
-| Community & Activity   | x | 10% | x.xx |
-| Accessibility          | x | 10% | x.xx |
-| **Total**              |   | 100% | **xx.xx** |
+| Factor               | Score (0–10) | Weight |  Weighted |
+| -------------------- | -----------: | -----: | --------: |
+| Security             |            x |    20% |      x.xx |
+| Authenticity         |            x |    15% |      x.xx |
+| Help-Intent          |            x |    10% |      x.xx |
+| Maintainability      |            x |    10% |      x.xx |
+| Tests & CI           |            x |    15% |      x.xx |
+| Documentation        |            x |    10% |      x.xx |
+| Community & Activity |            x |    10% |      x.xx |
+| Accessibility        |            x |    10% |      x.xx |
+| **Total**            |              |   100% | **xx.xx** |
 
 ### P0 Findings (auto-cap to F if any)
+
 - <finding or "none">
 
 ### Top 3 Strengths
+
 1. ...
 2. ...
 3. ...
 
 ### Top 3 Improvements
+
 1. ...
 2. ...
 3. ...
 
 ### Evidence
+
 - Security: <file:line>, <scanner output path>, <CVE IDs>
 - Authenticity: <commit SHAs checked>, <signature coverage %>
 - ... (one bullet per factor)
@@ -254,9 +259,14 @@ Badge: **<TruthSlayer Verified — Gold | Silver | Bronze | Conditional | Not Re
     "accessibility": "high"
   },
   "weights": {
-    "security": 0.20, "authenticity": 0.15, "help_intent": 0.10,
-    "maintainability": 0.10, "tests_ci": 0.15, "documentation": 0.10,
-    "community": 0.10, "accessibility": 0.10
+    "security": 0.2,
+    "authenticity": 0.15,
+    "help_intent": 0.1,
+    "maintainability": 0.1,
+    "tests_ci": 0.15,
+    "documentation": 0.1,
+    "community": 0.1,
+    "accessibility": 0.1
   },
   "p0_findings": [],
   "strengths": ["...", "...", "..."],

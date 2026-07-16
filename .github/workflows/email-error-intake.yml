@@ -16,13 +16,13 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Log what would be filed without creating issues'
+        description: "Log what would be filed without creating issues"
         type: boolean
         default: true
       max_issues:
-        description: 'Max issues to open this run'
+        description: "Max issues to open this run"
         type: string
-        default: '5'
+        default: "5"
 
 permissions:
   issues: write
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Read inbox and open issues
         env:
           GH_TOKEN: ${{ github.token }}

@@ -5,11 +5,11 @@ name: Fleet Controller
 # durable controller state or semantic monitor content actually changes.
 on:
   schedule:
-    - cron: '7,22,37,52 * * * *'
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
     inputs:
       preempt:
-        description: 'Actually cancel stalled/runaway runs (true) or dry-run (false)'
+        description: "Actually cancel stalled/runaway runs (true) or dry-run (false)"
         type: boolean
         default: true
 
@@ -38,7 +38,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Run fleet controller
         env:

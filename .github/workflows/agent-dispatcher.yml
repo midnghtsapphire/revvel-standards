@@ -58,15 +58,15 @@ jobs:
         run: |
           # Read agent-prompts.yml to get triggers
           echo "Looking for label triggers..."
-          
+
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.agent }}" ]; then
             echo "agent=${{ inputs.agent }}" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           # Check issue labels
           LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
-          
+
           # Belt-and-suspenders: route octopus-review[bot] issues to openrouter
           # even if the octopus-route.yml translator hasn't applied wr:code yet.
           # The translator runs in parallel with this dispatcher on issue:opened;
@@ -103,7 +103,7 @@ jobs:
         run: |
           # Load prompt from agent-prompts.yml
           # This is simplified - real implementation would parse YAML
-          
+
           case "${{ steps.determine.outputs.agent }}" in
             perplexity)
               echo "prompt<<EOF" >> $GITHUB_ENV
@@ -151,7 +151,7 @@ jobs:
           PROMPT: ${{ env.prompt }}
         run: |
           echo "Dispatching $AGENT for issue #$ISSUE_NUMBER..."
-          
+
           case "$AGENT" in
             perplexity)
               # Trigger Perplexity workflow

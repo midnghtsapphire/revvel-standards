@@ -5,7 +5,7 @@ name: Health Check
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # Every 15 min
+    - cron: "*/15 * * * *" # Every 15 min
   workflow_dispatch:
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
             "localhost:8080/health/live"
             "localhost:8080/health/ready"
           )
-          
+
           FAILED=""
           for ep in "${ENDPOINTS[@]}"; do
             url="https://$ep"
@@ -29,11 +29,11 @@ jobs:
               FAILED="${FAILED}"$'\n'"- $ep: HTTP $status"
             fi
           done
-          
+
           if [ -n "$FAILED" ]; then
             echo "failed=$FAILED" >> $GITHUB_OUTPUT
             exit 1
           fi
-      
+
       - name: Report
         run: echo "✅ All health endpoints OK"

@@ -68,8 +68,8 @@ See `app/api/calculate/route.ts` for full request/response schema.
 
 ## Runtime Configuration
 
-| Variable | Required | Description |
-| --- | --- | --- |
+| Variable                         | Required | Description                                               |
+| -------------------------------- | -------- | --------------------------------------------------------- |
 | `NEXT_PUBLIC_POLAR_CHECKOUT_URL` | Optional | Pro checkout URL. Falls back to email contact when unset. |
 
 Create local config (optional): create a `.env.local` file and set `NEXT_PUBLIC_POLAR_CHECKOUT_URL` if you want the Pro CTA to link somewhere.
@@ -78,14 +78,14 @@ Create local config (optional): create a `.env.local` file and set `NEXT_PUBLIC_
 
 ## Calculations Reference
 
-| Standard | What It Covers |
-| --- | --- |
-| ACCA Manual J (8th Ed.) | Residential heating/cooling load calculation |
-| ACCA Manual S | Equipment selection from calculated load |
-| ACCA Manual D | Duct system design and sizing |
-| ASHRAE 169 | Climate zone definitions and design temperatures |
-| ASHRAE HOF 2021 | U-values, infiltration, internal gains |
-| DOE / EPA AIM Act | SEER2, HSPF2 minimum standards; refrigerant phase-outs |
+| Standard                | What It Covers                                         |
+| ----------------------- | ------------------------------------------------------ |
+| ACCA Manual J (8th Ed.) | Residential heating/cooling load calculation           |
+| ACCA Manual S           | Equipment selection from calculated load               |
+| ACCA Manual D           | Duct system design and sizing                          |
+| ASHRAE 169              | Climate zone definitions and design temperatures       |
+| ASHRAE HOF 2021         | U-values, infiltration, internal gains                 |
+| DOE / EPA AIM Act       | SEER2, HSPF2 minimum standards; refrigerant phase-outs |
 
 > **Disclaimer:** This tool provides simplified Manual J estimates for preliminary sizing. Always have a licensed HVAC engineer perform a full Manual J/D/S calculation before purchasing equipment.
 

@@ -1,6 +1,6 @@
 # OpenRouter Assignee — First Line of Sight Process
 
-**Issue reference:** *"Add my openrouter_api_key as first line of sight in revvel-standards as an assignee in issues"* — make OpenRouter the first line of sight (orchestrator / collaborator) on every issue and PR, driven by `OPENROUTER_API_KEY`, running on a Ralph loop 24/7.
+**Issue reference:** _"Add my openrouter_api_key as first line of sight in revvel-standards as an assignee in issues"_ — make OpenRouter the first line of sight (orchestrator / collaborator) on every issue and PR, driven by `OPENROUTER_API_KEY`, running on a Ralph loop 24/7.
 
 This document describes the process, the implementation, and how to tune it.
 
@@ -12,12 +12,12 @@ This document describes the process, the implementation, and how to tune it.
 2. The workflow then attempts to assign **`@oaudrey`** (non-fatal if GitHub cannot apply the assignee in that context) and posts the first-line-of-sight comment.
 3. **Issues are labeled/routed immediately on open and reopen** via the live `issues:` trigger in [`.github/workflows/openrouter-assignee.yml`](../.github/workflows/openrouter-assignee.yml). WR issues additionally receive the `mindmappr` label and a best-effort `@Copilot` assignment via [`weekly-research.yml`](../.github/workflows/weekly-research.yml).
 4. The hourly cron sweep remains enabled as a backstop for anything missed by event-driven processing.
-1. Open pull requests are routed label-first with **`openrouter`**, **`auto-fix`**, **`copilot`**, and **`role:orchestrator`** as the idempotency marker for routing.
-2. The workflow then attempts to assign **`@Copilot`** (non-fatal if GitHub cannot apply the assignee in that context) and posts the first-line-of-sight comment.
-3. **Issues are labeled and assigned immediately on open** — the `issues:` trigger in [`.github/workflows/openrouter-assignee.yml`](../.github/workflows/openrouter-assignee.yml) is active. WR issues additionally receive the `mindmappr` label and `@Copilot` assignment via [`weekly-research.yml`](../.github/workflows/weekly-research.yml).
-4. If that `issues:` trigger is re-enabled later, newly opened issues will follow the same label-first routing path immediately on the event.
-5. A **cron sweep runs every hour, 24/7**, to pick up issues opened before the secret was configured and anything else missed by event-driven processing.
-6. The existing [`ralph-loop.yml`](../.github/workflows/ralph-loop.yml) continues to handle **CI-failure** self-healing on PRs.
+5. Open pull requests are routed label-first with **`openrouter`**, **`auto-fix`**, **`copilot`**, and **`role:orchestrator`** as the idempotency marker for routing.
+6. The workflow then attempts to assign **`@Copilot`** (non-fatal if GitHub cannot apply the assignee in that context) and posts the first-line-of-sight comment.
+7. **Issues are labeled and assigned immediately on open** — the `issues:` trigger in [`.github/workflows/openrouter-assignee.yml`](../.github/workflows/openrouter-assignee.yml) is active. WR issues additionally receive the `mindmappr` label and `@Copilot` assignment via [`weekly-research.yml`](../.github/workflows/weekly-research.yml).
+8. If that `issues:` trigger is re-enabled later, newly opened issues will follow the same label-first routing path immediately on the event.
+9. A **cron sweep runs every hour, 24/7**, to pick up issues opened before the secret was configured and anything else missed by event-driven processing.
+10. The existing [`ralph-loop.yml`](../.github/workflows/ralph-loop.yml) continues to handle **CI-failure** self-healing on PRs.
 
 Implementation: [`.github/workflows/openrouter-assignee.yml`](../.github/workflows/openrouter-assignee.yml).
 
@@ -27,13 +27,13 @@ Implementation: [`.github/workflows/openrouter-assignee.yml`](../.github/workflo
 
 OpenRouter is a service, not a GitHub user — it cannot be set as a GitHub `assignee`. This workflow uses **`@oaudrey`** as the GitHub-visible alias for the oAudrey/OpenRouter orchestrator while the actual routing still happens through the `openrouter` label and the `OPENROUTER_API_KEY` secret. So:
 
-| Signal | Value | Purpose |
-|---|---|---|
-| GitHub `assignee` | `@oaudrey` | The entity that appears in the GitHub UI "Assignees" panel — your first line of sight |
-| Label | `openrouter` | Routing hint for any automation that filters by OpenRouter-owned work |
-| Label | `auto-fix`, `copilot` | Shared routing labels consumed by the Ralph loop |
-| Label | `role:orchestrator` | Default role marker for first-line-of-sight routing |
-| Comment | First-line-of-sight notice | Points reviewers / auditors at `OPENROUTER_API_KEY`, the skill, and this doc |
+| Signal            | Value                      | Purpose                                                                               |
+| ----------------- | -------------------------- | ------------------------------------------------------------------------------------- |
+| GitHub `assignee` | `@oaudrey`                 | The entity that appears in the GitHub UI "Assignees" panel — your first line of sight |
+| Label             | `openrouter`               | Routing hint for any automation that filters by OpenRouter-owned work                 |
+| Label             | `auto-fix`, `copilot`      | Shared routing labels consumed by the Ralph loop                                      |
+| Label             | `role:orchestrator`        | Default role marker for first-line-of-sight routing                                   |
+| Comment           | First-line-of-sight notice | Points reviewers / auditors at `OPENROUTER_API_KEY`, the skill, and this doc          |
 
 If `@oaudrey` is not a collaborator in a target repo, the assignment attempt fails **non-fatally** and routing still completes via labels/comments. If a dedicated GitHub machine user (e.g. `revvel-openrouter-bot`) is provisioned later, swap the `assignees: ['oaudrey']` value in the workflow — no other changes required.
 
@@ -41,7 +41,7 @@ If `@oaudrey` is not a collaborator in a target repo, the assignment attempt fai
 
 ## Secret: `OPENROUTER_API_KEY`
 
-- Declared in [`.env.example`](../.env.example) under the *AI / LLM* section.
+- Declared in [`.env.example`](../.env.example) under the _AI / LLM_ section.
 - Vault path: `revvel/shared/llm/openrouter` (see `skills/vault-agent/SKILL.md`).
 - Fetch locally:
   ```bash
@@ -71,7 +71,7 @@ The `ralph-cron-sweep` job runs on the GitHub Actions `schedule` trigger:
 ```yaml
 on:
   schedule:
-    - cron: "0 * * * *"   # every hour, top of the hour
+    - cron: "0 * * * *" # every hour, top of the hour
 ```
 
 ### What the sweep does
@@ -86,15 +86,15 @@ A run summary is written to the workflow summary page (`Routed / Skipped / Total
 
 ### Tuning the cadence
 
-| Cadence | Cron expression | OpenRouter cost impact |
-|---|---|---|
-| Every 15 minutes (very responsive) | `"*/15 * * * *"` | ~96 runs/day |
-| **Every hour (default)** | `"0 * * * *"` | ~24 runs/day |
-| Every 4 hours (budget-safe) | `"0 */4 * * *"` | 6 runs/day |
-| Business hours only | `"0 9-17 * * 1-5"` | 9 runs/day, weekdays |
-| Nightly only | `"0 3 * * *"` | 1 run/day |
+| Cadence                            | Cron expression    | OpenRouter cost impact |
+| ---------------------------------- | ------------------ | ---------------------- |
+| Every 15 minutes (very responsive) | `"*/15 * * * *"`   | ~96 runs/day           |
+| **Every hour (default)**           | `"0 * * * *"`      | ~24 runs/day           |
+| Every 4 hours (budget-safe)        | `"0 */4 * * *"`    | 6 runs/day             |
+| Business hours only                | `"0 9-17 * * 1-5"` | 9 runs/day, weekdays   |
+| Nightly only                       | `"0 3 * * *"`      | 1 run/day              |
 
-Edit the `schedule:` block in `.github/workflows/openrouter-assignee.yml` and commit. The sweep itself only *routes* — it does **not** consume OpenRouter tokens. Token spend happens when the orchestrator picks the routed item up. So the cron cadence controls **latency**, not cost. Cost is bounded by the budgets in `skills/openrouter-swarms/SKILL.md § Cost Governance`.
+Edit the `schedule:` block in `.github/workflows/openrouter-assignee.yml` and commit. The sweep itself only _routes_ — it does **not** consume OpenRouter tokens. Token spend happens when the orchestrator picks the routed item up. So the cron cadence controls **latency**, not cost. Cost is bounded by the budgets in `skills/openrouter-swarms/SKILL.md § Cost Governance`.
 
 ### Disabling the sweep
 
@@ -106,19 +106,19 @@ Comment out the `schedule:` block, or delete the `ralph-cron-sweep` job. The `ro
 gh workflow run "OpenRouter Assignee — First Line of Sight" -f dry_run=true
 ```
 
-A dry run logs what *would* be routed without making changes — useful when first enabling the workflow on a repo with a lot of existing open issues.
+A dry run logs what _would_ be routed without making changes — useful when first enabling the workflow on a repo with a lot of existing open issues.
 
 ---
 
 ## How this relates to existing workflows
 
-| Workflow | Trigger | Scope | Relationship |
-|---|---|---|---|
-| `openrouter-assignee.yml` (**new**) | New issue / PR, hourly cron | Routes work **to** the orchestrator | Entry point — "first line of sight" |
-| `priority-router.yml` | Issue/PR events + hourly cron | Assigns `priority-p0` → `priority-p3` labels | Keeps backlog priority fresh alongside routing |
-| `ralph-loop.yml` | CI failure on a PR | Asks the orchestrator to **fix** a failing PR | Takes over once a PR exists and CI fails |
-| `issue-automation.yml` | Issue opened | Template / duplicate / triage checks | Runs alongside the new workflow; independent |
-| `sync-labels.yml` | Push to `main` | Syncs `.github/labels.yml` across repos | Propagates the new `openrouter` label |
+| Workflow                            | Trigger                       | Scope                                         | Relationship                                   |
+| ----------------------------------- | ----------------------------- | --------------------------------------------- | ---------------------------------------------- |
+| `openrouter-assignee.yml` (**new**) | New issue / PR, hourly cron   | Routes work **to** the orchestrator           | Entry point — "first line of sight"            |
+| `priority-router.yml`               | Issue/PR events + hourly cron | Assigns `priority-p0` → `priority-p3` labels  | Keeps backlog priority fresh alongside routing |
+| `ralph-loop.yml`                    | CI failure on a PR            | Asks the orchestrator to **fix** a failing PR | Takes over once a PR exists and CI fails       |
+| `issue-automation.yml`              | Issue opened                  | Template / duplicate / triage checks          | Runs alongside the new workflow; independent   |
+| `sync-labels.yml`                   | Push to `main`                | Syncs `.github/labels.yml` across repos       | Propagates the new `openrouter` label          |
 
 Together these give you: **route → prioritize → attempt → self-heal → escalate**, running continuously.
 

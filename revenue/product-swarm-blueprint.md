@@ -16,7 +16,7 @@
 ## Use Cases
 
 - Bug triage swarm
-- Research swarm  
+- Research swarm
 - Build + deploy swarm
 - Full company swarm (Iris + Remy + CEO)
 

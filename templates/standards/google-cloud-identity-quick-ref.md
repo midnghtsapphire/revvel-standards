@@ -29,11 +29,11 @@ Do you use Google Workspace or Cloud Identity?
 
 ### Microsoft Entra ID
 
-| Protocol | google.subject | google.groups |
-|---|---|---|
-| **OIDC** | `assertion.email` | `assertion.groups` |
-| **SAML** | `assertion.attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'][0]` | `assertion.attributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups']` |
-| **Large Groups (>150)** | `user.emails[0].value.lowerAscii()` | `group.externalId` (via SCIM) |
+| Protocol                | google.subject                                                                          | google.groups                                                                            |
+| ----------------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **OIDC**                | `assertion.email`                                                                       | `assertion.groups`                                                                       |
+| **SAML**                | `assertion.attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'][0]` | `assertion.attributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups']` |
+| **Large Groups (>150)** | `user.emails[0].value.lowerAscii()`                                                     | `group.externalId` (via SCIM)                                                            |
 
 ---
 
@@ -52,6 +52,7 @@ gcloud services enable \
 ## Quick Setup Commands
 
 ### Create Workforce Pool
+
 ```bash
 gcloud iam workforce-pools create POOL_ID \
   --location=global \
@@ -60,6 +61,7 @@ gcloud iam workforce-pools create POOL_ID \
 ```
 
 ### Create OIDC Provider
+
 ```bash
 gcloud iam workforce-pools providers create-oidc PROVIDER_ID \
   --workforce-pool=POOL_ID \
@@ -70,6 +72,7 @@ gcloud iam workforce-pools providers create-oidc PROVIDER_ID \
 ```
 
 ### Create SAML Provider (Microsoft Entra ID)
+
 ```bash
 gcloud iam workforce-pools providers create-saml PROVIDER_ID \
   --workforce-pool=POOL_ID \
@@ -83,6 +86,7 @@ gcloud iam workforce-pools providers create-saml PROVIDER_ID \
 ## SCIM Setup (Entra ID Only)
 
 ### Prerequisites
+
 - ✅ Workforce pool and provider created
 - ✅ OIDC or SAML configured
 - ✅ More than ~150 groups OR need autocomplete
@@ -90,11 +94,13 @@ gcloud iam workforce-pools providers create-saml PROVIDER_ID \
 ### Configuration Steps
 
 1. **Get SCIM Endpoint URL:**
+
    ```
    https://iam.googleapis.com/v1/locations/global/workforcePools/POOL_ID/providers/PROVIDER_ID/scim
    ```
 
 2. **Get SCIM Bearer Token:**
+
    ```bash
    gcloud iam workforce-pools providers describe PROVIDER_ID \
      --workforce-pool=POOL_ID \
@@ -123,13 +129,13 @@ gcloud iam workforce-pools providers create-saml PROVIDER_ID \
 
 ## Common Issues & Solutions
 
-| Issue | Solution |
-|---|---|
-| `google.subject` is empty | Check IdP sends email claim; verify attribute mapping syntax |
-| Groups not syncing | For >150 groups, enable SCIM; for fewer, check group claim in IdP |
-| Authentication fails | Verify workforce pool/provider config; check IdP metadata URL |
-| SCIM test fails | Verify SCIM endpoint URL format; regenerate bearer token |
-| User not in Google Cloud | Check user provisioned in workforce pool; verify group membership |
+| Issue                     | Solution                                                          |
+| ------------------------- | ----------------------------------------------------------------- |
+| `google.subject` is empty | Check IdP sends email claim; verify attribute mapping syntax      |
+| Groups not syncing        | For >150 groups, enable SCIM; for fewer, check group claim in IdP |
+| Authentication fails      | Verify workforce pool/provider config; check IdP metadata URL     |
+| SCIM test fails           | Verify SCIM endpoint URL format; regenerate bearer token          |
+| User not in Google Cloud  | Check user provisioned in workforce pool; verify group membership |
 
 ---
 
@@ -183,6 +189,7 @@ gcloud logging read "protoPayload.serviceName=\"iam.googleapis.com\"" \
 **Important:** You can only have **ONE** IdP per Google Cloud project.
 
 **Cannot mix:**
+
 - ❌ Multiple Workforce Identity Federation pools with different IdPs
 
 **Workaround:** Create separate Google Cloud projects for each IdP.
@@ -192,6 +199,7 @@ gcloud logging read "protoPayload.serviceName=\"iam.googleapis.com\"" \
 ## NotebookLM Enterprise Integration
 
 ### Enable Data Source Access Control
+
 1. Complete identity setup (Cloud Identity or Workforce Identity Federation)
 2. Ensure `google.groups` attribute mapped and syncing
 3. In NotebookLM Enterprise admin console, enable access control
@@ -199,6 +207,7 @@ gcloud logging read "protoPayload.serviceName=\"iam.googleapis.com\"" \
 5. Test with pilot users
 
 ### Autocomplete Requirements
+
 - **Cloud Identity:** ✅ Works automatically
 - **Workforce Identity Federation:** ✅ Requires SCIM (Entra ID only)
 
@@ -216,4 +225,4 @@ gcloud logging read "protoPayload.serviceName=\"iam.googleapis.com\"" \
 
 ---
 
-*Part of Revvel Standards. Keep this card handy during Google Cloud identity setup.*
+_Part of Revvel Standards. Keep this card handy during Google Cloud identity setup._

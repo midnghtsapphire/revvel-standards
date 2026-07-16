@@ -29,27 +29,32 @@ Automates the complete grant lifecycle:
 ## Complete Stack
 
 ### Discovery
+
 - **Instrumentl** — Grant opportunity matching
 - **Grants.gov** — Federal grant opportunities
 - **SAM.gov** — Entity validation and compliance
 
 ### AI & Proposal Writing
+
 - **OpenRouter** — Multi-model LLM access
   - Claude Sonnet 4.5 (drafting)
   - Claude Opus 4 (research, complex sections)
   - Claude Haiku 4.5 (summaries, tracking)
 
 ### Document Automation
+
 - **DocSpring** — PDF form filling (recommended)
 - **Anvil** — Alternative with Document AI
 - **doqs.dev** — Free tier option
 
 ### Workflow Automation
+
 - **n8n** — Self-hosted workflow builder (recommended)
 - **Zapier** — No-code automation
 - **Make** — Visual workflow automation
 
 ### Database & Tracking
+
 - **Supabase** — PostgreSQL with REST API (recommended)
 - **Airtable** — No-code database alternative
 
@@ -91,6 +96,7 @@ node examples/openrouter-proposals.js
 ## Cost Breakdown
 
 ### Monthly Costs
+
 - **LLM (OpenRouter):** $3-8 per proposal
 - **Workflow Automation:** $10-50/month (n8n hosting or Zapier/Make)
 - **Database:** $0-25/month (Supabase/Airtable)
@@ -98,6 +104,7 @@ node examples/openrouter-proposals.js
 - **Total:** ~$50-150/month
 
 ### ROI
+
 - **Time Saved:** 20-40 hours per month
 - **Applications:** 3-5x more proposals submitted
 - **Quality:** Consistent, high-quality proposals
@@ -114,12 +121,14 @@ node examples/openrouter-proposals.js
 ## Key Features
 
 ### Intelligent Discovery
+
 - Daily automated searches
 - Fit scoring based on org profile
 - Priority ranking
 - Team notifications
 
 ### AI-Powered Writing
+
 - Section-by-section generation
 - Human-in-the-loop review
 - Iterative refinement
@@ -127,6 +136,7 @@ node examples/openrouter-proposals.js
 - Quality scoring
 
 ### Workflow Automation
+
 - End-to-end orchestration
 - Approval workflows
 - Deadline reminders
@@ -134,6 +144,7 @@ node examples/openrouter-proposals.js
 - Team collaboration
 
 ### Full Compliance
+
 - SAM.gov validation
 - Milestone tracking
 - Expense documentation
@@ -165,19 +176,18 @@ skills/grant-mgmt-agent/
 
 ```javascript
 // Run every day at 8 AM
-const { dailyDiscovery } = require('./examples/grants-gov-integration');
+const { dailyDiscovery } = require("./examples/grants-gov-integration");
 
 const orgProfile = {
-  type: 'nonprofit',
-  keywords: ['education', 'technology', 'stem'],
-  annualBudget: 500000
+  type: "nonprofit",
+  keywords: ["education", "technology", "stem"],
+  annualBudget: 500000,
 };
 
-dailyDiscovery(orgProfile)
-  .then(opportunities => {
-    // Store in database
-    // Notify team
-  });
+dailyDiscovery(orgProfile).then((opportunities) => {
+  // Store in database
+  // Notify team
+});
 ```
 
 ### Proposal Generation
@@ -206,23 +216,27 @@ const section = await generateProposalSection({
 ## Success Metrics
 
 ### Discovery
+
 - Opportunities discovered per week
 - Match quality distribution
 - Time to decision
 
 ### Applications
+
 - Applications per month
 - Completion time
 - Quality scores
 - Success rate
 
 ### Outcomes
+
 - Award rate (%)
 - Total funding secured
 - Average award size
 - Cost per award
 
 ### Efficiency
+
 - Hours saved
 - Automation uptime
 - Error rate

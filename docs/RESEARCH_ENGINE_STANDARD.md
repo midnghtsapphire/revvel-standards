@@ -58,16 +58,16 @@ The orchestrator:
 
 ### 2. Lane Agents
 
-| Lane | Agent | Label | Output |
-|---|---|---|---|
-| Market Positioning | Echo | `research:marketing` | Audience, hooks, channels, offer |
-| SEO Demand | Noimos | `research:seo` | Keyword clusters, intent, landing-page requirements |
-| Competitor Intelligence | Iris | `research:competitors` | Competitors, GitHub stars, pricing, moat gaps |
-| Audience and Chatter | Scout | `research:chatter` | Social/forum pain, exact phrases, objections |
-| Factual Validation | Mirror | `research:facts` | Supported claims, weak claims, evidence gaps |
-| Technical Delivery | Forge | `research:technical` | Files, workflows, tests, integration risks |
-| Revenue Mechanics | Ledger | `research:revenue` | Sellable shape, pricing, funnel, metrics |
-| Research Review and Auto-Fix | Aria | `research:reviewer` | Review comments and fix-ready commit plan |
+| Lane                         | Agent  | Label                  | Output                                              |
+| ---------------------------- | ------ | ---------------------- | --------------------------------------------------- |
+| Market Positioning           | Echo   | `research:marketing`   | Audience, hooks, channels, offer                    |
+| SEO Demand                   | Noimos | `research:seo`         | Keyword clusters, intent, landing-page requirements |
+| Competitor Intelligence      | Iris   | `research:competitors` | Competitors, GitHub stars, pricing, moat gaps       |
+| Audience and Chatter         | Scout  | `research:chatter`     | Social/forum pain, exact phrases, objections        |
+| Factual Validation           | Mirror | `research:facts`       | Supported claims, weak claims, evidence gaps        |
+| Technical Delivery           | Forge  | `research:technical`   | Files, workflows, tests, integration risks          |
+| Revenue Mechanics            | Ledger | `research:revenue`     | Sellable shape, pricing, funnel, metrics            |
+| Research Review and Auto-Fix | Aria   | `research:reviewer`    | Review comments and fix-ready commit plan           |
 
 ### 3. OpenRouter Triangulation
 
@@ -179,4 +179,3 @@ node tests/research-engine.test.js
 - Packet written to `docs/research-engine/`
 - Issue or PR receives research lifecycle labels
 - Code-review handoff comment is posted
-

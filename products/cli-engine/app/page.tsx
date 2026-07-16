@@ -4,16 +4,48 @@
    ────────────────────────────────────────────────────────── */
 
 const terminalLines = [
-  { prefix: "$", text: "revvel-cli run --job generate-report", color: "text-emerald-400" },
+  {
+    prefix: "$",
+    text: "revvel-cli run --job generate-report",
+    color: "text-emerald-400",
+  },
   { prefix: "›", text: "Loading engine v2.4.1 …", color: "text-slate-300" },
-  { prefix: "›", text: "Connecting to data pipeline …", color: "text-slate-300" },
-  { prefix: "✓", text: "Pipeline ready [12 tasks queued]", color: "text-emerald-300" },
-  { prefix: "$", text: "revvel-cli exec --task=pdf-export --format=A4", color: "text-amber-300" },
+  {
+    prefix: "›",
+    text: "Connecting to data pipeline …",
+    color: "text-slate-300",
+  },
+  {
+    prefix: "✓",
+    text: "Pipeline ready [12 tasks queued]",
+    color: "text-emerald-300",
+  },
+  {
+    prefix: "$",
+    text: "revvel-cli exec --task=pdf-export --format=A4",
+    color: "text-amber-300",
+  },
   { prefix: "›", text: "Compiling templates …", color: "text-slate-300" },
-  { prefix: "›", text: "Injecting data stream 4.2 MB …", color: "text-slate-300" },
-  { prefix: "✓", text: "report-2026-05.pdf  [3.8 MB]  DONE", color: "text-emerald-300" },
-  { prefix: "$", text: "revvel-cli stripe checkout --plan=pro", color: "text-cyan-300" },
-  { prefix: "✓", text: "Session created  →  checkout.stripe.com/…", color: "text-emerald-300" },
+  {
+    prefix: "›",
+    text: "Injecting data stream 4.2 MB …",
+    color: "text-slate-300",
+  },
+  {
+    prefix: "✓",
+    text: "report-2026-05.pdf  [3.8 MB]  DONE",
+    color: "text-emerald-300",
+  },
+  {
+    prefix: "$",
+    text: "revvel-cli stripe checkout --plan=pro",
+    color: "text-cyan-300",
+  },
+  {
+    prefix: "✓",
+    text: "Session created  →  checkout.stripe.com/…",
+    color: "text-emerald-300",
+  },
   { prefix: " ", text: "", color: "" },
   { prefix: "$", text: "█", color: "text-emerald-400 cursor-blink" },
 ];
@@ -128,7 +160,6 @@ const shipSteps = [
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
-
       {/* ── Ambient light orbs ── */}
       <div className="pointer-events-none absolute -left-40 top-0 h-96 w-96 rounded-full bg-emerald-500/20 blur-3xl" />
       <div className="pointer-events-none absolute right-0 top-10 h-80 w-80 rounded-full bg-cyan-400/15 blur-3xl" />
@@ -147,9 +178,10 @@ export default function Home() {
           </span>
         </h1>
         <p className="mt-6 max-w-3xl text-lg leading-relaxed text-slate-300">
-          A premium command-line engine with a glassmorphic terminal UI. Queue automation pipelines,
-          export polished PDF reports, bill users through Stripe, and orchestrate AI agents — all
-          from a single, production-grade interface.
+          A premium command-line engine with a glassmorphic terminal UI. Queue
+          automation pipelines, export polished PDF reports, bill users through
+          Stripe, and orchestrate AI agents — all from a single,
+          production-grade interface.
         </p>
         <div className="mt-8 flex flex-wrap gap-4">
           <a
@@ -188,10 +220,15 @@ export default function Home() {
 
           {/* Terminal body */}
           <div className="overflow-hidden rounded-b-2xl bg-slate-950/90 px-6 py-5">
-            <ol className="space-y-1 text-sm leading-relaxed" aria-label="Terminal output">
+            <ol
+              className="space-y-1 text-sm leading-relaxed"
+              aria-label="Terminal output"
+            >
               {terminalLines.map((line, i) => (
                 <li key={i} className="flex gap-3">
-                  <span className="w-4 shrink-0 text-slate-500">{line.prefix}</span>
+                  <span className="w-4 shrink-0 text-slate-500">
+                    {line.prefix}
+                  </span>
                   <span className={`${line.color} font-mono`}>{line.text}</span>
                 </li>
               ))}
@@ -201,8 +238,12 @@ export default function Home() {
 
         {/* Floating PDF card */}
         <div className="absolute -right-4 top-8 hidden w-56 rounded-2xl border border-amber-400/30 bg-slate-900/80 p-4 shadow-xl backdrop-blur-lg md:block">
-          <p className="text-xs font-semibold text-amber-300">📄 Export Ready</p>
-          <p className="mt-1 text-sm font-bold text-white">report-2026-05.pdf</p>
+          <p className="text-xs font-semibold text-amber-300">
+            📄 Export Ready
+          </p>
+          <p className="mt-1 text-sm font-bold text-white">
+            report-2026-05.pdf
+          </p>
           <p className="mt-1 text-xs text-slate-400">3.8 MB · A4 · 24 pages</p>
           <div className="mt-3 rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-center text-xs font-semibold text-emerald-300">
             ↓ Download Report
@@ -212,16 +253,24 @@ export default function Home() {
 
       {/* ── FEATURES ── */}
       <section className="relative mx-auto max-w-6xl px-6 pb-14">
-        <h2 className="mb-8 text-2xl font-black text-white">Engine Capabilities</h2>
+        <h2 className="mb-8 text-2xl font-black text-white">
+          Engine Capabilities
+        </h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
             <article
               key={feature.title}
               className={`rounded-3xl border ${feature.color} p-6 backdrop-blur-md`}
             >
-              <p className={`text-2xl ${feature.iconColor}`} aria-hidden="true">{feature.icon}</p>
-              <h3 className="mt-3 text-lg font-bold text-white">{feature.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-300">{feature.description}</p>
+              <p className={`text-2xl ${feature.iconColor}`} aria-hidden="true">
+                {feature.icon}
+              </p>
+              <h3 className="mt-3 text-lg font-bold text-white">
+                {feature.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                {feature.description}
+              </p>
             </article>
           ))}
         </div>
@@ -260,15 +309,22 @@ export default function Home() {
                   Most Popular
                 </p>
               )}
-              <p className="text-sm font-semibold text-slate-300">{tier.name}</p>
+              <p className="text-sm font-semibold text-slate-300">
+                {tier.name}
+              </p>
               <p className="mt-2 text-4xl font-black text-white">
                 {tier.price}
-                <span className="text-base font-normal text-slate-400">{tier.period}</span>
+                <span className="text-base font-normal text-slate-400">
+                  {tier.period}
+                </span>
               </p>
               <p className="mt-2 text-xs text-slate-400">{tier.description}</p>
               <ul className="mt-5 flex-1 space-y-2">
                 {tier.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-slate-200">
+                  <li
+                    key={f}
+                    className="flex items-start gap-2 text-sm text-slate-200"
+                  >
                     <span className="text-emerald-400">✓</span>
                     <span>{f}</span>
                   </li>
@@ -297,8 +353,8 @@ export default function Home() {
             Ready to Execute?
           </h2>
           <p className="relative mx-auto mt-4 max-w-xl text-slate-200 text-sm leading-relaxed">
-            Launch the CLI engine, queue your first pipeline, and export a polished PDF report in
-            under 60 seconds. No configuration required.
+            Launch the CLI engine, queue your first pipeline, and export a
+            polished PDF report in under 60 seconds. No configuration required.
           </p>
           <a
             href="#waitlist"
@@ -313,17 +369,23 @@ export default function Home() {
       {/* ── WAITLIST / EARLY ACCESS ── */}
       <section id="waitlist" className="relative mx-auto max-w-6xl px-6 pb-16">
         <div className="rounded-3xl border border-cyan-300/25 bg-cyan-400/5 p-8 backdrop-blur-md">
-          <h2 className="text-2xl font-black text-white">Developer Early Access</h2>
+          <h2 className="text-2xl font-black text-white">
+            Developer Early Access
+          </h2>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-200">
-            Join the waitlist to be among the first developers to run pipelines, export PDF reports,
-            and access the MCP bridge. Early-access users lock in 40% off Pro for 12 months.
+            Join the waitlist to be among the first developers to run pipelines,
+            export PDF reports, and access the MCP bridge. Early-access users
+            lock in 40% off Pro for 12 months.
           </p>
           <p id="waitlist-hint" className="mt-4 text-xs text-cyan-200">
             Use your professional or GitHub email for priority access.
           </p>
           <form className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end">
             <div className="flex-1">
-              <label htmlFor="waitlist-email" className="mb-1 block text-xs font-semibold text-slate-400">
+              <label
+                htmlFor="waitlist-email"
+                className="mb-1 block text-xs font-semibold text-slate-400"
+              >
                 Email address
               </label>
               <input
@@ -348,15 +410,21 @@ export default function Home() {
       <footer className="relative border-t border-white/10 py-8 text-center text-xs text-slate-500">
         <p>
           © {new Date().getFullYear()} Revvel CLI Engine · Built on{" "}
-          <span className="text-emerald-400">revvel-standards</span> · Deployed on{" "}
-          <span className="text-cyan-400">Vercel</span>
+          <span className="text-emerald-400">revvel-standards</span> · Deployed
+          on <span className="text-cyan-400">Vercel</span>
         </p>
         <p className="mt-2">
-          <a href="#pricing" className="text-slate-400 hover:text-white">Pricing</a>
+          <a href="#pricing" className="text-slate-400 hover:text-white">
+            Pricing
+          </a>
           {" · "}
-          <a href="#run" className="text-slate-400 hover:text-white">Terminal</a>
+          <a href="#run" className="text-slate-400 hover:text-white">
+            Terminal
+          </a>
           {" · "}
-          <a href="#waitlist" className="text-slate-400 hover:text-white">Join Waitlist</a>
+          <a href="#waitlist" className="text-slate-400 hover:text-white">
+            Join Waitlist
+          </a>
         </p>
       </footer>
     </main>

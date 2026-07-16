@@ -8,7 +8,7 @@ name: Agent Monitor
 on:
   # Run every 15 minutes
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: "*/15 * * * *"
   # Can also be triggered manually
   workflow_dispatch:
 
@@ -35,7 +35,7 @@ jobs:
           # Test if OpenRouter is accessible
           response=$(curl -s -o /dev/null -w "%{http_code}" "https://openrouter.ai/api/v1/models" \
             -H "Authorization: Bearer $OPENROUTER_API_KEY" 2>&1 || echo "000")
-          
+
           if [[ "$response" == "200" ]]; then
             echo "openrouter=healthy" >> $GITHUB_OUTPUT
           else
@@ -47,7 +47,7 @@ jobs:
         run: |
           response=$(curl -s -o /dev/null -w "%{http_code}" "https://api.perplexity.ai/v1/models" \
             -H "Authorization: Bearer ${{ secrets.PERPLEXITY_API_KEY }}" 2>&1 || echo "000")
-          
+
           if [[ "$response" == "200" ]]; then
             echo "perplexity=healthy" >> $GITHUB_OUTPUT
           else
@@ -80,9 +80,9 @@ jobs:
           OPENROUTER="${{ steps.openrouter.outputs.openrouter }}"
           PERPLEXITY="${{ steps.perplexity.outputs.perplexity }}"
           JULES="${{ steps.jules.outputs.jules }}"
-          
+
           UNHEALTHY=()
-          
+
           # Check each agent
           if echo "$OPENROUTER" | grep -q "unhealthy"; then
             UNHEALTHY+=("OpenRouter: $OPENROUTER")
@@ -93,7 +93,7 @@ jobs:
           if echo "$JULES" | grep -q "unhealthy"; then
             UNHEALTHY+=("Jules: $JULES")
           fi
-          
+
           # Output overall status
           if [[ ${#UNHEALTHY[@]} -eq 0 ]]; then
             echo "status=healthy" >> $GITHUB_OUTPUT
@@ -128,7 +128,7 @@ jobs:
           EXISTING=$(gh search issues --repo ${{ github.repository }} \
             --state open --json number,title \
             -q ".[] | select(.title | contains(\"[AGENT-FAILURE]\")) | .number" 2>/dev/null | head -1 || echo "")
-          
+
           if [[ -n "$EXISTING" ]]; then
             echo "existing_wr=$EXISTING" >> $GITHUB_OUTPUT
             echo "Found existing WR: #$EXISTING"
@@ -167,7 +167,7 @@ jobs:
             --title "[AGENT-FAILURE] Agent health check failed" \
             --body "$BODY" \
             --label "needs-human,auto-error"
-          
+
           echo "✅ Created WR for agent failure"
 
       - name: Update existing WR
@@ -175,9 +175,9 @@ jobs:
         run: |
           EXISTING="${{ steps.existing.outputs.existing_wr }}"
           ISSUES="${{ needs.check-agent-health.outputs.issues }}"
-          
+
           gh issue comment "$EXISTING" --body "⚠️ Agent health check still failing: $ISSUES"
-          
+
           echo "✅ Updated existing WR #$EXISTING"
 
   # Auto-close AGENT-FAILURE issues when all agents are healthy again

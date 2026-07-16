@@ -5,16 +5,19 @@ Templates for Continuing Legal Education (CLE) videos with Colorado compliance.
 ## Colorado CLE Requirements
 
 ### Credit Units
+
 - **1 hour of instruction = 1 CLE credit unit**
 - Minimum 50 minutes of instruction per credit hour
 - Breaks do not count toward CLE credit
 
 ### Accreditation
+
 - Must be from an accredited provider
 - Colorado Bar Association approval required
 - Subject matter must be relevant to legal practice
 
 ### Compliance Requirements
+
 - [ ] Attendance verification system
 - [ ] Unique login for each participant
 - [ ] Periodic engagement checks (polls, questions)
@@ -130,6 +133,7 @@ Each CLE video should include:
 ## Colorado CLE Checklist
 
 ### Pre-Production
+
 - [ ] Topic approved by Colorado Bar
 - [ ] Course materials prepared
 - [ ] Script finalized with timestamps
@@ -137,18 +141,21 @@ Each CLE video should include:
 - [ ] Caption file prepared
 
 ### Production
+
 - [ ] High-quality recording
 - [ ] Clear audio
 - [ ] Professional visuals
 - [ ] Interactive elements embedded
 
 ### Post-Production
+
 - [ ] Closed captions added
 - [ ] Transcript generated
 - [ ] Quiz/assessment created
 - [ ] Certificate template ready
 
 ### Distribution
+
 - [ ] Upload to approved platform
 - [ ] Attendance tracking enabled
 - [ ] Reporting system tested
@@ -159,17 +166,20 @@ Each CLE video should include:
 ## Monetization
 
 ### CLE Pricing Models
+
 - **Per-credit pricing:** $50-150 per credit hour
 - **Course bundle:** $200-500 for multiple courses
 - **Subscription:** $29-99/month for unlimited access
 
 ### Platforms
+
 - State Bar marketplace
 - Vimeo Enterprise
 - Teachable/LearnWorlds
 - Custom LMS
 
 ### Revenue Streams
+
 - Course sales
 - Subscription fees
 - Bulk corporate licensing

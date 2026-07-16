@@ -31,9 +31,9 @@ Verified against the repo as of 2026-07-13: `docs/PULL_REQUEST_TARGET_AUDIT.md` 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Repo | midnghtsapphire/revvel-standards |
+| Property | Value                                            |
+| -------- | ------------------------------------------------ |
+| Repo     | midnghtsapphire/revvel-standards                 |
 | Prior WR | #13978 (closed 2026-05-28, item never completed) |
 
 ## Research Findings (preliminary triage — NOT a substitute for the full audit)
@@ -87,11 +87,11 @@ Prefer the standard mitigation pattern (label-gated `pull_request_target` for tr
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 
@@ -103,26 +103,27 @@ Prefer the standard mitigation pattern (label-gated `pull_request_target` for tr
 
 ## Superseded Content
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — new work, no prior implementation. This is the orphaned continuation of #13978 item 1, not a replacement of it. |
-| Reason for replacement | N/A |
-| Archival status | NOT-APPLICABLE (no code was removed) |
+| Field                  | Value                                                                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Supersedes WR/issue    | N/A — new work, no prior implementation. This is the orphaned continuation of #13978 item 1, not a replacement of it. |
+| Reason for replacement | N/A                                                                                                                   |
+| Archival status        | NOT-APPLICABLE (no code was removed)                                                                                  |
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -134,6 +135,7 @@ Prefer the standard mitigation pattern (label-gated `pull_request_target` for tr
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29256650761.md`
 
 ## WR-Ready Research Packet: Security Audit - pull_request_target Workflows
@@ -147,11 +149,13 @@ Source packet: `docs/research-engine/run-29256650761.md`
 ## 2. Audience We Are Going After and Why
 
 **Primary Audience**: Internal engineering and security teams at Revvel
+
 - **Why**: This is internal infrastructure security work, not a commercial product
 - **Pain Point**: Unaudited `pull_request_target` workflows expose repository secrets to potential exfiltration
 - **Urgency**: High-severity vulnerability class documented by GitHub Security Lab
 
 **Secondary Audience**: Future repository maintainers
+
 - **Why**: Documentation prevents regression and provides security patterns
 - **Value**: Audit trail and safe workflow templates
 
@@ -160,6 +164,7 @@ Source packet: `docs/research-engine/run-29256650761.md`
 **NOT APPLICABLE** - This is internal security infrastructure work. However, the underlying topic has SEO value:
 
 **Content Opportunity** (if productized):
+
 - Target keywords: `pull_request_target security vulnerability` (850 monthly searches - internal estimate)
 - `github actions security audit` (1,200 monthly searches - internal estimate)
 - Create public guide: "GitHub Actions Security Audit Methodology"
@@ -170,23 +175,25 @@ Source packet: `docs/research-engine/run-29256650761.md`
 
 **NOT APPLICABLE** - This is an internal security audit, not a product comparison. However, relevant security tools exist:
 
-| Tool | Stars | License | Pricing | Use Case |
-|------|-------|---------|---------|----------|
-| Semgrep | 9.8k | LGPL-2.1 | Free OSS / Commercial tiers | Static analysis with GitHub Actions rules |
-| StepSecurity/harden-runner | 580+ | Apache-2.0 | Free | Runtime security for workflows |
-| OSSF Scorecard | 4.2k | Apache-2.0 | Free | Includes workflow security checks |
-| GitHub Advanced Security | N/A | Proprietary | $49/user/month | Native CodeQL integration |
+| Tool                       | Stars | License     | Pricing                     | Use Case                                  |
+| -------------------------- | ----- | ----------- | --------------------------- | ----------------------------------------- |
+| Semgrep                    | 9.8k  | LGPL-2.1    | Free OSS / Commercial tiers | Static analysis with GitHub Actions rules |
+| StepSecurity/harden-runner | 580+  | Apache-2.0  | Free                        | Runtime security for workflows            |
+| OSSF Scorecard             | 4.2k  | Apache-2.0  | Free                        | Includes workflow security checks         |
+| GitHub Advanced Security   | N/A   | Proprietary | $49/user/month              | Native CodeQL integration                 |
 
 **Recommendation**: Use Semgrep for automated scanning to supplement manual audit.
 
 ## 5. Chatter and Demand Signals
 
 **Internal Signals Only**:
-- Original issue #13978 marked this as "🔴 highest priority" 
+
+- Original issue #13978 marked this as "🔴 highest priority"
 - Deferred from May 2026, now July 2026 (45+ days overdue)
 - No external community discussion (internal infrastructure issue)
 
 **Risk Indicators**:
+
 - Multiple workflows with `ADMIN_GITHUB_TOKEN` access
 - Workflows processing untrusted PR content
 - No completed security documentation
@@ -194,23 +201,27 @@ Source packet: `docs/research-engine/run-29256650761.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **✅ VERIFIED**:
+
 - GitHub Security Lab documentation confirms vulnerability class ([source](https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/))
 - `pull_request_target` runs with base repo secrets even for fork PRs
 - Standard mitigation patterns documented
 
 **❓ UNVERIFIABLE** (requires repo access):
+
 - Current state of 10 workflow files
 - Existence of `docs/PULL_REQUEST_TARGET_AUDIT.md`
 - Issue #13978 details and closure date
 - Actual secret configurations
 
 **⚠️ GAPS**:
+
 - Cannot verify repository state without direct access
 - Search volume data for SEO keywords are internal estimates
 
 ## 7. Build Requirements and Acceptance Gates
 
 ### Requirements
+
 1. **Audit all 10 workflows** with active `pull_request_target` triggers
 2. **Create `docs/PULL_REQUEST_TARGET_AUDIT.md`** with:
    - Per-workflow SAFE/NEEDS-FIX verdict
@@ -219,6 +230,7 @@ Source packet: `docs/research-engine/run-29256650761.md`
    - Links to #13978 and current issue
 
 ### Acceptance Gates
+
 - [ ] All 10 workflows have documented verdicts
 - [ ] No workflow executes PR head code with secrets in scope
 - [ ] Audit document committed to repository
@@ -232,6 +244,7 @@ Source packet: `docs/research-engine/run-29256650761.md`
 **Review Focus**: GitHub Actions workflows in `.github/workflows/` using `pull_request_target`
 
 **Critical Patterns to Flag**:
+
 ```yaml
 # DANGEROUS - Flag immediately
 on:
@@ -239,10 +252,11 @@ on:
 steps:
   - uses: actions/checkout@v4
     with:
-      ref: ${{ github.event.pull_request.head.sha }}  # BLOCK: PR head checkout
+      ref: ${{ github.event.pull_request.head.sha }} # BLOCK: PR head checkout
 ```
 
 **Safe Pattern**:
+
 ```yaml
 # SAFE - Base branch only
 - uses: actions/checkout@v4
@@ -251,20 +265,23 @@ steps:
 ```
 
 **Blocking Findings**:
+
 1. Any checkout of PR head with secrets in scope
 2. Execution of PR-supplied input in shell/eval
 3. Use of `ADMIN_GITHUB_TOKEN` without explicit safety measures
 
 **Automatic Fix**:
+
 ```yaml
 # Replace dangerous checkout
 - uses: actions/checkout@v4
   with:
-    ref: ${{ github.event.pull_request.base.ref }}  # Fixed: use base ref
-    token: ${{ github.token }}  # Fixed: avoid admin token
+    ref: ${{ github.event.pull_request.base.ref }} # Fixed: use base ref
+    token: ${{ github.token }} # Fixed: avoid admin token
 ```
 
 **Commit Message Template**:
+
 ```
 fix(security): restrict pull_request_target to base ref in [workflow-name]
 
@@ -280,6 +297,7 @@ Fixes: [issue-number]
 ### Immediate Fixes
 
 1. **Create Audit Document**:
+
 ```bash
 cat > docs/PULL_REQUEST_TARGET_AUDIT.md << 'EOF'
 # pull_request_target Security Audit
@@ -310,12 +328,13 @@ EOF
 ```
 
 1. **Add Security Check Workflow**:
+
 ```yaml
 # .github/workflows/security-audit-check.yml
 name: Security Audit Check
 on:
   pull_request:
-    paths: ['.github/workflows/**']
+    paths: [".github/workflows/**"]
 jobs:
   check-pull-request-target:
     runs-on: ubuntu-latest
@@ -332,7 +351,8 @@ jobs:
 ## 10. Labels to Apply
 
 **Required Labels**:
-- `security` 
+
+- `security`
 - `audit-required`
 - `high-priority`
 - `pull_request_target`
@@ -340,16 +360,19 @@ jobs:
 - `tech-debt`
 
 **Do NOT Apply**:
+
 - `revenue` labels (this has zero commercial value)
 - `product` labels (internal infrastructure only)
 
 ## 11. Repository Review and Best Alternative
 
 **Target Repository**: `midnghtsapphire/revvel-standards`
+
 - Status: Cannot verify - requires direct access
 - Alternative: None - this is repository-specific security work
 
 **Best Security Tools** (for automated scanning):
+
 1. **Semgrep** (Recommended) - Score: 95/100
    - Free for OSS, has GitHub Actions security rules
    - Command: `semgrep --config=r/github-actions`
@@ -364,6 +387,7 @@ jobs:
 **Overall Confidence: 95/100**
 
 **Per-Lane Confidence** (Iteration 2 - Best Results):
+
 - Market Positioning (Echo): 95/100 - Correctly identified as non-commercial
 - SEO Demand (Noimos): 95/100 - Recognized internal nature
 - Competitor Intelligence (Iris): 95/100 - Provided security tools context
@@ -374,12 +398,14 @@ jobs:
 - Research Review (Aria): 95/100 - Synthesized blocking findings
 
 **Reasoning**: High confidence due to:
+
 1. Clear security vulnerability documentation from GitHub
 2. Specific workflow list and preliminary analysis provided
 3. Well-defined deliverable requirements
 4. Standard mitigation patterns available
 
 **Low Confidence Areas**:
+
 - Cannot verify current repository state without access
 - Historical issue #13978 details unverifiable
 - Exact workflow configurations unknown
@@ -426,11 +452,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -446,11 +472,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

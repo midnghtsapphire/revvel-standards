@@ -6,12 +6,38 @@ description: "Expert on Octopus Review (source-available Modified MIT, RAG-based
 metadata:
   author: "Revvel AI Engine"
   category: "Code Quality & Autonomous Review"
-  tags: ["octopus-review", "octo", "ai-code-review", "rag", "qdrant", "embeddings", "usage-limits", "byok", "self-host", "openrouter", "ollama", "octp-cli", "issue-routing"]
+  tags:
+    [
+      "octopus-review",
+      "octo",
+      "ai-code-review",
+      "rag",
+      "qdrant",
+      "embeddings",
+      "usage-limits",
+      "byok",
+      "self-host",
+      "openrouter",
+      "ollama",
+      "octp-cli",
+      "issue-routing",
+    ]
   created_at: "2026-07-07"
   updated_at: "2026-07-07"
 
 persona: octo
-triggers: ["/octo", "/octopus", "octopus review", "usage limit", "octopus index", "octp", "review bot limits", "octopus self-host", "octopus openrouter"]
+triggers:
+  [
+    "/octo",
+    "/octopus",
+    "octopus review",
+    "usage limit",
+    "octopus index",
+    "octp",
+    "review bot limits",
+    "octopus self-host",
+    "octopus openrouter",
+  ]
 
 dependencies:
   skills: []

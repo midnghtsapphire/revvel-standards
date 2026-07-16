@@ -39,11 +39,13 @@ This automation implements a complete, end-to-end system for creating and market
 **Goal**: Target emotional niches with high search volume
 
 **Tools**:
+
 - PDF Trend Lab (or similar trend analysis tools)
 - Social listening data
 - Search volume analysis
 
-**Input**: 
+**Input**:
+
 ```json
 {
   "niche": "parenting",
@@ -62,12 +64,14 @@ This automation implements a complete, end-to-end system for creating and market
 **AI Model**: Claude Sonnet 4
 
 **Prompt Strategy**:
+
 - Emotional hooks
 - Pain point focus
 - Under 10 words
 - Creates urgency
 
 **Example Output**:
+
 ```json
 {
   "title": "Parents Hate Choppy Sleep: Fix It For Good",
@@ -85,6 +89,7 @@ This automation implements a complete, end-to-end system for creating and market
 **AI Model**: Claude Sonnet 4 (8000 token output)
 
 **Content Structure**:
+
 1. Introduction - Address the pain point
 2. Understanding the Problem - Why it matters
 3. Solution Framework - 3-5 main strategies
@@ -95,6 +100,7 @@ This automation implements a complete, end-to-end system for creating and market
 8. Encouraging Conclusion
 
 **Quality Gates**:
+
 - ✅ No placeholder text or TODOs
 - ✅ Conversational, empathetic tone
 - ✅ Specific examples included
@@ -107,18 +113,21 @@ This automation implements a complete, end-to-end system for creating and market
 **Tool**: Canva (via API)
 
 **Assets Created**:
+
 - Cover page (2100×2970px, 300 DPI)
 - Interior layout
 - Diagrams/infographics
 - Author persona section
 
 **Design Guidelines**:
+
 - Professional yet warm aesthetic
 - Emotional color schemes
 - Free images from Unsplash
 - Trust-building author bio
 
 **Manual Steps Required**:
+
 1. Open Canva design from API response
 2. Format AI-generated text across pages
 3. Add images and visual elements
@@ -132,18 +141,21 @@ This automation implements a complete, end-to-end system for creating and market
 **Platform**: Shopify (recommended over Etsy/Gumroad)
 
 **Why Shopify**:
+
 - Full customization control
 - Better storytelling capabilities
 - Emotional "experience" creation
 - Higher conversion rates
 
 **Product Setup**:
+
 - Price: $29 (single)
 - Product Type: Digital Download
 - SKU: Auto-generated with timestamp
 - Status: Draft (for review before publishing)
 
 **Alternative Stores**:
+
 - Gumroad (10% commission, faster setup)
 - Etsy (6.5% + $0.20 listing fee)
 - Own site + Stripe (2.9% + $0.30)
@@ -155,20 +167,24 @@ This automation implements a complete, end-to-end system for creating and market
 **Strategy**: Offer choice between high commission OR flat fee + smaller commission
 
 **Offer Structure**:
+
 - **Option A**: 50% commission per sale
 - **Option B**: $700 upfront + 15% ongoing commission
 
 **Why This Works**:
+
 - Creates perceived negotiation power
 - Often prompts counter-offer
 - Allows flexibility based on influencer size
 
 **Video Requirements**:
+
 - Duration: 30-60 seconds
 - Integration: Sponsored segment
 - Authenticity: Personal story connection
 
 **Targeting Criteria**:
+
 - Minimum 10,000 subscribers
 - Niche match (e.g., parenting content)
 - Engagement rate >3%
@@ -178,16 +194,16 @@ This automation implements a complete, end-to-end system for creating and market
 
 ## Platform Comparison
 
-| Feature | n8n | Make.com | Zapier | Gumloop |
-|---------|-----|----------|--------|---------|
-| **Cost** | Self-hosted (free) | $9-29/mo | $20-50/mo | $29-99/mo |
-| **Ease of Setup** | Medium | Easy | Very Easy | Easy |
-| **Claude Integration** | Via HTTP | Built-in | Via OpenAI/Custom | Built-in |
-| **Visual Builder** | ✅ Yes | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Self-Hosted Option** | ✅ Yes | ❌ No | ❌ No | ❌ No |
-| **Code Flexibility** | ✅ High | ⚠️ Medium | ⚠️ Limited | ⚠️ Medium |
-| **Error Handling** | ✅ Advanced | ✅ Good | ⚠️ Basic | ✅ Good |
-| **Best For** | Tech-savvy, cost-conscious | Balance of features/price | Quick setup, less tech | AI-heavy workflows |
+| Feature                | n8n                        | Make.com                  | Zapier                 | Gumloop            |
+| ---------------------- | -------------------------- | ------------------------- | ---------------------- | ------------------ |
+| **Cost**               | Self-hosted (free)         | $9-29/mo                  | $20-50/mo              | $29-99/mo          |
+| **Ease of Setup**      | Medium                     | Easy                      | Very Easy              | Easy               |
+| **Claude Integration** | Via HTTP                   | Built-in                  | Via OpenAI/Custom      | Built-in           |
+| **Visual Builder**     | ✅ Yes                     | ✅ Yes                    | ✅ Yes                 | ✅ Yes             |
+| **Self-Hosted Option** | ✅ Yes                     | ❌ No                     | ❌ No                  | ❌ No              |
+| **Code Flexibility**   | ✅ High                    | ⚠️ Medium                 | ⚠️ Limited             | ⚠️ Medium          |
+| **Error Handling**     | ✅ Advanced                | ✅ Good                   | ⚠️ Basic               | ✅ Good            |
+| **Best For**           | Tech-savvy, cost-conscious | Balance of features/price | Quick setup, less tech | AI-heavy workflows |
 
 ### Recommendation by Use Case
 
@@ -288,6 +304,7 @@ n8n start
 **Required for**: Title generation (Step 2), Content generation (Step 3)
 
 **Setup**:
+
 1. Go to https://console.anthropic.com/
 2. Create API key
 3. Store in automation platform credentials
@@ -295,7 +312,8 @@ n8n start
 
 **Cost**: ~$0.25 per product (title + content generation)
 
-**Rate Limits**: 
+**Rate Limits**:
+
 - Tier 1: 50 requests/minute
 - Tier 2: 1000 requests/minute
 
@@ -304,12 +322,14 @@ n8n start
 **Required for**: Design creation (Step 4)
 
 **Setup**:
+
 1. Go to https://www.canva.com/developers/
 2. Create an app
 3. Generate API access token
 4. Store in automation platform
 
 **Limitations**:
+
 - Requires Canva Pro account
 - Some features limited to Enterprise
 - Design creation is free via API
@@ -320,6 +340,7 @@ n8n start
 **Required for**: Product creation (Step 5)
 
 **Setup**:
+
 1. Shopify Admin → Apps → Develop apps
 2. Create custom app
 3. Enable Admin API scopes:
@@ -327,7 +348,8 @@ n8n start
    - `read_products`
 4. Install app and get access token
 
-**Rate Limits**: 
+**Rate Limits**:
+
 - 2 requests/second (REST)
 - 50 requests/second (GraphQL)
 
@@ -336,12 +358,14 @@ n8n start
 **Alternative to direct Claude API**
 
 **Benefits**:
+
 - Single API for multiple AI models
 - Better rate limiting
 - Cost optimization
 - Fallback support
 
 **Setup**:
+
 1. Get API key from https://openrouter.ai/
 2. Use model: `anthropic/claude-sonnet-4`
 3. Add `HTTP-Referer` header with your site
@@ -368,24 +392,28 @@ workflows/
 ### File Descriptions
 
 **n8n/pdf-product-creation.json**
+
 - Complete workflow with 11 nodes
 - Webhook trigger included
 - Conditional logic for error handling
 - Response node for API feedback
 
 **make/pdf-product-creation.json**
+
 - Make.com scenario blueprint
 - 9 modules configured
 - Built-in Anthropic integration
 - Webhook response included
 
 **zapier/pdf-product-creation.md**
+
 - Step-by-step setup guide
 - Code snippets for Python steps
 - Troubleshooting section
 - Alternative configurations
 
 **gumloop/pdf-product-creation.md**
+
 - Node-by-node configuration
 - Environment variable setup
 - Error handling strategies
@@ -413,6 +441,7 @@ workflows/
 ### Expected Results
 
 **Step 1 Output**:
+
 ```json
 {
   "niche": "parenting",
@@ -423,6 +452,7 @@ workflows/
 ```
 
 **Step 2 Output**:
+
 ```json
 {
   "title": "Parents Hate Choppy Sleep: Fix It For Good",
@@ -435,6 +465,7 @@ workflows/
 ~3000-5000 words of markdown content
 
 **Step 4 Output**:
+
 ```json
 {
   "design": {
@@ -448,6 +479,7 @@ workflows/
 ```
 
 **Step 5 Output**:
+
 ```json
 {
   "product": {
@@ -460,6 +492,7 @@ workflows/
 ```
 
 **Step 6 Output**:
+
 ```json
 {
   "outreach_campaign": {
@@ -488,26 +521,27 @@ workflows/
 
 ### Per-Product Cost Breakdown
 
-| Item | Cost | Notes |
-|------|------|-------|
-| Claude API (title) | $0.03 | 500 tokens out |
-| Claude API (content) | $0.22 | 8000 tokens out |
-| Canva API | $0.00 | Free design creation |
-| Shopify API | $0.00 | Included in plan |
-| Automation platform | $0.00-0.10 | Depends on plan/usage |
-| **Total per product** | **$0.25-0.35** | |
+| Item                  | Cost           | Notes                 |
+| --------------------- | -------------- | --------------------- |
+| Claude API (title)    | $0.03          | 500 tokens out        |
+| Claude API (content)  | $0.22          | 8000 tokens out       |
+| Canva API             | $0.00          | Free design creation  |
+| Shopify API           | $0.00          | Included in plan      |
+| Automation platform   | $0.00-0.10     | Depends on plan/usage |
+| **Total per product** | **$0.25-0.35** |                       |
 
 ### Monthly Scaling
 
-| Products/Month | API Cost | Automation Cost | Total |
-|----------------|----------|-----------------|-------|
-| 10 products | $2.50-3.50 | $0-10 | $2.50-13.50 |
-| 30 products | $7.50-10.50 | $9-29 | $16.50-39.50 |
-| 100 products | $25-35 | $29-99 | $54-134 |
+| Products/Month | API Cost    | Automation Cost | Total        |
+| -------------- | ----------- | --------------- | ------------ |
+| 10 products    | $2.50-3.50  | $0-10           | $2.50-13.50  |
+| 30 products    | $7.50-10.50 | $9-29           | $16.50-39.50 |
+| 100 products   | $25-35      | $29-99          | $54-134      |
 
 ### Revenue Potential
 
 **Conservative Estimate** (10 products/month):
+
 - Products created: 10
 - Avg price: $29
 - Conversion rate: 1% (of 1000 visitors)
@@ -517,6 +551,7 @@ workflows/
 - **Net Profit: $2,880/month**
 
 **Aggressive Estimate** (30 products/month):
+
 - Products created: 30
 - Revenue: $8,700/month
 - Cost: ~$40/month
@@ -533,20 +568,22 @@ workflows/
 **Symptom**: Parse error in Step 3 (title parsing)
 
 **Solution**:
-```javascript
+
+````javascript
 // Add JSON cleaning code
 let response = claudeOutput;
-response = response.replace(/```json\n?/g, '');
-response = response.replace(/```\n?/g, '');
+response = response.replace(/```json\n?/g, "");
+response = response.replace(/```\n?/g, "");
 response = response.trim();
 const parsed = JSON.parse(response);
-```
+````
 
 #### 2. Canva API 401 Unauthorized
 
 **Symptom**: HTTP 401 error in Step 4
 
 **Solutions**:
+
 - Verify API key is correct
 - Check Canva Pro subscription is active
 - Ensure API scopes include `design:content:write`
@@ -557,6 +594,7 @@ const parsed = JSON.parse(response);
 **Symptom**: HTTP 422 or validation error in Step 5
 
 **Solutions**:
+
 - Verify all required fields are present
 - Check that product type "Digital Download" exists
 - Ensure SKU is unique
@@ -567,6 +605,7 @@ const parsed = JSON.parse(response);
 **Symptom**: Claude generates <2000 words
 
 **Solutions**:
+
 - Increase `max_tokens` to 16000
 - Add explicit length requirement: "Write at least 4000 words"
 - Break into multiple prompts (outline first, then sections)
@@ -576,6 +615,7 @@ const parsed = JSON.parse(response);
 **Symptom**: Automation platform timeout (>30 seconds)
 
 **Solutions**:
+
 - Split workflow into multiple chained workflows
 - Use async/queue pattern for long-running steps
 - Increase timeout settings in platform
@@ -663,20 +703,20 @@ Auto-generate promotional posts:
 
 This automation implements Steps 2-6 of `standards/AUTOMATED_PRODUCT_PIPELINE.md`:
 
-| Pipeline Step | Automation Coverage | Status |
-|---------------|---------------------|--------|
-| 1. Listen | ❌ Not included (requires social listening setup) | Future |
-| 2. Triage | ⚠️ Partial (manual niche selection) | Current |
-| 3. Brief | ✅ Automated (title + content gen) | Current |
-| 4. ROI Gate | ❌ Not included (low cost, auto-approve) | N/A |
-| 5. Route | ✅ Fixed route (PDF shape) | Current |
-| 6. BOM | ⚠️ Manual (API keys pre-provisioned) | Current |
-| 7. Build | ✅ Automated (content + design) | Current |
-| 8. Certify | ❌ Manual review required | Future |
-| 9. Monetize | ✅ Automated (Shopify product) | Current |
-| 10. Deploy | ⚠️ Semi-automated (draft → publish manual) | Current |
-| 11. Market | ✅ Automated (campaign prep) | Current |
-| 12. Measure | ❌ Not included (separate analytics) | Future |
+| Pipeline Step | Automation Coverage                               | Status  |
+| ------------- | ------------------------------------------------- | ------- |
+| 1. Listen     | ❌ Not included (requires social listening setup) | Future  |
+| 2. Triage     | ⚠️ Partial (manual niche selection)               | Current |
+| 3. Brief      | ✅ Automated (title + content gen)                | Current |
+| 4. ROI Gate   | ❌ Not included (low cost, auto-approve)          | N/A     |
+| 5. Route      | ✅ Fixed route (PDF shape)                        | Current |
+| 6. BOM        | ⚠️ Manual (API keys pre-provisioned)              | Current |
+| 7. Build      | ✅ Automated (content + design)                   | Current |
+| 8. Certify    | ❌ Manual review required                         | Future  |
+| 9. Monetize   | ✅ Automated (Shopify product)                    | Current |
+| 10. Deploy    | ⚠️ Semi-automated (draft → publish manual)        | Current |
+| 11. Market    | ✅ Automated (campaign prep)                      | Current |
+| 12. Measure   | ❌ Not included (separate analytics)              | Future  |
 
 ### Required Connections (BOM Gate)
 
@@ -692,6 +732,7 @@ Per `standards/shapes/PDF.md`, these connections must be provisioned:
 ### Shape Standard Compliance
 
 ✅ Follows `standards/shapes/PDF.md`:
+
 - Research phase documented
 - Content structure matches spec
 - Quality gates defined
@@ -702,6 +743,7 @@ Per `standards/shapes/PDF.md`, these connections must be provisioned:
 ### Skill Integration
 
 This automation can be triggered by:
+
 - `skills/product-pipeline/` - For daily automated pipeline
 - Manual webhook call - For ad-hoc product creation
 - Scheduled cron - For batch processing
@@ -778,6 +820,7 @@ This automation workflow is part of the revvel-standards repository.
 ## Changelog
 
 ### v1.0.0 - 2026-05-02
+
 - ✅ Initial release
 - ✅ Complete 6-step automation
 - ✅ Support for n8n, Make, Zapier, Gumloop

@@ -35,7 +35,7 @@ name: Zero-Human Pipeline
 on:
   push: [main, develop]
   pull_request:
-  schedule: ['0 2 * * *']  # 2 AM daily
+  schedule: ["0 2 * * *"] # 2 AM daily
   repository_dispatch:
     - types: [deploy, test, audit]
 
@@ -89,7 +89,7 @@ class ZeroHumanMCP:
             "zapier": ZapierClient(),
             "gumloop": GumloopClient(),
         }
-        
+
     async def handle_email(self, email: dict):
         intent = await self.classify_email(email)
         handlers = {
@@ -99,7 +99,7 @@ class ZeroHumanMCP:
             "spam": lambda e: None,
         }
         await handlers.get(intent, self.handle_unknown)(email)
-        
+
     async def handle_client_request(self, email: dict):
         requirements = await self.extract_requirements(email)
         quote = self.generate_quote(requirements)
@@ -116,7 +116,14 @@ class ZeroHumanMCP:
   "workflows": [
     {
       "name": "Client Request → Quote → Proposal",
-      "nodes": ["email_trigger", "gpt_requirements", "calc_quote", "doc_proposal", "send_email", "notion_task"]
+      "nodes": [
+        "email_trigger",
+        "gpt_requirements",
+        "calc_quote",
+        "doc_proposal",
+        "send_email",
+        "notion_task"
+      ]
     },
     {
       "name": "Invoice Processing",
@@ -124,7 +131,13 @@ class ZeroHumanMCP:
     },
     {
       "name": "Lead → Website Analysis → Quote",
-      "nodes": ["form_trigger", "scrape_website", "ai_analysis", "generate_proposal", "send_email"]
+      "nodes": [
+        "form_trigger",
+        "scrape_website",
+        "ai_analysis",
+        "generate_proposal",
+        "send_email"
+      ]
     }
   ]
 }
@@ -134,11 +147,11 @@ class ZeroHumanMCP:
 
 ## Staying Relevant at 60+
 
-| Era | Role | Human Task |
-|-----|------|------------|
-| 2000s | Coder | Write all code |
-| 2010s | Lead | Review + manage |
-| 2020s | Architect | Design systems |
+| Era     | Role           | Human Task               |
+| ------- | -------------- | ------------------------ |
+| 2000s   | Coder          | Write all code           |
+| 2010s   | Lead           | Review + manage          |
+| 2020s   | Architect      | Design systems           |
 | **NOW** | **Strategist** | **Decide what to build** |
 
 ### Time Allocation
@@ -161,6 +174,7 @@ Zero-Human (40 hrs):
 ```
 
 This wires:
+
 - ✅ CI/CD pipeline
 - ✅ Security audit
 - ✅ Auto-linting
@@ -172,10 +186,9 @@ This wires:
 
 ## Revenue Impact
 
-| Process | Before | After | Savings |
-|---------|--------|-------|---------|
-| Client quote | 2 hrs | 5 min | 95% |
-| Invoice processing | 30 min | 0 min | 100% |
-| Code review | 1 hr | 10 min | 83% |
-| Lead follow-up | 1 hr | 0 min | 100% |
-
+| Process            | Before | After  | Savings |
+| ------------------ | ------ | ------ | ------- |
+| Client quote       | 2 hrs  | 5 min  | 95%     |
+| Invoice processing | 30 min | 0 min  | 100%    |
+| Code review        | 1 hr   | 10 min | 83%     |
+| Lead follow-up     | 1 hr   | 0 min  | 100%    |

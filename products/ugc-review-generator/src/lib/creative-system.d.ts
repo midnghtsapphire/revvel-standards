@@ -1,5 +1,5 @@
 export interface AmazonReviewPacket {
-  useCase: 'amazon-ugc';
+  useCase: "amazon-ugc";
   visualPrompt: string;
   script: string;
   checklist: string[];
@@ -14,7 +14,7 @@ export interface CalendarEntry {
 }
 
 export interface LocalLeadPacket {
-  useCase: 'local-leads';
+  useCase: "local-leads";
   brandName: string;
   overlayLines: string[];
   shortScript: string;

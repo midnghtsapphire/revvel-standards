@@ -1,4 +1,4 @@
-# WR: [WR]  /coder /mindmappr Implement atomic label updates in approval event handler
+# WR: [WR] /coder /mindmappr Implement atomic label updates in approval event handler
 
 **Issue:** #15600  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-09  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-09  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -92,7 +91,7 @@ Atomic label operations implemented for all PR state transitions
 Validation tests pass for concurrent approval/review scenarios
 Priority: P2 (automation reliability)
 
-Labels: work-request, 
+Labels: work-request,
 
 ### Definition of Done
 
@@ -140,18 +139,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -163,6 +163,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29053661789.md`
 
 # WR-Ready Research Packet: Atomic Label Updates in Approval Event Handler
@@ -172,6 +173,7 @@ Source packet: `docs/research-engine/run-29053661789.md`
 **Recommendation**: Implement atomic label updates using GitHub's `setLabels` API endpoint with optimistic locking pattern via `actions/github-script`. This prevents race conditions when multiple approval events occur simultaneously.
 
 **Key Decision Points**:
+
 - Use GitHub's atomic `setLabels` API instead of sequential add/remove operations
 - Implement retry logic with exponential backoff for conflict resolution
 - Target developer teams experiencing workflow reliability issues (500+ employee companies)
@@ -182,14 +184,16 @@ Source packet: `docs/research-engine/run-29053661789.md`
 **Primary Target**: DevOps engineers and platform teams at mid-to-large companies (500+ employees) managing high-volume repositories with complex approval workflows.
 
 **Pain Points**:
+
 - Race conditions causing inconsistent PR states (e.g., both `approved` and `needs-review` labels)
 - Manual intervention required to fix label states
 - Failed deployments due to incorrect label-based routing
 - Compliance audit failures from inconsistent approval chains
 
 **Why This Audience**:
+
 - Budget authority ($50K-500K annual tooling budgets)
-- High pain severity (73% report weekly deployment delays - *needs survey validation*)
+- High pain severity (73% report weekly deployment delays - _needs survey validation_)
 - Strong network effects for advocacy
 
 ## 3. Marketing and SEO Plan
@@ -197,34 +201,38 @@ Source packet: `docs/research-engine/run-29053661789.md`
 **Primary Messaging**: "Build approval workflows that just work. No more race conditions, no more manual clean-up."
 
 **SEO Target Keywords**:
+
 - "atomic label updates github" (transactional intent)
 - "github actions race condition" (problem-aware)
 - "approval workflow automation" (solution-seeking)
 
 **Content Strategy**:
+
 - Technical blog: "How to Atomically Update GitHub Labels on Pull Request Approval"
 - Comparison guide: Current vs. atomic label approaches
 - Video demo showing race condition prevention
 
 **Distribution Channels**:
+
 - GitHub Marketplace listing
 - Developer-focused content marketing
 - Conference talks on workflow reliability
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Stars | Pricing | Atomic Support | Moat |
-|------------|-------|---------|----------------|------|
-| **GitHub Native** | N/A | $21/user/month (Enterprise) | Yes (via API) | Platform lock-in |
-| **Probot** | 8.7k | Free (OSS) | Requires custom implementation | Community ecosystem |
-| **Mergify** | 1.6k | $8/user/month | Yes | Commercial support |
-| **actions/github-script** | 4.1k | Free | Yes (with custom code) | Official GitHub support |
+| Competitor                | Stars | Pricing                     | Atomic Support                 | Moat                    |
+| ------------------------- | ----- | --------------------------- | ------------------------------ | ----------------------- |
+| **GitHub Native**         | N/A   | $21/user/month (Enterprise) | Yes (via API)                  | Platform lock-in        |
+| **Probot**                | 8.7k  | Free (OSS)                  | Requires custom implementation | Community ecosystem     |
+| **Mergify**               | 1.6k  | $8/user/month               | Yes                            | Commercial support      |
+| **actions/github-script** | 4.1k  | Free                        | Yes (with custom code)         | Official GitHub support |
 
 **Key Insight**: Most competitors handle atomic updates as table stakes. Differentiation must come from reliability, ease of use, and multi-platform support.
 
 ## 5. Chatter and Demand Signals
 
 **Evidence Found**:
+
 - 2,847 open GitHub issues mentioning "approval workflow" + "race condition"
 - 156 Stack Overflow questions tagged `approval-workflow` + `atomic-operations` (past 12 months)
 - Common complaints: "Labels getting out of sync", "PR approved but still has needs-review label"
@@ -234,11 +242,13 @@ Source packet: `docs/research-engine/run-29053661789.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Validated**:
+
 - GitHub API supports atomic label operations via `setLabels` endpoint ✓
 - Race conditions are documented issue in concurrent workflows ✓
 - Enterprise teams require audit trails for compliance ✓
 
 **Evidence Gaps**:
+
 - Market size claim ($8.2B DevOps tools) requires Gartner subscription
 - 73% deployment delay statistic needs primary research
 - `/mindmappr` repository not found - may be internal or private
@@ -246,12 +256,14 @@ Source packet: `docs/research-engine/run-29053661789.md`
 ## 7. Build Requirements and Acceptance Gates
 
 **Implementation Surface**:
+
 1. Create `AtomicLabelManager` class with retry logic
 2. Implement GitHub Action using `actions/github-script`
 3. Add optimistic locking pattern for conflict resolution
 4. Include rollback mechanism for failed operations
 
 **Acceptance Gates**:
+
 - [ ] Concurrent approval test passes (3+ simultaneous approvals)
 - [ ] Rollback test passes (simulated API failure)
 - [ ] Rate limit compliance verified
@@ -279,15 +291,17 @@ await github.rest.issues.setLabels({labels: [...new Set(newLabels)]});
 ### For Ralph Loop Security Review
 
 **Auth Requirements**: Verify `GITHUB_TOKEN` permissions are scoped correctly:
+
 ```yaml
 permissions:
-  pull-requests: write  # Required for label updates
-  contents: read       # Not needed - remove if present
+  pull-requests: write # Required for label updates
+  contents: read # Not needed - remove if present
 ```
 
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Implement Atomic Update Logic
+
 **File**: `.github/workflows/approval-handler.yml`
 **Commit**: `fix(cicd): implement atomic label updates to prevent race conditions`
 
@@ -299,18 +313,18 @@ permissions:
     script: |
       const { owner, repo } = context.repo;
       const issue_number = context.issue.number;
-      
+
       // Fetch current labels
       const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
         owner, repo, issue_number
       });
-      
+
       // Construct new label set atomically
       const labelNames = currentLabels.map(l => l.name);
       const newLabels = labelNames
         .filter(name => !['status:needs-review'].includes(name))
         .concat(['status:approved']);
-      
+
       // Apply all labels in single operation
       await github.rest.issues.setLabels({
         owner, repo, issue_number,
@@ -319,6 +333,7 @@ permissions:
 ```
 
 ### Fix 2: Add Concurrency Test
+
 **File**: `.github/workflows/test-concurrent-approvals.yml`
 **Commit**: `test: add concurrent approval simulation for atomic label updates`
 
@@ -335,12 +350,14 @@ permissions:
 **Primary Finding**: `/mindmappr` repository not found or inaccessible.
 
 **Best Alternative**: **actions/github-script** (Official GitHub Action)
+
 - Stars: 4.1k+
 - Maintained by GitHub
 - Provides full API access for custom atomic operations
 - Free and open source
 
 **Why This Choice**:
+
 1. Official support reduces maintenance risk
 2. Maximum flexibility for implementing retry logic
 3. No vendor lock-in
@@ -351,16 +368,19 @@ permissions:
 **Overall Confidence: 78/100**
 
 **High Confidence (90-95)**:
+
 - Technical solution viability (GitHub API supports atomic operations)
 - Problem validation (race conditions are real and documented)
 - Implementation approach (github-script is proven solution)
 
 **Medium Confidence (70-80)**:
+
 - Market demand (evidence exists but needs quantification)
 - Pricing strategy (based on competitor analysis)
 - SEO opportunity (niche but valuable keywords)
 
 **Low Confidence (40-60)**:
+
 - Market size claims (requires paid research access)
 - `/mindmappr` integration (repository not found)
 - Exact user pain frequency (needs primary research)
@@ -407,11 +427,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -427,11 +447,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

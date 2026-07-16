@@ -8,11 +8,14 @@
     {
       "query_id": "repo-automation-gh-repo",
       "answer": "The gh CLI infers the repo from git remotes. With no actions/checkout step, set GH_REPO to github.repository at the job env so gh knows the target.",
-      "citations": ["https://docs.github.com/en/actions", "https://cli.github.com/manual/"],
+      "citations": [
+        "https://docs.github.com/en/actions",
+        "https://cli.github.com/manual/"
+      ],
       "error": false,
       "latency_ms": 1400,
       "tokens": { "input": 700, "output": 900 },
-      "cost_usd": 0.0020,
+      "cost_usd": 0.002,
       "usefulness_note": "Actionable, but omits the per-call --repo alternative."
     },
     {
@@ -27,7 +30,7 @@
       "error": false,
       "latency_ms": 4200,
       "tokens": { "input": 900, "output": 2100 },
-      "cost_usd": 0.0060,
+      "cost_usd": 0.006,
       "freshness_year": 2026,
       "usefulness_note": "Multiple providers, but does not call out consent capture explicitly."
     },
@@ -37,7 +40,7 @@
       "citations": ["https://github.com/rhysd/actionlint"],
       "error": false,
       "latency_ms": 1100,
-      "cost_usd": 0.0010
+      "cost_usd": 0.001
     },
     {
       "query_id": "code-review-routing-task",
@@ -59,7 +62,7 @@
       "error": false,
       "latency_ms": 5200,
       "tokens": { "input": 1000, "output": 2400 },
-      "cost_usd": 0.0070,
+      "cost_usd": 0.007,
       "freshness_year": 2025,
       "usefulness_note": "TAM and competitors, but drops explicit market-segment breakdown."
     },

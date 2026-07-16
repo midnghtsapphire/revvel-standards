@@ -54,11 +54,11 @@ scoring:
   formula: "round(sum(factor_score[0..10] * weight) * 10)  # -> 0..100"
   grade_bands:
     - { min: 90, max: 100, grade: "A+", badge: "TruthSlayer Verified — Gold" }
-    - { min: 80, max: 89,  grade: "A",  badge: "TruthSlayer Verified — Silver" }
-    - { min: 70, max: 79,  grade: "B",  badge: "TruthSlayer Verified — Bronze" }
-    - { min: 60, max: 69,  grade: "C",  badge: "Conditional — Fix Required" }
-    - { min: 40, max: 59,  grade: "D",  badge: "Not Recommended" }
-    - { min: 0,  max: 39,  grade: "F",  badge: "Avoid — Material Issues" }
+    - { min: 80, max: 89, grade: "A", badge: "TruthSlayer Verified — Silver" }
+    - { min: 70, max: 79, grade: "B", badge: "TruthSlayer Verified — Bronze" }
+    - { min: 60, max: 69, grade: "C", badge: "Conditional — Fix Required" }
+    - { min: 40, max: 59, grade: "D", badge: "Not Recommended" }
+    - { min: 0, max: 39, grade: "F", badge: "Avoid — Material Issues" }
   p0_caps:
     - "live secret leak"
     - "malware or backdoor"

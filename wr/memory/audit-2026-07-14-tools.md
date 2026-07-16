@@ -3,6 +3,7 @@
 Reusable audit toolchain (all reproducible, no API keys needed):
 
 **External tools**
+
 - `git clone --depth 1` — public repo pull
 - `node --test` (Node 22 built-in runner) — 631-test suite execution
 - `npx tsc -p tsconfig.json` — typecheck gate
@@ -13,6 +14,7 @@ Reusable audit toolchain (all reproducible, no API keys needed):
 - Zapier GitHub MCP (create_branch, get_file_contents, create_file, pull_request) — push lane when no direct GitHub connector is present
 
 **Internal repo tools exercised**
+
 - `npm test`, `npm run typecheck` (package.json scripts)
 - `scripts/automation-doctor.js` (crashed pre-fix → now loadable)
 - WR templates (WR_TEMPLATE_BASIC.md format followed for all 10 WRs)

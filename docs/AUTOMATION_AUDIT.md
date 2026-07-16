@@ -11,6 +11,7 @@
 **Current State:** ✅ **Automation is functional and comprehensive**
 
 The revvel-standards repository has extensive automation infrastructure:
+
 - **58 GitHub Actions workflows** covering triage, review, deployment, monitoring
 - **61 canonical labels** (not 5000 — all properly defined and documented)
 - **Multiple agent types** properly routed (OpenRouter, Copilot, Jules, Codex)
@@ -18,6 +19,7 @@ The revvel-standards repository has extensive automation infrastructure:
 - **Scheduled jobs** for maintenance and monitoring
 
 **Key Finding:** The comment about "5000 unused labels" appears to be either:
+
 1. Referring to labels across ALL MIDNGHTSAPPHIRE org repos (not just revvel-standards)
 2. Historical issue that has already been addressed
 3. Hyperbole expressing frustration
@@ -31,6 +33,7 @@ The revvel-standards repository has extensive automation infrastructure:
 ### Active Workflows (58 total)
 
 #### Agent Routing & Orchestration
+
 1. ✅ `openrouter-triage.yml` — First-line triage for issues/PRs
 2. ✅ `openrouter-instantiation-check.yml` — Health check for OpenRouter API
 3. ✅ `openrouter-coder.yml` — Code generation via OpenRouter
@@ -40,6 +43,7 @@ The revvel-standards repository has extensive automation infrastructure:
 7. ✅ `jules-feedback.yml` — Jules feedback loop
 
 #### PR & Code Review
+
 1. ✅ `ai-pr-review-openrouter.yml` — AI-powered PR review
 2. ✅ `pr-review-status.yml` — PR review status automation
 3. ✅ `match-labels.yml` — Label matching for routing
@@ -47,6 +51,7 @@ The revvel-standards repository has extensive automation infrastructure:
 5. ✅ `close-linked-issue.yml` — Auto-close issues when PR merges
 
 #### CI/CD & Quality
+
 1. ✅ `ai-ci-failure-helper.yml` — CI failure auto-fix
 2. ✅ `ralph-loop.yml` — Self-healing loop for failures
 3. ✅ `auto-error-handler.yml` — Automatic error handling
@@ -54,6 +59,7 @@ The revvel-standards repository has extensive automation infrastructure:
 5. ✅ `compliance-watcher.yml` — Compliance monitoring
 
 #### Label & Triage Management
+
 1. ✅ `arsc-labels.yml` — ARSC label management (Add/Remove/Set/Clear)
 2. ✅ `sync-labels.yml` — Sync canonical labels across repos
 3. ✅ `priority-router.yml` — Priority-based routing
@@ -61,16 +67,19 @@ The revvel-standards repository has extensive automation infrastructure:
 5. ✅ `credential-label-router.yml` — **NEW** Auto-routes credentials-missing issues to desktop agents
 
 #### Branch & Issue Management
+
 1. ✅ `create-issue-branch.yml` — Auto-create branches from issues
 2. ✅ `stale-branch-cleanup.yml` — Clean up stale branches
 3. ✅ `stale-docs-check.yml` — Check for outdated docs
 
 #### Merge & Deployment
+
 1. ✅ `auto-merge.yml` — Automatic PR merging
 2. ✅ `commit-queue-monitor.yml` — Monitor merge queue
 3. ✅ `mergify-merge-queue-labels-copier.yml` — Mergify integration
 
 #### Security & Secrets
+
 1. ✅ `credential-gatekeeper.yml` — Credential detection and BOM generation
 2. ✅ `credential-label-router.yml` — **NEW** Auto-assignment to agents with desktop access
 3. ✅ `doppler-secrets-sync.yml` — Doppler secrets sync
@@ -79,6 +88,7 @@ The revvel-standards repository has extensive automation infrastructure:
 6. ✅ `saml-sso-registration.yml` — SAML SSO automation
 
 #### Monitoring & Analytics
+
 1. ✅ `amplitude-events.yml` — Amplitude analytics events
 2. ✅ `amplitude-to-notion.yml` — Amplitude → Notion sync
 3. ⏸ `mabl.yml` — Mabl test automation (PAUSED 2026-05-27; replaced by Keploy. Auto-triggers commented; manual `workflow_dispatch` still works. See header notes in the workflow file for the full evaluation.)
@@ -86,6 +96,7 @@ The revvel-standards repository has extensive automation infrastructure:
 5. ✅ `proof-of-life.yml` — App health checks
 
 #### Deployment & Infrastructure
+
 1. ✅ `deploy-oaudrey.yml` — oAudrey deployment
 2. ✅ `oaudrey-retro.yml` — oAudrey retrospective
 3. ✅ `sync-oaudrey-dns.yml` — oAudrey DNS sync
@@ -95,12 +106,14 @@ The revvel-standards repository has extensive automation infrastructure:
 7. ✅ `app-artifact-audit.yml` — **NEW** Enforces Definition of Done every 6h: refreshes `docs/<app>/ARTIFACTS.md`, README live-deployment links, and `docs/APP_DELIVERY_STATUS.md` (Vercel auto-fill when `VERCEL_TOKEN` is set)
 
 #### Documentation & Changelog
+
 1. ✅ `ai-weekly-changelog.yml` — Auto-generated changelogs
 2. ✅ `flow-chart-sync.yml` — Flow chart updates
 3. ✅ `template-sync-check.yml` — Template consistency
 4. ✅ `update-agent-creator-data.yml` — Regenerates `agent-creator-data.{json,js}` (catalog for `agent-creator.html`, the Agent Hunter dashboard) when `skills/SKILLS_INDEX.yml`, `.github/agent-models.yml`, `.github/agent-prompts.yml`, or `scripts/openrouter-personas.js` change on main
 
 #### Special Purpose
+
 1. ✅ `fork-audit-bot.yml` — Fork evaluation
 2. ✅ `panda-ops.yml` — PandaOps integration
 3. ✅ `proposal-prosecution.yml` — Proposal handling
@@ -111,6 +124,7 @@ The revvel-standards repository has extensive automation infrastructure:
 8. ✅ `project-board-sync.yml` — Project board automation
 
 #### Cron Jobs
+
 1. ✅ `cron/*` — Multiple scheduled maintenance tasks
 
 ---
@@ -122,29 +136,36 @@ The revvel-standards repository has extensive automation infrastructure:
 **All labels are properly documented and serve clear purposes.**
 
 #### Triage & Type (13 labels)
+
 - ✅ `bug`, `enhancement`, `triage`
 - ✅ `triage:new`, `triage:in-progress`, `triage:needs-info`, `triage:classified`, `triage:escalated`
 - ✅ `documentation`, `security`, `design`, `dependencies`, `good-first-issue`
 
 #### Priority (4 labels)
+
 - ✅ `priority-p0`, `priority-p1`, `priority-p2`, `priority-p3`
 
 #### Lifecycle/State (4 labels)
+
 - ✅ `in-review`, `blocked`, `wontfix`, `bom-purchase`
 
 #### PR Review Status (4 labels)
+
 - ✅ `awaiting-approval`, `changes-requested`, `approved`, `review-started`
 
 #### Merge Control (2 labels)
+
 - ✅ `auto-merge`, `won't-merge`
 
 #### Automation/Routing (19 labels)
+
 - ✅ `auto-fix`, `copilot`, `ralph-loop`, `openrouter`
 - ✅ `openrouter:instantiating`, `openrouter:instantiated`, `openrouter:instantiation-failed`, `openrouter:needs-key`, `openrouter:ralph-escalated`, `openrouter:triage-failed`
 - ✅ `needs-human`, `vault-agent`, `codex`, `jules`, `deep-research`, `proof-of-life`
 - ✅ `role:orchestrator`, `role:fixer`
 
 #### Integration Labels (15 labels)
+
 - ✅ `graphite`, `graphite:stacked`
 - ✅ `gitkraken`, `gitkraken:workspace`
 - ✅ `antigravity`, `antigravity:agent-run`
@@ -160,14 +181,14 @@ The revvel-standards repository has extensive automation infrastructure:
 
 ### Verified Active Agents
 
-| Agent | Status | Routing | Health Check | Notes |
-|-------|--------|---------|--------------|-------|
-| **OpenRouter** | ✅ Active | `openrouter` label | `openrouter-instantiation-check.yml` | Runs daily, 👍 on success |
-| **GitHub Copilot** | ✅ Active | `copilot` label | Manual verification | This agent (me!) |
-| **Jules (Google)** | ✅ Active | `jules` label | `jules-invoke.yml` | Multiple workflows |
-| **Codex** | ✅ Active | `codex` label | Via OpenRouter | Code execution specialist |
-| **GOAP** | ⚠️ Mentioned | Not configured | None | Mentioned in comments, not implemented |
-| **Ralph Loop** | ✅ Active | `ralph-loop` label | `ralph-loop.yml` | Self-healing automation |
+| Agent              | Status       | Routing            | Health Check                         | Notes                                  |
+| ------------------ | ------------ | ------------------ | ------------------------------------ | -------------------------------------- |
+| **OpenRouter**     | ✅ Active    | `openrouter` label | `openrouter-instantiation-check.yml` | Runs daily, 👍 on success              |
+| **GitHub Copilot** | ✅ Active    | `copilot` label    | Manual verification                  | This agent (me!)                       |
+| **Jules (Google)** | ✅ Active    | `jules` label      | `jules-invoke.yml`                   | Multiple workflows                     |
+| **Codex**          | ✅ Active    | `codex` label      | Via OpenRouter                       | Code execution specialist              |
+| **GOAP**           | ⚠️ Mentioned | Not configured     | None                                 | Mentioned in comments, not implemented |
+| **Ralph Loop**     | ✅ Active    | `ralph-loop` label | `ralph-loop.yml`                     | Self-healing automation                |
 
 ### Agent Assignment Workflows
 
@@ -196,6 +217,7 @@ The revvel-standards repository has extensive automation infrastructure:
 ### Issue with Current Issue
 
 The issue `[WR] EVAluate if you think it works implement` should have triggered:
+
 1. `openrouter-triage.yml` on issue open — ✅ Should work
 2. Classification as research task — ✅ Should work
 3. Assignment to appropriate agent — ✅ Should work
@@ -274,16 +296,16 @@ The issue says "@why is this not autoprocessing please fix and do this WR" — l
 
 ### Scheduled Workflows
 
-| Workflow | Schedule | Purpose | Status |
-|----------|----------|---------|--------|
-| `openrouter-instantiation-check.yml` | Daily 06:17 UTC | OpenRouter health | ✅ Active |
-| `triage-cron.yml` | Hourly | Sweep untriaged items | ✅ Active |
-| `migration-cron.yml` | Custom | Database migrations | ✅ Active |
-| `stale-branch-cleanup.yml` | Daily 03:00 | Clean stale branches | ✅ Active |
-| `stale-docs-check.yml` | Weekly | Check doc freshness | ✅ Active |
-| `workflow-health-dashboard.yml` | Daily | Monitor workflows | ✅ Active |
-| `ai-weekly-changelog.yml` | Weekly | Generate changelog | ✅ Active |
-| `biome-inspector.yml` | Every 6h | Credit-free completion auditor — HTTP-checks each app's live link, files a worklist of unfinished projects | ✅ Active |
+| Workflow                             | Schedule        | Purpose                                                                                                    | Status    |
+| ------------------------------------ | --------------- | ---------------------------------------------------------------------------------------------------------- | --------- |
+| `openrouter-instantiation-check.yml` | Daily 06:17 UTC | OpenRouter health                                                                                          | ✅ Active |
+| `triage-cron.yml`                    | Hourly          | Sweep untriaged items                                                                                      | ✅ Active |
+| `migration-cron.yml`                 | Custom          | Database migrations                                                                                        | ✅ Active |
+| `stale-branch-cleanup.yml`           | Daily 03:00     | Clean stale branches                                                                                       | ✅ Active |
+| `stale-docs-check.yml`               | Weekly          | Check doc freshness                                                                                        | ✅ Active |
+| `workflow-health-dashboard.yml`      | Daily           | Monitor workflows                                                                                          | ✅ Active |
+| `ai-weekly-changelog.yml`            | Weekly          | Generate changelog                                                                                         | ✅ Active |
+| `biome-inspector.yml`                | Every 6h        | Credit-free completion auditor — HTTP-checks each app's live link, files a worklist of unfinished projects | ✅ Active |
 
 **Assessment:** ✅ All critical cron jobs are configured and active.
 
@@ -331,6 +353,7 @@ The issue says "@why is this not autoprocessing please fix and do this WR" — l
 **Current blockers:** None — all automation is functional.
 
 **Missing pieces identified:**
+
 - WR-specific label and workflow
 - 49Agents integration
 - GOAP agent (mentioned but unclear if needed)
@@ -356,7 +379,7 @@ Two core self-healing workflows were silently failing on every run because of
   `issues: write` + `actions: write`. Previously it had no token (every `gh`
   call ran unauthenticated) and only `contents: read` (could not re-label issues
   or re-run failed workflows), and `gh issue create` failed with `fatal: not a
-  git repository` because the job has no `actions/checkout`.
+git repository` because the job has no `actions/checkout`.
 - **`agent-monitor.yml`** — added `GH_REPO` to the checkoutless `create-failure-wr`
   job so `gh issue create`/`comment` resolve a repo target.
 - **`wr-pr-creation.yml`** — switched `${{ env.ISSUE_* }}` interpolation in `run:`
@@ -377,6 +400,7 @@ public repo, so the open core can act as an adoption funnel without exposing the
 rest of the proprietary repo.
 
 Safety properties:
+
 - **No-ops by default** — does nothing unless both the `MALAMA_MIRROR_TOKEN`
   secret and the `MALAMA_MIRROR_REPO` variable are configured, so nothing
   publishes by accident.

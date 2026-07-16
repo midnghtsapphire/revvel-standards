@@ -66,7 +66,7 @@ jobs:
           script: |
             const issueNumber = parseInt('${{ inputs.issue_number }}');
             const SELF_HEAL_LABELS = ['auto-fix', 'ralph-loop', 'scorecard'];
-            
+
             for (const label of SELF_HEAL_LABELS) {
               try {
                 await github.rest.issues.removeLabel({
@@ -90,7 +90,7 @@ jobs:
           script: |
             const issueNumber = parseInt('${{ inputs.issue_number }}');
             const SELF_HEAL_LABELS = ['auto-fix', 'ralph-loop', 'scorecard'];
-            
+
             try {
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,

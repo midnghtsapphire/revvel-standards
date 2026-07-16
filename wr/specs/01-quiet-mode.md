@@ -10,6 +10,7 @@ Quiet Mode is the default operating state for all scheduled automation.
 ## Purpose
 
 Quiet Mode ensures automation runs only when explicitly enabled. This prevents:
+
 - Unwanted automation firing in new repositories
 - Accidental workflow execution during development
 - Loss of user control over when automation activates
@@ -57,10 +58,10 @@ Scheduled workflows check for an open issue or pull request titled `exit-quiet-m
 
 Current workflows that respect Quiet Mode:
 
-| Workflow | Schedule | Purpose | File |
-|----------|----------|---------|------|
-| **migration-cron** | Daily 1 PM UTC | ⏳ Placeholder — will migrate one repository per day by priority tier | `.github/workflows/migration-cron.yml` |
-| **triage-cron** | Daily 12 PM UTC | ⏳ Placeholder — will propose one decision to DECISIONS-TODAY.md | `.github/workflows/triage-cron.yml` |
+| Workflow           | Schedule        | Purpose                                                               | File                                   |
+| ------------------ | --------------- | --------------------------------------------------------------------- | -------------------------------------- |
+| **migration-cron** | Daily 1 PM UTC  | ⏳ Placeholder — will migrate one repository per day by priority tier | `.github/workflows/migration-cron.yml` |
+| **triage-cron**    | Daily 12 PM UTC | ⏳ Placeholder — will propose one decision to DECISIONS-TODAY.md      | `.github/workflows/triage-cron.yml`    |
 
 ### Exception
 
@@ -86,6 +87,7 @@ Workflows will check for the gate on their next run, find it closed, and skip ex
 ### To Run A Workflow Manually
 
 Use GitHub Actions UI:
+
 1. Navigate to Actions tab
 2. Select the workflow
 3. Click "Run workflow" button
@@ -118,6 +120,7 @@ Every scheduled workflow that should respect Quiet Mode must:
 ### For Compliance-Critical Workflows
 
 Workflows that must run regardless of Quiet Mode (like Compliance Watcher):
+
 1. **Skip the gate check** entirely
 2. **Document the exception** in this spec
 3. **Get explicit approval** from repository owner before implementation
@@ -127,6 +130,7 @@ Workflows that must run regardless of Quiet Mode (like Compliance Watcher):
 ## Reference Implementation
 
 See working examples in:
+
 - `.github/workflows/migration-cron.yml`
 - `.github/workflows/triage-cron.yml`
 

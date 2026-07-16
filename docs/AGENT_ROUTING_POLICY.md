@@ -19,6 +19,7 @@ This document defines the agent routing policy for all automation in the `midngh
 > **Use free/affordable agents first. Paid agents are opt-in only.**
 
 All automation workflows must default to free or affordable agent options:
+
 1. **OpenRouter** (primary) - Pay-per-use with affordable models
 2. **Cursor** (fallback) - If available and cost-effective
 3. **OpenHands** (opt-in only) - Requires explicit `prefer_agent: OpenHands` parameter
@@ -27,27 +28,27 @@ All automation workflows must default to free or affordable agent options:
 
 ❌ **DO NOT** route to paid agents (OpenHands, Copilot) by default  
 ❌ **DO NOT** use `auto` mode that prefers paid agents  
-❌ **DO NOT** add paid agents to workflows without explicit approval  
+❌ **DO NOT** add paid agents to workflows without explicit approval
 
 ### Required Actions
 
 ✅ **DO** default to OpenRouter for all agent tasks  
 ✅ **DO** require explicit opt-in for paid agents  
 ✅ **DO** document costs for any paid service usage  
-✅ **DO** use CircleCI for PR reviews instead of paid GitHub tools  
+✅ **DO** use CircleCI for PR reviews instead of paid GitHub tools
 
 ---
 
 ## Agent Capabilities & Costs
 
-| Agent | Type | Cost | Use Case | Default? |
-|-------|------|------|----------|----------|
-| **OpenRouter** | API | Pay-per-use (~$0.001-0.01/request) | PR reviews, triage, research, code generation | ✅ Yes |
-| **CircleCI** | CI/CD | Free tier available | PR reviews, automated checks | ✅ Yes |
-| **BITO AI** | Code review | Free tier | Code reviews with repo memory | ✅ Yes |
-| **Cursor** | IDE agent | Subscription (~$20/month) | Interactive development | ⚠️ Fallback |
-| **OpenHands AI** | Autonomous | Pay-per-task (~$50+/task) | Complex multi-file tasks | ❌ Opt-in only |
-| **GitHub Copilot** | Code assist | $10-19/month | Inline code suggestions | ❌ Not for automation |
+| Agent              | Type        | Cost                               | Use Case                                      | Default?              |
+| ------------------ | ----------- | ---------------------------------- | --------------------------------------------- | --------------------- |
+| **OpenRouter**     | API         | Pay-per-use (~$0.001-0.01/request) | PR reviews, triage, research, code generation | ✅ Yes                |
+| **CircleCI**       | CI/CD       | Free tier available                | PR reviews, automated checks                  | ✅ Yes                |
+| **BITO AI**        | Code review | Free tier                          | Code reviews with repo memory                 | ✅ Yes                |
+| **Cursor**         | IDE agent   | Subscription (~$20/month)          | Interactive development                       | ⚠️ Fallback           |
+| **OpenHands AI**   | Autonomous  | Pay-per-task (~$50+/task)          | Complex multi-file tasks                      | ❌ Opt-in only        |
+| **GitHub Copilot** | Code assist | $10-19/month                       | Inline code suggestions                       | ❌ Not for automation |
 
 ---
 
@@ -58,18 +59,21 @@ All automation workflows must default to free or affordable agent options:
 **Purpose:** Fallback chain for issue/PR automation
 
 **Default chain:**
+
 ```
 OpenRouter (primary) → Cursor (fallback) → OpenHands (opt-in only)
 ```
 
 **Configuration:**
+
 ```yaml
-prefer_agent: "openrouter"  # Default value
+prefer_agent: "openrouter" # Default value
 ```
 
 **Opt-in to OpenHands:**
+
 ```yaml
-prefer_agent: "OpenHands"  # Must be explicit
+prefer_agent: "OpenHands" # Must be explicit
 ```
 
 ### 2. pr-auto-review.yml
@@ -79,6 +83,7 @@ prefer_agent: "OpenHands"  # Must be explicit
 **Default:** OpenRouter via `OPENROUTER_API_KEY`
 
 **Models used:**
+
 - Primary: `anthropic/claude-sonnet-4` (balanced quality/cost)
 - Fallback: `anthropic/claude-haiku-4.5` (faster, cheaper)
 
@@ -89,6 +94,7 @@ prefer_agent: "OpenHands"  # Must be explicit
 **Default:** BITO AI (free tier available)
 
 **When to use:**
+
 - PR opened/synchronized
 - Needs context from entire repository
 - Free tier sufficient for current usage
@@ -100,6 +106,7 @@ prefer_agent: "OpenHands"  # Must be explicit
 **Default:** Enabled for all PRs
 
 **Capabilities:**
+
 - Run tests and linters
 - OpenRouter-powered PR reviews
 - Post review comments directly in PRs
@@ -111,22 +118,24 @@ prefer_agent: "OpenHands"  # Must be explicit
 
 ### Monthly Budget Guidelines
 
-| Service | Budget | Usage Limit | Override Process |
-|---------|--------|-------------|------------------|
-| OpenRouter | $50/month | ~5000 requests | Auto-throttle at 80% |
-| BITO AI | $0/month | Free tier only | Upgrade requires approval |
-| CircleCI | $0/month | Free tier only | Paid plan requires approval |
-| OpenHands AI | $0/month | Explicit opt-in only | Per-task approval required |
+| Service      | Budget    | Usage Limit          | Override Process            |
+| ------------ | --------- | -------------------- | --------------------------- |
+| OpenRouter   | $50/month | ~5000 requests       | Auto-throttle at 80%        |
+| BITO AI      | $0/month  | Free tier only       | Upgrade requires approval   |
+| CircleCI     | $0/month  | Free tier only       | Paid plan requires approval |
+| OpenHands AI | $0/month  | Explicit opt-in only | Per-task approval required  |
 
 ### Cost Monitoring
 
 All workflows must log:
+
 - Agent used
 - API calls made
 - Estimated cost
 - Fallback events
 
 Monitor via:
+
 - OpenRouter dashboard: https://openrouter.ai/usage
 - CircleCI insights: https://app.circleci.com/
 - GitHub Actions usage: Settings → Billing
@@ -157,6 +166,7 @@ workflows:
 ```
 
 **Required secrets in CircleCI:**
+
 - `OPENROUTER_API_KEY` - For AI-powered reviews
 - `GITHUB_TOKEN` - For PR/issue operations
 
@@ -168,6 +178,7 @@ workflows:
    - Confirm webhook is active
 
 2. **Configure secrets:**
+
    ```bash
    # In CircleCI project settings
    OPENROUTER_API_KEY=sk-or-v1-...
@@ -188,6 +199,7 @@ workflows:
 **Trigger:** PR opened
 
 **Flow:**
+
 1. GitHub Actions detects PR
 2. `pr-auto-review.yml` triggers
 3. Calls OpenRouter API
@@ -199,6 +211,7 @@ workflows:
 **Trigger:** Issue labeled `wr:code`
 
 **Flow:**
+
 1. `agent-fallback.yml` triggers
 2. Tries OpenRouter → **fails** (rate limit)
 3. Tries Cursor → **succeeds**
@@ -210,12 +223,14 @@ workflows:
 **Trigger:** Manual workflow dispatch
 
 **Input:**
+
 ```yaml
 prefer_agent: "OpenHands"
 issue_number: 123
 ```
 
 **Flow:**
+
 1. Skips OpenRouter (explicit opt-in)
 2. Skips Cursor (explicit opt-in)
 3. Calls OpenHands AI
@@ -230,6 +245,7 @@ issue_number: 123
 **Symptom:** `429 Too Many Requests`
 
 **Solution:**
+
 1. Check OpenRouter dashboard for rate limit status
 2. Wait for rate limit reset (usually 1 minute)
 3. Workflow will automatically retry with exponential backoff
@@ -239,6 +255,7 @@ issue_number: 123
 **Symptom:** No CircleCI checks on PR
 
 **Solution:**
+
 1. Verify CircleCI webhook is active in GitHub settings
 2. Check `.circleci/config.yml` is valid (not disabled)
 3. Confirm `OPENROUTER_API_KEY` is set in CircleCI project settings
@@ -248,6 +265,7 @@ issue_number: 123
 **Symptom:** BITO AI workflow fails immediately
 
 **Solution:**
+
 1. Check `BITO_API_KEY` is configured
 2. Verify BITO API status
 3. Check if PR is draft (BITO skips drafts)
@@ -267,6 +285,7 @@ issue_number: 123
 ## Changelog
 
 ### 2026-05-03 - v1.0.0
+
 - Initial policy document
 - Changed default from OpenHands → OpenRouter
 - Re-enabled CircleCI for PR reviews
@@ -283,4 +302,4 @@ issue_number: 123
 
 ---
 
-*This policy aligns with the Prime Directive: Ship working, tested code — not plans. All automation must be cost-effective and sustainable.*
+_This policy aligns with the Prime Directive: Ship working, tested code — not plans. All automation must be cost-effective and sustainable._

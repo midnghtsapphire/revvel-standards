@@ -18,8 +18,8 @@ transient failure (API credit exhaustion, provider 402/429, missing key) and
 re-queues it for processing now that the underlying blocker is cleared.
 
 It is the **queue-recovery** counterpart to the Ralph Loop (`skills/ralph-loop/SKILL.md`):
-where Ralph re-drives a *failing PR* toward green CI, the Self-Healer re-drives
-*parked issues / WRs* back into the triage pipeline.
+where Ralph re-drives a _failing PR_ toward green CI, the Self-Healer re-drives
+_parked issues / WRs_ back into the triage pipeline.
 
 **Why it exists:** A Work Request that failed triage on an OpenRouter 402 keeps
 the `openrouter:triage-failed` label and (because the routing workflow uses the
@@ -32,13 +32,13 @@ parked item gets re-examined once the cause is gone.
 
 ## What This Skill Does
 
-| Task | Description |
-| --- | --- |
-| **Queue scan** | Lists open items labelled `openrouter:triage-failed` or `openrouter:needs-key` |
-| **Cause re-check** | Confirms the transient blocker (e.g. credits) is cleared before retrying |
-| **Re-queue** | Re-runs triage on each parked item, bypassing the `openrouter` idempotency label |
-| **Self-clear** | On success the triage script clears the failure labels (no manual cleanup) |
-| **Escalation** | After `max_recovery_attempts` failed sweeps, applies `needs-human` with evidence |
+| Task               | Description                                                                      |
+| ------------------ | -------------------------------------------------------------------------------- |
+| **Queue scan**     | Lists open items labelled `openrouter:triage-failed` or `openrouter:needs-key`   |
+| **Cause re-check** | Confirms the transient blocker (e.g. credits) is cleared before retrying         |
+| **Re-queue**       | Re-runs triage on each parked item, bypassing the `openrouter` idempotency label |
+| **Self-clear**     | On success the triage script clears the failure labels (no manual cleanup)       |
+| **Escalation**     | After `max_recovery_attempts` failed sweeps, applies `needs-human` with evidence |
 
 ---
 
@@ -120,8 +120,8 @@ Never:
 ```yaml
 # .github/self-healer.yml
 self_healer:
-  max_recovery_attempts: 3        # Failed sweeps before escalation
-  escalate_to: "midnghtsapphire"  # GitHub username to notify on escalation
+  max_recovery_attempts: 3 # Failed sweeps before escalation
+  escalate_to: "midnghtsapphire" # GitHub username to notify on escalation
   recovery_labels:
     - "openrouter:triage-failed"
     - "openrouter:needs-key"
@@ -133,12 +133,12 @@ self_healer:
 
 ## Dependencies
 
-| Dependency | Required? | Purpose |
-| --- | --- | --- |
-| **`.github/workflows/openrouter-triage.yml`** | ✅ Required | The recovery sweep this persona owns |
-| **`scripts/openrouter-triage.js`** | ✅ Required | Triage cascade + label self-clear |
-| **Funded OpenRouter account** | ⭕ Optional | Best lane; keyless Perplexity is the fallback |
-| **`ralph-loop` skill** | ⭕ Recommended | Handles the failing-PR case (CI), complementary to queue recovery |
+| Dependency                                    | Required?      | Purpose                                                           |
+| --------------------------------------------- | -------------- | ----------------------------------------------------------------- |
+| **`.github/workflows/openrouter-triage.yml`** | ✅ Required    | The recovery sweep this persona owns                              |
+| **`scripts/openrouter-triage.js`**            | ✅ Required    | Triage cascade + label self-clear                                 |
+| **Funded OpenRouter account**                 | ⭕ Optional    | Best lane; keyless Perplexity is the fallback                     |
+| **`ralph-loop` skill**                        | ⭕ Recommended | Handles the failing-PR case (CI), complementary to queue recovery |
 
 ---
 

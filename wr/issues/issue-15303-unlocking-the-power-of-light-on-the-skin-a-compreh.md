@@ -23,16 +23,17 @@ The `#tools #app` tag signals a request to build a consumer/clinical photobiomod
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
+
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
@@ -64,15 +65,15 @@ The article establishes three core PBM mechanisms relevant to a consumer/clinica
 
 ### SEO Keywords (monthly search volume — Google Keyword Planner estimates, unverified)
 
-| Keyword | Est. Volume | CPC Est. | Intent |
-| --- | --- | --- | --- |
-| red light therapy benefits | ~30 K | ~$1.20 | Informational |
-| photobiomodulation therapy | ~8 K | ~$2.00 | Research |
-| red light therapy app | ~5 K | ~$1.50 | Commercial |
-| LLLT protocol | ~2 K | ~$1.80 | Research/Commercial |
-| light therapy for skin rejuvenation | ~5 K | ~$1.30 | Commercial |
-| red light therapy hair growth | ~12 K | ~$1.60 | Commercial |
-| PBM dosing calculator | ~400 | ~$0.80 | Tool |
+| Keyword                             | Est. Volume | CPC Est. | Intent              |
+| ----------------------------------- | ----------- | -------- | ------------------- |
+| red light therapy benefits          | ~30 K       | ~$1.20   | Informational       |
+| photobiomodulation therapy          | ~8 K        | ~$2.00   | Research            |
+| red light therapy app               | ~5 K        | ~$1.50   | Commercial          |
+| LLLT protocol                       | ~2 K        | ~$1.80   | Research/Commercial |
+| light therapy for skin rejuvenation | ~5 K        | ~$1.30   | Commercial          |
+| red light therapy hair growth       | ~12 K       | ~$1.60   | Commercial          |
+| PBM dosing calculator               | ~400        | ~$0.80   | Tool                |
 
 Long-tail opportunity: "how many joules per session red light therapy" (~600/mo), "red light therapy protocol for wrinkles" (~900/mo) — both currently underserved by authoritative content.
 
@@ -92,15 +93,15 @@ Long-tail opportunity: "how many joules per session red light therapy" (~600/mo)
 
 ## Step 1A — Product/Output Selections
 
-| # | Output Type | Priority | Notes |
-| --- | --- | --- | --- |
-| 1 | Web app (Next.js 14 App Router) | P0 | Core PBM protocol manager; deployed on Vercel |
-| 2 | Dosimetry calculator | P0 | Calculates J/cm² from device power density (mW/cm²) × time |
-| 3 | Treatment log / progress tracker | P1 | Persistent session history with before/after notes |
-| 4 | Device compatibility database | P1 | Seeded with 25 popular consumer devices |
-| 5 | Condition protocol library | P1 | Evidence-based protocol cards (wound healing, acne, hair loss, anti-aging) |
-| 6 | REST API + white-label SDK | P2 | B2B tier for device manufacturers |
-| 7 | iOS/Android (React Native wrapper) | P2 | PWA-first; native wrapper in Phase 2 |
+| #   | Output Type                        | Priority | Notes                                                                      |
+| --- | ---------------------------------- | -------- | -------------------------------------------------------------------------- |
+| 1   | Web app (Next.js 14 App Router)    | P0       | Core PBM protocol manager; deployed on Vercel                              |
+| 2   | Dosimetry calculator               | P0       | Calculates J/cm² from device power density (mW/cm²) × time                 |
+| 3   | Treatment log / progress tracker   | P1       | Persistent session history with before/after notes                         |
+| 4   | Device compatibility database      | P1       | Seeded with 25 popular consumer devices                                    |
+| 5   | Condition protocol library         | P1       | Evidence-based protocol cards (wound healing, acne, hair loss, anti-aging) |
+| 6   | REST API + white-label SDK         | P2       | B2B tier for device manufacturers                                          |
+| 7   | iOS/Android (React Native wrapper) | P2       | PWA-first; native wrapper in Phase 2                                       |
 
 **Launch scope (MVP):** Items 1–5. Target 6-week build.
 
@@ -108,22 +109,22 @@ Long-tail opportunity: "how many joules per session red light therapy" (~600/mo)
 
 ### Competitor Analysis
 
-| Product | Type | Price | Strengths | Weaknesses |
-| --- | --- | --- | --- | --- |
-| **Joovv App** (iOS/Android) | Consumer companion | Free with device | Brand trust, simple UI | No dosimetry calc, Joovv-only, no protocol library |
-| **Mito Red Light companion** | Consumer companion | Free | Basic timer | Bare-bones, no cross-device support |
-| **PBM Therapy Tracker** (App Store) | Generic tracker | $4.99 one-time | Session logging | No dosimetry, no evidence base |
-| **LumiThera ClarVein** | Clinical SaaS | $200+/mo seat | FDA-cleared workflow | Clinical-only, no consumer offering |
-| **Thor Laser Calculator** | Clinical desktop | Included with hardware | Thorough dosimetry | Requires Thor hardware, not consumer-facing |
-| **Erchonia Portal** | Clinical SaaS | Pricing data pending — competitive benchmark research required. | Strong FDA clearance portfolio | Locked to Erchonia devices |
+| Product                             | Type               | Price                                                           | Strengths                      | Weaknesses                                         |
+| ----------------------------------- | ------------------ | --------------------------------------------------------------- | ------------------------------ | -------------------------------------------------- |
+| **Joovv App** (iOS/Android)         | Consumer companion | Free with device                                                | Brand trust, simple UI         | No dosimetry calc, Joovv-only, no protocol library |
+| **Mito Red Light companion**        | Consumer companion | Free                                                            | Basic timer                    | Bare-bones, no cross-device support                |
+| **PBM Therapy Tracker** (App Store) | Generic tracker    | $4.99 one-time                                                  | Session logging                | No dosimetry, no evidence base                     |
+| **LumiThera ClarVein**              | Clinical SaaS      | $200+/mo seat                                                   | FDA-cleared workflow           | Clinical-only, no consumer offering                |
+| **Thor Laser Calculator**           | Clinical desktop   | Included with hardware                                          | Thorough dosimetry             | Requires Thor hardware, not consumer-facing        |
+| **Erchonia Portal**                 | Clinical SaaS      | Pricing data pending — competitive benchmark research required. | Strong FDA clearance portfolio | Locked to Erchonia devices                         |
 
 **Gap identified:** No product currently serves the mass-market consumer PBM user with cross-device dosimetry + an evidence-based protocol library. The white space is clear.
 
 ### GitHub Open-Source Landscape
 
-| Repository | Stars | Status | Notes |
-| --- | --- | --- | --- |
-| No directly comparable OSS PBM app exists | — | — | Nearest is generic low-level-laser-therapy Wikipedia tooling |
+| Repository                                | Stars | Status | Notes                                                        |
+| ----------------------------------------- | ----- | ------ | ------------------------------------------------------------ |
+| No directly comparable OSS PBM app exists | —     | —      | Nearest is generic low-level-laser-therapy Wikipedia tooling |
 
 The OSS gap reinforces the build-vs-buy analysis: building proprietary is the only viable route. React/Next.js, Prisma ORM, and Vercel are all OSS components enabling a fast build.
 
@@ -136,22 +137,22 @@ The OSS gap reinforces the build-vs-buy analysis: building proprietary is the on
 
 ### Domain Strategy
 
-| Domain | Status | Strategy |
-| --- | --- | --- |
-| pbmprotocol.com | Likely available (unverified — WHOIS check required) | Primary brand domain |
-| redlightprotocol.com | Likely available (unverified) | Redirect / SEO landing |
-| photobiomodulation.app | Available TLD class | Mobile-app-era shortcut |
+| Domain                 | Status                                               | Strategy                |
+| ---------------------- | ---------------------------------------------------- | ----------------------- |
+| pbmprotocol.com        | Likely available (unverified — WHOIS check required) | Primary brand domain    |
+| redlightprotocol.com   | Likely available (unverified)                        | Redirect / SEO landing  |
+| photobiomodulation.app | Available TLD class                                  | Mobile-app-era shortcut |
 
 **Recommended domain:** pbmprotocol.com — mnemonic, keyword-rich, no trademark conflict.
 
 ### Monetization
 
-| Tier | Price | Features | Target |
-| --- | --- | --- | --- |
-| Free | $0 | Basic dosimetry calc, 7-day log | Top-of-funnel, SEO traffic |
-| Pro | $9.99/mo or $79/yr | Unlimited log, full protocol library, device DB, progress charts | Direct consumer |
-| Clinic | $49/mo per seat | Multi-patient management, export to PDF, EMR-ready CSV | Dermatologists, aestheticians |
-| White-label API | $199/mo flat + usage | REST API + SDK for device manufacturers to embed | B2B device brands |
+| Tier            | Price                | Features                                                         | Target                        |
+| --------------- | -------------------- | ---------------------------------------------------------------- | ----------------------------- |
+| Free            | $0                   | Basic dosimetry calc, 7-day log                                  | Top-of-funnel, SEO traffic    |
+| Pro             | $9.99/mo or $79/yr   | Unlimited log, full protocol library, device DB, progress charts | Direct consumer               |
+| Clinic          | $49/mo per seat      | Multi-patient management, export to PDF, EMR-ready CSV           | Dermatologists, aestheticians |
+| White-label API | $199/mo flat + usage | REST API + SDK for device manufacturers to embed                 | B2B device brands             |
 
 **Projected MRR at month 6 (internal estimate):** 800 Pro subscribers × $9.99 + 5 Clinic seats × $49 + 1 white-label = ~$8,490 MRR. Stretch target: $10 K MRR by month 7.
 
@@ -165,18 +166,18 @@ The OSS gap reinforces the build-vs-buy analysis: building proprietary is the on
 
 ### Functional Requirements
 
-| ID | Requirement | Priority |
-| --- | --- | --- |
-| F-01 | Dosimetry calculator: input power density (mW/cm²), treatment area (cm²), target dose (J/cm²) → output session time (minutes) | P0 |
-| F-02 | Condition selector: choose from wound healing, acne, hair regrowth, skin rejuvenation, pain, inflammation | P0 |
-| F-03 | Protocol card per condition: wavelength recommendation, dosing range, frequency, contraindications, PMC/PubMed citation | P0 |
-| F-04 | Device database: 25 consumer PBM devices seeded with irradiance specs by distance | P1 |
-| F-05 | Session log: date, device, area treated, dose delivered, subjective response notes | P1 |
-| F-06 | Progress visualisation: chart of cumulative dose vs. time per treatment area | P1 |
-| F-07 | User auth: email/password + Google OAuth via NextAuth.js | P0 |
-| F-08 | Stripe billing integration for Pro/Clinic tiers | P1 |
-| F-09 | REST API endpoints for white-label B2B consumers | P2 |
-| F-10 | CSV/PDF export of session log | P2 |
+| ID   | Requirement                                                                                                                   | Priority |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------- | -------- |
+| F-01 | Dosimetry calculator: input power density (mW/cm²), treatment area (cm²), target dose (J/cm²) → output session time (minutes) | P0       |
+| F-02 | Condition selector: choose from wound healing, acne, hair regrowth, skin rejuvenation, pain, inflammation                     | P0       |
+| F-03 | Protocol card per condition: wavelength recommendation, dosing range, frequency, contraindications, PMC/PubMed citation       | P0       |
+| F-04 | Device database: 25 consumer PBM devices seeded with irradiance specs by distance                                             | P1       |
+| F-05 | Session log: date, device, area treated, dose delivered, subjective response notes                                            | P1       |
+| F-06 | Progress visualisation: chart of cumulative dose vs. time per treatment area                                                  | P1       |
+| F-07 | User auth: email/password + Google OAuth via NextAuth.js                                                                      | P0       |
+| F-08 | Stripe billing integration for Pro/Clinic tiers                                                                               | P1       |
+| F-09 | REST API endpoints for white-label B2B consumers                                                                              | P2       |
+| F-10 | CSV/PDF export of session log                                                                                                 | P2       |
 
 ### Non-Functional Requirements
 
@@ -188,15 +189,15 @@ The OSS gap reinforces the build-vs-buy analysis: building proprietary is the on
 
 ### Technical Stack
 
-| Layer | Technology | Rationale |
-| --- | --- | --- |
+| Layer    | Technology                                        | Rationale                              |
+| -------- | ------------------------------------------------- | -------------------------------------- |
 | Frontend | Next.js 14 (App Router), TypeScript, Tailwind CSS | Matches repo's existing products stack |
-| Backend | Next.js API routes + Prisma ORM | Minimal infrastructure |
-| Database | PostgreSQL (Neon serverless) | Free tier adequate for MVP |
-| Auth | NextAuth.js | Drop-in OAuth + credentials |
-| Payments | Stripe Checkout + Customer Portal | Standard for SaaS |
-| Hosting | Vercel | Existing deployment pipeline |
-| Charts | Recharts | MIT, React-native compatible |
+| Backend  | Next.js API routes + Prisma ORM                   | Minimal infrastructure                 |
+| Database | PostgreSQL (Neon serverless)                      | Free tier adequate for MVP             |
+| Auth     | NextAuth.js                                       | Drop-in OAuth + credentials            |
+| Payments | Stripe Checkout + Customer Portal                 | Standard for SaaS                      |
+| Hosting  | Vercel                                            | Existing deployment pipeline           |
+| Charts   | Recharts                                          | MIT, React-native compatible           |
 
 ## Recommendations
 
@@ -209,20 +210,20 @@ The OSS gap reinforces the build-vs-buy analysis: building proprietary is the on
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 No prerequisite WRs identified. The app is a greenfield product build.
 
 ## Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-| --- | --- | --- | --- |
-| FDA regulatory grey zone — app could be construed as a medical device | Medium | High | Add mandatory medical disclaimer; do not make treatment claims; position as "educational dosimetry tool." Consult IP/regulatory counsel before Series A. |
-| Competitor (Joovv/Mito) ships native dosimetry feature | Medium | Medium | Move fast; ship calculator as free tool first to capture SEO share before incumbent. Moat is cross-brand neutrality — incumbents will never recommend competitor devices. |
-| Device irradiance data inaccuracy — manufacturers publish optimistic specs | High | Medium | Source irradiance from independent third-party testing (PBMmatters.com, GembaRed published lab tests) and label data source; allow user override. |
-| Low conversion from free to Pro | Medium | Medium | Paywall progress charts (highest-engagement feature) to drive upgrade; offer 14-day Pro trial at sign-up. |
-| Data privacy breach (session logs contain health info) | Low | High | Encrypt at rest, GDPR right-to-delete, SOC2 checklist before Clinic tier launch. |
+| Risk                                                                       | Likelihood | Impact | Mitigation                                                                                                                                                                |
+| -------------------------------------------------------------------------- | ---------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FDA regulatory grey zone — app could be construed as a medical device      | Medium     | High   | Add mandatory medical disclaimer; do not make treatment claims; position as "educational dosimetry tool." Consult IP/regulatory counsel before Series A.                  |
+| Competitor (Joovv/Mito) ships native dosimetry feature                     | Medium     | Medium | Move fast; ship calculator as free tool first to capture SEO share before incumbent. Moat is cross-brand neutrality — incumbents will never recommend competitor devices. |
+| Device irradiance data inaccuracy — manufacturers publish optimistic specs | High       | Medium | Source irradiance from independent third-party testing (PBMmatters.com, GembaRed published lab tests) and label data source; allow user override.                         |
+| Low conversion from free to Pro                                            | Medium     | Medium | Paywall progress charts (highest-engagement feature) to drive upgrade; offer 14-day Pro trial at sign-up.                                                                 |
+| Data privacy breach (session logs contain health info)                     | Low        | High   | Encrypt at rest, GDPR right-to-delete, SOC2 checklist before Clinic tier launch.                                                                                          |

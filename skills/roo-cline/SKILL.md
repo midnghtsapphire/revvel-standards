@@ -15,6 +15,7 @@ Use Roo-Cline autonomous coding agent for local development tasks requiring mult
 ## When to Use
 
 ✅ **Use Roo-Cline when:**
+
 - Working locally on complex features requiring multiple file changes
 - Refactoring code across multiple modules
 - Implementing features with both code and terminal commands
@@ -22,6 +23,7 @@ Use Roo-Cline autonomous coding agent for local development tasks requiring mult
 - Need human-in-the-loop approval for each action
 
 ❌ **Do NOT use Roo-Cline for:**
+
 - CI/CD automation (use GitHub Actions workflows)
 - PR reviews on GitHub (use Bito AI or OpenRouter)
 - Revenue/business tasks (use GOAP agent)

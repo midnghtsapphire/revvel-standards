@@ -37,15 +37,15 @@ Event names are read by humans on dashboards. Treat them like UI copy.
 
 Every Revvel app **must** emit these. Project-specific events go in the per-app `BOM.md` §Telemetry.
 
-| Event Name | Authoritative side | Required Properties |
-|---|---|---|
-| `App Loaded` | client | `app_version`, `platform` |
-| `User Signed Up` | server | `signup_method`, `referrer_source` |
-| `User Logged In` | server | `login_method` |
-| `User Logged Out` | client | _(none)_ |
-| `Feature Used` | client | `feature_name`, `surface` |
+| Event Name           | Authoritative side      | Required Properties                        |
+| -------------------- | ----------------------- | ------------------------------------------ |
+| `App Loaded`         | client                  | `app_version`, `platform`                  |
+| `User Signed Up`     | server                  | `signup_method`, `referrer_source`         |
+| `User Logged In`     | server                  | `login_method`                             |
+| `User Logged Out`    | client                  | _(none)_                                   |
+| `Feature Used`       | client                  | `feature_name`, `surface`                  |
 | `Purchase Completed` | server (Stripe webhook) | `product_slug`, `amount_cents`, `currency` |
-| `Error Surfaced` | client | `error_code`, `surface` |
+| `Error Surfaced`     | client                  | `error_code`, `surface`                    |
 
 > **Authoritative side** is whichever side can confirm the event without race conditions. Stripe purchases are server-confirmed via webhook; client `Purchase Completed` events are unreliable (closed tab, payment failure).
 
@@ -75,7 +75,7 @@ token                api_key
 
 ### EU residency
 
-If the app has *any* EU traffic, set:
+If the app has _any_ EU traffic, set:
 
 ```ts
 // In mixpanel-init.ts — already configurable via MIXPANEL_API_HOST:
@@ -101,14 +101,14 @@ Three layers, all enforced by `mixpanel-init.ts`:
 For events the client cannot be trusted to fire (purchases, server-validated signups), use the Node SDK:
 
 ```ts
-import Mixpanel from 'mixpanel';
+import Mixpanel from "mixpanel";
 const mp = Mixpanel.init(process.env.MIXPANEL_TOKEN!);
 
-mp.track('Purchase Completed', {
-  distinct_id: hashedUserId,                 // required for server-side
-  product_slug: 'asset-donation-engine',
+mp.track("Purchase Completed", {
+  distinct_id: hashedUserId, // required for server-side
+  product_slug: "asset-donation-engine",
   amount_cents: 4900,
-  currency: 'usd',
+  currency: "usd",
   ts: new Date().toISOString(),
 });
 ```

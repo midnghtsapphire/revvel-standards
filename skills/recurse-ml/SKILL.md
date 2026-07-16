@@ -47,11 +47,13 @@ If CI + RecurseML pass → merge
    Name: `RECURSE_ML_API_KEY`, Value: (from RecurseML dashboard)
 
 3. **Copy workflow:**
+
    ```bash
    cp revvel-standards/templates/cicd/recurse-ml.yml .github/workflows/recurse-ml.yml
    ```
 
 4. **Copy and customize rules:**
+
    ```bash
    cp revvel-standards/recurse-rules.md recurse-rules.md
    # Edit recurse-rules.md to add project-specific rules
@@ -79,20 +81,20 @@ If CI + RecurseML pass → merge
 
 All Revvel projects inherit the rules from `revvel-standards/recurse-rules.md`:
 
-| Rule | What It Catches |
-|---|---|
-| No Hardcoded Secrets | API keys, passwords, tokens in source |
-| No `any` Types | TypeScript `any` bypassing type system |
-| No Silent Error Swallowing | Empty catch blocks |
-| No Direct `console.log` | Debug logs in production code |
-| No TODO/FIXME in main | Incomplete work merged to main |
-| DRY Violations | Duplicated logic blocks (≥ 10 lines, ≥ 90% similar) |
-| No `.env` Committed | Secrets files in the repo |
-| Accessible UI | Images without alt text |
-| No Raw SQL Injection | Unparameterized user inputs to DB queries |
-| Auth on All Routes | Unprotected API endpoints |
-| Tests Required | New functions without test files |
-| Revvel Stack Compliance | Unapproved libraries (jQuery, Moment.js, etc.) |
+| Rule                       | What It Catches                                     |
+| -------------------------- | --------------------------------------------------- |
+| No Hardcoded Secrets       | API keys, passwords, tokens in source               |
+| No `any` Types             | TypeScript `any` bypassing type system              |
+| No Silent Error Swallowing | Empty catch blocks                                  |
+| No Direct `console.log`    | Debug logs in production code                       |
+| No TODO/FIXME in main      | Incomplete work merged to main                      |
+| DRY Violations             | Duplicated logic blocks (≥ 10 lines, ≥ 90% similar) |
+| No `.env` Committed        | Secrets files in the repo                           |
+| Accessible UI              | Images without alt text                             |
+| No Raw SQL Injection       | Unparameterized user inputs to DB queries           |
+| Auth on All Routes         | Unprotected API endpoints                           |
+| Tests Required             | New functions without test files                    |
+| Revvel Stack Compliance    | Unapproved libraries (jQuery, Moment.js, etc.)      |
 
 ## Agent Workflow — Self-Healing Loop
 
@@ -112,7 +114,7 @@ RecurseML violations can trigger the auto-fix loop:
 # In auto-fix.yml, add RecurseML violation detection:
 on:
   pull_request_review:
-    types: [submitted]  # Fires when RecurseML posts review
+    types: [submitted] # Fires when RecurseML posts review
 ```
 
 When RecurseML's automated review is submitted, `auto-fix.yml` can pick it up, create a
@@ -130,13 +132,13 @@ GitHub Issue labeled `auto-fix` + `copilot`, and have Copilot resolve the violat
 
 Track these during the trial to determine if renewal is worth it:
 
-| Metric | Target |
-|---|---|
-| Bugs caught before merge | ≥ 5 genuine issues found |
-| False positive rate | < 20% of comments are noise |
-| PR review time reduction | Noticeable reduction in manual review time |
-| Integration reliability | 0 workflow failures due to RecurseML |
-| Rules quality | Custom rules catch real Revvel-specific patterns |
+| Metric                   | Target                                           |
+| ------------------------ | ------------------------------------------------ |
+| Bugs caught before merge | ≥ 5 genuine issues found                         |
+| False positive rate      | < 20% of comments are noise                      |
+| PR review time reduction | Noticeable reduction in manual review time       |
+| Integration reliability  | 0 workflow failures due to RecurseML             |
+| Rules quality            | Custom rules catch real Revvel-specific patterns |
 
 If ≥ 4/5 targets are met → renew at $250/year.
 

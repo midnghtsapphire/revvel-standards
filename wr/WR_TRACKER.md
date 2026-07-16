@@ -17,52 +17,52 @@ This tracker monitors the Weekly Research (WR) status for all repositories in th
 
 ### Status Indicators
 
-| Icon | Status | Description |
-| --- | --- | --- |
-| ⭕ | Not Started | WR not yet initiated |
-| 🟡 | In Progress | WR actively being researched |
-| ✅ | Complete | WR finished, recommendations documented |
-| 🚀 | Ship-Ready | Repository is ship-to-market ready |
-| ⏸️ | Paused | WR temporarily suspended |
-| ❌ | Blocked | WR blocked by external dependency |
-| 📦 | Archived | Repository archived, no WR needed |
+| Icon | Status      | Description                             |
+| ---- | ----------- | --------------------------------------- |
+| ⭕   | Not Started | WR not yet initiated                    |
+| 🟡   | In Progress | WR actively being researched            |
+| ✅   | Complete    | WR finished, recommendations documented |
+| 🚀   | Ship-Ready  | Repository is ship-to-market ready      |
+| ⏸️   | Paused      | WR temporarily suspended                |
+| ❌   | Blocked     | WR blocked by external dependency       |
+| 📦   | Archived    | Repository archived, no WR needed       |
 
 ### Priority Levels
 
-| Level | Description | Revenue Potential | Timeline |
-| --- | --- | --- | --- |
-| P0 | Critical - Immediate revenue impact | $500+/month | This week |
-| P1 | High - Near-term revenue opportunity | $100-500/month | 1-2 weeks |
-| P2 | Medium - Strategic growth | $50-100/month | 1-2 months |
-| P3 | Low - Future potential | <$50/month | 3+ months |
-| P4 | Maintenance - No direct revenue | $0 | As needed |
+| Level | Description                          | Revenue Potential | Timeline   |
+| ----- | ------------------------------------ | ----------------- | ---------- |
+| P0    | Critical - Immediate revenue impact  | $500+/month       | This week  |
+| P1    | High - Near-term revenue opportunity | $100-500/month    | 1-2 weeks  |
+| P2    | Medium - Strategic growth            | $50-100/month     | 1-2 months |
+| P3    | Low - Future potential               | <$50/month        | 3+ months  |
+| P4    | Maintenance - No direct revenue      | $0                | As needed  |
 
 ---
 
 ## Repository Status Table
 
-| # | Repository | Created | Last Updated | Status | Priority | Revenue Potential | WR Link | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | [XHUMANITY](https://github.com/midnghtsapphire/XHUMANITY) | 2021-10-22 | 2026-04-28 | ⭕ | P2 | TBD | - | XPRIZE project |
-| 2 | [k9-community-site](https://github.com/midnghtsapphire/k9-community-site) | 2025-05-05 | 2026-06-22 | 🟡 | P3 | Memberships + partners | [WR](issues/issue-14705-fleet-maintenance-k9-community-site.md) | Vite/React/TS dog-community site; fleet WR #14705 — wire review workflows |
-| 3 | [certifixes](https://github.com/midnghtsapphire/certifixes) | 2025-05-09 | 2026-04-28 | ⭕ | P2 | TBD | - | 1 star |
-| 4 | [leaf2tree](https://github.com/midnghtsapphire/leaf2tree) | 2025-05-09 | 2026-03-05 | ⭕ | P3 | TBD | - | - |
-| 5 | [tikiwash-autofill-frontend-kit](https://github.com/midnghtsapphire/tikiwash-autofill-frontend-kit) | 2025-05-14 | 2026-03-05 | ⭕ | P3 | TBD | - | TypeScript |
-| 6 | [neurooz](https://github.com/midnghtsapphire/neurooz) | 2026-01-08 | 2026-05-02 | 🟡 | P0 | High | [WR](repos/neurooz.md) | AI-ADHD productivity |
-| 7 | [Meetaudreyevans](https://github.com/midnghtsapphire/Meetaudreyevans) | 2026-01-23 | 2026-05-02 | ⭕ | P1 | Medium | - | Life Hub |
-| 8 | [Mechatronopolis](https://github.com/midnghtsapphire/Mechatronopolis) | 2026-01-27 | 2026-05-02 | ⭕ | P2 | TBD | - | Mechatronics career |
-| 9 | [code-review-mcp-server](https://github.com/midnghtsapphire/code-review-mcp-server) | 2026-01-28 | 2026-03-05 | ⭕ | P1 | Medium | - | MCP server |
-| 10 | [the-alt-text](https://github.com/midnghtsapphire/the-alt-text) | 2026-01-29 | 2026-03-05 | ⭕ | P2 | TBD | - | TypeScript |
-| 11 | [oz-prompt-library](https://github.com/midnghtsapphire/oz-prompt-library) | 2026-01-30 | 2026-03-05 | ⭕ | P2 | TBD | - | Prompt library |
-| 12 | [rags](https://github.com/midnghtsapphire/rags) | 2026-01-30 | 2026-03-05 | ⭕ | P3 | TBD | - | - |
-| 13 | [universal_oz](https://github.com/midnghtsapphire/universal_oz) | 2026-01-30 | 2026-03-05 | ⭕ | P2 | TBD | - | Python |
-| 14 | [WEBSITE-FACTORY-API](https://github.com/midnghtsapphire/WEBSITE-FACTORY-API) | 2026-01-30 | 2026-03-05 | ⭕ | P1 | High | - | OpenRouter 5 models |
-| 15 | [WEBSITE-FACTORY-GENERATOR](https://github.com/midnghtsapphire/WEBSITE-FACTORY-GENERATOR) | 2026-01-30 | 2026-03-05 | ⭕ | P1 | High | - | OpenRouter generator |
-| 16 | [premolt](https://github.com/midnghtsapphire/premolt) | 2026-02-03 | 2026-04-06 | ⭕ | P1 | High | - | Security sandbox |
-| 17 | [Lifehub](https://github.com/midnghtsapphire/Lifehub) | 2026-02-06 | 2026-05-02 | ⭕ | P1 | Medium | - | - |
-| 18 | [Epstein](https://github.com/midnghtsapphire/Epstein) | 2026-02-06 | 2026-03-05 | ⭕ | P3 | TBD | - | - |
-| 19 | [affiliate-marketing-system](https://github.com/midnghtsapphire/affiliate-marketing-system) | 2026-02-07 | 2026-05-02 | ⭕ | P0 | Very High | - | Direct revenue |
-| 20 | [MCP-AUTH](https://github.com/midnghtsapphire/MCP-AUTH) | 2026-02-07 | 2026-05-02 | ⭕ | P1 | Medium | - | InTheWild platform |
+| #   | Repository                                                                                          | Created    | Last Updated | Status | Priority | Revenue Potential      | WR Link                                                         | Notes                                                                     |
+| --- | --------------------------------------------------------------------------------------------------- | ---------- | ------------ | ------ | -------- | ---------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 1   | [XHUMANITY](https://github.com/midnghtsapphire/XHUMANITY)                                           | 2021-10-22 | 2026-04-28   | ⭕     | P2       | TBD                    | -                                                               | XPRIZE project                                                            |
+| 2   | [k9-community-site](https://github.com/midnghtsapphire/k9-community-site)                           | 2025-05-05 | 2026-06-22   | 🟡     | P3       | Memberships + partners | [WR](issues/issue-14705-fleet-maintenance-k9-community-site.md) | Vite/React/TS dog-community site; fleet WR #14705 — wire review workflows |
+| 3   | [certifixes](https://github.com/midnghtsapphire/certifixes)                                         | 2025-05-09 | 2026-04-28   | ⭕     | P2       | TBD                    | -                                                               | 1 star                                                                    |
+| 4   | [leaf2tree](https://github.com/midnghtsapphire/leaf2tree)                                           | 2025-05-09 | 2026-03-05   | ⭕     | P3       | TBD                    | -                                                               | -                                                                         |
+| 5   | [tikiwash-autofill-frontend-kit](https://github.com/midnghtsapphire/tikiwash-autofill-frontend-kit) | 2025-05-14 | 2026-03-05   | ⭕     | P3       | TBD                    | -                                                               | TypeScript                                                                |
+| 6   | [neurooz](https://github.com/midnghtsapphire/neurooz)                                               | 2026-01-08 | 2026-05-02   | 🟡     | P0       | High                   | [WR](repos/neurooz.md)                                          | AI-ADHD productivity                                                      |
+| 7   | [Meetaudreyevans](https://github.com/midnghtsapphire/Meetaudreyevans)                               | 2026-01-23 | 2026-05-02   | ⭕     | P1       | Medium                 | -                                                               | Life Hub                                                                  |
+| 8   | [Mechatronopolis](https://github.com/midnghtsapphire/Mechatronopolis)                               | 2026-01-27 | 2026-05-02   | ⭕     | P2       | TBD                    | -                                                               | Mechatronics career                                                       |
+| 9   | [code-review-mcp-server](https://github.com/midnghtsapphire/code-review-mcp-server)                 | 2026-01-28 | 2026-03-05   | ⭕     | P1       | Medium                 | -                                                               | MCP server                                                                |
+| 10  | [the-alt-text](https://github.com/midnghtsapphire/the-alt-text)                                     | 2026-01-29 | 2026-03-05   | ⭕     | P2       | TBD                    | -                                                               | TypeScript                                                                |
+| 11  | [oz-prompt-library](https://github.com/midnghtsapphire/oz-prompt-library)                           | 2026-01-30 | 2026-03-05   | ⭕     | P2       | TBD                    | -                                                               | Prompt library                                                            |
+| 12  | [rags](https://github.com/midnghtsapphire/rags)                                                     | 2026-01-30 | 2026-03-05   | ⭕     | P3       | TBD                    | -                                                               | -                                                                         |
+| 13  | [universal_oz](https://github.com/midnghtsapphire/universal_oz)                                     | 2026-01-30 | 2026-03-05   | ⭕     | P2       | TBD                    | -                                                               | Python                                                                    |
+| 14  | [WEBSITE-FACTORY-API](https://github.com/midnghtsapphire/WEBSITE-FACTORY-API)                       | 2026-01-30 | 2026-03-05   | ⭕     | P1       | High                   | -                                                               | OpenRouter 5 models                                                       |
+| 15  | [WEBSITE-FACTORY-GENERATOR](https://github.com/midnghtsapphire/WEBSITE-FACTORY-GENERATOR)           | 2026-01-30 | 2026-03-05   | ⭕     | P1       | High                   | -                                                               | OpenRouter generator                                                      |
+| 16  | [premolt](https://github.com/midnghtsapphire/premolt)                                               | 2026-02-03 | 2026-04-06   | ⭕     | P1       | High                   | -                                                               | Security sandbox                                                          |
+| 17  | [Lifehub](https://github.com/midnghtsapphire/Lifehub)                                               | 2026-02-06 | 2026-05-02   | ⭕     | P1       | Medium                 | -                                                               | -                                                                         |
+| 18  | [Epstein](https://github.com/midnghtsapphire/Epstein)                                               | 2026-02-06 | 2026-03-05   | ⭕     | P3       | TBD                    | -                                                               | -                                                                         |
+| 19  | [affiliate-marketing-system](https://github.com/midnghtsapphire/affiliate-marketing-system)         | 2026-02-07 | 2026-05-02   | ⭕     | P0       | Very High              | -                                                               | Direct revenue                                                            |
+| 20  | [MCP-AUTH](https://github.com/midnghtsapphire/MCP-AUTH)                                             | 2026-02-07 | 2026-05-02   | ⭕     | P1       | Medium                 | -                                                               | InTheWild platform                                                        |
 
 _Table continues with remaining 80 repositories..._
 
@@ -102,12 +102,12 @@ cd wr
 
 ### Current State (as of 2026-05-02)
 
-| Category | Count | Est. Monthly Revenue | Notes |
-| --- | --- | --- | --- |
-| Ship-Ready | 0 | $0 | Target: 5 repos by end of May |
-| In Progress | 1 | $0 (potential) | neurooz WR being completed |
-| Identified P0 | ~10 | $5000+ (potential) | High-value opportunities |
-| Total Repositories | 140 | TBD | Full audit needed |
+| Category           | Count | Est. Monthly Revenue | Notes                         |
+| ------------------ | ----- | -------------------- | ----------------------------- |
+| Ship-Ready         | 0     | $0                   | Target: 5 repos by end of May |
+| In Progress        | 1     | $0 (potential)       | neurooz WR being completed    |
+| Identified P0      | ~10   | $5000+ (potential)   | High-value opportunities      |
+| Total Repositories | 140   | TBD                  | Full audit needed             |
 
 ### Prime Directive Progress
 

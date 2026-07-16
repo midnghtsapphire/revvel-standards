@@ -21,7 +21,9 @@ assert.deepEqual(metrics, {
   subscriptionPrice: 5,
 });
 
-const youtube = PLATFORMS.find((platform) => platform.id === "youtube-longform");
+const youtube = PLATFORMS.find(
+  (platform) => platform.id === "youtube-longform",
+);
 assert.ok(youtube, "YouTube long-form platform exists");
 
 const youtubeEstimate = estimatePlatform(youtube, metrics);

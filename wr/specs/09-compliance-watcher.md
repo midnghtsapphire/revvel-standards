@@ -3,6 +3,7 @@
 Compliance Watcher is the only cron that pierces Quiet Mode.
 
 ## Tracked records
+
 - CAGE 8ZRW3 (XI Website Solutions LLC) — expires 2026-05-05
 - CAGE 90SN0 (Freedom Angel Corp) — expires 2026-05-14
 - DUNS records linked to above entities
@@ -19,6 +20,7 @@ Compliance Watcher is the only cron that pierces Quiet Mode.
 - CA SOS renewal for Angel Reporter LLC
 
 ## Alerting rules
+
 - Alert thresholds: 60 / 30 / 14 / 7 / 3 / 1 days before expiration.
 - Alerts open GitHub issues with label `urgent-compliance`.
 - Assignee: `midnghtsapphire`.

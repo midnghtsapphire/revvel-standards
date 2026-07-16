@@ -13,7 +13,7 @@
 
 ## Purpose
 
-The **Bot Creator** turns a plain-language idea ("I want a bot that helps me adult, in a BT21 × glassmorphic look") into a complete, ready-to-ship bot specification. It covers what the bot *does* (functional **category**) and what it *looks/sounds like* (one or more **visual styles**, optionally combined), then emits a scaffold the user can drop into any Revvel repo.
+The **Bot Creator** turns a plain-language idea ("I want a bot that helps me adult, in a BT21 × glassmorphic look") into a complete, ready-to-ship bot specification. It covers what the bot _does_ (functional **category**) and what it _looks/sounds like_ (one or more **visual styles**, optionally combined), then emits a scaffold the user can drop into any Revvel repo.
 
 This solves the blank-page problem for bot builders: you pick a lane, pick a vibe (or two), and walk away with a named bot, system prompt, persona card, visual theme tokens, and capability checklist — consistent with the rest of the Revvel skills vault.
 
@@ -21,14 +21,14 @@ This solves the blank-page problem for bot builders: you pick a lane, pick a vib
 
 ## What This Skill Does
 
-| Action | Description |
-|---|---|
-| **Interview** | Asks at most 5 short questions: who it's for, what it does, primary category, 1–2 styles, tone |
-| **Category lock** | Snaps the bot's purpose to one functional category from the table below |
-| **Style compose** | Picks one style or combines up to **two** styles (e.g., `glassmorphic × bt21`) |
-| **Spec emit** | Outputs a Bot Spec: name, one-line pitch, system prompt, persona card, visual tokens, capability list |
-| **Scaffold** | Writes a `bots/<bot-slug>/` folder with `BOT.md`, `bot.yml`, `persona.yml`, `theme.json` |
-| **Register** | Adds the bot to a local `bots/REGISTRY.md` index so later bots inherit the same shape |
+| Action            | Description                                                                                           |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| **Interview**     | Asks at most 5 short questions: who it's for, what it does, primary category, 1–2 styles, tone        |
+| **Category lock** | Snaps the bot's purpose to one functional category from the table below                               |
+| **Style compose** | Picks one style or combines up to **two** styles (e.g., `glassmorphic × bt21`)                        |
+| **Spec emit**     | Outputs a Bot Spec: name, one-line pitch, system prompt, persona card, visual tokens, capability list |
+| **Scaffold**      | Writes a `bots/<bot-slug>/` folder with `BOT.md`, `bot.yml`, `persona.yml`, `theme.json`              |
+| **Register**      | Adds the bot to a local `bots/REGISTRY.md` index so later bots inherit the same shape                 |
 
 ---
 
@@ -47,20 +47,20 @@ memelord bot, genz bot, adulting bot, weaponized bot
 
 Pick exactly **one** category. The category decides the bot's job, tools, and guardrails.
 
-| Category | What the bot does |
-|---|---|
-| `adulting` | Life-admin nudges: bills, appointments, chores, meds, taxes-lite |
-| `creative` | Writes, illustrates, memes, remixes, brainstorms |
-| `study` | Explains, quizzes, flashcards, tracks a learning plan |
-| `coding` | Writes, reviews, and debugs code; opens PRs |
-| `productivity` | Inbox, calendar, tasks, focus timers, standups |
-| `social` | Reply drafts, tone-shift, DMs, comment crafting |
-| `finance` | Budget, subscriptions audit, expense categorization |
-| `wellness` | Mood, journal, sleep, hydration, gentle check-ins |
-| `gaming` | Game companions, lore bots, build optimizers |
-| `shopping` | Deal hunters, wishlist, price drop watchers |
-| `weaponized` | Aggressive debate / roast / cease-and-desist drafting (opt-in, safety rails on) |
-| `guardian` | Safety, red-team, fact-checking, scam detection |
+| Category       | What the bot does                                                               |
+| -------------- | ------------------------------------------------------------------------------- |
+| `adulting`     | Life-admin nudges: bills, appointments, chores, meds, taxes-lite                |
+| `creative`     | Writes, illustrates, memes, remixes, brainstorms                                |
+| `study`        | Explains, quizzes, flashcards, tracks a learning plan                           |
+| `coding`       | Writes, reviews, and debugs code; opens PRs                                     |
+| `productivity` | Inbox, calendar, tasks, focus timers, standups                                  |
+| `social`       | Reply drafts, tone-shift, DMs, comment crafting                                 |
+| `finance`      | Budget, subscriptions audit, expense categorization                             |
+| `wellness`     | Mood, journal, sleep, hydration, gentle check-ins                               |
+| `gaming`       | Game companions, lore bots, build optimizers                                    |
+| `shopping`     | Deal hunters, wishlist, price drop watchers                                     |
+| `weaponized`   | Aggressive debate / roast / cease-and-desist drafting (opt-in, safety rails on) |
+| `guardian`     | Safety, red-team, fact-checking, scam detection                                 |
 
 > **Weaponized guardrails:** never targets real individuals, never produces threats, slurs, doxxing, or illegal content. Refusals are firm and short.
 
@@ -72,27 +72,27 @@ Pick **one or two** styles. Two styles compose via `×` (e.g., `glassmorphic × 
 
 ### Dimensional / rendering styles
 
-| Style | Feel | Signature tokens |
-|---|---|---|
-| `1d` | Pure line art, single-stroke, monoline | `stroke:#111; fill:none; thickness:2px` |
-| `2d` | Flat illustration, bold shapes, no gradients | `flat-color; hard-edge; 2-tone shadow` |
-| `3d` | Rendered, soft shadows, dimensional depth | `ambient-occlusion; rim-light; matte-finish` |
+| Style          | Feel                                          | Signature tokens                                                      |
+| -------------- | --------------------------------------------- | --------------------------------------------------------------------- |
+| `1d`           | Pure line art, single-stroke, monoline        | `stroke:#111; fill:none; thickness:2px`                               |
+| `2d`           | Flat illustration, bold shapes, no gradients  | `flat-color; hard-edge; 2-tone shadow`                                |
+| `3d`           | Rendered, soft shadows, dimensional depth     | `ambient-occlusion; rim-light; matte-finish`                          |
 | `glassmorphic` | Frosted translucent panels, blurred backdrops | `backdrop-blur:20px; bg:rgba(255,255,255,0.12); border:1px/white/20%` |
-| `pacman` | 8-bit / arcade, chunky pixels, CRT scanlines | `pixel-grid:8px; palette:arcade; crt-scanlines` |
+| `pacman`       | 8-bit / arcade, chunky pixels, CRT scanlines  | `pixel-grid:8px; palette:arcade; crt-scanlines`                       |
 
 ### Persona / culture styles
 
-| Style | Feel | Signature tokens |
-|---|---|---|
-| `weaponized` | Tactical, matte black, hazard accents | `palette:noir+hazard-orange; stencil-type` |
-| `adulting` | Soft neutrals, calm, reassuring | `palette:sand+sage; serif-headings; rounded-2xl` |
-| `bt21` | Cute mascot, pastel, plush, big eyes | `palette:bt21-pastels; mascot-hero; plush-shadow` |
-| `pretty-pony` | Sparkle, rainbow gradients, cutie-marks | `palette:rainbow-pastel; sparkle-particles; script-display` |
-| `memelord` | Impact-font, deep-fried accents, reaction energy | `font:impact; emoji-abuse; drop-shadow:heavy` |
-| `genz` | Y2K × gradient blur × emoji-first | `palette:gradient-chrome; lowercase; sticker-chaos` |
-| `genx` | MTV grunge, cassette, halftone | `palette:grunge; halftone-dots; ransom-type` |
-| `millennial` | Soft sans, pastel, hand-lettered, avocado vibes | `palette:millennial-pink+sage; rounded-sans` |
-| `boomer` | Clear, high-contrast, large type, classic | `palette:navy+warm-white; serif; ≥18px base` |
+| Style         | Feel                                             | Signature tokens                                            |
+| ------------- | ------------------------------------------------ | ----------------------------------------------------------- |
+| `weaponized`  | Tactical, matte black, hazard accents            | `palette:noir+hazard-orange; stencil-type`                  |
+| `adulting`    | Soft neutrals, calm, reassuring                  | `palette:sand+sage; serif-headings; rounded-2xl`            |
+| `bt21`        | Cute mascot, pastel, plush, big eyes             | `palette:bt21-pastels; mascot-hero; plush-shadow`           |
+| `pretty-pony` | Sparkle, rainbow gradients, cutie-marks          | `palette:rainbow-pastel; sparkle-particles; script-display` |
+| `memelord`    | Impact-font, deep-fried accents, reaction energy | `font:impact; emoji-abuse; drop-shadow:heavy`               |
+| `genz`        | Y2K × gradient blur × emoji-first                | `palette:gradient-chrome; lowercase; sticker-chaos`         |
+| `genx`        | MTV grunge, cassette, halftone                   | `palette:grunge; halftone-dots; ransom-type`                |
+| `millennial`  | Soft sans, pastel, hand-lettered, avocado vibes  | `palette:millennial-pink+sage; rounded-sans`                |
+| `boomer`      | Clear, high-contrast, large type, classic        | `palette:navy+warm-white; serif; ≥18px base`                |
 
 ### Combo rules
 
@@ -129,8 +129,8 @@ bot:
   pitch: "<one sentence>"
   owner: "<user>"
   category: "<one of the 12 categories>"
-  style: "<style>"          # or "<style-a × style-b>"
-  tone: "chill"             # chill | neutral | spicy
+  style: "<style>" # or "<style-a × style-b>"
+  tone: "chill" # chill | neutral | spicy
   persona:
     voice: "<3–5 adjectives>"
     greeting: "<≤2 sentences>"
@@ -147,10 +147,10 @@ bot:
     palette: ["#...", "#...", "#..."]
     font_display: "<family>"
     font_body: "<family>"
-    radius: "2xl"           # sm | md | lg | xl | 2xl
-    surface: "glass"        # flat | glass | 3d | pixel
-    motion: "calm"          # calm | playful | aggressive
-    background: "minimal"   # minimal | scene | diorama (default: minimal)
+    radius: "2xl" # sm | md | lg | xl | 2xl
+    surface: "glass" # flat | glass | 3d | pixel
+    motion: "calm" # calm | playful | aggressive
+    background: "minimal" # minimal | scene | diorama (default: minimal)
 ```
 
 ---
@@ -185,7 +185,7 @@ The scaffold is framework-agnostic. If the host repo is Expo/React, `theme.json`
 ## Related Skills
 
 - [`persona-engine`](../persona-engine/SKILL.md) — consumes `persona.yml` at runtime.
-- [`skill-forge`](../skill-forge/SKILL.md) — use this when you want a *skill*, not a *bot*.
+- [`skill-forge`](../skill-forge/SKILL.md) — use this when you want a _skill_, not a _bot_.
 - [`brainstorming`](../brainstorming/SKILL.md) — run before bot-creator if the idea is still fuzzy.
 - [`accessibility`](../accessibility/SKILL.md) — contrast + font-size checks for all themes.
 
@@ -194,5 +194,6 @@ The scaffold is framework-agnostic. If the host repo is Expo/React, `theme.json`
 ## Termination
 
 The skill ends when:
+
 - The bot spec is emitted **and** the scaffold is written, **or**
 - The user cancels with `cancel bot`, `stop`, or `never mind`.

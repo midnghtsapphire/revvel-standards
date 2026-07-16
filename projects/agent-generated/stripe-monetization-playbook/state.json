@@ -9,7 +9,12 @@
   "step": 0,
   "step_name": "scaffolded",
   "monetization_model": "connect",
-  "monetization_models_supported": ["connect", "billing", "issuing", "terminal"],
+  "monetization_models_supported": [
+    "connect",
+    "billing",
+    "issuing",
+    "terminal"
+  ],
   "bom_ready": true,
   "build_green": false,
   "certified": false,

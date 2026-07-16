@@ -43,6 +43,7 @@ archive-upload-{{DATE}}/
 #### Brand Statement PDF
 
 Convert your brand statement to PDF with:
+
 - Clear title: "{{PERSON_NAME}} — Professional Statement"
 - Subtitle: "{{TAGLINE}}"
 - Sections:
@@ -54,6 +55,7 @@ Convert your brand statement to PDF with:
   - References (ORCID, GitHub, Wikidata URLs)
 
 **Formatting:**
+
 - Professional font (Arial, Calibri, Times New Roman)
 - 11-12pt body text
 - Clear section headers
@@ -89,14 +91,16 @@ For each project, create a PDF with:
 ## Technology Stack
 
 {{#each TECH_STACK}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 ## Outcomes & Impact
 
 {{#each OUTCOMES}}
+
 - {{this}}
-{{/each}}
+  {{/each}}
 
 ## Documentation
 
@@ -120,7 +124,7 @@ This work is licensed under {{LICENSE}}.
 
 ## Citation
 
-{{CREATOR_NAME}}. ({{YEAR}}). *{{PROJECT_NAME}}*. Retrieved from {{ARCHIVE_URL}}
+{{CREATOR_NAME}}. ({{YEAR}}). _{{PROJECT_NAME}}_. Retrieved from {{ARCHIVE_URL}}
 ```
 
 #### Metadata JSON
@@ -152,6 +156,7 @@ Create `metadata.json`:
 ```
 
 **Suggested subjects:**
+
 - Open Source Intelligence (OSINT)
 - Software Engineering
 - Geospatial Analysis
@@ -176,11 +181,13 @@ Create `metadata.json`:
 4. Fill in metadata form:
 
 **Item Title:**
+
 ```
 {{CREATOR_NAME}} — Professional Portfolio {{YEAR}}
 ```
 
 **Item Description:**
+
 ```
 Citable documentation of professional work by {{CREATOR_NAME}}, including:
 
@@ -199,33 +206,39 @@ Licensed under {{LICENSE}}.
 ```
 
 **Subject Tags:**
+
 ```
 {{#each SUBJECTS}}
-{{this}}; 
+{{this}};
 {{/each}}
 ```
 
 **Creator:**
+
 ```
 {{CREATOR_NAME}}
 ```
 
 **Date:**
+
 ```
 {{DATE}}
 ```
 
 **License:**
+
 ```
 {{LICENSE}}
 ```
 
 **Language:**
+
 ```
 English
 ```
 
 **Collection:**
+
 ```
 opensource
 ```
@@ -235,16 +248,19 @@ opensource
 #### Option B: Command Line Upload (Large Packages)
 
 Install `internetarchive` CLI:
+
 ```bash
 pip install internetarchive
 ```
 
 Configure credentials:
+
 ```bash
 ia configure
 ```
 
 Upload:
+
 ```bash
 ia upload {{IDENTIFIER_SLUG}} \
   archive-upload-{{DATE}}/* \
@@ -279,16 +295,19 @@ ia upload {{IDENTIFIER_SLUG}} \
 ### 5. Citing Your Archive.org Item
 
 **APA Format:**
+
 ```
 {{CREATOR_NAME}}. ({{YEAR}}). {{TITLE}}. Internet Archive. https://archive.org/details/{{IDENTIFIER_SLUG}}
 ```
 
 **MLA Format:**
+
 ```
 {{CREATOR_NAME}}. "{{TITLE}}." Internet Archive, {{DATE}}, archive.org/details/{{IDENTIFIER_SLUG}}.
 ```
 
 **Chicago Format:**
+
 ```
 {{CREATOR_NAME}}. "{{TITLE}}." Internet Archive. {{DATE}}. https://archive.org/details/{{IDENTIFIER_SLUG}}.
 ```
@@ -314,6 +333,7 @@ Before uploading:
 ## Why Internet Archive for E-E-A-T?
 
 **Benefits:**
+
 1. **Permanent URLs** — Never expires, can be cited forever
 2. **Wayback Machine** — Automatic versioning and time travel
 3. **High Domain Authority** — archive.org has strong SEO weight
@@ -322,6 +342,7 @@ Before uploading:
 6. **Free Forever** — No fees, no ads, open access
 
 **Use Cases:**
+
 - Citable professional portfolio
 - Project documentation snapshots
 - White papers and technical reports
@@ -334,11 +355,13 @@ Before uploading:
 ## Maintenance
 
 **Update Schedule:**
+
 - Upload new version annually or when significant projects are added
 - Keep old versions available (archive.org supports versioning)
 - Update metadata.json with new projects/credentials
 
 **Naming Convention:**
+
 ```
 {{CREATOR_SLUG}}-portfolio-{{YEAR}}
 {{CREATOR_SLUG}}-{{PROJECT_SLUG}}-{{VERSION}}

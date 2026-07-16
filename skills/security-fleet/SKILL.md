@@ -15,13 +15,13 @@ folds this file into `agent-creator-data.json`, and
 
 ## The five members
 
-| Handle | Name | Pattern | Group | One job |
-| --- | --- | --- | --- | --- |
-| `@sentinel` | Tripwire | Prompt-Injection Detection | Agent Input Defense | Scan issue/PR/comment/WR text for instruction-smuggling before agents consume it (S-MOS §4 log-poisoning tripwire) |
-| `@exprwatch` | Hardline | Untrusted-Expression Auditing | Workflow Hardening | Find untrusted `${{ github.event.* }}` interpolated into `run:` shells across all workflows (CLAUDE.md gotcha #4) |
-| `@exfil` | Blackout | Secret-Exfil Detection | Data Exfiltration Defense | Watch diffs and logs for leaked tokens; extends `secrets-sentinel.yml` |
-| `@permit` | Keysmith | Permission Minimization | Least Privilege | Audit per-workflow `permissions:` vs what the jobs actually do (CLAUDE.md gotcha #3) |
-| `@redteam` | Foxglove | Adversarial Red Teaming | Offense-Informed Defense | `scripts/patch-agent.js` dependency lane plus adversarial test generation against our own agents |
+| Handle       | Name     | Pattern                       | Group                     | One job                                                                                                            |
+| ------------ | -------- | ----------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `@sentinel`  | Tripwire | Prompt-Injection Detection    | Agent Input Defense       | Scan issue/PR/comment/WR text for instruction-smuggling before agents consume it (S-MOS §4 log-poisoning tripwire) |
+| `@exprwatch` | Hardline | Untrusted-Expression Auditing | Workflow Hardening        | Find untrusted `${{ github.event.* }}` interpolated into `run:` shells across all workflows (CLAUDE.md gotcha #4)  |
+| `@exfil`     | Blackout | Secret-Exfil Detection        | Data Exfiltration Defense | Watch diffs and logs for leaked tokens; extends `secrets-sentinel.yml`                                             |
+| `@permit`    | Keysmith | Permission Minimization       | Least Privilege           | Audit per-workflow `permissions:` vs what the jobs actually do (CLAUDE.md gotcha #3)                               |
+| `@redteam`   | Foxglove | Adversarial Red Teaming       | Offense-Informed Defense  | `scripts/patch-agent.js` dependency lane plus adversarial test generation against our own agents                   |
 
 ## Lanes and findings
 
@@ -45,8 +45,8 @@ by a stable title so scheduled lanes never spam the tracker.
   fleet enforces, not re-states.
 - [`skills/vault-agent/`](../vault-agent/SKILL.md) — secret provisioning;
   `@exfil` detects leaks, vault-agent owns storage.
-- `.github/workflows/secrets-sentinel.yml` — audits *configured* secrets;
-  `@exfil` extends it to *leaked* secrets in diffs and logs.
+- `.github/workflows/secrets-sentinel.yml` — audits _configured_ secrets;
+  `@exfil` extends it to _leaked_ secrets in diffs and logs.
 - `skills/patch-agent/` + `scripts/patch-agent.js` — `@redteam`'s
   dependency lane invokes it, never reimplements it.
 - The security-review skill — deep human-grade review; the fleet is the

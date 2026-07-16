@@ -16,11 +16,11 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 
 ## Access Control
 
-| Role | Access |
-|---|---|
-| `admin` | Full access to all admin panel sections |
-| `customer` | No access to `/admin` — redirected to homepage |
-| Unauthenticated | Redirected to login |
+| Role            | Access                                         |
+| --------------- | ---------------------------------------------- |
+| `admin`         | Full access to all admin panel sections        |
+| `customer`      | No access to `/admin` — redirected to homepage |
+| Unauthenticated | Redirected to login                            |
 
 **Admin email:** `angelreporters@gmail.com` — auto-assigned `admin` role on first Clerk login.
 
@@ -32,15 +32,15 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 
 **Purpose:** At-a-glance overview of business health.
 
-| Widget | Data |
-|---|---|
-| Today's Revenue | Sum of completed orders today |
-| Orders Today | Count of orders by status |
-| Upcoming Calendar | Next 7 days of confirmed orders |
-| Pending Catering Inquiries | Count + quick-view list |
-| Top Menu Items This Week | By order count |
-| Subscription Count | Active meal prep subscriptions |
-| Quick Actions | "Add Menu Item", "Block Calendar Date", "Create Blog Post" |
+| Widget                     | Data                                                       |
+| -------------------------- | ---------------------------------------------------------- |
+| Today's Revenue            | Sum of completed orders today                              |
+| Orders Today               | Count of orders by status                                  |
+| Upcoming Calendar          | Next 7 days of confirmed orders                            |
+| Pending Catering Inquiries | Count + quick-view list                                    |
+| Top Menu Items This Week   | By order count                                             |
+| Subscription Count         | Active meal prep subscriptions                             |
+| Quick Actions              | "Add Menu Item", "Block Calendar Date", "Create Blog Post" |
 
 ---
 
@@ -49,6 +49,7 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 **Purpose:** Edit any page's text and images without code changes.
 
 **How it works:**
+
 - All editable content is stored in `admin_config` table (key-value pairs)
 - Admin sees a visual list of fields organized by page
 - Text fields: inline text editor
@@ -57,15 +58,15 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 
 **Editable Content by Page:**
 
-| Page | Editable Fields |
-|---|---|
+| Page     | Editable Fields                                                                                                                                                     |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Homepage | Hero title, hero subtitle, hero CTA button text, hero background image, about snippet text, about snippet image, featured items (up to 6), eco section text + image |
-| Menu | Menu page hero text, category descriptions, filter section text |
-| About | Chef bio (full HTML), chef photo, chef video URL (YouTube/Vimeo embed), culinary school name + description, story timeline items |
-| Catering | Hero title, hero image, service description text, pricing callout text, FAQ items (add/edit/delete), gallery images (add/reorder/delete) |
-| Order | Order page intro text, pickup instructions, delivery instructions |
-| Contact | Business hours text, pickup address, phone number, email address, Google Maps embed URL, contact form confirmation message |
-| Footer | Footer tagline, social media links (Instagram, Facebook, TikTok, Twitter/X), newsletter signup text, eco badge section |
+| Menu     | Menu page hero text, category descriptions, filter section text                                                                                                     |
+| About    | Chef bio (full HTML), chef photo, chef video URL (YouTube/Vimeo embed), culinary school name + description, story timeline items                                    |
+| Catering | Hero title, hero image, service description text, pricing callout text, FAQ items (add/edit/delete), gallery images (add/reorder/delete)                            |
+| Order    | Order page intro text, pickup instructions, delivery instructions                                                                                                   |
+| Contact  | Business hours text, pickup address, phone number, email address, Google Maps embed URL, contact form confirmation message                                          |
+| Footer   | Footer tagline, social media links (Instagram, Facebook, TikTok, Twitter/X), newsletter signup text, eco badge section                                              |
 
 ---
 
@@ -74,6 +75,7 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 **Purpose:** Full CRUD on menu items.
 
 **Features:**
+
 - List all menu items with current price, category, status (active/archived)
 - Filter by category, dietary tags, active/archived
 - **Add Item:** Form with all fields from `menu_items` schema; image upload
@@ -90,6 +92,7 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 **Purpose:** Control which dates and time slots are available for ordering.
 
 **Features:**
+
 - Monthly calendar view (color-coded by service type)
 - **Add Slot:** Pick date + time + service type + max orders + pickup/delivery
 - **Block Date:** Mark entire date as unavailable (public holiday, chef day off, etc.)
@@ -105,6 +108,7 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 **Purpose:** View, manage, and fulfill all customer orders.
 
 **Features:**
+
 - Order list with filters: status, service type, date range, search by order number or customer email
 - **Order Detail View:**
   - Customer info, items ordered, dietary notes, fulfillment type + address
@@ -122,6 +126,7 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 **Purpose:** Manage incoming catering requests from inquiry to booking.
 
 **Features:**
+
 - List all inquiries with status (inquiry, quoted, deposit paid, confirmed, completed)
 - **Inquiry Detail View:** All submitted details, event info, dietary requirements, custom menu request
 - **Add Quote:** Enter total quoted price; system emails quote to customer
@@ -137,6 +142,7 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 **Purpose:** View and manage Meal Prep × 7 subscribers.
 
 **Features:**
+
 - List all active/cancelled subscriptions
 - Customer info, plan details, dietary preferences, current period
 - **Cancel Subscription:** Admin-initiated cancel (with reason)
@@ -151,6 +157,7 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 **Purpose:** Full CMS for blog posts.
 
 **Features:**
+
 - Post list with publish status, category, date
 - **Rich Text Editor:** TipTap with heading styles, images, links, bold/italic/lists
 - **SEO Fields:** Per-post SEO title, meta description, keywords, canonical URL
@@ -166,6 +173,7 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 **Purpose:** Business intelligence at a glance.
 
 **Metrics:**
+
 - Revenue by day/week/month (chart)
 - Orders by service type (pie chart)
 - Top 10 menu items by order count
@@ -181,16 +189,16 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 
 **Purpose:** Turn features on/off without a code deploy.
 
-| Feature | Default | Notes |
-|---|---|---|
-| Delivery ordering | OFF | Enable when logistics partner is ready |
-| Guest checkout | ON | |
-| Sunday Dinner ordering | ON | Disable during off-season |
-| Catering inquiry form | ON | |
-| Newsletter signup | ON | |
-| Blog section | ON | |
-| Meal prep subscriptions | ON | |
-| Instagram feed | OFF | Enable once account is connected |
+| Feature                 | Default | Notes                                  |
+| ----------------------- | ------- | -------------------------------------- |
+| Delivery ordering       | OFF     | Enable when logistics partner is ready |
+| Guest checkout          | ON      |                                        |
+| Sunday Dinner ordering  | ON      | Disable during off-season              |
+| Catering inquiry form   | ON      |                                        |
+| Newsletter signup       | ON      |                                        |
+| Blog section            | ON      |                                        |
+| Meal prep subscriptions | ON      |                                        |
+| Instagram feed          | OFF     | Enable once account is connected       |
 
 ---
 
@@ -198,14 +206,14 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 
 **Purpose:** Override SEO metadata per page without touching code.
 
-| Field | Editable |
-|---|---|
-| Meta title | Per page |
-| Meta description | Per page |
-| Meta keywords | Per page |
-| OG image URL | Per page |
-| OG image alt text | Per page |
-| Canonical URL | Per page |
+| Field                  | Editable |
+| ---------------------- | -------- |
+| Meta title             | Per page |
+| Meta description       | Per page |
+| Meta keywords          | Per page |
+| OG image URL           | Per page |
+| OG image alt text      | Per page |
+| Canonical URL          | Per page |
 | robots (index/noindex) | Per page |
 
 ---
@@ -215,6 +223,7 @@ The Soul2Bowl admin panel allows the owner/admin to manage every aspect of the w
 **Purpose:** Moderate and display customer reviews.
 
 **Features:**
+
 - View all submitted testimonials (published/unpublished)
 - Approve/reject testimonials for display
 - Edit text (minor corrections only)

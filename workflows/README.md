@@ -11,6 +11,7 @@ This directory contains automation workflows for various Revvel products and pro
 **Purpose**: Automate the complete 6-step process for creating and marketing PDF products
 
 **Features**:
+
 - AI-powered title generation (Claude)
 - 15-20 page content creation
 - Canva design integration
@@ -18,6 +19,7 @@ This directory contains automation workflows for various Revvel products and pro
 - YouTube influencer campaign prep
 
 **Quick Start**:
+
 ```bash
 ./setup-pdf-automation.sh [n8n|make|zapier|gumloop]
 ```
@@ -46,6 +48,7 @@ This n8n workflow automates the USDA loan eligibility checking process. It valid
 ## Prerequisites
 
 ### Required Services
+
 1. **n8n** (self-hosted or cloud) — https://n8n.io/
 2. **Google Maps API** — For geocoding addresses (get state/county)
 3. **PostgreSQL Database** — To store USDA income limit data
@@ -53,6 +56,7 @@ This n8n workflow automates the USDA loan eligibility checking process. It valid
 5. **Email Service** — SendGrid, Gmail, or SMTP
 
 ### API Keys / Credentials
+
 - `googleMapsApiKey` — Google Maps Geocoding API key
 - PostgreSQL connection (host, port, username, password, database)
 - Google Sheets OAuth credentials
@@ -148,11 +152,13 @@ In n8n dashboard → Settings → Credentials:
 **Endpoint:** `POST https://your-n8n.com/webhook/usda-eligibility`
 
 **Headers:**
+
 ```
 Content-Type: application/json
 ```
 
 **Body:**
+
 ```json
 {
   "name": "Audrey Evans",
@@ -166,6 +172,7 @@ Content-Type: application/json
 ### Response Format
 
 #### Eligible
+
 ```json
 {
   "success": true,
@@ -209,21 +216,19 @@ Content-Type: application/json
 ```
 
 #### Ineligible (Rural)
+
 ```json
 {
   "success": true,
   "message": "Property not in USDA-eligible area",
   "eligible": false,
   "ruralStatus": "ineligible",
-  "alternatives": [
-    "FHA loans",
-    "Conventional loans",
-    "VA loans (if veteran)"
-  ]
+  "alternatives": ["FHA loans", "Conventional loans", "VA loans (if veteran)"]
 }
 ```
 
 #### Ineligible (Income)
+
 ```json
 {
   "success": true,
@@ -338,9 +343,11 @@ Content-Type: application/json
 ## Important Notes
 
 ### USDA Eligibility Map API
+
 **WARNING:** USDA does **NOT** provide a public API for their eligibility map. The workflow includes a placeholder HTTP Request node that assumes an API exists.
 
 **Production Options:**
+
 1. **Scrape USDA Website:** Use Puppeteer/Playwright to automate the eligibility map form submission
 2. **Geocoding + Manual Database:** Use Google Maps geocoding to get coordinates, then check against a manually maintained database of rural ZIP codes
 3. **Third-Party API:** Use a paid service that aggregates USDA rural area data (if available)
@@ -348,6 +355,7 @@ Content-Type: application/json
 ### Legal Compliance
 
 **RESPA Section 8:** If you charge borrowers for this service, you may violate RESPA. Options:
+
 - **SaaS Model:** Charge a subscription fee for access to the tool (not per-loan)
 - **B2B Model:** Partner with lenders and get paid by them (not borrowers)
 - **Nonprofit:** Offer free service through a HUD-approved housing counseling agency
@@ -357,6 +365,7 @@ Content-Type: application/json
 ## Maintenance
 
 ### Annual Income Limit Updates
+
 USDA releases new income limits every spring (April-May). Update your database:
 
 ```sql

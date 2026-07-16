@@ -8,13 +8,13 @@
 
 Every Revvel app deployed as a PWA supports **"Add to Home Screen"** on both Android and iOS:
 
-| Platform | Method | Status |
-|---|---|---|
-| Android | Chrome → ⋮ → Add to Home Screen | ✅ Works now |
-| iOS | Safari → Share → Add to Home Screen | ✅ Works now |
-| Android (Play Store) | Trusted Web Activity (TWA) via Bubblewrap | ❌ Pending Play account |
-| iOS (App Store) | Capacitor → Xcode → App Store Connect | ❌ Pending Apple account |
-| Android + iOS | Apache Cordova → Play Store / App Store | ❌ Pending store accounts |
+| Platform             | Method                                    | Status                    |
+| -------------------- | ----------------------------------------- | ------------------------- |
+| Android              | Chrome → ⋮ → Add to Home Screen           | ✅ Works now              |
+| iOS                  | Safari → Share → Add to Home Screen       | ✅ Works now              |
+| Android (Play Store) | Trusted Web Activity (TWA) via Bubblewrap | ❌ Pending Play account   |
+| iOS (App Store)      | Capacitor → Xcode → App Store Connect     | ❌ Pending Apple account  |
+| Android + iOS        | Apache Cordova → Play Store / App Store   | ❌ Pending store accounts |
 
 Users can install your app to their home screen today without any store submission.
 
@@ -23,10 +23,11 @@ Users can install your app to their home screen today without any store submissi
 ## 2. Android Play Store Path
 
 ### Required Accounts (BOM Items)
-| Item | Provider | Cost | Status |
-|---|---|---|---|
-| Google Play Developer account | Google | $25 one-time | ❌ Not purchased |
-| Google Play Console access | Google | Included | — |
+
+| Item                          | Provider | Cost         | Status           |
+| ----------------------------- | -------- | ------------ | ---------------- |
+| Google Play Developer account | Google   | $25 one-time | ❌ Not purchased |
+| Google Play Console access    | Google   | Included     | —                |
 
 ### Technology: Bubblewrap CLI → TWA → APK
 
@@ -53,6 +54,7 @@ bundle exec fastlane android internal
 ```
 
 ### Play Console Setup (one-time)
+
 1. Go to https://play.google.com/console
 2. Create new app → "App" (not game) → Free
 3. Fill in store listing (description, screenshots, icon)
@@ -64,10 +66,11 @@ bundle exec fastlane android internal
 ## 3. iOS App Store Path
 
 ### Required Accounts (BOM Items)
-| Item | Provider | Cost | Status |
-|---|---|---|---|
-| Apple Developer Program | Apple | $99/year | ❌ Not purchased |
-| App Store Connect access | Apple | Included | — |
+
+| Item                     | Provider | Cost     | Status           |
+| ------------------------ | -------- | -------- | ---------------- |
+| Apple Developer Program  | Apple    | $99/year | ❌ Not purchased |
+| App Store Connect access | Apple    | Included | —                |
 
 ### Technology: Capacitor → Xcode → App Store Connect
 
@@ -104,6 +107,7 @@ npx cap open ios
 ```
 
 ### App Store Connect Setup (one-time)
+
 1. Go to https://appstoreconnect.apple.com
 2. Create new app → iOS → Bundle ID (create in developer.apple.com first)
 3. Fill in app metadata (description, screenshots, keywords)
@@ -119,6 +123,7 @@ Apache Cordova wraps your web app (HTML/CSS/JS) in a native WebView and provides
 ### When to Use Cordova
 
 Use Cordova when:
+
 - You need a specific native API only available as a Cordova plugin
 - You are migrating an existing Cordova-based app
 - You need cross-platform support (Android + iOS) from a single build pipeline
@@ -129,10 +134,10 @@ For new projects, prefer **Capacitor** (already documented above in Section 3).
 
 Same as Capacitor / TWA — you need the same store accounts:
 
-| Item | Provider | Cost | Status |
-|---|---|---|---|
-| Google Play Developer account | Google | $25 one-time | ❌ Not purchased |
-| Apple Developer Program | Apple | $99/year | ❌ Not purchased |
+| Item                          | Provider | Cost         | Status           |
+| ----------------------------- | -------- | ------------ | ---------------- |
+| Google Play Developer account | Google   | $25 one-time | ❌ Not purchased |
+| Apple Developer Program       | Apple    | $99/year     | ❌ Not purchased |
 
 ### Technology: Apache Cordova CLI → APK/AAB/IPA
 
@@ -171,6 +176,7 @@ Then follow the TODO comments in the workflow to activate Android and iOS deploy
 ### Full Documentation
 
 See **`templates/mobile/CORDOVA_STANDARD.md`** for:
+
 - Complete setup instructions (Java, Android SDK, Xcode, CocoaPods)
 - `config.xml` reference and plugin management
 - Android keystore generation and Play Store signing
@@ -182,11 +188,11 @@ See **`templates/mobile/CORDOVA_STANDARD.md`** for:
 
 ## 5. Required Accounts + Costs (BOM Items)
 
-| Account | Purpose | Cost | Where to Buy |
-|---|---|---|---|
-| Google Play Developer | Android store deployment | $25 one-time | https://play.google.com/console/signup |
-| Apple Developer Program | iOS store deployment + TestFlight | $99/year | https://developer.apple.com/programs/ |
-| Fastlane (optional) | Automated store publishing | Free | https://fastlane.tools |
+| Account                 | Purpose                           | Cost         | Where to Buy                           |
+| ----------------------- | --------------------------------- | ------------ | -------------------------------------- |
+| Google Play Developer   | Android store deployment          | $25 one-time | https://play.google.com/console/signup |
+| Apple Developer Program | iOS store deployment + TestFlight | $99/year     | https://developer.apple.com/programs/  |
+| Fastlane (optional)     | Automated store publishing        | Free         | https://fastlane.tools                 |
 
 ---
 
@@ -195,6 +201,7 @@ See **`templates/mobile/CORDOVA_STANDARD.md`** for:
 Fastlane automates the build → sign → upload process for both platforms.
 
 ### Installation
+
 ```bash
 # Install Fastlane (requires Ruby)
 gem install fastlane
@@ -206,6 +213,7 @@ bundle install
 ```
 
 ### Structure
+
 ```
 fastlane/
 ├── Fastfile    — Lane definitions (see templates/mobile/fastlane/Fastfile)
@@ -213,6 +221,7 @@ fastlane/
 ```
 
 ### Running Lanes
+
 ```bash
 # Android — deploy to internal testing
 bundle exec fastlane android internal

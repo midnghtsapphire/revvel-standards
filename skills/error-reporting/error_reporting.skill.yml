@@ -6,7 +6,8 @@ description: "Implement three-tier error reporting (console → email → GitHub
 metadata:
   author: "Revvel AI Engine"
   category: "DevOps & Deployment"
-  tags: ["error-reporting", "monitoring", "github-issues", "resend", "three-tier"]
+  tags:
+    ["error-reporting", "monitoring", "github-issues", "resend", "three-tier"]
   created_at: "2026-04-12"
   updated_at: "2026-04-12"
 
@@ -20,30 +21,30 @@ implementation:
   language: markdown
   content: |
     # Error Reporting Skill
-    
+
     Implement three-tier error reporting (console → email → GitHub Issue) for all significant server jobs using the `monitored()` wrapper.
-    
+
     ## Three-Tier System
-    
+
     ```
     Tier 1 — Console (always)         → console.error with structured log
     Tier 2 — Email (severity ≥ medium) → via Resend to admin address
     Tier 3 — GitHub Issue (severity ≥ high, with cooldown) → auto-created issue
     ```
-    
+
     ## Severity Levels
-    
+
     | Level | Code | When to Use |
     |---|---|---|
     | `low` | 1 | Expected user errors, input validation failures, 404s |
     | `medium` | 2 | Unexpected but recoverable server errors, third-party timeouts |
     | `high` | 3 | Data integrity failures, auth errors, payment failures |
     | `critical` | 4 | System down, DB unreachable, security incidents |
-    
+
     Default for unknown errors: `medium`. When in doubt, escalate up. `critical` always bypasses cooldown.
-    
+
     ## The `monitored()` Wrapper (Mandatory)
-    
+
     ```typescript
     await monitored(
       async () => {
@@ -58,17 +59,17 @@ implementation:
       }
     );
     ```
-    
+
     The wrapper: catches all errors → logs (Tier 1) → emails if `medium`+ (Tier 2) → creates GitHub Issue if `high`+ with cooldown (Tier 3) → re-throws.
-    
+
     ## Cooldown Rules
-    
+
     - Default cooldown: 60 minutes per `jobName` between GitHub issues
     - `critical`: no cooldown, always fires immediately
     - Store last-fired timestamp in `error_reports.created_at` (DB)
-    
+
     ## What Must Be Wrapped ("Significant Server Jobs")
-    
+
     - [ ] Scheduled / cron jobs
     - [ ] Background workers and queues
     - [ ] Webhook handlers (incoming from external services)
@@ -77,21 +78,21 @@ implementation:
     - [ ] Email sending functions
     - [ ] External API calls that mutate data
     - [ ] Database migrations
-    
+
     **Not required**: simple CRUD route handlers (covered by global error middleware), read-only endpoints, client-side code.
-    
+
     ## GitHub Issue Labels
-    
+
     All auto-created issues must be labeled: `{app-name}/error`
     - `high` severity → also `priority:high`
     - `critical` severity → also `priority:critical`
-    
+
     Pre-create the `{app-name}/error` label in the repo before deploying.
-    
+
     ## Database Table (`error_reports`)
-    
+
     Must exist in every app using this standard:
-    
+
     ```sql
     CREATE TABLE error_reports (
       id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -109,16 +110,15 @@ implementation:
       INDEX idx_job_name_created (job_name, created_at)
     );
     ```
-    
+
     ## PR Enforcement
-    
+
     Code review must reject any PR that adds a new cron job, worker, or webhook handler without `monitored()` wrapping.
-    
+
     ## Related Standards
-    
+
     - `templates/cicd/auto-fix.yml` — auto-fix loop for CI failures
     - `SECURITY_STANDARD.md` — secret management for Resend API key + GitHub token
-    
 
 examples: []
 

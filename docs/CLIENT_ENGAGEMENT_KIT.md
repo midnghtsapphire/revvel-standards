@@ -39,11 +39,11 @@ Shipped lanes: `dotnet`, `java`, `python`, `typescript`, `php`, `go`, `ruby`.
 
 ## 3. Integration tiers (cheapest first)
 
-| Tier | What it is | Access we need | Typical work |
-| --- | --- | --- | --- |
-| **(a) API-only** | We call the client's REST/Graph APIs; no code access. E.g. Microsoft Graph for mailbox cleanup. | One scoped API token/app registration in THEIR tenant | Email triage/cleanup, data hygiene, report generation |
-| **(b) Repo-level** | Fork/branch + PR into their GitHub / Azure DevOps. Their CI is the gate. | Read + PR permission on the target repo(s) only | Dependency updates, bug fixes, test-coverage lifts, backlog grooming |
-| **(c) Fleet-in-their-infra** | Our workflow pack deployed inside their org with THEIR scoped tokens; nothing routes through our infra. | They install the pack; tokens never leave their org | Continuous automation: triage bots, self-healing, scheduled hygiene |
+| Tier                         | What it is                                                                                              | Access we need                                        | Typical work                                                         |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------------------------- |
+| **(a) API-only**             | We call the client's REST/Graph APIs; no code access. E.g. Microsoft Graph for mailbox cleanup.         | One scoped API token/app registration in THEIR tenant | Email triage/cleanup, data hygiene, report generation                |
+| **(b) Repo-level**           | Fork/branch + PR into their GitHub / Azure DevOps. Their CI is the gate.                                | Read + PR permission on the target repo(s) only       | Dependency updates, bug fixes, test-coverage lifts, backlog grooming |
+| **(c) Fleet-in-their-infra** | Our workflow pack deployed inside their org with THEIR scoped tokens; nothing routes through our infra. | They install the pack; tokens never leave their org   | Continuous automation: triage bots, self-healing, scheduled hygiene  |
 
 Always start at the cheapest tier that can deliver the contract; escalate a
 tier only when the work demands it (and re-price).
@@ -55,14 +55,14 @@ client name, tier, and price attached; payment collection rides the
 ship-to-market payment rails (issue #15508 — Polar.sh checkout links per
 engagement).
 
-| Menu item | Tier | Unit | Pricing hook |
-| --- | --- | --- | --- |
-| Email triage & mailbox cleanup (Graph API) | a | per mailbox / month | flat monthly, Polar subscription |
-| Data hygiene (dedupe, normalize, validate exports) | a | per dataset | fixed quote after profiling |
-| Backlog grooming (label, dedupe, close-stale, prioritize) | a/b | per 100 issues | flat batch price |
-| Dependency updates + security patches | b | per repo / month | monthly retainer, Polar subscription |
-| Test-suite repair / flaky-test cleanup | b | per repo | fixed quote after `verify` baseline run |
-| Workflow-pack install + care (self-healing in their org) | c | per org / month | retainer, highest tier |
+| Menu item                                                 | Tier | Unit                | Pricing hook                            |
+| --------------------------------------------------------- | ---- | ------------------- | --------------------------------------- |
+| Email triage & mailbox cleanup (Graph API)                | a    | per mailbox / month | flat monthly, Polar subscription        |
+| Data hygiene (dedupe, normalize, validate exports)        | a    | per dataset         | fixed quote after profiling             |
+| Backlog grooming (label, dedupe, close-stale, prioritize) | a/b  | per 100 issues      | flat batch price                        |
+| Dependency updates + security patches                     | b    | per repo / month    | monthly retainer, Polar subscription    |
+| Test-suite repair / flaky-test cleanup                    | b    | per repo            | fixed quote after `verify` baseline run |
+| Workflow-pack install + care (self-healing in their org)  | c    | per org / month     | retainer, highest tier                  |
 
 WR title convention: `[WR] [CLIENT:<name>] [TIER:<a|b|c>] <menu item>` — the
 `CLIENT:` tag keeps client work visually and searchably separate from

@@ -25,21 +25,22 @@
 
 ### Multi-Agent Orchestration Approach
 
-| Agent | Use For | Tag | Auto-Execute | Status |
-|-------|---------|-----|--------------|--------|
-| **OpenRouter** | General tasks (auto-routed) | `@agent` | ✅ Yes (CI/CD) | Active |
-| **Bito AI** | Code quality, security scans | `@bito` | ✅ Yes (CI/CD) | Active |
-| **GOAP** | Revenue, business strategy | `@goap` | ✅ Yes (CI/CD) | Planned |
-| **Roo-Cline** | Local development | `@roo` | ⚠️ Manual (VS Code) | Documented |
-| **Jules** | Research, documentation | `@jules` | ✅ Yes (CI/CD) | Active |
-| **GitHub Copilot** | Complex coding tasks | `@copilot` | ⚠️ Manual | Active |
-| **CircleCI** | N/A - Disabled | N/A | ❌ No | Disabled |
+| Agent              | Use For                      | Tag        | Auto-Execute        | Status     |
+| ------------------ | ---------------------------- | ---------- | ------------------- | ---------- |
+| **OpenRouter**     | General tasks (auto-routed)  | `@agent`   | ✅ Yes (CI/CD)      | Active     |
+| **Bito AI**        | Code quality, security scans | `@bito`    | ✅ Yes (CI/CD)      | Active     |
+| **GOAP**           | Revenue, business strategy   | `@goap`    | ✅ Yes (CI/CD)      | Planned    |
+| **Roo-Cline**      | Local development            | `@roo`     | ⚠️ Manual (VS Code) | Documented |
+| **Jules**          | Research, documentation      | `@jules`   | ✅ Yes (CI/CD)      | Active     |
+| **GitHub Copilot** | Complex coding tasks         | `@copilot` | ⚠️ Manual           | Active     |
+| **CircleCI**       | N/A - Disabled               | N/A        | ❌ No               | Disabled   |
 
 ### Decision: CircleCI
 
 **❌ Do NOT use CircleCI.**
 
 **Reasoning:**
+
 - Already disabled in repository (`.circleci/config.yml` is no-op)
 - All CI/CD standardized on GitHub Actions (58 workflows)
 - Would require maintaining two CI systems
@@ -107,6 +108,7 @@
 ### Examples
 
 #### Code Quality (Bito)
+
 ```javascript
 // FIXME @bito: Review this for security vulnerabilities
 function login(username, password) {
@@ -115,6 +117,7 @@ function login(username, password) {
 ```
 
 #### Revenue Focus (GOAP)
+
 ```markdown
 TODO @goap: Research top 5 Amazon Vine alternatives for monetization
 Context: Current completion rate 47%, target 90%+
@@ -122,10 +125,15 @@ Goal: Additional $2000/month revenue
 ```
 
 #### Local Development (Roo-Cline)
+
 ```typescript
 // TODO @roo: Extract repeated logic into shared utility function
-function processDataA(data) { /* ... */ }
-function processDataB(data) { /* ... */ }
+function processDataA(data) {
+  /* ... */
+}
+function processDataB(data) {
+  /* ... */
+}
 ```
 
 ---
@@ -133,6 +141,7 @@ function processDataB(data) { /* ... */ }
 ## Implementation Phases
 
 ### ✅ Phase 1: Documentation (Complete)
+
 - [x] Evaluate all agent platforms
 - [x] Document tag-based system
 - [x] Create setup guides
@@ -140,6 +149,7 @@ function processDataB(data) { /* ... */ }
 - [x] Update registry
 
 ### 📋 Phase 2: Core Workflow (Planned)
+
 - [ ] Create `scripts/detect-agent-prompts.js`
 - [ ] Create `.github/workflows/agent-prompt-detector.yml`
 - [ ] Integrate with `openrouter-triage.yml`
@@ -147,12 +157,14 @@ function processDataB(data) { /* ... */ }
 - [ ] Test with sample prompts
 
 ### 📋 Phase 3: GOAP Deployment (Planned)
+
 - [ ] Deploy GOAP agent via OpenRouter
 - [ ] Create `@goap` routing workflow
 - [ ] Test revenue-focused prompts
 - [ ] Validate `learnings.md` self-healing loop
 
 ### 📋 Phase 4: Developer Onboarding (Planned)
+
 - [ ] Document VS Code setup
 - [ ] Create example prompts
 - [ ] Add to developer docs
@@ -166,6 +178,7 @@ function processDataB(data) { /* ... */ }
 **Roo-Cline** is a fork of **Cline** (formerly Claude Dev) — an autonomous coding agent for VS Code.
 
 **Key Features:**
+
 - Multiple modes: Code, Architect, Ask, Debug
 - Multi-LLM support (OpenAI, Claude, Gemini, Ollama)
 - Human-in-the-loop permissions
@@ -173,11 +186,13 @@ function processDataB(data) { /* ... */ }
 - Open source (Apache 2.0)
 
 **Repositories:**
+
 - https://github.com/marco-altran/Roo-Cline
 - https://github.com/OSL-Ai/Roo-Cline
 - Parent: https://github.com/RooCodeInc/Roo-Code
 
 **When to use:**
+
 - Local multi-file refactoring
 - Complex feature implementation
 - Debugging across files
@@ -192,6 +207,7 @@ function processDataB(data) { /* ... */ }
 **Mission:** Build systems that generate $10M by 2030, starting with $2000+/month.
 
 **Use for:**
+
 - Revenue-generating tasks
 - Business strategy
 - Monetization research
@@ -204,11 +220,13 @@ function processDataB(data) { /* ... */ }
 **Status:** Already integrated with skills and workflows
 
 **Files:**
+
 - `skills/bito-ai/SKILL.md`
 - `.github/workflows/bito-ai.yml`
 - `IMPLEMENTATION_SUMMARY_BITO_AI.md`
 
 **Use for:**
+
 - Code review
 - Security scanning
 - Technical debt analysis
@@ -250,16 +268,19 @@ Mark prompt as completed
 ## Validation
 
 ### Tests
+
 - ✅ All existing tests pass (100+ assertions)
 - ✅ No regressions introduced
 - ✅ Documentation-only changes
 
 ### Code Review
+
 - ✅ Passed — No review comments
 - ✅ Follows existing documentation patterns
 - ✅ Skills match registry format
 
 ### Security
+
 - ✅ CodeQL — No analysis needed (documentation only)
 - ✅ No code changes
 - ✅ No security impact
@@ -279,16 +300,19 @@ Mark prompt as completed
 ## Next Steps
 
 ### Immediate
+
 1. ✅ Merge this PR
 2. Communicate tag system to team
 3. Start using tags in code comments
 
 ### Short-Term (Next Sprint)
+
 1. Build Phase 2 workflow for automatic detection
 2. Test with real prompts in code
 3. Monitor routing accuracy
 
 ### Long-Term (Q3 2026)
+
 1. Deploy GOAP agent
 2. Expand to more repositories
 3. Build VS Code extension for prompt authoring
@@ -313,6 +337,7 @@ Mark prompt as completed
 ## References
 
 ### Documentation
+
 - [AGENT_PROMPT_CONVENTION.md](docs/AGENT_PROMPT_CONVENTION.md) — Tag system specification
 - [AGENT_PROMPT_EXECUTION_EVALUATION.md](docs/AGENT_PROMPT_EXECUTION_EVALUATION.md) — Full evaluation
 - [ROO_CLINE_SETUP.md](docs/ROO_CLINE_SETUP.md) — Roo-Cline guide
@@ -320,15 +345,18 @@ Mark prompt as completed
 - [49AGENTS_EVALUATION.md](docs/49AGENTS_EVALUATION.md) — Visual agent coordination
 
 ### Skills
+
 - [prompt-routing](skills/prompt-routing/SKILL.md) — Prompt detection and routing
 - [roo-cline](skills/roo-cline/SKILL.md) — Local development agent
 - [REGISTRY.md](skills/REGISTRY.md) — Skills vault index
 
 ### GOAP
+
 - [GOAP.md](GOAP.md) — GOAP system index
 - [GOAP_AGENT_PROMPT.md](GOAP_AGENT_PROMPT.md) — Canonical GOAP prompt
 
 ### External
+
 - [Roo-Cline GitHub](https://github.com/marco-altran/Roo-Cline)
 - [Cline Guide](https://www.onegen.ai/project/cline-guide-the-open-source-autonomous-coding-agent-for-vs-code/)
 
@@ -348,7 +376,7 @@ Mark prompt as completed
 ✅ **Documentation delivered**  
 ✅ **Skills created**  
 ✅ **Tag system defined**  
-✅ **Implementation plan established**  
+✅ **Implementation plan established**
 
 **Recommendation:** Approve and merge. Begin Phase 2 in separate PR.
 

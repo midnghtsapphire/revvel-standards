@@ -13,43 +13,43 @@
  * handled by deterministic code, never by the LLM.
  */
 
-import { OPENROUTER_API_URL } from './openrouter-config';
+import { OPENROUTER_API_URL } from "./openrouter-config";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { extractJsonFromContent } = require('./video-job-helpers') as {
+const { extractJsonFromContent } = require("./video-job-helpers") as {
   extractJsonFromContent: (content: string) => Record<string, unknown> | null;
 };
 
 export type FailureClass =
-  | 'missing_secret'
-  | 'connectivity'
-  | 'auth_error'
-  | 'rate_limit'
-  | 'provider_error'
-  | 'artifact_missing'
-  | 'publish_failed'
-  | 'verification_failed'
-  | 'unknown';
+  | "missing_secret"
+  | "connectivity"
+  | "auth_error"
+  | "rate_limit"
+  | "provider_error"
+  | "artifact_missing"
+  | "publish_failed"
+  | "verification_failed"
+  | "unknown";
 
 export type RenderStatus =
-  | 'draft'
-  | 'requirements_collected'
-  | 'dependencies_identified'
-  | 'backend_wiring_pending'
-  | 'backend_wired'
-  | 'execution_requested'
-  | 'processing'
-  | 'artifact_created'
-  | 'stored'
-  | 'published'
-  | 'verified'
-  | 'indexed'
-  | 'failed';
+  | "draft"
+  | "requirements_collected"
+  | "dependencies_identified"
+  | "backend_wiring_pending"
+  | "backend_wired"
+  | "execution_requested"
+  | "processing"
+  | "artifact_created"
+  | "stored"
+  | "published"
+  | "verified"
+  | "indexed"
+  | "failed";
 
 export interface SwarmQueryLog {
   run_id: string;
   query_id: string;
-  phase: 'scout' | 'sage' | 'forge' | 'planning' | 'diagnosis';
+  phase: "scout" | "sage" | "forge" | "planning" | "diagnosis";
   scout_name: string;
   model_id: string;
   prompt_tokens: number;
@@ -59,7 +59,7 @@ export interface SwarmQueryLog {
   response_text: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parsed_response: Record<string, any> | null;
-  confidence: 'high' | 'medium' | 'low';
+  confidence: "high" | "medium" | "low";
   timestamp_utc: string;
   used_in_final: boolean;
 }
@@ -71,7 +71,7 @@ export interface OrchestratorResult {
   provider_job_id: string | null;
   artifact_uri: string | null;
   canonical_video_url: string | null;
-  publish_status: 'unpublished' | 'published' | 'verified';
+  publish_status: "unpublished" | "published" | "verified";
   failure_class: FailureClass | null;
   failure_reason: string | null;
   failed_at_stage: string | null;
@@ -84,9 +84,9 @@ export interface OrchestratorResult {
 
 export interface ToolAssessment {
   tool_name: string;
-  category: 'api' | 'library' | 'service' | 'infra';
+  category: "api" | "library" | "service" | "infra";
   foss: boolean;
-  cost_model: 'free' | 'per-call' | 'subscription' | 'usage-based';
+  cost_model: "free" | "per-call" | "subscription" | "usage-based";
   est_cost_per_run: string;
   est_monthly_cost: string;
   alternatives: { name: string; foss: boolean; cost: string }[];
@@ -119,45 +119,45 @@ const TOKEN_COST_USD_PER_UNIT = 0.000003;
 // Scout configuration — one agent per research domain
 const SCOUTS = [
   {
-    name: 'Scout-1',
-    domain: 'provider_selection',
-    model: 'anthropic/claude-sonnet-4',
+    name: "Scout-1",
+    domain: "provider_selection",
+    model: "anthropic/claude-sonnet-4",
     question:
-      'Compare HeyGen, D-ID, Runway Gen-4, and Luma Dream Machine for AI music video generation ' +
-      'with lip-sync capability. Assess: cost per video, quality, latency, API availability, ' +
-      'and FOSS alternatives (Wav2Lip, SadTalker). Output a recommendation with justification.',
+      "Compare HeyGen, D-ID, Runway Gen-4, and Luma Dream Machine for AI music video generation " +
+      "with lip-sync capability. Assess: cost per video, quality, latency, API availability, " +
+      "and FOSS alternatives (Wav2Lip, SadTalker). Output a recommendation with justification.",
   },
   {
-    name: 'Scout-2',
-    domain: 'storage_options',
-    model: 'deepseek/deepseek-v3.2',
+    name: "Scout-2",
+    domain: "storage_options",
+    model: "deepseek/deepseek-v3.2",
     question:
-      'Compare Vercel Blob, Cloudflare R2, and AWS S3 for storing music video input/output assets ' +
-      '(WAV files ~50MB, MP4 files ~200MB). Assess: cost, latency, CDN support, free tier. ' +
-      'Recommend the best option for a Next.js app hosted on Vercel.',
+      "Compare Vercel Blob, Cloudflare R2, and AWS S3 for storing music video input/output assets " +
+      "(WAV files ~50MB, MP4 files ~200MB). Assess: cost, latency, CDN support, free tier. " +
+      "Recommend the best option for a Next.js app hosted on Vercel.",
   },
   {
-    name: 'Scout-3',
-    domain: 'publication_requirements',
-    model: 'anthropic/claude-sonnet-4',
+    name: "Scout-3",
+    domain: "publication_requirements",
+    model: "anthropic/claude-sonnet-4",
     question:
-      'What are the technical requirements to publish a generated MP4 video to a Vercel-hosted ' +
-      'Next.js website (meetaudreyevans.com)? Include: deployment method, video embedding best ' +
-      'practices, og:video meta tags for social sharing, and required environment variables.',
+      "What are the technical requirements to publish a generated MP4 video to a Vercel-hosted " +
+      "Next.js website (meetaudreyevans.com)? Include: deployment method, video embedding best " +
+      "practices, og:video meta tags for social sharing, and required environment variables.",
   },
   {
-    name: 'Scout-4',
-    domain: 'seo_metadata',
-    model: 'anthropic/claude-sonnet-4',
+    name: "Scout-4",
+    domain: "seo_metadata",
+    model: "anthropic/claude-sonnet-4",
     question:
-      'Generate SEO-optimised metadata for an AI music video page. The artist is Audrey Evans. ' +
-      'Include: title tag, meta description (max 160 chars), og:title, og:description, ' +
-      'JSON-LD schema for MusicVideoObject, and 5 relevant tags. Output as JSON.',
+      "Generate SEO-optimised metadata for an AI music video page. The artist is Audrey Evans. " +
+      "Include: title tag, meta description (max 160 chars), og:title, og:description, " +
+      "JSON-LD schema for MusicVideoObject, and 5 relevant tags. Output as JSON.",
   },
 ] as const;
 
-const SAGE_MODEL = 'anthropic/claude-sonnet-4';
-const FORGE_MODEL = 'anthropic/claude-sonnet-4';
+const SAGE_MODEL = "anthropic/claude-sonnet-4";
+const FORGE_MODEL = "anthropic/claude-sonnet-4";
 
 function generateId(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -172,15 +172,16 @@ function safeParse(text: string): Record<string, unknown> | null {
 }
 
 function isDiagnosisResult(value: unknown): value is DiagnosisResult {
-  if (!value || typeof value !== 'object') return false;
+  if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<Record<keyof DiagnosisResult, unknown>>;
 
   return (
-    typeof candidate.failure_class === 'string' &&
-    typeof candidate.root_cause === 'string' &&
-    typeof candidate.is_retryable === 'boolean' &&
-    typeof candidate.recommended_action === 'string' &&
-    (typeof candidate.next_step_for_human === 'string' || candidate.next_step_for_human === null)
+    typeof candidate.failure_class === "string" &&
+    typeof candidate.root_cause === "string" &&
+    typeof candidate.is_retryable === "boolean" &&
+    typeof candidate.recommended_action === "string" &&
+    (typeof candidate.next_step_for_human === "string" ||
+      candidate.next_step_for_human === null)
   );
 }
 
@@ -189,41 +190,51 @@ async function callOpenRouter(
   modelId: string,
   systemPrompt: string,
   userPrompt: string,
-  maxTokens = 2000
-): Promise<{ content: string; promptTokens: number; completionTokens: number }> {
+  maxTokens = 2000,
+): Promise<{
+  content: string;
+  promptTokens: number;
+  completionTokens: number;
+}> {
   const body = JSON.stringify({
     model: modelId,
     messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt },
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
     ],
     max_tokens: maxTokens,
     temperature: 0.3,
   });
 
   const response = await fetch(OPENROUTER_API_URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://github.com/midnghtsapphire/revvel-standards',
-      'X-Title': 'revvel-standards/music-video-creator',
+      "Content-Type": "application/json",
+      "HTTP-Referer": "https://github.com/midnghtsapphire/revvel-standards",
+      "X-Title": "revvel-standards/music-video-creator",
     },
     body,
   });
 
   if (!response.ok) {
-    const errorText = await response.text().catch(() => '');
+    const errorText = await response.text().catch(() => "");
     const status = response.status;
-    if (status === 429) throw Object.assign(new Error('Rate limit'), { failureClass: 'rate_limit' });
-    if (status === 401 || status === 403) throw Object.assign(new Error('Auth error'), { failureClass: 'auth_error' });
+    if (status === 429)
+      throw Object.assign(new Error("Rate limit"), {
+        failureClass: "rate_limit",
+      });
+    if (status === 401 || status === 403)
+      throw Object.assign(new Error("Auth error"), {
+        failureClass: "auth_error",
+      });
     throw Object.assign(new Error(`OpenRouter error ${status}: ${errorText}`), {
-      failureClass: 'provider_error',
+      failureClass: "provider_error",
     });
   }
 
   const data = await response.json();
-  const content = data.choices?.[0]?.message?.content ?? '';
+  const content = data.choices?.[0]?.message?.content ?? "";
   const promptTokens = data.usage?.prompt_tokens ?? 0;
   const completionTokens = data.usage?.completion_tokens ?? 0;
   return { content, promptTokens, completionTokens };
@@ -295,46 +306,46 @@ Output valid JSON matching this schema:
  */
 export async function runMusicVideoOrchestrator(
   audioFileName: string,
-  avatarFileName: string
+  avatarFileName: string,
 ): Promise<OrchestratorResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
-  const runId = generateId('run');
+  const runId = generateId("run");
   const swarmLogs: SwarmQueryLog[] = [];
   const modelsUsed: string[] = [];
   let totalTokens = 0;
 
   const result: OrchestratorResult = {
     run_id: runId,
-    render_status: 'draft',
-    provider_selected: '',
+    render_status: "draft",
+    provider_selected: "",
     provider_job_id: null,
     artifact_uri: null,
     canonical_video_url: null,
-    publish_status: 'unpublished',
+    publish_status: "unpublished",
     failure_class: null,
     failure_reason: null,
     failed_at_stage: null,
     swarm_logs: swarmLogs,
     tool_assessments: [],
-    metadata: { title: '', description: '', tags: [], canonical_url_path: '' },
-    total_token_cost_usd: '0.0000',
+    metadata: { title: "", description: "", tags: [], canonical_url_path: "" },
+    total_token_cost_usd: "0.0000",
     models_used: modelsUsed,
   };
 
   // ── Gate: OPENROUTER_API_KEY must be present ────────────────────────────
   if (!apiKey) {
-    result.render_status = 'failed';
-    result.failure_class = 'missing_secret';
-    result.failure_reason = 'OPENROUTER_API_KEY is not set in the environment';
-    result.failed_at_stage = 'backend_wiring';
+    result.render_status = "failed";
+    result.failure_class = "missing_secret";
+    result.failure_reason = "OPENROUTER_API_KEY is not set in the environment";
+    result.failed_at_stage = "backend_wiring";
     return result;
   }
 
-  result.render_status = 'requirements_collected';
+  result.render_status = "requirements_collected";
 
   // ── Layer 1: Scout Phase (parallel) ────────────────────────────────────
   const scoutPromises = SCOUTS.map(async (scout) => {
-    const queryId = generateId('scout');
+    const queryId = generateId("scout");
     const userPrompt = `Research question for ${scout.domain}:\n${scout.question}\n\nContext: audio file="${audioFileName}", avatar file="${avatarFileName}"`;
 
     try {
@@ -343,7 +354,7 @@ export async function runMusicVideoOrchestrator(
         scout.model,
         SCOUT_SYSTEM_PROMPT(scout.domain, scout.name),
         userPrompt,
-        1500
+        1500,
       );
 
       const tokensUsed = promptTokens + completionTokens;
@@ -354,7 +365,7 @@ export async function runMusicVideoOrchestrator(
       const log: SwarmQueryLog = {
         run_id: runId,
         query_id: queryId,
-        phase: 'scout',
+        phase: "scout",
         scout_name: scout.name,
         model_id: scout.model,
         prompt_tokens: promptTokens,
@@ -363,7 +374,8 @@ export async function runMusicVideoOrchestrator(
         est_cost_usd: (tokensUsed * TOKEN_COST_USD_PER_UNIT).toFixed(6),
         response_text: content,
         parsed_response: parsed,
-        confidence: (parsed?.confidence as 'high' | 'medium' | 'low') ?? 'medium',
+        confidence:
+          (parsed?.confidence as "high" | "medium" | "low") ?? "medium",
         timestamp_utc: isoNow(),
         used_in_final: true,
       };
@@ -374,44 +386,56 @@ export async function runMusicVideoOrchestrator(
       const log: SwarmQueryLog = {
         run_id: runId,
         query_id: queryId,
-        phase: 'scout',
+        phase: "scout",
         scout_name: scout.name,
         model_id: scout.model,
         prompt_tokens: 0,
         completion_tokens: 0,
         total_tokens: 0,
-        est_cost_usd: '0.0000',
+        est_cost_usd: "0.0000",
         response_text: error.message,
         parsed_response: null,
-        confidence: 'low',
+        confidence: "low",
         timestamp_utc: isoNow(),
         used_in_final: false,
       };
       swarmLogs.push(log);
-      return { scout: scout.name, content: '', parsed: null, error: error.message };
+      return {
+        scout: scout.name,
+        content: "",
+        parsed: null,
+        error: error.message,
+      };
     }
   });
 
   const scoutResults = await Promise.all(scoutPromises);
-  result.render_status = 'dependencies_identified';
+  result.render_status = "dependencies_identified";
 
   // ── Layer 2: Sage Phase (synthesis) ──────────────────────────────────
-  const sageQueryId = generateId('sage');
+  const sageQueryId = generateId("sage");
   const scoutSummary = JSON.stringify(
-    scoutResults.map((r) => ({ scout: r.scout, response: r.parsed ?? r.content })),
+    scoutResults.map((r) => ({
+      scout: r.scout,
+      response: r.parsed ?? r.content,
+    })),
     null,
-    2
+    2,
   );
 
   let sageOutput: Record<string, unknown> | null = null;
 
   try {
-    const { content: sageContent, promptTokens, completionTokens } = await callOpenRouter(
+    const {
+      content: sageContent,
+      promptTokens,
+      completionTokens,
+    } = await callOpenRouter(
       apiKey,
       SAGE_MODEL,
       SAGE_SYSTEM_PROMPT,
       `Scout responses:\n${scoutSummary}`,
-      2000
+      2000,
     );
 
     const tokensUsed = promptTokens + completionTokens;
@@ -423,8 +447,8 @@ export async function runMusicVideoOrchestrator(
     swarmLogs.push({
       run_id: runId,
       query_id: sageQueryId,
-      phase: 'sage',
-      scout_name: 'Sage',
+      phase: "sage",
+      scout_name: "Sage",
       model_id: SAGE_MODEL,
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
@@ -432,7 +456,7 @@ export async function runMusicVideoOrchestrator(
       est_cost_usd: (tokensUsed * TOKEN_COST_USD_PER_UNIT).toFixed(6),
       response_text: sageContent,
       parsed_response: sageOutput,
-      confidence: 'high',
+      confidence: "high",
       timestamp_utc: isoNow(),
       used_in_final: true,
     });
@@ -441,16 +465,16 @@ export async function runMusicVideoOrchestrator(
     swarmLogs.push({
       run_id: runId,
       query_id: sageQueryId,
-      phase: 'sage',
-      scout_name: 'Sage',
+      phase: "sage",
+      scout_name: "Sage",
       model_id: SAGE_MODEL,
       prompt_tokens: 0,
       completion_tokens: 0,
       total_tokens: 0,
-      est_cost_usd: '0.0000',
+      est_cost_usd: "0.0000",
       response_text: error.message,
       parsed_response: null,
-      confidence: 'low',
+      confidence: "low",
       timestamp_utc: isoNow(),
       used_in_final: false,
     });
@@ -458,25 +482,30 @@ export async function runMusicVideoOrchestrator(
 
   // Extract Sage outputs
   if (sageOutput) {
-    result.provider_selected = (sageOutput.selected_provider as string) ?? '';
-    result.tool_assessments = (sageOutput.tool_assessments as ToolAssessment[]) ?? [];
+    result.provider_selected = (sageOutput.selected_provider as string) ?? "";
+    result.tool_assessments =
+      (sageOutput.tool_assessments as ToolAssessment[]) ?? [];
     if (sageOutput.metadata) {
       result.metadata = sageOutput.metadata as VideoMetadata;
     }
   }
 
-  result.render_status = 'backend_wiring_pending';
+  result.render_status = "backend_wiring_pending";
 
   // ── Layer 3: Forge Phase (execution plan) ────────────────────────────
-  const forgeQueryId = generateId('forge');
+  const forgeQueryId = generateId("forge");
 
   try {
-    const { content: forgeContent, promptTokens, completionTokens } = await callOpenRouter(
+    const {
+      content: forgeContent,
+      promptTokens,
+      completionTokens,
+    } = await callOpenRouter(
       apiKey,
       FORGE_MODEL,
       FORGE_SYSTEM_PROMPT,
       `Sage synthesis:\n${JSON.stringify(sageOutput ?? {}, null, 2)}\n\nContext: audio="${audioFileName}", avatar="${avatarFileName}"`,
-      2000
+      2000,
     );
 
     const tokensUsed = promptTokens + completionTokens;
@@ -488,8 +517,8 @@ export async function runMusicVideoOrchestrator(
     swarmLogs.push({
       run_id: runId,
       query_id: forgeQueryId,
-      phase: 'forge',
-      scout_name: 'Forge',
+      phase: "forge",
+      scout_name: "Forge",
       model_id: FORGE_MODEL,
       prompt_tokens: promptTokens,
       completion_tokens: completionTokens,
@@ -497,7 +526,7 @@ export async function runMusicVideoOrchestrator(
       est_cost_usd: (tokensUsed * TOKEN_COST_USD_PER_UNIT).toFixed(6),
       response_text: forgeContent,
       parsed_response: forgeOutput,
-      confidence: 'high',
+      confidence: "high",
       timestamp_utc: isoNow(),
       used_in_final: true,
     });
@@ -506,23 +535,25 @@ export async function runMusicVideoOrchestrator(
     swarmLogs.push({
       run_id: runId,
       query_id: forgeQueryId,
-      phase: 'forge',
-      scout_name: 'Forge',
+      phase: "forge",
+      scout_name: "Forge",
       model_id: FORGE_MODEL,
       prompt_tokens: 0,
       completion_tokens: 0,
       total_tokens: 0,
-      est_cost_usd: '0.0000',
+      est_cost_usd: "0.0000",
       response_text: error.message,
       parsed_response: null,
-      confidence: 'low',
+      confidence: "low",
       timestamp_utc: isoNow(),
       used_in_final: false,
     });
   }
 
-  result.render_status = 'backend_wired';
-  result.total_token_cost_usd = (totalTokens * TOKEN_COST_USD_PER_UNIT).toFixed(6);
+  result.render_status = "backend_wired";
+  result.total_token_cost_usd = (totalTokens * TOKEN_COST_USD_PER_UNIT).toFixed(
+    6,
+  );
 
   return result;
 }
@@ -535,16 +566,16 @@ export async function diagnoseFailure(
   stageName: string,
   errorMessage: string,
   httpStatus: number | null,
-  providerName: string
+  providerName: string,
 ): Promise<DiagnosisResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return {
-      failure_class: 'missing_secret',
-      root_cause: 'OPENROUTER_API_KEY not set',
+      failure_class: "missing_secret",
+      root_cause: "OPENROUTER_API_KEY not set",
       is_retryable: false,
-      recommended_action: 'Set OPENROUTER_API_KEY in environment',
-      next_step_for_human: 'Add OPENROUTER_API_KEY to repository secrets',
+      recommended_action: "Set OPENROUTER_API_KEY in environment",
+      next_step_for_human: "Add OPENROUTER_API_KEY to repository secrets",
     };
   }
 
@@ -555,16 +586,16 @@ Valid failure_class values: missing_secret | connectivity | auth_error | rate_li
 
   const userPrompt = `Stage: ${stageName}
 Error: ${errorMessage}
-HTTP status: ${httpStatus ?? 'N/A'}
+HTTP status: ${httpStatus ?? "N/A"}
 Provider: ${providerName}`;
 
   try {
     const { content } = await callOpenRouter(
       apiKey,
-      'anthropic/claude-sonnet-4',
+      "anthropic/claude-sonnet-4",
       systemPrompt,
       userPrompt,
-      500
+      500,
     );
     const parsed = safeParse(content);
     if (parsed && isDiagnosisResult(parsed)) return parsed;
@@ -574,12 +605,37 @@ Provider: ${providerName}`;
 
   // Deterministic fallback classification
   const msg = errorMessage.toLowerCase();
-  if (msg.includes('401') || msg.includes('403') || msg.includes('auth'))
-    return { failure_class: 'auth_error', root_cause: errorMessage, is_retryable: false, recommended_action: 'Check API credentials', next_step_for_human: 'Verify API key is valid and has required permissions' };
-  if (msg.includes('429') || msg.includes('rate'))
-    return { failure_class: 'rate_limit', root_cause: errorMessage, is_retryable: true, recommended_action: 'Retry with exponential back-off', next_step_for_human: null };
+  if (msg.includes("401") || msg.includes("403") || msg.includes("auth"))
+    return {
+      failure_class: "auth_error",
+      root_cause: errorMessage,
+      is_retryable: false,
+      recommended_action: "Check API credentials",
+      next_step_for_human:
+        "Verify API key is valid and has required permissions",
+    };
+  if (msg.includes("429") || msg.includes("rate"))
+    return {
+      failure_class: "rate_limit",
+      root_cause: errorMessage,
+      is_retryable: true,
+      recommended_action: "Retry with exponential back-off",
+      next_step_for_human: null,
+    };
   if (httpStatus !== null && httpStatus >= 500 && httpStatus < 600)
-    return { failure_class: 'provider_error', root_cause: errorMessage, is_retryable: true, recommended_action: 'Retry after delay', next_step_for_human: null };
+    return {
+      failure_class: "provider_error",
+      root_cause: errorMessage,
+      is_retryable: true,
+      recommended_action: "Retry after delay",
+      next_step_for_human: null,
+    };
 
-  return { failure_class: 'unknown', root_cause: errorMessage, is_retryable: false, recommended_action: 'Investigate manually', next_step_for_human: 'Review error details and retry' };
+  return {
+    failure_class: "unknown",
+    root_cause: errorMessage,
+    is_retryable: false,
+    recommended_action: "Investigate manually",
+    next_step_for_human: "Review error details and retry",
+  };
 }

@@ -11,7 +11,7 @@
 
 Agents can read a whole file in a second and infer intent from the code. **A
 human under pressure cannot.** When something breaks at 2 a.m. and the person
-debugging is *not* the author — maybe not even the repo owner — the comments are
+debugging is _not_ the author — maybe not even the repo owner — the comments are
 what save them. Comments are a gift to that future human.
 
 So in this repo we comment **robustly and with detail**. Verbose, plain-English

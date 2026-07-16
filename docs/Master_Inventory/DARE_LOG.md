@@ -44,4 +44,4 @@ unset SECRET_VALUE
 
 ---
 
-*No secret values are stored in this log. Vault paths and metadata only.*
+_No secret values are stored in this log. Vault paths and metadata only._

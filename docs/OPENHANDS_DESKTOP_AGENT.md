@@ -125,29 +125,35 @@ Create `~/.local/openhands-agent/memory.md`:
 # OpenHands Desktop Agent Memory
 
 ## Mission
+
 Manage credentials and automation for midnghtsapphire/revvel-standards
 
 ## Credentials Location
+
 ~/.local/revvel-agent/credentials/
 
 ## GitHub Repo
+
 midnghtsapphire/revvel-standards
 
 ## Required Credentials
+
 - OPENROUTER_API_KEY ✅
-- CLAUDE_API_KEY ✅  
+- CLAUDE_API_KEY ✅
 - LINEAR_API_KEY ✅
 - BITO_API_KEY ❌ (need)
 - JULES_API_KEY ❌ (need)
 - NOIMOSAI_API_KEY ❌ (need)
 
 ## Daily Tasks
+
 1. Check ~/.local/revvel-agent/credentials/
 2. Sync new credentials to GitHub
 3. Run self-heal-repo if exists
 4. Check for new WRs and PRs
 
 ## Services to Monitor
+
 - bito.ai/settings (Bito API)
 - jules.google.com/settings (Jules API)
 - noimosai.com/settings (NoimosAI API)
@@ -161,7 +167,7 @@ midnghtsapphire/revvel-standards
 When running interactively, tell the agent:
 
 ```
-"Check my credentials folder for any new API keys. 
+"Check my credentials folder for any new API keys.
 Sync them to GitHub Secrets for midnghtsapphire/revvel-standards.
 Browse to bito.ai and extract my API key if I'm logged in.
 Do the same for jules.google.com and noimosai.com.
@@ -216,7 +222,7 @@ while ($true) {
     } catch {
         Write-Host "[$(Get-Date)] Error: $_" | Tee-Object -FilePath $LOG_FILE -Append
     }
-    
+
     Write-Host "[$(Get-Date)] Restarting in 30 seconds..." | Tee-Object -FilePath $LOG_FILE -Append
     Start-Sleep -Seconds 30
 }
@@ -260,11 +266,13 @@ Get-Content "$env:USERPROFILE\.local\openhands-agent\logs\agent-$(Get-Date -Form
 ## Troubleshooting
 
 ### "openhands not found"
+
 ```powershell
 pip install openhands
 ```
 
 ### Browser not opening
+
 ```powershell
 # Make sure Chrome/Edge is installed
 # Try with explicit browser:
@@ -272,6 +280,7 @@ openhands --browser chrome
 ```
 
 ### Permission errors
+
 ```powershell
 # Run PowerShell as Administrator
 ```

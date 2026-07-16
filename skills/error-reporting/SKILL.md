@@ -12,12 +12,12 @@ Tier 3 — GitHub Issue (severity ≥ high, with cooldown) → auto-created issu
 
 ## Severity Levels
 
-| Level | Code | When to Use |
-|---|---|---|
-| `low` | 1 | Expected user errors, input validation failures, 404s |
-| `medium` | 2 | Unexpected but recoverable server errors, third-party timeouts |
-| `high` | 3 | Data integrity failures, auth errors, payment failures |
-| `critical` | 4 | System down, DB unreachable, security incidents |
+| Level      | Code | When to Use                                                    |
+| ---------- | ---- | -------------------------------------------------------------- |
+| `low`      | 1    | Expected user errors, input validation failures, 404s          |
+| `medium`   | 2    | Unexpected but recoverable server errors, third-party timeouts |
+| `high`     | 3    | Data integrity failures, auth errors, payment failures         |
+| `critical` | 4    | System down, DB unreachable, security incidents                |
 
 Default for unknown errors: `medium`. When in doubt, escalate up. `critical` always bypasses cooldown.
 
@@ -30,11 +30,11 @@ await monitored(
     await saveToDatabase(records);
   },
   {
-    jobName: 'daily-data-ingestion',
-    severity: 'high',
+    jobName: "daily-data-ingestion",
+    severity: "high",
     cooldownMinutes: 120,
-    tags: ['data-pipeline'],
-  }
+    tags: ["data-pipeline"],
+  },
 );
 ```
 
@@ -62,6 +62,7 @@ The wrapper: catches all errors → logs (Tier 1) → emails if `medium`+ (Tier 
 ## GitHub Issue Labels
 
 All auto-created issues must be labeled: `{app-name}/error`
+
 - `high` severity → also `priority:high`
 - `critical` severity → also `priority:critical`
 

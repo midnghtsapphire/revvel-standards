@@ -9,14 +9,14 @@ static creatives, AI ad copy, and UGC video scripts — all from a single tool.
 
 ## What it does
 
-| Feature | Description |
-|---|---|
-| 🔗 Product Scraper | Paste any product URL — Shopify, WooCommerce, Amazon, custom. Extracts title, images, price, description, OG tags, and reviews via `cheerio`. |
-| ✍️ AI Ad Copy | Generates a primary headline, 3 variants (AIDA / PAS / BAB), a 30-second UGC video script, and hashtags via OpenRouter. |
-| 🎨 Static Creative | Server-side PNG rendering via `@napi-rs/canvas` across 5 templates: Bold, Minimal, UGC, Sale, Story. |
-| 🎬 Video Ad Scaffold | Ready-to-submit scripts for HeyGen, D-ID, Synthesia, Runway ML — plug in an API key to render avatar videos. |
-| 📊 Campaign Manager | Save, track, and manage campaigns with status, budget, spend, ROAS, and CTR — stored in localStorage. |
-| 📈 Analytics Dashboard | 14-day CTR, ROAS, spend vs. revenue, and conversion charts powered by Recharts. |
+| Feature                | Description                                                                                                                                   |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔗 Product Scraper     | Paste any product URL — Shopify, WooCommerce, Amazon, custom. Extracts title, images, price, description, OG tags, and reviews via `cheerio`. |
+| ✍️ AI Ad Copy          | Generates a primary headline, 3 variants (AIDA / PAS / BAB), a 30-second UGC video script, and hashtags via OpenRouter.                       |
+| 🎨 Static Creative     | Server-side PNG rendering via `@napi-rs/canvas` across 5 templates: Bold, Minimal, UGC, Sale, Story.                                          |
+| 🎬 Video Ad Scaffold   | Ready-to-submit scripts for HeyGen, D-ID, Synthesia, Runway ML — plug in an API key to render avatar videos.                                  |
+| 📊 Campaign Manager    | Save, track, and manage campaigns with status, budget, spend, ROAS, and CTR — stored in localStorage.                                         |
+| 📈 Analytics Dashboard | 14-day CTR, ROAS, spend vs. revenue, and conversion charts powered by Recharts.                                                               |
 
 ---
 
@@ -33,32 +33,32 @@ npm run dev                  # http://localhost:3009
 
 ## Environment variables
 
-| Variable | Required | Default | Notes |
-|---|---|---|---|
-| `OPENROUTER_API_KEY` | Recommended | — | Get one at <https://openrouter.ai>. If absent, mock copy is returned so the UI stays usable. |
-| `OPENROUTER_MODEL` | Optional | `anthropic/claude-haiku-3` | Any model supported by OpenRouter. Haiku-3 is cheap and fast for ad copy. |
-| `NEXT_PUBLIC_SITE_URL` | Optional | `http://localhost:3009` | Sent as `HTTP-Referer` to OpenRouter for rankings. |
+| Variable               | Required    | Default                    | Notes                                                                                        |
+| ---------------------- | ----------- | -------------------------- | -------------------------------------------------------------------------------------------- |
+| `OPENROUTER_API_KEY`   | Recommended | —                          | Get one at <https://openrouter.ai>. If absent, mock copy is returned so the UI stays usable. |
+| `OPENROUTER_MODEL`     | Optional    | `anthropic/claude-haiku-3` | Any model supported by OpenRouter. Haiku-3 is cheap and fast for ad copy.                    |
+| `NEXT_PUBLIC_SITE_URL` | Optional    | `http://localhost:3009`    | Sent as `HTTP-Referer` to OpenRouter for rankings.                                           |
 
 ---
 
 ## Pages
 
-| Route | Description |
-|---|---|
-| `/` | Landing page — hero, how-it-works, feature grid |
-| `/create` | 4-step wizard: URL → Scrape → Copy → Creative → Video |
-| `/campaigns` | Campaign manager — CRUD, status, metrics |
-| `/analytics` | ROAS / CTR / spend charts + per-campaign table |
+| Route        | Description                                           |
+| ------------ | ----------------------------------------------------- |
+| `/`          | Landing page — hero, how-it-works, feature grid       |
+| `/create`    | 4-step wizard: URL → Scrape → Copy → Creative → Video |
+| `/campaigns` | Campaign manager — CRUD, status, metrics              |
+| `/analytics` | ROAS / CTR / spend charts + per-campaign table        |
 
 ---
 
 ## API routes
 
-| Endpoint | Method | Body | Returns |
-|---|---|---|---|
-| `/api/scrape-product` | POST | `{ url: string }` | `ScrapeProductResponse` |
-| `/api/generate-ad` | POST | `{ product: ProductData }` | `GenerateAdResponse` |
-| `/api/generate-creative` | POST | `{ templateId, productTitle, headline, cta, imageUrl? }` | `GenerateCreativeResponse` |
+| Endpoint                 | Method | Body                                                     | Returns                    |
+| ------------------------ | ------ | -------------------------------------------------------- | -------------------------- |
+| `/api/scrape-product`    | POST   | `{ url: string }`                                        | `ScrapeProductResponse`    |
+| `/api/generate-ad`       | POST   | `{ product: ProductData }`                               | `GenerateAdResponse`       |
+| `/api/generate-creative` | POST   | `{ templateId, productTitle, headline, cta, imageUrl? }` | `GenerateCreativeResponse` |
 
 ---
 

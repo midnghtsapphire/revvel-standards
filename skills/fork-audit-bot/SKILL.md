@@ -69,14 +69,14 @@ you are wiring up presence-/authority-boosting automation for
 §GitHub Presence & Authority.) Short version — the bot moves:
 
 - GitHub **contribution graph** (squares per day)
-- GitHub **Achievements**: *Pull Shark*, *Galaxy Brain*, *Quickdraw*, *YOLO*
+- GitHub **Achievements**: _Pull Shark_, _Galaxy Brain_, _Quickdraw_, _YOLO_
 - **OpenRank** (X-lab / CHAOSS network-authority score)
 - **GitRank**, **CHAOSS Community Health** metrics
 - Appearance in upstream **Contributors** sidebars
 
 ## Anti-patterns
 
-- ❌ Opening dozens of shallow "typo fix" PRs to farm *Pull Shark* —
+- ❌ Opening dozens of shallow "typo fix" PRs to farm _Pull Shark_ —
   maintainers flag and block this. The bot's rubric intentionally gates on
   `strategic_value` + `goal_tag` alignment so only substantive audits land.
 - ❌ Forking every starred repo — waste of storage and attention. The

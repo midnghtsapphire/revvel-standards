@@ -6,20 +6,20 @@
 
 ## Format
 
-| Assumption | Risk | Reasoning | Validated |
-|------------|------|-----------|-----------|
+| Assumption         | Risk         | Reasoning          | Validated      |
+| ------------------ | ------------ | ------------------ | -------------- |
 | **What we assume** | low/med/high | Why we assume this | yes/no/pending |
 
 ---
 
 ## Documented Assumptions
 
-| ID | Assumption | Risk | Reasoning | Validated |
-|-----|------------|------|-----------|-----------|
-| A001 | OpenRouter API key will remain available | low | Enterprise tier, SLA | pending |
-| A002 | GitHub Pages sufficient for static sites | low | No dynamic backend needed | yes |
-| A003 | Weekly audit frequency is appropriate | med | Could be daily for critical paths | pending |
-| A004 | Proposal prosecution catches 80% of flaws | med | Based on OpenHands research | pending |
+| ID   | Assumption                                | Risk | Reasoning                         | Validated |
+| ---- | ----------------------------------------- | ---- | --------------------------------- | --------- |
+| A001 | OpenRouter API key will remain available  | low  | Enterprise tier, SLA              | pending   |
+| A002 | GitHub Pages sufficient for static sites  | low  | No dynamic backend needed         | yes       |
+| A003 | Weekly audit frequency is appropriate     | med  | Could be daily for critical paths | pending   |
+| A004 | Proposal prosecution catches 80% of flaws | med  | Based on OpenHands research       | pending   |
 
 ---
 

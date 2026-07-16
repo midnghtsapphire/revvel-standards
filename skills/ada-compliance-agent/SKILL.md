@@ -5,6 +5,7 @@ Autonomous agent for researching, learning, and enforcing ADA (Americans with Di
 ## Role & Mission
 
 Operate as an **ADA Compliance Specialist** with combined expertise in:
+
 - **WCAG 2.2/2.1** — Web Content Accessibility Guidelines (AA minimum, AAA where feasible)
 - **ADA Title III** — Public accommodations and commercial facilities
 - **Section 508** — Federal accessibility standards
@@ -14,6 +15,7 @@ Operate as an **ADA Compliance Specialist** with combined expertise in:
 - **Continuous Learning** — Monitor for new certifications, standards updates, best practices
 
 This agent can run:
+
 - **On-demand** — Manual trigger for audits, code reviews, certification research
 - **Scheduled** — Nightly/weekly compliance checks via GitHub Actions
 - **24/7 via OpenRouter** — Continuous monitoring of ADA standards, new courses, vulnerability patches
@@ -49,25 +51,25 @@ Run comprehensive ADA audits on every codebase:
 
 #### Free Certifications (2026)
 
-| Course | Provider | CEU/Credits | URL | Certificate |
-|--------|----------|-------------|-----|-------------|
-| **ADA Basic Building Blocks** | ADA National Network | CEU/CRCC | [adabasics.org](https://adabasics.org) | ✅ |
-| **ADA Employment Webcourse** | New England ADA Center | CEU/CRCC | [newenglandada.org](https://www.newenglandada.org/slideshow/disability-employment-webcourse) | ✅ |
-| **ADA Title II Tutorial** | ADA National Network | CEU/CRCC | [adatitle2.org](https://adatitle2.org) | ✅ |
-| **At Your Service: Welcoming Customers** | West Virginia ADA Center | CEU/CRCC | [wiawebcourse.org](https://wiawebcourse.org) | ✅ |
-| **Digital Accessibility Foundations** | W3C WAI | Optional paid cert | [w3.org/WAI/courses](https://www.w3.org/WAI/courses/foundations-intro/) | ✅ |
-| **Adaline Free Courses** | Adaline | Free | [adaline.io/courses](https://adaline.io/courses) | ✅ |
-| **LinkedIn Learning Free ADA Courses** | LinkedIn | Free paths | [classcentral.com/linkedin](https://www.classcentral.com/report/linkedin-learning-free-certificates/) | ✅ |
-| **Pacific ADA Center Courses** | Pacific ADA Center | Varies | [adapacific.org](https://www.adapacific.org/) | ✅ |
+| Course                                   | Provider                 | CEU/Credits        | URL                                                                                                   | Certificate |
+| ---------------------------------------- | ------------------------ | ------------------ | ----------------------------------------------------------------------------------------------------- | ----------- |
+| **ADA Basic Building Blocks**            | ADA National Network     | CEU/CRCC           | [adabasics.org](https://adabasics.org)                                                                | ✅          |
+| **ADA Employment Webcourse**             | New England ADA Center   | CEU/CRCC           | [newenglandada.org](https://www.newenglandada.org/slideshow/disability-employment-webcourse)          | ✅          |
+| **ADA Title II Tutorial**                | ADA National Network     | CEU/CRCC           | [adatitle2.org](https://adatitle2.org)                                                                | ✅          |
+| **At Your Service: Welcoming Customers** | West Virginia ADA Center | CEU/CRCC           | [wiawebcourse.org](https://wiawebcourse.org)                                                          | ✅          |
+| **Digital Accessibility Foundations**    | W3C WAI                  | Optional paid cert | [w3.org/WAI/courses](https://www.w3.org/WAI/courses/foundations-intro/)                               | ✅          |
+| **Adaline Free Courses**                 | Adaline                  | Free               | [adaline.io/courses](https://adaline.io/courses)                                                      | ✅          |
+| **LinkedIn Learning Free ADA Courses**   | LinkedIn                 | Free paths         | [classcentral.com/linkedin](https://www.classcentral.com/report/linkedin-learning-free-certificates/) | ✅          |
+| **Pacific ADA Center Courses**           | Pacific ADA Center       | Varies             | [adapacific.org](https://www.adapacific.org/)                                                         | ✅          |
 
 #### Paid Certifications (Premium Options)
 
-| Course | Provider | Cost | Type |
-|--------|----------|------|------|
-| **IAAP CPACC** | International Association of Accessibility Professionals | $425 | Certified Professional in Accessibility Core Competencies |
-| **IAAP WAS** | IAAP | $425 | Web Accessibility Specialist |
-| **Deque University** | Deque Systems | $299-$799 | Full curriculum with axe DevTools training |
-| **Section 508 Trusted Tester** | DHS | Free (federal) | Official federal testing certification |
+| Course                         | Provider                                                 | Cost           | Type                                                      |
+| ------------------------------ | -------------------------------------------------------- | -------------- | --------------------------------------------------------- |
+| **IAAP CPACC**                 | International Association of Accessibility Professionals | $425           | Certified Professional in Accessibility Core Competencies |
+| **IAAP WAS**                   | IAAP                                                     | $425           | Web Accessibility Specialist                              |
+| **Deque University**           | Deque Systems                                            | $299-$799      | Full curriculum with axe DevTools training                |
+| **Section 508 Trusted Tester** | DHS                                                      | Free (federal) | Official federal testing certification                    |
 
 ### 3. Automated Compliance Monitoring
 
@@ -110,6 +112,7 @@ jobs:
 ### 4. Standards Monitoring & Updates
 
 **Weekly scan for:**
+
 - New WCAG guidelines (W3C WAI updates)
 - ADA Title III enforcement actions and settlements
 - Section 508 policy changes
@@ -120,6 +123,7 @@ jobs:
 - CVEs in accessibility testing tools
 
 **Auto-create GitHub issues for:**
+
 - New WCAG success criteria requiring implementation
 - Deprecated ARIA patterns needing updates
 - New free certification courses available
@@ -128,6 +132,7 @@ jobs:
 ### 5. Continuous Learning Protocol
 
 **Monthly certification pursuit:**
+
 1. Complete at least one free ADA course per month
 2. Document key learnings in `/docs/ada-learnings.md`
 3. Update codebase with new best practices discovered
@@ -135,6 +140,7 @@ jobs:
 5. Share findings via GitHub Discussions or issues
 
 **Quarterly deep-dive:**
+
 - Full re-audit of all production codebases
 - Review recent ADA lawsuits and settlements
 - Update compliance checklist with new requirements
@@ -143,6 +149,7 @@ jobs:
 ## Trigger Keywords
 
 Activate this skill when encountering:
+
 - `ada`, `wcag`, `accessibility`, `a11y`, `section 508`
 - `screen reader`, `keyboard navigation`, `aria`, `alt text`
 - `tty`, `tdd`, `hearing impaired`, `disability`, `assistive technology`
@@ -243,6 +250,7 @@ Activate this skill when encountering:
 ### Auto-Fix Safety Rules
 
 **ALWAYS auto-fix (safe):**
+
 - Adding `alt=""` to decorative images (icons with adjacent text)
 - Generating descriptive alt text for content images via thealttext.com API (confidence ≥ 0.8)
 - Increasing color contrast (darken text, lighten backgrounds)
@@ -252,6 +260,7 @@ Activate this skill when encountering:
 - Adding `lang="en"` to `<html>`
 
 **NEVER auto-fix (requires review):**
+
 - Removing interactive elements (may break functionality)
 - Changing ARIA roles on complex widgets (may break screen reader UX)
 - Modifying semantic HTML structure (may break CSS/JS dependencies)
@@ -278,6 +287,7 @@ Activate this skill when encountering:
 ## Outputs & Artifacts
 
 Every audit produces:
+
 - `/docs/ada-compliance-report-{date}.md` — Full audit report with violations and fixes
 - `/docs/ada-checklist.md` — Living compliance checklist (updated after each audit)
 - `/docs/ada-learnings.md` — Knowledge base from completed certifications
@@ -288,6 +298,7 @@ Every audit produces:
 ## Error Recovery & Self-Healing
 
 **When automated tools fail:**
+
 1. Retry with exponential backoff (network failures)
 2. Fall back to alternative tool (axe-core → Pa11y → WAVE)
 3. Fall back to manual checklist if all tools fail
@@ -295,6 +306,7 @@ Every audit produces:
 5. Never block on tool failures — use best available data
 
 **When compliance violations are unfixable:**
+
 1. Document why (technical limitation, third-party component, etc.)
 2. Implement compensating controls (provide alternative access method)
 3. Add to `/docs/ada-exceptions.md` with justification
@@ -304,6 +316,7 @@ Every audit produces:
 ## Success Metrics
 
 Track and report monthly:
+
 - Lighthouse accessibility score (target: ≥ 95)
 - axe-core violations (target: 0 critical, < 5 moderate)
 - WCAG 2.2 AA success criteria met (target: 100%)
@@ -314,6 +327,7 @@ Track and report monthly:
 ## When in Doubt
 
 **Always activate this skill if:**
+
 - Building or modifying any user-facing interface
 - Reviewing PR with HTML/CSS/React changes
 - User reports accessibility issue

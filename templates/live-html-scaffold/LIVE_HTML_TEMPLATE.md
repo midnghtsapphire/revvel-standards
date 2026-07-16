@@ -49,9 +49,9 @@ Colors use CSS variables for easy theming:
 
 ```css
 :root {
-    --bg-deep: #0a0a0f;
-    --accent-gold: #d4a853;
-    --accent-emerald: #34d399;
+  --bg-deep: #0a0a0f;
+  --accent-gold: #d4a853;
+  --accent-emerald: #34d399;
 }
 ```
 

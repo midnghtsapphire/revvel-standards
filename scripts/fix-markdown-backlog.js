@@ -104,7 +104,7 @@ function main() {
     if (beforeCount > opts.threshold) {
       console.log(
         `❌ Backlog (${beforeCount}) exceeds threshold (${opts.threshold}). ` +
-          `Run \`npm run markdown:fix-backlog\` to auto-fix the mechanical findings.`
+          `Run \`npm run markdown:fix-backlog\` to auto-fix the mechanical findings.`,
       );
       process.exit(1);
     }
@@ -113,7 +113,9 @@ function main() {
   }
 
   console.log(`Markdown backlog before fix: ${beforeCount} finding(s).`);
-  console.log("Running markdownlint-cli2 --fix (this rewrites files in place)…");
+  console.log(
+    "Running markdownlint-cli2 --fix (this rewrites files in place)…",
+  );
   runNpmScript("lint:fix");
 
   const after = runNpmScript("lint");
@@ -125,7 +127,7 @@ function main() {
   console.log(`Remaining (non-auto-fixable) findings: ${afterCount}.`);
   if (afterCount > 0 && !opts.quiet) {
     console.log(
-      "These require manual edits. Review the remaining findings with `npm run lint`."
+      "These require manual edits. Review the remaining findings with `npm run lint`.",
     );
   }
 }

@@ -167,7 +167,9 @@ function getClient(): any | null {
     } else {
       // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
       const Mixpanel = require("mixpanel");
-      _client = Mixpanel.init(token, { host: API_HOST.replace(/^https?:\/\//, "") });
+      _client = Mixpanel.init(token, {
+        host: API_HOST.replace(/^https?:\/\//, ""),
+      });
     }
   } catch (err) {
     // SDK not installed in this environment — stay silent in production,

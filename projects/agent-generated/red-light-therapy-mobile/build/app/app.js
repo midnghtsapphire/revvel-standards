@@ -1,5 +1,13 @@
 (function setupApp() {
-  const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const DAYS = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
   const SAFE_MAX_DAILY_DOSE = 12;
 
   const calculator = window.RedLightCalculator;
@@ -20,7 +28,9 @@
       const status = day.scheduled
         ? day.plannedDoseJcm2.toFixed(1) + " J/cm2"
         : "Rest";
-      return "<li><strong>" + DAYS[day.dayIndex] + ":</strong> " + status + "</li>";
+      return (
+        "<li><strong>" + DAYS[day.dayIndex] + ":</strong> " + status + "</li>"
+      );
     });
     schedule.innerHTML = fragments.join("");
   }
@@ -37,9 +47,15 @@
     event.preventDefault();
     warning.textContent = "";
 
-    const targetDoseJcm2 = Number(document.getElementById("targetDoseJcm2").value);
-    const irradianceMwCm2 = Number(document.getElementById("irradianceMwCm2").value);
-    const sessionsPerWeek = Number(document.getElementById("sessionsPerWeek").value);
+    const targetDoseJcm2 = Number(
+      document.getElementById("targetDoseJcm2").value,
+    );
+    const irradianceMwCm2 = Number(
+      document.getElementById("irradianceMwCm2").value,
+    );
+    const sessionsPerWeek = Number(
+      document.getElementById("sessionsPerWeek").value,
+    );
     const startDay = Number(document.getElementById("startDay").value);
 
     try {
@@ -61,18 +77,20 @@
 
       const weeklyTotal = deliveredDose * sessionsPerWeek;
 
-      result.innerHTML = "<p><strong>Session length:</strong> "
-        + minutes.toFixed(1)
-        + " minutes</p><p><strong>Dose per session:</strong> "
-        + deliveredDose.toFixed(1)
-        + " J/cm2</p><p><strong>Weekly total:</strong> "
-        + weeklyTotal.toFixed(1)
-        + " J/cm2</p>";
+      result.innerHTML =
+        "<p><strong>Session length:</strong> " +
+        minutes.toFixed(1) +
+        " minutes</p><p><strong>Dose per session:</strong> " +
+        deliveredDose.toFixed(1) +
+        " J/cm2</p><p><strong>Weekly total:</strong> " +
+        weeklyTotal.toFixed(1) +
+        " J/cm2</p>";
 
       if (deliveredDose > SAFE_MAX_DAILY_DOSE) {
-        warning.textContent = "Warning: planned dose exceeds "
-          + SAFE_MAX_DAILY_DOSE
-          + " J/cm2 in a single day. Re-check your device irradiance and care plan with a clinician.";
+        warning.textContent =
+          "Warning: planned dose exceeds " +
+          SAFE_MAX_DAILY_DOSE +
+          " J/cm2 in a single day. Re-check your device irradiance and care plan with a clinician.";
       }
 
       renderWeeklyPlan(weeklyPlan);
@@ -81,4 +99,4 @@
       schedule.innerHTML = "";
     }
   });
-}());
+})();

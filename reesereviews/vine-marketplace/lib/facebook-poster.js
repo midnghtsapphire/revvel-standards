@@ -18,39 +18,38 @@
  * All API calls respect the free tier. No paid ad spend is required for organic posts.
  */
 
-'use strict';
+const fetch = require("node-fetch");
 
-const fetch = require('node-fetch');
-
-const META_API_VERSION = process.env.META_API_VERSION || 'v19.0';
+const META_API_VERSION = process.env.META_API_VERSION || "v19.0";
 const META_BASE = `https://graph.facebook.com/${META_API_VERSION}`;
-const PAGE_ID = process.env.META_PAGE_ID || '';
-const PAGE_TOKEN = process.env.META_PAGE_ACCESS_TOKEN || '';
-const CATALOG_ID = process.env.META_CATALOG_ID || '';
+const PAGE_ID = process.env.META_PAGE_ID || "";
+const PAGE_TOKEN = process.env.META_PAGE_ACCESS_TOKEN || "";
+const CATALOG_ID = process.env.META_CATALOG_ID || "";
 
 /** Build the listing description from a product record + price. */
 function buildDescription(product, listingPrice) {
-  const { productTitle, isVine, vineTaxValue, paidPrice, asin, orderId } = product;
-  const conditionNote = 'Condition: New / Like New — received and never used.';
+  const { productTitle, isVine, vineTaxValue, paidPrice, asin, orderId } =
+    product;
+  const conditionNote = "Condition: New / Like New — received and never used.";
   const vineNote = isVine
     ? `Originally received through Amazon Vine (FMV: $${vineTaxValue || paidPrice}).`
     : `Paid: $${paidPrice}.`;
 
   const lines = [
     `🛒 ${productTitle}`,
-    '',
+    "",
     `💲 Price: $${listingPrice} (firm)`,
     conditionNote,
     vineNote,
-    '',
-    '📦 Local pickup or shipping available.',
-    'Message me to arrange!',
-    '',
-    asin ? `ASIN: ${asin}` : '',
+    "",
+    "📦 Local pickup or shipping available.",
+    "Message me to arrange!",
+    "",
+    asin ? `ASIN: ${asin}` : "",
     `Order: ${orderId}`,
   ].filter((l) => l !== undefined);
 
-  return lines.join('\n').trim();
+  return lines.join("\n").trim();
 }
 
 /**
@@ -64,8 +63,8 @@ function buildDescription(product, listingPrice) {
 async function postToPage(product, listingPrice) {
   if (!PAGE_ID || !PAGE_TOKEN) {
     throw new Error(
-      'META_PAGE_ID and META_PAGE_ACCESS_TOKEN must be set. ' +
-      'See .env.example for setup instructions.'
+      "META_PAGE_ID and META_PAGE_ACCESS_TOKEN must be set. " +
+        "See .env.example for setup instructions.",
     );
   }
 
@@ -80,7 +79,7 @@ async function postToPage(product, listingPrice) {
       url: product.imageUrl,
       caption: message,
       access_token: PAGE_TOKEN,
-      published: 'true',
+      published: "true",
     });
   } else {
     // Text-only post
@@ -88,12 +87,12 @@ async function postToPage(product, listingPrice) {
     body = new URLSearchParams({
       message,
       access_token: PAGE_TOKEN,
-      published: 'true',
+      published: "true",
     });
   }
 
   const response = await fetch(endpoint, {
-    method: 'POST',
+    method: "POST",
     body,
   });
 
@@ -123,7 +122,7 @@ async function postToPage(product, listingPrice) {
 async function addToCatalog(product, listingPrice) {
   if (!CATALOG_ID || !PAGE_TOKEN) {
     throw new Error(
-      'META_CATALOG_ID and META_PAGE_ACCESS_TOKEN must be set for catalog listings.'
+      "META_CATALOG_ID and META_PAGE_ACCESS_TOKEN must be set for catalog listings.",
     );
   }
 
@@ -137,10 +136,10 @@ async function addToCatalog(product, listingPrice) {
     name: productTitle.substring(0, 200),
     description: buildDescription(product, listingPrice),
     price: Math.round(listingPrice * 100), // price in cents
-    currency: 'USD',
-    availability: 'in stock',
-    condition: 'new',
-    image_url: imageUrl || '',
+    currency: "USD",
+    availability: "in stock",
+    condition: "new",
+    image_url: imageUrl || "",
     // Only include a URL if we have a valid ASIN; otherwise omit to avoid broken links
     ...(asin ? { url: `https://www.amazon.com/dp/${asin}` } : {}),
     access_token: PAGE_TOKEN,
@@ -148,12 +147,12 @@ async function addToCatalog(product, listingPrice) {
 
   const endpoint = `${META_BASE}/${CATALOG_ID}/items_batch`;
   const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       access_token: PAGE_TOKEN,
       allow_upsert: true,
-      requests: [{ method: 'CREATE', data: itemData }],
+      requests: [{ method: "CREATE", data: itemData }],
     }),
   });
 
@@ -177,11 +176,11 @@ async function addToCatalog(product, listingPrice) {
 async function postProduct(product, listingPrice) {
   if (CATALOG_ID) {
     const result = await addToCatalog(product, listingPrice);
-    return { method: 'catalog', id: result.catalogItemId };
+    return { method: "catalog", id: result.catalogItemId };
   }
 
   const result = await postToPage(product, listingPrice);
-  return { method: 'page_post', id: result.postId, url: result.url };
+  return { method: "page_post", id: result.postId, url: result.url };
 }
 
 /**
@@ -190,7 +189,7 @@ async function postProduct(product, listingPrice) {
  */
 async function repostProduct(product, listingPrice) {
   if (!PAGE_ID || !PAGE_TOKEN) {
-    throw new Error('META_PAGE_ID and META_PAGE_ACCESS_TOKEN must be set.');
+    throw new Error("META_PAGE_ID and META_PAGE_ACCESS_TOKEN must be set.");
   }
 
   const message =
@@ -202,17 +201,19 @@ async function repostProduct(product, listingPrice) {
   const body = new URLSearchParams({
     message,
     access_token: PAGE_TOKEN,
-    published: 'true',
+    published: "true",
   });
 
-  const response = await fetch(endpoint, { method: 'POST', body });
+  const response = await fetch(endpoint, { method: "POST", body });
   const data = await response.json();
 
   if (!response.ok || data.error) {
-    throw new Error(`Facebook API error: ${data.error?.message || response.status}`);
+    throw new Error(
+      `Facebook API error: ${data.error?.message || response.status}`,
+    );
   }
 
-  return { method: 'repost', id: data.id };
+  return { method: "repost", id: data.id };
 }
 
 module.exports = { postProduct, repostProduct, addToCatalog, postToPage };

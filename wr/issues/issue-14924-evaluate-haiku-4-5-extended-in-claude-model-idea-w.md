@@ -1,4 +1,4 @@
-# WR: [WR]  evaluate haiku 4.5 extended in claude model idea-what docs do you need from it?
+# WR: [WR] evaluate haiku 4.5 extended in claude model idea-what docs do you need from it?
 
 **Issue:** #14924  
 **Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
@@ -8,8 +8,8 @@
 
 ---
 
-
 <!-- revvel-research-findings -->
+
 ## Research Findings
 
 Source packet: `docs/research-engine/run-28605178013.md`
@@ -21,11 +21,13 @@ Source packet: `docs/research-engine/run-28605178013.md`
 **BLOCKED - CRITICAL INFORMATION MISSING**
 
 The research cannot proceed due to three fundamental blockers:
+
 1. **Model Does Not Exist**: "Claude Haiku 4.5 Extended" is not a real Anthropic model. Current models are Claude 3.5 Sonnet and Claude 3.5 Haiku.
 2. **GrowlingEyes Asset Status Unknown**: Revenue, costs, and user metrics are required but not provided.
 3. **Evaluation Scope Undefined**: No metrics, benchmarks, or success criteria specified.
 
-**Decision Required**: 
+**Decision Required**:
+
 - Clarify actual target model (Claude 3.5 Haiku or Claude 3.5 Sonnet)
 - Provide GrowlingEyes financial data to enable Strategy A vs B decision
 - Define specific evaluation criteria and use cases
@@ -33,11 +35,13 @@ The research cannot proceed due to three fundamental blockers:
 ## 2. Audience We Are Going After and Why
 
 **Primary Target**: AI/ML teams at mid-to-large enterprises evaluating Claude models for production deployment
+
 - **Pain Point**: Need objective performance benchmarks for Claude model variants to justify cost/performance tradeoffs
 - **Budget**: $10K-100K+ annual AI model spend
 - **Decision Timeline**: 30-90 days for model selection cycles
 
 **Secondary Target**: Cybersecurity teams using AI for threat intelligence
+
 - **Unique Angle**: If leveraging GrowlingEyes, target CTI (Cyber Threat Intelligence) AI agent evaluation
 - **Pain Point**: No specialized evaluation tools for security-specific AI use cases
 - **Budget**: Part of security operations budget ($50K-500K annually)
@@ -47,11 +51,13 @@ The research cannot proceed due to three fundamental blockers:
 **Critical Issue**: Zero search volume for "haiku 4.5 extended" (non-existent model)
 
 **Recommended Approach**:
+
 - **Primary Keywords**: "Claude 3.5 Haiku evaluation", "LLM evaluation platform", "AI model comparison tools"
 - **Landing Page Title**: "Claude 3.5 Model Evaluation Platform | Compare Performance, Cost & Accuracy"
 - **Meta Description**: "Evaluate Claude 3.5 Haiku and Sonnet models with automated benchmarks. Track latency, cost, and accuracy for your specific use cases."
 
 **Content Strategy**:
+
 - Model comparison guides
 - Integration tutorials
 - Performance benchmark reports
@@ -60,25 +66,28 @@ The research cannot proceed due to three fundamental blockers:
 ## 4. Competitor and GitHub Star Intelligence
 
 **Key Competitors**:
-| Competitor | Type | GitHub Stars | Positioning |
-|------------|------|--------------|-------------|
-| LangSmith (LangChain) | Commercial | 400+ | Developer-focused LLM ops |
-| OpenAI Evals | Open Source | 14.2k | Evaluation framework |
-| Weights & Biases | Commercial | 8.5k | MLOps platform |
-| Ragas | Open Source | 10.1k | RAG evaluation |
-| DeepEval | Open Source | 2.2k | LLM testing framework |
+
+| Competitor            | Type        | GitHub Stars | Positioning               |
+| --------------------- | ----------- | ------------ | ------------------------- |
+| LangSmith (LangChain) | Commercial  | 400+         | Developer-focused LLM ops |
+| OpenAI Evals          | Open Source | 14.2k        | Evaluation framework      |
+| Weights & Biases      | Commercial  | 8.5k         | MLOps platform            |
+| Ragas                 | Open Source | 10.1k        | RAG evaluation            |
+| DeepEval              | Open Source | 2.2k         | LLM testing framework     |
 
 **Market Gap**: No competitor combines LLM evaluation with cybersecurity threat intelligence
 
 ## 5. Chatter and Demand Signals
 
 **Community Needs**:
+
 - Clear documentation templates for model evaluation
-- Decision frameworks for "build vs integrate" 
+- Decision frameworks for "build vs integrate"
 - Transparent pricing and ROI calculators
 - Domain-specific evaluation tools (especially security)
 
 **Common Objections**:
+
 - "Another generic LLM tool in a crowded market"
 - "Integration complexity not worth the effort"
 - "No proven ROI without case studies"
@@ -86,16 +95,18 @@ The research cannot proceed due to three fundamental blockers:
 ## 6. Factual Validation and Evidence Gaps
 
 **Verified Facts**:
+
 - GrowlingEyes.com is operational (threat intel across 18 domains)
 - Hosted on DigitalOcean (IP: 143.244.167.14)
 - Built with Next.js/TypeScript stack
-Add evidence citations: (1) Include a 'Data collected: [DATE]' timestamp above the table. (2) Verify star counts from GitHub API or latest snapshot. (3) For the 'market gap' claim, cite specific product documentation or interviews showing the gap. (4) Use conditional language: 'Based on public GitHub data as of [DATE], no identified competitor currently positions as...' rather than definitive claims.
-**Unverified Claims**:
+  Add evidence citations: (1) Include a 'Data collected: [DATE]' timestamp above the table. (2) Verify star counts from GitHub API or latest snapshot. (3) For the 'market gap' claim, cite specific product documentation or interviews showing the gap. (4) Use conditional language: 'Based on public GitHub data as of [DATE], no identified competitor currently positions as...' rather than definitive claims.
+  **Unverified Claims**:
 - Claude Haiku 4.5 Extended (does not exist)
 - GrowlingEyes revenue/costs (no data provided)
 - Market demand for CTI-specific AI evaluation
 
 **Evidence Needed**:
+
 - Anthropic API documentation for actual models
 - GrowlingEyes financial metrics
 - Customer validation interviews
@@ -103,20 +114,25 @@ Add evidence citations: (1) Include a 'Data collected: [DATE]' timestamp above t
 ## 7. Build Requirements and Acceptance Gates
 
 ### Phase 0: Asset Leverage Analysis (BLOCKED)
+
 **Required Data**:
+
 - GrowlingEyes monthly revenue
 - Operational costs (hosting + labor)
 - User metrics (MAU, paying customers)
 - Product-market fit evidence
 
 ### Phase 1: Technical Requirements
+
 **Core Features**:
+
 - Model performance benchmarking
 - Cost tracking and optimization
 - Latency monitoring
 - Domain-specific evaluation (if CTI focus)
 
 **Acceptance Criteria**:
+
 - [ ] Accurate model API integration
 - [ ] Sub-2 second evaluation response time
 - [ ] Cost tracking within 5% accuracy
@@ -125,6 +141,7 @@ Add evidence citations: (1) Include a 'Data collected: [DATE]' timestamp above t
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```yaml
 review_focus:
   - API key security and rotation
@@ -134,6 +151,7 @@ review_focus:
 ```
 
 ### For OpenRouter
+
 ```yaml
 check_points:
   - Model version compatibility
@@ -143,6 +161,7 @@ check_points:
 ```
 
 ### For Coderabbit
+
 ```yaml
 security_checks:
   - Environment variable usage
@@ -152,6 +171,7 @@ security_checks:
 ```
 
 ### For Ralph Loop
+
 ```yaml
 performance_review:
   - Async/await patterns
@@ -163,7 +183,9 @@ performance_review:
 ## 9. Automatic Fix and Commit Queue
 
 ### Blocking Issue #1: Model Specification
+
 **Fix**: Update all references from "Haiku 4.5 Extended" to "Claude 3.5 Haiku"
+
 ```bash
 git commit -m "fix: Update model references to Claude 3.5 Haiku
 
@@ -175,7 +197,9 @@ Resolves: Model specification error"
 ```
 
 ### Blocking Issue #2: Missing Requirements Template
+
 **Fix**: Create evaluation requirements template
+
 ```bash
 git commit -m "feat: Add model evaluation requirements template
 
@@ -187,7 +211,9 @@ Resolves: Missing evaluation scope"
 ```
 
 ### Blocking Issue #3: Strategic Decision Block
+
 **Fix**: Add decision framework document
+
 ```bash
 git commit -m "docs: Add asset leverage decision framework
 
@@ -201,6 +227,7 @@ Resolves: Strategic decision blocker"
 ## 10. Labels to Apply
 
 ### Immediate Labels
+
 - `blocked:model-does-not-exist`
 - `blocked:missing-financial-data`
 - `needs-clarification`
@@ -208,16 +235,19 @@ Resolves: Strategic decision blocker"
 - `opportunity:cti-niche`
 
 ### Process Labels
+
 - `phase:0-asset-analysis`
 - `status:awaiting-input`
 - `priority:high`
 
 ### Risk Labels
+
 - `risk:strategic-misalignment`
 - `risk:scope-creep`
 - `risk:weak-moat`
 
 ### Action Labels
+
 - `action:verify-model`
 - `action:gather-metrics`
 - `action:define-scope`
@@ -225,6 +255,7 @@ Resolves: Strategic decision blocker"
 ---
 
 **CRITICAL NEXT STEPS**:
+
 1. Confirm actual Claude model to evaluate (3.5 Haiku or 3.5 Sonnet)
 2. Provide GrowlingEyes revenue/cost data
 3. Define specific evaluation criteria and use cases

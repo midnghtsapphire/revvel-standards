@@ -5,14 +5,17 @@ Templates for YouTube videos with monetization in mind.
 ## Video Types
 
 ### Shorts
+
 **Duration:** 15-60 seconds
 **Monetization:** Shorts feed ads (when eligible)
 
 ### Standard Videos
+
 **Duration:** 5-15 minutes
 **Monetization:** Pre-roll, mid-roll ads, sponsorships
 
 ### Long-Form Content
+
 **Duration:** 15-60 minutes
 **Monetization:** Comprehensive ad revenue, course upsells
 
@@ -102,12 +105,14 @@ In this video, we're going to break down everything you need to know about [topi
 ## YouTube Best Practices
 
 ### Video Specs
+
 - **Aspect Ratio:** 16:9 (standard), 9:16 (Shorts)
 - **Duration:** 8+ minutes for optimal ad revenue
 - **Resolution:** 4K preferred, 1080p minimum
 - **Format:** MP4 (H.264)
 
 ### Monetization Streams
+
 1. **YouTube Partner Program**
    - Pre-roll ads
    - Mid-roll ads (5+ min videos)
@@ -125,6 +130,7 @@ In this video, we're going to break down everything you need to know about [topi
    - Patreon/Super Thanks
 
 ### SEO Optimization
+
 - Keyword-rich titles (front-load)
 - 200+ word description (first 2 lines visible)
 - 15+ tags

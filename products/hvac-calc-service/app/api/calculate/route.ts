@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import {
   buildCsvExport,
   buildMarkdownReport,
@@ -45,18 +45,20 @@ export async function POST(req: NextRequest) {
   ) {
     return NextResponse.json(
       { error: "floorArea must be a positive number" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (body.floorArea > 1_000_000) {
     return NextResponse.json(
       { error: "floorArea must be <= 1,000,000 sq ft" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  const inputs = normalizeLoadInputs(body as Parameters<typeof normalizeLoadInputs>[0]);
+  const inputs = normalizeLoadInputs(
+    body as Parameters<typeof normalizeLoadInputs>[0],
+  );
   const load = calculateLoad(inputs);
   const equipment = recommendEquipment(load.sensibleCoolingLoad);
   const duct = calculateDuctSize({ coolingLoadBtu: load.sensibleCoolingLoad });

@@ -30,7 +30,6 @@ version: 1
 # Every kind belongs to exactly one role.
 
 kinds:
-
   # ── Research lane ─────────────────────────────────────────────────────────
   - name: researcher
     role: research

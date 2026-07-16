@@ -6,12 +6,30 @@ description: "7-gate prosecution-audit procedure for any repository: validity, w
 metadata:
   author: "Revvel AI Engine"
   category: "Audit & Quality"
-  tags: ["audit", "prosecution", "repo-health", "wiring", "security", "hygiene", "wr-filing", "learnings"]
+  tags:
+    [
+      "audit",
+      "prosecution",
+      "repo-health",
+      "wiring",
+      "security",
+      "hygiene",
+      "wr-filing",
+      "learnings",
+    ]
   created_at: "2026-07-14"
   updated_at: "2026-07-14"
 
 persona: null
-triggers: ["/repo-audit", "prosecution audit", "full repo audit", "repo health check", "audit this repo", "find gaps broken wiring"]
+triggers:
+  [
+    "/repo-audit",
+    "prosecution audit",
+    "full repo audit",
+    "repo health check",
+    "audit this repo",
+    "find gaps broken wiring",
+  ]
 
 dependencies:
   skills: []

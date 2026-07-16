@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
 /**
  * WR Field Filler — sweep helper.
@@ -25,20 +25,22 @@
  *   edits and leaves a new blank), the sweep picks it up again.
  */
 
-const { spawnSync } = require('child_process');
-const path = require('path');
-const filler = require(path.join(__dirname, 'wr-fill-fields.js'));
+const { spawnSync } = require("child_process");
+const path = require("path");
+const filler = require(path.join(__dirname, "wr-fill-fields.js"));
 
-const REPO = process.env.GH_REPO || 'midnghtsapphire/revvel-standards';
+const REPO = process.env.GH_REPO || "midnghtsapphire/revvel-standards";
 
 // Argv-form invocation (no shell interpolation) so semgrep's
 // detect-child-process rule stays green and there is no path for a caller to
 // smuggle shell metacharacters into `gh`.
 function gh(argv) {
-  const result = spawnSync('gh', argv, { encoding: 'utf8', env: process.env });
+  const result = spawnSync("gh", argv, { encoding: "utf8", env: process.env });
   if (result.status !== 0) {
-    const stderr = (result.stderr || '').trim();
-    throw new Error(`gh ${argv.join(' ')} failed (exit ${result.status}): ${stderr}`);
+    const stderr = (result.stderr || "").trim();
+    throw new Error(
+      `gh ${argv.join(" ")} failed (exit ${result.status}): ${stderr}`,
+    );
   }
   return result.stdout;
 }
@@ -48,12 +50,18 @@ function listOpenWrIssues() {
   // wr:in-progress, and wr:new are the same lane; any WR that reaches the
   // filler will carry at least one of them.
   const raw = gh([
-    'issue', 'list',
-    '--repo', REPO,
-    '--state', 'open',
-    '--label', 'work-request',
-    '--limit', '500',
-    '--json', 'number,title,body,labels',
+    "issue",
+    "list",
+    "--repo",
+    REPO,
+    "--state",
+    "open",
+    "--label",
+    "work-request",
+    "--limit",
+    "500",
+    "--json",
+    "number,title,body,labels",
   ]);
   return JSON.parse(raw);
 }
@@ -62,9 +70,13 @@ function fetchIssues(numbers) {
   const out = [];
   for (const n of numbers) {
     const raw = gh([
-      'issue', 'view', String(n),
-      '--repo', REPO,
-      '--json', 'number,title,body,labels',
+      "issue",
+      "view",
+      String(n),
+      "--repo",
+      REPO,
+      "--json",
+      "number,title,body,labels",
     ]);
     out.push(JSON.parse(raw));
   }
@@ -87,8 +99,12 @@ function needsFilling(issue) {
 function parseArgs(argv) {
   const out = { issues: null };
   for (let i = 0; i < argv.length; i += 1) {
-    if (argv[i] === '--issues' && argv[i + 1]) {
-      out.issues = argv[++i].split(',').map((s) => s.trim()).filter(Boolean).map(Number);
+    if (argv[i] === "--issues" && argv[i + 1]) {
+      out.issues = argv[++i]
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .map(Number);
     }
   }
   return out;
@@ -96,17 +112,22 @@ function parseArgs(argv) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const issues = args.issues && args.issues.length > 0
-    ? fetchIssues(args.issues)
-    : listOpenWrIssues();
+  const issues =
+    args.issues && args.issues.length > 0
+      ? fetchIssues(args.issues)
+      : listOpenWrIssues();
 
   const needs = issues.filter(needsFilling);
 
   // Emit summary on stderr so the workflow can log it verbatim, and one
   // issue number per line on stdout for xargs-style consumption.
-  process.stderr.write(`[wr-fill-sweep] scanned ${issues.length} WR(s); ${needs.length} need filling\n`);
+  process.stderr.write(
+    `[wr-fill-sweep] scanned ${issues.length} WR(s); ${needs.length} need filling\n`,
+  );
   for (const i of needs) {
-    process.stderr.write(`[wr-fill-sweep]   #${i.number} ${i.title.slice(0, 60)}\n`);
+    process.stderr.write(
+      `[wr-fill-sweep]   #${i.number} ${i.title.slice(0, 60)}\n`,
+    );
     process.stdout.write(`${i.number}\n`);
   }
 }

@@ -1,6 +1,7 @@
 # Session Notes — February 20, 2026
 
 ## Purpose
+
 This document captures EVERY detail Revvel shared during this session so nothing is lost.
 Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 
@@ -9,6 +10,7 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 ## App-Specific Details Shared This Session
 
 ### GodsofInsurance
+
 - **Original design**: Zeus sitting in an ornate chair as splash screen — powerful, godly, really cool and ornate
 - **Theme**: Greek mythology, NOT cherry blossoms (that's Anime Ascend)
 - **Primary purpose**: Insurance LEAD GENERATION for life insurance
@@ -28,6 +30,7 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 - **FOSS-first**: Use as much free software as possible, combine multiple FOSS tools to match paid competitors. Only pay for APIs that accelerate, then build our own better version.
 
 ### Anime Ascend Wellness
+
 - **Original design**: White background, cherry blossom branches, Asian-themed, chibi mascot, dainty and subtle Japanese minimalism
 - **NOT blue, NOT corporate**
 - **Primary purpose**: HEALTH MONITORING (not just a habit tracker)
@@ -41,6 +44,7 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 - **STATUS**: v2.0 COMPLETE — pushed to GitHub, on hub, 21/21 tests passing
 
 ### PawSitting
+
 - **Reese's business** (Revvel's daughter) — real local pet sitting business
 - **Service area**: Wellington, Fort Collins, Loveland (NoCo), Evans, Timnath, Berthoud, and ALL surrounding Northern Colorado areas
 - **NOT just dogs/cats**: Reese watches horses, goats, peacocks, and all kinds of animals
@@ -53,15 +57,18 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 - **Blue Ocean**: No other pet sitting app handles livestock and exotic animals
 
 ### Rentable (rent-anything-hub)
+
 - **Personality**: "Rent the Unrentable" — fun, quirky (emotional support goats, haunted mirrors, astronaut suits)
 - **Keep as separate app** from rentiverse-finds-it-all-30 — multiple versions for different audiences is intentional
 - **Existing features to preserve**: WeirdVault, CO2 tracking, Fair Value gauge, barter system, emergency mode
 
 ### Sips (StarbucksSecretSips / secret-sip-feed)
+
 - **Existing features to preserve**: Image recipe extraction, social media extraction, categories, favorites, admin controls
 - **Rewrite way better** but keep core functionality
 
 ### Email Organizer (revvel-email-organizer)
+
 - **300,000 emails** to test against — ultimate stress test for the app
 - **Purpose**: Organize, unsubscribe, delete, create smart folders
 - **Folder style**: Fixer-style naming with colons (e.g., "Category:Subcategory")
@@ -71,6 +78,7 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 - **Gmail**: angelreporters@gmail.com
 
 ### TimelineTracker
+
 - **Created during COVID** when Revvel was going through a hard time
 - **Original purpose**: Court documentation — court filings, posts to mayor's site, evidence, all organized chronologically
 - **Product vision**: Could be for everyone — imagine pulling together every post grandparents ever made on Ancestry, every document, every public record into one timeline
@@ -83,6 +91,7 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 ## Universal Philosophy (ALL Apps)
 
 ### AI-for-Good Movement
+
 - Every app showcases AI as a force for GOOD — empowering real people, not replacing them
 - Public turning negative on AI due to billionaire tech bro narratives
 - Musk saying robots replace doctors in 2 years — tone deaf, doesn't know how regular people live
@@ -94,6 +103,7 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 - This is a MOVEMENT, not just a product line
 
 ### FOSS-First Philosophy
+
 - Use as much free/open-source software as possible
 - Combine multiple FOSS tools to be as robust as top paid competitors
 - Only pay for APIs that move us fast ahead
@@ -101,12 +111,14 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 - Don't mind paying for APIs that accelerate, but prefer to eventually replace them
 
 ### Blue Ocean in EVERY App
+
 - Every single app must have a cutting-edge differentiator
 - People should immediately see it provides stuff other apps don't
 - Research topics independently, come back with ideas WITHOUT user input
 - Document ALL Blue Ocean findings — they won't be remembered tomorrow
 
 ### Documentation is NON-NEGOTIABLE
+
 - If it's not documented, it doesn't exist
 - No one will buy an app without documentation
 - Everything must be on GitHub — sandbox is not persistent
@@ -115,12 +127,14 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 - Research findings must be documented and pushed to GitHub
 
 ### AI Assistants (Standard Module)
+
 - Text/Chat AI assistant in every app
 - AI Phone Answering assistant in every app
 - Google Voice for free local business number
 - FOSS stack: Vocode, Piper TTS, Whisper STT
 
 ### Stop Wasting Tokens
+
 - User has carpal tunnel — minimize typing
 - User has been repeating the same information across sessions — that's a waste of tokens they're paying for
 - READ the standards docs, READ the existing code, READ the session notes
@@ -130,6 +144,7 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 ---
 
 ## Zip Files / Lost Projects
+
 - Previous session said they put all zip files from LLM sessions into GitHub
 - User saw "weird entries that weren't really what they were"
 - Need to audit GitHub for these and verify they're correct
@@ -140,6 +155,7 @@ Push to GitHub (MIDNGHTSAPPHIRE/revvel-standards) immediately.
 ---
 
 ## Active Builds This Session
+
 1. GodsofInsurance — Zeus theme, lead gen, agent support (team bZnQNKFMd4I8cU3NxVMfRq)
 2. Anime Ascend Wellness — COMPLETE, pushed to GitHub (team JsHzs0g1TzjJRDJjNSTy4U)
 3. PawSitting — Reese's NoCo pet sitting (team FwA5Cys3bPyVAiBX41rNGx)

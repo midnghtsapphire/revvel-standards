@@ -10,6 +10,7 @@
 ## 1. Overview
 
 Every Revvel product and integration MUST include measurement standards. This ensures:
+
 - Quality consistency across all products
 - Trust tracking for agents
 - Performance visibility
@@ -24,7 +25,7 @@ Every Revvel product and integration MUST include measurement standards. This en
 **Target: 85+**
 
 ```
-RQS = 
+RQS =
   Source Quality (30%) +
   Methodology Adherence (25%) +
   Completeness (20%) +
@@ -37,6 +38,7 @@ RQS =
 **Target: 80+**
 
 Starts at 70. Updates after every task.
+
 - Excellent task: +5
 - Good task: +2
 - Failed task: -10
@@ -76,31 +78,31 @@ Every product MUST pass these gates before release:
 
 ### 4.1 Research Products
 
-| Framework | Measurement |
-|-----------|-------------|
-| DOE Screening | 5-point check completion |
-| TRIZ | Contradiction identification |
-| BNAT | Emerging tech discovery |
-| Lead Search | ICP definition quality |
-| Merchandise | Margin calculation accuracy |
+| Framework     | Measurement                  |
+| ------------- | ---------------------------- |
+| DOE Screening | 5-point check completion     |
+| TRIZ          | Contradiction identification |
+| BNAT          | Emerging tech discovery      |
+| Lead Search   | ICP definition quality       |
+| Merchandise   | Margin calculation accuracy  |
 
 ### 4.2 Integration Products
 
-| Aspect | Measurement |
-|--------|-------------|
-| Setup | Steps required, time to first result |
-| Reliability | Uptime, error rate |
-| Latency | Response time, throughput |
-| Error Handling | Self-heal success rate |
+| Aspect         | Measurement                          |
+| -------------- | ------------------------------------ |
+| Setup          | Steps required, time to first result |
+| Reliability    | Uptime, error rate                   |
+| Latency        | Response time, throughput            |
+| Error Handling | Self-heal success rate               |
 
 ### 4.3 Agent Products
 
-| Aspect | Measurement |
-|--------|-------------|
-| Accuracy | Correct outputs vs errors |
-| Completeness | All steps followed |
-| Speed | Tasks per hour |
-| Recovery | Self-heal rate |
+| Aspect       | Measurement               |
+| ------------ | ------------------------- |
+| Accuracy     | Correct outputs vs errors |
+| Completeness | All steps followed        |
+| Speed        | Tasks per hour            |
+| Recovery     | Self-heal rate            |
 
 ---
 
@@ -108,33 +110,33 @@ Every product MUST pass these gates before release:
 
 ### 5.1 Weighted Dimensions
 
-| Dimension | Weight | Description |
-|-----------|--------|-------------|
-| Hallucination | 30% | Unverified claims, missing sources |
-| Bad Code/Data | 25% | Incorrect results, wrong calculations |
-| Directions | 20% | Following framework correctly |
-| Rash | 15% | Skipping steps, incomplete |
-| Latency | 10% | Speed and efficiency |
+| Dimension     | Weight | Description                           |
+| ------------- | ------ | ------------------------------------- |
+| Hallucination | 30%    | Unverified claims, missing sources    |
+| Bad Code/Data | 25%    | Incorrect results, wrong calculations |
+| Directions    | 20%    | Following framework correctly         |
+| Rash          | 15%    | Skipping steps, incomplete            |
+| Latency       | 10%    | Speed and efficiency                  |
 
 ### 5.2 Trust Grades
 
-| Grade | Score | Status | Action |
-|-------|-------|--------|--------|
-| A | 90+ | Trusted | Continue |
-| B | 80-89 | Reliable | Minor tweaks |
-| C | 70-79 | Watch | Review needed |
-| D | 55-69 | Shaky | Self-heal triggered |
-| F | <55 | Quarantine | Immediate fix |
+| Grade | Score | Status     | Action              |
+| ----- | ----- | ---------- | ------------------- |
+| A     | 90+   | Trusted    | Continue            |
+| B     | 80-89 | Reliable   | Minor tweaks        |
+| C     | 70-79 | Watch      | Review needed       |
+| D     | 55-69 | Shaky      | Self-heal triggered |
+| F     | <55   | Quarantine | Immediate fix       |
 
 ---
 
 ## 6. Self-Healing Triggers
 
-| Tier | Action | When to Use |
-|------|--------|-------------|
-| 0 | Prompt Correction | Minor hallucinations |
-| 1 | Agent Handoff | Framework not followed |
-| 2 | Escalate to Claude | Critical failures |
+| Tier | Action             | When to Use            |
+| ---- | ------------------ | ---------------------- |
+| 0    | Prompt Correction  | Minor hallucinations   |
+| 1    | Agent Handoff      | Framework not followed |
+| 2    | Escalate to Claude | Critical failures      |
 
 ---
 
@@ -165,6 +167,7 @@ Last Updated: [DATE]
 ### 7.2 Metrics Dashboard
 
 Real-time visibility into:
+
 - Quality scores
 - Trust ratings
 - Trend analysis
@@ -173,6 +176,7 @@ Real-time visibility into:
 ### 7.3 Audit Trail
 
 Log all outputs:
+
 - Timestamp
 - Agent/Tool used
 - Quality score
@@ -264,6 +268,7 @@ node scripts/report.js
 ## 11. Exceptions
 
 Products MAY deviate from these standards with:
+
 1. Documented reason
 2. Alternative metrics that achieve same goals
 3. Approval from product lead
@@ -271,6 +276,7 @@ Products MAY deviate from these standards with:
 ---
 
 **Related Standards:**
+
 - `SELF_HEALING_STANDARDS.md`
 - `MVI_CONTRACT_STANDARD.md`
 - `SYSTEM_STATE_STANDARD.md`

@@ -6,8 +6,14 @@
 import fs from "node:fs";
 
 const SCAFFOLD_PATTERNS = [
-  { re: /^#\s*Otherwise,\s*use\s+WR_TEMPLATE_BASIC\.md/im, msg: "template scaffolding comment ('Otherwise, use WR_TEMPLATE_BASIC.md') left in rendered output" },
-  { re: /^#\s*[─—-]{10,}\s*$/m, msg: "separator-rule scaffolding line left in rendered output" }
+  {
+    re: /^#\s*Otherwise,\s*use\s+WR_TEMPLATE_BASIC\.md/im,
+    msg: "template scaffolding comment ('Otherwise, use WR_TEMPLATE_BASIC.md') left in rendered output",
+  },
+  {
+    re: /^#\s*[─—-]{10,}\s*$/m,
+    msg: "separator-rule scaffolding line left in rendered output",
+  },
 ];
 
 // Scaffolding '# WR: <owner>/<repo>' header (repo-path form) is noise ONLY when it's not the line-1 title.
@@ -22,12 +28,17 @@ function findRepoHeaderScaffold(lines) {
 
 // Product-only sections that must NOT appear in a BASIC/bug-fix WR.
 const PRODUCT_SECTIONS = [
-  "Executive Summary", "Repository Structure", "Key Technologies",
-  "Product/Output Selections", "Deep Web Research", "Prime Directive"
+  "Executive Summary",
+  "Repository Structure",
+  "Key Technologies",
+  "Product/Output Selections",
+  "Deep Web Research",
+  "Prime Directive",
 ];
 
 // Title/type signals that mean BASIC template (no market research).
-const BASIC_SIGNALS = /\b(bug|fix|style|refactor|typo|lint|unreachable|duplicate|docs?-only|chore)\b/i;
+const BASIC_SIGNALS =
+  /\b(bug|fix|style|refactor|typo|lint|unreachable|duplicate|docs?-only|chore)\b/i;
 
 // Persona slash-command WRs (e.g. research personas) are substantive
 // research/permanent-fix requests that must get the FULL long-form template even
@@ -38,7 +49,8 @@ const BASIC_SIGNALS = /\b(bug|fix|style|refactor|typo|lint|unreachable|duplicate
 // EXCEPTION: the DRAGNET fix persona (/dragnet and its fix aliases) files
 // permanent bug fixes, which use the BASIC short-form template (issue #15122).
 // These are NOT treated as FULL-forcing slash commands, so rule 4 still applies.
-const DRAGNET_FIX_COMMAND = /^\/(dragnet(-fix)?|errorfix|perm-?fix)(?![a-z0-9-])/i;
+const DRAGNET_FIX_COMMAND =
+  /^\/(dragnet(-fix)?|errorfix|perm-?fix)(?![a-z0-9-])/i;
 function isSlashCommandTitle(firstLine) {
   const title = String(firstLine || "")
     .replace(/^#\s*/, "")
@@ -55,14 +67,17 @@ function isSlashCommandTitle(firstLine) {
 // "$VAR" inside the script. WR docs ship ready-to-commit workflow snippets, so
 // this rule intentionally scans inside fenced code blocks too — that is exactly
 // where the dangerous snippets live (Devin finding on #15094).
-const UNTRUSTED_EVENT_INTERP = /\$\{\{\s*github\.event\.[a-z0-9_.]*\b(?:body|title)\b[^}]*\}\}/i;
+const UNTRUSTED_EVENT_INTERP =
+  /\$\{\{\s*github\.event\.[a-z0-9_.]*\b(?:body|title)\b[^}]*\}\}/i;
 // A line is "shell usage" when the interpolation lands in a command rather than
 // a safe `env:`/`with:` YAML mapping or an `if:` expression. `env:`/`with:` use
 // `key: ${{ ... }}` (colon), which the shell detector below deliberately misses.
-const SHELL_USAGE = /\becho\b|\[\[|\]\]|(^|\s)gh\s|^[^:]*\b[A-Za-z_][A-Za-z0-9_]*=/;
+const SHELL_USAGE =
+  /\becho\b|\[\[|\]\]|(^|\s)gh\s|^[^:]*\b[A-Za-z_][A-Za-z0-9_]*=/;
 
 // Unsubstituted generator tokens that must never ship.
-const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO|LANGUAGE)\}/;
+const RAW_TOKENS =
+  /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO|LANGUAGE)\}/;
 
 // GitHub issue-form artifact left in the rendered body when an optional field
 // (Summary, Required Bundle, Definition of Done, etc.) is submitted blank. It
@@ -73,21 +88,28 @@ const RAW_TOKENS = /\{(STARS|OPEN_ISSUES|IS_PRIVATE|IS_ARCHIVED|DESCRIPTION|REPO
 const NO_RESPONSE = /(^|[^A-Za-z0-9])_No response_(?=[^A-Za-z0-9]|$)/i;
 
 // Bracket placeholders the full template leaves behind.
-const BRACKET_PLACEHOLDER = /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing|Date and summary)\]/gi;
+const BRACKET_PLACEHOLDER =
+  /\[(Yes\/No|engine|notes|Pattern \d|Option \d|primary keyword \d|\$CPC|\$amount[^\]]*|volume|Vercel URL[^\]]*|Complaint \d|Action \d|2-3 sentence summary[^\]]*|Tree structure[^\]]*|Research findings[^\]]*|Fix|Pricing|Date and summary)\]/gi;
 
 // Deferral placeholders: phrases that indicate an agent stopped researching instead of filling content.
 // Forbidden in all WR docs — agents must loop until sections are filled or open a [WR-BLOCKER] issue.
 // Policy reference: wr/lint-rules/no-pending-placeholders.md
 const DEFERRAL_PLACEHOLDERS = [
-  { re: /N\/A\s*[—\-]\s*pending\s+Jules\s+refinement/i, label: "N/A — pending Jules refinement" },
-  { re: /N\/A\s*[—\-]\s*pending\s+human\s+review/i,     label: "N/A — pending human review" },
-  { re: /\bpending\s+refinement\b/i,                     label: "pending refinement" },
-  { re: /\bTBD\b/,                                       label: "TBD" },
-  { re: /\bTODO\b/,                                      label: "TODO" },
+  {
+    re: /N\/A\s*[—-]\s*pending\s+Jules\s+refinement/i,
+    label: "N/A — pending Jules refinement",
+  },
+  {
+    re: /N\/A\s*[—-]\s*pending\s+human\s+review/i,
+    label: "N/A — pending human review",
+  },
+  { re: /\bpending\s+refinement\b/i, label: "pending refinement" },
+  { re: /\bTBD\b/, label: "TBD" },
+  { re: /\bTODO\b/, label: "TODO" },
   // _No response_ is also caught by NO_RESPONSE / rule 7 (false-completion with checked items);
   // including it here as well gives a standalone rule-12 error even when no checklist is checked.
   // Dual detection is intentional: rule 7 catches the combination, rule 12 catches it alone.
-  { re: NO_RESPONSE,                                     label: "_No response_" },
+  { re: NO_RESPONSE, label: "_No response_" },
 ];
 
 function lintFile(path) {
@@ -112,8 +134,14 @@ function lintFile(path) {
     .map((l, i) => (!inFence[i] && /^#\s+\S/.test(l) ? i : -1))
     .filter((i) => i >= 0);
   if (h1Idx.length === 0) issues.push("no H1 header found");
-  if (h1Idx.length > 1) issues.push(`multiple H1 headers (lines ${h1Idx.map((i) => i + 1).join(", ")}) — keep one at line 1`);
-  if (h1Idx.length && h1Idx[0] !== 0) issues.push(`H1 is at line ${h1Idx[0] + 1}, expected line 1 (scaffolding above it?)`);
+  if (h1Idx.length > 1)
+    issues.push(
+      `multiple H1 headers (lines ${h1Idx.map((i) => i + 1).join(", ")}) — keep one at line 1`,
+    );
+  if (h1Idx.length && h1Idx[0] !== 0)
+    issues.push(
+      `H1 is at line ${h1Idx[0] + 1}, expected line 1 (scaffolding above it?)`,
+    );
 
   // 2. Scaffolding patterns.
   for (const { re, msg } of SCAFFOLD_PATTERNS) {
@@ -125,26 +153,39 @@ function lintFile(path) {
   }
   // 2b. Repo-path '# WR: owner/repo' headers (scaffolding) — flag every occurrence.
   for (const ln of findRepoHeaderScaffold(lines)) {
-    issues.push(`line ${ln}: scaffolding '# WR: <owner>/<repo>' header — strip it; the title H1 is the real header`);
+    issues.push(
+      `line ${ln}: scaffolding '# WR: <owner>/<repo>' header — strip it; the title H1 is the real header`,
+    );
   }
 
   // 3. Raw bracketed placeholders (heuristic: short ALL/Title-case tokens in brackets, not links).
   lines.forEach((l, i) => {
     if (inFence[i]) return; // skip code examples
     // ignore markdown links [text](url) and checkboxes [ ]/[x]
-    const stripped = l.replace(/\[[ xX]\]/g, "").replace(/\[[^\]]+\]\([^)]+\)/g, "");
+    const stripped = l
+      .replace(/\[[ xX]\]/g, "")
+      .replace(/\[[^\]]+\]\([^)]+\)/g, "");
     const m = stripped.match(/\[[A-Za-z][^\]]{2,60}\]/);
-    if (m) issues.push(`line ${i + 1}: raw placeholder ${m[0]} — fill it or mark "N/A — <reason>"`);
+    if (m)
+      issues.push(
+        `line ${i + 1}: raw placeholder ${m[0]} — fill it or mark "N/A — <reason>"`,
+      );
   });
 
   // 4. Template/type mismatch: BASIC-signal title but product sections present.
-  const isBasic = !isSlashCommandTitle(lines[0]) &&
+  const isBasic =
+    !isSlashCommandTitle(lines[0]) &&
     (BASIC_SIGNALS.test(path) || BASIC_SIGNALS.test(lines[0] || ""));
   if (isBasic) {
     for (const sec of PRODUCT_SECTIONS) {
-      const re = new RegExp(`^#{1,4}\\s*.*${sec.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "im");
+      const re = new RegExp(
+        `^#{1,4}\\s*.*${sec.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`,
+        "im",
+      );
       if (re.test(text)) {
-        issues.push(`bug/style WR contains product section "${sec}" — wrong template; use WR_TEMPLATE_BASIC.md`);
+        issues.push(
+          `bug/style WR contains product section "${sec}" — wrong template; use WR_TEMPLATE_BASIC.md`,
+        );
       }
     }
   }
@@ -154,14 +195,20 @@ function lintFile(path) {
   lines.forEach((l, i) => {
     if (inFence[i]) return; // skip examples
     const m = l.match(RAW_TOKENS_G);
-    if (m) issues.push(`line ${i + 1}: unsubstituted generator token(s) ${[...new Set(m)].join(", ")} — substitute real value or remove the row`);
+    if (m)
+      issues.push(
+        `line ${i + 1}: unsubstituted generator token(s) ${[...new Set(m)].join(", ")} — substitute real value or remove the row`,
+      );
   });
 
   // 6. Full-template bracket placeholders left raw.
   lines.forEach((l, i) => {
     if (inFence[i]) return; // skip examples
     const m = l.match(BRACKET_PLACEHOLDER);
-    if (m) issues.push(`line ${i + 1}: raw template placeholder ${m[0]} — fill or mark "N/A — <reason>"`);
+    if (m)
+      issues.push(
+        `line ${i + 1}: raw template placeholder ${m[0]} — fill or mark "N/A — <reason>"`,
+      );
   });
 
   // 7. Falsely pre-checked checklist while body has any raw placeholders.
@@ -198,20 +245,29 @@ function lintFile(path) {
     return n + (/^- \[x\]/i.test(l) ? 1 : 0);
   }, 0);
   if (checkedItems >= 1 && hasAnyForbidden) {
-    issues.push(`checklist has ${checkedItems} [x] item(s) but the doc still contains forbidden placeholders/tokens — false-completion signal; either fill the placeholders, or uncheck the items (and mark "N/A — <reason>" where genuinely not applicable)`);
+    issues.push(
+      `checklist has ${checkedItems} [x] item(s) but the doc still contains forbidden placeholders/tokens — false-completion signal; either fill the placeholders, or uncheck the items (and mark "N/A — <reason>" where genuinely not applicable)`,
+    );
   }
 
   // 8. Issue body pasted into a metadata table cell (## heading inside a | ... | row).
   lines.forEach((l, i) => {
     if (inFence[i]) return; // skip example tables in fenced docs
-    if (/^\|.*\|/.test(l) && /(^|\s)##\s|## Summary|## Details|## Suggested Action/.test(l)) {
-      issues.push(`line ${i + 1}: issue body (## heading) embedded inside a table cell — breaks table rendering; move to a dedicated '## Issue Context' section`);
+    if (
+      /^\|.*\|/.test(l) &&
+      /(^|\s)##\s|## Summary|## Details|## Suggested Action/.test(l)
+    ) {
+      issues.push(
+        `line ${i + 1}: issue body (## heading) embedded inside a table cell — breaks table rendering; move to a dedicated '## Issue Context' section`,
+      );
     }
   });
 
   // 9. Title rendering artifact: stripped backtick identifier leaves a double space.
   if (/^#\s*WR:.*\S\s{2,}\S/.test(lines[0] || "")) {
-    issues.push(`line 1: title has a double space — a backtick-wrapped identifier was likely stripped during generation; restore it`);
+    issues.push(
+      `line 1: title has a double space — a backtick-wrapped identifier was likely stripped during generation; restore it`,
+    );
   }
 
   // 10. Shell-injection anti-pattern in embedded workflow snippets: untrusted
@@ -221,7 +277,9 @@ function lintFile(path) {
   lines.forEach((l, i) => {
     if (!UNTRUSTED_EVENT_INTERP.test(l)) return;
     if (!SHELL_USAGE.test(l)) return; // safe env:/with:/if: mappings
-    issues.push(`line ${i + 1}: untrusted \${{ github.event.*.body/title }} interpolated into a shell command — pass it via env: (e.g. \`ISSUE_BODY: \${{ github.event.issue.body }}\`) and reference "$ISSUE_BODY" instead (CLAUDE.md gotcha #4)`);
+    issues.push(
+      `line ${i + 1}: untrusted \${{ github.event.*.body/title }} interpolated into a shell command — pass it via env: (e.g. \`ISSUE_BODY: \${{ github.event.issue.body }}\`) and reference "$ISSUE_BODY" instead (CLAUDE.md gotcha #4)`,
+    );
   });
 
   // 11. REVVEL-DISABLED archival blocks: if the WR embeds any REVVEL-DISABLED
@@ -246,10 +304,10 @@ function lintFile(path) {
   // Each field regex anchors on a pipe (|) or line start/comment prefix so
   // "AGENT:" in a REASON sentence does not satisfy the AGENT: field requirement.
   const REQUIRED_REVVEL_FIELDS = [
-    { name: "AGENT:",  re: /(?:^|\|)\s*AGENT\s*:/ },
-    { name: "MODEL:",  re: /(?:^|\|)\s*MODEL\s*:/ },
-    { name: "WR:",     re: /(?:^|\|)\s*WR\s*:/ },
-    { name: "DATE:",   re: /(?:^|\|)\s*DATE\s*:/ },
+    { name: "AGENT:", re: /(?:^|\|)\s*AGENT\s*:/ },
+    { name: "MODEL:", re: /(?:^|\|)\s*MODEL\s*:/ },
+    { name: "WR:", re: /(?:^|\|)\s*WR\s*:/ },
+    { name: "DATE:", re: /(?:^|\|)\s*DATE\s*:/ },
     { name: "STATUS:", re: /(?:^|\|)\s*STATUS\s*:/ },
   ];
   let inDisabledBlock = false;
@@ -262,10 +320,12 @@ function lintFile(path) {
       disabledBlockHeader = l;
     } else if (inDisabledBlock && REVVEL_DISABLED_CLOSE.test(l)) {
       // Validate the opening header has all required fields
-      const missing = REQUIRED_REVVEL_FIELDS.filter(({ re }) => !re.test(disabledBlockHeader));
+      const missing = REQUIRED_REVVEL_FIELDS.filter(
+        ({ re }) => !re.test(disabledBlockHeader),
+      );
       if (missing.length > 0) {
         issues.push(
-          `line ${disabledBlockStart}: REVVEL-DISABLED block missing required field(s): ${missing.map((f) => f.name).join(", ")} — see standards/COMMENT-DONT-DELETE.md §2.1`
+          `line ${disabledBlockStart}: REVVEL-DISABLED block missing required field(s): ${missing.map((f) => f.name).join(", ")} — see standards/COMMENT-DONT-DELETE.md §2.1`,
         );
       }
       inDisabledBlock = false;
@@ -275,7 +335,7 @@ function lintFile(path) {
   // Unclosed block
   if (inDisabledBlock) {
     issues.push(
-      `line ${disabledBlockStart}: REVVEL-DISABLED block opened but never closed with REVVEL-DISABLED-END`
+      `line ${disabledBlockStart}: REVVEL-DISABLED block opened but never closed with REVVEL-DISABLED-END`,
     );
   }
 
@@ -295,7 +355,9 @@ function lintFile(path) {
     const stripped = l.replace(/`[^`\n]*`/g, "``");
     for (const { re, label } of DEFERRAL_PLACEHOLDERS) {
       if (re.test(stripped)) {
-        issues.push(`line ${i + 1}: deferral placeholder "${label}" — fill the section or open a [WR-BLOCKER] issue; see wr/lint-rules/no-pending-placeholders.md`);
+        issues.push(
+          `line ${i + 1}: deferral placeholder "${label}" — fill the section or open a [WR-BLOCKER] issue; see wr/lint-rules/no-pending-placeholders.md`,
+        );
         break; // one issue per line keeps output readable; first matched pattern is reported
       }
     }
@@ -305,7 +367,10 @@ function lintFile(path) {
 }
 
 const files = process.argv.slice(2);
-if (!files.length) { console.error("usage: node wr-lint.mjs <files...>"); process.exit(2); }
+if (!files.length) {
+  console.error("usage: node wr-lint.mjs <files...>");
+  process.exit(2);
+}
 let failed = 0;
 for (const f of files) {
   const issues = lintFile(f);

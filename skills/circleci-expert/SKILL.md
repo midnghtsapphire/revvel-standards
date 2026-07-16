@@ -26,15 +26,15 @@ or `/persona orbit <task>`
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
-| **Wire-in** | Add a correct, minimal `.circleci/config.yml` to a repo and document the one-time human connect step |
-| **Validate** | Catch config errors locally (`circleci config validate` / `process`) before a single commit is spent |
-| **Reproduce** | Re-run failing jobs locally in Docker (`circleci local execute`) instead of debug-by-push |
-| **Tune** | Apply caching, workspaces, DLC, parallelism, test splitting, and resource-class rightsizing |
-| **Gate** | Enforce config policies as code (`circleci policy` — OPA/Rego) |
-| **Author** | Build, pack, test, and publish orbs (`circleci orb`) |
-| **Operate** | Trigger, watch, and script pipelines via the v1.x preview CLI and API, `--json` all the way |
+| Task          | Description                                                                                          |
+| ------------- | ---------------------------------------------------------------------------------------------------- |
+| **Wire-in**   | Add a correct, minimal `.circleci/config.yml` to a repo and document the one-time human connect step |
+| **Validate**  | Catch config errors locally (`circleci config validate` / `process`) before a single commit is spent |
+| **Reproduce** | Re-run failing jobs locally in Docker (`circleci local execute`) instead of debug-by-push            |
+| **Tune**      | Apply caching, workspaces, DLC, parallelism, test splitting, and resource-class rightsizing          |
+| **Gate**      | Enforce config policies as code (`circleci policy` — OPA/Rego)                                       |
+| **Author**    | Build, pack, test, and publish orbs (`circleci orb`)                                                 |
+| **Operate**   | Trigger, watch, and script pipelines via the v1.x preview CLI and API, `--json` all the way          |
 
 ---
 
@@ -44,42 +44,42 @@ CircleCI currently ships **two CLIs**. ORBIT uses both deliberately.
 
 ### Legacy stable CLI (v0.1.x) — the config-craft toolbox
 
-| Command | What it's for |
-|---|---|
-| `circleci setup` | Store the API token + host (`~/.circleci/cli.yml`) |
-| `circleci config validate` | Schema-check `.circleci/config.yml` locally — run before EVERY push |
-| `circleci config process` | Expand orbs, matrix jobs, and parameters into the final YAML — the single best debugging command |
-| `circleci config pack` | FYAML: merge a split `src/` config tree into one YAML — how monorepos keep configs sane |
-| `circleci local execute --job <name>` | Run a job locally in Docker |
-| `circleci orb init / validate / process / pack / publish` | Full orb authoring lifecycle (`publish dev:alpha` before promoting) |
-| `circleci tests glob / split` | Shard test files across parallel containers (`--split-by=timings` is the money flag) |
-| `circleci tests run` | Newer wrapper enabling **rerun-failed-tests-only** on workflow reruns |
-| `circleci policy decide / eval / fetch / push` | Config policies: evaluate Rego locally, then push the bundle |
-| `circleci runner` | Self-hosted runner resource management |
-| `circleci env subst` | Env-var substitution without needing gettext/envsubst in the image |
-| `circleci diagnostic` | Verify CLI auth + connectivity |
-| `circleci follow` | Follow a project on CircleCI from the terminal |
-| `circleci open` | Open the current project's CircleCI page from the repo directory |
-| `circleci info org` | List orgs your token can see |
-| `circleci completion` | Bash/Zsh completions |
-| `circleci telemetry` | Inspect/opt out of CLI telemetry |
-| `circleci update` / `version` | Self-update and version info |
+| Command                                                   | What it's for                                                                                    |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `circleci setup`                                          | Store the API token + host (`~/.circleci/cli.yml`)                                               |
+| `circleci config validate`                                | Schema-check `.circleci/config.yml` locally — run before EVERY push                              |
+| `circleci config process`                                 | Expand orbs, matrix jobs, and parameters into the final YAML — the single best debugging command |
+| `circleci config pack`                                    | FYAML: merge a split `src/` config tree into one YAML — how monorepos keep configs sane          |
+| `circleci local execute --job <name>`                     | Run a job locally in Docker                                                                      |
+| `circleci orb init / validate / process / pack / publish` | Full orb authoring lifecycle (`publish dev:alpha` before promoting)                              |
+| `circleci tests glob / split`                             | Shard test files across parallel containers (`--split-by=timings` is the money flag)             |
+| `circleci tests run`                                      | Newer wrapper enabling **rerun-failed-tests-only** on workflow reruns                            |
+| `circleci policy decide / eval / fetch / push`            | Config policies: evaluate Rego locally, then push the bundle                                     |
+| `circleci runner`                                         | Self-hosted runner resource management                                                           |
+| `circleci env subst`                                      | Env-var substitution without needing gettext/envsubst in the image                               |
+| `circleci diagnostic`                                     | Verify CLI auth + connectivity                                                                   |
+| `circleci follow`                                         | Follow a project on CircleCI from the terminal                                                   |
+| `circleci open`                                           | Open the current project's CircleCI page from the repo directory                                 |
+| `circleci info org`                                       | List orgs your token can see                                                                     |
+| `circleci completion`                                     | Bash/Zsh completions                                                                             |
+| `circleci telemetry`                                      | Inspect/opt out of CLI telemetry                                                                 |
+| `circleci update` / `version`                             | Self-update and version info                                                                     |
 
 ### Preview CLI (v1.x) — the agent-era operations surface
 
 Rewritten, cross-platform, explicitly **agent-friendly**: every data command takes
 `--json`, and watch commands return scriptable exit codes.
 
-| Command | What it's for |
-|---|---|
-| `circleci auth login` | Browser-based auth (replaces `setup`) |
-| `circleci run` | List / get / **trigger** / cancel / **watch** pipeline runs — watch exits nonzero on failure, so shell scripts and agents can block on CI |
-| `circleci pipeline` | List and inspect pipelines |
-| `circleci workflow` | Manage individual workflows |
-| `circleci envvar` | Manage project environment variables from the terminal |
-| `circleci deploy` | View deployments / initialize CircleCI Deploys |
-| `circleci dlc purge` | Force-flush Docker Layer Cache when a poisoned layer keeps resurfacing |
-| `circleci mcp` | **Built-in MCP server** — see Easter Eggs below |
+| Command               | What it's for                                                                                                                             |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `circleci auth login` | Browser-based auth (replaces `setup`)                                                                                                     |
+| `circleci run`        | List / get / **trigger** / cancel / **watch** pipeline runs — watch exits nonzero on failure, so shell scripts and agents can block on CI |
+| `circleci pipeline`   | List and inspect pipelines                                                                                                                |
+| `circleci workflow`   | Manage individual workflows                                                                                                               |
+| `circleci envvar`     | Manage project environment variables from the terminal                                                                                    |
+| `circleci deploy`     | View deployments / initialize CircleCI Deploys                                                                                            |
+| `circleci dlc purge`  | Force-flush Docker Layer Cache when a poisoned layer keeps resurfacing                                                                    |
+| `circleci mcp`        | **Built-in MCP server** — see Easter Eggs below                                                                                           |
 
 ---
 
@@ -104,7 +104,7 @@ CircleCI CLI. The treasure chest is real but practical — features almost nobod
 5. **`circleci policy eval`** runs raw OPA/Rego locally against a config — policy
    TDD before anything is pushed to the org.
 6. **`circleci env subst`** quietly replaces the gettext dependency in slim images.
-7. **Rerun-failed-tests-only** (`circleci tests run`) reruns *only* the failures on
+7. **Rerun-failed-tests-only** (`circleci tests run`) reruns _only_ the failures on
    a workflow rerun — most teams still rerun entire suites.
 8. **`circleci dlc purge`** — when Docker Layer Caching serves a stale layer, purge
    beats the traditional "rename the Dockerfile and cry" workaround.

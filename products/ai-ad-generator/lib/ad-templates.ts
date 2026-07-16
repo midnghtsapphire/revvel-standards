@@ -8,53 +8,57 @@
  * Run `npm install` in this product directory to pull the correct prebuilt binary.
  */
 
-import { AdTemplateConfig, AdTemplateId, StaticCreative } from '../types';
+import {
+  type AdTemplateConfig,
+  type AdTemplateId,
+  StaticCreative,
+} from "../types";
 
 export const AD_TEMPLATES: Record<AdTemplateId, AdTemplateConfig> = {
   bold: {
-    id: 'bold',
-    name: 'Bold Impact',
-    description: 'High-contrast black/yellow — maximum attention',
-    bgColor: '#1a1a1a',
-    textColor: '#ffffff',
-    accentColor: '#fbbf24',
-    layout: 'image-top',
+    id: "bold",
+    name: "Bold Impact",
+    description: "High-contrast black/yellow — maximum attention",
+    bgColor: "#1a1a1a",
+    textColor: "#ffffff",
+    accentColor: "#fbbf24",
+    layout: "image-top",
   },
   minimal: {
-    id: 'minimal',
-    name: 'Clean Minimal',
-    description: 'White background, elegant typography',
-    bgColor: '#ffffff',
-    textColor: '#111827',
-    accentColor: '#2563eb',
-    layout: 'split',
+    id: "minimal",
+    name: "Clean Minimal",
+    description: "White background, elegant typography",
+    bgColor: "#ffffff",
+    textColor: "#111827",
+    accentColor: "#2563eb",
+    layout: "split",
   },
   ugc: {
-    id: 'ugc',
-    name: 'UGC Style',
-    description: 'Organic-looking, user-generated content feel',
-    bgColor: '#faf7f2',
-    textColor: '#1f2937',
-    accentColor: '#dc2626',
-    layout: 'image-bg',
+    id: "ugc",
+    name: "UGC Style",
+    description: "Organic-looking, user-generated content feel",
+    bgColor: "#faf7f2",
+    textColor: "#1f2937",
+    accentColor: "#dc2626",
+    layout: "image-bg",
   },
   sale: {
-    id: 'sale',
-    name: 'Flash Sale',
-    description: 'Urgency-driven red design — drives conversions',
-    bgColor: '#dc2626',
-    textColor: '#ffffff',
-    accentColor: '#fbbf24',
-    layout: 'image-left',
+    id: "sale",
+    name: "Flash Sale",
+    description: "Urgency-driven red design — drives conversions",
+    bgColor: "#dc2626",
+    textColor: "#ffffff",
+    accentColor: "#fbbf24",
+    layout: "image-left",
   },
   story: {
-    id: 'story',
-    name: 'Story Format',
-    description: 'Vertical 9:16 format optimised for Stories/Reels',
-    bgColor: '#0f172a',
-    textColor: '#f8fafc',
-    accentColor: '#818cf8',
-    layout: 'image-bg',
+    id: "story",
+    name: "Story Format",
+    description: "Vertical 9:16 format optimised for Stories/Reels",
+    bgColor: "#0f172a",
+    textColor: "#f8fafc",
+    accentColor: "#818cf8",
+    layout: "image-bg",
   },
 };
 
@@ -82,28 +86,34 @@ interface RenderOptions {
  * blocked by the API route before this function is called.
  */
 export async function renderAdCreative(
-  opts: RenderOptions
-): Promise<{ imageData: string; mimeType: 'image/png' | 'image/svg+xml'; width: number; height: number }> {
+  opts: RenderOptions,
+): Promise<{
+  imageData: string;
+  mimeType: "image/png" | "image/svg+xml";
+  width: number;
+  height: number;
+}> {
   const {
     templateId,
     productTitle,
     headline,
     cta,
     width = 1080,
-    height = templateId === 'story' ? 1920 : 1080,
+    height = templateId === "story" ? 1920 : 1080,
   } = opts;
 
   const template = AD_TEMPLATES[templateId];
 
   // 'split' layout not yet implemented in the canvas path — treat as image-bg
-  const effectiveLayout = template.layout === 'split' ? 'image-bg' as const : template.layout;
+  const effectiveLayout =
+    template.layout === "split" ? ("image-bg" as const) : template.layout;
 
   try {
     // Dynamic import — prevents build failure if native binary is missing
-    const { createCanvas, loadImage } = await import('@napi-rs/canvas');
+    const { createCanvas, loadImage } = await import("@napi-rs/canvas");
 
     const canvas = createCanvas(width, height);
-    const ctx = canvas.getContext('2d') as unknown as Ctx;
+    const ctx = canvas.getContext("2d") as unknown as Ctx;
 
     // ── Background ──────────────────────────────────────────────────────────
     ctx.fillStyle = template.bgColor;
@@ -111,8 +121,8 @@ export async function renderAdCreative(
 
     // ── Gradient overlay ────────────────────────────────────────────────────
     const grad = ctx.createLinearGradient(0, height * 0.5, 0, height);
-    grad.addColorStop(0, 'rgba(0,0,0,0)');
-    grad.addColorStop(1, 'rgba(0,0,0,0.65)');
+    grad.addColorStop(0, "rgba(0,0,0,0)");
+    grad.addColorStop(1, "rgba(0,0,0,0.65)");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, width, height);
 
@@ -120,9 +130,9 @@ export async function renderAdCreative(
     if (opts.imageUrl) {
       try {
         const img = await loadImage(opts.imageUrl);
-        if (effectiveLayout === 'image-top') {
+        if (effectiveLayout === "image-top") {
           ctx.drawImage(img, 0, 0, width, height * 0.55);
-        } else if (effectiveLayout === 'image-left') {
+        } else if (effectiveLayout === "image-left") {
           ctx.drawImage(img, 0, 0, width * 0.5, height);
         } else {
           // image-bg: full background with re-applied gradient for readability
@@ -137,7 +147,7 @@ export async function renderAdCreative(
 
     const padding = width * 0.06;
     const textAreaY =
-      effectiveLayout === 'image-top' ? height * 0.58 : height * 0.55;
+      effectiveLayout === "image-top" ? height * 0.58 : height * 0.55;
 
     // ── Accent bar ──────────────────────────────────────────────────────────
     ctx.fillStyle = template.accentColor;
@@ -147,11 +157,18 @@ export async function renderAdCreative(
     const headlineFontSize = Math.round(width * 0.045);
     ctx.font = `bold ${headlineFontSize}px sans-serif`;
     ctx.fillStyle = template.textColor;
-    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+    ctx.shadowColor = "rgba(0,0,0,0.5)";
     ctx.shadowBlur = 8;
 
     const maxWidth = width - padding * 2 - 20;
-    wrapText(ctx, headline, padding + 20, textAreaY + headlineFontSize, maxWidth, headlineFontSize * 1.3);
+    wrapText(
+      ctx,
+      headline,
+      padding + 20,
+      textAreaY + headlineFontSize,
+      maxWidth,
+      headlineFontSize * 1.3,
+    );
 
     // ── Product sub-label ───────────────────────────────────────────────────
     const subFontSize = Math.round(width * 0.025);
@@ -174,23 +191,26 @@ export async function renderAdCreative(
     const ctaFontSize = Math.round(width * 0.03);
     ctx.font = `bold ${ctaFontSize}px sans-serif`;
     ctx.fillStyle = template.bgColor;
-    ctx.textAlign = 'center';
+    ctx.textAlign = "center";
     ctx.fillText(cta, btnX + btnW / 2, btnY + btnH * 0.65);
-    ctx.textAlign = 'left';
+    ctx.textAlign = "left";
 
     // ── Brand footer ────────────────────────────────────────────────────────
     ctx.font = `${Math.round(width * 0.018)}px sans-serif`;
     ctx.fillStyle = template.textColor;
     ctx.globalAlpha = 0.5;
-    ctx.fillText('Powered by AI Ad Generator', padding + 20, height - padding);
+    ctx.fillText("Powered by AI Ad Generator", padding + 20, height - padding);
     ctx.globalAlpha = 1;
 
-    const buffer = canvas.toBuffer('image/png');
-    const imageData = `data:image/png;base64,${buffer.toString('base64')}`;
-    return { imageData, mimeType: 'image/png', width, height };
+    const buffer = canvas.toBuffer("image/png");
+    const imageData = `data:image/png;base64,${buffer.toString("base64")}`;
+    return { imageData, mimeType: "image/png", width, height };
   } catch (err: unknown) {
     // Canvas unavailable — return an SVG placeholder
-    console.warn('[ad-templates] canvas render failed, using SVG placeholder:', err);
+    console.warn(
+      "[ad-templates] canvas render failed, using SVG placeholder:",
+      err,
+    );
     return svgPlaceholder(template, headline, cta, width, height);
   }
 }
@@ -215,7 +235,12 @@ type Ctx = {
   quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void;
   closePath(): void;
   fill(): void;
-  createLinearGradient(x0: number, y0: number, x1: number, y1: number): CanvasGradient;
+  createLinearGradient(
+    x0: number,
+    y0: number,
+    x1: number,
+    y1: number,
+  ): CanvasGradient;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   drawImage(image: any, ...args: number[]): void;
 };
@@ -226,10 +251,10 @@ function wrapText(
   x: number,
   y: number,
   maxWidth: number,
-  lineHeight: number
+  lineHeight: number,
 ): void {
-  const words = text.split(' ');
-  let line = '';
+  const words = text.split(" ");
+  let line = "";
   let currentY = y;
 
   for (const word of words) {
@@ -252,7 +277,7 @@ function roundRect(
   y: number,
   w: number,
   h: number,
-  r: number
+  r: number,
 ): void {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
@@ -268,17 +293,17 @@ function roundRect(
 }
 
 function truncate(str: string, max: number): string {
-  return str.length <= max ? str : str.slice(0, max - 3) + '...';
+  return str.length <= max ? str : str.slice(0, max - 3) + "...";
 }
 
 /** Escape special XML/HTML chars so dynamic text is safe inside SVG. */
 function escapeSvgText(str: string): string {
   return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function svgPlaceholder(
@@ -286,8 +311,13 @@ function svgPlaceholder(
   headline: string,
   cta: string,
   width: number,
-  height: number
-): { imageData: string; mimeType: 'image/svg+xml'; width: number; height: number } {
+  height: number,
+): {
+  imageData: string;
+  mimeType: "image/svg+xml";
+  width: number;
+  height: number;
+} {
   const safeHeadline = escapeSvgText(truncate(headline, 50));
   const safeCta = escapeSvgText(cta);
 
@@ -301,6 +331,6 @@ function svgPlaceholder(
       fill="${template.bgColor}" font-family="sans-serif">${safeCta}</text>
   </svg>`;
 
-  const imageData = `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
-  return { imageData, mimeType: 'image/svg+xml', width, height };
+  const imageData = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+  return { imageData, mimeType: "image/svg+xml", width, height };
 }

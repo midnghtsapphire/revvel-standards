@@ -14,52 +14,52 @@
  *   - Ships with a minimum-permissive Content-Security-Policy.
  */
 
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const SUPPORTED_MODELS = [
-  'perplexity/sonar',
-  'perplexity/sonar-pro',
-  'perplexity/sonar-reasoning',
-  'perplexity/sonar-reasoning-pro',
-  'perplexity/sonar-deep-research',
+  "perplexity/sonar",
+  "perplexity/sonar-pro",
+  "perplexity/sonar-reasoning",
+  "perplexity/sonar-reasoning-pro",
+  "perplexity/sonar-deep-research",
 ];
 
-const DEFAULT_MODEL = 'perplexity/sonar';
-const PUTER_SCRIPT_URL = 'https://js.puter.com/v2/';
+const DEFAULT_MODEL = "perplexity/sonar";
+const PUTER_SCRIPT_URL = "https://js.puter.com/v2/";
 
 function escapeHtml(value) {
   return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function buildOptions(models, selected) {
   return models
     .map((m) => {
-      const sel = m === selected ? ' selected' : '';
+      const sel = m === selected ? " selected" : "";
       return `        <option value="${escapeHtml(m)}"${sel}>${escapeHtml(m)}</option>`;
     })
-    .join('\n');
+    .join("\n");
 }
 
 function generateWidget(options = {}) {
   const {
-    title = 'Perplexity Research Widget (Keyless via Puter.js)',
+    title = "Perplexity Research Widget (Keyless via Puter.js)",
     models = SUPPORTED_MODELS,
     defaultModel = DEFAULT_MODEL,
   } = options;
 
   if (!Array.isArray(models) || models.length === 0) {
-    throw new Error('models must be a non-empty array');
+    throw new Error("models must be a non-empty array");
   }
   for (const m of models) {
-    if (typeof m !== 'string' || !m.startsWith('perplexity/')) {
+    if (typeof m !== "string" || !m.startsWith("perplexity/")) {
       throw new Error(`Unsupported model id: ${m}`);
     }
   }
@@ -158,11 +158,16 @@ ${optionsHtml}
 }
 
 function parseArgs(argv) {
-  const args = { out: 'templates/puter/perplexity-research-widget.html' };
+  const args = { out: "templates/puter/perplexity-research-widget.html" };
   for (let i = 2; i < argv.length; i += 1) {
     const a = argv[i];
-    if (a === '--out' && argv[i + 1]) { args.out = argv[i + 1]; i += 1; }
-    else if (a === '--title' && argv[i + 1]) { args.title = argv[i + 1]; i += 1; }
+    if (a === "--out" && argv[i + 1]) {
+      args.out = argv[i + 1];
+      i += 1;
+    } else if (a === "--title" && argv[i + 1]) {
+      args.title = argv[i + 1];
+      i += 1;
+    }
   }
   return args;
 }
@@ -172,7 +177,7 @@ function main() {
   const html = generateWidget({ title: args.title });
   const outPath = path.resolve(process.cwd(), args.out);
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
-  fs.writeFileSync(outPath, html, 'utf8');
+  fs.writeFileSync(outPath, html, "utf8");
   // eslint-disable-next-line no-console
   console.log(`Wrote ${outPath}`);
 }

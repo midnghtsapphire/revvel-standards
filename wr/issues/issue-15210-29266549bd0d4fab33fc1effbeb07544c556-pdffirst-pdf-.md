@@ -5,7 +5,7 @@
 **Created:** 2026-07-06  
 **Researcher:** GitHub Copilot Coding Agent  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -13,17 +13,18 @@ https://pdfs.semanticscholar.org/0bb8/29266549bd0d4fab33fc1effbeb07544c556.pdf
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | N/A |
-| Archived | N/A |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | N/A   |
+| Archived    | N/A   |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -37,6 +38,7 @@ Status note: this document currently records initial scope framing only; all che
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Pending detailed evidence extraction from the source PDF. Deep market and competitor research is deferred until treatment constraints and safety-relevant clinical claims are extracted and citation-mapped. **Owner:** orchestration lane delegates this extraction to a research specialist agent via OpenRouter routing. **Provenance to record:** delegated agent name + model route used for extraction run. **Target:** complete extraction before implementation PR kickoff.
 
 ## Executive Summary
@@ -88,11 +90,11 @@ Request captured for a mobile-first red-light therapy / photobiomodulation tool 
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ## Risks
 

@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-09  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-09  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -55,55 +54,43 @@ _No response_
 
 name: 🎛️ PR State Orchestrator
 on:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - ready_for_review
-      - converted_to_draft
-      - synchronize
-      - closed
-      - labeled
-  pull_request_review:
-    types:
-      - submitted
-  check_suite:
-    types:
-      - completed
-  check_run:
-    types:
-      - completed
-  schedule:
-    - cron: "*/30 * * * *"
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: PR number to re-evaluate (leave blank to re-sync all open PRs)
-        required: false
+pull_request:
+types: - opened - reopened - ready_for_review - converted_to_draft - synchronize - closed - labeled
+pull_request_review:
+types: - submitted
+check_suite:
+types: - completed
+check_run:
+types: - completed
+schedule: - cron: "*/30 * * * *"
+workflow_dispatch:
+inputs:
+pr_number:
+description: PR number to re-evaluate (leave blank to re-sync all open PRs)
+required: false
 
 permissions:
-  pull-requests: write
-  contents: write
-  issues: write
-  checks: read
+pull-requests: write
+contents: write
+issues: write
+checks: read
 
 jobs:
-  pr-lifecycle:
-    name: 🔄 PR Lifecycle Labels
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Determine draft vs ready state
-        uses: actions/github-script@v9.0.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const pr = context.payload.pull_request;
-            const prNumber = pr.number;
-            const isDraft = pr.draft;
-            const action = context.payload.action;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
+pr-lifecycle:
+name: 🔄 PR Lifecycle Labels
+if: github.event_name == 'pull_request'
+runs-on: ubuntu-latest
+steps: - name: Determine draft vs ready state
+uses: actions/github-script@v9.0.0
+with:
+github-token: ${{ secrets.GITHUB_TOKEN }}
+script: |
+const pr = context.payload.pull_request;
+const prNumber = pr.number;
+const isDraft = pr.draft;
+const action = context.payload.action;
+const owner = context.repo.owner;
+const repo = context.repo.repo;
 
             async function safeApi(callName, fn, fallback) {
               try {
@@ -277,22 +264,21 @@ jobs:
 
     timeout-minutes: 15
 
-  review-handler:
-    name: 🔍 Review State Labels
-    if: github.event_name == 'pull_request_review'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Apply review state labels
-        uses: actions/github-script@v9.0.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const review = context.payload.review;
-            const pr = context.payload.pull_request;
-            const prNumber = pr.number;
-            const state = review.state.toLowerCase();
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
+review-handler:
+name: 🔍 Review State Labels
+if: github.event_name == 'pull_request_review'
+runs-on: ubuntu-latest
+steps: - name: Apply review state labels
+uses: actions/github-script@v9.0.0
+with:
+github-token: ${{ secrets.GITHUB_TOKEN }}
+script: |
+const review = context.payload.review;
+const pr = context.payload.pull_request;
+const prNumber = pr.number;
+const state = review.state.toLowerCase();
+const owner = context.repo.owner;
+const repo = context.repo.repo;
 
             async function safeApi(callName, fn, fallback) {
               try {
@@ -427,21 +413,20 @@ jobs:
 
     timeout-minutes: 30
 
-  check-suite-handler:
-    name: ✅ CI Check Suite Labels
-    if: github.event_name == 'check_suite'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Apply check result labels to matching PRs
-        uses: actions/github-script@v9.0.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const suite = context.payload.check_suite;
-            const conclusion = suite.conclusion;
-            const headSha = suite.head_sha;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
+check-suite-handler:
+name: ✅ CI Check Suite Labels
+if: github.event_name == 'check_suite'
+runs-on: ubuntu-latest
+steps: - name: Apply check result labels to matching PRs
+uses: actions/github-script@v9.0.0
+with:
+github-token: ${{ secrets.GITHUB_TOKEN }}
+script: |
+const suite = context.payload.check_suite;
+const conclusion = suite.conclusion;
+const headSha = suite.head_sha;
+const owner = context.repo.owner;
+const repo = context.repo.repo;
 
             async function safeApi(callName, fn, fallback) {
               try {
@@ -574,21 +559,20 @@ jobs:
 
     timeout-minutes: 30
 
-  check-run-handler:
-    name: ✅ CI Check Run Labels
-    if: github.event_name == 'check_run'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Apply check_run result labels to matching PRs
-        uses: actions/github-script@v9.0.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const run = context.payload.check_run;
-            const conclusion = run.conclusion;
-            const headSha = run.head_sha;
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
+check-run-handler:
+name: ✅ CI Check Run Labels
+if: github.event_name == 'check_run'
+runs-on: ubuntu-latest
+steps: - name: Apply check_run result labels to matching PRs
+uses: actions/github-script@v9.0.0
+with:
+github-token: ${{ secrets.GITHUB_TOKEN }}
+script: |
+const run = context.payload.check_run;
+const conclusion = run.conclusion;
+const headSha = run.head_sha;
+const owner = context.repo.owner;
+const repo = context.repo.repo;
 
             async function safeApi(callName, fn, fallback) {
               try {
@@ -727,22 +711,21 @@ jobs:
 
     timeout-minutes: 30
 
-  resync-all-prs:
-    name: 🔄 Re-sync All Open PRs
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number == '')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Re-evaluate every open PR
-        uses: actions/github-script@v9.0.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const ALL_STATUS = [
-              'status:draft','status:waiting-for-review','status:approved',
-              'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
-            ];
+resync-all-prs:
+name: 🔄 Re-sync All Open PRs
+if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number == '')
+runs-on: ubuntu-latest
+steps: - name: Re-evaluate every open PR
+uses: actions/github-script@v9.0.0
+with:
+github-token: ${{ secrets.GITHUB_TOKEN }}
+script: |
+const owner = context.repo.owner;
+const repo = context.repo.repo;
+const ALL_STATUS = [
+'status:draft','status:waiting-for-review','status:approved',
+'status:needs-action','status:checks-failing','status:checks-passing','status:ready-to-merge'
+];
 
             async function safeApi(callName, fn, fallback) {
               try {
@@ -921,19 +904,18 @@ jobs:
 
     timeout-minutes: 15
 
-  manual-reevaluate:
-    name: 🔄 Manual Re-evaluate Single PR
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != ''
-    runs-on: ubuntu-latest
-    steps:
-      - name: Re-evaluate PR state from scratch
-        uses: actions/github-script@v9.0.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+manual-reevaluate:
+name: 🔄 Manual Re-evaluate Single PR
+if: github.event_name == 'workflow_dispatch' && github.event.inputs.pr_number != ''
+runs-on: ubuntu-latest
+steps: - name: Re-evaluate PR state from scratch
+uses: actions/github-script@v9.0.0
+with:
+github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = parseInt('${{ github.event.inputs.pr_number }}');
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
+const owner = context.repo.owner;
+const repo = context.repo.repo;
 
             async function safeApi(callName, fn, fallback) {
               try {
@@ -1087,7 +1069,7 @@ jobs:
     timeout-minutes: 30
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 ### Required Bundle
 
@@ -1139,18 +1121,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -1162,6 +1145,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-29057748721.md`
 
 # WR-Ready Research Packet: GitHub Actions Error Handling Upgrade
@@ -1177,46 +1161,52 @@ Source packet: `docs/research-engine/run-29057748721.md`
 ## 2. Audience We Are Going After and Why
 
 **Primary Target**: DevOps/Platform Engineering teams at mid-to-large software companies (50+ developers)
+
 - **Pain Point**: Manual PR management overhead, inconsistent merge policies, silent workflow failures
 - **Urgent Need**: Reliable automation that doesn't fail silently on transient errors
 - **Budget**: $99-299/month for developer productivity tools
 
 **Secondary Target**: Engineering Managers seeking to reduce PR cycle time
+
 - **Decision Criteria**: Reliability, visibility, maintenance overhead
 - **Switching Trigger**: Failed auto-merges near release deadlines
 
 ## 3. Marketing and SEO Plan
 
 ### Content Strategy
+
 - **Primary Keywords**: "github actions error handling best practices", "PR automation error recovery"
 - **Landing Page**: "/docs/github-actions-error-handling-best-practices"
 - **Meta Title**: "GitHub Actions Error Handling: Complete Guide to Workflow Reliability"
 - **Meta Description**: "Learn advanced error handling patterns for GitHub Actions workflows. Implement retry logic, structured logging, and failure recovery mechanisms."
 
 ### Content Calendar
+
 1. **Week 1**: "How to Reduce PR Review Time by 60% with Proper Error Handling"
 2. **Week 2**: "GitHub Actions vs Jenkins: Error Handling Comparison"
 3. **Week 3**: Case study showing time savings from improved error handling
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor | Stars | Pricing | Key Differentiator | Our Advantage |
-|------------|-------|---------|-------------------|---------------|
-| Mergify | 2.8k | $8-40/user/month | Advanced merge rules | Zero-setup, native Actions |
-| Kodiak | 1k | Self-hosted | Simple auto-merge | Visual status badges |
-| Danger JS | 5.5k | OSS | PR automation framework | Comprehensive lifecycle mgmt |
-| GitHub Native | N/A | Free | Basic auto-merge | Full state orchestration |
+| Competitor    | Stars | Pricing          | Key Differentiator      | Our Advantage                |
+| ------------- | ----- | ---------------- | ----------------------- | ---------------------------- |
+| Mergify       | 2.8k  | $8-40/user/month | Advanced merge rules    | Zero-setup, native Actions   |
+| Kodiak        | 1k    | Self-hosted      | Simple auto-merge       | Visual status badges         |
+| Danger JS     | 5.5k  | OSS              | PR automation framework | Comprehensive lifecycle mgmt |
+| GitHub Native | N/A   | Free             | Basic auto-merge        | Full state orchestration     |
 
 **Moat**: Native GitHub Actions integration with visual feedback system (status badges) that competitors lack.
 
 ## 5. Chatter and Demand Signals
 
 ### Developer Pain Points (from GitHub Community, Stack Overflow, Reddit)
+
 - "My PR was stuck for hours and I had no idea why"
 - "The workflow failed but there was no label or comment to tell me what went wrong"
 - "core.warning is easy to miss in the logs"
 
 ### Unmet Needs
+
 - Granular error reporting with PR labels
 - Automatic retries for transient errors
 - Clear, actionable feedback for contributors
@@ -1224,11 +1214,13 @@ Source packet: `docs/research-engine/run-29057748721.md`
 ## 6. Factual Validation and Evidence Gaps
 
 ### Verified
+
 - ✅ GitHub Actions syntax and API usage correct
 - ✅ `safeApi` pattern implemented consistently
 - ✅ Workflow handles all PR lifecycle events
 
 ### Evidence Gaps
+
 - ❓ API rate limit consumption under load (requires production metrics)
 - ❓ Actual error rates and types (needs telemetry)
 - ❓ Performance impact of retry logic (requires benchmarking)
@@ -1236,33 +1228,38 @@ Source packet: `docs/research-engine/run-29057748721.md`
 ## 7. Build Requirements and Acceptance Gates
 
 ### Must Have (Sprint 1)
+
 1. **Enhanced Error Handler**
+
    ```javascript
    async function enhancedApiCall(callName, fn, fallback, retries = 3) {
      for (let attempt = 1; attempt <= retries; attempt++) {
        try {
          return await Promise.race([
            fn(),
-           new Promise((_, reject) => 
-             setTimeout(() => reject(new Error('Timeout')), 30000)
-           )
+           new Promise((_, reject) =>
+             setTimeout(() => reject(new Error("Timeout")), 30000),
+           ),
          ]);
        } catch (e) {
-         const isRateLimit = e.status === 403 && e.message.includes('rate limit');
-         const isTimeout = e.message === 'Timeout';
-         
-         core.error(`${callName} attempt ${attempt}/${retries} failed: ${e.message}`);
-         
+         const isRateLimit =
+           e.status === 403 && e.message.includes("rate limit");
+         const isTimeout = e.message === "Timeout";
+
+         core.error(
+           `${callName} attempt ${attempt}/${retries} failed: ${e.message}`,
+         );
+
          if (attempt === retries) {
            if (critical) {
              core.setFailed(`Critical operation failed: ${callName}`);
            }
            return fallback;
          }
-         
+
          if (isRateLimit || isTimeout) {
            const delay = Math.min(1000 * Math.pow(2, attempt), 30000);
-           await new Promise(resolve => setTimeout(resolve, delay));
+           await new Promise((resolve) => setTimeout(resolve, delay));
          }
        }
      }
@@ -1273,6 +1270,7 @@ Source packet: `docs/research-engine/run-29057748721.md`
 3. **Rate Limit Protection**
 
 ### Acceptance Criteria
+
 - All API calls wrapped with retry logic
 - Critical errors create GitHub issues
 - No silent failures in label/badge operations
@@ -1281,6 +1279,7 @@ Source packet: `docs/research-engine/run-29057748721.md`
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```
 Review focus: Error handling patterns in GitHub Actions workflow
 Key areas:
@@ -1291,6 +1290,7 @@ Key areas:
 ```
 
 ### For Coderabbit
+
 ```
 Check for:
 - Consistent use of enhancedApiCall wrapper
@@ -1300,6 +1300,7 @@ Check for:
 ```
 
 ### Blocking Findings
+
 1. **Empty catch blocks** (Lines 156, 170)
    - **Fix**: Add error logging
    - **Commit**: `fix: add error logging to catch blocks`
@@ -1311,6 +1312,7 @@ Check for:
 ## 9. Automatic Fix and Commit Queue
 
 ### Priority 1: Enhanced Error Handler
+
 ```yaml
 commit: "feat: implement enhanced error handling with retry logic"
 files: [".github/workflows/pr-state-orchestrator.yml"]
@@ -1321,6 +1323,7 @@ changes:
 ```
 
 ### Priority 2: Error Notification
+
 ```yaml
 commit: "feat: add error notification system"
 files: [".github/workflows/error-notifications.yml"]
@@ -1331,6 +1334,7 @@ changes:
 ```
 
 ### Priority 3: Documentation
+
 ```yaml
 commit: "docs: add error handling documentation"
 files: ["docs/error-handling.md"]
@@ -1352,6 +1356,7 @@ content: |
 ## 11. Repository Review and Best Alternative
 
 ### Current Implementation Score: 65/100
+
 - ✅ Comprehensive PR lifecycle coverage
 - ✅ Basic error handling present
 - ❌ No retry logic
@@ -1359,12 +1364,14 @@ content: |
 - ❌ No observability
 
 ### Best Alternative: Mergify
+
 - **Score**: 85/100
 - **Pros**: Managed service, proven reliability, simple config
 - **Cons**: External dependency, subscription cost
 - **Migration Path**: Run parallel for 1 week, then cutover
 
 ### Recommendation
+
 Upgrade existing workflow first (lower friction), consider Mergify for long-term if maintenance becomes burdensome.
 
 ## 12. Confidence Score Summary
@@ -1372,6 +1379,7 @@ Upgrade existing workflow first (lower friction), consider Mergify for long-term
 ### Overall Confidence: 87/100
 
 **Lane Scores**:
+
 - Market Positioning (Echo): 85% - Strong value prop, clear differentiation
 - SEO Demand (Noimos): 82% - Good keyword opportunities, missing search volume data
 - Competitor Intelligence (Iris): 88% - Comprehensive analysis, clear moat identified
@@ -1382,6 +1390,7 @@ Upgrade existing workflow first (lower friction), consider Mergify for long-term
 - Repository Review (Scout-Web): 85% - Alternatives evaluated, migration path clear
 
 **Selected Approach**: Enhanced error handling implementation over migration to Mergify
+
 - **Rationale**: Lower friction, maintains team ownership, addresses all identified issues
 - **Risk Mitigation**: Phased rollout with monitoring and rollback plan
 
@@ -1425,11 +1434,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -1445,11 +1454,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

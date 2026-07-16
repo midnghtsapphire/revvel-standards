@@ -23,14 +23,19 @@
 const { execFileSync } = require("child_process");
 
 const DEFAULT_PROTECTED = "products/,apps/,sites/,src/,public/";
-const LOCKFILE_RE = /(^|\/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|bun\.lockb)$/;
+const LOCKFILE_RE =
+  /(^|\/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|bun\.lockb)$/;
 
 function evaluateDiff(files, { protectedPrefixes, maxDeleted, allowDestroy }) {
   if (allowDestroy) {
-    return { fail: false, reasons: ["`allow-destroy` label present — guard intentionally skipped."] };
+    return {
+      fail: false,
+      reasons: ["`allow-destroy` label present — guard intentionally skipped."],
+    };
   }
   const reasons = [];
-  const inProtected = (p) => protectedPrefixes.some((pre) => pre && p.startsWith(pre));
+  const inProtected = (p) =>
+    protectedPrefixes.some((pre) => pre && p.startsWith(pre));
   let protectedDeleted = 0;
   const deletedFiles = [];
   for (const f of files) {
@@ -39,20 +44,33 @@ function evaluateDiff(files, { protectedPrefixes, maxDeleted, allowDestroy }) {
     if (!LOCKFILE_RE.test(f.path)) protectedDeleted += Number(f.deleted) || 0;
   }
   if (deletedFiles.length > 0) {
-    reasons.push(`Deletes ${deletedFiles.length} existing file(s) under protected paths:`);
+    reasons.push(
+      `Deletes ${deletedFiles.length} existing file(s) under protected paths:`,
+    );
     deletedFiles.slice(0, 20).forEach((p) => reasons.push(`  - ${p}`));
-    if (deletedFiles.length > 20) reasons.push(`  …and ${deletedFiles.length - 20} more`);
+    if (deletedFiles.length > 20)
+      reasons.push(`  …and ${deletedFiles.length - 20} more`);
   }
   if (protectedDeleted > maxDeleted) {
-    reasons.push(`Removes ${protectedDeleted} lines under protected paths (limit ${maxDeleted}).`);
+    reasons.push(
+      `Removes ${protectedDeleted} lines under protected paths (limit ${maxDeleted}).`,
+    );
   }
   return { fail: reasons.length > 0, reasons };
 }
 
 function readDiff(baseSha) {
   // name-status gives A/M/D; numstat gives added/deleted counts. Merge by path.
-  const nameStatus = execFileSync("git", ["diff", "--name-status", `${baseSha}...HEAD`], { encoding: "utf8" });
-  const numstat = execFileSync("git", ["diff", "--numstat", `${baseSha}...HEAD`], { encoding: "utf8" });
+  const nameStatus = execFileSync(
+    "git",
+    ["diff", "--name-status", `${baseSha}...HEAD`],
+    { encoding: "utf8" },
+  );
+  const numstat = execFileSync(
+    "git",
+    ["diff", "--numstat", `${baseSha}...HEAD`],
+    { encoding: "utf8" },
+  );
 
   const status = {};
   for (const line of nameStatus.split("\n")) {
@@ -77,19 +95,30 @@ function main() {
     console.log("::warning::BASE_SHA not set — no-destroy guard skipped.");
     return 0;
   }
-  const protectedPrefixes = (process.env.PROTECTED || DEFAULT_PROTECTED).split(",").map((s) => s.trim()).filter(Boolean);
-  const maxDeleted = Math.max(1, parseInt(process.env.MAX_DELETED || "400", 10) || 400);
-  const allowDestroy = (process.env.ALLOW_DESTROY || "").toLowerCase() === "true";
+  const protectedPrefixes = (process.env.PROTECTED || DEFAULT_PROTECTED)
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const maxDeleted = Math.max(
+    1,
+    parseInt(process.env.MAX_DELETED || "400", 10) || 400,
+  );
+  const allowDestroy =
+    (process.env.ALLOW_DESTROY || "").toLowerCase() === "true";
 
   const files = readDiff(baseSha);
-  const { fail, reasons } = evaluateDiff(files, { protectedPrefixes, maxDeleted, allowDestroy });
+  const { fail, reasons } = evaluateDiff(files, {
+    protectedPrefixes,
+    maxDeleted,
+    allowDestroy,
+  });
 
   if (fail) {
     console.log("❌ No-Destroy Guard: this PR would destroy existing work.\n");
     reasons.forEach((r) => console.log(r));
     console.log(
       "\nIf this removal is intentional, add the `allow-destroy` label to the PR and re-run.\n" +
-      "Otherwise, change the approach to EDIT existing files with minimal diffs instead of replacing them."
+        "Otherwise, change the approach to EDIT existing files with minimal diffs instead of replacing them.",
     );
     return 1;
   }

@@ -8,7 +8,6 @@
 
 ---
 
-
 ---
 
 ## Executive Summary
@@ -23,17 +22,17 @@ Priority is to ship template variants that are both high-conversion and inclusiv
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-05-15 |
-| Last Updated | 2026-05-15 |
-| Primary Language | JavaScript |
-| Stars | {STARS} |
-| Open Issues | {OPEN_ISSUES} |
-| Description | {DESCRIPTION} |
-| Private | {IS_PRIVATE} |
-| Archived | {IS_ARCHIVED} |
+| Property         | Value                                                                                   |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
+| Created          | 2026-05-15                                                                              |
+| Last Updated     | 2026-05-15                                                                              |
+| Primary Language | JavaScript                                                                              |
+| Stars            | {STARS}                                                                                 |
+| Open Issues      | {OPEN_ISSUES}                                                                           |
+| Description      | {DESCRIPTION}                                                                           |
+| Private          | {IS_PRIVATE}                                                                            |
+| Archived         | {IS_ARCHIVED}                                                                           |
 
 ### Current Status
 
@@ -81,7 +80,12 @@ Implementation token baseline for template generator output:
 
 ```css
 :root {
-  --glass-container-bg: rgba(255, 255, 255, 0.18); /* 18% opacity (decorative container only, not text background) */
+  --glass-container-bg: rgba(
+    255,
+    255,
+    255,
+    0.18
+  ); /* 18% opacity (decorative container only, not text background) */
   --glass-border: rgba(255, 255, 255, 0.24); /* 24% opacity */
   --glass-blur: 14px;
   --hero-grad-a: #00a3ff;
@@ -92,6 +96,7 @@ Implementation token baseline for template generator output:
 #### BOM: Template APIs, Builders, and Orchestration Options
 
 Scoring model used below:
+
 - **Build Fit (40%)**: how directly it supports this repo's automation goals.
 - **Revenue Lift (35%)**: impact on time-to-market and sellable output quality.
 - **Automation Depth (25%)**: API/agent suitability for autonomous generation.
@@ -101,14 +106,14 @@ Scoring model used below:
   - `0.20 = ((1/5) * 0.40) + ((1/5) * 0.35) + ((1/5) * 0.25)`.
   - `1.00 = ((5/5) * 0.40) + ((5/5) * 0.35) + ((5/5) * 0.25)`.
 
-| Option | Role | API/Automation Path | Cost Band (monthly) | Fit (1-5) | Revenue (1-5) | Automation (1-5) | Weighted Score | Recommendation |
-|---|---|---|---|---:|---:|---:|---:|---|
-| OpenRouter + Swarm Orchestrator | Core generation engine | Native model routing + multi-agent workflows | Usage-based | 5 | 5 | 5 | 1.00 | Primary |
-| Lovable | Rapid website prototyping/templates | Prompt-to-site workflow, export handoff | Mid | 4 | 4 | 3 | 0.75 | Strong secondary |
-| Vercel v0 | UI component/page generation | AI generation + React-first output | Mid | 4 | 4 | 4 | 0.80 | Strong secondary |
-| Figma (+ plugin/API workflow) | Design source + PDF workflow | Design system + export to PDF/assets | Low-Mid | 5 | 4 | 3 | 0.83 | Required for PDF lane |
-| Framer | Marketing-site velocity | Visual builder + publish flow | Mid | 3 | 4 | 2 | 0.62 | Optional |
-| Webflow (+ Relume templates) | CMS + template scaling | Visual CMS + template libraries | Mid-High | 3 | 4 | 2 | 0.62 | Optional |
+| Option                          | Role                                | API/Automation Path                          | Cost Band (monthly) | Fit (1-5) | Revenue (1-5) | Automation (1-5) | Weighted Score | Recommendation        |
+| ------------------------------- | ----------------------------------- | -------------------------------------------- | ------------------- | --------: | ------------: | ---------------: | -------------: | --------------------- |
+| OpenRouter + Swarm Orchestrator | Core generation engine              | Native model routing + multi-agent workflows | Usage-based         |         5 |             5 |                5 |           1.00 | Primary               |
+| Lovable                         | Rapid website prototyping/templates | Prompt-to-site workflow, export handoff      | Mid                 |         4 |             4 |                3 |           0.75 | Strong secondary      |
+| Vercel v0                       | UI component/page generation        | AI generation + React-first output           | Mid                 |         4 |             4 |                4 |           0.80 | Strong secondary      |
+| Figma (+ plugin/API workflow)   | Design source + PDF workflow        | Design system + export to PDF/assets         | Low-Mid             |         5 |             4 |                3 |           0.83 | Required for PDF lane |
+| Framer                          | Marketing-site velocity             | Visual builder + publish flow                | Mid                 |         3 |             4 |                2 |           0.62 | Optional              |
+| Webflow (+ Relume templates)    | CMS + template scaling              | Visual CMS + template libraries              | Mid-High            |         3 |             4 |                2 |           0.62 | Optional              |
 
 OpenRouter is scored 5/5 for Fit, Revenue, and Automation because it is the only option in this table that directly enables multi-model routing plus swarm orchestration in the same execution path, which shortens template iteration time and improves output quality consistency.
 
@@ -123,12 +128,12 @@ OpenRouter is scored 5/5 for Fit, Revenue, and Automation because it is the only
 
 Each vertical below becomes a reusable feature pack listed on the website:
 
-| Vertical Pack | Core Features to Generate | Monetization Path | Score Impact |
-|---|---|---|---|
-| Green / Sustainability | carbon calculators, impact badges, eco CTAs | affiliate tools + premium templates | High |
-| Neurodivergent-friendly | low-stim mode, focus mode, reading simplifier, sensory-safe themes | premium accessibility packs + services | High |
-| Menstrual / Wellness | cycle education flows, symptom journaling UX blocks, privacy-safe onboarding (encryption at rest/in transit, consent gating, GDPR/HIPAA review, no third-party sharing by default) | niche template bundles + partnerships | Medium-High |
-| Accessibility-first baseline | keyboard nav, aria patterns, contrast-safe palettes, focus rings | conversion uplift across all packs | High |
+| Vertical Pack                | Core Features to Generate                                                                                                                                                          | Monetization Path                      | Score Impact |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ------------ |
+| Green / Sustainability       | carbon calculators, impact badges, eco CTAs                                                                                                                                        | affiliate tools + premium templates    | High         |
+| Neurodivergent-friendly      | low-stim mode, focus mode, reading simplifier, sensory-safe themes                                                                                                                 | premium accessibility packs + services | High         |
+| Menstrual / Wellness         | cycle education flows, symptom journaling UX blocks, privacy-safe onboarding (encryption at rest/in transit, consent gating, GDPR/HIPAA review, no third-party sharing by default) | niche template bundles + partnerships  | Medium-High  |
+| Accessibility-first baseline | keyboard nav, aria patterns, contrast-safe palettes, focus rings                                                                                                                   | conversion uplift across all packs     | High         |
 
 #### Initial Recommendation
 
@@ -151,15 +156,16 @@ Each vertical below becomes a reusable feature pack listed on the website:
 [Research findings about market trends in this domain]
 
 **Sources:**
+
 - [Link 1]: [Description]
 - [Link 2]: [Description]
 
 #### Competitors & Alternatives
 
-| Competitor | Features | Pricing | Market Share |
-|------------|----------|---------|--------------|
-| [Name 1] | [Key features] | [Pricing model] | [Estimate] |
-| [Name 2] | [Key features] | [Pricing model] | [Estimate] |
+| Competitor | Features       | Pricing         | Market Share |
+| ---------- | -------------- | --------------- | ------------ |
+| [Name 1]   | [Key features] | [Pricing model] | [Estimate]   |
+| [Name 2]   | [Key features] | [Pricing model] | [Estimate]   |
 
 #### Gaps in Existing Solutions
 
@@ -190,28 +196,34 @@ Each vertical below becomes a reusable feature pack listed on the website:
 #### Dependency Audit
 
 **Current Dependencies:**
+
 ```json
 [List key dependencies with versions]
 ```
 
 **Outdated Dependencies:**
-| Package | Current | Latest | Security Issues | Priority |
-|---------|---------|--------|-----------------|----------|
-| [name] | [version] | [version] | [CVE if any] | [High/Med/Low] |
+
+| Package | Current   | Latest    | Security Issues | Priority       |
+| ------- | --------- | --------- | --------------- | -------------- |
+| [name]  | [version] | [version] | [CVE if any]    | [High/Med/Low] |
 
 **Recommended Updates:**
+
 1. [Package]: [Current] → [Target] - [Reason]
 2. [Package]: [Current] → [Target] - [Reason]
 
 #### Security Vulnerabilities
 
 **Critical Issues:**
+
 - [CVE-XXXX]: [Description] - [Impact] - [Fix]
 
 **Medium Issues:**
+
 - [Description] - [Impact] - [Fix]
 
 **Low Issues:**
+
 - [Description] - [Impact] - [Fix]
 
 **Security Score:** [Rating/10]
@@ -223,27 +235,29 @@ Each vertical below becomes a reusable feature pack listed on the website:
 
 #### FOSS Alternatives to Paid Dependencies
 
-| Current (Paid) | FOSS Alternative | Pros | Cons | Recommendation |
-|----------------|------------------|------|------|----------------|
-| [Package] | [Alternative] | [List] | [List] | [Replace/Keep/Evaluate] |
+| Current (Paid) | FOSS Alternative | Pros   | Cons   | Recommendation          |
+| -------------- | ---------------- | ------ | ------ | ----------------------- |
+| [Package]      | [Alternative]    | [List] | [List] | [Replace/Keep/Evaluate] |
 
 ### SEO & Content Research
 
 #### Relevant Keywords
 
 **Primary Keywords:**
+
 - [keyword 1]: [Monthly search volume] - [Competition]
 - [keyword 2]: [Monthly search volume] - [Competition]
 
 **Long-tail Keywords:**
+
 - [keyword 1]: [Monthly search volume] - [Competition]
 - [keyword 2]: [Monthly search volume] - [Competition]
 
 #### Competitor Content Strategies
 
-| Competitor | Content Type | Frequency | Engagement | Takeaway |
-|------------|--------------|-----------|------------|----------|
-| [Name] | [Type] | [Frequency] | [Metrics] | [What to learn] |
+| Competitor | Content Type | Frequency   | Engagement | Takeaway        |
+| ---------- | ------------ | ----------- | ---------- | --------------- |
+| [Name]     | [Type]       | [Frequency] | [Metrics]  | [What to learn] |
 
 #### Partnership Opportunities
 
@@ -259,9 +273,9 @@ Each vertical below becomes a reusable feature pack listed on the website:
 
 #### Affiliate Programs
 
-| Program | Commission | Cookie Duration | Fit Score |
-|---------|------------|-----------------|-----------|
-| [Name] | [Rate] | [Days] | [Rating/5] |
+| Program | Commission | Cookie Duration | Fit Score  |
+| ------- | ---------- | --------------- | ---------- |
+| [Name]  | [Rate]     | [Days]          | [Rating/5] |
 
 ---
 
@@ -270,11 +284,13 @@ Each vertical below becomes a reusable feature pack listed on the website:
 ### Prime Directive Alignment
 
 **10M by 2030 Goal:**
+
 - Current contribution: [$amount/month or $0]
 - Potential contribution: [$amount/month]
 - Path to contribution: [Strategy]
 
 **$2000+/month Target (Start: May 1, 2026):**
+
 - Revenue streams identified: [Count]
 - Estimated monthly revenue: [$amount]
 - Time to first revenue: [Weeks/months]
@@ -284,10 +300,12 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current Autonomy Level:** [Low/Medium/High]
 
 **Blockers Identified:**
+
 1. [Blocker 1]: [Impact] → [Solution]
 2. [Blocker 2]: [Impact] → [Solution]
 
 **Autonomous Capabilities:**
+
 - [Capability 1]: [Status]
 - [Capability 2]: [Status]
 
@@ -296,10 +314,12 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current Self-Healing:** [None/Partial/Full]
 
 **Implemented:**
+
 - [Feature 1]: [Description]
 - [Feature 2]: [Description]
 
 **Missing:**
+
 - [Feature 1]: [Description and priority]
 - [Feature 2]: [Description and priority]
 
@@ -308,6 +328,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current Status:** [Not Ready / Needs Work / Ready / Deployed]
 
 **Readiness Checklist:**
+
 - [ ] All tests passing
 - [ ] No linting errors
 - [ ] No security vulnerabilities
@@ -328,6 +349,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current Status:** [Pass/Fail/No tests]
 
 **Failures Identified:**
+
 1. [Test 1]: [Issue] → [Fix]
 2. [Test 2]: [Issue] → [Fix]
 
@@ -336,12 +358,14 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current Status:** [Pass/Fail/No linter]
 
 **Errors Identified:**
+
 1. [Error 1]: [Location] → [Fix]
 2. [Error 2]: [Location] → [Fix]
 
 #### Security Vulnerabilities
 
 **Critical:** [Count]
+
 1. [Vulnerability]: [Impact] → [Fix]
 
 **High:** [Count]
@@ -353,6 +377,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current Status:** [Working/Broken/Not configured]
 
 **Issues Identified:**
+
 1. [Issue 1]: [Impact] → [Fix]
 2. [Issue 2]: [Impact] → [Fix]
 
@@ -375,6 +400,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current UX Score:** [Rating/10]
 
 **Improvements:**
+
 1. [Improvement 1]: [Issue] → [Solution] → [Impact]
 2. [Improvement 2]: [Issue] → [Solution] → [Impact]
 
@@ -383,6 +409,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current Accessibility:** [WCAG level]
 
 **Required:**
+
 - [ ] Keyboard navigation
 - [ ] Screen reader support
 - [ ] Color contrast (WCAG AA)
@@ -393,11 +420,13 @@ Each vertical below becomes a reusable feature pack listed on the website:
 #### Performance Optimization
 
 **Current Performance:**
+
 - Lighthouse Score: [Rating/100]
 - Load Time: [Seconds]
 - Bundle Size: [KB]
 
 **Optimizations:**
+
 1. [Optimization 1]: [Improvement] → [Expected gain]
 2. [Optimization 2]: [Improvement] → [Expected gain]
 
@@ -406,25 +435,29 @@ Each vertical below becomes a reusable feature pack listed on the website:
 #### Affiliate Links Integration
 
 **revvel-affiliate-links MCP:**
+
 - [ ] MCP server configured
 - [ ] Affiliate links identified
 - [ ] Links integrated in content
 - [ ] Tracking configured
 
 **Links to Add:**
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| [Name] | [Program] | [Rate] | [Where to add] |
+
+| Product/Service | Affiliate Program | Commission | Location       |
+| --------------- | ----------------- | ---------- | -------------- |
+| [Name]          | [Program]         | [Rate]     | [Where to add] |
 
 #### Payment Integration
 
 **Gumroad:**
+
 - [ ] Account setup
 - [ ] Products created
 - [ ] Integration implemented
 - [ ] Checkout tested
 
 **LemonSqueezy:**
+
 - [ ] Account setup
 - [ ] Products created
 - [ ] Integration implemented
@@ -437,6 +470,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current Analytics:** [None/Partial/Full]
 
 **To Implement:**
+
 - [ ] Google Analytics 4
 - [ ] Plausible Analytics (privacy-friendly alternative)
 - [ ] Revenue tracking
@@ -453,6 +487,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current Status:** [Deployed/Not deployed/Needs fix]
 
 **Configuration:**
+
 - [ ] `vercel.json` configured
 - [ ] Environment variables set
 - [ ] Build command correct
@@ -460,6 +495,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 - [ ] Deployment protection configured
 
 **URLs:**
+
 - **Production:** [URL or "Not deployed"]
 - **Preview:** [URL or "Not configured"]
 
@@ -469,6 +505,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 ### UI Verification
 
 **Verification Checklist:**
+
 - [ ] Homepage renders correctly
 - [ ] All pages render correctly
 - [ ] All forms work
@@ -483,6 +520,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 - [ ] Links work correctly
 
 **Issues Found:**
+
 1. [Issue 1]: [Description] → [Fix]
 2. [Issue 2]: [Description] → [Fix]
 
@@ -498,14 +536,15 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current README Status:** [Has TEST section / Missing / Needs update]
 
 **Required Format:**
+
 ```markdown
 ## Test
 
-| Feature | Status | URL |
-|--------|--------|-----|
-| Homepage | ✅ Working | https://{repo-name}.vercel.app |
-| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard |
-| API | ✅ Working | https://{repo-name}.vercel.app/api/health |
+| Feature   | Status     | URL                                       |
+| --------- | ---------- | ----------------------------------------- |
+| Homepage  | ✅ Working | https://{repo-name}.vercel.app            |
+| Dashboard | ✅ Working | https://{repo-name}.vercel.app/dashboard  |
+| API       | ✅ Working | https://{repo-name}.vercel.app/api/health |
 ```
 
 **Action Required:** [None / Add section / Update URLs]
@@ -515,6 +554,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 **Current README Status:** [Has deployment section / Missing / Needs update]
 
 **Required Format:**
+
 ```markdown
 ## Deployment
 
@@ -528,6 +568,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 ### Additional Documentation
 
 **Existing Documentation:**
+
 - [ ] README.md
 - [ ] CONTRIBUTING.md
 - [ ] LICENSE
@@ -553,6 +594,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 ### Implementation Tasks Created
 
 **Issues Created:**
+
 1. [Issue #X]: [Title] - [Priority]
 2. [Issue #Y]: [Title] - [Priority]
 
@@ -594,8 +636,8 @@ Each vertical below becomes a reusable feature pack listed on the website:
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
+| Risk     | Severity     | Probability  | Mitigation        |
+| -------- | ------------ | ------------ | ----------------- |
 | [Risk 1] | High/Med/Low | High/Med/Low | [How to mitigate] |
 | [Risk 2] | High/Med/Low | High/Med/Low | [How to mitigate] |
 
@@ -606,10 +648,12 @@ Each vertical below becomes a reusable feature pack listed on the website:
 ### Alternative 1: [Name]
 
 **Pros:**
+
 - [Pro 1]
 - [Pro 2]
 
 **Cons:**
+
 - [Con 1]
 - [Con 2]
 
@@ -618,10 +662,12 @@ Each vertical below becomes a reusable feature pack listed on the website:
 ### Alternative 2: [Name]
 
 **Pros:**
+
 - [Pro 1]
 - [Pro 2]
 
 **Cons:**
+
 - [Con 1]
 - [Con 2]
 
@@ -632,16 +678,19 @@ Each vertical below becomes a reusable feature pack listed on the website:
 ## References
 
 ### Documentation
+
 - [AGENTS.md](/docs/AGENTS.md)
 - [WEEKLY_RESEARCH_PROCESS.md](/docs/WEEKLY_RESEARCH_PROCESS.md)
 - [promptforproject.md](/promptforproject.md)
 
 ### External Resources
+
 - [Resource 1]: [Description]
 - [Resource 2]: [Description]
 - [Resource 3]: [Description]
 
 ### Research Sources
+
 - [Source 1]: [Description]
 - [Source 2]: [Description]
 
@@ -660,6 +709,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 
 **Last Updated:** 2026-05-17  
 **Next Review:** [Date in YYYY-MM-DD format or "After implementation"]
+
 # Work Request: Create Engine for Website UI Creation using OpenRouter, OpenHands, and Swarms
 
 - **Issue:** #13460
@@ -748,12 +798,12 @@ Build an autonomous UI Creation Engine that orchestrates OpenRouter (model routi
 
 ## Risks & Mitigations
 
-| Risk | Mitigation |
-| --- | --- |
-| OpenRouter cost spikes | Per-run budget cap + cheap fallback model |
-| Hallucinated APIs | Reviewer pass + `tsc --noEmit` gate |
-| Fork PR permission errors | Try/catch around `createComment` calls |
-| Prompt drift | Versioned prompts in `prompts/ui-engine/` |
+| Risk                      | Mitigation                                |
+| ------------------------- | ----------------------------------------- |
+| OpenRouter cost spikes    | Per-run budget cap + cheap fallback model |
+| Hallucinated APIs         | Reviewer pass + `tsc --noEmit` gate       |
+| Fork PR permission errors | Try/catch around `createComment` calls    |
+| Prompt drift              | Versioned prompts in `prompts/ui-engine/` |
 
 ## References
 

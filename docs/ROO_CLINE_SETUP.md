@@ -62,22 +62,26 @@
 #### Option 2: From GitHub (Latest/Dev Version)
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/marco-altran/Roo-Cline.git
    cd Roo-Cline
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Build the extension:
+
    ```bash
    npm run build
    ```
 
 4. Open in VS Code:
+
    ```bash
    code .
    ```
@@ -124,6 +128,7 @@ export OPENROUTER_API_KEY=$(doppler secrets get OPENROUTER_API_KEY --plain)
 ### 2. Configure Default Model
 
 **Settings JSON** (`settings.json`):
+
 ```json
 {
   "roo-cline.defaultModel": "anthropic/claude-sonnet-4",
@@ -134,6 +139,7 @@ export OPENROUTER_API_KEY=$(doppler secrets get OPENROUTER_API_KEY --plain)
 ```
 
 **Recommended Models:**
+
 - **Claude Sonnet 4** — Best for complex reasoning
 - **GPT-4 Turbo** — Fast and capable
 - **Gemini 2.0 Pro** — Excellent for research
@@ -156,6 +162,7 @@ export OPENROUTER_API_KEY=$(doppler secrets get OPENROUTER_API_KEY --plain)
    - **Debug** — Find and fix bugs
 
 3. **Describe your task**
+
    ```
    Refactor the authentication module to use JWT tokens instead of sessions.
    Requirements:
@@ -213,6 +220,7 @@ function processUserData(user) {
 ```
 
 **Invoke Roo-Cline:**
+
 1. Highlight the TODO comment
 2. Open Roo-Cline panel
 3. It automatically detects the task
@@ -221,6 +229,7 @@ function processUserData(user) {
 #### Context Management
 
 Roo-Cline can access:
+
 - ✅ All files in workspace
 - ✅ Git history and diffs
 - ✅ Terminal output
@@ -228,6 +237,7 @@ Roo-Cline can access:
 - ⚠️ Only files you explicitly grant access to
 
 **Tip:** Start with specific file scope:
+
 ```
 Update src/auth/*.ts files to use new token system.
 Do not modify other files.
@@ -269,27 +279,33 @@ Before implementing a feature:
 After Roo-Cline completes work:
 
 1. **Create HANDOFF.md:**
+
    ```markdown
    # Handoff: JWT Authentication Implementation
-   
+
    ## Status
+
    ✅ Local development complete
    ⚠️ Needs CI/CD deployment
-   
+
    ## Next Agent
+
    @agent (GitHub Actions for deployment)
-   
+
    ## What's Done
+
    - JWT auth implemented and tested locally
    - All tests passing (27/27)
-   
+
    ## What's Needed
+
    - [ ] Deploy to staging
    - [ ] Run E2E tests in CI
    - [ ] Deploy to production
    ```
 
 2. **Commit and push:**
+
    ```bash
    git add .
    git commit -m "feat: Implement JWT authentication"
@@ -307,11 +323,13 @@ After Roo-Cline completes work:
 **Purpose:** Write or modify code
 
 **When to use:**
+
 - Implementing features
 - Refactoring code
 - Adding functionality
 
 **Example:**
+
 ```
 Code Mode: Add pagination to the users API endpoint.
 - Support page and limit query params
@@ -324,11 +342,13 @@ Code Mode: Add pagination to the users API endpoint.
 **Purpose:** Design system architecture
 
 **When to use:**
+
 - Planning new features
 - Designing data models
 - System integration
 
 **Example:**
+
 ```
 Architect Mode: Design a caching strategy for our API.
 - Evaluate Redis vs in-memory
@@ -341,11 +361,13 @@ Architect Mode: Design a caching strategy for our API.
 **Purpose:** Answer questions about code
 
 **When to use:**
+
 - Understanding unfamiliar code
 - Reviewing architecture
 - Learning patterns
 
 **Example:**
+
 ```
 Ask Mode: Explain how the authentication flow works in this app.
 Include:
@@ -359,11 +381,13 @@ Include:
 **Purpose:** Find and fix bugs
 
 **When to use:**
+
 - Tracking down errors
 - Performance issues
 - Test failures
 
 **Example:**
+
 ```
 Debug Mode: Users report login fails intermittently.
 Context:
@@ -381,11 +405,13 @@ Find root cause and fix.
 ### 1. Start Small
 
 ❌ Bad:
+
 ```
 Refactor the entire codebase to use modern patterns.
 ```
 
 ✅ Good:
+
 ```
 Refactor src/utils/date.ts to use date-fns instead of Moment.js.
 Keep existing function signatures.
@@ -395,11 +421,13 @@ Update tests.
 ### 2. Be Specific
 
 ❌ Bad:
+
 ```
 Make the app faster.
 ```
 
 ✅ Good:
+
 ```
 Optimize the database query in src/api/users.ts:45.
 Current: 2.5s for 10k records.
@@ -410,11 +438,13 @@ Use indexing or query optimization.
 ### 3. Include Context
 
 ❌ Bad:
+
 ```
 Fix the bug.
 ```
 
 ✅ Good:
+
 ```
 Fix: Users can't log in after password reset.
 
@@ -466,10 +496,12 @@ Step 3: Update login endpoint
 ### Roo-Cline Not Responding
 
 **Symptoms:**
+
 - Panel shows "Thinking..." forever
 - No proposed actions appear
 
 **Solutions:**
+
 1. Check API key is valid:
    ```bash
    echo $OPENROUTER_API_KEY
@@ -481,9 +513,11 @@ Step 3: Update login endpoint
 ### Wrong Files Modified
 
 **Symptoms:**
+
 - Roo-Cline edits files you didn't mention
 
 **Solutions:**
+
 1. Be explicit about scope:
    ```
    ONLY modify src/auth/*.ts files.
@@ -500,11 +534,13 @@ Step 3: Update login endpoint
 ### Poor Code Quality
 
 **Symptoms:**
+
 - Generated code doesn't follow standards
 - Missing error handling
 - No tests
 
 **Solutions:**
+
 1. Include standards in prompt:
    ```
    Follow TypeScript best practices:
@@ -521,9 +557,11 @@ Step 3: Update login endpoint
 ### Excessive API Costs
 
 **Symptoms:**
+
 - Large API bills from LLM provider
 
 **Solutions:**
+
 1. Use local model via Ollama (free)
 2. Set context window limit:
    ```json
@@ -539,23 +577,25 @@ Step 3: Update login endpoint
 
 ## Comparison with Other Agents
 
-| Feature | Roo-Cline | GitHub Copilot | Bito AI | GOAP |
-|---------|-----------|----------------|---------|------|
-| **Local Development** | ✅ Yes | ⚠️ Partial | ❌ No | ❌ No |
-| **Multi-File Changes** | ✅ Yes | ❌ No | ❌ No | ⚠️ Partial |
-| **Autonomous Execution** | ✅ Yes | ❌ No | ⚠️ Partial | ✅ Yes |
-| **Terminal Commands** | ✅ Yes | ❌ No | ❌ No | ✅ Yes |
-| **CI/CD Native** | ❌ No | ✅ Yes | ✅ Yes | ✅ Yes |
-| **Revenue Focus** | ❌ No | ❌ No | ❌ No | ✅ Yes |
-| **Code Quality** | ⚠️ Partial | ⚠️ Partial | ✅ Yes | ❌ No |
+| Feature                  | Roo-Cline  | GitHub Copilot | Bito AI    | GOAP       |
+| ------------------------ | ---------- | -------------- | ---------- | ---------- |
+| **Local Development**    | ✅ Yes     | ⚠️ Partial     | ❌ No      | ❌ No      |
+| **Multi-File Changes**   | ✅ Yes     | ❌ No          | ❌ No      | ⚠️ Partial |
+| **Autonomous Execution** | ✅ Yes     | ❌ No          | ⚠️ Partial | ✅ Yes     |
+| **Terminal Commands**    | ✅ Yes     | ❌ No          | ❌ No      | ✅ Yes     |
+| **CI/CD Native**         | ❌ No      | ✅ Yes         | ✅ Yes     | ✅ Yes     |
+| **Revenue Focus**        | ❌ No      | ❌ No          | ❌ No      | ✅ Yes     |
+| **Code Quality**         | ⚠️ Partial | ⚠️ Partial     | ✅ Yes     | ❌ No      |
 
 **Use Roo-Cline when:**
+
 - Working locally on complex features
 - Need to modify multiple files
 - Want to execute terminal commands
 - Require human oversight
 
 **Use other agents when:**
+
 - Running in CI/CD (GitHub Copilot, OpenRouter)
 - Code review focus (Bito AI)
 - Revenue/business tasks (GOAP)

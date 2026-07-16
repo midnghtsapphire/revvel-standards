@@ -27,16 +27,16 @@ UI-to-database field testing validates that the full data pipeline — from the 
 
 **What it verifies:**
 
-| Question | What We Check |
-|---|---|
-| Does the value save at all? | `SELECT` the column after `INSERT` or `UPDATE` — is the row there? |
-| Is it in the right column? | Is `first_name` in `users.first_name`, not `users.last_name`? |
-| Is it the right data type? | Is a number stored as `INTEGER`, not `TEXT`? |
-| Is it the right format? | Is `email` lowercased? Is `price` stored as cents (integer), not a float? |
-| Are constraints enforced? | Does the DB reject a NULL in a required field? Reject a duplicate unique key? |
-| Does it update correctly? | After an `UPDATE`, does only the changed column change? |
-| Does delete work completely? | After a `DELETE`, is the row gone (or soft-deleted if applicable)? |
-| Are triggers/procedures firing? | Does an `INSERT` into `orders` correctly update `inventory_count`? |
+| Question                        | What We Check                                                                 |
+| ------------------------------- | ----------------------------------------------------------------------------- |
+| Does the value save at all?     | `SELECT` the column after `INSERT` or `UPDATE` — is the row there?            |
+| Is it in the right column?      | Is `first_name` in `users.first_name`, not `users.last_name`?                 |
+| Is it the right data type?      | Is a number stored as `INTEGER`, not `TEXT`?                                  |
+| Is it the right format?         | Is `email` lowercased? Is `price` stored as cents (integer), not a float?     |
+| Are constraints enforced?       | Does the DB reject a NULL in a required field? Reject a duplicate unique key? |
+| Does it update correctly?       | After an `UPDATE`, does only the changed column change?                       |
+| Does delete work completely?    | After a `DELETE`, is the row gone (or soft-deleted if applicable)?            |
+| Are triggers/procedures firing? | Does an `INSERT` into `orders` correctly update `inventory_count`?            |
 
 ---
 
@@ -59,19 +59,19 @@ Every UI field must be verified against the Software Requirement Specification (
 
 Confirm that the data type accepted by the UI field is compatible with the database column type.
 
-| UI Field Type | Accepted Input | Expected DB Column Type | Notes |
-|---|---|---|---|
-| `Text Input` | Any string | `VARCHAR(n)` or `TEXT` | Check max length constraint matches UI validation |
-| `Number Input` | Numeric only | `INTEGER`, `BIGINT`, `DECIMAL` | Money fields: stored as `INTEGER` cents |
-| `Email Input` | Email format | `VARCHAR(255)` | Lowercased before save |
-| `Date Picker` | ISO date | `DATE` or `TIMESTAMP WITH TIME ZONE` | Timezone handling must match app locale |
-| `Checkbox / Toggle` | True/False | `BOOLEAN` | NULL should be disallowed on required toggles |
-| `Dropdown (Select)` | One of N values | `VARCHAR` + DB check constraint or `ENUM` | UI options must exactly match DB-allowed values |
-| `Multi-Select` | Array of values | `TEXT[]` or `JSONB` | PostgreSQL array type preferred for simple lists |
-| `File Upload` | File → URL string | `TEXT` | Store the URL, not the binary |
-| `Rich Text Editor` | HTML / Markdown | `TEXT` | Sanitize HTML before save |
-| `Rating` | Integer 1–5 | `INTEGER` with CHECK constraint | Add `CHECK (rating BETWEEN 1 AND 5)` |
-| `Hidden Field` | System-assigned | `UUID`, `VARCHAR`, `INTEGER` | Never trust a hidden field from the client — re-validate server-side |
+| UI Field Type       | Accepted Input    | Expected DB Column Type                   | Notes                                                                |
+| ------------------- | ----------------- | ----------------------------------------- | -------------------------------------------------------------------- |
+| `Text Input`        | Any string        | `VARCHAR(n)` or `TEXT`                    | Check max length constraint matches UI validation                    |
+| `Number Input`      | Numeric only      | `INTEGER`, `BIGINT`, `DECIMAL`            | Money fields: stored as `INTEGER` cents                              |
+| `Email Input`       | Email format      | `VARCHAR(255)`                            | Lowercased before save                                               |
+| `Date Picker`       | ISO date          | `DATE` or `TIMESTAMP WITH TIME ZONE`      | Timezone handling must match app locale                              |
+| `Checkbox / Toggle` | True/False        | `BOOLEAN`                                 | NULL should be disallowed on required toggles                        |
+| `Dropdown (Select)` | One of N values   | `VARCHAR` + DB check constraint or `ENUM` | UI options must exactly match DB-allowed values                      |
+| `Multi-Select`      | Array of values   | `TEXT[]` or `JSONB`                       | PostgreSQL array type preferred for simple lists                     |
+| `File Upload`       | File → URL string | `TEXT`                                    | Store the URL, not the binary                                        |
+| `Rich Text Editor`  | HTML / Markdown   | `TEXT`                                    | Sanitize HTML before save                                            |
+| `Rating`            | Integer 1–5       | `INTEGER` with CHECK constraint           | Add `CHECK (rating BETWEEN 1 AND 5)`                                 |
+| `Hidden Field`      | System-assigned   | `UUID`, `VARCHAR`, `INTEGER`              | Never trust a hidden field from the client — re-validate server-side |
 
 ### 3.3. Schema Validation
 
@@ -122,6 +122,7 @@ Perform each of the four operations below for every screen under test. Record re
 **Expected result:** A new row exists in the correct table with every field value matching what was entered in the UI — no truncation, no type coercion errors, no missing columns.
 
 **SQL template:**
+
 ```sql
 -- Run immediately after UI save
 SELECT *
@@ -132,6 +133,7 @@ LIMIT 1;
 ```
 
 **Verification checklist:**
+
 - [ ] Row exists (`COUNT` = 1, not 0)
 - [ ] Every mapped column contains the value entered in the UI
 - [ ] `created_at` is set and recent (within the last 60 seconds)
@@ -153,6 +155,7 @@ LIMIT 1;
 **Expected result:** Every value shown on screen exactly matches the corresponding database column value, with correct formatting applied (e.g., `price_cents / 100` = displayed dollar amount).
 
 **SQL template:**
+
 ```sql
 SELECT
   id,
@@ -166,6 +169,7 @@ WHERE id = '<uuid-from-url>';
 ```
 
 **Verification checklist:**
+
 - [ ] All fields displayed on screen have corresponding DB values
 - [ ] No field shows stale data from a previous save
 - [ ] NULL fields display correctly (empty, placeholder, or "N/A" — not "null" or "undefined")
@@ -186,6 +190,7 @@ WHERE id = '<uuid-from-url>';
 **Expected result:** Only the modified column changes. All other columns remain identical to the pre-update state.
 
 **SQL template:**
+
 ```sql
 -- Before edit: capture the current state
 SELECT * FROM users WHERE id = '<uuid>';
@@ -202,6 +207,7 @@ WHERE id = '<uuid>';
 ```
 
 **Verification checklist:**
+
 - [ ] Only the edited field's column changed
 - [ ] All other columns have identical values to the pre-update state
 - [ ] `updated_at` is a new timestamp, more recent than `created_at`
@@ -221,12 +227,14 @@ WHERE id = '<uuid>';
 **Expected result:** For hard deletes — the row is gone (`COUNT` = 0). For soft deletes — the row still exists but `deleted_at` is set to a non-NULL timestamp.
 
 **SQL template — Hard Delete:**
+
 ```sql
 -- Should return 0 rows
 SELECT COUNT(*) FROM users WHERE id = '<uuid>';
 ```
 
 **SQL template — Soft Delete:**
+
 ```sql
 -- Should return 1 row with deleted_at set
 SELECT id, email, deleted_at
@@ -236,6 +244,7 @@ WHERE id = '<uuid>';
 ```
 
 **Verification checklist:**
+
 - [ ] Hard delete: row count = 0
 - [ ] Soft delete: `deleted_at` is not null and is a recent timestamp
 - [ ] Related records are handled correctly (cascading deletes or FK constraint rejection)
@@ -250,14 +259,15 @@ WHERE id = '<uuid>';
 
 Every transactional operation in a Revvel application must be ACID-compliant. Use the following tests to verify each property.
 
-| Property | What to Test | How to Test |
-|---|---|---|
-| **Atomicity** | A multi-step operation either fully completes or fully rolls back | Simulate a mid-transaction failure (e.g., network drop, bad FK reference). Verify no partial data is written. |
-| **Consistency** | The DB always moves from one valid state to another | Insert a record that violates a CHECK constraint. Verify the entire INSERT is rejected. |
-| **Isolation** | Concurrent transactions do not interfere with each other | Run two simultaneous UPDATE operations on the same row. Verify the final state reflects one valid outcome, not a merge of both. |
-| **Durability** | Committed data survives crashes | After a successful INSERT, force-restart the database. Verify the record is still present. |
+| Property        | What to Test                                                      | How to Test                                                                                                                     |
+| --------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Atomicity**   | A multi-step operation either fully completes or fully rolls back | Simulate a mid-transaction failure (e.g., network drop, bad FK reference). Verify no partial data is written.                   |
+| **Consistency** | The DB always moves from one valid state to another               | Insert a record that violates a CHECK constraint. Verify the entire INSERT is rejected.                                         |
+| **Isolation**   | Concurrent transactions do not interfere with each other          | Run two simultaneous UPDATE operations on the same row. Verify the final state reflects one valid outcome, not a merge of both. |
+| **Durability**  | Committed data survives crashes                                   | After a successful INSERT, force-restart the database. Verify the record is still present.                                      |
 
 **PostgreSQL transaction test pattern:**
+
 ```sql
 BEGIN;
 
@@ -281,16 +291,17 @@ SELECT * FROM orders WHERE user_id = '<uuid>' AND status = 'pending';
 
 Intentionally enter invalid data in the UI and verify the database (and API) correctly reject it.
 
-| Constraint Type | Test Input | Expected DB Behavior | Expected UI Behavior |
-|---|---|---|---|
-| `NOT NULL` | Leave a required field blank | `INSERT` rejected with `null value in column "x" violates not-null constraint` | Form validation error shown before submit, OR API returns 400 |
-| `UNIQUE` | Enter a duplicate email address | `INSERT` rejected with `duplicate key value violates unique constraint` | UI shows "Email already exists" message |
-| `CHECK` constraint | Enter `rating = 6` when `CHECK (rating BETWEEN 1 AND 5)` | `INSERT` rejected with `new row for relation violates check constraint` | API returns 422 or 400 with validation message |
-| `FOREIGN KEY` | Reference a non-existent parent record | `INSERT` rejected with `insert or update on table violates foreign key constraint` | UI should prevent orphan records via dropdown/search selection |
-| `VARCHAR(n)` max length | Paste 300 characters into a `VARCHAR(255)` field | `INSERT` rejected with `value too long for type character varying(255)` | UI character counter or maxlength attribute prevents this |
-| `ENUM` / `CHECK` on status | Set `status = 'invalid_value'` | `INSERT` rejected | UI dropdown limits options — but API must also validate |
+| Constraint Type            | Test Input                                               | Expected DB Behavior                                                               | Expected UI Behavior                                           |
+| -------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `NOT NULL`                 | Leave a required field blank                             | `INSERT` rejected with `null value in column "x" violates not-null constraint`     | Form validation error shown before submit, OR API returns 400  |
+| `UNIQUE`                   | Enter a duplicate email address                          | `INSERT` rejected with `duplicate key value violates unique constraint`            | UI shows "Email already exists" message                        |
+| `CHECK` constraint         | Enter `rating = 6` when `CHECK (rating BETWEEN 1 AND 5)` | `INSERT` rejected with `new row for relation violates check constraint`            | API returns 422 or 400 with validation message                 |
+| `FOREIGN KEY`              | Reference a non-existent parent record                   | `INSERT` rejected with `insert or update on table violates foreign key constraint` | UI should prevent orphan records via dropdown/search selection |
+| `VARCHAR(n)` max length    | Paste 300 characters into a `VARCHAR(255)` field         | `INSERT` rejected with `value too long for type character varying(255)`            | UI character counter or maxlength attribute prevents this      |
+| `ENUM` / `CHECK` on status | Set `status = 'invalid_value'`                           | `INSERT` rejected                                                                  | UI dropdown limits options — but API must also validate        |
 
 **Constraint test SQL pattern:**
+
 ```sql
 -- Test NOT NULL constraint
 INSERT INTO users (email, first_name, last_name)
@@ -311,15 +322,16 @@ If the application uses database triggers or stored procedures, verify they fire
 
 **Common trigger scenarios to test:**
 
-| Trigger | UI Action That Fires It | Expected DB Result |
-|---|---|---|
-| `update_inventory_on_order` | Customer completes checkout | `products.inventory_count` decremented by the ordered quantity |
-| `set_updated_at` | Any field edit and save | `updated_at` on the affected row updates to `NOW()` |
-| `log_admin_action` | Admin changes a user's role | A row is inserted into `audit_logs` |
-| `send_notification_on_order` | New order placed | A row is inserted into `notifications` table (or a webhook fires) |
-| `soft_delete_cascade` | Admin soft-deletes a user | Related records (orders, sessions) are also soft-deleted |
+| Trigger                      | UI Action That Fires It     | Expected DB Result                                                |
+| ---------------------------- | --------------------------- | ----------------------------------------------------------------- |
+| `update_inventory_on_order`  | Customer completes checkout | `products.inventory_count` decremented by the ordered quantity    |
+| `set_updated_at`             | Any field edit and save     | `updated_at` on the affected row updates to `NOW()`               |
+| `log_admin_action`           | Admin changes a user's role | A row is inserted into `audit_logs`                               |
+| `send_notification_on_order` | New order placed            | A row is inserted into `notifications` table (or a webhook fires) |
+| `soft_delete_cascade`        | Admin soft-deletes a user   | Related records (orders, sessions) are also soft-deleted          |
 
 **Trigger verification SQL:**
+
 ```sql
 -- After placing an order for 2 units of product <id>:
 SELECT inventory_count
@@ -340,37 +352,37 @@ WHERE id = '<uuid>';
 
 ### 6.1. Automation Tools
 
-| Tool | Type | Purpose | Cost | Link |
-|---|---|---|---|---|
-| **mabl** | SaaS — No-code E2E | Embed SQL query assertions directly inside UI test steps; validates DB state after UI actions | Paid ($0 trial) | [mabl DB testing](https://help.mabl.com/hc/en-us/articles/27563301153428-How-to-test-with-database-queries) |
-| **Playwright** | FOSS | E2E browser automation; combine with `pg` client to run SQL assertions inside test steps | Free | [playwright.dev](https://playwright.dev) |
-| **Vitest + Drizzle** | FOSS | Unit/integration test the API layer including DB writes; use test DB | Free | [vitest.dev](https://vitest.dev) |
-| **pgTAP** | FOSS | SQL-native test framework; write tests entirely in SQL for stored procedures and triggers | Free | [pgtap.org](https://pgtap.org) |
-| **Supabase Table Editor** | SaaS / FOSS | Visual DB row browser; verify data after UI actions without writing SQL | Free tier | [supabase.com](https://supabase.com) |
-| **Beekeeper Studio** | FOSS | GUI PostgreSQL client; run verification queries, browse tables | Free (Community) | [beekeeperstudio.io](https://www.beekeeperstudio.io) |
-| **TablePlus** | Proprietary | GUI PostgreSQL client; inspection, filtering, and query execution | Free (limited) | [tableplus.com](https://tableplus.com) |
-| **DBeaver** | FOSS | Full-featured GUI DB client; ER diagrams, schema comparison | Free | [dbeaver.io](https://dbeaver.io) |
+| Tool                      | Type               | Purpose                                                                                       | Cost             | Link                                                                                                        |
+| ------------------------- | ------------------ | --------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| **mabl**                  | SaaS — No-code E2E | Embed SQL query assertions directly inside UI test steps; validates DB state after UI actions | Paid ($0 trial)  | [mabl DB testing](https://help.mabl.com/hc/en-us/articles/27563301153428-How-to-test-with-database-queries) |
+| **Playwright**            | FOSS               | E2E browser automation; combine with `pg` client to run SQL assertions inside test steps      | Free             | [playwright.dev](https://playwright.dev)                                                                    |
+| **Vitest + Drizzle**      | FOSS               | Unit/integration test the API layer including DB writes; use test DB                          | Free             | [vitest.dev](https://vitest.dev)                                                                            |
+| **pgTAP**                 | FOSS               | SQL-native test framework; write tests entirely in SQL for stored procedures and triggers     | Free             | [pgtap.org](https://pgtap.org)                                                                              |
+| **Supabase Table Editor** | SaaS / FOSS        | Visual DB row browser; verify data after UI actions without writing SQL                       | Free tier        | [supabase.com](https://supabase.com)                                                                        |
+| **Beekeeper Studio**      | FOSS               | GUI PostgreSQL client; run verification queries, browse tables                                | Free (Community) | [beekeeperstudio.io](https://www.beekeeperstudio.io)                                                        |
+| **TablePlus**             | Proprietary        | GUI PostgreSQL client; inspection, filtering, and query execution                             | Free (limited)   | [tableplus.com](https://tableplus.com)                                                                      |
+| **DBeaver**               | FOSS               | Full-featured GUI DB client; ER diagrams, schema comparison                                   | Free             | [dbeaver.io](https://dbeaver.io)                                                                            |
 
 ### 6.2. No-Code / Low-Code DB Builders (for Mapping Error Reduction)
 
 These platforms can auto-generate CRUD screens directly from a database schema, eliminating manual field mapping errors:
 
-| Tool | Type | Purpose | Cost | Link |
-|---|---|---|---|---|
-| **Budibase** | FOSS / SaaS | Auto-generate full CRUD UI from Postgres tables; self-hostable | Free (self-hosted) | [budibase.com](https://budibase.com) |
-| **Power Apps** | SaaS | Microsoft low-code platform; connect to Postgres via connector | Free (limited) | [Power Apps DB testing](https://www.youtube.com/watch?v=nRE7ePvwSGQ) |
-| **Retool** | SaaS | Build internal CRUD tools on top of Postgres; quick admin panels | Free (2 users) | [retool.com](https://retool.com) |
-| **Appsmith** | FOSS | FOSS Retool alternative; self-hostable internal tools | Free | [appsmith.com](https://www.appsmith.com) |
-| **Baserow** | FOSS | Airtable-alternative; visual Postgres table browser and editor | Free (self-hosted) | [baserow.io](https://baserow.io) |
+| Tool           | Type        | Purpose                                                          | Cost               | Link                                                                 |
+| -------------- | ----------- | ---------------------------------------------------------------- | ------------------ | -------------------------------------------------------------------- |
+| **Budibase**   | FOSS / SaaS | Auto-generate full CRUD UI from Postgres tables; self-hostable   | Free (self-hosted) | [budibase.com](https://budibase.com)                                 |
+| **Power Apps** | SaaS        | Microsoft low-code platform; connect to Postgres via connector   | Free (limited)     | [Power Apps DB testing](https://www.youtube.com/watch?v=nRE7ePvwSGQ) |
+| **Retool**     | SaaS        | Build internal CRUD tools on top of Postgres; quick admin panels | Free (2 users)     | [retool.com](https://retool.com)                                     |
+| **Appsmith**   | FOSS        | FOSS Retool alternative; self-hostable internal tools            | Free               | [appsmith.com](https://www.appsmith.com)                             |
+| **Baserow**    | FOSS        | Airtable-alternative; visual Postgres table browser and editor   | Free (self-hosted) | [baserow.io](https://baserow.io)                                     |
 
 ### 6.3. Schema Validation Tools
 
-| Tool | Type | Purpose | Cost |
-|---|---|---|---|
-| **drizzle-kit** | FOSS | Generate and apply migrations; `drizzle-kit check` validates schema | Free |
-| **pg_prove** (pgTAP CLI) | FOSS | Run pgTAP SQL test suites from the command line | Free |
-| **schemalint** | FOSS | Lint Postgres schemas for naming conventions and common mistakes | Free |
-| **pgMustard** | SaaS | Query explain plan analyzer — catches slow queries before they reach prod | Free (limited) |
+| Tool                     | Type | Purpose                                                                   | Cost           |
+| ------------------------ | ---- | ------------------------------------------------------------------------- | -------------- |
+| **drizzle-kit**          | FOSS | Generate and apply migrations; `drizzle-kit check` validates schema       | Free           |
+| **pg_prove** (pgTAP CLI) | FOSS | Run pgTAP SQL test suites from the command line                           | Free           |
+| **schemalint**           | FOSS | Lint Postgres schemas for naming conventions and common mistakes          | Free           |
+| **pgMustard**            | SaaS | Query explain plan analyzer — catches slow queries before they reach prod | Free (limited) |
 
 ---
 
@@ -381,13 +393,14 @@ Every UI-to-database field test must produce a written evidence log. This log is
 ### 7.1. Evidence Log Format
 
 Store test evidence logs in:
+
 ```
 docs/field-tests/[PROJECT_NAME]/[SCREEN_NAME]_FIELD_TEST_LOG.md
 ```
 
 ### 7.2. Evidence Log Template
 
-```markdown
+````markdown
 # Field Test Log — [Screen Name]
 
 **Project:** [Project Name]  
@@ -402,23 +415,27 @@ docs/field-tests/[PROJECT_NAME]/[SCREEN_NAME]_FIELD_TEST_LOG.md
 ## CREATE Test
 
 **Test Input:**
-| Field | Value Entered |
-|---|---|
-| First Name | Jane |
-| Email | jane@example.com |
-| Role | user |
+
+| Field      | Value Entered    |
+| ---------- | ---------------- |
+| First Name | Jane             |
+| Email      | jane@example.com |
+| Role       | user             |
 
 **SQL Run:**
+
 ```sql
 SELECT id, first_name, email, role, created_at
 FROM users
 WHERE email = 'jane@example.com';
 ```
+````
 
 **Result:**
-| id | first_name | email | role | created_at |
-|---|---|---|---|---|
-| 550e8400-... | Jane | jane@example.com | user | 2026-04-15 13:00:00+00 |
+
+| id           | first_name | email            | role | created_at             |
+| ------------ | ---------- | ---------------- | ---- | ---------------------- |
+| 550e8400-... | Jane       | jane@example.com | user | 2026-04-15 13:00:00+00 |
 
 **Status:** ✅ PASS
 
@@ -429,14 +446,16 @@ WHERE email = 'jane@example.com';
 **Field Modified:** first_name → "Janet"
 
 **SQL Run:**
+
 ```sql
 SELECT first_name, last_name, updated_at FROM users WHERE id = '550e8400-...';
 ```
 
 **Result:**
-| first_name | last_name | updated_at |
-|---|---|---|
-| Janet | (unchanged) | 2026-04-15 13:01:00+00 |
+
+| first_name | last_name   | updated_at             |
+| ---------- | ----------- | ---------------------- |
+| Janet      | (unchanged) | 2026-04-15 13:01:00+00 |
 
 **Status:** ✅ PASS
 
@@ -447,13 +466,15 @@ SELECT first_name, last_name, updated_at FROM users WHERE id = '550e8400-...';
 **Method:** Soft Delete
 
 **SQL Run:**
+
 ```sql
 SELECT id, email, deleted_at FROM users WHERE id = '550e8400-...';
 ```
 
 **Result:**
-| id | email | deleted_at |
-|---|---|---|
+
+| id           | email            | deleted_at             |
+| ------------ | ---------------- | ---------------------- |
 | 550e8400-... | jane@example.com | 2026-04-15 13:02:00+00 |
 
 **Status:** ✅ PASS
@@ -462,11 +483,12 @@ SELECT id, email, deleted_at FROM users WHERE id = '550e8400-...';
 
 ## Constraint Tests
 
-| Constraint | Input | Expected Rejection | DB Error | API Status | Status |
-|---|---|---|---|---|---|
-| NOT NULL (first_name) | NULL | Yes | null value in column "first_name" | 400 | ✅ PASS |
-| UNIQUE (email) | jane@example.com (duplicate) | Yes | duplicate key value | 409 | ✅ PASS |
-```
+| Constraint            | Input                        | Expected Rejection | DB Error                          | API Status | Status  |
+| --------------------- | ---------------------------- | ------------------ | --------------------------------- | ---------- | ------- |
+| NOT NULL (first_name) | NULL                         | Yes                | null value in column "first_name" | 400        | ✅ PASS |
+| UNIQUE (email)        | jane@example.com (duplicate) | Yes                | duplicate key value               | 409        | ✅ PASS |
+
+````
 
 ---
 
@@ -588,7 +610,7 @@ test('should reject duplicate email at the database level', async ({ page }) => 
   );
   expect(parseInt(result.rows[0].count)).toBe(1);
 });
-```
+````
 
 ---
 
@@ -601,7 +623,7 @@ UI-to-database field tests run in the GitHub Actions CI pipeline as part of the 
 ```yaml
 # .github/workflows/e2e-tests.yml
 env:
-  TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}  # Separate test DB — NEVER point at production
+  TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }} # Separate test DB — NEVER point at production
   PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
 ```
 
@@ -627,6 +649,7 @@ Prod DB:   DATABASE_URL (prod) ← NEVER used in tests
 ```
 
 After every CI run, the test database is cleaned:
+
 ```sql
 -- Run in CI teardown step
 TRUNCATE users, orders, order_items, products RESTART IDENTITY CASCADE;
@@ -638,14 +661,14 @@ TRUNCATE users, orders, order_items, products RESTART IDENTITY CASCADE;
 
 This module is a required component of the DBA process for every Revvel application. The following checks are added to the compliance rubric (`COMPLIANCE_RUBRIC.md`):
 
-| Check ID | Check | Priority | Evidence Required |
-|---|---|---|---|
-| DBA-001 | Field test log exists for every screen in production | P0 | `docs/field-tests/[project]/` directory |
-| DBA-002 | E2E field tests cover all mandatory CRUD operations | P0 | `tests/e2e/ui-db-mapping/` directory |
-| DBA-003 | Constraint tests cover NOT NULL, UNIQUE, and CHECK constraints | P1 | Test file or manual evidence log |
-| DBA-004 | Schema validation runs in CI before E2E tests | P1 | `drizzle-kit check` step in `e2e-tests.yml` |
-| DBA-005 | Test database is isolated from production | P0 | Separate `TEST_DATABASE_URL` secret in GitHub Actions |
-| DBA-006 | Trigger tests exist for every database trigger | P2 | pgTAP test file or Playwright trigger assertion |
+| Check ID | Check                                                          | Priority | Evidence Required                                     |
+| -------- | -------------------------------------------------------------- | -------- | ----------------------------------------------------- |
+| DBA-001  | Field test log exists for every screen in production           | P0       | `docs/field-tests/[project]/` directory               |
+| DBA-002  | E2E field tests cover all mandatory CRUD operations            | P0       | `tests/e2e/ui-db-mapping/` directory                  |
+| DBA-003  | Constraint tests cover NOT NULL, UNIQUE, and CHECK constraints | P1       | Test file or manual evidence log                      |
+| DBA-004  | Schema validation runs in CI before E2E tests                  | P1       | `drizzle-kit check` step in `e2e-tests.yml`           |
+| DBA-005  | Test database is isolated from production                      | P0       | Separate `TEST_DATABASE_URL` secret in GitHub Actions |
+| DBA-006  | Trigger tests exist for every database trigger                 | P2       | pgTAP test file or Playwright trigger assertion       |
 
 ---
 
@@ -698,12 +721,12 @@ SELECT status, COUNT(*) FROM [table] GROUP BY status;
 
 ## 12. Related Documents
 
-| Document | Purpose |
-|---|---|
-| `FIELD_MAPPING_STANDARD.md` | How to create and maintain field maps |
-| `DATABASE_ARCHITECTURE_STANDARD.md` | PostgreSQL database architecture and hosting |
-| `TESTING_STANDARD.md` | Full testing framework — unit, integration, E2E |
-| `DATA_MODEL_STANDARD.md` | Data model design rules and naming conventions |
-| `docs/field-maps/DATABASE_TO_UI_MASTER_MAP.md` | Master index: every table column → every UI screen |
-| `docs/Universal-BOM_List/UI_FIELD_TESTING_BOM.md` | Bill of materials for UI field testing tools |
-| `COMPLIANCE_RUBRIC.md` | Compliance checks including DBA-001 through DBA-006 |
+| Document                                          | Purpose                                             |
+| ------------------------------------------------- | --------------------------------------------------- |
+| `FIELD_MAPPING_STANDARD.md`                       | How to create and maintain field maps               |
+| `DATABASE_ARCHITECTURE_STANDARD.md`               | PostgreSQL database architecture and hosting        |
+| `TESTING_STANDARD.md`                             | Full testing framework — unit, integration, E2E     |
+| `DATA_MODEL_STANDARD.md`                          | Data model design rules and naming conventions      |
+| `docs/field-maps/DATABASE_TO_UI_MASTER_MAP.md`    | Master index: every table column → every UI screen  |
+| `docs/Universal-BOM_List/UI_FIELD_TESTING_BOM.md` | Bill of materials for UI field testing tools        |
+| `COMPLIANCE_RUBRIC.md`                            | Compliance checks including DBA-001 through DBA-006 |

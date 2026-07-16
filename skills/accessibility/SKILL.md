@@ -4,20 +4,26 @@ Implement WCAG 2.2 AA/AAA accessibility requirements including TTY/TDD support, 
 
 ## Compliance Targets
 
-| Standard | Level |
-|---|---|
-| WCAG 2.2 | AA minimum, AAA where feasible |
-| Section 508 | Full compliance |
-| ADA Title III | Full compliance |
-| Lighthouse | Accessibility ≥ 90 (CI gate) |
+| Standard      | Level                          |
+| ------------- | ------------------------------ |
+| WCAG 2.2      | AA minimum, AAA where feasible |
+| Section 508   | Full compliance                |
+| ADA Title III | Full compliance                |
+| Lighthouse    | Accessibility ≥ 90 (CI gate)   |
 
 ## TTY / TDD — First-Class Requirement
 
 Every Revvel app footer must display:
+
 ```html
-<p>TTY: <a href="tel:[TTY_PHONE]">[TTY_PHONE]</a> (Hearing Impaired)
-  <small>TTY users may also dial 711 to reach us through the relay service.</small></p>
+<p>
+  TTY: <a href="tel:[TTY_PHONE]">[TTY_PHONE]</a> (Hearing Impaired)
+  <small
+    >TTY users may also dial 711 to reach us through the relay service.</small
+  >
+</p>
 ```
+
 - TTY number in footer, Contact page, and Organization JSON-LD (`contactOption: "TDDService"`)
 - TTY checkbox on all lead/contact forms: "I am deaf or hard of hearing and need TTY relay"
 - CRM: `leads.requires_tty = true` triggers TTY workflow
@@ -26,15 +32,15 @@ Every Revvel app footer must display:
 
 Every app must implement a user-controlled mode selector (persistent header button + Alt+A shortcut):
 
-| Mode | Code | Key Changes |
-|---|---|---|
-| Standard | `standard` | Default |
-| High Contrast (WCAG AAA) | `wcag_aaa` | 4.5:1+ contrast, 18px+ body, reduced motion |
-| Dyslexia-Friendly | `dyslexia` | OpenDyslexic font, wider letter spacing |
-| ADHD Focus Mode | `adhd` | Minimal UI, Pomodoro integration, dims non-active |
-| Sensory Safe | `sensory` | No animations, no auto-play, muted colors |
-| Large Print | `large_print` | 20px+ body, 44×44px min targets |
-| ECO / Low Power | `eco` | No shadows/filters/gradients, minimal images |
+| Mode                     | Code          | Key Changes                                       |
+| ------------------------ | ------------- | ------------------------------------------------- |
+| Standard                 | `standard`    | Default                                           |
+| High Contrast (WCAG AAA) | `wcag_aaa`    | 4.5:1+ contrast, 18px+ body, reduced motion       |
+| Dyslexia-Friendly        | `dyslexia`    | OpenDyslexic font, wider letter spacing           |
+| ADHD Focus Mode          | `adhd`        | Minimal UI, Pomodoro integration, dims non-active |
+| Sensory Safe             | `sensory`     | No animations, no auto-play, muted colors         |
+| Large Print              | `large_print` | 20px+ body, 44×44px min targets                   |
+| ECO / Low Power          | `eco`         | No shadows/filters/gradients, minimal images      |
 
 Store preference in `localStorage` and `users.accessibility_mode` (DB).
 
@@ -69,6 +75,7 @@ Store preference in `localStorage` and `users.accessibility_mode` (DB).
 ## Screen Reader Testing (Before Launch)
 
 Test with NVDA (Windows/free), VoiceOver (Mac/built-in), TalkBack (Android/built-in):
+
 - Navigate full page with Tab only
 - Fill out lead form without mouse
 - Error messages announced on invalid fields

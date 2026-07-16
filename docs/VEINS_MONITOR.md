@@ -11,13 +11,13 @@ The existing self-healing suite (`stuck-wr-detector.yml`, `stuck-check-watchdog.
 `auto-reset-stuck-issues.yml`) handles specific, well-defined failure modes. But
 there were gaps:
 
-| Gap | Pre-VEINS behaviour | VEINS fix |
-|---|---|---|
-| WR with `research:blocked` | `stuck-wr-detector` skipped it (requires completion label) | VEINS adds `wr:reset` to force PR skeleton |
-| WR open > 7 days, no PR, no research | Silently ignored | VEINS detects, posts diagnosis, adds `wr:reset` |
-| Issue stuck in `triage:new` > 7 days | `auto-reset-stuck-issues` only targets self-heal issues | VEINS cycles `triage:new` for ALL issues |
-| Any issue with `lifecycle:stuck` > 7 days | No re-escalation | VEINS re-posts diagnostic comment, adds `auto-fix` |
-| No human-readable "why is it stuck" | Engineers had to infer from labels | VEINS always posts a root-cause comment |
+| Gap                                       | Pre-VEINS behaviour                                        | VEINS fix                                          |
+| ----------------------------------------- | ---------------------------------------------------------- | -------------------------------------------------- |
+| WR with `research:blocked`                | `stuck-wr-detector` skipped it (requires completion label) | VEINS adds `wr:reset` to force PR skeleton         |
+| WR open > 7 days, no PR, no research      | Silently ignored                                           | VEINS detects, posts diagnosis, adds `wr:reset`    |
+| Issue stuck in `triage:new` > 7 days      | `auto-reset-stuck-issues` only targets self-heal issues    | VEINS cycles `triage:new` for ALL issues           |
+| Any issue with `lifecycle:stuck` > 7 days | No re-escalation                                           | VEINS re-posts diagnostic comment, adds `auto-fix` |
+| No human-readable "why is it stuck"       | Engineers had to infer from labels                         | VEINS always posts a root-cause comment            |
 
 ## How It Works
 
@@ -73,24 +73,24 @@ gh workflow run veins-monitor.yml \
 
 ## Recovery Actions Reference
 
-| Condition | VEINS action |
-|---|---|
-| WR > 7d, no PR, `research:blocked` | Add `wr:reset`, `lifecycle:stuck`, dispatch `wr-pr-creation.yml` |
+| Condition                           | VEINS action                                                     |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| WR > 7d, no PR, `research:blocked`  | Add `wr:reset`, `lifecycle:stuck`, dispatch `wr-pr-creation.yml` |
 | WR > 7d, no PR, no completion label | Add `wr:reset`, `lifecycle:stuck`, dispatch `wr-pr-creation.yml` |
-| Issue > 7d in `triage:new` | Remove + re-add `triage:new`, add `lifecycle:stuck` |
-| Issue > 7d with `lifecycle:stuck` | Add `auto-fix`, post escalation comment |
+| Issue > 7d in `triage:new`          | Remove + re-add `triage:new`, add `lifecycle:stuck`              |
+| Issue > 7d with `lifecycle:stuck`   | Add `auto-fix`, post escalation comment                          |
 
 ## Interaction with Other Healers
 
 VEINS is additive to — not a replacement for — the existing healer suite:
 
-| Workflow | Scope | Frequency |
-|---|---|---|
-| `stuck-wr-detector.yml` | WRs with completion labels, no PR | Every 6h |
-| `stuck-check-watchdog.yml` | WRs stuck in `wr:checking` | Every 30m |
-| `stuck-label-watchdog.yml` | PRs with stuck lifecycle labels | Every 1h |
-| `auto-reset-stuck-issues.yml` | Self-heal issues in `triage:new` | Every 30m |
-| **`veins-monitor.yml`** | **ALL issues and WRs > 7 days** | **Every 1h** |
+| Workflow                      | Scope                             | Frequency    |
+| ----------------------------- | --------------------------------- | ------------ |
+| `stuck-wr-detector.yml`       | WRs with completion labels, no PR | Every 6h     |
+| `stuck-check-watchdog.yml`    | WRs stuck in `wr:checking`        | Every 30m    |
+| `stuck-label-watchdog.yml`    | PRs with stuck lifecycle labels   | Every 1h     |
+| `auto-reset-stuck-issues.yml` | Self-heal issues in `triage:new`  | Every 30m    |
+| **`veins-monitor.yml`**       | **ALL issues and WRs > 7 days**   | **Every 1h** |
 
 VEINS is the final backstop — it catches everything the other healers miss.
 

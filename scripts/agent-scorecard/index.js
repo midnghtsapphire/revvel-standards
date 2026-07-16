@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
 /**
  * Fleet Trust Scorecard — orchestrator.
@@ -20,39 +20,39 @@
  *   CHANGED_FILES (newline list), CROSS_MODEL=1 to enable the LLM review.
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const { prQualityScore, grade } = require('./score-engine');
-const { findUnresolvedRefs } = require('./reference-resolver');
-const { checkClaims } = require('./claim-checker');
-const { review } = require('./cross-model-review');
-const { planRemediation } = require('./remediate');
-const ledger = require('./ledger');
+const { prQualityScore, grade } = require("./score-engine");
+const { findUnresolvedRefs } = require("./reference-resolver");
+const { checkClaims } = require("./claim-checker");
+const { review } = require("./cross-model-review");
+const { planRemediation } = require("./remediate");
+const ledger = require("./ledger");
 
-const REPO_ROOT = path.join(__dirname, '../..');
+const REPO_ROOT = path.join(__dirname, "../..");
 
 function envInt(name, dflt = 0) {
   const v = process.env[name];
-  if (v === undefined || v === '') return dflt;
+  if (v === undefined || v === "") return dflt;
   const n = parseInt(v, 10);
   return Number.isNaN(n) ? dflt : n;
 }
 function envBool(name) {
-  return /^(1|true|yes)$/i.test(process.env[name] || '');
+  return /^(1|true|yes)$/i.test(process.env[name] || "");
 }
 function readFileMaybe(p) {
   try {
-    return p && fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
+    return p && fs.existsSync(p) ? fs.readFileSync(p, "utf8") : "";
   } catch {
-    return '';
+    return "";
   }
 }
 
 function loadEnvKeys() {
   const keys = new Set();
-  const text = readFileMaybe(path.join(REPO_ROOT, '.env.example'));
-  for (const line of text.split('\n')) {
+  const text = readFileMaybe(path.join(REPO_ROOT, ".env.example"));
+  for (const line of text.split("\n")) {
     const m = line.match(/^\s*([A-Z0-9_]+)\s*=/);
     if (m) keys.add(m[1]);
   }
@@ -69,51 +69,61 @@ function setOutput(key, value) {
 }
 
 async function main() {
-  const agent = process.env.AGENT || 'unknown';
-  const pr = envInt('PR_NUMBER', 0) || null;
+  const agent = process.env.AGENT || "unknown";
+  const pr = envInt("PR_NUMBER", 0) || null;
   const diff = readFileMaybe(process.env.DIFF_FILE);
   const body = readFileMaybe(process.env.BODY_FILE);
-  const changedFiles = (process.env.CHANGED_FILES || '')
-    .split('\n')
+  const changedFiles = (process.env.CHANGED_FILES || "")
+    .split("\n")
     .map((s) => s.trim())
     .filter(Boolean);
-  const newFiles = (process.env.NEW_FILES || '')
-    .split('\n')
+  const newFiles = (process.env.NEW_FILES || "")
+    .split("\n")
     .map((s) => s.trim())
     .filter(Boolean);
 
   // Conventional-commit type from the PR title ("feat: ...", "fix(scope): ...").
-  const titleType = (process.env.PR_TITLE || '').match(/^(\w+)(?:\([^)]*\))?!?:/);
-  const prType = process.env.PR_TYPE || (titleType ? titleType[1].toLowerCase() : '');
+  const titleType = (process.env.PR_TITLE || "").match(
+    /^(\w+)(?:\([^)]*\))?!?:/,
+  );
+  const prType =
+    process.env.PR_TYPE || (titleType ? titleType[1].toLowerCase() : "");
 
   // Net-new capability = added files under the dirs where capability actually lives.
-  const CAPABILITY_DIRS = /^(skills|products|engines|scripts|\.github\/workflows)\//;
-  const newCapabilities = newFiles.filter((f) => CAPABILITY_DIRS.test(f)).length;
+  const CAPABILITY_DIRS =
+    /^(skills|products|engines|scripts|\.github\/workflows)\//;
+  const newCapabilities = newFiles.filter((f) =>
+    CAPABILITY_DIRS.test(f),
+  ).length;
 
   // Local detectors (free, deterministic).
-  const refs = findUnresolvedRefs({ diff, exists: repoExists, envKeys: loadEnvKeys() });
+  const refs = findUnresolvedRefs({
+    diff,
+    exists: repoExists,
+    envKeys: loadEnvKeys(),
+  });
   const claims = checkClaims(body, changedFiles);
 
   // Cross-model adversarial review (only when explicitly enabled + keys present).
-  let cross = { available: false, flagCount: 0, flags: [], summary: 'skipped' };
-  if (envBool('CROSS_MODEL') && diff) {
+  let cross = { available: false, flagCount: 0, flags: [], summary: "skipped" };
+  if (envBool("CROSS_MODEL") && diff) {
     cross = await review({ title: process.env.PR_TITLE, body, diff });
   }
 
   const signals = {
-    ciGreen: process.env.CI_GREEN === undefined ? true : envBool('CI_GREEN'),
-    redRunsBeforeGreen: envInt('RED_RUNS'),
-    testFailures: envInt('TEST_FAILURES'),
-    buildFailures: envInt('BUILD_FAILURES'),
-    codeqlFindings: envInt('CODEQL_FINDINGS'),
-    trivyFindings: envInt('TRIVY_FINDINGS'),
-    scaffoldingHits: envInt('SCAFFOLDING_HITS'),
-    rootJunkHits: envInt('ROOT_JUNK_HITS'),
-    nonConventionalCommits: envInt('NON_CONVENTIONAL_COMMITS'),
-    outOfScopeFiles: envInt('OUT_OF_SCOPE_FILES'),
-    revertedAfterMerge: envBool('REVERTED_AFTER_MERGE'),
-    forceAmends: envInt('FORCE_AMENDS'),
-    largeDiffNoTests: envBool('LARGE_DIFF_NO_TESTS'),
+    ciGreen: process.env.CI_GREEN === undefined ? true : envBool("CI_GREEN"),
+    redRunsBeforeGreen: envInt("RED_RUNS"),
+    testFailures: envInt("TEST_FAILURES"),
+    buildFailures: envInt("BUILD_FAILURES"),
+    codeqlFindings: envInt("CODEQL_FINDINGS"),
+    trivyFindings: envInt("TRIVY_FINDINGS"),
+    scaffoldingHits: envInt("SCAFFOLDING_HITS"),
+    rootJunkHits: envInt("ROOT_JUNK_HITS"),
+    nonConventionalCommits: envInt("NON_CONVENTIONAL_COMMITS"),
+    outOfScopeFiles: envInt("OUT_OF_SCOPE_FILES"),
+    revertedAfterMerge: envBool("REVERTED_AFTER_MERGE"),
+    forceAmends: envInt("FORCE_AMENDS"),
+    largeDiffNoTests: envBool("LARGE_DIFF_NO_TESTS"),
     unresolvedRefs: refs.count,
     unbackedClaims: claims.count,
     crossModelHallucinationFlags: cross.flagCount,
@@ -121,20 +131,26 @@ async function main() {
 
   const { score, dimensions } = prQualityScore(signals);
   const hallucinationCount =
-    signals.unresolvedRefs + signals.unbackedClaims + signals.crossModelHallucinationFlags;
+    signals.unresolvedRefs +
+    signals.unbackedClaims +
+    signals.crossModelHallucinationFlags;
 
   // Persist the score event, then recompute the leaderboard from the full ledger.
   ledger.appendEvent({
-    type: 'score',
+    type: "score",
     agent,
     pr,
     quality: score,
     hallucination: hallucinationCount,
-    latencyMin: process.env.LATENCY_MIN ? envInt('LATENCY_MIN') : undefined,
+    latencyMin: process.env.LATENCY_MIN ? envInt("LATENCY_MIN") : undefined,
     prType,
     newCapabilities,
     dimensions,
-    detail: { refs: refs.findings, claims: claims.findings, crossModel: cross.flags },
+    detail: {
+      refs: refs.findings,
+      claims: claims.findings,
+      crossModel: cross.flags,
+    },
   });
   const agents = ledger.aggregate(ledger.readEvents());
   ledger.writeLeaderboard(agents);
@@ -143,44 +159,64 @@ async function main() {
   const trust = agentNow ? agentNow.trust : null;
 
   // Decide if remediation is warranted.
-  const NEEDS_REMEDIATION = score < 60 || hallucinationCount > 0 || signals.ciGreen === false;
+  const NEEDS_REMEDIATION =
+    score < 60 || hallucinationCount > 0 || signals.ciGreen === false;
   let remediation = null;
   if (NEEDS_REMEDIATION) {
     remediation = planRemediation({
       agent,
       signals,
-      attempt: envInt('REMEDIATION_ATTEMPT'),
+      attempt: envInt("REMEDIATION_ATTEMPT"),
     });
-    const planPath = path.join(REPO_ROOT, 'wr/memory/last-remediation-plan.json');
-    fs.writeFileSync(planPath, JSON.stringify(remediation, null, 2) + '\n');
+    const planPath = path.join(
+      REPO_ROOT,
+      "wr/memory/last-remediation-plan.json",
+    );
+    fs.writeFileSync(planPath, JSON.stringify(remediation, null, 2) + "\n");
   }
 
   // Console + workflow outputs.
-  const g = trust != null ? grade(trust) : { letter: '?', label: 'n/a' };
-  console.log(`📊 Scorecard for ${agent} PR#${pr ?? '—'}`);
-  console.log(`   quality=${score}  trust=${trust ?? '—'} (${g.letter}/${g.label})  hallucinations=${hallucinationCount}`);
-  if (refs.count) console.log(`   ⚠️ unresolved refs: ${refs.findings.map((f) => f.ref).join(', ')}`);
-  if (claims.count) console.log(`   ⚠️ unbacked claims: ${claims.findings.map((f) => f.claim).join(', ')}`);
-  if (cross.available) console.log(`   🔎 cross-model: ${cross.flagCount} flag(s) — ${cross.summary}`);
-  if (remediation) console.log(`   🔧 remediation tier: ${remediation.tier}${remediation.handoffTo ? ` → ${remediation.handoffTo}` : ''}`);
+  const g = trust != null ? grade(trust) : { letter: "?", label: "n/a" };
+  console.log(`📊 Scorecard for ${agent} PR#${pr ?? "—"}`);
+  console.log(
+    `   quality=${score}  trust=${trust ?? "—"} (${g.letter}/${g.label})  hallucinations=${hallucinationCount}`,
+  );
+  if (refs.count)
+    console.log(
+      `   ⚠️ unresolved refs: ${refs.findings.map((f) => f.ref).join(", ")}`,
+    );
+  if (claims.count)
+    console.log(
+      `   ⚠️ unbacked claims: ${claims.findings.map((f) => f.claim).join(", ")}`,
+    );
+  if (cross.available)
+    console.log(
+      `   🔎 cross-model: ${cross.flagCount} flag(s) — ${cross.summary}`,
+    );
+  if (remediation)
+    console.log(
+      `   🔧 remediation tier: ${remediation.tier}${remediation.handoffTo ? ` → ${remediation.handoffTo}` : ""}`,
+    );
 
-  setOutput('quality', String(score));
-  setOutput('trust', String(trust ?? ''));
-  setOutput('hallucinations', String(hallucinationCount));
-  setOutput('needs_remediation', String(Boolean(remediation)));
+  setOutput("quality", String(score));
+  setOutput("trust", String(trust ?? ""));
+  setOutput("hallucinations", String(hallucinationCount));
+  setOutput("needs_remediation", String(Boolean(remediation)));
   if (remediation) {
-    setOutput('remediation_tier', remediation.tier);
-    if (remediation.handoffTo) setOutput('handoff_to', remediation.handoffTo);
+    setOutput("remediation_tier", remediation.tier);
+    if (remediation.handoffTo) setOutput("handoff_to", remediation.handoffTo);
   }
 
   return 0;
 }
 
 if (require.main === module) {
-  main().then((code) => process.exit(code)).catch((err) => {
-    console.error(`scorecard failed: ${err.stack || err.message}`);
-    process.exit(1);
-  });
+  main()
+    .then((code) => process.exit(code))
+    .catch((err) => {
+      console.error(`scorecard failed: ${err.stack || err.message}`);
+      process.exit(1);
+    });
 }
 
 module.exports = { main };

@@ -24,8 +24,14 @@
         "agreement_score": 0.85,
         "disagreements": 0,
         "adjudication_quality": 0.9,
-        "sources_a": ["https://docs.github.com/en/actions", "https://cli.github.com/manual/"],
-        "sources_b": ["https://docs.github.com/en/actions", "https://stackoverflow.com/q/gh-not-a-git-repository"],
+        "sources_a": [
+          "https://docs.github.com/en/actions",
+          "https://cli.github.com/manual/"
+        ],
+        "sources_b": [
+          "https://docs.github.com/en/actions",
+          "https://stackoverflow.com/q/gh-not-a-git-repository"
+        ],
         "unsupported_claims": 0
       }
     },
@@ -51,8 +57,16 @@
         "agreement_score": 0.8,
         "disagreements": 1,
         "adjudication_quality": 0.88,
-        "sources_a": ["https://www.zillow.com/", "https://www.experian.com/", "https://www.leadspedia.com/"],
-        "sources_b": ["https://www.experian.com/", "https://www.ftc.gov/", "https://www.iab.com/"],
+        "sources_a": [
+          "https://www.zillow.com/",
+          "https://www.experian.com/",
+          "https://www.leadspedia.com/"
+        ],
+        "sources_b": [
+          "https://www.experian.com/",
+          "https://www.ftc.gov/",
+          "https://www.iab.com/"
+        ],
         "unsupported_claims": 0
       }
     },
@@ -73,7 +87,9 @@
         "disagreements": 0,
         "adjudication_quality": 0.95,
         "sources_a": ["https://github.com/rhysd/actionlint"],
-        "sources_b": ["https://docs.github.com/en/actions/learn-github-actions/workflow-syntax"],
+        "sources_b": [
+          "https://docs.github.com/en/actions/learn-github-actions/workflow-syntax"
+        ],
         "unsupported_claims": 0
       }
     },
@@ -94,7 +110,9 @@
         "disagreements": 0,
         "adjudication_quality": 0.92,
         "sources_a": ["https://docs.github.com/en/actions/security-guides"],
-        "sources_b": ["https://owasp.org/www-community/attacks/Command_Injection"],
+        "sources_b": [
+          "https://owasp.org/www-community/attacks/Command_Injection"
+        ],
         "unsupported_claims": 0
       }
     },
@@ -120,8 +138,16 @@
         "agreement_score": 0.8,
         "disagreements": 1,
         "adjudication_quality": 0.9,
-        "sources_a": ["https://www.grandviewresearch.com/", "https://www.statista.com/", "https://www.ahrinet.org/"],
-        "sources_b": ["https://www.statista.com/", "https://www.ibisworld.com/", "https://www.mordorintelligence.com/"],
+        "sources_a": [
+          "https://www.grandviewresearch.com/",
+          "https://www.statista.com/",
+          "https://www.ahrinet.org/"
+        ],
+        "sources_b": [
+          "https://www.statista.com/",
+          "https://www.ibisworld.com/",
+          "https://www.mordorintelligence.com/"
+        ],
         "unsupported_claims": 0
       }
     },

@@ -44,9 +44,16 @@ Is the problem naturally recursive (trees, graphs, nested structures)?
 Recursion is **approved** for the following scenarios:
 
 ### 3.1. Directory and File System Traversal
+
 **Example:** Scanning nested directories for specific file types
+
 ```typescript
-function findFiles(dir: string, pattern: string, depth = 0, maxDepth = 10): string[] {
+function findFiles(
+  dir: string,
+  pattern: string,
+  depth = 0,
+  maxDepth = 10,
+): string[] {
   if (depth > maxDepth) {
     throw new Error(`Maximum directory depth ${maxDepth} exceeded at ${dir}`);
   }
@@ -55,7 +62,9 @@ function findFiles(dir: string, pattern: string, depth = 0, maxDepth = 10): stri
 ```
 
 ### 3.2. Tree Traversal (DOM, AST, Data Structures)
+
 **Example:** React component trees, JSON parsing, expression evaluation
+
 ```typescript
 interface TreeNode {
   value: string;
@@ -67,26 +76,35 @@ function traverseTree(node: TreeNode, depth = 0, maxDepth = 50): void {
     throw new Error(`Tree depth exceeds maximum ${maxDepth}`);
   }
   // Process node...
-  node.children.forEach(child => traverseTree(child, depth + 1, maxDepth));
+  node.children.forEach((child) => traverseTree(child, depth + 1, maxDepth));
 }
 ```
 
 ### 3.3. Parsing and Token Processing
+
 **Example:** SQL fragments, markdown parsing, syntax trees
+
 ```typescript
 function parseExpression(tokens: Token[], depth = 0): ASTNode {
   const MAX_PARSE_DEPTH = 100;
   if (depth > MAX_PARSE_DEPTH) {
-    throw new Error('Expression nesting too deep');
+    throw new Error("Expression nesting too deep");
   }
   // Parse tokens recursively...
 }
 ```
 
 ### 3.4. Graph Algorithms with Known Bounded Depth
+
 **Example:** Component hierarchies, navigation structures
+
 ```typescript
-function findPath(node: Node, target: string, visited = new Set<string>(), depth = 0): Node[] | null {
+function findPath(
+  node: Node,
+  target: string,
+  visited = new Set<string>(),
+  depth = 0,
+): Node[] | null {
   if (depth > 100) return null; // Prevent infinite recursion
   if (visited.has(node.id)) return null; // Prevent cycles
   visited.add(node.id);
@@ -110,9 +128,9 @@ function processNested(data: any, depth = 0, maxDepth = 50): any {
   if (depth > maxDepth) {
     throw new Error(`Recursion depth limit ${maxDepth} exceeded`);
   }
-  if (typeof data === 'object') {
-    return Object.entries(data).map(([k, v]) => 
-      processNested(v, depth + 1, maxDepth)
+  if (typeof data === "object") {
+    return Object.entries(data).map(([k, v]) =>
+      processNested(v, depth + 1, maxDepth),
     );
   }
   return data;
@@ -120,7 +138,7 @@ function processNested(data: any, depth = 0, maxDepth = 50): any {
 
 // ❌ WRONG - No depth tracking
 function processNested(data: any): any {
-  if (typeof data === 'object') {
+  if (typeof data === "object") {
     return Object.entries(data).map(([k, v]) => processNested(v));
   }
   return data;
@@ -138,7 +156,7 @@ function traverse(node: Node, visited = new Set<string>()): void {
     return;
   }
   visited.add(node.id);
-  node.children.forEach(child => traverse(child, visited));
+  node.children.forEach((child) => traverse(child, visited));
 }
 ```
 
@@ -183,6 +201,7 @@ function sumArray(arr: number[]): number {
 Recursion is **prohibited** in the following scenarios:
 
 ### 5.1. Unknown or Unbounded Input Sizes
+
 **❌ NEVER** use recursion when processing user-uploaded data, API responses, or any data where depth is unknown:
 
 ```typescript
@@ -193,6 +212,7 @@ async function processUserData(data: unknown): Promise<any> {
 ```
 
 ### 5.2. High-Frequency Operations
+
 **❌ AVOID** recursion in functions called thousands of times per second:
 
 - Event handlers (scroll, mousemove, resize)
@@ -201,6 +221,7 @@ async function processUserData(data: unknown): Promise<any> {
 - WebSocket message handlers
 
 ### 5.3. Large Dataset Processing
+
 **❌ FORBIDDEN** for operations on arrays/lists with >1000 elements:
 
 ```typescript
@@ -217,6 +238,7 @@ function processLargeDataset(items: Item[]): Result[] {
 ```
 
 ### 5.4. Embedded Systems and Resource-Constrained Environments
+
 Following industry best practices (as noted in the research), recursion is **banned** in:
 
 - IoT device code
@@ -230,15 +252,16 @@ Following industry best practices (as noted in the research), recursion is **ban
 
 Use these maximum depth values unless you have specific justification:
 
-| Use Case | Maximum Depth | Rationale |
-|----------|---------------|-----------|
-| File system traversal | 20 | Typical directory structures |
-| DOM tree traversal | 50 | Deeply nested HTML is rare |
-| JSON parsing | 100 | Prevent malicious payloads |
-| Expression evaluation | 100 | Reasonable nesting for math/logic |
-| Generic recursion | 50 | Conservative safe default |
+| Use Case              | Maximum Depth | Rationale                         |
+| --------------------- | ------------- | --------------------------------- |
+| File system traversal | 20            | Typical directory structures      |
+| DOM tree traversal    | 50            | Deeply nested HTML is rare        |
+| JSON parsing          | 100           | Prevent malicious payloads        |
+| Expression evaluation | 100           | Reasonable nesting for math/logic |
+| Generic recursion     | 50            | Conservative safe default         |
 
 **Exceeding these limits requires:**
+
 1. Comment explaining why higher depth is needed
 2. Code review approval
 3. Load testing to verify no stack overflow risk
@@ -250,9 +273,10 @@ Use these maximum depth values unless you have specific justification:
 All recursive functions must include these tests:
 
 ### 7.1. Maximum Depth Test
+
 ```typescript
-describe('processNested', () => {
-  it('should reject excessively deep nesting', () => {
+describe("processNested", () => {
+  it("should reject excessively deep nesting", () => {
     const deeplyNested = createNestedObject(100); // Helper creates 100-level nesting
     expect(() => processNested(deeplyNested)).toThrow(/depth limit/i);
   });
@@ -260,27 +284,31 @@ describe('processNested', () => {
 ```
 
 ### 7.2. Cycle Detection Test
+
 ```typescript
-describe('traverseGraph', () => {
-  it('should detect and handle cycles', () => {
-    const nodeA = { id: 'A', children: [] };
-    const nodeB = { id: 'B', children: [nodeA] };
+describe("traverseGraph", () => {
+  it("should detect and handle cycles", () => {
+    const nodeA = { id: "A", children: [] };
+    const nodeB = { id: "B", children: [nodeA] };
     nodeA.children.push(nodeB); // Create cycle
-    
+
     expect(() => traverseGraph(nodeA)).not.toThrow();
   });
 });
 ```
 
 ### 7.3. Large Input Stress Test
+
 ```typescript
-describe('recursiveFunction', () => {
-  it('should handle maximum safe depth without crashing', () => {
+describe("recursiveFunction", () => {
+  it("should handle maximum safe depth without crashing", () => {
     const maxDepth = 1000;
     const deepStructure = createDeepStructure(maxDepth);
-    
+
     // Should either succeed or throw controlled error
-    expect(() => recursiveFunction(deepStructure)).not.toThrow(/stack overflow/i);
+    expect(() => recursiveFunction(deepStructure)).not.toThrow(
+      /stack overflow/i,
+    );
   });
 });
 ```
@@ -311,17 +339,17 @@ When recursion must be converted to iteration, use an explicit stack:
 // BEFORE - Recursive
 function processTree(node: TreeNode): void {
   console.log(node.value);
-  node.children.forEach(child => processTree(child));
+  node.children.forEach((child) => processTree(child));
 }
 
 // AFTER - Iterative with explicit stack
 function processTree(root: TreeNode): void {
   const stack = [root];
-  
+
   while (stack.length > 0) {
     const node = stack.pop()!;
     console.log(node.value);
-    
+
     // Add children in reverse order to maintain same traversal order
     for (let i = node.children.length - 1; i >= 0; i--) {
       stack.push(node.children[i]);
@@ -331,6 +359,7 @@ function processTree(root: TreeNode): void {
 ```
 
 **Benefits:**
+
 - No stack overflow risk
 - Explicit memory management
 - Easier to debug
@@ -341,20 +370,24 @@ function processTree(root: TreeNode): void {
 ## 10. Language-Specific Guidance
 
 ### 10.1. TypeScript/JavaScript
+
 - No tail call optimization (TCO) in most engines
 - Default max stack ~10,000 calls (varies by engine)
 - **Recommendation:** Use iteration or explicit stack for depth >100
 
 ### 10.2. Python
+
 - Default recursion limit: 1000 (can be increased with `sys.setrecursionlimit()`)
 - **Recommendation:** Never increase limit beyond 2000; use iteration instead
 
 ### 10.3. Functional Languages (F#, Elixir, Haskell)
+
 - TCO is available and reliable
 - Tail recursion is preferred for loops
 - **Recommendation:** Use tail-recursive patterns; still track depth for safety
 
 ### 10.4. Go
+
 - Goroutines have small initial stack (2KB) that grows dynamically
 - **Recommendation:** Safe for moderate recursion; still enforce depth limits
 
@@ -365,6 +398,7 @@ function processTree(root: TreeNode): void {
 Based on production use cases shared by developers:
 
 ### ✅ Good: Directory Search
+
 ```typescript
 // Used for searching project files with unknown subdirectories
 function searchFiles(dir: string, extension: string, depth = 0): string[] {
@@ -374,12 +408,13 @@ function searchFiles(dir: string, extension: string, depth = 0): string[] {
 ```
 
 ### ✅ Good: Navbar Visibility
+
 ```typescript
 // Setting visibility of parent nav items based on children
 function updateNavVisibility(item: NavItem, depth = 0): boolean {
   if (depth > 10) return false; // Max menu depth
-  const childrenVisible = item.children.some(child => 
-    updateNavVisibility(child, depth + 1)
+  const childrenVisible = item.children.some((child) =>
+    updateNavVisibility(child, depth + 1),
   );
   item.visible = childrenVisible || item.isAccessible;
   return item.visible;
@@ -387,29 +422,31 @@ function updateNavVisibility(item: NavItem, depth = 0): boolean {
 ```
 
 ### ✅ Good: SQL Fragment Parsing
+
 ```typescript
 // Parsing user-defined filter criteria into AST
 function parseSQL(fragment: string, depth = 0): ASTNode {
-  if (depth > 100) throw new Error('SQL too complex');
+  if (depth > 100) throw new Error("SQL too complex");
   // Parse recursively with depth guard
 }
 ```
 
 ### ❌ Avoid: Pagination with Unknown Pages
+
 ```typescript
 // Don't use recursion when page count is unknown
 // Use a while loop instead
 async function fetchAllPages(url: string): Promise<Data[]> {
   const results = [];
   let nextUrl: string | null = url;
-  
+
   while (nextUrl) {
     const response = await fetch(nextUrl);
     const data = await response.json();
     results.push(...data.items);
     nextUrl = data.nextPage;
   }
-  
+
   return results;
 }
 ```
@@ -419,6 +456,7 @@ async function fetchAllPages(url: string): Promise<Data[]> {
 ## 12. Enforcement
 
 ### 12.1. RecurseML Rules
+
 The following patterns are checked automatically on every PR (see `recurse-rules.md`):
 
 - Recursive functions without depth tracking parameter
@@ -426,14 +464,15 @@ The following patterns are checked automatically on every PR (see `recurse-rules
 - Recursion in hot path code (event handlers, loops)
 
 ### 12.2. ESLint Rules
+
 Add to `.eslintrc.js`:
 
 ```javascript
 module.exports = {
   rules: {
-    'max-depth': ['error', 4], // Nested code depth
-    'complexity': ['warn', 10], // Cyclomatic complexity
-    'no-implicit-recursion': 'warn', // Custom rule (if available)
+    "max-depth": ["error", 4], // Nested code depth
+    complexity: ["warn", 10], // Cyclomatic complexity
+    "no-implicit-recursion": "warn", // Custom rule (if available)
   },
 };
 ```
@@ -443,20 +482,24 @@ module.exports = {
 ## 13. Reference and Further Reading
 
 ### Industry Standards
+
 - **MISRA C** (automotive/embedded): Recursion forbidden
 - **JPL Coding Standard** (NASA): Recursion forbidden in flight software
 - **Google Style Guides**: Recursion allowed with depth limits
 - **OWASP**: Warns against recursion on untrusted input (DoS risk)
 
 ### Academic Sources
+
 - "Structure and Interpretation of Computer Programs" (MIT) - Recursive thinking
 - "Introduction to Algorithms" (CLRS) - Recursion analysis
 - "The Art of Computer Programming" (Knuth) - Recursive algorithms
 
 ### Community Discussion
+
 Research source: Reddit r/csharp thread on recursion in production (2024)
 
 **Key takeaways:**
+
 - Most developers avoid recursion for large datasets
 - Common use: directory traversal, tree structures, parsing
 - Depth tracking is universally recommended
@@ -467,6 +510,7 @@ Research source: Reddit r/csharp thread on recursion in production (2024)
 ## 14. Summary
 
 **DO:**
+
 - ✅ Use recursion for trees, graphs, and nested structures with known depth
 - ✅ Always track recursion depth with a parameter
 - ✅ Set explicit maximum depth limits
@@ -475,6 +519,7 @@ Research source: Reddit r/csharp thread on recursion in production (2024)
 - ✅ Document why recursion is chosen over iteration
 
 **DON'T:**
+
 - ❌ Use recursion on untrusted/unknown input sizes
 - ❌ Recurse in high-frequency code paths
 - ❌ Exceed 100 depth without explicit justification
@@ -484,4 +529,5 @@ Research source: Reddit r/csharp thread on recursion in production (2024)
 ---
 
 **Version History:**
+
 - 1.0.0 (2026-04-15): Initial release based on industry research and community best practices

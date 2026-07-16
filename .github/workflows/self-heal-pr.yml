@@ -108,16 +108,16 @@ jobs:
         env:
           # workflow_dispatch
           WD_DESCRIPTION: ${{ github.event.inputs.fix_description }}
-          WD_ISSUE:       ${{ github.event.inputs.issue_number }}
-          WD_FIX_TYPE:    ${{ github.event.inputs.fix_type }}
-          WD_PATCH:       ${{ github.event.inputs.patch_content }}
-          WD_SUFFIX:      ${{ github.event.inputs.branch_suffix }}
+          WD_ISSUE: ${{ github.event.inputs.issue_number }}
+          WD_FIX_TYPE: ${{ github.event.inputs.fix_type }}
+          WD_PATCH: ${{ github.event.inputs.patch_content }}
+          WD_SUFFIX: ${{ github.event.inputs.branch_suffix }}
           # repository_dispatch (client_payload)
           RD_DESCRIPTION: ${{ github.event.client_payload.fix_description }}
-          RD_ISSUE:       ${{ github.event.client_payload.issue_number }}
-          RD_FIX_TYPE:    ${{ github.event.client_payload.fix_type }}
-          RD_PATCH:       ${{ github.event.client_payload.patch_content }}
-          RD_SUFFIX:      ${{ github.event.client_payload.branch_suffix }}
+          RD_ISSUE: ${{ github.event.client_payload.issue_number }}
+          RD_FIX_TYPE: ${{ github.event.client_payload.fix_type }}
+          RD_PATCH: ${{ github.event.client_payload.patch_content }}
+          RD_SUFFIX: ${{ github.event.client_payload.branch_suffix }}
         run: |
           DESCRIPTION="${WD_DESCRIPTION:-$RD_DESCRIPTION}"
           ISSUE="${WD_ISSUE:-$RD_ISSUE}"
@@ -157,7 +157,7 @@ jobs:
       - name: Create branch
         id: branch
         env:
-          FIX_TYPE:    ${{ steps.inputs.outputs.fix_type }}
+          FIX_TYPE: ${{ steps.inputs.outputs.fix_type }}
           SAFE_SUFFIX: ${{ steps.inputs.outputs.safe_suffix }}
         run: |
           DATE="$(date -u +%Y-%m-%d)"
@@ -177,8 +177,8 @@ jobs:
         id: commit
         env:
           DESCRIPTION: ${{ steps.inputs.outputs.description }}
-          ISSUE:       ${{ steps.inputs.outputs.issue }}
-          FIX_TYPE:    ${{ steps.inputs.outputs.fix_type }}
+          ISSUE: ${{ steps.inputs.outputs.issue }}
+          FIX_TYPE: ${{ steps.inputs.outputs.fix_type }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -224,10 +224,10 @@ jobs:
         id: open-pr
         env:
           DESCRIPTION: ${{ steps.inputs.outputs.description }}
-          ISSUE:       ${{ steps.inputs.outputs.issue }}
-          FIX_TYPE:    ${{ steps.inputs.outputs.fix_type }}
-          BRANCH:      ${{ steps.branch.outputs.name }}
-          RUN_URL:     ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          ISSUE: ${{ steps.inputs.outputs.issue }}
+          FIX_TYPE: ${{ steps.inputs.outputs.fix_type }}
+          BRANCH: ${{ steps.branch.outputs.name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           TITLE="fix(${FIX_TYPE}): ${DESCRIPTION}"
 
@@ -272,7 +272,7 @@ jobs:
         if: steps.open-pr.outputs.pr_number != ''
         env:
           DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
-          PR_NUMBER:     ${{ steps.open-pr.outputs.pr_number }}
+          PR_NUMBER: ${{ steps.open-pr.outputs.pr_number }}
         run: |
           if [[ -n "$DEVIN_API_KEY" ]]; then
             gh pr edit "$PR_NUMBER" --add-label "devin-review" && \
@@ -300,9 +300,9 @@ jobs:
       - name: Link PR back to originating issue
         if: steps.inputs.outputs.issue != '' && steps.open-pr.outputs.pr_number != ''
         env:
-          ISSUE:     ${{ steps.inputs.outputs.issue }}
+          ISSUE: ${{ steps.inputs.outputs.issue }}
           PR_NUMBER: ${{ steps.open-pr.outputs.pr_number }}
-          PR_URL:    ${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.open-pr.outputs.pr_number }}
+          PR_URL: ${{ github.server_url }}/${{ github.repository }}/pull/${{ steps.open-pr.outputs.pr_number }}
         run: |
           COMMENT_BODY="$(printf '🩹 **Self-Healing PR opened:** #%s — %s\n\nThe self-healing agent has opened a PR with a proposed fix for this issue. The PR will go through CI and automated code review before merging. You will receive a notification when it is ready for human review.' "$PR_NUMBER" "$PR_URL")"
           gh issue comment "$ISSUE" --body "$COMMENT_BODY"
@@ -331,8 +331,8 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install root dependencies
         run: npm ci

@@ -7,12 +7,14 @@ This work request has been fully implemented and is ready for review and merge.
 ## Implementation Summary
 
 **What was built:**
+
 - Task-based model routing with automatic fallback
 - 3 routing profiles optimized for different coding workflows
 - Comprehensive testing and documentation
 - Example CLI and evaluation harness
 
 **Quality checks:**
+
 - ✅ All unit tests passing (11/11)
 - ✅ Code review completed
 - ✅ CodeQL security scan passed (0 alerts)
@@ -67,16 +69,19 @@ See `docs/OPENROUTER_ROUTING_VALIDATION.md` for complete test procedures.
 ## Routing Profiles
 
 ### repo_surgery
+
 - **Models**: claude-3.7-sonnet → deepseek-v3.2 → gpt-5.2-codex
 - **Use for**: Multi-file edits, bug fixing, refactors
 - **Focus**: Independent reasoning, initiative
 
 ### cheap_batch_edits
+
 - **Models**: deepseek-v3.2 → claude-3.7-sonnet
 - **Use for**: Test generation, lint fixes, bulk changes
 - **Focus**: Cost-effectiveness, speed
 
 ### hard_debug
+
 - **Models**: gpt-5.2-codex → claude-3.7-sonnet → deepseek-v3.2
 - **Use for**: Difficult failures, root-cause analysis
 - **Focus**: Debugging expertise, depth
@@ -92,6 +97,7 @@ See `docs/OPENROUTER_ROUTING_VALIDATION.md` for complete test procedures.
 ## Stretch Goal Delivered
 
 The evaluation harness (stretch goal) has been implemented:
+
 - Compares all three profiles on the same prompt
 - Generates markdown reports with metrics
 - Supports quality assessment and cost comparison
@@ -99,6 +105,7 @@ The evaluation harness (stretch goal) has been implemented:
 ## Contact
 
 For questions or issues:
+
 - Review PR description and linked documentation
 - Check `docs/OPENROUTER_ROUTING_PR_SUMMARY.md` for complete details
 - See `docs/OPENROUTER_MODEL_ROUTING.md` for usage guide

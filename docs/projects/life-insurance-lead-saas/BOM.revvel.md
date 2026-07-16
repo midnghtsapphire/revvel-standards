@@ -44,27 +44,27 @@ does **not** spend money. Everything below is a **dry-run procurement plan** onl
 
 ## Lead Vendor Categories
 
-| Category | What it provides | Example vendors |
-|----------|------------------|-----------------|
-| Real-time quoting API | Term/whole-life quote engine to display rates | Compulife |
-| Consent / TrustedForm certs | Proof-of-consent certificates for TCPA | ActiveProspect TrustedForm |
-| Lead authenticity / Jornaya | LeadiD tokens, consent + tamper evidence | ActiveProspect / Jornaya (LeadiD) |
-| Lead scrubbing / suppression | DNC, duplicate, litigator, and bad-actor scrub | ScrubLock / ScrubLite |
-| Skip-trace / data enrichment | Phone, address, property enrichment for leads | BatchData |
-| LLM routing | Lead qualification + copy generation | OpenRouter |
-| Automation / MCP runner | Form → DB → CRM → email orchestration | Zapier (MCP) |
+| Category                     | What it provides                               | Example vendors                   |
+| ---------------------------- | ---------------------------------------------- | --------------------------------- |
+| Real-time quoting API        | Term/whole-life quote engine to display rates  | Compulife                         |
+| Consent / TrustedForm certs  | Proof-of-consent certificates for TCPA         | ActiveProspect TrustedForm        |
+| Lead authenticity / Jornaya  | LeadiD tokens, consent + tamper evidence       | ActiveProspect / Jornaya (LeadiD) |
+| Lead scrubbing / suppression | DNC, duplicate, litigator, and bad-actor scrub | ScrubLock / ScrubLite             |
+| Skip-trace / data enrichment | Phone, address, property enrichment for leads  | BatchData                         |
+| LLM routing                  | Lead qualification + copy generation           | OpenRouter                        |
+| Automation / MCP runner      | Form → DB → CRM → email orchestration          | Zapier (MCP)                      |
 
 ## APIs & Source URLs
 
-| # | Name | Category | Cost (USD) | Source URL | Acquisition | Blocking |
-|---|------|----------|------------|------------|-------------|----------|
-| 1 | Compulife Quote API | api | quote-based (contact sales) | <https://www.compulife.com/> (API: <https://www.compulifeapi.com/>) | Request API credentials; sandbox first | true |
-| 2 | TrustedForm (consent certs) | api | from ~$0.07/cert | <https://activeprospect.com/products/trustedform/> | ActiveProspect account → embed cert script → store cert URL | true |
-| 3 | Jornaya / LeadiD | api | contact sales | <https://www.jornaya.com/> | Add LeadiD campaign script; capture token per lead | false |
-| 4 | ScrubLock / ScrubLite (DNC + scrub) | service | from ~$0.01/lookup | <https://scrublock.com/> (ScrubLite: <https://www.scrublite.com/>) | Account + API key; scrub before delivery | true |
-| 5 | BatchData skip-trace/enrichment | api | usage-based | <https://batchdata.com/> (API: <https://developer.batchdata.com/>) | API key; enrich phone/address | false |
-| 6 | OpenRouter LLM routing | credential | usage-based | <https://openrouter.ai/keys> | Create key → set `OPENROUTER_API_KEY` secret | true |
-| 7 | Zapier MCP automation | service | from $0 (free tier) | <https://zapier.com/mcp> | Connect Zapier MCP; build form→DB→email Zap | true |
+| #   | Name                                | Category   | Cost (USD)                  | Source URL                                                          | Acquisition                                                 | Blocking |
+| --- | ----------------------------------- | ---------- | --------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------- | -------- |
+| 1   | Compulife Quote API                 | api        | quote-based (contact sales) | <https://www.compulife.com/> (API: <https://www.compulifeapi.com/>) | Request API credentials; sandbox first                      | true     |
+| 2   | TrustedForm (consent certs)         | api        | from ~$0.07/cert            | <https://activeprospect.com/products/trustedform/>                  | ActiveProspect account → embed cert script → store cert URL | true     |
+| 3   | Jornaya / LeadiD                    | api        | contact sales               | <https://www.jornaya.com/>                                          | Add LeadiD campaign script; capture token per lead          | false    |
+| 4   | ScrubLock / ScrubLite (DNC + scrub) | service    | from ~$0.01/lookup          | <https://scrublock.com/> (ScrubLite: <https://www.scrublite.com/>)  | Account + API key; scrub before delivery                    | true     |
+| 5   | BatchData skip-trace/enrichment     | api        | usage-based                 | <https://batchdata.com/> (API: <https://developer.batchdata.com/>)  | API key; enrich phone/address                               | false    |
+| 6   | OpenRouter LLM routing              | credential | usage-based                 | <https://openrouter.ai/keys>                                        | Create key → set `OPENROUTER_API_KEY` secret                | true     |
+| 7   | Zapier MCP automation               | service    | from $0 (free tier)         | <https://zapier.com/mcp>                                            | Connect Zapier MCP; build form→DB→email Zap                 | true     |
 
 ## MVP Stack
 
@@ -86,16 +86,16 @@ does **not** spend money. Everything below is a **dry-run procurement plan** onl
 
 ## Data Model (lead record — illustrative)
 
-| Field | Type | Notes |
-|-------|------|-------|
-| lead_id | uuid | primary key |
-| consent_cert_url | text | TrustedForm cert URL |
-| leadid_token | text | Jornaya LeadiD token |
-| state | text | drives licensing/DNC rules |
-| product_interest | text | term / whole / final-expense |
-| scrub_status | enum | clean / dnc / duplicate / litigator |
-| enrichment | jsonb | BatchData payload |
-| sold_to_agent_id | uuid | nullable until sold |
+| Field            | Type  | Notes                               |
+| ---------------- | ----- | ----------------------------------- |
+| lead_id          | uuid  | primary key                         |
+| consent_cert_url | text  | TrustedForm cert URL                |
+| leadid_token     | text  | Jornaya LeadiD token                |
+| state            | text  | drives licensing/DNC rules          |
+| product_interest | text  | term / whole / final-expense        |
+| scrub_status     | enum  | clean / dnc / duplicate / litigator |
+| enrichment       | jsonb | BatchData payload                   |
+| sold_to_agent_id | uuid  | nullable until sold                 |
 
 ## CLI BOM (operator tooling)
 

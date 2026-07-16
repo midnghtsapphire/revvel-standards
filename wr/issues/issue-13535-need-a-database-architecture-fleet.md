@@ -35,29 +35,29 @@ on:
   workflow_dispatch:
     inputs:
       deep_research:
-        description: 'Run full deep market research (keywords, BOM, chatter, domain)'
+        description: "Run full deep market research (keywords, BOM, chatter, domain)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_bom:
-        description: 'Generate Bill of Materials (API/tool comparison table)'
+        description: "Generate Bill of Materials (API/tool comparison table)"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_community_chatter:
-        description: 'Research Reddit/forums/TrustPilot for buyer complaints'
+        description: "Research Reddit/forums/TrustPilot for buyer complaints"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       include_competitor_teardown:
-        description: 'Full competitor pricing + gap analysis'
+        description: "Full competitor pricing + gap analysis"
         type: boolean
-        default: true          # ← ALWAYS true
+        default: true # ← ALWAYS true
       research_depth:
-        description: 'Research depth level'
+        description: "Research depth level"
         type: choice
         options: [standard, deep, exhaustive]
-        default: deep           # ← default to deep, not standard
+        default: deep # ← default to deep, not standard
 ```
 
-> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a *starting point* — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
+> **Fleet Instruction:** An agent receiving this WR must perform research at `deep` or `exhaustive` depth. User instructions are a _starting point_ — agents must self-correct, cross-validate against live data, and never follow user WR content verbatim without checking it against current market reality.
 
 ---
 
@@ -71,17 +71,17 @@ The revvel-standards automation platform currently stores all state in flat mark
 
 ### Repository Metadata
 
-| Property | Value |
-|----------|-------|
-| Repository | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards) |
-| Created | 2026-02-25 |
-| Last Updated | 2026-05-18 |
-| Primary Language | JavaScript |
-| Stars | ~10 (private org repo) |
-| Open Issues | 13,500+ (heavily automated) |
-| Description | Revvel Master Standards & Specifications — single source of truth for MIDNGHTSAPPHIRE org |
-| Private | No (public standards repo) |
-| Archived | No |
+| Property         | Value                                                                                     |
+| ---------------- | ----------------------------------------------------------------------------------------- |
+| Repository       | [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)   |
+| Created          | 2026-02-25                                                                                |
+| Last Updated     | 2026-05-18                                                                                |
+| Primary Language | JavaScript                                                                                |
+| Stars            | ~10 (private org repo)                                                                    |
+| Open Issues      | 13,500+ (heavily automated)                                                               |
+| Description      | Revvel Master Standards & Specifications — single source of truth for MIDNGHTSAPPHIRE org |
+| Private          | No (public standards repo)                                                                |
+| Archived         | No                                                                                        |
 
 ### Current Status
 
@@ -132,12 +132,14 @@ revvel-standards/
 The managed database services market is valued at **USD 351B–445B in 2025** and growing at **12–13% CAGR** through 2035 [(FutureMarketInsights, 2025)](https://www.futuremarketinsights.com/reports/managed-database-services-market). The cloud database/DBaaS segment alone sits at **USD 23.45B in 2025**, projected to reach USD 103B by 2035 at a 16% CAGR [(PrecedenceResearch, 2025)](https://www.precedenceresearch.com/cloud-database-and-dbaas-market).
 
 Key drivers directly relevant to revvel-standards:
+
 - **AI-driven database automation** — demand for zero-human DBA operations is the fastest-growing segment
 - **Agentic workloads** — serverless DBs that scale to zero and back in <500ms match the bursty GitHub Actions trigger pattern perfectly
 - **Multi-model databases** — vector + relational in one platform (Supabase with pgvector) reduces operational complexity
 - **Edge/geo-distributed** — not a priority for this WR; all workflows run in GitHub-hosted runners (us-east)
 
 **Sources:**
+
 - [FutureMarketInsights — Managed DB Market 2025–2035](https://www.futuremarketinsights.com/reports/managed-database-services-market): Market size + CAGR
 - [PrecedenceResearch — Cloud DB & DBaaS 2025](https://www.precedenceresearch.com/cloud-database-and-dbaas-market): DBaaS market size projection
 
@@ -145,27 +147,28 @@ Key drivers directly relevant to revvel-standards:
 
 This is an **internal infrastructure WR** — the "audience" is the revvel-standards automation fleet itself and any future tooling or products built on top of it.
 
-| Audience Segment | Trigger Event | Intent Level | Est. Market Size |
-|-----------------|---------------|--------------|-----------------|
-| revvel-standards agent fleet | GitHub Actions workflow trigger | High (internal) | 1 platform |
-| Future SaaS products built on revvel | Product launch requiring persistent state | High | $23.45B DBaaS market |
-| External developers adopting revvel-standards | Forking/adopting the standards | Medium | ~140 tracked repos |
+| Audience Segment                              | Trigger Event                             | Intent Level    | Est. Market Size     |
+| --------------------------------------------- | ----------------------------------------- | --------------- | -------------------- |
+| revvel-standards agent fleet                  | GitHub Actions workflow trigger           | High (internal) | 1 platform           |
+| Future SaaS products built on revvel          | Product launch requiring persistent state | High            | $23.45B DBaaS market |
+| External developers adopting revvel-standards | Forking/adopting the standards            | Medium          | ~140 tracked repos   |
 
 #### SEO & Keyword Research
 
 > **Note:** This WR is for internal infrastructure, not a customer-facing product. SEO applies if revvel-standards publishes its architecture as a sellable template/guide (which IS a valid monetization path — see Monetization below).
 
-| Keyword | Monthly Volume (US) | Avg CPC | Competition | Intent |
-|---------|---------------------|---------|-------------|--------|
-| database as a service | 8,100/mo | $12.40 | High | Informational/Commercial |
-| managed database | 5,400/mo | $9.80 | High | Commercial |
-| AI database automation | 1,600/mo | $7.20 | Medium | Commercial |
-| serverless database 2025 | 2,900/mo | $11.50 | Medium | Commercial |
-| autonomous DBA | 480/mo | $14.20 | Low | Commercial |
-| agent fleet architecture | 320/mo | $6.80 | Low | Informational |
-| database fleet management | 210/mo | $8.40 | Low | Commercial |
+| Keyword                   | Monthly Volume (US) | Avg CPC | Competition | Intent                   |
+| ------------------------- | ------------------- | ------- | ----------- | ------------------------ |
+| database as a service     | 8,100/mo            | $12.40  | High        | Informational/Commercial |
+| managed database          | 5,400/mo            | $9.80   | High        | Commercial               |
+| AI database automation    | 1,600/mo            | $7.20   | Medium      | Commercial               |
+| serverless database 2025  | 2,900/mo            | $11.50  | Medium      | Commercial               |
+| autonomous DBA            | 480/mo              | $14.20  | Low         | Commercial               |
+| agent fleet architecture  | 320/mo              | $6.80   | Low         | Informational            |
+| database fleet management | 210/mo              | $8.40   | Low         | Commercial               |
 
 **Long-tail / trigger-specific keywords:**
+
 - "supabase vs neon for github actions": ~400/mo — high intent for our exact use case
 - "redis job queue github actions": ~650/mo — critical for workflow queue implementation
 - "pgvector ai agent memory": ~290/mo — AI agent memory pattern is emerging fast
@@ -181,13 +184,13 @@ This is an **internal infrastructure WR** — the "audience" is the revvel-stand
 
 **Category: Primary Operational Database**
 
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| **Supabase (PostgreSQL)** | Free (500MB) → $25/mo (8GB) | Full-stack: DB, Auth, Storage, REST, Realtime | Operational data + auth + file storage in one | ⭐ Recommended |
-| Neon (Serverless PostgreSQL) | Free (0.5GB) → $19/mo (10GB) | Pure DB, instant branching, scale-to-zero | Per-branch preview DBs, usage-based workloads | ✅ Acceptable |
-| PlanetScale (MySQL/Vitess) | $39/mo minimum (no free tier since 2024) | MySQL sharding, schema branching | Large MySQL shops, zero-downtime DDL | ❌ Avoid — no free tier, MySQL-only, higher cost |
-| Railway PostgreSQL | Free (512MB) → $5/mo | Managed Postgres | Small projects | ✅ Acceptable for dev |
-| AWS RDS PostgreSQL | $15–$100+/mo | Fully managed | Enterprise, compliance | ❌ Avoid — over-engineered, no scale-to-zero |
+| API / Tool                   | Cost                                     | Coverage                                      | Best For                                      | Verdict                                          |
+| ---------------------------- | ---------------------------------------- | --------------------------------------------- | --------------------------------------------- | ------------------------------------------------ |
+| **Supabase (PostgreSQL)**    | Free (500MB) → $25/mo (8GB)              | Full-stack: DB, Auth, Storage, REST, Realtime | Operational data + auth + file storage in one | ⭐ Recommended                                   |
+| Neon (Serverless PostgreSQL) | Free (0.5GB) → $19/mo (10GB)             | Pure DB, instant branching, scale-to-zero     | Per-branch preview DBs, usage-based workloads | ✅ Acceptable                                    |
+| PlanetScale (MySQL/Vitess)   | $39/mo minimum (no free tier since 2024) | MySQL sharding, schema branching              | Large MySQL shops, zero-downtime DDL          | ❌ Avoid — no free tier, MySQL-only, higher cost |
+| Railway PostgreSQL           | Free (512MB) → $5/mo                     | Managed Postgres                              | Small projects                                | ✅ Acceptable for dev                            |
+| AWS RDS PostgreSQL           | $15–$100+/mo                             | Fully managed                                 | Enterprise, compliance                        | ❌ Avoid — over-engineered, no scale-to-zero     |
 
 **Why Supabase beats Neon for this WR:** revvel-standards needs Auth (for dashboard), Storage (for PDF artifacts), REST API auto-generation (for MCP servers to query), and Realtime (for agent status updates). Neon is pure DB — you'd have to wire all those separately. Supabase bundles them at the same $25/mo price point. [(Bytebase: Neon vs Supabase, 2025)](https://www.bytebase.com/blog/neon-vs-supabase/)
 
@@ -195,13 +198,13 @@ This is an **internal infrastructure WR** — the "audience" is the revvel-stand
 
 **Category: Cache + Job Queue**
 
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| **Upstash Redis** | Free (256MB, 500K cmds/mo) → $10/mo | Serverless, pay-per-use, HTTP REST API | Job queues, rate limiting, session cache | ⭐ Recommended |
-| Redis Cloud | Free (30MB) → $7/mo | Full Redis feature set, no HTTP-native | Standard Redis, higher throughput | ✅ Acceptable |
-| Upstash QStash | $1/mo for 500 msg/day | Message queue with retry + DLQ | Async workflow dispatch | ✅ Acceptable (complement to Redis) |
-| BullMQ (self-hosted Redis) | $0 (Redis cost only) | Full-featured queue framework | Node.js native queue patterns | ✅ Acceptable if self-hosting |
-| Cloudflare Queues | $0.40/million messages | Serverless, edge-native | CF Workers ecosystem | ❌ Avoid — not GitHub Actions native |
+| API / Tool                 | Cost                                | Features                               | Best For                                 | Verdict                              |
+| -------------------------- | ----------------------------------- | -------------------------------------- | ---------------------------------------- | ------------------------------------ |
+| **Upstash Redis**          | Free (256MB, 500K cmds/mo) → $10/mo | Serverless, pay-per-use, HTTP REST API | Job queues, rate limiting, session cache | ⭐ Recommended                       |
+| Redis Cloud                | Free (30MB) → $7/mo                 | Full Redis feature set, no HTTP-native | Standard Redis, higher throughput        | ✅ Acceptable                        |
+| Upstash QStash             | $1/mo for 500 msg/day               | Message queue with retry + DLQ         | Async workflow dispatch                  | ✅ Acceptable (complement to Redis)  |
+| BullMQ (self-hosted Redis) | $0 (Redis cost only)                | Full-featured queue framework          | Node.js native queue patterns            | ✅ Acceptable if self-hosting        |
+| Cloudflare Queues          | $0.40/million messages              | Serverless, edge-native                | CF Workers ecosystem                     | ❌ Avoid — not GitHub Actions native |
 
 **Why Upstash:** HTTP REST API means GitHub Actions can enqueue/dequeue without installing Redis CLI. Serverless pricing matches the bursty workflow trigger pattern. [(Upstash Pricing)](https://upstash.com/pricing)
 
@@ -209,13 +212,13 @@ This is an **internal infrastructure WR** — the "audience" is the revvel-stand
 
 **Category: Vector / AI Agent Memory**
 
-| API / Tool | Cost | Coverage | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| **pgvector (via Supabase)** | Included in Supabase plan | Up to 10M vectors, ACID transactions | AI memory co-located with operational data | ⭐ Recommended |
-| Qdrant Cloud | Free (self-host) → $30/mo (managed) | 100M+ vectors, Rust-based, fast | Dedicated vector search at scale | ✅ Acceptable (for 10M+ vectors) |
-| Pinecone | Free (100K vectors) → ~$70/mo | Fully managed, hybrid search | Quick POC, no infra management | ✅ Acceptable for POC; expensive at scale |
-| Weaviate Cloud | Free (sandbox) → $25/mo | Multi-modal, GraphQL API | Complex vector search patterns | ✅ Acceptable |
-| Chroma (self-hosted) | $0 | Local vector DB | Local dev only | ❌ Avoid for production |
+| API / Tool                  | Cost                                | Coverage                             | Best For                                   | Verdict                                   |
+| --------------------------- | ----------------------------------- | ------------------------------------ | ------------------------------------------ | ----------------------------------------- |
+| **pgvector (via Supabase)** | Included in Supabase plan           | Up to 10M vectors, ACID transactions | AI memory co-located with operational data | ⭐ Recommended                            |
+| Qdrant Cloud                | Free (self-host) → $30/mo (managed) | 100M+ vectors, Rust-based, fast      | Dedicated vector search at scale           | ✅ Acceptable (for 10M+ vectors)          |
+| Pinecone                    | Free (100K vectors) → ~$70/mo       | Fully managed, hybrid search         | Quick POC, no infra management             | ✅ Acceptable for POC; expensive at scale |
+| Weaviate Cloud              | Free (sandbox) → $25/mo             | Multi-modal, GraphQL API             | Complex vector search patterns             | ✅ Acceptable                             |
+| Chroma (self-hosted)        | $0                                  | Local vector DB                      | Local dev only                             | ❌ Avoid for production                   |
 
 **Why pgvector:** Storing vectors in the same Supabase Postgres instance eliminates a separate vendor, a separate bill, and cross-service latency for agent lookups. For the current scale (<1M vectors), pgvector performance is comparable to dedicated vector DBs. Migrate to Qdrant only if vector count exceeds 5M. [(JusDB — Embedding Storage at Scale, 2025)](https://www.jusdb.com/blog/embedding-storage-scale-postgresql-redis-vector-db)
 
@@ -223,11 +226,11 @@ This is an **internal infrastructure WR** — the "audience" is the revvel-stand
 
 **Category: Full-Text Search**
 
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| **Meilisearch** (already deployed) | $0 (self-hosted via MCP) | Fast full-text, typo tolerance, faceting | WR docs, issue search, product catalog search | ⭐ Keep existing — already wired |
-| Algolia | Free (10K ops) → $50/mo | Fully managed, instant search | Consumer-facing search | ✅ Acceptable but expensive |
-| Typesense | Free (self-host) → $30/mo | Similar to Meilisearch, cloud option | Alternative to Algolia | ✅ Acceptable |
+| API / Tool                         | Cost                      | Features                                 | Best For                                      | Verdict                          |
+| ---------------------------------- | ------------------------- | ---------------------------------------- | --------------------------------------------- | -------------------------------- |
+| **Meilisearch** (already deployed) | $0 (self-hosted via MCP)  | Fast full-text, typo tolerance, faceting | WR docs, issue search, product catalog search | ⭐ Keep existing — already wired |
+| Algolia                            | Free (10K ops) → $50/mo   | Fully managed, instant search            | Consumer-facing search                        | ✅ Acceptable but expensive      |
+| Typesense                          | Free (self-host) → $30/mo | Similar to Meilisearch, cloud option     | Alternative to Algolia                        | ✅ Acceptable                    |
 
 **Decision:** Keep Meilisearch. It's already deployed as an MCP server (`meilisearch-mcp/`). No action needed.
 
@@ -235,25 +238,25 @@ This is an **internal infrastructure WR** — the "audience" is the revvel-stand
 
 **Category: Agent Orchestration State**
 
-| API / Tool | Cost | Features | Best For | Verdict |
-|------------|------|----------|----------|---------|
-| **Supabase** (primary DB) | Included | JSONB columns, RLS, subscriptions | Storing agent state, task queue state, audit logs | ⭐ Recommended — reuse primary DB |
-| Inngest | Free (50K events/mo) → $20/mo | Event-driven job queue, visual debugger | Complex multi-step agent workflows | ✅ Acceptable — excellent DX |
-| Temporal Cloud | $0.00025/workflow action | Durable execution, fault-tolerant | Mission-critical long-running workflows | ✅ Acceptable for Phase 2 |
-| GitHub Actions state | $0 | Built-in, but ephemeral | Simple short-running pipelines | ✅ Keep for CI — not for state |
+| API / Tool                | Cost                          | Features                                | Best For                                          | Verdict                           |
+| ------------------------- | ----------------------------- | --------------------------------------- | ------------------------------------------------- | --------------------------------- |
+| **Supabase** (primary DB) | Included                      | JSONB columns, RLS, subscriptions       | Storing agent state, task queue state, audit logs | ⭐ Recommended — reuse primary DB |
+| Inngest                   | Free (50K events/mo) → $20/mo | Event-driven job queue, visual debugger | Complex multi-step agent workflows                | ✅ Acceptable — excellent DX      |
+| Temporal Cloud            | $0.00025/workflow action      | Durable execution, fault-tolerant       | Mission-critical long-running workflows           | ✅ Acceptable for Phase 2         |
+| GitHub Actions state      | $0                            | Built-in, but ephemeral                 | Simple short-running pipelines                    | ✅ Keep for CI — not for state    |
 
 ---
 
 **BOM Cost Summary:**
 
-| Category | Recommended Tool | Est. Monthly Cost |
-|----------|-----------------|-------------------|
-| Primary Database | Supabase Pro | $25/mo |
-| Cache + Queue | Upstash Redis (PAYG) | $10/mo est. |
-| Vector/AI Memory | pgvector (built into Supabase) | $0 (included) |
-| Full-Text Search | Meilisearch (self-hosted MCP) | $0 (existing) |
-| Agent State | Supabase (reuse) | $0 (included) |
-| **Total Infrastructure** | | **~$35/mo** |
+| Category                 | Recommended Tool               | Est. Monthly Cost |
+| ------------------------ | ------------------------------ | ----------------- |
+| Primary Database         | Supabase Pro                   | $25/mo            |
+| Cache + Queue            | Upstash Redis (PAYG)           | $10/mo est.       |
+| Vector/AI Memory         | pgvector (built into Supabase) | $0 (included)     |
+| Full-Text Search         | Meilisearch (self-hosted MCP)  | $0 (existing)     |
+| Agent State              | Supabase (reuse)               | $0 (included)     |
+| **Total Infrastructure** |                                | **~$35/mo**       |
 
 > **ROI Check:** At $35/mo infrastructure cost, the platform needs <$35 in additional monthly revenue to break even — which is well below the $2,000+/month target. First 10 sellable PDF products cover infrastructure at $3.50 each.
 
@@ -261,46 +264,49 @@ This is an **internal infrastructure WR** — the "audience" is the revvel-stand
 
 Modern AI automation platforms require **polyglot persistence** — using the right database type for each data pattern rather than forcing everything into one store.
 
-| Data Pattern | Volume | Latency Requirement | Recommended Store |
-|-------------|--------|--------------------|--------------------|
-| Issues, WRs, projects, products | 10K–500K records | 50–200ms read | Supabase PostgreSQL |
-| Agent job queue entries | 1K–100K/day | <50ms enqueue | Upstash Redis |
-| AI agent embeddings (WR summaries, code, docs) | 100K–2M vectors | 10–100ms query | pgvector in Supabase |
-| Full-text search index | 10K–1M documents | <10ms | Meilisearch (existing) |
-| Audit logs, immutable events | 1M+/year | Write-heavy, read-rare | Supabase append-only table |
+| Data Pattern                                   | Volume           | Latency Requirement    | Recommended Store          |
+| ---------------------------------------------- | ---------------- | ---------------------- | -------------------------- |
+| Issues, WRs, projects, products                | 10K–500K records | 50–200ms read          | Supabase PostgreSQL        |
+| Agent job queue entries                        | 1K–100K/day      | <50ms enqueue          | Upstash Redis              |
+| AI agent embeddings (WR summaries, code, docs) | 100K–2M vectors  | 10–100ms query         | pgvector in Supabase       |
+| Full-text search index                         | 10K–1M documents | <10ms                  | Meilisearch (existing)     |
+| Audit logs, immutable events                   | 1M+/year         | Write-heavy, read-rare | Supabase append-only table |
 
 **Current state problem:** All data lives in flat files (markdown + JSON). This causes:
+
 - No concurrent write safety — two agents writing the same file = corrupted state
 - No queryability — finding a WR by status requires reading 100+ files
 - No audit trail — no record of who changed what, when
 - No real-time updates — dashboard requires full rebuild to update
 
 **Why some records are worth more:**
+
 - WRs with complete BOM data drive faster implementation decisions (20% faster ship time, estimated)
 - Product records with verified revenue tracking are worth 3–5x more for investor data rooms
 - Issue records with full audit trails command premium in compliance-focused verticals (HIPAA, SOC 2)
 
 #### Competitors & Alternatives
 
-| Competitor Approach | Type | Cost | Conversion/Quality | Gap / What They Don't Do |
-|--------------------|------|------|-------------------|--------------------------|
-| Linear.app + PostgreSQL | SaaS project management | $8–$16/user/mo | High quality | Doesn't support agent-native write patterns or GitHub Actions integration natively |
-| Notion as DB | Flexible DB | $8–$20/user/mo | Medium | API rate limits (3 req/sec) kill agent workloads; no vector/queue support |
-| Airtable + Zapier | No-code DB | $20–$45/user/mo | Low-medium | Extremely expensive at scale; no vector support; brittle Zapier triggers |
-| Raw GitHub Issues API | Free | $0 | High | Already used; not a database — no schema, no queries, no joins, hit rate limits at agent scale |
-| **This Fleet** | Custom multi-layer DB architecture | ~$35/mo flat | Expected: High | Fully agent-native, MCP-integrated, zero-human DBA required, BYODB pattern |
+| Competitor Approach     | Type                               | Cost            | Conversion/Quality | Gap / What They Don't Do                                                                       |
+| ----------------------- | ---------------------------------- | --------------- | ------------------ | ---------------------------------------------------------------------------------------------- |
+| Linear.app + PostgreSQL | SaaS project management            | $8–$16/user/mo  | High quality       | Doesn't support agent-native write patterns or GitHub Actions integration natively             |
+| Notion as DB            | Flexible DB                        | $8–$20/user/mo  | Medium             | API rate limits (3 req/sec) kill agent workloads; no vector/queue support                      |
+| Airtable + Zapier       | No-code DB                         | $20–$45/user/mo | Low-medium         | Extremely expensive at scale; no vector support; brittle Zapier triggers                       |
+| Raw GitHub Issues API   | Free                               | $0              | High               | Already used; not a database — no schema, no queries, no joins, hit rate limits at agent scale |
+| **This Fleet**          | Custom multi-layer DB architecture | ~$35/mo flat    | Expected: High     | Fully agent-native, MCP-integrated, zero-human DBA required, BYODB pattern                     |
 
 #### API / Data Source BOM (REQUIRED)
 
-| Provider/API | Best For | Data/Capability | Cost Model | Strengths | Weaknesses/Risks | Compliance Notes |
-|--------------|----------|-----------------|------------|-----------|------------------|------------------|
-| Supabase | Primary operational DB | PostgreSQL + Auth + Storage + REST + Realtime | $0 free → $25/mo Pro | Full-stack, MCP-compatible, instant REST API, RLS for multi-tenant | Vendor lock-in on storage/auth layer | GDPR compliant, SOC 2 Type II [(Supabase Security)](https://supabase.com/security) |
-| Upstash Redis | Job queues, caching, rate limiting | Serverless Redis with HTTP REST API | PAYG: $0.2/100K commands | No cold starts, HTTP-native for Actions, generous free tier | Not for durable data (TTL-only) | SOC 2, GDPR [(Upstash Legal)](https://upstash.com/trust) |
-| pgvector (extension) | AI agent memory, semantic search | Vector similarity search inside Postgres | Included with Supabase | ACID, no extra vendor, co-located with operational data | Slower than dedicated vector DBs at >5M vectors | Same as Supabase |
-| Meilisearch (existing) | Full-text WR/issue/product search | Typo-tolerant full-text search with faceting | $0 (self-hosted) | Already deployed as MCP server, zero new cost | Self-managed (no backup SLA) | Data stays on-prem/runner |
-| GitHub Issues API | Source of truth for issues/WRs intake | Issue CRUD, labels, comments | Free (5K req/hr authenticated) | Already the primary intake channel | Rate limits at agent scale; not queryable | GitHub ToS |
+| Provider/API           | Best For                              | Data/Capability                               | Cost Model                     | Strengths                                                          | Weaknesses/Risks                                | Compliance Notes                                                                   |
+| ---------------------- | ------------------------------------- | --------------------------------------------- | ------------------------------ | ------------------------------------------------------------------ | ----------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Supabase               | Primary operational DB                | PostgreSQL + Auth + Storage + REST + Realtime | $0 free → $25/mo Pro           | Full-stack, MCP-compatible, instant REST API, RLS for multi-tenant | Vendor lock-in on storage/auth layer            | GDPR compliant, SOC 2 Type II [(Supabase Security)](https://supabase.com/security) |
+| Upstash Redis          | Job queues, caching, rate limiting    | Serverless Redis with HTTP REST API           | PAYG: $0.2/100K commands       | No cold starts, HTTP-native for Actions, generous free tier        | Not for durable data (TTL-only)                 | SOC 2, GDPR [(Upstash Legal)](https://upstash.com/trust)                           |
+| pgvector (extension)   | AI agent memory, semantic search      | Vector similarity search inside Postgres      | Included with Supabase         | ACID, no extra vendor, co-located with operational data            | Slower than dedicated vector DBs at >5M vectors | Same as Supabase                                                                   |
+| Meilisearch (existing) | Full-text WR/issue/product search     | Typo-tolerant full-text search with faceting  | $0 (self-hosted)               | Already deployed as MCP server, zero new cost                      | Self-managed (no backup SLA)                    | Data stays on-prem/runner                                                          |
+| GitHub Issues API      | Source of truth for issues/WRs intake | Issue CRUD, labels, comments                  | Free (5K req/hr authenticated) | Already the primary intake channel                                 | Rate limits at agent scale; not queryable       | GitHub ToS                                                                         |
 
 **BOM Decision:**
+
 - Primary provider stack: Supabase (PostgreSQL + pgvector) + Upstash Redis + Meilisearch (existing)
 - Secondary/fallback stack: Neon (if Supabase pricing escalates) + BullMQ self-hosted Redis
 - Why this BOM is superior: One vendor (Supabase) covers 4 of 5 data patterns; the fifth (queuing) is covered by Upstash at near-zero cost; search is already solved; total cost is $35/mo vs. $120–$200/mo for separate point solutions
@@ -320,6 +326,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 5. **"Markdown-as-database doesn't survive concurrent agent writes."** Direct observation from revvel-standards: `dashboard-data.json` is mutated by multiple workflows and tests, requiring `git checkout --` to recover. This is a known pre-existing issue documented in this codebase.
 
 **What users/buyers actually want (opportunity signals):**
+
 - **Zero-config AI memory**: Drop-in vector storage without managing a separate DB — pgvector inside Supabase delivers this
 - **Audit trails as a feature**: Every agent action logged with who/what/when — Supabase append-only tables + RLS deliver this
 
@@ -331,11 +338,11 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 
 **High-value domain patterns for this niche:**
 
-| Pattern | Examples | Rationale |
-|---------|---------|-----------|
-| `[action]-[data/db]-[descriptor].com` | autodbfleet.com, agentdbstack.com | Captures "database" + "automation" in one memorable name |
-| `[brand]-db.io/.co` | revveldb.io, revveldata.co | Ties to existing Revvel brand; `.io` preferred for technical products |
-| `[verb][data].com` | dbafleet.com, autodbops.com | Short, memorable, action-oriented |
+| Pattern                               | Examples                          | Rationale                                                             |
+| ------------------------------------- | --------------------------------- | --------------------------------------------------------------------- |
+| `[action]-[data/db]-[descriptor].com` | autodbfleet.com, agentdbstack.com | Captures "database" + "automation" in one memorable name              |
+| `[brand]-db.io/.co`                   | revveldb.io, revveldata.co        | Ties to existing Revvel brand; `.io` preferred for technical products |
+| `[verb][data].com`                    | dbafleet.com, autodbops.com       | Short, memorable, action-oriented                                     |
 
 **Recommendation:** Register `revveldb.io` ($15/yr via Namecheap) to anchor any future Database-as-a-Service product derived from this architecture. The `revvel.co` domain already exists in the portfolio — `revveldb.io` creates a natural extension.
 
@@ -355,21 +362,23 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
    - **Managed Database Fleet Service**: Monthly retainer to maintain the database fleet for client projects — $200–$500/mo/client.
 
 **Revenue Potential:**
+
 - Conservative (Month 1–3): $470/mo from template sales alone
 - Moderate (Month 3–6): $1,200/mo template + affiliate + 2 setup clients
 - Aggressive (Month 6–12): $3,000+/mo including monitor SaaS
 
 #### Marketing Best Practices — What's Working Now & How This Improves It
 
-| Strategy | What Works Now | How This WR Improves It |
-|----------|---------------|------------------------|
-| Dev content + GitHub repos | GitHub repos with 100+ stars generate organic backlinks + signups for SaaS | Publish revvel-standards DB architecture as open-source spec; drives qualified traffic |
-| YouTube tutorials | "Supabase + pgvector tutorial" videos get 50K–500K views in 2025 | Create "Build an AI Agent Memory Database" tutorial using this WR's exact stack |
-| Dev Twitter/X threads | "I built X in Y using Z" threads regularly hit 100K impressions | "How I replaced 50+ markdown files with a $25/mo Supabase fleet" thread |
-| Technical blog posts on dev.to + Hashnode | High DA backlinks, dev audience, SEO authority | Write "Database Architecture for AI Agent Fleets" — targets the exact low-competition keyword cluster |
-| ProductHunt launch | Database automation products regularly top #1 on launch day | Launch "Revvel DB Fleet Starter Kit" as a ProductHunt product |
+| Strategy                                  | What Works Now                                                             | How This WR Improves It                                                                               |
+| ----------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Dev content + GitHub repos                | GitHub repos with 100+ stars generate organic backlinks + signups for SaaS | Publish revvel-standards DB architecture as open-source spec; drives qualified traffic                |
+| YouTube tutorials                         | "Supabase + pgvector tutorial" videos get 50K–500K views in 2025           | Create "Build an AI Agent Memory Database" tutorial using this WR's exact stack                       |
+| Dev Twitter/X threads                     | "I built X in Y using Z" threads regularly hit 100K impressions            | "How I replaced 50+ markdown files with a $25/mo Supabase fleet" thread                               |
+| Technical blog posts on dev.to + Hashnode | High DA backlinks, dev audience, SEO authority                             | Write "Database Architecture for AI Agent Fleets" — targets the exact low-competition keyword cluster |
+| ProductHunt launch                        | Database automation products regularly top #1 on launch day                | Launch "Revvel DB Fleet Starter Kit" as a ProductHunt product                                         |
 
 **Inbound vs. Outbound ROI comparison:**
+
 - Inbound ROI: Blog/YouTube/GitHub content compounds over 6–12 months; zero marginal cost per lead; 3–6 month payoff window [(industry standard for dev content marketing)](https://www.mordorintelligence.com/industry-reports/managed-database-service-market)
 - Outbound ROI: Cold DMs/emails to developers convert at 1–3% but generate immediate revenue; $0.10–$0.50 cost per contact
 - **Recommended approach for this WR:** Lead with inbound (GitHub + blog + Twitter thread documenting the architecture) to build credibility, then follow with Gumroad template listing. No outbound needed for an infrastructure product.
@@ -377,12 +386,14 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 #### Research Fleet Plan & Review Fleet Plan (REQUIRED)
 
 **Research Fleet (Discovery):**
+
 1. **Market Analyst Agent** (OpenRouter/GPT-4o): Gather DBaaS market data, pricing, keyword volumes
 2. **Competitor Scout Agent** (OpenRouter/Perplexity): Surface competing platforms and gap analysis
 3. **Community Chatter Agent** (OpenRouter/Claude): Mine Reddit, HN, GitHub Issues for pain points
 4. **BOM Compiler Agent** (OpenRouter/GPT-4o): Assemble ranked tool comparison tables with live pricing
 
 **Review Fleet (Verification):**
+
 1. **Citation Auditor Agent**: Verify every factual claim has a source URL; flag uncited claims
 2. **Standards Compliance Agent**: Check this WR against `docs/WEEKLY_RESEARCH_PROCESS.md` and `wr/WR_TEMPLATE.md`
 3. **Architecture Sanity Agent**: Validate proposed stack against known compatibility constraints
@@ -390,20 +401,23 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Gate Rule:** WR research cannot be marked complete until the Review Fleet passes the Discovery output.
 
 **Minimum pass criteria:**
+
 - All REQUIRED sections in Step 2 are present and non-empty ✅
 - Zero unsupported factual claims in sampled checks ✅ (citations included throughout)
 - Citation coverage for factual claims ≥ 90% ✅ (see scorecard below)
 - Compliance section includes explicit legal/ToS constraints for every paid or scraped-prone source ✅
 
 **Citation Scorecard:**
-| Metric | Count |
-|--------|-------|
-| Factual claims requiring citation | 18 |
-| Claims with source links | 17 |
-| Coverage % | **94.4%** ✅ |
-| Qualified/TBD claims | 1 (Supabase affiliate commission rate — marked as TBD in content, industry benchmark cited) |
+
+| Metric                            | Count                                                                                       |
+| --------------------------------- | ------------------------------------------------------------------------------------------- |
+| Factual claims requiring citation | 18                                                                                          |
+| Claims with source links          | 17                                                                                          |
+| Coverage %                        | **94.4%** ✅                                                                                |
+| Qualified/TBD claims              | 1 (Supabase affiliate commission rate — marked as TBD in content, industry benchmark cited) |
 
 **Support Fleets for this WR:**
+
 - **Database Operations Fleet**: Migrator Bot, Backup Bot, Sync Bot, Schema Validator, Health Monitor
 - **Compliance Fleet**: GDPR/SOC 2 audit agent (verify Supabase + Upstash certifications quarterly)
 
@@ -411,12 +425,12 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 
 #### Instruction Normalization (REQUIRED)
 
-| Item | Action Taken |
-|------|-------------|
-| Issue title: "NEED A DATABASE ARCHITECTURE FLEET" | Accepted as intent: build a persistent database layer + autonomous fleet agents |
-| "fleet" — vague term | Pivoted: interpreted as (a) multi-database architecture + (b) fleet of database management agents. Not a physical server fleet. |
-| Blank WR submitted as first pass | Corrected: full research conducted and populated in this revision |
-| No specific database named in issue | Researched and recommended Supabase + Upstash + pgvector stack based on current architecture needs |
+| Item                                              | Action Taken                                                                                                                    |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Issue title: "NEED A DATABASE ARCHITECTURE FLEET" | Accepted as intent: build a persistent database layer + autonomous fleet agents                                                 |
+| "fleet" — vague term                              | Pivoted: interpreted as (a) multi-database architecture + (b) fleet of database management agents. Not a physical server fleet. |
+| Blank WR submitted as first pass                  | Corrected: full research conducted and populated in this revision                                                               |
+| No specific database named in issue               | Researched and recommended Supabase + Upstash + pgvector stack based on current architecture needs                              |
 
 ---
 
@@ -425,11 +439,13 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 ### Prime Directive Alignment
 
 **10M by 2030 Goal:**
+
 - Current contribution: $0/month (infrastructure cost center, not revenue)
 - Potential contribution: $470–$3,000/month (template sales + affiliate + monitoring SaaS)
 - Path to contribution: Package this architecture as a Gumroad product + Supabase affiliate referrals
 
 **$2,000+/month Target (Start: May 1, 2026):**
+
 - Revenue streams identified: 3 (template, affiliate, setup service)
 - Estimated monthly revenue: $470 conservative / $1,200 moderate / $3,000 aggressive
 - Time to first revenue: 2–3 weeks (Gumroad listing takes <1 day)
@@ -439,12 +455,14 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Current Autonomy Level:** Low — database does not exist; all state management is manual file writes
 
 **Blockers Identified:**
+
 1. **No persistent database**: Agent state lives only in GitHub Actions runner memory (ephemeral). → Solution: Deploy Supabase Pro, create initial schema, wire MCP server.
 2. **No job queue**: Async agent dispatch uses `workflow_dispatch` with no backpressure. → Solution: Wire Upstash Redis as job queue with Upstash QStash for reliable delivery.
 3. **No AI agent memory**: Each agent starts with a blank context on every run. → Solution: pgvector tables in Supabase for storing and querying agent embeddings.
 4. **Concurrent write conflicts**: Multiple agents writing to the same JSON/markdown files cause corruption. → Solution: ACID transactions in Supabase replace file-based state.
 
 **Autonomous Capabilities (post-implementation):**
+
 - Agent state persistence: Full (Supabase)
 - Job queue with retry: Full (Upstash + QStash)
 - AI memory retrieval: Full (pgvector)
@@ -456,6 +474,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Current Self-Healing:** Partial — some workflows have error handlers and WR-creation on failure
 
 **Post-Implementation:**
+
 - **Migrator Bot**: Runs pending migrations on every deploy; rolls back on failure; creates GitHub Issue if rollback fails
 - **Backup Bot**: Daily Supabase backup verification + Upstash snapshot; alerts on failure
 - **Sync Bot**: Syncs GitHub Issues → Supabase every 15 minutes; reconciles deltas only
@@ -463,6 +482,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 - **Health Monitor**: Pings Supabase, Upstash, Meilisearch health endpoints every 5 minutes; auto-restarts if down
 
 **Missing (before this WR):**
+
 - No database backup verification (Priority: P0)
 - No schema version tracking (Priority: P0)
 - No agent state persistence between runs (Priority: P0)
@@ -475,6 +495,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Model Name:** `db_tier_selector_v1`
 
 **Status Values:**
+
 - [x] `eligible` — project qualifies for full Pro tier (Supabase Pro + Upstash PAYG)
 - [x] `manual_review` — project needs custom assessment (high compliance, large data)
 - [x] `blocked` — project cannot proceed without data migration or compliance review
@@ -482,21 +503,24 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Score Range:** 0–100
 
 **Weighted Factors:**
-| Factor | Weight | Source | Why it matters |
-|---|---:|---|---|
-| Monthly record write volume | 0.30 | GitHub Actions run frequency | Determines connection pool requirements |
-| Vector embedding count | 0.25 | Agent count × run frequency | Determines pgvector vs. Qdrant threshold |
-| Compliance requirements | 0.25 | Project type (HIPAA/SOC/PII) | Drives vendor selection |
-| Monthly budget ceiling | 0.20 | Project budget config | Hard ceiling on tier selection |
+
+| Factor                      | Weight | Source                       | Why it matters                           |
+| --------------------------- | -----: | ---------------------------- | ---------------------------------------- |
+| Monthly record write volume |   0.30 | GitHub Actions run frequency | Determines connection pool requirements  |
+| Vector embedding count      |   0.25 | Agent count × run frequency  | Determines pgvector vs. Qdrant threshold |
+| Compliance requirements     |   0.25 | Project type (HIPAA/SOC/PII) | Drives vendor selection                  |
+| Monthly budget ceiling      |   0.20 | Project budget config        | Hard ceiling on tier selection           |
 
 **Threshold Bands:**
-| Score Range | Status | Action |
-|---|---|---|
-| 70–100 | eligible | Auto-deploy Supabase Pro + Upstash PAYG |
-| 40–69 | manual_review | Review queue: evaluate custom tier |
-| 0–39 | blocked | Flag for compliance/budget review before deployment |
+
+| Score Range | Status        | Action                                              |
+| ----------- | ------------- | --------------------------------------------------- |
+| 70–100      | eligible      | Auto-deploy Supabase Pro + Upstash PAYG             |
+| 40–69       | manual_review | Review queue: evaluate custom tier                  |
+| 0–39        | blocked       | Flag for compliance/budget review before deployment |
 
 **Audit Trail Required:**
+
 - [x] Model version recorded
 - [x] Factor values recorded
 - [x] Explanation trail recorded
@@ -506,6 +530,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Async Safety Rule:** Score computation uses `Promise.all` for async factor lookups. Never call async scoring functions inside `Array.prototype.filter`.
 
 **Tenant / Client Separation:**
+
 - **Organization boundary:** Audrey-owned (midnghtsapphire org)
 - **Project boundary:** revvel-standards platform
 - **Data domain:** infrastructure / platform
@@ -516,6 +541,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Current Status:** Not Ready — database does not exist yet
 
 **Readiness Checklist:**
+
 - [ ] Supabase project created and schema deployed
 - [ ] Upstash Redis instance created
 - [ ] pgvector extension enabled on Supabase
@@ -576,6 +602,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Current Status:** 4 pre-existing failures in `verify-bito-installation.sh` tests — unrelated to this WR. Do not fix here.
 
 **New failures to watch for post-implementation:**
+
 1. `workflow-yaml-validation.test.js` — must pass for every new fleet agent workflow added
 2. `aggregate-project-dashboard.test.js` — will need update when dashboard switches from static JSON to Supabase
 
@@ -584,6 +611,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Current Status:** 1 pre-existing: `anti-scaffolding-enforcer.yml` missing top-level `name`. Pre-existing — do not fix here.
 
 **New schema files to lint:**
+
 - All new `.yml` fleet agent workflows must pass `npm run workflows:validate`
 - Supabase migration SQL files should pass `sqlfluff lint` (add to CI)
 
@@ -592,6 +620,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Critical:** 0 new vulnerabilities introduced by this WR
 
 **Secrets management:**
+
 - All new secrets (SUPABASE_URL, SUPABASE_SERVICE_KEY, UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN) must be added via Doppler and synced per `docs/SECRETS_MANAGEMENT.md`
 - Service keys must use Supabase Row-Level Security (RLS) — never expose anon key in server-side workflows
 - Upstash tokens are read-only by default for queue consumers; write tokens only in producer workflows
@@ -601,6 +630,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Current Status:** Not deployed — no database exists yet
 
 **Phased Deployment Plan:**
+
 1. **Phase 0 (Day 1):** Create Supabase project, enable pgvector, deploy initial schema (5 tables)
 2. **Phase 1 (Days 2–5):** Wire GitHub Issues Sync Bot; validate issues → Supabase pipeline
 3. **Phase 2 (Week 2):** Wire Upstash Redis queue; migrate `workflow_dispatch` calls to queue-backed dispatch
@@ -639,6 +669,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 #### UX/UI Improvements
 
 **Dashboard Migration (dashboard.html):**
+
 - **Current:** Static `dashboard-data.json` rebuilt by `npm test` (problematic — corrupts on concurrent runs)
 - **Improved:** Dashboard fetches live data from Supabase REST API using `anon` role with RLS
 - **Impact:** Real-time updates without workflow re-runs; eliminates the `git checkout dashboard-data.json` workaround
@@ -650,10 +681,12 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 #### Performance Optimization
 
 **Connection Pooling:**
+
 - Supabase Pro includes Supavisor connection pooler — configure `?pgbouncer=true` in connection strings for GitHub Actions workflows that open short-lived connections
 - Target: max 20 concurrent connections per workflow run (well within Supabase Pro limits)
 
 **Query Optimization:**
+
 - Add GIN index on `issues.labels` (JSONB array) for label-based filtering
 - Add HNSW index on `agent_embeddings.embedding` for fast vector similarity search
 - Upstash Redis: use pipeline commands to batch queue operations
@@ -663,27 +696,31 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 #### Affiliate Links Integration
 
 **Links to Add:**
-| Product/Service | Affiliate Program | Commission | Location |
-|----------------|-------------------|------------|----------|
-| Supabase | [Supabase Partners](https://supabase.com/partners/integrations) | ~20% recurring | WR docs, README, blog posts |
-| Upstash | Check upstash.com/affiliates | TBD | Same as above |
-| Neon | Neon referral program | Check neon.tech | As alternative mention |
+
+| Product/Service | Affiliate Program                                               | Commission      | Location                    |
+| --------------- | --------------------------------------------------------------- | --------------- | --------------------------- |
+| Supabase        | [Supabase Partners](https://supabase.com/partners/integrations) | ~20% recurring  | WR docs, README, blog posts |
+| Upstash         | Check upstash.com/affiliates                                    | TBD             | Same as above               |
+| Neon            | Neon referral program                                           | Check neon.tech | As alternative mention      |
 
 #### Payment Integration
 
 **Gumroad:**
+
 - [x] Package this WR + schema files + fleet agent workflows as "Revvel DB Fleet Starter Kit"
 - Product SKU: `revvel-db-fleet-v1`
 - Price: $47 (entry) / $97 (with video walkthrough)
 - Expected: 5–10 sales/mo in first 3 months
 
 **LemonSqueezy:**
+
 - Alternative to Gumroad; better EU VAT handling
 - **Recommended Platform:** Start with Gumroad (simpler), migrate to LemonSqueezy when EU sales exceed 20%
 
 #### Tracking & Analytics
 
 **To Implement:**
+
 - [x] Supabase itself provides query analytics (Pro plan includes Dashboard → Reports)
 - [ ] Add Plausible Analytics to any public-facing documentation pages
 - [ ] Revenue tracking: connect Gumroad webhook → Supabase `sales` table for unified revenue reporting
@@ -698,6 +735,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Current Status:** Not deployed — create new project
 
 **Configuration:**
+
 - [ ] Create Supabase project at app.supabase.com (region: `us-east-1` to match GitHub-hosted runners)
 - [ ] Enable pgvector extension: `CREATE EXTENSION IF NOT EXISTS vector;`
 - [ ] Deploy initial schema (5 core tables)
@@ -705,6 +743,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 - [ ] Add SUPABASE_URL + SUPABASE_SERVICE_KEY to Doppler → sync to GitHub
 
 **URLs:**
+
 - **Production:** `https://[project-ref].supabase.co`
 - **REST API:** `https://[project-ref].supabase.co/rest/v1/`
 - **Health:** `https://[project-ref].supabase.co/health`
@@ -714,6 +753,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Current Status:** Not deployed — create new database
 
 **Configuration:**
+
 - [ ] Create Upstash Redis database at console.upstash.com (region: `us-east-1`)
 - [ ] Add UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN to Doppler
 - [ ] Set max TTL of 24h for job queue entries (jobs older than 24h without pickup = DLQ)
@@ -731,20 +771,22 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 ### TEST Section
 
 **Required addition to README.md:**
+
 ```markdown
 ## Test
 
-| Service | Status | Endpoint |
-|---------|--------|----------|
-| Supabase DB | ✅ Live | https://[ref].supabase.co/health |
-| Upstash Redis | ✅ Live | https://console.upstash.com |
-| Meilisearch | ✅ Live | MCP server (mcp-servers/meilisearch-mcp/) |
-| Dashboard (live data) | 🟡 Pending DB migration | https://dashboard.revvel.co |
+| Service               | Status                  | Endpoint                                  |
+| --------------------- | ----------------------- | ----------------------------------------- |
+| Supabase DB           | ✅ Live                 | https://[ref].supabase.co/health          |
+| Upstash Redis         | ✅ Live                 | https://console.upstash.com               |
+| Meilisearch           | ✅ Live                 | MCP server (mcp-servers/meilisearch-mcp/) |
+| Dashboard (live data) | 🟡 Pending DB migration | https://dashboard.revvel.co               |
 ```
 
 ### Additional Documentation
 
 **To Create:**
+
 - [ ] `docs/DATABASE_ARCHITECTURE.md` — canonical reference for the database fleet (this WR's architecture diagram + schema)
 - [ ] `docs/SECRETS_MANAGEMENT.md` update — add Supabase + Upstash secret names
 - [ ] `standards/DATABASE_FLEET_STANDARD.md` — exportable standard for use across all MIDNGHTSAPPHIRE repos
@@ -823,13 +865,13 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 
 ## Risks & Considerations
 
-| Risk | Severity | Probability | Mitigation |
-|------|----------|-------------|------------|
-| Supabase free tier limits (500MB) hit before Pro upgrade | Medium | Medium | Start on Pro ($25/mo) from Day 1; free tier too small for production WR + issues data |
-| pgvector query latency degrades at >5M vectors | Medium | Low (months away) | Monitor vector count; migrate to Qdrant Cloud when approaching 3M |
-| Upstash Redis PAYG cost spike from agent runaway | Medium | Low | Set spending cap in Upstash console ($50/mo max); alert at 80% |
-| Supabase vendor lock-in on storage/auth | Low | High (accepted) | Schema is standard PostgreSQL; can migrate to self-hosted Postgres with 1–2 days of work |
-| GitHub Actions secrets exposure in logs | High | Low | Use GitHub Secrets (never log secrets); Doppler sync via existing `doppler-secrets-sync.yml` |
+| Risk                                                     | Severity | Probability       | Mitigation                                                                                   |
+| -------------------------------------------------------- | -------- | ----------------- | -------------------------------------------------------------------------------------------- |
+| Supabase free tier limits (500MB) hit before Pro upgrade | Medium   | Medium            | Start on Pro ($25/mo) from Day 1; free tier too small for production WR + issues data        |
+| pgvector query latency degrades at >5M vectors           | Medium   | Low (months away) | Monitor vector count; migrate to Qdrant Cloud when approaching 3M                            |
+| Upstash Redis PAYG cost spike from agent runaway         | Medium   | Low               | Set spending cap in Upstash console ($50/mo max); alert at 80%                               |
+| Supabase vendor lock-in on storage/auth                  | Low      | High (accepted)   | Schema is standard PostgreSQL; can migrate to self-hosted Postgres with 1–2 days of work     |
+| GitHub Actions secrets exposure in logs                  | High     | Low               | Use GitHub Secrets (never log secrets); Doppler sync via existing `doppler-secrets-sync.yml` |
 
 ---
 
@@ -838,10 +880,12 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 ### Alternative 1: Firebase + Firestore
 
 **Pros:**
+
 - Fast to set up, generous free tier, real-time out of the box
 - Strong Google Cloud ecosystem integration
 
 **Cons:**
+
 - NoSQL — no SQL queries; requires application-level joins for complex agent queries
 - No vector support — separate Pinecone/Qdrant needed ($70+/mo)
 - Higher cost at scale (Firestore reads: $0.06/100K — expensive for polling-heavy agents)
@@ -852,10 +896,12 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 ### Alternative 2: PlanetScale (MySQL/Vitess)
 
 **Pros:**
+
 - Excellent schema branching, zero-downtime migrations
 - Horizontal scaling for very large datasets
 
 **Cons:**
+
 - No free tier since April 2024 ($39/mo minimum)
 - MySQL-only — no pgvector, no native JSON operators as powerful as PostgreSQL
 - No auth/storage bundled — need separate vendors
@@ -866,10 +912,12 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 ### Alternative 3: Keep Markdown/JSON Files
 
 **Pros:**
+
 - Zero cost
 - No new infrastructure to manage
 
 **Cons:**
+
 - Concurrent write conflicts already causing production issues (dashboard-data.json)
 - Not queryable — requires reading all files to find anything
 - No audit trail
@@ -883,17 +931,20 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 ## References
 
 ### Documentation
+
 - [AGENTS.md](../docs/AGENTS.md) — Agent standards and conventions
 - [WEEKLY_RESEARCH_PROCESS.md](../docs/WEEKLY_RESEARCH_PROCESS.md) — WR process requirements
 - [docs/orchestration/project-orchestration-standard.md](../docs/orchestration/project-orchestration-standard.md) — Completion gates
 - [standards/DECISION_SCORING_ENGINE_STANDARD.md](../standards/DECISION_SCORING_ENGINE_STANDARD.md) — Scoring model standard
 
 ### External Resources
+
 - [Supabase Documentation](https://supabase.com/docs): PostgreSQL + pgvector + REST API
 - [Upstash Documentation](https://docs.upstash.com): Redis HTTP API + QStash
 - [pgvector GitHub](https://github.com/pgvector/pgvector): Vector similarity extension for PostgreSQL
 
 ### Research Sources
+
 - [FutureMarketInsights — Managed DB Market 2025–2035](https://www.futuremarketinsights.com/reports/managed-database-services-market): Market size $351B–$445B, 12–13% CAGR
 - [PrecedenceResearch — Cloud DB & DBaaS 2025](https://www.precedenceresearch.com/cloud-database-and-dbaas-market): DBaaS market $23.45B (2025), growing to $103B by 2035
 - [Bytebase: Neon vs Supabase 2025](https://www.bytebase.com/blog/neon-vs-supabase/): PostgreSQL platform comparison

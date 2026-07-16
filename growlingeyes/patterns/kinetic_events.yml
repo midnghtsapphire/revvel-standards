@@ -22,7 +22,7 @@ regex:
     pattern: (\d+)\s*(killed|dead|casualties|wounded|injured|KIA)
     score: 60
     description: Casualty numbers
-  
+
   - name: MILITARY_UNIT
     pattern: (\d+(?:st|nd|rd|th))\s+(Brigade|Battalion|Regiment|Division|Corps)
     score: 40

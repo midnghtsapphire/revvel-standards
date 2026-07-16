@@ -81,19 +81,27 @@ function callOpenRouter(model, systemPrompt, userPrompt) {
 
     const req = https.request(options, (res) => {
       const chunks = [];
-      res.on("data", (chunk) => { chunks.push(chunk); });
+      res.on("data", (chunk) => {
+        chunks.push(chunk);
+      });
       res.on("end", () => {
         const data = Buffer.concat(chunks).toString();
         try {
           const parsed = JSON.parse(data);
           if (parsed.error) {
-            reject(new Error(`OpenRouter error: ${parsed.error.message || "Unknown error"}`));
+            reject(
+              new Error(
+                `OpenRouter error: ${parsed.error.message || "Unknown error"}`,
+              ),
+            );
             return;
           }
           const content = parsed.choices?.[0]?.message?.content ?? "";
           resolve(content);
         } catch (err) {
-          reject(new Error(`Failed to parse OpenRouter response: ${err.message}`));
+          reject(
+            new Error(`Failed to parse OpenRouter response: ${err.message}`),
+          );
         }
       });
     });
@@ -109,9 +117,8 @@ function callOpenRouter(model, systemPrompt, userPrompt) {
 // ---------------------------------------------------------------------------
 
 function buildTestAgents(targetUrl, appName, scenarios) {
-  const scenarioList = scenarios === "all"
-    ? "all standard S.H.I.F.T. scenarios"
-    : scenarios;
+  const scenarioList =
+    scenarios === "all" ? "all standard S.H.I.F.T. scenarios" : scenarios;
 
   return [
     {
@@ -299,13 +306,19 @@ async function main() {
   const testAgents = buildTestAgents(TARGET_URL, APP_NAME, TEST_SCENARIOS);
 
   // Run all agents in parallel
-  console.log(`⚡ Running ${testAgents.length} S.H.I.F.T. test agents in parallel...`);
+  console.log(
+    `⚡ Running ${testAgents.length} S.H.I.F.T. test agents in parallel...`,
+  );
   const startTime = Date.now();
 
   const agentPromises = testAgents.map(async (agent) => {
     console.log(`  → [${agent.name}] Starting (${agent.model})...`);
     try {
-      const content = await callOpenRouter(agent.model, agent.systemPrompt, agent.userPrompt);
+      const content = await callOpenRouter(
+        agent.model,
+        agent.systemPrompt,
+        agent.userPrompt,
+      );
       console.log(`  ✅ [${agent.name}] Complete`);
       return { name: agent.name, content };
     } catch (err) {
@@ -326,13 +339,15 @@ async function main() {
     synthesis = await callOpenRouter(
       "anthropic/claude-opus-4",
       "You are an expert QA lead synthesizing behavioral test reports into actionable findings.",
-      synthPrompt
+      synthPrompt,
     );
     console.log(`✅ Synthesis complete`);
   } catch (err) {
     console.error(`❌ Synthesis failed: ${err.message}`);
     // Fall back to raw reports if synthesis fails
-    synthesis = reports.map((r) => `## ${r.name}\n\n${r.content}`).join("\n\n---\n\n");
+    synthesis = reports
+      .map((r) => `## ${r.name}\n\n${r.content}`)
+      .join("\n\n---\n\n");
   }
 
   // Write output
@@ -350,10 +365,12 @@ async function main() {
 }
 
 if (require.main === module) {
-main().catch((err) => {
-  console.error("Fatal error:", err);
-  process.exit(1);
-});
+  main().catch((err) => {
+    console.error("Fatal error:", err);
+    process.exit(1);
+  });
 }
 
-if (typeof module !== "undefined" && module.exports) { module.exports = { main, callOpenRouter }; }
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { main, callOpenRouter };
+}

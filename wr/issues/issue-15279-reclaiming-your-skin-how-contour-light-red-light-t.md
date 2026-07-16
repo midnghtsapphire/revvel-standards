@@ -12,6 +12,7 @@
 Postpartum and body-conscious consumers are actively seeking non-invasive, at-home solutions for stretch marks. Red light therapy (RLT) and contour light devices are a growing wellness category with strong search demand, high AOV affiliate products, and a receptive audience willing to pay for educational content, tracking tools, and curated product recommendations.
 
 **Revenue vectors:**
+
 - Affiliate commissions on RLT devices ($200–$2,000 AOV)
 - Sponsored content from device manufacturers
 - Premium subscription (progress tracking, protocol guides)
@@ -24,6 +25,7 @@ Postpartum and body-conscious consumers are actively seeking non-invasive, at-ho
 ## 2. Product Concept
 
 A content-first web property + companion progress tracking tool that helps users:
+
 - Understand what stretch marks are and why RLT may help
 - Compare devices (wavelength, irradiance, coverage, price)
 - Log sessions and track visual progress over time
@@ -52,13 +54,13 @@ A content-first web property + companion progress tracking tool that helps users
 
 ## 5. Monetization Stack
 
-| Channel | Est. Month 3 | Est. Month 6 |
-|---|---|---|
-| Affiliate (devices) | $1,500 | $4,000 |
-| Affiliate (adjuncts: oils, creams) | $300 | $800 |
-| Sponsored posts | $0 | $1,500 |
-| Digital products | $200 | $700 |
-| **Total** | **$2,000** | **$7,000** |
+| Channel                            | Est. Month 3 | Est. Month 6 |
+| ---------------------------------- | ------------ | ------------ |
+| Affiliate (devices)                | $1,500       | $4,000       |
+| Affiliate (adjuncts: oils, creams) | $300         | $800         |
+| Sponsored posts                    | $0           | $1,500       |
+| Digital products                   | $200         | $700         |
+| **Total**                          | **$2,000**   | **$7,000**   |
 
 ---
 
@@ -90,11 +92,11 @@ Earlier drafts of this WR conflated three separate regulatory concerns and attem
 
 ### 8.1 Three Independent Regulatory Regimes
 
-| Regime | Triggered By | Mitigated By |
-|---|---|---|
-| **HIPAA** | Handling Protected Health Information (PHI) as a Covered Entity or Business Associate | Full administrative, physical, and technical safeguards — **not** disclaimers, **not** storage location |
-| **FDA SaMD** | Software that diagnoses, treats, cures, mitigates, or prevents disease | Scoping the product as wellness/educational; disclaimers; avoiding diagnostic claims |
-| **State privacy laws** (CCPA/CPRA, WA My Health My Data, etc.) | Collecting personal or consumer health data, even outside HIPAA | Privacy notices, consent, deletion rights, data minimization |
+| Regime                                                         | Triggered By                                                                          | Mitigated By                                                                                            |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **HIPAA**                                                      | Handling Protected Health Information (PHI) as a Covered Entity or Business Associate | Full administrative, physical, and technical safeguards — **not** disclaimers, **not** storage location |
+| **FDA SaMD**                                                   | Software that diagnoses, treats, cures, mitigates, or prevents disease                | Scoping the product as wellness/educational; disclaimers; avoiding diagnostic claims                    |
+| **State privacy laws** (CCPA/CPRA, WA My Health My Data, etc.) | Collecting personal or consumer health data, even outside HIPAA                       | Privacy notices, consent, deletion rights, data minimization                                            |
 
 These must be evaluated **separately**. Reducing FDA SaMD risk via disclaimers does **not** reduce HIPAA exposure. Client-side storage does **not** remove HIPAA applicability if PHI is being handled.
 
@@ -117,11 +119,13 @@ HIPAA applicability depends on whether we act as a **Covered Entity** or **Busin
 ### 8.3 What Disclaimers Can and Cannot Do
 
 **Disclaimers CAN:**
+
 - Support scoping the product as general wellness/educational for FDA SaMD purposes
 - Set user expectations about non-medical intent
 - Support consent and informed use
 
 **Disclaimers CANNOT:**
+
 - Exempt the app from HIPAA if PHI is handled
 - Exempt the app from state consumer health privacy laws
 - Substitute for BAAs, audit logging, access controls, or breach procedures
@@ -147,7 +151,7 @@ Encryption alone is not compliance. Storage location alone is not compliance.
 - [ ] **Formal Privacy Impact Assessment (PIA)** with legal/compliance covering HIPAA, FDA SaMD, CCPA/CPRA, WA MHMDA, GDPR (if EU traffic), and applicable state laws.
 - [ ] **Data classification review:** document, per data element, whether it is PHI, consumer health data, sensitive PI, or non-sensitive, and cite the legal basis for that classification.
 - [ ] **Regulatory scoping memo** signed by counsel stating whether HIPAA applies and why/why not.
-- [ ] **If HIPAA applies:** complete the §8.4 program *before* the tracker collects any user input.
+- [ ] **If HIPAA applies:** complete the §8.4 program _before_ the tracker collects any user input.
 - [ ] **If HIPAA does not apply:** document the reasoning explicitly (e.g., "data is not linked to a Covered Entity relationship; we are a direct-to-consumer wellness publisher"), and implement the applicable state-law consumer health privacy program (notice, consent, DSAR handling, deletion, minimization, security).
 - [ ] **Separate FDA SaMD analysis:** confirm that content, features, and marketing claims stay within wellness/educational scope. Track any feature that could imply diagnosis, treatment, mitigation, prevention, or cure of disease and route to legal review.
 - [ ] **Vendor review:** identify every third party touching user inputs and confirm the correct contractual instruments are in place (BAA if HIPAA; DPA / CCPA service provider addendum otherwise).
@@ -165,19 +169,19 @@ Until §8.5 is complete:
 
 ### 8.7 Documentation Trail
 
-All compliance decisions — including a decision that HIPAA does *not* apply — must be documented, dated, and signed off. "We used disclaimers" and "we stored it client-side" are not acceptable entries in that record.
+All compliance decisions — including a decision that HIPAA does _not_ apply — must be documented, dated, and signed off. "We used disclaimers" and "we stored it client-side" are not acceptable entries in that record.
 
 ---
 
 ## 9. Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|---|---|---|---|
-| Regulatory action (HIPAA / state health privacy) | Medium | High | Complete §8.5 before any health data collection |
-| FDA SaMD reclassification | Low–Medium | High | Strict wellness/educational scoping; legal review of claims |
-| Affiliate program changes | Medium | Medium | Diversify across 3+ affiliate networks |
-| SEO algorithm shifts | Medium | Medium | Multi-channel traffic (Pinterest, YouTube, email) |
-| Content liability (medical claims) | Medium | High | Editorial review checklist; no outcome guarantees |
+| Risk                                             | Likelihood | Impact | Mitigation                                                  |
+| ------------------------------------------------ | ---------- | ------ | ----------------------------------------------------------- |
+| Regulatory action (HIPAA / state health privacy) | Medium     | High   | Complete §8.5 before any health data collection             |
+| FDA SaMD reclassification                        | Low–Medium | High   | Strict wellness/educational scoping; legal review of claims |
+| Affiliate program changes                        | Medium     | Medium | Diversify across 3+ affiliate networks                      |
+| SEO algorithm shifts                             | Medium     | Medium | Multi-channel traffic (Pinterest, YouTube, email)           |
+| Content liability (medical claims)               | Medium     | High   | Editorial review checklist; no outcome guarantees           |
 
 ---
 

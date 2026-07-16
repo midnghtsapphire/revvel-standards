@@ -21,13 +21,13 @@
 
 Before creating any content, the agent must:
 
-| Task | Tool | Output |
-|------|------|--------|
-| Validate demand | Social listening output from pipeline step 1 | Confirmed complaint volume ≥ 50 mentions / 30 days |
-| Analyze top 10 competing PDFs | Google, Gumroad, Etsy, Amazon KDP search | `research/competitors.md` — pricing, reviews, gaps |
-| Identify SEO keywords | Brave Search / Google Trends / Ahrefs (if available) | `research/keywords.md` — top 20 keywords, volume, difficulty |
-| Define target audience | LLM analysis of complaint clusters | `research/audience.md` — persona, pain points, willingness to pay |
-| Determine price point | Competitor pricing + audience analysis | `decision/pricing.json` — price, comparison rationale |
+| Task                          | Tool                                                 | Output                                                            |
+| ----------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------- |
+| Validate demand               | Social listening output from pipeline step 1         | Confirmed complaint volume ≥ 50 mentions / 30 days                |
+| Analyze top 10 competing PDFs | Google, Gumroad, Etsy, Amazon KDP search             | `research/competitors.md` — pricing, reviews, gaps                |
+| Identify SEO keywords         | Brave Search / Google Trends / Ahrefs (if available) | `research/keywords.md` — top 20 keywords, volume, difficulty      |
+| Define target audience        | LLM analysis of complaint clusters                   | `research/audience.md` — persona, pain points, willingness to pay |
+| Determine price point         | Competitor pricing + audience analysis               | `decision/pricing.json` — price, comparison rationale             |
 
 **Gate:** `research/brief.md` must exist and include all five outputs before proceeding.
 
@@ -59,14 +59,14 @@ build/pdf/
 
 ### Tooling
 
-| Tool | Purpose | Install |
-|------|---------|---------|
-| **ChatGPT / Claude** | AI writing assistants to brainstorm, outline, and generate PDF content | Web-based (chatgpt.com, claude.ai) |
-| **Canva / Canva AI** | Format AI-generated text into polished PDFs; create covers and promotional assets | Web-based (canva.com) or [Canva Connect APIs](https://www.canva.dev/docs/connect/) |
-| **Pandoc** | Markdown → PDF compilation | `apt install pandoc texlive-xetex` |
-| **WeasyPrint** (alternative) | HTML/CSS → PDF with better styling | `pip install weasyprint` |
-| **Puppeteer/Playwright** (alternative) | HTML → PDF via headless Chrome | `npm install puppeteer` |
-| **Figma** (via MCP or API) | Cover design, diagrams, infographics | Figma MCP server |
+| Tool                                   | Purpose                                                                           | Install                                                                            |
+| -------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| **ChatGPT / Claude**                   | AI writing assistants to brainstorm, outline, and generate PDF content            | Web-based (chatgpt.com, claude.ai)                                                 |
+| **Canva / Canva AI**                   | Format AI-generated text into polished PDFs; create covers and promotional assets | Web-based (canva.com) or [Canva Connect APIs](https://www.canva.dev/docs/connect/) |
+| **Pandoc**                             | Markdown → PDF compilation                                                        | `apt install pandoc texlive-xetex`                                                 |
+| **WeasyPrint** (alternative)           | HTML/CSS → PDF with better styling                                                | `pip install weasyprint`                                                           |
+| **Puppeteer/Playwright** (alternative) | HTML → PDF via headless Chrome                                                    | `npm install puppeteer`                                                            |
+| **Figma** (via MCP or API)             | Cover design, diagrams, infographics                                              | Figma MCP server                                                                   |
 
 ### Content Creation Workflow (AI-Assisted)
 
@@ -74,7 +74,7 @@ build/pdf/
    - Generate table of contents based on problem statement
    - Create section outlines with key points
    - Draft content for each section in markdown format
-   
+
 2. **Refine & Format** — Import AI-generated content into:
    - Canva for visual layout and PDF export
    - Or keep in markdown and use Pandoc/WeasyPrint for compilation
@@ -119,15 +119,16 @@ python3 scripts/compile-pdf.py \
 
 Every PDF product needs these design assets:
 
-| Asset | Figma frame | Used for |
-|-------|-------------|----------|
-| Cover page | `<product-slug>/cover` | PDF first page + store thumbnail |
-| Landing page hero | `<product-slug>/hero` | Website above-the-fold |
-| Social preview | `<product-slug>/og-image` | Open Graph + Twitter Card (1200×630) |
-| Store thumbnail | `<product-slug>/thumbnail` | Gumroad/Etsy listing (1280×720) |
-| Mockup | `<product-slug>/mockup` | 3D book/tablet mockup for landing page |
+| Asset             | Figma frame                | Used for                               |
+| ----------------- | -------------------------- | -------------------------------------- |
+| Cover page        | `<product-slug>/cover`     | PDF first page + store thumbnail       |
+| Landing page hero | `<product-slug>/hero`      | Website above-the-fold                 |
+| Social preview    | `<product-slug>/og-image`  | Open Graph + Twitter Card (1200×630)   |
+| Store thumbnail   | `<product-slug>/thumbnail` | Gumroad/Etsy listing (1280×720)        |
+| Mockup            | `<product-slug>/mockup`    | 3D book/tablet mockup for landing page |
 
 **Figma workflow:**
+
 1. Agent requests design via Figma MCP or creates from brand template
 2. Brand colors/fonts from `templates/brand/BRAND_GUIDE.md`
 3. Export as PNG (300 DPI for print, 72 DPI for web)
@@ -148,21 +149,21 @@ This combination requires no backend infrastructure and scales infinitely with z
 
 ### Primary Stores
 
-| Store | How to upload | Pricing | Commission |
-|-------|--------------|---------|------------|
-| **Gumroad** | API (`POST /products`) or dashboard | Any price, $0 minimum | 10% flat |
-| **Carrd** | Web builder (carrd.co) — embed Gumroad link or Stripe Payment Link | Free (up to 3 sites) / $19/year Pro | N/A (landing page only — no per-sale fee) |
-| **Etsy (digital)** | Etsy API or dashboard → digital download listing | $0.99+ | 6.5% transaction + $0.20 listing |
-| **Own site (Stripe)** | Stripe Payment Link → deliver via email/download page | Any price | 2.9% + $0.30 |
+| Store                 | How to upload                                                      | Pricing                             | Commission                                |
+| --------------------- | ------------------------------------------------------------------ | ----------------------------------- | ----------------------------------------- |
+| **Gumroad**           | API (`POST /products`) or dashboard                                | Any price, $0 minimum               | 10% flat                                  |
+| **Carrd**             | Web builder (carrd.co) — embed Gumroad link or Stripe Payment Link | Free (up to 3 sites) / $19/year Pro | N/A (landing page only — no per-sale fee) |
+| **Etsy (digital)**    | Etsy API or dashboard → digital download listing                   | $0.99+                              | 6.5% transaction + $0.20 listing          |
+| **Own site (Stripe)** | Stripe Payment Link → deliver via email/download page              | Any price                           | 2.9% + $0.30                              |
 
 ### Secondary Stores
 
-| Store | Notes |
-|-------|-------|
-| **Payhip** | 0% commission on paid plan, 5% on free |
-| **LemonSqueezy** | Good international tax handling |
-| **Amazon KDP** | If the PDF is book-length (≥ 24 pages); needs ISBN |
-| **Creative Market** | If the PDF is a design template |
+| Store               | Notes                                              |
+| ------------------- | -------------------------------------------------- |
+| **Payhip**          | 0% commission on paid plan, 5% on free             |
+| **LemonSqueezy**    | Good international tax handling                    |
+| **Amazon KDP**      | If the PDF is book-length (≥ 24 pages); needs ISBN |
+| **Creative Market** | If the PDF is a design template                    |
 
 ### Upload Automation
 
@@ -193,6 +194,7 @@ Every PDF product gets a landing page deployed to the product's subdomain or pat
 ```
 
 Landing page must include:
+
 - Hero section with mockup image
 - Problem statement (from research)
 - Table of contents preview
@@ -206,13 +208,13 @@ Landing page must include:
 
 These must be provisioned (via BOM gatekeeper) before the build starts:
 
-| Connection | Purpose | Where stored |
-|------------|---------|--------------|
-| **Gumroad API key** | Upload products | Doppler `revvel-standards/prd/GUMROAD_ACCESS_TOKEN` |
-| **Stripe API key** | Payment links, products | Doppler `revvel-standards/prd/STRIPE_SECRET_KEY` |
-| **Figma access token** | Design generation | Doppler `revvel-standards/prd/FIGMA_ACCESS_TOKEN` |
-| **Google Search Console** | SEO submission | OAuth via Doppler |
-| **Etsy API key** | Etsy listings (optional) | Doppler `revvel-standards/prd/ETSY_API_KEY` |
+| Connection                | Purpose                  | Where stored                                        |
+| ------------------------- | ------------------------ | --------------------------------------------------- |
+| **Gumroad API key**       | Upload products          | Doppler `revvel-standards/prd/GUMROAD_ACCESS_TOKEN` |
+| **Stripe API key**        | Payment links, products  | Doppler `revvel-standards/prd/STRIPE_SECRET_KEY`    |
+| **Figma access token**    | Design generation        | Doppler `revvel-standards/prd/FIGMA_ACCESS_TOKEN`   |
+| **Google Search Console** | SEO submission           | OAuth via Doppler                                   |
+| **Etsy API key**          | Etsy listings (optional) | Doppler `revvel-standards/prd/ETSY_API_KEY`         |
 
 ---
 
@@ -225,6 +227,7 @@ This section describes the recommended end-to-end workflow for creating and sell
 Before creating anything, identify a specific problem your audience is actively trying to solve. Digital products work best when they provide a direct solution.
 
 **Examples of high-demand niches:**
+
 - "12-week back pain rehab program"
 - "Hypertrophy training guide"
 - "Productivity workflow template"
@@ -232,6 +235,7 @@ Before creating anything, identify a specific problem your audience is actively 
 - Industry-specific checklists and templates
 
 **Research activities:**
+
 - Use social listening (Step 1 of AUTOMATED_PRODUCT_PIPELINE) to find high-volume complaints
 - Validate demand through Reddit, Twitter/X, YouTube comments, forums
 - Analyze competitor PDFs on Gumroad, Etsy, Amazon KDP
@@ -319,6 +323,7 @@ Create a content channel that drives qualified traffic to your PDF:
    - Add timestamps and chapters
 
 **Why YouTube:**
+
 - Long-tail traffic (videos continue generating views for years)
 - High buyer intent (people actively searching for solutions)
 - Free organic reach (no paid ads required initially)
@@ -331,29 +336,34 @@ Create a content channel that drives qualified traffic to your PDF:
 **DO NOT** push your PDF aggressively from day one. Follow this timeline:
 
 **Phase 1: Value Building (Weeks 1–8)**
+
 - Focus purely on providing valuable free content
 - Build subscriber base and engagement
 - Establish authority in your niche
 - Do not mention your PDF yet
 
 **Phase 2: Soft Introduction (Weeks 9–12)**
+
 - Casually mention your PDF exists
 - Position it as "extra resources for those who want to go deeper"
 - Keep links in description, don't be pushy
 
 **Phase 3: Active Promotion (5,000–20,000 subscribers)**
+
 - Once you have consistent engagement and trust, promote more actively
 - Create dedicated videos about your PDF (e.g., "How I created this guide")
 - Offer limited-time discounts
 - Share testimonials and results
 
 **Why this timing works:**
+
 - Viewers already trust your authority
 - PDF feels like a helpful extension, not an advertisement
 - Near 100% profit margins mean every sale counts
 - No inventory or shipping costs, so late promotion doesn't hurt
 
 **Scaling:**
+
 - As your channel grows, your PDF sales scale automatically
 - Create additional PDFs to serve the same audience
 - Bundle products for higher-value offerings
@@ -365,16 +375,17 @@ Create a content channel that drives qualified traffic to your PDF:
 
 ### YouTube Channel Growth Milestones
 
-| Milestone | Timeline | Focus | Expected PDF Sales |
-|-----------|----------|-------|-------------------|
-| 0–1K subs | Months 1–3 | Content quality, SEO optimization | 0–10/month |
-| 1K–5K subs | Months 4–6 | Consistency, soft PDF mentions | 10–50/month |
-| 5K–20K subs | Months 7–12 | Active promotion, product expansion | 50–200/month |
-| 20K–100K subs | Year 2+ | Multiple products, affiliate deals, sponsorships | 200–1000+/month |
+| Milestone     | Timeline    | Focus                                            | Expected PDF Sales |
+| ------------- | ----------- | ------------------------------------------------ | ------------------ |
+| 0–1K subs     | Months 1–3  | Content quality, SEO optimization                | 0–10/month         |
+| 1K–5K subs    | Months 4–6  | Consistency, soft PDF mentions                   | 10–50/month        |
+| 5K–20K subs   | Months 7–12 | Active promotion, product expansion              | 50–200/month       |
+| 20K–100K subs | Year 2+     | Multiple products, affiliate deals, sponsorships | 200–1000+/month    |
 
 ### Additional Marketing Channels (Post-Launch)
 
 Once YouTube is established, expand to:
+
 - **Twitter/X** — Share tips and link to videos
 - **Reddit** — Participate in relevant communities, offer value before promoting
 - **Email list** — Capture emails via Gumroad, send updates about new PDFs
@@ -384,6 +395,7 @@ Once YouTube is established, expand to:
 ### Paid Advertising (Optional, After Validation)
 
 Only invest in paid ads once you've validated organic demand:
+
 - **YouTube Ads** — Promote your best-performing videos
 - **Google Ads** — Target high-intent keywords
 - **Facebook/Instagram Ads** — Target lookalike audiences

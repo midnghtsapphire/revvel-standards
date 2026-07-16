@@ -47,7 +47,7 @@ catalog with PR citations.
    Wrap tools and re-exit non-zero when the outcome is not met. Assert, do
    not comment.
 7. **`nosemgrep` suppression comments must be adjacent.** The `# nosemgrep:
-   rule-id` comment has to be on the same line as the flagged expression, or
+rule-id` comment has to be on the same line as the flagged expression, or
    on the line immediately above with no blank line between. Anything else
    is silently ignored. Always include the rule-id so the suppression is
    narrow and auditable.

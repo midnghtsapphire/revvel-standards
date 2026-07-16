@@ -14,6 +14,7 @@
 ### Branch Protection
 
 Main branch protection rules:
+
 - Require pull request reviews (1 approval minimum)
 - Require status checks to pass
 - Require branches to be up to date
@@ -22,6 +23,7 @@ Main branch protection rules:
 ### GitHub Actions
 
 Enable:
+
 - Automated testing for benchmark scripts
 - Link checking (keep awesome list links valid)
 - Auto-labeling for community submissions
@@ -30,6 +32,7 @@ Enable:
 ### Labels
 
 Standard labels from revvel-standards:
+
 - `agent:anterion`, `agent:devika`, etc. — Per-agent issues
 - `benchmark` — Benchmark tasks and improvements
 - `community-review` — Community-submitted reviews
@@ -47,10 +50,12 @@ Standard labels from revvel-standards:
 ### Repository Secrets
 
 Required secrets:
+
 - `OPENROUTER_API_KEY` — For automated agent testing
 - `DISPATCH_TOKEN` — For workflow triggers (if needed)
 
 Optional:
+
 - API keys for commercial agents (Cursor, Devin) if testing their APIs
 
 ## Initial File Structure
@@ -100,6 +105,7 @@ devina-imposter/
 ### Agent Evaluations
 
 Each agent gets:
+
 - Detailed capability matrix
 - Setup instructions
 - Real-world test results
@@ -110,6 +116,7 @@ Each agent gets:
 ### Benchmarks
 
 Benchmarks must be:
+
 - Reproducible
 - Measurable
 - Representative of real-world tasks
@@ -118,6 +125,7 @@ Benchmarks must be:
 ### Integration Patterns
 
 Patterns must include:
+
 - Problem statement
 - Solution code
 - Configuration examples
@@ -126,17 +134,18 @@ Patterns must include:
 
 ## Differentiation from awesome-devins
 
-| Aspect | awesome-devins | devina-imposter |
-|--------|---------------|-----------------|
-| **Focus** | Catalog (what exists) | Evaluation (what works) |
-| **Content** | Links and descriptions | Test results and reviews |
-| **Tone** | Neutral/promotional | Critical/honest |
-| **Updates** | New agents added | Performance tracked over time |
-| **Community** | Submissions via form | Detailed reviews and benchmarks |
+| Aspect        | awesome-devins         | devina-imposter                 |
+| ------------- | ---------------------- | ------------------------------- |
+| **Focus**     | Catalog (what exists)  | Evaluation (what works)         |
+| **Content**   | Links and descriptions | Test results and reviews        |
+| **Tone**      | Neutral/promotional    | Critical/honest                 |
+| **Updates**   | New agents added       | Performance tracked over time   |
+| **Community** | Submissions via form   | Detailed reviews and benchmarks |
 
 ## Success Metrics
 
 Track:
+
 - Number of agents evaluated
 - Community contributions (reviews, benchmarks)
 - Benchmark runs executed
@@ -146,16 +155,19 @@ Track:
 ## Maintenance Plan
 
 ### Weekly
+
 - Update agent evaluations with new releases
 - Review community submissions
 - Run benchmark suite
 
 ### Monthly
+
 - Analyze trends (which agents improving/declining)
 - Update integration patterns
 - Publish changelog
 
 ### Quarterly
+
 - Major benchmark suite update
 - Comprehensive agent landscape analysis
 - Community survey
@@ -194,6 +206,7 @@ Since GitHub repository creation cannot be automated via this workflow:
 7. License: MIT
 
 Then:
+
 ```bash
 # On local machine
 mkdir devina-imposter
@@ -218,6 +231,7 @@ git push -u origin main
 ```
 
 Configure:
+
 - Settings → Branches → Branch protection for `main`
 - Settings → Secrets and variables → Actions → Add `OPENROUTER_API_KEY`
 - Settings → Actions → General → Allow all actions
@@ -225,6 +239,7 @@ Configure:
 ## Alignment with Revvel Standards
 
 This repository follows:
+
 - `wr/NORTH_STAR.md` — Revenue first (consulting potential)
 - `docs/AGENTS.md` — Driven autonomy in testing
 - `standards/TESTING.md` — Comprehensive test coverage

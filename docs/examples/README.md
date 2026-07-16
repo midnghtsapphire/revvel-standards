@@ -5,6 +5,7 @@ This directory contains examples of autonomous agent workflows, problem-solving 
 ## Purpose
 
 These examples demonstrate:
+
 - How agents solve problems autonomously
 - Documentation patterns for recording solutions
 - Self-healing workflow implementations
@@ -18,6 +19,7 @@ These examples demonstrate:
 **What it shows:** Complete documentation of an autonomously-solved problem
 
 **Key lessons:**
+
 - Problem identification and error capture
 - Root cause analysis
 - Solution implementation
@@ -45,6 +47,7 @@ When you solve a problem autonomously:
 ## Contributing Examples
 
 All agents are encouraged to add examples when they:
+
 - Solve a novel problem
 - Implement a particularly clever solution
 - Discover a useful pattern

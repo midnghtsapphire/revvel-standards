@@ -4,7 +4,7 @@
 **Date:** 2026-04-29  
 **Status:** Active  
 **Category:** Security & Compliance  
-**Parent Standard:** AUDREY_AUTONOMOUS_AGENT_STANDARD.md  
+**Parent Standard:** AUDREY_AUTONOMOUS_AGENT_STANDARD.md
 
 ---
 
@@ -29,6 +29,7 @@ This standard defines the **automated secret management and access control** str
 **What it is:** Enterprise access management platform for databases, servers, Kubernetes, cloud resources.
 
 **Key Features:**
+
 - Programmatic access management via REST API
 - SDKs in Python, Go, Java, Ruby
 - Dynamic approval workflows
@@ -37,11 +38,13 @@ This standard defines the **automated secret management and access control** str
 - Zero-trust network access
 
 **GitHub Repos:**
+
 - [strongdm/strongdm-sdk-python](https://github.com/strongdm/strongdm-sdk-python)
 - [strongdm/strongdm-sdk-java](https://github.com/strongdm/strongdm-sdk-java)
 - [strongdm/terraform-provider-sdm](https://github.com/strongdm/terraform-provider-sdm)
 
 **Why NOT Recommended for Revvel:**
+
 - ❌ **Proprietary/Paid** — Requires enterprise license, not FOSS
 - ❌ **Overkill** — Designed for large enterprises with complex infrastructure
 - ❌ **Vendor Lock-in** — Proprietary API and SDKs
@@ -54,6 +57,7 @@ This standard defines the **automated secret management and access control** str
 ### 1. **Infisical** (PRIMARY RECOMMENDATION)
 
 **Why Infisical:**
+
 - ✅ **MIT License** — True open source, self-hostable
 - ✅ **Modern Developer Experience** — CLI, web UI, API, SDKs
 - ✅ **API-First Design** — Full automation support
@@ -67,6 +71,7 @@ This standard defines the **automated secret management and access control** str
 **GitHub:** [Infisical/infisical](https://github.com/Infisical/infisical)
 
 **Use Cases:**
+
 - Environment variable management across projects
 - API key rotation and distribution
 - Secret sharing between team members
@@ -75,6 +80,7 @@ This standard defines the **automated secret management and access control** str
 - Development to production secret promotion
 
 **Quick Start:**
+
 ```bash
 # Install Infisical CLI
 curl -1sLf 'https://dl.cloudsmith.io/public/infisical/infisical-cli/setup.deb.sh' | sudo -E bash
@@ -95,6 +101,7 @@ infisical run -- npm start
 ```
 
 **API Automation Example:**
+
 ```python
 # Python SDK
 from infisical import InfisicalClient
@@ -115,6 +122,7 @@ for secret in secrets:
 ```
 
 **Self-Hosting:**
+
 ```bash
 # Docker Compose
 curl -o docker-compose.yml https://raw.githubusercontent.com/Infisical/infisical/main/docker-compose.yml
@@ -124,19 +132,22 @@ docker-compose up -d
 ### 2. **HashiCorp Vault / OpenBao** (ENTERPRISE ALTERNATIVE)
 
 **Why Vault/OpenBao:**
+
 - ✅ **Industry Standard** — Most mature secret management solution
 - ✅ **Extensive Integrations** — AWS, GCP, Azure, databases, SSH, PKI
 - ✅ **Dynamic Secrets** — Generate temporary credentials on-demand
 - ✅ **Encryption as a Service** — Encrypt/decrypt data without storing
 - ✅ **OpenBao Fork** — Maintains true open source (MPL 2.0) after HashiCorp license change
 
-**GitHub:** 
+**GitHub:**
+
 - [hashicorp/vault](https://github.com/hashicorp/vault) (BSL license on newer versions)
 - [openbao/openbao](https://github.com/openbao/openbao) (MPL 2.0 fork)
 
 **When to Use:** Large-scale deployments, enterprise compliance requirements, need for dynamic secrets.
 
 **API Example:**
+
 ```python
 import hvac
 
@@ -156,6 +167,7 @@ print(secret['data']['data']['api_key'])
 ### 3. **Mozilla SOPS** (GITOPS FOCUSED)
 
 **Why SOPS:**
+
 - ✅ **File-Based Encryption** — Encrypt specific keys in YAML/JSON/ENV files
 - ✅ **GitOps Friendly** — Commit encrypted secrets to Git
 - ✅ **Cloud KMS Integration** — AWS KMS, GCP KMS, Azure Key Vault, PGP
@@ -166,6 +178,7 @@ print(secret['data']['data']['api_key'])
 **When to Use:** Infrastructure as Code, GitOps workflows, Kubernetes secrets management.
 
 **Example:**
+
 ```bash
 # Encrypt a file
 sops -e secrets.yaml > secrets.enc.yaml
@@ -186,6 +199,7 @@ sops secrets.enc.yaml
 **Decision:** Use **Infisical** as the primary secret management tool for Revvel projects.
 
 **Rationale:**
+
 - MIT license aligns with FOSS-first philosophy
 - Modern API and developer experience
 - Self-hostable for production workloads
@@ -194,6 +208,7 @@ sops secrets.enc.yaml
 ### Phase 2: Infisical Deployment
 
 **Option A: Cloud Hosted** (Fastest start)
+
 ```bash
 # Sign up at https://app.infisical.com
 # Create organization: MIDNGHTSAPPHIRE
@@ -201,6 +216,7 @@ sops secrets.enc.yaml
 ```
 
 **Option B: Self-Hosted** (Production recommended)
+
 ```bash
 # Deploy to DigitalOcean droplet or Kubernetes cluster
 git clone https://github.com/Infisical/infisical
@@ -211,6 +227,7 @@ docker-compose -f docker-compose.prod.yml up -d
 ### Phase 3: Migration Plan
 
 **Step 1:** Inventory all secrets across projects
+
 ```bash
 # Find all .env files
 find . -name ".env*" -not -path "*/node_modules/*"
@@ -220,6 +237,7 @@ trufflehog git file://. --only-verified
 ```
 
 **Step 2:** Migrate to Infisical
+
 ```bash
 # For each project
 cd /path/to/project
@@ -228,6 +246,7 @@ infisical secrets set $(cat .env | xargs)
 ```
 
 **Step 3:** Update CI/CD workflows
+
 ```yaml
 # .github/workflows/deploy.yml
 jobs:
@@ -242,28 +261,30 @@ jobs:
 ```
 
 **Step 4:** Update application code
+
 ```javascript
 // Before
 const apiKey = process.env.API_KEY;
 
 // After (with Infisical SDK)
-import { InfisicalClient } from '@infisical/sdk';
+import { InfisicalClient } from "@infisical/sdk";
 
 const client = new InfisicalClient({
   token: process.env.INFISICAL_TOKEN,
 });
 
 const secrets = await client.listSecrets({
-  environment: process.env.NODE_ENV || 'development',
+  environment: process.env.NODE_ENV || "development",
   projectId: process.env.INFISICAL_PROJECT_ID,
 });
 
-const apiKey = secrets.find(s => s.secretKey === 'API_KEY').secretValue;
+const apiKey = secrets.find((s) => s.secretKey === "API_KEY").secretValue;
 ```
 
 ### Phase 4: Automation Integration
 
 **OpenRouter API Key Management:**
+
 ```python
 # scripts/openrouter-with-infisical.py
 from infisical import InfisicalClient
@@ -290,13 +311,14 @@ if is_key_expiring(openrouter_key.value):
 ```
 
 **GitHub Actions Integration:**
+
 ```yaml
 # .github/workflows/infisical-sync.yml
 name: Sync Infisical Secrets
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Every 6 hours
+    - cron: "0 */6 * * *" # Every 6 hours
   workflow_dispatch:
 
 jobs:
@@ -314,7 +336,7 @@ jobs:
         run: |
           # Export secrets from Infisical
           infisical export --format dotenv > .env
-          
+
           # Update GitHub secrets via API
           gh secret set OPENROUTER_API_KEY < .env
 ```
@@ -407,9 +429,9 @@ from datetime import datetime, timedelta
 
 def rotate_secrets_if_needed():
     client = InfisicalClient(token=os.environ['INFISICAL_TOKEN'])
-    
+
     secrets = client.list_secrets(environment="production")
-    
+
     for secret in secrets:
         if secret.updated_at < datetime.now() - timedelta(days=90):
             new_value = generate_new_secret_value(secret.key)
@@ -456,7 +478,7 @@ secret_management:
   provider: "infisical"
   environment: "{{ ENV }}"
   auto_refresh: true
-  cache_ttl: 300  # 5 minutes
+  cache_ttl: 300 # 5 minutes
 ```
 
 ### MCP Server Integration
@@ -503,7 +525,7 @@ name: Check Secret Expiration
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Daily
+    - cron: "0 0 * * *" # Daily
 
 jobs:
   check:
@@ -513,7 +535,7 @@ jobs:
         run: |
           expiring=$(infisical secrets list --env=production --format=json | \
             jq '.[] | select(.expiresAt != null and .expiresAt < (now + 604800))')
-          
+
           if [ -n "$expiring" ]; then
             gh issue create \
               --title "Secrets expiring soon" \
@@ -528,12 +550,12 @@ jobs:
 # Monitor Infisical audit logs for anomalies
 def detect_anomalies():
     logs = client.get_audit_logs(project_id=PROJECT_ID, limit=100)
-    
+
     # Check for unusual access patterns
     access_by_user = {}
     for log in logs:
         access_by_user[log.user] = access_by_user.get(log.user, 0) + 1
-    
+
     for user, count in access_by_user.items():
         if count > THRESHOLD:
             create_security_alert(
@@ -545,12 +567,12 @@ def detect_anomalies():
 
 ## Cost Analysis
 
-| Solution | License | Self-Hosted Cost | Cloud Cost | Recommendation |
-|----------|---------|------------------|------------|----------------|
-| Infisical | MIT | $5/mo (DigitalOcean) | Free tier, then $10/user/mo | ✅ Best for Revvel |
-| Vault/OpenBao | MPL/BSL | $10/mo | $0.03/hr on AWS | Enterprise alternative |
-| SOPS | MPL | $0 | $0 (uses cloud KMS) | GitOps workflows |
-| strongDM | Proprietary | N/A | $50-200/user/mo | ❌ Not recommended |
+| Solution      | License     | Self-Hosted Cost     | Cloud Cost                  | Recommendation         |
+| ------------- | ----------- | -------------------- | --------------------------- | ---------------------- |
+| Infisical     | MIT         | $5/mo (DigitalOcean) | Free tier, then $10/user/mo | ✅ Best for Revvel     |
+| Vault/OpenBao | MPL/BSL     | $10/mo               | $0.03/hr on AWS             | Enterprise alternative |
+| SOPS          | MPL         | $0                   | $0 (uses cloud KMS)         | GitOps workflows       |
+| strongDM      | Proprietary | N/A                  | $50-200/user/mo             | ❌ Not recommended     |
 
 ---
 

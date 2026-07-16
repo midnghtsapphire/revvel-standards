@@ -14,13 +14,15 @@ Nothing here is deleted — it is preserved verbatim in case any part of the
 framework is wanted again. Do **not** treat these as active guidance.
 
 ## Contents
+
 - `30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md` — the full 30-day framework
 - `30_DAY_INTEGRATION_GUIDE.md` — how it integrated with the pipeline
 - `IMPLEMENTATION_SUMMARY_30DAY_LAUNCH.md` — implementation summary
 - `QUICKSTART_30DAY_LAUNCH.md` — quick-start guide
 
 ## What replaced it
+
 - **Build scope:** one iteration, done in full (`docs/DEFINITION_OF_DONE.md`).
 - **Delivery:** one WR/spec → fan-out PRs per surface (app / cli / api / pdf).
 - **Marketing rollout** (waitlist → launch → scale) still happens over time and
-  is unaffected — only the *build-in-30-days* framing is retired.
+  is unaffected — only the _build-in-30-days_ framing is retired.

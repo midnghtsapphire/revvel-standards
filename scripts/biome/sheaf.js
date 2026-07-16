@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
 /**
  * BIOME · sheaf — the crew's connective tissue (the monitor feed).
@@ -25,7 +25,7 @@ function worseOf(a, b) {
 }
 
 function computeOverallHealth(sections) {
-  let overall = 'healthy';
+  let overall = "healthy";
   for (const s of sections || []) overall = worseOf(overall, s.status);
   return overall;
 }
@@ -35,13 +35,13 @@ function glueSections(sections, generatedAtIso) {
   for (const s of sections || []) {
     workers[s.worker] = {
       status: s.status,
-      summary: s.summary || '',
+      summary: s.summary || "",
       counts: s.counts || {},
       detail: s.detail || {},
     };
   }
   return {
-    schema: 'biome-status/v1',
+    schema: "biome-status/v1",
     generated_at: generatedAtIso,
     credit_free: true,
     overall: computeOverallHealth(sections),
@@ -50,11 +50,17 @@ function glueSections(sections, generatedAtIso) {
 }
 
 function badge(status) {
-  return { healthy: '🟢', degraded: '🟡', down: '🔴' }[status] || '⚪';
+  return { healthy: "🟢", degraded: "🟡", down: "🔴" }[status] || "⚪";
 }
 
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  return String(str).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        c
+      ],
+  );
 }
 
 function renderStatusHtml(status) {
@@ -62,7 +68,7 @@ function renderStatusHtml(status) {
     .map(([name, w]) => {
       const counts = Object.entries(w.counts || {})
         .map(([k, v]) => `${escapeHtml(k)}: ${escapeHtml(v)}`)
-        .join(', ');
+        .join(", ");
       return `      <tr>
         <td>${badge(w.status)} <strong>${escapeHtml(name)}</strong></td>
         <td>${escapeHtml(w.status)}</td>
@@ -70,7 +76,7 @@ function renderStatusHtml(status) {
         <td>${escapeHtml(counts)}</td>
       </tr>`;
     })
-    .join('\n');
+    .join("\n");
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -90,7 +96,7 @@ function renderStatusHtml(status) {
 </head>
 <body>
   <h1>🧬 BIOME Crew Status</h1>
-  <p class="overall">Overall: ${badge(status.overall)} <strong>${escapeHtml(status.overall)}</strong> · credit-free: ${status.credit_free ? 'yes' : 'no'}</p>
+  <p class="overall">Overall: ${badge(status.overall)} <strong>${escapeHtml(status.overall)}</strong> · credit-free: ${status.credit_free ? "yes" : "no"}</p>
   <table>
     <thead>
       <tr><th>Worker</th><th>Status</th><th>Summary</th><th>Counts</th></tr>
@@ -105,16 +111,23 @@ ${rows}
 `;
 }
 
-module.exports = { SEVERITY, worseOf, computeOverallHealth, glueSections, renderStatusHtml, badge };
+module.exports = {
+  SEVERITY,
+  worseOf,
+  computeOverallHealth,
+  glueSections,
+  renderStatusHtml,
+  badge,
+};
 
 // --- CLI -------------------------------------------------------------------
 if (require.main === module) {
   (async () => {
-    const fs = require('fs');
-    const path = require('path');
-    const { repoApi } = require('./gh');
-    const sentinel = require('./sentinel');
-    const homeostat = require('./homeostat');
+    const fs = require("fs");
+    const path = require("path");
+    const { repoApi } = require("./gh");
+    const sentinel = require("./sentinel");
+    const homeostat = require("./homeostat");
 
     const generatedAt = new Date().toISOString();
 
@@ -122,10 +135,21 @@ if (require.main === module) {
     // limit, 5xx) here must degrade this sweep gracefully, not crash the whole crew
     // (see gh.js: allowError callers get null back instead of a throw). Warn loudly
     // so a degraded feed is never mistaken for "genuinely healthy".
-    const runsResp = await repoApi('/actions/runs?per_page=100', { allowError: true });
-    if (!runsResp) console.warn('[biome-sheaf] warning: failed to fetch recent workflow runs (API error) — treating as 0 runs for this sweep');
-    const issuesRespRaw = await repoApi('/issues?state=open&per_page=100&filter=all', { allowError: true });
-    if (!issuesRespRaw) console.warn('[biome-sheaf] warning: failed to fetch open issues (API error) — treating as 0 issues for this sweep');
+    const runsResp = await repoApi("/actions/runs?per_page=100", {
+      allowError: true,
+    });
+    if (!runsResp)
+      console.warn(
+        "[biome-sheaf] warning: failed to fetch recent workflow runs (API error) — treating as 0 runs for this sweep",
+      );
+    const issuesRespRaw = await repoApi(
+      "/issues?state=open&per_page=100&filter=all",
+      { allowError: true },
+    );
+    if (!issuesRespRaw)
+      console.warn(
+        "[biome-sheaf] warning: failed to fetch open issues (API error) — treating as 0 issues for this sweep",
+      );
     const issuesResp = issuesRespRaw || [];
     const runs = (runsResp && runsResp.workflow_runs) || [];
 
@@ -137,29 +161,45 @@ if (require.main === module) {
     const homeostatSection = homeostat.buildHomeostatSection(assessment);
 
     // medic's own last-run health, derived from the recent runs list.
-    const medicRun = runs.find((r) => String(r.path || '').includes('biome-medic'));
+    const medicRun = runs.find((r) =>
+      String(r.path || "").includes("biome-medic"),
+    );
     const medicSection = {
-      worker: 'medic',
-      status: medicRun && sentinel.FAILURE_CONCLUSIONS.has(medicRun.conclusion) ? 'degraded' : 'healthy',
-      summary: medicRun ? `last run: ${medicRun.conclusion || medicRun.status}` : 'no recent run yet',
+      worker: "medic",
+      status:
+        medicRun && sentinel.FAILURE_CONCLUSIONS.has(medicRun.conclusion)
+          ? "degraded"
+          : "healthy",
+      summary: medicRun
+        ? `last run: ${medicRun.conclusion || medicRun.status}`
+        : "no recent run yet",
       counts: {},
       detail: { last_run: medicRun ? medicRun.html_url : null },
     };
 
     const sheafSection = {
-      worker: 'sheaf',
-      status: 'healthy',
-      summary: 'feed generated',
+      worker: "sheaf",
+      status: "healthy",
+      summary: "feed generated",
       counts: { workers: 3 },
       detail: {},
     };
 
-    const status = glueSections([sentinelSection, homeostatSection, medicSection, sheafSection], generatedAt);
+    const status = glueSections(
+      [sentinelSection, homeostatSection, medicSection, sheafSection],
+      generatedAt,
+    );
 
-    const outDir = path.join(process.cwd(), 'docs', 'biome');
+    const outDir = path.join(process.cwd(), "docs", "biome");
     fs.mkdirSync(outDir, { recursive: true });
-    fs.writeFileSync(path.join(outDir, 'biome-status.json'), `${JSON.stringify(status, null, 2)}\n`);
-    fs.writeFileSync(path.join(outDir, 'biome-status.html'), renderStatusHtml(status));
+    fs.writeFileSync(
+      path.join(outDir, "biome-status.json"),
+      `${JSON.stringify(status, null, 2)}\n`,
+    );
+    fs.writeFileSync(
+      path.join(outDir, "biome-status.html"),
+      renderStatusHtml(status),
+    );
     console.log(`[biome-sheaf] wrote feed: overall=${status.overall}`);
   })().catch((err) => {
     console.error(`[biome-sheaf] error: ${err.message}`);

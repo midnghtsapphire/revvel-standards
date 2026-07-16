@@ -15,7 +15,7 @@
 
 This skill defines **when and how to use OpenRouter, Multi-Agent Systems (MAS), and Swarms** within the Revvel ecosystem. It gives every agent a clear decision framework for routing tasks to the right model, spawning the right agent topology, and giving each agent a human-readable name.
 
-**Issue reference:** GitHub Issue #41 — *"I need a system of when to use MAS, SWARMs and sub agents. I would like to give them a human name."*
+**Issue reference:** GitHub Issue #41 — _"I need a system of when to use MAS, SWARMs and sub agents. I would like to give them a human name."_
 
 ### Fleet scale & composition
 
@@ -24,20 +24,20 @@ pre-canned agents.** It is made of **sub-agents** (spawned per task),
 **on-demand agents** (created when needed, then retired), **OpenRouter routing
 across 3 LLMs** for capability, and **~300 swarms** for fan-out. Scale by
 spawning more swarms, not by inflating one swarm or minting permanent canned
-agents. See `docs/AGENTS.md` → *Agent Fleet Architecture*.
+agents. See `docs/AGENTS.md` → _Agent Fleet Architecture_.
 
 ---
 
 ## What This Skill Does
 
-| Task | Description |
-|---|---|
+| Task                             | Description                                                                                           |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | **Model routing via OpenRouter** | Route any prompt to the best model (GPT-5, Claude, Gemini, Mistral, etc.) based on task type and cost |
-| **MAS vs Swarm decision** | Decide whether a task needs a single agent, a team (MAS), or a swarm |
-| **Agent naming** | Assign every spawned agent a human name from the Revvel Agent Registry |
-| **Research workflow** | Run deep research using parallel Scout agents |
-| **Cost governance** | Enforce token budgets per agent to prevent runaway spend |
-| **GitHub model tokens** | Route cell-sequencing and physics/coding tasks to GitHub's o1 and GPT-5 Nano models |
+| **MAS vs Swarm decision**        | Decide whether a task needs a single agent, a team (MAS), or a swarm                                  |
+| **Agent naming**                 | Assign every spawned agent a human name from the Revvel Agent Registry                                |
+| **Research workflow**            | Run deep research using parallel Scout agents                                                         |
+| **Cost governance**              | Enforce token budgets per agent to prevent runaway spend                                              |
+| **GitHub model tokens**          | Route cell-sequencing and physics/coding tasks to GitHub's o1 and GPT-5 Nano models                   |
 
 ---
 
@@ -86,16 +86,16 @@ Task received
 
 ## OpenRouter Model Selection Guide
 
-| Task Type | Recommended Model | OpenRouter ID | Why |
-|---|---|---|---|
-| Code generation / debugging | Claude Sonnet 4 | `anthropic/claude-sonnet-4` | Best code quality |
-| Deep reasoning / architecture | Claude Opus 4 | `anthropic/claude-opus-4` | Highest reasoning |
-| Fast / cheap tasks | Claude Haiku 4.5 | `anthropic/claude-haiku-4-5` | Low cost, fast |
-| Code + physics problems | GitHub GPT-5 Nano | `github/gpt-5-nano` | Specialised for physics/coding |
-| Cell sequencing / biology | GitHub o1 | `github/o1-cell-sequencing` | Domain-specialised |
-| General research | GPT-5 | `openai/gpt-5` | Broad knowledge |
-| Long documents | Gemini 2.5 Pro | `google/gemini-2.5-pro` | Largest context window |
-| Code completion (fast) | Codex 5.1 | `openai/codex-5.1` | Speed-optimised |
+| Task Type                     | Recommended Model | OpenRouter ID                | Why                            |
+| ----------------------------- | ----------------- | ---------------------------- | ------------------------------ |
+| Code generation / debugging   | Claude Sonnet 4   | `anthropic/claude-sonnet-4`  | Best code quality              |
+| Deep reasoning / architecture | Claude Opus 4     | `anthropic/claude-opus-4`    | Highest reasoning              |
+| Fast / cheap tasks            | Claude Haiku 4.5  | `anthropic/claude-haiku-4-5` | Low cost, fast                 |
+| Code + physics problems       | GitHub GPT-5 Nano | `github/gpt-5-nano`          | Specialised for physics/coding |
+| Cell sequencing / biology     | GitHub o1         | `github/o1-cell-sequencing`  | Domain-specialised             |
+| General research              | GPT-5             | `openai/gpt-5`               | Broad knowledge                |
+| Long documents                | Gemini 2.5 Pro    | `google/gemini-2.5-pro`      | Largest context window         |
+| Code completion (fast)        | Codex 5.1         | `openai/codex-5.1`           | Speed-optimised                |
 
 ### OpenRouter Integration
 
@@ -121,14 +121,14 @@ Task received
 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
   method: "POST",
   headers: {
-    "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+    Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
     "Content-Type": "application/json",
-    "X-Title": "Revvel Agent"
+    "X-Title": "Revvel Agent",
   },
   body: JSON.stringify({
-    model: "anthropic/claude-sonnet-4",  // or use routing logic below
-    messages: [{ role: "user", content: prompt }]
-  })
+    model: "anthropic/claude-sonnet-4", // or use routing logic below
+    messages: [{ role: "user", content: prompt }],
+  }),
 });
 ```
 
@@ -139,41 +139,49 @@ const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
 Every spawned agent must be assigned a human name. Names are drawn from the registry below by category:
 
 ### Research & Discovery
+
 - **Scout** 🔭 — primary research agent
-- **Iris** 🌐 — web research specialist  
+- **Iris** 🌐 — web research specialist
 - **Lumen** 💡 — insight synthesiser
 
 ### Code & Engineering
+
 - **Aria** 🎯 — code review specialist
 - **Forge** 🔨 — skill builder / scaffolder
 - **Pixel** 🖥️ — frontend / UI specialist
 - **Axle** ⚙️ — backend / infrastructure
 
 ### Security & Compliance
+
 - **Vault** 🔐 — secrets & credential gatekeeper
 - **Shield** 🛡️ — OWASP / security auditor
 - **Cipher** 🔒 — encryption & auth specialist
 
 ### Content & Communication
+
 - **Sage** 📚 — documentation & writing
 - **Echo** 📢 — marketing & content
 - **Quill** ✍️ — copywriting specialist
 
 ### Deployment & Operations
+
 - **Nexus** 🚀 — deployment & DevOps
 - **Pulse** 📡 — monitoring & alerting
 - **Rail** 🛤️ — CI/CD pipeline specialist
 
 ### Legal & Finance
+
 - **Atlas** ⚖️ — legal research
 - **Ledger** 💰 — financial analysis
 - **Penny** 🪙 — investment research (yield scout)
 
 ### Quality & Testing
+
 - **Prism** 🔍 — testing specialist
 - **Mirror** 🪞 — code review reflector
 
 ### Meta / Orchestration
+
 - **Audrey** 🧠 — primary orchestrator (owner persona)
 - **Felix** 🏢 — corporation orchestrator
 - **Felixia** 🏢 — senior corporation orchestrator
@@ -187,7 +195,7 @@ For large-scale parallel tasks, use the Revvel Swarm pattern:
 ```
 Orchestrator (Audrey / Felix)
 ├── Worker-1 (Scout): Research topic A
-├── Worker-2 (Scout): Research topic B  
+├── Worker-2 (Scout): Research topic B
 ├── Worker-3 (Aria):  Review file set 1
 ├── Worker-4 (Aria):  Review file set 2
 └── Aggregator (Sage): Synthesise all results → final artifact
@@ -235,12 +243,13 @@ For any deep research task (like the original issue #41 request):
 
 Two GitHub-hosted models require special routing:
 
-| Model | Use Case | GitHub Token Required |
-|---|---|---|
-| **o1 Cell Sequencing** | Biology / genomics research, cell-level analysis | `GITHUB_TOKEN` with model scope |
+| Model                         | Use Case                                                 | GitHub Token Required           |
+| ----------------------------- | -------------------------------------------------------- | ------------------------------- |
+| **o1 Cell Sequencing**        | Biology / genomics research, cell-level analysis         | `GITHUB_TOKEN` with model scope |
 | **GPT-5 Nano Physics Coding** | Physics problems, scientific computing, algorithm design | `GITHUB_TOKEN` with model scope |
 
 To use GitHub models via OpenRouter:
+
 ```bash
 export GITHUB_TOKEN="your-github-token"
 # Then route via OpenRouter with model: "github/o1" or "github/gpt-5-nano"
@@ -250,12 +259,12 @@ export GITHUB_TOKEN="your-github-token"
 
 ## Cost Governance
 
-| Agent Class | Monthly Budget | Max Context | Model Cap |
-|---|---|---|---|
-| Research Scout | $5 / agent | 100k tokens | Sonnet |
-| Code Agent | $10 / agent | 200k tokens | Opus (escalation only) |
-| Orchestrator | $25 / session | 500k tokens | Opus |
-| Swarm (total) | $50 / swarm run | — | Sonnet for workers |
+| Agent Class    | Monthly Budget  | Max Context | Model Cap              |
+| -------------- | --------------- | ----------- | ---------------------- |
+| Research Scout | $5 / agent      | 100k tokens | Sonnet                 |
+| Code Agent     | $10 / agent     | 200k tokens | Opus (escalation only) |
+| Orchestrator   | $25 / session   | 500k tokens | Opus                   |
+| Swarm (total)  | $50 / swarm run | —           | Sonnet for workers     |
 
 **Enforcement rule:** Each agent must check its token budget before spawning sub-agents. Report to orchestrator if budget is within 20% of limit.
 
@@ -291,14 +300,16 @@ Constraints:
 ### Example 1: Multi-Topic Research
 
 **Input:**
+
 ```
 Research: openrouter integrations, swarm patterns, and GitHub model tokens
 ```
 
 **Output:**
+
 ```
 Spawning research swarm:
-→ Scout-1 (Sonnet): "openrouter integrations" 
+→ Scout-1 (Sonnet): "openrouter integrations"
 → Scout-2 (Sonnet): "swarm agent frameworks"
 → Scout-3 (Sonnet): "GitHub model tokens usage"
 → Aggregator: Sage (Opus) will synthesise all three findings
@@ -309,11 +320,13 @@ Spawning research swarm:
 ### Example 2: Single Deep Research Task
 
 **Input:**
+
 ```
 How do MAS and swarms differ and when should I use each?
 ```
 
 **Output:**
+
 ```
 [Single Scout agent research with structured comparison table,
 decision framework, and Revvel-specific recommendations]
@@ -323,11 +336,11 @@ decision framework, and Revvel-specific recommendations]
 
 ## Dependencies
 
-| Dependency | Required? | Purpose | Install |
-|---|---|---|---|
-| **OpenRouter API Key** | ✅ Required | Multi-model routing | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| **GBrain** | ⭕ Recommended | Prevent duplicate research | `bun add -g github:garrytan/gbrain` |
-| **GitHub Token** | ⭕ For GitHub models | Access o1 / GPT-5 Nano | [github.com/settings/tokens](https://github.com/settings/tokens) |
+| Dependency             | Required?            | Purpose                    | Install                                                          |
+| ---------------------- | -------------------- | -------------------------- | ---------------------------------------------------------------- |
+| **OpenRouter API Key** | ✅ Required          | Multi-model routing        | [openrouter.ai/keys](https://openrouter.ai/keys)                 |
+| **GBrain**             | ⭕ Recommended       | Prevent duplicate research | `bun add -g github:garrytan/gbrain`                              |
+| **GitHub Token**       | ⭕ For GitHub models | Access o1 / GPT-5 Nano     | [github.com/settings/tokens](https://github.com/settings/tokens) |
 
 ---
 

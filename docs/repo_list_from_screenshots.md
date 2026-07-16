@@ -1,6 +1,7 @@
 # MIDNGHTSAPPHIRE Repos (from user screenshots)
 
 ## Visible repos with "revvel" in name:
+
 - revvel-template-library (Private, Python)
 - revvel-email-organizer (Public, TypeScript)
 - revvel-skills-vault (Private, Python)
@@ -12,10 +13,13 @@
 - revvel-music-studio (Private, Python) - "Revvel Music Studio - Professional music prod..."
 
 ## Other repos visible:
+
 - dishantagnihotri/revvel (Public)
 - Revvelx/Revvelx (Public) - "Config files for my GitHub profile"
 - Elessurgon/Revvel (Public, Elixir)
 
 ## Note: No "revvel-hub" repo visible in screenshots
+
 ## The meetaudreyevans.com site uses GitHub Pages -> midnghtsapphire.github.io
+
 ## Need to find which repo has the CNAME file

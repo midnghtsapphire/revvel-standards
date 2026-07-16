@@ -8,12 +8,12 @@ name: BIOME Inspector
 
 on:
   schedule:
-    - cron: '30 */6 * * *'  # every 6 hours, offset from sheaf (hourly :00) to avoid a push race
+    - cron: "30 */6 * * *" # every 6 hours, offset from sheaf (hourly :00) to avoid a push race
   workflow_dispatch: {}
 
 permissions:
-  contents: write   # commits the completion scoreboard
-  issues: write     # files/resolves the worklist
+  contents: write # commits the completion scoreboard
+  issues: write # files/resolves the worklist
 
 concurrency:
   group: biome-inspector
@@ -35,7 +35,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Install deps (for YAML parsing)
         run: npm ci

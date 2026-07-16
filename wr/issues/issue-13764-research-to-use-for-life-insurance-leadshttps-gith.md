@@ -85,18 +85,18 @@ The requested source repo (`serumwriter/life-insurance-crm`) is a very early-sta
 
 ## Step 1A: Product / Output Selections
 
-| Output shape      | In scope?   | Format / length   | Primary engine / standard                |
-| ----------------- | ----------- | ----------------- | ---------------------------------------- |
-| Website / app UI  | Yes         | Production app    | `products/` + Vercel deployment standard |
-| API               | Yes         | REST              | Python backend service pattern           |
-| CLI               | No          | N/A               | N/A                                      |
-| MCP               | No          | N/A               | N/A                                      |
-| Skill             | No          | N/A               | N/A                                      |
-| PDF               | Optional    | Audit export PDF  | Existing PDF engine standards            |
-| PowerPoint / deck | No          | N/A               | N/A                                      |
-| Video             | No          | N/A               | N/A                                      |
-| Docs              | Yes         | WR docs           | `wr/issues/` + docs standards            |
-| Agent automation  | Yes         | Workflows/jobs    | `.github/workflows/` patterns            |
+| Output shape      | In scope? | Format / length  | Primary engine / standard                |
+| ----------------- | --------- | ---------------- | ---------------------------------------- |
+| Website / app UI  | Yes       | Production app   | `products/` + Vercel deployment standard |
+| API               | Yes       | REST             | Python backend service pattern           |
+| CLI               | No        | N/A              | N/A                                      |
+| MCP               | No        | N/A              | N/A                                      |
+| Skill             | No        | N/A              | N/A                                      |
+| PDF               | Optional  | Audit export PDF | Existing PDF engine standards            |
+| PowerPoint / deck | No        | N/A              | N/A                                      |
+| Video             | No        | N/A              | N/A                                      |
+| Docs              | Yes       | WR docs          | `wr/issues/` + docs standards            |
+| Agent automation  | Yes       | Workflows/jobs   | `.github/workflows/` patterns            |
 
 ### Platform Defaults & Website Requirements
 
@@ -121,20 +121,20 @@ High demand for compliant lead operations systems due to increasing TCPA stringe
 
 Independent agents and agency owners seeking exclusive, high-intent leads with verifiable compliance.
 
-| Audience Segment   | Trigger Event        | Intent Level   |
-| ------------------ | -------------------- | -------------- |
-| Independent Agents | Seeking lead sources | High           |
-| Agency Owners      | Scaling operations   | High           |
+| Audience Segment   | Trigger Event        | Intent Level |
+| ------------------ | -------------------- | ------------ |
+| Independent Agents | Seeking lead sources | High         |
+| Agency Owners      | Scaling operations   | High         |
 
 #### SEO & Keyword Research
 
-| Keyword                    | Monthly Volume (US)   | Avg CPC   | Competition   |
-| -------------------------- | --------------------- | --------- | ------------- |
-| life insurance leads       | 12,000                | $25.00    | High          |
-| life insurance CRM         | 3,500                 | $15.00    | High          |
-| exclusive insurance leads  | 1,200                 | $40.00    | High          |
-| insurance lead management  | 800                   | $12.00    | Medium        |
-| insurance sales automation | 400                   | $8.00     | Medium        |
+| Keyword                    | Monthly Volume (US) | Avg CPC | Competition |
+| -------------------------- | ------------------- | ------- | ----------- |
+| life insurance leads       | 12,000              | $25.00  | High        |
+| life insurance CRM         | 3,500               | $15.00  | High        |
+| exclusive insurance leads  | 1,200               | $40.00  | High        |
+| insurance lead management  | 800                 | $12.00  | Medium      |
+| insurance sales automation | 400                 | $8.00   | Medium      |
 
 **Long-tail / trigger-specific keywords:**
 
@@ -150,10 +150,10 @@ Independent agents and agency owners seeking exclusive, high-intent leads with v
 
 ### Category: Database / Backend
 
-| API / Tool           | Cost   | Coverage   | Best For   |
-| -------------------- | ------ | ---------- | ---------- |
-| Supabase (Postgres)  | $25/mo | Full data  | Core CRM   |
-| DigitalOcean Droplet | $5/mo  | Runtime    | Python API |
+| API / Tool           | Cost   | Coverage  | Best For   |
+| -------------------- | ------ | --------- | ---------- |
+| Supabase (Postgres)  | $25/mo | Full data | Core CRM   |
+| DigitalOcean Droplet | $5/mo  | Runtime   | Python API |
 
 ### Category: Compliance / Validation
 
@@ -163,11 +163,11 @@ Independent agents and agency owners seeking exclusive, high-intent leads with v
 
 **BOM Cost Summary:**
 
-| Category                 | Recommended Tool  |
-| ------------------------ | ----------------- |
-| Database                 | Supabase          |
-| Runtime                  | DigitalOcean      |
-| **Total Infrastructure** |                   |
+| Category                 | Recommended Tool |
+| ------------------------ | ---------------- |
+| Database                 | Supabase         |
+| Runtime                  | DigitalOcean     |
+| **Total Infrastructure** |                  |
 
 > **ROI Check:** 1-2 core SaaS subscriptions ($99/mo) completely covers infrastructure cost.
 
@@ -179,10 +179,10 @@ High-intent real-time exclusive leads are often higher than those ranges.
 
 **Shared vs. Exclusive / Tiered pricing:**
 
-| Solution Type   | How It Works       | Cost     | Conversion Rate  |
-| --------------- | ------------------ | -------- | ---------------- |
-| Shared Leads    | Sold to 3-5 agents | $20-$40  | 1-3%             |
-| Exclusive Leads | Sold to 1 agent    | $75-$150 | 5-10%            |
+| Solution Type   | How It Works       | Cost     | Conversion Rate |
+| --------------- | ------------------ | -------- | --------------- |
+| Shared Leads    | Sold to 3-5 agents | $20-$40  | 1-3%            |
+| Exclusive Leads | Sold to 1 agent    | $75-$150 | 5-10%           |
 
 **Why some units are worth more than others:**
 Speed to lead, exclusivity, and verifiable TCPA consent.
@@ -299,8 +299,8 @@ Converted sparse WR prompt into a concrete production wedge focusing on complian
 
 | Factor     | Weight | Source        |
 | ---------- | -----: | ------------- |
-| DNC Status | 1.00   | DNC Registry  |
-| TCPA Hours | 1.00   | Timezone calc |
+| DNC Status |   1.00 | DNC Registry  |
+| TCPA Hours |   1.00 | Timezone calc |
 
 **Threshold Bands:**
 
@@ -435,9 +435,9 @@ Converted sparse WR prompt into a concrete production wedge focusing on complian
 
 **Links to Add:**
 
-| Product/Service  | Affiliate Program   | Commission   |
-| ---------------- | ------------------- | ------------ |
-| ActiveProspect   | Partner             | 10%          |
+| Product/Service | Affiliate Program | Commission |
+| --------------- | ----------------- | ---------- |
+| ActiveProspect  | Partner           | 10%        |
 
 #### Payment Integration
 
@@ -527,8 +527,8 @@ None yet.
 ```markdown
 ## Test
 
-| Feature   | Status    |
-| --------- | --------- |
+| Feature   | Status     |
+| --------- | ---------- |
 | Homepage  | ✅ Working |
 | Dashboard | ✅ Working |
 | API       | ✅ Working |
@@ -612,10 +612,10 @@ README.md, User Guide, API Docs.
 
 ## Risks & Considerations
 
-| Risk            | Severity   | Probability   |
-| --------------- | ---------- | ------------- |
-| TCPA Changes    | High       | Medium        |
-| API Rate Limits | Medium     | Medium        |
+| Risk            | Severity | Probability |
+| --------------- | -------- | ----------- |
+| TCPA Changes    | High     | Medium      |
+| API Rate Limits | Medium   | Medium      |
 
 ---
 

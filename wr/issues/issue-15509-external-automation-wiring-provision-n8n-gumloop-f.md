@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-09  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-09  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -37,18 +36,19 @@ _Source: `wr/pending/05-external-automation-n8n-gumloop.md` (PR #15497)._
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -60,6 +60,7 @@ _Source: `wr/pending/05-external-automation-n8n-gumloop.md` (PR #15497)._
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28922440008.md`
 
 # WR-Ready Research Packet: External Automation Wiring
@@ -75,12 +76,14 @@ Source packet: `docs/research-engine/run-28922440008.md`
 **Primary Target**: DevOps engineers and platform teams at mid-to-large companies ($10M+ revenue) managing 50+ automation workflows.
 
 **Why This Audience**:
+
 - Waste 15-30% of sprint capacity on manual deployment steps (internal estimate)
 - Experience "Zapier Spaghetti" - undocumented, brittle automation webs
 - Actively seeking GitOps approaches for workflow management (verified via n8n community forums)
 - Willing to pay for solutions (n8n's paid "Source Control" feature validates this)
 
 **Language They Use**:
+
 - "CI/CD for automations"
 - "Workflow as code"
 - "GitOps for low-code"
@@ -89,17 +92,20 @@ Source packet: `docs/research-engine/run-28922440008.md`
 ## 3. Marketing and SEO Plan
 
 **Primary Keywords** (transactional intent):
-- "n8n CI/CD" 
+
+- "n8n CI/CD"
 - "deploy n8n workflows"
 - "n8n API import workflow"
 - "automate n8n workflow deployment"
 
 **Landing Page Strategy**:
+
 - URL: `/solutions/ci-cd-for-n8n-workflows`
 - Title: "CI/CD for n8n: Automate Your Workflow Deployments"
 - Meta: "Stop manually exporting n8n JSON. Learn how to version control, test, and automatically deploy your n8n workflows with CI/CD pipelines."
 
 **Content Angles**:
+
 - How-to guide: "Managing n8n in Production: A GitOps Approach"
 - Comparison: "n8n vs manual deployment for enterprise teams"
 - Technical tutorial: "Automated n8n provisioning with GitHub Actions"
@@ -108,30 +114,33 @@ Source packet: `docs/research-engine/run-28922440008.md`
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Platform | GitHub Stars | Pricing | API Provisioning | Moat |
-|----------|-------------|---------|------------------|------|
-| **n8n** | 44.8k | Free self-hosted, Cloud $20+/mo | ✅ Full REST API | Open-source, 400+ integrations |
-| **Windmill** | 9.8k | Free self-hosted, Cloud pricing varies | ✅ Git-native | Code-first approach |
-| **Temporal** | 11k | Free OSS, Enterprise custom | ✅ SDK-based | Durable execution |
-| **Zapier** | N/A (closed) | $19.99-$599/mo | ❌ Limited | 5000+ integrations |
-| **Make.com** | N/A (closed) | $9-$299/mo | ✅ Scenario API | Visual builder |
-| **Gumloop** | N/A (closed) | Pricing data pending — competitive benchmark research required | ❓ Unverified | AI/LLM focus |
+| Platform     | GitHub Stars | Pricing                                                        | API Provisioning | Moat                           |
+| ------------ | ------------ | -------------------------------------------------------------- | ---------------- | ------------------------------ |
+| **n8n**      | 44.8k        | Free self-hosted, Cloud $20+/mo                                | ✅ Full REST API | Open-source, 400+ integrations |
+| **Windmill** | 9.8k         | Free self-hosted, Cloud pricing varies                         | ✅ Git-native    | Code-first approach            |
+| **Temporal** | 11k          | Free OSS, Enterprise custom                                    | ✅ SDK-based     | Durable execution              |
+| **Zapier**   | N/A (closed) | $19.99-$599/mo                                                 | ❌ Limited       | 5000+ integrations             |
+| **Make.com** | N/A (closed) | $9-$299/mo                                                     | ✅ Scenario API  | Visual builder                 |
+| **Gumloop**  | N/A (closed) | Pricing data pending — competitive benchmark research required | ❓ Unverified    | AI/LLM focus                   |
 
 **Key Insight**: n8n dominates the open-source space. Windmill emerging as developer-centric alternative.
 
 ## 5. Chatter and Demand Signals
 
 **Verified Pain Points** ([n8n Community Forum](https://community.n8n.io/)):
+
 - "Managing workflows via the UI is a nightmare for teams"
 - "We need flows in source control for audit and compliance"
 - Multiple threads requesting Git sync and CI/CD integration
 
 **Market Validation**:
+
 - n8n's paid "Source Control" feature directly addresses this need
 - Community-built CLI tools (n8n-cli) demonstrate unmet demand
 - Users spending time on workarounds signals urgency
 
 **Objections to Current State**:
+
 - Lack of auditability and rollbacks
 - Team collaboration conflicts
 - Inconsistent error handling across flows
@@ -139,11 +148,13 @@ Source packet: `docs/research-engine/run-28922440008.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Verified**:
+
 - ✅ n8n REST API supports workflow import/export ([API docs](https://docs.n8n.io/api/))
 - ✅ JSON format for flow definitions
 - ✅ Webhook URL generation post-import
 
 **Unverified/Missing**:
+
 - ❌ Fleet charter standards document (internal reference not provided)
 - ❌ Gumloop API capabilities (no public documentation)
 - ❌ Specific implementation of "per-step cost telemetry"
@@ -154,16 +165,19 @@ Source packet: `docs/research-engine/run-28922440008.md`
 ## 7. Build Requirements and Acceptance Gates
 
 ### Phase 1: Foundation
+
 1. Document fleet charter automation standards
 2. Create n8n flow template with charter compliance
 3. Design secret-gated deployment logic
 
 ### Phase 2: Implementation
+
 1. **Build Pipeline**: Add flow generation to `automations/<wr>/flow.json`
 2. **Deploy Step**: Implement conditional n8n API deployment
 3. **Validation**: Create smoke test framework
 
 ### Acceptance Gates
+
 - [ ] Reference WR ships working n8n flow export
 - [ ] Deploy step skips gracefully when `N8N_API_KEY` missing
 - [ ] Charter rules visible in exported flow
@@ -173,21 +187,25 @@ Source packet: `docs/research-engine/run-28922440008.md`
 ## 8. Code Review Agent Packet
 
 ### Bito AI Review Points
+
 - Verify secret handling uses environment variables, not hardcoded values
 - Check error handling for n8n API failures
 - Validate JSON schema for flow exports
 
 ### OpenRouter Review
+
 - Ensure idempotent deployment logic
 - Verify retry mechanisms with exponential backoff
 - Check for proper async/await usage in API calls
 
 ### Coderabbit Focus
+
 - Dead-letter queue implementation in flows
 - Cost telemetry integration points
 - Human-in-the-loop step validation
 
 ### Ralph Loop Actions
+
 - Add integration tests for flow import/export
 - Implement health checks for deployed workflows
 - Create rollback mechanism for failed deployments
@@ -195,6 +213,7 @@ Source packet: `docs/research-engine/run-28922440008.md`
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Add Fleet Charter Documentation
+
 ```yaml
 path: docs/automation-standards.md
 content: |
@@ -208,6 +227,7 @@ commit_message: "docs: add fleet charter automation standards"
 ```
 
 ### Fix 2: Create Deploy Script
+
 ```bash
 path: scripts/deploy-n8n-flow.sh
 content: |
@@ -217,7 +237,7 @@ content: |
     echo "Manual import instructions: [link]"
     exit 0
   fi
-  
+
   curl -X POST "$N8N_API_URL/api/v1/workflows" \
     -H "X-N8N-API-KEY: $N8N_API_KEY" \
     -H "Content-Type: application/json" \
@@ -226,6 +246,7 @@ commit_message: "feat: add n8n deployment script with secret gating"
 ```
 
 ### Fix 3: Add Validation Workflow
+
 ```yaml
 path: .github/workflows/validate-automation.yml
 content: |
@@ -250,7 +271,7 @@ commit_message: "ci: add automation flow validation"
 
 - `needs-fleet-charter-doc`
 - `external-dependency`
-- `api-integration` 
+- `api-integration`
 - `security-review-required`
 - `needs-reference-wr`
 - `automation-workflow`
@@ -260,14 +281,16 @@ commit_message: "ci: add automation flow validation"
 ## 11. Repository Review and Best Alternative
 
 **Primary Recommendation**: n8n (confidence: 85%)
+
 - Mature REST API for workflow management
 - Active development (daily commits)
 - Self-hosted option aligns with control requirements
 - Note: Sustainable Use License requires legal review
 
 **Best Alternatives** (ranked):
+
 1. **Windmill** - Developer-first, Git-native workflows, AGPL license
-2. **Pipedream** - MIT license, code-first approach, generous free tier  
+2. **Pipedream** - MIT license, code-first approach, generous free tier
 3. **Temporal** - Most robust but complex integration
 4. **Node-RED** - Mature, Apache-2.0, strong in IoT space
 
@@ -278,6 +301,7 @@ commit_message: "ci: add automation flow validation"
 **Overall Confidence: 72%**
 
 ### Lane Scores:
+
 - Market Positioning (Echo): 75% - Strong problem validation, unclear market size
 - SEO Demand (Noimos): 65% - Technical niche, needs volume data
 - Competitor Intelligence (Iris): 80% - Clear landscape, Gumloop gap
@@ -329,11 +353,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -349,11 +373,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

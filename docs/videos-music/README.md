@@ -50,39 +50,39 @@ Example: `bulletproof-love-20260515T151936Z-v1.mp4`
 
 ## Required inputs per video
 
-| Field | Description |
-|---|---|
-| `audio_wav` | WAV audio file path, URL, or asset identifier |
-| `avatar` | Avatar image or video file path, URL, or asset identifier |
+| Field       | Description                                               |
+| ----------- | --------------------------------------------------------- |
+| `audio_wav` | WAV audio file path, URL, or asset identifier             |
+| `avatar`    | Avatar image or video file path, URL, or asset identifier |
 
 ## Required outputs per video
 
-| Field | Description |
-|---|---|
-| `video_filename` | Canonical MP4 filename using the naming rule above |
-| `thumbnail` | Poster/thumbnail image (strongly recommended for SEO) |
-| `captions_vtt` | Captions/subtitles file (recommended for accessibility and SEO) |
+| Field            | Description                                                     |
+| ---------------- | --------------------------------------------------------------- |
+| `video_filename` | Canonical MP4 filename using the naming rule above              |
+| `thumbnail`      | Poster/thumbnail image (strongly recommended for SEO)           |
+| `captions_vtt`   | Captions/subtitles file (recommended for accessibility and SEO) |
 
 ## Required publishing fields (once published)
 
-| Field | Required | Description |
-|---|---|---|
-| `required_on_main_website` | always `true` | Signals that this video must appear on the main website |
-| `website_url` | yes | Full URL to the product page on the main website |
-| `canonical_video_url` | yes | Direct public URL to the hosted MP4 |
-| `cdn_url` | recommended | CDN-served URL for the MP4 |
-| `embed_url` | optional | Embed player URL if applicable |
-| `publish_status` | always present | One of: `draft`, `generating`, `ready`, `published`, `failed` |
-| `published_at_utc` | yes when published | ISO 8601 UTC timestamp of first publication |
+| Field                      | Required           | Description                                                   |
+| -------------------------- | ------------------ | ------------------------------------------------------------- |
+| `required_on_main_website` | always `true`      | Signals that this video must appear on the main website       |
+| `website_url`              | yes                | Full URL to the product page on the main website              |
+| `canonical_video_url`      | yes                | Direct public URL to the hosted MP4                           |
+| `cdn_url`                  | recommended        | CDN-served URL for the MP4                                    |
+| `embed_url`                | optional           | Embed player URL if applicable                                |
+| `publish_status`           | always present     | One of: `draft`, `generating`, `ready`, `published`, `failed` |
+| `published_at_utc`         | yes when published | ISO 8601 UTC timestamp of first publication                   |
 
 ## Required SEO fields
 
-| Field | Description |
-|---|---|
-| `title` | Page/video SEO title |
-| `description` | Meta description (≤160 characters recommended) |
-| `keywords` | Array of keywords/tags |
-| `thumbnail_alt` | Alt text for the thumbnail image |
+| Field           | Description                                    |
+| --------------- | ---------------------------------------------- |
+| `title`         | Page/video SEO title                           |
+| `description`   | Meta description (≤160 characters recommended) |
+| `keywords`      | Array of keywords/tags                         |
+| `thumbnail_alt` | Alt text for the thumbnail image               |
 
 ## Scaffolding for new videos
 

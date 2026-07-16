@@ -22,17 +22,17 @@ async function runTests() {
 
   try {
     let requestCount = 0;
-    https.request = function (options, callback) {
+    https.request = (options, callback) => {
       requestCount++;
       const req = {
         _events: {},
-        on: function(event, cb) {
-            this._events[event] = cb;
+        on: function (event, cb) {
+          this._events[event] = cb;
         },
-        emit: function(event, ...args) {
-            if (this._events[event]) {
-                this._events[event](...args);
-            }
+        emit: function (event, ...args) {
+          if (this._events[event]) {
+            this._events[event](...args);
+          }
         },
         end: () => {},
         write: () => {},
@@ -41,13 +41,20 @@ async function runTests() {
       if (requestCount === 1) {
         // Agent 1 fails with a network error
         process.nextTick(() => {
-          req.emit('error', new Error("Simulated network failure"));
+          req.emit("error", new Error("Simulated network failure"));
         });
       } else {
         process.nextTick(() => {
           const res = {
             on: (event, cb) => {
-              if (event === "data") cb(Buffer.from(JSON.stringify({ choices: [{ message: { content: "Agent success" } }] })));
+              if (event === "data")
+                cb(
+                  Buffer.from(
+                    JSON.stringify({
+                      choices: [{ message: { content: "Agent success" } }],
+                    }),
+                  ),
+                );
               if (event === "end") cb();
             },
           };
@@ -60,9 +67,11 @@ async function runTests() {
 
     console.log("  Testing agent failure handling...");
 
-    let warnings = [];
+    const warnings = [];
     console.log = () => {};
-    console.warn = (msg) => { warnings.push(msg); };
+    console.warn = (msg) => {
+      warnings.push(msg);
+    };
     console.error = () => {};
 
     await script.main();
@@ -72,9 +81,11 @@ async function runTests() {
     console.warn = originalWarn;
     console.error = originalError;
 
-    assert(warnings.some(w => w.includes("Failed: Simulated network failure")), "Should log warning about agent failure");
+    assert(
+      warnings.some((w) => w.includes("Failed: Simulated network failure")),
+      "Should log warning about agent failure",
+    );
     console.log("  ✅ Agent failure handling test passed.");
-
   } catch (err) {
     console.log = originalLog;
     console.warn = originalWarn;
@@ -88,17 +99,17 @@ async function runTests() {
 
   try {
     let requestCount = 0;
-    https.request = function (options, callback) {
+    https.request = (options, callback) => {
       requestCount++;
       const req = {
         _events: {},
-        on: function(event, cb) {
-            this._events[event] = cb;
+        on: function (event, cb) {
+          this._events[event] = cb;
         },
-        emit: function(event, ...args) {
-            if (this._events[event]) {
-                this._events[event](...args);
-            }
+        emit: function (event, ...args) {
+          if (this._events[event]) {
+            this._events[event](...args);
+          }
         },
         end: () => {},
         write: () => {},
@@ -109,7 +120,14 @@ async function runTests() {
         process.nextTick(() => {
           const res = {
             on: (event, cb) => {
-              if (event === "data") cb(Buffer.from(JSON.stringify({ choices: [{ message: { content: "Agent success" } }] })));
+              if (event === "data")
+                cb(
+                  Buffer.from(
+                    JSON.stringify({
+                      choices: [{ message: { content: "Agent success" } }],
+                    }),
+                  ),
+                );
               if (event === "end") cb();
             },
           };
@@ -118,7 +136,7 @@ async function runTests() {
       } else {
         // Synthesizer fails with network error
         process.nextTick(() => {
-          req.emit('error', new Error("Synthesizer network failure"));
+          req.emit("error", new Error("Synthesizer network failure"));
         });
       }
 
@@ -127,10 +145,12 @@ async function runTests() {
 
     console.log("  Testing synthesizer failure handling...");
 
-    let errors = [];
+    const errors = [];
     console.log = () => {};
     console.warn = () => {};
-    console.error = (msg) => { errors.push(msg); };
+    console.error = (msg) => {
+      errors.push(msg);
+    };
 
     await script.main();
 
@@ -139,10 +159,17 @@ async function runTests() {
     console.error = originalError;
 
     const output = fs.readFileSync(testOutputPath, "utf8");
-    assert(errors.some(e => e.includes("Synthesis failed: Synthesizer network failure")), "Should log synthesis failure");
-    assert(output.includes("Agent success"), "Should contain raw reports as fallback");
+    assert(
+      errors.some((e) =>
+        e.includes("Synthesis failed: Synthesizer network failure"),
+      ),
+      "Should log synthesis failure",
+    );
+    assert(
+      output.includes("Agent success"),
+      "Should contain raw reports as fallback",
+    );
     console.log("  ✅ Synthesizer failure handling test passed.");
-
   } catch (err) {
     console.log = originalLog;
     console.warn = originalWarn;
@@ -160,5 +187,8 @@ async function runTests() {
 }
 
 if (require.main === module) {
-  runTests().catch(err => { console.error(err); process.exit(1); });
+  runTests().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
 }

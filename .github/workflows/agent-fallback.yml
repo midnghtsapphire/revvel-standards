@@ -13,21 +13,21 @@ on:
       issue_title:
         required: false
         type: string
-        default: ''
+        default: ""
       issue_body:
         required: false
         type: string
-        default: ''
+        default: ""
   workflow_dispatch:
     inputs:
       issue_number:
-        description: 'Issue number to process'
+        description: "Issue number to process"
         required: true
         type: string
       prefer_agent:
-        description: 'Preferred agent (OpenRouter, Devin, manual)'
+        description: "Preferred agent (OpenRouter, Devin, manual)"
         required: false
-        default: 'OpenRouter'
+        default: "OpenRouter"
         type: choice
         options:
           - OpenRouter

@@ -5,12 +5,12 @@ after Stripe's own fees.
 
 ## Inputs
 
-| Field | Your value | Example |
-| --- | --- | --- |
-| Average transaction size (USD) | fill in | 100.00 |
-| Expected monthly transaction count | fill in | 500 |
-| Your platform take rate (%) | fill in | 2.5 |
-| Model | fill in | connect |
+| Field                              | Your value | Example |
+| ---------------------------------- | ---------- | ------- |
+| Average transaction size (USD)     | fill in    | 100.00  |
+| Expected monthly transaction count | fill in    | 500     |
+| Your platform take rate (%)        | fill in    | 2.5     |
+| Model                              | fill in    | connect |
 
 ## Stripe costs to subtract
 

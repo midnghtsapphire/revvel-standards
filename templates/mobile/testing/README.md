@@ -16,13 +16,13 @@ These files are **opinionated starting points**. Each adopting Revvel app should
 
 ## Files in This Directory
 
-| File | Purpose |
-|---|---|
-| `jest.config.js` | jest-expo preset + 80/75/80/80 coverage thresholds |
-| `jest.setup.ts` | Loads `@testing-library/jest-native/extend-expect` and shared mocks |
-| `mocks/expo-secure-store.ts` | Shared mock for `expo-secure-store` |
-| `maestro/auth/sign-in.yaml` | Reference Maestro flow for the mandatory Sign-In journey |
-| `mobile-test.yml` | GitHub Actions workflow matrix for `mobile-test` (iOS on `macos-14`, Android on `ubuntu-latest`) |
+| File                         | Purpose                                                                                          |
+| ---------------------------- | ------------------------------------------------------------------------------------------------ |
+| `jest.config.js`             | jest-expo preset + 80/75/80/80 coverage thresholds                                               |
+| `jest.setup.ts`              | Loads `@testing-library/jest-native/extend-expect` and shared mocks                              |
+| `mocks/expo-secure-store.ts` | Shared mock for `expo-secure-store`                                                              |
+| `maestro/auth/sign-in.yaml`  | Reference Maestro flow for the mandatory Sign-In journey                                         |
+| `mobile-test.yml`            | GitHub Actions workflow matrix for `mobile-test` (iOS on `macos-14`, Android on `ubuntu-latest`) |
 
 ---
 
@@ -54,11 +54,11 @@ Required CI status check name: **`mobile-test`** — must block PR merges.
 
 ## Substitutions
 
-| Marker | Replace With | Example |
-|---|---|---|
-| `[APP_NAME]` | Display name shown in Maestro flows | `Sessiono` |
-| `[BUNDLE_ID]` | iOS bundle identifier / Android package | `com.revvel.sessiono` |
-| `[EAS_PROJECT_ID]` | EAS project id from `eas init` | `12345678-...` |
+| Marker             | Replace With                            | Example               |
+| ------------------ | --------------------------------------- | --------------------- |
+| `[APP_NAME]`       | Display name shown in Maestro flows     | `Sessiono`            |
+| `[BUNDLE_ID]`      | iOS bundle identifier / Android package | `com.revvel.sessiono` |
+| `[EAS_PROJECT_ID]` | EAS project id from `eas init`          | `12345678-...`        |
 
 ---
 

@@ -61,32 +61,32 @@ Every product folder MUST contain a `BOM.md` with this structure:
 ```markdown
 # BOM — <product-slug>
 
-| Item | Type | Provider | Env Var | Doppler Path | Status | Rotation | Notes |
-|------|------|----------|---------|--------------|--------|----------|-------|
-| Steam API key | api_key | Valve | STEAM_API_KEY | growlingeyes/prd | ✅ on hand | 90d | Free tier |
-| Discord bot token | bot_token | Discord | DISCORD_BOT_TOKEN | growlingeyes/prd | ✅ on hand | 90d | Needs MESSAGE_CONTENT intent |
-| WhatsMyName data | public_api | GitHub raw | — | — | ✅ free | none | No auth required |
-| TikTok scraping | scraper | Urlebird | — | — | ✅ free | none | Anonymous, no account |
-| MCP SDK | npm_package | Anthropic | — | — | ✅ free | none | @modelcontextprotocol/sdk |
-| Telegram bot token | bot_token | Telegram | TELEGRAM_BOT_TOKEN | growlingeyes/prd | ❌ needed | 90d | BotFather |
+| Item               | Type        | Provider   | Env Var            | Doppler Path     | Status     | Rotation | Notes                        |
+| ------------------ | ----------- | ---------- | ------------------ | ---------------- | ---------- | -------- | ---------------------------- |
+| Steam API key      | api_key     | Valve      | STEAM_API_KEY      | growlingeyes/prd | ✅ on hand | 90d      | Free tier                    |
+| Discord bot token  | bot_token   | Discord    | DISCORD_BOT_TOKEN  | growlingeyes/prd | ✅ on hand | 90d      | Needs MESSAGE_CONTENT intent |
+| WhatsMyName data   | public_api  | GitHub raw | —                  | —                | ✅ free    | none     | No auth required             |
+| TikTok scraping    | scraper     | Urlebird   | —                  | —                | ✅ free    | none     | Anonymous, no account        |
+| MCP SDK            | npm_package | Anthropic  | —                  | —                | ✅ free    | none     | @modelcontextprotocol/sdk    |
+| Telegram bot token | bot_token   | Telegram   | TELEGRAM_BOT_TOKEN | growlingeyes/prd | ❌ needed  | 90d      | BotFather                    |
 ```
 
 ### Item Types
 
-| Type | Description | Auto-Provisioning | Rotation Required |
-|------|-------------|-------------------|-------------------|
-| `api_key` | Third-party API key | If free tier and API exists | Yes — per provider policy |
-| `bot_token` | Discord/Telegram/Slack bot token | No — requires manual creation | Yes — 90 days default |
-| `oauth_client` | OAuth 2.0 client ID + secret | No — requires app registration | Yes — secret rotation 90d |
-| `npm_package` | npm/pip/cargo dependency | Auto (`npm install`) | Dependabot handles |
-| `public_api` | Free public API, no auth needed | N/A | N/A |
-| `scraper` | Web scraping target | N/A | N/A — monitor for breakage |
-| `mcp_server` | MCP server dependency | Auto-register in Kong | Yes — key rotation 90d |
-| `database` | DB connection string | Auto via Doppler | Yes — password rotation 30d |
-| `ssh_key` | SSH access key | Auto from Doppler | Yes — 180d |
-| `webhook` | Incoming/outgoing webhook URL | Create via provider API if available | Yes — secret rotation 90d |
-| `asset` | Font, image, template, etc. | Download if URL provided | N/A |
-| `subscription` | Paid service subscription | No — requires human approval | N/A — monitor billing |
+| Type           | Description                      | Auto-Provisioning                    | Rotation Required           |
+| -------------- | -------------------------------- | ------------------------------------ | --------------------------- |
+| `api_key`      | Third-party API key              | If free tier and API exists          | Yes — per provider policy   |
+| `bot_token`    | Discord/Telegram/Slack bot token | No — requires manual creation        | Yes — 90 days default       |
+| `oauth_client` | OAuth 2.0 client ID + secret     | No — requires app registration       | Yes — secret rotation 90d   |
+| `npm_package`  | npm/pip/cargo dependency         | Auto (`npm install`)                 | Dependabot handles          |
+| `public_api`   | Free public API, no auth needed  | N/A                                  | N/A                         |
+| `scraper`      | Web scraping target              | N/A                                  | N/A — monitor for breakage  |
+| `mcp_server`   | MCP server dependency            | Auto-register in Kong                | Yes — key rotation 90d      |
+| `database`     | DB connection string             | Auto via Doppler                     | Yes — password rotation 30d |
+| `ssh_key`      | SSH access key                   | Auto from Doppler                    | Yes — 180d                  |
+| `webhook`      | Incoming/outgoing webhook URL    | Create via provider API if available | Yes — secret rotation 90d   |
+| `asset`        | Font, image, template, etc.      | Download if URL provided             | N/A                         |
+| `subscription` | Paid service subscription        | No — requires human approval         | N/A — monitor billing       |
 
 ### Validation Rules
 
@@ -183,18 +183,18 @@ When the BOM Validator finds items with status `❌ needed`, the Provisioner att
 
 ### Auto-Provisioning Matrix
 
-| Type | Can Auto-Provision? | Method |
-|------|-------------------|--------|
-| `api_key` (free tier) | Yes | Call provider's signup/API-key endpoint if API exists |
-| `api_key` (paid) | No — human approval | Create `bom-block` issue |
-| `bot_token` | No — manual creation | Create `bom-block` issue with step-by-step instructions |
-| `npm_package` | Yes | `npm install <package>` |
-| `public_api` | Yes (no action needed) | Mark as ✅ |
-| `mcp_server` | Yes | Register route in Kong via Admin API |
-| `database` | Conditional | If Supabase project exists, create via API; otherwise `bom-block` |
-| `ssh_key` | Yes | Generate ed25519 key pair, store in Doppler |
-| `webhook` | Conditional | Create via provider API if supported |
-| `subscription` | No — human approval | Create `bom-block` issue with pricing + signup link |
+| Type                  | Can Auto-Provision?    | Method                                                            |
+| --------------------- | ---------------------- | ----------------------------------------------------------------- |
+| `api_key` (free tier) | Yes                    | Call provider's signup/API-key endpoint if API exists             |
+| `api_key` (paid)      | No — human approval    | Create `bom-block` issue                                          |
+| `bot_token`           | No — manual creation   | Create `bom-block` issue with step-by-step instructions           |
+| `npm_package`         | Yes                    | `npm install <package>`                                           |
+| `public_api`          | Yes (no action needed) | Mark as ✅                                                        |
+| `mcp_server`          | Yes                    | Register route in Kong via Admin API                              |
+| `database`            | Conditional            | If Supabase project exists, create via API; otherwise `bom-block` |
+| `ssh_key`             | Yes                    | Generate ed25519 key pair, store in Doppler                       |
+| `webhook`             | Conditional            | Create via provider API if supported                              |
+| `subscription`        | No — human approval    | Create `bom-block` issue with pricing + signup link               |
 
 ### Provisioning Workflow
 
@@ -229,15 +229,15 @@ The Rotator runs on a weekly cron (`0 6 * * 1` — Monday 06:00 UTC) and checks 
 
 ### Rotation Schedule Defaults
 
-| Type | Default Rotation | Override Allowed |
-|------|-----------------|-----------------|
-| `api_key` | 90 days | Yes — per provider policy |
-| `bot_token` | 90 days | Yes |
-| `oauth_client` | 90 days (secret only) | Yes |
-| `database` | 30 days | Yes — minimum 7 days |
-| `ssh_key` | 180 days | Yes |
-| `webhook` | 90 days | Yes |
-| `mcp_server` | 90 days (if keyed) | Yes |
+| Type           | Default Rotation      | Override Allowed          |
+| -------------- | --------------------- | ------------------------- |
+| `api_key`      | 90 days               | Yes — per provider policy |
+| `bot_token`    | 90 days               | Yes                       |
+| `oauth_client` | 90 days (secret only) | Yes                       |
+| `database`     | 30 days               | Yes — minimum 7 days      |
+| `ssh_key`      | 180 days              | Yes                       |
+| `webhook`      | 90 days               | Yes                       |
+| `mcp_server`   | 90 days (if keyed)    | Yes                       |
 
 ### Rotation Workflow
 
@@ -269,10 +269,10 @@ Rotator cron fires (Monday 06:00 UTC)
 Every rotation (automatic or manual) is appended to `docs/_ROTATION_LOG.md`:
 
 ```markdown
-| Date | Item | Old Suffix | New Suffix | Method | Agent |
-|------|------|-----------|-----------|--------|-------|
-| 2026-04-27 | STEAM_API_KEY | ...a3f2 | ...b7e1 | auto | gatekeeper-rotate.sh |
-| 2026-04-27 | DISCORD_BOT_TOKEN | ...9c4d | ...2e8a | manual | Audrey |
+| Date       | Item              | Old Suffix | New Suffix | Method | Agent                |
+| ---------- | ----------------- | ---------- | ---------- | ------ | -------------------- |
+| 2026-04-27 | STEAM_API_KEY     | ...a3f2    | ...b7e1    | auto   | gatekeeper-rotate.sh |
+| 2026-04-27 | DISCORD_BOT_TOKEN | ...9c4d    | ...2e8a    | manual | Audrey               |
 ```
 
 Only the last 4 characters of keys are logged. Full values NEVER appear in logs, issues, or PRs.
@@ -285,13 +285,13 @@ APIs that serve multiple products or need rate limiting, auth, or monitoring are
 
 ### When to Register in Kong
 
-| Scenario | Register in Kong? |
-|----------|-------------------|
-| API used by 1 product only | No — direct connection |
-| API used by 2+ products | Yes — centralized rate limiting |
+| Scenario                           | Register in Kong?               |
+| ---------------------------------- | ------------------------------- |
+| API used by 1 product only         | No — direct connection          |
+| API used by 2+ products            | Yes — centralized rate limiting |
 | API with rate limits we must share | Yes — Kong rate-limiting plugin |
-| MCP server exposed externally | Yes — auth + rate limiting |
-| Internal-only MCP server | No — local connection |
+| MCP server exposed externally      | Yes — auth + rate limiting      |
+| Internal-only MCP server           | No — local connection           |
 
 ### Kong Registration via Gatekeeper
 
@@ -346,15 +346,15 @@ In addition to standard registry fields, MCP entries include:
 
 ## 7. Cron Schedule
 
-| Job | Cron | What it does |
-|-----|------|-------------|
-| BOM Validator | On PR + `workflow_dispatch` | Validates BOM.md changes |
-| Credential Gatekeeper | On issue open/label | Scans issues for credential needs |
-| Gatekeeper Sync | On BOM change + daily `0 3 * * *` | Syncs Doppler → GitHub Secrets |
-| Rotator | Weekly `0 6 * * 1` | Checks + executes rotations |
-| BOM Self-Heal | Post-deploy + weekly `0 9 * * 1` | Audits P0 gaps, creates issues |
-| Registry Drift Check | Daily `0 4 * * *` | Compares registry vs Doppler vs Kong |
-| Master BOM Sync | Weekly `0 5 * * 1` | Regenerates `_MASTER_BOM.md` from product BOMs |
+| Job                   | Cron                              | What it does                                   |
+| --------------------- | --------------------------------- | ---------------------------------------------- |
+| BOM Validator         | On PR + `workflow_dispatch`       | Validates BOM.md changes                       |
+| Credential Gatekeeper | On issue open/label               | Scans issues for credential needs              |
+| Gatekeeper Sync       | On BOM change + daily `0 3 * * *` | Syncs Doppler → GitHub Secrets                 |
+| Rotator               | Weekly `0 6 * * 1`                | Checks + executes rotations                    |
+| BOM Self-Heal         | Post-deploy + weekly `0 9 * * 1`  | Audits P0 gaps, creates issues                 |
+| Registry Drift Check  | Daily `0 4 * * *`                 | Compares registry vs Doppler vs Kong           |
+| Master BOM Sync       | Weekly `0 5 * * 1`                | Regenerates `_MASTER_BOM.md` from product BOMs |
 
 ---
 

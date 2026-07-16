@@ -31,7 +31,7 @@ on:
     types: [figma-export]
   pull_request:
     paths:
-      - '.github/workflows/figma-to-pdf.yml'
+      - ".github/workflows/figma-to-pdf.yml"
   issue_comment:
     types: [created]
     if: 'contains(github.event.comment.body, "/figma-pdf")'
@@ -68,7 +68,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install Figma CLI
         run: npm install -g @figma/figma-cli
@@ -78,19 +78,19 @@ jobs:
           FILE_KEY: ${{ steps.parse.outputs.file_key }}
         run: |
           mkdir -p exports
-          
+
           # Try Figma CLI first
           npx @figma/figma-cli export "$FILE_KEY" \
             --format pdf \
             --scale 2 \
             --output exports/ \
             || echo "CLI export failed, trying API..."
-          
+
           # Fallback: use Figma REST API
           curl -s -H "X-Figma-Token: $FIGMA_API_KEY" \
             "https://api.figma.com/v1/files/$FILE_KEY" \
             > figma-response.json
-          
+
           # Check if response has export settings
           if [ -f figma-response.json ]; then
             echo "Figma file retrieved, using REST export..."
@@ -101,7 +101,7 @@ jobs:
         run: |
           # Install PDF tools
           pip install reportlab pillow
-          
+
           # Convert exported images to PDF
           python3 - <<'PY'
           import os
@@ -141,12 +141,12 @@ jobs:
           # Create a branch, commit PDF, open PR
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          
+
           git checkout -b figma-export/$(date +%Y%m%d)
           git add exports/
           git commit -m "chore: Figma PDF export"
           git push -u origin figma-export/$(date +%Y%m%d)
-          
+
           gh pr create \
             --title "Figma PDF Export" \
             --body "Automated PDF export from Figma" \

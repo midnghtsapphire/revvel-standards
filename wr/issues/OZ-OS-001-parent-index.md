@@ -8,10 +8,12 @@
 **Template:** custom (NOT WR_TEMPLATE_FULL.md — causes placeholder leakage, ref PR #14118, #14138, #14184)
 
 ## Core Realization
+
 Oz OS is a Research Intelligence Operating System, not an agent framework.
 The compounding asset is `intel.md`, `research-packs/`, `method-packs/` — not code.
 
 ## Optimization Target
+
 Most agent systems optimize for **Answer Quality**.
 Oz OS optimizes for **Method Discovery + Research Accumulation + Reusable Knowledge**.
 
@@ -27,11 +29,13 @@ Oz OS optimizes for **Method Discovery + Research Accumulation + Reusable Knowle
 ```
 
 ## Method Divergence Requirement
+
 Before any solution is proposed, agents MUST produce a Method Pack with 10+ methodologies:
 obvious, industry-standard, academic, open-source, enterprise, low-cost, historical,
 adjacent-domain, contrarian, experimental. Scored by confidence / cost / risk / complexity / novelty / scalability.
 
 ## Children (ship independently, no big-bang)
+
 - [ ] OZ-OS-002 — Bootstrap `oz-os` repo skeleton
 - [ ] OZ-OS-003 — `intel.md` schema + 5 backfilled entries
 - [ ] OZ-OS-004 — `research-packs/` structure + 3 seed packs
@@ -50,12 +54,14 @@ adjacent-domain, contrarian, experimental. Scored by confidence / cost / risk / 
 - [ ] OZ-OS-012 — Add `docs/INTELLIGENCE_LAYER_STANDARD.md` to `revvel-standards`
 
 ## Out of Scope
+
 - RIS-001 (electricity bar-chart-race) — separate WR
 - RIS-002 (agentic infographic engine) — separate WR
 - Rewriting existing products
 - Replacing `revvel-standards`
 
 ## Success Criteria
+
 - Method Hunter, Contrarian, Adjacent Domain all produce packs for one real topic
 - Synthesizer merges them into a ranked decision
 - Archivist writes the result to `intel.md`

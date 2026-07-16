@@ -5,11 +5,18 @@
   "target_mrr": 10000,
   "current_mrr": 0,
   "created": "2025-01-01",
-  "stack": ["nextjs", "typescript", "tailwind", "fuse.js", "papaparse", "@e965/xlsx"],
+  "stack": [
+    "nextjs",
+    "typescript",
+    "tailwind",
+    "fuse.js",
+    "papaparse",
+    "@e965/xlsx"
+  ],
   "monetization": {
     "saas_monthly": 97,
     "lifetime": 497,
-    "affiliate_revshare": 0.10
+    "affiliate_revshare": 0.1
   },
   "channels": ["polar.sh", "github", "newsletter"],
   "compliance": ["TCPA", "GDPR", "CCPA"],

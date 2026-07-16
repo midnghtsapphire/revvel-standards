@@ -84,18 +84,18 @@ No workflow change needed — GitHub Pages serves this folder verbatim.
 These are the steps Audrey (or any reviewer) can run to verify the UI
 is wired correctly end-to-end.
 
-| # | Step | Expected result |
-|---|---|---|
-| 1 | Open `index.html` in a browser | Page renders, accessibility selector visible in header |
-| 2 | Switch the accessibility selector through all 7 modes | Background, fonts, and focus outlines change per mode; preference persists on reload |
-| 3 | Leave owner as `midnghtsapphire`, leave token blank, click **Load repositories** | Status changes to "Loaded N repositories"; cards render |
-| 4 | Click **Run audit** on any one card | Checks change from `…` to `✓` or `✗`; score badge updates |
-| 5 | Click **Audit all repositories** | All cards receive scores sequentially; summary strip updates |
-| 6 | Click **Export report (JSON)** | Browser downloads `revvel-audit-<owner>-<timestamp>.json` |
-| 7 | Open the downloaded JSON | Contains `generatedAt`, `owner`, `totalRepos`, `audits` map |
-| 8 | Paste a token, click **Load repositories**, then **Forget token** | Token input clears; status confirms removal; `localStorage` no longer contains `facrm.token` |
-| 9 | Run a keyboard-only pass: `Tab` through every control | Focus outline always visible; no keyboard trap |
-| 10 | Run axe or Lighthouse against the page | 0 critical accessibility violations |
+| #   | Step                                                                             | Expected result                                                                              |
+| --- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 1   | Open `index.html` in a browser                                                   | Page renders, accessibility selector visible in header                                       |
+| 2   | Switch the accessibility selector through all 7 modes                            | Background, fonts, and focus outlines change per mode; preference persists on reload         |
+| 3   | Leave owner as `midnghtsapphire`, leave token blank, click **Load repositories** | Status changes to "Loaded N repositories"; cards render                                      |
+| 4   | Click **Run audit** on any one card                                              | Checks change from `…` to `✓` or `✗`; score badge updates                                    |
+| 5   | Click **Audit all repositories**                                                 | All cards receive scores sequentially; summary strip updates                                 |
+| 6   | Click **Export report (JSON)**                                                   | Browser downloads `revvel-audit-<owner>-<timestamp>.json`                                    |
+| 7   | Open the downloaded JSON                                                         | Contains `generatedAt`, `owner`, `totalRepos`, `audits` map                                  |
+| 8   | Paste a token, click **Load repositories**, then **Forget token**                | Token input clears; status confirms removal; `localStorage` no longer contains `facrm.token` |
+| 9   | Run a keyboard-only pass: `Tab` through every control                            | Focus outline always visible; no keyboard trap                                               |
+| 10  | Run axe or Lighthouse against the page                                           | 0 critical accessibility violations                                                          |
 
 ---
 

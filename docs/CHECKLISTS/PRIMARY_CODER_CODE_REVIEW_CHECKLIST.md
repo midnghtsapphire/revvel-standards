@@ -66,14 +66,11 @@ script: |
 // ❌ BAD (continuation at column 0):
 body: [
   `Line 1`,
-`Line 2`  // <- Flush left, terminates the array!
-]
+  `Line 2`, // <- Flush left, terminates the array!
+];
 
 // ✅ GOOD (all indented):
-body: [
-  `Line 1`,
-  `Line 2`
-].join('\n')
+body: [`Line 1`, `Line 2`].join("\n");
 ```
 
 #### 4. workflow_run Without workflows List
@@ -82,7 +79,7 @@ body: [
 # ❌ BAD:
 on:
   workflow_run:
-    workflows: [Workflow Name]  # WRONG - this is not valid!
+    workflows: [Workflow Name] # WRONG - this is not valid!
 
 # ✅ GOOD:
 on:
@@ -196,16 +193,16 @@ grep -rE "(api_key|token|password|secret)" . --include="*.js" | grep -v node_mod
 
 ## Common Fix Patterns (For Reference)
 
-| Issue | Fix |
-|-------|-----|
-| `status:checks-failing` but CI passing | Check API, fix labels |
-| `mergeable: false` dirty state | Rebase onto main, resolve conflicts |
-| Linter errors | Run formatter: `npm run format` |
-| Test failures | Fix tests or code, don't skip |
-| Missing env var | Add to `.env.example`, document |
-| Permission denied | Add `permissions:` to workflow |
+| Issue                                  | Fix                                 |
+| -------------------------------------- | ----------------------------------- |
+| `status:checks-failing` but CI passing | Check API, fix labels               |
+| `mergeable: false` dirty state         | Rebase onto main, resolve conflicts |
+| Linter errors                          | Run formatter: `npm run format`     |
+| Test failures                          | Fix tests or code, don't skip       |
+| Missing env var                        | Add to `.env.example`, document     |
+| Permission denied                      | Add `permissions:` to workflow      |
 
 ---
 
-*Created: 2026-06-22*  
-*Purpose: Ensure coders catch common issues before requesting review*
+_Created: 2026-06-22_  
+_Purpose: Ensure coders catch common issues before requesting review_

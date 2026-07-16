@@ -1,7 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { calculateDosage, CompensationProfile, formatMinutes, normalizeDosageInput } from "./data/calculator";
+import {
+  calculateDosage,
+  type CompensationProfile,
+  formatMinutes,
+  normalizeDosageInput,
+} from "./data/calculator";
 
 interface FormState {
   irradianceMwPerCm2: number;
@@ -74,9 +79,10 @@ export default function Home() {
             Universal Dosage Calculator for Photobiomodulation
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-700 sm:text-base">
-            Enter irradiance and your target dose. The calculator uses the universal formula:
-            <strong> time = (dose × 1000) / irradiance</strong>, then applies pulse and
-            compensation adjustments for practical session timing.
+            Enter irradiance and your target dose. The calculator uses the
+            universal formula:
+            <strong> time = (dose × 1000) / irradiance</strong>, then applies
+            pulse and compensation adjustments for practical session timing.
           </p>
         </section>
 
@@ -125,20 +131,27 @@ export default function Home() {
                 onChange={handleNumberChange}
               />
               <label className="flex flex-col gap-2">
-                <span className="text-sm font-semibold text-slate-700">Compensation</span>
+                <span className="text-sm font-semibold text-slate-700">
+                  Compensation
+                </span>
                 <select
                   value={state.compensationProfile}
                   onChange={(event) =>
                     setState((previous) => ({
                       ...previous,
-                      compensationProfile: event.target.value as CompensationProfile,
+                      compensationProfile: event.target
+                        .value as CompensationProfile,
                     }))
                   }
                   className="w-full rounded-xl border border-slate-200 bg-white p-3 text-base text-slate-900 shadow-sm outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-200"
                 >
                   <option value="none">None (lab-equivalent)</option>
-                  <option value="solar_meter">Solar meter correction (x2)</option>
-                  <option value="skin_reflection">Skin reflection correction (x2.5)</option>
+                  <option value="solar_meter">
+                    Solar meter correction (x2)
+                  </option>
+                  <option value="skin_reflection">
+                    Skin reflection correction (x2.5)
+                  </option>
                 </select>
               </label>
             </div>
@@ -149,30 +162,39 @@ export default function Home() {
             <div className="mt-4 space-y-3">
               <div className="rounded-2xl bg-cyan-50 p-4">
                 <p className="text-sm text-cyan-900">Estimated Session Time</p>
-                <p className="text-3xl font-bold text-cyan-950">{formatMinutes(result.adjustedTimeSeconds)}</p>
+                <p className="text-3xl font-bold text-cyan-950">
+                  {formatMinutes(result.adjustedTimeSeconds)}
+                </p>
               </div>
               <p className="text-sm text-slate-700">
-                Base time: <strong>{formatMinutes(result.baseTimeSeconds)}</strong>
+                Base time:{" "}
+                <strong>{formatMinutes(result.baseTimeSeconds)}</strong>
               </p>
               <p className="text-sm text-slate-700">
                 Effective irradiance:{" "}
-                <strong>{result.effectiveIrradianceMwPerCm2.toFixed(1)} mW/cm2</strong>
+                <strong>
+                  {result.effectiveIrradianceMwPerCm2.toFixed(1)} mW/cm2
+                </strong>
               </p>
               <p className="text-sm text-slate-700">
-                Compensation multiplier: <strong>x{result.compensationMultiplier}</strong>
+                Compensation multiplier:{" "}
+                <strong>x{result.compensationMultiplier}</strong>
               </p>
               <p className="text-sm text-slate-700">
-                Total energy per session: <strong>{result.totalEnergyJoules.toFixed(0)} J</strong>
+                Total energy per session:{" "}
+                <strong>{result.totalEnergyJoules.toFixed(0)} J</strong>
               </p>
               <p className="text-sm text-slate-700">
-                Weekly dose load: <strong>{result.weeklyDoseJPerCm2.toFixed(1)} J/cm2</strong>
+                Weekly dose load:{" "}
+                <strong>{result.weeklyDoseJPerCm2.toFixed(1)} J/cm2</strong>
               </p>
             </div>
             <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
-              This app is for general wellness and informational purposes only. It is not a medical
-              device and does not diagnose, treat, cure, or prevent any condition. Red light and PBM
-              session parameters vary by device, wavelength, distance, and individual response.
-              Consult a qualified clinician for medical decisions.
+              This app is for general wellness and informational purposes only.
+              It is not a medical device and does not diagnose, treat, cure, or
+              prevent any condition. Red light and PBM session parameters vary
+              by device, wavelength, distance, and individual response. Consult
+              a qualified clinician for medical decisions.
             </div>
           </aside>
         </section>

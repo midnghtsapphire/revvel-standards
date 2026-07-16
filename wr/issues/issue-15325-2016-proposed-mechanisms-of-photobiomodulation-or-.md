@@ -5,7 +5,7 @@
 **Created:** 2026-07-06  
 **Researcher:** Copilot + OpenRouter  
 **Research Date:** 2026-07-06  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -17,18 +17,19 @@ The requester has shared a 2016 peer-reviewed paper on the proposed mechanisms o
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A — internal WR |
-| Open Issues | N/A |
-| Private | true |
-| Archived | false |
+| Property    | Value             |
+| ----------- | ----------------- |
+| Stars       | N/A — internal WR |
+| Open Issues | N/A               |
+| Private     | true              |
+| Archived    | false             |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [x] Deep market research
 - [x] BOM
 - [x] Community chatter
@@ -44,6 +45,7 @@ The requester has shared a 2016 peer-reviewed paper on the proposed mechanisms o
 **Source paper:** [Proposed Mechanisms of Photobiomodulation or Low-Level Light Therapy](https://pubmed.ncbi.nlm.nih.gov/28070154/) — Hamblin MR, IEEE J Sel Top Quantum Electron, 2016.
 
 **Key science from the paper:**
+
 - Primary chromophore: cytochrome c oxidase in the mitochondrial respiratory chain absorbs red/NIR light (600–1100 nm).
 - Absorbed photons dissociate inhibitory nitric oxide (NO) from cytochrome c oxidase → enhanced electron transport → increased ATP, elevated mitochondrial membrane potential.
 - Secondary messengers activated: reactive oxygen species (ROS), cyclic AMP, calcium ions (Ca²⁺), and nitric oxide (NO) trigger transcription-factor cascades.
@@ -51,6 +53,7 @@ The requester has shared a 2016 peer-reviewed paper on the proposed mechanisms o
 - Stem/progenitor cells show heightened sensitivity — potential basis for regenerative applications.
 
 **Market size:**
+
 - Global photobiomodulation device market valued at ~USD 254 million in 2025, projected to reach ~USD 508 million by 2032 (CAGR ~10.4%). [Source: GII Research / ResearchAndMarkets 2025](https://www.giiresearch.com/report/coh1705823-photobiomodulation-market-by-application-by.html)
 - Red light therapy devices segment: ~USD 444 million in 2025, projected ~USD 658 million by 2032 (CAGR ~5.7%). [Source: ResearchAndMarkets 2025](https://www.researchandmarkets.com/reports/6160107/red-light-therapy-devices-market-global)
 
@@ -63,17 +66,18 @@ A 2016 landmark paper on photobiomodulation mechanisms confirms that red and nea
 **The opportunity:** Build a cross-device PBM dose-calculator and session-tracker tool (web + mobile app) that bridges the gap between the scientific literature and the consumer wellness market. Monetize via freemium SaaS (free calculator, paid protocol library + AI guidance), device affiliate links, and B2B white-label licensing to device manufacturers and clinics.
 
 **Output type (inferred from tags):**
+
 - `#tools` → Web tool: PBM Dose Calculator + Protocol Builder
 - `#apps` → Mobile app: PBM Session Tracker with AI coaching
 
 ## Step 1A — Product/Output Selections
 
-| # | Output | Type | Priority |
-| --- | --- | --- | --- |
-| 1 | **PBM Dose Calculator** — web tool: enter device irradiance (mW/cm²), wavelength, treatment area, goal → outputs fluence (J/cm²) and recommended session time | Web tool | P1 |
-| 2 | **PBM Session Tracker App** — mobile/PWA: log sessions, body zones, device used, dose achieved; trend charts; evidence-based protocol library | Mobile / PWA | P1 |
-| 3 | **Protocol Library** — curated evidence-based treatment protocols (pain, wound healing, skin, neurological) with citations to peer-reviewed papers | Content layer (gated) | P2 |
-| 4 | **AI Coaching Layer** — personalized protocol recommendations based on logged sessions, goals, and clinical literature | SaaS upsell | P2 |
+| #   | Output                                                                                                                                                        | Type                  | Priority |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | -------- |
+| 1   | **PBM Dose Calculator** — web tool: enter device irradiance (mW/cm²), wavelength, treatment area, goal → outputs fluence (J/cm²) and recommended session time | Web tool              | P1       |
+| 2   | **PBM Session Tracker App** — mobile/PWA: log sessions, body zones, device used, dose achieved; trend charts; evidence-based protocol library                 | Mobile / PWA          | P1       |
+| 3   | **Protocol Library** — curated evidence-based treatment protocols (pain, wound healing, skin, neurological) with citations to peer-reviewed papers            | Content layer (gated) | P2       |
+| 4   | **AI Coaching Layer** — personalized protocol recommendations based on logged sessions, goals, and clinical literature                                        | SaaS upsell           | P2       |
 
 ## Step 2 — Deep Web Research
 
@@ -90,14 +94,14 @@ A 2016 landmark paper on photobiomodulation mechanisms confirms that red and nea
 
 ### Competitor Analysis
 
-| Product | Type | Price | Strengths | Weaknesses |
-| --- | --- | --- | --- | --- |
-| **RedLightOS** | Android app | ~$5–15/month (PRO tier; exact pricing not publicly listed — competitive benchmark research required) | 55+ device support, precision dose calc, protocol library, 8 languages | Android-only, no iOS; device-locked UX |
-| **Outliyr Dose Calculator** | Free web tool | Free | Large device DB, clinical goal presets | No session tracking, no account, no AI |
-| **GembaRed Calculator** | Free web tool | Free | Irradiance + distance math | Minimal, single-purpose, no history |
-| **LED Light Therapy Shop Calculator** | Free web tool | Free | Clinical fluence tool | Brand-locked, no cross-device support |
-| **Radia** (App Store) | iOS app | Free / low one-time (~$0–$4.99 estimated) | Session log, clean UI | No dose calculator, no protocol guidance |
-| **Joovv App** | Companion app (device-bundled) | Free with device | Brand integration | Joovv device-only |
+| Product                               | Type                           | Price                                                                                                | Strengths                                                              | Weaknesses                               |
+| ------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------- |
+| **RedLightOS**                        | Android app                    | ~$5–15/month (PRO tier; exact pricing not publicly listed — competitive benchmark research required) | 55+ device support, precision dose calc, protocol library, 8 languages | Android-only, no iOS; device-locked UX   |
+| **Outliyr Dose Calculator**           | Free web tool                  | Free                                                                                                 | Large device DB, clinical goal presets                                 | No session tracking, no account, no AI   |
+| **GembaRed Calculator**               | Free web tool                  | Free                                                                                                 | Irradiance + distance math                                             | Minimal, single-purpose, no history      |
+| **LED Light Therapy Shop Calculator** | Free web tool                  | Free                                                                                                 | Clinical fluence tool                                                  | Brand-locked, no cross-device support    |
+| **Radia** (App Store)                 | iOS app                        | Free / low one-time (~$0–$4.99 estimated)                                                            | Session log, clean UI                                                  | No dose calculator, no protocol guidance |
+| **Joovv App**                         | Companion app (device-bundled) | Free with device                                                                                     | Brand integration                                                      | Joovv device-only                        |
 
 **Gap:** No cross-platform (iOS + Android + web), device-agnostic, AI-guided app currently dominates. RedLightOS comes closest but is Android-only.
 
@@ -110,12 +114,12 @@ A 2016 landmark paper on photobiomodulation mechanisms confirms that red and nea
 
 ### Domain Strategy
 
-| Domain option | Availability | Notes |
-| --- | --- | --- |
-| `pbmdose.com` | Check availability | Short, precise, clinical feel |
-| `redlightdose.app` | Check availability | `.app` TLD signals mobile product |
-| `lllttracker.com` | Check availability | Descriptive, SEO-friendly |
-| `photobiomodulator.app` | Check availability | Longer but science-credible |
+| Domain option           | Availability       | Notes                             |
+| ----------------------- | ------------------ | --------------------------------- |
+| `pbmdose.com`           | Check availability | Short, precise, clinical feel     |
+| `redlightdose.app`      | Check availability | `.app` TLD signals mobile product |
+| `lllttracker.com`       | Check availability | Descriptive, SEO-friendly         |
+| `photobiomodulator.app` | Check availability | Longer but science-credible       |
 
 Recommend: `pbmdose.com` or `redlightdose.app`. Register as part of this WR.
 
@@ -150,14 +154,14 @@ Recommend: `pbmdose.com` or `redlightdose.app`. Register as part of this WR.
 
 ### Tech Stack Recommendation
 
-| Layer | Technology |
-| --- | --- |
-| Frontend | Next.js 14 (App Router) + Tailwind CSS |
-| Mobile | PWA (Progressive Web App) or React Native Expo |
-| Backend | Next.js API routes + Supabase (session storage, user accounts) |
+| Layer    | Technology                                                         |
+| -------- | ------------------------------------------------------------------ |
+| Frontend | Next.js 14 (App Router) + Tailwind CSS                             |
+| Mobile   | PWA (Progressive Web App) or React Native Expo                     |
+| Backend  | Next.js API routes + Supabase (session storage, user accounts)     |
 | AI Layer | OpenRouter → Claude 3.5 Sonnet (existing OPENROUTER_API_KEY infra) |
-| Hosting | Vercel |
-| Port | 3007 (available — see AGENTS.md port table) |
+| Hosting  | Vercel                                                             |
+| Port     | 3007 (available — see AGENTS.md port table)                        |
 
 ## Recommendations
 
@@ -178,20 +182,20 @@ Recommend: `pbmdose.com` or `redlightdose.app`. Register as part of this WR.
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 No blocking dependencies. The OpenRouter API key infrastructure already exists in the repo.
 
 ## Risks
 
-| Risk | Severity | Mitigation |
-| --- | --- | --- |
-| Regulatory / medical claims (FDA, FTC) | High | Add clear disclaimer: "Not a medical device. For informational and wellness use only." Avoid therapeutic claims without citations. |
-| RedLightOS launches iOS app before our MVP | Medium | Differentiate with superior dose calculator, cross-device DB, and AI layer — not just tracking. |
-| Device irradiance data is self-reported by manufacturers | Medium | Surface measurement methodology notes; provide user-input override for measured values. |
-| OpenRouter API costs at scale (AI coaching tier) | Low | Gate AI features behind paid tier; rate-limit free tier. Existing infra already handles fallbacks. |
-| Domain registration cost | Low | Budget ~$12–15/year; negligible relative to revenue potential. |
+| Risk                                                     | Severity | Mitigation                                                                                                                         |
+| -------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Regulatory / medical claims (FDA, FTC)                   | High     | Add clear disclaimer: "Not a medical device. For informational and wellness use only." Avoid therapeutic claims without citations. |
+| RedLightOS launches iOS app before our MVP               | Medium   | Differentiate with superior dose calculator, cross-device DB, and AI layer — not just tracking.                                    |
+| Device irradiance data is self-reported by manufacturers | Medium   | Surface measurement methodology notes; provide user-input override for measured values.                                            |
+| OpenRouter API costs at scale (AI coaching tier)         | Low      | Gate AI features behind paid tier; rate-limit free tier. Existing infra already handles fallbacks.                                 |
+| Domain registration cost                                 | Low      | Budget ~$12–15/year; negligible relative to revenue potential.                                                                     |

@@ -5,7 +5,7 @@
 **Created:** 2026-06-25  
 **Researcher:** Copilot Coding Agent  
 **Research Date:** 2026-06-25  
-**WR Status:** ✅ Research complete — implementation delivered in existing production app  
+**WR Status:** ✅ Research complete — implementation delivered in existing production app
 
 ---
 
@@ -40,12 +40,12 @@ The original Amazon/HeyGen UGC generator remains available, so the repository ga
 
 ## Step 1A: Product / Output Selections
 
-| Decision | Selection | Reason |
-| --- | --- | --- |
-| Output type | `production-app` | The request asked to “implement this system,” not just describe it. |
-| Delivery shape | Extend existing app | Smallest complete change: reuse `products/ugc-review-generator/` rather than spin up a duplicate Next app. |
-| Primary audience | Real-estate and local-service marketers | The screenshot copy explicitly targets real-estate agents but the generator remains reusable for other local-service businesses. |
-| Artifact bundle | UI + deterministic logic + regression tests + WR doc | Satisfies “all artifacts required” without introducing unrelated infrastructure. |
+| Decision         | Selection                                            | Reason                                                                                                                           |
+| ---------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Output type      | `production-app`                                     | The request asked to “implement this system,” not just describe it.                                                              |
+| Delivery shape   | Extend existing app                                  | Smallest complete change: reuse `products/ugc-review-generator/` rather than spin up a duplicate Next app.                       |
+| Primary audience | Real-estate and local-service marketers              | The screenshot copy explicitly targets real-estate agents but the generator remains reusable for other local-service businesses. |
+| Artifact bundle  | UI + deterministic logic + regression tests + WR doc | Satisfies “all artifacts required” without introducing unrelated infrastructure.                                                 |
 
 ---
 
@@ -125,22 +125,22 @@ npm run build
 
 ## Artifact Engine Map
 
-| Artifact | Path | Status |
-| --- | --- | --- |
-| Zeely-style creative engine | `products/ugc-review-generator/src/lib/creative-system.js` | ✅ Delivered |
-| App UI | `products/ugc-review-generator/src/app/page.tsx` | ✅ Delivered |
-| Styling / accessibility modes | `products/ugc-review-generator/src/app/globals.css` | ✅ Delivered |
-| Product documentation | `products/ugc-review-generator/README.md` | ✅ Delivered |
-| Product blueprint | `products/ugc-review-generator/BLUEPRINT.md` | ✅ Delivered |
-| Changelog / roadmap | `products/ugc-review-generator/CHANGELOG.md`, `products/ugc-review-generator/ROADMAP.md` | ✅ Delivered |
-| Regression tests | `tests/ugc-review-generator.test.js` | ✅ Delivered |
+| Artifact                      | Path                                                                                     | Status       |
+| ----------------------------- | ---------------------------------------------------------------------------------------- | ------------ |
+| Zeely-style creative engine   | `products/ugc-review-generator/src/lib/creative-system.js`                               | ✅ Delivered |
+| App UI                        | `products/ugc-review-generator/src/app/page.tsx`                                         | ✅ Delivered |
+| Styling / accessibility modes | `products/ugc-review-generator/src/app/globals.css`                                      | ✅ Delivered |
+| Product documentation         | `products/ugc-review-generator/README.md`                                                | ✅ Delivered |
+| Product blueprint             | `products/ugc-review-generator/BLUEPRINT.md`                                             | ✅ Delivered |
+| Changelog / roadmap           | `products/ugc-review-generator/CHANGELOG.md`, `products/ugc-review-generator/ROADMAP.md` | ✅ Delivered |
+| Regression tests              | `tests/ugc-review-generator.test.js`                                                     | ✅ Delivered |
 
 ---
 
 ## Agent Self-Healing Journal
 
-| Issue | Resolution |
-| --- | --- |
+| Issue                                                                                | Resolution                                                                             |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
 | WR was “stuck not moving” because the screenshot had no code artifact attached to it | Extended the closest existing production app instead of creating redundant scaffolding |
-| Need to preserve prior UGC behavior while adding the new mode | Extracted deterministic helpers and added regression coverage for both flows |
-| Screenshot copy includes high-risk proof/urgency language | Added compliance notes and qualitative fallback behavior when proof is missing |
+| Need to preserve prior UGC behavior while adding the new mode                        | Extracted deterministic helpers and added regression coverage for both flows           |
+| Screenshot copy includes high-risk proof/urgency language                            | Added compliance notes and qualitative fallback behavior when proof is missing         |

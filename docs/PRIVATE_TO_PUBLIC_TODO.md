@@ -8,32 +8,33 @@
 
 ## Summary
 
-| Metric | Count |
-|--------|-------|
-| Total Private Repos | 76 |
-| Need Public + License | 74 |
-| Keep Private | 2 |
-| Already Public | 80+ |
+| Metric                | Count |
+| --------------------- | ----- |
+| Total Private Repos   | 76    |
+| Need Public + License | 74    |
+| Keep Private          | 2     |
+| Already Public        | 80+   |
 
 ---
 
 ## 🚨 PRIORITY REPOS (Revenue-Generating)
 
-| # | Repo | Priority | Status |
-|---|------|----------|--------|
-| 1 | the-alt-text | 🔴 HIGH | ⬜ TODO |
-| 2 | thealttext-backend | 🔴 HIGH | ⬜ TODO |
-| 3 | thealttext-frontend | 🔴 HIGH | ⬜ TODO |
-| 4 | thealttext-standalone | 🔴 HIGH | ⬜ TODO |
-| 5 | revvel-music-studio | 🟡 MEDIUM | ✅ DONE (already public!) |
-| 6 | ceremony-spark-toolkit | 🟡 MEDIUM | ⬜ TODO |
-| 7 | openclaw-ui | 🟡 MEDIUM | ⬜ TODO |
+| #   | Repo                   | Priority  | Status                    |
+| --- | ---------------------- | --------- | ------------------------- |
+| 1   | the-alt-text           | 🔴 HIGH   | ⬜ TODO                   |
+| 2   | thealttext-backend     | 🔴 HIGH   | ⬜ TODO                   |
+| 3   | thealttext-frontend    | 🔴 HIGH   | ⬜ TODO                   |
+| 4   | thealttext-standalone  | 🔴 HIGH   | ⬜ TODO                   |
+| 5   | revvel-music-studio    | 🟡 MEDIUM | ✅ DONE (already public!) |
+| 6   | ceremony-spark-toolkit | 🟡 MEDIUM | ⬜ TODO                   |
+| 7   | openclaw-ui            | 🟡 MEDIUM | ⬜ TODO                   |
 
 ---
 
 ## 📋 ALL PRIVATE REPOS (74 to process)
 
 ### Tier 1: High Revenue (7 repos) - ✅ DONE
+
 - [x] the-alt-text
 - [x] thealttext-backend
 - [x] thealttext-frontend
@@ -43,6 +44,7 @@
 - [x] revvel-expert-skills
 
 ### Tier 2: Core Products (15 repos) - ✅ DONE
+
 - [x] mindmappr
 - [x] mindmappr-setup
 - [x] ai-benchmarking-tool
@@ -58,6 +60,7 @@
 - [x] oz-prompt-library
 
 ### Tier 3: Consumer Apps (23 repos) - ✅ DONE
+
 - [x] Pawsitting
 - [x] anime-ascend
 - [x] anime-ascend-wellness
@@ -83,6 +86,7 @@
 - [x] wedlock-wizard-mobile
 
 ### Tier 4: Utilities & Tools (20 repos) - ✅ DONE
+
 - [x] code-review-mcp-server
 - [x] code-review-repo
 - [x] exact-match-display
@@ -105,6 +109,7 @@
 - [x] stellar-insight-archive-tool
 
 ### Tier 5: Duplicates (5 repos) - ✅ DONE
+
 - [x] rentiverse-finds-it-all
 - [x] rentiverse-finds-it-all-30
 - [x] stellar-insight-archive-tool-93
@@ -114,12 +119,14 @@
 - [x] marketing-automation-standalone
 
 ### Tier 6: Archives (Keep Private)
+
 - [x] glowstarlabs-vault (KEEP PRIVATE - secrets!)
 - [x] meetaudreyevans-archive (KEEP PRIVATE - archive)
 
 ---
 
 ## ✅ DONE (Already Public)
+
 - [x] revvel-music-studio (2024)
 - [x] revvel-standards (2024)
 

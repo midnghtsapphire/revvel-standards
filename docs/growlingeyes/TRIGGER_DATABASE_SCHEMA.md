@@ -33,6 +33,7 @@ CREATE INDEX idx_triggers_coordinates ON triggers USING GIST(coordinates);
 ```
 
 **Fields:**
+
 - `id`: Unique identifier
 - `domain`: Intelligence domain (cyber_threats, kinetic_events, environmental, etc.)
 - `source`: Data source (CISA, NVD, USGS, etc.)
@@ -68,6 +69,7 @@ CREATE INDEX idx_correlated_score ON correlated_triggers(score DESC);
 ```
 
 **Fields:**
+
 - `id`: Unique identifier
 - `correlation_type`: Type of correlation ('entity', 'geographic', 'temporal')
 - `correlation_value`: The correlating value (e.g., CVE-2024-1234, location grid, cluster ID)
@@ -92,43 +94,65 @@ Performance indexes for common queries:
 ```typescript
 // schema/triggers.ts
 
-import { pgTable, serial, varchar, text, integer, timestamp, point, jsonb, index } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  serial,
+  varchar,
+  text,
+  integer,
+  timestamp,
+  point,
+  jsonb,
+  index,
+} from "drizzle-orm/pg-core";
 
-export const triggers = pgTable('triggers', {
-  id: serial('id').primaryKey(),
-  domain: varchar('domain', { length: 50 }).notNull(),
-  source: varchar('source', { length: 100 }).notNull(),
-  title: text('title').notNull(),
-  score: integer('score').notNull(),
-  reason: text('reason'),
-  timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
-  coordinates: point('coordinates'),
-  affectedAreas: text('affected_areas'),
-  extractedEntities: jsonb('extracted_entities').$type<string[]>().default([]),
-  rawData: jsonb('raw_data').$type<Record<string, any>>(),
-  correlationId: integer('correlation_id').references(() => correlatedTriggers.id),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
-}, (table) => ({
-  scoreIdx: index('idx_triggers_score').on(table.score.desc()),
-  timestampIdx: index('idx_triggers_timestamp').on(table.timestamp.desc()),
-  domainIdx: index('idx_triggers_domain').on(table.domain),
-  sourceIdx: index('idx_triggers_source').on(table.source),
-  correlationIdx: index('idx_triggers_correlation').on(table.correlationId),
-}));
+export const triggers = pgTable(
+  "triggers",
+  {
+    id: serial("id").primaryKey(),
+    domain: varchar("domain", { length: 50 }).notNull(),
+    source: varchar("source", { length: 100 }).notNull(),
+    title: text("title").notNull(),
+    score: integer("score").notNull(),
+    reason: text("reason"),
+    timestamp: timestamp("timestamp", { withTimezone: true }).notNull(),
+    coordinates: point("coordinates"),
+    affectedAreas: text("affected_areas"),
+    extractedEntities: jsonb("extracted_entities")
+      .$type<string[]>()
+      .default([]),
+    rawData: jsonb("raw_data").$type<Record<string, any>>(),
+    correlationId: integer("correlation_id").references(
+      () => correlatedTriggers.id,
+    ),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  },
+  (table) => ({
+    scoreIdx: index("idx_triggers_score").on(table.score.desc()),
+    timestampIdx: index("idx_triggers_timestamp").on(table.timestamp.desc()),
+    domainIdx: index("idx_triggers_domain").on(table.domain),
+    sourceIdx: index("idx_triggers_source").on(table.source),
+    correlationIdx: index("idx_triggers_correlation").on(table.correlationId),
+  }),
+);
 
-export const correlatedTriggers = pgTable('correlated_triggers', {
-  id: serial('id').primaryKey(),
-  correlationType: varchar('correlation_type', { length: 50 }).notNull(),
-  correlationValue: text('correlation_value').notNull(),
-  score: integer('score').notNull(),
-  sourceCount: integer('source_count').notNull(),
-  reason: text('reason'),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
-}, (table) => ({
-  typeIdx: index('idx_correlated_type').on(table.correlationType),
-  scoreIdx: index('idx_correlated_score').on(table.score.desc()),
-}));
+export const correlatedTriggers = pgTable(
+  "correlated_triggers",
+  {
+    id: serial("id").primaryKey(),
+    correlationType: varchar("correlation_type", { length: 50 }).notNull(),
+    correlationValue: text("correlation_value").notNull(),
+    score: integer("score").notNull(),
+    sourceCount: integer("source_count").notNull(),
+    reason: text("reason"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  },
+  (table) => ({
+    typeIdx: index("idx_correlated_type").on(table.correlationType),
+    scoreIdx: index("idx_correlated_score").on(table.score.desc()),
+  }),
+);
 ```
 
 ## Example Queries
@@ -136,7 +160,7 @@ export const correlatedTriggers = pgTable('correlated_triggers', {
 ### Get Critical Triggers from Last 24 Hours
 
 ```sql
-SELECT 
+SELECT
     id,
     domain,
     source,
@@ -145,7 +169,7 @@ SELECT
     reason,
     timestamp
 FROM triggers
-WHERE 
+WHERE
     score >= 90
     AND timestamp >= NOW() - INTERVAL '24 hours'
 ORDER BY score DESC, timestamp DESC
@@ -155,7 +179,7 @@ LIMIT 50;
 ### Get Correlated Triggers
 
 ```sql
-SELECT 
+SELECT
     ct.correlation_type,
     ct.correlation_value,
     ct.source_count,
@@ -179,7 +203,7 @@ ORDER BY ct.score DESC;
 
 ```sql
 -- Find triggers within 100km of San Francisco (37.7749, -122.4194)
-SELECT 
+SELECT
     id,
     domain,
     source,
@@ -190,7 +214,7 @@ SELECT
         ST_MakePoint(-122.4194, 37.7749)::geography
     ) / 1000 AS distance_km
 FROM triggers
-WHERE 
+WHERE
     coordinates IS NOT NULL
     AND ST_DWithin(
         coordinates::geography,
@@ -203,7 +227,7 @@ ORDER BY distance_km ASC, score DESC;
 ### Domain Statistics
 
 ```sql
-SELECT 
+SELECT
     domain,
     COUNT(*) AS trigger_count,
     AVG(score) AS avg_score,
@@ -320,11 +344,13 @@ conn.commit()
 export const triggersRouter = router({
   // Get recent triggers
   getRecent: publicProcedure
-    .input(z.object({
-      limit: z.number().default(50),
-      minScore: z.number().default(40),
-      domains: z.array(z.string()).optional(),
-    }))
+    .input(
+      z.object({
+        limit: z.number().default(50),
+        minScore: z.number().default(40),
+        domains: z.array(z.string()).optional(),
+      }),
+    )
     .query(async ({ input, ctx }) => {
       return await ctx.db
         .select()
@@ -332,30 +358,31 @@ export const triggersRouter = router({
         .where(
           and(
             gte(triggers.score, input.minScore),
-            input.domains ? inArray(triggers.domain, input.domains) : undefined
-          )
+            input.domains ? inArray(triggers.domain, input.domains) : undefined,
+          ),
         )
         .orderBy(desc(triggers.score), desc(triggers.timestamp))
         .limit(input.limit);
     }),
-  
+
   // Get correlated triggers
-  getCorrelated: publicProcedure
-    .query(async ({ ctx }) => {
-      return await ctx.db
-        .select()
-        .from(correlatedTriggers)
-        .orderBy(desc(correlatedTriggers.score))
-        .limit(20);
-    }),
-  
+  getCorrelated: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db
+      .select()
+      .from(correlatedTriggers)
+      .orderBy(desc(correlatedTriggers.score))
+      .limit(20);
+  }),
+
   // Get triggers near location
   getNearLocation: publicProcedure
-    .input(z.object({
-      lat: z.number(),
-      lng: z.number(),
-      radiusKm: z.number().default(100),
-    }))
+    .input(
+      z.object({
+        lat: z.number(),
+        lng: z.number(),
+        radiusKm: z.number().default(100),
+      }),
+    )
     .query(async ({ input, ctx }) => {
       // SQL query with geographic functions
       const query = sql`
@@ -369,7 +396,7 @@ export const triggersRouter = router({
         ORDER BY score DESC
         LIMIT 50
       `;
-      
+
       return await ctx.db.execute(query);
     }),
 });

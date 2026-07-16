@@ -46,19 +46,19 @@ out the trigger of) the corresponding YAML file.
 `openrouter-auto-route.yml` parses the `### Output Type` field from the
 canonical `00-work-request.yml` form and applies labels per this table:
 
-| Output Type                  | Labels applied                  | Result                                 |
-|------------------------------|---------------------------------|----------------------------------------|
-| `cli-product`                | `swe-fix` + `bito-ai`           | SWE-Agent opens PR; BITO reviews       |
-| `api-product`                | `swe-fix` + `bito-ai`           | SWE-Agent opens PR; BITO reviews       |
-| `mcp-product`                | `swe-fix` + `bito-ai`           | SWE-Agent opens PR; BITO reviews       |
-| `production-app`             | `swe-fix` + `bito-ai`           | SWE-Agent opens PR; BITO reviews       |
-| `desktop-tool`               | `swe-fix` + `bito-ai`           | SWE-Agent opens PR; BITO reviews       |
-| `invention-flow`             | `swe-fix` + `bito-ai`           | SWE-Agent opens PR; BITO reviews       |
+| Output Type                  | Labels applied                    | Result                                    |
+| ---------------------------- | --------------------------------- | ----------------------------------------- |
+| `cli-product`                | `swe-fix` + `bito-ai`             | SWE-Agent opens PR; BITO reviews          |
+| `api-product`                | `swe-fix` + `bito-ai`             | SWE-Agent opens PR; BITO reviews          |
+| `mcp-product`                | `swe-fix` + `bito-ai`             | SWE-Agent opens PR; BITO reviews          |
+| `production-app`             | `swe-fix` + `bito-ai`             | SWE-Agent opens PR; BITO reviews          |
+| `desktop-tool`               | `swe-fix` + `bito-ai`             | SWE-Agent opens PR; BITO reviews          |
+| `invention-flow`             | `swe-fix` + `bito-ai`             | SWE-Agent opens PR; BITO reviews          |
 | `sellable-pdf`               | `noimosai` + `fix-me` + `bito-ai` | NoimosAI for content; OpenHands for fixes |
 | `technical-documentation`    | `noimosai` + `fix-me` + `bito-ai` | NoimosAI for content; OpenHands for fixes |
 | `project-management-doc`     | `noimosai` + `fix-me` + `bito-ai` | NoimosAI for content; OpenHands for fixes |
-| `client-code-task`           | `fix-me` + `bito-ai`            | OpenHands resolver opens PR; BITO reviews |
-| `internal-script-automation` | `fix-me` + `bito-ai`            | OpenHands resolver opens PR; BITO reviews |
+| `client-code-task`           | `fix-me` + `bito-ai`              | OpenHands resolver opens PR; BITO reviews |
+| `internal-script-automation` | `fix-me` + `bito-ai`              | OpenHands resolver opens PR; BITO reviews |
 
 `bito-ai` is **always** applied so every WR's resulting PR is BITO-reviewed.
 
@@ -72,15 +72,15 @@ still ships normally — it just won't auto-trigger an external resolver.
 Add these in **Settings → Secrets and variables → Actions** (or via the
 `gh` CLI). The stack works partially with only some configured.
 
-| Secret                  | Used by                 | Why                                              | Where to get it                          |
-|-------------------------|-------------------------|--------------------------------------------------|------------------------------------------|
-| `OPENROUTER_API_KEY`    | OpenHands, SWE-Agent    | Cheapest path — one key for both agents          | https://openrouter.ai/settings/keys      |
-| `OPENHANDS_API_KEY`     | OpenHands               | Direct OpenHands SaaS account (alternative)      | https://app.all-hands.dev/settings       |
-| `SWE_AGENT_API_KEY`     | SWE-Agent               | Direct provider key (Anthropic / OpenAI / etc.)  | Provider's API console                   |
-| `BITO_ACCESS_KEY`       | BITO-AI                 | Persistent-memory code review                    | https://bito.ai → Settings → Access Keys |
-| `GIT_ACCESS_TOKEN`      | BITO-AI                 | Classic GitHub PAT, `repo` scope                 | https://github.com/settings/tokens       |
-| `NOIMOSAI_API_KEY`      | NoimosAI                | Marketing-content generator                      | https://noimosai.com → Settings → API    |
-| `JULES_API_KEY`         | Jules WR Research       | Deep-research and PR rewrites                    | https://jules.google.com/settings        |
+| Secret               | Used by              | Why                                             | Where to get it                          |
+| -------------------- | -------------------- | ----------------------------------------------- | ---------------------------------------- |
+| `OPENROUTER_API_KEY` | OpenHands, SWE-Agent | Cheapest path — one key for both agents         | https://openrouter.ai/settings/keys      |
+| `OPENHANDS_API_KEY`  | OpenHands            | Direct OpenHands SaaS account (alternative)     | https://app.all-hands.dev/settings       |
+| `SWE_AGENT_API_KEY`  | SWE-Agent            | Direct provider key (Anthropic / OpenAI / etc.) | Provider's API console                   |
+| `BITO_ACCESS_KEY`    | BITO-AI              | Persistent-memory code review                   | https://bito.ai → Settings → Access Keys |
+| `GIT_ACCESS_TOKEN`   | BITO-AI              | Classic GitHub PAT, `repo` scope                | https://github.com/settings/tokens       |
+| `NOIMOSAI_API_KEY`   | NoimosAI             | Marketing-content generator                     | https://noimosai.com → Settings → API    |
+| `JULES_API_KEY`      | Jules WR Research    | Deep-research and PR rewrites                   | https://jules.google.com/settings        |
 
 The recommended minimum to get autonomous code resolution working is just
 `OPENROUTER_API_KEY` — it powers both OpenHands and SWE-Agent.
@@ -91,10 +91,10 @@ The recommended minimum to get autonomous code resolution working is just
 
 Set in **Settings → Secrets and variables → Actions → Variables**.
 
-| Variable                | Default                          | Purpose                                  |
-|-------------------------|----------------------------------|------------------------------------------|
-| `OPENHANDS_MODEL`       | `anthropic/claude-sonnet-4.5`    | Override the OpenHands resolver's model  |
-| `SWE_AGENT_MODEL`       | `anthropic/claude-sonnet-4.5`    | Override SWE-Agent's model               |
+| Variable          | Default                       | Purpose                                 |
+| ----------------- | ----------------------------- | --------------------------------------- |
+| `OPENHANDS_MODEL` | `anthropic/claude-sonnet-4.5` | Override the OpenHands resolver's model |
+| `SWE_AGENT_MODEL` | `anthropic/claude-sonnet-4.5` | Override SWE-Agent's model              |
 
 ---
 
@@ -104,13 +104,13 @@ The auto-router applies these labels. Create them once in **Settings →
 Labels** if they don't already exist (or let the first auto-route run
 log a warning and create them manually).
 
-| Label                  | Color   | Description                                   |
-|------------------------|---------|-----------------------------------------------|
-| `fix-me`               | `#0e8a16` | Hand to OpenHands resolver                  |
-| `swe-fix`              | `#1d76db` | Hand to SWE-Agent                           |
-| `bito-ai`              | `#fbca04` | Run BITO-AI code review on the PR           |
-| `noimosai`             | `#5319e7` | Hand to NoimosAI for marketing content      |
-| `credentials-missing`  | `#d93f0b` | Set when an agent can't run due to no creds |
+| Label                 | Color     | Description                                 |
+| --------------------- | --------- | ------------------------------------------- |
+| `fix-me`              | `#0e8a16` | Hand to OpenHands resolver                  |
+| `swe-fix`             | `#1d76db` | Hand to SWE-Agent                           |
+| `bito-ai`             | `#fbca04` | Run BITO-AI code review on the PR           |
+| `noimosai`            | `#5319e7` | Hand to NoimosAI for marketing content      |
+| `credentials-missing` | `#d93f0b` | Set when an agent can't run due to no creds |
 
 ---
 
@@ -139,13 +139,13 @@ To disable the reminder entirely: delete `.github/workflows/augment-check.yml`.
 
 ## 8. Failure Modes & Recovery
 
-| Symptom                                              | Cause                                          | Fix                                                                          |
-|------------------------------------------------------|-----------------------------------------------|-----------------------------------------------------------------------------|
-| Auto-router doesn't apply labels                     | Output Type field missing or label mismatch    | Check the issue body has `### Output Type` heading; use canonical form       |
-| Resolver workflow runs but no PR is created          | Model error or repo state issue                | Check the run logs; resolver runs `continue-on-error: true` so won't block   |
-| `credentials-missing` label appears on every issue   | Required secrets not configured                | Add at least `OPENROUTER_API_KEY` per Section 3                              |
+| Symptom                                                 | Cause                                       | Fix                                                                                    |
+| ------------------------------------------------------- | ------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Auto-router doesn't apply labels                        | Output Type field missing or label mismatch | Check the issue body has `### Output Type` heading; use canonical form                 |
+| Resolver workflow runs but no PR is created             | Model error or repo state issue             | Check the run logs; resolver runs `continue-on-error: true` so won't block             |
+| `credentials-missing` label appears on every issue      | Required secrets not configured             | Add at least `OPENROUTER_API_KEY` per Section 3                                        |
 | Augment reminder fires even though Augment is installed | Detection pattern changed upstream          | Update Augment detection patterns in `augment-check.yml:Check for Augment marker` step |
-| Two agents try to fix the same issue at once         | Both `fix-me` and `swe-fix` applied            | Pick one — the auto-router never applies both for the same Output Type      |
+| Two agents try to fix the same issue at once            | Both `fix-me` and `swe-fix` applied         | Pick one — the auto-router never applies both for the same Output Type                 |
 
 ---
 

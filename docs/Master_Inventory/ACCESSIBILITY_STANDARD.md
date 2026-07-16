@@ -19,13 +19,13 @@ Beyond mission: accessibility is **federal law**. The Americans with Disabilitie
 
 ## 2. Compliance Targets
 
-| Standard | Level Required | Why |
-|---|---|---|
-| **WCAG 2.1** | Level AA minimum, AAA where feasible | Federal law (ADA), Google's standard |
-| **WCAG 2.2** | Level AA | Current version (supersedes 2.1 in most guidance) |
-| **Section 508** | Full compliance | Required for any federal government business |
-| **ADA Title III** | Full compliance | Insurance and financial services are covered entities |
-| **EN 301 549** | AA | EU/international accessibility standard |
+| Standard          | Level Required                       | Why                                                   |
+| ----------------- | ------------------------------------ | ----------------------------------------------------- |
+| **WCAG 2.1**      | Level AA minimum, AAA where feasible | Federal law (ADA), Google's standard                  |
+| **WCAG 2.2**      | Level AA                             | Current version (supersedes 2.1 in most guidance)     |
+| **Section 508**   | Full compliance                      | Required for any federal government business          |
+| **ADA Title III** | Full compliance                      | Insurance and financial services are covered entities |
+| **EN 301 549**    | AA                                   | EU/international accessibility standard               |
 
 ---
 
@@ -36,35 +36,40 @@ Beyond mission: accessibility is **federal law**. The Americans with Disabilitie
 **TTY** (TeleTypewriter) / **TDD** (Telecommunications Device for the Deaf) allows deaf and hard of hearing people to communicate over phone lines by typing text instead of speaking.
 
 **The 711 Relay Service** is a free nationwide service. Anyone can dial 711 from any phone:
+
 - The relay operator calls the TTY user
 - The hearing caller speaks — the operator types their words to the TTY user
 - The TTY user types back — the operator reads their response aloud
 
 ### What Every Revvel App Must Do
 
-| Requirement | Implementation | Where |
-|---|---|---|
-| Display TTY number | `app_config.tty_phone` in footer and Contact page | Every page footer |
-| Contact form TTY option | "Check if you need TTY relay" checkbox | Contact form, lead forms |
-| Agent training note | "Dial 711 to reach TTY users" | Internal agent documentation |
-| TTY in JSON-LD | `contactOption: "TDDService"` in Organization schema | `app/layout.tsx` |
-| Lead flagging | `leads.requires_tty = true` triggers TTY workflow | CRM / pipeline |
+| Requirement             | Implementation                                       | Where                        |
+| ----------------------- | ---------------------------------------------------- | ---------------------------- |
+| Display TTY number      | `app_config.tty_phone` in footer and Contact page    | Every page footer            |
+| Contact form TTY option | "Check if you need TTY relay" checkbox               | Contact form, lead forms     |
+| Agent training note     | "Dial 711 to reach TTY users"                        | Internal agent documentation |
+| TTY in JSON-LD          | `contactOption: "TDDService"` in Organization schema | `app/layout.tsx`             |
+| Lead flagging           | `leads.requires_tty = true` triggers TTY workflow    | CRM / pipeline               |
 
 ### TTY Footer Display
 
 Every app footer must include:
+
 ```html
 <p>
-  Phone: <a href="tel:[MAIN_PHONE]">[MAIN_PHONE]</a> &nbsp;|&nbsp;
-  TTY: <a href="tel:[TTY_PHONE]">[TTY_PHONE]</a> (Hearing Impaired)
+  Phone: <a href="tel:[MAIN_PHONE]">[MAIN_PHONE]</a> &nbsp;|&nbsp; TTY:
+  <a href="tel:[TTY_PHONE]">[TTY_PHONE]</a> (Hearing Impaired)
   <br />
-  <small>TTY users may also dial 711 to reach us through the relay service.</small>
+  <small
+    >TTY users may also dial 711 to reach us through the relay service.</small
+  >
 </p>
 ```
 
 ### TTY Contact Page Section
 
 The `/about/contact` page must include a dedicated accessibility section:
+
 ```
 📞 Hearing Impaired / TTY Access
 Our TTY line: [TTY_PHONE]
@@ -79,15 +84,15 @@ We are available [HOURS] [TIMEZONE].
 
 Every Revvel application includes a user-controlled accessibility mode selector. Users choose the mode that works best for them. Their preference is stored in `localStorage` and synced to `users.accessibility_mode` in the database.
 
-| Mode | Code | Who It's For | What Changes |
-|---|---|---|---|
-| **Standard** | `standard` | Everyone — default experience | Normal design, no changes |
-| **WCAG AAA** | `wcag_aaa` | Low vision, high contrast needs | High contrast colors, large text (18px+ body), 4.5:1+ contrast ratio everywhere, enhanced focus indicators, reduced motion |
-| **Dyslexia-Friendly** | `dyslexia` | Dyslexic users | OpenDyslexic font, wider letter spacing, reduced justified text, cream/warm background instead of white |
-| **ADHD Focus Mode** | `adhd` | ADHD users | Minimal UI (hide decorative elements), Pomodoro timer integration, focus mode that dims non-active elements, reduced notifications |
-| **Sensory Safe** | `sensory` | Autism, sensory processing disorders | No animations, no auto-playing media, no pop-ups, muted colors, no flashing |
-| **Large Print** | `large_print` | Seniors, low vision | 20px+ body text, 2.5× heading sizes, larger click targets (min 44×44px), no tiny text anywhere |
-| **ECO / Low Power** | `eco` | Battery conservation, slow connections | No box shadows, no filters, no gradients, minimal images, text-only mode option |
+| Mode                  | Code          | Who It's For                           | What Changes                                                                                                                       |
+| --------------------- | ------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Standard**          | `standard`    | Everyone — default experience          | Normal design, no changes                                                                                                          |
+| **WCAG AAA**          | `wcag_aaa`    | Low vision, high contrast needs        | High contrast colors, large text (18px+ body), 4.5:1+ contrast ratio everywhere, enhanced focus indicators, reduced motion         |
+| **Dyslexia-Friendly** | `dyslexia`    | Dyslexic users                         | OpenDyslexic font, wider letter spacing, reduced justified text, cream/warm background instead of white                            |
+| **ADHD Focus Mode**   | `adhd`        | ADHD users                             | Minimal UI (hide decorative elements), Pomodoro timer integration, focus mode that dims non-active elements, reduced notifications |
+| **Sensory Safe**      | `sensory`     | Autism, sensory processing disorders   | No animations, no auto-playing media, no pop-ups, muted colors, no flashing                                                        |
+| **Large Print**       | `large_print` | Seniors, low vision                    | 20px+ body text, 2.5× heading sizes, larger click targets (min 44×44px), no tiny text anywhere                                     |
+| **ECO / Low Power**   | `eco`         | Battery conservation, slow connections | No box shadows, no filters, no gradients, minimal images, text-only mode option                                                    |
 
 ### Mode Selector Component
 
@@ -99,13 +104,37 @@ Every Revvel application includes a user-controlled accessibility mode selector.
 // 3. Keyboard shortcut: Alt+A opens the mode selector
 
 const modes = [
-  { code: 'standard', label: 'Standard', description: 'Default experience' },
-  { code: 'wcag_aaa', label: 'High Contrast (WCAG AAA)', description: 'Maximum contrast, large text' },
-  { code: 'dyslexia', label: 'Dyslexia-Friendly', description: 'OpenDyslexic font, wider spacing' },
-  { code: 'adhd', label: 'Focus Mode (ADHD)', description: 'Minimal UI, focus timer' },
-  { code: 'sensory', label: 'Sensory Safe', description: 'No animations, muted colors' },
-  { code: 'large_print', label: 'Large Print', description: 'Extra large text and buttons' },
-  { code: 'eco', label: 'Low Power / Eco', description: 'Minimal graphics, faster load' },
+  { code: "standard", label: "Standard", description: "Default experience" },
+  {
+    code: "wcag_aaa",
+    label: "High Contrast (WCAG AAA)",
+    description: "Maximum contrast, large text",
+  },
+  {
+    code: "dyslexia",
+    label: "Dyslexia-Friendly",
+    description: "OpenDyslexic font, wider spacing",
+  },
+  {
+    code: "adhd",
+    label: "Focus Mode (ADHD)",
+    description: "Minimal UI, focus timer",
+  },
+  {
+    code: "sensory",
+    label: "Sensory Safe",
+    description: "No animations, muted colors",
+  },
+  {
+    code: "large_print",
+    label: "Large Print",
+    description: "Extra large text and buttons",
+  },
+  {
+    code: "eco",
+    label: "Low Power / Eco",
+    description: "Minimal graphics, faster load",
+  },
 ];
 ```
 
@@ -127,45 +156,45 @@ Every page must pass these before launch:
 
 ### 5.1. Perceivable
 
-| Rule | What It Means | How to Implement |
-|---|---|---|
-| All images have alt text | Screen readers describe every image | `alt` attribute on every `<img>` and `<Image>`. See `SEO_METADATA_STANDARD.md` §3 |
-| Color is not the only indicator | Don't say "click the red button" | Use icons + labels, not color alone |
-| Text contrast: 4.5:1 minimum | Small text must be readable | Use WebAIM Contrast Checker |
-| Text contrast: 3:1 for large text | Headers (18px+) have slightly lower bar | Same tool |
-| Captions on video | Deaf users need text for video | Auto-generate captions with Whisper AI, then review |
-| Audio description or transcript | Blind users need described video content | Provide text transcript below all videos |
+| Rule                              | What It Means                            | How to Implement                                                                  |
+| --------------------------------- | ---------------------------------------- | --------------------------------------------------------------------------------- |
+| All images have alt text          | Screen readers describe every image      | `alt` attribute on every `<img>` and `<Image>`. See `SEO_METADATA_STANDARD.md` §3 |
+| Color is not the only indicator   | Don't say "click the red button"         | Use icons + labels, not color alone                                               |
+| Text contrast: 4.5:1 minimum      | Small text must be readable              | Use WebAIM Contrast Checker                                                       |
+| Text contrast: 3:1 for large text | Headers (18px+) have slightly lower bar  | Same tool                                                                         |
+| Captions on video                 | Deaf users need text for video           | Auto-generate captions with Whisper AI, then review                               |
+| Audio description or transcript   | Blind users need described video content | Provide text transcript below all videos                                          |
 
 ### 5.2. Operable
 
-| Rule | What It Means | How to Implement |
-|---|---|---|
-| Keyboard accessible | Everything works with Tab + Enter + Space | Test by unplugging your mouse and navigating |
-| No keyboard traps | Keyboard focus cannot get stuck | Test modal dialogs, dropdowns, popups |
-| Skip navigation link | Let keyboard users skip the nav | `<a href="#main-content" class="sr-only">Skip to main content</a>` |
-| Focus visible | Always show which element has focus | Never `outline: none` without a custom visible focus style |
-| No keyboard shortcut conflicts | Custom shortcuts must not override browser | Use `Alt+[key]` for app shortcuts |
-| Minimum click target: 44×44px | Touch targets must be large enough | All buttons, links, checkboxes: min 44px |
-| No timing requirements | Never require an action within a time limit | If you have a countdown, allow extension or disable |
+| Rule                           | What It Means                               | How to Implement                                                   |
+| ------------------------------ | ------------------------------------------- | ------------------------------------------------------------------ |
+| Keyboard accessible            | Everything works with Tab + Enter + Space   | Test by unplugging your mouse and navigating                       |
+| No keyboard traps              | Keyboard focus cannot get stuck             | Test modal dialogs, dropdowns, popups                              |
+| Skip navigation link           | Let keyboard users skip the nav             | `<a href="#main-content" class="sr-only">Skip to main content</a>` |
+| Focus visible                  | Always show which element has focus         | Never `outline: none` without a custom visible focus style         |
+| No keyboard shortcut conflicts | Custom shortcuts must not override browser  | Use `Alt+[key]` for app shortcuts                                  |
+| Minimum click target: 44×44px  | Touch targets must be large enough          | All buttons, links, checkboxes: min 44px                           |
+| No timing requirements         | Never require an action within a time limit | If you have a countdown, allow extension or disable                |
 
 ### 5.3. Understandable
 
-| Rule | What It Means | How to Implement |
-|---|---|---|
-| Language declared | Screen reader reads in right language | `<html lang="en">` (or "es" for Spanish) |
-| Error identification | Form errors are specific | "Email is required" not "Error in field 3" |
-| Error suggestion | Tell them how to fix it | "Enter a valid email like name@example.com" |
-| Labels on all inputs | Every form field has a label | `<label for="email">Email</label>` — never rely on placeholder alone |
-| Consistent navigation | Nav looks the same on every page | Same component, same order |
-| No jargon | Plain language | Replace "EIN" with "EIN (your business tax ID number)" |
+| Rule                  | What It Means                         | How to Implement                                                     |
+| --------------------- | ------------------------------------- | -------------------------------------------------------------------- |
+| Language declared     | Screen reader reads in right language | `<html lang="en">` (or "es" for Spanish)                             |
+| Error identification  | Form errors are specific              | "Email is required" not "Error in field 3"                           |
+| Error suggestion      | Tell them how to fix it               | "Enter a valid email like name@example.com"                          |
+| Labels on all inputs  | Every form field has a label          | `<label for="email">Email</label>` — never rely on placeholder alone |
+| Consistent navigation | Nav looks the same on every page      | Same component, same order                                           |
+| No jargon             | Plain language                        | Replace "EIN" with "EIN (your business tax ID number)"               |
 
 ### 5.4. Robust
 
-| Rule | What It Means | How to Implement |
-|---|---|---|
-| Valid HTML | No broken markup | Run HTML validator, Lighthouse audit |
-| ARIA labels on interactive elements | Screen readers understand custom widgets | `aria-label`, `aria-labelledby`, `aria-describedby` on all custom components |
-| Status messages announced | Success/error toasts reach screen readers | Use `role="alert"` or `aria-live="polite"` on toast notifications |
+| Rule                                | What It Means                             | How to Implement                                                             |
+| ----------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------- |
+| Valid HTML                          | No broken markup                          | Run HTML validator, Lighthouse audit                                         |
+| ARIA labels on interactive elements | Screen readers understand custom widgets  | `aria-label`, `aria-labelledby`, `aria-describedby` on all custom components |
+| Status messages announced           | Success/error toasts reach screen readers | Use `role="alert"` or `aria-live="polite"` on toast notifications            |
 
 ---
 
@@ -177,7 +206,10 @@ Insurance lead forms collect sensitive personal information from people who may 
 // Example: Accessible form field
 <div className="form-field">
   <label htmlFor="date-of-birth" className="label">
-    Date of Birth <span aria-label="required" className="required">*</span>
+    Date of Birth{" "}
+    <span aria-label="required" className="required">
+      *
+    </span>
   </label>
   <input
     id="date-of-birth"
@@ -185,7 +217,7 @@ Insurance lead forms collect sensitive personal information from people who may 
     type="date"
     aria-required="true"
     aria-describedby="dob-hint dob-error"
-    aria-invalid={errors.dateOfBirth ? 'true' : 'false'}
+    aria-invalid={errors.dateOfBirth ? "true" : "false"}
   />
   <p id="dob-hint" className="hint">
     Used to calculate your insurance rate. Format: MM/DD/YYYY
@@ -199,6 +231,7 @@ Insurance lead forms collect sensitive personal information from people who may 
 ```
 
 **Key rules:**
+
 - Every `<input>` must have an associated `<label>` via `for`/`id` pairing
 - Error messages must be announced via `role="alert"` or `aria-live`
 - Required fields must have `aria-required="true"`
@@ -212,15 +245,16 @@ Insurance lead forms collect sensitive personal information from people who may 
 
 Before launch, test the app with real screen readers:
 
-| Screen Reader | Platform | Cost | Where to Download |
-|---|---|---|---|
-| **NVDA** | Windows | Free | nvaccess.org |
-| **JAWS** | Windows | Paid (30-day trial) | freedomscientific.com |
-| **VoiceOver** | Mac / iPhone | Built-in | Press Cmd+F5 on Mac |
-| **TalkBack** | Android | Built-in | Accessibility settings |
-| **Narrator** | Windows | Built-in | Win+Ctrl+Enter |
+| Screen Reader | Platform     | Cost                | Where to Download      |
+| ------------- | ------------ | ------------------- | ---------------------- |
+| **NVDA**      | Windows      | Free                | nvaccess.org           |
+| **JAWS**      | Windows      | Paid (30-day trial) | freedomscientific.com  |
+| **VoiceOver** | Mac / iPhone | Built-in            | Press Cmd+F5 on Mac    |
+| **TalkBack**  | Android      | Built-in            | Accessibility settings |
+| **Narrator**  | Windows      | Built-in            | Win+Ctrl+Enter         |
 
 **Minimum test checklist with a screen reader:**
+
 - [ ] Can you navigate the home page using only Tab?
 - [ ] Are all images described?
 - [ ] Can you fill out the lead form without a mouse?
@@ -234,12 +268,12 @@ Before launch, test the app with real screen readers:
 
 Run these tools in CI/CD before every deploy:
 
-| Tool | What It Checks | How to Run |
-|---|---|---|
-| **axe-core** | WCAG 2.2 AA violations | `npx axe https://[appurl].com` |
-| **Lighthouse** | Accessibility score (target: 90+) | `npx lighthouse --only-categories=accessibility` |
-| **Pa11y** | WCAG issues in CI | `npx pa11y https://[appurl].com` |
-| **eslint-plugin-jsx-a11y** | JSX accessibility in code | Runs on every PR via ESLint |
+| Tool                       | What It Checks                    | How to Run                                       |
+| -------------------------- | --------------------------------- | ------------------------------------------------ |
+| **axe-core**               | WCAG 2.2 AA violations            | `npx axe https://[appurl].com`                   |
+| **Lighthouse**             | Accessibility score (target: 90+) | `npx lighthouse --only-categories=accessibility` |
+| **Pa11y**                  | WCAG issues in CI                 | `npx pa11y https://[appurl].com`                 |
+| **eslint-plugin-jsx-a11y** | JSX accessibility in code         | Runs on every PR via ESLint                      |
 
 **Required CI check: Accessibility score must be ≥ 90 (Lighthouse) before merge to main.**
 
@@ -247,12 +281,12 @@ Run these tools in CI/CD before every deploy:
 
 ## 9. Font Resources for Accessibility Modes
 
-| Mode | Font | Source | License |
-|---|---|---|---|
-| Dyslexia | **OpenDyslexic** | opendyslexic.org | Free, open source |
-| Large Print / WCAG | **Atkinson Hyperlegible** | brailleinstitute.org/freefont | Free |
-| Standard | **Inter** | fonts.google.com | Free (OFL) |
-| ADHD Focus | **Lexie Readable** | lexiereadable.com | Free |
+| Mode               | Font                      | Source                        | License           |
+| ------------------ | ------------------------- | ----------------------------- | ----------------- |
+| Dyslexia           | **OpenDyslexic**          | opendyslexic.org              | Free, open source |
+| Large Print / WCAG | **Atkinson Hyperlegible** | brailleinstitute.org/freefont | Free              |
+| Standard           | **Inter**                 | fonts.google.com              | Free (OFL)        |
+| ADHD Focus         | **Lexie Readable**        | lexiereadable.com             | Free              |
 
 ---
 

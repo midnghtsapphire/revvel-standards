@@ -10,12 +10,12 @@ Copy the `.github/workflows/cron/` folder to any repo that needs monitoring.
 
 ## Available Cron Jobs
 
-| Workflow | Frequency | Purpose | Creates Issue? |
-|----------|-----------|---------|-----------------|
-| `status-universal.yml` | Hourly | Check all sites | ✅ Yes |
-| `health-check.yml` | Every 15min | Backend health | No |
-| `link-checker.yml` | Daily 6am | Outbound links | ⚠️ Warning |
-| `api-monitor.yml` | Every 30min | API endpoints | ⚠️ Timeout |
+| Workflow               | Frequency   | Purpose         | Creates Issue? |
+| ---------------------- | ----------- | --------------- | -------------- |
+| `status-universal.yml` | Hourly      | Check all sites | ✅ Yes         |
+| `health-check.yml`     | Every 15min | Backend health  | No             |
+| `link-checker.yml`     | Daily 6am   | Outbound links  | ⚠️ Warning     |
+| `api-monitor.yml`      | Every 30min | API endpoints   | ⚠️ Timeout     |
 
 ---
 
@@ -52,6 +52,7 @@ DEFAULT_SITES="
 Checks backend `/health`, `/health/live`, `/health/ready` endpoints.
 
 Requirements from MONITORING.md:
+
 - `/health` - Basic health
 - `/health/live` - Liveness probe
 - `/health/ready` - Readiness probe
@@ -63,6 +64,7 @@ Requirements from MONITORING.md:
 Validates external links used in the site.
 
 Default links:
+
 - Spotify, LANDR, SoundCloud
 - Make.com, GoHighLevel, DigitalOcean
 
@@ -71,6 +73,7 @@ Default links:
 ## api-monitor.yml
 
 Monitors API endpoints:
+
 - GitHub API
 - OpenRouter API
 
@@ -78,12 +81,12 @@ Monitors API endpoints:
 
 ## Auto-Create Issues
 
-| Cron Job | Trigger | Labels |
-|---------|---------|---------|
-| status-universal | Site down | `status`, `automated`, `monitor` |
-| health-check | Endpoint fails | `health`, `automated` |
-| link-checker | Link fails | `links`, `warning` |
-| api-monitor | API timeout | `api`, `automated` |
+| Cron Job         | Trigger        | Labels                           |
+| ---------------- | -------------- | -------------------------------- |
+| status-universal | Site down      | `status`, `automated`, `monitor` |
+| health-check     | Endpoint fails | `health`, `automated`            |
+| link-checker     | Link fails     | `links`, `warning`               |
+| api-monitor      | API timeout    | `api`, `automated`               |
 
 ---
 
@@ -117,24 +120,26 @@ All repos MUST have:
 
 ## Frequency Guide
 
-| Interval | Use Case |
-|----------|---------|
+| Interval       | Use Case          |
+| -------------- | ----------------- |
 | `*/15 * * * *` | Critical backends |
-| `*/30 * * * *` | APIs |
-| `0 * * * *` | Standard websites |
-| `0 6 * * *` | Daily link checks |
+| `*/30 * * * *` | APIs              |
+| `0 * * * *`    | Standard websites |
+| `0 6 * * *`    | Daily link checks |
 
 ---
 
 ## Troubleshooting
 
 ### Issue not created?
+
 - Check workflow permissions: `contents: read, issues: write`
 
 ### Site shows as down but works?
+
 - Increase timeout in curl command
 - Check if site blocks GitHub IPs
 
 ### Need to skip?
-- Use `workflow_dispatch` to run manually
 
+- Use `workflow_dispatch` to run manually

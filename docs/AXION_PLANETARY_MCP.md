@@ -27,12 +27,12 @@ images, enabling **cloud-free Earth observation** anywhere on the planet.
 
 ## Why SAR-to-Optical?
 
-| Problem | SAR Solution |
-|---|---|
-| Clouds cover 70% of Earth at any time | SAR penetrates clouds completely |
-| Night-time surveillance | SAR is active — illuminates its own scene |
-| Wildfires produce smoke | SAR sees through smoke |
-| Optical imagery is easy to interpret | SAR backscatter is not |
+| Problem                                 | SAR Solution                                   |
+| --------------------------------------- | ---------------------------------------------- |
+| Clouds cover 70% of Earth at any time   | SAR penetrates clouds completely               |
+| Night-time surveillance                 | SAR is active — illuminates its own scene      |
+| Wildfires produce smoke                 | SAR sees through smoke                         |
+| Optical imagery is easy to interpret    | SAR backscatter is not                         |
 | LLMs cannot reason over raw backscatter | Optical-like images are directly interpretable |
 
 The `axion_sar2optical` model bridges the gap between SAR's all-weather
@@ -43,14 +43,14 @@ persistent, cloud-free situational awareness.
 
 ## Server Details
 
-| Field | Value |
-|---|---|
-| **File** | `growlingeyes/axion_mcp/server.py` |
-| **Package** | `axion-planetary-mcp` |
-| **Framework** | FastMCP ≥ 3.2.0 (patched — CVEs fixed in 2.13+, 2.14+, 3.2+) |
-| **Python** | ≥ 3.11 |
-| **Transport** | stdio (standard FastMCP) |
-| **Run** | `python -m growlingeyes.axion_mcp.server` or `axion-planetary-mcp` |
+| Field         | Value                                                              |
+| ------------- | ------------------------------------------------------------------ |
+| **File**      | `growlingeyes/axion_mcp/server.py`                                 |
+| **Package**   | `axion-planetary-mcp`                                              |
+| **Framework** | FastMCP ≥ 3.2.0 (patched — CVEs fixed in 2.13+, 2.14+, 3.2+)       |
+| **Python**    | ≥ 3.11                                                             |
+| **Transport** | stdio (standard FastMCP)                                           |
+| **Run**       | `python -m growlingeyes.axion_mcp.server` or `axion-planetary-mcp` |
 
 ---
 
@@ -61,6 +61,7 @@ persistent, cloud-free situational awareness.
 Converts a base64-encoded SAR GeoTIFF into a base64-encoded optical-like PNG/JPEG.
 
 **Processing pipeline:**
+
 1. Decode base64 → GeoTIFF bytes
 2. Load float32 SAR array: Band 1 = VV (or HH), Band 2 = VH (or HV, optional)
 3. Lee speckle filtering (optional) — reduces multiplicative SAR noise
@@ -75,6 +76,7 @@ Converts a base64-encoded SAR GeoTIFF into a base64-encoded optical-like PNG/JPE
 7. Encode → base64 PNG or JPEG
 
 **Input:**
+
 ```json
 {
   "sar_b64": "<base64-encoded GeoTIFF>",
@@ -85,6 +87,7 @@ Converts a base64-encoded SAR GeoTIFF into a base64-encoded optical-like PNG/JPE
 ```
 
 **Output:**
+
 ```json
 {
   "image_b64": "<base64-encoded PNG>",
@@ -130,13 +133,13 @@ polarisation modes.
 
 Authoritative list of SAR data sources compatible with `axion_sar2optical`:
 
-| Satellite | Operator | Resolution | Revisit | Cost |
-|---|---|---|---|---|
-| Sentinel-1 | ESA Copernicus | 10 m | 6 days | Free |
-| ALOS PALSAR-2 | JAXA | 10 m | 14 days | Free |
-| RADARSAT Constellation | MDA/CSA | 5 m | 4 days | Paid |
-| Capella Space | Capella | 0.5 m | ~daily | Paid |
-| ICEYE | ICEYE | 1 m | ~daily | Paid |
+| Satellite              | Operator       | Resolution | Revisit | Cost |
+| ---------------------- | -------------- | ---------- | ------- | ---- |
+| Sentinel-1             | ESA Copernicus | 10 m       | 6 days  | Free |
+| ALOS PALSAR-2          | JAXA           | 10 m       | 14 days | Free |
+| RADARSAT Constellation | MDA/CSA        | 5 m        | 4 days  | Paid |
+| Capella Space          | Capella        | 0.5 m      | ~daily  | Paid |
+| ICEYE                  | ICEYE          | 1 m        | ~daily  | Paid |
 
 ---
 
@@ -154,13 +157,13 @@ SAR-derived optical-like image.
 The `axion_sar2optical_v1.onnx` weights are a proprietary foundation model
 trained on paired Sentinel-1 SAR / Sentinel-2 optical data.
 
-| Field | Value |
-|---|---|
-| **Architecture** | Conditional GAN / U-Net (pix2pix variant) |
-| **Input** | `[1, 2, H, W]` float32 (VV + VH), log-normalised to `[-1, 1]` |
-| **Output** | `[1, 3, H, W]` float32 RGB optical-like, values in `[-1, 1]` |
-| **Default path** | `growlingeyes/axion_mcp/weights/axion_sar2optical_v1.onnx` |
-| **Env override** | `AXION_SAR2OPTICAL_WEIGHTS=/path/to/weights.onnx` |
+| Field            | Value                                                         |
+| ---------------- | ------------------------------------------------------------- |
+| **Architecture** | Conditional GAN / U-Net (pix2pix variant)                     |
+| **Input**        | `[1, 2, H, W]` float32 (VV + VH), log-normalised to `[-1, 1]` |
+| **Output**       | `[1, 3, H, W]` float32 RGB optical-like, values in `[-1, 1]`  |
+| **Default path** | `growlingeyes/axion_mcp/weights/axion_sar2optical_v1.onnx`    |
+| **Env override** | `AXION_SAR2OPTICAL_WEIGHTS=/path/to/weights.onnx`             |
 
 When weights are not present the server falls back to the physics-based CPU
 colorisation pipeline, which is deterministic and does not require GPU hardware.
@@ -184,10 +187,10 @@ colorisation pipeline, which is deterministic and does not require GPU hardware.
 
 ## Environment Variables
 
-| Variable | Required | Default | Purpose |
-|---|---|---|---|
-| `AXION_SAR2OPTICAL_WEIGHTS` | No | `axion_mcp/weights/axion_sar2optical_v1.onnx` | Path to ONNX model weights |
-| `AXION_OUTPUT_FORMAT` | No | `png` | Default output format (`png` or `jpeg`) |
+| Variable                    | Required | Default                                       | Purpose                                 |
+| --------------------------- | -------- | --------------------------------------------- | --------------------------------------- |
+| `AXION_SAR2OPTICAL_WEIGHTS` | No       | `axion_mcp/weights/axion_sar2optical_v1.onnx` | Path to ONNX model weights              |
+| `AXION_OUTPUT_FORMAT`       | No       | `png`                                         | Default output format (`png` or `jpeg`) |
 
 ---
 
@@ -196,13 +199,13 @@ colorisation pipeline, which is deterministic and does not require GPU hardware.
 The `growlingeyes/tools/` directory exposes five Python tools that feed
 intelligence into the GrowlingEyes data pipeline:
 
-| Tool | Description | Primary Library |
-|---|---|---|
-| `news_feed.py` | Google News OSINT feed across 20 domains | **PyGoogleNews** |
-| `apt_signals.py` | APT threat-intel scanner (CISA KEV, NVD, OTX, CISA RSS) | httpx, feedparser |
-| `stream_listener.py` | Real-time streams: AIS vessels, NOAA weather, USGS quakes, RSS | websockets, httpx, feedparser |
-| `scraper.py` | HTML/XML intelligence scrapers: FAA TFR, NIFC fires, OFAC SDN, UN sanctions | httpx, BeautifulSoup |
-| `weak_signal_finder.py` | Weak signal detection from RSS feeds (regex/token-based emerging themes) | feedparser, Rich |
+| Tool                    | Description                                                                 | Primary Library               |
+| ----------------------- | --------------------------------------------------------------------------- | ----------------------------- |
+| `news_feed.py`          | Google News OSINT feed across 20 domains                                    | **PyGoogleNews**              |
+| `apt_signals.py`        | APT threat-intel scanner (CISA KEV, NVD, OTX, CISA RSS)                     | httpx, feedparser             |
+| `stream_listener.py`    | Real-time streams: AIS vessels, NOAA weather, USGS quakes, RSS              | websockets, httpx, feedparser |
+| `scraper.py`            | HTML/XML intelligence scrapers: FAA TFR, NIFC fires, OFAC SDN, UN sanctions | httpx, BeautifulSoup          |
+| `weak_signal_finder.py` | Weak signal detection from RSS feeds (regex/token-based emerging themes)    | feedparser, Rich              |
 
 All tools read from `.env` and follow the GrowlingEyes error handling standards:
 no uncaught exceptions, empty list fallback on failure, Rich CLI output.
@@ -231,4 +234,4 @@ python growlingeyes/tools/weak_signal_finder.py --domains cyber maritime
 
 ---
 
-*GrowlingEyes is a product of Freedom Angel Corp — "We believe you."*
+_GrowlingEyes is a product of Freedom Angel Corp — "We believe you."_

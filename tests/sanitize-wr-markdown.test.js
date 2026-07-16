@@ -54,7 +54,8 @@ test("MD025: demotes any H1 after the first to an H2", async () => {
 });
 
 test("MD049: rewrites asterisk emphasis to underscore, keeps strong intact", async () => {
-  const input = "_No response_ then imported *packet emphasis* and **bold** text.\n";
+  const input =
+    "_No response_ then imported *packet emphasis* and **bold** text.\n";
   assert.strictEqual(
     await sanitize(input),
     "_No response_ then imported _packet emphasis_ and **bold** text.\n",
@@ -77,7 +78,11 @@ test("does not touch fenced code blocks or inline code", async () => {
   ].join("\n");
   const out = await sanitize(input);
   assert.match(out, /\n# not a heading\n/, "H1 inside fence untouched");
-  assert.match(out, /\n\n\*not emphasis\*\n/, "blanks/emphasis inside fence untouched");
+  assert.match(
+    out,
+    /\n\n\*not emphasis\*\n/,
+    "blanks/emphasis inside fence untouched",
+  );
   assert.match(out, /`\*code\*`/, "inline code untouched");
 });
 
@@ -96,12 +101,16 @@ test("CLI rewrites a dirty file in place and leaves a clean file untouched", () 
   const file = path.join(dir, "wr.md");
   try {
     fs.writeFileSync(file, "# A\n\n\n# B\n", "utf8");
-    const res = spawnSync(process.execPath, [SCRIPT, file], { encoding: "utf8" });
+    const res = spawnSync(process.execPath, [SCRIPT, file], {
+      encoding: "utf8",
+    });
     assert.strictEqual(res.status, 0, res.stderr);
     assert.match(res.stdout, /sanitized:/);
     assert.strictEqual(fs.readFileSync(file, "utf8"), "# A\n\n## B\n");
 
-    const res2 = spawnSync(process.execPath, [SCRIPT, file], { encoding: "utf8" });
+    const res2 = spawnSync(process.execPath, [SCRIPT, file], {
+      encoding: "utf8",
+    });
     assert.strictEqual(res2.status, 0, res2.stderr);
     assert.match(res2.stdout, /clean:/);
   } finally {
@@ -115,7 +124,9 @@ test("sanitized output passes markdownlint on the original failure pattern", (t)
   // Requires the repo devDependency markdownlint-cli2 to be installed
   // (`npm ci`); skips gracefully when it is not available.
   const repoRoot = path.join(__dirname, "..");
-  if (!fs.existsSync(path.join(repoRoot, "node_modules", "markdownlint-cli2"))) {
+  if (
+    !fs.existsSync(path.join(repoRoot, "node_modules", "markdownlint-cli2"))
+  ) {
     t.skip("markdownlint-cli2 not installed (run npm ci)");
     return;
   }
@@ -140,7 +151,13 @@ test("sanitized output passes markdownlint on the original failure pattern", (t)
 
     const lint = spawnSync(
       "npx",
-      ["--no-install", "markdownlint-cli2", "--config", path.join(repoRoot, ".markdownlint.jsonc"), file],
+      [
+        "--no-install",
+        "markdownlint-cli2",
+        "--config",
+        path.join(repoRoot, ".markdownlint.jsonc"),
+        file,
+      ],
       { cwd: repoRoot, encoding: "utf8" },
     );
     assert.strictEqual(

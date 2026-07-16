@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-09  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-09  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -105,18 +104,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -128,6 +128,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28964756781.md`
 
 # WR-Ready Research Packet: Mabl Wiring Implementation
@@ -137,8 +138,9 @@ Source packet: `docs/research-engine/run-28964756781.md`
 **BLOCKED - REQUIRES CLARIFICATION**
 
 This research cannot proceed without fundamental clarifications. The query references "wiring in mabl" and "her free" without providing:
+
 - Repository URLs or organization context
-- Definition of "wiring" in this technical context  
+- Definition of "wiring" in this technical context
 - Clarification of "her free" (likely a typo)
 - Specific PR/WR numbers to investigate
 
@@ -147,11 +149,13 @@ This research cannot proceed without fundamental clarifications. The query refer
 ## 2. Audience We Are Going After and Why
 
 **Cannot determine target audience** without understanding:
+
 - Whether this is for internal tooling or external product
 - If "mabl" refers to the commercial test automation platform or internal project
 - The specific use case for "wiring" implementation
 
 **Potential audiences** (unverified):
+
 - QA/Test engineers using mabl for test automation
 - DevOps teams integrating mabl into CI/CD pipelines
 - Development teams requiring test coverage in code review
@@ -159,6 +163,7 @@ This research cannot proceed without fundamental clarifications. The query refer
 ## 3. Marketing and SEO Plan
 
 **SEO Opportunity Identified** (if public-facing):
+
 - Low competition for "mabl wiring" technical content
 - Developer-focused long-tail keywords underserved
 - Potential content angles:
@@ -171,24 +176,26 @@ This research cannot proceed without fundamental clarifications. The query refer
 
 ### Test Automation Platform Comparison
 
-| Platform | Type | GitHub Stars | Pricing | Key Differentiator |
-|----------|------|--------------|---------|-------------------|
-| **Mabl** | Commercial SaaS | N/A (Closed Source) | Free trial + paid tiers (pricing not public) | AI-powered, low-code, auto-healing tests |
-| **Playwright** | Open Source | 62.9k+ | Free | Microsoft-backed, cross-browser, fast |
-| **Cypress** | Open Source | 46.5k+ | Free (paid dashboard available) | Developer-friendly, time-travel debugging |
-| **Selenium** | Open Source | 30k+ | Free | Industry standard, extensive language support |
-| **Katalon** | Commercial | N/A | Freemium model | Unified platform for web/API/mobile testing |
+| Platform       | Type            | GitHub Stars        | Pricing                                      | Key Differentiator                            |
+| -------------- | --------------- | ------------------- | -------------------------------------------- | --------------------------------------------- |
+| **Mabl**       | Commercial SaaS | N/A (Closed Source) | Free trial + paid tiers (pricing not public) | AI-powered, low-code, auto-healing tests      |
+| **Playwright** | Open Source     | 62.9k+              | Free                                         | Microsoft-backed, cross-browser, fast         |
+| **Cypress**    | Open Source     | 46.5k+              | Free (paid dashboard available)              | Developer-friendly, time-travel debugging     |
+| **Selenium**   | Open Source     | 30k+                | Free                                         | Industry standard, extensive language support |
+| **Katalon**    | Commercial      | N/A                 | Freemium model                               | Unified platform for web/API/mobile testing   |
 
 **Key Finding**: Mabl is a closed-source commercial platform with no public repositories for "wiring" implementation review.
 
 ## 5. Chatter and Demand Signals
 
 **Minimal public discourse** found regarding:
+
 - "Wiring" in mabl specifically
 - "Her free" (no references found - likely internal terminology)
 - Branch development strategies for mabl
 
 **Common mabl discussions focus on**:
+
 - Integration complexity with CI/CD
 - Documentation gaps
 - Free tier limitations
@@ -197,6 +204,7 @@ This research cannot proceed without fundamental clarifications. The query refer
 ## 6. Factual Validation and Evidence Gaps
 
 ### Critical Evidence Gaps
+
 - ❌ No repository URLs provided
 - ❌ No definition of "wiring" in mabl context
 - ❌ "Her free" terminology undefined
@@ -205,6 +213,7 @@ This research cannot proceed without fundamental clarifications. The query refer
 - ❌ Cannot verify mabl integration patterns
 
 ### Verification Blockers
+
 - Mabl is closed-source - no public code access
 - Internal repositories require authentication
 - Work request tracking system not specified
@@ -212,12 +221,14 @@ This research cannot proceed without fundamental clarifications. The query refer
 ## 7. Build Requirements and Acceptance Gates
 
 **Cannot define requirements without**:
+
 - Clear definition of "wiring" functionality
 - Repository access for code analysis
 - Understanding of current mabl usage
 - Specific branch development workflow
 
 **Proposed Acceptance Gates** (pending clarification):
+
 - [ ] All mabl API keys stored securely
 - [ ] Test isolation verified
 - [ ] CI/CD integration documented
@@ -226,6 +237,7 @@ This research cannot proceed without fundamental clarifications. The query refer
 ## 8. Code Review Agent Packet
 
 ### Bito AI Review Points
+
 ```yaml
 # BLOCKED: Cannot analyze without repository access
 review_focus:
@@ -235,6 +247,7 @@ review_focus:
 ```
 
 ### OpenRouter Review
+
 ```yaml
 # BLOCKED: Missing code context
 check_for:
@@ -244,6 +257,7 @@ check_for:
 ```
 
 ### Coderabbit Analysis
+
 ```yaml
 # BLOCKED: No PR/branch specified
 analyze:
@@ -253,6 +267,7 @@ analyze:
 ```
 
 ### Ralph Loop Actions
+
 ```yaml
 # BLOCKED: Undefined scope
 validate:
@@ -264,17 +279,22 @@ validate:
 ## 9. Automatic Fix and Commit Queue
 
 ### Fix 1: Clarify Requirements
+
 **Commit**: `fix: add required context to mabl wiring research request`
+
 ```markdown
 ## Required Information
+
 - [ ] Define "wiring" in mabl context
-- [ ] Correct "her free" terminology  
+- [ ] Correct "her free" terminology
 - [ ] Provide repository URLs
 - [ ] List specific PR/WR numbers
 ```
 
 ### Fix 2: Add Repository Search
+
 **Commit**: `feat: add automated repository search for mabl references`
+
 ```bash
 #!/bin/bash
 # Search for mabl references in codebase
@@ -283,14 +303,20 @@ find . -type f \( -name "*.js" -o -name "*.ts" -o -name "*.py" \) \
 ```
 
 ### Fix 3: Document Integration Patterns
+
 **Commit**: `docs: create mabl integration documentation template`
+
 ```markdown
 # Mabl Integration Documentation
+
 ## Wiring Patterns
+
 - [ ] API Integration
 - [ ] CI/CD Pipeline
 - [ ] Test Configuration
+
 ## Free Tier Usage
+
 - [ ] Current limits
 - [ ] Usage metrics
 ```
@@ -308,10 +334,11 @@ find . -type f \( -name "*.js" -o -name "*.ts" -o -name "*.py" \) \
 **Cannot review repositories** - No URLs provided
 
 **Best Alternatives** (if seeking test automation):
+
 1. **Playwright** - Best for developer-centric teams
    - 62.9k+ stars, Microsoft backing
    - Fast, reliable, cross-browser
-   
+
 2. **Cypress** - Best for developer experience
    - 46.5k+ stars, strong community
    - Interactive debugging, all-in-one solution
@@ -325,6 +352,7 @@ find . -type f \( -name "*.js" -o -name "*.ts" -o -name "*.py" \) \
 ### Overall Confidence: 15/100
 
 **Lane Confidence Breakdown**:
+
 - Market Positioning: 25/100 (blocked by missing context)
 - SEO Demand: 30/100 (can infer some patterns)
 - Competitor Intelligence: 60/100 (public data available)
@@ -335,6 +363,7 @@ find . -type f \( -name "*.js" -o -name "*.ts" -o -name "*.py" \) \
 - Repository Review: 25/100 (no repos to review)
 
 **Reasoning**: This research is fundamentally blocked by:
+
 1. Ambiguous terminology ("wiring", "her free")
 2. No repository or code access
 3. Missing context about mabl usage
@@ -382,11 +411,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -402,11 +431,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

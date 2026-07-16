@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from "next/server";
 import {
   DESIGN_PHASES,
   type ProjectInfo,
@@ -6,7 +6,7 @@ import {
   buildDhfCsv,
   countAllItems,
   countChecked,
-} from '../../data/controls';
+} from "../../data/controls";
 
 /**
  * POST /api/dhf
@@ -56,24 +56,32 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   // Validate and extract project info
   const rawProject = (body.project ?? {}) as Partial<ProjectInfo>;
   const project: ProjectInfo = {
-    deviceName: typeof rawProject.deviceName === 'string' ? rawProject.deviceName : '',
-    deviceVersion: typeof rawProject.deviceVersion === 'string' ? rawProject.deviceVersion : '1.0',
-    projectLead: typeof rawProject.projectLead === 'string' ? rawProject.projectLead : '',
-    intendedUse: typeof rawProject.intendedUse === 'string' ? rawProject.intendedUse : '',
+    deviceName:
+      typeof rawProject.deviceName === "string" ? rawProject.deviceName : "",
+    deviceVersion:
+      typeof rawProject.deviceVersion === "string"
+        ? rawProject.deviceVersion
+        : "1.0",
+    projectLead:
+      typeof rawProject.projectLead === "string" ? rawProject.projectLead : "",
+    intendedUse:
+      typeof rawProject.intendedUse === "string" ? rawProject.intendedUse : "",
     deviceClass:
-      rawProject.deviceClass === 'Class I' ||
-      rawProject.deviceClass === 'Class II' ||
-      rawProject.deviceClass === 'Class III'
+      rawProject.deviceClass === "Class I" ||
+      rawProject.deviceClass === "Class II" ||
+      rawProject.deviceClass === "Class III"
         ? rawProject.deviceClass
-        : '',
-    startDate: typeof rawProject.startDate === 'string' ? rawProject.startDate : '',
-    targetDate: typeof rawProject.targetDate === 'string' ? rawProject.targetDate : '',
+        : "",
+    startDate:
+      typeof rawProject.startDate === "string" ? rawProject.startDate : "",
+    targetDate:
+      typeof rawProject.targetDate === "string" ? rawProject.targetDate : "",
   };
 
   // Build the checked map from the payload
@@ -86,7 +94,7 @@ export async function POST(req: NextRequest) {
       // Only accept valid item IDs for this phase
       const validIds = new Set(phase.items.map((i) => i.id));
       const filtered = arr.filter(
-        (id): id is string => typeof id === 'string' && validIds.has(id)
+        (id): id is string => typeof id === "string" && validIds.has(id),
       );
       checkedMap.set(phase.id, new Set(filtered));
     }

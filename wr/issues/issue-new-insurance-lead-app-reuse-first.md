@@ -26,22 +26,25 @@ overwrite anything (No-Destroy Guard).
 ## ♻️ Reuse manifest (REQUIRED — pull these, do not rebuild)
 
 ### Reuse as-is
-| Capability | Source file(s) |
-| --- | --- |
-| Lead capture form/flow | `products/life-insurance-lead-engine/build/src/components/LeadGenerator/LeadGenerator.tsx` |
+
+| Capability                       | Source file(s)                                                                                                |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Lead capture form/flow           | `products/life-insurance-lead-engine/build/src/components/LeadGenerator/LeadGenerator.tsx`                    |
 | Lead de-duplication (logic + UI) | `products/life-insurance-lead-engine/build/src/components/Dedupe/Dedupe.tsx`, `.../build/src/utils/dedupe.ts` |
-| Lead data parsing | `products/life-insurance-lead-engine/build/src/utils/parser.ts` |
-| Email / newsletter capture | `products/life-insurance-lead-engine/build/src/components/Newsletter.tsx` |
-| Monetization block | `products/life-insurance-lead-engine/build/src/components/AffiliateMarketing.tsx` |
-| Accessibility panel | `products/life-insurance-lead-engine/build/src/components/AccessibilityControls.tsx` |
+| Lead data parsing                | `products/life-insurance-lead-engine/build/src/utils/parser.ts`                                               |
+| Email / newsletter capture       | `products/life-insurance-lead-engine/build/src/components/Newsletter.tsx`                                     |
+| Monetization block               | `products/life-insurance-lead-engine/build/src/components/AffiliateMarketing.tsx`                             |
+| Accessibility panel              | `products/life-insurance-lead-engine/build/src/components/AccessibilityControls.tsx`                          |
 
 ### Adapt (foundation exists — extend it)
-| Capability | Reuse from | Adapt into |
-| --- | --- | --- |
-| Public-records scraping (the Blue Ocean) | `reesereviews/vine-marketplace/lib/amazon-parser.js`, `gmail-reader.js`, `facebook-poster.js` | county/marriage-license/home-purchase record scrapers |
-| AI features (phone answering, quotes) | `src/lib/model-router.js`, `src/lib/model-routing-modes.js`, `products/music-video-creator/src/lib/orchestrator.ts`, `.../openrouter-config.ts`, `products/prompt-generation-app/lib/prompt-generator.js` | AI phone-answer agent + quote-explanation flow |
+
+| Capability                               | Reuse from                                                                                                                                                                                                | Adapt into                                            |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Public-records scraping (the Blue Ocean) | `reesereviews/vine-marketplace/lib/amazon-parser.js`, `gmail-reader.js`, `facebook-poster.js`                                                                                                             | county/marriage-license/home-purchase record scrapers |
+| AI features (phone answering, quotes)    | `src/lib/model-router.js`, `src/lib/model-routing-modes.js`, `products/music-video-creator/src/lib/orchestrator.ts`, `.../openrouter-config.ts`, `products/prompt-generation-app/lib/prompt-generator.js` | AI phone-answer agent + quote-explanation flow        |
 
 ### Build net-new (no reusable code in repo)
+
 - Public-records source connectors (use the adapted scraper pattern above)
 - Multi-carrier quote comparison
 - Twilio/voice integration for AI phone answering
@@ -67,7 +70,7 @@ overwrite anything (No-Destroy Guard).
 ## Guardrails
 
 - **New build is approved** (it's net-new, not a reimagining). Reimagining any
-  *existing* app still requires owner approval (propose → approve → build).
+  _existing_ app still requires owner approval (propose → approve → build).
 - **No-Destroy:** never overwrite/delete existing apps or the reused source files.
 - **Research:** standard research defaults apply (market, BOM, competitors,
   compliance — TCPA/FCRA/CAN-SPAM/source ToS are critical for public-records data).

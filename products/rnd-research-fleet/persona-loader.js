@@ -5,8 +5,8 @@
  */
 
 const PERSONAS = {
-  'market-researcher': {
-    name: 'Market Researcher',
+  "market-researcher": {
+    name: "Market Researcher",
     systemPrompt: `You are a senior Market Research Analyst specializing in:
 - Total Addressable Market (TAM) analysis
 - Competitive landscape mapping
@@ -14,11 +14,11 @@ const PERSONAS = {
 - Customer segmentation
 - Pricing strategy
 
-Provide data-backed insights with specific numbers and sources.`
+Provide data-backed insights with specific numbers and sources.`,
   },
-  
-  'technical-analyst': {
-    name: 'Technical Analyst',
+
+  "technical-analyst": {
+    name: "Technical Analyst",
     systemPrompt: `You are a Principal Systems Architect evaluating:
 - Technological feasibility
 - Architecture patterns
@@ -26,11 +26,11 @@ Provide data-backed insights with specific numbers and sources.`
 - Scalability concerns
 - Security considerations
 
-Be specific about tradeoffs and alternatives.`
+Be specific about tradeoffs and alternatives.`,
   },
-  
-  'sustainability-auditor': {
-    name: 'Sustainability Auditor',
+
+  "sustainability-auditor": {
+    name: "Sustainability Auditor",
     systemPrompt: `You are an Environmental Impact Analyst conducting:
 - Life Cycle Assessment (LCA)
 - Carbon footprint analysis
@@ -38,11 +38,11 @@ Be specific about tradeoffs and alternatives.`
 - Sustainable material alternatives
 - Regulatory compliance (EU Green Deal, etc.)
 
-Use quantitative metrics where possible.`
+Use quantitative metrics where possible.`,
   },
-  
-  'patent-hunter': {
-    name: 'Patent & Innovation Hunter',
+
+  "patent-hunter": {
+    name: "Patent & Innovation Hunter",
     systemPrompt: `You are a Technology Scout hunting for:
 - BNAT (Best Not Yet Available Technology)
 - Emerging patents and lab research
@@ -50,11 +50,11 @@ Use quantitative metrics where possible.`
 - Disruptive paradigm shifts
 - IP landscape gaps
 
-Focus on bleeding-edge, pre-commercial technology.`
+Focus on bleeding-edge, pre-commercial technology.`,
   },
-  
-  'triz-specialist': {
-    name: 'TRIZ Problem Solver',
+
+  "triz-specialist": {
+    name: "TRIZ Problem Solver",
     systemPrompt: `You are a TRIZ (Theory of Inventive Problem Solving) Expert applying:
 - Contradiction analysis (technical vs physical)
 - 40 Inventive Principles
@@ -62,11 +62,11 @@ Focus on bleeding-edge, pre-commercial technology.`
 - S-Field analysis
 - ARIZ problem-solving algorithm
 
-Find non-obvious solutions by resolving contradictions.`
+Find non-obvious solutions by resolving contradictions.`,
   },
-  
-  'doe-screener': {
-    name: 'DOE Screening Analyst',
+
+  "doe-screener": {
+    name: "DOE Screening Analyst",
     systemPrompt: `You are a Department of Energy (DOE) Screening Analyst applying the 5-point test:
 1. Technological Feasibility - Science-based viability
 2. Practicability - Can it be manufactured/scaled?
@@ -74,8 +74,8 @@ Find non-obvious solutions by resolving contradictions.`
 4. Safety - Health and environmental impacts
 5. Proprietary Roadblocks - IP and legal constraints
 
-Ruthlessly eliminate ideas that fail ANY point.`
-  }
+Ruthlessly eliminate ideas that fail ANY point.`,
+  },
 };
 
 // Master prompt for all personas
@@ -92,12 +92,12 @@ Use DOE, TRIZ, MEErP, LCA, and BNAT frameworks where relevant.`;
 
 async function runResearch(query, personaName) {
   const persona = PERSONAS[personaName];
-  
+
   if (!persona) {
     console.error(`❌ Unknown persona: ${personaName}`);
-    console.log('');
-    console.log('Available personas:');
-    Object.keys(PERSONAS).forEach(key => {
+    console.log("");
+    console.log("Available personas:");
+    Object.keys(PERSONAS).forEach((key) => {
       console.log(`  - ${key}: ${PERSONAS[key].name}`);
     });
     process.exit(1);
@@ -108,9 +108,9 @@ async function runResearch(query, personaName) {
 ║  🔬 R&D Research Fleet - Persona Mode     ║
 ╚══════════════════════════════════════════════╝`);
   console.log(`Persona: ${persona.name}`);
-  console.log('');
+  console.log("");
   console.log(`Query: ${query}`);
-  console.log('');
+  console.log("");
 
   const systemPrompt = `${persona.systemPrompt}
 
@@ -118,44 +118,49 @@ ${MASTER_PROMPT}`;
 
   // Call OpenRouter
   const result = await callOpenRouter(query, systemPrompt);
-  
-  console.log('');
-  console.log('═'.repeat(50));
-  console.log('✅ RESEARCH COMPLETE');
-  console.log('═'.repeat(50));
-  console.log('');
+
+  console.log("");
+  console.log("═".repeat(50));
+  console.log("✅ RESEARCH COMPLETE");
+  console.log("═".repeat(50));
+  console.log("");
   console.log(result);
-  
+
   return result;
 }
 
 async function callOpenRouter(query, systemPrompt) {
   const apiKey = process.env.OPENROUTER_API_KEY;
-  
+
   if (!apiKey) {
-    console.log('⚠️  No OPENROUTER_API_KEY - using free Perplexity');
-    return require('./perplexity-research.js').tryPerplexityNoKey?.(query) || 
-           'API key required. Set OPENROUTER_API_KEY in .env';
+    console.log("⚠️  No OPENROUTER_API_KEY - using free Perplexity");
+    return (
+      require("./perplexity-research.js").tryPerplexityNoKey?.(query) ||
+      "API key required. Set OPENROUTER_API_KEY in .env"
+    );
   }
 
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://rnd-research-fleet',
-      'X-Title': 'R&D Research Fleet'
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://rnd-research-fleet",
+        "X-Title": "R&D Research Fleet",
+      },
+      body: JSON.stringify({
+        model: "anthropic/claude-sonnet-4.6",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: query },
+        ],
+        max_tokens: 8000,
+        temperature: 0.7,
+      }),
     },
-    body: JSON.stringify({
-      model: 'anthropic/claude-sonnet-4.6',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: query }
-      ],
-      max_tokens: 8000,
-      temperature: 0.7
-    })
-  });
+  );
 
   if (!response.ok) {
     throw new Error(`API error: ${response.status}`);
@@ -168,7 +173,7 @@ async function callOpenRouter(query, systemPrompt) {
 // CLI
 const args = process.argv.slice(2);
 
-if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
+if (args.length === 0 || args[0] === "--help" || args[0] === "-h") {
   console.log(`
 🔬 R&D Research Fleet - Persona Loader
 
@@ -179,23 +184,23 @@ Usage:
 
 Available Personas:
 `);
-  Object.keys(PERSONAS).forEach(key => {
+  Object.keys(PERSONAS).forEach((key) => {
     console.log(`  ${key.padEnd(20)} - ${PERSONAS[key].name}`);
   });
-  console.log('');
+  console.log("");
   process.exit(0);
 }
 
 const personaName = args[0];
-const query = args.slice(1).join(' ');
+const query = args.slice(1).join(" ");
 
 if (!query) {
-  console.error('❌ Please provide a research query');
+  console.error("❌ Please provide a research query");
   process.exit(1);
 }
 
-runResearch(query, personaName).catch(e => {
-  console.error('❌ Error:', e.message);
+runResearch(query, personaName).catch((e) => {
+  console.error("❌ Error:", e.message);
   process.exit(1);
 });
 

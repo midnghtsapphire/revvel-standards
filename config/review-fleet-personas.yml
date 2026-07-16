@@ -41,7 +41,13 @@ finding_schema:
 personas:
   - id: security
     title: Security reviewer
-    skills: [sast-triage-semgrep, injection-analysis, token-permission-scoping, dependency-risk]
+    skills:
+      [
+        sast-triage-semgrep,
+        injection-analysis,
+        token-permission-scoping,
+        dependency-risk,
+      ]
     allowed_tools: [repo-read, semgrep, github-read, local-cli-readonly]
     scope: ["scripts/**", "**/*.js", ".github/workflows/**", "product-code"]
     must_check:
@@ -77,7 +83,8 @@ personas:
 
   - id: product_process
     title: Product / process reviewer
-    skills: [self-healing-loop-literacy, scope-assessment, scaffolding-detection]
+    skills:
+      [self-healing-loop-literacy, scope-assessment, scaffolding-detection]
     allowed_tools: [repo-read, github-read, local-cli]
     scope: [pr-description, scope-size, product-copy, "standards/"]
     must_check:
@@ -99,7 +106,8 @@ personas:
 
   - id: connector
     title: Connector reviewer
-    skills: [connector-auth-models, rate-limits, graceful-degradation, bom-authoring]
+    skills:
+      [connector-auth-models, rate-limits, graceful-degradation, bom-authoring]
     allowed_tools: [repo-read, connector-read-scopes]
     scope: [integration-code-touching-external-platforms]
     must_check:
@@ -108,7 +116,12 @@ personas:
       - n8n and Gumloop are treated as already-paid runner capacity (operator pays ~$60/mo total); prefer them before recommending new spend.
       - Free tiers, trials, and token-limited plans are preferred next; their limits (free_tier_available, free_tier_limits, trial_available, expected_usage, token_or_credit_limit, overage_risk, upgrade_trigger) are recorded in the BOM before any paid upgrade (see docs/standards/RUNNER_TARGETS.md).
       - Any new API/subscription/tier-upgrade is an advisory subscription_upgrade_recommendation in the procurement BOM with approval_required:true (see docs/standards/RUNNER_TARGETS.md).
-    must_not_do: [authenticate-live-paid-services, spend-credits, recommend-new-spend-without-bom-and-human-approval]
+    must_not_do:
+      [
+        authenticate-live-paid-services,
+        spend-credits,
+        recommend-new-spend-without-bom-and-human-approval,
+      ]
     blocking_rule: connector-failure-hard-breaks-loop-no-failsoft
 
   - id: implementation
@@ -137,8 +150,18 @@ personas:
     title: Syntax / Final Gate reviewer
     runs_last: true
     inherits_checklist: docs/CHECKLISTS/PRIMARY_CODER_CODE_REVIEW_CHECKLIST.md
-    skills: [multi-language-linters, parsers, test-runner-literacy, diff-inventory]
-    allowed_tools: [repo-read, local-cli-validators, "node --check", "python3 py_compile", "bash -n", markdownlint, "yaml.safe_load"]
+    skills:
+      [multi-language-linters, parsers, test-runner-literacy, diff-inventory]
+    allowed_tools:
+      [
+        repo-read,
+        local-cli-validators,
+        "node --check",
+        "python3 py_compile",
+        "bash -n",
+        markdownlint,
+        "yaml.safe_load",
+      ]
     scope: [diff-wide]
     must_check:
       - syntax-checks (node --check, py_compile, bash -n) on changed sources.
@@ -182,17 +205,39 @@ merge_recommendations:
 
 # Read-only connector review uses; missing access becomes a bom line, never a failure.
 connectors:
-  github: { use: "inspect PR/checks/labels/runs", bom: "GitHub token repo:read/actions:read" }
-  vercel: { use: "read deploy/build status, env var names", bom: "Vercel read token + project ID" }
-  supabase: { use: "read schema/migration/RLS presence", bom: "Supabase service read key" }
-  firebase: { use: "read rules/config presence", bom: "Firebase viewer credentials" }
-  openrouter: { use: "verify model routing/fallback config", bom: "Funded OpenRouter account + OPENROUTER_API_KEY (read)" }
+  github:
+    {
+      use: "inspect PR/checks/labels/runs",
+      bom: "GitHub token repo:read/actions:read",
+    }
+  vercel:
+    {
+      use: "read deploy/build status, env var names",
+      bom: "Vercel read token + project ID",
+    }
+  supabase:
+    {
+      use: "read schema/migration/RLS presence",
+      bom: "Supabase service read key",
+    }
+  firebase:
+    { use: "read rules/config presence", bom: "Firebase viewer credentials" }
+  openrouter:
+    {
+      use: "verify model routing/fallback config",
+      bom: "Funded OpenRouter account + OPENROUTER_API_KEY (read)",
+    }
   zapier: { use: "read Zap definitions", bom: "Zapier read API key" }
   make: { use: "read scenario blueprints", bom: "Make API token (read)" }
   n8n: { use: "read workflow JSON", bom: "n8n API key + instance URL" }
   gumloop: { use: "read flow definitions", bom: "Gumloop API key" }
-  browser_automation: { use: "render/check deployed page (read-only)", bom: "Headless browser (Playwright) in review env" }
-  local_cli: { use: "run repo tests/linters/validators", bom: "none — always available" }
+  browser_automation:
+    {
+      use: "render/check deployed page (read-only)",
+      bom: "Headless browser (Playwright) in review env",
+    }
+  local_cli:
+    { use: "run repo tests/linters/validators", bom: "none — always available" }
 
 # Canned/external review apps AUGMENT personas; they never replace them. Nothing
 # here is installed, funded, or authenticated by this config — adoption is a
@@ -200,16 +245,66 @@ connectors:
 external_apps_catalog:
   policy: augment-not-replace
   canned_apps:
-    - { name: CodeQL, purpose: deep-sast, feeds: security, approval: repo-owner }
-    - { name: Semgrep, purpose: rule-based-sast, feeds: security, approval: repo-owner }
-    - { name: Trivy, purpose: dependency-cve-scan, feeds: [security, compliance], approval: lead }
-    - { name: GitGuardian, purpose: secret-detection, feeds: security, approval: repo-owner }
-    - { name: Vercel Agent Review, purpose: deploy-aware-ai-review, feeds: implementation, approval: repo-owner }
-    - { name: Octopus, purpose: ai-pr-review, feeds: implementation, approval: repo-owner }
-    - { name: Cubic, purpose: ai-pr-review, feeds: implementation, approval: repo-owner }
-    - { name: BITO, purpose: ai-pr-review, feeds: implementation, approval: repo-owner }
-    - { name: RecurseML, purpose: ml-regression-review, feeds: implementation, approval: repo-owner }
-    - { name: Coderabbit, purpose: ai-pr-review, feeds: implementation, approval: repo-owner }
+    - {
+        name: CodeQL,
+        purpose: deep-sast,
+        feeds: security,
+        approval: repo-owner,
+      }
+    - {
+        name: Semgrep,
+        purpose: rule-based-sast,
+        feeds: security,
+        approval: repo-owner,
+      }
+    - {
+        name: Trivy,
+        purpose: dependency-cve-scan,
+        feeds: [security, compliance],
+        approval: lead,
+      }
+    - {
+        name: GitGuardian,
+        purpose: secret-detection,
+        feeds: security,
+        approval: repo-owner,
+      }
+    - {
+        name: Vercel Agent Review,
+        purpose: deploy-aware-ai-review,
+        feeds: implementation,
+        approval: repo-owner,
+      }
+    - {
+        name: Octopus,
+        purpose: ai-pr-review,
+        feeds: implementation,
+        approval: repo-owner,
+      }
+    - {
+        name: Cubic,
+        purpose: ai-pr-review,
+        feeds: implementation,
+        approval: repo-owner,
+      }
+    - {
+        name: BITO,
+        purpose: ai-pr-review,
+        feeds: implementation,
+        approval: repo-owner,
+      }
+    - {
+        name: RecurseML,
+        purpose: ml-regression-review,
+        feeds: implementation,
+        approval: repo-owner,
+      }
+    - {
+        name: Coderabbit,
+        purpose: ai-pr-review,
+        feeds: implementation,
+        approval: repo-owner,
+      }
 
 # PR-prep agents (see Section 11 of the standard). These get a PR READY to be
 # judged (clear checks, fix merge posture) BEFORE the reviewer personas judge it.
@@ -218,20 +313,20 @@ external_apps_catalog:
 pr_prep_agents:
   contract_owner: revvel
   runner_options: [jules, claude-code, copilot, github-actions, local-cli]
-  run_mode: parallel              # A and B run concurrently; disjoint write surfaces.
-  aggregate: strictest            # hold dominates ready/merge.
-  additive_only: true             # no deletes, no goal changes, no paid/irreversible actions.
+  run_mode: parallel # A and B run concurrently; disjoint write surfaces.
+  aggregate: strictest # hold dominates ready/merge.
+  additive_only: true # no deletes, no goal changes, no paid/irreversible actions.
 
   # Output schema emitted by each PR-prep agent (see Section 11.3).
   output_schema:
-    agent: string                 # pr-prep-ci-checks | pr-prep-merge-readiness
+    agent: string # pr-prep-ci-checks | pr-prep-merge-readiness
     pr: number
-    findings: array               # Section 4 finding objects
-    checks_run: array             # {name, result: pass|fixed|failing|skipped, evidence}
+    findings: array # Section 4 finding objects
+    checks_run: array # {name, result: pass|fixed|failing|skipped, evidence}
     files_changed: array
-    external_blockers: array      # {check, reason, bom} — never PR defects
+    external_blockers: array # {check, reason, bom} — never PR defects
     safe_to_merge: boolean
-    recommended_action: string    # A: hold|ready ; B: merge|close|split|hold
+    recommended_action: string # A: hold|ready ; B: merge|close|split|hold
     follow_up_prs: array
 
   agents:
@@ -239,7 +334,18 @@ pr_prep_agents:
       title: PR Prep Agent A — CI / Checks Prep
       role: get-automated-checks-green-or-accounted-for
       runs_before: review-fleet
-      allowed_tools: [repo-write-on-pr-branch, local-cli-validators, "node --check", "python3 py_compile", "bash -n", markdownlint, "yaml.safe_load", github-read-checks, github-rerun-safe-checks]
+      allowed_tools:
+        [
+          repo-write-on-pr-branch,
+          local-cli-validators,
+          "node --check",
+          "python3 py_compile",
+          "bash -n",
+          markdownlint,
+          "yaml.safe_load",
+          github-read-checks,
+          github-rerun-safe-checks,
+        ]
       must_check:
         - Validate workflow YAML + repo gotchas (GH_REPO/--repo, token-with-fallback, narrow permissions).
         - Run targeted tests and repo gate semantics (npm test, changed-Markdown markdownlint-cli2).
@@ -247,7 +353,15 @@ pr_prep_agents:
         - Detect external/token failures and classify as external_blockers, not PR defects.
         - Re-run only safe (idempotent, read-only, no-spend, no-mutation) checks.
         - Produce check-status summary (pass/fixed/still-failing/external-blocker).
-      must_not_do: [weaken-or-stub-a-gate, delete-code-to-silence-failure, change-goal-values, wire-paid-services, rerun-unsafe-mutating-checks, expand-scope]
+      must_not_do:
+        [
+          weaken-or-stub-a-gate,
+          delete-code-to-silence-failure,
+          change-goal-values,
+          wire-paid-services,
+          rerun-unsafe-mutating-checks,
+          expand-scope,
+        ]
       recommended_action_values: [ready, hold]
       blocking_rule: hold-while-real-in-scope-check-red; external_blockers-are-bom-not-blocking
 
@@ -255,7 +369,13 @@ pr_prep_agents:
       title: PR Prep Agent B — Merge-Readiness Prep
       role: get-pr-metadata-and-merge-posture-ready
       runs_before: review-fleet
-      allowed_tools: [repo-read, git-history-read, github-read-pr-scope-labels-reviews-mergeability, github-propose-metadata-edits]
+      allowed_tools:
+        [
+          repo-read,
+          git-history-read,
+          github-read-pr-scope-labels-reviews-mergeability,
+          github-propose-metadata-edits,
+        ]
       must_check:
         - Scope/title/body describe the change; not unrequested creep (AGENT_SCAFFOLDING_BAN).
         - No-delete / no-goal-change cross-check (RVS-PRESERVE-001, RVS-AGENT-001; blocking authority stays with no_delete_goals).
@@ -263,7 +383,14 @@ pr_prep_agents:
         - PR checklist present and satisfied (draft, linked WR/issue, validation evidence).
         - Required labels applied; required reviewers/personas for PR type requested.
         - Emit merge recommendation: merge|close|split|hold.
-      must_not_do: [merge-on-own-authority, close-on-own-authority, delete-content, edit-code, change-goals]
+      must_not_do:
+        [
+          merge-on-own-authority,
+          close-on-own-authority,
+          delete-content,
+          edit-code,
+          change-goals,
+        ]
       recommended_action_values: [merge, close, split, hold]
       blocking_rule: hold-or-request-changes-while-no-delete/goal-change/conflict/missing-required-review-open
 

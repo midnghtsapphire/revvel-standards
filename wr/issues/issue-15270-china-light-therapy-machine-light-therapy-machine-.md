@@ -17,18 +17,19 @@ The issue owner dropped a reference URL to [Made-in-China.com Light Therapy Mach
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [x] Deep market research
 - [ ] BOM
 - [x] Community chatter
@@ -50,6 +51,7 @@ The issue owner dropped a reference URL to [Made-in-China.com Light Therapy Mach
 The light therapy device market is a real, growing consumer-health vertical with a clear gap for a high-quality, unbiased comparison and buyer-education tool. The Made-in-China.com signal suggests the owner may be exploring either (a) a product-review/comparison SaaS targeting US/UK consumers or (b) a drop-shipping / white-label fulfillment play sourcing devices wholesale. Both paths are viable; this WR scopes the higher-margin digital-product path first (comparison app / affiliate hub).
 
 **Key Decision Criteria:**
+
 - Market size is substantial (see Evidence Gaps — exact figure requires paid Grand View Research / MarketsandMarkets report)
 - Consumer confusion is high: dozens of device types (red light, SAD lamps, blue light, UV, near-infrared) with overlapping claims
 - Amazon Associates commission on health/household appliances: 3% per publicly listed rate sheet (see Evidence Gaps for direct-brand program rates)
@@ -58,12 +60,14 @@ The light therapy device market is a real, growing consumer-health vertical with
 ## 2. Audience We Are Going After and Why
 
 **Primary Target**: US/UK/CA consumers researching light therapy devices for:
+
 - SAD (Seasonal Affective Disorder) — especially northern-latitude users, October–March seasonality
 - Skin conditions (acne, anti-aging, wound healing)
 - Athletic recovery (red light / near-infrared panels)
 - Sleep improvement (blue light blocking / circadian rhythm entrainment)
 
 **Why This Audience:**
+
 - High purchase intent (devices range $30–$2,000+; high AOV = high affiliate commission)
 - Research-heavy purchase behavior: consumers extensively compare before buying (observed pattern — verify with Google Analytics benchmarks)
 - Pain point: overwhelming array of unverified health claims; trust gap creates editorial opportunity
@@ -74,6 +78,7 @@ The light therapy device market is a real, growing consumer-health vertical with
 ## 3. Marketing and SEO Plan
 
 **Primary Keyword Clusters** (search volumes are estimates — verify with SEMrush/Ahrefs):
+
 - "best red light therapy panel" (high intent, high volume)
 - "SAD lamp comparison" / "best SAD lamp"
 - "light therapy machine reviews"
@@ -82,12 +87,14 @@ The light therapy device market is a real, growing consumer-health vertical with
 - "infrared therapy panel vs red light"
 
 **Content Strategy:**
+
 1. **Pillar Pages:** "Complete Guide to Light Therapy Devices (2026)" — covers all device types
 2. **Comparison Tables:** Best Red Light Panels, Best SAD Lamps, Best Blue Light Devices
 3. **Buyer Guides:** "How to Choose a Light Therapy Machine for SAD", "Red Light vs. Near-Infrared: What's the Difference?"
 4. **Review Pages:** individual product deep-dives with verified specs
 
 **Distribution Channels:**
+
 - Reddit: r/LightTherapy, r/SleepHacking, r/longevity, r/SkincareAddiction (member counts change — verify at time of launch)
 - Pinterest (wellness content performs well)
 - YouTube (device unboxings and clinical breakdowns)
@@ -97,26 +104,28 @@ The light therapy device market is a real, growing consumer-health vertical with
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Competitor / Tool | Pricing | Key Features | Notes |
-|---|---|---|---|
-| [Wirecutter (NYT)](https://www.nytimes.com/wirecutter/reviews/best-light-therapy-lamps/) | Free (affiliate model) | Editorial reviews, pick-one format | Dominates SAD lamp SERP; limited red-light coverage |
-| [Healthline / Medical News Today](https://www.healthline.com/health/red-light-therapy) | Free (ads + affiliate) | Medically reviewed articles | Authority site; not a comparison tool |
-| [Joovv.com](https://joovv.com) | Devices $599–$4,495 | Red light panels; own brand only | Manufacturer site, not neutral |
-| [EMR-TEK](https://emr-tek.com) | Devices $99–$799 | Budget red light; no comparison tool | Manufacturer |
-| [PlatinumLED Therapy Lights](https://platinumled.com) | Devices $149–$1,149 | High-output panels | Manufacturer |
-| No dominant neutral comparison SaaS exists | — | — | **Market gap** |
+| Competitor / Tool                                                                        | Pricing                | Key Features                         | Notes                                               |
+| ---------------------------------------------------------------------------------------- | ---------------------- | ------------------------------------ | --------------------------------------------------- |
+| [Wirecutter (NYT)](https://www.nytimes.com/wirecutter/reviews/best-light-therapy-lamps/) | Free (affiliate model) | Editorial reviews, pick-one format   | Dominates SAD lamp SERP; limited red-light coverage |
+| [Healthline / Medical News Today](https://www.healthline.com/health/red-light-therapy)   | Free (ads + affiliate) | Medically reviewed articles          | Authority site; not a comparison tool               |
+| [Joovv.com](https://joovv.com)                                                           | Devices $599–$4,495    | Red light panels; own brand only     | Manufacturer site, not neutral                      |
+| [EMR-TEK](https://emr-tek.com)                                                           | Devices $99–$799       | Budget red light; no comparison tool | Manufacturer                                        |
+| [PlatinumLED Therapy Lights](https://platinumled.com)                                    | Devices $149–$1,149    | High-output panels                   | Manufacturer                                        |
+| No dominant neutral comparison SaaS exists                                               | —                      | —                                    | **Market gap**                                      |
 
 GitHub OSS landscape: No relevant OSS comparison tool found for this vertical (internal check — 0 stars for "light therapy comparison" on GitHub).
 
 ## 5. Chatter and Demand Signals
 
 **Demand Signals (unverified — require manual verification):**
+
 - r/LightTherapy has active purchase-advice threads weekly; users express frustration with biased manufacturer reviews
 - Amazon "light therapy lamp" category: 1,000+ competing products; reviews mention confusion about lux ratings and wavelengths
 - Reddit r/SleepHacking: repeated requests for "neutral comparison of red light panels"
 - SAD lamp market peaks every September–October as northern hemisphere enters winter (internal estimate)
 
 **Key User Language:**
+
 - "I can't tell which wavelength actually matters"
 - "All these brands claim the same things"
 - "Is there an honest comparison site for these?"
@@ -125,12 +134,14 @@ GitHub OSS landscape: No relevant OSS comparison tool found for this vertical (i
 ## 6. Factual Validation and Evidence Gaps
 
 **Evidence Gaps — Required Before Shipping:**
+
 - ❌ Global light therapy device market size (requires IBISWorld / Grand View Research report — paid)
 - ❌ Exact affiliate commission rates by retailer (requires account registration with each program)
 - ❌ Keyword search volumes (requires SEMrush or Ahrefs export)
 - ❌ Wholesale MOQ and unit economics from Made-in-China.com suppliers (if physical product path chosen)
 
 **Verified / Low-Risk Facts:**
+
 - Wirecutter covers SAD lamps but has thin red-light panel coverage (manually verified)
 - Amazon light therapy lamp category is saturated with 1,000+ SKUs (manually verifiable)
 - Joovv, PlatinumLED, and EMR-TEK are established brands in the red light panel space (public websites)
@@ -140,6 +151,7 @@ GitHub OSS landscape: No relevant OSS comparison tool found for this vertical (i
 ### MVP — Comparison/Affiliate Tool (Recommended Path)
 
 **Features:**
+
 1. Device database with structured specs (wavelength nm, irradiance mW/cm², coverage area, price, brand)
 2. Side-by-side comparison UI (up to 4 devices)
 3. Use-case filter (SAD / skin / athletic recovery / sleep)
@@ -148,6 +160,7 @@ GitHub OSS landscape: No relevant OSS comparison tool found for this vertical (i
 6. Mobile-responsive, fast-loading (Core Web Vitals green)
 
 **Acceptance Gates:**
+
 - [ ] Device database seeded with ≥50 devices across all major categories
 - [ ] Comparison table renders correctly on mobile (< 768px)
 - [ ] Affiliate links fire correctly and are properly disclosed (FTC compliance)
@@ -155,6 +168,7 @@ GitHub OSS landscape: No relevant OSS comparison tool found for this vertical (i
 - [ ] Medical claim copy reviewed and hedged appropriately
 
 **Technical Stack (recommended):**
+
 - Frontend: Next.js (SSG for SEO)
 - Database: Airtable or Supabase (product specs, easy editorial updates)
 - Hosting: Vercel
@@ -187,15 +201,18 @@ The Made-in-China.com light therapy wholesale signal + `#tool #app #project` has
        unattributed statistics are treated as placeholders and will be flagged in review. -->
 
 **Market Overview:**
+
 - Global photobiomodulation / light therapy device market: requires paid report (Grand View Research or MarketsandMarkets) — see Evidence Gaps below
 - SAD lamp sub-market: growing segment; seasonality tied to northern-latitude winter months (qualitative observation — requires verification)
 - Primary consumer channels: Amazon, direct-to-consumer brand sites, specialty wellness retailers
 
 **Wholesale / Manufacturing Signal:**
+
 - Made-in-China.com lists 100+ suppliers for light therapy machines at wholesale prices (publicly visible at source URL)
 - Typical wholesale unit cost and MOQ: see Evidence Gaps — requires direct RFQ to suppliers; estimates not included to avoid unverified figures
 
 **Affiliate Opportunity:**
+
 - Amazon Associates: 3% commission on health/household appliances (publicly documented — verify current rate at [Amazon Associates rate card](https://affiliate-program.amazon.com/help/node/topic/GRXPHT8U84RAYDXZ))
 - Direct brand programs (Joovv, PlatinumLED): Pricing data pending — competitive benchmark research required. (See Evidence Gaps — requires account registration with each program.)
 
@@ -216,11 +233,11 @@ The Made-in-China.com light therapy wholesale signal + `#tool #app #project` has
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none — keyword validation can start immediately |
-| Blocks (downstream WRs) | none |
+| Field                           | Value                                           |
+| ------------------------------- | ----------------------------------------------- |
+| `depends_on` (prerequisite WRs) | none                                            |
+| Blocked by                      | none — keyword validation can start immediately |
+| Blocks (downstream WRs)         | none                                            |
 
 ## Risks
 

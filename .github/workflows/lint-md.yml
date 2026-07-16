@@ -63,5 +63,5 @@ jobs:
         uses: lint-md/github-action@v0.2.0
         with:
           files: ${{ steps.changed-markdown.outputs.files }}
-          configFile: '.lintmdrc'
-          failOnWarnings: 'false'
+          configFile: ".lintmdrc"
+          failOnWarnings: "false"

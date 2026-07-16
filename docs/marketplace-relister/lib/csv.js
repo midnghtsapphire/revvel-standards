@@ -2,7 +2,7 @@
 
 export function parseCsvLine(line) {
   const out = [];
-  let cur = '';
+  let cur = "";
   let q = false;
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
@@ -14,9 +14,9 @@ export function parseCsvLine(line) {
         } else q = false;
       } else cur += ch;
     } else if (ch === '"') q = true;
-    else if (ch === ',') {
+    else if (ch === ",") {
       out.push(cur);
-      cur = '';
+      cur = "";
     } else cur += ch;
   }
   out.push(cur);
@@ -24,17 +24,17 @@ export function parseCsvLine(line) {
 }
 
 export function normHeader(h) {
-  return String(h || '')
-    .replace(/^\uFEFF/, '')
+  return String(h || "")
+    .replace(/^\uFEFF/, "")
     .trim()
     .toLowerCase()
-    .replace(/[_]+/g, ' ')
-    .replace(/\s+/g, ' ');
+    .replace(/[_]+/g, " ")
+    .replace(/\s+/g, " ");
 }
 
 export function parseCsv(text) {
-  const lines = String(text || '')
-    .replace(/^\uFEFF/, '')
+  const lines = String(text || "")
+    .replace(/^\uFEFF/, "")
     .trim()
     .split(/\r?\n/)
     .filter((l) => l.trim());
@@ -45,7 +45,7 @@ export function parseCsv(text) {
     const cells = parseCsvLine(lines[i]);
     const row = {};
     headers.forEach((h, idx) => {
-      row[h] = (cells[idx] || '').trim();
+      row[h] = (cells[idx] || "").trim();
     });
     rows.push(row);
   }
@@ -63,7 +63,7 @@ function pick(row, names) {
       if (k.includes(want) && v) return v;
     }
   }
-  return '';
+  return "";
 }
 
 export function extractAsin(raw) {
@@ -79,21 +79,22 @@ export function extractAsin(raw) {
 export function rowsToProducts(rows) {
   return rows
     .map((row, i) => {
-      const asin = extractAsin(pick(row, ['asin', 'asin/isbn', 'asin isbn', 'isbn']));
+      const asin = extractAsin(
+        pick(row, ["asin", "asin/isbn", "asin isbn", "isbn"]),
+      );
       const title =
-        pick(row, ['title', 'product name', 'product title', 'item name']) ||
+        pick(row, ["title", "product name", "product title", "item name"]) ||
         (asin ? `Amazon product ${asin}` : null);
       if (!asin && !title) return null;
       const paid = parseFloat(
-        String(pick(row, ['unit price', 'item total', 'total owed', 'price']) || '').replace(
-          /[^0-9.-]/g,
-          ''
-        )
+        String(
+          pick(row, ["unit price", "item total", "total owed", "price"]) || "",
+        ).replace(/[^0-9.-]/g, ""),
       );
       return {
-        id: pick(row, ['order id', 'order number']) || `row-${i + 1}`,
+        id: pick(row, ["order id", "order number"]) || `row-${i + 1}`,
         asin,
-        title: (title || '').slice(0, 200),
+        title: (title || "").slice(0, 200),
         paid: Number.isFinite(paid) ? paid : 0,
         url: asin ? `https://www.amazon.com/dp/${asin}` : null,
       };

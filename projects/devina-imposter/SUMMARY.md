@@ -14,6 +14,7 @@ An honest evaluation framework and comparison repository for AI coding agents, i
 ## Why It Matters
 
 From our own analysis (`docs/neurooz/AGENT_SHIPPING_FAILURE_ANALYSIS.md`):
+
 > Repeated experience of AI coding agents failing to deliver complete, production-ready applications
 
 This addresses the gap between agent promises and agent delivery.

@@ -1,6 +1,7 @@
 # Kanban Cards
 
 ## Backlog
+
 - [ ] CRM export (Salesforce, HubSpot, GoHighLevel)
 - [ ] SMS drip via Twilio
 - [ ] Email warm-up sequences
@@ -9,10 +10,12 @@
 - [ ] AI call coach (real-time pitch assist)
 
 ## In Progress
+
 - [ ] Polar.sh checkout integration
 - [ ] Vercel deployment
 
 ## Done
+
 - [x] Build initial Next.js app
 - [x] NPI Registry integration
 - [x] Dedupe utility (Fuse.js)

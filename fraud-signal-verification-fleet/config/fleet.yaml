@@ -5,9 +5,9 @@
 # wired, the orchestrator should load this file so the two can't drift. Until then, treat
 # it as documentation, not executed config.
 orchestrator:
-  default_mode: parallel        # parallel | sequential
+  default_mode: parallel # parallel | sequential
   publish_to: dashboard/dashboard-data.json
-  require_human_review: false   # flip true before any live (non-seed) publish
+  require_human_review: false # flip true before any live (non-seed) publish
 
 agents:
   - name: agent-primary-source
@@ -37,4 +37,4 @@ judge:
   runs_after: all_agents
 
 refusal:
-  block_verdicts_on_named_persons: true   # never disable
+  block_verdicts_on_named_persons: true # never disable

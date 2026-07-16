@@ -1,7 +1,7 @@
 name: Daily News Briefing
 on:
   schedule:
-    - cron: '0 6 * * *' # 6am UTC daily (must be 5 fields; 3-field cron makes GitHub reject the workflow)
+    - cron: "0 6 * * *" # 6am UTC daily (must be 5 fields; 3-field cron makes GitHub reject the workflow)
 jobs:
   news:
     runs-on: ubuntu-latest

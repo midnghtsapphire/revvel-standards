@@ -47,12 +47,12 @@ Leverage academic LLLT/PBM research to create a high-value sellable PDF and a su
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ---
 
@@ -77,6 +77,7 @@ Leverage academic LLLT/PBM research to create a high-value sellable PDF and a su
 Low Level Laser Therapy (LLLT), now formally termed **Photobiomodulation (PBM)**, uses low-power lasers or LEDs (typically 1–500 mW, wavelengths 600–1100 nm) to stimulate biological processes at the cellular level without generating heat. The primary mechanism is absorption by cytochrome c oxidase in the mitochondrial electron transport chain, triggering increased ATP production, reduced oxidative stress, and modulation of inflammatory mediators ([Hamblin 2017, Photobiomodulation in the Brain, Springer](https://link.springer.com/book/10.1007/978-3-319-57036-5); [de Freitas & Hamblin 2016, IEEE JSTQE](https://ieeexplore.ieee.org/document/7562357)).
 
 **Key biological effects documented in peer-reviewed literature:**
+
 - Increased mitochondrial ATP synthesis ([Karu 1999, J Photochem Photobiol B](https://www.sciencedirect.com/science/article/pii/S1011134498001791))
 - Reduced pro-inflammatory cytokines (TNF-α, IL-1β, IL-6) — internal estimate, ranges vary by tissue type
 - Accelerated wound healing and tissue repair
@@ -91,15 +92,18 @@ Low Level Laser Therapy (LLLT), now formally termed **Photobiomodulation (PBM)**
 ### 2. Market Research
 
 **Global Photobiomodulation/LLLT Market:**
+
 - Market size: ~$1.2 billion USD (2024), projected ~$2.8 billion by 2030 at ~15% CAGR (internal estimate based on Grand View Research and MarketsandMarkets sector reports; precise sourced figure: [$1.14B in 2023 per Grand View Research](https://www.grandviewresearch.com/industry-analysis/photobiomodulation-therapy-market))
 - Key segments: pain management (largest), wound care, hair restoration, sports & recovery, aesthetics, neurology
 
 **Target Audiences:**
+
 1. **Clinical practitioners** — physiotherapists, chiropractors, sports medicine physicians, dermatologists
 2. **Wellness consumers** — biohackers, athletes, hair-loss sufferers, chronic pain patients
 3. **Device manufacturers** — companies building LLLT/PBM devices seeking validated clinical protocols
 
 **SEO / Marketing Keywords:**
+
 - `low level laser therapy guide` — 1K–10K monthly searches (Google Keyword Planner estimate)
 - `photobiomodulation therapy` — 1K–10K monthly searches
 - `LLLT treatment protocol` — 100–1K monthly searches
@@ -108,6 +112,7 @@ Low Level Laser Therapy (LLLT), now formally termed **Photobiomodulation (PBM)**
 - `LLLT hair growth` — 1K–10K monthly searches
 
 **GitHub Stars (related OSS tools):**
+
 - [photobiomodulation-calculator](https://github.com/search?q=photobiomodulation) — no dominant open-source repo; niche is underserved in OSS (~0–50 stars on scattered repos)
 - Opportunity: first mover in open-source LLLT dosage calculators and treatment planners
 
@@ -115,30 +120,33 @@ Low Level Laser Therapy (LLLT), now formally termed **Photobiomodulation (PBM)**
 
 ### 3. Competitor Analysis
 
-| Product | Type | Price | Gap |
-| --- | --- | --- | --- |
-| Thor Photomedicine (torchlight.com) | Clinical device + protocol software | $5,000–$15,000 device + $99/mo software | Very expensive, enterprise-only |
-| Erchonia EVRL | FDA-cleared LLLT device | ~$10,000+ device only | No consumer-grade app/calculator |
-| iGrow / Capillus | FDA-cleared hair LLLT helmets | $600–$3,000 device | No protocol guidance app |
-| Joovv | Consumer red-light panels | $500–$2,000 device | No clinical-grade PDF protocol guide |
-| Kaiyan Medical (OEM) | B2B LLLT device manufacturer | OEM pricing from ~$200/unit | No practitioner protocol library |
-| **Revvel LLLT PDF + App** | Sellable PDF protocol guide + dosage calculator app | Target: $47–$97 PDF, $29/mo app | First affordable, research-backed protocol guide with companion calculator |
+| Product                             | Type                                                | Price                                   | Gap                                                                        |
+| ----------------------------------- | --------------------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------- |
+| Thor Photomedicine (torchlight.com) | Clinical device + protocol software                 | $5,000–$15,000 device + $99/mo software | Very expensive, enterprise-only                                            |
+| Erchonia EVRL                       | FDA-cleared LLLT device                             | ~$10,000+ device only                   | No consumer-grade app/calculator                                           |
+| iGrow / Capillus                    | FDA-cleared hair LLLT helmets                       | $600–$3,000 device                      | No protocol guidance app                                                   |
+| Joovv                               | Consumer red-light panels                           | $500–$2,000 device                      | No clinical-grade PDF protocol guide                                       |
+| Kaiyan Medical (OEM)                | B2B LLLT device manufacturer                        | OEM pricing from ~$200/unit             | No practitioner protocol library                                           |
+| **Revvel LLLT PDF + App**           | Sellable PDF protocol guide + dosage calculator app | Target: $47–$97 PDF, $29/mo app         | First affordable, research-backed protocol guide with companion calculator |
 
 ---
 
 ### 4. Community Chatter
 
 **Reddit r/Biohacking, r/longevity, r/photobiomodulation:**
+
 - Users frequently ask: "What wavelength and dose should I use?" → dosage calculator is the #1 unmet need
 - Complaints about expensive devices with no protocol guidance
 - Strong interest in cognitive enhancement (transcranial PBM), hair growth, pain, and wound healing
 - Active threads: e.g. [r/photobiomodulation](https://www.reddit.com/r/photobiomodulation/) (~15K members as of mid-2025 — internal estimate)
 
 **TrustPilot / product reviews:**
+
 - Joovv reviewers note lack of protocol guidance: "Great device, but I don't know if I'm using it correctly"
 - iGrow/Capillus: "Works but instructions are too vague"
 
 **Practitioner forums (PhysioForum, ACA chiropractic forums):**
+
 - Demand for peer-reviewed dosage protocols in plain language
 - WALT (World Association of Laser Therapy) dosage guidelines are technical; a practitioner-friendly PDF is a clear gap
 
@@ -147,6 +155,7 @@ Low Level Laser Therapy (LLLT), now formally termed **Photobiomodulation (PBM)**
 ### 5. Domain Strategy
 
 **Recommended domains:**
+
 - `llltguide.com` — exact-match, high SEO value
 - `pbmprotocol.com` — professional/clinical positioning
 - `redlightprotocol.com` — consumer-friendly, high search volume
@@ -159,16 +168,17 @@ Low Level Laser Therapy (LLLT), now formally termed **Photobiomodulation (PBM)**
 
 ### 6. Monetization Model
 
-| Channel | Revenue Model | Price Point | Notes |
-| --- | --- | --- | --- |
-| Sellable PDF (primary) | One-time purchase | $47–$97 | Practitioner protocol guide; 20 variants via Gumloop pipeline |
+| Channel                   | Revenue Model         | Price Point     | Notes                                                                         |
+| ------------------------- | --------------------- | --------------- | ----------------------------------------------------------------------------- |
+| Sellable PDF (primary)    | One-time purchase     | $47–$97         | Practitioner protocol guide; 20 variants via Gumloop pipeline                 |
 | Dosage Calculator Web App | Freemium + $29/mo Pro | Free tier + Pro | Calculator for wavelength/dose/time; Pro unlocks condition-specific protocols |
-| Practitioner Bundle | One-time + license | $197–$297 | PDF + app annual license + 5 patient licenses |
-| White-label API | B2B SaaS | $199/mo | LLLT protocol API for device manufacturers |
-| Affiliate | Commission | 20–30% | Partner with Joovv, Mito Red, Kaiyan for device recommendations |
-| Polar.sh | Tip / sponsorship | Variable | OSS dosage calculator sponsorship tiers |
+| Practitioner Bundle       | One-time + license    | $197–$297       | PDF + app annual license + 5 patient licenses                                 |
+| White-label API           | B2B SaaS              | $199/mo         | LLLT protocol API for device manufacturers                                    |
+| Affiliate                 | Commission            | 20–30%          | Partner with Joovv, Mito Red, Kaiyan for device recommendations               |
+| Polar.sh                  | Tip / sponsorship     | Variable        | OSS dosage calculator sponsorship tiers                                       |
 
 **Revenue projection:**
+
 - Month 1–3: PDF sales → $2,000–$5,000/mo (SEO + Reddit + Product Hunt launch)
 - Month 3–12: App subscriptions → $5,000–$20,000/mo ARR buildup
 - Year 2: White-label API → $10,000–$30,000/mo (B2B)
@@ -180,6 +190,7 @@ Low Level Laser Therapy (LLLT), now formally termed **Photobiomodulation (PBM)**
 Low Level Laser Therapy (LLLT / Photobiomodulation) is a clinically validated, FDA-cleared modality with a ~$1.2B global market growing at ~15% CAGR. Despite strong clinical evidence, the market lacks affordable, research-backed protocol guides and dosage calculators for practitioners and consumers. The Plymouth University research paper ([source](https://pearl.plymouth.ac.uk/cgi/viewcontent.cgi?article=1203&context=secam-research)) provides the academic foundation for a credible, authoritative sellable PDF product and companion tools.
 
 **Recommended deliverables:**
+
 1. **Sellable PDF** — "The Complete LLLT/Photobiomodulation Protocol Guide" (20 variants via Gumloop pipeline)
 2. **Dosage Calculator Web App** — wavelength, power density, dose, and treatment time calculator with condition-specific protocols
 3. **CLI tool** — `lllt-calc` for practitioners/researchers to compute dose parameters offline
@@ -189,17 +200,18 @@ Low Level Laser Therapy (LLLT / Photobiomodulation) is a clinically validated, F
 
 ## Step 1A — Product/Output Selections
 
-| Field | Value |
-| --- | --- |
-| Output Type | `sellable-pdf` (primary) + `desktop-tool` / `production-app` (companion) |
-| PDF Pipeline Batch | Autocreate 20 |
-| Research Mode | deepresearch |
-| Delivery Mode | new-build |
-| Lifecycle Mode | build-direct |
-| Commercial Mode | sellable |
-| Delivery Shape | Multiple PRs intentionally planned |
+| Field              | Value                                                                    |
+| ------------------ | ------------------------------------------------------------------------ |
+| Output Type        | `sellable-pdf` (primary) + `desktop-tool` / `production-app` (companion) |
+| PDF Pipeline Batch | Autocreate 20                                                            |
+| Research Mode      | deepresearch                                                             |
+| Delivery Mode      | new-build                                                                |
+| Lifecycle Mode     | build-direct                                                             |
+| Commercial Mode    | sellable                                                                 |
+| Delivery Shape     | Multiple PRs intentionally planned                                       |
 
 **Reasoning:**
+
 - Title suffix `.pdf` → `sellable-pdf` primary output
 - `#tools #apps` tags → companion dosage calculator app and CLI tool as secondary outputs
 - Academic source PDF provides credible research foundation for commercial product
@@ -210,17 +222,20 @@ Low Level Laser Therapy (LLLT / Photobiomodulation) is a clinically validated, F
 ## Step 2 — Deep Web Research
 
 ### Market Size & Growth
+
 - Global PBM/LLLT therapy market: $1.14B (2023) → projected $2.8B by 2030 at ~14.7% CAGR ([Grand View Research](https://www.grandviewresearch.com/industry-analysis/photobiomodulation-therapy-market))
 - North America dominates (~38% share); Asia-Pacific fastest growing ([MarketsandMarkets estimate](https://www.marketsandmarkets.com/Market-Reports/photobiomodulation-therapy-market-2222.html))
 - Key growth drivers: aging population, chronic pain prevalence, non-invasive treatment preference, FDA clearances
 
 ### Clinical Evidence Base
+
 - 6,000+ peer-reviewed publications on PBM/LLLT as of 2024 (PubMed search — internal estimate)
 - FDA-cleared indications: androgenetic alopecia (hair loss), pain relief, inflammation
 - WALT (World Association for Laser Therapy) publishes dosage guidelines: [walt.nu](https://walt.nu)
 - Major academic centers (Harvard, Plymouth, University of São Paulo) publish PBM research
 
 ### Competitor Pricing (verified)
+
 - **Thor Photomedicine LTX:** Clinical LLLT device $8,000–$15,000; software subscription $99/mo ([thor.co.uk](https://www.thor.co.uk))
 - **Erchonia EVRL:** $10,000–$20,000 device ([erchonia.com](https://www.erchonia.com))
 - **Joovv Solo 3.0:** $699 consumer panel ([joovv.com](https://joovv.com))
@@ -229,6 +244,7 @@ Low Level Laser Therapy (LLLT / Photobiomodulation) is a clinically validated, F
 - **Protocol PDF guides (competing):** Pricing data pending — competitive benchmark research required; no dominant commercial PDF protocol guide found in market scan
 
 ### SEO Opportunity
+
 - `red light therapy` — 100K–1M monthly searches (Google Keyword Planner range)
 - `low level laser therapy` — 10K–100K monthly searches
 - `photobiomodulation` — 10K–100K monthly searches
@@ -241,16 +257,16 @@ Low Level Laser Therapy (LLLT / Photobiomodulation) is a clinically validated, F
 
 ### Required Bundle
 
-| # | Artifact | Priority | Notes |
-| --- | --- | --- | --- |
-| 1 | Sellable PDF: "The Complete LLLT/PBM Protocol Guide" (master edition) | P0 | 40–60 pages, citable references, dosage tables |
-| 2 | 20 condition-specific PDF variants (Gumloop batch) | P0 | Pain, wound, hair, cognition, sports recovery, etc. |
-| 3 | Dosage Calculator Web App (Next.js) | P1 | Wavelength × power density × time → dose (J/cm²) |
-| 4 | CLI tool: `lllt-calc` | P1 | Node.js/Python, npm-publishable |
-| 5 | MCP skill: `lllt-protocol` | P2 | Protocol lookup + dosage calc for AI agents |
-| 6 | Landing page (Vercel) | P1 | SEO-optimized, PDF + app upsell |
-| 7 | Gumloop pipeline config | P0 | 20-variant PDF batch generation |
-| 8 | Research brief (Markdown, committed) | P0 | Documents sources, dosage tables, contraindications |
+| #   | Artifact                                                              | Priority | Notes                                               |
+| --- | --------------------------------------------------------------------- | -------- | --------------------------------------------------- |
+| 1   | Sellable PDF: "The Complete LLLT/PBM Protocol Guide" (master edition) | P0       | 40–60 pages, citable references, dosage tables      |
+| 2   | 20 condition-specific PDF variants (Gumloop batch)                    | P0       | Pain, wound, hair, cognition, sports recovery, etc. |
+| 3   | Dosage Calculator Web App (Next.js)                                   | P1       | Wavelength × power density × time → dose (J/cm²)    |
+| 4   | CLI tool: `lllt-calc`                                                 | P1       | Node.js/Python, npm-publishable                     |
+| 5   | MCP skill: `lllt-protocol`                                            | P2       | Protocol lookup + dosage calc for AI agents         |
+| 6   | Landing page (Vercel)                                                 | P1       | SEO-optimized, PDF + app upsell                     |
+| 7   | Gumloop pipeline config                                               | P0       | 20-variant PDF batch generation                     |
+| 8   | Research brief (Markdown, committed)                                  | P0       | Documents sources, dosage tables, contraindications |
 
 ### Definition of Done
 
@@ -278,6 +294,7 @@ Low Level Laser Therapy (LLLT / Photobiomodulation) is a clinically validated, F
 ### Delivery Shape
 
 Multiple PRs intentionally planned:
+
 1. PR 1: Research brief + master PDF content (Markdown source)
 2. PR 2: 20 PDF variants (Gumloop batch output)
 3. PR 3: Dosage calculator Next.js app scaffold
@@ -310,20 +327,20 @@ Multiple PRs intentionally planned:
 
 ## Dependencies
 
-| Field | Value |
-| --- | --- |
-| `depends_on` (prerequisite WRs) | none |
-| Blocked by | none |
-| Blocks (downstream WRs) | none |
+| Field                           | Value |
+| ------------------------------- | ----- |
+| `depends_on` (prerequisite WRs) | none  |
+| Blocked by                      | none  |
+| Blocks (downstream WRs)         | none  |
 
 ---
 
 ## Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-| --- | --- | --- | --- |
-| FDA/regulatory grey area for clinical claims | Medium | High | Clearly label as educational/informational; include standard medical disclaimer; do not make diagnostic or treatment claims |
-| Competitor (Thor, Erchonia) with deeper clinical credibility | Low | Medium | Position as affordable/accessible alternative; lean on academic citations |
-| PDF market saturation | Low | Medium | 20-variant SEO strategy differentiates; condition-specific targeting captures long-tail search |
-| Plymouth University paper access issues | Low | Low | The source URL is publicly accessible; fallback to WALT dosage guidelines and PubMed-cited research |
-| Dosage accuracy liability | Medium | High | All dosage recommendations must cite peer-reviewed sources and include contraindication warnings; do not recommend specific device brands without evidence |
+| Risk                                                         | Likelihood | Impact | Mitigation                                                                                                                                                 |
+| ------------------------------------------------------------ | ---------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| FDA/regulatory grey area for clinical claims                 | Medium     | High   | Clearly label as educational/informational; include standard medical disclaimer; do not make diagnostic or treatment claims                                |
+| Competitor (Thor, Erchonia) with deeper clinical credibility | Low        | Medium | Position as affordable/accessible alternative; lean on academic citations                                                                                  |
+| PDF market saturation                                        | Low        | Medium | 20-variant SEO strategy differentiates; condition-specific targeting captures long-tail search                                                             |
+| Plymouth University paper access issues                      | Low        | Low    | The source URL is publicly accessible; fallback to WALT dosage guidelines and PubMed-cited research                                                        |
+| Dosage accuracy liability                                    | Medium     | High   | All dosage recommendations must cite peer-reviewed sources and include contraindication warnings; do not recommend specific device brands without evidence |

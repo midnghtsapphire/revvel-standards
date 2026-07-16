@@ -1,4 +1,5 @@
 # Persona Chat Systems: Research Report
+
 # Competitive Analysis for MindMappr Feature Design
 
 **Prepared for:** Revvel / MIDNGHTSAPPHIRE
@@ -27,13 +28,13 @@ Monica's bot creation interface is accessible through the "Bot Plaza," a marketp
 
 The differentiation between Monica's personas is almost entirely driven by the quality and specificity of the system prompt. A well-crafted system prompt will define:
 
-| Dimension | What It Controls | Example |
-|---|---|---|
-| **Role and Expertise** | What the persona knows | "You are a board-certified dermatologist with 15 years of clinical experience." |
-| **Personality Traits** | How the persona communicates | "You are warm, direct, and never condescending. You use plain language." |
-| **Backstory** | Depth and consistency | "You grew up in Miami and have a passion for accessible skincare." |
-| **Behavioral Rules** | What the persona will/won't do | "You never diagnose. You always recommend consulting a doctor for prescriptions." |
-| **Communication Style** | Tone, vocabulary, format | "You respond in short paragraphs, never bullet points, and always ask a follow-up question." |
+| Dimension               | What It Controls               | Example                                                                                      |
+| ----------------------- | ------------------------------ | -------------------------------------------------------------------------------------------- |
+| **Role and Expertise**  | What the persona knows         | "You are a board-certified dermatologist with 15 years of clinical experience."              |
+| **Personality Traits**  | How the persona communicates   | "You are warm, direct, and never condescending. You use plain language."                     |
+| **Backstory**           | Depth and consistency          | "You grew up in Miami and have a passion for accessible skincare."                           |
+| **Behavioral Rules**    | What the persona will/won't do | "You never diagnose. You always recommend consulting a doctor for prescriptions."            |
+| **Communication Style** | Tone, vocabulary, format       | "You respond in short paragraphs, never bullet points, and always ask a follow-up question." |
 
 Monica also supports a "Memory" feature that allows the AI to remember information across multiple conversations, giving personas a sense of continuity and personalization over time. [2] This is a significant differentiator from a simple stateless chatbot — the persona can remember that the user prefers certain topics, has mentioned specific life events, or has previously asked about related subjects.
 
@@ -111,13 +112,13 @@ OpenRouter provides a single API endpoint that routes requests to over 300 langu
 
 Based on OpenRouter's real-usage leaderboard data for February 2026, the top models for roleplay and creative personas are [9]:
 
-| Rank | Model | Best For | Cost Profile |
-|---|---|---|---|
-| 1 | DeepSeek V3.2 | Creative writing, roleplay, general chat | Very low cost |
-| 2 | Grok 4.1 Fast | Fast creative responses, trivia, roleplay | Moderate |
-| 3 | Gemini 2.5 Flash | Balanced: legal, marketing, roleplay | Low cost |
-| 4 | Claude 3.5 Sonnet | Technical, coding, reasoning | Moderate-high |
-| 5 | Gemini 2.5 Pro | Complex reasoning, technical analysis | Moderate |
+| Rank | Model             | Best For                                  | Cost Profile  |
+| ---- | ----------------- | ----------------------------------------- | ------------- |
+| 1    | DeepSeek V3.2     | Creative writing, roleplay, general chat  | Very low cost |
+| 2    | Grok 4.1 Fast     | Fast creative responses, trivia, roleplay | Moderate      |
+| 3    | Gemini 2.5 Flash  | Balanced: legal, marketing, roleplay      | Low cost      |
+| 4    | Claude 3.5 Sonnet | Technical, coding, reasoning              | Moderate-high |
+| 5    | Gemini 2.5 Pro    | Complex reasoning, technical analysis     | Moderate      |
 
 For the MindMappr Persona Chat, the routing strategy should be:
 

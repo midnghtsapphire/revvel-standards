@@ -10,10 +10,10 @@
 
 Soul2Bowl uses **two deployment targets**:
 
-| Environment | Platform | URL | Trigger |
-|---|---|---|---|
-| Staging / Preview | Vercel | `soul2bowl.vercel.app` | Every push to `main` or PR |
-| Production | DigitalOcean App Platform | `soul2bowl.com` | Manual or tagged release |
+| Environment       | Platform                  | URL                    | Trigger                    |
+| ----------------- | ------------------------- | ---------------------- | -------------------------- |
+| Staging / Preview | Vercel                    | `soul2bowl.vercel.app` | Every push to `main` or PR |
+| Production        | DigitalOcean App Platform | `soul2bowl.com`        | Manual or tagged release   |
 
 The Vercel staging deployment gives a live preview URL for every push — ideal for testing and QA before promoting to production.
 
@@ -32,18 +32,18 @@ The Vercel staging deployment gives a live preview URL for every push — ideal 
 
 Open the Vercel project → **Settings → Environment Variables** and add every variable from [`ENV_EXAMPLE.md`](./ENV_EXAMPLE.md):
 
-| Variable | Required | Notes |
-|---|---|---|
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | ✅ | Clerk dashboard → API Keys |
-| `CLERK_SECRET_KEY` | ✅ | Clerk dashboard → API Keys |
-| `CLERK_WEBHOOK_SECRET` | ✅ | Clerk dashboard → Webhooks |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY_TEST` | ✅ | Stripe dashboard → Developers → API Keys |
-| `STRIPE_SECRET_KEY_TEST` | ✅ | Stripe dashboard → Developers → API Keys |
-| `STRIPE_WEBHOOK_SECRET` | ✅ | Stripe dashboard → Webhooks |
-| `DATABASE_URL` | ✅ | Connection string to your staging PostgreSQL database |
-| `RESEND_API_KEY` | ✅ | Resend dashboard → API Keys |
-| `NEXT_PUBLIC_APP_URL` | ✅ | Set to `https://soul2bowl.vercel.app` for staging |
-| `OPENROUTER_API_KEY` | optional | AI alt-text generation |
+| Variable                                  | Required | Notes                                                 |
+| ----------------------------------------- | -------- | ----------------------------------------------------- |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`       | ✅       | Clerk dashboard → API Keys                            |
+| `CLERK_SECRET_KEY`                        | ✅       | Clerk dashboard → API Keys                            |
+| `CLERK_WEBHOOK_SECRET`                    | ✅       | Clerk dashboard → Webhooks                            |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY_TEST` | ✅       | Stripe dashboard → Developers → API Keys              |
+| `STRIPE_SECRET_KEY_TEST`                  | ✅       | Stripe dashboard → Developers → API Keys              |
+| `STRIPE_WEBHOOK_SECRET`                   | ✅       | Stripe dashboard → Webhooks                           |
+| `DATABASE_URL`                            | ✅       | Connection string to your staging PostgreSQL database |
+| `RESEND_API_KEY`                          | ✅       | Resend dashboard → API Keys                           |
+| `NEXT_PUBLIC_APP_URL`                     | ✅       | Set to `https://soul2bowl.vercel.app` for staging     |
+| `OPENROUTER_API_KEY`                      | optional | AI alt-text generation                                |
 
 Set each variable for **Preview** (and optionally **Production**) environments.
 
@@ -64,9 +64,9 @@ GitHub → midnghtsapphire/revvel-standards → Settings → Secrets and variabl
 
 Also add these Vercel project identifiers (found in **Project Settings → General**):
 
-| Secret name | Where to find it |
-|---|---|
-| `VERCEL_ORG_ID` | Vercel team settings → General → Team ID |
+| Secret name         | Where to find it                               |
+| ------------------- | ---------------------------------------------- |
+| `VERCEL_ORG_ID`     | Vercel team settings → General → Team ID       |
 | `VERCEL_PROJECT_ID` | Vercel project settings → General → Project ID |
 
 ---
@@ -133,14 +133,17 @@ gh workflow run "Deployment Health Check" \
 ### Secrets keep disappearing from GitHub Actions
 
 GitHub Actions secrets are not deleted automatically by any Revvel workflow. Common causes:
+
 1. **Manual deletion** — someone deleted them in Settings → Secrets.
 2. **Fine-grained PAT expiry** — `ADMIN_GITHUB_TOKEN` and similar PATs expire; regenerate and re-add them.
 3. **Organization-level override** — an org-level secret can shadow a repo-level secret but does not delete it.
 
 To audit and restore secrets quickly, run the **Secrets Health Check** workflow:
+
 ```bash
 gh workflow run "Secrets Health Check" --repo midnghtsapphire/revvel-standards
 ```
+
 Then add any missing secrets directly in **Settings → Secrets and variables → Actions** or via Doppler sync.
 
 ---

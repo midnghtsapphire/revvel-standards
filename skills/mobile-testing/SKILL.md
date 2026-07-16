@@ -27,14 +27,14 @@ Trigger this skill on any mobile-test work in an Expo/React Native repo:
 
 ## Stack Decision (do NOT re-litigate)
 
-| Layer | Use this. Do not substitute. |
-|---|---|
-| Unit + component | `jest-expo` preset + `@testing-library/react-native` + `@testing-library/jest-native` |
-| E2E (default) | **Maestro** — declarative YAML, one flow runs on both iOS and Android |
-| E2E (alternate tier — only when grey-box internals must be asserted) | Detox (requires `expo prebuild`; needs a separate decision in `DECISIONS.md`) |
-| Native build for E2E | EAS Build `--profile preview --platform ios|android` |
-| iOS sim runner | GitHub Actions `macos-14` |
-| Android emu runner | GitHub Actions `ubuntu-latest` + `reactivecircus/android-emulator-runner` |
+| Layer                                                                | Use this. Do not substitute.                                                          |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Unit + component                                                     | `jest-expo` preset + `@testing-library/react-native` + `@testing-library/jest-native` |
+| E2E (default)                                                        | **Maestro** — declarative YAML, one flow runs on both iOS and Android                 |
+| E2E (alternate tier — only when grey-box internals must be asserted) | Detox (requires `expo prebuild`; needs a separate decision in `DECISIONS.md`)         |
+| Native build for E2E                                                 | EAS Build `--profile preview --platform ios                                           | android` |
+| iOS sim runner                                                       | GitHub Actions `macos-14`                                                             |
+| Android emu runner                                                   | GitHub Actions `ubuntu-latest` + `reactivecircus/android-emulator-runner`             |
 
 **Forbidden:** Appium, Calabash, separate native iOS/Android codebases, ejecting from Expo managed without a `DECISIONS.md` entry.
 
@@ -42,25 +42,25 @@ Trigger this skill on any mobile-test work in an Expo/React Native repo:
 
 ## Coverage Thresholds (Hard CI Gate — same as web)
 
-| Metric | Minimum |
-|---|---|
-| Statements | 80% |
-| Branches | 75% |
-| Functions | 80% |
-| Lines | 80% |
+| Metric     | Minimum |
+| ---------- | ------- |
+| Statements | 80%     |
+| Branches   | 75%     |
+| Functions  | 80%     |
+| Lines      | 80%     |
 
 Configure in `jest.config.js`. Starter copy: [`templates/mobile/testing/jest.config.js`](../../templates/mobile/testing/jest.config.js).
 
 ---
 
-## Mandatory E2E Journeys (iOS *and* Android)
+## Mandatory E2E Journeys (iOS _and_ Android)
 
-| Journey | Required |
-|---|---|
-| Auth: Sign Up, Sign In, Sign Out | ✅ |
-| Checkout: Add to Cart, Complete Purchase | ✅ |
-| Admin: Toggle Feature Flag | ✅ |
-| Accessibility: VoiceOver / TalkBack navigation | ✅ |
+| Journey                                        | Required |
+| ---------------------------------------------- | -------- |
+| Auth: Sign Up, Sign In, Sign Out               | ✅       |
+| Checkout: Add to Cart, Complete Purchase       | ✅       |
+| Admin: Toggle Feature Flag                     | ✅       |
+| Accessibility: VoiceOver / TalkBack navigation | ✅       |
 
 Starter flows: [`templates/mobile/testing/maestro/`](../../templates/mobile/testing/maestro/).
 
@@ -68,12 +68,12 @@ Starter flows: [`templates/mobile/testing/maestro/`](../../templates/mobile/test
 
 ## Mocking Strategy
 
-| What | Tool |
-|---|---|
+| What                                                    | Tool                                                             |
+| ------------------------------------------------------- | ---------------------------------------------------------------- |
 | `expo-secure-store`, `expo-image`, `expo-notifications` | Built-in `jest-expo` mocks; override per-test with `jest.mock()` |
-| RevenueCat / Stripe SDK | Mock at the import boundary, never the wire format |
-| Time / Date | `jest.useFakeTimers()` — always reset after |
-| Network | `msw/native` |
+| RevenueCat / Stripe SDK                                 | Mock at the import boundary, never the wire format               |
+| Time / Date                                             | `jest.useFakeTimers()` — always reset after                      |
+| Network                                                 | `msw/native`                                                     |
 
 All shared mocks live in `tests/mocks/` and are loaded once in `jest.setup.ts`. **Never inline a mock inside a single test file.**
 

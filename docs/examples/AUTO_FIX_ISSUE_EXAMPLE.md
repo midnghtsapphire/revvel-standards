@@ -11,13 +11,15 @@ This is an example of how to document a problem that was solved autonomously. Th
 Branch creation was failing for issues with titles containing URLs or special characters.
 
 **Error Message:**
+
 ```
-Could not create branch issue/issue-381--wr-evaluate-https-//github-com/strongdm-or-others-then-implement 
-due to: refs/heads/issue/issue-381--wr-evaluate-https-//github-com/strongdm-or-others-then-implement 
+Could not create branch issue/issue-381--wr-evaluate-https-//github-com/strongdm-or-others-then-implement
+due to: refs/heads/issue/issue-381--wr-evaluate-https-//github-com/strongdm-or-others-then-implement
 is not a valid ref name.
 ```
 
 **Trigger:**
+
 - Any issue with a title containing URLs (e.g., `https://`)
 - Any issue with titles containing special shell or git characters
 - Happened on multiple workflow runs (every PR/WR)
@@ -25,17 +27,20 @@ is not a valid ref name.
 ## Error Details
 
 **Context:**
+
 - Workflow: `.github/workflows/create-issue-branch.yml`
 - Config: `.github/issue-branch.yml`
 - Tool: `robvanderleek/create-issue-branch@v1.9.0`
 
 **Root Issue:**
 The `gitReplaceChars` setting in `.github/issue-branch.yml` only included:
+
 ```
 gitReplaceChars: "'\"()[]{}!?"
 ```
 
 This didn't cover git-unsafe characters like:
+
 - Forward slash `/` (in URLs)
 - Colon `:` (in URLs)
 - At sign `@`
@@ -47,6 +52,7 @@ This didn't cover git-unsafe characters like:
 Git has strict rules for ref (branch) names per [git-check-ref-format](https://git-scm.com/docs/git-check-ref-format):
 
 **Git-prohibited characters/patterns:**
+
 - ASCII control characters (< \040)
 - Space, tilde `~`, caret `^`, colon `:`, question mark `?`, asterisk `*`, brackets `[]`
 - Consecutive dots `..`, slash-dot sequences `/./` or `/../`
@@ -55,6 +61,7 @@ Git has strict rules for ref (branch) names per [git-check-ref-format](https://g
 - At sign `@` in the sequence `@{` (reserved for ref syntax)
 
 **Additionally sanitized for shell safety and usability:**
+
 - Shell operators and special characters: `#`, `|`, `&`, `;`, `<`, `>`, `` ` ``, `$`, `%`, `+`, `=`, `,`
 - Forward slash `/` (problematic in certain ref patterns)
 
@@ -71,6 +78,7 @@ gitReplaceChars: "'\"()[]{}!?/:@~^*\\#|&;<>`$%+=.,"
 ```
 
 **Characters added:**
+
 - `/` — forward slash (URLs, paths)
 - `:` — colon (URLs, time)
 - `@` — at sign (mentions, emails)
@@ -97,16 +105,19 @@ Verified with 5 test cases including the original failure case. All now produce 
 ## Prevention
 
 **Immediate:**
+
 - Comprehensive character list based on git documentation
 - Detailed comments explaining each character class
 - All git-unsafe characters now covered
 
 **Long-term:**
+
 - Consider pre-validation of issue titles at creation time
 - Add workflow test that creates branches from problematic titles
 - Monitor for new git ref format rules in future git versions
 
 **Documentation:**
+
 - Updated `.github/issue-branch.yml` with full explanation
 - Added this issue as knowledge base entry
 - Documented in `docs/AGENT_AUTONOMY_PROTOCOLS.md` as example of self-healing
@@ -124,5 +135,5 @@ Verified with 5 test cases including the original failure case. All now produce 
 
 ---
 
-**Note:** This issue was created as an example of autonomous problem-solving documentation. 
+**Note:** This issue was created as an example of autonomous problem-solving documentation.
 Real auto-created issues would be created programmatically via GitHub Actions after fixing a problem.

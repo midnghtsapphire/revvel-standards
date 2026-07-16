@@ -25,6 +25,7 @@
 ## 1. Overview: Selling AI Skills
 
 A Revvel skill is a **deployable behavioral instruction set** for AI tools. You've done the hard work of:
+
 - Researching the domain
 - Writing the system prompt
 - Testing with PromptFoo
@@ -35,12 +36,12 @@ Now you can sell this value. You're not selling code — you're selling **time s
 
 ### Why People Pay for AI Skills
 
-| What They're Really Buying | Your Value Proposition |
-|---|---|
-| Hours of their time back | "This saves me 3 hours/week" |
-| Expertise they don't have | "This gives me a senior dev on demand" |
-| Consistency & reliability | "This never forgets to check for security issues" |
-| Easy setup | "Double-click and it just works" |
+| What They're Really Buying | Your Value Proposition                            |
+| -------------------------- | ------------------------------------------------- |
+| Hours of their time back   | "This saves me 3 hours/week"                      |
+| Expertise they don't have  | "This gives me a senior dev on demand"            |
+| Consistency & reliability  | "This never forgets to check for security issues" |
+| Easy setup                 | "Double-click and it just works"                  |
 
 ---
 
@@ -49,6 +50,7 @@ Now you can sell this value. You're not selling code — you're selling **time s
 ### Primary Marketplaces
 
 #### 🦞 ClawMarket (`clawmarket.io`)
+
 **Best for:** Claude-native skills and AI tools  
 **Audience:** Claude/Anthropic ecosystem users  
 **Revenue share:** ~20–30%  
@@ -57,6 +59,7 @@ Now you can sell this value. You're not selling code — you're selling **time s
 **Notes:** The most targeted platform for Revvel-style skills. Audience already uses Claude.
 
 #### 💰 Gumroad (`gumroad.com`)
+
 **Best for:** Simple one-time purchases, creative/niche skills  
 **Audience:** General digital product buyers  
 **Revenue share:** 10% flat fee  
@@ -65,6 +68,7 @@ Now you can sell this value. You're not selling code — you're selling **time s
 **Notes:** Zero monthly fee. Best for launching fast. Accepts Stripe payments.
 
 #### 🛒 GitHub Marketplace (`github.com/marketplace`)
+
 **Best for:** Developer workflow skills, GitHub Actions, CLI tools  
 **Audience:** Developers  
 **Revenue share:** 25% (GitHub Apps) / Free listing (Actions)  
@@ -72,6 +76,7 @@ Now you can sell this value. You're not selling code — you're selling **time s
 **Notes:** Free Actions listing has huge discoverability. Consider open-source + paid support model.
 
 #### 🤗 Hugging Face (`huggingface.co/spaces`)
+
 **Best for:** ML-adjacent skills, research tools, open models  
 **Audience:** AI/ML researchers and practitioners  
 **Revenue share:** Free hosting (Spaces) / donation model  
@@ -79,6 +84,7 @@ Now you can sell this value. You're not selling code — you're selling **time s
 **Notes:** Best for FOSS skills. Use HF Spaces as demo, Gumroad for paid version.
 
 #### 🎮 Itch.io (`itch.io`)
+
 **Best for:** Creative, experimental, and indie AI tools  
 **Audience:** Creative technologists, indie developers  
 **Revenue share:** You set it (0–30%)  
@@ -86,22 +92,23 @@ Now you can sell this value. You're not selling code — you're selling **time s
 **Notes:** "Name your price" model works well here. Experimental skills find audiences.
 
 #### 🚀 Product Hunt (`producthunt.com`)
+
 **Best for:** Launch visibility, not ongoing sales  
 **Revenue share:** Free  
 **Notes:** Use for launch day only. Drive traffic from PH to Gumroad or ClawMarket.
 
 ### Secondary Platforms
 
-| Platform | Best For | Notes |
-|---|---|---|
-| **LemonSqueezy** | SaaS pricing, subscriptions | Stripe alternative, good for subscriptions |
-| **Payhip** | EU-friendly, simple | Good alternative to Gumroad |
-| **Ko-fi** | Supporter/donation model | Good for open source with premium tier |
-| **Whop** | Community + product bundles | Growing marketplace for digital tools |
-| **Maven** | Courses + skills bundle | If adding training component |
-| **Notion Template Gallery** | If skill uses Notion | Niche but targeted |
-| **FlowGPT** | GPT/prompt marketplace | Alternative audience |
-| **PromptBase** | Prompt/agent marketplace | Direct prompt sales |
+| Platform                    | Best For                    | Notes                                      |
+| --------------------------- | --------------------------- | ------------------------------------------ |
+| **LemonSqueezy**            | SaaS pricing, subscriptions | Stripe alternative, good for subscriptions |
+| **Payhip**                  | EU-friendly, simple         | Good alternative to Gumroad                |
+| **Ko-fi**                   | Supporter/donation model    | Good for open source with premium tier     |
+| **Whop**                    | Community + product bundles | Growing marketplace for digital tools      |
+| **Maven**                   | Courses + skills bundle     | If adding training component               |
+| **Notion Template Gallery** | If skill uses Notion        | Niche but targeted                         |
+| **FlowGPT**                 | GPT/prompt marketplace      | Alternative audience                       |
+| **PromptBase**              | Prompt/agent marketplace    | Direct prompt sales                        |
 
 ---
 
@@ -119,31 +126,32 @@ The `0.10` factor means: price the skill at 10% of the annual value it delivers.
 
 **Examples:**
 
-| Skill | Hours Saved/Week | Rate | Annual Value | Recommended Price |
-|---|---|---|---|---|
-| Session startup | 0.5 hrs | $75 | $1,950 | $9–$19 |
-| Code review | 2 hrs | $75 | $7,800 | $49 |
-| Security audit | 3 hrs | $75 | $11,700 | $79 |
-| Full methodology | 5 hrs | $75 | $19,500 | $199 |
-| Custom skill | Variable | $75+ | Client-specific | $500+ |
+| Skill            | Hours Saved/Week | Rate | Annual Value    | Recommended Price |
+| ---------------- | ---------------- | ---- | --------------- | ----------------- |
+| Session startup  | 0.5 hrs          | $75  | $1,950          | $9–$19            |
+| Code review      | 2 hrs            | $75  | $7,800          | $49               |
+| Security audit   | 3 hrs            | $75  | $11,700         | $79               |
+| Full methodology | 5 hrs            | $75  | $19,500         | $199              |
+| Custom skill     | Variable         | $75+ | Client-specific | $500+             |
 
 ### Price Tiers
 
-| Tier | Price | Contents |
-|---|---|---|
-| **Free** | $0 | Skill SKILL.md only, manual setup, no installer |
-| **Starter** | $9 | Skill + Windows installer |
-| **Standard** | $19 | Skill + both installers + PromptFoo tests |
-| **Pro** | $49 | Skill + installers + tests + persona + full docs |
-| **Bundle (3 skills)** | $59 | Three Standard skills together |
-| **Bundle (5 skills)** | $99 | Five Standard skills together |
-| **Methodology Pack** | $199 | Full framework + 10+ skills + training guide |
-| **Custom skill** | $500–$2,000 | Custom-built skill for client's specific workflow |
-| **Enterprise license** | $299/seat | White-label rights + unlimited team installs |
+| Tier                   | Price       | Contents                                          |
+| ---------------------- | ----------- | ------------------------------------------------- |
+| **Free**               | $0          | Skill SKILL.md only, manual setup, no installer   |
+| **Starter**            | $9          | Skill + Windows installer                         |
+| **Standard**           | $19         | Skill + both installers + PromptFoo tests         |
+| **Pro**                | $49         | Skill + installers + tests + persona + full docs  |
+| **Bundle (3 skills)**  | $59         | Three Standard skills together                    |
+| **Bundle (5 skills)**  | $99         | Five Standard skills together                     |
+| **Methodology Pack**   | $199        | Full framework + 10+ skills + training guide      |
+| **Custom skill**       | $500–$2,000 | Custom-built skill for client's specific workflow |
+| **Enterprise license** | $299/seat   | White-label rights + unlimited team installs      |
 
 ### Free Tier Strategy
 
 Always offer a free tier. This builds trust and drives upgrades:
+
 - **Free:** Just the SKILL.md — they have to set it up manually
 - **Paid:** Everything works with one double-click
 
@@ -159,11 +167,11 @@ The conversion from "this is hard" to "this just works" is your value.
 ## [Skill Name] — AI Skill for [Claude Code / Cursor / Copilot]
 
 **What it does in one sentence:**
-[Clear, outcome-focused description. "Automatically reviews your code 
+[Clear, outcome-focused description. "Automatically reviews your code
 for security issues before every commit."]
 
 **Who it's for:**
-[Specific user. "Freelance developers who want expert code review 
+[Specific user. "Freelance developers who want expert code review
 without hiring a senior developer."]
 
 **Time saved:** [X] hours per week  
@@ -190,7 +198,7 @@ That's it. No terminal. No commands. No config files.
 ✅ Works on Windows 10/11 and macOS 12+  
 ✅ No coding required  
 ✅ Tested and verified  
-✅ Free updates  
+✅ Free updates
 
 ---
 
@@ -267,21 +275,25 @@ These buyers are specifically looking for Claude-compatible skills.
 When writing listings, use these proven value metrics:
 
 ### Time Metrics
+
 - Hours saved per week / month / year
 - Minutes to install vs. hours to do manually
 - "Setup in under 2 minutes"
 
 ### Quality Metrics
+
 - "Never misses a security issue"
 - "Catches X% more bugs than manual review"
 - "Consistent results every time"
 
 ### Money Metrics
+
 - "Pays for itself in [X] days"
 - "Replaces a $75/hr consultant for this task"
 - "ROI of [X]% in first month"
 
 ### Simplicity Metrics
+
 - "Double-click to install"
 - "No coding required"
 - "Works immediately, no configuration"
@@ -296,17 +308,18 @@ Price individual skills based on their ROI value. Keep most under $49 for impuls
 
 ### Bundles That Work
 
-| Bundle Name | Skills Included | Price | Why It Sells |
-|---|---|---|---|
-| **Developer Starter Pack** | code-review + security + testing | $59 | Covers the three most common dev needs |
-| **Session Management Pack** | system-state + mvi-contract + context-management + wrap-up | $39 | Complete session workflow |
-| **Deploy & Monitor Pack** | deployment + error-reporting + security | $69 | Full production ops |
-| **Content Creator Pack** | brainstorming + auto-documentation + seo-metadata | $49 | Writer's toolkit |
-| **Full Revvel Framework** | All 25+ skills | $199 | Best value, clearest offer |
+| Bundle Name                 | Skills Included                                            | Price | Why It Sells                           |
+| --------------------------- | ---------------------------------------------------------- | ----- | -------------------------------------- |
+| **Developer Starter Pack**  | code-review + security + testing                           | $59   | Covers the three most common dev needs |
+| **Session Management Pack** | system-state + mvi-contract + context-management + wrap-up | $39   | Complete session workflow              |
+| **Deploy & Monitor Pack**   | deployment + error-reporting + security                    | $69   | Full production ops                    |
+| **Content Creator Pack**    | brainstorming + auto-documentation + seo-metadata          | $49   | Writer's toolkit                       |
+| **Full Revvel Framework**   | All 25+ skills                                             | $199  | Best value, clearest offer             |
 
 ### Subscription Model
 
 Consider a subscription for regular skill updates:
+
 - **$9/month** — Access to all skills + monthly updates
 - **$19/month** — All skills + priority support + early access to new skills
 - **$99/year** — Annual discount + everything in Pro
@@ -317,25 +330,26 @@ Consider a subscription for regular skill updates:
 
 ### Licensing Options
 
-| License | What It Allows | When to Use |
-|---|---|---|
-| **Personal license** | One person, one machine | Default for $9–$49 products |
-| **Team license** | Up to 5 people | $99–$199 products |
-| **Organization license** | Unlimited employees | $299–$999 products |
-| **White-label** | Resell under your brand | $500–$2,000 custom deals |
+| License                  | What It Allows          | When to Use                 |
+| ------------------------ | ----------------------- | --------------------------- |
+| **Personal license**     | One person, one machine | Default for $9–$49 products |
+| **Team license**         | Up to 5 people          | $99–$199 products           |
+| **Organization license** | Unlimited employees     | $299–$999 products          |
+| **White-label**          | Resell under your brand | $500–$2,000 custom deals    |
 
 ### What to Put in Your License
 
 ```
 This skill is licensed for personal use by a single individual.
-You may not redistribute, resell, or share this skill without 
-a commercial license. For team or commercial licensing, 
+You may not redistribute, resell, or share this skill without
+a commercial license. For team or commercial licensing,
 contact [your email].
 ```
 
 ### Open Source vs. Paid
 
 Consider making the SKILL.md open source (MIT) while charging for:
+
 - The one-click installer
 - Pre-configured persona
 - PromptFoo test suite
@@ -361,9 +375,10 @@ Each skill you build makes the next one easier and more valuable:
 ### Skill Idea Backlog
 
 Keep a running list. Every time you do a repetitive AI task, ask:
-*"Could this be a skill?"*
+_"Could this be a skill?"_
 
 Common high-value opportunities:
+
 - Industry-specific compliance checks (HIPAA, SOC2, PCI-DSS)
 - Niche code review (React, Django, Rails)
 - Domain-specific writing (legal, medical, finance)
@@ -386,20 +401,20 @@ Common high-value opportunities:
 ### Conservative Scenario (Solo Developer, Part-time)
 
 | Month | Skills Listed | Avg Price | Sales/Month | Revenue |
-|---|---|---|---|---|
-| 1 | 2 | $19 | 5 | $95 |
-| 3 | 5 | $29 | 15 | $435 |
-| 6 | 10 | $39 | 30 | $1,170 |
-| 12 | 15 + bundles | $49 avg | 60 | $2,940 |
+| ----- | ------------- | --------- | ----------- | ------- |
+| 1     | 2             | $19       | 5           | $95     |
+| 3     | 5             | $29       | 15          | $435    |
+| 6     | 10            | $39       | 30          | $1,170  |
+| 12    | 15 + bundles  | $49 avg   | 60          | $2,940  |
 
 ### Growth Scenario (Active Catalog Building)
 
-| Month | Active Products | Avg Price | Sales/Month | Revenue |
-|---|---|---|---|---|
-| 3 | 10 | $39 | 40 | $1,560 |
-| 6 | 20 | $49 | 80 | $3,920 |
-| 12 | 30 + 3 bundles | $59 avg | 150 | $8,850 |
-| 24 | 50 + enterprise | $99 avg | 200+ | $19,800+ |
+| Month | Active Products | Avg Price | Sales/Month | Revenue  |
+| ----- | --------------- | --------- | ----------- | -------- |
+| 3     | 10              | $39       | 40          | $1,560   |
+| 6     | 20              | $49       | 80          | $3,920   |
+| 12    | 30 + 3 bundles  | $59 avg   | 150         | $8,850   |
+| 24    | 50 + enterprise | $99 avg   | 200+        | $19,800+ |
 
 ### Key Leverage Points
 
@@ -410,5 +425,5 @@ Common high-value opportunities:
 
 ---
 
-*See also: [AGENTIC_METHODOLOGY_STANDARD.md](Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md) for skill building methodology.*  
-*See also: [SKILL_CREATION_GUIDE.md](SKILL_CREATION_GUIDE.md) for step-by-step skill creation.*
+_See also: [AGENTIC_METHODOLOGY_STANDARD.md](Master_Inventory/AGENTIC_METHODOLOGY_STANDARD.md) for skill building methodology._  
+_See also: [SKILL_CREATION_GUIDE.md](SKILL_CREATION_GUIDE.md) for step-by-step skill creation._

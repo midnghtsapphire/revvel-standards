@@ -44,7 +44,6 @@ body:
         - ✅ You can uncheck items or add more, but you never have to copy-paste the defaults
         - ✅ Default severity is set to "Unknown — let the research pass decide"
 
-
   - type: dropdown
     id: task_type
     attributes:

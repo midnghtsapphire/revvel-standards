@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-07  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-07  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -29,6 +28,7 @@ The resulting PR must pass the **full code review** — OpenRouter
 revvel-standards change.
 
 ## Tasks
+
 - [ ] Update / refresh the docs (README, overview, contributing).
 - [ ] Research concrete improvements (deps, security, tests, DX, performance).
 - [ ] Ensure the target repo has the standard review workflows (OpenRouter code
@@ -39,18 +39,19 @@ revvel-standards change.
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -62,6 +63,7 @@ revvel-standards change.
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28785285825.md`
 
 # Fleet Maintenance Research Synthesis: midnghtsapphire/master
@@ -71,6 +73,7 @@ Source packet: `docs/research-engine/run-28785285825.md`
 **BLOCKED - CANNOT PROCEED**: Repository `midnghtsapphire/master` is either non-existent, private, or inaccessible. Multiple research lanes confirmed inability to access the target repository. No fleet maintenance actions can be taken without repository verification.
 
 **Critical Actions Required**:
+
 1. Verify correct repository path (could be `midnghtsapphire/[repo-name]` not `/master`)
 2. Confirm repository is public or provide access credentials
 3. Re-run research once repository access is confirmed
@@ -78,17 +81,20 @@ Source packet: `docs/research-engine/run-28785285825.md`
 ## 2. Audience We Are Going After and Why
 
 **Primary Audience** (if repository exists):
+
 - **Individual developers** maintaining personal projects/utilities
 - **Small development teams** needing automated repository maintenance
 - **Open source maintainers** managing multiple repositories
 
 **Why This Audience**:
+
 - Manual repository maintenance is time-consuming and error-prone
 - Security vulnerabilities accumulate without automated scanning
 - Documentation drift reduces project usability and contributions
 - Inconsistent tooling across repositories creates technical debt
 
 **Pain Points**:
+
 - Outdated dependencies with security vulnerabilities
 - Missing or inconsistent CI/CD workflows
 - Stale documentation blocking contributions
@@ -97,21 +103,25 @@ Source packet: `docs/research-engine/run-28785285825.md`
 ## 3. Marketing and SEO Plan
 
 **Target Keywords**:
+
 - "automated repository maintenance" (low competition)
 - "GitHub workflow automation" (high volume, high competition)
 - "fleet maintenance for developers" (niche, low competition)
 - "automated code review workflows" (medium competition)
 
 **Landing Page Strategy**:
+
 - **Title**: "Automated Fleet Maintenance for GitHub Repositories | Reduce Technical Debt"
 - **Meta Description**: "Streamline repository maintenance with automated security scanning, dependency updates, and standardized workflows. Open-source fleet maintenance for development teams."
 
 **Content Angles**:
+
 - "How to automate repository maintenance across multiple projects"
 - "Best practices for fleet-wide security scanning"
 - "Reducing technical debt with automated workflows"
 
 **Distribution Channels**:
+
 - GitHub Marketplace (if productized)
 - Developer forums (Reddit r/devops, Hacker News)
 - DevOps newsletters and blogs
@@ -121,20 +131,22 @@ Source packet: `docs/research-engine/run-28785285825.md`
 
 ### Direct Competitors
 
-| Tool | Stars | Pricing | Strengths | Weaknesses |
-|------|-------|---------|-----------|------------|
-| **Renovate** | 16.8k | Free OSS, Paid hosting | Comprehensive dependency updates | Complex configuration |
-| **Dependabot** | Built-in GitHub | Free | Native GitHub integration | Limited to dependencies |
-| **Fleet (fleetdm)** | 2.9k | OSS + Enterprise | Device management focus | Not repo-focused |
-| **Allstar** | 1.2k | Free OSS | Security policy enforcement | Limited scope |
+| Tool                | Stars           | Pricing                | Strengths                        | Weaknesses              |
+| ------------------- | --------------- | ---------------------- | -------------------------------- | ----------------------- |
+| **Renovate**        | 16.8k           | Free OSS, Paid hosting | Comprehensive dependency updates | Complex configuration   |
+| **Dependabot**      | Built-in GitHub | Free                   | Native GitHub integration        | Limited to dependencies |
+| **Fleet (fleetdm)** | 2.9k            | OSS + Enterprise       | Device management focus          | Not repo-focused        |
+| **Allstar**         | 1.2k            | Free OSS               | Security policy enforcement      | Limited scope           |
 
 ### Market Gaps
+
 - **Mid-market pricing**: Gap between free OSS and expensive enterprise solutions
 - **Holistic maintenance**: Most tools focus on single aspects (deps OR security OR docs)
 - **Developer experience**: Complex setup and configuration requirements
 - **Cross-repository standardization**: Limited tools for fleet-wide consistency
 
 ### Pricing Opportunity
+
 - **Free tier**: Public repositories, basic features
 - **Pro tier**: $29-49/month for private repos, advanced features
 - **Team tier**: $99-199/month for organizations
@@ -143,18 +155,21 @@ Source packet: `docs/research-engine/run-28785285825.md`
 ## 5. Chatter and Demand Signals
 
 **Verified Pain Points** (from general developer communities):
+
 - "Documentation is always out of date" - frequent complaint
 - "Too many manual steps to maintain repos" - common frustration
 - "Security scanning setup is complex" - barrier to adoption
 - "Inconsistent workflows across team repos" - organizational pain
 
 **Unmet Needs**:
+
 - One-click standardization across repository fleets
 - Automated documentation updates based on code changes
 - Simplified security workflow setup
 - Transparent review pipeline with clear requirements
 
 **Adoption Barriers**:
+
 - Fear of automated changes breaking existing workflows
 - Lack of trust in AI-powered code review
 - Unclear ROI for maintenance automation
@@ -163,17 +178,20 @@ Source packet: `docs/research-engine/run-28785285825.md`
 ## 6. Factual Validation and Evidence Gaps
 
 ### Verified Facts
+
 - Standard review tools exist: Semgrep, CodeQL (GitHub-native)
 - AI code review tools emerging: OpenRouter integration possible
 - Repository maintenance is a recognized problem space
 
 ### Unverified Claims
+
 - ❌ Repository `midnghtsapphire/master` existence
 - ❌ "revvel-standards pipeline" documentation
 - ❌ Current workflow configurations
 - ❌ Jules review tool specifications
 
 ### Evidence Gaps Requiring Verification
+
 - Repository access and current state
 - Existing user base or adoption metrics
 - Performance impact of proposed changes
@@ -182,12 +200,14 @@ Source packet: `docs/research-engine/run-28785285825.md`
 ## 7. Build Requirements and Acceptance Gates
 
 ### Minimum Viable Implementation
+
 1. **Documentation Refresh**
    - Updated README.md with clear purpose and usage
    - CONTRIBUTING.md with contribution guidelines
    - SECURITY.md with vulnerability reporting
 
 2. **Standard Workflows**
+
    ```yaml
    .github/workflows/
    ├── ai-pr-review-openrouter.yml
@@ -202,6 +222,7 @@ Source packet: `docs/research-engine/run-28785285825.md`
    - Implement security vulnerability alerts
 
 ### Acceptance Criteria
+
 - [ ] All standard workflows present and passing
 - [ ] Documentation complete and current
 - [ ] No high/critical security vulnerabilities
@@ -211,6 +232,7 @@ Source packet: `docs/research-engine/run-28785285825.md`
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```yaml
 review_focus:
   - Check for security vulnerabilities in dependencies
@@ -220,6 +242,7 @@ review_focus:
 ```
 
 ### For OpenRouter
+
 ```yaml
 review_criteria:
   - Code follows established patterns
@@ -229,6 +252,7 @@ review_criteria:
 ```
 
 ### For Coderabbit
+
 ```yaml
 checks:
   - Documentation completeness
@@ -238,6 +262,7 @@ checks:
 ```
 
 ### For Ralph Loop
+
 ```yaml
 validation:
   - All workflows trigger correctly
@@ -249,6 +274,7 @@ validation:
 ## 9. Automatic Fix and Commit Queue
 
 ### Priority 1: Repository Access Verification
+
 ```bash
 # Automatic fix: Verify repository exists
 gh repo view midnghtsapphire/master || echo "Repository not accessible"
@@ -262,6 +288,7 @@ fix: verify repository access before fleet maintenance
 ```
 
 ### Priority 2: Add Missing Workflows
+
 ```yaml
 # File: .github/workflows/fleet-maintenance-init.yml
 name: Initialize Fleet Maintenance
@@ -276,34 +303,41 @@ jobs:
         run: |
           mkdir -p .github/workflows
           # Copy standard workflow templates
-          
+
 # Commit message:
 feat: add standard review workflows
 
 - Add CodeQL security analysis
-- Add Semgrep static analysis  
+- Add Semgrep static analysis
 - Add OpenRouter AI review
 - Add Jules code review
 ```
 
 ### Priority 3: Documentation Bootstrap
+
 ```markdown
 # Automatic fix: Create minimal README
+
 echo "# Project Name
 
 ## Overview
+
 [Auto-generated - needs update]
 
 ## Installation
+
 [Auto-generated - needs update]
 
 ## Contributing
+
 See CONTRIBUTING.md
 
 ## Security
+
 See SECURITY.md" > README.md
 
 # Commit message:
+
 docs: bootstrap repository documentation
 
 - Add minimal README structure
@@ -314,22 +348,26 @@ docs: bootstrap repository documentation
 ## 10. Labels to Apply
 
 ### Blocking Issues
+
 - `blocked:repository-access` - Cannot access target repository
 - `blocked:missing-research` - Insufficient data to proceed
 - `needs-verification` - Claims require validation
 
 ### Risk Labels
+
 - `risk:security-vulnerabilities` - Potential security issues
 - `risk:breaking-changes` - May break existing functionality
 - `risk:scope-creep` - Undefined improvement scope
 
 ### Action Labels
+
 - `fleet-maintenance` - Part of fleet maintenance sweep
 - `needs-docs` - Documentation updates required
 - `needs-workflows` - Missing standard workflows
 - `needs-tests` - Test coverage insufficient
 
 ### Process Labels
+
 - `research-complete` - All lanes have reported
 - `ready-for-review` - Can proceed to code review
 - `auto-fix-available` - Has automated remediation
@@ -378,11 +416,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -398,11 +436,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

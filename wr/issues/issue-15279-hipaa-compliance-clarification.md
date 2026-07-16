@@ -13,10 +13,13 @@ This document corrects the flawed HIPAA compliance strategy previously outlined 
 The original compliance framing contained three critical errors:
 
 ### 1. PHI Misclassification
+
 Health data collected by the app (postpartum weeks, stretch mark severity ratings, symptom notes, progress photos) constitutes **Protected Health Information (PHI)** under HIPAA when linked to identifiable users. HIPAA applies to any covered entity or business associate handling PHI—**regardless of whether data is stored client-side, encrypted, or on user devices**.
 
 ### 2. Incomplete Compliance Requirements
+
 Encryption alone does not satisfy HIPAA. Full compliance requires:
+
 - **Business Associate Agreements (BAAs)** with all third-party processors (analytics, crash reporting, cloud sync, AI/ML services)
 - **Comprehensive audit logging** of all PHI access events
 - **Documented breach notification procedures** (60-day rule under §164.404)
@@ -26,6 +29,7 @@ Encryption alone does not satisfy HIPAA. Full compliance requires:
 - **Data retention and disposal policies**
 
 ### 3. Disclaimer Ineffectiveness
+
 Medical disclaimers and "educational use only" framing may reduce **FDA SaMD (Software as a Medical Device)** classification risk, but they **do not exempt** the application from HIPAA obligations. These are independent regulatory frameworks.
 
 ## Corrected Compliance Framework
@@ -78,6 +82,7 @@ If full HIPAA compliance is out of scope for initial launch:
 ### Independent Track: FDA SaMD Risk Mitigation
 
 Separately from HIPAA, mitigate FDA SaMD classification:
+
 - Position app as **wellness/educational**, not diagnostic or therapeutic.
 - Avoid claims of "treating," "diagnosing," or "curing" stretch marks or medical conditions.
 - Include disclaimers directing users to healthcare providers for medical advice.
@@ -105,6 +110,7 @@ Separately from HIPAA, mitigate FDA SaMD classification:
 ## Revenue Impact
 
 Properly scoping compliance protects the $10k → $10M revenue trajectory:
+
 - **Regulatory fines** for HIPAA violations range from $137 to $2.1M per violation category, per year
 - **Breach costs** average $10.9M in healthcare (IBM 2023 report)
 - **Enterprise/B2B deals** (clinics, spas, providers) require documented HIPAA posture — proper compliance unlocks higher-ACV revenue tiers

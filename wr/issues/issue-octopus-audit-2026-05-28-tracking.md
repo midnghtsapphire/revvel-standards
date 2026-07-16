@@ -26,6 +26,7 @@ own focused PR when promoted (`spec-approved` per the two-phase pipeline in
 ## Items (prioritised — top first)
 
 ### 🔴 1. `pull_request_target` workflow security audit
+
 **Severity:** Critical (potential RCE / secret exfiltration)
 **Risk:** Workflows triggered by `pull_request_target` run in the **base
 branch's context with write permissions** but the PR head code is untrusted.
@@ -35,6 +36,7 @@ careful sandboxing, a malicious PR can exfiltrate every secret the workflow
 touches.
 
 **Acceptance criteria:**
+
 - Inventory every `.github/workflows/*.yml` using `on: pull_request_target:`.
 - For each: confirm it does **not** run any code from the PR head, OR if it
   does, that the checkout uses `ref: github.event.pull_request.base.sha` (or
@@ -44,6 +46,7 @@ touches.
 - Workflows that are unsafe get patched in the same PR.
 
 ### 🟠 2. Auto-merge gate — require human-author or explicit approval label
+
 **Severity:** High (supply-chain risk)
 **File:** `.github/workflows/pr-state-orchestrator.yml` (and any other
 workflow that calls `enablePullRequestAutoMerge`).
@@ -53,6 +56,7 @@ review if checks pass. A compromised agent (or a hallucinated change that
 passes automated checks) can ship.
 
 **Acceptance criteria:**
+
 - Gate `enablePullRequestAutoMerge` calls to one of:
   - PR author is a real human (not a bot login), **or**
   - PR carries the `human-approved` label that only collaborators can add.
@@ -62,11 +66,13 @@ passes automated checks) can ship.
   introduced.
 
 ### 🟠 3. `ui/freedom-angel-repo-manager` — stop storing PAT in localStorage
+
 **Severity:** High
 **Risk:** `localStorage` persists across sessions and is readable by any JS on
 the same origin → an XSS makes the PAT exfiltratable.
 
 **Acceptance criteria:**
+
 - **Phase A (stopgap):** move to `sessionStorage` and add a top-of-page
   warning that the token is in-browser only.
 - **Phase B (proper):** server-side token exchange — a small endpoint that
@@ -74,6 +80,7 @@ the same origin → an XSS makes the PAT exfiltratable.
   Phase B becomes a separate WR if Phase A is shipped first.
 
 ### 🟠 4. `CREDENTIAL_BACKUP_JSON` — document rotation policy + risk
+
 **Severity:** High (per Octopus)
 **Risk:** An inline JSON env var that aggregates secrets from up to 9 backup
 sources (Doppler, JSON, SOPS, pass, Bitwarden, 1Password, Infisical, Vault)
@@ -82,6 +89,7 @@ in one go. Also: env-var blob secrets are easier to leak in process listings
 than discrete `gh secret`s.
 
 **Acceptance criteria:**
+
 - Add a **rotation policy** section to `docs/SECRETS_MANAGEMENT.md`:
   - `CREDENTIAL_BACKUP_JSON` is rotated whenever any credential inside it
     rotates (so the blob never lags a single-secret rotation).
@@ -92,20 +100,24 @@ than discrete `gh secret`s.
 - Long-term migration to discrete per-secret backups is a separate WR.
 
 ### 🟡 5. OpenRouter API key in example code — non-CI execution risk
+
 **Severity:** Medium
 **File:** `docs/AGENT_AUTONOMY_PROTOCOLS.md` (example uses
 `process.env.OPENROUTER_API_KEY`).
 **Acceptance criteria:**
-- Add a banner above the example: *"For illustration only; do not paste into
+
+- Add a banner above the example: _"For illustration only; do not paste into
   CI workflows where stdout/stderr is logged. Use the routing engine via
   scripts/openrouter-routing.js so the key never appears in user-controlled
-  contexts."*
+  contexts."_
 - Same banner pattern for any other docs that show inline key usage.
 
 ### 🟡 6. n8n webhook — HMAC + rate limit + replace stub research step
+
 **Severity:** Medium
 **File:** `workflows/n8n/pdf-product-creation.json`
 **Three sub-items in one WR:**
+
 - Add **HMAC signature validation** on the `pdf-product-start` webhook so
   unauthenticated callers can't trigger the pipeline (which pays for
   Anthropic API calls).
@@ -116,6 +128,7 @@ than discrete `gh secret`s.
   `scripts/research-engine.js` or the openrouter-coder lane.
 
 ### 🟡 7. Sparse test coverage — group push
+
 **Severity:** Quality
 **Today:** `trust-community/audits/revvel-standards/truthslayer-report.md`
 records only 3 test files (`tests/scripts/fork-audit-bot.test.js`,
@@ -123,6 +136,7 @@ records only 3 test files (`tests/scripts/fork-audit-bot.test.js`,
 Products like `music-video-creator`, `graphify-evaluator`, and Python tools
 have no visible tests.
 **Acceptance criteria:**
+
 - For every product app, ensure at least the **Completeness Gate** floor:
   build + a smoke test (e.g., Cypress smoke per the lead-engine pattern in
   #13972, or `pytest -k smoke` for Python tools).
@@ -132,13 +146,13 @@ have no visible tests.
 
 ### Process / quality cluster (one PR, several small fixes)
 
-| Item | File | Fix |
-| --- | --- | --- |
-| Markdown→HTML regex chain is fragile | `scripts/content-automation.js` | Replace `.replace(...)` chain with a proper Markdown parser (e.g., `marked` or `remark`) |
-| Planned-but-not-implemented features hidden in prose | `revvel-rosette-automation/README.md` (and others) | Add `[TODO][not-implemented]` markers + a failing test stub so the gap is discoverable |
-| Unfilled WR template placeholders shipped to main | `wr/issues/issue-13873-*.md`, `wr/issues/issue-13745-*.md` and others | New CI guard `scripts/wr-placeholder-check.js` — fails any PR that modifies `wr/issues/**` with an unfilled `{DESCRIPTION}` / `[Yes/No]` / `[Date and summary]` |
-| No root linter config | repo root | Add minimal root `eslint.config.mjs` + `.prettierrc.json` + Python `ruff.toml`, even if products override |
-| BUG-006 (open): YAML failures in `api-rate-limit-handler.yml` + `jules-coding-agent.yml` | both files | Run `yamllint` / `actionlint` locally; fix the offending blocks; commit |
+| Item                                                                                     | File                                                                  | Fix                                                                                                                                                             |
+| ---------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Markdown→HTML regex chain is fragile                                                     | `scripts/content-automation.js`                                       | Replace `.replace(...)` chain with a proper Markdown parser (e.g., `marked` or `remark`)                                                                        |
+| Planned-but-not-implemented features hidden in prose                                     | `revvel-rosette-automation/README.md` (and others)                    | Add `[TODO][not-implemented]` markers + a failing test stub so the gap is discoverable                                                                          |
+| Unfilled WR template placeholders shipped to main                                        | `wr/issues/issue-13873-*.md`, `wr/issues/issue-13745-*.md` and others | New CI guard `scripts/wr-placeholder-check.js` — fails any PR that modifies `wr/issues/**` with an unfilled `{DESCRIPTION}` / `[Yes/No]` / `[Date and summary]` |
+| No root linter config                                                                    | repo root                                                             | Add minimal root `eslint.config.mjs` + `.prettierrc.json` + Python `ruff.toml`, even if products override                                                       |
+| BUG-006 (open): YAML failures in `api-rate-limit-handler.yml` + `jules-coding-agent.yml` | both files                                                            | Run `yamllint` / `actionlint` locally; fix the offending blocks; commit                                                                                         |
 
 ---
 
@@ -157,6 +171,7 @@ when first promoted).
 ## Definition of Done for this tracking WR
 
 Closed when:
+
 - Every item above is either (a) shipped in its own PR or (b) explicitly
   marked "won't fix — accepted risk" with owner sign-off.
 - Octopus Review's next audit run on `main` shows ✅ on the closed items.

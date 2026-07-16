@@ -38,7 +38,11 @@
  * actually run; registration and deferred handles need no key.
  */
 
-const { routedChat, callOpenRouter, ROUTING_PROFILES } = require("./openrouter-routing");
+const {
+  routedChat,
+  callOpenRouter,
+  ROUTING_PROFILES,
+} = require("./openrouter-routing");
 
 /** Instantiation modes. */
 const INSTANTIATION_MODES = {
@@ -179,7 +183,17 @@ const PERSONA_REGISTRY = {
     //                   score with the product-pipeline ROI gate, emit a BOM, and
     //                   produce a complete WR with MVP scope, acceptance gates, and
     //                   next-step assignments.
-    aliases: ["errorfix", "permfix", "dragnet-fix", "scaffold", "builder", "product-build", "🕵️", "🕵", "🔎"],
+    aliases: [
+      "errorfix",
+      "permfix",
+      "dragnet-fix",
+      "scaffold",
+      "builder",
+      "product-build",
+      "🕵️",
+      "🕵",
+      "🔎",
+    ],
     profile: "repo_surgery",
     description:
       "Autonomous error hunter and product scaffolder. In ERROR MODE: reads the issue/PR " +
@@ -222,7 +236,7 @@ const PERSONA_REGISTRY = {
       "Read the issue, the WR, and any upstream diagnosis (Devin finding, Octopus comment, Copilot review) carefully — they usually contain the exact change to make.",
       "Honor the canonical Fix Prompt Format (see docs/FIX_PROMPT_FORMAT.md): `Fix the following <Severity> (<Category>) issue in <path> at lines X-Y: Problem: <one-paragraph diagnosis>. Either <apply the real fix> or mark the WR explicitly as <status>`. If the inbound issue carries this shape, follow the file/line range exactly. If it does not, mentally reformat the diagnosis into this shape before acting — it forces you to pick a single file, a single span, and one of the two acceptance paths.",
       "Make the smallest correct patch: change only what the diagnosis calls for. Do not refactor, do not add features, do not introduce abstractions.",
-      "Never produce a tracking-only WR pretending to be a fix. If the issue says \"fix X,\" your output must edit a real (non-wr/) file. If you cannot apply it, say so plainly and label the issue needs-human.",
+      'Never produce a tracking-only WR pretending to be a fix. If the issue says "fix X," your output must edit a real (non-wr/) file. If you cannot apply it, say so plainly and label the issue needs-human.',
       "State which files you changed, why, and what you verified (lint, tests, smoke).",
     ].join(" "),
     readinessPrompt:
@@ -244,7 +258,14 @@ const PERSONA_REGISTRY = {
     //   gate       — config policies as code (circleci policy, OPA/Rego)
     //   operate    — v1.x preview CLI: run/watch with exit codes, envvar, dlc purge,
     //                and the built-in MCP server (circleci mcp)
-    aliases: ["circleci", "circle-ci", "orbs", "pipeline-commander", "🪐", "⭕"],
+    aliases: [
+      "circleci",
+      "circle-ci",
+      "orbs",
+      "pipeline-commander",
+      "🪐",
+      "⭕",
+    ],
     profile: "repo_surgery",
     description:
       "CircleCI specialist for the fleet. Wires new repos into CircleCI with minimal pinned " +
@@ -376,11 +397,12 @@ function getPersona(handle) {
     if ((p.aliases || []).map((a) => a.toLowerCase()).includes(key)) return p;
   }
   const canonical = Object.keys(PERSONA_REGISTRY);
-  const aliases = Object.values(PERSONA_REGISTRY)
-    .flatMap((p) => (p.aliases || []).map((a) => `${a} → ${p.handle}`));
+  const aliases = Object.values(PERSONA_REGISTRY).flatMap((p) =>
+    (p.aliases || []).map((a) => `${a} → ${p.handle}`),
+  );
   throw new Error(
     `Unknown persona: ${handle}. Available: ${canonical.join(", ")}. ` +
-    `Aliases: ${aliases.join(", ") || "(none)"}.`
+      `Aliases: ${aliases.join(", ") || "(none)"}.`,
   );
 }
 
@@ -400,7 +422,9 @@ function normalizeMode(mode) {
     const available = Object.keys(INSTANTIATION_MODES)
       .map((k) => INSTANTIATION_MODES[k])
       .join(", ");
-    throw new Error(`Unknown mode: ${mode}. Available modes: ${available} (aliases like "right away" accepted).`);
+    throw new Error(
+      `Unknown mode: ${mode}. Available modes: ${available} (aliases like "right away" accepted).`,
+    );
   }
   return resolved;
 }
@@ -429,7 +453,9 @@ function buildMessages(persona, task) {
  */
 async function runPersona(persona, task, opts = {}) {
   if (!task || typeof task !== "string") {
-    throw new Error(`A task string is required to run persona "${persona.handle}"`);
+    throw new Error(
+      `A task string is required to run persona "${persona.handle}"`,
+    );
   }
 
   const messages = buildMessages(persona, task);
@@ -438,9 +464,17 @@ async function runPersona(persona, task, opts = {}) {
 
   if (persona.models && !profile) {
     // Persona pins an explicit model chain (e.g. The Professor's Sonar lane).
-    result = await callOpenRouter({ models: persona.models, messages, ...routerOpts });
+    result = await callOpenRouter({
+      models: persona.models,
+      messages,
+      ...routerOpts,
+    });
   } else {
-    result = await routedChat({ profile: profile || persona.profile, messages, ...routerOpts });
+    result = await routedChat({
+      profile: profile || persona.profile,
+      messages,
+      ...routerOpts,
+    });
   }
 
   return {
@@ -449,7 +483,8 @@ async function runPersona(persona, task, opts = {}) {
     role: persona.role,
     text: result.text,
     modelUsed: result.modelUsed,
-    requestedModels: result.requestedModels || (persona.models ? persona.models : undefined),
+    requestedModels:
+      result.requestedModels || (persona.models ? persona.models : undefined),
   };
 }
 
@@ -478,7 +513,9 @@ async function instantiate(handle, options = {}) {
 
   if (normalizedMode === INSTANTIATION_MODES.EAGER) {
     if (!silent) {
-      console.log(`${persona.emoji} Instantiating ${persona.name} (right away)`);
+      console.log(
+        `${persona.emoji} Instantiating ${persona.name} (right away)`,
+      );
     }
     const prompt = task || persona.readinessPrompt;
     const result = await runPersona(persona, prompt, opts);
@@ -488,14 +525,22 @@ async function instantiate(handle, options = {}) {
   // ON_ASSIGNMENT
   if (task) {
     if (!silent) {
-      console.log(`${persona.emoji} Instantiating ${persona.name} (on assignment, task provided)`);
+      console.log(
+        `${persona.emoji} Instantiating ${persona.name} (on assignment, task provided)`,
+      );
     }
     const result = await runPersona(persona, task, opts);
-    return { ...result, mode: INSTANTIATION_MODES.ON_ASSIGNMENT, instantiated: true };
+    return {
+      ...result,
+      mode: INSTANTIATION_MODES.ON_ASSIGNMENT,
+      instantiated: true,
+    };
   }
 
   if (!silent) {
-    console.log(`${persona.emoji} Registered ${persona.name} (on assignment, awaiting task)`);
+    console.log(
+      `${persona.emoji} Registered ${persona.name} (on assignment, awaiting task)`,
+    );
   }
   return {
     persona: persona.handle,
@@ -516,7 +561,8 @@ async function instantiate(handle, options = {}) {
  * @returns {Promise<Object[]>} Array of results / deferred handles, in order.
  */
 async function instantiateFleet(handles, options = {}) {
-  const list = handles && handles.length ? handles : Object.keys(PERSONA_REGISTRY);
+  const list =
+    handles && handles.length ? handles : Object.keys(PERSONA_REGISTRY);
   const { task, ...rest } = options; // a shared task would be ambiguous across personas
   return Promise.all(list.map((h) => instantiate(h, rest)));
 }
@@ -536,20 +582,33 @@ try {
   const fleetCatalog = JSON.parse(
     require("fs").readFileSync(
       require("path").join(__dirname, "..", "agent-creator-data.json"),
-      "utf8"
-    )
+      "utf8",
+    ),
   );
   const FLEET_SOURCES = [
     // The conductor IS the delegation point — telling it to hand off to
     // itself would undermine the one-job guardrail (Copilot finding).
-    { def: fleetCatalog.fleet, emoji: "\u{1F6A2}", profile: "repo_surgery", entryPoint: "conductor", delegateTo: "conductor" },
+    {
+      def: fleetCatalog.fleet,
+      emoji: "\u{1F6A2}",
+      profile: "repo_surgery",
+      entryPoint: "conductor",
+      delegateTo: "conductor",
+    },
     // Security fleet has no internal orchestrator: off-pattern work goes to
     // @dragnet, the core analysis/OSINT persona, for re-delegation.
-    { def: fleetCatalog.security_fleet, emoji: "\u{1F6E1}\u{FE0F}", profile: "review", entryPoint: null, delegateTo: "dragnet" },
+    {
+      def: fleetCatalog.security_fleet,
+      emoji: "\u{1F6E1}\u{FE0F}",
+      profile: "review",
+      entryPoint: null,
+      delegateTo: "dragnet",
+    },
   ];
   for (const { def, emoji, profile, entryPoint, delegateTo } of FLEET_SOURCES) {
     const fleetDef = def || {};
-    const charterRules = (fleetDef.charter && fleetDef.charter.operating_rules) || [];
+    const charterRules =
+      (fleetDef.charter && fleetDef.charter.operating_rules) || [];
     for (const member of fleetDef.agents || []) {
       if (!member.handle || PERSONA_REGISTRY[member.handle]) continue; // never clobber a core persona
       PERSONA_REGISTRY[member.handle] = {

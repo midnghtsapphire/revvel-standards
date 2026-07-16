@@ -7,14 +7,14 @@ name: Auditor Controller
 
 on:
   schedule:
-    - cron: "0 13 * * *"   # daily at 13:00 UTC
+    - cron: "0 13 * * *" # daily at 13:00 UTC
   workflow_dispatch:
   pull_request:
     paths:
-      - 'scripts/auditor-controller.js'
-      - '.github/workflows/auditor-controller.yml'
-      - 'data/subscriptions.yml'
-      - 'wr/issues/*.md'
+      - "scripts/auditor-controller.js"
+      - ".github/workflows/auditor-controller.yml"
+      - "data/subscriptions.yml"
+      - "wr/issues/*.md"
 
 permissions:
   contents: read

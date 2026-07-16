@@ -65,6 +65,7 @@ See [`GO_TO_MARKET.md`](./GO_TO_MARKET.md) for launch channels, ROI model, and s
 
 Primary funding rail: **Polar.sh** (GitHub funding platform).
 Secondary: affiliate links, newsletter-driven upsells.
+
 # Revvel Skill Runner
 
 **Port:** 3004  
@@ -93,8 +94,8 @@ npm run dev                  # http://localhost:3004
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|---|---|---|
+| Variable             | Required | Description                                 |
+| -------------------- | -------- | ------------------------------------------- |
 | `OPENROUTER_API_KEY` | Optional | OpenRouter API key for live skill execution |
 
 Create `.env.local`:
@@ -144,6 +145,7 @@ A production-ready application to run Revvel skills. Built with Next.js and Tail
 Follows EXRUP methodology.
 
 ## Mandatory UI Components (EXRUP)
+
 - Affiliate Marketing card
 - Newsletter signup
 - Accessibility Controls

@@ -5,6 +5,7 @@ Export Figma designs directly to sellable PDFs.
 ## When to use this skill
 
 Use this when you need to:
+
 - Convert Figma designs to PDF for client delivery
 - Generate sellable PDF documents from Figma mockups
 - Export Figma prototypes as PDF presentations
@@ -125,10 +126,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Figma export
         run: npm install -g @figma/figma-cli
-      
+
       - name: Export PDF
         env:
           FIGMA_API_KEY: ${{ secrets.FIGMA_API_KEY }}
@@ -136,7 +137,7 @@ jobs:
           figma export pdf ${{ github.event.inputs.figma_file }} \
             --output ./exports/ \
             --scale 2
-      
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -146,13 +147,13 @@ jobs:
 
 ## Use Cases
 
-| Use Case | Description | Required |
-|---------|-------------|----------|
-| Client deliverables | Export approved designs as PDF | Figma API key |
-| Design specs | Generate spec sheets from frames | Figma API + OpenRouter |
-| Invoices/quotes | Template-based PDF generation | Figma template + data |
-| Portfolio | Export case study designs | Figma API key |
-| Presentations | Figma prototypes to slide PDFs | Export each frame |
+| Use Case            | Description                      | Required               |
+| ------------------- | -------------------------------- | ---------------------- |
+| Client deliverables | Export approved designs as PDF   | Figma API key          |
+| Design specs        | Generate spec sheets from frames | Figma API + OpenRouter |
+| Invoices/quotes     | Template-based PDF generation    | Figma template + data  |
+| Portfolio           | Export case study designs        | Figma API key          |
+| Presentations       | Figma prototypes to slide PDFs   | Export each frame      |
 
 ## Pricing
 
@@ -163,12 +164,14 @@ jobs:
 ## Examples
 
 ### Generate from Figma file
+
 ```
 Input: https://figma.com/file/abc123/Project-Designs
 Output: exports/project-designs.pdf
 ```
 
 ### Multi-page export
+
 ```
 Input: Pages: ["Cover", "Screens", "Specs"]
 Output: exports/cover.pdf, exports/screens.pdf, exports/specs.pdf

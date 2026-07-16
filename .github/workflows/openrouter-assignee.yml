@@ -21,7 +21,7 @@ on:
   pull_request_target:
     types: [opened, reopened, ready_for_review]
   schedule:
-    - cron: "0 * * * *"  # Every hour, top of the hour
+    - cron: "0 * * * *" # Every hour, top of the hour
   workflow_dispatch:
     inputs:
       dry_run:

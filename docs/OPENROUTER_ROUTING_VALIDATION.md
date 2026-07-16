@@ -54,11 +54,13 @@ node scripts/openrouter-routing-example.js repo_surgery "Fix the bug in the user
 ```
 
 **Expected behavior:**
+
 - Models tried in order: `anthropic/claude-sonnet-4` → `deepseek/deepseek-v3.2` → `openai/gpt-5.2-codex`
 - Response should show independent reasoning and suggest improvements
 - Should return the actual model used
 
 **Expected output format:**
+
 ```
 ================================================================================
 OpenRouter Routing Example
@@ -92,11 +94,13 @@ node scripts/openrouter-routing-example.js cheap_batch_edits "Generate unit test
 ```
 
 **Expected behavior:**
+
 - Models tried in order: `deepseek/deepseek-v3.2` → `anthropic/claude-sonnet-4`
 - Should prioritize cost-effective model first
 - Response should be practical and focused on the task
 
 **Expected output format:**
+
 ```
 ================================================================================
 OpenRouter Routing Example
@@ -130,11 +134,13 @@ node scripts/openrouter-routing-example.js hard_debug "The application crashes w
 ```
 
 **Expected behavior:**
+
 - Models tried in order: `openai/gpt-5.2-codex` → `anthropic/claude-sonnet-4` → `deepseek/deepseek-v3.2`
 - Should provide deep debugging insights
 - May suggest multiple approaches and root causes
 
 **Expected output format:**
+
 ```
 ================================================================================
 OpenRouter Routing Example
@@ -169,18 +175,20 @@ To simulate a fallback scenario, you can:
 2. Observe OpenRouter automatically trying the next model in the chain
 
 **Method 1: Programmatic test**
+
 ```javascript
-const { callOpenRouter } = require('./scripts/openrouter-routing');
+const { callOpenRouter } = require("./scripts/openrouter-routing");
 
 const result = await callOpenRouter({
-  models: ['invalid/model-name', 'anthropic/claude-sonnet-4'],
-  messages: [{ role: 'user', content: 'Hello!' }],
+  models: ["invalid/model-name", "anthropic/claude-sonnet-4"],
+  messages: [{ role: "user", content: "Hello!" }],
 });
 
-console.log('Fallback worked! Used:', result.modelUsed);
+console.log("Fallback worked! Used:", result.modelUsed);
 ```
 
 **Expected behavior:**
+
 - First model fails (invalid name or unavailable)
 - OpenRouter automatically tries second model
 - Response comes from second model
@@ -195,6 +203,7 @@ node scripts/openrouter-routing-eval.js "Refactor the database layer to use conn
 ```
 
 **Expected behavior:**
+
 - Runs the same prompt through all three profiles
 - Generates a markdown report in `logs/openrouter-routing-eval-<timestamp>.md`
 - Report includes:
@@ -204,55 +213,61 @@ node scripts/openrouter-routing-eval.js "Refactor the database layer to use conn
   - Raw responses for manual quality assessment
 
 **Sample report excerpt:**
+
 ```markdown
 # OpenRouter Routing Evaluation Report
 
 ## Summary Comparison
 
-| Profile | Model Used | Response Time | Response Length | Status |
-|---------|-----------|---------------|-----------------|--------|
-| repo_surgery | anthropic/claude-sonnet-4 | 2341ms | 1543 chars | ✅ Success |
-| cheap_batch_edits | deepseek/deepseek-v3.2 | 1876ms | 1234 chars | ✅ Success |
-| hard_debug | openai/gpt-5.2-codex | 2103ms | 1678 chars | ✅ Success |
+| Profile           | Model Used                | Response Time | Response Length | Status     |
+| ----------------- | ------------------------- | ------------- | --------------- | ---------- |
+| repo_surgery      | anthropic/claude-sonnet-4 | 2341ms        | 1543 chars      | ✅ Success |
+| cheap_batch_edits | deepseek/deepseek-v3.2    | 1876ms        | 1234 chars      | ✅ Success |
+| hard_debug        | openai/gpt-5.2-codex      | 2103ms        | 1678 chars      | ✅ Success |
 
 ## Observations
 
 ### Response Length
+
 - **Most detailed:** hard_debug (1678 chars)
 - **Most concise:** cheap_batch_edits (1234 chars)
 
 ### Response Time
+
 - **Fastest:** cheap_batch_edits (1876ms)
 - **Slowest:** repo_surgery (2341ms)
 ```
 
 ## Acceptance Criteria Validation
 
-| Criterion | Status | Notes |
-|-----------|--------|-------|
-| A caller can request one of the named routing profiles | ✅ Pass | `routedChat({ profile: 'repo_surgery', ... })` |
-| The client sends the correct `models` array to OpenRouter | ✅ Pass | Verified in unit tests |
-| The response object exposes the actual model used | ✅ Pass | `result.modelUsed` field |
-| Errors are surfaced cleanly if all fallbacks fail | ✅ Pass | Tested in unit tests |
-| Unit tests cover profile selection and request construction | ✅ Pass | 11 tests, all passing |
-| Example usage is runnable with only `OPENROUTER_API_KEY` set | ✅ Pass | CLI requires only API key |
-| Documentation includes at least one real request/response example | ✅ Pass | Multiple examples in docs |
-| No hardcoded secrets | ✅ Pass | Uses env var only |
-| No breaking changes to existing model clients | ✅ Pass | New module, no modifications |
+| Criterion                                                         | Status  | Notes                                          |
+| ----------------------------------------------------------------- | ------- | ---------------------------------------------- |
+| A caller can request one of the named routing profiles            | ✅ Pass | `routedChat({ profile: 'repo_surgery', ... })` |
+| The client sends the correct `models` array to OpenRouter         | ✅ Pass | Verified in unit tests                         |
+| The response object exposes the actual model used                 | ✅ Pass | `result.modelUsed` field                       |
+| Errors are surfaced cleanly if all fallbacks fail                 | ✅ Pass | Tested in unit tests                           |
+| Unit tests cover profile selection and request construction       | ✅ Pass | 11 tests, all passing                          |
+| Example usage is runnable with only `OPENROUTER_API_KEY` set      | ✅ Pass | CLI requires only API key                      |
+| Documentation includes at least one real request/response example | ✅ Pass | Multiple examples in docs                      |
+| No hardcoded secrets                                              | ✅ Pass | Uses env var only                              |
+| No breaking changes to existing model clients                     | ✅ Pass | New module, no modifications                   |
 
 ## Model Behavior Comparison
 
 When `OPENROUTER_API_KEY` is available, the following comparison should be performed:
 
 ### Hypothesis
+
 - **repo_surgery**: Claude 3.7 Sonnet should show more independent reasoning and suggest improvements beyond the literal request
 - **cheap_batch_edits**: DeepSeek V3.2 should be faster and more concise, focused on the specific task
 - **hard_debug**: GPT-5.2 Codex should provide deeper technical analysis and multiple debugging approaches
 
 ### Test Task
+
 Prompt: "Fix the memory leak in the session handler where user sessions accumulate in memory"
 
 **Expected observations:**
+
 1. **Independence:** repo_surgery model may suggest additional improvements like session cleanup policies, monitoring, or architectural changes
 2. **Cost:** cheap_batch_edits should complete faster and at lower cost
 3. **Depth:** hard_debug model should provide more detailed root-cause analysis and multiple solution approaches
@@ -277,6 +292,7 @@ Based on [OpenRouter documentation](https://openrouter.ai/docs/guides/routing/mo
 4. **Downtime**: Model or provider is temporarily unavailable
 
 **Important notes:**
+
 - Fallback is best-effort; if all models fail for the same reason (e.g., content policy), the request will fail
 - The `model` field in the response indicates which model actually responded
 - Fallback happens automatically server-side; the client doesn't need to implement retry logic
@@ -287,6 +303,7 @@ Based on [OpenRouter documentation](https://openrouter.ai/docs/guides/routing/mo
 The OpenRouter model routing implementation is complete and tested. All unit tests pass, and the module is ready for integration testing with actual API credentials.
 
 To complete validation:
+
 1. Set `OPENROUTER_API_KEY` in the environment
 2. Run the manual validation tests listed above
 3. Review the evaluation harness report to compare model behaviors

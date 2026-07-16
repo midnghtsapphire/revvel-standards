@@ -2,7 +2,7 @@
 
 **Status:** Active  
 **Problem:** Doppler keeps deleting BITO secrets  
-**Solution:** Manual backup and PR notification system  
+**Solution:** Manual backup and PR notification system
 
 ---
 
@@ -33,6 +33,7 @@ When Doppler drops secrets, you must manually restore them in GitHub:
 ### Backup Method: PR Notification
 
 The `bito-ai.yml` workflow now:
+
 1. Checks if secrets exist before running
 2. If missing, posts a comment on the PR explaining what's needed
 3. Skips gracefully (doesn't fail the PR)
@@ -68,6 +69,7 @@ echo "✅ BITO secrets restored!"
 ### Option 1: Disable Doppler Rotation for BITO
 
 In Doppler dashboard:
+
 1. Find the `revvel-standards/prd` config
 2. Locate `BITO_ACCESS_KEY` and `GIT_ACCESS_TOKEN`
 3. Set rotation to **manual** or **disabled**
@@ -102,12 +104,14 @@ gh secret list | grep BITO
 ```
 
 Expected output:
+
 ```
 BITO_ACCESS_KEY    Updated <date>
 GIT_ACCESS_TOKEN   Updated <date>
 ```
 
 If missing:
+
 ```
 # Not listed = missing
 ```

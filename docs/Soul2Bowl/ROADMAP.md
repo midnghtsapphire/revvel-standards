@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0  
 **Date:** April 2026  
-**Status:** Active Planning  
+**Status:** Active Planning
 
 ---
 
@@ -17,6 +17,7 @@ Soul2Bowl follows the **EXRUP (Extreme Rapid Programming)** 8-phase lifecycle fr
 **Goal:** Repository scaffolded, design system live, core pages built
 
 ### Milestones
+
 - [ ] Create GitHub repo `midnghtsapphire/Soul2Bowl`
 - [ ] Scaffold Next.js 14 project with App Router
 - [ ] Configure Tailwind CSS with glassmorphism design system (see `BRAND.md`)
@@ -39,6 +40,7 @@ Soul2Bowl follows the **EXRUP (Extreme Rapid Programming)** 8-phase lifecycle fr
 **Goal:** Full ordering flow operational end-to-end
 
 ### Milestones
+
 - [ ] Build Order/Calendar page (FullCalendar.js integration)
 - [ ] Implement service-type booking logic (Individual, Sunday Dinner, By the Pound, Meal Prep)
 - [ ] Integrate Stripe Checkout (one-time payments)
@@ -59,6 +61,7 @@ Soul2Bowl follows the **EXRUP (Extreme Rapid Programming)** 8-phase lifecycle fr
 **Goal:** Admin panel fully operational; blog and SEO live
 
 ### Milestones
+
 - [ ] Build Admin Panel (`/admin`) — auth-gated to `angelreporters@gmail.com`
   - [ ] Page text and image CMS
   - [ ] Menu item manager (add, edit, price, archive, photo upload)
@@ -83,6 +86,7 @@ Soul2Bowl follows the **EXRUP (Extreme Rapid Programming)** 8-phase lifecycle fr
 **Goal:** Animations, accessibility, final QA, production launch
 
 ### Milestones
+
 - [ ] Implement all Framer Motion animations (hero steam, card hover, page transitions, scroll reveals)
 - [ ] Food photography assets integrated (all menu photos at correct specs)
 - [ ] Owner video produced and embedded on About page
@@ -107,25 +111,25 @@ Soul2Bowl follows the **EXRUP (Extreme Rapid Programming)** 8-phase lifecycle fr
 
 ## Post-Launch Enhancements (Backlog)
 
-| Feature | Priority | Notes |
-|---|---|---|
-| Push notifications (order ready, pickup reminder) | P1 | Via web push API |
-| Loyalty/rewards points system | P2 | Gamified repeat ordering |
-| Mobile app (React Native / Expo) | P2 | Per Revvel mobile standard |
-| Yelp / TripAdvisor review integration | P1 | Pull testimonials automatically |
-| Gift cards | P2 | Stripe gift card support |
-| Referral program | P2 | Affiliate engine from Revvel standard |
-| Spanish language support | P3 | i18n with `next-intl` |
-| Live order tracker (SMS updates) | P2 | Twilio integration |
+| Feature                                           | Priority | Notes                                 |
+| ------------------------------------------------- | -------- | ------------------------------------- |
+| Push notifications (order ready, pickup reminder) | P1       | Via web push API                      |
+| Loyalty/rewards points system                     | P2       | Gamified repeat ordering              |
+| Mobile app (React Native / Expo)                  | P2       | Per Revvel mobile standard            |
+| Yelp / TripAdvisor review integration             | P1       | Pull testimonials automatically       |
+| Gift cards                                        | P2       | Stripe gift card support              |
+| Referral program                                  | P2       | Affiliate engine from Revvel standard |
+| Spanish language support                          | P3       | i18n with `next-intl`                 |
+| Live order tracker (SMS updates)                  | P2       | Twilio integration                    |
 
 ---
 
 ## Timeline Summary
 
-| Phase | Week | Status |
-|---|---|---|
-| Phase 1: Foundation | Weeks 1–2 | 🔲 Not Started |
-| Phase 2: Core Commerce | Weeks 3–4 | 🔲 Not Started |
+| Phase                    | Week      | Status         |
+| ------------------------ | --------- | -------------- |
+| Phase 1: Foundation      | Weeks 1–2 | 🔲 Not Started |
+| Phase 2: Core Commerce   | Weeks 3–4 | 🔲 Not Started |
 | Phase 3: Admin + Content | Weeks 5–6 | 🔲 Not Started |
 | Phase 4: Polish + Launch | Weeks 7–8 | 🔲 Not Started |
-| Post-Launch (backlog) | Week 9+ | 🔲 Backlog |
+| Post-Launch (backlog)    | Week 9+   | 🔲 Backlog     |

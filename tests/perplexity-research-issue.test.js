@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+"use strict";
 
 /**
  * Tests for scripts/perplexity-research-issue.js
@@ -13,17 +13,17 @@
  * `callPerplexity`).
  */
 
-const assert = require('assert');
-const fs = require('fs');
-const path = require('path');
+const assert = require("assert");
+const fs = require("fs");
+const path = require("path");
 const {
   buildResearchPrompt,
   callPerplexityNoKey,
   callPerplexityViaOpenRouter,
   fetchGitHubIssue,
-} = require('../scripts/perplexity-research-issue.js');
+} = require("../scripts/perplexity-research-issue.js");
 
-const REPO_ROOT = path.resolve(__dirname, '..');
+const REPO_ROOT = path.resolve(__dirname, "..");
 
 let passed = 0;
 let failed = 0;
@@ -41,101 +41,130 @@ async function test(name, fn) {
 
 async function run() {
   // ── Module shape ──────────────────────────────────────────────────────────
-  await test('exports the no-key primary and OpenRouter backup lanes', () => {
-    assert.strictEqual(typeof callPerplexityNoKey, 'function');
-    assert.strictEqual(typeof callPerplexityViaOpenRouter, 'function');
-    assert.strictEqual(typeof buildResearchPrompt, 'function');
-    assert.strictEqual(typeof fetchGitHubIssue, 'function');
+  await test("exports the no-key primary and OpenRouter backup lanes", () => {
+    assert.strictEqual(typeof callPerplexityNoKey, "function");
+    assert.strictEqual(typeof callPerplexityViaOpenRouter, "function");
+    assert.strictEqual(typeof buildResearchPrompt, "function");
+    assert.strictEqual(typeof fetchGitHubIssue, "function");
   });
 
   // ── buildResearchPrompt ───────────────────────────────────────────────────
-  await test('buildResearchPrompt includes issue details and recent comments', () => {
+  await test("buildResearchPrompt includes issue details and recent comments", () => {
     const prompt = buildResearchPrompt({
       number: 42,
-      title: 'Add Rex lane',
-      body: 'Need no-key Perplexity research in oAudrey.',
-      labels: ['work-request', 'oaudrey'],
-      comments: [{ author: { login: 'midnghtsapphire' }, body: 'get the data, do not leave it incomplete' }],
+      title: "Add Rex lane",
+      body: "Need no-key Perplexity research in oAudrey.",
+      labels: ["work-request", "oaudrey"],
+      comments: [
+        {
+          author: { login: "midnghtsapphire" },
+          body: "get the data, do not leave it incomplete",
+        },
+      ],
     });
 
-    assert.ok(prompt.includes('Issue #42: Add Rex lane'));
-    assert.ok(prompt.includes('Labels: work-request, oaudrey'));
-    assert.ok(prompt.includes('midnghtsapphire'));
-    assert.ok(prompt.includes('no-key Perplexity'));
+    assert.ok(prompt.includes("Issue #42: Add Rex lane"));
+    assert.ok(prompt.includes("Labels: work-request, oaudrey"));
+    assert.ok(prompt.includes("midnghtsapphire"));
+    assert.ok(prompt.includes("no-key Perplexity"));
   });
 
-  await test('buildResearchPrompt handles empty body gracefully', () => {
+  await test("buildResearchPrompt handles empty body gracefully", () => {
     const prompt = buildResearchPrompt({
       number: 10,
-      title: 'No body issue',
+      title: "No body issue",
       body: null,
       labels: [],
       comments: [],
     });
-    assert.ok(prompt.includes('No body issue'));
-    assert.ok(prompt.includes('(No body)'));
+    assert.ok(prompt.includes("No body issue"));
+    assert.ok(prompt.includes("(No body)"));
   });
 
-  await test('buildResearchPrompt contains the required output sections', () => {
+  await test("buildResearchPrompt contains the required output sections", () => {
     const prompt = buildResearchPrompt({
-      number: 5, title: 'Section check', body: 'Some body', labels: [], comments: [],
+      number: 5,
+      title: "Section check",
+      body: "Some body",
+      labels: [],
+      comments: [],
     });
-    assert.ok(prompt.includes('Diagnosis'));
-    assert.ok(prompt.includes('Implementation Plan'));
-    assert.ok(prompt.includes('Code Agent Handoff'));
-    assert.ok(prompt.includes('Sources'));
+    assert.ok(prompt.includes("Diagnosis"));
+    assert.ok(prompt.includes("Implementation Plan"));
+    assert.ok(prompt.includes("Code Agent Handoff"));
+    assert.ok(prompt.includes("Sources"));
   });
 
   // ── Primary lane: no-key bridge ───────────────────────────────────────────
-  await test('callPerplexityNoKey uses the python no-key bridge with sonar + auto fallback', async () => {
+  await test("callPerplexityNoKey uses the python no-key bridge with sonar + auto fallback", async () => {
     const calls = [];
-    const output = await callPerplexityNoKey('research prompt', (command, args) => {
-      calls.push({ command, args });
-      return 'Research answer\n';
-    });
+    const output = await callPerplexityNoKey(
+      "research prompt",
+      (command, args) => {
+        calls.push({ command, args });
+        return "Research answer\n";
+      },
+    );
 
-    assert.strictEqual(output, 'Research answer');
+    assert.strictEqual(output, "Research answer");
     assert.strictEqual(calls.length, 1);
-    assert.strictEqual(calls[0].command, 'python3');
-    assert.strictEqual(calls[0].args[2], 'research prompt');
-    assert.strictEqual(calls[0].args[3], 'sonar');
-    assert.strictEqual(calls[0].args[4], 'auto');
+    assert.strictEqual(calls[0].command, "python3");
+    assert.strictEqual(calls[0].args[2], "research prompt");
+    assert.strictEqual(calls[0].args[3], "sonar");
+    assert.strictEqual(calls[0].args[4], "auto");
   });
 
-  await test('callPerplexityNoKey throws when the bridge returns nothing', async () => {
+  await test("callPerplexityNoKey throws when the bridge returns nothing", async () => {
     await assert.rejects(
-      () => callPerplexityNoKey('p', () => '   '),
-      /No response returned from no-key Perplexity bridge/
+      () => callPerplexityNoKey("p", () => "   "),
+      /No response returned from no-key Perplexity bridge/,
     );
   });
 
   // ── Workflow + docs contract ──────────────────────────────────────────────
-  await test('workflow installs helallao/perplexity-ai and requires no PERPLEXITY_API_KEY', () => {
+  await test("workflow installs helallao/perplexity-ai and requires no PERPLEXITY_API_KEY", () => {
     const workflow = fs.readFileSync(
-      path.join(REPO_ROOT, '.github', 'workflows', 'perplexity-research-agent.yml'),
-      'utf8'
+      path.join(
+        REPO_ROOT,
+        ".github",
+        "workflows",
+        "perplexity-research-agent.yml",
+      ),
+      "utf8",
     );
-    assert.ok(workflow.includes('helallao/perplexity-ai.git@main'));
-    assert.ok(workflow.includes('Install no-key Perplexity bridge'));
-    assert.ok(!workflow.includes('PERPLEXITY_API_KEY'));
+    assert.ok(workflow.includes("helallao/perplexity-ai.git@main"));
+    assert.ok(workflow.includes("Install no-key Perplexity bridge"));
+    assert.ok(!workflow.includes("PERPLEXITY_API_KEY"));
   });
 
-  await test('no-key integration doc exists and references the Rex / oAudrey lane', () => {
-    const docPath = path.join(REPO_ROOT, 'docs', 'PERPLEXITY_NO_KEY_INTEGRATION.md');
-    assert.ok(fs.existsSync(docPath), 'docs/PERPLEXITY_NO_KEY_INTEGRATION.md should exist');
-    const doc = fs.readFileSync(docPath, 'utf8');
-    assert.ok(doc.includes('helallao/perplexity-ai'));
-    assert.ok(doc.includes('Rex'));
-    assert.ok(doc.includes('oAudrey'));
+  await test("no-key integration doc exists and references the Rex / oAudrey lane", () => {
+    const docPath = path.join(
+      REPO_ROOT,
+      "docs",
+      "PERPLEXITY_NO_KEY_INTEGRATION.md",
+    );
+    assert.ok(
+      fs.existsSync(docPath),
+      "docs/PERPLEXITY_NO_KEY_INTEGRATION.md should exist",
+    );
+    const doc = fs.readFileSync(docPath, "utf8");
+    assert.ok(doc.includes("helallao/perplexity-ai"));
+    assert.ok(doc.includes("Rex"));
+    assert.ok(doc.includes("oAudrey"));
   });
 
-  await test('OpenRouter deep_search fallback keeps Sonnet 3.5 + Fusion and returns text content', () => {
+  await test("OpenRouter deep_search fallback keeps Sonnet 3.5 + Fusion and returns text content", () => {
     const script = fs.readFileSync(
-      path.join(REPO_ROOT, 'scripts', 'perplexity-research-issue.js'),
-      'utf8'
+      path.join(REPO_ROOT, "scripts", "perplexity-research-issue.js"),
+      "utf8",
     );
-    assert.ok(script.includes("['anthropic/claude-3.5-sonnet', 'openrouter/fusion']"));
-    assert.ok(script.includes('return result.text;'));
+    assert.ok(
+      /["']?anthropic\/claude-3\.5-sonnet["']?,\s*["']?openrouter\/fusion["']?/.test(
+        script,
+      ),
+      'script should include both "anthropic/claude-3.5-sonnet" and "openrouter/fusion"',
+    );
+    assert.ok(script.includes("return result.text;"));
   });
 
   console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);

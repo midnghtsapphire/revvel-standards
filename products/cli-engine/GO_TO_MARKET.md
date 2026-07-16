@@ -8,29 +8,29 @@
 
 ## Ideal Customer
 
-| Segment | Profile | Pain |
-|---|---|---|
-| Solo developers | Building automation scripts for client billing, reporting, data pipelines | No productized frontend for their CLI tools |
-| SaaS teams | Running multi-step batch jobs, audit logs, or report generation | Need user auth, billing, and export without building from scratch |
-| AI agent builders | Wiring LLMs via MCP to automation pipelines | Need a battle-tested execution layer with API/MCP bridge |
-| Consultants | Delivering client reports on schedule | Want one-command PDF generation with professional output |
+| Segment           | Profile                                                                   | Pain                                                              |
+| ----------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Solo developers   | Building automation scripts for client billing, reporting, data pipelines | No productized frontend for their CLI tools                       |
+| SaaS teams        | Running multi-step batch jobs, audit logs, or report generation           | Need user auth, billing, and export without building from scratch |
+| AI agent builders | Wiring LLMs via MCP to automation pipelines                               | Need a battle-tested execution layer with API/MCP bridge          |
+| Consultants       | Delivering client reports on schedule                                     | Want one-command PDF generation with professional output          |
 
 ## Revenue Model
 
-| Tier | Price | Target Customer |
-|---|---|---|
-| Starter | $29/mo | Solo devs, indie hackers, freelancers |
-| Pro | $99/mo | Small teams (≤5 developers) |
+| Tier       | Price  | Target Customer                              |
+| ---------- | ------ | -------------------------------------------- |
+| Starter    | $29/mo | Solo devs, indie hackers, freelancers        |
+| Pro        | $99/mo | Small teams (≤5 developers)                  |
 | Enterprise | Custom | Agencies, large teams, white-label customers |
 
 **Revenue projections:**
 
-| Customers | Monthly Revenue |
-|---|---|
-| 25 Starter | $725 |
-| 50 Pro | $4,950 |
-| 100 mixed | ~$7,400 |
-| 200 mixed + 2 Enterprise | ~$18,000+ |
+| Customers                | Monthly Revenue |
+| ------------------------ | --------------- |
+| 25 Starter               | $725            |
+| 50 Pro                   | $4,950          |
+| 100 mixed                | ~$7,400         |
+| 200 mixed + 2 Enterprise | ~$18,000+       |
 
 ## Marketing SEO Keywords
 
@@ -45,11 +45,11 @@
 
 **Top competing tools and GitHub stars (research snapshot):**
 
-| Tool | GitHub Stars | Gap |
-|---|---|---|
-| Ink (terminal UI React) | ~26k ⭐ | No web UI / no billing |
-| Charm Gum | ~18k ⭐ | CLI-only, no export or auth |
-| Taskhero / Conductor | ~3–8k ⭐ | No glassmorphic UI surface |
+| Tool                    | GitHub Stars | Gap                         |
+| ----------------------- | ------------ | --------------------------- |
+| Ink (terminal UI React) | ~26k ⭐      | No web UI / no billing      |
+| Charm Gum               | ~18k ⭐      | CLI-only, no export or auth |
+| Taskhero / Conductor    | ~3–8k ⭐     | No glassmorphic UI surface  |
 
 **Our wedge:** Revvel CLI Engine is the only tool that combines a premium glassmorphic landing page, native PDF export, Stripe billing, and MCP/API orchestration in one deployable Next.js product.
 

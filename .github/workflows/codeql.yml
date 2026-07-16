@@ -22,7 +22,7 @@ on:
   pull_request:
     branches: [main]
   schedule:
-    - cron: '20 3 * * 1'
+    - cron: "20 3 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -60,7 +60,7 @@ jobs:
         # 2026-05-21 (Claude): scan the JS sources, not just workflow files.
         # 2026-07-11 (Copilot, WR #15693): add python so coldtrace/backend
         # (incl. its models/ package) is covered; build-mode none works.
-        language: ['actions', 'javascript-typescript', 'python']
+        language: ["actions", "javascript-typescript", "python"]
 
     steps:
       - name: Checkout repository
@@ -142,7 +142,7 @@ jobs:
     permissions:
       contents: read
       security-events: read # list code-scanning alerts
-      issues: write         # file/refresh/close the triage issue
+      issues: write # file/refresh/close the triage issue
     env:
       # gh runs unauthenticated without a token; prefer the ADMIN PAT so the
       # filed issue can cascade to downstream routing workflows.

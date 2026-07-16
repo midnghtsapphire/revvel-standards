@@ -1,7 +1,7 @@
 # BIOME — Biomimetic Independent Operations & Monitoring Engine
 
 A **credit-free, additive** self-healing crew for `revvel-standards`. BIOME runs
-*alongside* the existing ~70-workflow fleet. It edits, renames, and deletes
+_alongside_ the existing ~70-workflow fleet. It edits, renames, and deletes
 nothing (per `standards/COMMENT-DONT-DELETE.md` (RVS-AGENT-001) and
 `standards/PRESERVE_GOALS_AND_HISTORY.md` (RVS-PRESERVE-001)).
 
@@ -14,26 +14,26 @@ triage collapses to a dead "static-fallback · rule-based" stub that pings
 every worker runs on deterministic rules + the free, built-in `GITHUB_TOKEN`.
 
 > **Credit-free invariant:** no BIOME worker ever requires a paid API key. Missing
-> AI keys are *informational*, never a degradation of the crew.
+> AI keys are _informational_, never a degradation of the crew.
 
 ## The metaphor (sheaves + biomimicry)
 
-- **Sheaf** — each worker emits a *local* status section; `sheaf` glues them into
+- **Sheaf** — each worker emits a _local_ status section; `sheaf` glues them into
   one globally-consistent fleet-health object (local sections → global section,
   exactly as a sheaf glues). That global object is the monitor feed.
-- **Biomimic** — each worker is a biological self-healing *reflex* that fires
+- **Biomimic** — each worker is a biological self-healing _reflex_ that fires
   without external dependencies, the way an immune response doesn't wait for
   permission.
 
 ## The crew
 
-| Worker | Biomimetic role | Schedule | What it does (rule-based, no AI) |
-|--------|-----------------|----------|----------------------------------|
-| `biome-sentinel` | nociceptor (pain sensor) | every 2h | Scans recent runs + open issues; files one deduped `[BIOME-SENTINEL]` incident when failures or stuck items cross threshold. Ongoing incidents are **refreshed quietly** (issue body/title edited in place — no comment spam) and **auto-resolved** (one resolution comment + close) when the fleet recovers. |
-| `biome-medic` | macrophage (immune cell) | every 6h | Re-surfaces stuck items (`self-heal` label + comment); when AI lanes are offline, clears dead `openrouter:needs-key` blocks. Storm-safe; never deletes content. |
-| `biome-homeostat` | homeostasis regulator | every 6h | Detects missing AI keys (the Doppler-wipe case); posts ONE consolidated, deduped status note and auto-resolves it when keys return. No `needs-human` spam. |
-| `biome-sheaf` | connective tissue | hourly | Glues every worker's local section into `biome-status.json` + `biome-status.html` and commits them (single committer — no commit races). |
-| `biome-inspector` | proprioception (is it alive?) | every 6h | HTTP-checks every app's live URL from `docs/app-deployments.yml` (2xx = testable-live), publishes `app-completion.json` (+ `.html`), and files a deduped worklist of missing/unreachable projects so they get finished. Enforces DEFINITION_OF_DONE #1. |
+| Worker            | Biomimetic role               | Schedule | What it does (rule-based, no AI)                                                                                                                                                                                                                                                                              |
+| ----------------- | ----------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `biome-sentinel`  | nociceptor (pain sensor)      | every 2h | Scans recent runs + open issues; files one deduped `[BIOME-SENTINEL]` incident when failures or stuck items cross threshold. Ongoing incidents are **refreshed quietly** (issue body/title edited in place — no comment spam) and **auto-resolved** (one resolution comment + close) when the fleet recovers. |
+| `biome-medic`     | macrophage (immune cell)      | every 6h | Re-surfaces stuck items (`self-heal` label + comment); when AI lanes are offline, clears dead `openrouter:needs-key` blocks. Storm-safe; never deletes content.                                                                                                                                               |
+| `biome-homeostat` | homeostasis regulator         | every 6h | Detects missing AI keys (the Doppler-wipe case); posts ONE consolidated, deduped status note and auto-resolves it when keys return. No `needs-human` spam.                                                                                                                                                    |
+| `biome-sheaf`     | connective tissue             | hourly   | Glues every worker's local section into `biome-status.json` + `biome-status.html` and commits them (single committer — no commit races).                                                                                                                                                                      |
+| `biome-inspector` | proprioception (is it alive?) | every 6h | HTTP-checks every app's live URL from `docs/app-deployments.yml` (2xx = testable-live), publishes `app-completion.json` (+ `.html`), and files a deduped worklist of missing/unreachable projects so they get finished. Enforces DEFINITION_OF_DONE #1.                                                       |
 
 ## The loop (detect → remediate → regulate → monitor → inspect → reset)
 
@@ -82,10 +82,20 @@ Feed shape:
   "credit_free": true,
   "overall": "healthy | degraded | down",
   "workers": {
-    "sentinel":  { "status": "...", "summary": "...", "counts": {}, "detail": {} },
-    "homeostat": { "status": "...", "summary": "...", "counts": {}, "detail": {} },
-    "medic":     { "status": "...", "summary": "...", "counts": {}, "detail": {} },
-    "sheaf":     { "status": "...", "summary": "...", "counts": {}, "detail": {} }
+    "sentinel": {
+      "status": "...",
+      "summary": "...",
+      "counts": {},
+      "detail": {}
+    },
+    "homeostat": {
+      "status": "...",
+      "summary": "...",
+      "counts": {},
+      "detail": {}
+    },
+    "medic": { "status": "...", "summary": "...", "counts": {}, "detail": {} },
+    "sheaf": { "status": "...", "summary": "...", "counts": {}, "detail": {} }
   }
 }
 ```
@@ -96,13 +106,13 @@ AI key keeps `overall` healthy by design.
 ## Standards adherence
 
 - **No-delete / preserve** — workers only add labels/comments and close resolved
-  ops issues; they never delete code or content. Removing a stale *label* is
+  ops issues; they never delete code or content. Removing a stale _label_ is
   metadata, not a content deletion.
 - **Token-with-fallback** — every worker uses
   `secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN`.
 - **`GH_REPO`** — set so `gh`/API calls resolve the repo without a remote.
 - **Narrow permissions** — least privilege per worker. Only `biome-sheaf` and
-  `biome-inspector` get `contents: write`, and each commits its *own* feed file
+  `biome-inspector` get `contents: write`, and each commits its _own_ feed file
   (`biome-status.*` vs `app-completion.*`) on offset schedules (sheaf hourly at
   :00, inspector every 6h at :30); `biome-inspector` also rebases before pushing,
   so the two never race.

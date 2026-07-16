@@ -58,23 +58,26 @@ please research all uses and wire-in renovate and create .yaml file
 name: Trusted Bot Auto-Approve
 
 ## Auto-approves PRs authored by trusted bots once all required CI checks pass
+
 ## After approval, pr-state-orchestrator picks up the 'approved' review event
+
 ## and handles label progression + auto-merge enablement
+
 ##
+
 ## Trusted bots: Devin, Jules, Copilot, Cursor, Octopus, CircleCI, Bito, OpenHands
 
 on:
-  check_suite:
-    types: [completed]
-  workflow_run:
-    workflows:
-      - "GitGuardian Security Checks"
-    types: [completed]
+check_suite:
+types: [completed]
+workflow_run:
+workflows: - "GitGuardian Security Checks"
+types: [completed]
 
 permissions:
-  pull-requests: write
-  contents: read
-  checks: read
+pull-requests: write
+contents: read
+checks: read
 
 Claude Renovate Review Action
 GitHub LicenseGitHub Actions Workflow Status
@@ -85,56 +88,54 @@ Usage
 name: Claude Renovate Review
 
 on:
-  pull_request:
-    types:
-      - opened
-      - edited
+pull_request:
+types: - opened - edited
 
 jobs:
-  claude-renovate-review:
-    if: github.event.pull_request.user.login == 'renovate[bot]'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write # for commenting on the PR
-    steps:
-      - uses: actions/checkout@v4
-      - uses: koki-develop/claude-renovate-review@v1
-        id: review
-        with:
-          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+claude-renovate-review:
+if: github.event.pull_request.user.login == 'renovate[bot]'
+runs-on: ubuntu-latest
+permissions:
+contents: read
+pull-requests: write # for commenting on the PR
+steps: - uses: actions/checkout@v4 - uses: koki-develop/claude-renovate-review@v1
+id: review
+with:
+anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
           # or
           claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
       # Use the safety-assessment output
       - name: Check safety assessment
         run: echo "Safety Assessment: ${{ steps.review.outputs.safety-assessment }}"
+
 Using the safety-assessment output
 You can use the safety-assessment output to automate PR workflows based on the safety level.
 
 Auto-approve safe PRs
+
 - name: Auto-approve if safe
   if: steps.review.outputs.safety-assessment == 'safe'
   run: gh pr review "$PR_NUMBER" --approve
   env:
     GITHUB_TOKEN: ${{ github.token }}
-    PR_NUMBER: ${{ github.event.pull_request.number }}
-Auto-merge safe PRs
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  Auto-merge safe PRs
 - name: Auto-merge if safe
   if: steps.review.outputs.safety-assessment == 'safe'
   run: gh pr merge "$PR_NUMBER" --auto
   env:
     GITHUB_TOKEN: ${{ github.token }}
-    PR_NUMBER: ${{ github.event.pull_request.number }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
 Inputs
 Name Description Required Default
 anthropic-api-key Anthropic API key for Claude Code No* -
 claude-code-oauth-token Claude Code OAuth token (alternative to anthropic-api-key) No* -
 github-token GitHub token with repo and pull request permissions No ${{ github.token }}
-create-comment Create the review result as a comment on the pull request No true
-pull-request-number The number of the pull request to review. If not provided, it will use the pull request number from the event context No -
-allowed-tools Newline-separated list of allowed tools for Claude Code. Each tool should be on a separate line No WebFetch(domain:github.com)
-WebFetch(domain:raw.githubusercontent.com)
+  create-comment Create the review result as a comment on the pull request No true
+  pull-request-number The number of the pull request to review. If not provided, it will use the pull request number from the event context No -
+  allowed-tools Newline-separated list of allowed tools for Claude Code. Each tool should be on a separate line No WebFetch(domain:github.com)
+  WebFetch(domain:raw.githubusercontent.com)
 - Either anthropic-api-key or claude-code-oauth-token must be provided.
 
 Outputs
@@ -193,18 +194,19 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -216,6 +218,7 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 N/A — pending Jules refinement
 
 ## Executive Summary
@@ -258,11 +261,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -278,11 +281,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),

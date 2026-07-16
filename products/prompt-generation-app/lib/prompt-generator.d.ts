@@ -21,7 +21,10 @@ export interface PromptPacket {
 }
 
 export function clampScore(score: number): number;
-export function generatePromptPacket(input: { idea: string; audience?: string }): PromptPacket;
+export function generatePromptPacket(input: {
+  idea: string;
+  audience?: string;
+}): PromptPacket;
 export function packetToMarkdown(packet: PromptPacket): string;
 export interface ResearchSource {
   id: string;
@@ -85,8 +88,12 @@ export const COMPETITORS: Competitor[];
 export const INTERNAL_PROMPT_ASSETS: string[];
 export const RESEARCH_SOURCES: ResearchSource[];
 export function buildChecklist(): ChecklistItem[];
-export function exportPromptPacketMarkdown(packet: Omit<PromptPacket, 'markdown'>): string;
-export function generatePromptPacket(options?: Partial<PromptPacketInput>): PromptPacket;
+export function exportPromptPacketMarkdown(
+  packet: Omit<PromptPacket, "markdown">,
+): string;
+export function generatePromptPacket(
+  options?: Partial<PromptPacketInput>,
+): PromptPacket;
 export function scoreOpportunity(options: {
   idea: string;
   audience: string;

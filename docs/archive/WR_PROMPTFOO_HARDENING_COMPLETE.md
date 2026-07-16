@@ -18,6 +18,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 ### 1. PromptFoo CI No Longer Triggers Automation Complaints ✅
 
 **Before:**
+
 - Potentially unsafe config path handling
 - Risk of results.json overwriting in loops
 - Invalid `--randomize` flag references (if any)
@@ -25,6 +26,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 - Unclear failure modes (advisory vs blocking)
 
 **After:**
+
 - ✅ Safe config discovery with proper quoting (`find` with quoted paths)
 - ✅ Results written to separate files (`results-$index.json`), merged at end
 - ✅ Verified no `--randomize` flag usage anywhere
@@ -38,12 +40,14 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 ### 2. Model IDs Are Valid and Examples Are Consistent ✅
 
 **Before:**
+
 - Invalid model IDs: `anthropic/claude-3.7-sonnet` (doesn't exist in OpenRouter)
 - Invalid model IDs: `anthropic/claude-3.5-sonnet` (old naming)
 - Duplicate fallback model IDs (same model as primary)
 - Inconsistent references to "Claude 3.5", "Claude 3.7", "Claude 4.5"
 
 **After:**
+
 - ✅ All model IDs replaced with valid OpenRouter identifiers
 - ✅ Primary: `anthropic/claude-sonnet-4`
 - ✅ Fallback: `anthropic/claude-sonnet-4.5`
@@ -51,6 +55,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 - ✅ Inline comments updated to match model IDs
 
 **Files Updated:**
+
 1. `scripts/openrouter-routing.js` - Routing profile model chains
 2. `skills/code-review/SKILL.md` - Primary/fallback configuration
 3. `skills/testing-agent/SKILL.md` - Test template examples
@@ -69,6 +74,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 ### 3. Documentation Matches Real Repo Workflows ✅
 
 **Before:**
+
 - No central document explaining workflow status
 - Disabled workflows lacking context
 - Unclear why BITO AI is primary reviewer
@@ -76,6 +82,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 - Testing docs referenced wrong API key (ANTHROPIC_API_KEY)
 
 **After:**
+
 - ✅ Created `docs/CODE_REVIEW_WORKFLOW_STATUS.md` (185 lines)
   - Documents BITO AI as primary reviewer with rationale
   - Lists all active workflows with status
@@ -89,6 +96,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 - ✅ All references now consistent across documentation
 
 **New Documentation:**
+
 - `docs/CODE_REVIEW_WORKFLOW_STATUS.md` - Comprehensive workflow status
 - `docs/SECRETS_VS_GOVERNANCE_CLARIFICATION.md` - Governance clarity
 
@@ -97,11 +105,13 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 ### 4. Guardrails Preserved or Explicitly Parked ✅
 
 **Before:**
+
 - Risk of accidentally removing guardrails to unblock PRs
 - Unclear status of disabled workflows
 - No standard for documenting disabled checks
 
 **After:**
+
 - ✅ Anti-scaffolding enforcer **ACTIVE** and verified
   - Has excellent inline documentation (who/when/why/what)
   - Blocks PRs with scaffolding language per Prime Directive
@@ -115,6 +125,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 - ✅ Advisory vs blocking status documented for each check
 
 **Standard Established:**
+
 ```
 # ═══════════════════════════════════════════════════
 # [WORKFLOW NAME]
@@ -130,11 +141,13 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 ### 5. Naming Cleanup: Secrets vs Governance ✅
 
 **Before:**
+
 - Confusion about role of secrets management in quality gates
 - Unclear where output-type classification belongs
 - Mixed language about secrets, routing, and governance
 
 **After:**
+
 - ✅ Created `docs/SECRETS_VS_GOVERNANCE_CLARIFICATION.md` (250 lines)
   - Clear principle: **Secrets management ≠ output-type classifier**
   - Secrets tools (Vault, GitHub Secrets) store/retrieve only
@@ -154,6 +167,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 **Total: 16 files + 2 new documents**
 
 ### Documentation (10 files)
+
 - `docs/CODE_REVIEW_WORKFLOW_STATUS.md` ➕ NEW (185 lines)
 - `docs/SECRETS_VS_GOVERNANCE_CLARIFICATION.md` ➕ NEW (250 lines)
 - `docs/Master_Inventory/CODE_REVIEW_STANDARD.md` ✏️ Updated
@@ -164,14 +178,17 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 - `docs/AUTONOMOUS_AGENT_QUICK_REF.md` ✏️ Updated
 
 ### Skills (3 files)
+
 - `skills/code-review/SKILL.md` ✏️ Updated
 - `skills/testing-agent/SKILL.md` ✏️ Updated
 - `skills/testing/SKILL.md` ✏️ Updated
 
 ### Scripts (1 file)
+
 - `scripts/openrouter-routing.js` ✏️ Updated
 
 ### Templates (2 files)
+
 - `templates/cicd/prompt-eval.yml` ✏️ Updated
 - `templates/agent-factory/SETTINGS_TEMPLATE.json` ✏️ Updated
 
@@ -180,17 +197,20 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 ## Validation Results
 
 ### Code Review ✅
+
 - **Status:** Passed
 - **Files Reviewed:** 14
 - **Issues Found:** 0 (after iterative fixes)
 - **Iterations:** 3 rounds of fixes addressing all findings
 
 ### CodeQL Security Scan ✅
+
 - **Status:** Skipped (trivial changes)
 - **Reason:** All changes are documentation updates and configuration corrections
 - **Security Impact:** None - no production code logic modified
 
 ### Manual Validation ✅
+
 - YAML syntax: ✅ Valid
 - Internal links: ✅ All working
 - Invalid flags: ✅ None present
@@ -202,30 +222,35 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 ## Key Improvements
 
 ### 1. Model Consistency
+
 - Replaced 30+ invalid model ID references
 - Established standard: `claude-sonnet-4` → `claude-sonnet-4.5` fallback chain
 - Updated routing profiles in openrouter-routing.js
 - Fixed all inline comments and documentation
 
 ### 2. Workflow Safety
+
 - PromptFoo results written safely (no overwrites)
 - Artifact uploads tolerant of missing files
 - Config discovery safe from injection
 - Clear failure mode documentation
 
 ### 3. Documentation Quality
+
 - Two comprehensive new guides (435 lines total)
 - Clear workflow status with flow diagrams
 - Disabled workflows explained with re-enable conditions
 - Reviewer roles and responsibilities clarified
 
 ### 4. Governance Clarity
+
 - Secrets management separated from quality gates
 - Output-type classification documented
 - Architecture diagrams added
 - Best practices examples provided
 
 ### 5. Standards Compliance
+
 - Anti-scaffolding enforcer verified active
 - Guardrails preserved with documentation
 - Disabled workflow documentation standard established
@@ -263,6 +288,7 @@ This PR successfully hardens PromptFoo CI and code-review standards as requested
 5. ✅ Naming cleanup
 
 The repository now has:
+
 - Valid, consistent model IDs across all files
 - Safe PromptFoo workflow patterns
 - Comprehensive workflow documentation

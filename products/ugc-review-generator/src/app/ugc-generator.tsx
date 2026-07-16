@@ -16,7 +16,8 @@ const MODES = [
 type ModeId = (typeof MODES)[number]["id"];
 type UseCase = "local-leads" | "amazon-ugc";
 
-const { buildAmazonReviewPacket, buildLocalLeadPacket, packetToMarkdown } = creativeSystem;
+const { buildAmazonReviewPacket, buildLocalLeadPacket, packetToMarkdown } =
+  creativeSystem;
 
 export default function UgcGenerator() {
   const [mode, setMode] = useState<ModeId>("default");
@@ -83,9 +84,10 @@ export default function UgcGenerator() {
     }
   }
 
-  const isFormEmpty = useCase === 'amazon-ugc'
-    ? !productName?.trim() || !problem?.trim()
-    : !brandName?.trim() || !audience?.trim();
+  const isFormEmpty =
+    useCase === "amazon-ugc"
+      ? !productName?.trim() || !problem?.trim()
+      : !brandName?.trim() || !audience?.trim();
 
   return (
     <div className={`mode-${mode} min-h-screen bg-slate-950 text-slate-100`}>
@@ -97,12 +99,14 @@ export default function UgcGenerator() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl space-y-3">
               <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
-                Reverse-engineer Zeely-style lead ads and UGC scripts in one workspace.
+                Reverse-engineer Zeely-style lead ads and UGC scripts in one
+                workspace.
               </h1>
               <p className="max-w-2xl text-base text-slate-300">
-                Use the new Local Lead mode to turn one offer into overlay copy, a proof-led
-                script, landing-page messaging, and a 30-day content plan inspired by the
-                screenshot workflow. Keep the original Amazon/HeyGen UGC flow for product demos.
+                Use the new Local Lead mode to turn one offer into overlay copy,
+                a proof-led script, landing-page messaging, and a 30-day content
+                plan inspired by the screenshot workflow. Keep the original
+                Amazon/HeyGen UGC flow for product demos.
               </p>
             </div>
             <button
@@ -111,13 +115,15 @@ export default function UgcGenerator() {
               onClick={copyPacket}
               className="rounded-full bg-cyan-300 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isFormEmpty ? 'Complete form to copy' : copyState}
+              {isFormEmpty ? "Complete form to copy" : copyState}
             </button>
           </div>
         </header>
         <section className="grid gap-3 rounded-2xl border border-white/10 bg-black/20 p-4 md:grid-cols-3">
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-semibold text-slate-200">Generator mode</span>
+            <span className="text-sm font-semibold text-slate-200">
+              Generator mode
+            </span>
             <select
               value={useCase}
               onChange={(event) => setUseCase(event.target.value as UseCase)}
@@ -158,11 +164,14 @@ export default function UgcGenerator() {
                 <div>
                   <h2 className="text-xl font-bold">Amazon UGC inputs</h2>
                   <p className="mt-1 text-sm text-slate-300">
-                    Keep the original product-review flow for avatar tools like HeyGen.
+                    Keep the original product-review flow for avatar tools like
+                    HeyGen.
                   </p>
                 </div>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Product name</span>
+                  <span className="mb-2 block text-sm font-medium">
+                    Product name
+                  </span>
                   <input
                     type="text"
                     value={productName}
@@ -172,7 +181,9 @@ export default function UgcGenerator() {
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Problem</span>
+                  <span className="mb-2 block text-sm font-medium">
+                    Problem
+                  </span>
                   <input
                     type="text"
                     value={problem}
@@ -182,18 +193,24 @@ export default function UgcGenerator() {
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Hook type</span>
+                  <span className="mb-2 block text-sm font-medium">
+                    Hook type
+                  </span>
                   <select
                     value={hookType}
                     onChange={(event) => setHookType(event.target.value)}
                     className="w-full rounded-xl border border-white/15 bg-slate-900 p-3"
                   >
-                    <option value="unboxing">Unboxing &amp; first impression</option>
+                    <option value="unboxing">
+                      Unboxing &amp; first impression
+                    </option>
                     <option value="problem">Problem-solving demo</option>
                   </select>
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Affiliate link</span>
+                  <span className="mb-2 block text-sm font-medium">
+                    Affiliate link
+                  </span>
                   <input
                     type="url"
                     value={affiliateLink}
@@ -208,11 +225,14 @@ export default function UgcGenerator() {
                 <div>
                   <h2 className="text-xl font-bold">Local lead inputs</h2>
                   <p className="mt-1 text-sm text-slate-300">
-                    Rebuild the proof + urgency + CTA system shown in the Zeely screenshot.
+                    Rebuild the proof + urgency + CTA system shown in the Zeely
+                    screenshot.
                   </p>
                 </div>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Brand name</span>
+                  <span className="mb-2 block text-sm font-medium">
+                    Brand name
+                  </span>
                   <input
                     type="text"
                     value={brandName}
@@ -221,7 +241,9 @@ export default function UgcGenerator() {
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Business type</span>
+                  <span className="mb-2 block text-sm font-medium">
+                    Business type
+                  </span>
                   <input
                     type="text"
                     value={businessType}
@@ -230,7 +252,9 @@ export default function UgcGenerator() {
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Audience</span>
+                  <span className="mb-2 block text-sm font-medium">
+                    Audience
+                  </span>
                   <input
                     type="text"
                     value={audience}
@@ -239,7 +263,9 @@ export default function UgcGenerator() {
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Pain point</span>
+                  <span className="mb-2 block text-sm font-medium">
+                    Pain point
+                  </span>
                   <input
                     type="text"
                     value={painPoint}
@@ -248,7 +274,9 @@ export default function UgcGenerator() {
                   />
                 </label>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Proof metric</span>
+                  <span className="mb-2 block text-sm font-medium">
+                    Proof metric
+                  </span>
                   <input
                     type="text"
                     value={proofMetric}
@@ -259,7 +287,9 @@ export default function UgcGenerator() {
                 </label>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="block">
-                    <span className="mb-2 block text-sm font-medium">Offer</span>
+                    <span className="mb-2 block text-sm font-medium">
+                      Offer
+                    </span>
                     <input
                       type="text"
                       value={offer}
@@ -268,7 +298,9 @@ export default function UgcGenerator() {
                     />
                   </label>
                   <label className="block">
-                    <span className="mb-2 block text-sm font-medium">Free-trial days</span>
+                    <span className="mb-2 block text-sm font-medium">
+                      Free-trial days
+                    </span>
                     <input
                       type="number"
                       min="1"
@@ -280,7 +312,9 @@ export default function UgcGenerator() {
                   </label>
                 </div>
                 <label className="block">
-                  <span className="mb-2 block text-sm font-medium">Urgency window (hours)</span>
+                  <span className="mb-2 block text-sm font-medium">
+                    Urgency window (hours)
+                  </span>
                   <input
                     type="number"
                     min="1"
@@ -299,7 +333,9 @@ export default function UgcGenerator() {
               <>
                 <article className="rounded-3xl border border-white/10 bg-white/5 p-6">
                   <h2 className="text-xl font-bold">Visual prompt</h2>
-                  <p className="mt-4 text-sm leading-7 text-slate-200">{packet.visualPrompt}</p>
+                  <p className="mt-4 text-sm leading-7 text-slate-200">
+                    {packet.visualPrompt}
+                  </p>
                 </article>
                 <article className="rounded-3xl border border-white/10 bg-white/5 p-6">
                   <h2 className="text-xl font-bold">HeyGen script</h2>
@@ -323,7 +359,8 @@ export default function UgcGenerator() {
                     <div>
                       <h2 className="text-xl font-bold">Overlay copy</h2>
                       <p className="text-sm text-slate-300">
-                        Short stacked captions modeled on the screenshot structure.
+                        Short stacked captions modeled on the screenshot
+                        structure.
                       </p>
                     </div>
                     <span className="rounded-full border border-cyan-300/40 px-3 py-1 text-xs uppercase tracking-[0.2em] text-cyan-200">
@@ -344,11 +381,18 @@ export default function UgcGenerator() {
 
                 <article className="rounded-3xl border border-white/10 bg-white/5 p-6">
                   <h2 className="text-xl font-bold">3-part short script</h2>
-                  <p className="mt-4 text-sm leading-7 text-slate-200">{packet.shortScript}</p>
+                  <p className="mt-4 text-sm leading-7 text-slate-200">
+                    {packet.shortScript}
+                  </p>
                   <div className="mt-5 grid gap-4 md:grid-cols-3">
                     {packet.hooks.map((hook) => (
-                      <div key={hook} className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
-                        <p className="text-sm leading-6 text-slate-200">{hook}</p>
+                      <div
+                        key={hook}
+                        className="rounded-2xl border border-white/10 bg-slate-950/60 p-4"
+                      >
+                        <p className="text-sm leading-6 text-slate-200">
+                          {hook}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -356,8 +400,12 @@ export default function UgcGenerator() {
 
                 <article className="rounded-3xl border border-white/10 bg-white/5 p-6">
                   <h2 className="text-xl font-bold">Landing-page hero</h2>
-                  <h3 className="mt-4 text-2xl font-black">{packet.landingPage.hero}</h3>
-                  <p className="mt-3 text-sm leading-7 text-slate-300">{packet.landingPage.subhead}</p>
+                  <h3 className="mt-4 text-2xl font-black">
+                    {packet.landingPage.hero}
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    {packet.landingPage.subhead}
+                  </p>
                   <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-slate-200">
                     {packet.landingPage.bullets.map((bullet) => (
                       <li key={bullet}>{bullet}</li>
@@ -383,8 +431,13 @@ export default function UgcGenerator() {
                       </thead>
                       <tbody>
                         {packet.contentCalendar.map((entry) => (
-                          <tr key={entry.day} className="border-b border-white/5 align-top">
-                            <td className="px-3 py-3 font-semibold">{entry.day}</td>
+                          <tr
+                            key={entry.day}
+                            className="border-b border-white/5 align-top"
+                          >
+                            <td className="px-3 py-3 font-semibold">
+                              {entry.day}
+                            </td>
                             <td className="px-3 py-3">{entry.format}</td>
                             <td className="px-3 py-3">{entry.angle}</td>
                             <td className="px-3 py-3">{entry.hook}</td>
@@ -397,7 +450,9 @@ export default function UgcGenerator() {
                 </article>
 
                 <article className="rounded-3xl border border-amber-300/20 bg-amber-500/5 p-6">
-                  <h2 className="text-xl font-bold text-amber-100">Compliance checks</h2>
+                  <h2 className="text-xl font-bold text-amber-100">
+                    Compliance checks
+                  </h2>
                   <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-amber-50">
                     {packet.complianceNotes.map((note) => (
                       <li key={note}>{note}</li>
@@ -413,7 +468,8 @@ export default function UgcGenerator() {
           <article className="rounded-2xl bg-slate-950/50 p-5">
             <h2 className="text-lg font-bold">Newsletter capture</h2>
             <p className="mt-2 text-sm text-slate-300">
-              Offer weekly hooks, proof templates, and CTA experiments for local-service ads.
+              Offer weekly hooks, proof templates, and CTA experiments for
+              local-service ads.
             </p>
             <div className="mt-4 flex flex-col gap-3 sm:flex-row">
               <input
@@ -432,7 +488,8 @@ export default function UgcGenerator() {
           <article className="rounded-2xl bg-slate-950/50 p-5">
             <h2 className="text-lg font-bold">Affiliate module</h2>
             <p className="mt-2 text-sm text-slate-300">
-              Pair these scripts with creator gear, lighting kits, or CRM recommendations.
+              Pair these scripts with creator gear, lighting kits, or CRM
+              recommendations.
             </p>
             <a
               href="https://www.amazon.com/"

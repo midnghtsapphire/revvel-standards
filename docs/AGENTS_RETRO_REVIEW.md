@@ -3,7 +3,7 @@
 **Version:** 1.0.0  
 **Date:** 2026-05-01  
 **Author:** Goap / Copilot  
-**Status:** Proposed — Awaiting Audrey Review  
+**Status:** Proposed — Awaiting Audrey Review
 
 ---
 
@@ -16,9 +16,9 @@ The `oAudrey retro — 2026-04-30` issue (and every identical retro issue before
 
 **These issues never get closed.** The retro workflow keeps running, keeps finding the same problems, and keeps opening new issues. Agents read the issues, acknowledge them, propose steps, and nothing changes. This document:
 
-1. Diagnoses **why** the loop is stuck  
-2. Reviews the current AGENTS.md for the specific gaps that perpetuate it  
-3. Proposes concrete changes with rationale, comparison to current text, and why each change will succeed  
+1. Diagnoses **why** the loop is stuck
+2. Reviews the current AGENTS.md for the specific gaps that perpetuate it
+3. Proposes concrete changes with rationale, comparison to current text, and why each change will succeed
 
 ---
 
@@ -28,9 +28,9 @@ The `oAudrey retro — 2026-04-30` issue (and every identical retro issue before
 
 `HTTP 000` from curl means the DNS never resolved and/or no app was ever deployed to DigitalOcean App Platform. Fixing it requires **exactly two human-only actions**:
 
-| Action | Why an Agent Cannot Do It |
-|--------|---------------------------|
-| Set `DIGITALOCEAN_API_TOKEN` GitHub secret | Requires authenticated access to GitHub repo settings → only a human (or an admin PAT) can write secrets |
+| Action                                                                                                                                | Why an Agent Cannot Do It                                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Set `DIGITALOCEAN_API_TOKEN` GitHub secret                                                                                            | Requires authenticated access to GitHub repo settings → only a human (or an admin PAT) can write secrets          |
 | Point `oaudrey.com` nameservers to DigitalOcean in Namecheap (`ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com`) | Requires logging into Namecheap with the `uprisinghope` credentials — an agent has no way to do this autonomously |
 
 No amount of re-running workflows, adding retries, or improving code changes the fact that **the credential and DNS setup must happen once by a human**.
@@ -64,7 +64,7 @@ The retro workflow runs on a **weekly cron** regardless of whether last week's i
 
 **Problem:** This rule makes no distinction between:
 
-- **Code/config blocker** — agent CAN fix (wrong env var name, missing file, broken workflow YAML)  
+- **Code/config blocker** — agent CAN fix (wrong env var name, missing file, broken workflow YAML)
 - **Infrastructure/credential blocker** — agent CANNOT fix (secret not set in GitHub, DNS not pointed, live DigitalOcean app does not exist)
 
 Agents apply the same "try to fix it yourself" logic to both categories. For infrastructure blockers this produces an endless loop of failed attempts without ever escalating to the human who holds the credentials.
@@ -75,10 +75,11 @@ Agents apply the same "try to fix it yourself" logic to both categories. For inf
 
 **Current text (Escalation Guidelines):**
 
-> Escalate only when:  
-> - You've tried 3+ different approaches and all have failed  
-> - The decision requires spending money, deleting data, or changing auth/permissions  
-> - **You need access to credentials you don't have**  
+> Escalate only when:
+>
+> - You've tried 3+ different approaches and all have failed
+> - The decision requires spending money, deleting data, or changing auth/permissions
+> - **You need access to credentials you don't have**
 
 The third bullet IS correct — "credentials you don't have" should trigger escalation. But in practice agents do not recognize `DIGITALOCEAN_API_TOKEN not set` as "credentials I don't have." They treat it as a solvable technical problem (maybe the secret name is wrong? maybe the Doppler sync failed?). The text needs to be explicit that **missing GitHub repo secrets and live DNS/registrar access are always infrastructure blockers requiring human escalation**, regardless of how many approaches are tried.
 
@@ -90,7 +91,7 @@ The third bullet IS correct — "credentials you don't have" should trigger esca
 
 Without this concept, the retro workflow treats HTTP 000 identically whether:  
 (a) the app was deployed but DNS is broken — fixable by agent  
-(b) the app was never deployed and the secret doesn't exist — requires human  
+(b) the app was never deployed and the secret doesn't exist — requires human
 
 Both produce the same `⚠️ Needs Work` output in the retro report.
 
@@ -123,9 +124,9 @@ Both produce the same `⚠️ Needs Work` output in the retro report.
 
 Not all blockers are equal. Before attempting a fix, classify the blocker:
 
-| Blocker Type | Examples | Agent Action |
-|---|---|---|
-| **Code/config blocker** | Wrong env var name, missing file, broken YAML, bad import | Fix autonomously |
+| Blocker Type               | Examples                                                                                  | Agent Action                                  |
+| -------------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------- |
+| **Code/config blocker**    | Wrong env var name, missing file, broken YAML, bad import                                 | Fix autonomously                              |
 | **Infrastructure blocker** | GitHub secret not set, DNS not pointed, live app does not exist, registrar login required | Escalate immediately — do NOT retry in a loop |
 
 **Infrastructure blocker = a human must act.** No code change, no workflow retry, no documentation update can substitute for a human setting a GitHub secret or clicking a DNS configuration in a registrar dashboard.
@@ -143,6 +144,7 @@ Not all blockers are equal. Before attempting a fix, classify the blocker:
 #### Recognizing Infrastructure Blockers
 
 You have an infrastructure blocker when ANY of these are true:
+
 - A GitHub Actions secret is not set (check: `gh secret list --repo <owner>/<repo>`)
 - A DNS record does not resolve (`dig +short <domain>` returns empty)
 - A live cloud app/service does not exist and has never been deployed
@@ -169,6 +171,7 @@ You have an infrastructure blocker when ANY of these are true:
 ### Change 3 — Update SYSTEM_STATE.md oAudrey entry to use "pending human action" state
 
 **Current state entry:**
+
 ```
 | Production server | ❌ | Not deployed (standards repo) |
 | DNS | ❌ | Not deployed (standards repo) |
@@ -177,6 +180,7 @@ You have an infrastructure blocker when ANY of these are true:
 The comment `(standards repo)` implies this is expected — this repo is a standards repo, not a product. But `oaudrey.com` IS a product being deployed from this repo. The ❌ entries should be relabeled as `⏳` with a clear note.
 
 **Proposed entry:**
+
 ```
 | oAudrey App Platform app | ⏳ | Pending: set DIGITALOCEAN_API_TOKEN secret → run deploy-oaudrey.yml |
 | oAudrey DNS (oaudrey.com) | ⏳ | Pending: point oaudrey.com NS to ns1-3.digitalocean.com in Namecheap (uprisinghope) |
@@ -206,6 +210,7 @@ When recurring infrastructure blockers are identified, add a learnings.md entry 
 **Do not:** Run `deploy-oaudrey.yml` without the secret set — it will skip silently  
 **Do:** If the retro reports HTTP 000, check SYSTEM_STATE.md first — if marked ⏳, this is an infrastructure blocker, not a code bug  
 **Human actions required:**
+
 1. Set `DIGITALOCEAN_API_TOKEN` in GitHub repo secrets (DO Dashboard → API → Personal Access Tokens)
 2. In Namecheap (`uprisinghope`): set oaudrey.com nameservers to `ns1.digitalocean.com`, `ns2.digitalocean.com`, `ns3.digitalocean.com`
 3. In DigitalOcean: add oaudrey.com + fieldwork.oaudrey.com as custom domains on the App Platform app
@@ -216,13 +221,13 @@ When recurring infrastructure blockers are identified, add a learnings.md entry 
 
 ## Summary — What Changes, What Is Kept, and Why
 
-| # | What Changes | What Is Kept | Why |
-|---|---|---|---|
-| 1 | New "Infrastructure Blocker Protocol" section in AGENTS.md | All existing autonomy/self-healing rules | Adds a named classification that stops the "retry everything" loop for human-only actions without weakening agent autonomy for code problems |
-| 2 | `oaudrey-retro.yml` deduplication: comment on existing open issue instead of creating a new one | All existing health-check and gap-analysis logic | Stops issue spam; makes the persistent issue the single source of truth for the deployment status |
-| 3 | SYSTEM_STATE.md: `⏳` entries for oAudrey infrastructure | All other status entries | Makes the pending human action visible at step 4 of the required reading order — before agents do any work |
-| 4 | Project-specific context in AGENTS.md updated to reflect oAudrey instead of "Sessiono" | All other context | Correct context = correct decisions from agents on first read |
-| 5 | `learnings.md` entry for the "infrastructure blocker" pattern | All existing learnings | Persistent memory: future agents apply this lesson immediately |
+| #   | What Changes                                                                                    | What Is Kept                                     | Why                                                                                                                                          |
+| --- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | New "Infrastructure Blocker Protocol" section in AGENTS.md                                      | All existing autonomy/self-healing rules         | Adds a named classification that stops the "retry everything" loop for human-only actions without weakening agent autonomy for code problems |
+| 2   | `oaudrey-retro.yml` deduplication: comment on existing open issue instead of creating a new one | All existing health-check and gap-analysis logic | Stops issue spam; makes the persistent issue the single source of truth for the deployment status                                            |
+| 3   | SYSTEM_STATE.md: `⏳` entries for oAudrey infrastructure                                        | All other status entries                         | Makes the pending human action visible at step 4 of the required reading order — before agents do any work                                   |
+| 4   | Project-specific context in AGENTS.md updated to reflect oAudrey instead of "Sessiono"          | All other context                                | Correct context = correct decisions from agents on first read                                                                                |
+| 5   | `learnings.md` entry for the "infrastructure blocker" pattern                                   | All existing learnings                           | Persistent memory: future agents apply this lesson immediately                                                                               |
 
 ---
 
@@ -236,6 +241,7 @@ The changes target the **four structural failure modes** in the current loop:
 4. **Noise accumulation failure** → Fixed by Gap 4/Change 2 (deduplication in retro workflow)
 
 After these changes:
+
 - An agent starting a new session reads GOAP.md → GOAL.md → learnings.md → SYSTEM_STATE.md in order
 - SYSTEM_STATE.md shows `⏳ Pending human action` for oAudrey DNS and app platform
 - The agent reads the exact human steps and creates ONE clear escalation issue with those steps

@@ -61,6 +61,7 @@ cat launch/30-day-plan.md
 ## Success Metrics
 
 Track these daily in `metrics/`:
+
 - Signups
 - Conversions
 - Revenue
@@ -70,10 +71,10 @@ Track these daily in `metrics/`:
 ---
 
 **Launch Date:** 2026-06-01  
-**Days Remaining:** 30  
+**Days Remaining:** 30
 
 Let's ship this! 🚢
 
 ---
 
-*Generated on 2026-05-02T03:41:46Z by autonomous-product-launcher.sh*
+_Generated on 2026-05-02T03:41:46Z by autonomous-product-launcher.sh_

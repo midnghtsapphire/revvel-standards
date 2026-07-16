@@ -18,13 +18,13 @@ Think of it as the **instruction manual for the whole machine**.
 
 ## Documents in This Folder
 
-| File | What It Is | Best For |
-|---|---|---|
-| [`MASTER_FLOW_SIMPLE.md`](./MASTER_FLOW_SIMPLE.md) | Plain numbered steps — written for an 8-year-old | Quick reference, onboarding |
-| [`MASTER_FLOW_WIREFRAME.md`](./MASTER_FLOW_WIREFRAME.md) | ASCII box-and-arrow diagram | Developers, at-a-glance architecture |
-| [`MASTER_FLOW_3D.md`](./MASTER_FLOW_3D.md) | Mermaid layered flow chart (3D-style) | Presentations, visual thinkers |
-| [`TOOLS_CATALOG.md`](./TOOLS_CATALOG.md) | Every tool, API, MCP, CLI with description | Deep reference |
-| [`TOOLS_CATALOG.csv`](./TOOLS_CATALOG.csv) | Same data as CSV for Excel / database upload | Spreadsheets, databases |
+| File                                                     | What It Is                                       | Best For                             |
+| -------------------------------------------------------- | ------------------------------------------------ | ------------------------------------ |
+| [`MASTER_FLOW_SIMPLE.md`](./MASTER_FLOW_SIMPLE.md)       | Plain numbered steps — written for an 8-year-old | Quick reference, onboarding          |
+| [`MASTER_FLOW_WIREFRAME.md`](./MASTER_FLOW_WIREFRAME.md) | ASCII box-and-arrow diagram                      | Developers, at-a-glance architecture |
+| [`MASTER_FLOW_3D.md`](./MASTER_FLOW_3D.md)               | Mermaid layered flow chart (3D-style)            | Presentations, visual thinkers       |
+| [`TOOLS_CATALOG.md`](./TOOLS_CATALOG.md)                 | Every tool, API, MCP, CLI with description       | Deep reference                       |
+| [`TOOLS_CATALOG.csv`](./TOOLS_CATALOG.csv)               | Same data as CSV for Excel / database upload     | Spreadsheets, databases              |
 
 ---
 
@@ -56,9 +56,11 @@ If you rename a document or move a folder, the workflow will catch it on the nex
 ## Metadata (Auto-Updated)
 
 <!-- SYNC-META-START -->
+
 - **Last sync:** 2026-05-05
 - **Total docs in repo:** 582
 - **Total tools catalogued:** 80
 - **Workflow:** `.github/workflows/flow-chart-sync.yml`
 - **Script:** `scripts/sync-flow-charts.js`
+
 <!-- SYNC-META-END -->

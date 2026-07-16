@@ -9,13 +9,12 @@
 
 ---
 
-
 **Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-09  
 **Researcher:** Jules (Google) + OpenRouter  
 **Research Date:** 2026-07-09  
-**WR Status:** 🟡 In Progress  
+**WR Status:** 🟡 In Progress
 
 ## Issue Context
 
@@ -62,7 +61,6 @@ wr/issues/issue-15506-fleet-phase-2-label-routing-workflow-instantiation.md:198:
 wr/issues/issue-15506-fleet-phase-2-label-routing-workflow-instantiation.md:203:23 error MD026/no-trailing-punctuation Trailing punctuation in heading [Punctuation: ':']
 
 Exited with code exit status 1
-
 
 ### Required Bundle
 
@@ -114,18 +112,19 @@ _No response_
 
 ## Repository Metadata
 
-| Property | Value |
-| --- | --- |
-| Stars | N/A |
-| Open Issues | N/A |
-| Private | No |
-| Archived | No |
+| Property    | Value |
+| ----------- | ----- |
+| Stars       | N/A   |
+| Open Issues | N/A   |
+| Private     | No    |
+| Archived    | No    |
 
 ## Research Checklist
 
 <!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
 <!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 <!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -137,6 +136,7 @@ _No response_
 ## Research Findings
 
 <!-- revvel-research-findings -->
+
 Source packet: `docs/research-engine/run-28975883294.md`
 
 # WR-Ready Research Packet: Six CircleCI Errors
@@ -146,6 +146,7 @@ Source packet: `docs/research-engine/run-28975883294.md`
 **Fix the 6 markdown linting errors immediately** in `wr/issues/issue-15506-fleet-phase-2-label-routing-workflow-instantiation.md` to unblock the CI/CD pipeline. This is a **P0 blocking issue** preventing deployment.
 
 **Specific fixes required:**
+
 - Line 12: Remove extra blank line (MD012)
 - Line 70: Convert second H1 to H2 heading (MD025)
 - Lines 188, 193, 198, 203: Remove trailing colons from headings (MD026)
@@ -156,7 +157,8 @@ Source packet: `docs/research-engine/run-28975883294.md`
 
 **Primary Audience:** Internal development teams using CircleCI with markdown documentation standards
 
-**Why:** 
+**Why:**
+
 - **Urgent Pain:** Build failures blocking deployment pipelines
 - **Frequency:** Common issue affecting developer productivity
 - **Impact:** 15-30 minute delays per occurrence, multiplied across team
@@ -166,38 +168,42 @@ Source packet: `docs/research-engine/run-28975883294.md`
 ## 3. Marketing and SEO Plan
 
 **Target Keywords:**
+
 - "CircleCI markdown lint errors" (high intent)
 - "fix MD012 MD025 MD026 errors" (solution-focused)
 - "CircleCI pipeline failed markdown" (problem-aware)
 
 **Content Strategy:**
+
 - **Landing Page:** "Fix CircleCI Markdown Lint Errors: Complete Guide"
 - **Meta Description:** "Resolve CircleCI markdown linting failures (MD012, MD025, MD026) with step-by-step fixes. Unblock your CI/CD pipeline in minutes."
-- **FAQ Schema:** 
+- **FAQ Schema:**
   - "How to fix MD012 multiple blank lines in CircleCI?"
   - "Why does CircleCI fail on MD025 single title violations?"
   - "What is exit status 1 in CircleCI?"
 
 ## 4. Competitor and GitHub Star Intelligence
 
-| Tool | Stars | Last Commit | Pricing | Key Differentiator |
-|------|-------|-------------|---------|-------------------|
-| [markdownlint](https://github.com/DavidAnson/markdownlint) | 16.7k | June 2024 | Free (OSS) | Most popular, VSCode extension |
-| [markdownlint-cli2](https://github.com/DavidAnson/markdownlint-cli2) | 1.3k | May 2024 | Free (OSS) | Faster, better glob support |
-| [remark-lint](https://github.com/remarkjs/remark-lint) | 1.5k | June 2024 | Free (OSS) | Plugin ecosystem, extensible |
-| [Vale](https://github.com/errata-ai/vale) | 3.4k | May 2024 | Free (OSS), Paid tiers | Advanced style guide enforcement |
-| [Super-Linter](https://github.com/github/super-linter) | 9.8k | May 2024 | Free (OSS) | All-in-one, includes markdownlint |
+| Tool                                                                 | Stars | Last Commit | Pricing                | Key Differentiator                |
+| -------------------------------------------------------------------- | ----- | ----------- | ---------------------- | --------------------------------- |
+| [markdownlint](https://github.com/DavidAnson/markdownlint)           | 16.7k | June 2024   | Free (OSS)             | Most popular, VSCode extension    |
+| [markdownlint-cli2](https://github.com/DavidAnson/markdownlint-cli2) | 1.3k  | May 2024    | Free (OSS)             | Faster, better glob support       |
+| [remark-lint](https://github.com/remarkjs/remark-lint)               | 1.5k  | June 2024   | Free (OSS)             | Plugin ecosystem, extensible      |
+| [Vale](https://github.com/errata-ai/vale)                            | 3.4k  | May 2024    | Free (OSS), Paid tiers | Advanced style guide enforcement  |
+| [Super-Linter](https://github.com/github/super-linter)               | 9.8k  | May 2024    | Free (OSS)             | All-in-one, includes markdownlint |
 
 **Market Position:** Saturated OSS market with low switching costs. Differentiation requires unique workflow automation or better error reporting.
 
 ## 5. Chatter and Demand Signals
 
 **Common Complaints:**
-- "CircleCI blocked my PR for a double blank line" 
+
+- "CircleCI blocked my PR for a double blank line"
 - "Why are markdown errors blocking production?"
 - "Can't we just auto-fix these?"
 
 **Channels:**
+
 - GitHub Issues on markdownlint repos
 - Stack Overflow (tags: circleci, markdownlint)
 - CircleCI Discuss forums
@@ -207,11 +213,13 @@ Source packet: `docs/research-engine/run-28975883294.md`
 ## 6. Factual Validation and Evidence Gaps
 
 **Verified Facts:**
+
 - ✅ 6 specific markdown linting errors with line numbers
 - ✅ Standard markdownlint rules (MD012, MD025, MD026)
 - ✅ Exit status 1 indicates pipeline failure
 
 **Evidence Gaps:**
+
 - ❌ Cannot verify actual file content without repo access
 - ❌ No CircleCI build URL provided
 - ❌ Markdownlint configuration unknown
@@ -219,12 +227,14 @@ Source packet: `docs/research-engine/run-28975883294.md`
 ## 7. Build Requirements and Acceptance Gates
 
 **Acceptance Criteria:**
+
 - [ ] All 6 markdown linting errors resolved
 - [ ] CircleCI pipeline passes successfully
 - [ ] Document renders correctly in markdown viewers
 - [ ] No new linting violations introduced
 
 **Implementation Requirements:**
+
 1. Fix markdown violations in target file
 2. Verify pipeline passes
 3. Add pre-commit hooks to prevent recurrence
@@ -233,6 +243,7 @@ Source packet: `docs/research-engine/run-28975883294.md`
 ## 8. Code Review Agent Packet
 
 ### For Bito AI
+
 ```yaml
 task: Fix markdown linting errors
 file: wr/issues/issue-15506-fleet-phase-2-label-routing-workflow-instantiation.md
@@ -249,13 +260,17 @@ errors:
 ```
 
 ### For Coderabbit
+
 Review the markdown file for:
+
 1. Multiple consecutive blank lines (only 1 allowed)
 2. Multiple H1 headings (only 1 per document)
 3. Trailing punctuation in headings (remove colons)
 
 ### For Ralph Loop
+
 Validate that after fixes:
+
 - Markdown renders correctly
 - No new linting violations introduced
 - CircleCI pipeline passes
@@ -263,6 +278,7 @@ Validate that after fixes:
 ## 9. Automatic Fix and Commit Queue
 
 ### Immediate Fix Script
+
 ```bash
 #!/bin/bash
 FILE="wr/issues/issue-15506-fleet-phase-2-label-routing-workflow-instantiation.md"
@@ -288,6 +304,7 @@ This unblocks the CircleCI pipeline."
 ```
 
 ### Pre-commit Hook
+
 ```yaml
 # .pre-commit-config.yaml
 repos:
@@ -295,13 +312,13 @@ repos:
     rev: v0.37.0
     hooks:
       - id: markdownlint-fix
-        args: ['--fix']
+        args: ["--fix"]
 ```
 
 ## 10. Labels to Apply
 
 - `ci-blocker` (highest priority)
-- `markdown-lint` 
+- `markdown-lint`
 - `auto-fixable`
 - `documentation`
 - `quick-fix`
@@ -312,6 +329,7 @@ repos:
 **Current Tool:** Likely using markdownlint or markdownlint-cli
 
 **Best Alternatives Ranked:**
+
 1. **markdownlint-cli2** - Faster performance, better configuration, backward compatible
 2. **remark-lint** - More extensible but requires ecosystem knowledge
 3. **textlint** - Overkill for markdown-only use case
@@ -323,6 +341,7 @@ repos:
 **Overall Confidence: 92/100**
 
 **Per-Lane Scores:**
+
 - Echo (Market Positioning): 85 - Clear technical issue, limited market data
 - Noimos (SEO): 88 - Strong keyword opportunities identified
 - Iris (Competitor): 90 - Comprehensive tool comparison available
@@ -375,11 +394,11 @@ N/A — pending Jules refinement
 <!-- Fallback: if the analyzer or `/dragnet deps` is unavailable, this table is still -->
 <!-- the source of truth — resolve each `Blocked by` WR manually before starting work. -->
 
-| Field | Value |
-| --- | --- |
+| Field                           | Value                          |
+| ------------------------------- | ------------------------------ |
 | `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
-| Blocked by | N/A — pending Jules refinement |
-| Blocks (downstream WRs) | N/A — pending Jules refinement |
+| Blocked by                      | N/A — pending Jules refinement |
+| Blocks (downstream WRs)         | N/A — pending Jules refinement |
 
 N/A — pending Jules refinement
 
@@ -395,11 +414,11 @@ N/A — pending Jules refinement
      Record the superseded WR/issue reference and the reason for replacement below. -->
 <!-- If nothing is superseded, write "N/A — new work, no prior implementation." -->
 
-| Field | Value |
-| --- | --- |
-| Supersedes WR/issue | N/A — pending Jules refinement |
+| Field                  | Value                          |
+| ---------------------- | ------------------------------ |
+| Supersedes WR/issue    | N/A — pending Jules refinement |
 | Reason for replacement | N/A — pending Jules refinement |
-| Archival status | N/A — pending Jules refinement |
+| Archival status        | N/A — pending Jules refinement |
 
 <!-- Archival status options: COMMENTED-OUT (code commented with REVVEL-DISABLED),
      DELETED-WITH-RATIONALE (human-ratified deletion, see RVS-AGENT-001 §7),
