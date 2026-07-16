@@ -1,66 +1,38 @@
----
-name: Lint Markdown (lint-md)
+# Markdown lint — markdownlint-cli2 (David Anson). Single markdown gate for the repo.
+# Replaced the @lint-md action 2026-07-16: it was a duplicate linter with conflicting rules.
+# Config: .markdownlint.jsonc
+name: Lint Markdown (markdownlint-cli2)
 
 on:
+  pull_request:
+    paths: ["**/*.md"]
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+    paths: ["**/*.md"]
+  workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
-  lint-markdown:
-    name: lint-md
+  markdownlint:
+    name: markdownlint-cli2
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-
+    timeout-minutes: 15
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
-          fetch-depth: 0
-
-      - name: Determine changed Markdown files
-        id: changed-markdown
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PUSH_BEFORE_SHA: ${{ github.event.before }}
-          PUSH_HEAD_SHA: ${{ github.sha }}
-        run: |
-          set -euo pipefail
-          trap 'echo "::error::Failed to determine changed Markdown files."' ERR
-          ZERO_SHA="0000000000000000000000000000000000000000"
-
-          if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            BASE_SHA="$PR_BASE_SHA"
-            HEAD_SHA="$PR_HEAD_SHA"
-          else
-            BASE_SHA="$PUSH_BEFORE_SHA"
-            HEAD_SHA="$PUSH_HEAD_SHA"
-          fi
-
-          if [[ -z "$BASE_SHA" || "$BASE_SHA" == "$ZERO_SHA" ]]; then
-            CHANGED_MARKDOWN_FILES="$(git diff-tree --no-commit-id --name-only -r "$HEAD_SHA" -- '*.md' | tr '\n' ' ')"
-          else
-            CHANGED_MARKDOWN_FILES="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" -- '*.md' | tr '\n' ' ')"
-          fi
-
-          echo "files=$CHANGED_MARKDOWN_FILES" >> "$GITHUB_OUTPUT"
-
-      - name: Skip when no Markdown files changed
-        if: steps.changed-markdown.outcome == 'success' && steps.changed-markdown.outputs.files == ''
-        run: echo "::notice::No Markdown changes detected."
-
-      - name: Lint Markdown
-        if: steps.changed-markdown.outcome == 'success' && steps.changed-markdown.outputs.files != ''
-        uses: lint-md/github-action@v0.2.0
+      - name: Run markdownlint-cli2
+        uses: DavidAnson/markdownlint-cli2-action@v23
         with:
-          files: ${{ steps.changed-markdown.outputs.files }}
-          configFile: '.lintmdrc'
-          failOnWarnings: 'false'
+          globs: |
+            **/*.md
+            !node_modules/**
+            !.git/**
+            !dist/**
+            !vendor/**
+            !wr/issues/**
+            !docs/agents/claude/transcripts/**
+          config: .markdownlint.jsonc
+          fix: false
