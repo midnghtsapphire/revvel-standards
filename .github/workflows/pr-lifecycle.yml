@@ -94,7 +94,7 @@ on:
       - "Docs Freshness Check"
       - "Fix-WR Gate"
       - "Intelligent Code Quality Scanner"
-      - "Lint Markdown (lint-md)"
+      - "Lint Markdown (markdownlint-cli2)"
       - "No Root Junk"
       - "No-Destroy Guard"
       - "SAML SSO Registration Check"

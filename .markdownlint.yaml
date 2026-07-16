@@ -1,0 +1,69 @@
+# markdownlint configuration
+# See: https://github.com/DavidAnson/markdownlint/blob/main/README.md#configure
+
+# Default: enable all rules
+default: true
+
+# Disable rules we're not enforcing yet (technical debt)
+MD001: false  # heading-increment-by-one (structural fix needed)
+MD003: false  # heading-style (inconsistent style in templates)
+MD005: false  # list-indent (various indentation patterns)
+MD007: false  # ul-indent (unordered list indentation)
+MD018: false  # no-missing-space-atx (space after heading marker)
+MD023: false  # heading-start-left (heading alignment)
+MD025: false  # single-title (multiple top-level headings in templates)
+MD026: false  # no-trailing-punctuation (punctuation in headings)
+MD029: false  # ol-prefix (ordered list prefix)
+MD034: false  # no-bare-urls (bare URLs in text)
+MD037: false  # no-space-in-emphasis (spaces in emphasis)
+MD038: false  # no-space-in-code (spaces in code)
+MD042: false  # no-empty-links (empty link text)
+MD045: false  # image-alt-text (missing alt text)
+MD046: false  # code-block-style (code block fence style)
+MD051: false  # link-fragments (link fragment style)
+MD052: false  # reference-links (reference link style)
+MD055: false  # table-pipe-style (table pipe alignment)
+MD056: false  # table-columns (table column count)
+
+# Enable these important rules
+MD002: true   # first-line-heading
+MD004: true   # ul-style
+MD006: true   # ul-start-left
+MD008: true   # no-hard-tabs
+MD009: true   # no-trailing-spaces
+MD010: true   # no-hard-tabs
+MD011: true   # no-reversed-links
+MD012: true   # no-multiple-blanks
+MD013:        # line-length
+  line_length: 120
+  code_blocks: true
+  code_block_line_length: 120
+MD014: true   # commands-show-output
+MD015: true   # commands-show-newline
+MD016: true   # headers-increment
+MD017: true   # no-multiple-space-blockquote
+MD019: true   # no-multiple-space-atx
+MD020: true   # no-space-in-closing-atx
+MD021: true   # no-multiple-space-closed-atx
+MD022: true   # blanks-around-headings
+MD024: true   # no-duplicate-heading
+MD027: true   # no-multiple-space-blockquote
+MD028: true   # no-blanks-blockquote
+MD030: true   # list-marker-space
+MD031: true   # blanks-around-fences
+MD032: true   # blanks-around-lists
+MD033: true   # no-inline-html
+MD035: true   # hr-style
+MD036: true   # no-emphasis-as-heading
+MD039: true   # no-space-in-links
+MD040: true   # fenced-code-language
+MD041: true   # first-line-h1
+MD043: true   # required-headings
+MD044: true   # proper-names
+MD047: true   # single-trailing-newline
+MD048: true   # code-fence-style
+MD049: true   # emphasis-style
+MD050: true   # strong-style
+
+# Specify which rules should cause CI to fail
+extends: default
