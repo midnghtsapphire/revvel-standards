@@ -9,9 +9,6 @@ on:
         type: string
   issues:
     types: [labeled]
-        description: 'Issue number to work on'
-        required: true
-        type: string
   issue_comment:
     types: [created]
 
@@ -25,9 +22,12 @@ env:
 
 jobs:
   jules-agent:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.label.name, 'jules')
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/jules'))
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && contains(github.event.label.name, 'jules')) ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '/jules'))
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,58 +43,15 @@ jobs:
       - name: Determine issue number
         id: issue
         run: |
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run Jules agent
-        run: |
-          echo "Running Jules coding agent for issue #${{ inputs.issue_number }}"
-          # Agent logic would go here
-
-      - name: Create PR
-        run: |
-          BRANCH="jules/issue-${{ inputs.issue_number }}"
-          git checkout -b "$BRANCH" || git checkout "$BRANCH"
-          git config user.name "jules-bot"
-          git config user.email "jules-bot@users.noreply.github.com"
-          git add -A
-          git diff --cached --quiet || git commit -m "chore: jules agent changes for #${{ inputs.issue_number }}"
-          git push -u origin "$BRANCH" || true
-          gh pr create --title "jules: fixes for #${{ inputs.issue_number }}" \
-            --body "Closes #${{ inputs.issue_number }}" \
-            --base main --head "$BRANCH" || true
-          gh issue edit "${{ inputs.issue_number }}" --add-label "wr:pr-open" || true
-      - name: Determine issue number
-        id: issue
-        run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
+            echo "number=${{ github.event.inputs.issue_number }}" >> $GITHUB_OUTPUT
           else
             echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create branch and apply changes
-        run: |
-          ISSUE_NUM="${{ steps.issue.outputs.number }}"
-          BRANCH="jules/issue-${ISSUE_NUM}"
-          git config user.name "jules-coding-agent[bot]"
-          git config user.email "jules-agent@users.noreply.github.com"
-          git checkout -b "$BRANCH" || git checkout "$BRANCH"
-          echo "Agent scaffolding for issue #${ISSUE_NUM}" >> .jules-agent-log
-          git add -A
-          git commit -m "chore(jules): scaffold changes for #${ISSUE_NUM}" || echo "No changes"
-          git push -u origin "$BRANCH" || true
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Open PR
-        run: |
-          ISSUE_NUM="${{ steps.issue.outputs.number }}"
-          BRANCH="jules/issue-${ISSUE_NUM}"
-          gh pr create \
-            --title "fix: automated changes for #${ISSUE_NUM}" \
-            --body "Closes #${ISSUE_NUM}" \
-            --base main \
-            --head "$BRANCH" || echo "PR may already exist"
-          gh issue edit "$ISSUE_NUM" --add-label "wr:pr-open" || true
       - name: Create branch and stub commit
         id: branch
         run: |
@@ -117,7 +74,7 @@ jobs:
             --title "chore(jules): work on #${ISSUE}" \
             --body "Closes #${ISSUE}" \
             --head "${{ steps.branch.outputs.branch }}" \
-            --base main
+            --base main || echo "PR may already exist"
 
       - name: Label issue
         run: |
