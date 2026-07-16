@@ -1,3 +1,4 @@
+<!-- markdownlint-disable-file MD046 -->
 # WR: [WR] How could the attached script be used? implemented
 
 **Issue:** #15714  
