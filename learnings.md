@@ -173,3 +173,17 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 
 **Next Action:** Fix WR-A3 dead script paths (quick grep + edit), then trace WR-A2 state engine and add CI guard. After that, push full branch and open PR for review. The Markdown linting errors (800+) can be addressed in a follow-up maintenance PR—critical path is green workflows + tests first.
 
+---
+
+**Date/Time:** 2026-07-16T01:00:00Z
+
+**Task Attempted:** Verify status of WR-A3 (dead script paths) and clarify what's blocking CI success. Audited all script references in workflows to confirm which are actually missing and whether they're properly guarded.
+
+**Outcome:** [COMPLETE] WR-A3 is NOT a blocker—all script references are properly guarded with conditional checks. No workflows will fail if optional scripts are missing.
+
+**Root Cause of Failure (If any):** Prior learnings.md entry listed "dead scripts" but mischaracterized the issue: agent-fallback.yml and ship-to-market.yml both use `if [ -f scripts/... ]` guards, so missing scripts are skipped gracefully. The vine-to-marketplace.yml reference to `index.js` calls `reesereviews/vine-marketplace/index.js`, which exists. No dead scripts = no actual WR-A3.
+
+**Self-Healing Fix / Learned Lesson:** When auditing for dead code paths, verify not just presence but conditional context. A "dead" script reference is only harmful if called unconditionally. All workflow script calls in this codebase already use file-existence guards (best practice). Updated learnings.md to reflect this; the fix-pattern catalog in `standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md` should note: guard-first code prevents false alarms and cascading failures.
+
+**Next Action:** Focus on 40 failing tests as the real blocker. Prioritize by impact: (1) auto-resolve-mechanical-conflicts.test.js, checkbox-diff.test.js, credential-autonomy-agent.test.js (core fleet logic), (2) CI diagnosis tests (ci-error-prevention chain), (3) WR rendering + form sync. Then address WR-A2 state.json. Markdown linting (800+ errors in templates/generated) is deferred per user's "orderly matter" preference.
+
