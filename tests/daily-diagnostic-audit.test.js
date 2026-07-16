@@ -154,7 +154,7 @@ test('parseDiagnosticResponse strips a ```json fence', () => {
 test('parseDiagnosticResponse rejects unparseable text', () => {
   const result = parseDiagnosticResponse('not json at all');
   assert.strictEqual(result.valid, false);
-  assert.match(result.error, /unparseable/);
+  assert.match(result.error, /unparsable/);
 });
 
 test('parseDiagnosticResponse rejects empty response', () => {

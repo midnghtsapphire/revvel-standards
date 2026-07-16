@@ -64,8 +64,6 @@ const FALLBACK_MARKER = "<!-- octopus-review-fallback -->";
 // The GitHub App login Octopus posts as (see octopus-route.yml).
 const OCTOPUS_BOT_LOGIN = "octopus-review[bot]";
 
-const MAX_DIFF_CHARS = parseInt(process.env.MAX_DIFF_CHARS || "60000", 10);
-
 // Retry policy for GitHub API rate limiting. The issue_comment trigger is
 // unscoped (fires on every comment on every issue/PR in the repo), so a
 // single burst of bot chatter (Vercel pings, CI-status, ship-quality-check,
@@ -322,7 +320,6 @@ async function githubRequestOnce({
   pathName,
   method = "GET",
   payload,
-  accept,
 }) {
   const token = process.env.GITHUB_TOKEN || "";
   const result = await rawRequest({
@@ -369,15 +366,20 @@ async function githubRequest({
     } catch (err) {
       lastErr = err;
       if (attempt === RATE_LIMIT_MAX_RETRIES) break;
-      await _sleep(computeRetryDelayMs(attempt, {}));
+      await _sleep(computeRetryDelayMs({}, attempt));
       continue;
     }
 
     if (res.status >= 200 && res.status < 300) {
-      return res;
+      return JSON.parse(res.body);
     }
 
     const kind = classifyRateLimit(res.status, res.headers, res.body);
+    if (kind === null) {
+      const err = new Error(`GitHub HTTP ${res.status}`);
+      err.status = res.status;
+      throw err;
+    }
     if (kind === "primary") {
       const waitMs = computePrimaryResetWaitMs(res.headers, _now());
       if (waitMs !== null) {
@@ -399,7 +401,7 @@ async function githubRequest({
       }
       // No usable reset — fall through to short backoff (best effort).
       if (attempt < RATE_LIMIT_MAX_RETRIES) {
-        await _sleep(computeRetryDelayMs(attempt, res.headers));
+        await _sleep(computeRetryDelayMs(res.headers, attempt));
         continue;
       }
       const err = new Error(
@@ -411,8 +413,19 @@ async function githubRequest({
     }
 
     if (kind === "secondary") {
+      const retryAfterMs = parseRetryAfterMs(res.headers);
+      if (retryAfterMs !== null && retryAfterMs > RATE_LIMIT_MAX_INPROCESS_WAIT_MS) {
+        const err = new Error(
+          `github secondary rate limit; Retry-After ${Math.round(retryAfterMs / 1000)}s ` +
+            `exceeds the in-process wait budget ${Math.round(RATE_LIMIT_MAX_INPROCESS_WAIT_MS / 1000)}s. ` +
+            `Giving up.`,
+        );
+        err.rateLimit = "secondary";
+        err.status = res.status;
+        throw err;
+      }
       if (attempt < RATE_LIMIT_MAX_RETRIES) {
-        await _sleep(computeRetryDelayMs(attempt, res.headers));
+        await _sleep(computeRetryDelayMs(res.headers, attempt));
       }
     }
   }

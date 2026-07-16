@@ -273,7 +273,7 @@ test('githubRequest gives up after exhausting retries on a persistent header-les
   try {
     await assert.rejects(
       () => githubRequest({ pathName: '/repos/midnghtsapphire/revvel-standards/pulls/1/reviews' }),
-      /GitHub HTTP 403/
+      /primary rate limit/
     );
     // RATE_LIMIT_MAX_RETRIES retries + the initial attempt.
     const maxRetries = parseInt(process.env.RATE_LIMIT_MAX_RETRIES, 10);
@@ -323,7 +323,7 @@ test('githubRequest gives up immediately (no wasted retries) when a PRIMARY limi
   try {
     await assert.rejects(
       () => githubRequest({ pathName: '/repos/midnghtsapphire/revvel-standards/pulls/3/reviews' }),
-      /primary rate limit, reset too far out/
+      /exceeds in-process wait ceiling/
     );
     const elapsedMs = Date.now() - start;
     assert.strictEqual(
