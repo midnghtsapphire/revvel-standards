@@ -1,19 +1,34 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-16T05:11:15.811Z",
+  "generated_at": "2026-07-16T06:50:04.350Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 29475761480,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29475761480",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29475179520,
+            "name": "Secrets Presence Ledger",
+            "path": ".github/workflows/secrets-backup-daily.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29475179520",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
