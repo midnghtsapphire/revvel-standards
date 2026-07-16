@@ -10,9 +10,10 @@ permissions:
   issues: write
 
 jobs:
-  audit:
+  diagnose:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: env.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN
     steps:
       - uses: actions/checkout@v4
         with:

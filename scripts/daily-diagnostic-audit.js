@@ -17,15 +17,28 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const yaml = require('yaml');
 
 const MAX_SCOPE_FILES = 8;
 const WINDOW_HOURS = 48;
-const SCOPE_GLOBS = [/^\.github\/workflows\/.*\.ya?ml$/, /^scripts\/.*\.js$/];
+const SCOPE_GLOBS = [
+  { dir: '.github/workflows/', ext: '.yml' },
+  { dir: 'scripts/', ext: '.js' },
+];
 const MAX_FILE_BYTES = 20000;
 
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const MODEL_PRIMARY = 'anthropic/claude-3.5-sonnet';
 const MODEL_FALLBACK = 'deepseek/deepseek-r1';
+
+const WR_LABELS = ['work-request', 'auto-diagnosed'];
+const WR_ASSIGNEES = ['oaudrey'];
+
+const LEARNINGS_PLACEHOLDER = `This was flagged by the daily-diagnostic-audit cron (file changed within the last {SINCE_HOURS}h).
+See \`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md\` for the fix-pattern catalog.
+
+**Verify the proposed fix before applying** — the model can be wrong. Also
+consider whether this represents a new catalog-worthy pattern.`;
 
 function log(...args) {
   console.log('[daily-diagnostic-audit]', ...args);
@@ -33,6 +46,32 @@ function log(...args) {
 
 function warn(...args) {
   console.warn('[daily-diagnostic-audit][warn]', ...args);
+}
+
+function parseGitLogNameOnly(raw) {
+  if (!raw) return [];
+  const seen = new Set();
+  const result = [];
+  for (const line of String(raw).split('\n')) {
+    const f = line.trim();
+    if (!f || seen.has(f)) continue;
+    seen.add(f);
+    result.push(f);
+  }
+  return result;
+}
+
+function filterInScope(files) {
+  const result = [];
+  for (const f of files) {
+    for (const glob of SCOPE_GLOBS) {
+      if (f.startsWith(glob.dir) && f.endsWith(glob.ext)) {
+        result.push(f);
+        break;
+      }
+    }
+  }
+  return result;
 }
 
 function getChangedFiles() {
@@ -71,9 +110,9 @@ function loadPlaybookContext() {
   const p = 'standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md';
   if (fs.existsSync(p)) {
     const buf = fs.readFileSync(p, 'utf8');
-    return buf.length > 8000 ? buf.slice(0, 8000) : buf;
+    return buf.length > 12000 ? buf.slice(0, 12000) : buf;
   }
-  return `Fix-pattern catalog (embedded fallback):
+  return `Pattern Catalog (embedded fallback):
 1. Missing continue-on-error/allowError on non-critical steps.
 2. Unguarded label races (concurrent issue re-labeling without lock).
 3. Token permission gaps (missing scopes for POST endpoints).
@@ -84,16 +123,28 @@ function loadPlaybookContext() {
 8. Fail-closed on optional integrations (no OPENROUTER_API_KEY should not crash).`;
 }
 
-function buildPrompt(files, playbook) {
-  const fileBlocks = files
-    .map((f) => `--- FILE: ${f} ---\n${readFileBounded(f) || '(unreadable)'}\n`)
-    .join('\n');
+function loadDiagnosticModels() {
+  const repoRoot = path.join(__dirname, '..');
+  const modelConfigPath = path.join(repoRoot, '.github', 'agent-models.yml');
+  try {
+    const content = fs.readFileSync(modelConfigPath, 'utf8');
+    const config = yaml.parse(content);
+    const profile = config.profiles?.review || {};
+    const models = [];
+    if (profile.primary) models.push(profile.primary);
+    if (profile.fallback) models.push(profile.fallback);
+    return models.length > 0 ? models : [MODEL_PRIMARY, MODEL_FALLBACK];
+  } catch {
+    return [MODEL_PRIMARY, MODEL_FALLBACK];
+  }
+}
 
-  const system = `You are a code auditor. Diagnose AT MOST ONE real, code-level bug in the provided files.
+function buildSystemPrompt(playbookContext) {
+  return `You are a code auditor. Diagnose AT MOST ONE real, code-level bug in the provided files.
 
 RULES:
 - If you cannot ground a diagnosis in the actual code shown, return {"issueFound": false}.
-- Do NOT manufacture findings. Do NOT guess.
+- Do NOT manufacture an issue and do not invent a file, line, or behavior. Do NOT guess.
 - If you find something but can't propose a concrete fix, set proposedFix to "No clear fix — needs human investigation".
 - Confidence must be one of: "high", "medium", "low". Use "low" if unsure.
 - Return JSON only, matching this schema:
@@ -101,19 +152,50 @@ RULES:
   "issueFound": boolean,
   "confidence": "high"|"medium"|"low",
   "file": "path/to/file",
-  "title": "short summary",
-  "category": "one of the catalog patterns or 'other'",
-  "description": "what the bug is and why it matters",
+  "line": "line number or range",
+  "patternCategory": "one of the catalog patterns or 'other'",
+  "diagnosis": "what the bug is and why it matters",
   "proposedFix": "concrete code-level fix, or 'No clear fix — needs human investigation'",
   "reasoning": "why you believe this, grounded in the file content"
 }
 
 FIX-PATTERN CATALOG:
-${playbook}`;
+${playbookContext}`;
+}
 
-  const user = `Audit these files (changed in the last ${WINDOW_HOURS}h):
+function buildUserPrompt(scopeFiles, opts = {}) {
+  const sinceHours = opts.sinceHours || WINDOW_HOURS;
+  const maxPromptChars = opts.maxPromptChars || 50000;
 
-${fileBlocks}`;
+  let promptText = `Audit these files (changed in the last ${sinceHours} hours):\n\n`;
+  let charCount = promptText.length;
+
+  for (let i = 0; i < scopeFiles.length; i++) {
+    const file = scopeFiles[i];
+    const content = file.content || readFileBounded(file.path || file);
+    const path = file.path || file;
+    const fileBlock = `--- FILE: ${path} ---\n${content || '(unreadable)'}\n\n`;
+
+    if (charCount + fileBlock.length > maxPromptChars && i > 0) {
+      const remaining = scopeFiles.length - i;
+      promptText += `\n(${remaining} remaining files omitted due to prompt budget)`;
+      break;
+    }
+
+    promptText += fileBlock;
+    charCount += fileBlock.length;
+  }
+
+  return promptText;
+}
+
+function buildPrompt(files, playbook) {
+  const fileBlocks = files
+    .map((f) => `--- FILE: ${f} ---\n${readFileBounded(f) || '(unreadable)'}\n`)
+    .join('\n');
+
+  const system = buildSystemPrompt(playbook);
+  const user = `Audit these files (changed in the last ${WINDOW_HOURS}h):\n\n${fileBlocks}`;
 
   return { system, user };
 }
@@ -151,11 +233,38 @@ function parseDiagnosis(text) {
   }
 }
 
+function parseDiagnosticResponse(text) {
+  if (!text) return { valid: false, error: 'empty response' };
+
+  let cleaned = String(text).trim();
+  cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+
+  let diagnosis;
+  try {
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (!match) return { valid: false, error: 'unparseable response (no JSON object found)' };
+    diagnosis = JSON.parse(match[0]);
+  } catch (err) {
+    return { valid: false, error: `unparseable JSON: ${err.message}` };
+  }
+
+  if (!('issueFound' in diagnosis)) {
+    return { valid: false, error: 'missing issueFound field' };
+  }
+
+  if (!['high', 'medium', 'low'].includes(diagnosis.confidence)) {
+    diagnosis.confidence = 'low';
+  }
+
+  return { valid: true, diagnosis };
+}
+
 function isActionableDiagnosis(d) {
   if (!d || typeof d !== 'object') return false;
   if (d.issueFound !== true) return false;
   if (!['high', 'medium'].includes(d.confidence)) return false;
-  if (!d.file || !d.title || !d.description) return false;
+  const diagnosis = (d.diagnosis || '').trim();
+  if (!diagnosis) return false;
   return true;
 }
 
@@ -174,6 +283,109 @@ async function hasExistingOpenDiagnosis(repo, token, file) {
   } catch {
     return false;
   }
+}
+
+function renderWrTitle(diagnosis) {
+  return `[WR] Daily Diagnostic Audit: ${diagnosis.diagnosis || diagnosis.title || 'Code issue'} (${diagnosis.file})`;
+}
+
+function renderWrBody(opts) {
+  const {
+    template,
+    diagnosis,
+    scopeFiles,
+    sinceHours,
+    repoFull,
+    repoUrl,
+    today,
+    runUrl,
+  } = opts;
+
+  let body = String(template || '');
+
+  const issueContext = `**File:** \`${diagnosis.file}\` (line ${diagnosis.line || 'N/A'})
+
+**Issue:** ${diagnosis.diagnosis || 'Unknown issue'}
+
+**Pattern Category:** ${diagnosis.patternCategory || 'other'}
+
+**Confidence:** ${diagnosis.confidence}`;
+
+  const summary = `This issue was detected by the daily-diagnostic-audit cron scanning files changed in the last ${sinceHours} hours.
+
+**Reasoning:** ${diagnosis.reasoning || 'See proposed fix details'}`;
+
+  const objective = `Verify and implement the proposed fix for the detected issue.`;
+
+  const requiredBundle = `1. Review the proposed fix in the Learnings section
+2. Verify the fix against the current code in \`${diagnosis.file}\`
+3. Test the fix locally before merging
+4. Close this WR with a comment explaining whether the fix was applied`;
+
+  const definitionOfDone = `- [ ] Proposed fix verified against current code
+- [ ] Fix implemented (or rejected with reasoning)
+- [ ] Tests pass if applicable
+- [ ] This WR closed`;
+
+  const validation = `1. Verify the issue exists in \`${diagnosis.file}\`
+2. Check that the proposed fix resolves it
+3. Run \`npm test\` to ensure no regressions`;
+
+  const blockers = sinceHours > 0 ? `None—this is a best-effort detection. If the diagnosis is wrong, close this WR.` : `None.`;
+
+  const proposedFix = `\`\`\`
+${diagnosis.proposedFix || 'No clear fix — needs human investigation'}
+\`\`\`
+
+Machine-generated starting point—verify and adapt as needed.`;
+
+  const learnings = LEARNINGS_PLACEHOLDER.replace('{SINCE_HOURS}', String(sinceHours));
+
+  body = body.replace('{TITLE}', diagnosis.diagnosis || 'Code issue');
+  body = body.replace('{ISSUE_CONTEXT}', issueContext);
+  body = body.replace('{ISSUE_BODY}', issueContext);
+  body = body.replace('{SUMMARY}', summary);
+  body = body.replace('{OBJECTIVE}', objective);
+  body = body.replace('{REQUIRED_BUNDLE}', requiredBundle);
+  body = body.replace('{DEFINITION_OF_DONE}', definitionOfDone);
+  body = body.replace('{VALIDATION}', validation);
+  body = body.replace('{BLOCKERS}', blockers);
+  body = body.replace('{PROPOSED_FIX}', proposedFix);
+  body = body.replace('{LEARNINGS}', learnings);
+
+  // If template lacks diagnostic sections, prepend them before Learnings
+  if (!body.includes('## Proposed Fix')) {
+    const sections = [
+      '## Summary\n\n' + summary,
+      '## Objective\n\n' + objective,
+      '## Required Bundle\n\n' + requiredBundle,
+      '## Definition of Done\n\n' + definitionOfDone,
+      '## Validation\n\n' + validation,
+      '## Blockers\n\n' + blockers,
+      '## Proposed Fix\n\n' + proposedFix,
+    ].join('\n\n');
+
+    const learningsIdx = body.indexOf('## Learnings');
+    if (learningsIdx >= 0) {
+      body = body.slice(0, learningsIdx) + sections + '\n\n' + body.slice(learningsIdx);
+    } else {
+      body += '\n\n' + sections;
+    }
+  }
+
+  if (!body.includes('## Learnings — What & Why')) {
+    body += `\n\n## Learnings — What & Why\n\n${learnings}`;
+  } else {
+    body = body.replace(new RegExp(LEARNINGS_PLACEHOLDER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), learnings);
+  }
+
+  return body;
+}
+
+function renderCoderComment() {
+  return `For the implementing agent: please verify the proposed fix in the Proposed Fix section against the current code before implementing. **Don't apply blindly** — if this diagnosis is stale or incorrect, close this WR with a comment explaining why.
+
+See the **Learnings — What & Why** section for context on why this was detected and how to verify it.`;
 }
 
 function renderBody(d) {
@@ -311,10 +523,19 @@ if (require.main === module) {
 }
 
 module.exports = {
-  getChangedFiles,
-  buildPrompt,
-  parseDiagnosis,
+  parseGitLogNameOnly,
+  filterInScope,
+  buildSystemPrompt,
+  buildUserPrompt,
+  parseDiagnosticResponse,
   isActionableDiagnosis,
-  renderBody,
+  renderWrTitle,
+  renderWrBody,
+  renderCoderComment,
   loadPlaybookContext,
+  loadDiagnosticModels,
+  LEARNINGS_PLACEHOLDER,
+  SCOPE_GLOBS,
+  WR_LABELS,
+  WR_ASSIGNEES,
 };
