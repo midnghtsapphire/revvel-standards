@@ -64,6 +64,3 @@ MD047: true   # single-trailing-newline
 MD048: true   # code-fence-style
 MD049: true   # emphasis-style
 MD050: true   # strong-style
-
-# Specify which rules should cause CI to fail
-extends: default
