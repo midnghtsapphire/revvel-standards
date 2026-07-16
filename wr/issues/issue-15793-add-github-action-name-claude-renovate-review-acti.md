@@ -1,3 +1,4 @@
+<!-- markdownlint-disable-file MD046 -->
 # WR: [WR] Add github Action: name: Claude Renovate Review Action
 
 **Issue:** #15793  
