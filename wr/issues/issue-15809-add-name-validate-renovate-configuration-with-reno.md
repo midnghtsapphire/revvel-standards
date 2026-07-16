@@ -1,3 +1,4 @@
+<!-- markdownlint-disable-file MD046 -->
 # WR: [WR] add - name: Validate Renovate Configuration with renovate-config-validator uses: suzuki-shunsuke/github-action-renovate-config-validator@v2.1.0
 
 **Issue:** #15809  
