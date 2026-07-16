@@ -18,7 +18,6 @@
 'use strict';
 
 const { spawnSync } = require('child_process');
-const https = require('https');
 
 const ACTION = process.env.ACTION || 'full';
 const DRY_RUN = process.env.DRY_RUN === 'true';
@@ -112,14 +111,6 @@ function run(cmd, args, options = {}) {
     stdout: result.stdout || '',
     stderr: result.stderr || '',
   };
-}
-
-function list() {
-  const res = run('gh', ['secret', 'list', '--repo', REPO]);
-  if (res.status !== 0) {
-    throw new Error(`gh secret list failed: ${res.stderr}`);
-  }
-  return parseSecretListOutput(res.stdout);
 }
 
 /**
@@ -258,13 +249,6 @@ async function audit() {
     backupValid,
     backupReason,
   };
-}
-
-function remove(name) {
-  const res = run('gh', ['secret', 'remove', name, '--repo', REPO]);
-  if (res.status !== 0) {
-    throw new Error(`gh secret remove ${name} failed: ${res.stderr}`);
-  }
 }
 
 /**

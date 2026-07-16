@@ -49,7 +49,10 @@
 
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
 const https = require('https');
+const yaml = require('yaml');
 
 const GITHUB_API_HOST = 'api.github.com';
 const USER_AGENT = 'octopus-review-fallback';
@@ -129,117 +132,27 @@ function normalizeHeaders(headers) {
 }
 
 /**
- * Classify a rate-limited response.
+ * Load the review profile from agent-models.yml.
+ * Returns the review profile configuration for use in review workflows.
+ * Constructs a `models` array from the primary and fallback fields.
  *
- * @param {number} status
- * @param {Record<string,string>} headers   Already lowercased.
- * @param {string} body
- * @returns {"primary"|"secondary"|null}
+ * @returns {Object} The review profile from agent-models.yml with a models array
  */
-function classifyRateLimit(status, headers, body) {
-  if (status !== 403 && status !== 429) return null;
-  const h = normalizeHeaders(headers);
-  const text = String(body || '').toLowerCase();
+function loadReviewProfile() {
+  const repoRoot = path.join(__dirname, '..');
+  const modelConfigPath = path.join(repoRoot, '.github', 'agent-models.yml');
+  const content = fs.readFileSync(modelConfigPath, 'utf8');
+  const config = yaml.parse(content);
+  const profile = config.profiles?.review || {};
 
-  const remaining = h['x-ratelimit-remaining'];
-  const reset = h['x-ratelimit-reset'];
-  const retryAfter = h['retry-after'];
+  // Construct models array from primary and fallback
+  const models = [];
+  if (profile.primary) models.push(profile.primary);
+  if (profile.fallback) models.push(profile.fallback);
 
-  // Explicit secondary wording wins.
-  if (text.includes('secondary rate limit') || text.includes('abuse detection')) {
-    return 'secondary';
-  }
-
-  // Explicit primary wording (documented in docs/biome/README.md).
-  if (text.includes('api rate limit exceeded')) {
-    return 'primary';
-  }
-
-  // Header-based primary signal: remaining == 0 + reset present.
-  if (remaining !== undefined && Number(remaining) === 0 && reset) {
-    return 'primary';
-  }
-
-  // Retry-After without primary signal → treat as secondary.
-  if (retryAfter) return 'secondary';
-
-  // 429 without a clearer signal → treat as secondary (short-lived).
-  if (status === 429) return 'secondary';
-
-  return null;
+  return { ...profile, models };
 }
 
-/**
- * Compute milliseconds to wait until `x-ratelimit-reset`.
- * Returns null if the header is missing/unparseable/in the past.
- */
-function computePrimaryResetWaitMs(headers, nowMs = Date.now()) {
-  const h = normalizeHeaders(headers);
-  const reset = h['x-ratelimit-reset'];
-  if (!reset) return null;
-  const resetSec = Number(reset);
-  if (!Number.isFinite(resetSec) || resetSec <= 0) return null;
-  const waitMs = resetSec * 1000 - nowMs;
-  // Add a small 1s cushion; if reset is already in the past, treat as null.
-  if (waitMs <= 0) return null;
-  return waitMs + 1000;
-}
-
-/**
- * Compute the delay before a retry attempt for the *secondary* path.
- *
- * Honors server-provided `Retry-After` in full (seconds), bounded only by
- * RATE_LIMIT_MAX_INPROCESS_WAIT_MS so a pathological value can't burn the
- * whole job. Falls back to exponential backoff otherwise.
- */
-function computeRetryDelayMs(attempt, headers) {
-  const h = normalizeHeaders(headers);
-  const retryAfterRaw = h['retry-after'];
-  if (retryAfterRaw !== undefined) {
-    const secs = Number(retryAfterRaw);
-    if (Number.isFinite(secs) && secs > 0) {
-      return Math.min(secs * 1000, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
-    }
-    // Retry-After can also be an HTTP-date. Try parsing.
-    const asDate = Date.parse(retryAfterRaw);
-    if (Number.isFinite(asDate)) {
-      const delta = asDate - Date.now();
-      if (delta > 0) {
-        return Math.min(delta, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
-      }
-    }
-  }
-  // Exponential backoff: 1.5s, 3s, 6s, 12s, …
-  const expo = RATE_LIMIT_BASE_DELAY_MS * Math.pow(2, attempt);
-  return Math.min(expo, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
-}
-
-/**
- * True when a GitHub REST response looks like a rate-limit rejection worth
- * special-casing (as opposed to a genuine permissions 403, which should
- * fail fast, not retry): HTTP 429, or HTTP 403 whose body is GitHub's
- * primary/secondary rate-limit message. Does NOT distinguish primary vs
- * secondary — see classifyRateLimit() for that.
- */
-function isRateLimitedResponse(status, body) {
-  if (status === 429) return true;
-  if (status !== 403) return false;
-  const text = String(body || "").toLowerCase();
-  return (
-    text.includes("rate limit exceeded") ||
-    text.includes("secondary rate limit") ||
-    text.includes("abuse detection")
-  );
-}
-
-/**
- * Buckets a rate-limited response (isRateLimitedResponse() already true)
- * into "primary" (shared installation budget exhausted) or "secondary"
- * (short-lived abuse-detection limit). Header signal wins when present
- * (most reliable, since Node lowercases response header names); otherwise
- * falls back to GitHub's documented message wording. Returns null if the
- * response isn't a rate-limit response at all.
- */
 function classifyRateLimit(status, headers, body) {
   if (status !== 403 && status !== 429) return null;
   const h = headers || {};
@@ -375,6 +288,21 @@ function rawRequest({ method, path, token, body }) {
     if (payload) req.write(payload);
     req.end();
   });
+}
+
+async function githubRequestOnce({ pathName, method = 'GET', payload, accept }) {
+  const token = process.env.GITHUB_TOKEN || '';
+  const result = await rawRequest({
+    method,
+    path: pathName,
+    token,
+    body: payload ? (typeof payload === 'string' ? JSON.parse(payload) : payload) : undefined,
+  });
+  return {
+    status: result.status,
+    headers: result.headers,
+    data: result.body,
+  };
 }
 
 /**
@@ -558,14 +486,14 @@ async function githubRequest({ pathName, method = "GET", payload, accept }) {
       }
       const err = new Error(`github secondary rate limit; giving up after ${RATE_LIMIT_MAX_RETRIES} retries`);
       err.rateLimit = 'secondary';
-      err.status = res.status;
+      err.status = status;
       throw err;
     }
 
     // Non-rate-limit error — fail fast, don't burn retries on a genuine
     // 403/404/422.
-    const err = new Error(`github ${method} ${path} failed: ${res.status} ${res.body.slice(0, 500)}`);
-    err.status = res.status;
+    const err = new Error(`github ${method} ${pathName} failed: ${status} ${data.slice(0, 500)}`);
+    err.status = status;
     throw err;
   }
   throw lastErr || new Error('github request failed');
@@ -636,26 +564,19 @@ module.exports = {
   computePrimaryResetWaitMs,
   computeRetryDelayMs,
   isRateLimitedResponse,
+  parseRetryAfterMs,
   githubRequest,
+  githubRequestOnce,
   shouldReview,
   postFallbackReview,
   isQuotaDeathComment,
   loadReviewProfile,
-  shouldReview,
   FALLBACK_MARKER,
   OCTOPUS_BOT_LOGIN,
   QUOTA_DEATH_PATTERNS,
-  isRateLimitedResponse,
-  classifyRateLimit,
-  computePrimaryResetWaitMs,
-  computeRetryDelayMs,
-  parseRetryAfterMs,
-  githubRequest,
-  githubRequestOnce,
   RATE_LIMIT_MAX_RETRIES,
   RATE_LIMIT_BASE_DELAY_MS,
   RATE_LIMIT_MAX_INPROCESS_WAIT_MS,
-  RATE_LIMIT_MAX_BACKOFF_MS,
 };
 
 if (require.main === module) {
