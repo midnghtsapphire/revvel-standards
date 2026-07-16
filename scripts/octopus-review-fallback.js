@@ -316,11 +316,7 @@ function rawRequest({ method, path, token, body }) {
   });
 }
 
-async function githubRequestOnce({
-  pathName,
-  method = "GET",
-  payload,
-}) {
+async function githubRequestOnce({ pathName, method = "GET", payload }) {
   const token = process.env.GITHUB_TOKEN || "";
   const result = await rawRequest({
     method,
@@ -414,7 +410,10 @@ async function githubRequest({
 
     if (kind === "secondary") {
       const retryAfterMs = parseRetryAfterMs(res.headers);
-      if (retryAfterMs !== null && retryAfterMs > RATE_LIMIT_MAX_INPROCESS_WAIT_MS) {
+      if (
+        retryAfterMs !== null &&
+        retryAfterMs > RATE_LIMIT_MAX_INPROCESS_WAIT_MS
+      ) {
         const err = new Error(
           `github secondary rate limit; Retry-After ${Math.round(retryAfterMs / 1000)}s ` +
             `exceeds the in-process wait budget ${Math.round(RATE_LIMIT_MAX_INPROCESS_WAIT_MS / 1000)}s. ` +
