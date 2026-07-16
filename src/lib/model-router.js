@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { MODE_ORDER } = require("./model-routing-modes");
 
 const enterpriseMatrixPath = path.join(
@@ -69,7 +69,7 @@ function getBestModelsForDomain(domainName) {
 
   return domain.best_models
     .map(getModelById)
-    .filter((model) => model && model.enabled);
+    .filter((model) => model?.enabled);
 }
 
 function getFallbackChain() {

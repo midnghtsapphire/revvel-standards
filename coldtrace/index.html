@@ -1358,11 +1358,11 @@
           s: parseFloat(document.getElementById("aoi-s").value),
           w: parseFloat(document.getElementById("aoi-w").value),
           e: parseFloat(document.getElementById("aoi-e").value),
-          radius: parseInt(document.getElementById("max-radius").value),
+          radius: parseInt(document.getElementById("max-radius").value, 10),
         };
       }
 
-      function flyToLKL() {
+      function _flyToLKL() {
         const p = getParams();
         map.flyTo({ center: [p.lon, p.lat], zoom: 12, duration: 1200 });
       }
@@ -1414,7 +1414,7 @@
         if (map.getSource("lkl-src")) map.getSource("lkl-src").setData(pt);
       }
 
-      function toggleLayer(name) {
+      function _toggleLayer(name) {
         state.layers[name] = !state.layers[name];
         const vis = state.layers[name] ? "visible" : "none";
         const ids = {
@@ -1430,7 +1430,7 @@
         });
       }
 
-      function setLayerOpacity(name, val) {
+      function _setLayerOpacity(name, val) {
         const v = val / 100;
         state.opacity[name] = v;
         if (name === "heatmap" && map.getLayer("heatmap-layer"))
@@ -1442,7 +1442,7 @@
       }
 
       // ─── Main analysis pipeline (demo simulation) ──────────────────────────────
-      async function runAnalysis() {
+      async function _runAnalysis() {
         const p = getParams();
         setStatus("RUNNING");
         showLoading(true);
@@ -1463,7 +1463,7 @@
 
         for (const step of steps) {
           document.getElementById("loading-step").textContent = step.msg;
-          document.getElementById("loading-bar").style.width = step.pct + "%";
+          document.getElementById("loading-bar").style.width = `${step.pct}%`;
           await delay(step.delay);
         }
 
@@ -1514,7 +1514,7 @@
 
       function enableLayer(name) {
         state.layers[name] = true;
-        document.getElementById("layer-" + name).checked = true;
+        document.getElementById(`layer-${name}`).checked = true;
         const ids = {
           viewshed: ["viewshed-fill", "viewshed-line"],
           heatmap: ["heatmap-layer"],
@@ -1704,7 +1704,7 @@
         document.getElementById("export-panel").classList.remove("hidden");
       }
 
-      function flyToZone(lat, lon) {
+      function _flyToZone(lat, lon) {
         map.flyTo({ center: [lon, lat], zoom: 13, duration: 1000 });
       }
 
@@ -1738,7 +1738,7 @@
       }
 
       // Export (demo)
-      function exportReport(fmt) {
+      function _exportReport(fmt) {
         const params = {
           case: document.getElementById("case-num").value,
           title: document.getElementById("case-title").value,
@@ -1785,7 +1785,7 @@
         URL.revokeObjectURL(a.href);
       }
 
-      function showAPIConfig() {
+      function _showAPIConfig() {
         alert(
           "Production: set OPENTOPOGRAPHY_API_KEY, SENTINEL_HUB_CLIENT_ID, and SENTINEL_HUB_SECRET in your .env file. See the ColdTrace README for setup instructions.",
         );

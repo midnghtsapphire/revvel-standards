@@ -34,7 +34,7 @@ export default function CampaignsPage() {
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [refresh]);
 
   const filtered = campaigns.filter((c) => {
     const matchPlatform = platform === "All" || c.platform === platform;

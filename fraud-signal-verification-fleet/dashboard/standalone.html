@@ -536,12 +536,12 @@
           d.title || d.case_id || "(untitled case)";
         if (d.scope_note)
           document.getElementById("disclaimer").textContent =
-            "⚠ " + (d.disclaimer || d.scope_note);
+            `⚠ ${d.disclaimer || d.scope_note}`;
         document.getElementById("meta").innerHTML =
           `<span>case <b>${esc(d.case_id || "—")}</b></span><span>generated <b>${esc(d.generated_at)}</b></span>` +
           `<span>mode <b>${esc(d.mode)}</b></span><span>refused <b>${esc(d.refused_count)}</b></span>`;
         const ig = document.getElementById("integrity");
-        ig.textContent = Math.round(d.case_evidentiary_integrity * 100) + "%";
+        ig.textContent = `${Math.round(d.case_evidentiary_integrity * 100)}%`;
         ig.style.color =
           d.case_evidentiary_integrity >= 0.55
             ? COLORS.SUPPORTED
@@ -558,7 +558,7 @@
             return `<div class="card ${c.refused ? "refused" : ""}"><div class="chead">
       <div><div class="cid">${esc(c.id)}</div><div class="ctext">${c.refused ? "⛔ " : ""}${esc(c.text)}</div></div>
       <div class="band" style="color:${col};background:#16271d22">${esc(c.band)}</div></div>${meter}
-      <div class="body"><span class="conf" style="color:${col}">${c.refused ? "REFUSED" : pct + "% confidence"}</span> · ${esc(VERDICT[c.band] || "")}
+      <div class="body"><span class="conf" style="color:${col}">${c.refused ? "REFUSED" : `${pct}% confidence`}</span> · ${esc(VERDICT[c.band] || "")}
       <ul class="rat">${(Array.isArray(c.rationale) ? c.rationale : []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
       ${c.note ? `<div class="note">${esc(c.note)}</div>` : ""}</div></div>`;
           })
@@ -587,21 +587,21 @@
           return e.message;
         }
       }
-      function loadFile(ev) {
+      function _loadFile(ev) {
         const f = ev.target.files[0];
         if (!f) return;
         const rd = new FileReader();
         rd.onload = () => {
           const err = ingest(JSON.parse(rd.result));
-          if (err) alert("Could not score: " + err);
+          if (err) alert(`Could not score: ${err}`);
         };
         rd.readAsText(f);
       }
-      function openPaste() {
+      function _openPaste() {
         document.getElementById("pasteErr").textContent = "";
         document.getElementById("paste").showModal();
       }
-      function applyPaste() {
+      function _applyPaste() {
         try {
           const o = JSON.parse(document.getElementById("pasteArea").value);
           const err = ingest(o);
@@ -612,17 +612,17 @@
           document.getElementById("paste").close();
         } catch (e) {
           document.getElementById("pasteErr").textContent =
-            "Invalid JSON: " + e.message;
+            `Invalid JSON: ${e.message}`;
         }
       }
-      function exportData() {
+      function _exportData() {
         if (!CURRENT) return;
         const b = new Blob([JSON.stringify(CURRENT, null, 2)], {
           type: "application/json",
         });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(b);
-        a.download = (CURRENT.case_id || "case") + "-scored.json";
+        a.download = `${CURRENT.case_id || "case"}-scored.json`;
         a.click();
       }
       function useSeed() {

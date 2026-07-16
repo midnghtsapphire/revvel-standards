@@ -241,10 +241,10 @@
         return Math.ceil(sqft / (zoneMult[climate] || 400));
       }
 
-      function generateBOM() {
-        const sqft = parseInt(document.getElementById("sqft").value) || 0;
+      function _generateBOM() {
+        const sqft = parseInt(document.getElementById("sqft").value, 10) || 0;
         const roofHeight = parseInt(
-          document.getElementById("roofHeight").value,
+          document.getElementById("roofHeight").value, 10
         );
         const floor = document.getElementById("floor").value;
         const system = document.getElementById("systemType").value;

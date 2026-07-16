@@ -20,7 +20,7 @@
  *   MAX_DELETED     max deleted lines allowed under protected paths (default 400)
  */
 
-const { execFileSync } = require("child_process");
+const { execFileSync } = require("node:child_process");
 
 const DEFAULT_PROTECTED = "products/,apps/,sites/,src/,public/";
 const LOCKFILE_RE =

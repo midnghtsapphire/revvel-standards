@@ -93,7 +93,7 @@ provider, rationale, execution_steps, required_secrets, verification_criteria`;
   const parsed = extractJsonFromContent(content) ?? {};
   return {
     provider:
-      (parsed["provider"] as string) ??
+      (parsed.provider as string) ??
       params.availableProviders[0] ??
       "heygen",
     plan: parsed,

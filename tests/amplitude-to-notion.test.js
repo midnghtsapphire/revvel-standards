@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-const assert = require("assert");
+const assert = require("node:assert");
 const {
   readConfig,
   validateConfig,
@@ -84,7 +84,7 @@ test("amplitudeHost selects us by default and eu when asked", () => {
 test("amplitudeAuthHeader returns Basic <base64(api:secret)>", () => {
   const h = amplitudeAuthHeader("alice", "wonderland");
   const expected =
-    "Basic " + Buffer.from("alice:wonderland").toString("base64");
+    `Basic ${Buffer.from("alice:wonderland").toString("base64")}`;
   assert.strictEqual(h, expected);
 });
 

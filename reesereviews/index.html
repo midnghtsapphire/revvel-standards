@@ -1189,7 +1189,7 @@
         .addEventListener("submit", async (e) => {
           e.preventDefault();
           const form = e.target;
-          const email = form.querySelector('input[name="email"]').value;
+          const _email = form.querySelector('input[name="email"]').value;
           const status = document.getElementById("newsletter-status");
           const button = form.querySelector("button");
 
@@ -1220,7 +1220,7 @@
               "Thank you for subscribing! We'll keep you updated with the latest reviews.";
             status.className = "status-message status-success";
             form.reset();
-          } catch (error) {
+          } catch (_error) {
             status.textContent =
               "Sorry, there was an error. Please try again later.";
             status.className = "status-message status-error";

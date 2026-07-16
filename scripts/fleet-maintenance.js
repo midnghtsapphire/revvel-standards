@@ -29,8 +29,8 @@
  *   DRY_RUN         'true' to log the plan without filing issues
  */
 
-const fs = require("fs");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const { execFileSync } = require("node:child_process");
 
 function env(key, def = "") {
   return process.env[key] || def;

@@ -211,8 +211,8 @@ test("DEFAULT_MODEL_CHAIN honours the SSOT model policy (twins + Fable 5, no den
   // Drift-proof: read the denylist straight from .github/agent-models.yml so
   // this test fails the moment a banned model (Sonnet family, auto/fusion)
   // sneaks back into the controller's reassignment chain.
-  const fs = require("fs");
-  const path = require("path");
+  const fs = require("node:fs");
+  const path = require("node:path");
   const YAML = require("yaml");
   const ssot = YAML.parse(
     fs.readFileSync(
@@ -285,7 +285,7 @@ test("evaluate is a pure node: feed + stop + self-healing ingestion", () => {
   assert.equal(out.ingestion.needs_healing.length, 1);
   assert.equal(out.ingestion.needs_healing[0].id, 2);
   assert.ok(
-    !out.preemptions.some((p) => p.path && p.path.includes("self-healing")),
+    !out.preemptions.some((p) => p.path?.includes("self-healing")),
   );
 });
 

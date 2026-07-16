@@ -10,7 +10,7 @@
  * 3. Approval state detection
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 
 let passed = 0;
 let failed = 0;
@@ -40,11 +40,11 @@ const LIFECYCLE_LABELS = [
   "needs-action",
 ];
 
-const ALL_LABELS = new Set(LIFECYCLE_LABELS);
+const _ALL_LABELS = new Set(LIFECYCLE_LABELS);
 
 // === Utility Functions ===
 
-function getNextState(action, currentLabels, reviewState, checksPassing) {
+function getNextState(action, currentLabels, _reviewState, _checksPassing) {
   // State machine for PR lifecycle
   switch (action) {
     case "opened":

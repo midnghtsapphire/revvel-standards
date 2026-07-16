@@ -34,7 +34,7 @@ function assertThrows(fn, testName) {
     fn();
     console.error(`❌ ${testName} - Expected to throw but didn't`);
     testsFailed++;
-  } catch (err) {
+  } catch (_err) {
     console.log(`✅ ${testName}`);
     testsPassed++;
   }
@@ -45,7 +45,7 @@ async function assertRejects(promise, testName) {
     await promise;
     console.error(`❌ ${testName} - Expected to reject but didn't`);
     testsFailed++;
-  } catch (err) {
+  } catch (_err) {
     console.log(`✅ ${testName}`);
     testsPassed++;
   }
@@ -209,7 +209,7 @@ async function runTests() {
   }
 
   // Summary
-  console.log("\n" + "=".repeat(80));
+  console.log(`\n${"=".repeat(80)}`);
   console.log("Test Summary");
   console.log("=".repeat(80));
   console.log(`Passed: ${testsPassed}`);

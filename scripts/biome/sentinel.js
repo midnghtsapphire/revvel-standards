@@ -34,7 +34,7 @@ const INCIDENT_MARKER = "<!-- biome-sentinel-incident -->";
 
 function labelNames(item) {
   return (item.labels || [])
-    .map((l) => (typeof l === "string" ? l : (l && l.name) || ""))
+    .map((l) => (typeof l === "string" ? l : (l?.name) || ""))
     .filter(Boolean);
 }
 
@@ -193,7 +193,7 @@ if (require.main === module) {
       console.warn(
         "[biome-sentinel] warning: failed to fetch open issues (API error) — treating as 0 issues for this sweep",
       );
-    const runClass = classifyRuns((runsResp && runsResp.workflow_runs) || []);
+    const runClass = classifyRuns((runsResp?.workflow_runs) || []);
     const stuck = detectStuckIssues(
       issuesResp || [],
       Date.now(),
@@ -262,7 +262,7 @@ if (require.main === module) {
         },
       });
       console.log(
-        `[biome-sentinel] filed incident #${created && created.number}`,
+        `[biome-sentinel] filed incident #${created?.number}`,
       );
     }
   })().catch((err) => {

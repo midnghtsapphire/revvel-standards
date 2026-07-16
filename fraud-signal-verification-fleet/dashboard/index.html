@@ -287,8 +287,8 @@
       async function load() {
         let d;
         try {
-          d = await (await fetch("dashboard-data.json?" + Date.now())).json();
-        } catch (e) {
+          d = await (await fetch(`dashboard-data.json?${Date.now()}`)).json();
+        } catch (_e) {
           document.getElementById("title").textContent =
             "Could not load dashboard-data.json — run src/orchestrator.py";
           return;
@@ -317,7 +317,7 @@
           }
         }
         document.getElementById("title").textContent = d.title;
-        document.getElementById("disclaimer").textContent = "⚠ " + d.disclaimer;
+        document.getElementById("disclaimer").textContent = `⚠ ${d.disclaimer}`;
         document.getElementById("meta").innerHTML =
           `<span>case <b>${esc(d.case_id)}</b></span>` +
           `<span>generated <b>${esc(d.generated_at || "—")}</b></span>` +
@@ -330,7 +330,7 @@
           )
           .join("");
         const ig = document.getElementById("integrity");
-        ig.textContent = (d.case_evidentiary_integrity * 100).toFixed(0) + "%";
+        ig.textContent = `${(d.case_evidentiary_integrity * 100).toFixed(0)}%`;
         ig.style.color =
           d.case_evidentiary_integrity >= 0.55
             ? COLORS.SUPPORTED
@@ -352,7 +352,7 @@
       </div>
       ${meter}
       <div class="body">
-        <span class="conf" style="color:${col}">${c.refused ? "REFUSED" : pct + "% confidence"}</span> · ${esc(c.verdict)}
+        <span class="conf" style="color:${col}">${c.refused ? "REFUSED" : `${pct}% confidence`}</span> · ${esc(c.verdict)}
         <ul class="rat">${(Array.isArray(c.rationale) ? c.rationale : []).map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
         ${c.analyst_note ? `<div class="note">${esc(c.analyst_note)}</div>` : ""}
       </div>
@@ -367,7 +367,7 @@
           )
           .join("");
         document.getElementById("foot").textContent =
-          d.headline_finding + "  ·  Auto-refreshes every 15s.";
+          `${d.headline_finding}  ·  Auto-refreshes every 15s.`;
       }
       load();
       setInterval(load, 15000);

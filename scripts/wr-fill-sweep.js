@@ -25,8 +25,8 @@
  *   edits and leaves a new blank), the sweep picks it up again.
  */
 
-const { spawnSync } = require("child_process");
-const path = require("path");
+const { spawnSync } = require("node:child_process");
+const path = require("node:path");
 const filler = require(path.join(__dirname, "wr-fill-fields.js"));
 
 const REPO = process.env.GH_REPO || "midnghtsapphire/revvel-standards";
@@ -88,7 +88,7 @@ function fetchIssues(numbers) {
  * WR fields — the same rule the filler applies per field.
  */
 function needsFilling(issue) {
-  if (!issue || !issue.body) return false;
+  if (!issue?.body) return false;
   const fields = filler.parseIssueBody(issue.body);
   // A WR the form dumped without ANY known headings (e.g. someone used a
   // different template) is not our lane; skip it.

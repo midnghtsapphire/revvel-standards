@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 "use strict";
 
-const fs = require("fs");
-const https = require("https");
-const path = require("path");
+const fs = require("node:fs");
+const https = require("node:https");
+const path = require("node:path");
 
 const OPENROUTER_HOST = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
@@ -196,7 +196,7 @@ function slugify(value) {
   );
 }
 
-function parseCsv(value) {
+function _parseCsv(value) {
   return String(value || "")
     .split(",")
     .map((item) => item.trim())
@@ -772,7 +772,7 @@ function formatDocument({ context, synthesis, laneReports, status }) {
   return lines.filter((line) => line !== null && line !== undefined).join("\n");
 }
 
-function buildMissingKeyReport(context) {
+function buildMissingKeyReport(_context) {
   const laneReports = LANE_DEFINITIONS.map((lane) => ({
     id: lane.id,
     name: lane.name,

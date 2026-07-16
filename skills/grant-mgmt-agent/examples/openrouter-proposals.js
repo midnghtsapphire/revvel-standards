@@ -7,7 +7,7 @@
  * API Documentation: https://openrouter.ai/docs
  */
 
-const https = require("https");
+const https = require("node:https");
 
 const OPENROUTER_BASE = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const YAML = require("yaml");
 
 const root = path.resolve(__dirname, "..");
@@ -60,7 +60,7 @@ function assertGreenWorkflow(relativePath, { requiresFixedDefaultUrl }) {
       `${relativePath} must grant contents: write for generated report commits`,
     );
   }
-  if (!job || job["timeout-minutes"] !== 15) {
+  if (job?.["timeout-minutes"] !== 15) {
     throw new Error(
       `${relativePath} must define green-website job with timeout-minutes: 15`,
     );
@@ -70,7 +70,7 @@ function assertGreenWorkflow(relativePath, { requiresFixedDefaultUrl }) {
       `${relativePath} must skip its own generated report commits`,
     );
   }
-  if (!actionStep || actionStep.uses !== "actions/github-script@v9.0.0") {
+  if (actionStep?.uses !== "actions/github-script@v9.0.0") {
     throw new Error(
       `${relativePath} must collect Website Carbon data with actions/github-script@v9.0.0`,
     );
@@ -94,7 +94,7 @@ function assertGreenWorkflow(relativePath, { requiresFixedDefaultUrl }) {
   ) {
     throw new Error(`${relativePath} must write the carbon data file`);
   }
-  if (!artifactStep || artifactStep.uses !== "actions/upload-artifact@v4") {
+  if (artifactStep?.uses !== "actions/upload-artifact@v4") {
     throw new Error(
       `${relativePath} must upload the carbon artifact with actions/upload-artifact@v4`,
     );

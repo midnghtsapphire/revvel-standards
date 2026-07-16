@@ -6,7 +6,7 @@
  * Tests core functions: search, filtering, and export verification
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 const { search } = require("../scripts/dashboard-cli.js");
 
 // Test data - mock dashboard data structure

@@ -270,7 +270,7 @@
     </div>
     <script>
       const MAX_DEMOS = 3;
-      let demoCount = parseInt(localStorage.getItem("hvacDemoCount") || "0");
+      let demoCount = parseInt(localStorage.getItem("hvacDemoCount") || "0", 10);
       document.getElementById("demoCount").textContent = MAX_DEMOS - demoCount;
       const pricing = {
         condensing: {
@@ -335,7 +335,7 @@
         };
         return Math.ceil(sqft / (zoneMult[climate] || 400));
       }
-      function generateBOM() {
+      function _generateBOM() {
         if (demoCount >= MAX_DEMOS) {
           document.getElementById("limitedMsg").style.display = "block";
           document.getElementById("output").style.display = "none";
@@ -345,9 +345,9 @@
         localStorage.setItem("hvacDemoCount", demoCount);
         document.getElementById("demoCount").textContent =
           MAX_DEMOS - demoCount;
-        const sqft = parseInt(document.getElementById("sqft").value) || 0;
+        const sqft = parseInt(document.getElementById("sqft").value, 10) || 0;
         const roofHeight = parseInt(
-          document.getElementById("roofHeight").value,
+          document.getElementById("roofHeight").value, 10
         );
         const floor = document.getElementById("floor").value;
         const system = document.getElementById("systemType").value;
@@ -388,7 +388,7 @@
         const materialsTotal = ductLF * 2.5 + wireLF * 2 + refrigLF * 3 + 450;
         const grandTotal =
           (equipmentTotal + materialsTotal + laborCost) * floorAdj * roofAdj;
-        const output = `================================================================================\nHVAC BILL OF MATERIALS\n================================================================================\nPROJECT: ${sqft} SF | ${roofHeight}ft | ${floor.toUpperCase()} | Zone ${climate} | ${system.toUpperCase()}\nTONNAGE: ${ton} Ton\n================================================================================\nEQUIPMENT: Condensing ${ton}T $${condPrice} | Coil $${coilPrice}${furnacePrice > 0 ? " | Furnace $" + furnacePrice : ""} | Air Handler $${airHandlerPrice}\nTXV $185 | Thermostat $145\nEQUIPMENT TOTAL: $${equipmentTotal}\nDUCTWORK: ${Math.ceil(ton * 3)}x diffusers | ${Math.ceil(ton * 2)}x grilles | ${ductLF}ft flex | ${Math.round(sqft / 80)}ft sheet metal\nDUCTWORK TOTAL: $${(ductLF * 2.5).toFixed(2)}\nREFRIGERATION: ${refrigLF}ft liquid | ${refrigLF + 10}ft suction | ${refrigLF}ft vapor\nREFRIG TOTAL: $${(refrigLF * 3 + 205).toFixed(2)}\nELECTRICAL: ${Math.round(sqft / 15)}ft #10/2 | ${Math.round(sqft / 25)}ft #14/3 | Breaker | Disconnect\nELECTRICAL TOTAL: $${(wireLF * 2 + 225).toFixed(2)}\nMISC: Pump $165 | Float $35 | Gauge $85 | Multi-meter $125 | R-410A $${ton <= 5 ? 150 : 250}\nMISC TOTAL: $${(535 + (ton <= 5 ? 150 : 250)).toFixed(2)}\nLABOR: ${baseLabor}hrs install | ${ductLabor}hrs duct | ${elecLabor}hrs electrical | ${Math.round(sqft / 400)}hrs test\nLABOR TOTAL: $${laborCost.toFixed(2)}\n================================================================================\nGRAND TOTAL: $${grandTotal.toFixed(2)}\n================================================================================\n`;
+        const output = `================================================================================\nHVAC BILL OF MATERIALS\n================================================================================\nPROJECT: ${sqft} SF | ${roofHeight}ft | ${floor.toUpperCase()} | Zone ${climate} | ${system.toUpperCase()}\nTONNAGE: ${ton} Ton\n================================================================================\nEQUIPMENT: Condensing ${ton}T $${condPrice} | Coil $${coilPrice}${furnacePrice > 0 ? ` | Furnace $${furnacePrice}` : ""} | Air Handler $${airHandlerPrice}\nTXV $185 | Thermostat $145\nEQUIPMENT TOTAL: $${equipmentTotal}\nDUCTWORK: ${Math.ceil(ton * 3)}x diffusers | ${Math.ceil(ton * 2)}x grilles | ${ductLF}ft flex | ${Math.round(sqft / 80)}ft sheet metal\nDUCTWORK TOTAL: $${(ductLF * 2.5).toFixed(2)}\nREFRIGERATION: ${refrigLF}ft liquid | ${refrigLF + 10}ft suction | ${refrigLF}ft vapor\nREFRIG TOTAL: $${(refrigLF * 3 + 205).toFixed(2)}\nELECTRICAL: ${Math.round(sqft / 15)}ft #10/2 | ${Math.round(sqft / 25)}ft #14/3 | Breaker | Disconnect\nELECTRICAL TOTAL: $${(wireLF * 2 + 225).toFixed(2)}\nMISC: Pump $165 | Float $35 | Gauge $85 | Multi-meter $125 | R-410A $${ton <= 5 ? 150 : 250}\nMISC TOTAL: $${(535 + (ton <= 5 ? 150 : 250)).toFixed(2)}\nLABOR: ${baseLabor}hrs install | ${ductLabor}hrs duct | ${elecLabor}hrs electrical | ${Math.round(sqft / 400)}hrs test\nLABOR TOTAL: $${laborCost.toFixed(2)}\n================================================================================\nGRAND TOTAL: $${grandTotal.toFixed(2)}\n================================================================================\n`;
         document.getElementById("bomContent").textContent = output;
         document.getElementById("output").style.display = "block";
         document

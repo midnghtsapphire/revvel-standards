@@ -40,7 +40,7 @@ test("secrets-guardian.sh does not duplicate critical secrets in missing= output
 
   try {
     execFileSync("bash", [scriptPath], { env, stdio: "pipe" });
-  } catch (err) {
+  } catch (_err) {
     // Script may exit non-zero when secrets missing; we still validate output file.
   }
 

@@ -894,7 +894,7 @@
         const pane = document.getElementById("log-pane");
         pane.classList.add("visible");
         const line = document.createElement("div");
-        line.className = "log-line " + cls;
+        line.className = `log-line ${cls}`;
         line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
         pane.appendChild(line);
         pane.scrollTop = pane.scrollHeight;
@@ -927,7 +927,7 @@
 
       function isStale(p) {
         if (!p.listed || p.sold) return false;
-        const stale = parseInt(window.REPOST_STALE_DAYS || 7);
+        const stale = parseInt(window.REPOST_STALE_DAYS || 7, 10);
         const cutoff = Date.now() - stale * 86400000;
         const last = p.lastRepostAt || p.listedAt;
         return !last || new Date(last).getTime() < cutoff;
@@ -984,7 +984,7 @@
           selectedOrders.clear();
           updateSelectedCount();
         } catch (e) {
-          toast("Failed to load products: " + e.message);
+          toast(`Failed to load products: ${e.message}`);
         }
       }
 
@@ -1043,7 +1043,7 @@
 
       // ── Actions ────────────────────────────────────────────────────────────────
 
-      async function fetchEmails() {
+      async function _fetchEmails() {
         const btn = document.getElementById("btn-fetch");
         btn.disabled = true;
         log("Fetching Amazon emails…", "log-info");
@@ -1065,8 +1065,8 @@
           await loadSummary();
           await loadProducts();
         } catch (e) {
-          log("❌ " + e.message, "log-err");
-          toast("Fetch failed: " + e.message);
+          log(`❌ ${e.message}`, "log-err");
+          toast(`Fetch failed: ${e.message}`);
         } finally {
           btn.disabled = false;
         }
@@ -1075,10 +1075,10 @@
       // ── CSV import + one-at-a-time queue ───────────────────────────────────────
       let currentQueueProduct = null;
 
-      async function importCsv() {
+      async function _importCsv() {
         const input = document.getElementById("csv-file");
         const btn = document.getElementById("btn-csv");
-        if (!input.files || !input.files[0]) {
+        if (!input.files?.[0]) {
           toast("Choose an Amazon orders CSV file first");
           return;
         }
@@ -1101,8 +1101,8 @@
           await loadSummary();
           await loadProducts();
         } catch (e) {
-          log("❌ CSV: " + e.message, "log-err");
-          toast("CSV import failed: " + e.message);
+          log(`❌ CSV: ${e.message}`, "log-err");
+          toast(`CSV import failed: ${e.message}`);
         } finally {
           btn.disabled = false;
         }
@@ -1118,12 +1118,12 @@
           product.asin ? `ASIN ${product.asin}` : "no ASIN",
           product.productUrl || "",
           remaining != null ? `${remaining} left in queue` : "",
-          enrichMeta && enrichMeta.reason ? `enrich: ${enrichMeta.reason}` : "",
+          enrichMeta?.reason ? `enrich: ${enrichMeta.reason}` : "",
         ].filter(Boolean);
         document.getElementById("queue-meta").textContent = bits.join(" · ");
         const img = document.getElementById("queue-img");
         const imgs =
-          product.imageUrls && product.imageUrls.length
+          product.imageUrls?.length
             ? product.imageUrls
             : product.imageUrl
               ? [product.imageUrl]
@@ -1156,7 +1156,7 @@
         document.getElementById("queue-pack").style.display = "none";
       }
 
-      async function queueNext(enrich) {
+      async function _queueNext(enrich) {
         log(
           enrich ? "Next item + enrich images…" : "Next item (link only)…",
           "log-info",
@@ -1180,12 +1180,12 @@
           );
           toast(`Queue: ${data.remaining} remaining`);
         } catch (e) {
-          log("❌ Queue: " + e.message, "log-err");
+          log(`❌ Queue: ${e.message}`, "log-err");
           toast(e.message);
         }
       }
 
-      async function enrichCurrent() {
+      async function _enrichCurrent() {
         if (!currentQueueProduct) return toast("Load next item first");
         try {
           const r = await fetch(
@@ -1209,7 +1209,7 @@
         }
       }
 
-      async function showListingPack() {
+      async function _showListingPack() {
         if (!currentQueueProduct) return toast("Load next item first");
         try {
           const r = await fetch(
@@ -1246,7 +1246,7 @@
 
       function renderJobSteps(job) {
         const box = document.getElementById("job-steps");
-        if (!job || !job.steps) {
+        if (!job?.steps) {
           box.innerHTML = "";
           return;
         }
@@ -1275,12 +1275,12 @@
           .join("");
         if (job.packDir) {
           document.getElementById("job-pack-dir").textContent =
-            "Saved on your PC: " + job.packDir;
+            `Saved on your PC: ${job.packDir}`;
         }
         const thumbs = document.getElementById("job-thumbs");
         const key =
           (job.product && (job.product.asin || job.product.orderId)) || "";
-        if (job.images && job.images.length && key) {
+        if (job.images?.length && key) {
           thumbs.innerHTML = job.images
             .map(
               (im) =>
@@ -1291,7 +1291,7 @@
         }
       }
 
-      async function generateLifestylePack() {
+      async function _generateLifestylePack() {
         if (!currentQueueProduct)
           return toast("Import CSV and click Next product first");
         const btn = document.getElementById("btn-gen");
@@ -1321,7 +1321,7 @@
           });
           pollJob(data.jobId);
         } catch (e) {
-          log("❌ " + e.message, "log-err");
+          log(`❌ ${e.message}`, "log-err");
           toast(e.message);
           btn.disabled = false;
         }
@@ -1348,7 +1348,7 @@
               document.getElementById("btn-gen").disabled = false;
               if (job.status === "done") {
                 toast("Pack ready on your disk");
-                log("✅ Pack: " + (job.packDir || ""), "log-ok");
+                log(`✅ Pack: ${job.packDir || ""}`, "log-ok");
               } else {
                 toast("Job finished with errors — check steps");
               }
@@ -1380,7 +1380,7 @@
         }
       }
 
-      async function postSelected() {
+      async function _postSelected() {
         const selected = [...selectedOrders];
         if (selected.length === 0) {
           toast('Select products to post, or use "Post All Unlisted"');
@@ -1409,14 +1409,14 @@
           await loadSummary();
           await loadProducts();
         } catch (e) {
-          log("❌ " + e.message, "log-err");
-          toast("Post failed: " + e.message);
+          log(`❌ ${e.message}`, "log-err");
+          toast(`Post failed: ${e.message}`);
         } finally {
           btn.disabled = false;
         }
       }
 
-      async function postOne(orderId) {
+      async function _postOne(orderId) {
         log(`Posting ${orderId}…`, "log-info");
         try {
           const r = await fetch(`${API}/post`, {
@@ -1436,12 +1436,12 @@
           await loadSummary();
           await loadProducts();
         } catch (e) {
-          log("❌ " + e.message, "log-err");
-          toast("Error: " + e.message);
+          log(`❌ ${e.message}`, "log-err");
+          toast(`Error: ${e.message}`);
         }
       }
 
-      async function repostOne(orderId) {
+      async function _repostOne(orderId) {
         log(`Reposting ${orderId}…`, "log-info");
         try {
           const r = await fetch(`${API}/repost`, {
@@ -1455,12 +1455,12 @@
           await loadSummary();
           await loadProducts();
         } catch (e) {
-          log("❌ " + e.message, "log-err");
-          toast("Error: " + e.message);
+          log(`❌ ${e.message}`, "log-err");
+          toast(`Error: ${e.message}`);
         }
       }
 
-      async function repostStale() {
+      async function _repostStale() {
         const btn = document.getElementById("btn-repost");
         btn.disabled = true;
         log("Reposting stale listings…", "log-info");
@@ -1478,14 +1478,14 @@
           await loadSummary();
           await loadProducts();
         } catch (e) {
-          log("❌ " + e.message, "log-err");
-          toast("Repost failed: " + e.message);
+          log(`❌ ${e.message}`, "log-err");
+          toast(`Repost failed: ${e.message}`);
         } finally {
           btn.disabled = false;
         }
       }
 
-      async function markSold(orderId) {
+      async function _markSold(orderId) {
         const price = prompt(
           "Enter sale price (leave blank to use listing price):",
         );
@@ -1508,19 +1508,19 @@
           await loadSummary();
           await loadProducts();
         } catch (e) {
-          toast("Error: " + e.message);
+          toast(`Error: ${e.message}`);
         }
       }
 
       // ── Selection ─────────────────────────────────────────────────────────────
 
-      function toggleSelect(orderId, checked) {
+      function _toggleSelect(orderId, checked) {
         if (checked) selectedOrders.add(orderId);
         else selectedOrders.delete(orderId);
         updateSelectedCount();
       }
 
-      function toggleSelectAll(cb) {
+      function _toggleSelectAll(cb) {
         const rows = document.querySelectorAll(
           '#products-body input[type="checkbox"]:not(:disabled)',
         );
@@ -1555,7 +1555,7 @@
             s.rfyMissed ?? "—";
           const rate =
             s.rfyConversionRate != null
-              ? Math.round(s.rfyConversionRate * 100) + "%"
+              ? `${Math.round(s.rfyConversionRate * 100)}%`
               : "—";
           document.getElementById("s-rfy-rate").textContent = rate;
         } catch {
@@ -1574,7 +1574,7 @@
           const data = await r.json();
           renderRfyTable(data.entries || []);
         } catch (e) {
-          toast("Failed to load RFY list: " + e.message);
+          toast(`Failed to load RFY list: ${e.message}`);
         }
       }
 
@@ -1620,7 +1620,7 @@
 
       // ── RFY: add entry ────────────────────────────────────────────────────────
 
-      async function addRfyEntry() {
+      async function _addRfyEntry() {
         const title = document.getElementById("rfy-title").value.trim();
         if (!title) {
           toast("Product title is required");
@@ -1657,7 +1657,7 @@
           await loadRfy();
           await loadRfySummary();
         } catch (e) {
-          toast("Error: " + e.message);
+          toast(`Error: ${e.message}`);
         }
       }
 
@@ -1679,7 +1679,7 @@
           await loadRfy();
           await loadRfySummary();
         } catch (e) {
-          toast("Error: " + e.message);
+          toast(`Error: ${e.message}`);
         }
       }
 
@@ -1697,7 +1697,7 @@
           await loadRfy();
           await loadRfySummary();
         } catch (e) {
-          toast("Error: " + e.message);
+          toast(`Error: ${e.message}`);
         }
       }
 

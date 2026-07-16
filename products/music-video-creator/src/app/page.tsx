@@ -195,7 +195,7 @@ export default function Home() {
       formData.append("audio", audioFile);
       formData.append("avatar", avatarFile);
       const theme = THEMES.find((t) => t.id === selectedTheme);
-      if (theme && theme.prompt) {
+      if (theme?.prompt) {
         formData.append("theme_prompt", theme.prompt);
       }
 

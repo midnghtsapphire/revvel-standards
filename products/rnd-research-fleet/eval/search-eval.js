@@ -42,7 +42,7 @@
  *   }
  */
 
-const fs = require("fs");
+const fs = require("node:fs");
 
 // ---------------------------------------------------------------------------
 // Decision thresholds (documented in standards/SEARCH_EVALUATION.md).
@@ -108,13 +108,13 @@ const NPLET_THRESHOLDS = {
 // Small helpers
 // ---------------------------------------------------------------------------
 function round(n, d = 4) {
-  if (typeof n !== "number" || !isFinite(n)) return n;
+  if (typeof n !== "number" || !Number.isFinite(n)) return n;
   const f = 10 ** d;
   return Math.round(n * f) / f;
 }
 
 function mean(arr) {
-  const nums = arr.filter((x) => typeof x === "number" && isFinite(x));
+  const nums = arr.filter((x) => typeof x === "number" && Number.isFinite(x));
   if (nums.length === 0) return null;
   return nums.reduce((a, b) => a + b, 0) / nums.length;
 }
@@ -140,7 +140,7 @@ function domainSet(urls) {
 }
 
 function countOf(v) {
-  if (typeof v === "number" && isFinite(v)) return v;
+  if (typeof v === "number" && Number.isFinite(v)) return v;
   if (Array.isArray(v)) return v.length;
   return 0;
 }
@@ -1092,7 +1092,7 @@ function renderMarkdown(report) {
     lines.push(`| ${name} | ${fmt(bv)} | ${fmt(cv)} | ${fmt(dv)} |`);
   }
   lines.push("");
-  if (c.usefulness_notes && c.usefulness_notes.length) {
+  if (c.usefulness_notes?.length) {
     lines.push("## Downstream usefulness notes (candidate)");
     lines.push("");
     for (const u of c.usefulness_notes)

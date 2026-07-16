@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from "react";
-import { type Node, NodeType } from "@workspace/api-client-react";
+import { useState, useMemo } from "react";
+import type { Node, } from "@workspace/api-client-react";
 import { Plus, MoreVertical, Edit2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {

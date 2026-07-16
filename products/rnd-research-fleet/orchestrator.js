@@ -215,7 +215,7 @@ async function orchestrate(opts) {
     throw new Error("orchestrate: armSpecs must be a non-empty array");
   }
   for (const s of armSpecs) {
-    if (!s || !s.id || !s.model) {
+    if (!s?.id || !s.model) {
       throw new Error(
         "orchestrate: each arm spec needs both an id and a model",
       );
@@ -361,8 +361,8 @@ async function orchestrate(opts) {
 
 // --- CLI demo (stubbed dispatch so it runs without an API key) -------------
 if (require.main === module) {
-  const fs = require("fs");
-  const path = require("path");
+  const fs = require("node:fs");
+  const path = require("node:path");
   const outDir =
     process.env.ORCH_OUT_DIR ||
     path.join(process.cwd(), "docs", "research-engine", "checkpoints");

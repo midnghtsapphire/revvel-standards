@@ -28,8 +28,8 @@
  *     [--client <name>] [--log <path>] [--json]
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { detect } = require("./detect-stack");
 
 // Default per-client action-log directory (repo-relative). Per isolation
@@ -126,7 +126,7 @@ function emitActionLog(plan, { logPath, dryRun = true } = {}) {
       task: plan.task,
     }),
   );
-  fs.appendFileSync(file, lines.join("\n") + "\n");
+  fs.appendFileSync(file, `${lines.join("\n")}\n`);
   return file;
 }
 

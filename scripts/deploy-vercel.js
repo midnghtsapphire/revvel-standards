@@ -7,9 +7,9 @@
  * Usage: node scripts/deploy-vercel.js --repo=owner/repo
  */
 
-const fs = require("fs");
-const crypto = require("crypto");
-const { execSync } = require("child_process");
+const fs = require("node:fs");
+const crypto = require("node:crypto");
+const { execSync } = require("node:child_process");
 const GIT_USER_NAME = "revvel-automation[bot]";
 const GIT_USER_EMAIL = "revvel-automation@users.noreply.github.com";
 

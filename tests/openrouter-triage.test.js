@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 
-const assert = require("assert");
-const { execFileSync } = require("child_process");
+const assert = require("node:assert");
+const { execFileSync } = require("node:child_process");
 const {
   buildSystemPrompt,
   buildUserPrompt,

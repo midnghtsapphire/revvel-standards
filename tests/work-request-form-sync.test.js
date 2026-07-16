@@ -8,19 +8,19 @@
  * Pure fs + regex — no npm deps required for this file.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 
-let passed = 0;
+let _passed = 0;
 let failed = 0;
 
 function test(name, fn) {
   try {
     fn();
     console.log(`PASS: ${name}`);
-    passed++;
+    _passed++;
   } catch (e) {
     console.log(`FAIL: ${name}\n    ${e.stack || e.message}`);
     failed++;

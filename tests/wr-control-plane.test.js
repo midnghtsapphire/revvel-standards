@@ -27,9 +27,9 @@
  *      server consistently.
  */
 
-const { spawnSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { spawnSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 const SERVER_DIR = path.join(REPO_ROOT, "mcp-servers", "wr-control-plane");
@@ -613,14 +613,14 @@ test(".mcp.json includes a disabled wr-pr-control-plane entry", () => {
   const cfg = JSON.parse(
     fs.readFileSync(path.join(REPO_ROOT, ".mcp.json"), "utf8"),
   );
-  const entry = cfg.mcpServers && cfg.mcpServers["wr-pr-control-plane"];
+  const entry = cfg.mcpServers?.["wr-pr-control-plane"];
   assert(entry, "wr-pr-control-plane missing from .mcp.json");
   assertEq(entry.disabled, true, ".mcp.json entry must be disabled by default");
   assert(
     entry.disabledReason && /credentials/i.test(entry.disabledReason),
     "disabledReason must explain credentials path",
   );
-  assert(entry.env && entry.env.GITHUB_TOKEN, "GITHUB_TOKEN env wiring");
+  assert(entry.env?.GITHUB_TOKEN, "GITHUB_TOKEN env wiring");
   assert(entry.env.COMPOSIO_API_KEY, "COMPOSIO_API_KEY env wiring");
   assert(entry.env.OBOT_BASE_URL, "OBOT_BASE_URL env wiring");
 });
@@ -637,7 +637,7 @@ test(".env.example documents every required control-plane variable", () => {
     "WR_DEFAULT_REPO",
     "JULES_API_KEY",
   ]) {
-    assert(env.includes(v + "="), `.env.example missing ${v}`);
+    assert(env.includes(`${v}=`), `.env.example missing ${v}`);
   }
   assert(
     /api\.tavily\.com/.test(env),
@@ -659,7 +659,7 @@ test("templates/mcp/.env.mcp.example mirrors the control-plane variables", () =>
     "OBOT_ALLOWED_HOSTS",
     "WR_DEFAULT_REPO",
   ]) {
-    assert(env.includes(v + "="), `template env example missing ${v}`);
+    assert(env.includes(`${v}=`), `template env example missing ${v}`);
   }
   assert(
     /api\.tavily\.com/.test(env),
@@ -674,7 +674,7 @@ test("templates/mcp/mcp.revvel-custom.json exposes the wr-pr-control-plane entry
       "utf8",
     ),
   );
-  const entry = cfg.mcpServers && cfg.mcpServers["wr-pr-control-plane"];
+  const entry = cfg.mcpServers?.["wr-pr-control-plane"];
   assert(entry, "wr-pr-control-plane missing from mcp.revvel-custom.json");
   assert(
     entry.args.some((a) => a.includes("mcp-servers/wr-control-plane")),

@@ -26,10 +26,10 @@
   function renderWeeklyPlan(plan) {
     const fragments = plan.map(function mapDay(day) {
       const status = day.scheduled
-        ? day.plannedDoseJcm2.toFixed(1) + " J/cm2"
+        ? `${day.plannedDoseJcm2.toFixed(1)} J/cm2`
         : "Rest";
       return (
-        "<li><strong>" + DAYS[day.dayIndex] + ":</strong> " + status + "</li>"
+        `<li><strong>${DAYS[day.dayIndex]}:</strong> ${status}</li>`
       );
     });
     schedule.innerHTML = fragments.join("");
@@ -95,7 +95,7 @@
 
       renderWeeklyPlan(weeklyPlan);
     } catch (error) {
-      result.innerHTML = "<p class='error'>" + error.message + "</p>";
+      result.innerHTML = `<p class='error'>${error.message}</p>`;
       schedule.innerHTML = "";
     }
   });

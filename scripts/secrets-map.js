@@ -24,8 +24,8 @@
  * Pure scan/render functions are exported for tests; IO lives in main().
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const ROOT = path.join(__dirname, "..");
 const WORKFLOWS_DIR = path.join(ROOT, ".github/workflows");
@@ -171,7 +171,7 @@ function renderMarkdown(map, ledgerNames = []) {
   out.push(
     `*Last generated: ${new Date().toISOString().slice(0, 10)} from \`.github/workflows/\`.*`,
   );
-  return out.join("\n") + "\n";
+  return `${out.join("\n")}\n`;
 }
 
 /** Compare ignoring the volatile "Last generated" date line. */

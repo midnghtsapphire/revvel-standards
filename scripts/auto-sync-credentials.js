@@ -15,7 +15,7 @@
 
 "use strict";
 
-const https = require("https");
+const https = require("node:https");
 
 const GITHUB_API = "api.github.com";
 
@@ -79,7 +79,7 @@ async function setSecret(repo, name, value) {
 function encryptValue(value, publicKey) {
   // Simple XOR encryption for demo - in production use libsodium or the GitHub API
   // This is a placeholder - the real implementation would use proper encryption
-  const crypto = require("crypto");
+  const crypto = require("node:crypto");
   const keyBuffer = Buffer.from(publicKey, "base64");
   const valueBuffer = Buffer.from(value);
 
@@ -122,7 +122,7 @@ async function main() {
   let credentials;
   try {
     credentials = JSON.parse(backupJson);
-  } catch (e) {
+  } catch (_e) {
     console.error("Invalid JSON in CREDENTIAL_BACKUP_JSON");
     process.exit(1);
   }

@@ -123,8 +123,8 @@ module.exports = {
 // --- CLI -------------------------------------------------------------------
 if (require.main === module) {
   (async () => {
-    const fs = require("fs");
-    const path = require("path");
+    const fs = require("node:fs");
+    const path = require("node:path");
     const { repoApi } = require("./gh");
     const sentinel = require("./sentinel");
     const homeostat = require("./homeostat");
@@ -151,7 +151,7 @@ if (require.main === module) {
         "[biome-sheaf] warning: failed to fetch open issues (API error) — treating as 0 issues for this sweep",
       );
     const issuesResp = issuesRespRaw || [];
-    const runs = (runsResp && runsResp.workflow_runs) || [];
+    const runs = (runsResp?.workflow_runs) || [];
 
     const runClass = sentinel.classifyRuns(runs);
     const stuck = sentinel.detectStuckIssues(issuesResp, Date.now());

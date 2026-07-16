@@ -11,7 +11,7 @@
  * 4. Branch name generation
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 
 let passed = 0;
 let failed = 0;
@@ -42,7 +42,7 @@ const wrIssue = {
   ],
 };
 
-const nonWrIssue = {
+const _nonWrIssue = {
   number: 14570,
   title: "Bug: Something is broken",
   body: "Description",
@@ -126,7 +126,7 @@ function isCompletionLabel(labelName) {
   return COMPLETION_LABELS.has(labelName);
 }
 
-function shouldCreatePr(issue, eventName, action, label) {
+function shouldCreatePr(issue, eventName, action, _label) {
   // Skip if issue is closed or has issue:done
   if (issue.state === "closed") return false;
 
@@ -359,7 +359,7 @@ function isCompletionTrigger(eventName, action, labelName) {
   });
 
   await test("generateBranchName truncates long titles", () => {
-    const longTitle = "[WR] " + "a".repeat(100);
+    const longTitle = `[WR] ${"a".repeat(100)}`;
     const result = generateBranchName(14569, longTitle);
     assert.ok(result.length <= 60 + 20); // prefix + number + truncated slug
   });

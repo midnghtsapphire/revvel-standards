@@ -4,10 +4,10 @@
 
 // 2026-05-21 (Claude): import BDD globals so the file runs directly and under `node --test`.
 const { after, describe, it } = require("node:test");
-const assert = require("assert");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
+const assert = require("node:assert");
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
 
 // Redirect the doctor report to a temp file BEFORE requiring the script, so any
 // doctor.run() during tests never rewrites the tracked AUTOMATION-DOCTOR-REPORT.md
@@ -56,7 +56,7 @@ describe("AutomationDoctor", () => {
 
     it("should have job timeout defaults", () => {
       assert.ok(CONFIG.jobTimeoutDefaults.label);
-      assert.ok(CONFIG.jobTimeoutDefaults["validation"]);
+      assert.ok(CONFIG.jobTimeoutDefaults.validation);
     });
   });
 
@@ -164,8 +164,8 @@ describe("Stuck Issue Detection", () => {
 
 describe("Model Config Parsing", () => {
   it("should parse agent-models.yml", () => {
-    const fs = require("fs");
-    const path = require("path");
+    const fs = require("node:fs");
+    const path = require("node:path");
     const YAML = require("yaml");
 
     const modelConfigPath = path.join(
@@ -186,8 +186,8 @@ describe("Model Config Parsing", () => {
   });
 
   it("should have current model versions in profiles", () => {
-    const fs = require("fs");
-    const path = require("path");
+    const fs = require("node:fs");
+    const path = require("node:path");
     const YAML = require("yaml");
 
     const modelConfigPath = path.join(
@@ -208,7 +208,7 @@ describe("Model Config Parsing", () => {
 
 describe("Workflow YAML Parsing", () => {
   it("should parse issue-state-machine.yml", () => {
-    const fs = require("fs");
+    const fs = require("node:fs");
     const YAML = require("yaml");
 
     const path = ".github/workflows/issue-state-machine.yml";
@@ -223,7 +223,7 @@ describe("Workflow YAML Parsing", () => {
   });
 
   it("should parse stuck-check-watchdog.yml", () => {
-    const fs = require("fs");
+    const fs = require("node:fs");
     const YAML = require("yaml");
 
     const path = ".github/workflows/stuck-check-watchdog.yml";

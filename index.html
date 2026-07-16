@@ -103,8 +103,8 @@
       }
       @media (prefers-reduced-motion: reduce) {
         * {
-          animation: none !important;
-          transition: none !important;
+          animation: none;
+          transition: none;
         }
       }
     </style>
@@ -414,7 +414,7 @@
 
             const link = document.createElement("p");
             link.className = "mt-4 font-mono text-[11px] text-iris";
-            link.textContent = entry.path + " →";
+            link.textContent = `${entry.path} →`;
 
             card.append(tag, title, desc, link);
             grid.appendChild(card);

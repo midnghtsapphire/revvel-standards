@@ -31,11 +31,11 @@
 
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
-const LABELS_FILE = path.join(REPO_ROOT, ".github", "labels.yml");
+const _LABELS_FILE = path.join(REPO_ROOT, ".github", "labels.yml");
 
 // The one-namespace-per-axis taxonomy. Every label in labels.yml must carry
 // an `axis:` from this set. Documented in docs/AGENT_MONITORING_STANDARD.md.
@@ -87,7 +87,7 @@ function parseLabelsYaml(raw) {
     if (line.startsWith("#") || line === "" || line === "labels:") continue;
     const name = line.match(/^-\s+name:\s+"?([^"]+?)"?\s*$/);
     if (name) {
-      if (current && current.name) labels.push(current);
+      if (current?.name) labels.push(current);
       current = { name: name[1] };
       continue;
     }
@@ -105,7 +105,7 @@ function parseLabelsYaml(raw) {
     const axis = line.match(/^axis:\s+"?([^"]+?)"?\s*$/);
     if (axis) current.axis = axis[1];
   }
-  if (current && current.name) labels.push(current);
+  if (current?.name) labels.push(current);
   return labels;
 }
 
@@ -210,7 +210,7 @@ async function fetchIssueCounts(labelNames, token, repo) {
         `https://api.github.com/search/issues?q=${query}&per_page=1`,
         {
           headers: {
-            Authorization: "Bearer " + token,
+            Authorization: `Bearer ${token}`,
             Accept: "application/vnd.github+json",
             "User-Agent": "label-inventory",
           },

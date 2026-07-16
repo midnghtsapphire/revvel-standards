@@ -6,8 +6,8 @@
  * Without a key, the pack still gets listing.txt + product reference (if fetchable).
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { attachProductLink, productUrlFromAsin } = require("./amazon-parser");
 const { enrichProduct, buildListingPack } = require("./product-link");
 const { calculateListingPrice } = require("./price-calculator");

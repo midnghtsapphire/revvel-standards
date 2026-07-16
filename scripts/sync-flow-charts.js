@@ -23,8 +23,8 @@
 
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -37,7 +37,7 @@ const FLOW_CHARTS_DIR = path.join(
   "docs",
   "Master Revvel-Standards Flow Charts",
 );
-const DOCS_DIR = path.join(REPO_ROOT, "docs");
+const _DOCS_DIR = path.join(REPO_ROOT, "docs");
 
 const TODAY = new Date().toISOString().split("T")[0];
 

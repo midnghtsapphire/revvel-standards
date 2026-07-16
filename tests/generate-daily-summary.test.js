@@ -12,11 +12,11 @@
  * - Markdown to HTML conversion
  */
 
-const assert = require("assert");
-const Module = require("module");
+const assert = require("node:assert");
+const Module = require("node:module");
 
 // Mock dependencies for testing
-const mockModule = {
+const _mockModule = {
   getToday: null,
   getYesterday: null,
   formatDate: null,
@@ -168,7 +168,7 @@ else failed++;
 function formatDate(isoString) {
   const date = new Date(isoString);
   return (
-    date.toLocaleString("en-US", {
+    `${date.toLocaleString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -176,7 +176,7 @@ function formatDate(isoString) {
       minute: "2-digit",
       hour12: true,
       timeZone: "UTC",
-    }) + " UTC"
+    })} UTC`
   );
 }
 
@@ -214,7 +214,7 @@ if (
     }
     function getYesterday() {
       const today = getToday();
-      const date = new Date(today + "T00:00:00Z");
+      const date = new Date(`${today}T00:00:00Z`);
       date.setUTCDate(date.getUTCDate() - 1);
       return date.toISOString().split("T")[0];
     }

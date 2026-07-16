@@ -20,9 +20,9 @@
 
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const { execSync, spawnSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execSync, spawnSync } = require("node:child_process");
 
 // ─── Configuration ────────────────────────────────────────
 const TARGET_DIR = process.argv[2] || ".";
@@ -498,7 +498,7 @@ console.log(`\nAuditing: ${repoRoot}\n`);
 
 // Calculate max score (excluding bonus checks)
 const coreChecks = checks.filter((c) => !c.bonus);
-const maxScore = coreChecks.reduce((sum, c) => sum + c.points, 0);
+const _maxScore = coreChecks.reduce((sum, c) => sum + c.points, 0);
 
 for (const check of checks) {
   const isBonus = check.bonus === true;
@@ -507,7 +507,7 @@ for (const check of checks) {
   let passed = false;
   try {
     passed = check.fn();
-  } catch (e) {
+  } catch (_e) {
     passed = false;
   }
 

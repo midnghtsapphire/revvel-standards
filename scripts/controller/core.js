@@ -120,7 +120,7 @@ function classifyRun(run, nowMs, cfg = DEFAULTS) {
 
 // Which orchestrators to cut: the stalled + runaway ones, never a protected run
 // (the immune system / the controller itself). This is the eviction decision.
-function selectPreemptions(classified, cfg = DEFAULTS) {
+function selectPreemptions(classified, _cfg = DEFAULTS) {
   return classified.filter(
     (c) => (c.health === "stalled" || c.health === "runaway") && !c.protected,
   );

@@ -17,7 +17,7 @@
 
 "use strict";
 
-const { spawnSync } = require("child_process");
+const { spawnSync } = require("node:child_process");
 
 const ACTION = process.env.ACTION || "full";
 const DRY_RUN = process.env.DRY_RUN === "true";
@@ -446,8 +446,6 @@ async function main() {
         actionsTaken.push("refresh:unsupported");
         break;
       }
-
-      case "full":
       default: {
         // Do everything
         const fullAudit = await audit();
@@ -498,7 +496,7 @@ async function main() {
     log(`Agent failed: ${error.message}`, "error");
     console.log(error.stack);
     if (process.env.GITHUB_OUTPUT) {
-      require("fs").appendFileSync(
+      require("node:fs").appendFileSync(
         process.env.GITHUB_OUTPUT,
         `\nstatus=failure\nactions_taken=${actionsTaken.join(";")}\n`,
       );
@@ -516,7 +514,7 @@ async function main() {
 
   // Output for GitHub Actions
   if (process.env.GITHUB_OUTPUT) {
-    require("fs").appendFileSync(
+    require("node:fs").appendFileSync(
       process.env.GITHUB_OUTPUT,
       `\nstatus=${status}\nactions_taken=${actionsTaken.join(";")}\n`,
     );

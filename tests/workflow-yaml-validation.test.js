@@ -12,8 +12,8 @@
  *   - the list never contains a `"*"` wildcard
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { describe, test, before } = require("node:test");
 const assert = require("node:assert");
 
@@ -46,15 +46,15 @@ function expect(actual) {
 let yaml;
 try {
   yaml = require("js-yaml");
-} catch (e) {
+} catch (_e) {
   // js-yaml is optional; tests that need it will skip gracefully.
   yaml = null;
 }
 
 const WORKFLOWS_DIR = path.join(__dirname, "..", ".github", "workflows");
-const PR_LIFECYCLE = path.join(WORKFLOWS_DIR, "pr-lifecycle.yml");
+const _PR_LIFECYCLE = path.join(WORKFLOWS_DIR, "pr-lifecycle.yml");
 
-function loadWorkflowNames() {
+function _loadWorkflowNames() {
   const names = new Set();
   if (!yaml || !fs.existsSync(WORKFLOWS_DIR)) return names;
   for (const f of fs.readdirSync(WORKFLOWS_DIR)) {

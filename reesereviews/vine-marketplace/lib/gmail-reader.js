@@ -106,7 +106,7 @@ function fetchEmails({ since = null, before = null, markRead = false } = {}) {
                   const raw = Buffer.concat(chunks);
                   const parsed = await simpleParser(raw);
                   mails.push(parsed);
-                } catch (parseErr) {
+                } catch (_parseErr) {
                   // Non-fatal: skip unparseable messages
                 }
               });

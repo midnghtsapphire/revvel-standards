@@ -3,7 +3,7 @@
 
 /** Unit tests for scripts/seo-a11y-guard.js — pure detection logic. */
 
-const assert = require("assert");
+const assert = require("node:assert");
 const { evaluateSeoA11y } = require("../scripts/seo-a11y-guard");
 
 let passed = 0;

@@ -17,7 +17,7 @@
  * See docs/PR_AUTO_REVIEW_AUTOMATION.md for full process documentation.
  */
 
-const https = require("https");
+const https = require("node:https");
 
 // Environment variables
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
@@ -357,7 +357,7 @@ function buildUserPrompt(prDetails, files, diff) {
   // Truncate diff if too large
   const truncatedDiff =
     diff.length > MAX_DIFF_SIZE
-      ? diff.slice(0, MAX_DIFF_SIZE) + "\n...(diff truncated for length)"
+      ? `${diff.slice(0, MAX_DIFF_SIZE)}\n...(diff truncated for length)`
       : diff;
 
   const filesList = files
@@ -576,7 +576,7 @@ async function main() {
         line: parseInt(c.line, 10),
         body: c.comment,
       }))
-      .filter((c) => !isNaN(c.line) && c.line > 0)
+      .filter((c) => !Number.isNaN(c.line) && c.line > 0)
       .slice(0, MAX_INLINE_COMMENTS);
 
     console.log(`Submitting ${githubComments.length} inline comments`);
@@ -599,7 +599,7 @@ async function main() {
     const isRateLimit =
       error.message.includes("429") ||
       error.message.toLowerCase().includes("rate limit");
-    const errorType = isRateLimit ? "Rate Limit" : "Error";
+    const _errorType = isRateLimit ? "Rate Limit" : "Error";
 
     // Post error comment
     try {

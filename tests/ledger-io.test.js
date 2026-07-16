@@ -9,9 +9,9 @@
 
 const test = require("node:test");
 const assert = require("node:assert");
-const os = require("os");
-const fs = require("fs");
-const path = require("path");
+const os = require("node:os");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const {
   appendEvent,
@@ -41,10 +41,10 @@ test("readEvents: parses valid JSONL lines", () => {
   try {
     fs.writeFileSync(
       f,
-      [
+      `${[
         JSON.stringify({ type: "score", agent: "a", quality: 90 }),
         JSON.stringify({ type: "score", agent: "b", quality: 80 }),
-      ].join("\n") + "\n",
+      ].join("\n")}\n`,
     );
     const events = readEvents(f);
     assert.strictEqual(events.length, 2);
@@ -60,12 +60,12 @@ test("readEvents: silently skips malformed JSON lines", () => {
   try {
     fs.writeFileSync(
       f,
-      [
+      `${[
         JSON.stringify({ type: "score", agent: "x", quality: 85 }),
         "NOT_VALID_JSON",
         "{unclosed",
         JSON.stringify({ type: "score", agent: "y", quality: 75 }),
-      ].join("\n") + "\n",
+      ].join("\n")}\n`,
     );
     const events = readEvents(f);
     assert.strictEqual(

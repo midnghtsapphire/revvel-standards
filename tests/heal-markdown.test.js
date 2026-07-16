@@ -147,7 +147,7 @@ test("globToRegExp + isIgnored honour .markdownlintignore-style patterns", () =>
     "docs/MASTER_AUDIT_PROMPTS/**",
     "docs/research-drafts/**",
   ].map(globToRegExp);
-  const root = require("path").resolve(__dirname, "..");
+  const root = require("node:path").resolve(__dirname, "..");
   assert.equal(
     isIgnored("docs/MASTER_AUDIT_PROMPTS/session.md", patterns, root),
     true,
@@ -161,7 +161,7 @@ test("globToRegExp + isIgnored honour .markdownlintignore-style patterns", () =>
 });
 
 test("globToRegExp: a middle/leading globstar matches ZERO directories (gitignore semantics)", () => {
-  const root = require("path").resolve(__dirname, "..");
+  const root = require("node:path").resolve(__dirname, "..");
   const mid = [globToRegExp("docs/**/transcripts/**")];
   assert.equal(isIgnored("docs/transcripts/t1.md", mid, root), true); // zero dirs between
   assert.equal(isIgnored("docs/agents/x/transcripts/t1.md", mid, root), true); // many dirs

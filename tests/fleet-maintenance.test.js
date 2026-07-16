@@ -3,7 +3,7 @@
 
 /** Unit tests for scripts/fleet-maintenance.js. */
 
-const assert = require("assert");
+const assert = require("node:assert");
 const {
   fileWorkRequest,
   hasOpenWorkRequest,

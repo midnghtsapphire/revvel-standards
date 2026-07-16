@@ -30,7 +30,7 @@
 
 "use strict";
 
-const https = require("https");
+const https = require("node:https");
 
 // ---------------------------------------------------------------------------
 // Config (read at run time, NOT at module load — so tests can require() us

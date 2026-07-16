@@ -13,7 +13,7 @@
  * without touching the filesystem.
  */
 
-const path = require("path");
+const path = require("node:path");
 
 const RELATIVE_IMPORT_RE =
   /(?:import\s+[^'"]*from\s*|require\(\s*|import\(\s*)['"](\.[^'"]+)['"]/g;
@@ -54,7 +54,7 @@ function resolvesWithExts(baseRel, exists) {
   for (const ext of JS_EXTS) {
     if (exists(baseRel + ext)) return true;
     // index files inside a referenced directory
-    if (exists(path.posix.join(baseRel, "index" + (ext || ".js")))) return true;
+    if (exists(path.posix.join(baseRel, `index${ext || ".js"}`))) return true;
   }
   return false;
 }

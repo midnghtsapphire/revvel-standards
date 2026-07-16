@@ -14,8 +14,8 @@
  * Pure render/group/inject/drift functions are exported for tests; IO lives in main().
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const YAML = require("yaml");
 
 const ROOT = path.join(__dirname, "..");
@@ -110,7 +110,7 @@ function renderMarkdown(doc) {
     ...[...groups.keys()].filter((t) => !TYPE_ORDER.includes(t)),
   ]) {
     const items = groups.get(type);
-    if (!items || !items.length) continue;
+    if (!items?.length) continue;
     out.push(`## ${TYPE_TITLE[type] || type}`);
     out.push("");
     out.push(
@@ -145,7 +145,7 @@ function renderMarkdown(doc) {
   out.push(
     `*Last generated: ${new Date().toISOString().slice(0, 10)} from \`config/connections.yml\`.*`,
   );
-  return out.join("\n") + "\n";
+  return `${out.join("\n")}\n`;
 }
 
 /** Compact summary table for the README block. */
@@ -168,7 +168,7 @@ function renderReadmeBlock(doc) {
     ...[...groups.keys()].filter((t) => !TYPE_ORDER.includes(t)),
   ]) {
     const items = groups.get(type);
-    if (!items || !items.length) continue;
+    if (!items?.length) continue;
     const examples = items
       .slice(0, 4)
       .map((c) => `\`${c.id}\``)
@@ -195,8 +195,8 @@ function injectReadme(readme, block, begin = BEGIN, end = END) {
 
 /** Generated agent-fallback chain block for the README (replaces stale prose). */
 function renderFallbackBlock(doc) {
-  const chain = (doc.meta && doc.meta.fallback_chain) || [];
-  const retired = (doc.meta && doc.meta.fallback_retired) || [];
+  const chain = (doc.meta?.fallback_chain) || [];
+  const retired = (doc.meta?.fallback_retired) || [];
   const lines = [FB_BEGIN];
   lines.push(
     "**Fallback chain** — generated from `config/connections.yml`, so it never drifts:",
@@ -239,7 +239,7 @@ function renderHtml(doc) {
 </head>
 <body>
 <h1>🔌 Connections Dashboard</h1>
-<div class="meta">Generated from <code>config/connections.yml</code> — on-demand, always fresh. Owner: ${(doc.meta && doc.meta.owner) || ""} · ${(doc.meta && doc.meta.updated) || ""}</div>
+<div class="meta">Generated from <code>config/connections.yml</code> — on-demand, always fresh. Owner: ${(doc.meta?.owner) || ""} · ${(doc.meta?.updated) || ""}</div>
 <div class="controls">
   <input id="q" placeholder="filter by name / access / connects-to…" size="32"/>
   <select id="type"><option value="">all types</option></select>

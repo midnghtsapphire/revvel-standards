@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 // 2026-05-21 (Claude): schemas/state.schema.json declares draft 2020-12, so use
 // Ajv's 2020 build instead of the default draft-07 entrypoint (was: require('ajv')).
 const Ajv = require("ajv/dist/2020");

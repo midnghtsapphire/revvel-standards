@@ -13,8 +13,8 @@
 
 "use strict";
 
-const assert = require("assert");
-const path = require("path");
+const assert = require("node:assert");
+const path = require("node:path");
 const {
   SUPPORTED_MODELS,
   DEFAULT_MODEL,
@@ -32,7 +32,7 @@ function test(name, fn) {
   } catch (err) {
     failures += 1;
     // eslint-disable-next-line no-console
-    console.error(`  FAIL ${name}: ${err && err.message ? err.message : err}`);
+    console.error(`  FAIL ${name}: ${err?.message ? err.message : err}`);
   }
 }
 

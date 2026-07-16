@@ -21,9 +21,9 @@
  *     --output="./output"
  */
 
-const https = require("https");
-const fs = require("fs");
-const path = require("path");
+const https = require("node:https");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // ---------------------------------------------------------------------------
 // Configuration
@@ -748,7 +748,7 @@ async function main() {
     );
 
     const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
-    console.log("\n" + "=".repeat(60));
+    console.log(`\n${"=".repeat(60)}`);
     console.log(`✅ UI Creation Engine Complete in ${totalDuration}s`);
     console.log(`📁 Output directory: ${args.output}`);
     console.log("=".repeat(60));

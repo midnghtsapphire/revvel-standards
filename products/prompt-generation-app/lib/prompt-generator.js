@@ -72,7 +72,7 @@ function marketFacts(idea) {
   ];
 }
 
-function competitorGaps(idea) {
+function competitorGaps(_idea) {
   return [
     {
       competitor: "Generic incumbent A",
@@ -89,7 +89,7 @@ function competitorGaps(idea) {
   ];
 }
 
-function legalBoundaries(idea) {
+function legalBoundaries(_idea) {
   return [
     "Respect robots.txt and ToS on any scraped surface.",
     "No PII collection without explicit consent + DPA.",

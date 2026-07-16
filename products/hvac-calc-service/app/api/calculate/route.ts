@@ -115,10 +115,10 @@ export async function POST(req: NextRequest) {
 }
 
 function parseNum(value: unknown, defaultVal: number): number {
-  if (typeof value === "number" && isFinite(value) && value > 0) return value;
+  if (typeof value === "number" && Number.isFinite(value) && value > 0) return value;
   if (typeof value === "string") {
     const n = parseFloat(value);
-    if (isFinite(n) && n > 0) return n;
+    if (Number.isFinite(n) && n > 0) return n;
   }
   return defaultVal;
 }

@@ -177,7 +177,7 @@
         margin-top: 8px;
       }
       .hidden {
-        display: none !important;
+        display: none;
       }
       .toast {
         position: fixed;
@@ -529,11 +529,11 @@
             '<div class="meta">Order ' +
             esc(p.orderId) +
             (p.asin
-              ? " · ASIN " + esc(p.asin)
+              ? ` · ASIN ${esc(p.asin)}`
               : ' · <span class="warn">no ASIN</span>') +
-            (p.paidPrice ? " · paid $" + p.paidPrice.toFixed(2) : "") +
+            (p.paidPrice ? ` · paid $${p.paidPrice.toFixed(2)}` : "") +
             (p.suggestedPrice != null
-              ? " · suggest $" + p.suggestedPrice.toFixed(2)
+              ? ` · suggest $${p.suggestedPrice.toFixed(2)}`
               : "") +
             "</div>";
 
@@ -580,7 +580,7 @@
           document.getElementById("file").click();
         };
         document.getElementById("file").onchange = function () {
-          const f = this.files && this.files[0];
+          const f = this.files?.[0];
           if (!f) return;
           const reader = new FileReader();
           reader.onload = () => {
@@ -602,7 +602,7 @@
             }
             loadProducts(
               products,
-              f.name + " · " + products.length + " products",
+              `${f.name} · ${products.length} products`,
             );
           };
           reader.onerror = () => {

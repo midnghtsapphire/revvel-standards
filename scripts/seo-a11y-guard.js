@@ -20,8 +20,8 @@
  *   PROTECTED         protected path prefixes (default: products/,apps/,sites/,src/)
  */
 
-const fs = require("fs");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const { execFileSync } = require("node:child_process");
 
 const DEFAULT_PROTECTED = "products/,apps/,sites/,src/";
 const APP_FILE_RE = /\.(html|jsx|tsx)$/i;

@@ -21,8 +21,8 @@
  */
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const semver = require("semver");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
@@ -80,7 +80,7 @@ function resolvedFromLock(pkgJsonPath, pkgName) {
   const data = JSON.parse(fs.readFileSync(lock, "utf8"));
   const packages = data.packages || {};
   const node = packages[`node_modules/${pkgName}`];
-  return node && node.version ? node.version : null;
+  return node?.version ? node.version : null;
 }
 
 function declaredRange(pkgJson, pkgName) {
@@ -89,7 +89,7 @@ function declaredRange(pkgJson, pkgName) {
     "devDependencies",
     "optionalDependencies",
   ]) {
-    if (pkgJson[field] && pkgJson[field][pkgName])
+    if (pkgJson[field]?.[pkgName])
       return { field, range: pkgJson[field][pkgName] };
   }
   return null;
@@ -119,7 +119,7 @@ function applyFix(pkgPath, advisory, finding) {
   const pkgJson = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
   const floor = finding.recommended;
   pkgJson[finding.field][advisory.package] = `^${floor}`;
-  fs.writeFileSync(pkgPath, JSON.stringify(pkgJson, null, 2) + "\n");
+  fs.writeFileSync(pkgPath, `${JSON.stringify(pkgJson, null, 2)}\n`);
   return floor;
 }
 

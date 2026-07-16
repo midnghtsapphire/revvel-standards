@@ -17,8 +17,8 @@
  * calls live inside the spawned runner, which reads OPENROUTER_API_KEY itself.
  */
 
-const path = require("path");
-const { spawn } = require("child_process");
+const path = require("node:path");
+const { spawn } = require("node:child_process");
 
 // arm.kind -> runner script. Default kind is 'single' (one deep-search call).
 const ARM_RUNNERS = Object.freeze({
@@ -188,7 +188,7 @@ function makeDispatch(query, opts = {}) {
 
       child.on("close", (code) => {
         cleanup();
-        if (signal && signal.aborted) {
+        if (signal?.aborted) {
           return reject(new Error(`${kind} arm aborted (cut by orchestrator)`));
         }
         const parsed = parseRunnerOutput(kind, out);

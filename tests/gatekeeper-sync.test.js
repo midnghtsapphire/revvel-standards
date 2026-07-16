@@ -13,9 +13,9 @@
  *   4. The script is referenced by the credential-gatekeeper workflow
  */
 
-const { execFileSync, spawnSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { execFileSync, spawnSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const SCRIPT = path.resolve(__dirname, "..", "scripts", "gatekeeper-sync.sh");
 const WORKFLOW = path.resolve(

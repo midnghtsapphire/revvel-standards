@@ -15,8 +15,8 @@
  * 2026-05-21 (Claude): created to centralize the no-key-first lane.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { callPerplexityNoKey } = require("./perplexity-research-issue");
 const { callOpenRouter } = require("./openrouter-routing");
 const { SCRIPT_EXECUTABLE_MODES } = require("../src/lib/model-routing-modes");

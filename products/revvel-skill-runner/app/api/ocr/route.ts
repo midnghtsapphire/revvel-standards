@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
     : {
         type: "image_url",
         image_url: {
-          url: imageBase64!.startsWith("data:")
+          url: imageBase64?.startsWith("data:")
             ? imageBase64!
             : `data:image/png;base64,${imageBase64}`,
         },

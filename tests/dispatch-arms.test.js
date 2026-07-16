@@ -2,7 +2,7 @@
 
 const { test } = require("node:test");
 const assert = require("node:assert");
-const { EventEmitter } = require("events");
+const { EventEmitter } = require("node:events");
 const {
   ARM_RUNNERS,
   extractCitations,

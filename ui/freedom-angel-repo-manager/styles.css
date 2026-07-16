@@ -62,8 +62,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   * {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms;
+    transition-duration: 0.01ms;
   }
 }
 
@@ -127,7 +127,7 @@ input:focus-visible {
 }
 
 .visually-hidden {
-  position: absolute !important;
+  position: absolute;
   width: 1px;
   height: 1px;
   padding: 0;
@@ -545,8 +545,8 @@ html[data-a11y-mode="sensory"] {
   --shadow: none;
 }
 html[data-a11y-mode="sensory"] * {
-  transition: none !important;
-  animation: none !important;
+  transition: none;
+  animation: none;
 }
 
 /* 6. Large Print — 20px base, bigger buttons, generous spacing */
@@ -569,9 +569,9 @@ html[data-a11y-mode="eco"] {
   --muted-bg: #ffffff;
 }
 html[data-a11y-mode="eco"] * {
-  box-shadow: none !important;
-  filter: none !important;
-  background-image: none !important;
+  box-shadow: none;
+  filter: none;
+  background-image: none;
 }
 html[data-a11y-mode="eco"] .site-header {
   background: #ffffff;

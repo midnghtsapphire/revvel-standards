@@ -146,7 +146,7 @@ async function enrichProduct(product, opts = {}) {
 function buildListingPack(product, pricing = null) {
   const p = attachProductLink({ ...product });
   const images =
-    p.imageUrls && p.imageUrls.length
+    p.imageUrls?.length
       ? p.imageUrls
       : p.imageUrl
         ? [p.imageUrl]

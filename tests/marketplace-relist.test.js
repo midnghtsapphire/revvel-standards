@@ -2,9 +2,9 @@
 
 const test = require("node:test");
 const assert = require("node:assert");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
 
 const relist = require("../scripts/marketplace-relist");
 
@@ -138,7 +138,7 @@ test("dry-run pack for a NEW item records image prompts (3 or 5)", async () => {
   assert.equal(listing.images.prompts.length, 5);
   assert.equal(listing.images.policy, "ai-staged-from-real-photos");
   assert.equal(listing.suggestedPrice, 12); // 20 × 0.6 default margin
-  assert.ok(listing.video && listing.video.prompt);
+  assert.ok(listing.video?.prompt);
 });
 
 test("live pack stops generating images at the spend cap", async () => {

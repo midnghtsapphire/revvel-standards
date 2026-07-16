@@ -7,7 +7,7 @@
  * API Documentation: https://developer.grants.gov/
  */
 
-const https = require("https");
+const https = require("node:https");
 
 const GRANTS_GOV_BASE = "www.grants.gov";
 const GRANTS_GOV_PATH = "/rest/opportunities/search";

@@ -11,8 +11,8 @@
 
 const test = require("node:test");
 const assert = require("node:assert");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const yaml = require("yaml");
 
 const SKILLS_DIR = path.resolve(__dirname, "..", "skills");

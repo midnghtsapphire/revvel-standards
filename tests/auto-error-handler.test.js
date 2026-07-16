@@ -10,7 +10,7 @@
  * 3. Escalation criteria
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 
 let passed = 0;
 let failed = 0;
@@ -28,7 +28,7 @@ async function test(name, fn) {
 }
 
 // === Constants ===
-const MAX_AUTO_FIX_ATTEMPTS = 3;
+const _MAX_AUTO_FIX_ATTEMPTS = 3;
 const ESCALATION_THRESHOLDS = {
   infrastructure: 1, // Immediate escalation
   data_loss: 1, // Immediate escalation
@@ -77,7 +77,7 @@ function detectErrorCategory(errorMessage) {
   return "generic";
 }
 
-function shouldEscalate(category, attemptCount, errorMessage) {
+function shouldEscalate(category, attemptCount, _errorMessage) {
   const threshold =
     ESCALATION_THRESHOLDS[category] || ESCALATION_THRESHOLDS.generic;
   return attemptCount >= threshold;

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Eye, Brain, Sun, Battery } from "lucide-react";
 
 export default function AccessibilityControls() {

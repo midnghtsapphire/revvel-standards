@@ -8,8 +8,8 @@
 process.env.LISTING_DISCOUNT_RATE = "0.20";
 process.env.MIN_LISTING_PRICE = "1.00";
 
-const assert = require("assert");
-const path = require("path");
+const assert = require("node:assert");
+const path = require("node:path");
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -285,8 +285,8 @@ test("attachProductLink is idempotent", () => {
 console.log("\n📁  Pack store");
 
 const packStore = require("../lib/pack-store");
-const os = require("os");
-const fs = require("fs");
+const os = require("node:os");
+const fs = require("node:fs");
 
 test("packsRoot defaults under home Documents", () => {
   const prev = process.env.MARKETPLACE_PACKS_DIR;
@@ -298,7 +298,7 @@ test("packsRoot defaults under home Documents", () => {
 });
 
 test("packDir writes listing under MARKETPLACE_PACKS_DIR", () => {
-  const tmp = path.join(os.tmpdir(), "mp-packs-test-" + Date.now());
+  const tmp = path.join(os.tmpdir(), `mp-packs-test-${Date.now()}`);
   process.env.MARKETPLACE_PACKS_DIR = tmp;
   const dir = packStore.packDir({ asin: "B08C4KWM9T", orderId: "X" });
   assert.ok(dir.includes("B08C4KWM9T"));

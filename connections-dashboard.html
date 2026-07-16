@@ -542,7 +542,7 @@
         typeSel.appendChild(o);
       });
       const tags = (a) =>
-        (a || []).map((x) => '<span class="tag">' + x + "</span>").join("") ||
+        (a || []).map((x) => `<span class="tag">${x}</span>`).join("") ||
         "—";
       let sortK = "type",
         asc = true;
@@ -560,7 +560,7 @@
         });
         rows.sort(
           (a, b) =>
-            ((a[sortK] || "") + "").localeCompare((b[sortK] || "") + "") *
+            (`${a[sortK] || ""}`).localeCompare(`${b[sortK] || ""}`) *
             (asc ? 1 : -1),
         );
         tbody.innerHTML = rows
@@ -596,7 +596,7 @@
           )
           .join("");
         document.getElementById("count").textContent =
-          rows.length + " / " + DATA.length + " shown";
+          `${rows.length} / ${DATA.length} shown`;
       }
       document.querySelectorAll("th[data-k]").forEach(
         (th) =>

@@ -41,7 +41,7 @@
  * fallback comment and exits 0 (so the workflow job stays green).
  */
 
-const https = require("https");
+const https = require("node:https");
 const { routedChat } = require("./openrouter-routing.js");
 
 // ─── Environment ─────────────────────────────────────────────────────────────
@@ -78,7 +78,7 @@ function splitRepository(repo) {
 
 function ghHeaders(token) {
   return {
-    Authorization: "Bearer " + token,
+    Authorization: `Bearer ${token}`,
     "User-Agent": "dragnet-ci-autofix",
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
@@ -362,7 +362,7 @@ async function analyzeFailure({ prTitle, prDiff, failedJobs }) {
 
   const trimmedDiff =
     prDiff.length > MAX_DIFF_CHARS
-      ? prDiff.slice(0, MAX_DIFF_CHARS) + "\n…(diff truncated)"
+      ? `${prDiff.slice(0, MAX_DIFF_CHARS)}\n…(diff truncated)`
       : prDiff;
 
   const systemPrompt = [
@@ -474,7 +474,7 @@ async function main() {
   try {
     const comments = await listPRComments(PR_NUMBER);
     const existing = comments.find(
-      (c) => c.body && c.body.includes(AUTOFIX_MARKER),
+      (c) => c.body?.includes(AUTOFIX_MARKER),
     );
     if (existing) {
       // Update the existing comment to reflect the latest run rather than

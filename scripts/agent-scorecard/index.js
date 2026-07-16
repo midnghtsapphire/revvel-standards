@@ -20,8 +20,8 @@
  *   CHANGED_FILES (newline list), CROSS_MODEL=1 to enable the LLM review.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const { prQualityScore, grade } = require("./score-engine");
 const { findUnresolvedRefs } = require("./reference-resolver");
@@ -172,7 +172,7 @@ async function main() {
       REPO_ROOT,
       "wr/memory/last-remediation-plan.json",
     );
-    fs.writeFileSync(planPath, JSON.stringify(remediation, null, 2) + "\n");
+    fs.writeFileSync(planPath, `${JSON.stringify(remediation, null, 2)}\n`);
   }
 
   // Console + workflow outputs.

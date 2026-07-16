@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import type { FormEvent } from "react";
 
 export default function Newsletter() {
   const [email, setEmail] = useState("");

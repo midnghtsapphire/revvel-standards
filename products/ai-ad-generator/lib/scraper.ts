@@ -96,7 +96,7 @@ export async function scrapeProduct(url: string): Promise<ProductData> {
     }
 
     // Stream the body with a byte counter so we never buffer more than MAX_RESPONSE_BYTES
-    const reader = res.body!.getReader();
+    const reader = res.body?.getReader();
     const chunks: Uint8Array[] = [];
     let totalBytes = 0;
     try {
@@ -234,8 +234,7 @@ export async function scrapeProduct(url: string): Promise<ProductData> {
     const w = parseInt($(el).attr("width") || "0", 10);
     const h = parseInt($(el).attr("height") || "0", 10);
     if (
-      src &&
-      src.startsWith("http") &&
+      src?.startsWith("http") &&
       (w === 0 || w >= 200) &&
       (h === 0 || h >= 200)
     ) {

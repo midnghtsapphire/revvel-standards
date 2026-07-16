@@ -2,9 +2,9 @@
 
 const test = require("node:test");
 const assert = require("node:assert");
-const os = require("os");
-const fs = require("fs");
-const path = require("path");
+const os = require("node:os");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const {
   scan,
@@ -233,7 +233,7 @@ test("scan returns an unreadable hit for a non-existent file", () => {
 // ── scan: allowedFiles exemptions ─────────────────────────────────────────────
 
 test("scan does not flag Co-Authored-By: Claude in docs/ files", () => {
-  withTempFile(".md", "# Agent Profile\n\nCo-Authored-By: Claude\n", (tmp) => {
+  withTempFile(".md", "# Agent Profile\n\nCo-Authored-By: Claude\n", (_tmp) => {
     // Simulate a path under docs/
     const docsTmp = path.join(os.tmpdir(), `docs-${Date.now()}.md`);
     fs.writeFileSync(docsTmp, "Co-Authored-By: Claude\n");
@@ -257,7 +257,7 @@ test("scan does not flag Co-Authored-By: Claude in docs/ files", () => {
 test("scan snippet is truncated to 80 chars", () => {
   const longMatch =
     "Made with Lovable — this is a very long string that goes well past eighty characters and keeps going and going";
-  withTempFile(".md", longMatch + "\n", (tmp) => {
+  withTempFile(".md", `${longMatch}\n`, (tmp) => {
     const hits = scan(tmp);
     const hit = hits.find((h) => h.id === "lovable-attr");
     assert.ok(hit, "should find lovable-attr");

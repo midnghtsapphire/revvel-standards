@@ -7,23 +7,21 @@
  */
 
 import {
-  createWriteStream,
   createReadStream,
   existsSync,
   statSync,
   readFileSync,
   writeFileSync,
   readdirSync,
-  statSync as stat,
   rmSync,
   mkdirSync,
   execSync,
-} from "fs";
+} from "node:fs";
 import { extract } from "tar";
 import { unzip } from "unzipper";
-import { join, basename, extname, dirname } from "path";
-import { pipeline } from "stream/promises";
-import { fileURLToPath } from "url";
+import { join, extname, dirname } from "node:path";
+import { pipeline } from "node:stream/promises";
+import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -306,7 +304,7 @@ async function runInstall() {
         });
         installed = true;
         break;
-      } catch (err) {
+      } catch (_err) {
         log.error(`Install script failed`);
         if (AUTO_FIX) {
           log.info("Attempting auto-fix...");

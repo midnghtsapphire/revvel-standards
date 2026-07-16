@@ -27,8 +27,8 @@
  *   lastRepostAt   string|null  — ISO 8601
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // rfy-tracker is in the same lib directory; loaded lazily-safe at module level.
 // We guard against circular-require or missing module scenarios.

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 "use strict";
 
-const assert = require("assert");
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+const assert = require("node:assert");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execSync } = require("node:child_process");
 
 function runTests() {
   let testsPassed = 0;
@@ -176,7 +176,7 @@ function runTests() {
   // Test 9: Script fails gracefully when flow charts directory doesn't exist
   runTest("sync-flow-charts.js fails gracefully with missing directory", () => {
     try {
-      const result = execSync(
+      const _result = execSync(
         `REPO_ROOT="/tmp/nonexistent" DRY_RUN=true node "${scriptPath}"`,
         {
           encoding: "utf8",

@@ -7,8 +7,8 @@
  * Addresses: "I NEED A LOG OF WHO IS DOING WHAT TO BE CHECKED"
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const _path = require("node:path");
 
 const AUDIT_LOG_PATH = "logs/agent-audit/audit.jsonl";
 const TOKEN_LOG_PATH = "logs/agent-audit/token-usage.jsonl";
@@ -282,7 +282,7 @@ function verifyChain() {
   }
 
   const entries = parseJSONL(AUDIT_LOG_PATH);
-  const crypto = require("crypto");
+  const crypto = require("node:crypto");
 
   let valid = true;
   let prevHash = "0000000000000000";
@@ -330,13 +330,13 @@ const command = args[0] || "report";
 
 switch (command) {
   case "report": {
-    const hours = parseInt(args[1]) || 24;
+    const hours = parseInt(args[1], 10) || 24;
     generateReport(hours);
     break;
   }
 
   case "export": {
-    const exportHours = parseInt(args[1]) || 24;
+    const exportHours = parseInt(args[1], 10) || 24;
     const outputPath = args[2] || null;
     exportJSON(exportHours, outputPath);
     break;

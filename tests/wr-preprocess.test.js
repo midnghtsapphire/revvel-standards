@@ -49,7 +49,7 @@ test("extractImageUrls: ignores non-image links and empty/invalid input", () => 
 });
 
 test("ocrImages: uses injected runner and never throws on failure", () => {
-  const runner = (cmd, args) => {
+  const runner = (_cmd, args) => {
     const url = args[args.length - 1];
     if (url.includes("bad")) throw new Error("python missing");
     return "OCR line one\nOCR line two\n";

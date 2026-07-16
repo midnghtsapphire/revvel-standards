@@ -19,8 +19,8 @@
  *   REPO                - Repository in owner/repo format for issue comments
  */
 
-const fs = require("fs");
-const https = require("https");
+const fs = require("node:fs");
+const https = require("node:https");
 const { callOpenRouter, ROUTING_PROFILES } = require("./openrouter-routing");
 
 const PROFILE_NAME = process.env.PROFILE || "deep_search";

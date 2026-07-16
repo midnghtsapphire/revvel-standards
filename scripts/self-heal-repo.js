@@ -23,7 +23,7 @@ const REPO_NAME = REPO.split("/")[1];
 const NOW = new Date();
 const THIRTY_DAYS_AGO = new Date(NOW.getTime() - 30 * 24 * 60 * 60 * 1000);
 const FOURTEEN_DAYS_AGO = new Date(NOW.getTime() - 14 * 24 * 60 * 60 * 1000);
-const SEVEN_DAYS_AGO = new Date(NOW.getTime() - 7 * 24 * 60 * 60 * 1000);
+const _SEVEN_DAYS_AGO = new Date(NOW.getTime() - 7 * 24 * 60 * 60 * 1000);
 
 const results = {
   closed: 0,
@@ -101,7 +101,7 @@ async function addLabel(issueNumber, label) {
     });
     console.log(`  🏷️  Labeled #${issueNumber} as ${label}`);
     results.labeled++;
-  } catch (e) {
+  } catch (_e) {
     // Label might already exist
   }
 }
@@ -111,12 +111,12 @@ async function addComment(issueNumber, body) {
     await post(`/issues/${issueNumber}/comments`, { body });
     console.log(`  💬 Commented on #${issueNumber}`);
     results.comments++;
-  } catch (e) {
+  } catch (_e) {
     console.log(`  ⚠️  Failed to comment on #${issueNumber}`);
   }
 }
 
-async function mergePR(number) {
+async function _mergePR(number) {
   try {
     await api(`/pulls/${number}/merge`, {
       method: "PUT",
@@ -395,7 +395,7 @@ async function reprocessPRLabels() {
             await post(`/issues/${n}/labels`, { labels: [l] });
             labels.push(l);
             results.labeled++;
-          } catch (e) {
+          } catch (_e) {
             /* noop */
           }
         }
@@ -407,7 +407,7 @@ async function reprocessPRLabels() {
               method: "DELETE",
             });
             labels = labels.filter((x) => x !== l);
-          } catch (e) {
+          } catch (_e) {
             /* noop */
           }
         }
@@ -514,7 +514,7 @@ async function main() {
 
   // Output for GitHub Actions
   if (process.env.GITHUB_OUTPUT) {
-    require("fs").appendFileSync(
+    require("node:fs").appendFileSync(
       process.env.GITHUB_OUTPUT,
       `\nclosed=${results.closed}\nlabeled=${results.labeled}\nduplicates=${results.duplicates}\n`,
     );

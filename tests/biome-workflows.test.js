@@ -2,8 +2,8 @@
 
 const { test } = require("node:test");
 const assert = require("node:assert");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const yaml = require("yaml");
 
 const WF_DIR = path.join(__dirname, "..", ".github", "workflows");

@@ -46,8 +46,7 @@ function resolveToken(): string | undefined {
 /** Set to 'https://api-eu.mixpanel.com' for EU-residency projects. */
 const API_HOST =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ((typeof process !== "undefined" && (process.env as any)) || {})
-    .MIXPANEL_API_HOST || "https://api.mixpanel.com";
+  (typeof process !== "undefined" && (process.env as any))?.MIXPANEL_API_HOST || "https://api.mixpanel.com";
 
 // ─── PII guardrails ────────────────────────────────────────────────────────
 //
@@ -255,7 +254,7 @@ export function optOut(): void {
       /* noop */
     }
     const client = getClient();
-    if (client && client.opt_out_tracking) client.opt_out_tracking();
+    if (client?.opt_out_tracking) client.opt_out_tracking();
   }
 }
 
@@ -268,7 +267,7 @@ export function optIn(): void {
       /* noop */
     }
     const client = getClient();
-    if (client && client.opt_in_tracking) client.opt_in_tracking();
+    if (client?.opt_in_tracking) client.opt_in_tracking();
   }
 }
 

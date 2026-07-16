@@ -3,8 +3,8 @@
 
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const YAML = require("yaml");
 
 const WORKFLOW_PATH = path.resolve(

@@ -10,9 +10,9 @@
  * Runs via cron (hourly) or manually via CLI.
  */
 
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execSync } = require("node:child_process");
 
 const REPO_ROOT = execSync("git rev-parse --show-toplevel", {
   encoding: "utf-8",
@@ -32,7 +32,7 @@ function getRootProjectName() {
       fs.readFileSync(path.join(REPO_ROOT, "package.json"), "utf-8"),
     );
     return packageJson.name || path.basename(REPO_ROOT);
-  } catch (err) {
+  } catch (_err) {
     return path.basename(REPO_ROOT);
   }
 }
@@ -454,7 +454,7 @@ function extractProjectStatus() {
 
     for (const file of systemStates) {
       if (!file) continue;
-      const content = fs.readFileSync(file, "utf-8");
+      const _content = fs.readFileSync(file, "utf-8");
       const projectName = path.basename(path.dirname(file));
       status.push({
         project: projectName,
@@ -462,7 +462,7 @@ function extractProjectStatus() {
         hasSystemState: true,
       });
     }
-  } catch (err) {
+  } catch (_err) {
     // Ignore errors
   }
 

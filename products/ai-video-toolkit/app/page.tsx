@@ -440,7 +440,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
               {selectedCategory === "All Tools"
                 ? "All Tools"
-                : selectedCategory + " Tools"}
+                : `${selectedCategory} Tools`}
             </h2>
             <div className="text-gray-600 dark:text-gray-400">
               {filteredTools.length}{" "}

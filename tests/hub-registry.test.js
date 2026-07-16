@@ -49,12 +49,12 @@ test("buildRegistry assembles hub entries from data/hub/entries JSON files", () 
   const myPage = registry.entries.find((e) => e.slug === "my-page");
   assert.equal(myPage.issue, 15510);
   assert.equal(myPage.tag, "Product");
-  assert.equal(myPage.live_url, PAGES_BASE_URL + "my-page/");
+  assert.equal(myPage.live_url, `${PAGES_BASE_URL}my-page/`);
 
   const other = registry.entries.find((e) => e.slug === "other");
   assert.equal(other.tag, "Website", "tag should default to Website");
   assert.equal(other.issue, null);
-  assert.equal(other.live_url, PAGES_BASE_URL + "other.html");
+  assert.equal(other.live_url, `${PAGES_BASE_URL}other.html`);
 });
 
 test("buildRegistry rejects malformed entries", () => {
@@ -123,7 +123,7 @@ test("validateEntry and liveUrl work standalone", () => {
       "ok.json",
     ),
   );
-  assert.equal(liveUrl("./my-page/"), PAGES_BASE_URL + "my-page/");
+  assert.equal(liveUrl("./my-page/"), `${PAGES_BASE_URL}my-page/`);
 });
 
 test("CLI writes both JSON and window-global artifacts", () => {

@@ -103,7 +103,7 @@ describe("[TABLE_NAME] field validation", () => {
       ];
       for (const ts of validTimestamps) {
         const parsed = new Date(ts);
-        expect(isNaN(parsed.getTime())).toBe(false);
+        expect(Number.isNaN(parsed.getTime())).toBe(false);
       }
     });
 
@@ -113,7 +113,7 @@ describe("[TABLE_NAME] field validation", () => {
         // Only test for clearly invalid date strings
         if (ts === "not-a-date" || ts === "" || ts === "undefined") {
           const parsed = new Date(ts);
-          expect(isNaN(parsed.getTime())).toBe(true);
+          expect(Number.isNaN(parsed.getTime())).toBe(true);
         }
       }
     });

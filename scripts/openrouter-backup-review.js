@@ -13,7 +13,7 @@
 // ============================================================
 "use strict";
 
-const fs = require("fs");
+const fs = require("node:fs");
 const { callOpenRouter } = require("./openrouter-routing.js");
 
 // Explicit model list so the backup does not depend on a routing profile
@@ -25,7 +25,7 @@ function summary(md) {
   const out = process.env.GITHUB_STEP_SUMMARY;
   if (out) {
     try {
-      fs.appendFileSync(out, md + "\n");
+      fs.appendFileSync(out, `${md}\n`);
     } catch (_) {
       /* best-effort */
     }
@@ -68,7 +68,7 @@ function summary(md) {
             "bugs, security issues, and correctness regressions. Be concise. List " +
             "concrete findings with file/line where possible; if it looks clean, say so.",
         },
-        { role: "user", content: "Review this unified diff:\n\n" + diff },
+        { role: "user", content: `Review this unified diff:\n\n${diff}` },
       ],
     });
     const model = res.model || MODELS.join(", ");

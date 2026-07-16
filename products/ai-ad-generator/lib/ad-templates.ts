@@ -8,10 +8,9 @@
  * Run `npm install` in this product directory to pull the correct prebuilt binary.
  */
 
-import {
-  type AdTemplateConfig,
-  type AdTemplateId,
-  StaticCreative,
+import type {
+  AdTemplateConfig,
+  AdTemplateId,
 } from "../types";
 
 export const AD_TEMPLATES: Record<AdTemplateId, AdTemplateConfig> = {
@@ -293,7 +292,7 @@ function roundRect(
 }
 
 function truncate(str: string, max: number): string {
-  return str.length <= max ? str : str.slice(0, max - 3) + "...";
+  return str.length <= max ? str : `${str.slice(0, max - 3)}...`;
 }
 
 /** Escape special XML/HTML chars so dynamic text is safe inside SVG. */

@@ -22,8 +22,8 @@
  *   node detect-stack.js <path-to-client-repo> --json   # machine-readable
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const STACKS_DIR = path.join(__dirname, "stacks");
 

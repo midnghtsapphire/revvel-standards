@@ -8,9 +8,9 @@
  * Usage: node scripts/sync-secrets.js --repo owner/repo
  */
 
-const fs = require("fs");
-const path = require("path");
-const { spawnSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { spawnSync } = require("node:child_process");
 
 const REVVEL_STANDARDS = path.join(__dirname, "..");
 const SECRETS_DOC = path.join(REVVEL_STANDARDS, "docs/SECRETS_MANAGEMENT.md");
@@ -47,7 +47,7 @@ function parseEnvTemplate() {
 }
 
 // Get GH CLI
-function ghAPI(endpoint, method = "GET", body = null) {
+function _ghAPI(endpoint, method = "GET", body = null) {
   const args = ["api", endpoint];
   if (method !== "GET") args.push("-X", method);
 
@@ -64,8 +64,8 @@ function ghAPI(endpoint, method = "GET", body = null) {
   if (result.error) throw result.error;
   if (result.status !== 0) {
     const output =
-      (result.stderr && result.stderr.trim()) ||
-      (result.stdout && result.stdout.trim()) ||
+      (result.stderr?.trim()) ||
+      (result.stdout?.trim()) ||
       "No output from gh";
     throw new Error(
       `gh ${args.join(" ")} failed with exit code ${result.status}: ${output}`,

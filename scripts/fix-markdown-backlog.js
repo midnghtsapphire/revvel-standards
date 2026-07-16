@@ -37,7 +37,7 @@
  * human (or a follow-up agent) must resolve by editing the flagged files.
  */
 
-const { spawnSync } = require("child_process");
+const { spawnSync } = require("node:child_process");
 
 /**
  * Count markdownlint findings from markdownlint-cli2 stderr/stdout output.

@@ -102,7 +102,7 @@ function buildNpletResult({
   const consensus = consensusScore(perModelSources, k);
 
   const firstAnswer =
-    runs.map((r) => r.answer).find((a) => a && a.trim()) || "";
+    runs.map((r) => r.answer).find((a) => a?.trim()) || "";
   const answer =
     typeof adj.answer === "string" && adj.answer.trim()
       ? adj.answer.trim()

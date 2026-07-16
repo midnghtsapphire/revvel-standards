@@ -10,9 +10,9 @@
  * - Integration points
  */
 
-const { execFileSync, spawnSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { execFileSync, spawnSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 
@@ -27,7 +27,7 @@ class SkipTest extends Error {
   }
 }
 
-function skip(reason) {
+function _skip(reason) {
   throw new SkipTest(reason);
 }
 

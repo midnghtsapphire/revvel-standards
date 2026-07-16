@@ -11,7 +11,7 @@
  * 4. Health threshold logic
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 
 let passed = 0;
 let failed = 0;
@@ -64,7 +64,7 @@ function parseActionsStatus(actionsJson) {
 
 function parseStuckCount(stuckIssues) {
   const count = parseInt(stuckIssues, 10);
-  return isNaN(count) ? 0 : count;
+  return Number.isNaN(count) ? 0 : count;
 }
 
 function checkWorkflowsPresent(workflowsList, requiredWorkflows) {

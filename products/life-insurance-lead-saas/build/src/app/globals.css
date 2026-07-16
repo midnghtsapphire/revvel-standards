@@ -27,39 +27,39 @@ body {
 
 /* Accessibility overrides */
 body.high-contrast-mode {
-  background-color: #000 !important;
-  color: #fff !important;
+  background-color: #000;
+  color: #fff;
 }
 
 body.high-contrast-mode * {
-  border-color: #fff !important;
-  background-color: #000 !important;
-  color: #fff !important;
+  border-color: #fff;
+  background-color: #000;
+  color: #fff;
 }
 
 body.high-contrast-mode a {
-  color: #ffeb3b !important;
-  text-decoration: underline !important;
+  color: #ffeb3b;
+  text-decoration: underline;
 }
 
 body.large-text-mode {
-  font-size: 1.25rem !important;
+  font-size: 1.25rem;
 }
 
 body.large-text-mode h1 {
-  font-size: 3rem !important;
+  font-size: 3rem;
 }
 body.large-text-mode h2 {
-  font-size: 2.5rem !important;
+  font-size: 2.5rem;
 }
 body.large-text-mode h3 {
-  font-size: 2rem !important;
+  font-size: 2rem;
 }
 body.large-text-mode h4 {
-  font-size: 1.75rem !important;
+  font-size: 1.75rem;
 }
 body.large-text-mode p,
 body.large-text-mode li,
 body.large-text-mode div {
-  font-size: 1.25rem !important;
+  font-size: 1.25rem;
 }

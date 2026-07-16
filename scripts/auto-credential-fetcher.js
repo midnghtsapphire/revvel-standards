@@ -16,9 +16,9 @@
 
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const { execSync, execFileSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execSync, execFileSync } = require("node:child_process");
 
 // Configuration
 const CREDS_DIR =
@@ -79,7 +79,7 @@ const SERVICES = [
 ];
 
 // Try to use Puppeteer if available, otherwise use curl
-async function tryPuppeteer() {
+async function _tryPuppeteer() {
   try {
     const puppeteer = require("puppeteer");
     return puppeteer;
@@ -97,7 +97,7 @@ async function tryPlaywright() {
   }
 }
 
-async function fetchWithBrowser(url, options = {}) {
+async function fetchWithBrowser(url, _options = {}) {
   console.log(`\n🌐 Opening: ${url}`);
 
   // Try Playwright first
@@ -138,7 +138,7 @@ async function fetchWithBrowser(url, options = {}) {
   }
 }
 
-async function extractApiKey(content, service) {
+async function extractApiKey(content, _service) {
   // Common API key patterns
   const patterns = [
     /sk-[a-zA-Z0-9]{20,}/g,
@@ -197,18 +197,18 @@ async function syncToGitHub(name) {
       throw new Error(`Refusing to sync secret with unsafe name: ${name}`);
     }
     // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); name validated; secret passed via stdin (input) not argv
-    const result = execFileSync(
+    const _result = execFileSync(
       "gh",
       ["secret", "set", name, "--body-file", "-", "--repo", REPO],
       { encoding: "utf8", input: value },
     );
     console.log(`   ✅ Synced to GitHub: ${name}`);
     return true;
-  } catch (e) {
+  } catch (_e) {
     // Try direct API
     try {
-      const { execSync: exec } = require("child_process");
-      const response = require("https").request(
+      const { execSync: exec } = require("node:child_process");
+      const response = require("node:https").request(
         `https://api.github.com/repos/${REPO}/actions/secrets/${name}`,
         {
           method: "PUT",
@@ -217,13 +217,13 @@ async function syncToGitHub(name) {
             "Content-Type": "application/json",
           },
         },
-        (res) => {
+        (_res) => {
           console.log(`   ✅ Synced via API: ${name}`);
           return true;
         },
       );
       response.end(JSON.stringify({ secret_value: value }));
-    } catch (apiErr) {
+    } catch (_apiErr) {
       console.log(`   ⚠️  GitHub sync skipped (no permissions)`);
       return false;
     }
@@ -283,7 +283,7 @@ async function fetchService(service) {
     return {
       name: service.name,
       status: "success",
-      key: key.substring(0, 20) + "...",
+      key: `${key.substring(0, 20)}...`,
     };
   }
 
@@ -303,11 +303,11 @@ async function fetchService(service) {
 }
 
 async function main() {
-  console.log("\n" + "╔" + "═".repeat(48) + "╗");
+  console.log(`\n╔${"═".repeat(48)}╗`);
   console.log(
-    "║" + " ".repeat(10) + "🤖 Auto Credential Fetcher" + " ".repeat(12) + "║",
+    `║${" ".repeat(10)}🤖 Auto Credential Fetcher${" ".repeat(12)}║`,
   );
-  console.log("╚" + "═".repeat(48) + "╝");
+  console.log(`╚${"═".repeat(48)}╝`);
 
   console.log(`\n📁 Credentials dir: ${CREDS_DIR}`);
   console.log(`📦 Target repo: ${REPO}`);
@@ -337,7 +337,7 @@ async function main() {
   }
 
   // Summary
-  console.log("\n" + "═".repeat(50));
+  console.log(`\n${"═".repeat(50)}`);
   console.log("📊 SUMMARY");
   console.log("═".repeat(50));
 
@@ -356,7 +356,7 @@ async function main() {
     }
   }
 
-  console.log("\n" + "═".repeat(50));
+  console.log(`\n${"═".repeat(50)}`);
 
   // If we got some keys, sync them
   const newKeys = results.filter((r) => r.status === "success");
@@ -370,7 +370,7 @@ async function main() {
   console.log("\n✅ Auto Credential Fetcher complete!");
   console.log("\n💡 To add credentials manually:");
   console.log(
-    '   echo "KEY_VALUE" > "' + path.join(CREDS_DIR, "NEW_KEY") + '"',
+    `   echo "KEY_VALUE" > "${path.join(CREDS_DIR, "NEW_KEY")}"`,
   );
 }
 

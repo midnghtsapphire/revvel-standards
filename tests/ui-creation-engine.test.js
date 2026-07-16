@@ -1,6 +1,6 @@
 // UI Creation Engine Tests
 
-const assert = require("assert");
+const assert = require("node:assert");
 const {
   shouldIncludeMCPPromptPack,
   buildUIRecommendationsUserPrompt,
@@ -81,8 +81,8 @@ test("Image sizes follow standard dimensions", () => {
 test("Alt text must be 5-15 words and descriptive", () => {
   const validAlt =
     "Soul2Bowl chef preparing BBQ fusion bowl in commercial kitchen"; // 10 words
-  const invalidAlt1 = "Image of food"; // Too generic
-  const invalidAlt2 = "soul2bowl.jpg"; // Filename, not description
+  const _invalidAlt1 = "Image of food"; // Too generic
+  const _invalidAlt2 = "soul2bowl.jpg"; // Filename, not description
 
   const wordCount = validAlt.split(" ").length;
   assert.ok(wordCount >= 5 && wordCount <= 15, "Alt text should be 5-15 words");

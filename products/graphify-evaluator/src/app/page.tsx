@@ -1,4 +1,4 @@
-import React from "react";
+
 import { AffiliateModule } from "@/components/AffiliateModule";
 import { NewsletterModule } from "@/components/NewsletterModule";
 

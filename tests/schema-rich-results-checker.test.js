@@ -9,7 +9,7 @@
 // range of valid, invalid, and edge-case structured data inputs.
 // ============================================================
 
-const assert = require("assert");
+const assert = require("node:assert");
 const {
   parseJsonLd,
   validateSchema,

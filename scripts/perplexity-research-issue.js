@@ -25,8 +25,8 @@
  *   OPENROUTER_API_KEY  - Optional backup lane (perplexity/sonar-pro)
  */
 
-const fs = require("fs");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const { execFileSync } = require("node:child_process");
 
 // Configuration
 const CONFIG = {
@@ -159,7 +159,7 @@ async function main() {
   // Post research comment to issue
   await postResearchComment(repo, issueNumber, research);
 
-  console.log("✅ Research complete for issue #" + issueNumber);
+  console.log(`✅ Research complete for issue #${issueNumber}`);
 }
 
 function buildResearchPrompt(issue) {
@@ -177,12 +177,12 @@ Research this GitHub issue and produce:
 8. Source URLs for any claims
 
 Issue #${issue.number}: ${issue.title}
-${issue.labels.length > 0 ? "Labels: " + issue.labels.join(", ") : ""}
+${issue.labels.length > 0 ? `Labels: ${issue.labels.join(", ")}` : ""}
 
 Body:
 ${issue.body || "(No body)"}
 
-${issue.comments.length > 0 ? "Recent comments:\n" + issue.comments.map((c) => `- ${c.author.login}: ${c.body.substring(0, 500)}`).join("\n\n") : ""}
+${issue.comments.length > 0 ? `Recent comments:\n${issue.comments.map((c) => `- ${c.author.login}: ${c.body.substring(0, 500)}`).join("\n\n")}` : ""}
 
 Return your response in this format:
 ## Diagnosis
@@ -247,7 +247,7 @@ async function callPerplexityNoKey(prompt, execFileSyncImpl = execFileSync) {
 // 2026-06-23: Use deep_search profile for all OpenRouter research
 const { callOpenRouter, ROUTING_PROFILES } = require("./openrouter-routing");
 
-async function callPerplexityViaOpenRouter(openrouterKey, prompt) {
+async function callPerplexityViaOpenRouter(_openrouterKey, prompt) {
   // Get deep_search profile models (Sonnet 3.5 + Fusion)
   const profile = ROUTING_PROFILES.deep_search || {
     models: ["anthropic/claude-3.5-sonnet", "openrouter/fusion"],
@@ -303,12 +303,12 @@ async function fetchGitHubIssue(repo, issueNumber) {
       encoding: "utf8",
     });
     commits = commitsData.trim().split("\n").slice(0, 5);
-  } catch (e) {
+  } catch (_e) {
     // No commits available
   }
 
   return {
-    number: parseInt(issueNumber),
+    number: parseInt(issueNumber, 10),
     title: issueData.title,
     body: issueData.body,
     labels: issueData.labels.map((l) => l.name),

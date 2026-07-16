@@ -160,7 +160,7 @@ test("parseDiagnosticResponse parses a clean JSON object", () => {
 });
 
 test("parseDiagnosticResponse strips a ```json fence", () => {
-  const text = "```json\n" + JSON.stringify({ issueFound: false }) + "\n```";
+  const text = `\`\`\`json\n${JSON.stringify({ issueFound: false })}\n\`\`\``;
   const result = parseDiagnosticResponse(text);
   assert.strictEqual(result.valid, true);
   assert.strictEqual(result.diagnosis.issueFound, false);

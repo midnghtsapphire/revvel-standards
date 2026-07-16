@@ -21,8 +21,8 @@
  * no dispatch) so the heal loop can consume the controller's verdict directly.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const core = require("./core");
 
 let repoApi;
@@ -119,12 +119,12 @@ function loadControllerState(outDir, nowMs = Date.now(), ttlMs = STATE_TTL_MS) {
   }
   const live = {};
   for (const [k, v] of Object.entries(workflows)) {
-    const t = Date.parse((v && v.last_cut_at) || "");
+    const t = Date.parse((v?.last_cut_at) || "");
     if (Number.isFinite(t) && nowMs - t > ttlMs) continue; // recovered — clean slate
     live[k] = {
-      count: (v && v.count) || 0,
-      tried: (v && v.tried) || [],
-      last_cut_at: (v && v.last_cut_at) || null,
+      count: (v?.count) || 0,
+      tried: (v?.tried) || [],
+      last_cut_at: (v?.last_cut_at) || null,
     };
   }
   return live;

@@ -4,9 +4,9 @@
  * Creates branded fork and sets up workflows on first run
  */
 
-const { execSync, execFileSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { execSync, execFileSync } = require("node:child_process");
+const _fs = require("node:fs");
+const _path = require("node:path");
 
 const CONFIG = {
   repoName: "rnd-research-fleet",
@@ -180,7 +180,7 @@ function initGit(token) {
 }
 
 function prompt(question) {
-  const readline = require("readline");
+  const readline = require("node:readline");
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,

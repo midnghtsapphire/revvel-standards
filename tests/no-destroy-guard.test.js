@@ -3,7 +3,7 @@
 
 /** Unit tests for scripts/no-destroy-guard.js — pure diff-evaluation logic. */
 
-const assert = require("assert");
+const assert = require("node:assert");
 const { evaluateDiff } = require("../scripts/no-destroy-guard");
 
 let passed = 0;

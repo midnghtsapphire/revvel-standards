@@ -1,5 +1,5 @@
-import { mkdirSync, writeFileSync } from "fs";
-import path from "path";
+import { mkdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import glob from "fast-glob";
 import chokidar from "chokidar";
 import type { FSWatcher } from "chokidar";
@@ -46,7 +46,7 @@ export function mockupPreviewPlugin(): Plugin {
     });
 
     return files.map((f) => ({
-      globKey: "./" + f.slice("src/".length),
+      globKey: `./${f.slice("src/".length)}`,
       importPath: path.posix.relative("src/.generated", f),
     }));
   }

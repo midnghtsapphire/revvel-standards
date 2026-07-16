@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 "use strict";
 
-const https = require("https");
-const fs = require("fs");
-const path = require("path");
+const https = require("node:https");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
@@ -433,7 +433,7 @@ async function callGitHubModels(systemPrompt, userPrompt) {
 
 // Lane 6: Static rule-based fallback — keyword matching on the issue text.
 // Never throws. Used as the last resort when all AI lanes are unavailable.
-function callStaticFallback(systemPrompt, userPrompt) {
+function callStaticFallback(_systemPrompt, userPrompt) {
   try {
     const text = (userPrompt || "").toLowerCase();
     const labels = [];
@@ -475,7 +475,7 @@ function callStaticFallback(systemPrompt, userPrompt) {
 
 async function callPerplexityNoKey(systemPrompt, userPrompt) {
   // Use the Perplexity No-Key Python bridge
-  const { execSync, execFileSync } = require("child_process");
+  const { execSync, execFileSync } = require("node:child_process");
   const installHint =
     'python3 -m pip install "perplexity-api @ git+https://github.com/helallao/perplexity-ai.git@main"';
   const pythonScript = buildPerplexityTriageScript(installHint);
@@ -484,7 +484,7 @@ async function callPerplexityNoKey(systemPrompt, userPrompt) {
   const combinedPrompt = `${systemPrompt}\n\n---\n\n${userPrompt}`;
 
   const scriptPath = "/tmp/perplexity_triage.py";
-  require("fs").writeFileSync(scriptPath, pythonScript);
+  require("node:fs").writeFileSync(scriptPath, pythonScript);
 
   try {
     // Install if needed

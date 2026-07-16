@@ -65,6 +65,6 @@ if (require.main === module) {
   const final = combineVerdict({ testsResult, aiResult });
   process.stdout.write(`${final}\n`);
   if (process.env.GITHUB_OUTPUT) {
-    require("fs").appendFileSync(process.env.GITHUB_OUTPUT, `final=${final}\n`);
+    require("node:fs").appendFileSync(process.env.GITHUB_OUTPUT, `final=${final}\n`);
   }
 }

@@ -20,9 +20,9 @@
  * real coordinator wiring the working research-engine + ship-to-market assets.
  */
 
-const fs = require("fs");
-const path = require("path");
-const { spawnSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { spawnSync } = require("node:child_process");
 const Ajv = require("ajv/dist/2020");
 const addFormats = require("ajv-formats");
 
@@ -215,7 +215,7 @@ function orchestrate(intake, opts = {}) {
 
   if (!opts.dryRun) {
     fs.mkdirSync(path.dirname(outPath), { recursive: true });
-    fs.writeFileSync(outPath, JSON.stringify(state, null, 2) + "\n");
+    fs.writeFileSync(outPath, `${JSON.stringify(state, null, 2)}\n`);
   }
 
   return {
@@ -492,7 +492,7 @@ function main() {
       dryRun: Boolean(flags["dry-run"]),
     });
     if (result.outPath)
-      fs.writeFileSync(result.outPath, JSON.stringify(state, null, 2) + "\n");
+      fs.writeFileSync(result.outPath, `${JSON.stringify(state, null, 2)}\n`);
     const trail = state.steps
       .map((s) => `${s.step_id}:${s.status}`)
       .join(" → ");

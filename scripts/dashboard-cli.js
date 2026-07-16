@@ -7,9 +7,9 @@
  * Provides quick access to project info, URLs, status without "looking in folders"
  */
 
-const { execSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { execSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const REPO_ROOT = execSync("git rev-parse --show-toplevel", {
   encoding: "utf-8",
@@ -116,8 +116,8 @@ function search(data, query) {
   results.projects = data.projects.filter(
     (p) =>
       p.name.toLowerCase().includes(q) ||
-      (p.description && p.description.toLowerCase().includes(q)) ||
-      (p.status && p.status.toLowerCase().includes(q)),
+      (p.description?.toLowerCase().includes(q)) ||
+      (p.status?.toLowerCase().includes(q)),
   );
 
   // Search URLs
@@ -131,7 +131,7 @@ function search(data, query) {
     (d) =>
       d.name.toLowerCase().includes(q) ||
       d.purpose.toLowerCase().includes(q) ||
-      (d.notes && d.notes.toLowerCase().includes(q)),
+      (d.notes?.toLowerCase().includes(q)),
   );
 
   return results;
@@ -198,7 +198,7 @@ function showProjects(data, filter = null) {
     projects = projects.filter(
       (p) =>
         p.name.toLowerCase().includes(filter.toLowerCase()) ||
-        (p.status && p.status.toLowerCase().includes(filter.toLowerCase())),
+        (p.status?.toLowerCase().includes(filter.toLowerCase())),
     );
   }
 
@@ -315,7 +315,7 @@ function openBrowser() {
     } else {
       execSync(`xdg-open ${dashboardPath}`);
     }
-  } catch (err) {
+  } catch (_err) {
     console.log(
       `${colors.yellow}Could not open browser automatically.${colors.reset}`,
     );

@@ -160,8 +160,8 @@ test("sentinel CLI refreshes existing incidents in place (PATCH, not comment spa
   // incident must be refreshed by editing the issue, never by POSTing a new
   // comment every 2h sweep. Semantic check: the only comment POST allowed is
   // the one-time recovery note (buildResolutionComment).
-  const fs = require("fs");
-  const path = require("path");
+  const fs = require("node:fs");
+  const path = require("node:path");
   const src = fs.readFileSync(
     path.join(__dirname, "..", "scripts", "biome", "sentinel.js"),
     "utf8",

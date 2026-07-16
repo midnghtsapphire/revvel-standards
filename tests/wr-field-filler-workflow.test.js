@@ -93,7 +93,7 @@ test("wr-field-filler toggles wr:reset after a successful fill (self-heal loop)"
   // still needs a human to poke it. Regression-guard by asserting the step
   // exists and references the label.
   const jobs = wf.jobs || {};
-  const fillJob = jobs.fill || jobs["fill"];
+  const fillJob = jobs.fill || jobs.fill;
   assert.ok(fillJob, "fill job must exist");
   const steps = fillJob.steps || [];
   const toggleStep = steps.find((s) => /wr:reset/i.test(String(s.run || "")));

@@ -12,7 +12,7 @@
  * 5. Circular dependency prevention (exclude own check)
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 
 let passed = 0;
 let failed = 0;

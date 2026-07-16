@@ -25,7 +25,7 @@ function stuckAgeVerdict(
 ) {
   if (createdAt == null) return "invalid";
   const created = new Date(createdAt).getTime();
-  if (isNaN(created)) return "invalid";
+  if (Number.isNaN(created)) return "invalid";
   const ageMs = now - created;
   if (ageMs < minStuckAgeMs) return "too_young";
   if (maxAgeMs != null && ageMs > maxAgeMs) return "too_old";
@@ -69,7 +69,7 @@ function referencesIssue(text, issueNumber) {
 }
 
 function hasIssueBranchRef(pr, issueNumber) {
-  const headRef = pr.head && pr.head.ref ? pr.head.ref : "";
+  const headRef = pr.head?.ref ? pr.head.ref : "";
   return new RegExp(
     String.raw`(^|[/_-])issue-${issueNumber}($|[-_/])`,
     "i",

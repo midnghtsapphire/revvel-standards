@@ -15,7 +15,7 @@
  * See docs/PR_REVIEW_REQUEST_AUTOMATION.md for full process documentation.
  */
 
-const https = require("https");
+const https = require("node:https");
 
 // Environment variables
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
@@ -380,7 +380,7 @@ function buildUserPrompt(prDetails, reviews, reviewComments, diff) {
 
   // Truncate diff if too large (keep first 10000 chars)
   const truncatedDiff =
-    diff.length > 10000 ? diff.slice(0, 10000) + "\n...(diff truncated)" : diff;
+    diff.length > 10000 ? `${diff.slice(0, 10000)}\n...(diff truncated)` : diff;
 
   return [
     `# PR #${PR_NUMBER}: ${prDetails.title}`,

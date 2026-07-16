@@ -23,9 +23,9 @@
 
 "use strict";
 
-const crypto = require("crypto");
-const fs = require("fs");
-const { spawnSync } = require("child_process");
+const crypto = require("node:crypto");
+const fs = require("node:fs");
+const { spawnSync } = require("node:child_process");
 
 const DEFAULT_CLI_TIMEOUT_MS =
   Number.parseInt(
@@ -156,7 +156,7 @@ function safeSpawn(cmd, args, opts = {}) {
     !cmd.endsWith("node") &&
     !cmd.endsWith("doppler")
   )
-    throw new Error("Unsafe command: " + cmd);
+    throw new Error(`Unsafe command: ${cmd}`);
   try {
     const { maxBuffer, stdio, timeout, ...rest } = opts;
     // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process
@@ -400,7 +400,7 @@ function resolveKey(key, resolvers = RESOLVERS) {
   for (const fn of resolvers) {
     try {
       const hit = fn(key);
-      if (hit && hit.value) return hit;
+      if (hit?.value) return hit;
     } catch (_) {
       /* keep going */
     }
@@ -546,7 +546,7 @@ function syncSecrets(opts) {
   if (!opts.secretsCsv) {
     throw new Error("--secrets is required");
   }
-  if (!opts.repo || !opts.repo.includes("/")) {
+  if (!opts.repo?.includes("/")) {
     throw new Error("--repo must be owner/repo");
   }
 
@@ -577,7 +577,7 @@ function syncSecrets(opts) {
 
   for (const name of secrets) {
     const resolved = resolveKey(name);
-    if (resolved && resolved.value) {
+    if (resolved?.value) {
       const written = setGithubSecret(
         name,
         resolved.value,

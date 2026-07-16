@@ -136,12 +136,12 @@
             });
             for await (var part of resp) {
               // Safe rendering: textContent only, never innerHTML.
-              outEl.textContent += part && part.text ? part.text : "";
+              outEl.textContent += part?.text ? part.text : "";
             }
             setStatus("Done.");
           } catch (err) {
             setStatus(
-              "Error: " + (err && err.message ? err.message : String(err)),
+              `Error: ${err?.message ? err.message : String(err)}`,
             );
           } finally {
             btn.disabled = false;

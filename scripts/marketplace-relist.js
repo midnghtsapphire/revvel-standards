@@ -58,9 +58,9 @@
  *   node scripts/marketplace-relist.js apply-decisions <batchDir> [decisions.json]
  */
 
-const fs = require("fs");
-const path = require("path");
-const https = require("https");
+const fs = require("node:fs");
+const path = require("node:path");
+const https = require("node:https");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -412,7 +412,7 @@ function openrouterRequest(body) {
         path: "/api/v1/chat/completions",
         method: "POST",
         headers: {
-          Authorization: "Bearer " + OPENROUTER_API_KEY,
+          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
           "Content-Length": Buffer.byteLength(payload),
           "HTTP-Referer": "https://github.com/midnghtsapphire/revvel-standards",
@@ -462,10 +462,10 @@ async function callTextLane(lane, prompt, request = openrouterRequest) {
         max_tokens: 4000,
       });
       const content =
-        res && res.choices && res.choices[0] && res.choices[0].message
+        res?.choices?.[0]?.message
           ? res.choices[0].message.content
           : "";
-      if (content && content.trim()) return { model, content };
+      if (content?.trim()) return { model, content };
       lastError = new Error(`Empty response from ${model}`);
     } catch (e) {
       lastError = e;
@@ -499,9 +499,9 @@ async function callImageGen(
         modalities: ["image", "text"],
       });
       const msg =
-        res && res.choices && res.choices[0] && res.choices[0].message;
-      const images = ((msg && msg.images) || [])
-        .map((im) => im && im.image_url && im.image_url.url)
+        res?.choices?.[0]?.message;
+      const images = ((msg?.images) || [])
+        .map((im) => im?.image_url?.url)
         .filter(Boolean);
       if (images.length) return { model, images };
       lastError = new Error(`No images returned by ${model}`);
@@ -634,8 +634,7 @@ async function buildListingPack(item, options) {
 
     if (isNew) {
       const sourceUrls =
-        (listing.enrichment.result &&
-          listing.enrichment.result.officialImageUrls) ||
+        (listing.enrichment.result?.officialImageUrls) ||
         [];
       for (let s = 0; s < listing.images.prompts.length; s++) {
         if (!spendTracker.canSpend()) {

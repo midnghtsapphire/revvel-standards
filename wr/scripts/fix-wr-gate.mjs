@@ -120,7 +120,7 @@ if (claimsFix && wrOnly && isTrackingOnly) {
 
 if (issues.length) {
   console.log("✗ fix-WR gate failed:");
-  issues.forEach((i) => console.log("   - " + i));
+  issues.forEach((i) => console.log(`   - ${i}`));
   process.exit(1);
 }
 console.log("✓ fix-WR gate passed");

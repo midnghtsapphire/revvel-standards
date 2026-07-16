@@ -13,7 +13,7 @@
  * 6. Label selection (devin-review gating on DEVIN_API_KEY)
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 
 let passed = 0;
 let failed = 0;

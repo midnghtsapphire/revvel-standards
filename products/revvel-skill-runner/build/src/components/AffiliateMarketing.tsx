@@ -40,7 +40,7 @@ export default function AffiliateMarketing() {
         ))}
       </ul>
     </section>
-import React from 'react';
+export {}
 
 export default function AffiliateMarketing() {
   return (

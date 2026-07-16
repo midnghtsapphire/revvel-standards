@@ -12,9 +12,9 @@
 
 "use strict";
 
-const assert = require("assert");
-const fs = require("fs");
-const path = require("path");
+const assert = require("node:assert");
+const fs = require("node:fs");
+const path = require("node:path");
 const yaml = require("yaml");
 
 let passed = 0;
@@ -90,7 +90,7 @@ test("Workflows must use consistent token fallback pattern", () => {
   const issues = [];
 
   // Correct pattern: secrets.ADMIN_GITHUB_TOKEN || github.token
-  const correctPattern = /secrets\.ADMIN_GITHUB_TOKEN\s*\|\|\s*github\.token/;
+  const _correctPattern = /secrets\.ADMIN_GITHUB_TOKEN\s*\|\|\s*github\.token/;
   // Deprecated pattern: secrets.GIT_ACCESS_TOKEN (not in comments)
   const deprecatedPattern = /secrets\.GIT_ACCESS_TOKEN/;
 
@@ -363,7 +363,7 @@ test("WR templates must have all required sections", () => {
 // Test 10: Scripts must have proper shebangs
 // ============================================================
 test("Shell scripts must have proper shebangs", () => {
-  const patterns = ["**/*.sh", "**/*.bash"];
+  const _patterns = ["**/*.sh", "**/*.bash"];
 
   // Check wr/scripts directory
   const scriptsDir = "wr/scripts";
@@ -391,7 +391,7 @@ test("Shell scripts must have proper shebangs", () => {
 // Test 11: Check for common YAML syntax errors
 // ============================================================
 test("YAML files must not have tab indentation", () => {
-  const patterns = [".github/**/*.yml", ".github/**/*.yaml"];
+  const _patterns = [".github/**/*.yml", ".github/**/*.yaml"];
 
   // Check workflow directory
   const workflowDir = ".github/workflows";

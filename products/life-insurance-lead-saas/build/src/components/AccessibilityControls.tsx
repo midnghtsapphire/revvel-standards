@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 export const AccessibilityControls = () => {
   const [highContrast, setHighContrast] = useState(false);

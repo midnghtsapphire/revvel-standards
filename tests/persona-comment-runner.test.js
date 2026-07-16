@@ -6,7 +6,7 @@
  * Pure parsing; no live calls.
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 const {
   parsePersonaCommand,
   sanitizeMentions,

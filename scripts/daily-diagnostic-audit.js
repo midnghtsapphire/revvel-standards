@@ -14,9 +14,9 @@
  *  - Bounded scope: at most MAX_SCOPE_FILES files, 48h window.
  */
 
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execSync } = require("node:child_process");
 const yaml = require("yaml");
 
 const MAX_SCOPE_FILES = 8;
@@ -103,7 +103,7 @@ function readFileBounded(p) {
   try {
     const buf = fs.readFileSync(p, "utf8");
     return buf.length > MAX_FILE_BYTES
-      ? buf.slice(0, MAX_FILE_BYTES) + "\n... [truncated]"
+      ? `${buf.slice(0, MAX_FILE_BYTES)}\n... [truncated]`
       : buf;
   } catch {
     return null;
@@ -361,13 +361,13 @@ Machine-generated starting point—verify and adapt as needed.`;
   // If template lacks diagnostic sections, prepend them before Learnings
   if (!body.includes("## Proposed Fix")) {
     const sections = [
-      "## Summary\n\n" + summary,
-      "## Objective\n\n" + objective,
-      "## Required Bundle\n\n" + requiredBundle,
-      "## Definition of Done\n\n" + definitionOfDone,
-      "## Validation\n\n" + validation,
-      "## Blockers\n\n" + blockers,
-      "## Proposed Fix\n\n" + proposedFix,
+      `## Summary\n\n${summary}`,
+      `## Objective\n\n${objective}`,
+      `## Required Bundle\n\n${requiredBundle}`,
+      `## Definition of Done\n\n${definitionOfDone}`,
+      `## Validation\n\n${validation}`,
+      `## Blockers\n\n${blockers}`,
+      `## Proposed Fix\n\n${proposedFix}`,
     ].join("\n\n");
 
     const learningsIdx = body.indexOf("## Learnings");
@@ -378,7 +378,7 @@ Machine-generated starting point—verify and adapt as needed.`;
         "\n\n" +
         body.slice(learningsIdx);
     } else {
-      body += "\n\n" + sections;
+      body += `\n\n${sections}`;
     }
   }
 

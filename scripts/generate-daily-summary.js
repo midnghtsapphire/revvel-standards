@@ -14,8 +14,8 @@
  */
 
 const { Octokit } = require("@octokit/rest");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // ────────────────────────────────────────────────────────────────────────────
 // Configuration
@@ -53,9 +53,9 @@ function getToday() {
  * Get yesterday's date in YYYY-MM-DD format
  * Returns the date before getToday()
  */
-function getYesterday() {
+function _getYesterday() {
   const today = getToday();
-  const date = new Date(today + "T00:00:00Z");
+  const date = new Date(`${today}T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() - 1);
   return date.toISOString().split("T")[0];
 }
@@ -66,7 +66,7 @@ function getYesterday() {
 function formatDate(isoString) {
   const date = new Date(isoString);
   return (
-    date.toLocaleString("en-US", {
+    `${date.toLocaleString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
@@ -74,7 +74,7 @@ function formatDate(isoString) {
       minute: "2-digit",
       hour12: true,
       timeZone: "UTC",
-    }) + " UTC"
+    })} UTC`
   );
 }
 
@@ -553,7 +553,7 @@ function convertMarkdownToHTML(markdown) {
             // Convert markdown links: [text](url) → <a> tags
             cellContent = cellContent.replace(
               /\[([^\]]+)\]\(([^)]+)\)/g,
-              (match, text, url) => {
+              (_match, text, url) => {
                 return `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`;
               },
             );
@@ -596,7 +596,7 @@ function convertMarkdownToHTML(markdown) {
       continue;
     } else if (inList) {
       // End of list
-      processedLines.push("<ul>" + listItems.join("") + "</ul>");
+      processedLines.push(`<ul>${listItems.join("")}</ul>`);
       listItems.length = 0;
       inList = false;
     }
@@ -605,7 +605,7 @@ function convertMarkdownToHTML(markdown) {
     let processedLine = line;
     processedLine = processedLine.replace(
       /\[([^\]]+)\]\(([^)]+)\)/g,
-      (match, text, url) => {
+      (_match, text, url) => {
         return `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`;
       },
     );
@@ -639,7 +639,7 @@ function convertMarkdownToHTML(markdown) {
 
   // Close any open lists or tables
   if (inList && listItems.length > 0) {
-    processedLines.push("<ul>" + listItems.join("") + "</ul>");
+    processedLines.push(`<ul>${listItems.join("")}</ul>`);
   }
   if (inTable) {
     processedLines.push("</tbody></table>");

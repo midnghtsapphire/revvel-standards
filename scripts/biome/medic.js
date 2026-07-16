@@ -105,13 +105,13 @@ if (require.main === module) {
         "[biome-medic] warning: failed to fetch open issues (API error) — treating as 0 issues for this sweep",
       );
     const issuesResp = issuesRespRaw || [];
-    const runClass = classifyRuns((runsResp && runsResp.workflow_runs) || []);
+    const runClass = classifyRuns((runsResp?.workflow_runs) || []);
     const stuck = detectStuckIssues(issuesResp, Date.now());
     const assessment = assessKeyHealth(process.env);
 
     const labelNames = (it) =>
       (it.labels || []).map((l) =>
-        typeof l === "string" ? l : (l && l.name) || "",
+        typeof l === "string" ? l : (l?.name) || "",
       );
     const keyBlocked = issuesResp.filter(
       (it) =>
@@ -133,7 +133,7 @@ if (require.main === module) {
     );
 
     for (const action of [...plan.relabels, ...plan.keyUnblocks]) {
-      if (action.remove && action.remove.length) {
+      if (action.remove?.length) {
         for (const lbl of action.remove) {
           await repoApi(
             `/issues/${action.issue}/labels/${encodeURIComponent(lbl)}`,
@@ -144,7 +144,7 @@ if (require.main === module) {
           );
         }
       }
-      if (action.add && action.add.length) {
+      if (action.add?.length) {
         await repoApi(`/issues/${action.issue}/labels`, {
           method: "POST",
           body: { labels: action.add },

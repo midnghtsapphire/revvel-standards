@@ -132,7 +132,7 @@ function extensionOf(filename) {
 function runRule(files, { patterns, onlyCode = true }) {
   const findings = [];
   for (const f of files) {
-    if (!f || !f.filename || !f.patch) continue;
+    if (!f?.filename || !f.patch) continue;
     if (onlyCode && !CODE_EXTENSIONS.has(extensionOf(f.filename))) continue;
 
     for (const { line, text } of parseAddedLines(f.patch)) {

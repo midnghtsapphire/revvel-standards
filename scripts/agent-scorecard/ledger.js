@@ -9,8 +9,8 @@
  * leaderboard can always be regenerated from the ledger alone.
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const { updateTrust, grade, STARTING_TRUST } = require("./score-engine");
 const { agentTrends, arrow } = require("./trends");
 
@@ -26,7 +26,7 @@ function appendEvent(event, ledgerPath = LEDGER_PATH) {
     ...event,
   });
   fs.mkdirSync(path.dirname(ledgerPath), { recursive: true });
-  fs.appendFileSync(ledgerPath, line + "\n");
+  fs.appendFileSync(ledgerPath, `${line}\n`);
   return line;
 }
 
@@ -75,7 +75,7 @@ function aggregate(events = []) {
   };
 
   for (const ev of events) {
-    if (!ev || !ev.agent) continue;
+    if (!ev?.agent) continue;
     const a = get(ev.agent);
     a.events.push(ev);
 
@@ -178,7 +178,7 @@ function renderLeaderboard(agents) {
 
   lines.push("");
   lines.push(`*Last updated: ${new Date().toISOString().slice(0, 10)}.*`);
-  return lines.join("\n") + "\n";
+  return `${lines.join("\n")}\n`;
 }
 
 function writeLeaderboard(agents, leaderboardPath = LEADERBOARD_PATH) {

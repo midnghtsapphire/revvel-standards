@@ -11,8 +11,8 @@
 // Exits 0 = clean, 1 = at least one fingerprint hit.
 // Standard: standards/AGENT_SCAFFOLDING_BAN.md
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // ── Banned patterns. Each is { id, re, why, allowedFiles? } ───────────────────
 // `allowedFiles`: paths matching any regex here are exempt for that rule.
@@ -212,7 +212,7 @@ function scan(file) {
   }
   const hits = [];
   for (const rule of BANNED) {
-    if (rule.allowedFiles && rule.allowedFiles.some((r) => r.test(file)))
+    if (rule.allowedFiles?.some((r) => r.test(file)))
       continue;
     const m = rule.re.exec(text);
     if (m) {

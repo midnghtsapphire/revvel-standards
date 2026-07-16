@@ -14,9 +14,9 @@
  * API Documentation: https://openrouter.ai/docs/guides/routing/model-fallbacks
  */
 
-const https = require("https");
-const fs = require("fs");
-const path = require("path");
+const https = require("node:https");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const OPENROUTER_HOST = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
@@ -40,7 +40,7 @@ const lookupData = loadModelLookup();
 
 let ROUTING_PROFILES = {};
 
-if (lookupData && lookupData.profiles && lookupData.models) {
+if (lookupData?.profiles && lookupData.models) {
   for (const [key, profile] of Object.entries(lookupData.profiles)) {
     const resolvedModels = profile.models
       .map((modelId) => {
@@ -176,7 +176,7 @@ async function callOpenRouter({
         // Check status code before parsing
         if (res.statusCode < 200 || res.statusCode >= 300) {
           const truncatedBody =
-            data.length > 500 ? data.substring(0, 500) + "..." : data;
+            data.length > 500 ? `${data.substring(0, 500)}...` : data;
           reject(
             new Error(
               `OpenRouter API returned status ${res.statusCode}: ${truncatedBody}`,
@@ -201,7 +201,7 @@ async function callOpenRouter({
           }
 
           const choice = parsed.choices[0];
-          if (!choice.message || !choice.message.content) {
+          if (!choice.message?.content) {
             reject(new Error("No message content in response"));
             return;
           }

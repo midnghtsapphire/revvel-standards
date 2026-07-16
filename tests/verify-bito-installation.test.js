@@ -10,9 +10,9 @@
  * - Runs without errors
  */
 
-const { execSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { execSync } = require("node:child_process");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Track test results
 let passed = 0;
@@ -287,7 +287,7 @@ test("BITO_INSTALLATION_VERIFICATION.md has troubleshooting guide", () => {
 
 // ─── Test Summary ─────────────────────────────────────────────────────────────
 
-console.log("\n" + "=".repeat(60));
+console.log(`\n${"=".repeat(60)}`);
 console.log(`Test Summary: ${passed} passed, ${failed} failed`);
 console.log("=".repeat(60));
 

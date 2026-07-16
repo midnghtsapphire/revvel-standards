@@ -212,7 +212,6 @@ export default function Page() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
             style={styles.input}
-            autoFocus
           />
           <button type="submit" style={styles.btnGreen}>
             Open app

@@ -42,8 +42,8 @@
 
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const DEFAULT_CONFIG_PATH = path.join(
   __dirname,
@@ -101,14 +101,13 @@ function scoreRepo(repo, cand) {
       ? Math.max(0, 10 - Math.min(safe(repo.open_issues_count) / 50, 10))
       : 5; // 0..10
   const license =
-    repo.license &&
-    repo.license.spdx_id &&
+    repo.license?.spdx_id &&
     repo.license.spdx_id !== "NOASSERTION"
       ? 10
       : 0; // 0 or 10
   const recency = recencyScore(repo.pushed_at); // 0..15
   const strategic =
-    Math.min(Math.max(safe(cand && cand.strategic_value), 0), 10) * 2; // 0..20
+    Math.min(Math.max(safe(cand?.strategic_value), 0), 10) * 2; // 0..20
   const archivedPenalty = repo.archived ? -25 : 0; // penalty
   const forkPenalty = repo.fork ? -10 : 0; // penalty
   const disabledPenalty = repo.disabled ? -25 : 0; // penalty
@@ -219,7 +218,7 @@ function buildAuditBody({ cand, repo, score }) {
     `- Stars: **${repo.stargazers_count ?? "n/a"}**`,
     `- Forks: **${repo.forks_count ?? "n/a"}**`,
     `- Open issues: **${repo.open_issues_count ?? "n/a"}**`,
-    `- License: **${(repo.license && repo.license.spdx_id) || "none"}**`,
+    `- License: **${(repo.license?.spdx_id) || "none"}**`,
     `- Last push: **${repo.pushed_at ?? "n/a"}**`,
     `- Archived: **${repo.archived ? "yes" : "no"}**`,
     `- Default branch: \`${repo.default_branch || "main"}\``,

@@ -101,7 +101,7 @@ function buildStatusBody(assessment, generatedAtIso) {
 function shouldTriggerRecovery(assessment, env) {
   return (
     assessment.aiLanesOffline === true &&
-    String((env && env.BIOME_RECOVER_KEYS) || "").toLowerCase() === "true"
+    String((env?.BIOME_RECOVER_KEYS) || "").toLowerCase() === "true"
   );
 }
 
@@ -176,7 +176,7 @@ if (require.main === module) {
         },
       });
       console.log(
-        `[biome-homeostat] opened consolidated status #${created && created.number}`,
+        `[biome-homeostat] opened consolidated status #${created?.number}`,
       );
     }
 

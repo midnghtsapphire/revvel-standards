@@ -7,10 +7,10 @@
 
 "use strict";
 
-const assert = require("assert");
-const path = require("path");
-const fs = require("fs");
-const os = require("os");
+const assert = require("node:assert");
+const path = require("node:path");
+const fs = require("node:fs");
+const os = require("node:os");
 
 // Prevent main() from executing when required.
 const originalMain = require.main;

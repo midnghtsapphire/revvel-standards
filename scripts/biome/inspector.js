@@ -26,7 +26,7 @@ function isExternal(meta) {
 }
 
 function deriveLiveUrl(name, meta, baseUrl) {
-  const explicit = ((meta && meta.live_url) || "").trim();
+  const explicit = ((meta?.live_url) || "").trim();
   if (explicit) return /^https?:\/\//i.test(explicit) ? explicit : ""; // ignore non-http(s) values
   if (!isExternal(meta) && baseUrl && /^https?:\/\//i.test(baseUrl))
     return `${baseUrl.replace(/\/+$/, "")}/docs/${name}/`;
@@ -204,8 +204,8 @@ module.exports = {
 // --- CLI -------------------------------------------------------------------
 if (require.main === module) {
   (async () => {
-    const fs = require("fs");
-    const path = require("path");
+    const fs = require("node:fs");
+    const path = require("node:path");
     const YAML = require("yaml");
     const { repoApi } = require("./gh");
 
@@ -217,7 +217,7 @@ if (require.main === module) {
           "utf8",
         ),
       ) || {};
-    const baseUrl = (manifest.deployment && manifest.deployment.base_url) || "";
+    const baseUrl = (manifest.deployment?.base_url) || "";
     const appsManifest = manifest.apps || {};
 
     async function attempt(url, method) {
@@ -335,7 +335,7 @@ if (require.main === module) {
         },
       });
       console.log(
-        `[biome-inspector] filed worklist #${created && created.number}`,
+        `[biome-inspector] filed worklist #${created?.number}`,
       );
     }
   })().catch((err) => {

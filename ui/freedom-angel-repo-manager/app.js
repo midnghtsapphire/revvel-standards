@@ -57,7 +57,7 @@
       id: "labels",
       label: "Standard labels (enhancement, bug, security)",
       run: (ctx) =>
-        gh(ctx, "/repos/" + ctx.owner + "/" + ctx.repo + "/labels?per_page=100")
+        gh(ctx, `/repos/${ctx.owner}/${ctx.repo}/labels?per_page=100`)
           .then((labels) => {
             if (!Array.isArray(labels)) return false;
             var names = labels.map((l) => String(l.name || "").toLowerCase());
@@ -87,12 +87,12 @@
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
     };
-    if (token) h.Authorization = "Bearer " + token;
+    if (token) h.Authorization = `Bearer ${token}`;
     return h;
   }
 
   function gh(ctx, path) {
-    return fetch("https://api.github.com" + path, {
+    return fetch(`https://api.github.com${path}`, {
       headers: ghHeaders(ctx.token),
     }).then((res) => {
       var remaining = res.headers.get("x-ratelimit-remaining");
@@ -104,7 +104,7 @@
           .catch(() => ({}))
           .then((err) => {
             var msg =
-              (err && err.message) || "HTTP " + res.status + " from GitHub";
+              (err?.message) || `HTTP ${res.status} from GitHub`;
             var e = new Error(msg);
             e.status = res.status;
             throw e;
@@ -157,9 +157,9 @@
   function readmeText(ctx) {
     if (ctx._readmeCache !== undefined)
       return Promise.resolve(ctx._readmeCache);
-    return gh(ctx, "/repos/" + ctx.owner + "/" + ctx.repo + "/readme")
+    return gh(ctx, `/repos/${ctx.owner}/${ctx.repo}/readme`)
       .then((data) => {
-        if (!data || !data.content) {
+        if (!data?.content) {
           ctx._readmeCache = "";
           return "";
         }
@@ -167,7 +167,7 @@
           var decoded = atob(data.content.replace(/\s+/g, ""));
           ctx._readmeCache = decoded;
           return decoded;
-        } catch (e) {
+        } catch (_e) {
           ctx._readmeCache = "";
           return "";
         }
@@ -200,7 +200,7 @@
       el.appendChild(msg);
     }
     el.classList.remove("status-error", "status-success");
-    if (kind) el.classList.add("status-" + kind);
+    if (kind) el.classList.add(`status-${kind}`);
   }
 
   function updateRate(remaining) {
@@ -262,17 +262,17 @@
 
   function renderAuditResult(repoName, result) {
     var card = document.querySelector(
-      '.repo-card[data-repo="' + cssEscape(repoName) + '"]',
+      `.repo-card[data-repo="${cssEscape(repoName)}"]`,
     );
     if (!card) return;
 
     var score = card.querySelector(".repo-score");
     var pct = Math.round((result.score / result.total) * 100);
-    score.textContent = result.score + " / " + result.total + " (" + pct + "%)";
+    score.textContent = `${result.score} / ${result.total} (${pct}%)`;
     score.dataset.tier = pct >= 85 ? "good" : pct >= 60 ? "fair" : "poor";
 
     result.checks.forEach((c) => {
-      var li = card.querySelector('li[data-check="' + c.id + '"]');
+      var li = card.querySelector(`li[data-check="${c.id}"]`);
       if (li) li.dataset.status = c.status;
     });
   }
@@ -299,7 +299,7 @@
         var r = state.auditResults[k];
         pctSum += (r.score / r.total) * 100;
       });
-      $("#m-avg").textContent = Math.round(pctSum / audited) + "%";
+      $("#m-avg").textContent = `${Math.round(pctSum / audited)}%`;
     } else {
       $("#m-avg").textContent = "—";
     }
@@ -320,7 +320,7 @@
     localStorage.setItem(LS_OWNER, owner);
     if (token) localStorage.setItem(LS_TOKEN, token);
 
-    setStatus("Loading repositories for " + owner + "…");
+    setStatus(`Loading repositories for ${owner}…`);
     $("#summary-grid").hidden = true;
     $("#controls").hidden = true;
     $("#repo-list").textContent = "";
@@ -346,17 +346,17 @@
   function fetchAllRepos(owner, token) {
     // Try /orgs/{owner}/repos first, fall back to /users/{owner}/repos.
     var ctx = { owner: owner, token: token };
-    return gh(ctx, "/orgs/" + owner + "/repos?per_page=100&type=all")
+    return gh(ctx, `/orgs/${owner}/repos?per_page=100&type=all`)
       .then((data) => {
         if (Array.isArray(data)) return data;
-        return gh(ctx, "/users/" + owner + "/repos?per_page=100&type=owner");
+        return gh(ctx, `/users/${owner}/repos?per_page=100&type=owner`);
       })
       .then((data) => (Array.isArray(data) ? data : []));
   }
 
   function auditOne(repo) {
     var ctx = { owner: state.owner, repo: repo.name, token: state.token };
-    setStatus("Auditing " + repo.name + "…");
+    setStatus(`Auditing ${repo.name}…`);
 
     var results = CHECKS.map((c) =>
       Promise.resolve()
@@ -375,7 +375,7 @@
       state.auditResults[repo.name] = result;
       renderAuditResult(repo.name, result);
       renderSummary();
-      setStatus("Audit complete: " + repo.name, "success");
+      setStatus(`Audit complete: ${repo.name}`, "success");
       return result;
     });
   }
@@ -384,14 +384,14 @@
     if (state.repos.length === 0) return;
     var btn = $("#audit-all-btn");
     btn.disabled = true;
-    setStatus("Auditing " + state.repos.length + " repositories sequentially…");
+    setStatus(`Auditing ${state.repos.length} repositories sequentially…`);
 
     var i = 0;
     function next() {
       if (i >= state.repos.length) {
         btn.disabled = false;
         setStatus(
-          "All audits complete (" + state.repos.length + " repos).",
+          `All audits complete (${state.repos.length} repos).`,
           "success",
         );
         return Promise.resolve();
@@ -419,7 +419,7 @@
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
-    a.download = "revvel-audit-" + state.owner + "-" + Date.now() + ".json";
+    a.download = `revvel-audit-${state.owner}-${Date.now()}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -449,7 +449,7 @@
 
   function handleErr(err) {
     console.error(err);
-    var msg = (err && err.message) || "Unknown error";
+    var msg = (err?.message) || "Unknown error";
     if (err && err.status === 401) {
       msg = "GitHub rejected your token (401). Please check it and retry.";
     } else if (err && err.status === 403) {
@@ -458,7 +458,7 @@
     } else if (err && err.status === 404) {
       msg = "Owner not found on GitHub (404).";
     }
-    setStatus("Error: " + msg, "error");
+    setStatus(`Error: ${msg}`, "error");
   }
 
   /* ---------- Accessibility mode ---------- */

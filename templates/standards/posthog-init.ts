@@ -46,8 +46,7 @@ function resolveToken(): string | undefined {
 /** Set to 'https://eu.posthog.com' for EU-residency projects. */
 const API_HOST =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ((typeof process !== "undefined" && (process.env as any)) || {})
-    .POSTHOG_API_HOST || "https://app.posthog.com";
+  (typeof process !== "undefined" && (process.env as any))?.POSTHOG_API_HOST || "https://app.posthog.com";
 
 // ─── PII guardrails ────────────────────────────────────────────────────────
 //
@@ -275,7 +274,7 @@ export function optOut(): void {
       /* noop */
     }
     const client = getClient();
-    if (client && client.opt_out_capturing) client.opt_out_capturing();
+    if (client?.opt_out_capturing) client.opt_out_capturing();
   }
 }
 
@@ -288,7 +287,7 @@ export function optIn(): void {
       /* noop */
     }
     const client = getClient();
-    if (client && client.opt_in_capturing) client.opt_in_capturing();
+    if (client?.opt_in_capturing) client.opt_in_capturing();
   }
 }
 

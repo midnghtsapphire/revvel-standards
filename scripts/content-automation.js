@@ -14,9 +14,9 @@
  * Uses OpenRouter for AI generation with model selection per task.
  */
 
-const fs = require("fs");
-const path = require("path");
-const https = require("https");
+const fs = require("node:fs");
+const path = require("node:path");
+const https = require("node:https");
 
 // Configuration from environment
 const CONFIG = {
@@ -94,8 +94,7 @@ async function callOpenRouter(model, messages, maxTokens = 4000) {
               new Error(result.error.message || JSON.stringify(result.error)),
             );
           } else if (
-            !result.choices ||
-            !result.choices.length ||
+            !result.choices?.length ||
             !result.choices[0].message
           ) {
             reject(
@@ -212,7 +211,7 @@ Create a detailed content outline.`;
 /**
  * Phase 3: Draft Generation
  */
-async function phaseDraft(brief, outline) {
+async function phaseDraft(_brief, outline) {
   console.log("✍️  Phase 3: Draft Generation...");
 
   const systemPrompt = `You are an expert ${CONFIG.format} writer. Write the complete first draft following the outline provided.

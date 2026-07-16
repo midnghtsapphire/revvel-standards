@@ -6,11 +6,11 @@
  * Tests conflict resolution logic for mechanical merge conflicts
  */
 
-const assert = require("assert");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
-const { execSync } = require("child_process");
+const assert = require("node:assert");
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
+const { execSync } = require("node:child_process");
 const {
   pickNewerRef,
   tryVersionBump,
@@ -287,7 +287,7 @@ test("main() exits non-zero for a binary conflict with zero marker hunks", () =>
     let mergeFailed = false;
     try {
       git("merge --no-commit --no-ff feature");
-    } catch (e) {
+    } catch (_e) {
       mergeFailed = true; // expected: merge conflict
     }
     assert.ok(mergeFailed, "merge should conflict");
@@ -336,7 +336,7 @@ test("main() exits 0 when every hunk is cleanly auto-resolved", () => {
 
     try {
       git("merge --no-commit --no-ff feature");
-    } catch (e) {
+    } catch (_e) {
       // expected conflict
     }
 
@@ -361,7 +361,7 @@ test("main() exits 0 when every hunk is cleanly auto-resolved", () => {
 
 // ─── Summary ─────────────────────────────────────────────────────────────
 
-console.log("\n" + "=".repeat(60));
+console.log(`\n${"=".repeat(60)}`);
 console.log(`Test Summary: ${passed} passed, ${failed} failed`);
 console.log("=".repeat(60));
 

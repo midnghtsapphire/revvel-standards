@@ -36,9 +36,9 @@
  * executed when this file is run directly (require.main === module).
  */
 
-const fs = require("fs");
-const path = require("path");
-const https = require("https");
+const fs = require("node:fs");
+const path = require("node:path");
+const https = require("node:https");
 const yaml = require("yaml");
 
 // ─── Constants ──────────────────────────────────────────────────────────
@@ -155,7 +155,7 @@ function splitDomain(domain) {
  * supports ALIAS (Porkbun) or move the apex to DigitalOcean nameservers.
  */
 function buildNamecheapRequest({ domain, records, credentials }) {
-  if (!credentials || !credentials.apiKey || !credentials.apiUser) {
+  if (!credentials?.apiKey || !credentials.apiUser) {
     throw new Error("buildNamecheapRequest: missing apiKey/apiUser");
   }
   const { sld, tld } = splitDomain(domain);
@@ -207,7 +207,7 @@ function buildNamecheapRequest({ domain, records, credentials }) {
  * by the workflow via dig) before running the sync against GoDaddy.
  */
 function buildGodaddyRequest({ domain, records, credentials }) {
-  if (!credentials || !credentials.apiKey || !credentials.apiSecret) {
+  if (!credentials?.apiKey || !credentials.apiSecret) {
     throw new Error("buildGodaddyRequest: missing apiKey/apiSecret");
   }
 
@@ -275,7 +275,7 @@ function buildPorkbunCreateRequests({
   credentials,
   existingRecords,
 }) {
-  if (!credentials || !credentials.apiKey || !credentials.secretApiKey) {
+  if (!credentials?.apiKey || !credentials.secretApiKey) {
     throw new Error("buildPorkbunCreateRequests: missing apiKey/secretApiKey");
   }
 
@@ -284,7 +284,7 @@ function buildPorkbunCreateRequests({
     secretapikey: credentials.secretApiKey,
   };
 
-  const retrieveRequest = {
+  const _retrieveRequest = {
     method: "POST",
     url: `https://api.porkbun.com/api/json/v3/dns/retrieve/${encodeURIComponent(domain)}`,
     headers: { "Content-Type": "application/json" },

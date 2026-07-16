@@ -6,8 +6,8 @@
  * Tests compliance check helper functions and validation logic
  */
 
-const assert = require("assert");
-const path = require("path");
+const assert = require("node:assert");
+const _path = require("node:path");
 
 let passed = 0;
 let failed = 0;
@@ -33,7 +33,7 @@ const {
 } = require("../scripts/check-compliance.js");
 
 // Test data - mock repo root
-const TEST_REPO_ROOT = __dirname;
+const _TEST_REPO_ROOT = __dirname;
 
 console.log("Running check-compliance.js tests...\n");
 

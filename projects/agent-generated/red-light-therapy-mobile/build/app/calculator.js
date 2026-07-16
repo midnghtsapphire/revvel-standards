@@ -2,7 +2,7 @@
   function toPositiveNumber(value, name) {
     const numeric = Number(value);
     if (!Number.isFinite(numeric) || numeric <= 0) {
-      throw new Error(name + " must be a positive number");
+      throw new Error(`${name} must be a positive number`);
     }
     return numeric;
   }

@@ -9,7 +9,7 @@ export default defineConfig({
     screenshotOnRunFailure: true,
     viewportWidth: 1280,
     viewportHeight: 800,
-    setupNodeEvents(on, config) {
+    setupNodeEvents(_on, config) {
       // Applitools eyes-cypress is wired in support/e2e.ts via `import` —
       // no additional setup needed here. If APPLITOOLS_API_KEY is not set,
       // eyes calls become no-ops (the SDK handles it gracefully).

@@ -720,7 +720,7 @@
         });
       }
 
-      function filterTable() {
+      function _filterTable() {
         const filter = document.getElementById("stateFilter").value;
         const filtered = filter
           ? stateData.filter((d) => d.state === filter)

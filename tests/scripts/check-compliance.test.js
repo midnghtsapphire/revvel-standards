@@ -1,6 +1,6 @@
-const assert = require("assert");
-const fs = require("fs");
-const path = require("path");
+const assert = require("node:assert");
+const fs = require("node:fs");
+const path = require("node:path");
 
 // Prevent check-compliance.js from executing its main logic when required
 const originalMain = require.main;
@@ -13,14 +13,14 @@ const { codeContains } = require("../../scripts/check-compliance.js");
 require.main = originalMain;
 
 function runTests() {
-  const repoRoot = process.cwd(); // The script uses process.cwd() as repoRoot by default if no arg is provided
+  const _repoRoot = process.cwd(); // The script uses process.cwd() as repoRoot by default if no arg is provided
   // However, check-compliance.js hardcodes repoRoot at the top level
 
   // Actually, to make testing reliable, we should use the same repoRoot that check-compliance.js uses.
   // By default, check-compliance.js uses process.argv[2] or process.cwd()
   // Since we require it, it's process.cwd(). Let's create dummy directories in the current working directory.
 
-  const testDirs = ["src", "server", "api", "app"];
+  const _testDirs = ["src", "server", "api", "app"];
 
   // Save state to restore later
   const createdDirs = [];
@@ -51,7 +51,7 @@ function runTests() {
         if (fs.existsSync(dir)) {
           try {
             fs.rmdirSync(dir);
-          } catch (e) {}
+          } catch (_e) {}
         }
       });
   }

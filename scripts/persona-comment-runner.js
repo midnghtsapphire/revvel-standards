@@ -45,8 +45,8 @@
  * Env: COMMENT_BODY, ISSUE_NUMBER, REPO (owner/repo), OPENROUTER_API_KEY, GH_TOKEN
  */
 
-const fs = require("fs");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const { execFileSync } = require("node:child_process");
 const {
   instantiate,
   getPersonas,
@@ -56,7 +56,7 @@ const {
 // Verbs that mean "do the thing" rather than "tell me about it".
 // "do" is included so "/dragnet do a perm fix" and "/dragnet please do a fix"
 // enter EXECUTION mode without requiring a more explicit verb.
-const ACTION_VERBS = [
+const _ACTION_VERBS = [
   "build",
   "implement",
   "create",
@@ -302,11 +302,11 @@ function gatherContext(repo, issueNumber) {
       "",
       "### Failing checks (latest)",
       failingChecks
-        ? "```json\n" + failingChecks + "\n```"
+        ? `\`\`\`json\n${failingChecks}\n\`\`\``
         : "_(none failing)_",
       "",
       "### Diff head",
-      diffHead ? "```diff\n" + diffHead + "\n```" : "_(no diff captured)_",
+      diffHead ? `\`\`\`diff\n${diffHead}\n\`\`\`` : "_(no diff captured)_",
       "",
       "---",
       "",

@@ -21,8 +21,8 @@
  */
 
 const { routedChat } = require("./openrouter-routing");
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const PROFILES = ["repo_surgery", "cheap_batch_edits", "hard_debug"];
 

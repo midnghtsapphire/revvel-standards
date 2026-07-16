@@ -4,7 +4,7 @@
  * Test suite for Project Dashboard Aggregator
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 const {
   parseInventory,
   parseBOM,
@@ -135,10 +135,10 @@ else failed++;
 // Test: Integration - full dashboard generation
 if (
   test("Dashboard generation runs without errors", () => {
-    const { execSync } = require("child_process");
-    const path = require("path");
-    const os = require("os");
-    const fs = require("fs");
+    const { execSync } = require("node:child_process");
+    const path = require("node:path");
+    const os = require("node:os");
+    const fs = require("node:fs");
     const repoRoot = execSync("git rev-parse --show-toplevel", {
       encoding: "utf-8",
     }).trim();

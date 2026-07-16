@@ -425,12 +425,12 @@ function _validatePropertyShapes(type, obj) {
       : [obj.mainEntity];
     for (let i = 0; i < items.length; i++) {
       const q = items[i];
-      if (!q || q["@type"] !== "Question") {
+      if (q?.["@type"] !== "Question") {
         errors.push({
           property: `mainEntity[${i}]`,
           message: `mainEntity items must have @type "Question"`,
         });
-      } else if (!q.acceptedAnswer || !q.acceptedAnswer.text) {
+      } else if (!q.acceptedAnswer?.text) {
         errors.push({
           property: `mainEntity[${i}].acceptedAnswer`,
           message: "Question must have acceptedAnswer with text property",
@@ -446,7 +446,7 @@ function _validatePropertyShapes(type, obj) {
       : [obj.itemListElement];
     for (let i = 0; i < items.length; i++) {
       const li = items[i];
-      if (!li || li["@type"] !== "ListItem") {
+      if (li?.["@type"] !== "ListItem") {
         errors.push({
           property: `itemListElement[${i}]`,
           message: 'BreadcrumbList items must have @type "ListItem"',

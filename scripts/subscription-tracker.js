@@ -10,8 +10,8 @@
 // Everything here is pure and clock-injectable so the logic is unit-testable;
 // the workflow (.github/workflows/subscription-tracker.yml) wires it to GitHub.
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const YAML = require("yaml");
 
 // Default warning window: surface anything due within this many days.
@@ -47,7 +47,7 @@ function effectiveDueDate(sub) {
   if (sub && sub.status === "trial" && sub.trial_end) {
     return { kind: "trial", date: sub.trial_end };
   }
-  if (sub && sub.renewal_date) {
+  if (sub?.renewal_date) {
     return { kind: "renewal", date: sub.renewal_date };
   }
   // A trial with no end date is still a trial, just an unknown one.
@@ -100,7 +100,7 @@ function loadSubscriptions(file = DEFAULT_SUBSCRIPTIONS_FILE) {
   const raw = fs.readFileSync(file, "utf8");
   const doc = YAML.parse(raw);
   const list = doc && Array.isArray(doc.subscriptions) ? doc.subscriptions : [];
-  return list.filter((entry) => entry && entry.name);
+  return list.filter((entry) => entry?.name);
 }
 
 // Build a full report over a list of subscriptions.

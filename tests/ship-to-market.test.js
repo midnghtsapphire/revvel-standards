@@ -11,7 +11,7 @@
  * 4. Channel routing logic
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 
 let passed = 0;
 let failed = 0;
@@ -73,7 +73,7 @@ function checkChannel(channel, input, labels) {
 
 function getDeliveryChannels(input, labels) {
   const normalizedInput = parseDeliveryInput(input);
-  const labelSet = new Set(labels || []);
+  const _labelSet = new Set(labels || []);
 
   // If input is 'all', return all channels
   if (normalizedInput === "all") {
@@ -145,7 +145,7 @@ function isWrPullRequest(labels, title) {
   return (
     labelSet.has("work-request") ||
     labelSet.has("weekly-research") ||
-    (title && title.startsWith("[WR]"))
+    (title?.startsWith("[WR]"))
   );
 }
 

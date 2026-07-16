@@ -31,8 +31,8 @@
 
 "use strict";
 
-const { execSync } = require("child_process");
-const fs = require("fs");
+const { execSync } = require("node:child_process");
+const fs = require("node:fs");
 
 function sh(cmd, opts = {}) {
   return execSync(cmd, { encoding: "utf8", ...opts });
@@ -388,7 +388,7 @@ if (require.main === module) {
   } catch (err) {
     console.error(
       "auto-resolve-mechanical-conflicts: fatal:",
-      (err && err.stack) || err,
+      (err?.stack) || err,
     );
     process.exit(1);
   }

@@ -41,9 +41,9 @@
  * the auto-heal workflow loop-safe (second run → no diff → no push).
  */
 
-const fs = require("fs");
-const path = require("path");
-const { spawnSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { spawnSync } = require("node:child_process");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 // Pinned fallback for slim CI jobs that skip `npm ci`; keep in sync with the
@@ -95,7 +95,7 @@ function mapFences(text) {
  * @returns {boolean}
  */
 function isSetextCandidateText(line) {
-  if (!line || !line.trim()) return false;
+  if (!line?.trim()) return false;
   const t = line.trimStart();
   if (t.startsWith("#")) return false; // already ATX
   if (/^([-*+]\s|\d{1,9}[.)]\s)/.test(t)) return false; // list item

@@ -19,9 +19,9 @@
 
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const { execSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execSync } = require("node:child_process");
 
 // ---------------------------------------------------------------------------
 // Config
@@ -332,7 +332,7 @@ function buildIssueBody(findings) {
       lines.push(`- \`${f.file}\` line ${f.line}: \`${f.excerpt}\``);
     }
     lines.push("");
-    if (first.references && first.references.length) {
+    if (first.references?.length) {
       lines.push(`**References:** ${first.references.join(", ")}`);
       lines.push("");
     }
@@ -391,7 +391,7 @@ async function fileIssue(findings, dryRun) {
         );
         console.log(`✅ Updated issue #${existing.number}`);
       } else {
-        console.log("[dry-run] Would PATCH issue #" + existing.number);
+        console.log(`[dry-run] Would PATCH issue #${existing.number}`);
       }
       return;
     }

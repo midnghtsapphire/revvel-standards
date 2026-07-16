@@ -46,9 +46,9 @@
  *   OUTPUT_FILE          Where to write the enriched body (default: stdout)
  */
 
-const fs = require("fs");
-const path = require("path");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const path = require("node:path");
+const { execFileSync } = require("node:child_process");
 
 let routedChat;
 try {
@@ -171,7 +171,7 @@ function runOcr(url, opts = {}) {
     return {
       url,
       text: "",
-      error: err && err.message ? err.message : String(err),
+      error: err?.message ? err.message : String(err),
     };
   }
 }
@@ -269,7 +269,7 @@ function buildEnrichmentMessages({ title, body, ocrText }) {
     "",
     `WR BODY (original):\n${body || "(empty)"}`,
   ];
-  if (ocrText && ocrText.trim()) {
+  if (ocrText?.trim()) {
     userParts.push(
       "",
       `TEXT EXTRACTED FROM ATTACHED IMAGES (OCR):\n${ocrText.trim()}`,
@@ -324,7 +324,7 @@ async function enrichWorkRequest({
     apiKey !== undefined ? apiKey : process.env.OPENROUTER_API_KEY || "";
   const chat = routed || routedChat;
   const appendix =
-    ocrText && ocrText.trim() ? `\n\n${assembleOcrAppendixText(ocrText)}` : "";
+    ocrText?.trim() ? `\n\n${assembleOcrAppendixText(ocrText)}` : "";
   const fallback = (error) => ({
     body: `${body || ""}${appendix}`.trim(),
     enriched: false,
@@ -347,7 +347,7 @@ async function enrichWorkRequest({
       silent: true,
     });
     const content =
-      result && result.content ? String(result.content).trim() : "";
+      result?.content ? String(result.content).trim() : "";
     if (!content)
       return fallback("LLM returned empty content — using original body");
     return {
@@ -356,7 +356,7 @@ async function enrichWorkRequest({
       modelUsed: result.modelUsed || null,
     };
   } catch (err) {
-    return fallback(err && err.message ? err.message : String(err));
+    return fallback(err?.message ? err.message : String(err));
   }
 }
 
@@ -443,7 +443,7 @@ async function main() {
     fs.writeFileSync(outputFile, result.enrichedBody, "utf8");
     console.error(`wr-preprocess: enriched WR written to ${outputFile}`);
   } else {
-    process.stdout.write(result.enrichedBody + "\n");
+    process.stdout.write(`${result.enrichedBody}\n`);
   }
 }
 

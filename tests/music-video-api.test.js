@@ -7,9 +7,9 @@
  * No Next.js runtime required — runs with plain `node`.
  */
 
-const assert = require("assert");
-const fs = require("fs");
-const path = require("path");
+const assert = require("node:assert");
+const fs = require("node:fs");
+const path = require("node:path");
 const {
   VIDEO_PROVIDERS,
   selectBestProvider,
@@ -276,7 +276,7 @@ test("Music Video Creator polling treats provider completion as terminal success
 
 // ─── Summary ─────────────────────────────────────────────────────────────────
 
-console.log("\n" + "=".repeat(60));
+console.log(`\n${"=".repeat(60)}`);
 console.log("Music Video API Test Summary");
 console.log("=".repeat(60));
 console.log(`Passed: ${passed}`);

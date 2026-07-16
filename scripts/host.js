@@ -46,8 +46,8 @@
  *   }
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const yaml = require("yaml");
 const Ajv2020 = require("ajv/dist/2020");
 const addFormats = require("ajv-formats");
@@ -141,8 +141,8 @@ function classifyBlockName(name) {
 function threadFor(kind, wrTitle, blockName, deviceTree) {
   const spec = (deviceTree.kinds || []).find((k) => k.name === kind);
   const timeout =
-    spec && spec.default_timeout_minutes ? spec.default_timeout_minutes : 30;
-  const agent = spec && spec.default_agent ? spec.default_agent : "openrouter";
+    spec?.default_timeout_minutes ? spec.default_timeout_minutes : 30;
+  const agent = spec?.default_agent ? spec.default_agent : "openrouter";
   return {
     id: "thread-1",
     kind,
@@ -322,9 +322,9 @@ function main() {
   }
   const rendered = JSON.stringify(contract, null, 2);
   if (args.out) {
-    fs.writeFileSync(args.out, rendered + "\n");
+    fs.writeFileSync(args.out, `${rendered}\n`);
   } else {
-    process.stdout.write(rendered + "\n");
+    process.stdout.write(`${rendered}\n`);
   }
 }
 

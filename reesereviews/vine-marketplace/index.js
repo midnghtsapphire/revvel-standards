@@ -13,7 +13,7 @@ require("dotenv").config();
 
 const express = require("express");
 const cron = require("node-cron");
-const path = require("path");
+const path = require("node:path");
 
 const { fetchEmails, filterAmazonEmails } = require("./lib/gmail-reader");
 const { parseAmazonEmail, attachProductLink } = require("./lib/amazon-parser");
@@ -604,7 +604,7 @@ function main() {
     return;
   }
   if (CLI_COMMAND === "import-csv") {
-    const fs = require("fs");
+    const fs = require("node:fs");
     const file = process.argv[3];
     if (!file) {
       console.error("Usage: node index.js import-csv <path-to-orders.csv>");

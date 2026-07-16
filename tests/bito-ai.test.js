@@ -12,7 +12,7 @@
  * 5. Comment posting logic
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 
 let passed = 0;
 let failed = 0;
@@ -30,7 +30,7 @@ async function test(name, fn) {
 }
 
 // === Constants ===
-const BITO_LABELS = [
+const _BITO_LABELS = [
   "bito-ai",
   "bito-ai:review",
   "awaiting-approval",

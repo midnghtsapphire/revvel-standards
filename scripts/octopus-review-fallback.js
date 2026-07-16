@@ -49,9 +49,9 @@
 
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const https = require("https");
+const fs = require("node:fs");
+const path = require("node:path");
+const https = require("node:https");
 const yaml = require("yaml");
 
 const GITHUB_API_HOST = "api.github.com";
@@ -498,9 +498,9 @@ async function main() {
   } catch (err) {
     // Preserve prior "never fail loud" behavior — the schedule sweep will
     // retry primary-limit deferrals. Log the classification so it's obvious.
-    const tag = err && err.rateLimit ? ` [rate-limit=${err.rateLimit}]` : "";
+    const tag = err?.rateLimit ? ` [rate-limit=${err.rateLimit}]` : "";
     console.warn(
-      `octopus-review-fallback: giving up${tag}: ${err && err.message ? err.message : err}`,
+      `octopus-review-fallback: giving up${tag}: ${err?.message ? err.message : err}`,
     );
   }
 }

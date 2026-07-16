@@ -18,9 +18,9 @@
  *   updatedAt    string|null  — ISO 8601 last status change
  */
 
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
+const fs = require("node:fs");
+const path = require("node:path");
+const crypto = require("node:crypto");
 
 const DATA_DIR = path.join(__dirname, "..", "data");
 const RFY_FILE = path.join(DATA_DIR, "rfy-watchlist.json");
@@ -46,7 +46,7 @@ function save(list) {
 
 /** Generate a unique ID (8 random bytes → 16 hex chars). */
 function genId() {
-  return "rfy-" + crypto.randomBytes(8).toString("hex");
+  return `rfy-${crypto.randomBytes(8).toString("hex")}`;
 }
 
 /**
@@ -61,7 +61,7 @@ function genId() {
  * @returns {object} the created entry
  */
 function add(item) {
-  if (!item.productTitle || !item.productTitle.trim()) {
+  if (!item.productTitle?.trim()) {
     throw new Error("productTitle is required");
   }
   const list = load();

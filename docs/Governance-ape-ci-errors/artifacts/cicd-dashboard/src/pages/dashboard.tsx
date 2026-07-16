@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import {
   useGetFlow,
@@ -11,7 +11,6 @@ import { FlowTree } from "@/components/flow-tree";
 import { FlowStats } from "@/components/flow-stats";
 import { NodeDetailDrawer } from "@/components/node-detail-drawer";
 import { Loader2, GitBranch } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import madApeHero from "@/assets/mad-ape-hero.png";
 
 export function Dashboard() {

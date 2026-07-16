@@ -4,7 +4,7 @@
 /** Unit tests for scripts/fix-markdown-backlog.js — pure parsing helpers. */
 
 const { test } = require("node:test");
-const assert = require("assert");
+const assert = require("node:assert");
 const {
   countLintErrors,
   parseArgs,

@@ -4,8 +4,8 @@
  * Uses free Perplexity bridge + OpenRouter Fusion fallback
  */
 
-const fs = require("fs");
-const { execFileSync } = require("child_process");
+const fs = require("node:fs");
+const { execFileSync } = require("node:child_process");
 
 // Master R&D Prompt
 const SYSTEM_PROMPT = `You are an autonomous Lead Systems Engineer, Market Analyst, and R&D Director.
@@ -37,7 +37,7 @@ const CONFIG = {
 const query =
   process.argv.slice(2).join(" ") ||
   (async () => {
-    const readline = require("readline");
+    const readline = require("node:readline");
     const rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout,

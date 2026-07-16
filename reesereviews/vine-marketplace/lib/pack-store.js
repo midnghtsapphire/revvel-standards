@@ -5,9 +5,9 @@
  * Override: MARKETPLACE_PACKS_DIR
  */
 
-const fs = require("fs");
-const path = require("path");
-const os = require("os");
+const fs = require("node:fs");
+const path = require("node:path");
+const os = require("node:os");
 
 function packsRoot() {
   if (process.env.MARKETPLACE_PACKS_DIR) {

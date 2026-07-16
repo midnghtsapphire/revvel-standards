@@ -1,7 +1,7 @@
-const assert = require("assert");
-const fs = require("fs");
-const path = require("path");
-const https = require("https");
+const assert = require("node:assert");
+const fs = require("node:fs");
+const path = require("node:path");
+const https = require("node:https");
 
 const testOutputPath = path.join(__dirname, "test-output.md");
 process.env.OPENROUTER_API_KEY = "test-key";
@@ -22,7 +22,7 @@ async function runTests() {
 
   try {
     let requestCount = 0;
-    https.request = (options, callback) => {
+    https.request = (_options, callback) => {
       requestCount++;
       const req = {
         _events: {},
@@ -99,7 +99,7 @@ async function runTests() {
 
   try {
     let requestCount = 0;
-    https.request = (options, callback) => {
+    https.request = (_options, callback) => {
       requestCount++;
       const req = {
         _events: {},

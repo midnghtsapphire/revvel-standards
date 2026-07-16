@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "wouter";
-import { Plus, Settings, ChevronRight, Activity } from "lucide-react";
+import { useState } from "react";
+import { useLocation } from "wouter";
+import { Plus, Settings, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useListFlows } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";

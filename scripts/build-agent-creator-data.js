@@ -18,8 +18,8 @@
  * Usage: node scripts/build-agent-creator-data.js [--out-dir <dir>]
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const YAML = require("yaml");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -76,9 +76,9 @@ function buildData() {
   const modelsDoc = readYaml(SOURCES.model_profiles);
   const profiles = Object.entries(modelsDoc.profiles || {}).map(([id, p]) => ({
     id,
-    description: (p && p.description) || "",
-    provider: (p && p.provider) || "",
-    primary: (p && p.primary) || null,
+    description: (p?.description) || "",
+    provider: (p?.provider) || "",
+    primary: (p?.primary) || null,
     use_for: (p && Array.isArray(p.use_for) && p.use_for) || [],
   }));
 
@@ -128,7 +128,7 @@ function main() {
   const outDir = outIdx >= 0 ? path.resolve(args[outIdx + 1]) : ROOT;
 
   const data = buildData();
-  const json = JSON.stringify(data, null, 2) + "\n";
+  const json = `${JSON.stringify(data, null, 2)}\n`;
   fs.writeFileSync(path.join(outDir, "agent-creator-data.json"), json);
   fs.writeFileSync(
     path.join(outDir, "agent-creator-data.js"),

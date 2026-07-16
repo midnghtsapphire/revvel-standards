@@ -6,7 +6,7 @@
  * Uses the injectable seams (_noKey/_openRouter) so no live calls are made.
  */
 
-const assert = require("assert");
+const assert = require("node:assert");
 const { ask, DEFAULT_FALLBACK_MODELS } = require("../scripts/llm");
 
 let passed = 0;

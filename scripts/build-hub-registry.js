@@ -32,8 +32,8 @@
  * Usage: node scripts/build-hub-registry.js [--out-dir <dir>] [--entries-dir <dir>]
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const ROOT = path.resolve(__dirname, "..");
 const ENTRIES_DIR = path.join(ROOT, "data", "hub", "entries");
@@ -130,7 +130,7 @@ function main() {
   const data = buildRegistry(entriesDir);
   fs.writeFileSync(
     path.join(outDir, "hub-registry.json"),
-    JSON.stringify(data, null, 2) + "\n",
+    `${JSON.stringify(data, null, 2)}\n`,
   );
   fs.writeFileSync(
     path.join(outDir, "hub-registry.js"),

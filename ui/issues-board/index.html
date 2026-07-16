@@ -306,28 +306,28 @@
         return brightness > 128 ? "#000" : "#fff";
       }
 
-      function createIssue() {
+      function _createIssue() {
         window.open(
           `https://github.com/${REPO_OWNER}/${REPO_NAME}/issues/new/choose`,
           "_blank",
         );
       }
 
-      function viewDocs() {
+      function _viewDocs() {
         window.open(
           `https://github.com/${REPO_OWNER}/${REPO_NAME}/blob/main/docs/GITHUB_ISSUES_UI_ENHANCEMENTS.md`,
           "_blank",
         );
       }
 
-      function viewWorkflows() {
+      function _viewWorkflows() {
         window.open(
           `https://github.com/${REPO_OWNER}/${REPO_NAME}/actions`,
           "_blank",
         );
       }
 
-      function exportIssues() {
+      function _exportIssues() {
         const csv =
           "Number,Title,State,Labels,Assignees,Comments,Created,Updated\n" +
           allIssues

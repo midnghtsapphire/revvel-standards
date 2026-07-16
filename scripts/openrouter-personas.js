@@ -562,7 +562,7 @@ async function instantiate(handle, options = {}) {
  */
 async function instantiateFleet(handles, options = {}) {
   const list =
-    handles && handles.length ? handles : Object.keys(PERSONA_REGISTRY);
+    handles?.length ? handles : Object.keys(PERSONA_REGISTRY);
   const { task, ...rest } = options; // a shared task would be ambiguous across personas
   return Promise.all(list.map((h) => instantiate(h, rest)));
 }
@@ -580,8 +580,8 @@ async function instantiateFleet(handles, options = {}) {
 // personas above are unaffected.
 try {
   const fleetCatalog = JSON.parse(
-    require("fs").readFileSync(
-      require("path").join(__dirname, "..", "agent-creator-data.json"),
+    require("node:fs").readFileSync(
+      require("node:path").join(__dirname, "..", "agent-creator-data.json"),
       "utf8",
     ),
   );
@@ -608,7 +608,7 @@ try {
   for (const { def, emoji, profile, entryPoint, delegateTo } of FLEET_SOURCES) {
     const fleetDef = def || {};
     const charterRules =
-      (fleetDef.charter && fleetDef.charter.operating_rules) || [];
+      (fleetDef.charter?.operating_rules) || [];
     for (const member of fleetDef.agents || []) {
       if (!member.handle || PERSONA_REGISTRY[member.handle]) continue; // never clobber a core persona
       PERSONA_REGISTRY[member.handle] = {

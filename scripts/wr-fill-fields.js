@@ -48,9 +48,9 @@
  * always rule-based so an untrusted body cannot escape the allowed enum).
  */
 
-const fs = require("fs");
-const path = require("path");
-const https = require("https");
+const fs = require("node:fs");
+const path = require("node:path");
+const https = require("node:https");
 const yaml = require("yaml");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
@@ -238,7 +238,7 @@ async function fillWithLlm({ title, fields, filledMap, log }) {
   const out = [];
   for (const f of fields) {
     const spec = specByHeading.get(f.heading);
-    if (!spec || spec.default_by !== "llm" || !isBlank(f.kind, f.value)) {
+    if (spec?.default_by !== "llm" || !isBlank(f.kind, f.value)) {
       out.push(f);
       continue;
     }
@@ -361,7 +361,7 @@ function orRequest(payload) {
           if (status < 200 || status >= 300)
             return reject(
               new Error(
-                `OpenRouter ${status}: ${(parsed.error && parsed.error.message) || "no body"}`,
+                `OpenRouter ${status}: ${(parsed.error?.message) || "no body"}`,
               ),
             );
           const text = parsed?.choices?.[0]?.message?.content;

@@ -11,10 +11,10 @@
  * router classification, and BOM generation still hold and preserve goals.
  */
 
-const assert = require("assert");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
+const assert = require("node:assert");
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
 const yaml = require("yaml");
 const {
   deliverChannelFor,

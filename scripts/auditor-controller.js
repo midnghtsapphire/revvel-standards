@@ -14,8 +14,8 @@
 // GitHub API. The script is intentionally one file — adding a new
 // assertion is one function in CHECKS below.
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
 

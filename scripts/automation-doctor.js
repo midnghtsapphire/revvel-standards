@@ -14,8 +14,8 @@
  *   --report   Generate markdown report (default)
  */
 
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 const YAML = require("yaml");
 
 // Configuration
@@ -102,7 +102,7 @@ class AutomationDoctor {
         const content = fs.readFileSync(filePath, "utf8");
         const doc = YAML.parse(content);
 
-        if (!doc || !doc.jobs) {
+        if (!doc?.jobs) {
           this.results.workflows.invalid.push({
             file,
             error: "Missing jobs section",
@@ -119,7 +119,7 @@ class AutomationDoctor {
           const job = doc.jobs[jobName];
 
           // Determine job type and expected timeout
-          const name = jobName.toLowerCase();
+          const _name = jobName.toLowerCase();
           const hasTimeout = job["timeout-minutes"] !== undefined;
 
           if (!hasTimeout) {
@@ -168,7 +168,7 @@ class AutomationDoctor {
           }
         }
       } catch (e) {
-        this.results.errors.push("Could not parse labels file: " + e.message);
+        this.results.errors.push(`Could not parse labels file: ${e.message}`);
       }
     } else {
       console.log(

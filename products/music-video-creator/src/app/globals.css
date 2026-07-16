@@ -18,24 +18,24 @@
 
 /* Accessibility Modes */
 .neuro-mode * {
-  transition: none !important;
-  animation: none !important;
-  filter: none !important;
+  transition: none;
+  animation: none;
+  filter: none;
 }
 
 .neuro-mode body {
-  background-color: #f8f9fa !important;
-  color: #1a1a1a !important;
+  background-color: #f8f9fa;
+  color: #1a1a1a;
 }
 
 .eco-mode * {
-  transition: none !important;
-  animation: none !important;
-  box-shadow: none !important;
+  transition: none;
+  animation: none;
+  box-shadow: none;
 }
 
 .dyslexic-mode body {
-  font-family: "OpenDyslexic", "Comic Sans MS", sans-serif !important;
-  line-height: 1.9 !important;
-  letter-spacing: 0.2em !important;
+  font-family: "OpenDyslexic", "Comic Sans MS", sans-serif;
+  line-height: 1.9;
+  letter-spacing: 0.2em;
 }
