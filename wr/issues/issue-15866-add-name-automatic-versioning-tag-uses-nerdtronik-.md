@@ -1,3 +1,4 @@
+<!-- markdownlint-disable-file MD046 -->
 # WR: [WR] add - name: Automatic Versioning Tag uses: nerdtronik/auto-versioning@latest
 
 **Issue:** #15866  
