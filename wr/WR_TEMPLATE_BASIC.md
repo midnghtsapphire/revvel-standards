@@ -1,4 +1,4 @@
-# [WR] {TITLE}
+# WR: {TITLE}
 
 ## Issue Context
 
