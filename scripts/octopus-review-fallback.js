@@ -212,6 +212,8 @@ function computeRetryDelayMs(attempt, headers) {
   // Exponential backoff: 1.5s, 3s, 6s, 12s, …
   const expo = RATE_LIMIT_BASE_DELAY_MS * Math.pow(2, attempt);
   return Math.min(expo, RATE_LIMIT_MAX_INPROCESS_WAIT_MS);
+}
+
 /**
  * True when a GitHub REST response looks like a rate-limit rejection worth
  * special-casing (as opposed to a genuine permissions 403, which should
@@ -371,38 +373,6 @@ function rawRequest({ method, path, token, body }) {
     });
     req.on('error', reject);
     if (payload) req.write(payload);
-/**
- * Single GitHub REST attempt — no retry logic. Resolves with
- * { status, headers, data } so the retry wrapper (githubRequest) can decide
- * whether to retry, independent of parsing/success handling.
- */
-function githubRequestOnce({ pathName, method = "GET", payload, accept }) {
-  return new Promise((resolve, reject) => {
-    const body = payload ? JSON.stringify(payload) : "";
-    const req = https.request(
-      {
-        hostname: "api.github.com",
-        path: pathName,
-        method,
-        headers: {
-          Authorization: "Bearer " + GITHUB_TOKEN,
-          "User-Agent": "revvel-octopus-review-fallback",
-          Accept: accept || "application/vnd.github+json",
-          "X-GitHub-Api-Version": "2022-11-28",
-          "Content-Type": "application/json",
-          "Content-Length": Buffer.byteLength(body),
-        },
-      },
-      (res) => {
-        let data = "";
-        res.on("data", (chunk) => { data += chunk; });
-        res.on("end", () => {
-          resolve({ status: res.statusCode || 0, headers: res.headers || {}, data });
-        });
-      },
-    );
-    req.on("error", reject);
-    if (body) req.write(body);
     req.end();
   });
 }
