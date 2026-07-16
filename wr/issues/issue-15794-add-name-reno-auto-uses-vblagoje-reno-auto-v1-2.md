@@ -1,3 +1,4 @@
+<!-- markdownlint-disable-file MD046 -->
 # WR: [WR] add - name: reno-auto uses: vblagoje/reno-auto@v1.2
 
 **Issue:** #15794  
