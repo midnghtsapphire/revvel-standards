@@ -13,7 +13,8 @@ const labelsPath = path.join(REPO_ROOT, '.github', 'labels.yml');
 test('agent-monitor create-failure-wr uses labels that exist in labels.yml', () => {
   const workflow = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
   const labelsDoc = yaml.parse(fs.readFileSync(labelsPath, 'utf8'));
-  const knownLabels = new Set((labelsDoc.labels || []).map((label) => label.name));
+  const labelsList = Array.isArray(labelsDoc) ? labelsDoc : (labelsDoc.labels || []);
+  const knownLabels = new Set(labelsList.map((label) => label.name));
   const createStep = workflow.jobs?.['create-failure-wr']?.steps?.find(
     (step) => (step.run || '').includes('gh issue create')
   );
