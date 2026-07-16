@@ -14,25 +14,25 @@
  *  - Bounded scope: at most MAX_SCOPE_FILES files, 48h window.
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
-const yaml = require('yaml');
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
+const yaml = require("yaml");
 
 const MAX_SCOPE_FILES = 8;
 const WINDOW_HOURS = 48;
 const SCOPE_GLOBS = [
-  { dir: '.github/workflows/', ext: '.yml' },
-  { dir: 'scripts/', ext: '.js' },
+  { dir: ".github/workflows/", ext: ".yml" },
+  { dir: "scripts/", ext: ".js" },
 ];
 const MAX_FILE_BYTES = 20000;
 
-const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL_PRIMARY = 'anthropic/claude-3.5-sonnet';
-const MODEL_FALLBACK = 'deepseek/deepseek-r1';
+const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const MODEL_PRIMARY = "anthropic/claude-3.5-sonnet";
+const MODEL_FALLBACK = "deepseek/deepseek-r1";
 
-const WR_LABELS = ['work-request', 'auto-diagnosed'];
-const WR_ASSIGNEES = ['oaudrey'];
+const WR_LABELS = ["work-request", "auto-diagnosed"];
+const WR_ASSIGNEES = ["oaudrey"];
 
 const LEARNINGS_PLACEHOLDER = `This was flagged by the daily-diagnostic-audit cron (file changed within the last {SINCE_HOURS}h).
 See \`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md\` for the fix-pattern catalog.
@@ -41,18 +41,18 @@ See \`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md\` for the fix-pattern catalog
 consider whether this represents a new catalog-worthy pattern.`;
 
 function log(...args) {
-  console.log('[daily-diagnostic-audit]', ...args);
+  console.log("[daily-diagnostic-audit]", ...args);
 }
 
 function warn(...args) {
-  console.warn('[daily-diagnostic-audit][warn]', ...args);
+  console.warn("[daily-diagnostic-audit][warn]", ...args);
 }
 
 function parseGitLogNameOnly(raw) {
   if (!raw) return [];
   const seen = new Set();
   const result = [];
-  for (const line of String(raw).split('\n')) {
+  for (const line of String(raw).split("\n")) {
     const f = line.trim();
     if (!f || seen.has(f)) continue;
     seen.add(f);
@@ -76,13 +76,15 @@ function filterInScope(files) {
 
 function getChangedFiles() {
   try {
-    const since = new Date(Date.now() - WINDOW_HOURS * 3600 * 1000).toISOString();
+    const since = new Date(
+      Date.now() - WINDOW_HOURS * 3600 * 1000,
+    ).toISOString();
     const out = execSync(
       `git log --since="${since}" --name-only --pretty=format: --no-merges origin/main 2>/dev/null || git log --since="${since}" --name-only --pretty=format: --no-merges HEAD`,
-      { encoding: 'utf8' }
+      { encoding: "utf8" },
     );
     const files = new Set();
-    for (const line of out.split('\n')) {
+    for (const line of out.split("\n")) {
       const f = line.trim();
       if (!f) continue;
       if (!SCOPE_GLOBS.some((r) => r.test(f))) continue;
@@ -92,24 +94,26 @@ function getChangedFiles() {
     }
     return Array.from(files);
   } catch (err) {
-    warn('git log failed:', err.message);
+    warn("git log failed:", err.message);
     return [];
   }
 }
 
 function readFileBounded(p) {
   try {
-    const buf = fs.readFileSync(p, 'utf8');
-    return buf.length > MAX_FILE_BYTES ? buf.slice(0, MAX_FILE_BYTES) + '\n... [truncated]' : buf;
+    const buf = fs.readFileSync(p, "utf8");
+    return buf.length > MAX_FILE_BYTES
+      ? buf.slice(0, MAX_FILE_BYTES) + "\n... [truncated]"
+      : buf;
   } catch {
     return null;
   }
 }
 
 function loadPlaybookContext() {
-  const p = 'standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md';
+  const p = "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md";
   if (fs.existsSync(p)) {
-    const buf = fs.readFileSync(p, 'utf8');
+    const buf = fs.readFileSync(p, "utf8");
     return buf.length > 12000 ? buf.slice(0, 12000) : buf;
   }
   return `Pattern Catalog (embedded fallback):
@@ -124,10 +128,10 @@ function loadPlaybookContext() {
 }
 
 function loadDiagnosticModels() {
-  const repoRoot = path.join(__dirname, '..');
-  const modelConfigPath = path.join(repoRoot, '.github', 'agent-models.yml');
+  const repoRoot = path.join(__dirname, "..");
+  const modelConfigPath = path.join(repoRoot, ".github", "agent-models.yml");
   try {
-    const content = fs.readFileSync(modelConfigPath, 'utf8');
+    const content = fs.readFileSync(modelConfigPath, "utf8");
     const config = yaml.parse(content);
     const profile = config.profiles?.review || {};
     const models = [];
@@ -174,7 +178,7 @@ function buildUserPrompt(scopeFiles, opts = {}) {
     const file = scopeFiles[i];
     const content = file.content || readFileBounded(file.path || file);
     const path = file.path || file;
-    const fileBlock = `--- FILE: ${path} ---\n${content || '(unreadable)'}\n\n`;
+    const fileBlock = `--- FILE: ${path} ---\n${content || "(unreadable)"}\n\n`;
 
     if (charCount + fileBlock.length > maxPromptChars && i > 0) {
       const remaining = scopeFiles.length - i;
@@ -191,8 +195,8 @@ function buildUserPrompt(scopeFiles, opts = {}) {
 
 function buildPrompt(files, playbook) {
   const fileBlocks = files
-    .map((f) => `--- FILE: ${f} ---\n${readFileBounded(f) || '(unreadable)'}\n`)
-    .join('\n');
+    .map((f) => `--- FILE: ${f} ---\n${readFileBounded(f) || "(unreadable)"}\n`)
+    .join("\n");
 
   const system = buildSystemPrompt(playbook);
   const user = `Audit these files (changed in the last ${WINDOW_HOURS}h):\n\n${fileBlocks}`;
@@ -202,16 +206,16 @@ function buildPrompt(files, playbook) {
 
 async function callOpenRouter(system, user, model) {
   const res = await fetch(OPENROUTER_URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       model,
       messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: user },
+        { role: "system", content: system },
+        { role: "user", content: user },
       ],
       temperature: 0.2,
       max_tokens: 1500,
@@ -219,7 +223,7 @@ async function callOpenRouter(system, user, model) {
   });
   if (!res.ok) throw new Error(`OpenRouter ${model}: HTTP ${res.status}`);
   const data = await res.json();
-  return data.choices?.[0]?.message?.content || '';
+  return data.choices?.[0]?.message?.content || "";
 }
 
 function parseDiagnosis(text) {
@@ -234,36 +238,40 @@ function parseDiagnosis(text) {
 }
 
 function parseDiagnosticResponse(text) {
-  if (!text) return { valid: false, error: 'empty response' };
+  if (!text) return { valid: false, error: "empty response" };
 
   let cleaned = String(text).trim();
-  cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+  cleaned = cleaned.replace(/^```json\s*/, "").replace(/\s*```$/, "");
 
   let diagnosis;
   try {
     const match = cleaned.match(/\{[\s\S]*\}/);
-    if (!match) return { valid: false, error: 'unparseable response (no JSON object found)' };
+    if (!match)
+      return {
+        valid: false,
+        error: "unparsable response (no JSON object found)",
+      };
     diagnosis = JSON.parse(match[0]);
   } catch (err) {
-    return { valid: false, error: `unparseable JSON: ${err.message}` };
+    return { valid: false, error: `unparsable JSON: ${err.message}` };
   }
 
-  if (!('issueFound' in diagnosis)) {
-    return { valid: false, error: 'missing issueFound field' };
+  if (!("issueFound" in diagnosis)) {
+    return { valid: false, error: "missing issueFound field" };
   }
 
-  if (!['high', 'medium', 'low'].includes(diagnosis.confidence)) {
-    diagnosis.confidence = 'low';
+  if (!["high", "medium", "low"].includes(diagnosis.confidence)) {
+    diagnosis.confidence = "low";
   }
 
   return { valid: true, diagnosis };
 }
 
 function isActionableDiagnosis(d) {
-  if (!d || typeof d !== 'object') return false;
+  if (!d || typeof d !== "object") return false;
   if (d.issueFound !== true) return false;
-  if (!['high', 'medium'].includes(d.confidence)) return false;
-  const diagnosis = (d.diagnosis || '').trim();
+  if (!["high", "medium"].includes(d.confidence)) return false;
+  const diagnosis = (d.diagnosis || "").trim();
   if (!diagnosis) return false;
   return true;
 }
@@ -274,7 +282,7 @@ async function hasExistingOpenDiagnosis(repo, token, file) {
     const res = await fetch(url, {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github+json',
+        Accept: "application/vnd.github+json",
       },
     });
     if (!res.ok) return false;
@@ -286,34 +294,25 @@ async function hasExistingOpenDiagnosis(repo, token, file) {
 }
 
 function renderWrTitle(diagnosis) {
-  return `[WR] Daily Diagnostic Audit: ${diagnosis.diagnosis || diagnosis.title || 'Code issue'} (${diagnosis.file})`;
+  return `[WR] Daily Diagnostic Audit: ${diagnosis.diagnosis || diagnosis.title || "Code issue"} (${diagnosis.file})`;
 }
 
 function renderWrBody(opts) {
-  const {
-    template,
-    diagnosis,
-    scopeFiles,
-    sinceHours,
-    repoFull,
-    repoUrl,
-    today,
-    runUrl,
-  } = opts;
+  const { template, diagnosis, sinceHours } = opts;
 
-  let body = String(template || '');
+  let body = String(template || "");
 
-  const issueContext = `**File:** \`${diagnosis.file}\` (line ${diagnosis.line || 'N/A'})
+  const issueContext = `**File:** \`${diagnosis.file}\` (line ${diagnosis.line || "N/A"})
 
-**Issue:** ${diagnosis.diagnosis || 'Unknown issue'}
+**Issue:** ${diagnosis.diagnosis || "Unknown issue"}
 
-**Pattern Category:** ${diagnosis.patternCategory || 'other'}
+**Pattern Category:** ${diagnosis.patternCategory || "other"}
 
 **Confidence:** ${diagnosis.confidence}`;
 
   const summary = `This issue was detected by the daily-diagnostic-audit cron scanning files changed in the last ${sinceHours} hours.
 
-**Reasoning:** ${diagnosis.reasoning || 'See proposed fix details'}`;
+**Reasoning:** ${diagnosis.reasoning || "See proposed fix details"}`;
 
   const objective = `Verify and implement the proposed fix for the detected issue.`;
 
@@ -331,52 +330,65 @@ function renderWrBody(opts) {
 2. Check that the proposed fix resolves it
 3. Run \`npm test\` to ensure no regressions`;
 
-  const blockers = sinceHours > 0 ? `None—this is a best-effort detection. If the diagnosis is wrong, close this WR.` : `None.`;
+  const blockers =
+    sinceHours > 0
+      ? `None—this is a best-effort detection. If the diagnosis is wrong, close this WR.`
+      : `None.`;
 
   const proposedFix = `\`\`\`
-${diagnosis.proposedFix || 'No clear fix — needs human investigation'}
+${diagnosis.proposedFix || "No clear fix — needs human investigation"}
 \`\`\`
 
 Machine-generated starting point—verify and adapt as needed.`;
 
-  const learnings = LEARNINGS_PLACEHOLDER.replace('{SINCE_HOURS}', String(sinceHours));
+  const learnings = LEARNINGS_PLACEHOLDER.replace(
+    "{SINCE_HOURS}",
+    String(sinceHours),
+  );
 
-  body = body.replace('{TITLE}', diagnosis.diagnosis || 'Code issue');
-  body = body.replace('{ISSUE_CONTEXT}', issueContext);
-  body = body.replace('{ISSUE_BODY}', issueContext);
-  body = body.replace('{SUMMARY}', summary);
-  body = body.replace('{OBJECTIVE}', objective);
-  body = body.replace('{REQUIRED_BUNDLE}', requiredBundle);
-  body = body.replace('{DEFINITION_OF_DONE}', definitionOfDone);
-  body = body.replace('{VALIDATION}', validation);
-  body = body.replace('{BLOCKERS}', blockers);
-  body = body.replace('{PROPOSED_FIX}', proposedFix);
-  body = body.replace('{LEARNINGS}', learnings);
+  body = body.replace("{TITLE}", diagnosis.diagnosis || "Code issue");
+  body = body.replace("{ISSUE_CONTEXT}", issueContext);
+  body = body.replace("{ISSUE_BODY}", issueContext);
+  body = body.replace("{SUMMARY}", summary);
+  body = body.replace("{OBJECTIVE}", objective);
+  body = body.replace("{REQUIRED_BUNDLE}", requiredBundle);
+  body = body.replace("{DEFINITION_OF_DONE}", definitionOfDone);
+  body = body.replace("{VALIDATION}", validation);
+  body = body.replace("{BLOCKERS}", blockers);
+  body = body.replace("{PROPOSED_FIX}", proposedFix);
+  body = body.replace("{LEARNINGS}", learnings);
 
   // If template lacks diagnostic sections, prepend them before Learnings
-  if (!body.includes('## Proposed Fix')) {
+  if (!body.includes("## Proposed Fix")) {
     const sections = [
-      '## Summary\n\n' + summary,
-      '## Objective\n\n' + objective,
-      '## Required Bundle\n\n' + requiredBundle,
-      '## Definition of Done\n\n' + definitionOfDone,
-      '## Validation\n\n' + validation,
-      '## Blockers\n\n' + blockers,
-      '## Proposed Fix\n\n' + proposedFix,
-    ].join('\n\n');
+      "## Summary\n\n" + summary,
+      "## Objective\n\n" + objective,
+      "## Required Bundle\n\n" + requiredBundle,
+      "## Definition of Done\n\n" + definitionOfDone,
+      "## Validation\n\n" + validation,
+      "## Blockers\n\n" + blockers,
+      "## Proposed Fix\n\n" + proposedFix,
+    ].join("\n\n");
 
-    const learningsIdx = body.indexOf('## Learnings');
+    const learningsIdx = body.indexOf("## Learnings");
     if (learningsIdx >= 0) {
-      body = body.slice(0, learningsIdx) + sections + '\n\n' + body.slice(learningsIdx);
+      body =
+        body.slice(0, learningsIdx) +
+        sections +
+        "\n\n" +
+        body.slice(learningsIdx);
     } else {
-      body += '\n\n' + sections;
+      body += "\n\n" + sections;
     }
   }
 
-  if (!body.includes('## Learnings — What & Why')) {
+  if (!body.includes("## Learnings — What & Why")) {
     body += `\n\n## Learnings — What & Why\n\n${learnings}`;
   } else {
-    body = body.replace(new RegExp(LEARNINGS_PLACEHOLDER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), learnings);
+    body = body.replace(
+      new RegExp(LEARNINGS_PLACEHOLDER.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+      learnings,
+    );
   }
 
   return body;
@@ -400,17 +412,17 @@ consider whether this represents a new catalog-worthy pattern.`;
   return `## [WR] Auto-diagnosed: ${d.title}
 
 **File:** \`${d.file}\`
-**Category:** ${d.category || 'other'}
+**Category:** ${d.category || "other"}
 **Confidence:** ${d.confidence}
 
 ### Description
 ${d.description}
 
 ### Proposed Fix
-${d.proposedFix || 'No clear fix — needs human investigation'}
+${d.proposedFix || "No clear fix — needs human investigation"}
 
 ### Reasoning
-${d.reasoning || '(no reasoning provided)'}
+${d.reasoning || "(no reasoning provided)"}
 
 ${learnings}
 
@@ -423,40 +435,43 @@ async function fileWR(repo, token, d) {
   const body = renderBody(d);
   const title = `[WR] ${d.title} (${d.file})`;
   const res = await fetch(`https://api.github.com/repos/${repo}/issues`, {
-    method: 'POST',
+    method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-      'Content-Type': 'application/json',
+      Accept: "application/vnd.github+json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       title,
       body,
-      labels: ['WR', 'auto-diagnosed', 'needs-review'],
+      labels: ["WR", "auto-diagnosed", "needs-review"],
     }),
   });
   if (!res.ok) {
-    warn('issue POST failed:', res.status, await res.text());
+    warn("issue POST failed:", res.status, await res.text());
     return null;
   }
   const created = await res.json();
-  log('filed WR:', created.html_url);
+  log("filed WR:", created.html_url);
 
   // Coder-facing comment
   try {
-    await fetch(`https://api.github.com/repos/${repo}/issues/${created.number}/comments`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json',
+    await fetch(
+      `https://api.github.com/repos/${repo}/issues/${created.number}/comments`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          body: `@coding-agent: please verify the proposed fix in the issue body against the current file (\`${d.file}\`) before implementing. If the diagnosis is stale or wrong, close with a comment explaining why rather than "fixing" a non-issue.`,
+        }),
       },
-      body: JSON.stringify({
-        body: `@coding-agent: please verify the proposed fix in the issue body against the current file (\`${d.file}\`) before implementing. If the diagnosis is stale or wrong, close with a comment explaining why rather than "fixing" a non-issue.`,
-      }),
-    });
+    );
   } catch (err) {
-    warn('comment POST failed:', err.message);
+    warn("comment POST failed:", err.message);
   }
 
   return created;
@@ -464,13 +479,13 @@ async function fileWR(repo, token, d) {
 
 async function main() {
   if (!process.env.OPENROUTER_API_KEY) {
-    warn('OPENROUTER_API_KEY not set — fail-open exit 0');
+    warn("OPENROUTER_API_KEY not set — fail-open exit 0");
     return;
   }
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPOSITORY;
   if (!token || !repo) {
-    warn('GITHUB_TOKEN or GITHUB_REPOSITORY missing — fail-open exit 0');
+    warn("GITHUB_TOKEN or GITHUB_REPOSITORY missing — fail-open exit 0");
     return;
   }
 
@@ -479,7 +494,7 @@ async function main() {
     log(`no in-scope files changed in last ${WINDOW_HOURS}h — no-op`);
     return;
   }
-  log(`scope: ${files.length} file(s):`, files.join(', '));
+  log(`scope: ${files.length} file(s):`, files.join(", "));
 
   const playbook = loadPlaybookContext();
   const { system, user } = buildPrompt(files, playbook);
@@ -488,22 +503,28 @@ async function main() {
   try {
     content = await callOpenRouter(system, user, MODEL_PRIMARY);
   } catch (err) {
-    warn('primary model failed:', err.message, '- trying fallback');
+    warn("primary model failed:", err.message, "- trying fallback");
     try {
       content = await callOpenRouter(system, user, MODEL_FALLBACK);
     } catch (err2) {
-      warn('fallback model failed:', err2.message, '- exit 0');
+      warn("fallback model failed:", err2.message, "- exit 0");
       return;
     }
   }
 
   const diagnosis = parseDiagnosis(content);
   if (!diagnosis) {
-    warn('unparseable LLM response — exit 0');
+    warn("unparsable LLM response — exit 0");
     return;
   }
   if (!isActionableDiagnosis(diagnosis)) {
-    log('no actionable diagnosis (issueFound=' + diagnosis.issueFound + ', confidence=' + diagnosis.confidence + ') — no-op');
+    log(
+      "no actionable diagnosis (issueFound=" +
+        diagnosis.issueFound +
+        ", confidence=" +
+        diagnosis.confidence +
+        ") — no-op",
+    );
     return;
   }
 
@@ -517,7 +538,7 @@ async function main() {
 
 if (require.main === module) {
   main().catch((err) => {
-    warn('unhandled:', err.message);
+    warn("unhandled:", err.message);
     process.exit(0);
   });
 }

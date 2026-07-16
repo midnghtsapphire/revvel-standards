@@ -259,10 +259,10 @@ function tryAdditive(ours, theirs) {
   }
 
   // Detect content type mismatch (list items vs assignments vs other)
-  const oHasLists = oLines.some(l => /^\s*[-*]\s/.test(l));
-  const tHasLists = tLines.some(l => /^\s*[-*]\s/.test(l));
-  const oHasAssignments = oLines.some(l => assignRe.test(l));
-  const tHasAssignments = tLines.some(l => assignRe.test(l));
+  const oHasLists = oLines.some((l) => /^\s*[-*]\s/.test(l));
+  const tHasLists = tLines.some((l) => /^\s*[-*]\s/.test(l));
+  const oHasAssignments = oLines.some((l) => assignRe.test(l));
+  const tHasAssignments = tLines.some((l) => assignRe.test(l));
 
   if ((oHasLists && tHasAssignments) || (oHasAssignments && tHasLists)) {
     return null;

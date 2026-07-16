@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * checkbox-diff.js
@@ -41,8 +41,8 @@ const FOLLOWUP_PREFIX_RE = /^follow[\s-]*up\s*:\s*(.*)$/i;
  * break the old<->new pairing.
  */
 function normalizeDescription(text) {
-  return String(text || '')
-    .replace(/\s+/g, ' ')
+  return String(text || "")
+    .replace(/\s+/g, " ")
     .trim()
     .toLowerCase();
 }
@@ -61,8 +61,8 @@ function parseFollowUpCheckboxes(body) {
   for (const line of lines) {
     const taskMatch = line.match(TASK_LINE_RE);
     if (!taskMatch) continue;
-    const checked = taskMatch[1].toLowerCase() === 'x';
-    const label = taskMatch[2] || '';
+    const checked = taskMatch[1].toLowerCase() === "x";
+    const label = taskMatch[2] || "";
     const followMatch = label.match(FOLLOWUP_PREFIX_RE);
     if (!followMatch) continue;
     const description = followMatch[1].trim();
@@ -83,7 +83,7 @@ function parseFollowUpCheckboxes(body) {
  * @returns {Array<{checked: boolean, description: string, rawLine: string, normalizedKey: string}>}
  */
 function parseFollowUpTasks(body) {
-  if (body === null || body === undefined || typeof body !== 'string') {
+  if (body === null || body === undefined || typeof body !== "string") {
     return [];
   }
   const lines = body.split(/\r?\n/);
@@ -92,11 +92,11 @@ function parseFollowUpTasks(body) {
     const m = TASK_LINE_RE.exec(line);
     if (!m) continue;
     const checkChar = m[1];
-    const label = m[2] || '';
+    const label = m[2] || "";
     const fm = FOLLOWUP_PREFIX_RE.exec(label.trim());
     if (!fm) continue;
-    const description = (fm[1] || '').trim();
-    const checked = checkChar === 'x' || checkChar === 'X';
+    const description = (fm[1] || "").trim();
+    const checked = checkChar === "x" || checkChar === "X";
     out.push({
       checked,
       description,
@@ -115,10 +115,10 @@ function parseFollowUpTasks(body) {
  * @returns {string}
  */
 function normalizeKey(s) {
-  return String(s || '')
+  return String(s || "")
     .toLowerCase()
-    .replace(/\s+/g, ' ')
-    .replace(/[.,;:!?]+$/g, '')
+    .replace(/\s+/g, " ")
+    .replace(/[.,;:!?]+$/g, "")
     .trim();
 }
 
