@@ -142,7 +142,7 @@ if (require.main === module) {
     // Promptly rehydrate the wiped key(s) by dispatching the existing reviewed
     // Doppler->Actions recovery workflow (no-ops if Doppler has no value).
     if (shouldTriggerRecovery(assessment, process.env)) {
-      const recoveryWorkflow = process.env.BIOME_RECOVERY_WORKFLOW || 'secret-persistence-guard.yml';
+      const recoveryWorkflow = process.env.BIOME_RECOVERY_WORKFLOW || '';
       await repoApi(`/actions/workflows/${recoveryWorkflow}/dispatches`, {
         method: 'POST',
         body: { ref: 'main', inputs: { force_recovery: 'true' } },

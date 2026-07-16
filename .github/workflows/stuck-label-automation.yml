@@ -245,24 +245,6 @@ jobs:
                   }
                   break;
 
-                case 'recheck-credentials':
-                  comment_body += `Credentials have been marked missing for over 48 hours.\n\n`;
-                  comment_body += `**Auto-action:** Re-triggering credential gatekeeper to check current state.\n`;
-
-                  if (!dry_run) {
-                    // Trigger credential-gatekeeper workflow
-                    await github.rest.actions.createWorkflowDispatch({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      workflow_id: 'credential-gatekeeper.yml',
-                      ref: 'main',
-                      inputs: {
-                        issue_number: String(item.number),
-                      },
-                    }).catch(e => core.warning(`Could not trigger credential-gatekeeper: ${e.message}`));
-                  }
-                  break;
-
                 case 'retry-instantiation':
                   comment_body += `OpenRouter instantiation has been stuck for over 2 hours.\n\n`;
                   comment_body += `**Auto-action:** Marking as failed. Ralph Loop will retry.\n`;
