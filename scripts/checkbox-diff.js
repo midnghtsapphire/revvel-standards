@@ -116,30 +116,9 @@ function findNewlyCheckedFollowUps(oldBody, newBody) {
       results.push({ description: item.description });
     }
     // If prior was already checked, no transition -> no trigger.
- * Pure utility to detect newly-checked "Follow-up:" checklist items between
- * two versions of a markdown body (e.g. a PR/issue body before and after edit).
- *
- * The exported function `findNewlyCheckedFollowUps(oldBody, newBody)` returns
- * an array of objects: { description: string, rawLine: string }.
- *
- * Design goals:
- *  - Pure (no network, no GitHub API), so it's fully unit-testable.
- *  - Match items by normalized text content, not by line position, so that
- *    reordering / unrelated edits in the same diff don't confuse detection.
- *  - Tolerate case / whitespace / hyphen variants on the "Follow-up:" prefix.
- *  - Do NOT report items that were newly added AND checked in the same edit
- *    (no prior unchecked state to transition from -- avoids over-firing).
- *  - Do NOT report items that were already checked in the old body.
- */
-
-// Match a markdown task-list line:
-//   optional leading whitespace, `- `, `[ ]` or `[x]`/`[X]`, then the label.
-// Capture groups: 1 = checkbox inner char (space, x, or X), 2 = label text.
-const TASK_LINE_RE = /^\s*[-*+]\s*\[([ xX])\]\s*(.*)$/;
-
-// Match a "Follow-up:" (or "Followup:", "Follow up:", "Follow - up:") prefix,
-// case-insensitively, with minor whitespace/hyphen tolerance.
-const FOLLOWUP_PREFIX_RE = /^follow\s*-?\s*up\s*:\s*(.*)$/i;
+  }
+  return results;
+}
 
 /**
  * Parse a markdown body into an array of task-list entries.

@@ -151,6 +151,11 @@ function list() {
   const res = run('gh', ['secret', 'list', '--repo', REPO]);
   if (res.status !== 0) {
     throw new Error(`gh secret list failed: ${res.stderr}`);
+  }
+  return parseSecretListOutput(res.stdout);
+}
+
+/**
  * Parse + validate CREDENTIAL_BACKUP_JSON once. Returns
  * { backup, valid, reason }:
  *   - backup: the parsed object (or {} when unparseable)

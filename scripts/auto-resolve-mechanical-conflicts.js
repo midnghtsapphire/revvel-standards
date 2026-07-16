@@ -104,6 +104,8 @@ function iterHunks(content) {
  *   - GitHub Actions `uses: owner/repo@vX.Y.Z` version bump: pick the higher
  *     semver on either side.
  *   - Identical ours/theirs (should be rare but harmless): pick either.
+ *   - Single-line version bump where the other side added extra lines:
+ *     resolve the version bump and preserve all lines from the longer side.
  */
 function tryResolveHunk(ours, theirs) {
   if (ours === theirs) return { resolved: true, text: ours };
@@ -111,6 +113,8 @@ function tryResolveHunk(ours, theirs) {
   const usesRe = /^(\s*)([-]?\s*uses:\s*)([^\s@]+)@(\S+)\s*$/;
   const oLines = ours.split("\n");
   const tLines = theirs.split("\n");
+
+  // Case 1: equal line counts - resolve line-by-line
   if (oLines.length === tLines.length && oLines.length > 0) {
     const merged = [];
     for (let k = 0; k < oLines.length; k++) {
@@ -126,6 +130,52 @@ function tryResolveHunk(ours, theirs) {
       }
     }
     return { resolved: true, text: merged.join("\n") };
+  }
+
+  // Case 2: unequal line counts - try single-line version bump resolution
+  // If one side has a single `uses:` line and the other side has the same
+  // action with a different version (possibly with extra lines), resolve by:
+  // 1. Finding and resolving the version bump
+  // 2. Keeping all non-conflicting lines from both sides
+  if (oLines.length > 0 && tLines.length > 0) {
+    // Find all uses: lines
+    const oUsesIndices = [];
+    const tUsesIndices = [];
+    for (let i = 0; i < oLines.length; i++) {
+      if (usesRe.test(oLines[i])) oUsesIndices.push(i);
+    }
+    for (let i = 0; i < tLines.length; i++) {
+      if (usesRe.test(tLines[i])) tUsesIndices.push(i);
+    }
+
+    // If exactly one uses: line on each side and they reference the same action
+    if (oUsesIndices.length === 1 && tUsesIndices.length === 1) {
+      const oUsesIdx = oUsesIndices[0];
+      const tUsesIdx = tUsesIndices[0];
+      const oUses = oLines[oUsesIdx];
+      const tUses = tLines[tUsesIdx];
+      const om = oUses.match(usesRe);
+      const tm = tUses.match(usesRe);
+
+      if (om && tm && om[3] === tm[3]) {
+        // Same action, resolve version
+        const pick = semverCmp(om[4], tm[4]) >= 0 ? om[4] : tm[4];
+        const resolvedUses = `${om[1]}${om[2]}${om[3]}@${pick}`;
+
+        // Collect all lines except the conflicting uses: line
+        const result = [];
+        for (let i = 0; i < oLines.length; i++) {
+          if (i !== oUsesIdx) result.push(oLines[i]);
+        }
+        for (let i = 0; i < tLines.length; i++) {
+          if (i !== tUsesIdx) result.push(tLines[i]);
+        }
+        // Insert the resolved uses: line at the position it appeared in ours
+        result.splice(oUsesIdx, 0, resolvedUses);
+
+        return { resolved: true, text: result.join("\n") };
+      }
+    }
   }
 
   return { resolved: false };
@@ -181,9 +231,65 @@ function tryAdditive(ours, theirs) {
   if (oLines.length === 0 && tLines.length === 0) return null;
   const oSet = new Set(oLines);
   const tSet = new Set(tLines);
+
+  // Check for exact line duplicates
   for (const line of oSet) {
     if (tSet.has(line)) return null;
   }
+
+  // Detect variable assignment conflicts (same variable with different values)
+  const oAssignments = new Map();
+  const tAssignments = new Map();
+  const assignRe = /^([a-zA-Z_][a-zA-Z0-9_]*)\s*=/;
+
+  for (const line of oLines) {
+    const m = line.match(assignRe);
+    if (m) oAssignments.set(m[1], line);
+  }
+  for (const line of tLines) {
+    const m = line.match(assignRe);
+    if (m) tAssignments.set(m[1], line);
+  }
+
+  // If the same variable appears in both with different values, not additive
+  for (const [varName, oLine] of oAssignments) {
+    if (tAssignments.has(varName) && tAssignments.get(varName) !== oLine) {
+      return null;
+    }
+  }
+
+  // Detect content type mismatch (list items vs assignments vs other)
+  const oHasLists = oLines.some(l => /^\s*[-*]\s/.test(l));
+  const tHasLists = tLines.some(l => /^\s*[-*]\s/.test(l));
+  const oHasAssignments = oLines.some(l => assignRe.test(l));
+  const tHasAssignments = tLines.some(l => assignRe.test(l));
+
+  if ((oHasLists && tHasAssignments) || (oHasAssignments && tHasLists)) {
+    return null;
+  }
+
+  // Detect when both sides reference the same action/package but with different versions
+  // e.g., "uses: actions/checkout@v4" vs "uses: actions/checkout@v5"
+  const usesRe = /^(\s*)([-]?\s*uses:\s*)([^\s@]+)@(\S+)\s*$/;
+  const oUsesRefs = new Map();
+  const tUsesRefs = new Map();
+
+  for (const line of oLines) {
+    const m = line.match(usesRe);
+    if (m) oUsesRefs.set(m[3], m[4]);
+  }
+  for (const line of tLines) {
+    const m = line.match(usesRe);
+    if (m) tUsesRefs.set(m[3], m[4]);
+  }
+
+  // If same action referenced with different versions, not additive
+  for (const [action, oVersion] of oUsesRefs) {
+    if (tUsesRefs.has(action) && tUsesRefs.get(action) !== oVersion) {
+      return null;
+    }
+  }
+
   const merged = [...oLines, ...tLines];
   return merged.length > 0 ? merged.join("\n") : null;
 }
