@@ -252,7 +252,10 @@ function isQuotaDeathComment(body) {
   return QUOTA_DEATH_PATTERNS.some((pattern) => lower.includes(pattern));
 }
 
-function isRateLimitedResponse(status, headers, body) {
+function isRateLimitedResponse(status, bodyOrHeaders, maybeBody) {
+  // Handle both (status, body) and (status, headers, body) signatures
+  const body = maybeBody !== undefined ? maybeBody : bodyOrHeaders;
+  const headers = maybeBody !== undefined ? bodyOrHeaders : {};
   return classifyRateLimit(status, headers, body) !== null;
 }
 
