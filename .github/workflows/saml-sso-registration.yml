@@ -8,6 +8,7 @@ jobs:
   verify-saml-identity:
     name: Verify SAML SSO Identity
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       pull-requests: write
       contents: read
