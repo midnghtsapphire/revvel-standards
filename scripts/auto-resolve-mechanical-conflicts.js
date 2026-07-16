@@ -29,27 +29,29 @@
  * for every file that did not land in the RESOLVED bucket.
  */
 
-'use strict';
+"use strict";
 
-const { execSync, spawnSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const { execSync } = require("child_process");
+const fs = require("fs");
 
 function sh(cmd, opts = {}) {
-  return execSync(cmd, { encoding: 'utf8', ...opts });
+  return execSync(cmd, { encoding: "utf8", ...opts });
 }
 
 /**
  * List files git currently reports as unmerged (conflicted).
  */
 function listConflictedFiles() {
-  let out = '';
+  let out = "";
   try {
-    out = sh('git diff --name-only --diff-filter=U');
+    out = sh("git diff --name-only --diff-filter=U");
   } catch {
     return [];
   }
-  return out.split('\n').map((s) => s.trim()).filter(Boolean);
+  return out
+    .split("\n")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 /**
@@ -59,28 +61,33 @@ function listConflictedFiles() {
  */
 function iterHunks(content) {
   const hunks = [];
-  if (typeof content !== 'string' || content.length === 0) return hunks;
-  const lines = content.split('\n');
+  if (typeof content !== "string" || content.length === 0) return hunks;
+  const lines = content.split("\n");
   let i = 0;
   while (i < lines.length) {
-    if (lines[i].startsWith('<<<<<<<')) {
+    if (lines[i].startsWith("<<<<<<<")) {
       const start = i;
       const ours = [];
       const theirs = [];
       i++;
-      while (i < lines.length && !lines[i].startsWith('=======')) {
+      while (i < lines.length && !lines[i].startsWith("=======")) {
         ours.push(lines[i]);
         i++;
       }
       if (i >= lines.length) return hunks;
       i++; // skip =======
-      while (i < lines.length && !lines[i].startsWith('>>>>>>>')) {
+      while (i < lines.length && !lines[i].startsWith(">>>>>>>")) {
         theirs.push(lines[i]);
         i++;
       }
       if (i >= lines.length) return hunks;
       const end = i;
-      hunks.push({ start, end, ours: ours.join('\n'), theirs: theirs.join('\n') });
+      hunks.push({
+        start,
+        end,
+        ours: ours.join("\n"),
+        theirs: theirs.join("\n"),
+      });
       i++;
     } else {
       i++;
@@ -102,8 +109,8 @@ function tryResolveHunk(ours, theirs) {
   if (ours === theirs) return { resolved: true, text: ours };
 
   const usesRe = /^(\s*)([-]?\s*uses:\s*)([^\s@]+)@(\S+)\s*$/;
-  const oLines = ours.split('\n');
-  const tLines = theirs.split('\n');
+  const oLines = ours.split("\n");
+  const tLines = theirs.split("\n");
   if (oLines.length === tLines.length && oLines.length > 0) {
     const merged = [];
     for (let k = 0; k < oLines.length; k++) {
@@ -118,15 +125,21 @@ function tryResolveHunk(ours, theirs) {
         return { resolved: false };
       }
     }
-    return { resolved: true, text: merged.join('\n') };
+    return { resolved: true, text: merged.join("\n") };
   }
 
   return { resolved: false };
 }
 
 function semverCmp(a, b) {
-  const pa = String(a).replace(/^v/, '').split('.').map((n) => parseInt(n, 10) || 0);
-  const pb = String(b).replace(/^v/, '').split('.').map((n) => parseInt(n, 10) || 0);
+  const pa = String(a)
+    .replace(/^v/, "")
+    .split(".")
+    .map((n) => parseInt(n, 10) || 0);
+  const pb = String(b)
+    .replace(/^v/, "")
+    .split(".")
+    .map((n) => parseInt(n, 10) || 0);
   for (let k = 0; k < Math.max(pa.length, pb.length); k++) {
     const x = pa[k] || 0;
     const y = pb[k] || 0;
@@ -137,7 +150,8 @@ function semverCmp(a, b) {
 
 function pickNewerRef(a, b) {
   const isSha40 = (s) => /^[a-f0-9]{40}$/.test(String(s));
-  const isSemver = (s) => /^\d+(\.\d+)?(\.\d+)?$/.test(String(s).replace(/^v/, ''));
+  const isSemver = (s) =>
+    /^\d+(\.\d+)?(\.\d+)?$/.test(String(s).replace(/^v/, ""));
   const aIsSha = isSha40(a);
   const bIsSha = isSha40(b);
   if (aIsSha && bIsSha) return null;
@@ -162,8 +176,8 @@ function tryVersionBump(ours, theirs) {
 }
 
 function tryAdditive(ours, theirs) {
-  const oLines = ours.split('\n').filter(Boolean);
-  const tLines = theirs.split('\n').filter(Boolean);
+  const oLines = ours.split("\n").filter(Boolean);
+  const tLines = theirs.split("\n").filter(Boolean);
   if (oLines.length === 0 && tLines.length === 0) return null;
   const oSet = new Set(oLines);
   const tSet = new Set(tLines);
@@ -171,7 +185,7 @@ function tryAdditive(ours, theirs) {
     if (tSet.has(line)) return null;
   }
   const merged = [...oLines, ...tLines];
-  return merged.length > 0 ? merged.join('\n') : null;
+  return merged.length > 0 ? merged.join("\n") : null;
 }
 
 /**
@@ -180,14 +194,14 @@ function tryAdditive(ours, theirs) {
 function resolveFile(file) {
   let content;
   try {
-    content = fs.readFileSync(file, 'utf8');
+    content = fs.readFileSync(file, "utf8");
   } catch {
     return { ok: 0, ambiguous: 0 };
   }
   const hunks = iterHunks(content);
   if (hunks.length === 0) return { ok: 0, ambiguous: 0 };
 
-  const lines = content.split('\n');
+  const lines = content.split("\n");
   let ok = 0;
   let ambiguous = 0;
 
@@ -196,7 +210,7 @@ function resolveFile(file) {
     const { start, end, ours, theirs } = hunks[h];
     const res = tryResolveHunk(ours, theirs);
     if (res.resolved) {
-      const replacement = res.text.length ? res.text.split('\n') : [];
+      const replacement = res.text.length ? res.text.split("\n") : [];
       lines.splice(start, end - start + 1, ...replacement);
       ok++;
     } else {
@@ -205,10 +219,12 @@ function resolveFile(file) {
   }
 
   if (ok > 0) {
-    fs.writeFileSync(file, lines.join('\n'));
+    fs.writeFileSync(file, lines.join("\n"));
     try {
       if (ambiguous === 0) sh(`git add -- ${JSON.stringify(file)}`);
-    } catch {}
+    } catch {
+      // Silently ignore git add failures (e.g., file not in a git repo).
+    }
   }
 
   return { ok, ambiguous };
@@ -217,7 +233,7 @@ function resolveFile(file) {
 function main() {
   const files = listConflictedFiles();
   if (files.length === 0) {
-    console.log('No conflicted files.');
+    console.log("No conflicted files.");
     process.exit(0);
   }
 
@@ -251,7 +267,9 @@ function main() {
     }
   }
 
-  console.log(`\nSummary: ${totalOk} hunk(s) auto-resolved, ${totalAmbiguous} ambiguous, ${totalUnresolved} file(s) unresolved.`);
+  console.log(
+    `\nSummary: ${totalOk} hunk(s) auto-resolved, ${totalAmbiguous} ambiguous, ${totalUnresolved} file(s) unresolved.`,
+  );
   // Exit 0 ONLY when every conflicted file was fully resolved. See top-of-file
   // contract — gating on totalAmbiguous alone would let zero-hunk MANUAL files
   // (binary conflicts, unknown marker styles) sneak through as false success.
@@ -262,9 +280,20 @@ if (require.main === module) {
   try {
     main();
   } catch (err) {
-    console.error('auto-resolve-mechanical-conflicts: fatal:', err && err.stack || err);
+    console.error(
+      "auto-resolve-mechanical-conflicts: fatal:",
+      (err && err.stack) || err,
+    );
     process.exit(1);
   }
 }
 
-module.exports = { iterHunks, tryResolveHunk, resolveFile, semverCmp, pickNewerRef, tryVersionBump, tryAdditive };
+module.exports = {
+  iterHunks,
+  tryResolveHunk,
+  resolveFile,
+  semverCmp,
+  pickNewerRef,
+  tryVersionBump,
+  tryAdditive,
+};

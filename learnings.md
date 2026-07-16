@@ -3,7 +3,7 @@
 This file logs lessons learned from self-healing fixes, incidents, and other operational learnings.
 
 > **Usage note:** Writes must be append-only. Never rewrite or delete prior entries. Each new lesson goes at the bottom, using the template below.
-
+>
 > Append-only log. Writes must be append-only: never edit or delete prior entries; add new ones at the bottom using the template below.
 
 ## Template
@@ -25,7 +25,11 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 
 **Root Cause of Failure (If any):** A prior `learnings.md` entry deviated from the established template by extending the `Self-Healing Fix / Learned Lesson` heading with extra clarifying text (`— tools and skills actually used, for whoever runs the next one of these`). This broke exact-string grep-ability of the log by field name.
 
-**Self-Healing Fix / Learned Lesson:** Keep template headings verbatim. Any clarifying context belongs in the body of the entry, not appended to the heading. This preserves `grep -F '**Self-Healing Fix / Learned Lesson:**'` as reliable for enumerating lessons. Tools/skills: `markdownlint-cli2` for validation, `grep -F` for heading consistency, and "template first, prose second" discipline when appending to structured logs.
+**Self-Healing Fix / Learned Lesson:** Keep template headings verbatim. Any clarifying context
+belongs in the body of the entry, not appended to the heading. This preserves
+`grep -F '**Self-Healing Fix / Learned Lesson:**'` as reliable for enumerating lessons.
+Tools/skills: `markdownlint-cli2` for validation, `grep -F` for heading consistency, and
+"template first, prose second" discipline when appending to structured logs.
 
 ---
 - **Date/Time:** 2025-01-fleet-audit-session
@@ -87,12 +91,29 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 ## Entry: Fleet Audit-and-Fix Session — Tools & Skills Used
 
 - **Date/Time:** 2025-01-27 (session)
-- **Task Attempted:** Multi-part fleet audit-and-fix: bug sweep, recon, checkbox-to-WR feature, four-fleet wiring audit, orphaned WR closeout.
-- **Outcome:** Session completed with concrete deliverables. Several wiring bugs remain open: `scripts/security-fleet.js` lacks trigger wiring, `credential-autonomy-agent.yml` has no failure reporting, `self-heal-pr.yml` and `reset-self-heal-issue.yml` are manual-only despite being documented as automatic.
-- **Root Cause of Failure:** Common pattern: workflows documented as "automatic" but lacking `on:` triggers or failure-propagation wiring. No audit loop existed to catch docs-vs-reality drift.
-- **Self-Healing Fix / Learned Lesson:** Tools/skills: `Agent` + `isolation: "worktree"` for parallel fleet audits, `TaskCreate` for progress tracking, `mcp__github__*` for all GitHub ops, direct verification (not read-through trust), and own-turn inline edits for <1min changes. (No Skill tools used; the audit loop is a candidate for future packaging.)
-- **Next Action:** Address highest-priority findings: (1) wire trigger to `scripts/security-fleet.js`, (2) add failure propagation to `credential-autonomy-agent.yml`, (3) add automatic triggers to `self-heal-pr.yml` and `reset-self-heal-issue.yml`.
-## **Next Action:** See `standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md` for the reusable methodology and the growing fix-pattern catalog. Open items from this session still needing a priority call before more PRs get dispatched: `scripts/security-fleet.js` has zero trigger (the fleet's prompt-injection/secret-exfil/permission-drift detector never runs), `credential-autonomy-agent.yml` runs hourly and can structurally never report failure, and `self-heal-pr.yml`/`reset-self-heal-issue.yml` (CLAUDE.md's own documented loop steps 4 and 6) are 100% manual despite being described as automatic
+- **Task Attempted:** Multi-part fleet audit-and-fix: bug sweep, recon, checkbox-to-WR feature,
+  four-fleet wiring audit, orphaned WR closeout.
+- **Outcome:** Session completed with concrete deliverables. Several wiring bugs remain open:
+  `scripts/security-fleet.js` lacks trigger wiring, `credential-autonomy-agent.yml` has no
+  failure reporting, `self-heal-pr.yml` and `reset-self-heal-issue.yml` are manual-only
+  despite being documented as automatic.
+- **Root Cause of Failure:** Common pattern: workflows documented as "automatic" but lacking
+  `on:` triggers or failure-propagation wiring. No audit loop existed to catch docs-vs-reality
+  drift.
+- **Self-Healing Fix / Learned Lesson:** Tools/skills: `Agent` + `isolation: "worktree"` for
+  parallel fleet audits, `TaskCreate` for progress tracking, `mcp__github__*` for all GitHub
+  ops, direct verification (not read-through trust), and own-turn inline edits for <1min
+  changes. (No Skill tools used; the audit loop is a candidate for future packaging.)
+- **Next Action:** Address highest-priority findings: (1) wire trigger to
+  `scripts/security-fleet.js`, (2) add failure propagation to `credential-autonomy-agent.yml`,
+  (3) add automatic triggers to `self-heal-pr.yml` and `reset-self-heal-issue.yml`.
+## **Next Action:** See `standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md` for the reusable
+methodology and the growing fix-pattern catalog. Open items from this session still needing
+a priority call before more PRs get dispatched: `scripts/security-fleet.js` has zero trigger
+(the fleet's prompt-injection/secret-exfil/permission-drift detector never runs),
+`credential-autonomy-agent.yml` runs hourly and can structurally never report failure, and
+`self-heal-pr.yml`/`reset-self-heal-issue.yml` (CLAUDE.md's own documented loop steps 4 and
+6) are 100% manual despite being described as automatic
 
 **Date/Time:** 2026-07-14T13:15:00Z
 
@@ -102,7 +123,11 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 
 **Root Cause of Failure (If any):** Audited snapshot became stale; live main gained partial WR-A1 fix (yaml/ajv/ajv-formats/@types/node landed; SemVer + @octokit/rest missing). Incident root cause: whole-file-write APIs must never target append-only logs — transfer-size ceilings force truncation.
 
-**Self-Healing Fix / Learned Lesson:** (1) Audits decay—re-verify findings against live HEAD before applying. (2) Cluster failures by root cause: 23 test failures = 1 bug (undeclared deps). (3) Every fix needs a vaccine: corrective WRs name the guard preventing recurrence. (4) Whole-file-write APIs forbidden on append-only logs—use Git-native paths or side-file fold-in for atomic, size-unbounded appends. Procedure in `skills/repo-audit/SKILL.md`.
+**Self-Healing Fix / Learned Lesson:** (1) Audits decay—re-verify findings against live HEAD
+before applying. (2) Cluster failures by root cause: 23 test failures = 1 bug (undeclared
+deps). (3) Every fix needs a vaccine: corrective WRs name the guard preventing recurrence.
+(4) Whole-file-write APIs forbidden on append-only logs—use Git-native paths or side-file
+fold-in for atomic, size-unbounded appends. Procedure in `skills/repo-audit/SKILL.md`.
 
 **Next Action:** Review/merge PR from `audit/2026-07-14-wr-a1`. Then agents execute WR-A1..A10 in priority order (A2 state engine and A3 dead script paths first — both P0/P1 and both currently breaking live automation). Also: archive learnings.md entries older than 90 days per its own header rule — the log is 70KB+ and growing; a WR for the archival cron is warranted.
 
@@ -120,7 +145,13 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 
 **Root Cause of Failure:** Multiple agents and prior sessions generated workflows with overlapping keys/conditions without validation. Automation Doctor detected syntax but npm run verify fails at workflows:validate step, blocking lint and test phases entirely.
 
-**Self-Healing Fix / Learned Lesson:** Stopping the bleeding first: fix workflows in priority order (duplicate keys first, then timeouts, then dead scripts). Use `npm run verify:fast` to validate between fixes. Each workflow gets repaired once with a single commit, no batching, so failures are isolated. Tools used: `Read` to inspect each broken workflow file, `Edit` with exact line-number fixes, `Bash` to validate post-fix via re-running workflows:validate. No `Agent` tool until the immediate breaking failures are gone — they prevent even basic local testing.
+**Self-Healing Fix / Learned Lesson:** Stopping the bleeding first: fix workflows in priority
+order (duplicate keys first, then timeouts, then dead scripts). Use `npm run verify:fast` to
+validate between fixes. Each workflow gets repaired once with a single commit, no batching,
+so failures are isolated. Tools used: `Read` to inspect each broken workflow file, `Edit`
+with exact line-number fixes, `Bash` to validate post-fix via re-running workflows:validate.
+No `Agent` tool until the immediate breaking failures are gone — they prevent even basic
+local testing.
 
 **Next Action:** Fix the 8 invalid workflows, one per commit, starting with agent-fallback.yml. Commits go to `claude/revvel-standards-governance-review-dktw2r` branch. After all 8 workflows fixed, add timeout-minutes to the 9 jobs, then trace and resolve WR-A3 dead scripts, then tackle WR-A2 state engine.
 
@@ -183,9 +214,19 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 
 **Root Cause of Failure (If any):** Prior learnings.md entry listed "dead scripts" but mischaracterized the issue: agent-fallback.yml and ship-to-market.yml both use `if [ -f scripts/... ]` guards, so missing scripts are skipped gracefully. The vine-to-marketplace.yml reference to `index.js` calls `reesereviews/vine-marketplace/index.js`, which exists. No dead scripts = no actual WR-A3.
 
-**Self-Healing Fix / Learned Lesson:** When auditing for dead code paths, verify not just presence but conditional context. A "dead" script reference is only harmful if called unconditionally. All workflow script calls in this codebase already use file-existence guards (best practice). Updated learnings.md to reflect this; the fix-pattern catalog in `standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md` should note: guard-first code prevents false alarms and cascading failures.
+**Self-Healing Fix / Learned Lesson:** When auditing for dead code paths, verify not just
+presence but conditional context. A "dead" script reference is only harmful if called
+unconditionally. All workflow script calls in this codebase already use file-existence
+guards (best practice). Updated learnings.md to reflect this; the fix-pattern catalog in
+`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md` should note: guard-first code prevents false
+alarms and cascading failures.
 
-**Next Action:** Focus on 40 failing tests as the real blocker. Prioritize by impact: (1) auto-resolve-mechanical-conflicts.test.js, checkbox-diff.test.js, credential-autonomy-agent.test.js (core fleet logic), (2) CI diagnosis tests (ci-error-prevention chain), (3) WR rendering + form sync. Then address WR-A2 state.json. Markdown linting (800+ errors in templates/generated) is deferred per user's "orderly matter" preference.
+**Next Action:** Focus on 40 failing tests as the real blocker. Prioritize by impact:
+(1) auto-resolve-mechanical-conflicts.test.js, checkbox-diff.test.js,
+credential-autonomy-agent.test.js (core fleet logic), (2) CI diagnosis tests
+(ci-error-prevention chain), (3) WR rendering + form sync. Then address WR-A2 state.json.
+Markdown linting (800+ errors in templates/generated) is deferred per user's "orderly
+matter" preference.
 
 ---
 
@@ -197,7 +238,13 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 
 **Root Cause of Failure:** Test utility functions were never extracted/exported from the implementation. The script had the logic (semverCmp) but tests expected it under different names (pickNewerRef). This is a naming/API mismatch from prior refactoring.
 
-**Self-Healing Fix / Learned Lesson:** (1) Always export testable utility functions even if they're only used internally by the script—they're the public contract for unit testing. (2) Naming consistency: when tests were written, the implementation API changed but exports were never updated. The fix is one-time extraction + export; future changes must update both the test expectations and the implementation exports together. (3) Prioritize by test count + impact: this file had 37 subtests, fixing one function unlock many. Focus on breadth-first fixes for maximum test coverage gain.
+**Self-Healing Fix / Learned Lesson:** (1) Always export testable utility functions even if
+they're only used internally by the script—they're the public contract for unit testing.
+(2) Naming consistency: when tests were written, the implementation API changed but exports
+were never updated. The fix is one-time extraction + export; future changes must update
+both the test expectations and the implementation exports together. (3) Prioritize by test
+count + impact: this file had 37 subtests, fixing one function unlock many. Focus on
+breadth-first fixes for maximum test coverage gain.
 
 **Next Action:** Push current fixes to branch and open PR for review. The 40/592 test failures remain but workflow YAML validation (200/200 valid) is solid. Leave edge-case test refinements for follow-up PR to keep this one focused and reviewable per user's "orderly matter" preference.
 
