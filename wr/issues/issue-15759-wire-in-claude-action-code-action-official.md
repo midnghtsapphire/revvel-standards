@@ -1,3 +1,4 @@
+<!-- markdownlint-disable-file MD046 -->
 # WR: [WR] Wire-in Claude Action Code Action Official
 
 **Issue:** #15759  
