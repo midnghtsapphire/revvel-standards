@@ -37,7 +37,7 @@
   "MD031": false,
   "MD032": false,
   "MD036": false,
-  "MD040": false,
+  "MD040": true,
   "MD009": false,
   "MD026": {
     "punctuation": ".,:!?\""
