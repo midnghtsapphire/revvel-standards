@@ -94,41 +94,8 @@ function log(message, type = 'info') {
   console.log(`${prefix} ${message}`);
 }
 
-function run(command, args = [], options = {}) {
-  // spawnSync with an explicit argv array does NOT spawn a shell, so args
-  // cannot be shell-injected. All callers pass a fixed command ('gh').
-  //
-  // Callers may pass `options.input` to feed data (e.g. secret values) to
-  // the child's stdin instead of argv, since argv is visible to any other
-  // process on the host for the process's lifetime via
-  // /proc/<pid>/cmdline or `ps aux`. stdio[0] must be 'pipe' (not
-  // 'ignore') for `input` to actually reach the child.
-  // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process -- arg array (no shell); command is a fixed literal at every call site
-  const result = spawnSync(command, args, {
-    encoding: 'utf8',
-    stdio: [options.input !== undefined ? 'pipe' : 'ignore', 'pipe', 'pipe'],
-    ...options,
-  });
-  return {
-    ok: result.status === 0,
-    stdout: result.stdout?.trim() || '',
-    stderr: result.stderr?.trim() || '',
-    error: result.error,
-  };
-}
-
-/**
- * Run a command synchronously.
- *
- * @param {string} cmd
- * @param {string[]} args
- * @param {{ input?: string }} [options]
- * @returns {{ status: number|null, stdout: string, stderr: string }}
- */
 function run(cmd, args, options = {}) {
   const hasInput = typeof options.input === 'string' && options.input.length > 0;
-  // Note: Node's spawnSync silently drops `input` when stdio[0] === 'ignore',
-  // so we must switch stdin to 'pipe' whenever input is provided.
   const stdio = [hasInput ? 'pipe' : 'ignore', 'pipe', 'pipe'];
 
   const spawnOptions = {
@@ -293,52 +260,11 @@ async function audit() {
   };
 }
 
-async function restore(secretsToRestore) {
-  if (!secretsToRestore || secretsToRestore.length === 0) {
-    log('Nothing to restore', 'info');
-    return { restored: [], failed: [] };
-  }
-
 function remove(name) {
   const res = run('gh', ['secret', 'remove', name, '--repo', REPO]);
   if (res.status !== 0) {
     throw new Error(`gh secret remove ${name} failed: ${res.stderr}`);
-  const { backup } = loadBackup();
-  const restored = [];
-  const failed = [];
-
-  log(`🔄 Restoring ${secretsToRestore.length} secrets...`, 'action');
-
-  for (const name of secretsToRestore) {
-    const value = backup[name];
-    if (!value) {
-      log(`${name}: not in backup`, 'warning');
-      failed.push(name);
-      continue;
-    }
-
-    if (DRY_RUN) {
-      // In dry-run we don't actually write, but the secret WOULD be restored,
-      // so count it as handled (not a failure) for exit-status purposes.
-      log(`${name}: would restore (DRY RUN)`, 'action');
-      restored.push(name);
-    } else {
-      // Pass the plaintext value via stdin (not argv/--body) so it never
-      // appears in `ps aux` / /proc/<pid>/cmdline. `gh secret set` reads
-      // from stdin by default when --body is omitted — same safe pattern
-      // already established in scripts/provision-repo-secrets.sh.
-      const result = run('gh', ['secret', 'set', name, '--repo', REPO], { input: value });
-      if (result.ok) {
-        log(`${name}: restored`, 'success');
-        restored.push(name);
-      } else {
-        log(`${name}: FAILED - ${result.stderr}`, 'error');
-        failed.push(name);
-      }
-    }
   }
-
-  return { restored, failed };
 }
 
 /**
@@ -369,25 +295,6 @@ function restore(name, value) {
   }
 }
 
-module.exports = { run, list, remove, restore };
-
-if (require.main === module) {
-  const [, , action, name, value] = process.argv;
-  try {
-    switch (action) {
-      case 'list':
-        console.log(list().join('\n'));
-        break;
-      case 'remove':
-        remove(name);
-        break;
-      case 'restore':
-        // Prefer reading value from env to avoid it appearing in this process's argv either.
-        restore(name, process.env.SECRET_VALUE || value || '');
-        break;
-      default:
-        console.error('Usage: credential-autonomy-agent.js <list|remove|restore> [name] [value]');
-        process.exit(2);
 async function cleanup(staleSecrets) {
   if (!staleSecrets || staleSecrets.length === 0) {
     log('Nothing to cleanup', 'info');
