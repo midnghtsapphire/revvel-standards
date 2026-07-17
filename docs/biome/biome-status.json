@@ -1,52 +1,24 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-17T10:33:22.835Z",
+  "generated_at": "2026-07-17T11:29:38.774Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "5/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 5,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29572318187,
+            "id": 29576418110,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29572318187",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29570957706,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29570957706",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29569570611,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29569570611",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29567939838,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29567939838",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29567846481,
-            "name": "Vine → Marketplace Automation",
-            "path": ".github/workflows/vine-to-marketplace.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29567846481",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29576418110",
             "conclusion": "failure"
           }
         ],
