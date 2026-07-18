@@ -1,52 +1,38 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-18T08:34:31.864Z",
+  "generated_at": "2026-07-18T09:31:26.174Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "5/100 recent runs failed; 0 stuck item(s)",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 5,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29637670082,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29637670082",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29637455241,
+            "id": 29638691650,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29637455241",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29638691650",
             "conclusion": "failure"
           },
           {
-            "id": 29636206803,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29636206803",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29636172678,
+            "id": 29637905190,
             "name": "Stuck Check Watchdog",
             "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29636172678",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29637905190",
             "conclusion": "failure"
           },
           {
-            "id": 29635068635,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29635068635",
+            "id": 29637848648,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29637848648",
             "conclusion": "failure"
           }
         ],
@@ -72,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29635586198"
+        "last_run": null
       }
     },
     "sheaf": {
