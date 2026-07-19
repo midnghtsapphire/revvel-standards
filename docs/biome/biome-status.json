@@ -1,19 +1,68 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-19T03:03:50.137Z",
+  "generated_at": "2026-07-19T05:04:21.777Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "9/100 recent runs failed; 0 stuck item(s)",
+      "summary": "16/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 9,
+        "failed_runs": 16,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 29674267903,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29674267903",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29674182196,
+            "name": "Stuck Label Detection & Auto-Progression",
+            "path": ".github/workflows/stuck-label-automation.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29674182196",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29672731643,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29672731643",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29671817366,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29671817366",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29671418079,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29671418079",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29671313473,
+            "name": "durability-mirror",
+            "path": ".github/workflows/durability-mirror.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29671313473",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29671252433,
+            "name": "Repo Organizer",
+            "path": ".github/workflows/repo-organizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29671252433",
+            "conclusion": "failure"
+          },
           {
             "id": 29671071832,
             "name": "CI Error Prevention Tests",
@@ -33,48 +82,6 @@
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29670745463",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29669020018,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29669020018",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29669011606,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29669011606",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29667806149,
-            "name": "Follow-up Checkbox Router",
-            "path": ".github/workflows/followup-checkbox-router.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29667806149",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29667794852,
-            "name": "Octopus Review Fallback",
-            "path": ".github/workflows/octopus-review-fallback.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29667794852",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29667697545,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29667697545",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29667696379,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29667696379",
             "conclusion": "failure"
           }
         ],
