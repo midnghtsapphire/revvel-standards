@@ -1,52 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-19T08:47:49.427Z",
+  "generated_at": "2026-07-19T09:35:07.602Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "5/100 recent runs failed; 0 stuck item(s)",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 5,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29680413129,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29680413129",
+            "id": 29680839463,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29680839463",
             "conclusion": "failure"
           },
           {
-            "id": 29680293042,
-            "name": "Stuck Label Detection & Auto-Progression",
-            "path": ".github/workflows/stuck-label-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29680293042",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29679178795,
+            "id": 29680664220,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29679178795",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29680664220",
             "conclusion": "failure"
           },
           {
-            "id": 29678727388,
+            "id": 29680636111,
             "name": "Stuck Check Watchdog",
             "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29678727388",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29680636111",
             "conclusion": "failure"
           },
           {
-            "id": 29677713409,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29677713409",
+            "id": 29680578840,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29680578840",
             "conclusion": "failure"
           }
         ],
@@ -72,10 +65,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29678393092"
+        "last_run": null
       }
     },
     "sheaf": {
