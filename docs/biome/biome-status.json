@@ -1,19 +1,54 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-18T23:18:37.228Z",
+  "generated_at": "2026-07-19T00:31:27.115Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "7/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 7,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 29667027001,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29667027001",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29666660145,
+            "name": "Stuck Label Detection & Auto-Progression",
+            "path": ".github/workflows/stuck-label-automation.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29666660145",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29666049087,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29666049087",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29665210733,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29665210733",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29665208045,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29665208045",
+            "conclusion": "failure"
+          },
           {
             "id": 29664964284,
             "name": "Daily WR & PR Summary",
