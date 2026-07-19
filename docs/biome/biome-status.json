@@ -1,87 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-19T05:04:21.777Z",
+  "generated_at": "2026-07-19T06:52:22.936Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "16/100 recent runs failed; 0 stuck item(s)",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 16,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29674267903,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29674267903",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29674182196,
+            "id": 29676975918,
             "name": "Stuck Label Detection & Auto-Progression",
             "path": ".github/workflows/stuck-label-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29674182196",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29676975918",
             "conclusion": "failure"
           },
           {
-            "id": 29672731643,
+            "id": 29676116622,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29672731643",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29676116622",
             "conclusion": "failure"
           },
           {
-            "id": 29671817366,
-            "name": "Follow-up Checkbox Router",
-            "path": ".github/workflows/followup-checkbox-router.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29671817366",
+            "id": 29674541725,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29674541725",
             "conclusion": "failure"
           },
           {
-            "id": 29671418079,
+            "id": 29674487307,
             "name": "Stuck Check Watchdog",
             "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29671418079",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29671313473,
-            "name": "durability-mirror",
-            "path": ".github/workflows/durability-mirror.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29671313473",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29671252433,
-            "name": "Repo Organizer",
-            "path": ".github/workflows/repo-organizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29671252433",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29671071832,
-            "name": "CI Error Prevention Tests",
-            "path": ".github/workflows/ci-error-prevention.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29671071832",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29671008859,
-            "name": "Stuck Label Detection & Auto-Progression",
-            "path": ".github/workflows/stuck-label-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29671008859",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29670745463,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29670745463",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29674487307",
             "conclusion": "failure"
           }
         ],
@@ -107,10 +65,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29668432299"
+        "last_run": null
       }
     },
     "sheaf": {
