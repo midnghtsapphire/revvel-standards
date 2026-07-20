@@ -1,0 +1,67 @@
+# Lane Canary (WR-4481) — proves the keyless tier-2 lane is alive BEFORE it's needed.
+# STAGED HERE because the Zapier GitHub token lacks workflow scope.
+# ACTION REQUIRED: move this file to .github/workflows/lane-canary.yml (UI or PAT lane), then set repo variable PPLX_CANARY_URL.
+name: lane-canary
+
+on:
+  schedule:
+    - cron: "17 6 * * *"   # daily 06:17 UTC (~00:17 MDT)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+env:
+  PPLX_CANARY_URL: ${{ vars.PPLX_CANARY_URL }}
+  ORFREE_MODEL: ${{ vars.ORFREE_MODEL || 'meta-llama/llama-3.2-3b-instruct:free' }}
+  LEDGER_PATH: FAILURE-LEDGER.jsonl
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ping keyless Perplexity lane
+        id: pplx
+        continue-on-error: true
+        run: |
+          if [ -z "$PPLX_CANARY_URL" ]; then echo "skipped=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 -X POST "$PPLX_CANARY_URL" \
+            -H 'Content-Type: application/json' \
+            -d '{"messages":[{"role":"user","content":"ping"}],"max_tokens":1}')
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          [ "$code" = "200" ]
+
+      - name: Ping OpenRouter :free lane (keyless probe)
+        id: orfree
+        continue-on-error: true
+        run: |
+          # 401 = reachable-but-auth-required (acceptable liveness signal); 200 = fully open
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 https://openrouter.ai/api/v1/models)
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          [ "$code" = "200" ] || [ "$code" = "401" ]
+
+      - name: Write FAILURE-LEDGER entry
+        run: |
+          status="healthy"; class="lane-recovery"
+          if [ "${{ steps.pplx.outcome }}" = "failure" ] || [ "${{ steps.orfree.outcome }}" = "failure" ]; then
+            status="degraded"; class="lane-5xx"
+          fi
+          printf '{"ts":"%s","agent":"lane-canary","class":"%s","trigger":"canary pplx=%s orfree=%s","lane":"tier2","repo":"revvel-standards","summary":"tier-2 canary %s"}\n' \
+            "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$class" "${{ steps.pplx.outputs.code || 'skip' }}" "${{ steps.orfree.outputs.code || 'na' }}" "$status" >> "$LEDGER_PATH"
+          git config user.name lane-canary; git config user.email canary@users.noreply.github.com
+          git add "$LEDGER_PATH"; git commit -m "chore(ledger): lane canary $status" && git push || echo "no change"
+
+      - name: Open lane-degraded issue on failure
+        if: steps.pplx.outcome == 'failure' || steps.orfree.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner, repo: context.repo.repo,
+              title: `lane-degraded: tier-2 canary failed ${new Date().toISOString().slice(0,10)}`,
+              labels: ['lane-degraded'],
+              body: 'Tier-2 keyless lane canary failed (WR-4481). pplx=${{ steps.pplx.outputs.code }} orfree=${{ steps.orfree.outputs.code }}. Failover ladder may be dead — verify before relying on it.'
+            });
