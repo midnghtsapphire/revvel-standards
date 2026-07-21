@@ -1,24 +1,59 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-21T06:52:22.836Z",
+  "generated_at": "2026-07-21T07:48:39.070Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "6/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 6,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29808379395,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29808379395",
+            "id": 29811161918,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29811161918",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29811161874,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29811161874",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29811149044,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29811149044",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29811149042,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29811149042",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29811136979,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29811136979",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29811136974,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29811136974",
             "conclusion": "failure"
           }
         ],
@@ -44,10 +79,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29811409718"
       }
     },
     "sheaf": {
