@@ -1,52 +1,38 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-21T00:30:44.879Z",
+  "generated_at": "2026-07-21T01:34:45.256Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "5/100 recent runs failed; 0 stuck item(s)",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 5,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29790493768,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29790493768",
+            "id": 29791670119,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29791670119",
             "conclusion": "failure"
           },
           {
-            "id": 29790489015,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29790489015",
+            "id": 29791652871,
+            "name": "Octopus Review Fallback",
+            "path": ".github/workflows/octopus-review-fallback.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29791652871",
             "conclusion": "failure"
           },
           {
-            "id": 29790486339,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29790486339",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29790467918,
-            "name": "Agent Dispatcher",
-            "path": ".github/workflows/agent-dispatcher.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29790467918",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29790437663,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29790437663",
+            "id": 29791461339,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29791461339",
             "conclusion": "failure"
           }
         ],
@@ -72,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29792860633"
       }
     },
     "sheaf": {
