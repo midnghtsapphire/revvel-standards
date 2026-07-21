@@ -1,87 +1,66 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-21T13:32:35.548Z",
+  "generated_at": "2026-07-21T14:41:52.551Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "13/100 recent runs failed; 0 stuck item(s)",
+      "summary": "7/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 13,
+        "failed_runs": 7,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29834240931,
+            "id": 29838542395,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29834240931",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29838542395",
             "conclusion": "failure"
           },
           {
-            "id": 29831795271,
-            "name": "Perplexity Research Agent",
-            "path": ".github/workflows/perplexity-research-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29831795271",
+            "id": 29838268638,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29838268638",
             "conclusion": "failure"
           },
           {
-            "id": 29831793596,
-            "name": "Perplexity Research Agent",
-            "path": ".github/workflows/perplexity-research-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29831793596",
+            "id": 29838267924,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29838267924",
             "conclusion": "failure"
           },
           {
-            "id": 29831791996,
-            "name": "Perplexity Research Agent",
-            "path": ".github/workflows/perplexity-research-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29831791996",
+            "id": 29838263161,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29838263161",
             "conclusion": "failure"
           },
           {
-            "id": 29831790284,
-            "name": "Perplexity Research Agent",
-            "path": ".github/workflows/perplexity-research-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29831790284",
+            "id": 29838260538,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29838260538",
             "conclusion": "failure"
           },
           {
-            "id": 29831788586,
-            "name": "Perplexity Research Agent",
-            "path": ".github/workflows/perplexity-research-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29831788586",
+            "id": 29838251842,
+            "name": "Follow-up Checkbox Router",
+            "path": ".github/workflows/followup-checkbox-router.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29838251842",
             "conclusion": "failure"
           },
           {
-            "id": 29831786801,
-            "name": "Perplexity Research Agent",
-            "path": ".github/workflows/perplexity-research-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29831786801",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29831784664,
-            "name": "Perplexity Research Agent",
-            "path": ".github/workflows/perplexity-research-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29831784664",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29831782719,
-            "name": "Perplexity Research Agent",
-            "path": ".github/workflows/perplexity-research-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29831782719",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29831780904,
-            "name": "Perplexity Research Agent",
-            "path": ".github/workflows/perplexity-research-agent.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29831780904",
+            "id": 29838251829,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29838251829",
             "conclusion": "failure"
           }
         ],
@@ -107,10 +86,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29833959730"
+        "last_run": null
       }
     },
     "sheaf": {
