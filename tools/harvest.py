@@ -4,7 +4,10 @@
 Daily-cron literature/parts harvester for the Photon Bench. Implements
 WR-4600.3-harvest-spec.yml under the WR-4200 contract:
 
-  - NEVER emit a URL that was not returned by a live call. No exceptions.
+  - NEVER fabricate a URL from a title or a guess. Every URL is either
+    returned verbatim by a live call, or deterministically formed from an
+    identifier that live call returned (PMID/NCT/DOI -> the provider's
+    documented canonical URL). No URL is ever invented. No exceptions.
   - Report DELTA, not "breakthrough". Most days: zero.
   - quiet_day: true is a SUCCESS, recorded and committed.
   - Snapshots are content-hashed and immutable.
@@ -149,7 +152,9 @@ def _get(url, timeout=20):
 
 
 def fetch_eutils(term, n, api_key=None):
-    """NCBI E-utilities: esearch -> esummary. Every URL comes from the API's own ids."""
+    """NCBI E-utilities esearch. Each returned PMID becomes its documented
+    canonical PubMed URL (pubmed.ncbi.nlm.nih.gov/<pmid>/); no esummary call is
+    made, so titles/abstracts stay at the source rather than being copied here."""
     base = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils"
     q = {"db": "pubmed", "term": term, "retmax": str(n), "retmode": "json", "sort": "date"}
     if api_key:
@@ -373,7 +378,10 @@ def main(argv=None):
     else:
         shards = due_shards()
 
-    snap = harvest(shards, dry_run=args.dry_run)
+    # NCBI grants a higher E-utilities rate limit when a key is presented; the
+    # workflow exports it. Absent, we simply run unauthenticated (lower limit).
+    api_key = os.environ.get("NCBI_API_KEY") or None
+    snap = harvest(shards, dry_run=args.dry_run, api_key=api_key)
     # Machine-readable summary for the workflow to read via outputs.
     print(json.dumps({
         "new": snap["delta_count"],

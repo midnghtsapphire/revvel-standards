@@ -1249,11 +1249,27 @@ document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',async()
 (async function(){
   const $=id=>document.getElementById(id);
   const seed=JSON.parse($('seed').textContent||'{}');
+  // The live harvester (tools/harvest.py) writes data/latest.json with its own
+  // field names (generated_at / delta_count / flagged / content_hash / rows).
+  // The seed and the render code below use the dashboard schema
+  // (generated_utc / new_today / flagged_today / sha256 / delta). Map one onto
+  // the other so a successful live fetch renders correctly. Idempotent: the
+  // seed already uses the dashboard names, so nothing is overwritten.
+  function normalize(s){
+    if(!s||typeof s!=='object') return s;
+    if(s.generated_utc==null && s.generated_at!=null) s.generated_utc=s.generated_at;
+    if(s.new_today==null && s.delta_count!=null) s.new_today=s.delta_count;
+    if(s.sha256==null && s.content_hash!=null) s.sha256=s.content_hash;
+    if(s.flagged_today==null && Array.isArray(s.flagged)) s.flagged_today=s.flagged;
+    if(s.delta==null && Array.isArray(s.rows)) s.delta=s.rows;
+    return s;
+  }
+
   let src='seed (offline)';
   let s=seed;
   try{
     const r=await fetch('data/latest.json',{cache:'no-store'});
-    if(r.ok){ s=await r.json(); src='data/latest.json (live)'; }
+    if(r.ok){ s=normalize(await r.json()); src='data/latest.json (live)'; }
   }catch(e){}
   try{
     const ix=await fetch('data/index.json',{cache:'no-store'});
@@ -1265,7 +1281,7 @@ document.querySelectorAll('.copy').forEach(b=>b.addEventListener('click',async()
       sel.addEventListener('change',async e=>{
         if(!e.target.value){ location.reload(); return; }
         const q=await fetch('data/snapshots/'+e.target.value+'.json',{cache:'no-store'});
-        if(q.ok){ paint(await q.json(),'snapshot '+e.target.value); }
+        if(q.ok){ paint(normalize(await q.json()),'snapshot '+e.target.value); }
       });
     }
   }catch(e){}
