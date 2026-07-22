@@ -7,7 +7,7 @@
 
 ---
 
-## 1. What Is SYSTEM_STATE.md?
+## 1. What Is SYSTEM_STATE.md
 
 `SYSTEM_STATE.md` is the single source of truth for what is **actually working in production** at any given moment. It is not a wishlist, not a backlog, and not a spec. It reflects reality.
 
