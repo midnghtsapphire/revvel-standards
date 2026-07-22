@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PrintBank — Vector Wall Art + Photo Print Sizer</title>
+<meta name="description" content="144 true-vector printable wall art SVGs, plus a photo print sizer that grades your photos across 24 standard print sizes.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>PrintBank</h1>
+  <nav>
+    <button data-tab="bank" class="active">Print Bank</button>
+    <button data-tab="photos">Your Photos</button>
+    <button data-tab="sizes">Size Guide</button>
+  </nav>
+</header>
+
+<main>
+  <section id="tab-bank" class="tab active">
+    <div class="controls">
+      <input type="search" id="search" placeholder="Search prints…">
+      <select id="genre-filter"><option value="">All genres</option></select>
+    </div>
+    <div id="grid" class="grid"></div>
+  </section>
+
+  <section id="tab-photos" class="tab">
+    <div id="drop" class="drop">
+      <p>Drop a photo here, or <label class="link"><input type="file" id="file" accept="image/*" hidden> click to choose</label></p>
+      <p class="hint">Everything runs in your browser. Your photo never leaves this page.</p>
+    </div>
+    <div id="photo-result" hidden>
+      <div class="photo-meta"></div>
+      <table id="grade-table"><thead><tr><th>Size</th><th>Ratio</th><th>Effective DPI</th><th>Grade</th><th>Export</th></tr></thead><tbody></tbody></table>
+    </div>
+  </section>
+
+  <section id="tab-sizes" class="tab">
+    <table id="size-guide"><thead><tr><th>Size</th><th>Ratio</th><th>Pixels @ 300 DPI</th><th>Pixels @ 150 DPI</th></tr></thead><tbody></tbody></table>
+  </section>
+</main>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-inner">
+    <button class="close" id="close-modal">×</button>
+    <div id="modal-preview"></div>
+    <div id="modal-info"></div>
+    <div class="modal-actions">
+      <button id="dl-svg">Download SVG (any size)</button>
+      <button id="dl-300">Export PNG @ 300 DPI</button>
+      <button id="dl-150">Export PNG @ 150 DPI</button>
+      <select id="export-size"></select>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>PrintBank · client-side · <a href="https://polar.sh" target="_blank" rel="noopener">Support on Polar</a></p>
+</footer>
+
+<script src="print-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
