@@ -139,7 +139,7 @@ Set `DEMO_MODE=false` and add keys to `.env` to activate real data.
 
 ### Probability Weight Model
 
-```
+```text
 P(location) =
   0.35 × accessibility_score    # Tobler 1993 hiking function
 + 0.30 × concealment_score      # inverse viewshed density
@@ -164,7 +164,7 @@ Based on Koester (2008) *Lost Person Behavior* empirical data:
 
 ## Architecture
 
-```
+```text
 coldtrace/
 ├── index.html              ← Static demo app (viewable immediately, no build)
 ├── .env.example            ← Environment template

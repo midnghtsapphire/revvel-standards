@@ -4,7 +4,7 @@ The family Marketplace Relister app now lives at:
 
 **`docs/marketplace-relister`**
 
-### Vercel Root Directory
+## Vercel Root Directory
 
 ```text
 docs/marketplace-relister

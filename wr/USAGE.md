@@ -29,7 +29,7 @@ cd wr/scripts
 cd wr/scripts
 ./batch-generate-wrs.sh p1
 ```
-```
+```text
 
 **P1 (High Priority):**
 ```bash
@@ -39,12 +39,12 @@ cd wr/scripts
 ### 3. Create WR via Issue
 
 Create an issue with title format:
-```
+```text
 [WR] Repository Review - [repository-name]
 ```
 
 Example:
-```
+```text
 [WR] Repository Review - [neurooz]
 ```
 
@@ -59,7 +59,7 @@ The automation will:
 
 ## Directory Structure
 
-```
+```text
 wr/
 ├── README.md                    # System overview
 ├── WR_TEMPLATE.md              # Standard template
@@ -202,7 +202,7 @@ cd wr/scripts
 ### Example 3: Via GitHub Issue
 
 **Issue Title:**
-```
+```text
 [WR] Repository Review - [neurooz]
 ```
 

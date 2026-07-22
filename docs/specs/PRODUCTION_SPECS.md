@@ -185,7 +185,7 @@ Complete technical specifications for all video production artifacts across all 
 ## Quick Reference Cheat Sheet
 
 ### Video Frame Sizes
-```
+```text
 4K:      3840 × 2160
 1080p:   1920 × 1080
 720p:    1280 × 720
@@ -195,7 +195,7 @@ Complete technical specifications for all video production artifacts across all 
 ```
 
 ### Social Media Image Sizes
-```
+```text
 Square (Instagram): 1080 × 1080
 Portrait (Instagram): 1080 × 1350
 Story (All): 1080 × 1920
@@ -204,7 +204,7 @@ OG Image: 1200 × 630
 ```
 
 ### Print Sizes (at 300 DPI)
-```
+```text
 Letter (8.5×11"): 2550 × 3300 px
 A4 (210×297mm): 2480 × 3508 px
 Business Card: 1050 × 600 px

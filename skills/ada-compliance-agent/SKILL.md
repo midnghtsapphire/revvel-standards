@@ -269,11 +269,11 @@ Activate this skill when encountering:
 
 ## Integration with Existing Skills
 
-- **Load with:** [`accessibility`](#accessibility) — Extends base accessibility skill with autonomous agent capabilities
-- **Triggers:** [`ralph-loop`](#ralph-loop) — On CI failure, attempt auto-fix before escalating
-- **Requires:** [`testing`](#testing) — Uses test infrastructure for accessibility test runs
-- **Informs:** [`code-review`](#code-review) — Accessibility findings feed into code review feedback
-- **Uses:** [`auto-documentation`](#auto-documentation) — Generates compliance reports and audit documentation
+- **Load with:** `accessibility` — Extends base accessibility skill with autonomous agent capabilities
+- **Triggers:** `ralph-loop` — On CI failure, attempt auto-fix before escalating
+- **Requires:** `testing` — Uses test infrastructure for accessibility test runs
+- **Informs:** `code-review` — Accessibility findings feed into code review feedback
+- **Uses:** `auto-documentation` — Generates compliance reports and audit documentation
 
 ## Outputs & Artifacts
 

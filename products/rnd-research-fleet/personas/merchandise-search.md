@@ -44,7 +44,7 @@ Before anything, check:
 
 ### 4. Margin Calculation
 
-```
+```text
 Selling Price: $X
 - Product Cost: $Y
 - Shipping: $Z
@@ -82,7 +82,7 @@ Target: 40%+ for healthy business
 
 ## Output Format
 
-```
+```text
 MERCHANDISE INTELLIGENCE REPORT
 
 ═══════════════════════════════════

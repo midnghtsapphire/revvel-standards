@@ -197,7 +197,7 @@ gh issue create \
 
 ## The Full Loop at a Glance
 
-```
+```text
 📖 READ RULES           → REVVEL_MASTER_STANDARDS.md
         ↓
 🔬 DEEP RESEARCH        → AI Research Module (5 agents via OpenRouter)

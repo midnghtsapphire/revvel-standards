@@ -104,7 +104,7 @@ When a coder requests to bypass normal merge requirements, reviewers should leav
 ### How to Request Force-Merge
 
 Coder comments on PR:
-```
+```text
 /force-merge reason: <brief explanation>
 ```
 

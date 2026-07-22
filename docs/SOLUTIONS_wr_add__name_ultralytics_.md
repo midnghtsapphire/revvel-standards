@@ -12,9 +12,9 @@
 This solution implements the full scope of the Ultralytics Actions bundle (v0.2.27), providing a comprehensive automation layer across code quality, PR management, and general CI/CD workflow enhancement. The integration is designed to be idempotent, meaning multiple runs under the same conditions will not cause cascading failures or unwanted state changes, fulfilling the *Definition of Done*.
 
 We are implementing three distinct layers:
-1.  **The Core GitHub Action:** The main `ultralytics/actions` executor for multi-language formatting and AI intelligence.
-2.  **Standalone Composites Actions:** Reusable dedicated actions (e.g., cleanup, retry) for specific workflow needs.
-3.  **Python SDK Integration:** Programmatic access to the utilities via the installed `ultralytics-actions` package.
+1. **The Core GitHub Action:** The main `ultralytics/actions` executor for multi-language formatting and AI intelligence.
+2. **Standalone Composites Actions:** Reusable dedicated actions (e.g., cleanup, retry) for specific workflow needs.
+3. **Python SDK Integration:** Programmatic access to the utilities via the installed `ultralytics-actions` package.
 
 ---
 

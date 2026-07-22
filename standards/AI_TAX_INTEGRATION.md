@@ -15,7 +15,7 @@ After comprehensive research, **there are NO dedicated tax-specific LLM models a
 
 ### Recommended Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │                  Tax AI System                       │
 ├─────────────────────────────────────────────────────┤

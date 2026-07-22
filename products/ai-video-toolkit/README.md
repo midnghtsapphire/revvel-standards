@@ -81,7 +81,7 @@ This application is configured for static export and can be deployed to Vercel o
 
 ## Live Demo
 
-🌐 **[View Live Demo](#)** - Coming soon
+🌐 **View Live Demo _(deploy link pending)_** - Coming soon
 
 ## Revenue Model
 

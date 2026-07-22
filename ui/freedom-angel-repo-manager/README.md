@@ -112,7 +112,7 @@ drops straight into this repository.
 
 ## 6. Architecture (for contributors)
 
-```
+```text
 ui/freedom-angel-repo-manager/
 ├── index.html          Semantic HTML, all ARIA attributes, skip link
 ├── styles.css          Design tokens + 7 accessibility-mode overrides

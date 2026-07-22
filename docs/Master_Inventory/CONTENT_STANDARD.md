@@ -41,7 +41,7 @@ Every app blog must cover these content categories from launch. Content is AI-ge
 
 Every app must have these routes:
 
-```
+```text
 /blog                        → Blog index (all posts, paginated)
 /blog/[category]             → Category listing page
 /blog/[category]/[slug]      → Individual post page

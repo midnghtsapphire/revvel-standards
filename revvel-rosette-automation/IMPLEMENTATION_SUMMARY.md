@@ -30,7 +30,7 @@ Successfully created **revvel-rosette-automation**, a comprehensive test harness
 - Integration with parent repository
 
 **Project Structure:**
-```
+```text
 revvel-rosette-automation/
 ├── config/      # 8 configuration files (YAML + JSON)
 ├── src/         # 4 Python modules (orchestrator, scheduler, gatekeeper, selfheal)

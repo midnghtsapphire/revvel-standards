@@ -31,7 +31,7 @@ Hardcoded API keys, passwords, tokens, and connection strings in source code are
 
 All secrets must be injected at runtime via environment variables.
 
-```
+```text
 # .env.example (commit this — no real values)
 DATABASE_URL=postgresql://user:password@host:5432/dbname
 STRIPE_SECRET_KEY=sk_live_...
@@ -410,7 +410,7 @@ Every Revvel application repository must also include the `auto-fix.yml` workflo
 
 The auto-fix loop works as follows:
 
-```
+```text
 CI workflow fails
     ↓
 auto-fix.yml triggers on workflow_run completion (conclusion = failure)

@@ -32,7 +32,7 @@ and a static marketing page is a cheap, low-risk first milestone.
 
 ## Project Layout
 
-```
+```text
 fieldwork/
 ├── README.md            ← You are here
 ├── LICENSE

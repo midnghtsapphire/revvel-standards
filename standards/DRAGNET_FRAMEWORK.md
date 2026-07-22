@@ -25,7 +25,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    DRAGNET ARCHITECTURE                      │
 ├─────────────────────────────────────────────────────────────┤
@@ -82,7 +82,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ## Decision Pipeline
 
 ### Phase 1: Analysis (PLATO)
-```
+```text
 1. Question all assumptions
 2. Identify stakeholders
 3. Map unknown unknowns
@@ -91,7 +91,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ```
 
 ### Phase 2: Edge Cases (MEDUSA)
-```
+```text
 1. Search unconventional sources
 2. Identify risk vectors
 3. Map failure modes
@@ -99,7 +99,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ```
 
 ### Phase 3: Stress Test (COUNTER)
-```
+```text
 1. Apply death-by-thousand-cuts test
 2. Simulate negative scenarios
 3. Identify KILL triggers
@@ -107,7 +107,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ```
 
 ### Phase 4: Validation (DARWIN)
-```
+```text
 1. Verify all claims
 2. Check evidence chains
 3. Validate sources
@@ -115,7 +115,7 @@ DRAGNET defines a framework for autonomous decision-making using five cooperatin
 ```
 
 ### Phase 5: Judgment (JUDGE)
-```
+```text
 1. Score all dimensions
 2. Apply thresholds
 3. Issue verdict

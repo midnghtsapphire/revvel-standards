@@ -53,7 +53,7 @@ curl -sL https://<live-url> | head -20
 ## Commit Message Format
 
 All deploy agent fix commits use:
-```
+```text
 fix: deploy agent cleanup — <description>
 ```
 

@@ -26,7 +26,7 @@ The Weak Signal Finder surfaces these patterns by analyzing word frequency, cont
 
 ## Architecture
 
-```
+```text
 RSS Feeds (by domain) → Feed Aggregation → Text Processing → Frequency Analysis
                                                                      ↓
                                                Output (JSON) ← Signal Scoring ← Contextual Analysis

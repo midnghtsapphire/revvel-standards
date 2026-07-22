@@ -1,5 +1,5 @@
 # MindMappr Persona Chat: Feature Specification
-# Lovable Build Spec — v1.0
+## Lovable Build Spec — v1.0
 
 **Prepared for:** Revvel / MIDNGHTSAPPHIRE
 **Date:** February 20, 2026
@@ -29,7 +29,7 @@ The feature is designed for two primary user groups: the primary user (professio
 
 ## Lovable Build Spec
 
-```
+```text
 {
   feature: "Persona Chat",
   version: "1.0",
@@ -46,7 +46,7 @@ The feature is designed for two primary user groups: the primary user (professio
 
 ### pages
 
-```
+```text
 pages: [
   {
     slug: "/personas",
@@ -123,7 +123,7 @@ pages: [
 
 ### components
 
-```
+```text
 components: [
   {
     name: "PersonaCard",
@@ -213,7 +213,7 @@ components: [
 
 ### flows
 
-```
+```text
 flows: [
   {
     wizardName: "CreatePersonaWizard",
@@ -267,7 +267,7 @@ flows: [
 
 ### dataModels
 
-```
+```text
 dataModels: [
   {
     entity: "Persona",
@@ -340,7 +340,7 @@ dataModels: [
 
 ### automations
 
-```
+```text
 automations: [
   {
     trigger: "User sends a message in a persona chat",

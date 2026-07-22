@@ -132,7 +132,7 @@ Dashboard updates automatically:
 
 ## Architecture
 
-```
+```text
 Data Sources               Aggregator                Output
 ─────────────             ────────────              ──────
 ├─ _MASTER_INVENTORY.md   

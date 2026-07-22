@@ -13,11 +13,11 @@ You want to generate a blog post about "Best Budget Headphones 2026"
 1. Go to the repository: <https://github.com/midnghtsapphire/revvel-standards>
 2. Click **Issues** → **New Issue**
 3. Set the title:
-   ```
+   ```text
    Write blog post about best budget headphones 2026
    ```
 4. Add description (optional):
-   ```
+   ```text
    Target audience: Young professionals, students
    Keywords: budget headphones, affordable audio, wireless headphones
    Tone: Professional yet approachable
@@ -42,7 +42,7 @@ You want to generate a blog post about "Best Budget Headphones 2026"
 
 ### Output
 Generated content is saved to:
-```
+```text
 content-automation-output/2026-05-02-best-budget-headphones-2026/
 ├── metadata.json
 ├── brief.md
@@ -80,7 +80,7 @@ You want to create a video script manually without opening an issue
 - Commits to repository automatically
 
 ### Output
-```
+```text
 content-automation-output/2026-05-02-how-to-choose-the-right-burial-insurance/
 ├── metadata.json
 ├── brief.md
@@ -106,7 +106,7 @@ Every Sunday at 09:00 UTC, the system automatically generates content ideas
 
 ### Output
 The scheduled run uses the standard blog pipeline with topic "Weekly Content Calendar":
-```
+```text
 content-automation-output/2026-05-02-weekly-content-calendar/
 ├── metadata.json
 ├── brief.md
@@ -131,7 +131,7 @@ You have a blog post and want to convert it to a Twitter/X thread
 4. Provide the blog content in description (or reference URL)
 
 ### Output
-```
+```text
 content-automation-output/2026-05-02-your-topic/
 └── formats/
     └── social-thread.md
@@ -178,7 +178,7 @@ You want to generate content in ALL formats at once
 
 ### Output
 All formats generated simultaneously:
-```
+```text
 content-automation-output/2026-05-02-your-topic/
 └── formats/
     ├── blog.html            # Ready-to-publish blog HTML

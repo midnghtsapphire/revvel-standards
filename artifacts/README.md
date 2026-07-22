@@ -4,7 +4,7 @@ This system generates ALL artifacts from video production: website, CLI, MCP, AP
 
 ## Overview
 
-```
+```text
 Input (Video/Content)
        │
        ▼
@@ -92,7 +92,7 @@ Output Artifacts + Distribution + Monetization
 
 ## Workflow
 
-```
+```text
 1. INPUT
    - Video file
    - Script/transcript

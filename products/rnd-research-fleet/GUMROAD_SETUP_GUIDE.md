@@ -23,12 +23,12 @@
 ## Step 3: Fill in Product Details
 
 ### Product Name
-```
+```text
 R&D Research Fleet
 ```
 
 ### Price
-```
+```text
 $400
 ```
 
@@ -145,7 +145,7 @@ Email: <support@freedomangelcorp.com>
 
 ## What Your Listing Will Look Like
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │  R&D Research Fleet                        │
 │                                             │
@@ -172,7 +172,7 @@ Email: <support@freedomangelcorp.com>
 ## After Publishing
 
 You'll get a shareable link like:
-```
+```text
 https://freedomangelcorp.gumroad.com/l/rnd-research-fleet
 ```
 
