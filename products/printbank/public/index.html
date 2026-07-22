@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>PrintBank — vector wall art & photo print sizer</title>
+  <meta name="description" content="144 true-vector printable wall art prints and a client-side photo print sizer. Every print downloads as SVG and prints losslessly from 4×6 to A1."/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="site-header">
+    <h1>PrintBank</h1>
+    <p class="tagline">True-vector wall art · client-side photo print sizer</p>
+    <nav>
+      <a href="#gallery">Gallery</a>
+      <a href="#workbench">Your Photos</a>
+      <a href="#sizes">Size guide</a>
+    </nav>
+  </header>
+
+  <section id="gallery">
+    <div class="controls">
+      <input id="search" type="search" placeholder="Search prints…" aria-label="Search prints"/>
+      <select id="genre-filter" aria-label="Filter by genre">
+        <option value="">All genres</option>
+      </select>
+    </div>
+    <div id="grid" class="grid" aria-live="polite"></div>
+  </section>
+
+  <section id="workbench">
+    <h2>Your Photos — print sizer</h2>
+    <p>Drop a photo below. We grade it against every standard print size (fully client-side; nothing uploaded).</p>
+    <div id="dropzone" class="dropzone">
+      <input id="file" type="file" accept="image/*"/>
+      <p>Drag &amp; drop or click to choose an image</p>
+    </div>
+    <div id="photo-results" hidden>
+      <div class="photo-summary">
+        <img id="photo-preview" alt="Your uploaded photo"/>
+        <div id="photo-meta"></div>
+      </div>
+      <table id="grade-table">
+        <thead><tr><th>Size</th><th>Effective DPI</th><th>Grade</th><th>Export</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sizes">
+    <h2>Standard print sizes</h2>
+    <table id="size-table">
+      <thead><tr><th>Name</th><th>Inches</th><th>Ratio</th><th>Group</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <div id="modal" class="modal" hidden>
+    <div class="modal-card">
+      <button class="close" id="modal-close" aria-label="Close">×</button>
+      <div id="modal-preview"></div>
+      <h3 id="modal-title"></h3>
+      <p id="modal-meta"></p>
+      <div class="actions">
+        <button id="dl-svg">Download SVG (vector)</button>
+        <button id="dl-png-150">Export 150 DPI PNG</button>
+        <button id="dl-png-300">Export 300 DPI PNG (premium)</button>
+      </div>
+      <label>Print size:
+        <select id="modal-size"></select>
+      </label>
+    </div>
+  </div>
+
+  <footer>
+    <p>PrintBank · deterministic vector catalog · <a href="https://polar.sh">Support on Polar</a></p>
+  </footer>
+
+  <script src="print-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
