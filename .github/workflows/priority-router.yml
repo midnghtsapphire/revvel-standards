@@ -21,6 +21,12 @@ on:
         description: Use OpenRouter when OPENROUTER_API_KEY is configured
         type: boolean
         default: true
+# Serialize per issue/PR so rapid label toggles don't spawn concurrent runs
+# that race on the same priority labels. Schedule/dispatch runs key on run_id
+# (no cancellation). Cancels only superseded runs for the same target.
+concurrency:
+  group: priority-router-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
+  cancel-in-progress: true
 permissions:
   issues: write
   pull-requests: write
