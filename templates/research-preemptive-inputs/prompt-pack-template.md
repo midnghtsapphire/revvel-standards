@@ -93,7 +93,7 @@ should produce this from the templates automatically.
 
 > **Slot 1 — Multi-palette grid for "Bananas / Vol Navy sailgating":**
 >
-> ```
+> ```text
 > A vector graphic design showcase sheet featuring four variations of a sports
 > team logo, organized in a clean 2x2 grid. The main character is a cartoon
 > banana mascot wearing a baseball cap and a striped jersey, happily steering
@@ -114,7 +114,7 @@ should produce this from the templates automatically.
 > background for a professional design portfolio style. Clean lines,
 > screen-printed aesthetic, no overlapping frames. Stylized silhouettes
 > only — no UT trademarked marks (Power-T, Smokey likeness, etc.).
-> ```
+> ```text
 
 The same template ships variants for batting-pose emblem, sticker-pack grid,
 and so on — derived purely from the WR's motif + palette inputs.

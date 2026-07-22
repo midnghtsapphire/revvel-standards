@@ -404,7 +404,7 @@ Every page type stores its SEO fields in the database. Here is where each metada
 | Product | `products.meta_title` → fallback: `products.name` | `products.meta_description` → fallback: `products.short_description` | `products.images[0].url` | `products.images[0].alt` → fallback: `products.name` |
 | Landing Page | `landing_pages.seo_title` | `landing_pages.seo_description` | `landing_pages.og_image_url` | `landing_pages.og_image_alt` |
 | About Page | `about_pages.seo_title` | `about_pages.seo_description` | `about_pages.hero_image_url` | `about_pages.hero_image_alt` |
-| Category | Auto: `[Category Name] Articles | [App Name]` | Auto: `Browse [count] articles about [category]` | Default OG image | Default OG alt |
+| Category | Auto: `[Category Name] Articles \| [App Name]` | Auto: `Browse [count] articles about [category]` | Default OG image | Default OG alt |
 | Lead Form | Static in code | Static in code | None (noindex) | N/A |
 
 ---

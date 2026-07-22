@@ -82,7 +82,7 @@ Following `skills/mvi-contract/SKILL.md`. **No coding permitted in `midnghtsapph
 | TLS via Caddy/Let's Encrypt on droplet | ❌ not configured for premolt.com | agent |
 | Env vars: `RESEND_API_KEY`, `DATABASE_URL`, `WAITLIST_TABLE` | ❌ to provision via vault-agent skill | agent |
 | Repo: `midnghtsapphire/premolt` scaffolded with site code | ❌ to scaffold | agent |
-| Other features that must be complete first: none |
+| Other features that must be complete first: none | | |
 
 ### Section 4 — Acceptance Gates
 - [ ] Site source is in `midnghtsapphire/premolt` and follows `revvel-standards` repo template (AGENTS.md symlinks, pre-commit, CI).

@@ -3,7 +3,7 @@
 > **Last Updated**: Feb 25, 2026 4:35 PM MST
 > **Sprint**: Sprint 1 — Foundation & Core Apps
 > **Status**: Snapshot (see note below)
-
+>
 > [!NOTE]
 > **This document is a point-in-time snapshot from Feb 25, 2026.**
 > It is not automatically maintained. For live project status, see:

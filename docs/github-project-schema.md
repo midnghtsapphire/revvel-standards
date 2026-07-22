@@ -1,7 +1,7 @@
 # GitHub Project Schema
 
 > 📖 **Read first — before provisioning the board:** [`docs/reference/github-projects-automation-guide.pdf`](./reference/github-projects-automation-guide.pdf) (8 pages, ~15 min). Documents the GraphQL API, auth-scope rules (`GITHUB_TOKEN` cannot reach Projects), the two-step `addProjectV2ItemById` → `updateProjectV2ItemFieldValue` pattern, and the platform limits (50 fields per Project, 50 options per single-select, 25 issue fields per org, 10 pinned per issue type) that constrain every decision below. Without these constraints in mind, the schema below is just a wishlist.
-
+>
 > 🛠 **Then read:** [`docs/github-project-v2-workflows.md`](./github-project-v2-workflows.md) for the operator setup walkthrough that wires the default-field-setter workflows to the schema below.
 
 The Revvel operating model uses a single GitHub Project to track every work request from intake through launch and measurement. The project enforces routing decisions made in either of the two intake forms — the heavy [Work Request](../.github/ISSUE_TEMPLATE/00-work-request.yml) form (primary) and the lightweight [OpenHands System WR](../.github/ISSUE_TEMPLATE/10-OpenHands-system-wr.yml) form — and the [Viability Gate](../templates/viability-gate-template.md).

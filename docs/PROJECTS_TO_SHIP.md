@@ -210,11 +210,11 @@ Input → Google Sheets check → CPA review → Execute
 
 | Project | Status | Revenue | Notes |
 |---------|--------|---------|-------|
-| Reese Reviews | $K/mo | Expand |
-| Rental Co | Setup | Q2 launch |
-| Overflow LLC | Setup | Q2 launch |
-| Compliance tracker | In progress | Passive |
-| Tax Navigator | Planning | Q3 |
+| Reese Reviews | $K/mo | Expand | |
+| Rental Co | Setup | Q2 launch | |
+| Overflow LLC | Setup | Q2 launch | |
+| Compliance tracker | In progress | Passive | |
+| Tax Navigator | Planning | Q3 | |
 
 ---
 

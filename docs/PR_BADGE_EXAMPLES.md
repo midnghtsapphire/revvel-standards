@@ -82,10 +82,10 @@ The labels match the badge colors for visual consistency:
 
 | Label | Badge | Color |
 |-------|-------|-------|
-| awaiting-approval | ![](https://img.shields.io/badge/-awaiting__approval-fbca04) | Yellow (#fbca04) |
-| review-started | ![](https://img.shields.io/badge/-review__started-0075ca) | Blue (#0075ca) |
-| changes-requested | ![](https://img.shields.io/badge/-changes__requested-d93f0b) | Red (#d93f0b) |
-| approved | ![](https://img.shields.io/badge/-approved-0e8a16) | Green (#0e8a16) |
+| awaiting-approval | ![awaiting-approval status badge](https://img.shields.io/badge/-awaiting__approval-fbca04) | Yellow (#fbca04) |
+| review-started | ![review-started status badge](https://img.shields.io/badge/-review__started-0075ca) | Blue (#0075ca) |
+| changes-requested | ![changes-requested status badge](https://img.shields.io/badge/-changes__requested-d93f0b) | Red (#d93f0b) |
+| approved | ![approved status badge](https://img.shields.io/badge/-approved-0e8a16) | Green (#0e8a16) |
 
 ---
 

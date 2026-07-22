@@ -81,10 +81,10 @@ Full hierarchy rationale is maintained in [`ENTITY_HIERARCHY.md`](ENTITY_HIERARC
 | `mrp` | Manufacturing (coffee blends, specialty items) | 🔵 Configure when Vine House production starts | — |
 | `project` | Tasks, timesheets, project profitability | ✅ Always on | GitHub Projects for non-code work |
 | `hr`, `hr_expense` | Employees, expense reimbursement | 🟡 Enable on first hire | — |
-| `hr_payroll` | Payroll runs | ❌ CE version is limited — use Gusto / Wave Payroll instead |
-| `website`, `website_sale` | Public storefront | ❌ **Do not use** — our storefronts are Shopify / custom Next.js per [`_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md §4). Odoo stays headless. |
-| `point_of_sale` | Retail POS | 🟡 Evaluate only if in-person Vine House events happen |
-| `marketing_automation` | Drip campaigns | ❌ **Do not use** — Enterprise-only; use Loops / Mailchimp per [`MARKETING_AUTOMATION_STANDARD.md`](MARKETING_AUTOMATION_STANDARD.md) |
+| `hr_payroll` | Payroll runs | ❌ CE version is limited — use Gusto / Wave Payroll instead | |
+| `website`, `website_sale` | Public storefront | ❌ **Do not use** — our storefronts are Shopify / custom Next.js per [`_MASTER_INVENTORY.md`](../_MASTER_INVENTORY.md §4). Odoo stays headless. | |
+| `point_of_sale` | Retail POS | 🟡 Evaluate only if in-person Vine House events happen | |
+| `marketing_automation` | Drip campaigns | ❌ **Do not use** — Enterprise-only; use Loops / Mailchimp per [`MARKETING_AUTOMATION_STANDARD.md`](MARKETING_AUTOMATION_STANDARD.md) | |
 | OCA `account_financial_report` | Replaces Enterprise advanced reports | ✅ Install from OCA | Odoo Enterprise financial reports |
 | OCA `mis_builder` | Custom KPIs / dashboards | 🟡 Evaluate in Phase 3 | Metabase for some views |
 

@@ -32,7 +32,7 @@ Trigger this skill on any mobile-test work in an Expo/React Native repo:
 | Unit + component | `jest-expo` preset + `@testing-library/react-native` + `@testing-library/jest-native` |
 | E2E (default) | **Maestro** — declarative YAML, one flow runs on both iOS and Android |
 | E2E (alternate tier — only when grey-box internals must be asserted) | Detox (requires `expo prebuild`; needs a separate decision in `DECISIONS.md`) |
-| Native build for E2E | EAS Build `--profile preview --platform ios|android` |
+| Native build for E2E | EAS Build `--profile preview --platform ios\|android` |
 | iOS sim runner | GitHub Actions `macos-14` |
 | Android emu runner | GitHub Actions `ubuntu-latest` + `reactivecircus/android-emulator-runner` |
 
