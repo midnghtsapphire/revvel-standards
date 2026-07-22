@@ -24,7 +24,7 @@ repeatable **method** for finding and correcting them, so the next agent
 (human or AI) does not have to rediscover it from scratch.
 **Status:** Active reference (2026-07-13)
 **Case evidence:** Formalizes the audit-and-fix session that produced PRs
-## 15821, #15823, #15824, #15825, #15826, #15827, and #15828.
+## 15821, #15823, #15824, #15825, #15826, #15827, and #15828
 
 This playbook exists so the next agent (human or AI) does not have to
 rediscover the audit methodology or the fix-pattern catalog from scratch.
@@ -81,75 +81,75 @@ This is the method actually used on 2026-07-13, not a theoretical one.
 8. **Close the loop in `learnings.md`.** After each fix merges, append a
    dated entry with symptom, root cause, and the PR link. This is what makes
    step 3 work next time.
-1. **Scope into parallel read-only research agents by category.**
+9. **Scope into parallel read-only research agents by category.**
    Do not run one monolithic "audit everything" pass. Spawn several
    read-only subagents, each with a narrow category (e.g. "CI workflows",
    "secret handling", "label/state races", "shell scripts", "third-party
    Actions"). Read-only means: they may `grep`, `cat`, `gh api`, but they
    **must not** edit files or open PRs.
 
-2. **Demand file:line citations.**
+10. **Demand file:line citations.**
    Every finding must include `path/to/file.ext:LN` or a PR/issue URL.
    Findings without citations are rumors and must be re-verified before
    triage.
 
-3. **Cross-reference `learnings.md` for recurrence.**
+11. **Cross-reference `learnings.md` for recurrence.**
    Before treating a finding as novel, grep `learnings.md` and prior PR
    titles. A recurring pattern deserves a catalog entry here, not just a
    one-off fix.
 
-4. **Triage before fixing.**
+12. **Triage before fixing.**
    Not every finding becomes an immediate PR. Categorize each as:
    - **Fix now** — user-visible, security, or actively-breaking CI.
    - **Fix next** — real bug, not on fire, tracked as an issue.
    - **Document only** — intentional trade-off; add to `learnings.md`.
    - **Reject** — false positive; record *why* so the next audit skips it.
 
-5. **One fix per isolated worktree subagent.**
+13. **One fix per isolated worktree subagent.**
    Each fix runs in its own `git worktree` with its own branch. The
    subagent must run `npm ci && npm test` and add a regression test
    before opening the PR. This prevents fix-A from masking or reverting
    fix-B.
 
-6. **Watch live CI on your own in-flight PRs.**
+14. **Watch live CI on your own in-flight PRs.**
    Static findings are not enough. Poll `gh pr checks` on the PRs *this
    audit is opening*. The broken `saml-sso-registration.yml` third-party
    Action (fixed in #15828) was only caught because a fix-PR's CI failed
    for an unrelated reason and someone actually looked.
 
-7. **Targeted search for stale commitments — do not enumerate.**
+15. **Targeted search for stale commitments — do not enumerate.**
    Search issue/PR history for phrases like `Next Action`, `follow-up`,
    `TODO`, `will address in a follow-up`. Do not try to read every open
    issue. Stale commitments become new findings; close them or convert
    them to tracked issues.
-1. **Scope into parallel read-only research agents by category.** Do not run
+16. **Scope into parallel read-only research agents by category.** Do not run
    a single monolithic "audit everything" pass. Split by concern (CI/CD,
    secret handling, shell scripts, third-party Actions, label lifecycle,
    exit-code semantics, follow-up debt) and dispatch each as an independent
    read-only subagent. Parallel scoping is what surfaces cross-cutting
    patterns instead of one-off bugs.
-2. **Demand file:line citations for every finding.** A finding without
+17. **Demand file:line citations for every finding.** A finding without
    `path/to/file.ext:LINE` is not actionable and is not accepted. Citations
    also make cross-referencing `learnings.md` mechanical instead of
    subjective.
-3. **Cross-reference `learnings.md` for recurrence.** Before triaging a
+18. **Cross-reference `learnings.md` for recurrence.** Before triaging a
    finding as novel, grep `learnings.md` and the standards directory for the
    same symptom. Recurrence changes the priority: a second occurrence is a
    process failure, not a bug.
-4. **Triage before fixing.** Not every finding becomes an immediate PR. Sort
+19. **Triage before fixing.** Not every finding becomes an immediate PR. Sort
    into: (a) fix now in an isolated worktree, (b) file an issue with
    citation, (c) fold into the next relevant PR, (d) explicitly defer with a
    reason. Fixing everything at once defeats bisect and review.
-5. **One fix per isolated worktree subagent.** Each fix runs `npm ci &&
+20. **One fix per isolated worktree subagent.** Each fix runs `npm ci &&
    npm test` plus a targeted regression test in its own worktree. No
    fix ships without a regression test that would have caught the original
    symptom.
-6. **Watch live CI on your own in-flight PRs.** Static findings are only
+21. **Watch live CI on your own in-flight PRs.** Static findings are only
    half the audit. The broken third-party Action in
    `saml-sso-registration.yml` (#15828) was not caught by reading code — it
    was caught by watching an unrelated PR fail CI and reading the log. Keep
    a browser tab or `gh run watch` on active PRs during the audit window.
-7. **Targeted search, not enumeration, for stale follow-up commitments.**
+22. **Targeted search, not enumeration, for stale follow-up commitments.**
    `gh search issues "Next Action" OR "follow-up" is:open` beats scrolling.
    Stale "we'll fix this next PR" comments are a rich seam of real bugs
    whose original context has evaporated.

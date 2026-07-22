@@ -752,7 +752,6 @@ concurrency:
 
 ---
 
-
 ## Workflows WITH Concurrency Control ✅
 
 ### `agent-fallback.yml`
@@ -970,7 +969,6 @@ concurrency:
 **Cancel in Progress:** false
 
 ---
-
 
 ## Recommendations
 

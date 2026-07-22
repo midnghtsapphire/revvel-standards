@@ -75,7 +75,7 @@ token                api_key
 
 ### EU residency
 
-If the app has *any* EU traffic, set:
+If the app has _any_ EU traffic, set:
 
 ```ts
 // In mixpanel-init.ts — already configurable via MIXPANEL_API_HOST:

@@ -26,7 +26,6 @@ permissions:
 permissions:
             ^
 
-
 ### Jobs Missing timeout-minutes
 
 - `ci-error-prevention.yml`: error-prevention-tests, lint-workflows, token-security-check, wr-lint-check, automation-health, summary
