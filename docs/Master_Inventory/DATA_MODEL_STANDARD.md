@@ -259,7 +259,7 @@ npx drizzle-kit studio
 
 ## 9. Database File Structure
 
-```
+```text
 db/
 ├── schema.ts          # All table definitions (single file for small apps)
 ├── schema/            # Split by domain for larger apps

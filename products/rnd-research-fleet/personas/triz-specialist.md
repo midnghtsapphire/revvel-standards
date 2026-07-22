@@ -42,7 +42,7 @@ When stuck, apply these:
 
 ## Output Format
 
-```
+```text
 PROBLEM: [Core issue]
 
 CONTRADICTION FOUND:

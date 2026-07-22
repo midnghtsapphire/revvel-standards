@@ -33,7 +33,7 @@
 
 ### Architecture
 
-```
+```text
 build/token/
   src/
     credits/

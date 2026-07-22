@@ -34,7 +34,7 @@ If Audrey's combined income exceeds the Medicaid limit:
 
 ### Goal: $0 taxable income to Audrey
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │              PASSIVE INCOME MODEL                       │
 ├─────────────────────────────────────────────────────────┤
@@ -80,7 +80,7 @@ You DON'T materially participate if:
 
 ### For Audrey
 
-```
+```text
 Audrey's involvement = PICK PRODUCTS
 Caresse's involvement = DO ALL THE WORK
 

@@ -122,7 +122,7 @@ iconutil -c icns MyApp.iconset
 
 Place all icons in your app repo at:
 
-```
+```text
 client/public/icons/
 ├── favicon-16x16.png
 ├── favicon-32x32.png

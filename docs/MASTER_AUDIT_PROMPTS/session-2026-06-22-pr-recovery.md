@@ -8,7 +8,7 @@
 
 ## Original User Request
 
-```
+```text
 These are my requirements and coding standards please review in detail. Review all PRs 
 that could be squashed and merged as they are complete. Help me push through all the 
 self healing scripts holding everything up.

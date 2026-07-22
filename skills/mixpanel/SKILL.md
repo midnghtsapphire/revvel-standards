@@ -16,7 +16,7 @@ Mixpanel is a product-analytics platform that captures **user-behavior events** 
 
 ## Integration Architecture
 
-```
+```text
 Revvel app (browser / Node / mobile)
         ↓
   Mixpanel SDK initialized with MIXPANEL_TOKEN

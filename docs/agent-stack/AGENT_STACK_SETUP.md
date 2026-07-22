@@ -15,7 +15,7 @@
 
 ## 1. The Stack at a Glance
 
-```
+```text
 [WR] issue opened/edited
         │
         ▼

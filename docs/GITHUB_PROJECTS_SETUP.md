@@ -118,7 +118,7 @@ gh api repos/$APP_REPO/milestones -f title="Phase 7: Maintenance"  -f descriptio
 
 ### Board Name Convention
 
-```
+```text
 {PRODUCT_NAME} — Active Development
 ```
 
@@ -243,7 +243,7 @@ No secrets or configuration changes are required — the workflow uses `GITHUB_T
 
 **How linked issues are detected:** The workflow parses the PR title and body for any of these patterns (case-insensitive):
 
-```
+```text
 Closes #42    Fixes #42    Resolves #42
 Close #42     Fix #42      Resolve #42
 Closed #42    Fixed #42    Resolved #42
@@ -303,7 +303,7 @@ jobs:
 
 **How labels become env vars:** Label names are uppercased and hyphens become underscores.
 
-```
+```text
 label: "skip-tests"   →  GITHUB_PR_LABEL_SKIP_TESTS=true
 label: "security"     →  GITHUB_PR_LABEL_SECURITY=true
 label: "bom-purchase" →  GITHUB_PR_LABEL_BOM_PURCHASE=true

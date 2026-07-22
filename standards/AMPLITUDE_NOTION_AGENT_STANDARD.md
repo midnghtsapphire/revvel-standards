@@ -16,7 +16,7 @@ An autonomous agent that pulls a daily snapshot from the **Amplitude Dashboard R
 
 It closes the loop:
 
-```
+```text
 GitHub events ── amplitude-events.yml ──▶ Amplitude
                                               │
                                               ▼

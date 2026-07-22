@@ -89,7 +89,7 @@ The Department of Energy (DOE) 5-Point Screening Analysis is a rigorous evaluati
 
 ## Decision Tree
 
-```
+```text
                     ┌─────────────────┐
                     │  Pass all 5?    │
                     └────────┬────────┘

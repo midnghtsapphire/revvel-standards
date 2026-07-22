@@ -80,7 +80,7 @@ Minimum viable usage (streaming):
 
 ### Recommended CSP
 
-```
+```text
 Content-Security-Policy:
   default-src 'self';
   script-src 'self' https://js.puter.com;

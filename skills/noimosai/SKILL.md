@@ -78,7 +78,7 @@ Operators can trigger NoimosAI directly from GitHub Actions → NoimosAI → Run
 
 ### Vault Path
 
-```
+```text
 revvel/shared/marketing/noimosai
 ```
 
@@ -118,7 +118,7 @@ Submit a new marketing task to the autonomous team.
 ```
 
 **Headers:**
-```
+```text
 Authorization: Bearer NOIMOSAI_API_KEY
 Content-Type: application/json
 ```
@@ -144,7 +144,7 @@ List all tasks in the workspace (paginated).
 
 ## Agent Workflow — How NoimosAI Agents Work
 
-```
+```text
 Issue opened with `marketing` label
     ↓
 .github/workflows/noimosai.yml fires

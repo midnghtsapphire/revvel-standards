@@ -1,7 +1,7 @@
 # Team State — Persistent Handoff File
-# Updated: Feb 16, 2026 16:49 MST
-# PURPOSE: Every team reads this on startup, writes to it as they work
-# New teams pick up exactly where the last one stopped
+## Updated: Feb 16, 2026 16:49 MST
+## PURPOSE: Every team reads this on startup, writes to it as they work
+## New teams pick up exactly where the last one stopped
 
 ---
 

@@ -1,6 +1,6 @@
 # MANUS_INSTRUCTIONS.md
-# GrowlingEyes — The Watcher
-# Complete Build Handoff: 18-Domain Threat Intelligence Platform
+## GrowlingEyes — The Watcher
+## Complete Build Handoff: 18-Domain Threat Intelligence Platform
 
 **Owner:** Audrey Walter-Evans / MIDNGHTSAPPHIRE
 **Date:** April 1, 2026
@@ -119,7 +119,7 @@ export const events = mysqlTable('events', {
 These require ZERO authentication. Just fetch and parse.
 
 #### 1. GDELT Project (covers ALL 18 domains)
-```
+```text
 URL: https://api.gdeltproject.org/api/v2/doc/doc
 Method: GET
 Params: query, mode=ArtList, maxrecords=10, format=json, timespan=24h, sort=DateDesc
@@ -251,7 +251,7 @@ export async function fetchGdelt(query: string, maxRecords = 10): Promise<GdeltA
 ```
 
 #### 2. USGS Earthquake API
-```
+```text
 URL: https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson
 Method: GET
 Auth: NONE
@@ -262,7 +262,7 @@ Poll: Every 5 minutes
 ```
 
 #### 3. GDACS Disaster Alerts
-```
+```text
 URL: https://www.gdacs.org/xml/rss.xml
 Method: GET (RSS/XML)
 Auth: NONE
@@ -272,7 +272,7 @@ Poll: Every 15 minutes
 ```
 
 #### 4. CISA Cybersecurity Advisories
-```
+```text
 URL: https://www.cisa.gov/cybersecurity-advisories/all.xml
 Method: GET (RSS/XML)
 Auth: NONE
@@ -281,7 +281,7 @@ Poll: Every 30 minutes
 ```
 
 #### 5. FRA Form 54 (US Rail Accidents)
-```
+```text
 URL: https://data.transportation.gov/resource/85tf-25kj.json
 Method: GET (Socrata JSON API)
 Auth: NONE
@@ -293,7 +293,7 @@ Poll: Every hour
 ```
 
 #### 6. NOAA Space Weather Alerts
-```
+```text
 URL: https://services.swpc.noaa.gov/products/alerts.json
 Method: GET
 Auth: NONE
@@ -305,7 +305,7 @@ Poll: Every 15 minutes
 ```
 
 #### 7. US Drought Monitor
-```
+```text
 URL: https://usdmdataservices.unl.edu/api/StateStatistics/GetDroughtSeverityStatisticsByAreaPercent
 Params: ?aoi=US&startdate=YYYY-MM-DD&enddate=YYYY-MM-DD&statisticsType=1
 Auth: NONE
@@ -315,7 +315,7 @@ Poll: Weekly (updates Thursdays)
 ```
 
 #### 8. openFDA Drug Recalls
-```
+```text
 URL: https://api.fda.gov/drug/enforcement.json
 Params: ?search=report_date:[YYYYMMDD+TO+YYYYMMDD]&sort=report_date:desc&limit=10
 Auth: NONE (rate limited without key)
@@ -326,7 +326,7 @@ Poll: Every 6 hours
 ```
 
 #### 9. UNHCR Refugee Data
-```
+```text
 URL: https://api.unhcr.org/population/v1/population/
 Params: ?limit=20&year=2024&page=1
 Auth: NONE
@@ -335,7 +335,7 @@ Poll: Daily
 ```
 
 #### 10. SIPRI Arms Transfers
-```
+```text
 URL: https://armstrade.sipri.org/armstrade/page/values.php
 Method: Web scrape or download CSV
 Auth: NONE
@@ -344,7 +344,7 @@ Poll: Monthly (updated quarterly)
 ```
 
 #### 11. ReliefWeb
-```
+```text
 URL: https://api.reliefweb.int/v1/reports?appname=growlingeyes
 Params: &filter[field]=primary_country&limit=10&sort[]=date:desc
 Auth: NONE
@@ -353,7 +353,7 @@ Poll: Every hour
 ```
 
 #### 12. Cloudflare Radar (Internet Outages)
-```
+```text
 URL: https://radar.cloudflare.com (data accessible via public pages)
 Auth: NONE
 Use for: Internet traffic anomalies by country (cable cuts, outages)
@@ -361,7 +361,7 @@ Poll: Every 30 minutes
 ```
 
 #### 13. NOAA Weather Alerts
-```
+```text
 URL: https://api.weather.gov/alerts/active
 Auth: NONE (set User-Agent header)
 Returns: GeoJSON with active weather alerts
@@ -370,7 +370,7 @@ Poll: Every 10 minutes
 ```
 
 #### 14. FAO Food Price Index
-```
+```text
 URL: https://www.fao.org/worldfoodsituation/foodpricesindex/en/
 Auth: NONE
 Data: Monthly commodity price indices (cereals, oils, dairy, meat, sugar)
@@ -378,7 +378,7 @@ Poll: Monthly
 ```
 
 #### 15. GPSJam.org
-```
+```text
 URL: https://gpsjam.org
 Auth: NONE
 Data: Daily GPS interference maps derived from aircraft ADS-B data
@@ -387,7 +387,7 @@ Poll: Daily
 ```
 
 #### 16. TeleGeography Submarine Cable Map
-```
+```text
 URL: https://github.com/telegeography/www.submarinecablemap.com
 Auth: NONE
 Data: GeoJSON of all 597+ submarine cable systems + landing stations
@@ -395,7 +395,7 @@ Use: Static overlay on map — update monthly
 ```
 
 #### 17. OpenRailwayMap
-```
+```text
 URL: https://www.openrailwaymap.org
 Tiles: https://tiles.openrailwaymap.org/
 Auth: NONE
@@ -406,7 +406,7 @@ Use: Map overlay layer
 ### TIER 2: Add Next (Free Key Required)
 
 #### 18. AISstream.io (REAL-TIME VESSEL TRACKING)
-```
+```text
 URL: wss://stream.aisstream.io/v0/stream
 Auth: Free API key from aisstream.io
 Protocol: WebSocket
@@ -416,7 +416,7 @@ THIS IS THE BIG ONE for maritime domain — real-time ship positions globally
 ```
 
 #### 19. Space-Track.org
-```
+```text
 URL: https://www.space-track.org/basicspacedata/query/
 Auth: Free account (username/password, cookie-based)
 Key endpoints:
@@ -427,7 +427,7 @@ Key endpoints:
 ```
 
 #### 20. NVD/CVE (with key for better rate limits)
-```
+```text
 URL: https://services.nvd.nist.gov/rest/json/cves/2.0
 Auth: Optional API key (higher rate limits)
 Params: ?pubStartDate=YYYY-MM-DDTHH:MM:SS&pubEndDate=...&resultsPerPage=20
@@ -435,14 +435,14 @@ Key fields: cve.id, descriptions, metrics.cvssMetricV31.cvssData.baseScore
 ```
 
 #### 21. AlienVault OTX
-```
+```text
 URL: https://otx.alienvault.com/api/v1/pulses/subscribed
 Auth: Free API key
 Key fields: pulse.name, pulse.indicators, pulse.created
 ```
 
 #### 22. ACLED (Armed Conflict)
-```
+```text
 URL: https://acleddata.com/data-export-tool/
 Auth: Free API key
 Key fields: event_date, event_type, country, latitude, longitude, fatalities, actor1, actor2
@@ -450,7 +450,7 @@ THE structured conflict dataset — every protest, battle, explosion, globally
 ```
 
 #### 23. NASA FIRMS (Fire Data)
-```
+```text
 URL: https://firms.modaps.eosdis.nasa.gov/api/
 Auth: Free MAP_KEY
 Data: Active fire detections from MODIS/VIIRS satellites
@@ -458,7 +458,7 @@ Use for: Agricultural fires, wildfire near infrastructure, conflict areas
 ```
 
 #### 24. EIA Energy Data
-```
+```text
 URL: https://api.eia.gov/v2/
 Auth: Free API key
 Data: Oil prices, gas prices, crude inventory, production data
@@ -466,7 +466,7 @@ Key series: PET.RWTC.D (WTI crude daily), NG.RNGWHHD.D (natural gas)
 ```
 
 #### 25. FRED Economic Data
-```
+```text
 URL: https://api.stlouisfed.org/fred/series/observations
 Auth: Free API key
 Key series: CPIAUCSL (CPI), UNRATE (unemployment), DFF (fed funds rate),
@@ -474,7 +474,7 @@ Key series: CPIAUCSL (CPI), UNRATE (unemployment), DFF (fed funds rate),
 ```
 
 #### 26. ADS-B Exchange
-```
+```text
 URL: https://adsbexchange.com/data/
 Auth: Free tier available
 Data: Unfiltered flight data INCLUDING military aircraft
@@ -482,28 +482,28 @@ Complements existing FR24 integration
 ```
 
 #### 27. OpenSky Network
-```
+```text
 URL: https://opensky-network.org/api/states/all
 Auth: Free account (better rate limits)
 Data: All aircraft in flight right now
 ```
 
 #### 28. IOM Displacement Tracking Matrix
-```
+```text
 URL: https://dtm.iom.int/data-and-analysis/dtm-api
 Auth: Free registration
 Data: Internal displacement figures by country, admin region
 ```
 
 #### 29. RIPE Atlas (Internet Measurement)
-```
+```text
 URL: https://atlas.ripe.net/api/v2/
 Auth: Free account
 Data: Global internet measurement probes — detect cable cuts, routing anomalies
 ```
 
 #### 30. FlightRadar24 (EXISTING KEY)
-```
+```text
 Audrey already has an FR24 API key wired into the app.
 The frontend has an FR24 tab with flight search.
 ALSO: FR24 GPS Jamming Map at flightradar24.com/data/gps-jamming

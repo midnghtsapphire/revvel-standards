@@ -23,7 +23,7 @@ Templates optimized for TikTok's algorithm and audience.
 **Best for:** Viral educational content
 **Hook:** Start with the payoff, not the setup
 
-```
+```text
 [HOOK - 0:00-0:03]
 [Show the result/tip immediately]
 
@@ -46,7 +46,7 @@ Follow for more tips like this 🔥"
 **Best for:** Engagement, relatability
 **Duration:** 30-60 seconds
 
-```
+```text
 [HOOK - 0:00-0:05]
 "Let me tell you about the time I [interesting story hook]..."
 
@@ -68,7 +68,7 @@ Follow for more tips like this 🔥"
 **Best for:** Trend participation, viral potential
 **Duration:** 15-60 seconds
 
-```
+```text
 [CONTEXT]
 [Use trending sound or format]
 
@@ -107,7 +107,7 @@ Follow for more tips like this 🔥"
 - Engage with comments within 30 minutes
 
 ### Hashtag Strategy
-```
+```text
 Discovery: #[topic]#[topic] #[topic]
 Trending: #[trendinghashtag] #[viral]
 Niche: #[niche] #[community]

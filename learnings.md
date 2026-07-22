@@ -11,11 +11,11 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 **Root Cause of Failure (If any):** What actually broke and why.
 
 **Self-Healing Fix / Learned Lesson:** What was done to fix it, or what was learned.
-# Learnings Log
+## Learnings Log
 
 > **Usage note:** Writes must be append-only. Never rewrite or delete prior
 > entries. Each new lesson goes at the bottom, using the template below.
-# Learnings
+## Learnings
 
 > Append-only log. Writes must be append-only: never edit or delete prior entries; add new ones at the bottom using the template below.
 

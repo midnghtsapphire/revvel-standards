@@ -5,7 +5,7 @@
 
 ## Three-Layer Architecture
 
-```
+```text
 ┌────────────────────────────────────────────────┐
 │  ORCHESTRATOR  (routes intake → engines)       │
 │   - Owns state.json                            │
@@ -37,7 +37,7 @@
 
 ## Engine Interface
 
-```
+```text
 Input:  { intake_id, state, env }
 Output: { artifacts[], next_engine?, runner_calls[], bom?, status }
 ```
@@ -50,7 +50,7 @@ Output: { artifacts[], next_engine?, runner_calls[], bom?, status }
 
 ## Runner Interface
 
-```
+```text
 Input:  { target, payload, credentials_ref }
 Output: { result | bom, status, evidence[] }
 ```

@@ -58,7 +58,7 @@ All automation workflows must default to free or affordable agent options:
 **Purpose:** Fallback chain for issue/PR automation
 
 **Default chain:**
-```
+```text
 OpenRouter (primary) → Cursor (fallback) → OpenHands (opt-in only)
 ```
 

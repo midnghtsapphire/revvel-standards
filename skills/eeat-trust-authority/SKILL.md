@@ -276,7 +276,7 @@ This statement MUST appear consistently across:
 
 ### Canonical Brand Statement
 
-```
+```text
 Audrey Evans
 Systems builder. Legal-tech operator. Intelligence researcher.
 Northern Colorado

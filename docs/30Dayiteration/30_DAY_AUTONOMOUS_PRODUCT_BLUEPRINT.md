@@ -376,7 +376,7 @@ If after 7 days in market:
 5. **Repeat** — until metrics improve
 
 ### Pivot Decision Tree
-```
+```text
 Low signups → Test new channels/messaging
 Low conversion → Test pricing/trust signals
 High refunds → Improve product/expectations

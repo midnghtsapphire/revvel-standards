@@ -43,7 +43,7 @@ node perplexity-research.js "Your question"
 
 ## What's Inside
 
-```
+```text
 rnd-research-fleet/
 ├── README.md                    # This file
 ├── MASTER_PROMPT.md             # The core R&D prompt

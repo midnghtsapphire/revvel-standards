@@ -59,7 +59,7 @@ Status: ✅ = working as expected | ⚠️ = working with known issue | ❌ = no
 
 ### 7. Last Updated
 
-```
+```text
 Last updated: [YYYY-MM-DD HH:MM UTC]
 Updated by: [Agent name/ID or "Human: [name]"]
 Session summary: [one sentence about what changed]

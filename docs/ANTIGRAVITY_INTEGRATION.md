@@ -72,7 +72,7 @@ Antigravity is **not** a replacement for any existing lane. It is a **contributo
 
 ### 3.1. Flow diagram
 
-```
+```text
                            ┌──────────────────────────────────────┐
                            │  Contributor workstation             │
                            │                                      │
@@ -194,7 +194,7 @@ Extends [`TEST_HARNESS_RESEARCH.md`](./revvel-standards/TEST_HARNESS_RESEARCH.md
 
 Additive only — no existing files overwritten.
 
-```
+```text
 revvel-standards/
 ├── .github/
 │   └── labels.yml                      # + antigravity, + antigravity:agent-run (R-AG-06)

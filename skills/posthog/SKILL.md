@@ -20,7 +20,7 @@ PostHog is an all-in-one product analytics platform that captures **user-behavio
 
 ## Integration Architecture
 
-```
+```text
 Revvel app (browser / Node / mobile)
         ↓
   PostHog SDK initialized with POSTHOG_API_KEY

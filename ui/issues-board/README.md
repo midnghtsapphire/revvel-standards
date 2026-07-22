@@ -23,7 +23,7 @@ Interactive web-based dashboard for enhanced GitHub Issues UI management.
 ### GitHub Pages Deployment
 
 The dashboard is automatically deployed to:
-```
+```text
 https://midnghtsapphire.github.io/revvel-standards/ui/issues-board/
 ```
 

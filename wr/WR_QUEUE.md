@@ -52,7 +52,7 @@ Lightweight parking lot for research suggestions and spec ideas before they beco
 
 ## Promotion Workflow
 
-```
+```text
 New idea
   → wr/ideas/YYYY-MM-DD-{slug}.md  (WR_TEMPLATE_IDEA)
   → add row here (status: Queued)
