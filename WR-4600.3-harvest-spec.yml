@@ -1,0 +1,57 @@
+# WR-4600.3 — Watchtower Harvest Spec
+#
+# Purpose: keyless, deterministic daily harvest of adverse-first signals
+# across public biomedical/regulatory/scholarly APIs. Reports DELTA, not
+# "breakthroughs". A quiet day is a success.
+
+id: WR-4600.3
+version: 1
+title: Watchtower harvest pipeline
+cadence:
+  cron: "17 6 * * *"   # 06:17 UTC daily
+  timezone: UTC
+
+invariants:
+  - id: WR-4200-no-fabrication
+    rule: "Every URL emitted MUST originate from an API response body. Never construct a URL from a template."
+    severity: P0
+  - id: no-padding
+    rule: "A shard that requires a key we do not have degrades to 0 rows with a procurement note. Never fabricate rows to hit a count."
+    severity: P0
+  - id: adverse-first
+    rule: "The 'adverse' shard runs before any efficacy/positive shard."
+    severity: P1
+  - id: delta-reporting
+    rule: "Report DELTA vs prior snapshot. A quiet day is a success and STILL produces a snapshot."
+    severity: P1
+  - id: immutable-snapshots
+    rule: "Snapshots are content-hashed (sha256) and immutable once written."
+    severity: P1
+
+shards:
+  - id: adverse
+    order: 1
+    source: NCBI-EUtilities
+    endpoint: "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+    keyless: true
+  - id: trials
+    order: 2
+    source: ClinicalTrials.gov-v2
+    endpoint: "https://clinicaltrials.gov/api/v2/studies"
+    keyless: true
+  - id: scholarly
+    order: 3
+    source: Crossref
+    endpoint: "https://api.crossref.org/works"
+    keyless: true
+
+triage:
+  open_issue_when_any_row_tagged:
+    - HARM
+    - FLICKER
+    - OCULAR
+
+self_test:
+  offline: true
+  deterministic: true
+  checks: 17

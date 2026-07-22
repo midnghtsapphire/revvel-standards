@@ -1,0 +1,60 @@
+name: Watchtower (WR-4600.3)
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Self-test (grounding gate)
+        run: python tools/harvest.py --self-test
+
+      - name: Harvest
+        id: harvest
+        run: |
+          python tools/harvest.py | tee /tmp/harvest.json
+          echo "triage=$(python -c 'import json;print(str(json.load(open(\"/tmp/harvest.json\")).get(\"triage\", False)).lower())')" >> "$GITHUB_OUTPUT"
+
+      - name: Commit snapshot (quiet days included)
+        run: |
+          git config user.name  "watchtower-bot"
+          git config user.email "watchtower-bot@users.noreply.github.com"
+          git add wr/snapshots/ || true
+          if git diff --cached --quiet; then
+            echo "no snapshot delta"
+          else
+            git commit -m "chore(watchtower): daily snapshot"
+            git push
+          fi
+
+      - name: Summon triage issue (HARM/FLICKER/OCULAR only)
+        if: steps.harvest.outputs.triage == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const data = JSON.parse(fs.readFileSync('/tmp/harvest.json', 'utf8'));
+            const rows = (data.snapshot && data.snapshot.rows) || [];
+            const today = new Date().toISOString().slice(0, 10);
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[watchtower] triage ${today}`,
+              body: `WR-4600.3 detected HARM/FLICKER/OCULAR signals. See snapshot ${data.snapshot && data.snapshot.path}.\n\nRows: ${data.rows}\nTriage: true`,
+              labels: ['watchtower', 'triage'],
+            });
