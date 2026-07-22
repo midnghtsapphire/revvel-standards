@@ -1,0 +1,50 @@
+# WR-4600.3 Harvest Spec
+# Watchtower harvest pipeline specification
+# Source: Drive-driven follow-up to WR-4600 Photon Bench (#16549)
+
+spec_id: WR-4600.3
+title: Watchtower Harvest Pipeline
+version: 1.0.0
+status: active
+
+principles:
+  - id: WR-4200
+    rule: A fabricated citation is a P0 incident.
+    enforcement: Every URL must originate from an API response, never constructed.
+  - id: DELTA-not-breakthrough
+    rule: Report DELTA, not "breakthrough". A quiet day is a success.
+  - id: no-padding
+    rule: Shards needing an unavailable key degrade to 0 rows with a procurement note.
+  - id: adverse-first
+    rule: The `adverse` shard runs first so harm signals are never buried.
+  - id: immutable-snapshots
+    rule: Snapshots are content-hashed and immutable.
+
+sources:
+  - name: NCBI E-utilities
+    base: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/
+    keyless: true
+  - name: ClinicalTrials.gov v2
+    base: https://clinicaltrials.gov/api/v2/
+    keyless: true
+  - name: Crossref
+    base: https://api.crossref.org/
+    keyless: true
+
+shards:
+  - id: adverse
+    order: 1
+    triage: HARM|FLICKER|OCULAR triggers ONE triage issue
+  - id: clinical
+    order: 2
+  - id: literature
+    order: 3
+
+self_test:
+  checks: 17
+  offline: true
+  deterministic: true
+
+schedule:
+  cron: "17 6 * * *"
+  timezone: UTC

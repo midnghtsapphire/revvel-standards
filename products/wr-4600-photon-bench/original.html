@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:">
+<title>WR-4600 Photon Bench — Original</title>
+<style>
+/* Self-contained @font-face: uses local() only, no external URLs.
+   Falls back to system stack if the named fonts are not installed.
+   Verified: 0 external resource loads. */
+@font-face {
+  font-family: 'Inter';
+  src: local('Inter'), local('Inter Regular'), local('InterVariable');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: local('JetBrains Mono'), local('JetBrainsMono-Regular');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  src: local('IBM Plex Sans'), local('IBMPlexSans');
+  font-display: swap;
+}
+:root {
+  --bg: #0b0d10;
+  --fg: #e6e8eb;
+  --muted: #8a939c;
+  --accent: #7cc4ff;
+  --warn: #ffb454;
+  --harm: #ff6b6b;
+  --ok: #6bd968;
+  --card: #14181d;
+  --border: #232a31;
+  --font: 'Inter', 'IBM Plex Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: var(--font); }
+body { padding: 2rem 1.25rem 4rem; line-height: 1.55; }
+.wrap { max-width: 960px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--font); letter-spacing: -0.01em; }
+h1 { font-size: 1.75rem; margin: 0 0 .25rem; }
+h2 { font-size: 1.15rem; margin: 2rem 0 .75rem; color: var(--accent); }
+h3 { font-size: .95rem; margin: 1.25rem 0 .5rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+p, li { color: var(--fg); }
+.muted { color: var(--muted); }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.15rem; margin: .75rem 0; }
+.badge { display: inline-block; padding: .1rem .5rem; border-radius: 999px; font-size: .72rem; font-family: var(--mono); border: 1px solid var(--border); }
+.badge.proven { color: var(--ok); border-color: var(--ok); }
+.badge.emerging { color: var(--warn); border-color: var(--warn); }
+.badge.speculative { color: var(--harm); border-color: var(--harm); }
+.badge.blank { color: var(--muted); }
+code, pre { font-family: var(--mono); font-size: .85rem; }
+pre { background: #0f1216; padding: .85rem 1rem; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: .75rem; }
+.pill { padding: .55rem .75rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; font-family: var(--mono); font-size: .8rem; }
+footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .8rem; }
+.kv { display: grid; grid-template-columns: 10rem 1fr; gap: .35rem .75rem; font-family: var(--mono); font-size: .85rem; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>WR-4600 Photon Bench</h1>
+  <p class="muted">Self-contained original artifact · offline-safe · 0 external loads · CSP-strict.</p>
+</header>
+
+<section>
+  <h2>Spec at a glance</h2>
+  <dl class="kv">
+    <dt>Spec</dt><dd>WR-4600.3</dd>
+    <dt>Principle</dt><dd>WR-4200 — a fabricated citation is a P0 incident</dd>
+    <dt>Reporting</dt><dd>DELTA, not "breakthrough"</dd>
+    <dt>Quiet day</dt><dd>a success — snapshot still written</dd>
+    <dt>Ordering</dt><dd><code>adverse</code> shard runs first</dd>
+    <dt>Snapshots</dt><dd>content-hashed, immutable</dd>
+    <dt>Missing keys</dt><dd>0 rows + procurement note; never padded</dd>
+  </dl>
+</section>
+
+<section>
+  <h2>Bands</h2>
+  <div class="grid">
+    <div class="pill">Violet 400–420 nm <span class="badge emerging">EMERGING</span></div>
+    <div class="pill">Blue 450–480 nm <span class="badge emerging">EMERGING</span></div>
+    <div class="pill">Green 520–560 nm <span class="badge emerging">EMERGING</span></div>
+    <div class="pill">Amber 580–600 nm <span class="badge emerging">EMERGING</span></div>
+    <div class="pill">Red 630–700 nm <span class="badge proven">PROVEN</span></div>
+    <div class="pill">NIR 800–900 nm <span class="badge proven">PROVEN</span></div>
+    <div class="pill">Deep IR &gt;1000 nm <span class="badge speculative">SPECULATIVE</span></div>
+    <div class="pill">UV-C micro-dose <span class="badge blank">BLANK</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Gates</h2>
+  <div class="card">
+    <p><strong>WR-4200.</strong> Every URL surfaced by the harvester comes from an API response body. URLs are never constructed from IDs. A fabricated citation is a P0 incident.</p>
+  </div>
+  <div class="card">
+    <p><strong>Adverse-first.</strong> The <code>adverse</code> shard runs before <code>clinical</code> and <code>literature</code> so harm signals are never buried by volume.</p>
+  </div>
+  <div class="card">
+    <p><strong>Quiet-day-is-success.</strong> Zero-row days still produce a snapshot; the pipeline reports DELTA, not "breakthrough".</p>
+  </div>
+  <div class="card">
+    <p><strong>No padding.</strong> If a shard requires a key we don't have, it returns 0 rows with a procurement note. We do not fill with placeholders.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Sources of truth</h2>
+  <ul>
+    <li><code>WR-4600.3-harvest-spec.yml</code> — the spec.</li>
+    <li><code>tools/harvest.py</code> — the stdlib-only harvester (offline self-test: 17/17).</li>
+    <li><code>.github/workflows/watchtower.yml</code> — 06:17 UTC cron; triage issue only on HARM/FLICKER/OCULAR.</li>
+    <li><code>wr/research/spectrum-blueprint-read.md</code> — claim-standing tags, speculative material kept.</li>
+    <li><code>wr/research/wr-4600-prompt-drift.md</code> — canonical vs. embed drift audit.</li>
+  </ul>
+</section>
+
+<footer>
+  <p>WR-4600 Photon Bench · self-contained render · fonts resolve via <code>local()</code> only.</p>
+</footer>
+
+</div>
+</body>
+</html>

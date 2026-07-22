@@ -1,0 +1,73 @@
+name: watchtower
+
+on:
+  schedule:
+    # 06:17 UTC daily — WR-4600.3 spec
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Grounding gate — harvest self-test (offline, 17 checks)
+        run: python3 tools/harvest.py --self-test
+
+      - name: Harvest
+        id: harvest
+        run: |
+          set -euo pipefail
+          python3 tools/harvest.py --out snapshots | tee harvest.log
+          if grep -q '^TRIAGE:' harvest.log; then
+            echo "triage=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "triage=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit snapshot (quiet days included)
+        run: |
+          set -euo pipefail
+          git config user.name  "watchtower[bot]"
+          git config user.email "watchtower[bot]@users.noreply.github.com"
+          git add snapshots/
+          if git diff --cached --quiet; then
+            echo "no snapshot delta — nothing to commit"
+          else
+            git commit -m "chore(watchtower): snapshot $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi
+
+      - name: Summon triage issue (HARM/FLICKER/OCULAR only)
+        if: steps.harvest.outputs.triage == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const log = fs.readFileSync('harvest.log', 'utf8');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `watchtower: HARM/FLICKER/OCULAR signal ${new Date().toISOString().slice(0,10)}`,
+              body: [
+                'Watchtower detected an adverse signal (HARM/FLICKER/OCULAR).',
+                '',
+                '```',
+                log.slice(-4000),
+                '```',
+                '',
+                'Spec: WR-4600.3 · Principle: WR-4200 (no fabricated citations).'
+              ].join('\n'),
+              labels: ['watchtower', 'triage', 'adverse-signal']
+            });
