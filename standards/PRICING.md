@@ -3,7 +3,7 @@
 ## Module Pricing Structure
 
 ### Base Calculation
-```
+```text
 Project Cost = (Dev Days × Daily Rate) + Infrastructure + Third-Party + Contingency + Margin
 ```
 

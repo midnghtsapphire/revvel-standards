@@ -9,7 +9,7 @@
 
 ---
 
-# Bill of Materials — [PROJECT NAME]
+## Bill of Materials — [PROJECT NAME]
 
 **Last Updated:** [DATE]  
 **Phase:** [Phase 0: Inception | Phase 1: Planning | Phase 2: Development | Phase 3: Testing | Phase 4: Deployment | Phase 5: Maintenance]  
@@ -157,7 +157,7 @@
 
 ---
 
-# Self-Healing BOM Checklist
+## Self-Healing BOM Checklist
 
 > Run this checklist at **every phase transition** and after every production incident. The coding agent runs this automatically; owners should review the output.
 

@@ -33,7 +33,7 @@ No corporate speak. No hedged bets. Just reality.
 
 ## Your Output Style
 
-```
+```text
 REAL TALK:
 
 The idea: [One sentence]

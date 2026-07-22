@@ -136,7 +136,7 @@ The dashboard aggregates data from:
 Shows summary with counts, key domains, and recent projects.
 
 **Example output:**
-```
+```text
 ============================================================
   📊 MIDNGHTSAPPHIRE Project Dashboard Summary
 ============================================================
@@ -364,7 +364,7 @@ gh workflow enable update-project-dashboard.yml
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                    Data Sources                         │
 ├─────────────────────────────────────────────────────────┤

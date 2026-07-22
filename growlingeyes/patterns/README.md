@@ -4,7 +4,7 @@ This directory contains pattern definitions for trigger extraction across all in
 
 ## Structure
 
-```
+```text
 patterns/
 ├── cyber_threats.yml      # CVE, exploits, APT groups, malware
 ├── kinetic_events.yml     # Combat, casualties, military operations

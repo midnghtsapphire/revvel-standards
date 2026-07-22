@@ -278,7 +278,7 @@ This research evaluates search engine alternatives to Elasticsearch for Revvel a
 
 ### Recommended Architecture
 
-```
+```text
 User Query → MeiliSearch (instant search, typo tolerance)
                ↓
           [Optional] OpenRouter (semantic enhancement, intent understanding)

@@ -44,7 +44,7 @@ describes a new product/feature rather than a bug)
 
 This skill activates when these phrases appear in a comment:
 
-```
+```text
 /scaffold <product request>
 /builder <product request>
 /product-build <product request>
@@ -191,7 +191,7 @@ See BOM table above.
 ## Example
 
 **Trigger comment:**
-```
+```text
 /scaffold Create a resume generator based on the screenshots in issue #15164 and the Reddit thread at https://www.reddit.com/r/recruitinghell/s/en2zyR33dj
 ```
 

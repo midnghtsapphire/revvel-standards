@@ -34,7 +34,7 @@
 
 ### Project Structure
 
-```
+```text
 build/excel/
   templates/
     <product-slug>.xlsx       # Main Excel template
@@ -140,7 +140,7 @@ wb.save("templates/<product-slug>.xlsx")
 
 ### Etsy Listing Optimization
 
-```
+```text
 Title: <Keyword-Rich Product Name> | Excel Template | Google Sheets | <Use Case>
 Tags: excel template, spreadsheet, <niche>, <use case>, google sheets, business, tracker, calculator
 Description:

@@ -55,7 +55,7 @@ Optional:
 
 ## Initial File Structure
 
-```
+```text
 devina-imposter/
 ├── .github/
 │   ├── ISSUE_TEMPLATE/

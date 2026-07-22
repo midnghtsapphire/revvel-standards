@@ -10,7 +10,7 @@ Two templates are available. **Pick one.**
 - Research engine fills everything else
 - Use for **95% of WRs**
 
-```
+```text
 cp WR_TEMPLATE_BASIC.md wr/WR-XXX.md
 ```
 
@@ -22,7 +22,7 @@ cp WR_TEMPLATE_BASIC.md wr/WR-XXX.md
 - Use only if you are very picky about outcomes
 - Required fields: phase, revenue impact, acceptance criteria, tech approach, dependencies, risk, metrics, etc.
 
-```
+```text
 cp WR_TEMPLATE_FULL.md wr/WR-XXX.md
 ```
 

@@ -57,7 +57,7 @@ BITO AI is an **agentic code review and developer productivity platform** purpos
 
 BITO AI is **not** a replacement for any existing lane. It is a **persistent-memory code-review agent** that complements the current automation surface.
 
-```
+```text
                           ┌──────────────────────────────────────────┐
                           │  Contributor workstation                 │
                           │                                          │
@@ -185,7 +185,7 @@ Add the secret at: **Settings → Secrets and variables → Actions → New repo
 
 Vault path:
 
-```
+```text
 revvel/shared/code-review/bito
 ```
 

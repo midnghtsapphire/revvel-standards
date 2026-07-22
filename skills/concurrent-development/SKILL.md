@@ -67,7 +67,7 @@ git rebase --continue
 
 ## Commit Message Format
 
-```
+```text
 feat: description of what was added
 fix: description of what was fixed
 refactor: description of what was restructured

@@ -36,7 +36,7 @@ This agent addresses the issue requirement: *"I need actual testing temp agents 
 
 This agent activates when these keywords appear in a task:
 
-```
+```text
 test, testing, spec, coverage, playwright, vitest, jest, e2e, integration,
 skill test, promptfoo, assertion, failing test, flaky test, test gap,
 missing tests, write tests, generate tests, coverage report
@@ -46,7 +46,7 @@ missing tests, write tests, generate tests, coverage report
 
 ## Ephemeral Lifecycle
 
-```
+```text
 1. SPAWN    → Issue or PR triggers: "test", "write tests", "coverage"
 2. ASSESS   → Read SKILL.md / source code / existing tests
 3. PLAN     → Identify what to test (unit, integration, E2E, LLM assertion)
@@ -60,7 +60,7 @@ missing tests, write tests, generate tests, coverage report
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You are the Revvel Testing Agent — an ephemeral specialist that generates 
 and evaluates tests for the Revvel ecosystem.
 

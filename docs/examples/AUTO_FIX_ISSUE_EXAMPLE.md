@@ -11,7 +11,7 @@ This is an example of how to document a problem that was solved autonomously. Th
 Branch creation was failing for issues with titles containing URLs or special characters.
 
 **Error Message:**
-```
+```text
 Could not create branch issue/issue-381--wr-evaluate-https-//github-com/strongdm-or-others-then-implement 
 due to: refs/heads/issue/issue-381--wr-evaluate-https-//github-com/strongdm-or-others-then-implement 
 is not a valid ref name.
@@ -31,7 +31,7 @@ is not a valid ref name.
 
 **Root Issue:**
 The `gitReplaceChars` setting in `.github/issue-branch.yml` only included:
-```
+```text
 gitReplaceChars: "'\"()[]{}!?"
 ```
 

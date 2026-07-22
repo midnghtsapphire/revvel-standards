@@ -115,7 +115,7 @@ Successfully hardened PromptFoo CI workflows and aligned code-review standards a
 - ✅ Advisory vs blocking status documented for each check
 
 **Standard Established:**
-```
+```text
 # ═══════════════════════════════════════════════════
 # [WORKFLOW NAME]
 # Who: [Name]

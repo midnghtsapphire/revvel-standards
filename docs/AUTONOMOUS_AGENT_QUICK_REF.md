@@ -51,7 +51,7 @@
 > Auto-create issues, retry, document
 
 **Error handling protocol:**
-```
+```text
 Error → Capture context → Create issue → Try 3 alternatives → Document solution
 ```
 
@@ -78,7 +78,7 @@ Error → Capture context → Create issue → Try 3 alternatives → Document s
 
 ## Error Handling Flowchart
 
-```
+```text
 ┌─────────────┐
 │ Error Occurs│
 └──────┬──────┘

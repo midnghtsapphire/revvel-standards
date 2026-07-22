@@ -246,7 +246,7 @@
 
 ## Entity Relationship Diagram (Text)
 
-```
+```text
 users ──────────────────────────────────────────────────┐
   │                                                      │
   ├── orders ──────────────── order_items ── menu_items  │

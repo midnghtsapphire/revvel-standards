@@ -1,5 +1,5 @@
 # Persona Chat Systems: Research Report
-# Competitive Analysis for MindMappr Feature Design
+## Competitive Analysis for MindMappr Feature Design
 
 **Prepared for:** Revvel / MIDNGHTSAPPHIRE
 **Date:** February 20, 2026

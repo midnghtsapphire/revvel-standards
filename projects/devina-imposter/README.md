@@ -22,7 +22,7 @@ This repository addresses the gap between:
 
 ## Structure
 
-```
+```text
 devina-imposter/
 ├── README.md                    # This file
 ├── agents/

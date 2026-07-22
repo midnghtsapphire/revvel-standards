@@ -88,13 +88,13 @@ Open any `YYYY-MM-DD.html` file directly in your browser.
 
 ### Option 2: GitHub Pages
 If GitHub Pages is enabled:
-```
+```text
 https://midnghtsapphire.github.io/revvel-standards/wr/summaries/YYYY-MM-DD.html
 ```
 
 ### Option 3: Index Page
 View all summaries via the index:
-```
+```text
 https://midnghtsapphire.github.io/revvel-standards/wr/summaries/index.html
 ```
 

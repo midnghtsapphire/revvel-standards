@@ -39,7 +39,7 @@ sources. The GitHub side of that workflow lives here:
 
 ## Structure — one folder per topic
 
-```
+```text
 docs/research-drafts/
   README.md          ← you are here
   _TEMPLATE/         ← copy this to start a new topic

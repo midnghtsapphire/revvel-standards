@@ -35,7 +35,7 @@ This standard applies to:
 
 Every content generation request flows through these stages:
 
-```
+```text
 Input (topic + context)
     ↓
 Phase 1: Research & Topic Ideation (2-3 min)
@@ -194,7 +194,7 @@ All generated content must pass these automated quality checks:
 
 Generated content follows this directory structure:
 
-```
+```text
 content-automation-output/
 └── YYYY-MM-DD-{slug}/
     ├── metadata.json          # Title, keywords, metrics

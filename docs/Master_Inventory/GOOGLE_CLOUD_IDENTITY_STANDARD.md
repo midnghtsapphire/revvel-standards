@@ -101,7 +101,7 @@ When using Workforce Identity Federation, you must configure attribute mappings 
 **Setup:** [Configure OIDC provider with Microsoft Entra ID](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id#create-oidc-provider)
 
 **Attribute Mappings:**
-```
+```text
 google.subject=assertion.email
 google.groups=assertion.groups
 ```
@@ -116,7 +116,7 @@ google.groups=assertion.groups
 **Setup:** [Configure SAML provider with Microsoft Entra ID](https://cloud.google.com/iam/docs/workforce-sign-in-microsoft-entra-id#create-saml-provider)
 
 **Attribute Mappings:**
-```
+```text
 google.subject=assertion.attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'][0]
 google.groups=assertion.attributes['http://schemas.microsoft.com/ws/2008/06/identity/claims/groups']
 ```
@@ -130,7 +130,7 @@ google.groups=assertion.attributes['http://schemas.microsoft.com/ws/2008/06/iden
 - Standard group claim would exceed token size limits
 
 **Attribute Mappings:**
-```
+```text
 google.subject=user.emails[0].value.lowerAscii()
 google.groups=group.externalId
 ```

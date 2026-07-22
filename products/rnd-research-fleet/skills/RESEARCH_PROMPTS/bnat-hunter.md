@@ -37,7 +37,7 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 
 ## BNAT Discovery Process
 
-```
+```text
 1. Define Search Domain
    ↓
 2. Map Academic Literature
@@ -186,25 +186,25 @@ BNAT refers to cutting-edge technologies currently in research, patent phases, o
 ## Search Strategies
 
 ### Academic Literature
-```
+```text
 Search terms: "[technology] + prototype + lab + research + 2023-2025"
 Databases: Google Scholar, arXiv, ResearchGate, PubMed
 ```
 
 ### Patents
-```
+```text
 Search: "status=active + [technology] + inventor"
 Focus: Filed < 2 years ago, international coverage
 ```
 
 ### Startup Activity
-```
+```text
 Sources: Crunchbase, PitchBook, AngelList
 Focus: Series A/B funding, R&D headcount
 ```
 
 ### Government R&D
-```
+```text
 Programs: DARPA, ARPA-E, Horizon Europe, SBIR/STTR
 Keywords: [technology] + [program name]
 ```

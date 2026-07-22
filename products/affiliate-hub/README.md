@@ -84,7 +84,7 @@ npm run build
 
 ## Live Demo
 
-🌐 **[View Live Demo](#)** - Coming soon
+🌐 **View Live Demo _(deploy link pending)_** - Coming soon
 
 ## Revenue Model
 

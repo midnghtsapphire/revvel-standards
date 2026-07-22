@@ -13,7 +13,7 @@ A comprehensive **automatic agent fallback system** that ensures zero-downtime a
 
 ### Fallback Chain
 
-```
+```text
 ┌─────────────┐
 │  OpenHands AI   │ ← Primary (most capable)
 └──────┬──────┘

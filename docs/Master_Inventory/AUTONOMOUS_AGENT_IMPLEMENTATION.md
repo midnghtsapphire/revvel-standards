@@ -157,7 +157,7 @@ This guide provides the complete implementation of **relentlessly autonomous, se
 
 ### Automatic Error Recovery Flow
 
-```
+```text
 Error Occurs
     ↓
 Capture Context (logs, env, stack trace)
@@ -182,7 +182,7 @@ Update Knowledge Base (learnings.md)
 
 ### OpenRouter Failure Recovery
 
-```
+```text
 OpenRouter API Call
     ↓
 Failure Detected
@@ -314,14 +314,14 @@ jobs:
 **Scenario:** Agent encounters unfamiliar technology
 
 **Old Approach:**
-```
+```text
 Agent: "I don't know how to implement X. Can you provide guidance?"
 Human: *provides documentation*
 Agent: *implements based on human input*
 ```
 
 **New Approach:**
-```
+```text
 Agent identifies need for technology X
     ↓
 Searches GitHub for X implementations (50+ repos reviewed)

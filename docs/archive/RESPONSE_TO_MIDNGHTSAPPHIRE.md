@@ -166,7 +166,7 @@ The original issue requested n8n workflows, but I deliberately chose **not** to 
 
 ## System Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                  Gatekeeper Architecture                 │
 │                                                           │
@@ -364,7 +364,7 @@ Workflows are already in `.github/workflows/` and will run automatically:
 ## Files Changed
 
 **New Files (This Session):**
-```
+```text
 gatekeeper-cli/                          # Complete CLI implementation
 ├── gatekeeper_cli/
 │   ├── main.py                          # Entry point

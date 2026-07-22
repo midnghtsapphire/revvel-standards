@@ -91,7 +91,7 @@ Once the POC validates the approach:
 1. Provision **MeiliSearch Cloud** at <https://www.meilisearch.com/cloud>
 2. Store credentials in Vault: `revvel/shared/search/meilisearch`
 3. Add to your project `.env`:
-   ```
+   ```text
    MEILI_HOST=https://your-instance.meilisearch.io
    MEILI_KEY=your-api-key
    ```

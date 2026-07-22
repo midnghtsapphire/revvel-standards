@@ -65,7 +65,7 @@ Every app footer must include:
 ### TTY Contact Page Section
 
 The `/about/contact` page must include a dedicated accessibility section:
-```
+```text
 📞 Hearing Impaired / TTY Access
 Our TTY line: [TTY_PHONE]
 You may also reach us through the 711 Relay Service at no cost.

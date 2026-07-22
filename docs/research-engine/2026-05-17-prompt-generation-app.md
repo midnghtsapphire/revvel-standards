@@ -55,7 +55,7 @@ We ship **due-diligence packets**, not prompt catalogs:
 1. Wire Polar.sh checkout to packet generator
 2. Add LLM-augmented source retrieval (v2)
 3. Ship `/api/packet` JSON endpoint for programmatic access ($99/mo tier)
-# Research Packet: Prompt Generation App
+## Research Packet: Prompt Generation App
 
 **Product:** Revvel PromptForge  
 **Branch:** `cursor/prompt-generation-app-e66e`  

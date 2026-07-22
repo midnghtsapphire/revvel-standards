@@ -42,7 +42,7 @@ Name pattern: **M**odular **A**gents · **L**earning **A**nd **M**onitored
 
 ## Trigger Keywords
 
-```
+```text
 malama, self-healing agent, self-evolving agent, autonomous loop,
 plan act verify learn, session constitution, agent operating loop
 ```
