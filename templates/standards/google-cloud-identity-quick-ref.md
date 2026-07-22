@@ -4,7 +4,7 @@
 
 ---
 
-## Decision Tree: Which Authentication Framework?
+## Decision Tree: Which Authentication Framework
 
 ```
 Do you use Google Workspace or Cloud Identity?
