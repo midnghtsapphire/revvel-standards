@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PrintBank — vector wall art + photo print sizer</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>PrintBank</h1>
+  <nav>
+    <button data-tab="gallery" class="active">Gallery</button>
+    <button data-tab="photos">Your Photos</button>
+    <button data-tab="sizes">Size Guide</button>
+  </nav>
+</header>
+
+<section id="tab-gallery" class="tab active">
+  <div class="controls">
+    <input id="search" placeholder="Search prints…" type="search">
+    <select id="genre-filter"><option value="">All genres</option></select>
+  </div>
+  <div id="grid" class="grid"></div>
+</section>
+
+<section id="tab-photos" class="tab">
+  <div id="drop" class="drop">
+    <p>Drop a photo here, or <label class="link"><input type="file" accept="image/*" id="file" hidden> browse</label></p>
+    <p class="muted">Processed entirely in your browser. Nothing uploaded.</p>
+  </div>
+  <div id="photo-result" hidden>
+    <div id="photo-preview"></div>
+    <table id="grade-table"></table>
+  </div>
+</section>
+
+<section id="tab-sizes" class="tab">
+  <table id="size-guide"></table>
+</section>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-content">
+    <button class="close" id="modal-close">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<footer>
+  <small>PrintBank · true-vector prints · <a href="https://polar.sh">Premium via Polar</a></small>
+</footer>
+
+<script src="print-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
