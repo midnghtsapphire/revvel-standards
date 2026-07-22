@@ -100,10 +100,10 @@ This JSON-LD script **must be embedded** in the `<head>` section of every public
 
 **Instructions:**
 
-1.  **`name`**: Replace `[Specific App/Website Name]` with the public name of the specific application (e.g., "GlowStarLabs", "Revvel").
-2.  **`url`**: Replace `[Specific App/Website URL]` with the canonical homepage URL.
-3.  **`logo`**: Replace `[Specific App/Website Logo URL]` with a direct link to the official logo image file.
-4.  **DO NOT** change any fields within the `parentOrganization` object. This block is the source of our SEO authority and must remain consistent across all properties.
+1. **`name`**: Replace `[Specific App/Website Name]` with the public name of the specific application (e.g., "GlowStarLabs", "Revvel").
+2. **`url`**: Replace `[Specific App/Website URL]` with the canonical homepage URL.
+3. **`logo`**: Replace `[Specific App/Website Logo URL]` with a direct link to the official logo image file.
+4. **DO NOT** change any fields within the `parentOrganization` object. This block is the source of our SEO authority and must remain consistent across all properties.
 
 ### Trust Signal Integration
 
@@ -125,5 +125,5 @@ By adhering to these standards, we create a powerful, unified brand identity tha
 
 ### References
 
-[1] Colorado Secretary of State, Business Database Search. (https://www.sos.state.co.us/biz/BusinessEntityCriteriaExt.do)
-[2] California Secretary of State, Business Search. (https://bizfileonline.sos.ca.gov/search/business)
+[1] Colorado Secretary of State, Business Database Search. (<https://www.sos.state.co.us/biz/BusinessEntityCriteriaExt.do>)
+[2] California Secretary of State, Business Search. (<https://bizfileonline.sos.ca.gov/search/business>)

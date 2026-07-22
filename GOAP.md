@@ -7,7 +7,7 @@
 
 ---
 
-## What Is This File?
+## What Is This File
 
 This is the top-level index for the **Goap agent system**. Every file in this system references back here. Start here. All roads lead here.
 
