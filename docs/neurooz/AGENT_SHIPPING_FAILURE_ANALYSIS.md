@@ -138,7 +138,7 @@ AI coding agents are extraordinarily capable at generating code, but they consis
 
 ---
 
-### Failure #9: The Missing "Last Mile"
+### Failure #9: The Missing "Last Mile
 **What happens:** The app is 95% done. Login works. Dashboard works. Core features work. But: no favicon. No loading states. No error messages. No 404 page. No email notifications. No admin panel. No onboarding flow. No help text.
 
 **Why it happens:** Agents focus on the "interesting" parts — the algorithms, the UI components, the API endpoints. The last 5% (polish, error handling, edge cases, user guidance) is boring to code but essential to ship.
@@ -275,7 +275,7 @@ The **S.H.I.F.T.** (Self-Healing Intent-Focused Tasks) framework was created spe
 
 ## 6. The "Ship It" Mindset Shift
 
-### Stop Thinking In Features. Start Thinking In Shipped Increments.
+### Stop Thinking In Features. Start Thinking In Shipped Increments
 
 **Old pattern (fails every time):**
 1. Tell agent to build entire app

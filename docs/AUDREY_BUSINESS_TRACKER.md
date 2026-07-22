@@ -112,18 +112,18 @@
 
 ## How to Use
 
-### Weekly:
+### Weekly
 1. Log all income in INCOME TRACKER
 2. Log all expenses in EXPENSE TRACKER
 3. Log any donations in DONATION TRACKER
 
-### Monthly:
+### Monthly
 1. Review DASHBOARD
 2. Check MEDICAID WATCHDOG
 3. Update COMPLIANCE for any renewals
 4. Review GRANT OPPORTUNITIES
 
-### Quarterly:
+### Quarterly
 1. Verify all K-1 projections
 2. Check Medicaid status with CPA
 3. Review business performance

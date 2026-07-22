@@ -9,7 +9,7 @@
 
 ### 1. Create Account / Claim Profile
 
-1. Go to https://www.researchgate.net/
+1. Go to <https://www.researchgate.net/>
 2. Sign up using your academic/institutional email (preferred) or Gmail
 3. If a profile already exists with your name, click "Is this you?" to claim it
 
@@ -165,7 +165,7 @@ Outcomes:
 {{/each}}
 
 **Add these:**
-- GitHub: https://github.com/{{GITHUB_USERNAME}}
+- GitHub: <https://github.com/{{GITHUB_USERNAME}}>
 - Personal Website: {{WEBSITE_URL}}
 - Wikidata: {{WIKIDATA_URL}} (after creation)
 - LinkedIn: {{LINKEDIN_URL}}
@@ -234,7 +234,7 @@ Before finalizing:
 
 ---
 
-## Why ResearchGate for Non-Academic Work?
+## Why ResearchGate for Non-Academic Work
 
 **Applied Research Qualifies:**
 - Open-source intelligence tools (GrowlingEyes)
@@ -249,7 +249,7 @@ ResearchGate recognizes **applied research** and **industry R&D** as valid schol
 
 ## After Profile Creation
 
-1. **Share Profile URL:** https://www.researchgate.net/profile/{{USERNAME}}
+1. **Share Profile URL:** <https://www.researchgate.net/profile/{{USERNAME}}>
 2. **Update Brand Statement:** Add ResearchGate URL
 3. **Update state.json:** `"researchgate": {"status": "claimed", "profile_url": "..."}`
 4. **Cross-Link:** Add ResearchGate link to GitHub profile, ORCID, and website
@@ -259,11 +259,11 @@ ResearchGate recognizes **applied research** and **industry R&D** as valid schol
 
 ## Resources
 
-- **ResearchGate Help:** https://www.researchgate.net/help
-- **Adding Publications:** https://www.researchgate.net/help/research/adding-publications
-- **Profile Settings:** https://www.researchgate.net/settings
-- **Privacy Settings:** https://www.researchgate.net/settings/privacy
-- **ORCID Integration:** https://www.researchgate.net/settings/identifiers
+- **ResearchGate Help:** <https://www.researchgate.net/help>
+- **Adding Publications:** <https://www.researchgate.net/help/research/adding-publications>
+- **Profile Settings:** <https://www.researchgate.net/settings>
+- **Privacy Settings:** <https://www.researchgate.net/settings/privacy>
+- **ORCID Integration:** <https://www.researchgate.net/settings/identifiers>
 
 ---
 

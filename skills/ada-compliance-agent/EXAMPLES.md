@@ -481,22 +481,22 @@ Detailed comparison report saved to:
 
 ## Common Issues and Solutions
 
-### "Lighthouse score varies between runs"
+### "Lighthouse score varies between runs
 - Run multiple times and take average
 - Test in incognito mode to avoid extension interference
 - Use CI environment for consistent results
 
-### "Agent auto-fixed something incorrectly"
+### "Agent auto-fixed something incorrectly
 - Revert the commit
 - Add the pattern to `.ada-compliance-ignore`
 - Open issue to improve auto-fix logic
 
-### "Too many false positives"
+### "Too many false positives
 - Configure axe-core rules in `.axerc.json`
 - Use `aria-hidden` for truly decorative elements
 - Document exceptions in `/docs/ada-exceptions.md`
 
-### "Agent can't access my dev server"
+### "Agent can't access my dev server
 - Ensure server runs on `localhost:3000` or configure URL
 - Add `--host 0.0.0.0` to make server accessible
 - Check firewall isn't blocking

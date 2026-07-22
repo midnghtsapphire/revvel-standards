@@ -10,12 +10,12 @@
 
 Bellingcat is an independent international collective of researchers, investigators, and citizen journalists using open-source and social media investigation to probe a variety of subjects – from Mexican drug lords and crimes against humanity to tracking the use of chemical weapons and conflicts worldwide.
 
-**Community:** https://www.bellingcat.com/  
-**Discord:** https://discord.gg/bellingcat
+**Community:** <https://www.bellingcat.com/>  
+**Discord:** <https://discord.gg/bellingcat>
 
 ---
 
-## Why Join Bellingcat for {{PERSON_NAME}}?
+## Why Join Bellingcat for {{PERSON_NAME}}
 
 **Your Relevant Experience:**
 {{#each RELEVANT_EXPERIENCE}}
@@ -35,7 +35,7 @@ Bellingcat is an independent international collective of researchers, investigat
 
 ### 1. Create Bellingcat Account
 
-1. Go to https://www.bellingcat.com/
+1. Go to <https://www.bellingcat.com/>
 2. Click "Join" or "Register"
 3. Fill in registration form:
    - **Username:** {{USERNAME}}
@@ -103,7 +103,7 @@ Check all that apply:
 
 ### 4. Join Discord Server
 
-1. Go to https://discord.gg/bellingcat
+1. Go to <https://discord.gg/bellingcat>
 2. Read and accept community rules
 3. Introduce yourself in #introductions:
 
@@ -335,11 +335,11 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 
 ## Resources
 
-- **Bellingcat Toolkit:** https://docs.google.com/spreadsheets/d/18rtqh8EG2q1xBo2cLNyhIDuK9jrPGwYr9DI2UncoqJQ/
-- **Online Investigation Toolkit:** https://start.me/p/ZME8nR/bellingcat
-- **Discord Server:** https://discord.gg/bellingcat
-- **Submission Guidelines:** https://www.bellingcat.com/contribute/
-- **Investigation Standards:** https://www.bellingcat.com/category/resources/
+- **Bellingcat Toolkit:** <https://docs.google.com/spreadsheets/d/18rtqh8EG2q1xBo2cLNyhIDuK9jrPGwYr9DI2UncoqJQ/>
+- **Online Investigation Toolkit:** <https://start.me/p/ZME8nR/bellingcat>
+- **Discord Server:** <https://discord.gg/bellingcat>
+- **Submission Guidelines:** <https://www.bellingcat.com/contribute/>
+- **Investigation Standards:** <https://www.bellingcat.com/category/resources/>
 
 ---
 
