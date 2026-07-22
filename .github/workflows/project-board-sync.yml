@@ -17,6 +17,11 @@ on:
 permissions:
   issues: read
   pull-requests: read
+# Serialize per issue/PR so rapid label toggles from other automation don't
+# spawn concurrent board-sync runs for the same item.
+concurrency:
+  group: project-board-sync-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 jobs:
   sync:
     name: Sync to project board

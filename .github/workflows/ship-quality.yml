@@ -16,6 +16,11 @@ on:
 permissions:
   contents: read
   pull-requests: write
+# Serialize per PR and cancel superseded runs so a burst of edits/synchronize
+# events doesn't post the "Ship Quality Check" review three times over.
+concurrency:
+  group: ship-quality-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 env:
   GH_TOKEN: ${{ github.token }}
 jobs:

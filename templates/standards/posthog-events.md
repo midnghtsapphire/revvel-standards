@@ -77,7 +77,7 @@ token                api_key
 
 ### EU residency
 
-If the app has *any* EU traffic, set:
+If the app has _any_ EU traffic, set:
 
 ```ts
 // In posthog-init.ts — already configurable via POSTHOG_API_HOST:
@@ -295,14 +295,14 @@ If migrating from Mixpanel:
 - **Paid tier**: $0.000025/event after 1M (about $25 for 2M events), $0.005/replay after 5K.
 - **Self-hosted**: Free forever, but you manage infrastructure.
 
-See https://posthog.com/pricing for current pricing.
+See <https://posthog.com/pricing> for current pricing.
 
 ---
 
 ## References
 
-- PostHog Docs: https://posthog.com/docs
-- PostHog GitHub: https://github.com/PostHog/posthog
-- PostHog API: https://posthog.com/docs/api
+- PostHog Docs: <https://posthog.com/docs>
+- PostHog GitHub: <https://github.com/PostHog/posthog>
+- PostHog API: <https://posthog.com/docs/api>
 - Revvel PostHog Integration Standard: `docs/POSTHOG_INTEGRATION.md`
 - Revvel PostHog Skill: `skills/posthog/SKILL.md`
