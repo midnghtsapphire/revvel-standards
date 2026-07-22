@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrintBank — Vector Wall Art + Photo Print Sizer</title>
+  <meta name="description" content="144 true-vector printable wall art files + grade your own photos against 24 standard print sizes.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="pb-header">
+    <div class="pb-brand">PrintBank</div>
+    <nav class="pb-nav">
+      <a href="#gallery" class="pb-nav-link active" data-tab="gallery">Gallery</a>
+      <a href="#photos" class="pb-nav-link" data-tab="photos">Your Photos</a>
+      <a href="#sizes" class="pb-nav-link" data-tab="sizes">Size Guide</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Gallery -->
+    <section id="gallery" class="pb-tab active">
+      <div class="pb-controls">
+        <input type="search" id="pb-search" placeholder="Search prints…" aria-label="Search prints">
+        <select id="pb-genre" aria-label="Filter by genre">
+          <option value="">All genres</option>
+        </select>
+      </div>
+      <div id="pb-grid" class="pb-grid"></div>
+    </section>
+
+    <!-- Photos -->
+    <section id="photos" class="pb-tab">
+      <div class="pb-drop" id="pb-drop">
+        <p>Drop a photo here, or</p>
+        <label class="pb-btn"><input type="file" id="pb-file" accept="image/*" hidden> Choose file</label>
+        <p class="pb-hint">All processing is client-side. Your photo never leaves the browser.</p>
+      </div>
+      <div id="pb-photo-workbench" class="pb-workbench" hidden>
+        <div class="pb-preview">
+          <canvas id="pb-photo-canvas"></canvas>
+          <div class="pb-photo-meta" id="pb-photo-meta"></div>
+        </div>
+        <table class="pb-grade-table">
+          <thead>
+            <tr><th>Size</th><th>Ratio</th><th>Effective DPI</th><th>Grade</th><th>Export</th></tr>
+          </thead>
+          <tbody id="pb-grade-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Size Guide -->
+    <section id="sizes" class="pb-tab">
+      <h2>Standard Print Sizes</h2>
+      <table class="pb-size-table">
+        <thead>
+          <tr><th>ID</th><th>Dimensions</th><th>Aspect ratio</th><th>Pixels @ 300 DPI</th><th>Pixels @ 150 DPI</th></tr>
+        </thead>
+        <tbody id="pb-size-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Detail modal -->
+  <div id="pb-modal" class="pb-modal" hidden>
+    <div class="pb-modal-inner">
+      <button class="pb-modal-close" id="pb-modal-close" aria-label="Close">×</button>
+      <div class="pb-modal-preview" id="pb-modal-preview"></div>
+      <div class="pb-modal-info">
+        <h2 id="pb-modal-title"></h2>
+        <p id="pb-modal-genre" class="pb-muted"></p>
+        <div class="pb-actions">
+          <button class="pb-btn" id="pb-download-svg">Download SVG (lossless)</button>
+          <label class="pb-inline">
+            Export PNG @
+            <select id="pb-export-size"></select>
+            <select id="pb-export-dpi">
+              <option value="300">300 DPI (gallery)</option>
+              <option value="150">150 DPI (draft)</option>
+            </select>
+            <button class="pb-btn pb-btn-primary" id="pb-download-png">Download PNG</button>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="pb-footer">
+    <p>PrintBank — <a href="https://polar.sh" target="_blank" rel="noopener">Support via Polar.sh</a></p>
+  </footer>
+
+  <script src="print-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
