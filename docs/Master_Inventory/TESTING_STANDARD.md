@@ -146,7 +146,7 @@ Run coverage locally: `npx vitest run --coverage`
 **Rule:** Any frontend-to-backend API call that crosses a service boundary (e.g., a Next.js frontend calling a separate Express API) requires a contract test.
 
 **Recommended tools:**
-- **Pact** (https://pact.io) — consumer-driven contract testing
+- **Pact** (<https://pact.io>) — consumer-driven contract testing
 - **openapi-fetch + zod** — validate responses match the OpenAPI schema at runtime in tests
 
 **Location:** `tests/contract/`
@@ -445,7 +445,7 @@ Run the Human Testing API:
 ### 11.3. Setup
 
 **Requirements:**
-- `OPENROUTER_API_KEY` GitHub Secret (get key at https://openrouter.ai)
+- `OPENROUTER_API_KEY` GitHub Secret (get key at <https://openrouter.ai>)
 - The `scripts/run-human-testing-api.js` script in your repo
 
 **One-time setup for any Revvel app:**
@@ -568,8 +568,8 @@ The workflow installs the mabl CLI (`npm install -g @mablhq/mabl-cli`), authenti
 
 | Resource | URL |
 |---|---|
-| mabl Workspace | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w |
-| mabl Agent Tasks | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks |
-| mabl API Settings | https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis |
-| mabl CLI (npm) | https://www.npmjs.com/package/@mablhq/mabl-cli |
+| mabl Workspace | <https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w> |
+| mabl Agent Tasks | <https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/agents/tasks> |
+| mabl API Settings | <https://app.mabl.com/workspaces/BsQPWJHcAYbKHlKpH1TWtA-w/settings/apis> |
+| mabl CLI (npm) | <https://www.npmjs.com/package/@mablhq/mabl-cli> |
 | Workflow file | `.github/workflows/mabl.yml` |

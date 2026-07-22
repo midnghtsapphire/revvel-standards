@@ -6,9 +6,9 @@
 
 ## Step 1: Create Gumroad Account (if needed)
 
-1. Go to **https://app.gumroad.com**
+1. Go to **<https://app.gumroad.com>**
 2. Click **"Sign up"**
-3. Use your email: **audrey@freedomangelcorp.com**
+3. Use your email: **<audrey@freedomangelcorp.com>**
 4. Set up payout method (bank account or PayPal)
 
 ---
@@ -16,23 +16,23 @@
 ## Step 2: Create New Product
 
 1. Click **"+ New product"** (orange button)
-2. Or go directly: https://app.gumroad.com/products/new
+2. Or go directly: <https://app.gumroad.com/products/new>
 
 ---
 
 ## Step 3: Fill in Product Details
 
-### Product Name:
+### Product Name
 ```
 R&D Research Fleet
 ```
 
-### Price:
+### Price
 ```
 $400
 ```
 
-### Description (copy this exact text):
+### Description (copy this exact text)
 
 ---
 
@@ -99,9 +99,9 @@ Download, unzip, run `install.sh`. Done in 60 seconds.
 
 ---
 
-### 💬 Questions?
+### 💬 Questions
 
-Email: support@freedomangelcorp.com
+Email: <support@freedomangelcorp.com>
 
 ---
 
@@ -114,7 +114,7 @@ Email: support@freedomangelcorp.com
 1. Click **"Upload a file"** button
 2. Download the file first:
    - **Click this link:**
-   https://github.com/midnghtsapphire/revvel-standards/raw/main/products/rnd-research-fleet-v1.0.0.tar.gz
+   <https://github.com/midnghtsapphire/revvel-standards/raw/main/products/rnd-research-fleet-v1.0.0.tar.gz>
    
 3. Upload the downloaded file to Gumroad
 
@@ -124,14 +124,14 @@ Email: support@freedomangelcorp.com
 
 ## Step 5: Configure Options
 
-### Custom Fields (optional):
+### Custom Fields (optional)
 - Leave default
 
-### License (important!):
+### License (important!)
 - ✅ Enable license
 - Customers can use on unlimited projects
 
-### Comments:
+### Comments
 - ✅ Allow comments (builds trust)
 
 ---
@@ -143,7 +143,7 @@ Email: support@freedomangelcorp.com
 
 ---
 
-## What Your Listing Will Look Like:
+## What Your Listing Will Look Like
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -189,7 +189,7 @@ Share this link anywhere to sell!
 
 ---
 
-## Got Questions?
+## Got Questions
 
-- Gumroad Help: https://help.gumroad.com/
-- Email me: support@freedomangelcorp.com
+- Gumroad Help: <https://help.gumroad.com/>
+- Email me: <support@freedomangelcorp.com>

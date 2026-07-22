@@ -144,6 +144,5 @@ gh pr merge --admin --merge
 
 ## Getting Help
 
-- GitHub: https://github.com/midnghtsapphire/revvel-standards
-- Issues: https://github.com/midnghtsapphire/revvel-standards/issues
-
+- GitHub: <https://github.com/midnghtsapphire/revvel-standards>
+- Issues: <https://github.com/midnghtsapphire/revvel-standards/issues>

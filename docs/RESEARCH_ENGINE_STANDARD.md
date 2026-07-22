@@ -179,4 +179,3 @@ node tests/research-engine.test.js
 - Packet written to `docs/research-engine/`
 - Issue or PR receives research lifecycle labels
 - Code-review handoff comment is posted
-

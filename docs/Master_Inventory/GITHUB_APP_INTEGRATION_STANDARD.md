@@ -362,12 +362,12 @@ Before deploying any GitHub App integration, verify:
 
 ## 11. References
 
-- GitHub Apps documentation: https://docs.github.com/en/apps
-- Authenticating as a GitHub App: https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation
-- Octokit.js App SDK: https://github.com/octokit/app.js
-- `actions/create-github-app-token`: https://github.com/actions/create-github-app-token
-- `gh` CLI: https://cli.github.com/
-- GitHub Enterprise Cloud: https://docs.github.com/en/enterprise-cloud@latest
+- GitHub Apps documentation: <https://docs.github.com/en/apps>
+- Authenticating as a GitHub App: <https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation>
+- Octokit.js App SDK: <https://github.com/octokit/app.js>
+- `actions/create-github-app-token`: <https://github.com/actions/create-github-app-token>
+- `gh` CLI: <https://cli.github.com/>
+- GitHub Enterprise Cloud: <https://docs.github.com/en/enterprise-cloud@latest>
 - Related Revvel Standards:
   - `VAULT_AGENT_STANDARD.md` — secret management
   - `SECURITY_STANDARD.md` — overall security policy
