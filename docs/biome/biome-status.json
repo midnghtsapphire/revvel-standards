@@ -1,80 +1,66 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-22T12:33:44.051Z",
+  "generated_at": "2026-07-22T13:32:50.666Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "9/100 recent runs failed; 0 stuck item(s)",
+      "summary": "7/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 9,
+        "failed_runs": 7,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29920060298,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29920060298",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29919718444,
-            "name": "Stuck Label Detection & Auto-Progression",
-            "path": ".github/workflows/stuck-label-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29919718444",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29918598187,
+            "id": 29923844761,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29918598187",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29923844761",
             "conclusion": "failure"
           },
           {
-            "id": 29916709641,
+            "id": 29921372573,
+            "name": "Perplexity Research Agent",
+            "path": ".github/workflows/perplexity-research-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29921372573",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29921370420,
+            "name": "Perplexity Research Agent",
+            "path": ".github/workflows/perplexity-research-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29921370420",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29921368261,
+            "name": "Perplexity Research Agent",
+            "path": ".github/workflows/perplexity-research-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29921368261",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29921352200,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29921352200",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29921186561,
+            "name": "Octopus Review Fallback",
+            "path": ".github/workflows/octopus-review-fallback.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29921186561",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29920710231,
             "name": "Stuck Check Watchdog",
             "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29916709641",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29915883034,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29915883034",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29914113691,
-            "name": "Follow-up Checkbox Router",
-            "path": ".github/workflows/followup-checkbox-router.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29914113691",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29913384178,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29913384178",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29913382514,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29913382514",
-            "conclusion": "failure"
-          },
-          {
-            "id": 29912771898,
-            "name": "Stuck Label Detection & Auto-Progression",
-            "path": ".github/workflows/stuck-label-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29912771898",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29920710231",
             "conclusion": "failure"
           }
         ],
@@ -100,10 +86,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29923449784"
       }
     },
     "sheaf": {
