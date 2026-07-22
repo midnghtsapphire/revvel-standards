@@ -1,0 +1,59 @@
+name: watchtower
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Self-test (grounding gate)
+        run: python3 tools/harvest.py --self-test
+
+      - name: Harvest
+        run: python3 tools/harvest.py --emit-triage-signal
+
+      - name: Commit snapshot (including quiet days)
+        run: |
+          git config user.name  "watchtower-bot"
+          git config user.email "watchtower-bot@users.noreply.github.com"
+          git add wr/snapshots
+          if git diff --cached --quiet; then
+            echo "no snapshot changes"
+          else
+            git commit -m "chore(watchtower): daily snapshot $(date -u +%Y-%m-%dT%H:%MZ)"
+            git push
+          fi
+
+      - name: Summon triage issue if HARM/FLICKER/OCULAR row present
+        if: hashFiles('.triage-required') != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const now = new Date().toISOString().slice(0,10);
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              title: `watchtower: triage required (${now})`,
+              labels: ['watchtower','triage'],
+              body: [
+                'A HARM / FLICKER / OCULAR row was surfaced in the daily snapshot.',
+                '',
+                'See the newest file under `wr/snapshots/`.',
+                '',
+                'This issue is created only when a triage token is present; quiet days are silent.'
+              ].join('\n')
+            });

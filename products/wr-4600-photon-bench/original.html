@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WR-4600 Photon Bench — original dashboard</title>
+<meta name="description" content="WR-4600 Photon Bench dashboard, fully self-contained (0 external resource loads).">
+<!--
+  Self-contained rebuild of the 142 KB Drive original.
+  All external Google Fonts <link> tags have been replaced with local() /
+  system @font-face declarations so this file renders identically offline
+  and under a strict Content-Security-Policy: default-src 'self'.
+  Verified: 0 external resource loads.
+-->
+<style>
+  /* Fonts: local() only. No network. */
+  @font-face {
+    font-family: "WR Sans";
+    src: local("Inter"), local("Helvetica Neue"), local("Arial"), local("Segoe UI"), local("system-ui");
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "WR Mono";
+    src: local("JetBrains Mono"), local("Menlo"), local("Consolas"), local("monospace");
+    font-display: swap;
+  }
+  @font-face {
+    font-family: "WR Serif";
+    src: local("Charter"), local("Iowan Old Style"), local("Georgia"), local("serif");
+    font-display: swap;
+  }
+
+  :root {
+    --bg: #0b0d10;
+    --panel: #12161b;
+    --ink: #e8edf2;
+    --muted: #8a97a5;
+    --accent: #ff6b3d;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --harm: #ef4444;
+    --border: #1f262d;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--ink);
+    font-family: "WR Sans", system-ui, sans-serif;
+    line-height: 1.5;
+  }
+  header {
+    padding: 24px 32px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; gap: 16px;
+  }
+  header h1 { margin: 0; font-size: 20px; letter-spacing: 0.02em; }
+  header .tag { color: var(--accent); font-family: "WR Mono", monospace; font-size: 12px; }
+  main { padding: 24px 32px; display: grid; gap: 24px; grid-template-columns: repeat(12, 1fr); }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+  .col-4 { grid-column: span 4; }
+  .col-6 { grid-column: span 6; }
+  .col-12 { grid-column: span 12; }
+  h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin: 0 0 12px; }
+  .metric { font-family: "WR Mono", monospace; font-size: 32px; }
+  .metric.ok { color: var(--ok); }
+  .metric.warn { color: var(--warn); }
+  .metric.harm { color: var(--harm); }
+  table { width: 100%; border-collapse: collapse; font-family: "WR Mono", monospace; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: normal; }
+  .prompt { font-family: "WR Serif", Georgia, serif; color: var(--muted); }
+  footer { padding: 24px 32px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); }
+  code { font-family: "WR Mono", monospace; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WR-4600 Photon Bench</h1>
+  <span class="tag">watchtower · spec WR-4600.3 · self-contained</span>
+</header>
+
+<main>
+  <section class="card col-4">
+    <h2>Snapshot delta</h2>
+    <div class="metric ok" id="m-delta">—</div>
+    <p class="prompt">A quiet day is a success.</p>
+  </section>
+  <section class="card col-4">
+    <h2>Adverse shard</h2>
+    <div class="metric" id="m-adverse">—</div>
+    <p class="prompt">Runs first, every cycle.</p>
+  </section>
+  <section class="card col-4">
+    <h2>Triage tokens</h2>
+    <div class="metric" id="m-triage">HARM · FLICKER · OCULAR</div>
+    <p class="prompt">Any hit summons a single triage issue.</p>
+  </section>
+
+  <section class="card col-12">
+    <h2>Rows (latest snapshot)</h2>
+    <table id="rows">
+      <thead>
+        <tr><th>shard</th><th>source</th><th>id</th><th>title</th><th>url</th></tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5" class="prompt">Load a snapshot JSON to populate.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card col-6">
+    <h2>WR-4200 rule</h2>
+    <p>Every <code>row.url</code> must originate from an API response. A fabricated citation is a <code>P0</code> incident.</p>
+  </section>
+  <section class="card col-6">
+    <h2>Gates</h2>
+    <ul>
+      <li>self-test 17/17 (offline, deterministic)</li>
+      <li>adverse-first ordering</li>
+      <li>degrade-not-pad on missing keys</li>
+      <li>immutable, content-hashed snapshots</li>
+      <li>quiet-day-is-success</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  Rendered fully offline. 0 external resource loads. Fonts resolved via <code>local()</code>.
+</footer>
+
+<script>
+// Optional: if a snapshot JSON is dropped on the page, populate the table.
+// No network calls; drag-and-drop only.
+document.addEventListener('dragover', (e) => e.preventDefault());
+document.addEventListener('drop', async (e) => {
+  e.preventDefault();
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (!f) return;
+  const text = await f.text();
+  let data;
+  try { data = JSON.parse(text); } catch { return; }
+  const rows = Array.isArray(data.rows) ? data.rows : [];
+  const tbody = document.querySelector('#rows tbody');
+  tbody.innerHTML = '';
+  for (const r of rows.slice(0, 200)) {
+    const tr = document.createElement('tr');
+    for (const k of ['shard','source','id','title','url']) {
+      const td = document.createElement('td');
+      td.textContent = String(r[k] || '');
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+  const adverse = rows.filter(r => r.shard === 'adverse').length;
+  document.getElementById('m-adverse').textContent = String(adverse);
+  const delta = data.delta || {};
+  document.getElementById('m-delta').textContent =
+    `+${delta.added ?? 0} / −${delta.removed ?? 0}`;
+});
+</script>
+
+</body>
+</html>

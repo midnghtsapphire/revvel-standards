@@ -1,0 +1,62 @@
+# WR-4600.3 — Watchtower harvest spec
+# Source of truth for tools/harvest.py.  Any change here requires a spec bump.
+id: WR-4600.3
+title: Watchtower daily harvest
+owner: WR-4600 Photon Bench
+status: active
+
+principles:
+  - id: WR-4200
+    rule: A fabricated citation is a P0 incident.
+    enforcement: Every row.url MUST originate from an API response; never constructed.
+  - id: delta-not-breakthrough
+    rule: Report DELTA vs prior snapshot; a quiet day is a success.
+  - id: immutable-snapshots
+    rule: Snapshots are content-hashed and never edited in place.
+  - id: degrade-not-pad
+    rule: A shard needing a key that isn't present returns 0 rows + a procurement note.
+  - id: adverse-first
+    rule: The adverse shard runs first every cycle.
+
+shards:
+  - name: adverse
+    api: openFDA device events
+    endpoint: https://api.fda.gov/device/event.json
+    keyless: true
+  - name: trials
+    api: ClinicalTrials.gov v2
+    endpoint: https://clinicaltrials.gov/api/v2/studies
+    keyless: true
+  - name: literature
+    api: NCBI E-utilities (+ Crossref fallback)
+    endpoint: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/
+    keyless: true
+  - name: regulatory
+    api: openFDA 510(k)
+    endpoint: https://api.fda.gov/device/510k.json
+    keyless: true
+
+triage_tokens:
+  - HARM
+  - FLICKER
+  - OCULAR
+
+self_test:
+  offline: true
+  deterministic: true
+  checks: 17
+
+schedule:
+  cron_utc: "17 6 * * *"
+  dispatch: true
+
+outputs:
+  snapshot_dir: wr/snapshots/
+  snapshot_name: "snapshot-<UTC-timestamp>.json"
+  fields:
+    - generated_at
+    - spec
+    - delta { added, removed, prior_total }
+    - shards[] { shard, count, note, degraded }
+    - rows[]   { shard, source, id, title, url, tags[], fetched_at }
+    - content_hash (sha256, sorted-keys)
