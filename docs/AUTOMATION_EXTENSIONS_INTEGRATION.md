@@ -66,7 +66,7 @@ PR / issue event  ─►  GitHub (source of truth)
 
 The extensions are **downstream** of the OpenRouter hand-off. They consume the same labels the existing lanes already emit; they do not rewrite them.
 
-### Why this repo specifically?
+### Why this repo specifically
 
 Because `revvel-standards` owns:
 

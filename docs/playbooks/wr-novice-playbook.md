@@ -19,7 +19,7 @@ step, what to do when something stalls, and the manual escape hatches.
 
 ---
 
-## 2. What Is a WR?
+## 2. What Is a WR
 
 A **Work Request (WR)** is a GitHub Issue that asks the automated product pipeline to
 research, scope, and deliver something — code, a report, a product page, a doc, or a
