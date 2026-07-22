@@ -1,0 +1,39 @@
+# Zizmor — GitHub Actions security audit (workflow injection, unpinned actions, over-broad perms).
+# Unique coverage not in CodeQL. Reports to code scanning (advisory, like Trivy/CodeQL): only NEW issues
+# in changed workflows surface. Flip continue-on-error off to make it a hard gate later.
+name: Zizmor (Actions security)
+
+on:
+  pull_request:
+    paths: [".github/workflows/**"]
+  push:
+    branches: [main]
+    paths: [".github/workflows/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install zizmor
+        run: pip install zizmor
+      - name: Run zizmor (SARIF)
+        continue-on-error: true
+        run: zizmor --format sarif .github/workflows/ > zizmor.sarif
+      - name: Upload to code scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: zizmor.sarif
+          category: zizmor
