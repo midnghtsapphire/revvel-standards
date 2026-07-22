@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PrintBank — Vector Wall Art + Photo Print Sizer</title>
+<meta name="description" content="144 true-vector printable wall art designs + client-side photo print sizer grading your images against 24 standard sizes."/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<header class="hdr">
+  <h1>PrintBank</h1>
+  <p class="tag">True-vector wall art · one file, every size · plus your-photo print sizer</p>
+  <nav>
+    <a href="#bank">Print Bank</a>
+    <a href="#photos">Your Photos</a>
+    <a href="#sizes">Size Guide</a>
+  </nav>
+</header>
+
+<section id="bank">
+  <div class="controls">
+    <input id="q" type="search" placeholder="Search prints…"/>
+    <select id="genre"><option value="">All genres</option></select>
+  </div>
+  <div id="grid" class="grid" aria-live="polite"></div>
+</section>
+
+<section id="photos">
+  <h2>Your Photos → Print Sizer</h2>
+  <p>Drop a photo below. We grade it against 24 print sizes by effective DPI after center-crop, then export a print-ready PNG at 300 DPI (or 150 DPI minimum). Everything runs in your browser — nothing uploaded.</p>
+  <div id="drop" class="drop">Drop image here or click to choose</div>
+  <input id="file" type="file" accept="image/*" hidden/>
+  <div id="photoInfo" class="photo-info"></div>
+  <div id="gradeTable"></div>
+</section>
+
+<section id="sizes">
+  <h2>Standard Print Sizes</h2>
+  <div id="sizeGuide"></div>
+</section>
+
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-inner">
+    <button id="modalClose" class="close" aria-label="Close">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<footer>
+  <p>PrintBank · Vector prints, honest DPI. Premium exports via <a href="https://polar.sh" rel="noopener">Polar.sh</a> (roadmap).</p>
+</footer>
+
+<script src="print-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
