@@ -55,9 +55,9 @@ The following table provides a summary of the enhancements completed for each of
 
 With the backend infrastructure now complete and deployed, the applications are ready for the final integration phase. We recommend the following actions:
 
-1.  **Configure Environment Variables:** For each repository, copy the `.env.example` file to a new `.env` file and populate it with your actual secret keys for Stripe (test and live), Google OAuth, and a secure JWT secret.
-2.  **Local Testing:** Use the `docker-compose up -d` command in each repository to build and run the entire backend stack locally. The API documentation will be available at the port specified in the `README.md` (e.g., `http://localhost:8001/docs`).
-3.  **Frontend Integration:** Connect the existing Vite/React frontends to the newly created backend APIs. The API endpoints for authentication, billing, and other features are now live and ready to be consumed.
+1. **Configure Environment Variables:** For each repository, copy the `.env.example` file to a new `.env` file and populate it with your actual secret keys for Stripe (test and live), Google OAuth, and a secure JWT secret.
+2. **Local Testing:** Use the `docker-compose up -d` command in each repository to build and run the entire backend stack locally. The API documentation will be available at the port specified in the `README.md` (e.g., `http://localhost:8001/docs`).
+3. **Frontend Integration:** Connect the existing Vite/React frontends to the newly created backend APIs. The API endpoints for authentication, billing, and other features are now live and ready to be consumed.
 
 ## 6. Conclusion
 

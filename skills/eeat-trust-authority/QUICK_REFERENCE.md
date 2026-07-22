@@ -38,7 +38,7 @@ ls -lt docs/reports/eeat-health-*.md | head -1
 ## Master Identity
 
 **Name:** Audrey Evans  
-**Email:** angelreporters@gmail.com  
+**Email:** <angelreporters@gmail.com>  
 **ORCID:** [0009-0005-0663-7832](https://orcid.org/0009-0005-0663-7832)  
 **Entity:** Freedom Angel Corp (Founded 2010, EIN: 86-1209156)  
 **Location:** Northern Colorado  

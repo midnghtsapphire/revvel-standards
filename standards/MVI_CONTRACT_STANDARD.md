@@ -7,7 +7,7 @@
 
 ---
 
-## 1. What Is an MVI?
+## 1. What Is an MVI
 
 **MVI = Minimum Viable Increment**
 

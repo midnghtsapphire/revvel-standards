@@ -40,7 +40,7 @@ down next to the code**. Example we hit in this repo:
 
 A human who doesn't know that will waste hours. The comment hands it to them.
 
-### 2.3 Always document the fallback / "what to do if it fails"
+### 2.3 Always document the fallback / "what to do if it fails
 
 Per the fleet rule (every failure cascades to a working fallback — never
 dead-end), each failure path should say, in words:
