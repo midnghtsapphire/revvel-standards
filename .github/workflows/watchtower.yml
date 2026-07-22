@@ -1,0 +1,65 @@
+name: WR-4600 Watchtower
+
+on:
+  schedule:
+    - cron: '17 6 * * *'  # 06:17 UTC daily
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Self-test (grounding gate)
+        run: python tools/harvest.py --self-test
+
+      - name: Harvest
+        run: python tools/harvest.py --out snapshots/
+
+      - name: Commit snapshot (quiet days included)
+        run: |
+          git config user.name  'watchtower-bot'
+          git config user.email 'watchtower-bot@users.noreply.github.com'
+          git add snapshots/ || true
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore(watchtower): daily snapshot'
+            git push
+          else
+            echo 'no snapshot delta'
+          fi
+
+      - name: Triage — HARM/FLICKER/OCULAR only
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json, os, glob, subprocess, sys
+          files = sorted(glob.glob('snapshots/wr-4600-*.json'))
+          if not files:
+              sys.exit(0)
+          with open(files[-1]) as f:
+              snap = json.load(f)
+          triggers = ('HARM','FLICKER','OCULAR')
+          hits = []
+          for shard, rows in snap.get('shards', {}).items():
+              for r in rows:
+                  blob = json.dumps(r).upper()
+                  if any(t in blob for t in triggers):
+                      hits.append((shard, r))
+          if not hits:
+              print('no triage triggers')
+              sys.exit(0)
+          shard, row = hits[0]
+          title = f'[watchtower] triage: {shard} signal'
+          body  = 'Auto-opened by WR-4600 watchtower.\n\n```json\n' + json.dumps(row, indent=2) + '\n```'
+          subprocess.run(['gh','issue','create','--title',title,'--body',body,'--label','watchtower'], check=False)
+          PY

@@ -1,0 +1,52 @@
+# WR-4600.3 Watchtower Harvest Spec
+#
+# Live keyless APIs only. Every URL must come from an API response.
+# A fabricated citation is a P0 incident (WR-4200).
+
+version: "WR-4600.3"
+cadence: "06:17 UTC daily"
+report_style: "DELTA (a quiet day is a success)"
+
+ordering:
+  - adverse       # runs first; harm signal beats novelty
+  - trials
+  - literature
+  - regulatory
+
+sources:
+  adverse:
+    api: "openFDA (keyless)"
+    endpoint: "https://api.fda.gov/device/event.json"
+    url_source: "API response 'results[].openfda' fields"
+  trials:
+    api: "ClinicalTrials.gov v2"
+    endpoint: "https://clinicaltrials.gov/api/v2/studies"
+    url_source: "API response 'protocolSection.identificationModule.nctId'"
+  literature:
+    api: "NCBI E-utilities (esearch + esummary)"
+    endpoint: "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
+    url_source: "PMID from esummary result"
+  crossref:
+    api: "Crossref"
+    endpoint: "https://api.crossref.org/works"
+    url_source: "DOI from response 'message.items[].DOI'"
+
+rules:
+  fabrication: "P0. Never construct a URL from a title. Never guess DOIs/PMIDs/NCTs."
+  key_required_shards: "Degrade to 0 rows with a procurement note. Do not pad."
+  quiet_day: "Snapshot anyway. Immutable. Content-hashed."
+  snapshot_naming: "wr-4600-<UTC-date>-<sha256[:12]>.json"
+
+triage:
+  trigger_labels: ["HARM", "FLICKER", "OCULAR"]
+  one_issue_per_run: true
+
+self_test:
+  count: 17
+  mode: "offline, deterministic"
+  gates:
+    - "no network calls in self-test"
+    - "fabricated-URL detector triggers"
+    - "quiet-day snapshot still emitted"
+    - "adverse-first ordering enforced"
+    - "key-required shard degrades to 0 rows"
