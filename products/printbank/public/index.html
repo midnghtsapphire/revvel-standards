@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PrintBank — True Vector Wall Art + Photo Sizer</title>
+<meta name="description" content="144 true-vector printable wall art designs. Print at any size from 4x6 to A0 with zero quality loss. Free photo print sizer grades your photos across 24 standard print sizes."/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<header class="hdr">
+  <div class="wrap">
+    <h1>PrintBank</h1>
+    <p>144 true-vector prints · one download prints losslessly 4×6″ → A0</p>
+    <nav>
+      <a href="#gallery">Gallery</a>
+      <a href="#workbench">Your Photos</a>
+      <a href="#sizes">Size Guide</a>
+    </nav>
+  </div>
+</header>
+
+<section id="gallery" class="wrap">
+  <div class="filters">
+    <input id="q" placeholder="Search prints…" type="search"/>
+    <select id="genre">
+      <option value="">All genres</option>
+    </select>
+    <span id="count" class="count"></span>
+  </div>
+  <div id="grid" class="grid"></div>
+</section>
+
+<section id="workbench" class="wrap">
+  <h2>Your Photos → Print Sizer</h2>
+  <p>Drop a photo. We grade it against every standard print size by effective DPI after center-crop, then export a print-ready PNG. Everything runs in your browser — nothing uploaded.</p>
+  <div id="drop" class="drop">Drop image here or <label class="link">browse<input type="file" id="file" accept="image/*" hidden/></label></div>
+  <div id="photoResults" hidden>
+    <canvas id="preview"></canvas>
+    <table id="gradeTable"><thead><tr><th>Size</th><th>Ratio</th><th>Effective DPI</th><th>Grade</th><th>Export</th></tr></thead><tbody></tbody></table>
+  </div>
+</section>
+
+<section id="sizes" class="wrap">
+  <h2>Size Guide</h2>
+  <table id="sizeGuide"><thead><tr><th>Name</th><th>Inches</th><th>Ratio</th><th>Pixels @300dpi</th></tr></thead><tbody></tbody></table>
+</section>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-inner">
+    <button id="modalClose" aria-label="Close">×</button>
+    <div id="modalArt"></div>
+    <div class="modal-side">
+      <h3 id="modalTitle"></h3>
+      <p id="modalGenre"></p>
+      <button id="dlSvg">Download SVG (any size)</button>
+      <label>Export PNG at size:
+        <select id="pngSize"></select>
+      </label>
+      <label>DPI:
+        <select id="pngDpi"><option>300</option><option>150</option></select>
+      </label>
+      <button id="dlPng">Download PNG</button>
+    </div>
+  </div>
+</div>
+
+<footer class="wrap ftr">
+  <p>PrintBank · vectors are yours to print unlimited times, personal or small-shop use.</p>
+</footer>
+
+<script src="print-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
