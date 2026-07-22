@@ -270,7 +270,7 @@ express the design — and that decision must be logged in `DECISIONS.md`.
 
 ## References
 
-- RevenueCat docs: https://www.revenuecat.com/docs
-- Webhook event reference: https://www.revenuecat.com/docs/webhooks
-- REST API v2: https://www.revenuecat.com/reference/projects
-- Web Billing: https://www.revenuecat.com/docs/web/web-billing
+- RevenueCat docs: <https://www.revenuecat.com/docs>
+- Webhook event reference: <https://www.revenuecat.com/docs/webhooks>
+- REST API v2: <https://www.revenuecat.com/reference/projects>
+- Web Billing: <https://www.revenuecat.com/docs/web/web-billing>

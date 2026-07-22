@@ -13,8 +13,6 @@
 <!-- REQUIRED: Start the title with [WR] so automation routes it correctly. -->
 <!-- Example: "[WR] Add Polar.sh checkout button to OSINT tool landing page" -->
 
-
-
 ## Description
 
 <!-- Describe what you want in plain English. -->
@@ -24,8 +22,6 @@
 <!--   - Any constraints (deadline, budget, tech preference)? -->
 <!--   - If copying or refreshing an existing repo, include the repo URL so the research engine can identify the strongest assets and choose the optimal product direction -->
 <!-- The research engine will fill in technical details, acceptance criteria, etc. -->
-
-
 
 ---
 

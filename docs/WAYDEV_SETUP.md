@@ -4,12 +4,12 @@
 **Date:** April 14, 2026  
 **Status:** Under Evaluation (1-week trial)  
 **Cost:** ~$20/month per contributor, billed annually (~$240/year) — verify exact rate at checkout  
-**GitHub Marketplace:** https://github.com/marketplace/waydev  
-**Waydev Dashboard:** https://app.waydev.co
+**GitHub Marketplace:** <https://github.com/marketplace/waydev>  
+**Waydev Dashboard:** <https://app.waydev.co>
 
 ---
 
-## 1. What Is Waydev?
+## 1. What Is Waydev
 
 Waydev is a **developer productivity analytics platform** that connects to GitHub (and GitLab, Jira, etc.) to automatically collect commit, pull-request, and code-review metadata. It produces dashboards and reports that surface:
 
@@ -46,7 +46,7 @@ Waydev operates as a **passive observer** — it requires no changes to workflow
 
 ### Step 1 — Install the GitHub App
 
-1. Go to: https://github.com/marketplace/waydev
+1. Go to: <https://github.com/marketplace/waydev>
 2. Click **"Set up a plan"** → choose the **Pro** tier (~$20/month per contributor, billed annually).
 3. Under **"Install it for free"** (trial) or the paid plan page, select **"midnghtsapphire"** as the account.
 4. When prompted for repository access, choose **"All repositories"** (recommended) or select specific repos.
@@ -54,7 +54,7 @@ Waydev operates as a **passive observer** — it requires no changes to workflow
 
 ### Step 2 — Complete Waydev Onboarding
 
-1. Sign in / create a Waydev account at https://app.waydev.co (use GitHub SSO for simplicity).
+1. Sign in / create a Waydev account at <https://app.waydev.co> (use GitHub SSO for simplicity).
 2. Authorise the Waydev app to read your GitHub data.
 3. Select the repositories you want tracked. Recommended starting set:
    - `midnghtsapphire/revvel-standards`
@@ -66,7 +66,7 @@ Waydev operates as a **passive observer** — it requires no changes to workflow
 
 ### Step 3 — Verify the Dashboard
 
-1. Open https://app.waydev.co → **Dashboard**.
+1. Open <https://app.waydev.co> → **Dashboard**.
 2. Confirm your repositories appear and recent commits/PRs are visible.
 3. Explore the **"Engineering Performance"** and **"Cycle Time"** tabs to see your team's baseline metrics.
 
@@ -104,7 +104,7 @@ If Waydev is not retained after the trial:
 1. Go to **GitHub → Settings → Applications → Installed GitHub Apps**.
 2. Find **Waydev** and click **"Configure"**.
 3. Scroll down and click **"Uninstall"**.
-4. Log in to https://app.waydev.co → **Settings → Billing** → cancel the subscription (if one was started).
+4. Log in to <https://app.waydev.co> → **Settings → Billing** → cancel the subscription (if one was started).
 
 No code changes are required — Waydev has no footprint in the repositories themselves.
 
@@ -133,4 +133,4 @@ If the project later adopts Jira or Linear for issue tracking, Waydev supports d
 
 ---
 
-_For questions, contact the Revvel platform team or open an issue tagged `bom-purchase` in `midnghtsapphire/revvel-standards`._
+*For questions, contact the Revvel platform team or open an issue tagged `bom-purchase` in `midnghtsapphire/revvel-standards`.*

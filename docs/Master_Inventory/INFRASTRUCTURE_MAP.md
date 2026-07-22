@@ -144,7 +144,7 @@ Repos like `rvvel`, `mindmappr`, and `Pawsitting` use GitHub Actions for automat
 ---
 
 ## 7. Immediate Contacts & Support
-- **Primary Contact:** Audrey Evans (angelreporters@gmail.com)
+- **Primary Contact:** Audrey Evans (<angelreporters@gmail.com>)
 - **Technical Support:** Submit request at [https://help.manus.im](https://help.manus.im)
 
 ---
