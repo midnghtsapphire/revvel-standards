@@ -1,4 +1,4 @@
-# 📖 Reminders — "Before you do X, read Y first"
+# 📖 Reminders — "Before you do X, read Y first
 
 > ⚡ **Busy / lost in folders?** Open **[START_HERE_CALL_CHAIN.md](./START_HERE_CALL_CHAIN.md)** first — which workflow starts and what runs next.
 
@@ -8,7 +8,7 @@ When you're about to start something new, grep this file with the verb of your a
 
 ---
 
-## Provisioning a new GitHub Project v2 board (https://github.com/users/midnghtsapphire/projects/5)
+## Provisioning a new GitHub Project v2 board (<https://github.com/users/midnghtsapphire/projects/5>)
 
 **For the live `revvel-standards` Project board:**
 
@@ -33,7 +33,7 @@ When you're about to start something new, grep this file with the verb of your a
 
 ---
 
-## Wiring the Project v2 default-field-setter workflows (for https://github.com/users/midnghtsapphire/projects/5)
+## Wiring the Project v2 default-field-setter workflows (for <https://github.com/users/midnghtsapphire/projects/5>)
 
 **Read before you start:**
 

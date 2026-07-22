@@ -418,7 +418,7 @@ WHERE email = 'jane@example.com';
 **Result:**
 | id | first_name | email | role | created_at |
 |---|---|---|---|---|
-| 550e8400-... | Jane | jane@example.com | user | 2026-04-15 13:00:00+00 |
+| 550e8400-... | Jane | <jane@example.com> | user | 2026-04-15 13:00:00+00 |
 
 **Status:** ✅ PASS
 
@@ -454,7 +454,7 @@ SELECT id, email, deleted_at FROM users WHERE id = '550e8400-...';
 **Result:**
 | id | email | deleted_at |
 |---|---|---|
-| 550e8400-... | jane@example.com | 2026-04-15 13:02:00+00 |
+| 550e8400-... | <jane@example.com> | 2026-04-15 13:02:00+00 |
 
 **Status:** ✅ PASS
 
@@ -465,7 +465,7 @@ SELECT id, email, deleted_at FROM users WHERE id = '550e8400-...';
 | Constraint | Input | Expected Rejection | DB Error | API Status | Status |
 |---|---|---|---|---|---|
 | NOT NULL (first_name) | NULL | Yes | null value in column "first_name" | 400 | ✅ PASS |
-| UNIQUE (email) | jane@example.com (duplicate) | Yes | duplicate key value | 409 | ✅ PASS |
+| UNIQUE (email) | <jane@example.com> (duplicate) | Yes | duplicate key value | 409 | ✅ PASS |
 ```
 
 ---

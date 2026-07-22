@@ -38,7 +38,7 @@ Graphite is **not** a replacement for any existing tool listed in [`TEST_HARNESS
 | CI signal on the full stack | None — each PR tested independently | Graphite re-triggers CI on descendants when an ancestor is pushed, so the top of a stack is always tested against its *current* parent. |
 | PR → orchestrator hand-off | `openrouter-assignee.yml` → `@Copilot` per PR | Graphite stack metadata (`gt-stack`) is surfaced in the first-line-of-sight comment so the orchestrator understands the whole stack, not just a leaf PR. |
 
-### Why not just "open smaller PRs"?
+### Why not just "open smaller PRs
 
 We already ask contributors to do that. In practice, standards work (a new skill, a new BOM row, a new template) spans several files and at least two logical layers (e.g. **labels.yml** change + **docs** change + **CHANGELOG** entry). Graphite lets those three layers ship as three PRs that land in order, without forcing the author to wait for a human review of layer N before starting layer N+1.
 
@@ -165,11 +165,11 @@ revvel-standards/
 
 Each bullet is a **single PR**, continuing the numbering from the existing rollout:
 
-9. **PR-9 (this PR):** Land this integration doc, append the BOM row, add `graphite` + `graphite:stacked` labels, append the CHANGELOG entry. No runtime behaviour changes yet.
-10. **PR-10:** Install the Graphite GitHub App; run `gt init`; commit `.graphite_repo_config`.
-11. **PR-11:** Configure the Graphite merge-queue to require the `revvel-standards / test` status check (R-GT-03).
-12. **PR-12:** Append the Graphite stack summary block to `openrouter-assignee.yml` (R-GT-05).
-13. **PR-13:** 30-day observation period; record outcomes; decide whether to flip Graphite from advisory to required.
+1. **PR-9 (this PR):** Land this integration doc, append the BOM row, add `graphite` + `graphite:stacked` labels, append the CHANGELOG entry. No runtime behaviour changes yet.
+2. **PR-10:** Install the Graphite GitHub App; run `gt init`; commit `.graphite_repo_config`.
+3. **PR-11:** Configure the Graphite merge-queue to require the `revvel-standards / test` status check (R-GT-03).
+4. **PR-12:** Append the Graphite stack summary block to `openrouter-assignee.yml` (R-GT-05).
+5. **PR-13:** 30-day observation period; record outcomes; decide whether to flip Graphite from advisory to required.
 
 Total expected engineering time: **≤ 1 day** across PR-10..PR-12, plus the observation window.
 

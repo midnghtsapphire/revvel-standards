@@ -211,11 +211,10 @@ _Last intent: stop hunting folders; one root file for start → next. Detail liv
 
 **Do not use the hub homepage for uploads.** Use:
 
-- https://revvel-standards.vercel.app/docs/vine-orders/
-- or https://revvel-standards.vercel.app/vine-orders.html
+- <https://revvel-standards.vercel.app/docs/vine-orders/>
+- or <https://revvel-standards.vercel.app/vine-orders.html>
 
 That page accepts your CSV in the browser. The main Vercel site only shows docs/folders.
-
 
 ---
 
@@ -225,10 +224,8 @@ App code: `docs/marketplace-relister`
 Deploy as its **own** Vercel project (Root Directory = `docs/marketplace-relister`).  
 Set `OPENROUTER_API_KEY` once in Vercel. Bookmark that app URL only.
 
-
 ## Family Order Packs (private Vercel)
 
 Code: `docs/marketplace-relister`.
 Deploy once on Vercel (Root Directory = that folder). Env: `OPENROUTER_API_KEY` + `FAMILY_APP_PASSWORD`.
 Daily use: one bookmark, upload CSV, Process next 10/25, download packs.
-
