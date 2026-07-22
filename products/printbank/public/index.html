@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PrintBank — vector wall art, printed any size</title>
+<meta name="description" content="144 true-vector printable wall art SVGs — one download prints losslessly from 4×6 to A0. Plus a photo print sizer that grades your own images." />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">PrintBank</div>
+  <nav>
+    <a href="#gallery">Gallery</a>
+    <a href="#workbench">Your Photos</a>
+    <a href="#sizes">Size Guide</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>144 vector prints. One download. Any size.</h1>
+  <p>Every print in the bank is <strong>true SVG</strong> — print at 4×6″, A4, 24×36″ or A0 with zero loss. Or bring your own photo and let the sizer grade it against 24 standard print sizes.</p>
+</section>
+
+<section id="gallery">
+  <div class="controls">
+    <input id="search" type="search" placeholder="Search prints…" />
+    <select id="genre">
+      <option value="">All genres</option>
+    </select>
+    <span id="count" class="count"></span>
+  </div>
+  <div id="grid" class="grid"></div>
+</section>
+
+<section id="workbench">
+  <h2>Your Photos — print sizer</h2>
+  <p>Drop a photo. We grade its effective DPI at every standard size and export a correctly-sized, print-ready PNG entirely in your browser.</p>
+  <div id="drop" class="drop">
+    <input id="file" type="file" accept="image/*" />
+    <p>Drag &amp; drop, or click to choose an image</p>
+  </div>
+  <div id="photoInfo" class="hidden">
+    <div id="photoMeta"></div>
+    <table id="gradeTable" class="grade"><thead><tr><th>Size</th><th>Ratio</th><th>Effective DPI</th><th>Grade</th><th>Export</th></tr></thead><tbody></tbody></table>
+  </div>
+</section>
+
+<section id="sizes">
+  <h2>Size guide</h2>
+  <table id="sizeTable" class="grade"><thead><tr><th>Size</th><th>Inches</th><th>Ratio</th><th>Pixels @ 300 DPI</th></tr></thead><tbody></tbody></table>
+</section>
+
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-inner">
+    <button id="closeModal" class="close" aria-label="Close">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<footer>
+  <p>PrintBank · vector-first printable art · <a href="https://polar.sh" rel="noopener">funded via Polar</a></p>
+</footer>
+
+<script src="print-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
