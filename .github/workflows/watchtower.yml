@@ -1,0 +1,59 @@
+name: watchtower
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Grounding gate (self-test)
+        run: python tools/harvest.py --self-test
+
+      - name: Harvest
+        id: harvest
+        run: |
+          python tools/harvest.py --out wr/snapshots | tee harvest-out.json
+          echo "snapshot=$(jq -r .snapshot harvest-out.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit snapshot (quiet days included)
+        run: |
+          git config user.name "watchtower-bot"
+          git config user.email "watchtower@users.noreply.github.com"
+          git add wr/snapshots
+          if git diff --cached --quiet; then
+            echo "no snapshot delta (already-immutable hit)"
+          else
+            git commit -m "chore(watchtower): snapshot $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Triage — summon issue only on HARM/FLICKER/OCULAR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SNAPSHOT: ${{ steps.harvest.outputs.snapshot }}
+        run: |
+          if [ -z "$SNAPSHOT" ] || [ ! -f "$SNAPSHOT" ]; then
+            echo "no snapshot file; skipping triage"
+            exit 0
+          fi
+          HIT=$(jq -r '[.shards[].rows[]? | select(.gate=="HARM" or .gate=="FLICKER" or .gate=="OCULAR")] | length' "$SNAPSHOT")
+          if [ "${HIT:-0}" -gt 0 ]; then
+            gh issue create \
+              --title "[watchtower] gate hit: HARM/FLICKER/OCULAR ($(date -u +%Y-%m-%d))" \
+              --body "Snapshot: \`$SNAPSHOT\`\n\nGate rows: $HIT\n\nTriage per WR-4600.3."
+          else
+            echo "quiet day — no triage issue"
+          fi

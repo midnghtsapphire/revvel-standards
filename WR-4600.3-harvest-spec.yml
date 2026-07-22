@@ -1,0 +1,64 @@
+# WR-4600.3 Harvest Spec
+# Watchtower harvest pipeline — keyless, live, no fabrication.
+
+id: WR-4600.3
+name: watchtower-harvest
+version: 1
+
+principles:
+  - id: WR-4200
+    rule: "A fabricated citation is a P0 incident."
+  - id: delta-not-breakthrough
+    rule: "Report deltas. A quiet day is a success."
+  - id: url-provenance
+    rule: "Every URL must come from an API response body. Never construct."
+  - id: immutable-snapshots
+    rule: "Snapshots are content-hashed and append-only."
+  - id: no-padding
+    rule: "A shard needing a missing key degrades to 0 rows + procurement note."
+  - id: adverse-first
+    rule: "Run the 'adverse' shard before any positive-signal shard."
+
+shards:
+  - name: adverse
+    order: 0
+    sources:
+      - api: ncbi-eutils
+        endpoint: "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+        keyless: true
+        query: "(phototherapy OR photobiomodulation) AND (adverse OR harm OR flicker OR ocular)"
+      - api: clinicaltrials-v2
+        endpoint: "https://clinicaltrials.gov/api/v2/studies"
+        keyless: true
+
+  - name: efficacy
+    order: 1
+    sources:
+      - api: ncbi-eutils
+        keyless: true
+      - api: crossref
+        endpoint: "https://api.crossref.org/works"
+        keyless: true
+
+  - name: mechanism
+    order: 2
+    sources:
+      - api: crossref
+        keyless: true
+
+gates:
+  - HARM
+  - FLICKER
+  - OCULAR
+
+self_test:
+  offline: true
+  deterministic: true
+  check_count: 17
+
+triage:
+  summon_issue_on:
+    - HARM
+    - FLICKER
+    - OCULAR
+  never_summon_on_quiet_day: true
