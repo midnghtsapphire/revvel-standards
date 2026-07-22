@@ -128,13 +128,12 @@ All repos MUST have:
 
 ## Troubleshooting
 
-### Issue not created?
+### Issue not created
 - Check workflow permissions: `contents: read, issues: write`
 
-### Site shows as down but works?
+### Site shows as down but works
 - Increase timeout in curl command
 - Check if site blocks GitHub IPs
 
-### Need to skip?
+### Need to skip
 - Use `workflow_dispatch` to run manually
-

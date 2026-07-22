@@ -6,7 +6,7 @@ This document defines the protocols that enable agents to operate with **driven 
 
 ## GOAP (Goal-Oriented Action Planning)
 
-### What is GOAP?
+### What is GOAP
 
 Goal-Oriented Action Planning is an AI planning system where agents:
 
@@ -113,7 +113,7 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
 
 ## Swarm Coordination
 
-### What is Swarm Coordination?
+### What is Swarm Coordination
 
 Swarm coordination enables multiple agents to work on parallel, independent subtasks while sharing context and synchronizing results.
 
@@ -366,8 +366,6 @@ When OpenRouter API calls fail:
 #### 1. Immediate Retry with Backoff
 
 > **For illustration only.** Do **not** paste this example into a CI workflow where stdout/stderr is logged. Always call OpenRouter via `scripts/openrouter-routing.js` (or another wrapper) so the key never appears in user-controlled contexts. — Octopus audit 2026-05-28
-
-
 
 See the illustration-only caveat in [OPENROUTER_API_KEY_VERIFICATION_STANDARD.md](./OPENROUTER_API_KEY_VERIFICATION_STANDARD.md) before using any code examples below.
 
