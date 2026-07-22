@@ -1,0 +1,58 @@
+# WR-4600.3 Harvest Spec
+# Watchtower harvest pipeline — keyless, API-grounded, delta-honest.
+#
+# PRIME DIRECTIVE: $10k/month → $10M in 3 years.
+# This spec anchors the harvest pipeline used by tools/harvest.py.
+
+id: WR-4600.3
+name: Watchtower Harvest
+version: 0.1.0
+owner: wr-photon-bench
+cadence: daily
+cron_utc: "17 6 * * *"
+
+principles:
+  - id: WR-4200
+    rule: "A fabricated citation is a P0 incident. Every URL must originate from an API response."
+  - id: DELTA-HONEST
+    rule: "Report DELTA, never 'breakthrough'. Quiet days are success and still snapshot."
+  - id: IMMUTABLE-SNAPSHOTS
+    rule: "Snapshots are content-hashed and immutable once written."
+  - id: NO-PADDING
+    rule: "Shards needing an API key degrade to 0 rows + procurement note. Never synthesize rows."
+  - id: ADVERSE-FIRST
+    rule: "Adverse/HARM shard runs first so a bad signal cannot be buried by later shards."
+
+shards:
+  - id: adverse
+    order: 1
+    source: ncbi_eutils
+    keyless: true
+    query: "(photobiomodulation OR low-level light therapy) AND (adverse OR harm OR retinal)"
+  - id: trials
+    order: 2
+    source: clinicaltrials_v2
+    keyless: true
+    query: "photobiomodulation"
+  - id: literature
+    order: 3
+    source: crossref
+    keyless: true
+    query: "photobiomodulation dose"
+  - id: regulatory
+    order: 4
+    source: openfda
+    keyless: true
+    optional: true
+
+triage:
+  summon_issue_on:
+    - HARM
+    - FLICKER
+    - OCULAR
+  max_issues_per_run: 1
+
+self_test:
+  required_checks: 17
+  offline: true
+  deterministic: true

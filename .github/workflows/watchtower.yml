@@ -1,0 +1,68 @@
+name: watchtower
+
+on:
+  schedule:
+    - cron: "17 6 * * *"   # 06:17 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: watchtower
+  cancel-in-progress: false
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Grounding gate — self-test (17 offline checks)
+        run: python tools/harvest.py --self-test
+
+      - name: Harvest (keyless, API-grounded)
+        id: harvest
+        run: |
+          python tools/harvest.py --out wr/snapshots | tee harvest.out.json
+          echo "triage_count=$(python -c 'import json,sys;print(json.load(open(\"harvest.out.json\")).get(\"triage_count\",0))')" >> "$GITHUB_OUTPUT"
+          echo "snapshot=$(python -c 'import json,sys;print(json.load(open(\"harvest.out.json\")).get(\"snapshot\",\"\"))')" >> "$GITHUB_OUTPUT"
+
+      - name: Commit snapshot (quiet days included)
+        run: |
+          git config user.name "watchtower-bot"
+          git config user.email "watchtower-bot@users.noreply.github.com"
+          git add wr/snapshots || true
+          if git diff --cached --quiet; then
+            echo "no snapshot delta"
+          else
+            git commit -m "chore(watchtower): snapshot $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Summon triage issue (only on HARM/FLICKER/OCULAR)
+        if: steps.harvest.outputs.triage_count != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const snap = '${{ steps.harvest.outputs.snapshot }}';
+            const n = '${{ steps.harvest.outputs.triage_count }}';
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[watchtower] ${n} triage row(s) — ${new Date().toISOString().slice(0,10)}`,
+              body: [
+                `Snapshot: \`${snap}\``,
+                ``,
+                `Delta contains ${n} row(s) tagged HARM/FLICKER/OCULAR.`,
+                `Per WR-4200: verify every URL originates from an API response before acting.`,
+              ].join('\n'),
+              labels: ['watchtower', 'triage'],
+            });

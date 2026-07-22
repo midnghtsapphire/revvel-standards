@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;" />
+<title>WR-4600 · Photon Bench (offline artifact)</title>
+<style>
+  /* Self-contained: no external font links. Uses local() then system fallback. */
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400 700;
+    src: local('Inter'), local('Inter-Regular'), local('system-ui');
+  }
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 400 700;
+    src: local('JetBrains Mono'), local('JetBrainsMono-Regular'), local('Menlo'), local('Consolas'), local('monospace');
+  }
+  @font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 400 900;
+    src: local('Fraunces'), local('Georgia'), local('serif');
+  }
+
+  :root {
+    --bg: #0b0d10;
+    --panel: #12161c;
+    --ink: #e7ecf3;
+    --muted: #8a95a5;
+    --accent: #ff6a3d;
+    --ok: #4ade80;
+    --warn: #f59e0b;
+    --harm: #ef4444;
+    --line: #1f2731;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; line-height: 1.55; }
+  code, pre, .mono { font-family: 'JetBrains Mono', Menlo, Consolas, monospace; }
+  h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 800; letter-spacing: -0.01em; }
+
+  header { padding: 32px 24px 12px; border-bottom: 1px solid var(--line); }
+  header .kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.14em; font-size: 12px; }
+  header h1 { margin: 6px 0 0; font-size: clamp(28px, 4vw, 44px); }
+  header p { color: var(--muted); margin: 8px 0 0; max-width: 72ch; }
+
+  main { padding: 24px; display: grid; gap: 20px; grid-template-columns: repeat(12, 1fr); max-width: 1200px; margin: 0 auto; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; grid-column: span 12; }
+  @media (min-width: 900px) {
+    .card.half { grid-column: span 6; }
+    .card.third { grid-column: span 4; }
+  }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; border: 1px solid var(--line); }
+  .tag.ok { color: var(--ok); border-color: color-mix(in oklab, var(--ok) 40%, var(--line)); }
+  .tag.warn { color: var(--warn); border-color: color-mix(in oklab, var(--warn) 40%, var(--line)); }
+  .tag.harm { color: var(--harm); border-color: color-mix(in oklab, var(--harm) 40%, var(--line)); }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 8px 6px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
+  th { color: var(--muted); font-weight: 600; }
+
+  footer { color: var(--muted); font-size: 12px; padding: 24px; text-align: center; border-top: 1px solid var(--line); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<header>
+  <div class="kicker">WR-4600 · Photon Bench</div>
+  <h1>Offline dashboard artifact</h1>
+  <p>Self-contained snapshot rendered from the original 142&nbsp;KB Drive artifact.
+  External Google Fonts <code>&lt;link&gt;</code>s have been replaced with
+  <code>local()</code> / system <code>@font-face</code> declarations so the page
+  renders identically offline and under a strict CSP. <strong>Zero external
+  resource loads.</strong></p>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Safety gates</h2>
+    <table>
+      <thead><tr><th>Gate</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>HARM</td><td><span class="tag ok">wired</span></td><td>Adverse-first shard order; triage issue on any HARM row.</td></tr>
+        <tr><td>FLICKER</td><td><span class="tag ok">wired</span></td><td>Photosensitive-seizure gate on frequency &amp; duty cycle.</td></tr>
+        <tr><td>OCULAR</td><td><span class="tag ok">wired</span></td><td>Retinal-hazard gate on wavelength &amp; irradiance.</td></tr>
+        <tr><td>WR-4200 (no fabrication)</td><td><span class="tag ok">enforced</span></td><td>Every citation URL originates in an API response.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card half">
+    <h3>Dose engine</h3>
+    <p>Deterministic. Biphasic-aware. Never routes through free-form agent
+    loops (see <code>wr-4600-prompt-drift.md</code>).</p>
+  </section>
+
+  <section class="card half">
+    <h3>Watchtower</h3>
+    <p>Daily at 06:17 UTC. Keyless APIs only. Quiet days still snapshot.
+    Snapshots are content-hashed and immutable.</p>
+  </section>
+
+  <section class="card third">
+    <h3>Spec</h3>
+    <p class="mono">WR-4600.3-harvest-spec.yml</p>
+  </section>
+  <section class="card third">
+    <h3>Pipeline</h3>
+    <p class="mono">tools/harvest.py --self-test</p>
+  </section>
+  <section class="card third">
+    <h3>CI</h3>
+    <p class="mono">.github/workflows/watchtower.yml</p>
+  </section>
+</main>
+
+<footer>
+  WR-4600 · Photon Bench · offline artifact · self-contained · 0 external loads
+</footer>
+</body>
+</html>
