@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PrintBank — True Vector Wall Art</title>
+<meta name="description" content="144 true-vector printable wall art designs. Print losslessly from 4×6 to A0. Plus a photo sizer that grades your images for 24 print sizes.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="#">PrintBank</a>
+    <nav>
+      <a href="#gallery">Gallery</a>
+      <a href="#workbench">Your Photos</a>
+      <a href="#sizes">Size Guide</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>True-vector wall art. One file, every size.</h1>
+    <p>144 SVG prints across 8 genres — download once, print losslessly from 4×6″ to A0. Plus a photo sizer that grades your own images against 24 standard print sizes.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="#gallery">Browse the Bank</a>
+      <a class="btn" href="#workbench">Size Your Photos</a>
+    </div>
+  </div>
+</section>
+
+<section id="gallery" class="section">
+  <div class="wrap">
+    <h2>The Bank</h2>
+    <div class="controls">
+      <input id="search" type="search" placeholder="Search…" aria-label="Search prints">
+      <select id="genre-filter" aria-label="Filter by genre">
+        <option value="">All genres</option>
+      </select>
+    </div>
+    <div id="grid" class="grid"></div>
+  </div>
+</section>
+
+<section id="workbench" class="section alt">
+  <div class="wrap">
+    <h2>Your Photos → Print-Ready</h2>
+    <p>Drop a photo. We center-crop for every standard print size, compute effective DPI, and grade quality. Exports are client-side — nothing is uploaded.</p>
+    <div id="dropzone" class="dropzone">
+      <p>Drop an image, or <label class="link">click to choose<input id="file" type="file" accept="image/*" hidden></label></p>
+    </div>
+    <div id="photo-result" hidden>
+      <div class="result-grid">
+        <div>
+          <canvas id="preview"></canvas>
+          <p class="meta" id="src-meta"></p>
+        </div>
+        <div>
+          <table class="grade-table">
+            <thead><tr><th>Size</th><th>Ratio</th><th>DPI</th><th>Grade</th><th></th></tr></thead>
+            <tbody id="grade-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="sizes" class="section">
+  <div class="wrap">
+    <h2>Size Guide</h2>
+    <table class="size-table">
+      <thead><tr><th>Size</th><th>Ratio</th><th>Pixels @ 300 DPI</th><th>Pixels @ 150 DPI</th></tr></thead>
+      <tbody id="size-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-inner">
+    <button class="close" id="modal-close" aria-label="Close">×</button>
+    <div id="modal-preview"></div>
+    <div class="modal-side">
+      <h3 id="modal-title"></h3>
+      <p id="modal-genre" class="meta"></p>
+      <div class="exports">
+        <button class="btn primary" id="dl-svg">Download SVG (any size)</button>
+        <label>Export PNG size:
+          <select id="png-size"></select>
+        </label>
+        <label>DPI:
+          <select id="png-dpi">
+            <option value="300">300 (print)</option>
+            <option value="150">150 (draft)</option>
+          </select>
+        </label>
+        <button class="btn" id="dl-png">Export PNG</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p>PrintBank — deterministic vector print catalog. All rendering is client-side.</p>
+  </div>
+</footer>
+
+<script src="print-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
