@@ -1,0 +1,42 @@
+# WR-4600.3 Harvest Spec
+version: 0.3.0
+principles:
+  - grounding_first: self-test must pass before any live call
+  - no_fabrication: every URL originates from an API response payload
+  - delta_not_breakthrough: report changes, not hype
+  - quiet_day_is_success: snapshot even on zero-delta days
+  - adverse_first: adverse shard runs before efficacy shards
+  - immutable_snapshots: content-hash and never rewrite
+  - degrade_dont_pad: shards needing keys return 0 rows + procurement note
+
+shards:
+  - id: adverse
+    order: 1
+    source: ncbi_eutils
+    query: "(photobiomodulation OR low-level laser therapy) AND (adverse OR ocular OR retinal OR burn)"
+    keyless: true
+  - id: trials
+    order: 2
+    source: clinicaltrials_v2
+    query: "photobiomodulation"
+    keyless: true
+  - id: literature
+    order: 3
+    source: crossref
+    query: "photobiomodulation dose response"
+    keyless: true
+  - id: regulatory
+    order: 4
+    source: fda_openfda
+    keyless: false
+    procurement_note: "Requires openFDA key for high-rate access; degrades to 0 rows without."
+
+triage_triggers:
+  - HARM
+  - FLICKER
+  - OCULAR
+
+self_test:
+  checks: 17
+  offline: true
+  deterministic: true
