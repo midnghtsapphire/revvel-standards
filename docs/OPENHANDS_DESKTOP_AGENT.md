@@ -6,7 +6,7 @@
 
 ## What It Does
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    YOUR DESKTOP                              │
 │                                                              │
@@ -160,7 +160,7 @@ midnghtsapphire/revvel-standards
 
 When running interactively, tell the agent:
 
-```
+```text
 "Check my credentials folder for any new API keys. 
 Sync them to GitHub Secrets for midnghtsapphire/revvel-standards.
 Browse to bito.ai and extract my API key if I'm logged in.

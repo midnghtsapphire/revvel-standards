@@ -49,7 +49,7 @@ Example:
 
 Use this template to create custom badges:
 
-```
+```text
 https://img.shields.io/badge/{LABEL}-{MESSAGE}-{COLOR}?style={STYLE}
 ```
 

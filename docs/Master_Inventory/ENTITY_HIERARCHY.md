@@ -25,7 +25,7 @@ The following table details the legal entities that form our corporate structure
 
 This hierarchy must be reflected in all branding, metadata, and public-facing communications. **Freedom Angel Corp** is the root parent.
 
-```
+```text
 Freedom Angel Corp (Founded 2010, EIN: 86-1209156)
   │
   ├─── Information Technology Umbrella

@@ -59,7 +59,7 @@ node scripts/openrouter-routing-example.js repo_surgery "Fix the bug in the user
 - Should return the actual model used
 
 **Expected output format:**
-```
+```text
 ================================================================================
 OpenRouter Routing Example
 ================================================================================
@@ -97,7 +97,7 @@ node scripts/openrouter-routing-example.js cheap_batch_edits "Generate unit test
 - Response should be practical and focused on the task
 
 **Expected output format:**
-```
+```text
 ================================================================================
 OpenRouter Routing Example
 ================================================================================
@@ -135,7 +135,7 @@ node scripts/openrouter-routing-example.js hard_debug "The application crashes w
 - May suggest multiple approaches and root causes
 
 **Expected output format:**
-```
+```text
 ================================================================================
 OpenRouter Routing Example
 ================================================================================

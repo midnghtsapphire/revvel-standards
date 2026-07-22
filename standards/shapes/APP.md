@@ -45,7 +45,7 @@
 
 ### Project Structure (Web)
 
-```
+```text
 build/app/
   src/
     pages/              # Route pages
@@ -69,7 +69,7 @@ build/app/
 
 ### Project Structure (Mobile — Expo)
 
-```
+```text
 build/app/
   app/                  # Expo Router file-based routing
     (tabs)/             # Tab navigation
@@ -171,7 +171,7 @@ Full apps require comprehensive design:
 
 ### Landing Page / Marketing Site
 
-```
+```text
 <product-slug>.revvel.io
 ```
 

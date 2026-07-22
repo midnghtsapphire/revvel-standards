@@ -25,7 +25,7 @@ Reese Reviews is a professional product review platform focused on Amazon Vine r
 
 ## Project Structure
 
-```
+```text
 reesereviews/
 ├── index.html              # Main landing page
 ├── assets/                 # Images, logos, favicons

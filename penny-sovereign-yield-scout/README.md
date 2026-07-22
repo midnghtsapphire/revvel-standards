@@ -23,7 +23,7 @@ This is the **launch bible** — start here.
 
 ## Project Layout
 
-```
+```text
 penny-sovereign-yield-scout/
 ├── README.md                  ← You are here (launch bible)
 ├── persona.yaml               ← Copy-paste into OpenClaw
@@ -92,7 +92,7 @@ Copy `.env.example` to `.env` and populate:
 
 ## Architecture Overview
 
-```
+```text
 Social Feeds (Twitter / Reddit / Telegram)
         │
         ▼

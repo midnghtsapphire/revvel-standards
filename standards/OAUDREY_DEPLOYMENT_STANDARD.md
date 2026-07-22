@@ -24,7 +24,7 @@ This document is the authoritative deployment guide for the **oAudrey Hub** (`oa
 
 ## Architecture
 
-```
+```text
                   GitHub (midnghtsapphire/revvel-standards)
                        │  push to main
                        ▼
@@ -238,7 +238,7 @@ python3 -m http.server 8080
 3. Under **Nameservers**, select **Custom DNS**
 4. Enter DigitalOcean nameservers:
 
-   ```
+   ```text
    ns1.digitalocean.com
    ns2.digitalocean.com
    ns3.digitalocean.com
@@ -253,7 +253,7 @@ python3 -m http.server 8080
 3. Add `oaudrey.com` → point to your App Platform app
 4. Add subdomains:
 
-   ```
+   ```text
    oaudrey.com         → ALIAS to your App Platform URL
    www.oaudrey.com     → CNAME to oaudrey.com
    fieldwork.oaudrey.com → CNAME to your App Platform URL
@@ -345,7 +345,7 @@ Triggers:
 
 ### Deploy Checklist (per deploy)
 
-```
+```text
 [ ] oaudrey/index.html — markup valid, all tabs wired
 [ ] oaudrey/404.html — exists and branded
 [ ] oaudrey/.do/app.yaml — spec validated
@@ -379,7 +379,7 @@ The **oAudrey Retro** workflow (`oaudrey-retro.yml`) runs after every successful
 
 ### Continuous improvement loop
 
-```
+```text
 push → deploy → retro → issue → fix → push → ...
        ↑______________________________________________↑
                   (self-improving loop)

@@ -20,7 +20,7 @@ them into properly structured Work Request issues with priority-slot labels.
 
 Post a comment on any issue (or open a new one) containing `/brain-dump`:
 
-```
+```text
 /brain-dump every morning I want a tool to dump notes and auto create WRs.
 We also need a brain dump to priority slot mapper and notebook LM integration.
 The OSINT pipeline needs a new scraping module for Telegram.
@@ -58,7 +58,7 @@ In dry-run mode, the workflow logs what it would create but does not open any is
 Priority slots provide an **ordered queue** within a sprint window. They complement
 the existing `priority-p0..p3` labels by adding position information.
 
-```
+```text
 priority-slot:1-1  ← Sprint 1, Position 1 (highest priority right now)
 priority-slot:1-2  ← Sprint 1, Position 2
 priority-slot:1-3  ← Sprint 1, Position 3
@@ -93,7 +93,7 @@ For best results, ensure `OPENROUTER_API_KEY` is set as a repository secret.
 ## Example Input → Output
 
 **Input brain dump:**
-```
+```text
 every morning I want a tool to dump notes and auto create WRs. Neuros has
 the feature, maybe get it from there. Need notebook LM API integration.
 The OSINT pipeline needs a new scraping module.

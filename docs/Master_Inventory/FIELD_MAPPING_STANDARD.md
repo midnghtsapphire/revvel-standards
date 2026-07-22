@@ -72,7 +72,7 @@ Every field map document must contain exactly these columns, in this order:
 
 Every field gets a unique ID following this format:
 
-```
+```text
 FM-[SCREEN_CODE]-[NUMBER]
 
 Examples:
@@ -181,7 +181,7 @@ When looking at a filled field map entry, read it as a sentence:
 In Figma, every field in the design file must be linked to a variable that matches the `Frontend Variable Name` column of the field map. See `docs/VISUAL_DOCUMENTATION_GUIDE.md` for step-by-step Figma setup.
 
 **Naming convention for Figma variables:**
-```
+```text
 [Screen Code]/[Field Label in camelCase]
 
 Examples:
@@ -208,7 +208,7 @@ When sharing field maps with non-technical stakeholders, the recommended format 
 
 ## 10. Where Field Maps Live
 
-```
+```text
 your-app-repo/
 └── docs/
     └── field-maps/

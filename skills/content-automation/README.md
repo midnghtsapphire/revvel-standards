@@ -21,7 +21,7 @@ Content Automation is a complete AI-powered content creation system that elimina
 
 ### The 5-Phase Pipeline
 
-```
+```text
 Input (topic + context)
     ↓
 1. Research & Topic Ideation (2-3 min)
@@ -131,7 +131,7 @@ Set in Settings → Secrets and variables → Actions → Variables:
 1. Go to Issues → New Issue
 2. Title: "Write blog post about [your topic]"
 3. Description (optional):
-   ```
+   ```text
    Target audience: Young professionals
    Keywords: budget headphones, affordable audio
    Tone: Professional yet approachable
@@ -171,7 +171,7 @@ Set in Settings → Secrets and variables → Actions → Variables:
 
 ## Output Structure
 
-```
+```text
 content-automation-output/
 └── 2026-05-02-best-wireless-headphones/
     ├── metadata.json           # Stats, models, quality scores
@@ -336,7 +336,7 @@ See [EXAMPLES.md](./EXAMPLES.md) for 10 detailed usage scenarios:
 
 ## Files in This Skill
 
-```
+```text
 skills/content-automation/
 ├── SKILL.md                    # Complete skill documentation
 ├── content-automation.skill.yml # Machine-readable config
@@ -346,7 +346,7 @@ skills/content-automation/
 
 ## Related Files
 
-```
+```text
 .github/workflows/content-automation.yml    # Workflow automation
 scripts/content-automation.js               # Pipeline implementation  
 standards/CONTENT_AUTOMATION_STANDARD.md    # Standard documentation

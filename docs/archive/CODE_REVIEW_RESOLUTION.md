@@ -196,7 +196,7 @@ await assertRejects(
 - 0 tests failing
 
 ### Test Output
-```
+```text
 Test Group: Routing Profiles Structure
 ✅ Should have exactly 3 routing profiles
 

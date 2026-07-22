@@ -352,7 +352,7 @@ The Dark Web Listener is a coded process summoned from the GrowlingEyes dashboar
 
 ### Architecture
 
-```
+```text
 [GrowlingEyes Dashboard] → [Summon Listener] → [PM2 Worker: darkWebListener]
                                                         ↓
                                           [Tor SOCKS5 Proxy :9050]

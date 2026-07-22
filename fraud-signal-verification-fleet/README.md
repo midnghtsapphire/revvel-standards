@@ -66,7 +66,7 @@ The only adjudicated item (a guilty plea) concerns a *different person* and is n
 imputed to Newsom.
 
 ## Layout
-```
+```text
 src/         confidence scorer, agents, judge, orchestrator
 prompts/     master prompt + per-agent prompts (parallel & sequential chaining)
 config/      source-tier weights, adjudication ceilings

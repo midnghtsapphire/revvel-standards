@@ -204,7 +204,7 @@ Named after the show's satirical approach to current events, this method applies
 #### Daily Cron (02:00 UTC)
 
 **Existing:** `standards/AUTOMATED_PRODUCT_PIPELINE.md` already defines:
-```
+```text
 1. LISTEN (daily, cron)
    Social listening across X / Reddit / TikTok / YouTube comments / forums
 ```

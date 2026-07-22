@@ -7,7 +7,7 @@
 
 ## Section 1: Context Check
 
-```
+```text
 Previous session completed: [what was finished last session]
 Current production state: [what is live and working right now — from SYSTEM_STATE.md]
 Known bugs relevant to this MVI: [list from SYSTEM_STATE.md Known Bugs, or "none"]
@@ -18,7 +18,7 @@ SYSTEM_STATE.md last updated: [date]
 
 ## Section 2: Feature Definition
 
-```
+```text
 Feature: [One clear sentence — what the user will be able to do after this session]
 User story: As a [role], I can [action], so that [outcome].
 ```
@@ -27,7 +27,7 @@ User story: As a [role], I can [action], so that [outcome].
 
 ## Section 3: Dependency Map
 
-```
+```text
 Database tables required: [list tables that must already exist]
 API routes required: [list routes that must already exist]
 Environment variables required: [list env vars that must be set]
@@ -52,7 +52,7 @@ Other features that must be complete first: [list or "none"]
 
 ## Section 5: Out of Scope
 
-```
+```text
 The following are explicitly NOT being done in this session:
 - [PLACEHOLDER]
 - [PLACEHOLDER]
@@ -62,7 +62,7 @@ The following are explicitly NOT being done in this session:
 
 ## Section 6: Files to Touch
 
-```
+```text
 New files:
 - [path/to/new-file.ts]
 
@@ -74,7 +74,7 @@ Modified files:
 
 ## Section 7: Rollback Plan
 
-```
+```text
 Rollback steps:
 1. git revert <commit-hash> and push to trigger re-deploy
 2. [Additional steps if DB migration involved]
@@ -92,6 +92,6 @@ Rollback risk: [low / medium / high — describe if medium or high]
 - [ ] No dangling TODOs that break functionality
 - [ ] PR opened following branch naming convention: `feat/[feature-name]`
 
-```
+```text
 Agent sign-off: [Agent name/ID] — [YYYY-MM-DD HH:MM UTC]
 ```

@@ -93,7 +93,7 @@ mkdir -p wr/pending/audit-$DATE wr/memory
 ```
 
 **Prime directive alignment:** Audits protect the $10k→$10M pipeline by preventing silent drift in Polar.sh funding automation, OSINT product workflows, and the orchestrator bus that ships them.
-# Skill: Repo Prosecution Audit
+## Skill: Repo Prosecution Audit
 
 **When to use:** Any "find gaps, broken wiring, errors, bugs" request against a repo. Prosecution-first: assume broken, prove working.
 

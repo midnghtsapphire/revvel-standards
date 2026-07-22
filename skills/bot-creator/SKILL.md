@@ -34,7 +34,7 @@ This solves the blank-page problem for bot builders: you pick a lane, pick a vib
 
 ## Trigger Keywords
 
-```
+```text
 bot creator, create a bot, build a bot, new bot, design a bot,
 bot builder, scaffold bot, make a bot, bot spec, bot factory,
 glassmorphic bot, 3d bot, pacman bot, bt21 bot, pretty pony bot,
@@ -157,7 +157,7 @@ bot:
 
 ## Scaffold Output
 
-```
+```text
 bots/
   <bot-slug>/
     BOT.md          # human doc, mirrors the spec

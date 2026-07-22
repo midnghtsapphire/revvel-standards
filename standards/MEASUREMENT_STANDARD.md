@@ -23,7 +23,7 @@ Every Revvel product and integration MUST include measurement standards. This en
 
 **Target: 85+**
 
-```
+```text
 RQS = 
   Source Quality (30%) +
   Methodology Adherence (25%) +
@@ -60,7 +60,7 @@ Average time from setup/activation to first useful output.
 
 Every product MUST pass these gates before release:
 
-```
+```text
 [ ] Quality Score > 85
 [ ] Trust Score > 80
 [ ] Self-Healing Rate < 5%
@@ -144,7 +144,7 @@ Every product MUST include:
 
 ### 7.1 SYSTEM_STATE.md
 
-```
+```text
 ## Current State
 Version: [X]
 Last Updated: [DATE]
@@ -185,7 +185,7 @@ Log all outputs:
 
 Use this for every new product/integration:
 
-```
+```text
 PRODUCT MEASUREMENT CHECKLIST
 
 Setup:
@@ -223,7 +223,7 @@ Release:
 
 For any new integration, include:
 
-```
+```text
 /[product]/
 ├── standards/
 │   ├── QUALITY_STANDARDS.md    # Product-specific quality rules

@@ -23,7 +23,7 @@ The **Revvel Emblem** is a highly detailed, skeuomorphic-yet-digital shield. It 
 
 Every design element must trace back through this chain. Start at the top, derive each level before moving to the next.
 
-```
+```text
 Project Topic
     ↓
 User Metaphor (the "feeling" the user describes — e.g., "digital growl")
@@ -181,7 +181,7 @@ The depth gradient (dark at the edges, bright at the center) must always be main
 
 ## Section 5: The Golden Formula
 
-```
+```text
 Revvel Emblem = (Derivation × Metaphor Stack) + Integrated Logic
 ```
 

@@ -23,7 +23,7 @@ Templates for Facebook videos, reels, and live streams.
 **Best for:** Viral reach, engagement
 **Duration:** ~30 seconds
 
-```
+```text
 [Visual/Setting] Casual, relatable environment. Avatar speaks directly to camera.
 
 "Hey! Quick tip that will save you [time/money/resources]...
@@ -40,7 +40,7 @@ Drop a 🔥 if this helped, and follow for more tips like this!"
 **Best for:** Value-driven content, authority building
 **Duration:** 2-3 minutes
 
-```
+```text
 [Visual/Setting] Professional setup with screen share or demo area.
 
 "Welcome back! Today we're going to talk about [topic].
@@ -59,7 +59,7 @@ Don't forget to subscribe and hit the notification bell so you never miss an upd
 **Best for:** Trust building, conversions
 **Duration:** 60-90 seconds
 
-```
+```text
 [Visual/Setting] Clean, professional. May include testimonials overlay.
 
 "Have you ever wondered what makes [ideal customer] so successful?

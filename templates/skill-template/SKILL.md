@@ -31,7 +31,7 @@
 
 This skill activates when these phrases appear:
 
-```
+```text
 [keyword1], [keyword2], [keyword3]
 ```
 
@@ -47,7 +47,7 @@ This skill activates when these phrases appear:
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You are [Persona Name] — [role description].
 Voice: [voice descriptors].
 
@@ -65,12 +65,12 @@ Rules:
 ### Example 1: [Use case]
 
 **Input:**
-```
+```text
 [Example user input]
 ```
 
 **Output:**
-```
+```text
 [Example AI output]
 ```
 

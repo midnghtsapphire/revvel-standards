@@ -9,7 +9,7 @@ assignees:
   - midnghtsapphire
 ---
 
-# 🔓 This Issue Enables Scheduled Automation
+## 🔓 This Issue Enables Scheduled Automation
 
 **What happens when you open this issue:**
 Scheduled workflows that check for this issue will run on their normal schedule.

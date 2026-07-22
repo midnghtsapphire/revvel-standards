@@ -365,7 +365,7 @@ A **loan packager** is a third-party professional who prepares and submits USDA 
 
 **Workflow: USDA Loan Eligibility Check + Pre-Qualification**
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │ 1. Trigger: Webhook (User submits eligibility form)            │
 └───────────────────────┬─────────────────────────────────────────┘
@@ -456,7 +456,7 @@ A **loan packager** is a third-party professional who prepares and submits USDA 
 5. District board members (you) control law enforcement
 
 **Legal Pathway:**
-```
+```text
 NEMT Company → PUC Utility Classification → Special District Formation → Police Powers
 ```
 

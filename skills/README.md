@@ -18,7 +18,7 @@ Skills are stored in this directory. Every agent operating in any Revvel reposit
 
 Every skill lives in its own folder under `skills/`:
 
-```
+```text
 skills/
 ├── README.md                    ← you are here
 ├── REGISTRY.md                  ← human-readable index of all skills
