@@ -361,7 +361,7 @@ Add this to every project's GitHub Actions workflow:
 |---|---|
 | Testing Standard | `TESTING_STANDARD.md` |
 | Agent Factory Standard | `AGENT_FACTORY_STANDARD.md` |
-| PromptFoo docs | https://promptfoo.dev/docs |
+| PromptFoo docs | <https://promptfoo.dev/docs> |
 | Tooling BOM (testing tools) | `docs/Universal-BOM_List/TOOLING_AND_TESTING_BOM.md` |
 | LLM Recommendations | `docs/Universal-BOM_List/LLM_RECOMMENDATIONS.md` |
 

@@ -13,7 +13,9 @@ function read(relativePath) {
 }
 
 test('stale audited actions are removed or explicitly dispositioned', () => {
-  assert.doesNotMatch(read('.github/workflows/match-labels.yml'), /^\s*uses:\s+binowork\/match-labels@/m);
+  // match-labels.yml was removed (dead workflow: its outputs were unreachable).
+  // Removal disposes of the deprecated binowork/match-labels@ action entirely.
+  assert.ok(!fs.existsSync(path.join(root, '.github/workflows/match-labels.yml')));
   assert.doesNotMatch(read('.github/workflows/arsc-labels.yml'), /^\s*uses:\s+wagner-cotta\/arsc-label@/m);
   assert.doesNotMatch(read('templates/cicd/arsc-labels.yml'), /^\s*uses:\s+wagner-cotta\/arsc-label@/m);
   assert.doesNotMatch(read('.github/workflows/green-website.yml'), /^\s*uses:\s+filiptronicek\/green-action@/m);

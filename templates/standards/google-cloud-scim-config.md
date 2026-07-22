@@ -1,10 +1,10 @@
 # SCIM Provisioning Configuration Template
 #
 # This template provides example configurations for SCIM (System for Cross-domain Identity Management)
-# provisioning with Google Cloud Workforce Identity Federation.
+# provisioning with Google Cloud Workforce Identity Federation
 #
 # Reference: docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md
-# Official Docs: https://cloud.google.com/iam/docs/configure-scim-ms-entra
+# Official Docs: <https://cloud.google.com/iam/docs/configure-scim-ms-entra>
 
 ---
 

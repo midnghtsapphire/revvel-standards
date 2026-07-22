@@ -13,12 +13,12 @@ A comprehensive list of all repositories in the MIDNGHTSAPPHIRE organization, in
 | Digital-Forensics-Guide | Digital Forensics Guide. Learn all about Digital Forensics, Computer Forensics, Mobile device Forensics, Network Forensics, and Database Forensics. | Fork | Frontend | PUBLIC |
 | Epstein |  | Active | Library/Other | PUBLIC |
 | ForensicsTools | A list of free and open forensics analysis tools and other resources | Fork | Tool | PUBLIC |
-| FreeBirthdaycards | Repository for https://replit.com/@angelreporters/FreeBirthdaycards | Active | Library/Other | PUBLIC |
+| FreeBirthdaycards | Repository for <https://replit.com/@angelreporters/FreeBirthdaycards> | Active | Library/Other | PUBLIC |
 | GRREAT-475_2141-Chaigon-Failey-Siebert | GRREAT is a tool written in Python that will integrate with Google GRR. It will allow the user to hash the contents of a box with a piecewise algorithm and store the hashes. The user could later hash the contents again to determine what has been changed and the extent of those changes. | Fork | Library/Other | PUBLIC |
 | GlowYourSpace |  | Active | Library/Other | PUBLIC |
-| GodsofInsurance | Repository for https://replit.com/@angelreporters/InsuranceLeadPro | Active | Library/Other | PUBLIC |
+| GodsofInsurance | Repository for <https://replit.com/@angelreporters/InsuranceLeadPro> | Active | Library/Other | PUBLIC |
 | GraphMemory | GraphRAG database - hybrid graph / vector db | Fork | Library/Other | PUBLIC |
-| HomecareListingscom | Repository for https://replit.com/@angelreporters/HomecareListingscom | Active | Library/Other | PUBLIC |
+| HomecareListingscom | Repository for <https://replit.com/@angelreporters/HomecareListingscom> | Active | Library/Other | PUBLIC |
 | LOLRMM | LotL RMM | Fork | Library/Other | PUBLIC |
 | LetItRain-475-2161_Good_Rodgers | This tool will take credentials or an API key for a cloud storage provider as input (Google Drive, Dropbox, etc) and download all available info (current files, deleted files, and file versions) from that provider. The data will be sorted into an easy-to-navigate directory structure, and both positive and negative hashing will be performed with a u | Fork | Library/Other | PUBLIC |
 | Lifehub |  | Active | Library/Other | PUBLIC |
@@ -48,7 +48,7 @@ A comprehensive list of all repositories in the MIDNGHTSAPPHIRE organization, in
 | Mechatronopolis | Everything about Mechatronics and Full Career Path and tracking | Active | Library/Other | PUBLIC |
 | Meetaudreyevans | Life Hub | Active | Library/Other | PUBLIC |
 | MemCoin_474-2135_Andrews-Bornstein-Pagano | MEMCoin will indicate if a bitcoin wallet exists, will pull the contents of memory and search for indicators that might advance access.  | Fork | Library/Other | PUBLIC |
-| MerchMaster | Repository for https://replit.com/@angelreporters/MerchMaster | Active | Library/Other | PUBLIC |
+| MerchMaster | Repository for <https://replit.com/@angelreporters/MerchMaster> | Active | Library/Other | PUBLIC |
 | OpenClaw_DigitalOcean | Multiple Agents | Active | Library/Other | PUBLIC |
 | OpenSourceArtifactollectionToolkit-OSACT-475_2141-Cifranic-Mercado-Simmonds-Voellmer | OSACT is a collection of python modules aimed at the collection and analysis/presentation of forensically interesting artifacts on a Windows machine. It is primarily intended to be run against a live machine rather than a dead box or disk image. | Fork | Tool | PUBLIC |
 | Pawsitting |  | Active | Library/Other | PUBLIC |
@@ -60,16 +60,16 @@ A comprehensive list of all repositories in the MIDNGHTSAPPHIRE organization, in
 | SSRN-AUTOMATION | WHITE PAPER AUTOMATION | Active | Library/Other | PUBLIC |
 | SSRN_Whitepapers |  | Active | Library/Other | PUBLIC |
 | ScoutSavvy |  | Active | Library/Other | PRIVATE |
-| SmartBirthdayIdeascom | Repository for https://replit.com/@angelreporters/SmartBirthdayIdeascom | Active | Library/Other | PUBLIC |
+| SmartBirthdayIdeascom | Repository for <https://replit.com/@angelreporters/SmartBirthdayIdeascom> | Active | Library/Other | PUBLIC |
 | Soul-Files | Agent Soul Files | Active | Library/Other | PUBLIC |
 | Specflow | Specs that enforce themselves. Turn specs into contracts that can't be broken by helpful LLMs. | Fork | Library/Other | PUBLIC |
 | StarbucksSecretSips |  | Active | Library/Other | PUBLIC |
-| SymbolSoulConnect | Repository for https://replit.com/@angelreporters/SymbolSoulConnect | Active | Library/Other | PUBLIC |
+| SymbolSoulConnect | Repository for <https://replit.com/@angelreporters/SymbolSoulConnect> | Active | Library/Other | PUBLIC |
 | TikiWashbot |  | Active | Bot | PUBLIC |
 | Tikiwashbot_kickstarter |  | Active | Bot | PUBLIC |
-| TimelineTracker | Repository for https://replit.com/@angelreporters/TimelineTracker | Active | Library/Other | PUBLIC |
+| TimelineTracker | Repository for <https://replit.com/@angelreporters/TimelineTracker> | Active | Library/Other | PUBLIC |
 | TimelineTracker-1 | Tracks you | Active | Library/Other | PUBLIC |
-| VowGenerator | Repository for https://replit.com/@angelreporters/VowGenerator | Active | Tool | PUBLIC |
+| VowGenerator | Repository for <https://replit.com/@angelreporters/VowGenerator> | Active | Tool | PUBLIC |
 | WEBSITE-FACTORY-API | Openrouter imput and output 5 models | Active | Backend | PUBLIC |
 | WEBSITE-FACTORY-GENERATOR | Openrouter call to five different LLMS input prompt | Active | Tool | PUBLIC |
 | WirelessProximityMonitor_474-2135_Pittner-Sirianni-Swerling | Goal is to create a monitor of both Bluetooth and Wi-Fi traffic. Using this traffic we will attempt to track and analyze movement around a location. | Fork | Library/Other | PUBLIC |
@@ -129,7 +129,7 @@ A comprehensive list of all repositories in the MIDNGHTSAPPHIRE organization, in
 | guardaio |  | Active | Library/Other | PUBLIC |
 | in-the-wild |  | Active | Library/Other | PUBLIC |
 | instant-ordain-certificate-pro |  | Active | Library/Other | PUBLIC |
-| java-dbx | Tika parser for Outlook DBX files using a fork of https://github.com/gbstack/java-dbx | Fork | Library/Other | PUBLIC |
+| java-dbx | Tika parser for Outlook DBX files using a fork of <https://github.com/gbstack/java-dbx> | Fork | Library/Other | PUBLIC |
 | java-libpst | A library to read PST files with java, without need for external libraries. | Fork | Library/Other | PUBLIC |
 | jfreechartextensions | Extensions to original JFreeChart library to fix some issues | Fork | Library/Other | PUBLIC |
 | k9-community-site | images k9-community-site/css k9-community-site/js | Active | Library/Other | PUBLIC |
