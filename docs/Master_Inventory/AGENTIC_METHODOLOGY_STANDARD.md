@@ -520,7 +520,7 @@ The **2040 Precog Methodology** anticipates this future by building for it today
 
 ### The Revvel Development Loop
 
-```
+```text
 RESEARCH → SPEC (SKILL.md) → BUILD (skill.yml) → TEST (promptfoo.yml)
     ↑                                                      |
     └─────── ITERATE ←── MONITOR ←── SHIP ←── VERIFY ──────┘
@@ -568,7 +568,7 @@ A **Pop-Up Skill** is a skill that installs itself, runs, and cleans up — all 
 
 ### Architecture Overview
 
-```
+```text
 User double-clicks installer
          │
          ▼
@@ -602,7 +602,7 @@ User double-clicks installer
 
 ### Pop-Up Skill File Structure
 
-```
+```text
 skills/<skill-name>/
 ├── SKILL.md                  # Human-readable spec & documentation
 ├── <skill-name>.skill.yml    # Machine-readable config for AI tools
@@ -684,7 +684,7 @@ farewell: |
 
 ### Skill States
 
-```
+```text
 DRAFT → REVIEW → BETA → STABLE → DEPRECATED
 ```
 
@@ -912,12 +912,12 @@ Skills are valued by their **ROI multiplier** — how much developer time they s
 
 ### ROI Calculation Formula
 
-```
+```text
 Skill Value = (Hours Saved Per Week × Developer Hourly Rate × 52) × 0.1
 ```
 
 Example: Code Review skill saves 3 hours/week for a $75/hr developer:
-```
+```text
 Value = (3 × $75 × 52) × 0.1 = $1,170/year → Price at $49–$99
 ```
 

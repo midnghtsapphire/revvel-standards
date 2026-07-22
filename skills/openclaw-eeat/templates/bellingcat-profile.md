@@ -47,7 +47,7 @@ Bellingcat is an independent international collective of researchers, investigat
 
 #### Bio Template
 
-```
+```text
 {{PERSON_NAME}} is a {{PRIMARY_ROLE}} specializing in {{EXPERTISE_SUMMARY}}.
 
 Professional Background:
@@ -107,7 +107,7 @@ Check all that apply:
 2. Read and accept community rules
 3. Introduce yourself in #introductions:
 
-```
+```text
 Hi, I'm {{PERSON_NAME}} ({{USERNAME}})
 
 Background: {{SHORT_BIO}}
@@ -136,7 +136,7 @@ GitHub: https://github.com/{{GITHUB_USERNAME}}
 **Title:** "{{SAR_CASE_STUDY_TITLE}}"
 
 **Abstract:**
-```
+```text
 {{SAR_ABSTRACT}}
 ```
 

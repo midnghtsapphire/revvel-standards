@@ -4,7 +4,7 @@ Comprehensive video production templates and automation for all social media pla
 
 ## Directory Structure
 
-```
+```text
 templates/video/
 ├── social-media/          # Social media video templates
 │   ├── linkedin/          # LinkedIn avatar video templates

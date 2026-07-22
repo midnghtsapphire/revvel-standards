@@ -13,7 +13,7 @@ The **Runner Orchestrator** is the top-level dispatcher in the Revvel Execution 
 
 ## State Flow
 
-```
+```text
 intake (inbox)
    │
    ▼

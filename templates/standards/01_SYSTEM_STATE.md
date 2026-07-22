@@ -75,7 +75,7 @@
 
 ## Last Updated
 
-```
+```text
 Last updated: [YYYY-MM-DD HH:MM UTC]
 Updated by: [Agent name/ID or "Human: name"]
 Session summary: [One sentence — what changed this session]

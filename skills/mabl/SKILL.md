@@ -21,7 +21,7 @@ Mabl is an AI-powered test automation platform. It records, maintains, and runs 
 
 ## Integration Architecture
 
-```
+```text
 Developer / Agent pushes code
         ↓
 mabl.yml workflow triggers (on PR and push to main)

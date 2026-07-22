@@ -8,7 +8,7 @@
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    ZERO-HUMAN FRAMEWORK                     │
 ├─────────────────────────────────────────────────────────────┤
@@ -143,7 +143,7 @@ class ZeroHumanMCP:
 
 ### Time Allocation
 
-```
+```text
 Traditional (40 hrs):
   Coding: 30 hrs, Meetings: 5 hrs, Admin: 5 hrs
 

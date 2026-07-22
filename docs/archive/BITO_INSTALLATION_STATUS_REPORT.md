@@ -78,7 +78,7 @@ Created automated verification tools to validate the installation:
   - Provides actionable error messages
 
 #### Script Output Example
-```
+```text
 ═══════════════════════════════════════════════════════════════
   Bito AI GitHub App Installation Verification
   Installation ID: 128849516
@@ -227,7 +227,7 @@ Use the helper script to manage the BITO API key:
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  Developer Workstation                                      │
 │                                                             │

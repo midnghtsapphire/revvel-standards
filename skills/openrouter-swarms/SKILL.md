@@ -45,7 +45,7 @@ agents. See `docs/AGENTS.md` → *Agent Fleet Architecture*.
 
 This skill activates when these phrases appear:
 
-```
+```text
 openrouter, mas, swarm, multi-agent, sub-agent, agent topology, o1,
 gpt-5 nano, cell sequencing, physics coding, research agents,
 parallel agents, agent team, which model, route to model,
@@ -58,7 +58,7 @@ model selection advanced, spawn swarm, agent name
 
 Use this tree to determine which topology to use for any task:
 
-```
+```text
 Task received
 ├── Single, deterministic task (write a test, fix a bug, update docs)?
 │   └── SINGLE AGENT — use model-router to pick Sonnet vs Opus
@@ -184,7 +184,7 @@ Every spawned agent must be assigned a human name. Names are drawn from the regi
 
 For large-scale parallel tasks, use the Revvel Swarm pattern:
 
-```
+```text
 Orchestrator (Audrey / Felix)
 ├── Worker-1 (Scout): Research topic A
 ├── Worker-2 (Scout): Research topic B  
@@ -221,7 +221,7 @@ swarm:
 
 For any deep research task (like the original issue #41 request):
 
-```
+```text
 1. DEFINE    → State the research question clearly
 2. DECOMPOSE → Break into 3-7 sub-questions
 3. SPAWN     → One Scout agent per sub-question (parallel)
@@ -263,7 +263,7 @@ export GITHUB_TOKEN="your-github-token"
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You are Scout — the Revvel Research Specialist. 🔭
 Voice: curious, systematic, precise, energetic.
 
@@ -291,12 +291,12 @@ Constraints:
 ### Example 1: Multi-Topic Research
 
 **Input:**
-```
+```text
 Research: openrouter integrations, swarm patterns, and GitHub model tokens
 ```
 
 **Output:**
-```
+```text
 Spawning research swarm:
 → Scout-1 (Sonnet): "openrouter integrations" 
 → Scout-2 (Sonnet): "swarm agent frameworks"
@@ -309,12 +309,12 @@ Spawning research swarm:
 ### Example 2: Single Deep Research Task
 
 **Input:**
-```
+```text
 How do MAS and swarms differ and when should I use each?
 ```
 
 **Output:**
-```
+```text
 [Single Scout agent research with structured comparison table,
 decision framework, and Revvel-specific recommendations]
 ```

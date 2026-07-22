@@ -205,7 +205,7 @@ curl -X POST "${OPENHANDS_HOST}/api/automation/v1/preset/plugin" \
 
 ## Zapier Core Zaps
 
-```
+```text
 Zap 1: GitHub PR → Slack
   Trigger: New PR with label "needs-review"
   Actions: Format → Slack → Notion task
@@ -227,7 +227,7 @@ Zap 4: Calendar → Client Reminder
 
 ## Make Scenarios
 
-```
+```text
 Scenario: Invoice Processing
   Email → Parse PDF → Stripe check → Sheets → Slack
 
@@ -242,7 +242,7 @@ Scenario: GitHub PR → Deploy
 
 ## Automation Architecture
 
-```
+```text
 ┌─────────────────────────────────────┐
 │         AUTOMATION LAYER            │
 ├─────────────────────────────────────┤

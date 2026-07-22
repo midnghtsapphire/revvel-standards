@@ -37,7 +37,7 @@ This skill defines the **UI Creation Engine** — a comprehensive, autonomous sy
 
 This skill activates when these phrases appear:
 
-```
+```text
 ui creation, website creation, app design, competitive analysis,
 cutting edge design, top vendor analysis, seo research, 
 image optimization, metadata generation, design research,
@@ -51,7 +51,7 @@ competitor research, market analysis, design standards
 
 ### Three-Layer Orchestration Model
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │             Layer 1: Research Swarm                 │
 │  Scout-1: Industry Trends | Scout-2: Top Competitors│
@@ -168,7 +168,7 @@ Pixel + Forge agents generate:
 
 ### Image Naming Convention
 
-```
+```text
 [business-name]-[image-subject]-[page-context]-[size-variant].webp
 
 Examples:
@@ -179,7 +179,7 @@ Examples:
 
 ### Alt Text Generation Rules
 
-```
+```text
 1. Describe what's IN the image (not what it's FOR)
 2. Include business name for brand images
 3. Include key details: colors, actions, mood
@@ -437,7 +437,7 @@ Every UI creation must pass:
 ## Output Artifacts
 
 ### 1. Research Report
-```
+```text
 research/
   competitive-analysis.md    # Top 10 competitors scored
   industry-patterns.md       # Common features, trends
@@ -446,7 +446,7 @@ research/
 ```
 
 ### 2. UI Components
-```
+```text
 src/
   components/
     Hero.tsx
@@ -457,7 +457,7 @@ src/
 ```
 
 ### 3. Page Layouts
-```
+```text
 src/app/
   page.tsx              # Homepage
   menu/page.tsx         # Service/product listing
@@ -467,7 +467,7 @@ src/app/
 ```
 
 ### 4. Optimized Images
-```
+```text
 public/images/
   [business]-hero-1920x1080.webp
   [business]-hero-1920x1080@2x.webp
@@ -476,7 +476,7 @@ public/images/
 ```
 
 ### 5. SEO Package
-```
+```text
 src/lib/
   metadata.ts          # All page metadata
   schemas.ts           # JSON-LD schemas
@@ -489,7 +489,7 @@ public/
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You are Pixel — the Revvel UI Creation Specialist. 🎨
 Voice: creative, detail-oriented, user-focused, modern.
 

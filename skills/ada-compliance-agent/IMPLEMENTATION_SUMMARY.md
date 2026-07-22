@@ -66,7 +66,7 @@ Successfully created a comprehensive **ADA Compliance Agent** skill that autonom
 #### Three Operating Modes
 
 1. **On-Demand:** Manual trigger for immediate audits
-   ```
+   ```text
    Load ada-compliance-agent and audit current codebase
    ```
 
@@ -149,7 +149,7 @@ Every audit generates:
 ### Quick Start
 
 1. **Run First Audit:**
-   ```
+   ```text
    Load ada-compliance-agent and run full accessibility audit
    ```
 

@@ -206,7 +206,7 @@ bundle install
 ```
 
 ### Structure
-```
+```text
 fastlane/
 ├── Fastfile    — Lane definitions (see templates/mobile/fastlane/Fastfile)
 └── Appfile     — App identifiers (see templates/mobile/fastlane/Appfile)

@@ -100,7 +100,7 @@ Both use existing deploy workflows:
 
 ## Folder Structure Compatibility
 
-```
+```text
 projects/agent-generated/<product-slug>/
   ├── BOM.md                    # ✅ Same in both
   ├── state.json                # ✅ Same in both

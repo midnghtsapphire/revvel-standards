@@ -100,7 +100,7 @@ kebab-case. No metaphor, no brand identity required.
 
 ## 5. Decision checklist
 
-```
+```text
 Is it market-facing with its own domain?
 ├─ Yes → Codename tier
 │        ├─ Coin/fuse an evocative name (PascalCase display, lowercase slug)

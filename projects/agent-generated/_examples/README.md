@@ -4,7 +4,7 @@ This directory contains example autonomous product launches using the 30-day blu
 
 ## Structure
 
-```
+```text
 _examples/
   demo-product/          # Complete demo showing all generated files
   README.md             # This file

@@ -252,7 +252,7 @@ openclaw run-skill openclaw-eeat \
 
 **Total: 19 files created**
 
-```
+```text
 skills/openclaw-eeat/
 ├── SKILL.md (425 lines)
 ├── README.md (143 lines)

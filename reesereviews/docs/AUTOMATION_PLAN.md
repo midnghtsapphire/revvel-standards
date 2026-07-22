@@ -40,7 +40,7 @@ Per user request to "find a way to automate getting keys even if it is a test on
 
 ### Implementation Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │         Review Ingestion Layer              │
 ├─────────────────────────────────────────────┤

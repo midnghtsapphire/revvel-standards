@@ -17,7 +17,7 @@ A chat-first OSINT toolkit for Gen Z and gamer audiences. No traditional web das
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  USER INTERFACES (chat-first, no web dashboard)         │
 │                                                         │
@@ -421,7 +421,7 @@ export const genzIntRouter = router({
 
 ## Repository Layout
 
-```
+```text
 growlingeyes/
   server/
     genzIntRouter.ts          # tRPC router for GenZ-INT queries

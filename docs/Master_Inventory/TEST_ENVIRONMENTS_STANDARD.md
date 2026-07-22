@@ -17,7 +17,7 @@ The test harness used across all Revvel applications is the **S.H.I.F.T. framewo
 
 ## 2. The Four-Stage Pipeline
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                  Revvel Test Pipeline                        │
 │                                                             │

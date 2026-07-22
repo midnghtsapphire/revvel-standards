@@ -104,7 +104,7 @@ Confirm: *"Every page" = every route in `midnghtsapphire/growlingeyes` (the app)
 
 ## Section 4 — Acceptance Gates (for the implementation MVI, not this PR)
 
-```
+```text
 [ ] Audrey approves §3.1–§3.5 on the issue thread (👍 + reply)
 [ ] All 50 files in this repo updated to the approved identity (see §6)
 [ ] templates/brand/REVVEL_EMBLEM_STANDARD.md re-derives the new emblem
@@ -259,7 +259,7 @@ This PR cannot touch that repo. The implementation MVI will open a companion PR 
 
 ## Section 9 — Sign-Off
 
-```
+```text
 [ ] Audrey: name choice (A / B / C) → ____
 [ ] Audrey: mark direction (M1 / M2 / M3 / M4) → ____
 [ ] Audrey: palette accept / amend → ____

@@ -4,7 +4,7 @@
 
 ## Directory Structure
 
-```
+```text
 docs/proposals/
 ├── README.md           ← This file
 ├── _template.md        ← Standard proposal template

@@ -214,7 +214,7 @@ These fields appear on every insurance lead form, regardless of product type. Th
 
 ## Part 7: Lead Status Flow Diagram (All Products)
 
-```
+```text
 Form Submitted
       │
       ▼

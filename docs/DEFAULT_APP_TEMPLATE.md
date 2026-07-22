@@ -14,7 +14,7 @@ This document serves as the **single source of truth (SSOT)** for the structure,
 
 All new repositories must adhere to the following standardized folder structure:
 
-```
+```text
 /project-name
 ├── docs/             # All project documentation (BLUEPRINT.md, ROADMAP.md, etc.)
 ├── src/              # Main application source code
@@ -47,7 +47,7 @@ All repositories must contain a `LICENSE` file with the following text. No other
 
 The `.env.example` file must list all required environment variables for the application to run, with placeholder values. This includes, but is not limited to:
 
-```
+```text
 # Stripe API Keys
 STRIPE_PUBLIC_KEY_TEST=
 STRIPE_SECRET_KEY_TEST=

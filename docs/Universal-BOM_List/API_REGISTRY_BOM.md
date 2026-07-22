@@ -282,7 +282,7 @@
 
 All API keys MUST be stored in the Revvel Vault (see `VAULT_AGENT_STANDARD.md`), never in `.env` files committed to git, and never hardcoded. The naming convention:
 
-```
+```text
 ANTHROPIC_API_KEY          → /revvel/shared/llm/anthropic
 OPENAI_API_KEY             → /revvel/shared/llm/openai
 GROQ_API_KEY               → /revvel/shared/llm/groq

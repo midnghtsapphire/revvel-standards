@@ -32,7 +32,7 @@ GBrain is the retrieval engine that makes that brain searchable. The brain repo 
 
 ## Core Architecture
 
-```
+```text
 ┌──────────────────┐    ┌───────────────┐    ┌──────────────────┐
 │   Brain Repo     │    │    GBrain     │    │    AI Agent      │
 │   (git repo of   │    │  (retrieval   │    │  (reads brain    │
@@ -97,7 +97,7 @@ mkdir -p ~/brain && cd ~/brain && git init
 ```
 
 ### Phase 4: Set Up Directory Structure (MECE Schema)
-```
+```text
 ~/brain/
 ├── people/          # One file per person (name, role, company, history)
 ├── companies/       # One file per organization
@@ -142,7 +142,7 @@ For Cursor: Settings > MCP Servers > add the same JSON block.
 
 Every conversation should follow this loop:
 
-```
+```text
 Message received
   → BEFORE responding: gbrain search "<key entities from message>"
   → Detect entities: people, companies, ideas mentioned

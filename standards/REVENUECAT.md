@@ -53,7 +53,7 @@ do not invent app-specific aliases.
 > **Rule:** Public keys are platform-scoped and **must** be loaded from the
 > per-platform env vars above — do not reuse one key across platforms.
 > RevenueCat will reject mismatched keys.
-
+>
 > **Framework prefixes:** Some client bundlers require a prefix to expose env
 > vars to client code (Expo: `EXPO_PUBLIC_`, Next.js: `NEXT_PUBLIC_`, Vite:
 > `VITE_`, CRA: `REACT_APP_`). When that's required, prepend the prefix to the

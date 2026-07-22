@@ -6,7 +6,7 @@ code-review-style fix loop before committing the final report.
 
 ## Overview
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────────┐
 │                     WR Search-Research Engine                        │
 ├──────────────────────────────────────────────────────────────────────┤

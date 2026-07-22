@@ -43,7 +43,7 @@ Creates cutting-edge website and mobile app interfaces that compete with top ven
 
 ## Output
 
-```
+```text
 output-dir/
 ├── research/
 │   ├── competitive-analysis.md      # Comprehensive competitive analysis

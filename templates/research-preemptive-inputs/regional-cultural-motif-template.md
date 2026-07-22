@@ -88,7 +88,7 @@ plus the safe-use rendering instructions for each.
 
 List every source consulted. Format:
 
-```
+```text
 - Sunsphere — https://en.wikipedia.org/wiki/Sunsphere (public landmark, reproduction OK)
 - UT Branding guidelines — https://brand.utk.edu/ (consulted for trademark scope)
 - Neyland Stadium checkerboard — https://en.wikipedia.org/wiki/Neyland_Stadium#Checkerboard_end_zones

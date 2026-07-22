@@ -52,7 +52,7 @@ audit history stays interpretable.
 
 ## 3. The loop
 
-```
+```text
 Quarterly cron (1st of Jan/Apr/Jul/Oct)
        │
        ▼

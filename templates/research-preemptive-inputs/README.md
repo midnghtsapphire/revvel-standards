@@ -45,7 +45,7 @@ incomplete — escalate as `research:blocked` per
 
 ## How packs feed the EXRUP one-iteration loop
 
-```
+```text
 WR opens
    │
    ▼
