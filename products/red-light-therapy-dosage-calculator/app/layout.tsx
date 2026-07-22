@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Red Light Therapy Dosage Calculator",
   description:
-    "Mobile-friendly universal dosage calculator for red light therapy and photobiomodulation sessions.",
+    "General wellness and educational dosage calculator for red light therapy and photobiomodulation sessions. Not a medical device.",
 };
 
 export default function RootLayout({

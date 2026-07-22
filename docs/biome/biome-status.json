@@ -1,52 +1,59 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-15T19:28:26.530Z",
+  "generated_at": "2026-07-22T19:30:23.064Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "5/100 recent runs failed; 0 stuck item(s)",
+      "summary": "6/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 5,
+        "failed_runs": 6,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29444615166,
-            "name": "Follow-up Checkbox Router",
-            "path": ".github/workflows/followup-checkbox-router.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444615166",
+            "id": 29951155878,
+            "name": "CI Error Prevention Tests",
+            "path": ".github/workflows/ci-error-prevention.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29951155878",
             "conclusion": "failure"
           },
           {
-            "id": 29444604766,
-            "name": "Follow-up Checkbox Router",
-            "path": ".github/workflows/followup-checkbox-router.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444604766",
+            "id": 29951154938,
+            "name": ".github/workflows/jules-coding-agent.yml",
+            "path": ".github/workflows/jules-coding-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29951154938",
             "conclusion": "failure"
           },
           {
-            "id": 29444594446,
-            "name": "Follow-up Checkbox Router",
-            "path": ".github/workflows/followup-checkbox-router.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444594446",
+            "id": 29951154100,
+            "name": ".github/workflows/proposal-prosecution.yml",
+            "path": ".github/workflows/proposal-prosecution.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29951154100",
             "conclusion": "failure"
           },
           {
-            "id": 29444594325,
-            "name": "Intelligent Code Quality Scanner",
-            "path": ".github/workflows/ship-quality.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444594325",
+            "id": 29951153528,
+            "name": ".github/workflows/openrouter-coder.yml",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29951153528",
             "conclusion": "failure"
           },
           {
-            "id": 29444594085,
-            "name": "Octopus Review Fallback",
-            "path": ".github/workflows/octopus-review-fallback.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29444594085",
+            "id": 29951152930,
+            "name": ".github/workflows/devin-code-review.yml",
+            "path": ".github/workflows/devin-code-review.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29951152930",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29951152388,
+            "name": ".github/workflows/patch-agent.yml",
+            "path": ".github/workflows/patch-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29951152388",
             "conclusion": "failure"
           }
         ],

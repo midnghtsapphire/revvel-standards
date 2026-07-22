@@ -371,8 +371,8 @@ workflows:
       - weekly-report
 ```
 
-2. **Enable CircleCI webhook:**
-   - Go to https://app.circleci.com/
+1. **Enable CircleCI webhook:**
+   - Go to <https://app.circleci.com/>
    - Add project: midnghtsapphire/revvel-standards
    - CircleCI will auto-detect `.circleci/config.yml`
 

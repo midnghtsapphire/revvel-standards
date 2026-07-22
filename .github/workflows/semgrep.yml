@@ -1,14 +1,8 @@
+# DISABLED 2026-07-16 — CodeQL provides equivalent SAST coverage (see .github/workflows/codeql.yml).
+# Semgrep removed from PR/push/schedule to avoid duplicate scanning. Manual run only via workflow_dispatch.
 name: Semgrep SAST
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: 15 4 * * 1
-  workflow_dispatch: null
+  workflow_dispatch:
 permissions:
   contents: read
   security-events: write

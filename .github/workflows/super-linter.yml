@@ -1,11 +1,11 @@
+# DISABLED 2026-07-16 — redundant wrapper. Coverage kept by: markdownlint-cli2 (markdown),
+# Biome (JS), CodeQL + Trivy + GitGuardian (security). Removed to stop double-linting the whole repo.
+# Manual run only via workflow_dispatch.
 ---
 name: Super-Linter
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:
 
 permissions: {}
 

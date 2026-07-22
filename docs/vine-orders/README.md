@@ -2,7 +2,7 @@
 
 ## Open this URL only
 
-https://revvel-standards.vercel.app/docs/vine-orders/
+<https://revvel-standards.vercel.app/docs/vine-orders/>
 
 ## What to click (in order)
 
@@ -14,4 +14,4 @@ https://revvel-standards.vercel.app/docs/vine-orders/
 ## What NOT to expect
 
 - The dashed "Choose CSV" box is a **file picker on your computer**, not a product website.
-- The main hub https://revvel-standards.vercel.app/ does not upload orders.
+- The main hub <https://revvel-standards.vercel.app/> does not upload orders.
