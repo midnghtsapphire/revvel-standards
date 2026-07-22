@@ -1,31 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-22T17:29:48.135Z",
+  "generated_at": "2026-07-22T18:26:32.351Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 29939956468,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29939956468",
+            "id": 29946304978,
+            "name": "Stuck Label Detection & Auto-Progression",
+            "path": ".github/workflows/stuck-label-automation.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29946304978",
             "conclusion": "failure"
           },
           {
-            "id": 29938893195,
+            "id": 29945077009,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29945077009",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29943086779,
             "name": "Stuck Check Watchdog",
             "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29938893195",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29943086779",
+            "conclusion": "failure"
+          },
+          {
+            "id": 29943084280,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29943084280",
             "conclusion": "failure"
           }
         ],
