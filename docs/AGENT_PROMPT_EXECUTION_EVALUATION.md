@@ -17,7 +17,7 @@
 
 ---
 
-## Context: What Are "OpenHands's Comment Prompts"?
+## Context: What Are "OpenHands's Comment Prompts
 
 Based on research, this refers to:
 1. **TODO/FIXME comments in code** tagged for agent execution (e.g., `TODO @agent: implement retry logic`)
@@ -93,9 +93,9 @@ The question is: **which agent platform should pick up and execute these prompts
 - Open source (Apache 2.0)
 
 **Key Repositories:**
-- https://github.com/marco-altran/Roo-Cline
-- https://github.com/OSL-Ai/Roo-Cline
-- Parent: https://github.com/RooCodeInc/Roo-Code
+- <https://github.com/marco-altran/Roo-Cline>
+- <https://github.com/OSL-Ai/Roo-Cline>
+- Parent: <https://github.com/RooCodeInc/Roo-Code>
 
 **Evaluation:**
 - ✅ Excellent for local development prompts
