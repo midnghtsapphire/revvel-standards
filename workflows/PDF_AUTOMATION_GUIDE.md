@@ -203,8 +203,8 @@ This automation implements a complete, end-to-end system for creating and market
 ### Prerequisites
 
 1. **API Keys Required**:
-   - Claude AI (Anthropic) - Get from: https://console.anthropic.com/
-   - Canva API - Get from: https://www.canva.com/developers/
+   - Claude AI (Anthropic) - Get from: <https://console.anthropic.com/>
+   - Canva API - Get from: <https://www.canva.com/developers/>
    - Shopify Admin API - Get from: Your Shopify admin
    - Optional: OpenRouter (for model routing)
 
@@ -236,7 +236,7 @@ n8n start
 # Access at http://localhost:5678
 ```
 
-1. Open n8n at http://localhost:5678
+1. Open n8n at <http://localhost:5678>
 2. Go to Workflows → Import from File
 3. Select `workflows/n8n/pdf-product-creation.json`
 4. Add your credentials:
@@ -288,7 +288,7 @@ n8n start
 **Required for**: Title generation (Step 2), Content generation (Step 3)
 
 **Setup**:
-1. Go to https://console.anthropic.com/
+1. Go to <https://console.anthropic.com/>
 2. Create API key
 3. Store in automation platform credentials
 4. Model: `claude-sonnet-4` (or `claude-3-5-sonnet-20241022`)
@@ -304,7 +304,7 @@ n8n start
 **Required for**: Design creation (Step 4)
 
 **Setup**:
-1. Go to https://www.canva.com/developers/
+1. Go to <https://www.canva.com/developers/>
 2. Create an app
 3. Generate API access token
 4. Store in automation platform
@@ -342,7 +342,7 @@ n8n start
 - Fallback support
 
 **Setup**:
-1. Get API key from https://openrouter.ai/
+1. Get API key from <https://openrouter.ai/>
 2. Use model: `anthropic/claude-sonnet-4`
 3. Add `HTTP-Referer` header with your site
 
@@ -753,16 +753,16 @@ When intake starts from a **Work Request** issue with **Output Type = sellable-p
 
 ### Tools
 
-- n8n: https://n8n.io/
-- Make.com: https://www.make.com/
-- Zapier: https://zapier.com/
-- Gumloop: https://gumloop.com/
+- n8n: <https://n8n.io/>
+- Make.com: <https://www.make.com/>
+- Zapier: <https://zapier.com/>
+- Gumloop: <https://gumloop.com/>
 
 ### APIs
 
-- Claude AI: https://docs.anthropic.com/
-- Canva: https://www.canva.com/developers/
-- Shopify: https://shopify.dev/docs/api/admin
+- Claude AI: <https://docs.anthropic.com/>
+- Canva: <https://www.canva.com/developers/>
+- Shopify: <https://shopify.dev/docs/api/admin>
 
 ---
 

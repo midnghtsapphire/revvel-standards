@@ -7,7 +7,7 @@
 
 ---
 
-## 1. What Is EDI?
+## 1. What Is EDI
 
 **EDI** stands for **Electronic Data Interchange**. It is the process of computers exchanging business documents in a standard format — without humans manually entering data.
 

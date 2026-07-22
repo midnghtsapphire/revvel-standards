@@ -237,7 +237,7 @@ Edit `scripts/pr-auto-review.js` and modify the `buildSystemPrompt()` function t
 
 **Solutions:**
 1. Check workflow run logs for error messages
-2. Verify OpenRouter API status: https://openrouter.ai/status
+2. Verify OpenRouter API status: <https://openrouter.ai/status>
 3. Check API key has credits remaining
 4. Look for JSON parsing errors in logs (model may have returned invalid format)
 5. Check if PR diff is too large (truncates at 15KB)
@@ -445,4 +445,4 @@ OpenRouter charges vary by model:
 
 ---
 
-_Last updated: 2026-05-03_
+*Last updated: 2026-05-03*

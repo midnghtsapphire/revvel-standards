@@ -25,10 +25,10 @@ Both opportunities directly support the Prime Directive: **$3,000/month minimum 
 
 **Found in:** `docs/REPO_CATALOG.md` (line 233)  
 **Reference:** Z-relivator fork description mentions "polar" alongside better-auth, shadcn/ui  
-**Platform:** https://polar.sh  
+**Platform:** <https://polar.sh>  
 **Status:** Official GitHub funding partner (2024)
 
-### What is Polar.sh?
+### What is Polar.sh
 
 Polar.sh is an **open-source billing platform** and **Merchant of Record (MoR)** designed specifically for developers, SaaS products, and open-source projects. It became an official GitHub funding partner in 2024 and offers unique developer-centric monetization features【3:2†source】【3:4†source】.
 
