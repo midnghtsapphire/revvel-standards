@@ -188,7 +188,7 @@ gh api /repos/midnghtsapphire/revvel-standards/contents/README.md
 
 ### 5.1 Webhook Server Architecture
 
-```
+```text
 External Source                GitHub                  Your Agent Server
 ─────────────────     ─────────────────────     ─────────────────────────
 User pushes code  →   GitHub fires webhook  →   POST /webhook

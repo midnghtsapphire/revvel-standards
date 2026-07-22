@@ -24,7 +24,7 @@ Templates for YouTube videos with monetization in mind.
 **Duration:** 8-12 minutes
 **Revenue:** Ad revenue + potential affiliate
 
-```
+```text
 [INTRO - 0:00-0:30]
 [Hook + Intro]
 "Welcome to [Channel Name]! In this video, I'm going to show you exactly how to [outcome].
@@ -56,7 +56,7 @@ Drop a comment below with your thoughts, and I'll see you in the next video!"
 **Best for:** High engagement, click-through rates
 **Duration:** 10-15 minutes
 
-```
+```text
 [INTRO]
 "Today I'm sharing the [top X things/facts/reasons] about [topic] that [target audience] needs to know.
 
@@ -81,7 +81,7 @@ Let me know in the comments, and subscribe for more content like this!"
 **Best for:** Authority building, evergreen traffic
 **Duration:** 12-20 minutes
 
-```
+```text
 [INTRO]
 "Have you ever wondered [question about topic]?
 

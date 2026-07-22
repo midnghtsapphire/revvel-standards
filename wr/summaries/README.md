@@ -20,13 +20,13 @@ Open any `YYYY-MM-DD.html` file directly in your browser.
 
 ### GitHub Pages
 If GitHub Pages is enabled for this repository, summaries are available at:
-```
+```text
 https://midnghtsapphire.github.io/revvel-standards/wr/summaries/YYYY-MM-DD.html
 ```
 
 ### Raw GitHub Content
 View summaries directly via:
-```
+```text
 https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/wr/summaries/YYYY-MM-DD.html
 ```
 

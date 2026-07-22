@@ -701,7 +701,7 @@ For detailed guidance on:
 
 ## Commit Messages
 
-```
+```text
 <type>: <short description>
 
 Types: feat, fix, refactor, test, docs, chore, style
@@ -752,7 +752,7 @@ All apps targeting mobile (iOS + Android) MUST use Expo with React Native. This 
 - Expo has an MCP server for AI coding tools (Claude Code, Cursor)
 
 **Standard Expo Stack:**
-```
+```text
 expo (latest SDK)
 expo-router          # File-based routing
 nativewind           # Tailwind CSS for React Native
@@ -966,7 +966,7 @@ This creates a knowledge base of problems solved, making the system smarter over
 
 ### Key Workflows
 
-```
+```text
 deploy-oaudrey.yml      # Deploys oaudrey/ and fieldwork/ to DigitalOcean App Platform
 oaudrey-retro.yml       # Weekly health-check + gap analysis (deduplicates issues)
 sync-oaudrey-dns.yml    # Syncs dns-records.yml to the active DNS registrar
@@ -975,7 +975,7 @@ credential-gatekeeper.yml  # Provisions GitHub secrets from Doppler
 
 ### Key Standards
 
-```
+```text
 standards/OAUDREY_DEPLOYMENT_STANDARD.md  # Full deploy guide, DNS steps, troubleshooting
 docs/oaudrey/BOM.md                        # Complete credential bill of materials
 docs/AGENTS_RETRO_REVIEW.md               # Analysis of the HTTP 000 loop + proposed fixes

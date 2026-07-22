@@ -12,7 +12,7 @@
 This document defines the **agent fallback chain** for automated code generation and task execution. When the primary agent (OpenHands AI) reaches rate limits or becomes unavailable, the system automatically falls back to secondary agents (Cursor, then OpenRouter) to ensure continuous operation.
 
 **Fallback Chain:**
-```
+```text
 OpenHands AI → Cursor → OpenRouter (multi-model) → Manual escalation
 ```
 

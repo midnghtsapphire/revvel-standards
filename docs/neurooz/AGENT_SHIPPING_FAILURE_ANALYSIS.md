@@ -301,7 +301,7 @@ The **S.H.I.F.T.** (Self-Healing Intent-Focused Tasks) framework was created spe
 
 ## 7. Recommended Agent Session Structure
 
-```
+```text
 SESSION START (15 min)
 ├── Read HANDOFF.md from last session
 ├── Read DARE_LOG.md for context

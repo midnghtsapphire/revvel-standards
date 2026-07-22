@@ -32,7 +32,7 @@ This document defines the standard convention for leaving prompts/instructions f
 
 ### Basic Format
 
-```
+```text
 // TODO @agent: <description of task>
 // FIXME @agent: <description of problem to fix>
 // NOTE @agent: <information or context>

@@ -250,7 +250,7 @@ SEO-targeted blog posts to publish at launch per [Content Standard](../Master_In
 
 ## 8. robots.txt
 
-```
+```text
 User-agent: *
 Allow: /
 Disallow: /api/

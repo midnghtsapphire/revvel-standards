@@ -59,7 +59,7 @@ The existing hand-off (see [`OPENROUTER_ASSIGNEE_PROCESS.md`](./OPENROUTER_ASSIG
 
 GitKraken adds a **read-side** surface on top of that:
 
-```
+```text
 PR opened ─► openrouter-assignee.yml ─► assignee = @Copilot
                                         ├─ label: openrouter
                                         ├─ label: role:orchestrator
@@ -147,7 +147,7 @@ Evaluated against the same criteria as other integrations in this repo:
 
 Additive only — no existing files overwritten.
 
-```
+```text
 revvel-standards/
 ├── .github/
 │   └── labels.yml                          # + gitkraken, + gitkraken:workspace (R-GK-03)

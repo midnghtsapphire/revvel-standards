@@ -27,7 +27,7 @@ plus the repo rules (`AGENTS.md`).
 
 ## How It Works
 
-```
+```text
 detect.py  ──scans cwd──▶  scores each shape from filesystem signals
                            ▶ picks the winner (highest score, priority tiebreak)
                            ▶ prints the docs to load:
@@ -85,7 +85,7 @@ The agent then reads the three `load` paths before starting work.
 
 ## Trigger Keywords
 
-```
+```text
 project router, detect project type, which standard, shape router,
 what should I load, session start router
 ```

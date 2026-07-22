@@ -15,7 +15,7 @@ Each repository gets a comprehensive WR that includes:
 
 ## Directory Structure
 
-```
+```text
 wr/
 ├── README.md                    # This file
 ├── WR_TRACKER.md               # Master tracker for all WRs
@@ -47,7 +47,7 @@ wr/
 
 ### Idea → Full WR promotion path
 
-```
+```text
 Capture idea
   → copy WR_TEMPLATE_IDEA.md → wr/ideas/YYYY-MM-DD-{slug}.md
   → add row to WR_QUEUE.md (status: Queued)
@@ -76,7 +76,7 @@ cd wr/scripts
 ### Via GitHub Actions
 
 Create an issue with title:
-```
+```text
 [WR] Repository Review - [repository-name]
 ```
 

@@ -15,7 +15,7 @@ This document defines the complete state machine for issue and PR labels in the 
 
 ## State Machine Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    ISSUE/PR OPENED                           │
 └──────────────────────┬──────────────────────────────────────┘

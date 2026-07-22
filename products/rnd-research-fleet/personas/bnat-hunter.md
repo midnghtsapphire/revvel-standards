@@ -46,7 +46,7 @@ What's working in Industry A that could revolutionize Industry B?
 
 ## Output Format
 
-```
+```text
 BNAT DISCOVERED:
 
 1. [Technology Name]

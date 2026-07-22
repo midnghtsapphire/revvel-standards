@@ -40,7 +40,7 @@ Load any combination of modules; each module is independently useful and compose
 
 ## Trigger Keywords
 
-```
+```text
 superpowers, /brainstorming, /tdd, /execute-plan, /debug superpowers,
 /writing-skills, red-green-refactor, structured tdd, four-phase debug,
 subagent code review, composable skill framework, claude superpowers plugin
@@ -79,7 +79,7 @@ subagent code review, composable skill framework, claude superpowers plugin
 
 **Mandatory pipeline:**
 
-```
+```text
 RED   → Write tests that describe the desired behaviour.
         Tests MUST fail at this stage. If they pass, stop and fix the tests.
 GREEN → Write the minimum implementation to make all tests pass.
@@ -147,7 +147,7 @@ REFACTOR → Clean up code without changing behaviour.
 **When to use:** When authoring a new skill, writing a standard, or producing any documentation that will be used as an agent instruction.
 
 **Pipeline (mirrors TDD):**
-```
+```text
 RED   → Define what the skill/doc must make an agent do or not do.
         Write 3+ assertion statements that the finished doc must satisfy.
         Example: "An agent reading this MUST refuse to skip the RED phase."
@@ -171,7 +171,7 @@ The `code-reviewer` is a subagent spawned by `/execute-plan` at each batch check
 5. **Security** — Any injections, exposed secrets, or auth bypasses?
 
 **Output format:**
-```
+```text
 ✅ PASS — [summary of what's good]
 🟡 CHANGES NEEDED — [numbered list of required changes]
 🔴 BLOCKED — [reason; must escalate before proceeding]
@@ -193,7 +193,7 @@ The `code-reviewer` is a subagent spawned by `/execute-plan` at each batch check
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You have the Superpowers skills framework loaded. This framework enforces
 structured software development discipline. You MUST follow these rules:
 

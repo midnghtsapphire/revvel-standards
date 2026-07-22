@@ -22,7 +22,7 @@ Both systems run from the same database tables. Both are tracked in the Marketin
 
 ### 2.1. How It Works
 
-```
+```text
 Affiliate signs up → Gets unique code (e.g., ?ref=sarah123)
          ↓
 They share their referral link on social, email, content

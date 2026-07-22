@@ -19,7 +19,7 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
 
 ### Flow Design
 
-```
+```text
 [Webhook Trigger]
     ↓
 [Step 1: Research Node - Validate Niche]
@@ -82,11 +82,11 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
 - **Temperature**: 0.7
 - **Max Tokens**: 500
 - **System Prompt**:
-  ```
+  ```text
   You are a product title expert specializing in emotional, compelling copy for digital products.
   ```
 - **User Prompt**:
-  ```
+  ```text
   Based on the niche "{{niche}}" and search trends, create a catchy, emotional title and subtitle for a PDF guide.
 
   The title should:
@@ -122,11 +122,11 @@ Gumloop is a no-code AI automation platform that excels at chaining AI operation
 - **Temperature**: 0.8
 - **Max Tokens**: 8000
 - **System Prompt**:
-  ```
+  ```text
   You are an expert content writer specializing in practical, actionable guides that help people solve real problems.
   ```
 - **User Prompt**:
-  ```
+  ```text
   Create a comprehensive PDF guide with the following details:
 
   Title: {{title}}
@@ -373,7 +373,7 @@ Configure error webhooks to notify when:
 
 Gumloop supports parallel branches. After Step 3 (content generation), you can run Steps 4 and 5 in parallel:
 
-```
+```text
 [Step 3: Generate Content]
     ├─→ [Step 4: Canva Design]
     └─→ [Step 5: Shopify Product]

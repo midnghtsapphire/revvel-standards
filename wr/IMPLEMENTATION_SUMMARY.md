@@ -23,7 +23,7 @@ Successfully implemented a comprehensive Weekly Research (WR) tracking system fo
 
 ### 1. Directory Structure
 
-```
+```text
 /wr/
 ├── README.md                           # System overview and quickstart
 ├── WR_TEMPLATE.md                      # Standard template (13KB, all sections)
@@ -267,7 +267,7 @@ cd wr/scripts
 ### Example 3: Via GitHub Issue
 
 **Create issue:**
-```
+```text
 Title: [WR] Repository Review - [affiliate-marketing-system]
 Body: Full review needed for ship-to-market assessment
 ```

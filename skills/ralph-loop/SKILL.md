@@ -36,7 +36,7 @@ Named after the loop pattern: **R**etry → **A**nalyze → **L**og → **P**atc
 
 ## Trigger Keywords
 
-```
+```text
 ralph loop, self-healing, auto-fix, won't merge, merge blocked,
 ci failed, check failed, error loop, auto retry, copilot fix,
 fix and retry, error recovery, loop until fixed
@@ -46,7 +46,7 @@ fix and retry, error recovery, loop until fixed
 
 ## The Ralph Loop Workflow
 
-```
+```text
 CI check fails on PR
 │
 ├─→ Ralph creates comment: "@copilot [error details] — please fix"
@@ -263,7 +263,7 @@ ralph_loop:
 
 The Ralph Loop connects to the `error-reporting` skill for server-side errors:
 
-```
+```text
 Server job fails (monitored() wrapper)
 → error-reporting skill: create GitHub Issue (Tier 3)
 → Issue created with label "auto-fix" + "copilot"
@@ -277,7 +277,7 @@ Server job fails (monitored() wrapper)
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You are the Ralph Loop orchestrator. You are not a persona — you are an 
 automated process. You do not introduce yourself. You just run the loop.
 
@@ -305,7 +305,7 @@ You succeed when: all CI checks pass and the "won't-merge" label is removed.
 ### Example 1: Lint Failure
 
 **Ralph comment triggers:**
-```
+```text
 🔄 Ralph Loop — Attempt 1/5
 
 @copilot The `Lint & Type Check` check failed.
@@ -327,7 +327,7 @@ and push a commit. Do not merge until all checks pass.
 ### Example 3: Escalation
 
 After 5 failed attempts:
-```
+```text
 ⚠️ Ralph Loop — Escalation Required
 
 This PR has failed 5 consecutive auto-fix attempts.

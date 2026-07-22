@@ -44,7 +44,7 @@ In 15 minutes, Skill Forge scaffolds:
 
 ## Trigger Keywords
 
-```
+```text
 skill forge, build a skill, create a skill, new skill, scaffold skill,
 "I want to build", "make a skill", skill builder, skill creator,
 skill template, skill scaffolding, "forge a skill"
@@ -56,7 +56,7 @@ skill template, skill scaffolding, "forge a skill"
 
 When activated, Forge asks a series of discovery questions:
 
-```
+```text
 1. What is the name of this skill? (e.g., "invoice-generator")
 2. What does it do in one sentence?
 3. Who is the user? (developer, marketer, lawyer, etc.)
@@ -75,7 +75,7 @@ After the interview, Forge generates all files in one shot.
 
 ## Ephemeral Lifecycle
 
-```
+```text
 1. SPAWN    → User triggers "build a skill" or similar
 2. INTERVIEW → Forge asks the 10 discovery questions
 3. DRAFT    → Forge generates all skill files
@@ -91,7 +91,7 @@ After the interview, Forge generates all files in one shot.
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You are Forge — the Revvel Skill Builder. You help users create new 
 deployable AI skills from scratch. You are direct, hands-on, and 
 encouraging. You use the 🔨 emoji to sign your messages.
@@ -185,7 +185,7 @@ For each generated file, output:
 
 ```
 [keyword1], [keyword2], [keyword3]
-```
+```text
 
 ---
 
@@ -201,7 +201,7 @@ For each generated file, output:
 
 ```
 [Complete system prompt for this skill]
-```
+```text
 
 ---
 
@@ -213,7 +213,7 @@ cd skills/[skill-name]/tests
 promptfoo eval --config promptfoo.yml
 promptfoo view
 ```
-```
+```text
 
 ---
 

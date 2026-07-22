@@ -410,6 +410,7 @@ function parseArgs(argv) {
     dryRun: false,
     ledger: DEFAULT_LEDGER,
     scope: null,
+    changedOnly: false,
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -418,8 +419,21 @@ function parseArgs(argv) {
     else if (a === '--dry-run') { opts.dryRun = true; opts.fileIssues = true; }
     else if (a === '--ledger' && next) { opts.ledger = next; i++; }
     else if (a === '--scope' && next) { opts.scope = next; i++; }
+    else if (a === '--changed-only') opts.changedOnly = true;
   }
   return opts;
+}
+
+/**
+ * The set of repo-relative files changed in the current PR, read from the
+ * CHAOSMENDER_CHANGED_FILES env var (newline- or comma-separated). Used by
+ * --changed-only so a PR's scan gates only what the PR actually touched, not
+ * the whole-repo baseline (the daily scheduled run still scans everything and
+ * files issues for the self-healing loop).
+ */
+function loadChangedFiles() {
+  const raw = process.env.CHAOSMENDER_CHANGED_FILES || '';
+  return new Set(raw.split(/[\n,]/).map((s) => s.trim()).filter(Boolean));
 }
 
 async function main() {
@@ -433,7 +447,16 @@ async function main() {
     process.exit(1);
   }
 
-  const findings = runChecks(REPO_ROOT, ledger);
+  let findings = runChecks(REPO_ROOT, ledger);
+  if (opts.changedOnly) {
+    const changed = loadChangedFiles();
+    findings = findings.filter((f) => changed.has(f.file));
+    console.log(
+      `ℹ️  ChaosMender --changed-only: ${changed.size} changed file(s) in scope, ` +
+        `${findings.length} finding(s) attributable to this diff. ` +
+        `(Whole-repo baseline is scanned by the daily scheduled run.)`,
+    );
+  }
   printReport(findings);
 
   if (opts.fileIssues && findings.length > 0) {

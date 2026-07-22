@@ -25,7 +25,7 @@ No manual configuration required — one command and the fleet is live.
 
 **Direct download link (copy and paste into your browser):**
 
-```
+```text
 https://github.com/midnghtsapphire/revvel-standards/raw/main/products/rnd-research-fleet-v1.0.0.tar.gz
 ```
 
@@ -86,7 +86,7 @@ cd rnd-research-fleet
 
 After extraction you'll see:
 
-```
+```text
 rnd-research-fleet/
 ├── EXPLODE_GUIDE.md          ← you are here
 ├── README.md
@@ -121,7 +121,7 @@ The installer will:
 
 **Expected output:**
 
-```
+```text
 🚀 R&D Research Fleet Installer
 ==============================
 ✅ Node.js v20.x.x

@@ -13,7 +13,7 @@ Use this when you need to:
 
 ## Prerequisites
 
-```
+```text
 Required secrets:
 - FIGMA_API_KEY (get from Figma Settings → Personal Access Tokens)
 - OPENROUTER_API_KEY (optional, for AI-generated descriptions)
@@ -163,13 +163,13 @@ jobs:
 ## Examples
 
 ### Generate from Figma file
-```
+```text
 Input: https://figma.com/file/abc123/Project-Designs
 Output: exports/project-designs.pdf
 ```
 
 ### Multi-page export
-```
+```text
 Input: Pages: ["Cover", "Screens", "Specs"]
 Output: exports/cover.pdf, exports/screens.pdf, exports/specs.pdf
 ```

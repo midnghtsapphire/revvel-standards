@@ -93,7 +93,7 @@ npx playwright test --ui     # Debug mode
 
 ## Directory Structure
 
-```
+```text
 tests/
 ├── unit/
 ├── integration/

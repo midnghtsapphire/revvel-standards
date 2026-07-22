@@ -96,7 +96,7 @@ Every SYSTEM_STATE.md must contain exactly these sections, in this order:
 
 ### 3.7. Last Updated
 
-```
+```text
 Last updated: [YYYY-MM-DD HH:MM UTC]
 Updated by: [Agent name/ID or "Human: [name]"]
 Session summary: [one sentence about what changed this session]

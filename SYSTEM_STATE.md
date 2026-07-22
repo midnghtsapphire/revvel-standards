@@ -170,7 +170,7 @@ Until populated, the workflows fail loudly on every new issue (intentional — s
 
 ## Last Updated
 
-```
+```text
 Last updated: 2026-07-09 03:03 UTC
 Updated by: Cursor
 Session summary: Fixed fleet maintenance WR dedupe to fail closed on `gh issue list` and JSON parse errors, with regression tests proving duplicate WR creation is blocked.

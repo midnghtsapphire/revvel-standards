@@ -27,7 +27,7 @@ Templates for Continuing Legal Education (CLE) videos with Colorado compliance.
 
 Each CLE video should include:
 
-```
+```text
 [COURSE INTRO - 2 min]
 - Course title and objectives
 - Instructor introduction
@@ -61,7 +61,7 @@ Each CLE video should include:
 **Duration:** 50-60 minutes
 **Credits:** 1 ETHICS
 
-```
+```text
 [MODULE 1: Introduction - 5 min]
 - Overview of AI in legal practice
 - Ethical considerations
@@ -100,7 +100,7 @@ Each CLE video should include:
 **Duration:** 50-60 minutes
 **Credits:** 1 GENERAL
 
-```
+```text
 [MODULE 1: Technology Stack - 12 min]
 - Essential tools
 - Integration strategies

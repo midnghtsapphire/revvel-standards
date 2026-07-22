@@ -203,7 +203,7 @@ Required repository secrets (Settings → Secrets → Actions):
 
 ## Architecture
 
-```
+```text
 angelreporters@gmail.com (IMAP)
     │
     ▼

@@ -77,7 +77,7 @@ All images: WebP format, under 200KB, served via CDN (DigitalOcean Spaces or Sup
 
 ## robots.txt Standard
 
-```
+```text
 User-agent: *
 Disallow: /api/
 Disallow: /admin/

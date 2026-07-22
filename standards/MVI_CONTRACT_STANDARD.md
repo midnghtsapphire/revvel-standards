@@ -36,7 +36,7 @@ Every coding session must begin with a completed MVI Contract. No coding is perm
 
 Fill from `SYSTEM_STATE.md` before writing a single line of code. Reference the specific sections that are relevant to this MVI.
 
-```
+```text
 Previous session completed: [describe what was finished]
 Current production state: [what is live and working right now]
 Known bugs relevant to this MVI: [list any from SYSTEM_STATE.md Known Bugs section]
@@ -47,7 +47,7 @@ SYSTEM_STATE.md last updated: [date]
 
 > What exactly is being built in this session? One sentence.
 
-```
+```text
 Feature: [One clear sentence describing the user-observable outcome]
 User story: As a [role], I can [action], so that [outcome].
 ```
@@ -56,7 +56,7 @@ User story: As a [role], I can [action], so that [outcome].
 
 > What does this feature depend on that must already exist?
 
-```
+```text
 Database tables required: [list]
 API routes required: [list]
 Environment variables required: [list]
@@ -68,7 +68,7 @@ Other features that must be complete first: [list or "none"]
 
 > What must be true for this MVI to be considered complete?
 
-```
+```text
 [ ] TypeScript check passes (pnpm check)
 [ ] Unit tests pass (pnpm test)
 [ ] E2E test for this feature passes (pnpm test:e2e)
@@ -81,7 +81,7 @@ Other features that must be complete first: [list or "none"]
 
 > What is explicitly NOT being done in this session?
 
-```
+```text
 Out of scope:
 - [list everything that is intentionally deferred]
 ```
@@ -92,7 +92,7 @@ This section prevents scope creep. If something is not on the list, it is out of
 
 > What files will be created or modified?
 
-```
+```text
 New files:
 - [path/to/new-file.ts]
 
@@ -104,7 +104,7 @@ Modified files:
 
 > If this MVI breaks production, how do we revert?
 
-```
+```text
 Rollback steps:
 1. [e.g., git revert <commit-hash> and push]
 2. [e.g., run migration rollback: pnpm db:rollback]
@@ -120,7 +120,7 @@ Rollback risk: [low/medium/high — describe if high]
 
 > The agent must confirm completion before closing the session.
 
-```
+```text
 [ ] All acceptance gates passed
 [ ] SYSTEM_STATE.md updated
 [ ] No dangling TODOs that break functionality

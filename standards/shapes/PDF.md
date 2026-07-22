@@ -39,7 +39,7 @@ Before creating any content, the agent must:
 
 Every PDF product follows this structure:
 
-```
+```text
 build/pdf/
   content/
     outline.md          # Table of contents + section summaries
@@ -188,7 +188,7 @@ stripe payment_links create --line-items[0][price]=<price_id> --line-items[0][qu
 
 Every PDF product gets a landing page deployed to the product's subdomain or path:
 
-```
+```text
 <product-slug>.revvel.io   OR   revvel.io/products/<product-slug>
 ```
 

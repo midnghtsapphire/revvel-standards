@@ -1,15 +1,15 @@
 # Recurse Rules — MIDNGHTSAPPHIRE / Revvel Standards
-#
-# This file defines custom code quality rules enforced by RecurseML on every PR
-# RecurseML reads this file and flags any patterns listed below as violations
-#
-# Rule format
-# ## Rule Name
-# **Pattern:** description of what to look for
-# **Why:** rationale
-# **Fix:** how to fix it
-#
-# Reference: <https://docs.recurse.ml/recurse-rules>
+##
+## This file defines custom code quality rules enforced by RecurseML on every PR
+## RecurseML reads this file and flags any patterns listed below as violations
+##
+## Rule format
+## ## Rule Name
+## **Pattern:** description of what to look for
+## **Why:** rationale
+## **Fix:** how to fix it
+##
+## Reference: <https://docs.recurse.ml/recurse-rules>
 
 ---
 

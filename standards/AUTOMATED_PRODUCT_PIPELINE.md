@@ -17,7 +17,7 @@ A daily, agent-driven pipeline that turns high-volume social-media complaints in
 
 ## Pipeline Overview
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │  1. LISTEN (daily, cron)                                                     │
 │     Social listening across X / Reddit / TikTok / YouTube comments / forums  │
@@ -176,7 +176,7 @@ The Gatekeeper (enforced via [`.github/workflows/credential-gatekeeper.yml`](../
 
 Each shape has a build standard already defined in this repo. Per-product builds live under:
 
-```
+```text
 projects/agent-generated/<product-slug>/
   build/
     src/                # source code, scaffolded from the shape's template
@@ -280,7 +280,7 @@ Numbers loop back into step 2's `payability` weighting so the pipeline learns ov
 
 The pipeline writes every candidate and shipped product to a single, predictable folder structure (the same shape used by `templates/agent-generated-product/`):
 
-```
+```text
 projects/agent-generated/
   _intake/                   # daily listening output (jsonl)
   _index.md                  # human-readable list of candidates and ships

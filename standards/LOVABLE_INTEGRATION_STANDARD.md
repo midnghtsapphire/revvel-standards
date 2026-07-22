@@ -70,7 +70,7 @@ curl -X POST "https://api.lovable.dev/v1/projects" \
 
 ### WR Processing with Lovable
 
-```
+```text
 Issue Opened → Triage (Perplexity No-Key fallback) → 
   ↓ If area:ui or output-type:production-app
 Lovable Build → GitHub Sync → Code Review → Deploy
@@ -157,7 +157,7 @@ jobs:
 1. Copy the issue description and requirements
 2. Go to <https://lovable.dev>
 3. Create new project with prompt:
-   ```
+   ```text
    Create a live-type dashboard that repurposes data from https://github.com/elder-plinius/CL4R1T4S
    
    Requirements:

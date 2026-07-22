@@ -125,7 +125,7 @@ The `CHANGELOG.md` in every repo is your history book. It tells you what changed
 
 **Reading a CHANGELOG entry:**
 
-```
+```text
 ## [1.3.0] — 2026-04-05
 
 ### Added
@@ -156,7 +156,7 @@ The `CHANGELOG.md` in every repo is your history book. It tells you what changed
 
 You'll see endpoints written like this in documentation and bug reports:
 
-```
+```text
 POST /api/auth/register
 GET  /api/products?category=electronics&limit=20
 PUT  /api/users/:id
@@ -183,7 +183,7 @@ DELETE /api/orders/:id
 
 You'll occasionally see schema definitions like this:
 
-```
+```text
 users table:
   id          UUID        PRIMARY KEY
   email       VARCHAR(255) UNIQUE NOT NULL
@@ -232,7 +232,7 @@ users table:
 
 When something goes wrong, use this template to file a bug report (in GitHub Issues):
 
-```
+```text
 **Bug Title:** [Short description — max 10 words]
 
 **Severity:** 

@@ -227,7 +227,7 @@ stateDiagram-v2
 
 ## Workflow Dependencies
 
-```
+```text
 weekly-research.yml (Entry Point)
     ├── Triggers: jules-invoke.yml (via 'jules' label)
     ├── Triggers: openrouter-triage.yml (via 'openrouter' label)
@@ -302,7 +302,7 @@ ai-pr-review-openrouter.yml (PR Review)
 
 **Typical WR Completion:**
 
-```
+```text
 T+0:00 - User creates [WR] issue
 T+0:01 - weekly-research.yml applies labels, posts welcome
 T+0:02 - jules-invoke.yml triggers Jules
