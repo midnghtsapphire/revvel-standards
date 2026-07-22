@@ -1,0 +1,66 @@
+# WR-4600.3 — Watchtower Harvest Spec
+#
+# Principle: report DELTA, not "breakthrough". A quiet day is a success.
+# Every URL must originate from an API response. Never construct URLs.
+# Fabricated citations are P0 incidents (WR-4200).
+
+version: "4600.3"
+name: watchtower-harvest
+cadence: "17 6 * * *"  # 06:17 UTC daily
+
+shards:
+  # adverse runs FIRST — safety signals gate everything downstream
+  - id: adverse
+    order: 1
+    source: openFDA
+    keyless: true
+    endpoint: https://api.fda.gov/device/event.json
+    query: photobiomodulation OR "low level light" OR "red light therapy"
+    triage_on: [HARM, FLICKER, OCULAR]
+
+  - id: trials
+    order: 2
+    source: ClinicalTrials.gov v2
+    keyless: true
+    endpoint: https://clinicaltrials.gov/api/v2/studies
+    query: photobiomodulation
+
+  - id: literature
+    order: 3
+    source: NCBI E-utilities
+    keyless: true
+    endpoint: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi
+    query: photobiomodulation[MeSH] AND ("last 7 days"[PDat])
+
+  - id: crossref
+    order: 4
+    source: Crossref
+    keyless: true
+    endpoint: https://api.crossref.org/works
+    query: photobiomodulation
+
+  - id: patents
+    order: 5
+    source: USPTO
+    keyless: false
+    procurement_note: >-
+      Requires USPTO ODP token. Until provisioned, this shard emits ZERO rows
+      with a procurement note. Never pad.
+
+rules:
+  - id: no-fabricated-urls
+    severity: P0
+    description: Every URL in output must appear verbatim in an upstream API response.
+  - id: quiet-day-is-success
+    description: Zero-delta days still snapshot. Do not synthesize activity.
+  - id: content-hash-immutable
+    description: Snapshots are SHA-256 addressed. Never overwrite.
+  - id: adverse-first
+    description: The adverse shard runs before any other shard.
+  - id: keyless-degrade
+    description: Keyed shards without a key emit 0 rows plus a procurement note.
+
+self_test:
+  offline: true
+  deterministic: true
+  checks: 17

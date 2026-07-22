@@ -1,0 +1,58 @@
+name: watchtower
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Grounding gate (offline self-test)
+        run: python tools/harvest.py --self-test
+
+      - name: Harvest
+        id: harvest
+        env:
+          USPTO_TOKEN: ${{ secrets.USPTO_TOKEN }}
+        run: |
+          python tools/harvest.py --run --out wr/snapshots
+          echo "triage=$(cat wr/snapshots/.triage 2>/dev/null || echo none)" >> $GITHUB_OUTPUT
+
+      - name: Commit snapshot (quiet days included)
+        run: |
+          git config user.name  'watchtower-bot'
+          git config user.email 'watchtower@users.noreply.github.com'
+          git add wr/snapshots
+          if git diff --cached --quiet; then
+            echo 'no changes'
+          else
+            git commit -m "chore(watchtower): daily snapshot $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - name: Open triage issue on HARM/FLICKER/OCULAR
+        if: steps.harvest.outputs.triage != 'none' && steps.harvest.outputs.triage != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const kind = '${{ steps.harvest.outputs.triage }}';
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[watchtower] triage: ${kind} signal in daily harvest`,
+              body: `The daily harvest surfaced a ${kind} row. Review \`wr/snapshots/\` for the latest hash-addressed snapshot.\n\nPer WR-4600.3, only HARM/FLICKER/OCULAR rows summon a triage issue. All other rows land silently in the snapshot.`,
+              labels: ['watchtower', 'triage', kind.toLowerCase()]
+            });
