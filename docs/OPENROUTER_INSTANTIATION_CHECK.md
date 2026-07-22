@@ -60,7 +60,7 @@ The workflow calls `GET https://openrouter.ai/api/v1/models` with the `OPENROUTE
 
 ---
 
-## The Ralph loop: "heavy hitters if unresolved in a day"
+## The Ralph loop: "heavy hitters if unresolved in a day
 
 On every failed probe the workflow looks at the tracking issue's comment history, finds the most recent success comment, and computes `brokenForMs = now − lastSuccessTime` (falling back to the issue creation time if there has never been a success).
 

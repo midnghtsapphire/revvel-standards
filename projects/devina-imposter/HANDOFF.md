@@ -3,7 +3,7 @@
 ## Issue Context
 
 - **Issue**: [WR] Create this in a repository for me call it devina-imposter
-- **Reference**: https://github.com/e2b-dev/awesome-devins
+- **Reference**: <https://github.com/e2b-dev/awesome-devins>
 - **Agent Instructions**: "should have been picked up by auto process please do that and this wr"
 
 ## Why Manual Creation Required
@@ -27,7 +27,7 @@ GitHub Copilot Coding Agent and OpenRouter workflows cannot create new GitHub re
 ### Option 1: GitHub Web UI (Recommended)
 
 1. **Create Repository**
-   - Go to https://github.com/new
+   - Go to <https://github.com/new>
    - Repository name: `devina-imposter`
    - Description: "Honest evaluation framework and comparison list for AI coding agents"
    - Visibility: Public
@@ -206,7 +206,7 @@ After repository is live:
 4. **Revenue planning** — Set up consulting intake form
 5. **Integration with revvel-standards** — Cross-link documentation
 
-## Questions?
+## Questions
 
 Ask in midnghtsapphire/revvel-standards issue or ping @midnghtsapphire directly.
 
