@@ -1,0 +1,51 @@
+# WR-4600.3 Harvest Spec
+#
+# Watchtower daily harvest. Live, keyless APIs only in the free tier.
+# Every URL must come from an API response body. No URL construction from
+# guessed IDs. A fabricated citation is a P0 incident (WR-4200).
+
+version: "WR-4600.3"
+schedule_utc: "17 6 * * *"
+
+principles:
+  - id: no-fabrication
+    rule: "Every emitted URL originates from an API response field. Never construct."
+    severity: P0
+  - id: delta-not-breakthrough
+    rule: "Report DELTA vs prior snapshot. A quiet day is a success."
+  - id: quiet-day-snapshot
+    rule: "Snapshot on quiet days too. Immutable, content-hashed."
+  - id: adverse-first
+    rule: "The 'adverse' shard runs first every day."
+  - id: graceful-degrade
+    rule: "Shards needing a key we do not have degrade to 0 rows with a procurement note. Never pad."
+
+shards:
+  - id: adverse
+    order: 0
+    source: openFDA-faers
+    keyless: true
+  - id: pubmed
+    order: 1
+    source: ncbi-eutils
+    keyless: true
+  - id: trials
+    order: 2
+    source: clinicaltrials-v2
+    keyless: true
+  - id: crossref
+    order: 3
+    source: crossref
+    keyless: true
+
+escalation:
+  rows_matching:
+    - HARM
+    - FLICKER
+    - OCULAR
+  action: open-one-triage-issue
+
+self_test:
+  offline: true
+  deterministic: true
+  checks: 17
