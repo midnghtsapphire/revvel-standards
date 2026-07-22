@@ -93,7 +93,7 @@ re-forked from the original source at any time.
 | `github-api-extended` | [tyler-technologies-oss/github-api-extended](https://github.com/tyler-technologies-oss/github-api-extended) | An extension of the GitHub API that allows seamless integration with other APIs |
 | `github-mcp-server` | [github/github-mcp-server](https://github.com/github/github-mcp-server) | GitHub's official MCP Server |
 | `gk-cli` | [gitkraken/gk-cli](https://github.com/gitkraken/gk-cli) | GitKraken CLI Releases and Documentation |
-| `java-dbx` | [sepinf-inc/java-dbx](https://github.com/sepinf-inc/java-dbx) | Tika parser for Outlook DBX files using a fork of https://github.com/gbstack/java-dbx |
+| `java-dbx` | [sepinf-inc/java-dbx](https://github.com/sepinf-inc/java-dbx) | Tika parser for Outlook DBX files using a fork of <https://github.com/gbstack/java-dbx> |
 | `java-libpst` | [sepinf-inc/java-libpst](https://github.com/sepinf-inc/java-libpst) | A library to read PST files with java, without need for external libraries. |
 | `jfreechartextensions` | [sepinf-inc/jfreechartextensions](https://github.com/sepinf-inc/jfreechartextensions) | Extensions to original JFreeChart library to fix some issues |
 | `libewf` | [sepinf-inc/libewf](https://github.com/sepinf-inc/libewf) | Libewf is a library to access the Expert Witness Compression Format (EWF) |
