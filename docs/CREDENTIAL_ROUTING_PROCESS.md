@@ -135,7 +135,7 @@ Once all credentials are provisioned:
 
 ## Flow Diagram
 
-```
+```text
 ┌─────────────────────────┐
 │ Issue Opened/Labeled    │
 │ (ready-to-implement)    │

@@ -90,7 +90,7 @@ A complete, production-ready automation system for creating and selling PDF prod
 
 ### Architecture
 
-```
+```text
 [Webhook Trigger] → [Validate Niche] → [Claude: Title] → [Claude: Content] 
     → [Canva API] → [Shopify API] → [Campaign Prep] → [Response]
 ```

@@ -33,7 +33,7 @@ Does the solution rely on technology we cannot legally use?
 
 ## Output Format
 
-```
+```text
 VERDICT: [APPROVE / CONDITIONAL / REJECT]
 
 1. Feasibility: ✅/❌ [Details]

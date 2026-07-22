@@ -57,7 +57,7 @@ The CI/CD deployment workflow needs a `VERCEL_TOKEN`:
 
 ### 4. Add `VERCEL_TOKEN` to This Repository's Secrets
 
-```
+```text
 GitHub → midnghtsapphire/revvel-standards → Settings → Secrets and variables → Actions
 → New repository secret → Name: VERCEL_TOKEN → Value: <paste token>
 ```

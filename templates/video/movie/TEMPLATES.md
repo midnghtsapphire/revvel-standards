@@ -20,7 +20,7 @@ Templates for creating full-length movies (90-120 minutes) using AI avatar techn
 
 ## Production Workflow
 
-```
+```text
 PHASE 1: DEVELOPMENT
 ├── Concept and logline
 ├── Treatment written
@@ -62,7 +62,7 @@ PHASE 5: DELIVERY
 **Best for:** Educational, biographical, topic exploration
 **Duration:** 60-90 minutes
 
-```
+```text
 [ACT 1: INTRODUCTION - 15 min]
 ├── Cold open (hook) - 2 min
 ├── Title sequence - 1 min
@@ -92,7 +92,7 @@ PHASE 5: DELIVERY
 **Best for:** Tight narrative, emotional impact
 **Duration:** 20-30 minutes
 
-```
+```text
 [ACT 1: SETUP - 5 min]
 ├── Opening image - 1 min
 ├── Introduce protagonist - 2 min
@@ -119,7 +119,7 @@ PHASE 5: DELIVERY
 **Best for:** Full narrative experience
 **Duration:** 90-120 minutes
 
-```
+```text
 [ACT 1: SETUP - 25 min]
 ├── Opening image - 2 min
 ├── Theme stated (subtle) - 1 min

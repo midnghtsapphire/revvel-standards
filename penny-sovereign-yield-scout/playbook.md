@@ -43,7 +43,7 @@ The **penny-sovereign-yield-scout** targets the **blue ocean** at the intersecti
 
 Penny-priced assets offer **asymmetric upside** when combined with yield:
 
-```
+```text
 Position value = token_price × quantity × (1 + APY)^time
 ```
 
@@ -153,7 +153,7 @@ Sub-$5M TVL, higher risk/reward. Social signal required before sweep (see `50_ap
 
 ### 4.1 The Opportunity Score Formula
 
-```
+```text
 opportunity_score = (apy_net / 100) × log10(tvl_usd) × (1 - il_risk_score) × (1 - rug_risk_score)
 ```
 
@@ -181,7 +181,7 @@ python tools/yield_scraper_cli.py --top 20 --output results.json
 
 ### 4.3 Sample Sweep Output
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │  PENNY SOVEREIGN YIELD SCOUT — Live Sweep Results                   │
 │  Scanned: 50 protocols | Time: 2026-04-11 09:00 UTC                 │
@@ -204,7 +204,7 @@ Rank  Protocol         Chain      Pool              APY      TVL        Score
 
 The Kelly Criterion, adapted for DeFi yield positions:
 
-```
+```text
 f* = (p × b - q) / b
 
 Where:
@@ -233,7 +233,7 @@ Where:
 
 Starting capital: $10,000 DeFi yield portfolio
 
-```
+```text
 $4,000  (40%)  Tier 1 — Aave v3 USDC loop (12% APY)
 $2,000  (20%)  Tier 1 — Pendle eETH PT (85% APY)
 $2,000  (20%)  Tier 2 — Beefy BSC vault (55% APY)
@@ -252,7 +252,7 @@ Blended APY: ~41% | Expected IL-adjusted return: ~35%
 Impermanent Loss (IL) occurs when the price ratio of tokens in a liquidity pool changes from the ratio at entry. The further prices diverge, the greater the loss relative to simply holding.
 
 **IL Formula (for 50/50 pools):**
-```
+```text
 IL = 2 × sqrt(price_ratio) / (1 + price_ratio) - 1
 ```
 
@@ -284,7 +284,7 @@ python tools/il_shield.py --token0 ETH --token1 USDC --pool 0xABC... --max-il 5.
 
 Penny tokens in lending protocols have **zero IL** — you supply, earn interest, withdraw. This is the safest penny yield strategy:
 
-```
+```text
 Target: Supply penny token on Aave/Radiant/Morpho
 Earn: Lending APY (no IL risk)
 Exit: Withdraw any time, no price ratio dependency
@@ -298,7 +298,7 @@ Exit: Withdraw any time, no price ratio dependency
 
 Optimal compound frequency minimises gas cost as a percentage of compounded value:
 
-```
+```text
 Optimal_interval = sqrt(2 × gas_cost_usd / (position_usd × apy_daily))
 ```
 
@@ -331,7 +331,7 @@ open http://localhost:8765/docs
 
 The API includes a gas guard that refuses to compound when:
 
-```
+```text
 gas_cost_usd > 0.02 × accumulated_yield_usd
 ```
 

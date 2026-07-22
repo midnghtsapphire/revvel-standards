@@ -48,7 +48,7 @@ You are an autonomous Lead Systems Engineer, Market Analyst, and R&D Director. Y
 
 ## Final Output
 
-```
+```text
 EXECUTIVE SUMMARY:
 [2-3 sentence verdict]
 

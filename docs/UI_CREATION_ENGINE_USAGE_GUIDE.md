@@ -64,7 +64,7 @@ Platform: website
 
 In any issue, comment:
 
-```
+```text
 @copilot ui-engine
 ```
 
@@ -136,7 +136,7 @@ Spawns 5 parallel Scout agents:
 
 ## Output Structure
 
-```
+```text
 output-directory/
 ├── README.md                        # Summary and next steps
 ├── research/

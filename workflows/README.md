@@ -148,7 +148,7 @@ In n8n dashboard → Settings → Credentials:
 **Endpoint:** `POST https://your-n8n.com/webhook/usda-eligibility`
 
 **Headers:**
-```
+```text
 Content-Type: application/json
 ```
 
@@ -260,7 +260,7 @@ Content-Type: application/json
 
 ## Workflow Diagram
 
-```
+```text
 ┌────────────┐     ┌──────────────┐     ┌──────────────────┐
 │  Webhook   │────>│ Validate     │────>│ Check USDA       │
 │  Trigger   │     │ Input        │     │ Eligibility      │

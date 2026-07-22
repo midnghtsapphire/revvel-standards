@@ -1,5 +1,5 @@
 # LinkedIn Avatar Video Scripts
-# Template collection for HeyGen avatar videos
+## Template collection for HeyGen avatar videos
 
 ## Overview
 
@@ -13,7 +13,7 @@ This directory contains script templates for creating LinkedIn avatar videos usi
 **Best for:** Getting quick attention, driving immediate clicks
 **Tone:** Energetic & Direct
 
-```
+```text
 [Visual/Setting] Professional, modern digital background. Avatar speaks confidently with natural pacing.
 
 "If you want to add something genuinely cutting-edge to your resume, you need to look at Eco Code. I'm talking about green coding—writing software that directly reduces compute energy and saves massive infrastructure costs.
@@ -31,7 +31,7 @@ Click the link in my bio to get started today. See you in the next video."
 **Best for:** Technical audience, problem-solvers
 **Tone:** Analytical & Informative
 
-```
+```text
 [Visual/Setting] Clean desk setup, professional lighting. Avatar speaks with authority.
 
 "Let's talk about something that's been on my mind lately—software sustainability.
@@ -55,7 +55,7 @@ Check the link in my bio for the free certification program. Let's build a more 
 **Best for:** Building personal brand, connecting emotionally
 **Tone:** Conversational & Relatable
 
-```
+```text
 [Visual/Setting] Casual professional setting, natural movement. Avatar speaks like a friend.
 
 "Can I tell you something that completely changed how I think about my work as a developer?

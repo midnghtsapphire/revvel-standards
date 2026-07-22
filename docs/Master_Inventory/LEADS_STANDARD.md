@@ -29,7 +29,7 @@ When a lead purchases, they become a customer. Their lead record stays in the `l
 
 Every lead is always in exactly one stage. Stages are ordered — leads move forward (or are lost/disqualified).
 
-```
+```text
 NEW → CONTACTED → QUALIFIED → QUOTED → APPLIED → APPROVED → ISSUED
                                               ↓
                                            DECLINED

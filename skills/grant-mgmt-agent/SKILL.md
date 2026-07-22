@@ -38,7 +38,7 @@ This skill automates the complete grant management pipeline from discovery throu
 
 ## Trigger Keywords
 
-```
+```text
 grant management, grant automation, grant discovery, grant proposal,
 instrumentl, grants.gov, sam.gov, grant tracking, proposal writing,
 grant application, grant pipeline, grant workflow, grant compliance,
@@ -573,7 +573,7 @@ async function searchInstrumentl(profile) {
 
 ### Daily Discovery Automation
 
-```
+```text
 Schedule: Every day at 8 AM
 1. Run Instrumentl search
 2. Run Grants.gov search
@@ -585,7 +585,7 @@ Schedule: Every day at 8 AM
 
 ### Application Pipeline
 
-```
+```text
 Trigger: New opportunity marked "apply"
 1. Fetch RFP requirements
 2. Validate eligibility with SAM.gov
@@ -604,7 +604,7 @@ Trigger: New opportunity marked "apply"
 
 ### Compliance Tracking
 
-```
+```text
 Schedule: Weekly
 1. Check all active grants
 2. Identify upcoming milestones

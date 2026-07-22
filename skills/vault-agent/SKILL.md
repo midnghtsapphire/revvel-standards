@@ -16,7 +16,7 @@ You are triggered when:
 
 ## Your Lifecycle (Follow Exactly)
 
-```
+```text
 1. LOAD CONTEXT — read app name, environment, services list
 2. FOR EACH SERVICE in the list:
    a. vault kv get revvel/apps/{APP}/{ENV}/{SERVICE}
@@ -38,7 +38,7 @@ Ask these questions:
 ### Naming Convention
 
 Name every credential created at external services as:
-```
+```text
 revvel-{app_name}-{environment}-{YYYY-MM-DD}
 ```
 Example: `revvel-mind-mappr-prod-2026-04-14`
@@ -110,7 +110,7 @@ unset SECRET_VALUE  # clear immediately
 If any provisioning step fails (network error, 2FA required, service down, quota exceeded):
 
 1. Log the failure with structured context (no secret values):
-   ```
+   ```text
    VAULT_AGENT_ERROR: {SERVICE} provisioning failed
    App: {APP_NAME} | Env: {ENV} | Path: revvel/apps/{APP}/{ENV}/{SERVICE}
    Reason: {ERROR_MESSAGE}
@@ -127,7 +127,7 @@ If any provisioning step fails (network error, 2FA required, service down, quota
 
 After completing all provisioning, output a summary in this format:
 
-```
+```text
 ## Vault Agent Provisioning Summary
 App: {APP_NAME} | Env: {ENVIRONMENT}
 

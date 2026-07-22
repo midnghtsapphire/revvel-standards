@@ -47,7 +47,7 @@ Soul2Bowl is a premium online ordering and catering platform for a St. Louis-nat
 
 ## Project Structure
 
-```
+```text
 /Soul2Bowl
 ├── docs/                 # All project documentation
 ├── src/
@@ -88,7 +88,7 @@ cp .env.example .env
 
 Required variables (see `.env.example` for full list):
 
-```
+```text
 # Clerk
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=

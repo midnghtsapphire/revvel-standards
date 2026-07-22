@@ -32,7 +32,7 @@ Kong Gateway OSS is the **free, open-source** API gateway that sits in front of 
 
 ## 2. Architecture
 
-```
+```text
 Internet Traffic
       │
       ▼
@@ -117,7 +117,7 @@ docker compose up -d
 
 All Kong configuration lives in `revvel-standards/install/kong/`:
 
-```
+```text
 install/kong/
 ├── docker-compose.yml      # Kong + PostgreSQL containers
 ├── .env.example            # Environment template

@@ -59,7 +59,7 @@ Before searching, define:
 
 ## Output Format
 
-```
+```text
 LEAD INTELLIGENCE REPORT
 
 ═══════════════════════════════════

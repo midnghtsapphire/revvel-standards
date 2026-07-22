@@ -59,6 +59,7 @@ The authed dashboard does **not** need SSR — it's correctly `noindex`-by-natur
 | `revvel-standards/docs/VEINS_MONITOR.md` | **Vital Engine INtelligence Surveillance** |
 | `revvel-standards/docs/veins/README.md` | **OpenVorce Community IntegRation Standards** |
 | `veins-self-healing-engine` (repo tagline) | **V.E.I.N.S. Self-Healing Engine** (VSPR + Perplexity Brain) |
+
 **Impact:** Search engines resolve entities by *consistent, repeated* name+description signals. Four expansions = no entity consolidation = weaker Knowledge-Graph recognition and diluted brand SERP.
 **Fix (fleet):** Choose **one** canonical expansion and use it verbatim everywhere (site, READMEs, llms.txt, JSON-LD `name`/`alternateName`, social profiles). Add the others only as `alternateName` in JSON-LD if they must coexist.
 

@@ -46,7 +46,7 @@ The most likely causes were:
 
 **What it does:**
 
-```
+```text
 Every Hour:
   ├─ Check if 8 critical secrets are present
   ├─ If missing → Try to auto-recover from Doppler
@@ -87,7 +87,7 @@ On Deletion Attempt:
 
 **What it does:**
 
-```
+```text
 Every 6 Hours:
   ├─ Scan all open issues and PRs
   ├─ Find labels exceeding time thresholds
@@ -111,7 +111,7 @@ Every 6 Hours:
 
 **Example Flow:**
 
-```
+```text
 Issue #123 has label `credentials-missing`
 
 Hour 0:  Label applied
@@ -214,7 +214,7 @@ Run the validation script:
 ```
 
 Output:
-```
+```text
 ✅ All validations passed!
 
 Next steps:

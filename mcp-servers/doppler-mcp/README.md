@@ -32,7 +32,7 @@ python -m doppemcp.server
 
 ## Architecture
 
-```
+```text
 ┌─────────────┐     MCP      ┌─────────────┐
 │ AI Agent    │◄────────────►│ DoppleMCP   │
 │ (Claude,    │              │             │

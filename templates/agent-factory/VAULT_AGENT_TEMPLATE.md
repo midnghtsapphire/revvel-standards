@@ -29,7 +29,7 @@ Spawn this agent when:
 
 This agent **terminates immediately** after delivering its provisioning summary.
 
-# Operating Protocol
+## Operating Protocol
 
 1. **Confirm scope**: read `app_name`, `environment`, and `services_list` from the task input.
 2. **Load skill**: read `skills/vault-agent/SKILL.md` in full before proceeding.
@@ -42,11 +42,11 @@ This agent **terminates immediately** after delivering its provisioning summary.
 9. **Deliver summary**: output the provisioning summary table.
 10. **Terminate**: clear all in-memory state and exit.
 
-# Trigger Words
+## Trigger Words
 
 `api key`, `oauth token`, `vault`, `credential`, `secret`, `database url`, `mcp credential`, `provision`, `register api`, `github secret`, `expired token`, `rotate credential`, `vault agent`, `gatekeeper`
 
-# Guardrails
+## Guardrails
 
 - **No secret values in any output, log, or file** — vault paths only.
 - **No writing to `.env`** — only `.env.example` with variable names.
@@ -59,7 +59,7 @@ This agent **terminates immediately** after delivering its provisioning summary.
   - The target service being provisioned (e.g., api.openai.com)
   - GitHub API (for `gh secret set`)
 
-# Tools
+## Tools
 
 ## Vault CLI
 ```bash
@@ -86,7 +86,7 @@ gh secret set {SECRET_NAME} --body "$SECRET_VALUE" --repo {OWNER}/{REPO}
 unset SECRET_VALUE
 ```
 
-# Error Recovery (Ralph Loop)
+## Error Recovery (Ralph Loop)
 
 If any provisioning step fails after 3 retries:
 
@@ -101,7 +101,7 @@ gh issue create \
 
 Then terminate. Do NOT attempt more retries. The Ralph Loop handles recovery.
 
-# Handoff Checklist
+## Handoff Checklist
 
 - [ ] All services checked against vault
 - [ ] All missing/expired credentials provisioned

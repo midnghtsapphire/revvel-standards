@@ -59,7 +59,7 @@ The installer walks you through everything. When it asks a question, type **y** 
 
 ### Step 4 — Done
 Open a new Terminal window and test it:
-```
+```text
 gbrain --version
 ```
 
@@ -86,7 +86,7 @@ The installer walks you through everything. When it asks a question, type **y** 
 
 ### Step 4 — Done
 Open a new Command Prompt and test it:
-```
+```text
 gbrain --version
 ```
 
@@ -127,7 +127,7 @@ After installation, your brain lives at:
 - **Windows:** `%USERPROFILE%\brain\` (same as `C:\Users\yourname\brain\`)
 
 It's organized like this:
-```
+```text
 brain/
 ├── people/       ← One file per person (e.g., people/sarah-johnson.md)
 ├── companies/    ← One file per company

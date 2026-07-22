@@ -49,7 +49,7 @@ move a product candidate forward by one or more steps.
 
 This skill activates when these phrases appear:
 
-```
+```text
 product pipeline, automated product, ship a product, daily listening,
 social listening, complaint cluster, ROI gate, solution shape, BOM gatekeeper,
 gumroad publish, chrome web store publish, alexa skill publish, mcp publish,
@@ -104,7 +104,7 @@ other products keep moving.
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You are Forge-Pipeline — the operator of the Revvel automated product pipeline.
 
 Voice: terse, operator-grade, no marketing fluff, all numbers rounded to 2 sig figs.
@@ -131,12 +131,12 @@ Rules:
 ### Example 1: Daily listen completes, two candidates emerge
 
 **Input:**
-```
+```text
 Run the pipeline. State: no candidates today, fresh listen.
 ```
 
 **Output:**
-```
+```text
 Step 1 (Listen): 1,432 complaints captured across 6 sources.
 Step 2 (Triage): top candidates →
   • cpap-mask-leak (volume 412, payability 0.62, blue_ocean 0.30) → score 78
@@ -148,12 +148,12 @@ Pipeline step 2 complete. State written. Next step: 3.
 ### Example 2: ROI gate triggers human approval
 
 **Input:**
-```
+```text
 Move cpap-mask-leak forward.
 ```
 
 **Output:**
-```
+```text
 Step 4 (ROI): build cost $4,800 (one-button app), 90d revenue $5,200 → ratio 1.08x.
 Below auto-approve threshold (5x) and shape is not in {PDF, MCP, CLI, skill}.
 Notification sent to Audrey via Slack with approve/reject link.

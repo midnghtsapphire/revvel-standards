@@ -16,16 +16,10 @@ esac; done
 
 [[ -z "$TITLE" ]] && { echo "need --title" >&2; exit 2; }
 # wr/ — env-overridable so tests can point HERE at a sandbox instead of the
-#959.733px wr/ — env-overridable so tests can point HERE at a sandbox instead of the
-# real wr/issues/ (tests set HERE=<tmpdir>; without the default-only
+# real wr/issues/ (tests set HERE=<tmpdir>; without this default-only
 # assignment the override is silently ignored and test runs mutate tracked
 # fixture files).
 HERE="${HERE:-$(cd "$(dirname "$0")/.." && pwd)}"
-# real wr/issues/ (tests/generate-wr-comment-stripping.test.js sets
-# HERE=<tmpdir>; without this default-only assignment the override was
-# silently ignored and test runs mutated tracked fixture files).
-HERE="${HERE:-$(cd "$(dirname "$0")/.." && pwd)}"
-HERE="${HERE:-$(cd "$(dirname "$0")/.." && pwd)}"   # wr/; respect env-var override for tests
 ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || echo "_No issue body provided._" )"
 
 # ---- FIX (class 2): select template by issue class instead of always FULL ----

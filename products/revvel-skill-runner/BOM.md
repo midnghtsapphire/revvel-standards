@@ -8,7 +8,7 @@
 | Newsletter ESP | Resend/Buttondown | $9 |
 | Analytics | Plausible | $9 |
 | **Total** | | **~$39/mo** |
-# BOM: revvel-skill-runner
+## BOM: revvel-skill-runner
 
 | Component | Status | Required | Cost | Justification |
 | --------- | ------ | -------- | ---- | ------------- |
