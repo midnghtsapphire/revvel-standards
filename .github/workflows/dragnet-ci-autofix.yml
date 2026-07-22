@@ -1,0 +1,150 @@
+# =============================================================================
+# DRAGNET CI AUTOFIX
+# =============================================================================
+#
+# PURPOSE:
+#   When a check suite completes with a failure conclusion on a PR, this
+#   workflow automatically:
+#     1. Fetches the failing job logs.
+#     2. Fetches the PR diff.
+#     3. Calls OpenRouter (Opus 4.8 code_patch profile) to identify the root
+#        cause and produce a minimal unified-diff patch.
+#     4. Posts a pinned analysis comment on the PR with the diagnosis.
+#     5. Dispatches self-heal-pr.yml (when a code patch is available) so the
+#        fix lands in a new branch/PR, goes through CI, and gets an AI review
+#        before merging.
+#
+# TRIGGER LANES:
+#   1. check_suite: completed — fires automatically on every failed suite that
+#      is associated with a PR. The job-level `if:` filter limits it to
+#      `failure` and `timed_out` conclusions only.
+#   2. workflow_dispatch — manual trigger: paste a PR number to re-run the
+#      analysis on demand (e.g. after a transient API failure on the first run).
+#
+# LOOP PREVENTION:
+#   - Skips PRs whose head branch starts with "self-heal/" (the branches
+#     created by self-heal-pr.yml) so the autofix never chases its own tail.
+#   - The script also skips if "[dragnet-skip]" or "[skip-ci]" appears in the
+#     PR title, and uses a sticky HTML marker to update-in-place rather than
+#     post duplicate comments.
+#
+# SECURITY:
+#   - GH_DISPATCH_TOKEN must be ADMIN_GITHUB_TOKEN (or a PAT with repo:write).
+#     GITHUB_TOKEN cannot trigger downstream workflows — see CLAUDE.md §3.
+#   - All caller-supplied text flows through env: vars in run: blocks; nothing
+#     is interpolated as ${{ ... }} inside shell scripts.
+#
+# If OPENROUTER_API_KEY is not configured the script posts a plain "checks
+# failed" comment on the PR and exits cleanly — no breakage.
+#
+# =============================================================================
+
+name: Dragnet CI Autofix
+
+on:
+  check_suite:
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to analyze (re-run analysis on demand)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: read   # needed to fetch Actions job logs
+
+concurrency:
+  # One autofix run per PR at a time — prevents racing patches from the same
+  # check suite completing multiple times in quick succession.
+  group: >-
+    dragnet-ci-autofix-${{
+      github.event_name == 'check_suite' &&
+      github.event.check_suite.pull_requests[0].number ||
+      github.event.inputs.pr_number ||
+      github.run_id
+    }}
+  cancel-in-progress: false
+
+env:
+  GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────
+  # JOB: autofix-on-check-suite
+  # Triggered automatically when a check suite completes with a failure.
+  # ─────────────────────────────────────────────────────────────────────────
+  autofix-on-check-suite:
+    name: "🔧 Autofix failing checks (check_suite)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: >-
+      github.event_name == 'check_suite' &&
+      (github.event.check_suite.conclusion == 'failure' ||
+       github.event.check_suite.conclusion == 'timed_out') &&
+      github.event.check_suite.pull_requests[0].number != null
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Run Dragnet CI Autofix
+        env:
+          # Read access: PRs, check runs, job logs.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Write + dispatch access: post comments, trigger self-heal-pr.
+          # ADMIN_GITHUB_TOKEN is required so the dispatched self-heal-pr.yml
+          # can in turn trigger further downstream workflows.
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.check_suite.pull_requests[0].number }}
+          CHECK_SUITE_URL: ${{ github.event.check_suite.url }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: node scripts/dragnet-ci-autofix.js
+
+  # ─────────────────────────────────────────────────────────────────────────
+  # JOB: autofix-on-demand
+  # Manual re-run via workflow_dispatch when the first run failed transiently
+  # or a human wants to re-analyze a specific PR.
+  # ─────────────────────────────────────────────────────────────────────────
+  autofix-on-demand:
+    name: "🔧 Autofix on demand (workflow_dispatch)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Run Dragnet CI Autofix (on demand)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+          CHECK_SUITE_URL: ""
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: node scripts/dragnet-ci-autofix.js

@@ -4,7 +4,7 @@
 
 ▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/oaudrey/)**
 
-## What Is This?
+## What Is This
 
 **oAudrey** is the public-facing **Automation Software Hub** for
 **Freedom Angel Corp** — an autonomous umbrella over a growing family of

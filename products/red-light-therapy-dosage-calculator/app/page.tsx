@@ -148,7 +148,7 @@ export default function Home() {
             <h2 className="text-xl font-semibold">Session Output</h2>
             <div className="mt-4 space-y-3">
               <div className="rounded-2xl bg-cyan-50 p-4">
-                <p className="text-sm text-cyan-900">Recommended Session Time</p>
+                <p className="text-sm text-cyan-900">Estimated Session Time</p>
                 <p className="text-3xl font-bold text-cyan-950">{formatMinutes(result.adjustedTimeSeconds)}</p>
               </div>
               <p className="text-sm text-slate-700">
@@ -169,8 +169,10 @@ export default function Home() {
               </p>
             </div>
             <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
-              Educational calculator only. Red light and PBM protocols vary by device, wavelength, distance,
-              and treatment goal. Confirm your protocol with a qualified clinician.
+              This app is for general wellness and informational purposes only. It is not a medical
+              device and does not diagnose, treat, cure, or prevent any condition. Red light and PBM
+              session parameters vary by device, wavelength, distance, and individual response.
+              Consult a qualified clinician for medical decisions.
             </div>
           </aside>
         </section>

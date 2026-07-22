@@ -9,7 +9,7 @@
 
 ---
 
-## What is BITO AI?
+## What is BITO AI
 
 BITO AI is an **agentic code-review and developer-productivity platform** with persistent repository memory. It indexes the entire codebase once and maintains an up-to-date knowledge base, enabling:
 

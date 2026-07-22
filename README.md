@@ -805,8 +805,8 @@ No automation runs. PR #2 will add optional cron — and even then nothing fires
 12. `wr/memory/decisions.jsonl`
 
 ### Compliance clock
-- 🔴 2026-05-05 — CAGE 8ZRW3 (XI Website Solutions LLC) renewal
-- 🔴 2026-05-14 — CAGE 90SN0 (Freedom Angel Corp) renewal
+- ⛔ 2026-05-05 — CAGE 8ZRW3 (XI Website Solutions LLC) **EXPIRED** — call DLA 1-877-352-2255
+- ⛔ 2026-05-14 — CAGE 90SN0 (Freedom Angel Corp) **EXPIRED** — call DLA 1-877-352-2255
 - 🟡 IRS transcript call this quarter
 
 All action data lives in `projects/_self/GRANTS_AND_COMPLIANCE.md`.
