@@ -10,9 +10,17 @@
 set -euo pipefail
 
 root=$(git rev-parse --show-toplevel)
-hook="$root/.git/hooks/pre-commit"
+# Resolve the hooks dir through git so this works in linked worktrees too,
+# where `.git` is a file, not a directory (a hard-coded "$root/.git/hooks"
+# fails there).
+hooks_dir=$(cd "$root" && git rev-parse --git-path hooks)
+case "$hooks_dir" in
+  /*) : ;;                       # already absolute
+  *) hooks_dir="$root/$hooks_dir" ;;
+esac
+hook="$hooks_dir/pre-commit"
 
-mkdir -p "$root/.git/hooks"
+mkdir -p "$hooks_dir"
 
 if [ -e "$hook" ] && ! grep -q 'pre-review-gate' "$hook" 2>/dev/null; then
   cp "$hook" "$hook.bak"

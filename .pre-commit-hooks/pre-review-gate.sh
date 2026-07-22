@@ -32,7 +32,12 @@ restage=0
 if [ "$#" -gt 0 ]; then
   files=("$@")
 else
-  mapfile -t files < <(git diff --cached --name-only --diff-filter=ACM)
+  # bash 3.2 (macOS default) has no `mapfile`; use a portable read loop.
+  # Include R so renamed-and-modified files are validated, not skipped.
+  files=()
+  while IFS= read -r _f; do
+    [ -n "$_f" ] && files+=("$_f")
+  done < <(git diff --cached --name-only --diff-filter=ACMR)
   restage=1
 fi
 
@@ -79,11 +84,26 @@ if [ "${#md[@]}" -gt 0 ]; then
 import re
 import sys
 
-# Bare URL preceded by start-of-line or whitespace; already-wrapped (<url>),
-# markdown links ([t](url)) and inline code (`url`) never match because the
-# preceding character is not whitespace. Trailing punctuation stays outside.
-URL_RE = re.compile(r"(^|\s)(https?://[^\s<>]+?)([.,;:!?]*)(?=\s|$)")
+# Bare URL preceded by start-of-line or whitespace. Already-wrapped (<url>) and
+# markdown links ([t](url)) don't match. Inline code spans ARE protected
+# separately (see rewrite_outside_code) because a URL inside `code` IS preceded
+# by whitespace and would otherwise be corrupted. Trailing punctuation stays out.
+URL_RE = re.compile(r"(^|\s)(https?://[^\s<>`]+?)([.,;:!?]*)(?=\s|$)")
 FENCE_RE = re.compile(r"^\s*(```|~~~)")
+CODE_SPAN_RE = re.compile(r"`[^`]*`")
+
+
+def rewrite_outside_code(line):
+    # Only rewrite bare URLs outside inline-code spans: splitting on `...`
+    # yields code at odd indices, prose at even indices.
+    parts = CODE_SPAN_RE.split(line)
+    spans = CODE_SPAN_RE.findall(line)
+    rebuilt = []
+    for i, seg in enumerate(parts):
+        rebuilt.append(URL_RE.sub(lambda m: f"{m.group(1)}<{m.group(2)}>{m.group(3)}", seg))
+        if i < len(spans):
+            rebuilt.append(spans[i])
+    return "".join(rebuilt)
 
 def fix(path):
     with open(path, encoding="utf-8") as fh:
@@ -105,7 +125,7 @@ def fix(path):
         if blank and prev_blank:
             continue  # collapse duplicate blank lines
         prev_blank = blank
-        out.append(URL_RE.sub(lambda m: f"{m.group(1)}<{m.group(2)}>{m.group(3)}", line))
+        out.append(rewrite_outside_code(line))
     fixed = "\n".join(out)
     if fixed != text:
         with open(path, "w", encoding="utf-8") as fh:
@@ -164,8 +184,15 @@ import sys
 try:
     import yaml
 except ImportError:
-    print("pre-review: PyYAML not available — skipping YAML validation", file=sys.stderr)
-    sys.exit(0)
+    # A blocking gate must not report success on YAML it never validated.
+    # Fail closed with an actionable fix instead of a silent pass.
+    print(
+        "pre-review: PyYAML is required to validate staged YAML but is not "
+        "installed. Install it (`python3 -m pip install pyyaml`) or unstage the "
+        "YAML change. Refusing to pass unvalidated YAML.",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 class Loader(yaml.SafeLoader):
     pass

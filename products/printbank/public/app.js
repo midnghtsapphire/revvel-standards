@@ -67,10 +67,17 @@
     visible.forEach((print) => {
       const card = document.createElement("article");
       card.className = "card";
+      // Button semantics so keyboard-only users can open print details.
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+      card.setAttribute("aria-label", `Open ${print.title} — ${print.genreLabel}, ${print.ratioLabel}`);
       card.innerHTML =
         `<div class="art">${print.svg}</div>` +
         `<div class="meta"><h3>${print.title}</h3><p>${print.genreLabel} · ${print.ratioLabel}</p></div>`;
       card.addEventListener("click", () => openModal(print));
+      card.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openModal(print); }
+      });
       grid.appendChild(card);
     });
   }
@@ -82,8 +89,15 @@
   // ---------------------------------------------------------------------------
   const modal = $("#modal");
   let currentPrint = null;
+  let lastFocused = null;
+
+  function closeModal() {
+    modal.hidden = true;
+    if (lastFocused && typeof lastFocused.focus === "function") lastFocused.focus();
+  }
 
   function openModal(print) {
+    lastFocused = document.activeElement;
     currentPrint = print;
     $("#modal-art").innerHTML = print.svg;
     $("#modal-title").textContent = print.title;
@@ -98,7 +112,23 @@
     });
     updatePixelNote();
     modal.hidden = false;
+    // Move focus into the dialog so keyboard/screen-reader users land inside it.
+    $("#modal-close").focus();
   }
+
+  // Focus trap + Escape while the dialog is open.
+  modal.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape") { ev.preventDefault(); closeModal(); return; }
+    if (ev.key !== "Tab") return;
+    const focusable = modal.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+    else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+  });
 
   function updatePixelNote() {
     if (!currentPrint) return;
@@ -110,16 +140,76 @@
 
   $("#dl-size").addEventListener("change", updatePixelNote);
   $("#dl-dpi").addEventListener("change", updatePixelNote);
-  $("#modal-close").addEventListener("click", () => { modal.hidden = true; });
-  modal.addEventListener("click", (ev) => { if (ev.target === modal) modal.hidden = true; });
+  $("#modal-close").addEventListener("click", closeModal);
+  modal.addEventListener("click", (ev) => { if (ev.target === modal) closeModal(); });
 
   function downloadBlob(blob, filename) {
+    if (!blob) {
+      // toBlob() yields null when the browser fails to encode (typically a
+      // canvas too large for available memory). Surface it rather than passing
+      // null to createObjectURL (which throws) and leaving the user with nothing.
+      window.alert("Export failed: the image was too large to encode in this browser. Try a smaller size or DPI.");
+      return;
+    }
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  // CRC-32 (PNG) — table-free, small. Used to checksum an inserted chunk.
+  function crc32(bytes) {
+    let c = ~0;
+    for (let i = 0; i < bytes.length; i++) {
+      c ^= bytes[i];
+      for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xedb88320 & -(c & 1));
+    }
+    return (~c) >>> 0;
+  }
+
+  // Rewrite a PNG blob to carry a pHYs chunk declaring the real print DPI, so
+  // print software reads the file as the selected physical size instead of the
+  // browser's hard-coded 96 DPI. Resolves to a new Blob (or the original if it
+  // isn't a parseable PNG). Pure client-side, no dependencies.
+  async function pngWithDpi(blob, dpi) {
+    try {
+      const buf = new Uint8Array(await blob.arrayBuffer());
+      const sig = [137, 80, 78, 71, 13, 10, 26, 10];
+      for (let i = 0; i < 8; i++) if (buf[i] !== sig[i]) return blob;
+      // IHDR is the first chunk: 8-byte sig + 4 len + "IHDR" + 13 data + 4 crc.
+      const ihdrEnd = 8 + 4 + 4 + 13 + 4;
+      const ppm = Math.round(dpi / 0.0254); // pixels per metre
+      const data = new Uint8Array(9);
+      const dv = new DataView(data.buffer);
+      dv.setUint32(0, ppm); dv.setUint32(4, ppm); data[8] = 1; // unit: metre
+      const type = new Uint8Array([0x70, 0x48, 0x59, 0x73]); // "pHYs"
+      const chunk = new Uint8Array(4 + 4 + 9 + 4);
+      const cdv = new DataView(chunk.buffer);
+      cdv.setUint32(0, 9);
+      chunk.set(type, 4);
+      chunk.set(data, 8);
+      const crcInput = new Uint8Array(4 + 9);
+      crcInput.set(type, 0); crcInput.set(data, 4);
+      cdv.setUint32(17, crc32(crcInput));
+      const out = new Uint8Array(buf.length + chunk.length);
+      out.set(buf.subarray(0, ihdrEnd), 0);
+      out.set(chunk, ihdrEnd);
+      out.set(buf.subarray(ihdrEnd), ihdrEnd + chunk.length);
+      return new Blob([out], { type: "image/png" });
+    } catch {
+      return blob; // never block a download on the metadata step
+    }
+  }
+
+  // Encode a canvas to PNG at the given DPI and download it. `filename` is
+  // captured by the caller so a later modal/print change can't rename the file.
+  function savePng(canvas, dpi, filename) {
+    canvas.toBlob(async (blob) => {
+      if (!blob) { downloadBlob(null); return; }
+      downloadBlob(await pngWithDpi(blob, dpi), filename);
+    }, "image/png");
   }
 
   function slug(text) {
@@ -136,11 +226,15 @@
 
   $("#dl-png").addEventListener("click", () => {
     if (!currentPrint) return;
+    // Capture everything now — the user may open another print while the SVG
+    // rasterizes, and the async toBlob callback must not read a changed global.
+    const print = currentPrint;
     const sizeId = $("#dl-size").value;
     const dpi = Number($("#dl-dpi").value);
     const px = E.pixelsForSize(sizeId, dpi);
+    const filename = `${slug(print.title)}-${sizeId}-${dpi}dpi.png`;
     const img = new Image();
-    const svgBlob = new Blob([currentPrint.svg], { type: "image/svg+xml" });
+    const svgBlob = new Blob([print.svg], { type: "image/svg+xml" });
     const url = URL.createObjectURL(svgBlob);
     img.onload = () => {
       const canvas = document.createElement("canvas");
@@ -148,10 +242,9 @@
       canvas.height = px.height;
       canvas.getContext("2d").drawImage(img, 0, 0, px.width, px.height);
       URL.revokeObjectURL(url);
-      canvas.toBlob((blob) => {
-        downloadBlob(blob, `${slug(currentPrint.title)}-${sizeId}-${dpi}dpi.png`);
-      }, "image/png");
+      savePng(canvas, dpi, filename);
     };
+    img.onerror = () => URL.revokeObjectURL(url);
     img.src = url;
   });
 
@@ -161,6 +254,7 @@
   const zone = $("#upload-zone");
   const input = $("#photo-input");
   let photoImg = null;
+  let photoLoadToken = 0; // ignore stale onload callbacks from earlier uploads
 
   $("#browse-btn").addEventListener("click", () => input.click());
   input.addEventListener("change", () => { if (input.files[0]) loadPhoto(input.files[0]); });
@@ -177,15 +271,20 @@
   });
 
   function loadPhoto(file) {
+    const token = ++photoLoadToken;
     const img = new Image();
+    const url = URL.createObjectURL(file);
     img.onload = () => {
+      URL.revokeObjectURL(url); // decoded image stays usable; free the blob URL
+      if (token !== photoLoadToken) return; // a newer upload superseded this one
       photoImg = img;
       $("#photo-workbench").hidden = false;
       $("#photo-meta").textContent = `${file.name} — ${img.naturalWidth} × ${img.naturalHeight} px`;
       renderSizeTable();
       previewCrop(null);
     };
-    img.src = URL.createObjectURL(file);
+    img.onerror = () => URL.revokeObjectURL(url);
+    img.src = url;
   }
 
   function renderSizeTable() {
@@ -221,20 +320,31 @@
     );
   }
 
+  // The preview is only ever shown a few hundred px wide, so cap the backing
+  // canvas — a full-resolution phone photo would allocate hundreds of MB and
+  // can freeze/crash the tab. The original photoImg is kept for export.
+  const PREVIEW_MAX = 900;
+  function previewScale(w, h) {
+    const f = Math.min(1, PREVIEW_MAX / Math.max(w, h));
+    return { w: Math.max(1, Math.round(w * f)), h: Math.max(1, Math.round(h * f)) };
+  }
+
   function previewCrop(sizeId) {
     const canvas = $("#crop-canvas");
     const ctx = canvas.getContext("2d");
     if (!sizeId) {
-      canvas.width = photoImg.naturalWidth;
-      canvas.height = photoImg.naturalHeight;
-      ctx.drawImage(photoImg, 0, 0);
+      const d = previewScale(photoImg.naturalWidth, photoImg.naturalHeight);
+      canvas.width = d.w;
+      canvas.height = d.h;
+      ctx.drawImage(photoImg, 0, 0, d.w, d.h);
       return;
     }
     const rec = gradeFor(sizeId);
     const { crop } = rec;
-    canvas.width = crop.width;
-    canvas.height = crop.height;
-    ctx.drawImage(photoImg, crop.x, crop.y, crop.width, crop.height, 0, 0, crop.width, crop.height);
+    const d = previewScale(crop.width, crop.height);
+    canvas.width = d.w;
+    canvas.height = d.h;
+    ctx.drawImage(photoImg, crop.x, crop.y, crop.width, crop.height, 0, 0, d.w, d.h);
   }
 
   function exportPhoto(sizeId) {
@@ -251,9 +361,7 @@
     ctx.imageSmoothingQuality = "high";
     const { crop } = rec;
     ctx.drawImage(photoImg, crop.x, crop.y, crop.width, crop.height, 0, 0, outW, outH);
-    canvas.toBlob((blob) => {
-      downloadBlob(blob, `photo-print-${sizeId}-${dpi}dpi.png`);
-    }, "image/png");
+    savePng(canvas, dpi, `photo-print-${sizeId}-${dpi}dpi.png`);
   }
 
   // ---------------------------------------------------------------------------

@@ -1,5 +1,14 @@
 # PrintBank — Printable Wall Art & Photo Print Sizer
 
+## Live Deployment / Test
+
+Preview (this branch, Vercel — verified Ready):
+<https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app/products/printbank/public/>
+
+The app is a static single-page site (`products/printbank/public/`, no build
+step). Open the preview to browse the print bank, download an SVG, export a
+sized PNG, and run a photo through the "Your Photos" sizer.
+
 A "print bank" for printable wall art, inspired by the top-selling Etsy
 "entire shop / 30,000-print bundle" listings — but built around two honest
 advantages those bundles don't have:
