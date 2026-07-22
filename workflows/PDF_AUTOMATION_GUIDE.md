@@ -352,7 +352,7 @@ n8n start
 
 ### Location Structure
 
-```
+```text
 workflows/
 ├── n8n/
 │   ├── pdf-product-creation.json          # Import-ready n8n workflow

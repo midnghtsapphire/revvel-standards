@@ -48,7 +48,7 @@ Based on the revvel-standards repository inventory, Neurooz currently has:
 
 Refactor into a modular monolith structure. **Move existing files into modules without deleting any:**
 
-```
+```text
 src/
 ├── modules/
 │   ├── cognitive/          # Oz Engine — mode detection, tests, dashboard
@@ -205,7 +205,7 @@ export const emailSubscribers = pgTable('email_subscribers', {
 
 Add tRPC routers for each module:
 
-```
+```text
 server/routers/
 ├── cognitive.ts      # Mode detection, mode history, cognitive tests
 ├── financial.ts      # Plaid link, transactions, impulse alerts, goals

@@ -111,7 +111,7 @@ Now you can sell this value. You're not selling code — you're selling **time s
 
 Your price should reflect the value the skill delivers:
 
-```
+```text
 Skill Value = (Hours Saved Per Week × Developer Hourly Rate × 52 weeks) × 0.10
 ```
 
@@ -326,7 +326,7 @@ Consider a subscription for regular skill updates:
 
 ### What to Put in Your License
 
-```
+```text
 This skill is licensed for personal use by a single individual.
 You may not redistribute, resell, or share this skill without 
 a commercial license. For team or commercial licensing, 

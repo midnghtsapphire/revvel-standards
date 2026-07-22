@@ -104,7 +104,7 @@ Before proceeding, confirm:
 
 ## Files Changed
 
-```
+```text
 projects/devina-imposter/
 ├── HANDOFF.md              (Manual creation guide)
 ├── README.md               (Project overview)

@@ -1,10 +1,10 @@
 # SCIM Provisioning Configuration Template
 #
-# This template provides example configurations for SCIM (System for Cross-domain Identity Management)
-# provisioning with Google Cloud Workforce Identity Federation
+## This template provides example configurations for SCIM (System for Cross-domain Identity Management)
+## provisioning with Google Cloud Workforce Identity Federation
 #
-# Reference: docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md
-# Official Docs: <https://cloud.google.com/iam/docs/configure-scim-ms-entra>
+## Reference: docs/Master_Inventory/GOOGLE_CLOUD_IDENTITY_STANDARD.md
+## Official Docs: <https://cloud.google.com/iam/docs/configure-scim-ms-entra>
 
 ---
 
@@ -145,7 +145,7 @@ gcloud iam workforce-pools providers describe PROVIDER_ID \
 ### Test Provisioning with a Pilot User
 
 **Step 1: Create a Test User in Entra ID**
-```
+```text
 User Principal Name: testuser@yourdomain.com
 Display Name: Test User
 Email: testuser@yourdomain.com
@@ -171,7 +171,7 @@ gcloud iam workforce-pools providers list-workforce-identities PROVIDER_ID \
 ```
 
 **Expected Output:**
-```
+```text
 name: locations/global/workforcePools/WORKFORCE_POOL_ID/subjects/testuser@yourdomain.com
 subject: testuser@yourdomain.com
 state: ACTIVE
@@ -264,7 +264,7 @@ If your organization has more than approximately 150 groups, use the scalable gr
 - Workforce Identity Federation provider created
 
 ### Attribute Mappings for Large Groups
-```
+```text
 google.subject=user.emails[0].value.lowerAscii()
 google.groups=group.externalId
 ```

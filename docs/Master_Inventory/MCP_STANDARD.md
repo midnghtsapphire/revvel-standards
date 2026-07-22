@@ -1008,7 +1008,7 @@ Or for development (running from source):
 
 Place all custom MCP server code in `mcp_server/` within the project:
 
-```
+```text
 [project-root]/
   mcp_server/
     __init__.py

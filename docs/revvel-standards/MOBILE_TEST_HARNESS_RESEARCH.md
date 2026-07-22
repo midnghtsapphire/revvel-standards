@@ -162,7 +162,7 @@ This sits inside the existing Expo / EAS budget; no new line items required for 
 
 This is what an adopting Revvel app SHOULD look like. None of these files are added to `revvel-standards` — only the **starter copies** under `templates/mobile/testing/`.
 
-```
+```text
 my-revvel-app/
 ├── app.json                            # Expo config (linted by app-config suite)
 ├── eas.json                            # EAS Build profiles (preview profile required)

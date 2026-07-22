@@ -45,7 +45,7 @@ This document delivers (a) and (b). (c) is gated on Audrey's 👍 of the MVI in 
 
 Bring Premolt up to parity with sibling projects. Net new files:
 
-```
+```text
 docs/premolt/
 ├── README.md          # ← NEW — index of all premolt docs (mirrors growlingeyes/)
 ├── BOM.md             # exists — keep; refresh when Stripe/domain/Apple/Google purchases are made

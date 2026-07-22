@@ -174,7 +174,7 @@ These custom fields are added via a thin OCA-style module `revvel_odoo_bridge` (
 
 ### 5.1 Reference Topology
 
-```
+```text
               ┌──────────────────────── MIDNGHTSAPPHIRE ────────────────────────┐
               │                                                                 │
  Shopify ─┐   │   ┌─────────────┐   Nginx   ┌────────────────────┐   pg       │

@@ -33,7 +33,7 @@
 
 ### Project Structure
 
-```
+```text
 build/cli/
   src/
     index.ts            # Entry point (or main.go / main.rs)
@@ -149,7 +149,7 @@ jobs:
 
 ### Landing Page
 
-```
+```text
 <tool-name>.revvel.io   OR   revvel.io/tools/<tool-name>
 ```
 

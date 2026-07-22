@@ -60,7 +60,7 @@ Write these down. You'll need them in the next steps.
 Create a new folder in the `skills/` directory with your skill's name.
 Use lowercase letters and dashes (no spaces).
 
-```
+```text
 skills/
 └── my-skill-name/     ← Create this folder
     ├── SKILL.md       ← You'll create this in Step 3
@@ -70,7 +70,7 @@ skills/
 ```
 
 **Example:** If you're building a security review skill, the folder would be:
-```
+```text
 skills/security-review/
 ```
 
@@ -88,7 +88,7 @@ Here's the important parts you need to fill in:
 Write 1-2 sentences explaining what the skill does. Write like you're explaining it to a 10-year-old.
 
 **Example:**
-```
+```text
 This skill reviews your code for security problems before you publish it.
 It checks for common mistakes that hackers use to break into apps.
 ```
@@ -97,7 +97,7 @@ It checks for common mistakes that hackers use to break into apps.
 These are the words that turn the skill on. When someone types one of these words, the skill activates.
 
 **Example:**
-```
+```text
 security review, check for vulnerabilities, scan my code, security check,
 OWASP, is my code safe, security audit
 ```
@@ -106,7 +106,7 @@ OWASP, is my code safe, security audit
 This is what the AI reads before every conversation when the skill is active. Write it like you're giving instructions to a very smart assistant.
 
 **Example:**
-```
+```text
 You are a security expert reviewing code for vulnerabilities.
 When given code, check for:
 - SQL injection
@@ -290,7 +290,7 @@ Before publishing, go through this checklist:
 
 ## Quick Reference: Skill File Structure
 
-```
+```text
 skills/
 └── your-skill-name/
     ├── SKILL.md                          ← Main spec (human-readable)

@@ -5,7 +5,7 @@ MIDNGHTSAPPHIRE organization.
 
 ## Structure
 
-```
+```text
 projects/
   _self/          # Revvel corporate docs (nonprofit, tax, grants, support)
   README.md       # This file

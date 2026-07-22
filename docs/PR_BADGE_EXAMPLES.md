@@ -93,7 +93,7 @@ The labels match the badge colors for visual consistency:
 
 Here's how the status progresses through a typical PR lifecycle:
 
-```
+```text
 1. PR Opened
    ↓
    [awaiting-approval] 🟡
@@ -111,7 +111,7 @@ Here's how the status progresses through a typical PR lifecycle:
 
 Or, if changes are needed:
 
-```
+```text
 1. PR Opened
    ↓
    [awaiting-approval] 🟡

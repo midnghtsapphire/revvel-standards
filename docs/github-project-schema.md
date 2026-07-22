@@ -35,7 +35,7 @@ The Revvel operating model uses a single GitHub Project to track every work requ
 
 ## Status Lifecycle
 
-```
+```text
 Inbox → Researching → Scored
                       ├── Hold       (Decision = HOLD)
                       ├── Archived   (Decision = ARCHIVE)

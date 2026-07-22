@@ -156,7 +156,7 @@ export OPENROUTER_API_KEY=$(doppler secrets get OPENROUTER_API_KEY --plain)
    - **Debug** — Find and fix bugs
 
 3. **Describe your task**
-   ```
+   ```text
    Refactor the authentication module to use JWT tokens instead of sessions.
    Requirements:
    - Use jsonwebtoken library
@@ -184,7 +184,7 @@ export OPENROUTER_API_KEY=$(doppler secrets get OPENROUTER_API_KEY --plain)
 
 #### Multi-Step Tasks
 
-```
+```text
 Phase 1: Database Schema
 - Create migration for users table
 - Add JWT columns (refresh_token, token_expiry)
@@ -228,7 +228,7 @@ Roo-Cline can access:
 - ⚠️ Only files you explicitly grant access to
 
 **Tip:** Start with specific file scope:
-```
+```text
 Update src/auth/*.ts files to use new token system.
 Do not modify other files.
 ```
@@ -241,7 +241,7 @@ Do not modify other files.
 
 When using Roo-Cline in Revvel repos, remind it to:
 
-```
+```text
 Follow Revvel Standards:
 - Use TypeScript strict mode (no `any` types)
 - Add error reporting (Sentry + Resend + GitHub Issue)
@@ -256,7 +256,7 @@ Reference: docs/AGENTS.md in this repo
 
 Roo-Cline can use skills from the repository's [`skills/`](../skills/) directory:
 
-```
+```text
 Before implementing a feature:
 1. Check if a relevant skill exists in skills/
 2. Read the skill's SKILL.md
@@ -312,7 +312,7 @@ After Roo-Cline completes work:
 - Adding functionality
 
 **Example:**
-```
+```text
 Code Mode: Add pagination to the users API endpoint.
 - Support page and limit query params
 - Return total count in response
@@ -329,7 +329,7 @@ Code Mode: Add pagination to the users API endpoint.
 - System integration
 
 **Example:**
-```
+```text
 Architect Mode: Design a caching strategy for our API.
 - Evaluate Redis vs in-memory
 - Define cache invalidation logic
@@ -346,7 +346,7 @@ Architect Mode: Design a caching strategy for our API.
 - Learning patterns
 
 **Example:**
-```
+```text
 Ask Mode: Explain how the authentication flow works in this app.
 Include:
 - Entry points
@@ -364,7 +364,7 @@ Include:
 - Test failures
 
 **Example:**
-```
+```text
 Debug Mode: Users report login fails intermittently.
 Context:
 - Happens ~10% of the time
@@ -381,12 +381,12 @@ Find root cause and fix.
 ### 1. Start Small
 
 ❌ Bad:
-```
+```text
 Refactor the entire codebase to use modern patterns.
 ```
 
 ✅ Good:
-```
+```text
 Refactor src/utils/date.ts to use date-fns instead of Moment.js.
 Keep existing function signatures.
 Update tests.
@@ -395,12 +395,12 @@ Update tests.
 ### 2. Be Specific
 
 ❌ Bad:
-```
+```text
 Make the app faster.
 ```
 
 ✅ Good:
-```
+```text
 Optimize the database query in src/api/users.ts:45.
 Current: 2.5s for 10k records.
 Target: <100ms.
@@ -410,12 +410,12 @@ Use indexing or query optimization.
 ### 3. Include Context
 
 ❌ Bad:
-```
+```text
 Fix the bug.
 ```
 
 ✅ Good:
-```
+```text
 Fix: Users can't log in after password reset.
 
 Context:
@@ -448,7 +448,7 @@ npm run build
 
 Don't let Roo-Cline make massive changes without checkpoints:
 
-```
+```text
 Step 1: Add JWT library and types
 [Review + commit]
 
@@ -485,12 +485,12 @@ Step 3: Update login endpoint
 
 **Solutions:**
 1. Be explicit about scope:
-   ```
+   ```text
    ONLY modify src/auth/*.ts files.
    Do NOT touch any other files.
    ```
 2. Use `.rooignore` file (create in repo root):
-   ```
+   ```text
    node_modules/
    dist/
    .git/
@@ -506,14 +506,14 @@ Step 3: Update login endpoint
 
 **Solutions:**
 1. Include standards in prompt:
-   ```
+   ```text
    Follow TypeScript best practices:
    - No `any` types
    - Explicit return types
    - Comprehensive error handling
    ```
 2. Reference style guide:
-   ```
+   ```text
    Follow the patterns in existing code.
    Match the style of src/api/products.ts.
    ```

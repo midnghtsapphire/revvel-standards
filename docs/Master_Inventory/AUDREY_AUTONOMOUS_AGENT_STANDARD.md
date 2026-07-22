@@ -51,7 +51,7 @@ rules (append-only, artifact-first, auto-documentation, GitHub flow,
 entity, secrets hygiene, FOSS priority, self-heal) and fixes the
 output format to:
 
-```
+```text
 --- ISSUE MARKDOWN ---
 --- CHANGES ---
 --- VERIFICATION STEPS ---

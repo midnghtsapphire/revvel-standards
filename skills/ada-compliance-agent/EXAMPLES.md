@@ -7,7 +7,7 @@ This document provides practical examples of how to use the ADA Compliance Agent
 **Scenario:** You want to check the accessibility of your current codebase before deploying to production.
 
 **Command:**
-```
+```text
 Load the ada-compliance-agent skill and run a full accessibility audit on the current branch
 ```
 
@@ -20,7 +20,7 @@ Load the ada-compliance-agent skill and run a full accessibility audit on the cu
 6. Commits auto-fixes to a new branch
 
 **Expected output:**
-```
+```text
 ✅ Completed ADA Compliance Audit
 
 Summary:
@@ -50,7 +50,7 @@ Next steps:
 **Scenario:** You want to find free courses to learn about ADA compliance.
 
 **Command:**
-```
+```text
 Load ada-compliance-agent and research free ADA certification courses available in 2026
 ```
 
@@ -62,7 +62,7 @@ Load ada-compliance-agent and research free ADA certification courses available 
 5. Posts summary in GitHub Discussions
 
 **Expected output:**
-```
+```text
 🎓 Free ADA Certification Courses (2026)
 
 Found 8 free courses with certificates:
@@ -107,7 +107,7 @@ Updated: /docs/ada-certifications.md
 **Scenario:** CI failed on a PR due to accessibility violations.
 
 **Command:**
-```
+```text
 Load ada-compliance-agent and fix accessibility violations in PR #42
 ```
 
@@ -120,7 +120,7 @@ Load ada-compliance-agent and fix accessibility violations in PR #42
 6. Requests review for manual fixes
 
 **Expected output:**
-```
+```text
 🔧 Auto-Fixed Accessibility Violations in PR #42
 
 Fixed automatically:
@@ -163,7 +163,7 @@ Next steps: Address the 3 manual items above, then re-run tests.
 - Posts summary to Slack/Discord (if configured)
 
 **Example report:**
-```
+```text
 📊 Weekly ADA Compliance Report (May 5, 2026)
 
 Trend: ⬆️ Score improved from 89 to 94
@@ -235,7 +235,7 @@ alerts:
 - Major update to WCAG or Section 508
 
 **Example alert:**
-```
+```text
 🚨 ADA Compliance Alert
 
 Type: Critical Violation Detected
@@ -297,7 +297,7 @@ jobs:
 5. Blocks merge if critical violations remain
 
 **Example PR comment:**
-```
+```text
 ## 🔍 ADA Compliance Check
 
 Status: ⚠️ **Action Required**
@@ -338,7 +338,7 @@ Status: ⚠️ **Action Required**
 **Scenario:** Final accessibility review before launching a new feature.
 
 **Command:**
-```
+```text
 Load ada-compliance-agent and run complete pre-launch accessibility audit for the payment-flow feature
 ```
 
@@ -350,7 +350,7 @@ Load ada-compliance-agent and run complete pre-launch accessibility audit for th
 5. Creates punch list of any remaining issues
 
 **Expected output:**
-```
+```text
 🚀 Pre-Launch Accessibility Audit: Payment Flow
 
 OVERALL STATUS: ⚠️  NOT READY FOR LAUNCH
@@ -408,7 +408,7 @@ Would you like me to auto-fix issues #890 and #891?
 **Scenario:** Compare your accessibility against competitors.
 
 **Command:**
-```
+```text
 Load ada-compliance-agent and benchmark our checkout flow against Amazon, Shopify, and Stripe
 ```
 
@@ -419,7 +419,7 @@ Load ada-compliance-agent and benchmark our checkout flow against Amazon, Shopif
 4. Generates comparison report
 
 **Expected output:**
-```
+```text
 📊 Accessibility Benchmark Report
 
 YOUR SITE vs. COMPETITORS

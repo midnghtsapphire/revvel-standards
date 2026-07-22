@@ -20,7 +20,7 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 
 ## 1. PIPELINE (the governing order)
 
-```
+```text
 [WR title] 
    │
    ▼

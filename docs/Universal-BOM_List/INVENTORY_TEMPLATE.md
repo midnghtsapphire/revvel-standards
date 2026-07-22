@@ -8,7 +8,7 @@
 
 ---
 
-# [BUSINESS / PROJECT NAME] Inventory
+## [BUSINESS / PROJECT NAME] Inventory
 
 **Last Updated:** [DATE]  
 **Business Type:** [Tech Project / E-Commerce / Rental / Mobile App / Other]  

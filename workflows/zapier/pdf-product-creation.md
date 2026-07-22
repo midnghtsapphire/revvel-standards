@@ -57,7 +57,7 @@ This Zap automates the 6-step process for creating and marketing PDF products:
 - **Action**: Send Prompt (via Anthropic or OpenRouter integration)
 - **Model**: claude-sonnet-4
 - **Prompt**:
-  ```
+  ```text
   You are a product title expert. Based on the niche "{{Step 1: niche}}" and search trends, create a catchy, emotional title and subtitle for a PDF guide.
 
   The title should:
@@ -104,7 +104,7 @@ This Zap automates the 6-step process for creating and marketing PDF products:
 - **Action**: Send Prompt
 - **Model**: claude-sonnet-4
 - **Prompt**:
-  ```
+  ```text
   Create a comprehensive PDF guide with the following details:
 
   Title: {{Step 3: title}}
@@ -264,7 +264,7 @@ Add a parallel path after Step 4 to also list on Gumroad:
 - **URL**: `https://api.gumroad.com/v2/products`
 - **Method**: POST
 - **Body**:
-  ```
+  ```text
   access_token=YOUR_GUMROAD_TOKEN
   &name={{Step 3: title}}
   &price=2900

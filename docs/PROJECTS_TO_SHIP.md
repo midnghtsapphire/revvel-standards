@@ -45,7 +45,7 @@
 
 ### Process: Credentials Audit
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │           CREDENTIALS AUDIT PROCESS                        │
 ├─────────────────────────────────────────────────────────────┤
@@ -78,7 +78,7 @@
 
 ### Simplified Process
 
-```
+```text
 AUDREY'S DECISION FLOW:
 Input → Google Sheets check → CPA review → Execute
                  ↓
@@ -137,7 +137,7 @@ Input → Google Sheets check → CPA review → Execute
 
 ### Learning Loop
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │              ITERATE OR DUMP LOOP                          │
 ├─────────────────────────────────────────────────────────────┤

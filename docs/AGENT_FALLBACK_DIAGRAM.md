@@ -2,7 +2,7 @@
 
 ## High-Level Architecture
 
-```
+```text
                           ┌─────────────────────────┐
                           │   GitHub Issue/PR       │
                           │   (Code generation      │
@@ -79,7 +79,7 @@
 
 ## Retry Logic Flow
 
-```
+```text
                           ┌─────────────────┐
                           │  Call Agent     │
                           └────────┬────────┘
@@ -111,7 +111,7 @@
 
 ## Monitoring Flow
 
-```
+```text
                     ┌──────────────────────────┐
                     │  Fallback Event          │
                     │  (OpenHands → Cursor)        │
@@ -143,7 +143,7 @@
 
 ## Cost Optimization Flow
 
-```
+```text
                     ┌──────────────────────────┐
                     │  Incoming Task           │
                     └───────────┬──────────────┘
@@ -174,7 +174,7 @@
 
 ## Setup Flow
 
-```
+```text
                     ┌─────────────────────────────┐
                     │  Run setup-agent-fallback.sh│
                     └──────────────┬──────────────┘
@@ -218,7 +218,7 @@
 
 ## Error Handling Flow
 
-```
+```text
                     ┌──────────────────────────┐
                     │  API Call Fails          │
                     └───────────┬──────────────┘

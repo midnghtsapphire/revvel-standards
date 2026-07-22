@@ -16,7 +16,7 @@
 
 ## 2. Architecture
 
-```
+```text
 GitHub PR opened / synchronized
          │
          ▼
@@ -50,7 +50,7 @@ GitHub PR opened / synchronized
 
 ### 3.2 Vault Path
 
-```
+```text
 revvel/shared/code-review/bito
 ```
 

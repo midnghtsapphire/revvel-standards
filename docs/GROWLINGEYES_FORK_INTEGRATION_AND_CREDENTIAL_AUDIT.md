@@ -106,7 +106,7 @@ These forks support your AI agent development workflow, not GrowlingEyes directl
 
 If you integrate the forensic forks, here's how the sidebar could expand:
 
-```
+```text
 SURVEILLANCE (existing)
 ├── LiDAR Mapping          (existing)
 ├── Missing Persons        (existing)  

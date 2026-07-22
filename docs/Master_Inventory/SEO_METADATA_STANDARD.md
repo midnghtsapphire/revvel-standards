@@ -448,7 +448,7 @@ Every page type stores its SEO fields in the database. Here is where each metada
 
 ## 10. The Robots.txt Standard
 
-```
+```text
 # /public/robots.txt
 User-agent: *
 Allow: /

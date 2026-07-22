@@ -19,7 +19,7 @@ The Gatekeeper is the unified control plane that manages the full lifecycle of e
 
 ## Architecture
 
-```
+```text
 Product Pipeline (step 5: shape router)
         │
         ▼
@@ -198,7 +198,7 @@ When the BOM Validator finds items with status `❌ needed`, the Provisioner att
 
 ### Provisioning Workflow
 
-```
+```text
 BOM.md parsed
     │
     ├─ item.status == "✅ on hand"  →  verify in Doppler → done
@@ -241,7 +241,7 @@ The Rotator runs on a weekly cron (`0 6 * * 1` — Monday 06:00 UTC) and checks 
 
 ### Rotation Workflow
 
-```
+```text
 Rotator cron fires (Monday 06:00 UTC)
     │
     ├─ Read _GATEKEEPER_REGISTRY.json
@@ -379,7 +379,7 @@ The Gatekeeper is invoked at **step 6** of the [`AUTOMATED_PRODUCT_PIPELINE.md`]
 
 ## 9. File Layout
 
-```
+```text
 revvel-standards/
   standards/
     GATEKEEPER.md                          # ← this file

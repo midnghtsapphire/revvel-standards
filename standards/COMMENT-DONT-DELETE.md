@@ -163,7 +163,7 @@ Now the security team can `grep -r REVVEL-DISABLED` and immediately see that an 
 
 Add the following snippet to every agent configuration file in the repo (`.openhands/microagent/repo.md`, `.cursorrules`, `.github/copilot-instructions.md`, `CLAUDE.md`, etc.):
 
-```
+```text
 ## RVS-AGENT-001: Comment, don't delete
 
 When you cannot make code work, DO NOT DELETE IT. Comment it out with this header:

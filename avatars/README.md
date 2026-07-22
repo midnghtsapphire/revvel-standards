@@ -4,7 +4,7 @@ This repository stores all work avatars for video production across all platform
 
 ## Directory Structure
 
-```
+```text
 avatars/
 ├── work/                    # Production-ready avatars (HIGH QUALITY)
 │   ├── professional/        # Business, LinkedIn, CLE
@@ -77,7 +77,7 @@ Like Donna AI avatars - high-end, glossy, premium appearance that looks expensiv
 
 Each avatar can have multiple outfits:
 
-```
+```text
 avatar-name/
 ├── base/                    # Default appearance
 ├── outfit-professional/     # Business attire

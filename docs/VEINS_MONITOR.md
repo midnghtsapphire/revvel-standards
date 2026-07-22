@@ -21,7 +21,7 @@ there were gaps:
 
 ## How It Works
 
-```
+```text
 Hourly cron (0 * * * *)
     │
     ├── Case 1: open work-request issues > 7 days, no PR
@@ -53,7 +53,7 @@ without progressing will receive a diagnosis and an auto-recovery attempt.
 
 To change the threshold, trigger the workflow manually:
 
-```
+```text
 Actions → VEINS Monitor → Run workflow → max_age_days=3
 ```
 

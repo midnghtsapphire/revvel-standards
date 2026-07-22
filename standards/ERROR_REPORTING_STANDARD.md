@@ -15,7 +15,7 @@ Every significant server job must implement the three-tier error reporting syste
 
 ## 2. Three-Tier Error Reporting System
 
-```
+```text
 Tier 1 — Console (always)
     ↓ (if severity ≥ medium OR repeated)
 Tier 2 — Email (via Resend or configured transport)
@@ -163,7 +163,7 @@ Cooldowns prevent GitHub issue spam when a job is repeatedly failing.
 
 All auto-created GitHub issues must be labeled with:
 
-```
+```text
 {app-name}/error
 ```
 

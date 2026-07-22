@@ -153,7 +153,7 @@ node scripts/check-app-json.js
 
 ## Directory Structure
 
-```
+```text
 tests/
 ├── unit/
 ├── component/

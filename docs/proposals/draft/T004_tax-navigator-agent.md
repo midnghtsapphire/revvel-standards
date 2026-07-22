@@ -55,7 +55,7 @@ Audrey Evans has multiple businesses spread across different niches, each with u
 
 ### Multi-System Enterprise Tracker
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │              ENTERPRISE BUSINESS TRACKER                      │
 ├─────────────────────────────────────────────────────────────┤
@@ -171,7 +171,7 @@ medicaid_watch = {
 
 ### How to Minimize Taxable Income
 
-```
+```text
 Audrey purchases product → Donates to Rental LLC → 
     → Rental LLC gets FMV deduction
     → Audrey gets charitable deduction

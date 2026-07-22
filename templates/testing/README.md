@@ -57,7 +57,7 @@ These three test templates provide a starting pattern for the field validation, 
 
 ## Where Files Go
 
-```
+```text
 tests/
 ├── unit/
 │   └── [table-name]-field-validation.test.ts

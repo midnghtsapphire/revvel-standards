@@ -27,7 +27,7 @@ motif shortlist and a specific palette combo from the palette template.
 
 Use case: side-by-side palette comparison so the human picks fast.
 
-```
+```text
 A vector graphic design showcase sheet featuring four variations of {SUBJECT},
 organized in a clean 2x2 grid. The main composition is {COMPOSITION_DESCRIPTION},
 referencing {MOTIF_1, MOTIF_2, MOTIF_3} (all KEEP-flagged in the motif gate).
@@ -48,7 +48,7 @@ e.g., use stylized silhouettes, avoid trademarked marks}.
 
 Use case: the "this is the answer" version once a palette has been picked.
 
-```
+```text
 A vector graphic of {SUBJECT} in {COMPOSITION_DESCRIPTION}.
 
 Color palette: {PICKED_PALETTE_NAME}, hexes {PICKED_PALETTE_HEXES}.
@@ -67,7 +67,7 @@ of licensed properties}.
 
 Use case: gives the asset step a B-side for the same palette.
 
-```
+```text
 {Same SUBJECT and PALETTE as slot 2, but the pose / framing is shifted to
 ALT_COMPOSITION_DESCRIPTION}. Otherwise identical instructions.
 ```
@@ -76,7 +76,7 @@ ALT_COMPOSITION_DESCRIPTION}. Otherwise identical instructions.
 
 Use case: backgrounds, packaging, web hero strips.
 
-```
+```text
 A seamless tileable pattern derived from {KEEP-flagged PATTERN_MOTIF, e.g.,
 orange-and-white checkerboard from §2 of the motif template}.
 
@@ -136,7 +136,7 @@ revision before handing to the asset-artifact step.
 Generated prompt packs ship into the WR's `assets/prompts/` directory
 alongside the WR doc, so re-runs and audits can replay them exactly.
 
-```
+```text
 wr/issues/issue-NNNNN-...md          ← the WR doc
 wr/issues/issue-NNNNN-...assets/
   prompts/
