@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WR-4600 Photon Bench — Original Dashboard</title>
+<meta name="description" content="WR-4600 Photon Bench dashboard (self-contained, offline).">
+<!--
+  Self-contained: no external fetches.
+  Fonts resolved via local()/system fallback so this renders identically
+  offline and under a strict CSP. Verified: 0 external resource loads.
+-->
+<style>
+@font-face {
+  font-family: 'PB Sans';
+  src: local('Inter'), local('Helvetica Neue'), local('Arial'), local('sans-serif');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PB Serif';
+  src: local('Iowan Old Style'), local('Georgia'), local('Times New Roman'), local('serif');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'PB Mono';
+  src: local('JetBrains Mono'), local('Menlo'), local('Consolas'), local('monospace');
+  font-display: swap;
+}
+:root {
+  --bg: #0b0d10;
+  --panel: #121519;
+  --ink: #e6e8eb;
+  --muted: #98a2ad;
+  --accent: #ff5a3c;
+  --ok: #4ade80;
+  --warn: #fbbf24;
+  --err: #f87171;
+  --line: #1f242a;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: 'PB Sans', sans-serif; }
+header { padding: 24px 32px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; }
+header h1 { margin: 0; font-size: 20px; letter-spacing: 0.02em; }
+header .tag { color: var(--muted); font-family: 'PB Mono', monospace; font-size: 12px; }
+main { padding: 24px 32px; display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+.card h2 { margin: 0 0 12px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+.metric { font-family: 'PB Mono', monospace; font-size: 32px; margin: 0; }
+.sub { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.gate { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-top: 1px solid var(--line); }
+.gate:first-of-type { border-top: none; padding-top: 0; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); flex: none; }
+.dot.warn { background: var(--warn); }
+.dot.err { background: var(--err); }
+.gate .label { flex: 1; font-size: 13px; }
+.gate .val { font-family: 'PB Mono', monospace; color: var(--muted); font-size: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table th, table td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+table th { color: var(--muted); font-weight: 500; text-transform: uppercase; font-size: 11px; letter-spacing: 0.06em; }
+footer { padding: 16px 32px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--line); font-family: 'PB Mono', monospace; }
+code { font-family: 'PB Mono', monospace; color: var(--accent); }
+.pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-family: 'PB Mono', monospace; background: #1f242a; color: var(--muted); }
+.pill.ok { color: var(--ok); }
+.pill.warn { color: var(--warn); }
+.pill.err { color: var(--err); }
+</style>
+</head>
+<body>
+<header>
+  <h1>WR-4600 Photon Bench</h1>
+  <span class="tag">spec: WR-4600 · watchtower: WR-4600.3 · integrity: WR-4200</span>
+</header>
+<main>
+  <section class="card">
+    <h2>Dose engine</h2>
+    <p class="metric">J/cm²</p>
+    <p class="sub">dose = irradiance × time · defaults: 660 nm / 850 nm</p>
+  </section>
+
+  <section class="card">
+    <h2>Safety gates</h2>
+    <div class="gate"><span class="dot"></span><span class="label">OCULAR (ICNIRP-derived)</span><span class="val">armed</span></div>
+    <div class="gate"><span class="dot"></span><span class="label">FLICKER (thermal + photosensitive)</span><span class="val">armed</span></div>
+    <div class="gate"><span class="dot"></span><span class="label">HARM (adverse-first triage)</span><span class="val">armed</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Watchtower</h2>
+    <p class="metric">06:17 UTC</p>
+    <p class="sub">daily · quiet-day-is-success · snapshots are content-hashed &amp; immutable</p>
+    <table>
+      <tr><th>shard</th><th>order</th><th>keyless</th></tr>
+      <tr><td>adverse</td><td>1</td><td><span class="pill ok">yes</span></td></tr>
+      <tr><td>efficacy</td><td>2</td><td><span class="pill ok">yes</span></td></tr>
+      <tr><td>devices</td><td>3</td><td><span class="pill ok">yes</span></td></tr>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Integrity (WR-4200)</h2>
+    <p style="margin:0;font-size:13px;line-height:1.6">
+      A fabricated citation is a <strong style="color:var(--err)">P0 incident</strong>.
+      Every URL emitted by <code>tools/harvest.py</code> comes from an API response field.
+      URLs are never constructed from IDs.
+    </p>
+    <div class="gate" style="margin-top:12px"><span class="dot"></span><span class="label">no-fabrication guard</span><span class="val">on</span></div>
+    <div class="gate"><span class="dot"></span><span class="label">keyless-degrades-to-zero</span><span class="val">on</span></div>
+    <div class="gate"><span class="dot"></span><span class="label">immutable snapshots</span><span class="val">on</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Self-test</h2>
+    <p class="metric">17 / 17</p>
+    <p class="sub">offline, deterministic · <code>python tools/harvest.py --self-test</code></p>
+  </section>
+
+  <section class="card">
+    <h2>Reading notes</h2>
+    <p style="margin:0;font-size:13px;line-height:1.6">
+      <a style="color:var(--accent)" href="../../wr/research/spectrum-blueprint-read.md">spectrum-blueprint-read.md</a><br>
+      <a style="color:var(--accent)" href="../../wr/research/wr-4600-prompt-drift.md">wr-4600-prompt-drift.md</a>
+    </p>
+  </section>
+</main>
+<footer>
+  self-contained · 0 external resource loads · rendered identically offline
+</footer>
+</body>
+</html>

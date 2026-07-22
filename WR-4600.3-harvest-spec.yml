@@ -1,0 +1,48 @@
+# WR-4600.3 Harvest Spec
+# Source of truth for tools/harvest.py
+
+spec: WR-4600.3
+title: Watchtower Harvest Pipeline
+parent: WR-4600 Photon Bench
+inherits: WR-4200  # a fabricated citation is a P0 incident
+
+principles:
+  - id: no-fabrication
+    rule: Every URL in output MUST come from an API response. Never constructed, never templated.
+    severity: P0
+  - id: delta-not-breakthrough
+    rule: Report DELTA vs previous snapshot. Do not use hype vocabulary.
+  - id: quiet-day-is-success
+    rule: A day with zero new rows is a valid outcome. Snapshot anyway.
+  - id: immutable-snapshots
+    rule: Snapshots are content-hashed and never rewritten.
+  - id: keyless-degrades-to-zero
+    rule: A shard that would require a missing API key returns 0 rows plus a procurement note. Never pad, never fabricate.
+  - id: adverse-first
+    rule: The 'adverse' shard runs before all others so harm signals surface even on partial runs.
+
+shards:
+  - id: adverse
+    order: 1
+    sources:
+      - ncbi_eutils      # keyless
+      - clinicaltrials_v2 # keyless
+  - id: efficacy
+    order: 2
+    sources:
+      - ncbi_eutils
+      - crossref
+  - id: devices
+    order: 3
+    sources:
+      - crossref
+
+triage:
+  taxonomy: [HARM, FLICKER, OCULAR]
+  action: open exactly ONE triage issue per run if any row matches; otherwise none.
+
+self_test:
+  mode: offline-deterministic
+  checks: 17
+
+cron: "17 6 * * *"  # 06:17 UTC
