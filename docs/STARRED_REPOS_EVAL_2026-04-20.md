@@ -21,7 +21,7 @@ Both tools are tracked in [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md) as �
 
 ## 1. Infisical — Application secrets and configuration management
 
-**Repo:** https://github.com/Infisical/Infisical
+**Repo:** <https://github.com/Infisical/Infisical>
 **License:** MIT (core) + commercial (cloud / enterprise tiers)
 **Hosting:** Self-hosted (Docker/K8s) **or** Infisical Cloud
 **Pricing:** Free self-host · $0 Starter (cloud) · $6/user/mo Pro · custom Enterprise
@@ -94,7 +94,7 @@ between Vault and Infisical.
 
 ## 2. vscode-copilot-chat-bedrock — AWS Bedrock models in Copilot Chat
 
-**Repo:** https://github.com/gabrielkoo/vscode-copilot-chat-bedrock
+**Repo:** <https://github.com/gabrielkoo/vscode-copilot-chat-bedrock>
 **License:** Not yet verified — confirm before adoption
 **Hosting:** VS Code extension (client-side); calls AWS Bedrock directly with
 the developer's AWS credentials.
