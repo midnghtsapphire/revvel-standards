@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PrintBank — 144 vector wall-art prints + photo print sizer</title>
+<meta name="description" content="144 true-vector (SVG) printable wall-art designs — one download, any size, lossless. Plus a photo print sizer that grades your photos against 24 standard print sizes."/>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<header class="site">
+  <div class="wrap">
+    <h1><a href="#">PrintBank</a></h1>
+    <nav>
+      <a href="#gallery">Gallery</a>
+      <a href="#workbench">Your Photos</a>
+      <a href="#guide">Size Guide</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h2>144 wall-art prints. Every one is <em>true vector</em>.</h2>
+    <p>One SVG download prints losslessly at any size — 4×6″ postcard to A0 poster. Plus: drop in your own photo and see instantly which print sizes will look gallery-perfect.</p>
+  </div>
+</section>
+
+<section id="gallery" class="wrap section">
+  <div class="toolbar">
+    <input id="search" type="search" placeholder="Search titles or tags…" aria-label="Search prints"/>
+    <select id="genre" aria-label="Filter by genre"><option value="">All genres</option></select>
+    <span class="count" id="count"></span>
+  </div>
+  <div id="grid" class="grid" aria-live="polite"></div>
+</section>
+
+<section id="workbench" class="wrap section alt">
+  <h2>Your Photos — print sizer</h2>
+  <p>Everything runs in your browser. Nothing uploads.</p>
+  <div id="drop" class="drop">
+    <input id="file" type="file" accept="image/*"/>
+    <p>Drop a photo here, or click to choose.</p>
+  </div>
+  <div id="photoInfo" class="hidden">
+    <div class="photo-summary">
+      <canvas id="preview" width="400" height="400"></canvas>
+      <div>
+        <p><strong id="photoDims"></strong></p>
+        <p id="photoMeta"></p>
+        <button id="exportBtn" class="primary">Export print-ready PNG</button>
+        <select id="exportSize" aria-label="Export size"></select>
+      </div>
+    </div>
+    <table id="gradeTable" class="grade">
+      <thead><tr><th>Size</th><th>Effective DPI</th><th>Grade</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<section id="guide" class="wrap section">
+  <h2>Standard print sizes</h2>
+  <table id="sizeGuide" class="grade">
+    <thead><tr><th>Size</th><th>Inches</th><th>@300 DPI (px)</th><th>@150 DPI (px)</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-inner">
+    <button class="close" id="modalClose" aria-label="Close">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<footer class="site">
+  <div class="wrap">
+    <p>PrintBank · <a href="https://github.com/">GitHub</a> · Premium bulk export via Polar.sh (coming soon)</p>
+  </div>
+</footer>
+
+<script src="print-engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
