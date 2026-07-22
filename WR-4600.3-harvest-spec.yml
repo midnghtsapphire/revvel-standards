@@ -1,0 +1,68 @@
+# WR-4600.3 — Watchtower Harvest Spec
+# Source of truth for tools/harvest.py behaviour.
+# Companion to WR-4200 (fabricated-citation-is-P0) and WR-4600 (Photon Bench).
+
+spec_id: WR-4600.3
+version: 0.3.0
+title: Watchtower harvest pipeline for WR-4600 Photon Bench
+
+principles:
+  - id: WR-4200
+    rule: A fabricated citation is a P0 incident. Every URL emitted MUST originate
+          verbatim from an API response payload — never string-constructed.
+  - id: delta-not-breakthrough
+    rule: Report DELTA against the prior snapshot. Never use the word "breakthrough".
+          A quiet day (zero new rows) is a valid, successful outcome and still
+          produces a snapshot.
+  - id: immutable-snapshot
+    rule: Snapshots are content-hashed (sha256, 16-char prefix) and written to
+          wr/watchtower/snapshots/ with a UTC timestamp filename. Never rewritten.
+  - id: harm-first
+    rule: The `adverse` shard MUST run first. Ordering is load-bearing.
+  - id: degrade-never-pad
+    rule: A shard requiring a missing API key emits ZERO rows plus a procurement
+          note. It never fabricates, pads, mocks, or estimates.
+
+shards:
+  - name: adverse
+    order: 1
+    source: openFDA (drug/event.json)
+    key_required: false
+    notes: FAERS adverse-event metadata. Per-record URLs not provided by API;
+           row-emission strict mode → 0 rows, meta only.
+
+  - name: clinical
+    order: 2
+    source: ClinicalTrials.gov v2 (/studies)
+    key_required: false
+    notes: Emits row only if canonical study URL appears in raw response body.
+
+  - name: literature
+    order: 3
+    source: Crossref (/works)
+    key_required: false
+    notes: Uses item.URL from payload; verified via assert_url_from_api.
+
+  - name: regulatory
+    order: 4
+    source: NCBI E-utilities (esearch + esummary, db=pubmed)
+    key_required: false
+    notes: PubMed esummary does not embed per-record URLs; strict mode → 0 rows,
+           PMID count reported in note. (Elink lookup deferred to WR-4600.4.)
+
+triage:
+  summon_tags: [HARM, FLICKER, OCULAR]
+  policy: Summon exactly ONE triage issue per harvest run if any row carries a
+          summon tag. Quiet days summon nothing.
+
+self_test:
+  count: 17
+  mode: offline, deterministic, no network
+
+schedule:
+  cron: "17 6 * * *"   # 06:17 UTC daily
+  dispatch: true
+
+validation:
+  - python tools/harvest.py --self-test    # 17/17
+  - node tests/wr-4600-harvest.test.js     # grounding + no-fabrication

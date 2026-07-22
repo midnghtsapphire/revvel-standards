@@ -1,0 +1,86 @@
+name: watchtower
+
+on:
+  schedule:
+    - cron: '17 6 * * *'   # 06:17 UTC daily (WR-4600.3)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  harvest:
+    name: WR-4600.3 harvest
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Grounding gate — self-test (17 checks, offline)
+        run: python tools/harvest.py --self-test
+
+      - name: Harvest (live keyless APIs)
+        id: harvest
+        run: |
+          python tools/harvest.py | tee harvest.log
+          echo "log<<EOF" >> "$GITHUB_OUTPUT"
+          tail -n 50 harvest.log >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Commit snapshot (quiet days included)
+        run: |
+          git config user.name  "watchtower-bot"
+          git config user.email "watchtower-bot@users.noreply.github.com"
+          git add wr/watchtower/snapshots/ || true
+          if git diff --cached --quiet; then
+            echo "no snapshot changes"
+          else
+            git commit -m "chore(watchtower): snapshot $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi
+
+      - name: Detect triage trigger (HARM / FLICKER / OCULAR)
+        id: triage
+        run: |
+          latest=$(ls -1 wr/watchtower/snapshots/*.json 2>/dev/null | tail -n 1 || true)
+          if [ -z "$latest" ]; then
+            echo "summon=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          summon=$(python -c "import json,sys; d=json.load(open('$latest')); print(str(d.get('triage',{}).get('summon',False)).lower())")
+          echo "summon=$summon" >> "$GITHUB_OUTPUT"
+          echo "snapshot=$latest" >> "$GITHUB_OUTPUT"
+
+      - name: Summon ONE triage issue (harm-tagged rows only)
+        if: steps.triage.outputs.summon == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = '${{ steps.triage.outputs.snapshot }}';
+            const snap = JSON.parse(fs.readFileSync(path, 'utf8'));
+            const reasons = (snap.triage && snap.triage.reasons) || [];
+            const title = `[watchtower] triage: HARM/FLICKER/OCULAR row detected`;
+            const body = [
+              `Snapshot: \`${path}\``,
+              `Content hash: \`${snap.content_hash}\``,
+              ``,
+              `## Reasons`,
+              ...reasons.map(r => `- ${r}`),
+              ``,
+              `WR-4600.3 policy: exactly one triage issue per run when summon tags fire.`,
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['watchtower', 'triage', 'WR-4600'],
+            });
