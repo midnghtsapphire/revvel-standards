@@ -1,0 +1,70 @@
+name: watchtower
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Self-test (grounding gate)
+        run: python3 tools/harvest.py --self-test
+
+      - name: Harvest
+        run: python3 tools/harvest.py
+
+      - name: Commit snapshot (quiet days included)
+        run: |
+          git config user.name  "watchtower-bot"
+          git config user.email "watchtower-bot@users.noreply.github.com"
+          git add wr/snapshots/ || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(watchtower): daily snapshot $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "no snapshot delta (quiet day handled by hash-immutable filename)"
+          fi
+
+      - name: Summon triage issue on HARM/FLICKER/OCULAR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            const out = execSync('python3 tools/harvest.py --dry-run').toString();
+            let parsed;
+            try { parsed = JSON.parse(out); } catch (e) { return; }
+            const triage = parsed.triage || [];
+            if (triage.length === 0) {
+              core.info('quiet day — no triage issue');
+              return;
+            }
+            const body = [
+              '**Watchtower triage** — WR-4600.3',
+              '',
+              'Rows matched HARM / FLICKER / OCULAR:',
+              '```json',
+              JSON.stringify(triage, null, 2),
+              '```',
+              '',
+              '_A fabricated citation is a P0 incident (WR-4200). Every row above is API-sourced._'
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[watchtower] triage: ${triage.length} row(s) flagged`,
+              body,
+              labels: ['watchtower', 'wr-4600']
+            });

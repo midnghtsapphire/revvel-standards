@@ -1,0 +1,54 @@
+# WR-4600.3 — Watchtower Harvest Spec
+# Source: Drive. Do not edit without a spec bump.
+
+spec: WR-4600.3
+title: Photon Bench Watchtower Harvest
+owner: wr-4600
+cadence: daily 06:17 UTC
+
+principles:
+  - id: WR-4200
+    rule: A fabricated citation is a P0 incident. Every URL must come from an API response payload, never constructed.
+  - id: DELTA-NOT-BREAKTHROUGH
+    rule: Report changes, not hype. A quiet day is a success.
+  - id: QUIET-DAY-SNAPSHOT
+    rule: Snapshot on every run, including zero-delta days.
+  - id: IMMUTABLE-SNAPSHOTS
+    rule: Snapshots are content-hashed and immutable once written.
+  - id: DEGRADE-NOT-PAD
+    rule: A shard needing a missing key returns 0 rows with a procurement note; never synthesize rows.
+  - id: ADVERSE-FIRST
+    rule: The adverse-events shard runs first. Harm signals gate everything else.
+
+shards:
+  - name: adverse
+    order: 1
+    source: NCBI E-utilities (esearch/efetch, pubmed)
+    key_required: false
+    query: photobiomodulation AND (adverse OR harm OR retinal OR ocular)
+  - name: trials
+    order: 2
+    source: ClinicalTrials.gov v2 API
+    key_required: false
+    query: photobiomodulation OR low-level laser therapy
+  - name: literature
+    order: 3
+    source: Crossref REST
+    key_required: false
+    query: photobiomodulation dose response
+  - name: regulatory
+    order: 4
+    source: openFDA (device events)
+    key_required: false
+    query: light therapy device
+
+triage:
+  summon_issue_only_on:
+    - HARM
+    - FLICKER
+    - OCULAR
+
+self_test:
+  offline: true
+  deterministic: true
+  checks: 17
