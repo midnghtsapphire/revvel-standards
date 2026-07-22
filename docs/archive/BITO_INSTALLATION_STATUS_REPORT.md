@@ -23,7 +23,7 @@ The Bito AI GitHub extension (**installation ID: 128849516**) is **fully configu
 - ✅ Verification tools added
 
 **Action Required:**
-- ⚠️ Repository owner should verify GitHub App installation at: https://github.com/settings/installations/128849516
+- ⚠️ Repository owner should verify GitHub App installation at: <https://github.com/settings/installations/128849516>
 - ⚠️ Verify `BITO_API_KEY` secret is configured in repository settings
 
 ---
@@ -164,15 +164,15 @@ Updated repository documentation and configuration:
 The following items require manual verification by the repository owner:
 
 1. **GitHub App Installation**
-   - Visit: https://github.com/settings/installations/128849516
+   - Visit: <https://github.com/settings/installations/128849516>
    - Confirm: Bito AI app is installed
    - Verify: It has access to `midnghtsapphire/revvel-standards`
    - Check: Required permissions are granted
 
 2. **GitHub Actions Secret**
-   - Visit: https://github.com/midnghtsapphire/revvel-standards/settings/secrets/actions
+   - Visit: <https://github.com/midnghtsapphire/revvel-standards/settings/secrets/actions>
    - Confirm: `BITO_API_KEY` secret exists
-   - If missing: Get key from https://bito.ai → Settings → API Keys
+   - If missing: Get key from <https://bito.ai> → Settings → API Keys
    - Add secret with exact name `BITO_API_KEY`
 
 3. **Functional Test**
@@ -313,14 +313,14 @@ vault kv put revvel/shared/code-review/bito api_key="<new-key>"
 
 ## References
 
-- **Installation URL:** https://github.com/settings/installations/128849516
+- **Installation URL:** <https://github.com/settings/installations/128849516>
 - **Verification Guide:** [docs/BITO_INSTALLATION_VERIFICATION.md](../docs/BITO_INSTALLATION_VERIFICATION.md)
 - **Integration Documentation:** [docs/BITO_AI_INTEGRATION.md](../docs/BITO_AI_INTEGRATION.md)
 - **Integration Standard:** [standards/BITO_AI_INTEGRATION_STANDARD.md](../standards/BITO_AI_INTEGRATION_STANDARD.md)
 - **Skill Metadata:** [skills/bito-ai/SKILL.md](../skills/bito-ai/SKILL.md)
 - **Workflow:** [.github/workflows/bito-ai.yml](../.github/workflows/bito-ai.yml)
 - **Test Workflow:** [.github/workflows/test-bito-integration.yml](../.github/workflows/test-bito-integration.yml)
-- **Bito AI Website:** https://bito.ai
+- **Bito AI Website:** <https://bito.ai>
 
 ---
 

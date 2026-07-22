@@ -97,9 +97,9 @@ Score 1–5:
 - Monetization fit:
 - Strategic fit:
 
-### Total:
+### Total
 
-### Decision:
+### Decision
 
 - REFRESH AND RELAUNCH
 - NARROW AND REPOSITION
