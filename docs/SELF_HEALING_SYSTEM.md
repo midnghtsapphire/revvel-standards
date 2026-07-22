@@ -5,7 +5,7 @@
 
 ---
 
-## What is the Self-Healing System?
+## What is the Self-Healing System
 
 The self-healing system is an automated infrastructure that detects failures, stuck issues, and broken workflows — then automatically attempts to fix them without human intervention.
 

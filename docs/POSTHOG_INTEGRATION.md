@@ -305,7 +305,7 @@ If migrating from Mixpanel:
 - **Paid tier**: $0.000025/event after 1M (about $25 for 2M events), $0.005/replay after 5K.
 - **Self-hosted**: Free forever, but you manage infrastructure.
 
-See https://posthog.com/pricing for current pricing.
+See <https://posthog.com/pricing> for current pricing.
 
 ---
 
@@ -319,9 +319,9 @@ See https://posthog.com/pricing for current pricing.
 
 ## 12. References
 
-- PostHog Docs: https://posthog.com/docs
-- PostHog GitHub: https://github.com/PostHog/posthog
-- PostHog GitHub Actions: https://github.com/marketplace?query=posthog
+- PostHog Docs: <https://posthog.com/docs>
+- PostHog GitHub: <https://github.com/PostHog/posthog>
+- PostHog GitHub Actions: <https://github.com/marketplace?query=posthog>
 - Revvel PostHog Skill: `skills/posthog/SKILL.md`
 - Revvel PostHog Events Standard: `templates/standards/posthog-events.md`
 - Revvel PostHog Init Template: `templates/standards/posthog-init.ts`

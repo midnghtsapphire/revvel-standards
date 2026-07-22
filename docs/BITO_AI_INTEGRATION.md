@@ -33,7 +33,7 @@ Today, `revvel-standards` has automated PR review via `ai-pr-review-openrouter.y
 
 ---
 
-## 2. What is BITO AI?
+## 2. What is BITO AI
 
 BITO AI is an **agentic code review and developer productivity platform** purpose-built for engineering teams. It is distinct from generic LLM chat tools because it:
 
