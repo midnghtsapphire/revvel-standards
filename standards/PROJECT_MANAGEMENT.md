@@ -211,4 +211,3 @@ govt_reporting = {
 - [ ] Budget variance tracked weekly
 - [ ] Client approval for scope changes
 - [ ] Final deliverable documentation complete
-

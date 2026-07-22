@@ -16,7 +16,7 @@ This standard defines the **automated secret management and access control** str
 
 ## Executive Summary
 
-**Issue Context:** [WR] Evaluate https://github.com/strongdm or others then implement automated API key and secret management.
+**Issue Context:** [WR] Evaluate <https://github.com/strongdm> or others then implement automated API key and secret management.
 
 **Recommendation:** Use **Infisical** (MIT license) for FOSS projects, with HashiCorp Vault/OpenBao as enterprise alternative. StrongDM is enterprise-focused ($$$) and not suitable for FOSS-first Revvel standards.
 

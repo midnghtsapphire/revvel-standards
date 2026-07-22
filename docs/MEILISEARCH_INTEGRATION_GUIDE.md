@@ -10,7 +10,7 @@
 
 This guide walks you through integrating MeiliSearch for product/user-facing search in Revvel applications. MeiliSearch provides instant search results with typo tolerance, relevance tuning, and powerful filtering capabilities.
 
-## Why MeiliSearch?
+## Why MeiliSearch
 
 - **Instant search** — Results in <50ms
 - **Typo tolerance** — "soul bowls" finds "Soul Bowl"
@@ -38,7 +38,7 @@ curl -L https://install.meilisearch.com | sh
 
 #### Option B: MeiliCloud (Recommended for Production)
 
-1. Sign up at https://www.meilisearch.com/cloud
+1. Sign up at <https://www.meilisearch.com/cloud>
 2. Create a new project
 3. Copy your host URL and API key
 
@@ -405,7 +405,7 @@ export default async function handler(req, res) {
 
 ### MeiliCloud Setup
 
-1. **Create project** at https://cloud.meilisearch.com
+1. **Create project** at <https://cloud.meilisearch.com>
 2. **Choose region** closest to your users
 3. **Select plan:**
    - Free tier: 100K searches/month
