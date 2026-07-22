@@ -1,0 +1,84 @@
+name: WR-4600 Watchtower
+# Daily PBM literature/adverse-event harvest for the Photon Bench.
+# Reports DELTA, not "breakthrough". A quiet day is a success and still commits
+# a snapshot — proving you looked and found nothing is the point of a monitor.
+# An issue is summoned ONLY on a HARM/FLICKER/OCULAR row, never on a schedule.
+on:
+  schedule:
+    - cron: "17 6 * * *"   # 06:17 UTC — off-peak, dodges the :00 stampede
+  workflow_dispatch:
+    inputs:
+      shard:
+        description: Run a single shard (e.g. adverse); blank runs all due shards
+        type: string
+        default: ""
+      all:
+        description: Run every shard, ignoring cadence
+        type: boolean
+        default: false
+permissions:
+  contents: write
+  issues: write
+concurrency:
+  group: watchtower
+  cancel-in-progress: false
+jobs:
+  harvest:
+    name: Harvest and snapshot
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Self-test the harvester (grounding gate — no network)
+        run: python3 tools/harvest.py --self-test
+      - name: Run harvest
+        id: run
+        env:
+          NCBI_API_KEY: ${{ secrets.NCBI_API_KEY }}
+        run: |
+          if [ "${{ github.event.inputs.all }}" = "true" ]; then
+            SUMMARY=$(python3 tools/harvest.py --all | tail -1)
+          elif [ -n "${{ github.event.inputs.shard }}" ]; then
+            SUMMARY=$(python3 tools/harvest.py --shard "${{ github.event.inputs.shard }}" | tail -1)
+          else
+            SUMMARY=$(python3 tools/harvest.py | tail -1)
+          fi
+          echo "summary=$SUMMARY" >> "$GITHUB_OUTPUT"
+          echo "flagged=$(printf '%s' "$SUMMARY" | python3 -c 'import sys,json; print(json.load(sys.stdin)["flagged"])')" >> "$GITHUB_OUTPUT"
+          echo "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit snapshot (quiet days included)
+        run: |
+          git config user.name "wr4600-watchtower[bot]"
+          git config user.email "watchtower@users.noreply.github.com"
+          git add data/ || true
+          if git diff --cached --quiet; then
+            echo "No snapshot change to commit."
+          else
+            git commit -m "chore(watchtower): daily snapshot [skip ci]"
+            git push
+          fi
+      - name: Summon — open ONE triage issue only on a HARM/FLICKER/OCULAR row
+        if: steps.run.outputs.flagged != '0' && steps.run.outputs.flagged != ''
+        uses: actions/github-script@v9.0.0
+        with:
+          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const flagged = '${{ steps.run.outputs.flagged }}';
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Watchtower: ${flagged} flagged row(s)`,
+              labels: ['watchtower', 'triage'],
+              body: [
+                `The Watchtower flagged **${flagged}** row(s) touching a veto class`,
+                `(HARM / FLICKER / OCULAR). These are summonses, not verdicts — a`,
+                `regex noticed a word; a human decides.`,
+                ``,
+                `See \`data/latest.json\` → \`flagged\` for the rows and their live URLs.`,
+              ].join('\n'),
+            });
