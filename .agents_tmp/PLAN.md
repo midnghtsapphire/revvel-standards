@@ -32,7 +32,7 @@ Create a standalone bash script that:
 - Set remote origin
 - Initial commit and push
 
-### Required files in new product:
+### Required files in new product
 ```
 products/$PRODUCT_NAME/
 ├── package.json          (Next.js + TypeScript + Tailwind)

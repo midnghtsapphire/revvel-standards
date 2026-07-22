@@ -51,7 +51,7 @@ Systems builder, legal-tech operator, intelligence researcher. Building platform
 
 ## Contact Info
 
-**Email:** angelreporters@gmail.com  
+**Email:** <angelreporters@gmail.com>  
 **ORCID:** [0009-0005-0663-7832](https://orcid.org/0009-0005-0663-7832)  
 **Previous ORCID:** 0009-0004-9108-3995 (still has papers)  
 **GitHub Personal:** [@midnghtsapphire](https://github.com/midnghtsapphire)  
