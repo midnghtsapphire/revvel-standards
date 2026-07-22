@@ -32,7 +32,7 @@ When you open a WR issue:
 - [x] Allow GitHub Actions to create and approve pull requests
 
 ### 5. Augment Code GitHub App (manual install)
-👉 https://app.augmentcode.com/settings/code-review
+👉 <https://app.augmentcode.com/settings/code-review>
 - Click Install GitHub App
 - Select this repo
 - Done — Augment Code will auto-review every PR

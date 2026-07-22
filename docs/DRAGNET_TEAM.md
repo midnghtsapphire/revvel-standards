@@ -111,10 +111,10 @@ All DRAGNET systems operate in **SILENT MODE**:
 
 | Job | System | Schedule |
 |-----|-------|----------|
-| `dragnet:plato:daily` | PLATO | 0 5 * * * |
-| `dragnet:medusa:weekly` | MEDUSA | 0 6 * * 0 |
-| `dragnet:counter:weekly` | COUNTER | 0 7 * * 1 |
-| `dragnet:darwin:monthly` | DARWIN | 0 8 1 * * |
+| `dragnet:plato:daily` | PLATO | 0 5 ** * |
+| `dragnet:medusa:weekly` | MEDUSA | 0 6 ** 0 |
+| `dragnet:counter:weekly` | COUNTER | 0 7 ** 1 |
+| `dragnet:darwin:monthly` | DARWIN | 0 8 1 ** |
 | `dragnet:judge:continuous` | JUDGE | Real-time |
 
 ---

@@ -187,8 +187,8 @@ Aligns with:
 1. **Choose platform**: n8n recommended (free, self-hosted)
 2. **Run setup script**: `./workflows/setup-pdf-automation.sh n8n`
 3. **Provision API keys**:
-   - Claude AI: https://console.anthropic.com/
-   - Canva: https://www.canva.com/developers/
+   - Claude AI: <https://console.anthropic.com/>
+   - Canva: <https://www.canva.com/developers/>
    - Shopify: Your Shopify admin
 
 ### Week 1

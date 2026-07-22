@@ -414,12 +414,12 @@ promptfoo eval --config promptfoo.yml
 
 ## References
 
-- **E-E-A-T Guide**: https://developers.google.com/search/docs/appearance/e-e-a-t
-- **Google Knowledge Graph**: https://developers.google.com/knowledge-graph
-- **Wikidata**: https://www.wikidata.org/wiki/Wikidata:Introduction
-- **ORCID API**: https://info.orcid.org/documentation/api-tutorials/
-- **Schema.org**: https://schema.org/
-- **ResearchGate**: https://www.researchgate.net/
-- **Internet Archive**: https://archive.org/
-- **MISP**: https://www.misp-project.org/
-- **Bellingcat**: https://www.bellingcat.com/
+- **E-E-A-T Guide**: <https://developers.google.com/search/docs/appearance/e-e-a-t>
+- **Google Knowledge Graph**: <https://developers.google.com/knowledge-graph>
+- **Wikidata**: <https://www.wikidata.org/wiki/Wikidata:Introduction>
+- **ORCID API**: <https://info.orcid.org/documentation/api-tutorials/>
+- **Schema.org**: <https://schema.org/>
+- **ResearchGate**: <https://www.researchgate.net/>
+- **Internet Archive**: <https://archive.org/>
+- **MISP**: <https://www.misp-project.org/>
+- **Bellingcat**: <https://www.bellingcat.com/>

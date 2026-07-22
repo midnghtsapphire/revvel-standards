@@ -35,8 +35,8 @@ After a successful deployment:
 3. **Standards Update**: If a new pattern is established (e.g., live data polling, vault security), it is documented in `GROWLINGEYES_MASTER_SPEC.md`.
 
 ## Sandboxes & Environments
-*   **Local Sandbox**: The isolated Ubuntu environment where Manus writes code, runs builds, and tests logic.
-*   **DigitalOcean Droplet (Live)**: The production server (`164.90.148.7`) running Nginx and PM2. Manus connects via SSH using the `growlingeyes_deploy` key.
-*   **Vault Server**: The secure HashiCorp Vault instance (`159.65.36.200`) used for secret management.
+* **Local Sandbox**: The isolated Ubuntu environment where Manus writes code, runs builds, and tests logic.
+* **DigitalOcean Droplet (Live)**: The production server (`164.90.148.7`) running Nginx and PM2. Manus connects via SSH using the `growlingeyes_deploy` key.
+* **Vault Server**: The secure HashiCorp Vault instance (`159.65.36.200`) used for secret management.
 
 This pipeline ensures that every change is planned, tested, deployed securely, and documented for future reference.

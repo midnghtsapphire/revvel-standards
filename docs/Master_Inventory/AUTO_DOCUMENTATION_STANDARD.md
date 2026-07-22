@@ -24,20 +24,20 @@ Every repository within the organization must contain specific documentation art
 
 A `CHANGELOG.md` file is strictly mandatory in the root directory of every single repository. This file serves as the historical record of the project's evolution.
 
-1.  **Format:** The file must adhere to the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and utilize Semantic Versioning.
-2.  **Automation:** The `CHANGELOG.md` must be automatically updated by a GitHub Action upon every push to the `main` branch.
-3.  **Content Requirements:** The automated logging process must capture and record the following information for every change:
-    *   **Timestamp:** The exact date and time the change was committed and merged.
-    *   **Description:** A clear summary of what was changed (derived from the commit message or PR title).
-    *   **Author:** The identity of the user, developer, or AI agent (e.g., Venice AI, Claude) that authored and pushed the change.
+1. **Format:** The file must adhere to the [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format and utilize Semantic Versioning.
+2. **Automation:** The `CHANGELOG.md` must be automatically updated by a GitHub Action upon every push to the `main` branch.
+3. **Content Requirements:** The automated logging process must capture and record the following information for every change:
+    * **Timestamp:** The exact date and time the change was committed and merged.
+    * **Description:** A clear summary of what was changed (derived from the commit message or PR title).
+    * **Author:** The identity of the user, developer, or AI agent (e.g., Venice AI, Claude) that authored and pushed the change.
 
 ### 3.2. Automated API Documentation
 
 For backend services and APIs, documentation must be generated directly from the source code.
 
-1.  **Generation Tools:** Tools like Swagger (OpenAPI) or TypeDoc must be integrated into the build process.
-2.  **Hosting:** The generated documentation must be automatically hosted and accessible (e.g., via GitHub Pages or a dedicated `/docs` route on the deployed application).
-3.  **Synchronization:** The API documentation must update simultaneously with the deployment of new code to ensure it always reflects the live environment.
+1. **Generation Tools:** Tools like Swagger (OpenAPI) or TypeDoc must be integrated into the build process.
+2. **Hosting:** The generated documentation must be automatically hosted and accessible (e.g., via GitHub Pages or a dedicated `/docs` route on the deployed application).
+3. **Synchronization:** The API documentation must update simultaneously with the deployment of new code to ensure it always reflects the live environment.
 
 ## 4. Infrastructure and State Tracking
 
@@ -55,5 +55,5 @@ While some elements of sprint tracking require manual input, the `SPRINT_STATE.m
 
 Failure to adhere to these auto-documentation standards will result in blocked deployments.
 
-1.  **CI/CD Gates:** GitHub Actions pipelines are configured to fail if a `CHANGELOG.md` is missing or if the automated update script fails to execute.
-2.  **Code Review:** AI reviewers (Venice AI, Claude) are instructed to reject pull requests that do not include the necessary configuration for auto-documentation or that attempt to bypass the automated logging systems.
+1. **CI/CD Gates:** GitHub Actions pipelines are configured to fail if a `CHANGELOG.md` is missing or if the automated update script fails to execute.
+2. **Code Review:** AI reviewers (Venice AI, Claude) are instructed to reject pull requests that do not include the necessary configuration for auto-documentation or that attempt to bypass the automated logging systems.

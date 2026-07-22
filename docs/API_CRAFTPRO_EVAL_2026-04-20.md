@@ -20,7 +20,7 @@ Tracked in [`_MASTER_INVENTORY.md`](./_MASTER_INVENTORY.md) §1.11 and [`_MASTER
 
 ## 1. API CraftPro — Auto-generate backend APIs from a SQL schema
 
-**Marketplace listing:** https://github.com/marketplace/api-craftpro
+**Marketplace listing:** <https://github.com/marketplace/api-craftpro>
 **License:** Commercial SaaS (generated code ownership per vendor ToS — verify before any production use)
 **Hosting:** Cloud SaaS (vendor-hosted); output is committed to the user's GitHub repo
 **Pricing:** Free trial with a capped number of API generations; paid tiers beyond the trial (verify current tier pricing before adoption)
@@ -90,4 +90,4 @@ The triggering issue asked to "add API CraftPro to revvel-standards and evaluate
 
 ## Appendix — How this tool was identified
 
-The triggering issue named "API CraftPro" directly. The listing was located on GitHub Marketplace (https://github.com/marketplace/api-craftpro) and cross-referenced against the vendor's public description. If a different "CraftPro"-named tool was intended, re-open the source issue with the correct URL and this document will be updated.
+The triggering issue named "API CraftPro" directly. The listing was located on GitHub Marketplace (<https://github.com/marketplace/api-craftpro>) and cross-referenced against the vendor's public description. If a different "CraftPro"-named tool was intended, re-open the source issue with the correct URL and this document will be updated.
