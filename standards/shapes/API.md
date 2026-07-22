@@ -33,7 +33,7 @@
 
 ### Project Structure
 
-```
+```text
 build/api/
   src/
     index.ts            # Server entry (Fastify or Express)
@@ -146,7 +146,7 @@ npx @redocly/cli build-docs docs/openapi.yml -o docs/index.html
 
 ### API Key Management
 
-```
+```text
 User signs up → Stripe checkout → webhook → generate API key → email to user
 ```
 

@@ -113,7 +113,7 @@ Before implementing:
 
 ### Error Response Template
 
-```
+```text
 Error: [Specific operation that failed]
 
 Context:
@@ -618,7 +618,7 @@ Regular updates should include:
 
 ### Example Status Update
 
-```
+```text
 ## Status Update - 2026-04-29
 
 ### Completed

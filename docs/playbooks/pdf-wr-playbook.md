@@ -49,7 +49,7 @@ If any field is missing, **block the WR** and request clarification. Do not star
 
 ## 4. Production pipeline
 
-```
+```text
 WR issue  ─▶  Brief (this doc §3)
           ─▶  Outline (markdown in repo)
           ─▶  Draft (markdown + assets)
@@ -68,7 +68,7 @@ WR issue  ─▶  Brief (this doc §3)
 
 ### 4.2 Repo layout
 
-```
+```text
 docs/
   playbooks/
     pdf-wr-playbook.md        ← this file

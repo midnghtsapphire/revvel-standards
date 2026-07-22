@@ -118,6 +118,7 @@ OpenRouter diagnostics run on failure, and a missing `OPENROUTER_API_KEY`
 degrades to a warning (no extra red build from the AI helper itself). Do not
 treat this section as approval for new repos to adopt CircleCI instead of
 GitHub Actions
+
 ---
 
 ## Cost governance

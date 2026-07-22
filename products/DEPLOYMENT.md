@@ -71,7 +71,7 @@ Configure custom domains in Vercel Dashboard:
 - `promptforge.revvel.co` → prompt-generation-app
 
 ### DNS Configuration
-```
+```text
 CNAME affiliate-hub    cname.vercel-dns.com
 CNAME ai-video         cname.vercel-dns.com
 CNAME screen-recorder  cname.vercel-dns.com
@@ -158,7 +158,7 @@ Add GA4 tracking code to each product for:
 
 ### Affiliate Tracking
 Use UTM parameters for affiliate links:
-```
+```text
 CNAME promptforge.revvel.co → cname.vercel-dns.com
 ```
 

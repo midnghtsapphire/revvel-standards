@@ -6,7 +6,7 @@ See [MCP_STANDARD.md](../../../docs/Master_Inventory/MCP_STANDARD.md) Section 11
 
 ## Structure
 
-```
+```text
 mcp_server/
   __init__.py
   server.py          # FastMCP entry point — all tools, resources, prompts

@@ -83,7 +83,7 @@ Agent specs live in `oz-os/agents/`. No agent merges its own PR.
 
 The core policy:
 
-```
+```text
 No research    → no architecture
 No evidence    → no merge
 No tests       → no completion claim
@@ -150,7 +150,7 @@ verification requirements.
 
 The intelligence layer plugs into the MASTER.md pipeline at steps 5.5–5.8:
 
-```
+```text
 (5)   CLEAN OUTPUT
 (5.5) METHOD HUNTER       → method-pack.md        (optional per WR)
 (5.6) CONTRARIAN           → contrarian-pack.md    (optional per WR)

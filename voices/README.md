@@ -16,7 +16,7 @@ Similar to Donna AI - upload audio files and combine them to create unique voice
 
 ### Voice Combination Process
 
-```
+```text
 Input Audio Files
        │
        ▼
@@ -45,7 +45,7 @@ Final Voice Clone + Settings
 
 ## Directory Structure
 
-```
+```text
 voices/
 ├── clones/                  # Voice clone configurations
 │   ├── primary/             # Main voice clone

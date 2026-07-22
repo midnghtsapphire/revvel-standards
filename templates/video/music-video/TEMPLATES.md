@@ -24,7 +24,7 @@ Templates for creating music videos with HeyGen avatars and voice clones.
 
 ## Production Workflow
 
-```
+```text
 1. PRE-PRODUCTION
    ├── Song finalized and mastered
    ├── Lyrics approved
@@ -52,7 +52,7 @@ Templates for creating music videos with HeyGen avatars and voice clones.
 **Best for:** First release, maximum reach
 **Duration:** Full song length
 
-```
+```text
 [STRUCTURE]
 [00:00-00:10] Title card with song name + artist
 [00:10-INTRO] Visual intro with subtle lyrics
@@ -82,7 +82,7 @@ Templates for creating music videos with HeyGen avatars and voice clones.
 **Best for:** Deep storytelling, emotional impact
 **Duration:** 3-5 minutes
 
-```
+```text
 [SCENE BREAKDOWN]
 
 ACT 1 (0:00-1:00)
@@ -112,7 +112,7 @@ POST-CREDITS
 **Best for:** Artist branding, music platforms
 **Duration:** 3-5 minutes
 
-```
+```text
 [SETUP]
 - Professional lighting
 - Avatar in focal position

@@ -18,7 +18,7 @@
 
 | ID | Title | Status | Owner | Last Touched | Deadline |
 |-----|-------|--------|------|------------|----------|
-| P001 | field-work extraction & PDF products | active | @midnghtsapphire | 2026-04-20 |
+| P001 | field-work extraction & PDF products | active | @midnghtsapphire | 2026-04-20 | |
 | P004 | Tax Navigator Agent (Odoo + multi-entity) | active | @openhands | 2026-04-25 | 2026-05-01 |
 
 ### PRs
@@ -76,7 +76,7 @@
 | T017 | State schema product_slug contract fix | done | @cursor | 2026-05-20 |
 | T018 | Creator Payout Tracker shippable product engine | done | @cursor | 2026-05-21 |
 | T019 | Sessiono AI music platform - website + Vercel deploy | ⚠️ unverified | @openhands | 2026-06-09 |
-| | **ALL 70 REPOS — see audit note ⚠️** | | | | |
+| | **ALL 70 REPOS — see audit note ⚠️** | | | |
 
 > ⚠️ **Audit 2026-06-13:** T019 (Sessiono) is marked done, but no Sessiono
 > website, app code, or Vercel deploy config exists in this repo — the only

@@ -84,7 +84,7 @@ The `deploy.yml` template uses the GitHub Deployments API to create a `pending` 
 
 DeployBot only needs to be installed once at the **midnghtsapphire** organisation level. Every repo that uses `deploy.yml` automatically appears in the dashboard.
 
-```
+```text
 GitHub → github.com/apps/deploybot-app → Install → midnghtsapphire (All repositories)
 ```
 
@@ -117,7 +117,7 @@ The `panda-ops.yml` workflow runs on every `pull_request` (opened, synchronize, 
 
 Add the `OPENAI_API_KEY` secret to the repository:
 
-```
+```text
 GitHub → Settings → Secrets and variables → Actions → New repository secret
 Name: OPENAI_API_KEY
 Value: <your key from https://platform.openai.com/api-keys>
@@ -191,7 +191,7 @@ Then go to: `github.com/midnghtsapphire/YOUR_REPO/actions` to watch the first de
 
 ## How the Pipeline Works
 
-```
+```text
 Push to main
     ↓
 GitHub Actions runner (ubuntu-latest)

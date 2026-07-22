@@ -7,7 +7,7 @@
 
 ## Directory Structure
 
-```
+```text
 growlingeyes/
 ├── requirements.txt              # Python deps: PyGoogleNews, feedparser, rasterio, FastMCP …
 ├── requirements-dev.txt          # Test deps: pytest, pytest-asyncio, responses

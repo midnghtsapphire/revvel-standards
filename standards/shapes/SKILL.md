@@ -33,7 +33,7 @@
 
 ### Project Structure
 
-```
+```text
 build/skill/
   skill/
     SKILL.md              # The main skill document (agent-readable)
@@ -94,7 +94,7 @@ How to confirm the skill executed correctly:
 | Service | Purpose | Credential path |
 |---------|---------|-----------------|
 | ... | ... | Doppler `project/config/KEY` |
-```
+```text
 
 ### Quality Gates
 

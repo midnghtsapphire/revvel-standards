@@ -59,7 +59,7 @@ The following property keys **must never** be sent to PostHog. The drop-in `post
 
 ### Banned property keys
 
-```
+```text
 email                phone               ssn
 email_address        phone_number        tax_id
 full_name            first_name          last_name

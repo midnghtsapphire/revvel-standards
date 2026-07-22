@@ -67,7 +67,7 @@ After exhaustive research and direct evaluation across Claude 3.7 Sonnet, GPT-4o
 
 > This is the recommended architecture for wiring LLMs into Revvel Standards autonomously.
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    REVVEL LLM ROUTER                         │
 │                  (model-router skill)                        │
@@ -132,7 +132,7 @@ The **BOM Self-Healing Agent** is the autonomous process that periodically revie
 **Trigger:** Every deployment + monthly cron
 
 **Prompt strategy:**
-```
+```text
 System: You are the Revvel BOM Self-Healing Agent. Your job is to review 
 the project BOM at [path] and identify:
 1. Items that are no longer needed or have been replaced

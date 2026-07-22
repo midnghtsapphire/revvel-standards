@@ -27,7 +27,7 @@ This allows non-technical stakeholders (or developers who prefer clicking over t
 
 ## 3. How It Works
 
-```
+```text
 PR has labels:
   environment:staging
   project:api

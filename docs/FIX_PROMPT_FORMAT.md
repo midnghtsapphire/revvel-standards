@@ -24,7 +24,7 @@ explicitly tracking-only — never something in between.
 
 ## Template
 
-```
+```text
 Fix the following <Severity> (<Category>) issue in `<path>` at lines <start>-<end>:
 
 Problem: <one-paragraph diagnosis. State what the file currently does, why
@@ -40,7 +40,7 @@ not to treat it as <whatever the false-completion signal would be>.
 
 ## Canonical example
 
-```
+```text
 Fix the following Medium (Style) issue in
 `wr/issues/issue-14024-add-source-citations-for-seo-keyword-volume-and-cpc.md`
 at lines 161-175:

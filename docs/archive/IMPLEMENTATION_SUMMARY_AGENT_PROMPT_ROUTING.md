@@ -217,7 +217,7 @@ function processDataB(data) { /* ... */ }
 
 ## Architecture
 
-```
+```text
 GitHub Event (Push/PR/Issue)
     ↓
 agent-prompt-detector.yml (Future Workflow)
@@ -297,7 +297,7 @@ Mark prompt as completed
 
 ## Files Changed
 
-```
+```text
  docs/AGENT_PROMPT_CONVENTION.md          | 11684 bytes (new)
  docs/AGENT_PROMPT_EXECUTION_EVALUATION.md | 12774 bytes (new)
  docs/ROO_CLINE_SETUP.md                   | 13068 bytes (new)

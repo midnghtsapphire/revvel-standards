@@ -159,7 +159,7 @@ The `bito-ai.yml` workflow automatically runs on every PR. To trigger manually:
 
 ## 🏗️ Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │  Developer Workstation                          │
 │                                                  │

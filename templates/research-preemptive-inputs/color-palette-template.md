@@ -101,7 +101,7 @@ generators.
 
 ## 6. Citations
 
-```
+```text
 - UT brand guide — https://brand.utk.edu/
 - Tennessee Orange origin — https://en.wikipedia.org/wiki/University_of_Tennessee#Color
 - Great Smoky Mountains palette reference — https://www.nps.gov/grsm/

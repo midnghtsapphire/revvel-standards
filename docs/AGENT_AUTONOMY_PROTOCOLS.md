@@ -22,7 +22,7 @@ When facing a complex task:
 
 #### 1. Define the Goal State
 
-```
+```text
 GOAL: Branch creation succeeds for all issue titles
 CURRENT STATE: Branch creation fails for titles containing URLs
 DELTA: Need to sanitize issue titles to remove git-unsafe characters
@@ -38,7 +38,7 @@ DELTA: Need to sanitize issue titles to remove git-unsafe characters
 
 #### 3. Build Action Plan
 
-```
+```text
 1. Research → Learn what characters are invalid
 2. Update config → Add characters to gitReplaceChars
 3. Test → Verify sanitization works
@@ -134,7 +134,7 @@ Use swarm coordination when:
 
 Break the main task into independent subtasks:
 
-```
+```text
 MAIN TASK: Update all services to use new authentication library
 
 SUBTASKS:

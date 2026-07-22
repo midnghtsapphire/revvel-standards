@@ -64,7 +64,7 @@ npm run dev                  # http://localhost:3009
 
 ## Architecture
 
-```
+```text
 User → /create (wizard) → /api/scrape-product → lib/scraper.ts (undici + cheerio)
                         → /api/generate-ad     → lib/openrouter.ts (OpenRouter API)
                         → /api/generate-creative → lib/ad-templates.ts (@napi-rs/canvas)

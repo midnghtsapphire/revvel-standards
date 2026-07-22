@@ -15,7 +15,7 @@ Each template includes:
 **Tone:** Energetic & Direct
 **Duration:** ~45-60 seconds
 
-```
+```text
 [Visual/Setting] Professional, modern digital background. Avatar speaks confidently with natural pacing.
 
 "Looking to add something genuinely cutting-edge to your resume? I'm talking about green coding—writing software that directly reduces compute energy and saves massive infrastructure costs.
@@ -48,7 +48,7 @@ Whether you are optimizing local applications or managing an autonomous agent fl
 **Tone:** Strategic & Technical
 **Duration:** ~60 seconds
 
-```
+```text
 [Visual/Setting] Sleek, glassmorphic UI or clean tech studio environment.
 
 "Managing an autonomous agent fleet demands maximum efficiency—not just in logic, but in resource consumption. Every extra API call, redundant loop, or heavy model query drives up your cloud bill and carbon footprint.
@@ -68,7 +68,7 @@ Level up your engineering skills and your resume at the exact same time. Hit the
 **Tone:** Fast-Paced, Conversational
 **Duration:** ~30 seconds
 
-```
+```text
 [Visual/Setting] Dynamic, high-energy presentation.
 
 "Stop letting inefficient code bloat your infrastructure costs. Whether you are building web apps or scaling an autonomous agent fleet, eco-friendly architecture is the ultimate cheat code for saving money.
@@ -95,7 +95,7 @@ Learn the tips and tricks that top-tier companies are using to optimize their st
 - Post during business hours (Tue-Thu, 8-10am or 5-6pm)
 
 ### Hashtag Strategy
-```
+```text
 Industry: #SoftwareEngineering #DevOps #CloudComputing
 Trend: #GreenTech #SustainableTech #EcoCode
 Personal: #[YourName] #[YourBrand]

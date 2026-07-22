@@ -103,7 +103,7 @@ cordova requirements ios
 
 ### 4.2 Standard Project Structure
 
-```
+```text
 my-app/
 ├── config.xml            ← App configuration (name, ID, version, plugins)
 ├── www/                  ← Web source files (your HTML/CSS/JS)
@@ -123,7 +123,7 @@ my-app/
 
 Add to your project's `.gitignore`:
 
-```
+```text
 # Cordova generated artifacts
 platforms/
 plugins/

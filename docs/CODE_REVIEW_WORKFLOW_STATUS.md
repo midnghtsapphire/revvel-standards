@@ -86,7 +86,7 @@ workflow_dispatch:
 
 ## Review Pipeline Flow
 
-```
+```text
 ┌──────────────────────────────────────────────────────┐
 │  1. PR Opened/Synchronized                           │
 └──────────────────┬───────────────────────────────────┘
@@ -129,7 +129,7 @@ workflow_dispatch:
 
 When `pr-auto-review.yml` or `ai-pr-review-openrouter.yml` are manually triggered:
 
-```
+```text
 Primary:   anthropic/claude-sonnet-4
 Fallback:  anthropic/claude-sonnet-4.5
 ```

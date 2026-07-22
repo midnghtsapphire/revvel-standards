@@ -127,7 +127,7 @@ Every app has a single-row `app_config` table that stores the default SEO fields
 
 | Field ID | Screen | Label | DB Table | DB Column | Frontend Var | Notes |
 |---|---|---|---|---|---|---|
-| FM-SEO-001 | Admin Settings → SEO | Site Name | `app_config` | `site_name` | `siteName` | Used in `<title>` as suffix: "Page Title | [Site Name]" |
+| FM-SEO-001 | Admin Settings → SEO | Site Name | `app_config` | `site_name` | `siteName` | Used in `<title>` as suffix: "Page Title \| [Site Name]" |
 | FM-SEO-002 | Admin Settings → SEO | Default SEO Title | `app_config` | `seo_title` | `seoTitle` | Home page title |
 | FM-SEO-003 | Admin Settings → SEO | Default SEO Description | `app_config` | `seo_description` | `seoDescription` | Home page meta description. 150–160 chars. |
 | FM-SEO-004 | Admin Settings → SEO | Default OG Image | `app_config` | `og_image_url` | `ogImageUrl` | 1200×630px. Used when page has no specific image. |
