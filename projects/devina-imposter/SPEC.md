@@ -185,7 +185,7 @@ Target: $500-2000/month within 6 months from affiliate partnerships, consulting,
 
 Since GitHub repository creation cannot be automated via this workflow:
 
-1. Navigate to https://github.com/new
+1. Navigate to <https://github.com/new>
 2. Set repository name: `devina-imposter`
 3. Description: "Honest evaluation framework and comparison list for AI coding agents"
 4. Public visibility
