@@ -192,7 +192,7 @@
       tr.innerHTML = '<td>' + g.size + (g.rotated ? ' (rotated)' : '') + '</td>' +
         '<td>' + g.dpi + '</td>' +
         '<td><span class="grade-' + g.grade + '">' + g.grade + '</span></td>' +
-        '<td><button data-size="' + g.size + '"' + (g.dpi < 150 ? ' disabled title="Below 150 DPI"' : '') + '>Export</button></td>';
+        '<td><button data-size="' + g.size + '"' + (g.grade === 'low' ? ' disabled title="Below 150 DPI"' : '') + '>Export</button></td>';
       gradeBody.appendChild(tr);
     });
     gradeBody.querySelectorAll('button[data-size]').forEach(function (btn) {
