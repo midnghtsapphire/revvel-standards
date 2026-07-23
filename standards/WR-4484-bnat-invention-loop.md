@@ -1,58 +1,138 @@
 # WR-4484 — Autonomous BNAT Invention Loop (Human-Gated)
 
-- **Band:** 44xx (autonomy directive — HUMAN MERGE REQUIRED, no auto-merge, per 4470-band policy)
-- **Status:** DRAFT rev 0
-- **Depends:** WR-4200, WR-4380, WR-4470, WR-4480, WR-4481, WR-4482 (Evidence-First), WR-4483 (Ensemble AHP), MATH_FRAMEWORK_CATALOG, CORE RULES (SCAN/TEARDOWN/DISCOVER/QUICK)
+**Register:** WR (Working Register)
+**ID:** 4484
+**Band:** 44xx — Autonomy / Agentic Systems
+**Revision:** 0
+**Status:** DRAFT — HUMAN MERGE REQUIRED
+**Related:** WR-4483 (Ensemble AHP + RICE Decision Framework)
 
-## Purpose
-Agents autonomously discover gaps, invent, build, and PREPARE new products (BNAT-class) end-to-end — authoring drafts, IP artifacts, and launch packages — but NOTHING launches, publishes, files, or merges without human approval. The human gate is the product's final validation stage, not an afterthought.
+---
 
-## The Loop (each stage emits a ledger entry; each formula cites the catalog)
-```
-1. SCAN     -> demand signals per CORE RULES (SEO, VOC, competitive/BAT, frontier)
-2. GAP      -> JTBD framing; Ulwick Opportunity Score: Opp = Imp + max(Imp - Sat, 0)
-              threshold: pursue only Opp >= 12 (survey-derived) OR operator-data signal
-3. INVENT   -> TRIZ contradiction -> inventive principle; reasoning topology per selector
-              (CoT/ToT/GoT matched to branching factor — v2 prompt section 0)
-4. SCREEN   -> DOE 5-point (feasibility, practicability, utility, safety, proprietary):
-              any FAIL = kill, log, next candidate. BAT compare: build only if candidate
-              dominates BAT on >= 2 DOE axes. BNAT check: if lab/patent-phase tech
-              dominates the candidate, pivot or park.
-5. DECIDE   -> WR-4483 ensemble AHP if multi-criteria; RICE for queue position
-              (Confidence printed; Brier-scored on resolution, target BS < 0.20)
-6. BUILD    -> M1 skeleton only (one upward rev per change); FAILURE-LEDGER JSONL;
-              lane routing WR-4480/4481; append-only files
-7. IP-PREP  -> agents DRAFT: provisional-patent-style disclosure (problem, prior art
-              search log, claims sketch), copyright headers, license file, attribution.
-              LEGAL CONSTRAINT: agents are tools, not inventors/authors of record.
-              US law requires a natural-person inventor (Thaler v. Vidal, Fed. Cir. 2022)
-              and human authorship for copyright (USCO guidance 2023). Inventor/author
-              of record = Audrey Evans; agent contribution logged in ledger for
-              disclosure. Agents NEVER file anything.
-8. GATE     -> WR-4470 validation gate + human review PR. Launch checklist attached.
-              HUMAN MERGE = the approval. No merge, no launch, no listing, no filing.
-9. LEARN    -> Brier update on stage-5 confidences; EWMA trust update per agent lane;
-              killed-candidate postmortems appended to FAILURE-LEDGER.
-```
+## 1. Purpose
 
-## Measurement (loop KPIs — all from proven metrics, no invented ratios)
-- Throughput: candidates entering SCREEN per week (count)
-- Kill discipline: DOE-5 kill rate (healthy loop kills most candidates; a 0% kill rate is a red flag, not a success)
-- Calibration: Brier score of stage-5 confidences, target < 0.20
-- Cost per gated candidate: full lane spend / candidates reaching GATE
-- Human gate outcomes: approve / revise / kill counts (approval rate is NOT the target metric — calibration is)
-- Cycle time: SCAN->GATE, tracked as distribution not average (Little's Law applies: WIP = throughput x cycle time; cap loop WIP)
+Define the **Autonomous BNAT (Big-New-Adjacent-Transformative) Invention Loop**: a bounded, human-gated pipeline in which software agents scan for opportunity gaps, invent candidate solutions, screen them under strict kill discipline, decide via the WR-4483 ensemble, build M1 (proof-of-concept) skeletons, and draft IP artifacts.
 
-## Hard constraints
-- Human merge required at GATE — no exception, no auto-merge, no self-approval
-- No external publishing, listing, filing, outreach, or spend commitments by agents
-- IP drafts are internal artifacts until human-approved
-- Append-only; kills are logged, never deleted
-- Evidence hierarchy (WR-4482) governs every stage: operator data > named methods > comps > analogies > sentiment
+**No agent may launch, list, file, or publish. Every terminal action requires a human merge.**
 
-## Acceptance checklist
-- [ ] Loop runs end-to-end on one seeded candidate and produces a gated PR with launch checklist + IP draft
-- [ ] DOE-5 kill correctly fires on a seeded infeasible candidate (test fixture)
-- [ ] Ledger shows stage entries, agent lanes, costs, and Brier-scorable confidence records
-- [ ] No external side effects occur pre-merge (verified by audit)
-- [ ] Inventor/author-of-record fields populated with human name; agent contribution disclosed
+---
+
+## 2. Prime Directive Alignment
+
+This loop exists to accelerate the $10k → $10M/3yr trajectory by:
+- Compressing idea → M1 skeleton time from weeks to hours
+- Enforcing kill discipline so capital/attention concentrates on winners
+- Producing IP drafts (provisional patent skeletons, trademark search briefs, defensive publications) as a **capital moat** by Phase 3 ($100k/mo)
+
+Target contribution: **≥ 30% of new SKUs / product lines in Phase 2–3 originate from this loop.**
+
+---
+
+## 3. Hard Constraints (NON-NEGOTIABLE)
+
+| # | Constraint | Rationale |
+|---|------------|-----------|
+| H1 | **No agent may file a patent, trademark, or copyright application.** Humans are inventor/author of record. | *Thaler v. Vidal*, 43 F.4th 1207 (Fed. Cir. 2022); USCO *Copyright Registration Guidance: Works Containing Material Generated by AI* (March 16, 2023). |
+| H2 | **No agent may publish, list on a marketplace, or ship to customers.** | Legal + brand risk; requires WR-4483 decision + human merge. |
+| H3 | **Every stage output must cite the named method it applied.** | Auditability; prevents "vibe reasoning." |
+| H4 | **Kill rate must be tracked and reported.** 0% kill rate over a rolling 30-day window is a RED FLAG requiring loop review. | Kill discipline is the primary quality signal; a loop that kills nothing is hallucinating value. |
+| H5 | **Calibration (Brier score < 0.20 over rolling 50 decisions) is the North Star metric, not approval rate.** | Approval-rate optimization degenerates into rubber-stamping. |
+| H6 | **All prior-art / freedom-to-operate claims are ADVISORY.** Human counsel required before any external filing. | Agents cannot render legal opinions. |
+| H7 | **WIP cap enforced via Little's Law:** `WIP ≤ throughput × target_cycle_time`. Default: ≤ 7 concurrent inventions in flight per human reviewer. | Prevents reviewer overload → rubber-stamp failure mode. |
+
+---
+
+## 4. Loop Stages
+
+Each stage names the method it applies. Outputs are structured artifacts checked into `inventions/<slug>/`.
+
+### Stage 1 — SCAN (gap detection)
+**Method:** Ulwick **Opportunity Score** = `Importance + max(0, Importance − Satisfaction)` on jobs-to-be-done extracted from support tickets, review corpora, and OSINT feeds.
+**Output:** `01-scan.md` — ranked list of gaps with opportunity scores ≥ 12.
+**Kill:** gaps with score < 10 are dropped.
+
+### Stage 2 — INVENT (candidate generation)
+**Method:** **TRIZ** 40 inventive principles applied to top-N gaps. Agent must name the principle(s) used per candidate.
+**Output:** `02-invent.md` — ≥ 5 candidates per gap, each tagged with TRIZ principle IDs.
+
+### Stage 3 — SCREEN (DOE-5 kill discipline)
+**Method:** **Design-of-Experiments 5-factor kill screen**:
+1. Desirability (is there a signal a user will pay?)
+2. Feasibility (can we build M1 in ≤ 2 weeks?)
+3. Viability (unit economics > 3× COGS?)
+4. Defensibility (IP, data moat, distribution, or speed?)
+5. Legality (regulated? patent-encumbered? platform-ToS-safe?)
+
+Any factor rated **RED** → **KILL**. Agent must record kill reason.
+**Output:** `03-screen.md` — survivors + kill log.
+**KPI:** kill rate ≥ 60% expected at this stage.
+
+### Stage 4 — DECIDE (WR-4483)
+**Method:** WR-4483 **Ensemble AHP + RICE**. Agents produce scored matrix; decision recommendation is advisory.
+**Output:** `04-decide.md` — scored candidates, recommendation, and confidence interval.
+**Kill:** RICE < threshold OR AHP consistency ratio > 0.10 → back to Stage 2 or KILL.
+
+### Stage 5 — BUILD (M1 skeleton)
+**Method:** Minimum-Marketable-Skeleton. Agent scaffolds repo, README, landing page copy, and one runnable path.
+**Output:** `inventions/<slug>/m1/` — code + README. No deploy, no listing.
+
+### Stage 6 — DRAFT IP (advisory only)
+**Method:** Templates for (a) provisional patent skeleton, (b) trademark search brief, (c) defensive-publication draft.
+**Output:** `05-ip-draft.md` — clearly labeled `ADVISORY — HUMAN COUNSEL REQUIRED`. Inventor field left blank for human to fill (H1).
+
+### Stage 7 — GATE (HUMAN MERGE)
+**Method:** Pull request. A human reviewer:
+- Verifies each stage cited its named method
+- Verifies kill discipline was applied (spot-check killed candidates)
+- Signs the inventor/author field on any IP draft they choose to pursue
+- Records their **calibration prediction** (probability this invention ships and earns > $1k in 90 days)
+
+**Only after human merge** may downstream launch/listing workflows be triggered — and those workflows are themselves out of scope for this WR.
+
+---
+
+## 5. Metrics & KPIs
+
+| Metric | Target | Alert |
+|--------|--------|-------|
+| Rolling 30-day kill rate | 55–85% | < 40% or > 95% |
+| Brier score (calibration, 50-decision window) | < 0.20 | > 0.25 |
+| Cycle time SCAN → GATE | ≤ 5 business days | > 10 |
+| WIP (Little's Law cap) | ≤ 7 per reviewer | > 7 |
+| Named-method citation coverage | 100% of stage outputs | < 100% |
+| Human-merge override rate (human kills what agent approved) | 20–50% healthy | < 10% (rubber-stamp) or > 70% (agent miscalibrated) |
+
+---
+
+## 6. Failure Modes & Mitigations
+
+| Failure Mode | Signal | Mitigation |
+|--------------|--------|------------|
+| Rubber-stamp merges | Override rate < 10% | Rotate reviewers; inject known-bad candidates as calibration probes |
+| Hallucinated prior-art clearance | Filing rejected / opposed | H6: all FTO advisory; require human counsel |
+| Kill-rate collapse | 30-day kill rate < 40% | Freeze loop; audit last 20 approvals |
+| Reviewer overload | WIP > cap; cycle time > 10d | Enforce Little's Law cap; hire/rotate reviewer |
+| Agent invents in regulated space unknowingly | Legality factor missed at Stage 3 | Add regulated-domain classifier; escalate to human at Stage 3 |
+
+---
+
+## 7. Legal Notes (informational, not legal advice)
+
+- **Inventorship:** Under current U.S. law (*Thaler v. Vidal*, 2022), only natural persons may be named inventors on a U.S. patent. Agents in this loop **draft**; humans **invent** (H1).
+- **Copyright:** Per USCO 2023 guidance, works lacking human authorship are not registrable. Human contribution must be substantive.
+- **Trademark:** Search briefs are advisory. Filing decisions require counsel.
+- **Defensive publication:** Publishing a technical disclosure (e.g., via IP.com or a timestamped repo commit) can preempt competitor patents at low cost and is a legitimate agent-drafted, human-merged artifact.
+
+---
+
+## 8. Open Questions (rev-0)
+
+1. How do we source calibration ground-truth for the Brier score in Phase 1 when we have < 50 decisions? → Proposal: bootstrap with retrospective grading of last 90 days of manual decisions.
+2. Should the loop be allowed to auto-draft *defensive publications* for immediate timestamping (no filing)? → Leaning yes, still under H2 human merge.
+3. Reviewer bandwidth model when we go from 1 → 3 reviewers in Phase 2.
+
+---
+
+## 9. Changelog
+
+- **rev-0** — Initial draft. HUMAN MERGE REQUIRED before any downstream automation consumes this spec.
