@@ -26,7 +26,7 @@ Canonical enumerates the tool inventory (harvest, dose-engine, snapshot store, t
 ### 4. n8n / Gumloop Principle
 Canonical: **"Every automation edge must be reversible or have a manual stop."** Dropped from embed.
 
-**Impact:** Principle still honored in code (cron + dispatch, triage requires human ack). Missing from prompt means model won't restate it if asked.
+**Impact:** Not yet implemented. The repository contains no Watchtower workflow or triage acknowledgement path; the product README lists harvest wiring as roadmap work.
 
 ## Faithful Gates
 
