@@ -57,7 +57,7 @@ Requirements for ALL repositories in MIDNGHTSAPPHIRE organization.
 
 When creating a new repo, include:
 
-```
+```text
 .github/
 └── workflows/
     └── cron/

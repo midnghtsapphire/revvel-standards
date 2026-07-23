@@ -121,7 +121,104 @@ function tryResolveHunk(ours, theirs) {
     return { resolved: true, text: merged.join('\n') };
   }
 
+  // Different line counts: handle a version bump of a single shared action
+  // combined with additive-only extra lines (e.g. one side bumped `uses:` while
+  // the other added a `- run:` step). Only safe when each side has exactly one
+  // `uses:` line for the same action and every other line is additive.
+  const oUses = oLines.filter((l) => USES_LINE_RE.test(l));
+  const tUses = tLines.filter((l) => USES_LINE_RE.test(l));
+  if (oUses.length === 1 && tUses.length === 1) {
+    const bump = tryVersionBump(oUses[0], tUses[0]);
+    if (bump) {
+      const bumpedLine = bump.replace(/\n$/, '');
+      const oOther = oLines.filter((l) => !USES_LINE_RE.test(l));
+      const tOther = tLines.filter((l) => !USES_LINE_RE.test(l));
+      const additiveOnly = [...oOther, ...tOther].every(
+        (l) => l.trim() === '' || isAdditiveLine(l),
+      );
+      if (additiveOnly) {
+        const seen = new Set(oLines.map((l) => l.trim()));
+        const result = oLines.map((l) => (USES_LINE_RE.test(l) ? bumpedLine : l));
+        for (const l of tOther) {
+          if (l.trim() && !seen.has(l.trim())) result.push(l);
+        }
+        return { resolved: true, text: result.join('\n') };
+      }
+    }
+  }
+
   return { resolved: false };
+}
+
+const FULL_SHA_RE = /^[0-9a-f]{40}$/i;
+const VERSION_LIKE_RE = /^v?\d+(\.\d+)*$/;
+
+/**
+ * Pick the newer of two GitHub Actions `uses:` refs, or null when undecidable.
+ *  - Equal refs -> the (identical) ref.
+ *  - Exactly one full 40-char SHA -> that SHA (a pinned SHA supersedes a tag).
+ *  - Two full SHAs -> null (no ordering between opaque commit ids).
+ *  - Two version-like refs -> the higher semver.
+ *  - Anything else (branch names, partial hashes) -> null.
+ */
+function pickNewerRef(a, b) {
+  if (a === b) return a;
+  const aSha = FULL_SHA_RE.test(String(a));
+  const bSha = FULL_SHA_RE.test(String(b));
+  if (aSha && bSha) return null;
+  if (aSha) return a;
+  if (bSha) return b;
+  if (VERSION_LIKE_RE.test(String(a)) && VERSION_LIKE_RE.test(String(b))) {
+    return semverCmp(a, b) >= 0 ? a : b;
+  }
+  return null;
+}
+
+// A single `uses: owner/repo@ref` line. Group 1: prefix (indent + optional
+// list dash + `uses:`), group 2: owner/repo, group 3: ref.
+const USES_LINE_RE = /^(\s*-?\s*uses:\s*)([^\s@]+)@(\S+?)\s*$/;
+
+/**
+ * Resolve a single-line GitHub Actions version-bump conflict. Returns the
+ * winning line (newline-terminated) or null when the block is not a clean
+ * single-line `uses:` bump of the same action, or the refs are undecidable.
+ */
+function tryVersionBump(current, incoming) {
+  if (typeof current !== 'string' || typeof incoming !== 'string') return null;
+  if (current.includes('\n') || incoming.includes('\n')) return null;
+  const c = current.match(USES_LINE_RE);
+  const i = incoming.match(USES_LINE_RE);
+  if (!c || !i) return null;
+  if (c[2] !== i[2]) return null; // different action
+  const newer = pickNewerRef(c[3], i[3]);
+  if (newer === null) return null;
+  const winner = newer === c[3] ? c : i;
+  return `${winner[1]}${winner[2]}@${newer}\n`;
+}
+
+// A markdown list item or table row — the additive line shapes we can safely
+// concatenate.
+function isAdditiveLine(line) {
+  const t = line.trim();
+  if (t === '') return false;
+  return /^([-*+]|\d+\.)\s+/.test(t) || /^\|.*\|$/.test(t);
+}
+
+/**
+ * Resolve an additive conflict: two blocks that each add distinct markdown
+ * list items / table rows can be concatenated (current first). Returns null
+ * when either side is empty, contains non-additive content, or the two sides
+ * share a line (overlap is ambiguous, not additive).
+ */
+function tryAdditive(current, incoming) {
+  if (typeof current !== 'string' || typeof incoming !== 'string') return null;
+  const cLines = current.split('\n').filter((l) => l.trim() !== '');
+  const iLines = incoming.split('\n').filter((l) => l.trim() !== '');
+  if (cLines.length === 0 || iLines.length === 0) return null;
+  if (!cLines.every(isAdditiveLine) || !iLines.every(isAdditiveLine)) return null;
+  const cSet = new Set(cLines.map((l) => l.trim()));
+  if (iLines.some((l) => cSet.has(l.trim()))) return null; // overlap -> ambiguous
+  return [...cLines, ...iLines].join('\n');
 }
 
 function semverCmp(a, b) {
@@ -228,4 +325,12 @@ if (require.main === module) {
   }
 }
 
-module.exports = { iterHunks, tryResolveHunk, resolveFile, semverCmp };
+module.exports = {
+  iterHunks,
+  tryResolveHunk,
+  resolveFile,
+  semverCmp,
+  pickNewerRef,
+  tryVersionBump,
+  tryAdditive,
+};

@@ -67,7 +67,7 @@ Those patterns become your **persona guardrails** in the system prompt. They are
 
 You take your manual roleplay pairs (the input scenario + your handwritten response) and place them directly in the system prompt as examples. The format looks like this:
 
-```
+```text
 <example>
 User: I have a past-due bill and a work deadline today. I don't know what to handle first.
 
@@ -88,7 +88,7 @@ The agent now has a concrete demonstration of exactly what "good" looks like. It
 
 A system prompt built using the Wizard of Oz method has four distinct sections:
 
-```
+```text
 [1. IDENTITY]
 You are Scarecrow, a calm and structured decision-support agent for GrowlingEyes users.
 Your job is to help users prioritize competing obligations without increasing their anxiety.

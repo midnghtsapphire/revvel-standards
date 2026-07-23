@@ -6,7 +6,7 @@
 
 ## Decision Tree: Which Authentication Framework
 
-```
+```text
 Do you use Google Workspace or Cloud Identity?
 ├─ YES → Use Cloud Identity (Case 1)
 │         ✓ All identities managed in Google
@@ -90,7 +90,7 @@ gcloud iam workforce-pools providers create-saml PROVIDER_ID \
 ### Configuration Steps
 
 1. **Get SCIM Endpoint URL:**
-   ```
+   ```text
    https://iam.googleapis.com/v1/locations/global/workforcePools/POOL_ID/providers/PROVIDER_ID/scim
    ```
 

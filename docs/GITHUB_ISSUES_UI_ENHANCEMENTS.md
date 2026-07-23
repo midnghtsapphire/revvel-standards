@@ -1064,7 +1064,7 @@ The branch name sanitization logic is intentionally duplicated across three file
 3. `.github/workflows/issue-auto-triage.yml` (line 73-77) - GitHub Actions context
 
 **Standard Pattern:**
-```
+```text
 issue-{number}-{title-lowercase-alphanumeric-only-40-chars-no-trailing-hyphens}
 ```
 

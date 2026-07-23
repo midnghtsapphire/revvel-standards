@@ -18,7 +18,7 @@ This standard defines how NoimosAI is provisioned, triggered, and governed acros
 
 ## 2. Architecture
 
-```
+```text
 GitHub Issue / Schedule / Dispatch
           │
           ▼
@@ -55,7 +55,7 @@ NoimosAI Autonomous Agent Fleet
 
 ### 3.3 Vault Path
 
-```
+```text
 revvel/shared/marketing/noimosai
 ```
 
@@ -113,13 +113,13 @@ Add them to `.github/labels.yml` so `sync-labels.yml` propagates them automatica
 
 ### Base URL
 
-```
+```text
 https://api.noimosai.com/v1
 ```
 
 ### Authentication
 
-```
+```text
 Authorization: Bearer {NOIMOSAI_API_KEY}
 ```
 

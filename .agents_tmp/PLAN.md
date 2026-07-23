@@ -5,10 +5,10 @@ Create a single shell script `scripts/create-product.sh` that:
 - Initializes a new GitHub repository
 - Pushes everything to GitHub
 
-# 2. CONTEXT SUMMARY
+## 2. CONTEXT SUMMARY
 The `revvel-standards` repo contains multiple Next.js products under `products/`. Each product follows the same structure (package.json, app/, configs, tests/). A script is needed to bootstrap new products quickly.
 
-# 3. APPROACH OVERVIEW
+## 3. APPROACH OVERVIEW
 Create a standalone bash script that:
 1. Accepts product name as argument
 2. Creates folder structure from template
@@ -16,7 +16,7 @@ Create a standalone bash script that:
 4. Uses GitHub API via `gh` CLI to create repo under `midnghtsapphire`
 5. Pushes to GitHub
 
-# 4. IMPLEMENTATION STEPS
+## 4. IMPLEMENTATION STEPS
 
 ### Step 1: Create `scripts/create-product.sh`
 - Create the script at `/workspace/project/revvel-standards/scripts/create-product.sh`
@@ -33,7 +33,7 @@ Create a standalone bash script that:
 - Initial commit and push
 
 ### Required files in new product
-```
+```text
 products/$PRODUCT_NAME/
 ├── package.json          (Next.js + TypeScript + Tailwind)
 ├── package-lock.json
@@ -53,7 +53,7 @@ products/$PRODUCT_NAME/
 └── DEPLOYMENT_GUIDE.md
 ```
 
-# 5. TESTING AND VALIDATION
+## 5. TESTING AND VALIDATION
 - Run script with test product name: `./scripts/create-product.sh test-product-123`
 - Verify folder created in `products/`
 - Verify files exist with correct content

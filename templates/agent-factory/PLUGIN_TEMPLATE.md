@@ -13,15 +13,15 @@ requirements:
 # Purpose
 - What this plugin bundles and when to use it.
 
-# Installation
+## Installation
 - Files to copy/symlink (agents, commands, settings, hooks).
 - Any environment expectations (env vars, secrets storage, CI requirements).
 
-# Triggers Enabled
+## Triggers Enabled
 - Keywords or file patterns this plugin registers.
 
-# Guardrails
+## Guardrails
 - Security/compliance controls baked into the bundle.
 
-# Outputs
+## Outputs
 - Artifacts produced (logs, reports, recaps) and where they live.

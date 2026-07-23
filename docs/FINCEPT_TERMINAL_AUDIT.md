@@ -43,7 +43,7 @@ Sources used:
 An **open-source, native-desktop Bloomberg-terminal alternative** — CFA-level analytics, 100+ data connectors, 37 AI agents across investor/economic/geopolitics frameworks, 16 broker integrations, and real-time crypto/equity trading — shipped as a single Qt6/C++20 binary per platform.
 
 ### Repo top-level layout
-```
+```text
 .
 ├── .github/            # workflows, issue/PR templates, CONTRIBUTING, FUNDING.yml
 ├── docs/               # ARCHITECTURE, CONTRIBUTING, CPP/PYTHON guides, GETTING_STARTED, translations, COMMERCIAL_LICENSE, CODE_OF_CONDUCT

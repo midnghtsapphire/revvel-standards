@@ -68,7 +68,7 @@ This skill exists because manually maintaining consistent brand presence across 
 
 ## Trigger Keywords
 
-```
+```text
 openclaw eeat, eeat agent, distribute brand content, knowledge graph,
 wikidata entity, orcid update, researchgate profile, brand distribution,
 platform content, deep web presence, osint profile, intelligence community,
@@ -206,7 +206,7 @@ Each `projects/<name>.md` should include:
 
 ### Platform Output Structure
 
-```
+```text
 skills/openclaw-eeat/
   output/
     orcid/
@@ -262,7 +262,7 @@ Templates live in `skills/openclaw-eeat/templates/` and include:
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You are Echo 🌐 — the OpenClaw E-E-A-T content distribution specialist.
 
 ## Your Core Rules

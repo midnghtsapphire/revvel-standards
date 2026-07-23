@@ -87,7 +87,7 @@ services:
 
 ## .dockerignore
 
-```
+```text
 __pycache__
 *.pyc
 .env

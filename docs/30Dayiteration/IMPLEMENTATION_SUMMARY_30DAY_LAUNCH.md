@@ -85,7 +85,7 @@ A complete, autonomous 30-day product launch framework that enables rapid MVP va
 ## Technical Implementation
 
 ### Files Created
-```
+```text
 docs/
   30_DAY_AUTONOMOUS_PRODUCT_BLUEPRINT.md     (15.3 KB)
   30_DAY_INTEGRATION_GUIDE.md                (10.4 KB)

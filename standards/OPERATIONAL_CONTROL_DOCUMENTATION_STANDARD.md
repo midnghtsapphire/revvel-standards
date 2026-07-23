@@ -41,14 +41,14 @@ Always document the intended action, not what to avoid.
 Critical operational information must be at the top level, not buried in FAQs or sub-documents.
 
 **Avoid:**
-```
+```text
 spec.md → "See FAQ for details"
 FAQ.md → "See workflow files for examples"
 workflow.yml → "See spec for documentation"
 ```
 
 **Prefer:**
-```
+```text
 spec.md → Complete specification with examples inline
 workflow.yml → Reference to spec.md only
 ```

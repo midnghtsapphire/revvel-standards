@@ -283,7 +283,7 @@ The tool was tested in a sandboxed CI environment with network restrictions. RSS
 
 ### Test Results
 
-```
+```text
 Testing Weak Signal Finder components...
 
 ✓ Text processing works

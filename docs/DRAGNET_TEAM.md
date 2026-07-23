@@ -22,7 +22,7 @@ DRAGNET is the evolution of THE COUNCIL - five autonomous decision systems worki
 
 ## Execution Flow
 
-```
+```text
                     PLATO (P)
                    Deep Analysis
               ┌──────────────────┐

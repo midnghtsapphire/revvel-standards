@@ -3,7 +3,7 @@
 > **Last Updated**: Feb 25, 2026 4:35 PM MST
 > **Sprint**: Sprint 1 — Foundation & Core Apps
 > **Status**: Snapshot (see note below)
-
+>
 > [!NOTE]
 > **This document is a point-in-time snapshot from Feb 25, 2026.**
 > It is not automatically maintained. For live project status, see:
@@ -73,7 +73,7 @@
 
 ## Corporate Entity Hierarchy
 
-```
+```text
 Freedom Angel Corp (2010, CO, EIN: 86-1209156, Non-Profit, Good Standing)
 ├── Freedom Angel Fighters (Advocacy & Anti-Trafficking)
 ├── Angel Reporter(s) (Investigative Journalism, Copyright 2010 & 2018)

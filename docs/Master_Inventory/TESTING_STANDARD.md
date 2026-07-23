@@ -157,7 +157,7 @@ Run coverage locally: `npx vitest run --coverage`
 
 All tests must follow this naming standard so CI output is human-readable:
 
-```
+```text
 describe('ModuleName or ComponentName', () => {
   describe('methodName or scenario', () => {
     it('should [expected behavior] when [condition]', () => { ... });
@@ -313,7 +313,7 @@ npx vitest
 
 Every Revvel repo must have this test directory structure:
 
-```
+```text
 tests/
 ├── unit/              # Pure function and utility tests
 ├── integration/       # API route and DB interaction tests

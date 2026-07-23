@@ -48,7 +48,7 @@ User reported multiple concerns:
 ### Issue 3: Agent Routing
 
 **Finding:** `agent-fallback.yml` had routing order:
-```
+```text
 OpenHands (paid, ~$50/task) → Cursor → OpenRouter (affordable)
 ```
 
@@ -136,12 +136,12 @@ jobs:
 **Changes:**
 
 **Old routing:**
-```
+```text
 OpenHands (paid) → Cursor → OpenRouter
 ```
 
 **New routing:**
-```
+```text
 OpenRouter (affordable) → Cursor → OpenHands (opt-in only)
 ```
 

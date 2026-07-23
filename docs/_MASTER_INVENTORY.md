@@ -314,7 +314,7 @@
 |---|---|---|---|---|---|---|
 | @axe-core/playwright | Automated WCAG accessibility testing in CI pipeline | Deque (FOSS) | $0 | N/A (FOSS) | 🟡 Research Topic | Required for WCAG 2.1 AA compliance testing |
 | VoiceOver / TalkBack testing | Screen reader compatibility testing for senior users | Apple / Google | $0 (built-in) | N/A | 🟡 Research Topic | Manual testing required before App Store submission |
-| UserTesting.com | Remote user research with real senior testers | UserTesting | No free tier | $49+/test | First test session | 🟡 Research Topic | Evaluate for senior-specific UX validation |
+| UserTesting.com | Remote user research with real senior testers | UserTesting | No free tier | $49+/test (first test session) | 🟡 Research Topic | Evaluate for senior-specific UX validation |
 | Dynamic Type / Font scaling | iOS dynamic type and Android font scaling support | Apple / Google | $0 (platform feature) | N/A | 🟡 Research Topic | Must implement before launch |
 
 ---

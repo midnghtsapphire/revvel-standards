@@ -64,7 +64,7 @@ Per IRS regulations, multi-member LLCs are taxed as partnerships by default:
 
 ## Architecture Pattern
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │              RECOMMENDED ENTITY STRUCTURE                   │
 ├─────────────────────────────────────────────────────────────┤

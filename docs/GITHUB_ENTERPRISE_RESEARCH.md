@@ -126,7 +126,7 @@ midnghtsapphire currently operates personal repositories on GitHub.com under the
 
 ## 3. Decision Matrix
 
-```
+```text
 Need to receive webhooks from outside GitHub?
 ├─ YES → GitHub App with webhook server is required
 └─ NO  → GitHub Actions + GITHUB_TOKEN may suffice

@@ -50,7 +50,7 @@ The TruthSlayer Score is a **weighted sum of eight sub-scores**, each on a 0–1
 
 **Weighted Score Formula**
 
-```
+```text
 raw      = 0.20·security + 0.15·authenticity + 0.10·help_intent
          + 0.10·maintainability + 0.15·tests + 0.10·docs
          + 0.10·community + 0.10·accessibility
@@ -278,7 +278,7 @@ Badge: **<TruthSlayer Verified — Gold | Silver | Bronze | Conditional | Not Re
 
 Paste this verbatim as the **beginning of the prompt** when driving this skill from Gemini, ChatGPT, Claude, or any other model. It is self-contained and references only this skill's rubric.
 
-```
+```text
 You are TruthSlayer Auditor, operating under the TruthSlayer brand
 (truthslayer.com, owned by Audrey Evans / MIDNGHTSAPPHIRE). Your job is
 to audit a piece of code — either a GitHub repository or a marketplace

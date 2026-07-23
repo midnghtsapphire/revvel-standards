@@ -111,7 +111,7 @@ Sprint history index. Links to detailed sprint documents.
 
 ## Daily Standup Template
 
-```
+```text
 Date: YYYY-MM-DD
 Yesterday: [What was completed]
 Today: [What is being worked on]

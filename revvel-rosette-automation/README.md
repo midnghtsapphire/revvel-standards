@@ -28,7 +28,7 @@ This harness follows the **S.H.I.F.T. framework** (Self-Healing Intent-Focused T
 
 ### 2.1. Components
 
-```
+```text
 revvel-rosette-automation/
 ├── config/               # Configuration files (YAML, JSON)
 │   ├── 300Projects.yaml       # Master project registry

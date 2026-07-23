@@ -29,7 +29,7 @@ Every research task follows the MVI framework:
 - Time constraints
 
 ### 4. Acceptance Gates
-```
+```text
 [ ] Research completed
 [ ] Sources cited
 [ ] No hallucinations
@@ -77,7 +77,7 @@ Every research output is scored on 5 dimensions:
 
 ### 1. Research Quality Score (0-100)
 
-```
+```text
 Research Quality = 
   (Source Reliability × 0.30) +
   (Methodology Adherence × 0.25) +
@@ -132,7 +132,7 @@ Before delivering any research output:
 
 Track research state across sessions:
 
-```
+```text
 ## Current Research State
 Last session: [date]
 Active projects: [list]
@@ -175,7 +175,7 @@ Each research session feeds into:
 
 ## Quick Reference Card
 
-```
+```text
 SCORE QUALITY: node scripts/score.js [output-file]
 CHECK SOURCES: node scripts/verify-sources.js [output-file]
 TRACK METRICS: node scripts/metrics.js

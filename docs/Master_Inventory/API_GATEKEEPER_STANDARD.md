@@ -28,7 +28,7 @@ The Gatekeeper is not a single product — it is a layered architecture that can
 
 ## 3. Gatekeeper Architecture
 
-```
+```text
 Client Request
       │
       ▼
@@ -625,7 +625,7 @@ http:
 
 ### 10.3. Caddy (Recommended for Simple/Edge Deployments)
 
-```
+```text
 # Caddyfile
 api.revvel.io {
     rate_limit {
@@ -810,7 +810,7 @@ jobs:
 
 ## 13. Gatekeeper Directory Structure
 
-```
+```text
 src/
 ├── gatekeeper.ts           # Main gateway entry point
 ├── auth/

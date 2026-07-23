@@ -21,7 +21,7 @@ Your research fleet generates real-time metrics. This dashboard tracks:
 ### 1. Research Quality Score (RQS)
 **Target: 85+**
 
-```
+```text
 RQS = 
   Source Quality (30%) +
   Methodology Adherence (25%) +
@@ -66,7 +66,7 @@ Average time from query to actionable insight.
 
 ## Dashboard Template
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  R&D RESEARCH FLEET - LIVE METRICS                     │
 ├─────────────────────────────────────────────────────────┤
@@ -108,7 +108,7 @@ Average time from query to actionable insight.
 
 Get notified when metrics drop:
 
-```
+```text
 ⚠️ Quality Alert: RQS dropped below 80
 ⚠️ Trust Alert: ATS dropped below 70
 ⚠️ Self-Heal Spike: SHR > 10%
@@ -119,7 +119,7 @@ Get notified when metrics drop:
 
 ## Weekly Report Template
 
-```
+```text
 RESEARCH FLEET WEEKLY REPORT
 Week of: [DATE]
 

@@ -288,7 +288,7 @@ The Urban Oz theme reimagines the Wizard of Oz as a cyberpunk cityscape. The Eme
 
 ### 4.3 Emerald City Dashboard Layout
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │  ░░░ EMERALD CITY SKYLINE (parallax background) ░░░    │
 │  ░░░ Neon buildings, glowing windows, aurora sky ░░░    │
@@ -332,7 +332,7 @@ The Urban Oz theme reimagines the Wizard of Oz as a cyberpunk cityscape. The Eme
 
 ### 4.5 Yellow Brick Road Progress System
 
-```
+```text
 START ─── ○ ─── ○ ─── ★ ─── ○ ─── ○ ─── ★ ─── ○ ─── ● EMERALD CITY
           │     │     │     │     │     │     │     │
         Task  Task  MILE  Task  Task  MILE  Task  CURRENT

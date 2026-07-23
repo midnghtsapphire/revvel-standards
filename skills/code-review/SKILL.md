@@ -30,7 +30,7 @@ providers:
 ```
 
 ### Fallback Model Chain
-```
+```text
 Bito AI → Claude Sonnet 4 (OpenRouter) → Claude Sonnet 4.5 (fallback)
 ```
 

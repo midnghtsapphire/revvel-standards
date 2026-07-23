@@ -142,7 +142,7 @@ node examples/openrouter-proposals.js
 
 ## Documentation Structure
 
-```
+```text
 skills/grant-mgmt-agent/
 ├── SKILL.md                           # Full documentation
 ├── grant-mgmt-agent.skill.yml         # Machine-readable config

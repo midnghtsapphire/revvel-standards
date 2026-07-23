@@ -23,7 +23,7 @@ This standard defines when and how recursion may be used in Revvel production co
 
 Use this decision tree to determine if recursion is appropriate:
 
-```
+```text
 Is the problem naturally recursive (trees, graphs, nested structures)?
 ├─ NO → Use iteration
 └─ YES → Continue

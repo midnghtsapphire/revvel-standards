@@ -146,7 +146,7 @@ A single GitHub Project (<https://github.com/users/midnghtsapphire/projects/5>) 
 
 Status lifecycle:
 
-```
+```text
 Inbox → Researching → Scored → { Hold | Archived | Approved → In Build → In Review → Ready to Launch → Launched → Measuring }
 ```
 

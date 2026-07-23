@@ -17,7 +17,7 @@ Each product that exits the Solution-Shape Router (step 5 of [`AUTOMATED_PRODUCT
 
 ## How Shapes Relate to the Pipeline
 
-```
+```text
 AUTOMATED_PRODUCT_PIPELINE.md (the master pipeline)
   └── Step 5: Solution-Shape Router picks one shape
         └── This folder: the build + publish standard for that shape

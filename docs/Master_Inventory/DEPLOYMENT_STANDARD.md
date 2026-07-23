@@ -68,7 +68,7 @@ npm run build
 
    If the build fails, the deploy agent diagnoses and fixes the errors. Common issues include missing dependencies, incorrect import paths, or environment variable misconfigurations. All fixes are committed with the message format:
 
-```
+```text
 fix: deploy agent cleanup — <description>
 ```
 

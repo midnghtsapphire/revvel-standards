@@ -4,7 +4,7 @@
 > in what order, and where every artifact plugs in. If two docs conflict, this file's ordering wins.
 > System: **REVVEL**. Method: **UPREV** (one iteration · multiple PRs · max over minimum · deep
 > research first · self-healing · form-driven not label-driven).
-
+>
 > ⚡ **Which workflow file runs next?**  
 > **[`START_HERE_CALL_CHAIN.md`](./START_HERE_CALL_CHAIN.md)** — human-readable call chain (issue → research → code → ship).  
 > This file (`MASTER.md`) governs *doc order*; that file governs *runtime file → next file*.
@@ -20,7 +20,7 @@ raw placeholders). Jules normalizes text; agents generate scope; research preced
 
 ## 1. PIPELINE (the governing order)
 
-```
+```text
 [WR title] 
    │
    ▼
