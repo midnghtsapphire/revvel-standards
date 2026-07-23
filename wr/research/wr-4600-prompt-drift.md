@@ -14,9 +14,9 @@ Canonical spec includes an `IDENTITY` block establishing operator persona, scope
 **Impact:** Model may drift on tone/scope in extended sessions. Gates still fire; refusals still land.
 
 ### 2. MODEL ROUTING
-Canonical routes queries by class: `adverse → strict-mode LLM`, `research → retrieval-augmented`, `math → symbolic tool`. Dashboard uses single default model.
+Canonical routes queries by class: `adverse → strict-mode LLM`, `research → retrieval-augmented`, `math → symbolic tool`. The shipped dashboard is static and does not invoke a model.
 
-**Impact:** Adverse-event queries do not currently escalate to strict mode. Mitigated by hard-coded gate patterns; not urgent but worth restoring.
+**Impact:** No runtime routing occurs today. If model dispatch is added later, adverse-event escalation must be implemented then.
 
 ### 3. INVENTORY
 Canonical enumerates the tool inventory (harvest, dose-engine, snapshot store, triage) so the model can reason about its own capabilities. Dashboard omits.
