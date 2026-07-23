@@ -6,7 +6,7 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-HOOK_DIR=".git/hooks"
+HOOK_DIR="$(git rev-parse --git-path hooks)"
 HOOK="$HOOK_DIR/pre-commit"
 GATE=".pre-commit-hooks/pre-review-gate.sh"
 JSONL_GATE=".pre-commit-hooks/wr-memory-gate.sh"
