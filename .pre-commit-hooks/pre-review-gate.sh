@@ -28,8 +28,7 @@ cd "$REPO_ROOT" || exit 1
 if [ "$#" -gt 0 ]; then
   FILES=("$@")
 else
-  # shellcheck disable=SC2207
-  FILES=($(git diff --cached --name-only --diff-filter=ACMR))
+  mapfile -d '' -t FILES < <(git diff --cached --name-only --diff-filter=ACMR -z)
 fi
 
 if [ "${#FILES[@]}" -eq 0 ]; then
