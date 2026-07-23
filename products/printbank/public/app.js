@@ -40,11 +40,17 @@
       if (q && item.title.toLowerCase().indexOf(q) === -1 && item.genre.indexOf(q) === -1) return;
       var card = document.createElement('div');
       card.className = 'pb-card';
+      card.setAttribute('role', 'button');
+      card.tabIndex = 0;
       card.innerHTML =
         '<div class="pb-card-preview">' + PE.generateSvg(item.seed, item.genre, 400, 600) + '</div>' +
         '<div class="pb-card-info"><p class="pb-card-title">' + escapeHtml(item.title) + '</p>' +
         '<p class="pb-card-genre">' + item.genre.replace(/-/g, ' ') + '</p></div>';
-      card.addEventListener('click', function () { openModal(item); });
+      var activateCard = function () { openModal(item); };
+      card.addEventListener('click', activateCard);
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activateCard(); }
+      });
       grid.appendChild(card);
     });
   }
