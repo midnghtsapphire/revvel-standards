@@ -1,9 +1,10 @@
 # WR-4485 — The Underdog Register
 
-**Band:** 44xx (Contrarian / Counter-Consensus)
+**Band:** 44xx (Standards / Immune System)
 **Rev:** 0
 **Status:** ACTIVE — catalog immune system
 **Parent:** WR-4484 (BNAT invention loop)
+**Closes:** #16674, #16676, #16678
 **Cross-refs:** WR-4485 is the negative-knowledge index; every entry either (a) names a failure mode, (b) supplies underdog math, (c) formalizes folk wisdom, or (d) marks a gap for invention.
 
 ---
@@ -182,3 +183,4 @@ Per the issue: **Section D is the primary review target.** Those five gaps becom
 ## Change Log
 
 - **rev-0** — Initial register. Sections A (8 failures), B (7 underdog results), C (7 chatterings), D (5 gaps). All D-items marked CONSTRUCTED where provisional forms are given.
+- **rev-0 patch** — Header normalized: Band set to Standards / Immune System (function in Band, flavor in Status); Closes line restored from agent-fallback/issue-16681.
