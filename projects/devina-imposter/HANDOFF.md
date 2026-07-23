@@ -110,7 +110,7 @@ gh repo create midnghtsapphire/devina-imposter \
 ### Option 3: Delegate to OpenRouter Agent
 
 1. Create new issue in revvel-standards:
-   ```
+   ```text
    Title: [wr:code] Initialize devina-imposter repository
    
    Body:

@@ -64,7 +64,7 @@ Required CI status check name: **`mobile-test`** — must block PR merges.
 
 ## What Goes Where in an Adopting App
 
-```
+```text
 my-revvel-app/
 ├── jest.config.js              ← from templates/mobile/testing/jest.config.js
 ├── jest.setup.ts               ← from templates/mobile/testing/jest.setup.ts

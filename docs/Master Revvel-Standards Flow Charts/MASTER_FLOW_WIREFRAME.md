@@ -13,7 +13,7 @@
 
 ## Full Wireframe
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                    REVVEL MASTER STANDARDS WORKFLOW                          ║
 ║              From Idea → Research → Docs → Code → Ship                      ║
@@ -269,7 +269,7 @@
 
 ## API & Credential Flow (Security Detail)
 
-```
+```text
   ┌──────────────────────────────────────────────────────────────────────┐
   │  GitHub Secrets  (repository-level, never committed to code)        │
   │                                                                     │
@@ -295,7 +295,7 @@
 
 ## MCP Server Integration Point
 
-```
+```text
   ┌──────────────────────────────────────────────────────────────────────┐
   │  .mcp.json  (in each project root)                                  │
   │                                                                     │

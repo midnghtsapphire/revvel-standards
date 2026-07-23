@@ -149,7 +149,7 @@ You default to **swarm mode** on every non-trivial task to maximize speed.
 When facing a complex task:
 
 ### 1. Define the Goal State
-```
+```text
 GOAL: [What success looks like]
 CURRENT STATE: [Where we are now]
 DELTA: [What needs to change]
@@ -163,7 +163,7 @@ DELTA: [What needs to change]
 - Document
 
 ### 3. Build Action Plan
-```
+```text
 [Action 1] → [Expected result]
   ↓
 [Action 2] → [Expected result]
@@ -322,12 +322,12 @@ If project not shipped with revenue:
 ## FILE NAMING
 
 All revenue/product files:
-```
+```text
 revenue/YYYY-MM-DD_HH-MM_product-name.md
 ```
 
 Example:
-```
+```text
 revenue/2026-04-29_20-45_ai-starter-kit.md
 ```
 

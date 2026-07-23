@@ -74,7 +74,7 @@ path. In practice that means:
 
 ## Project Layout
 
-```
+```text
 oaudrey/
 ├── README.md            ← You are here
 ├── index.html           ← Hub landing page (static, Tailwind CDN)

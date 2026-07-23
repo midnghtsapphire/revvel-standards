@@ -127,7 +127,7 @@ Maestro flows are named by journey: `auth/sign-in.yaml`, `checkout/happy-path.ya
 
 ## Directory Structure
 
-```
+```text
 tests/
 ├── unit/
 ├── component/

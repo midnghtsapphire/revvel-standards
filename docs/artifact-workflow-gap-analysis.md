@@ -233,7 +233,7 @@ test('opened PR gets awaiting-review label', () => {
 
 ### Full List (158 workflows)
 
-```
+```text
 === Creates PRs (5) ===
 - auto-approve-clean-prs.yml
 - trusted-bot-auto-approve.yml

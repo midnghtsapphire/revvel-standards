@@ -34,7 +34,7 @@ After auditing the full `revvel-standards` repository, the current structure is 
 
 ### Current vs. Recommended Top-Level
 
-```
+```text
 CURRENT ROOT                          RECOMMENDED ROOT
 ─────────────────────────────────     ─────────────────────────────────
 revvel-standards/                     revvel-standards/
@@ -103,7 +103,7 @@ revvel-standards/                     revvel-standards/
 
 **Solution:** Move all `*_STANDARD.md` files into `standards/` with shortened names:
 
-```
+```text
 standards/
 ├── README.md              # Index of all standards
 ├── accessibility.md       # was ACCESSIBILITY_STANDARD.md
@@ -138,7 +138,7 @@ standards/
 4. After 2 weeks, remove originals with git history preserved
 
 **GitHub Issue Template:**
-```
+```text
 Title: [Folder Structure] Move standards files into standards/ directory
 Labels: enhancement, documentation, New Project
 Assign: midnghtsapphire
@@ -154,7 +154,7 @@ Assign: midnghtsapphire
 
 **Solution:** Add `.github/` with standard templates:
 
-```
+```text
 .github/
 ├── ISSUE_TEMPLATE/
 │   ├── bom-gap.md          # For missing APIs, tools, purchases
@@ -167,7 +167,7 @@ Assign: midnghtsapphire
 ```
 
 **`CODEOWNERS` content:**
-```
+```text
 * @midnghtsapphire
 docs/Universal-BOM_List/ @midnghtsapphire @Copilot
 standards/ @midnghtsapphire
@@ -189,7 +189,7 @@ standards/ @midnghtsapphire
 **Problem:** `docs/` contains a mix of project-specific docs (GrowlingEyes, Neurooz, etc.), general guides (ONBOARDING.md, NON_CODER_GUIDE.md), and session notes (SESSION_NOTES_2026-02-25.md). This makes it hard to find things.
 
 **Solution:**
-```
+```text
 docs/
 ├── projects/          ← project-specific directories
 │   ├── growlingeyes/
@@ -222,7 +222,7 @@ docs/
 
 **Solution:** Every skill gets a PromptFoo test suite:
 
-```
+```text
 skills/
 ├── <skill-name>/
 │   ├── SKILL.md
@@ -271,7 +271,7 @@ tests:
 **Problem:** The `SELF_HEALING_BOM_TEMPLATE.md` is now in `docs/Universal-BOM_List/` but should also be accessible from `templates/` for the `bootstrap-new-project.sh` script.
 
 **Solution:**
-```
+```text
 templates/
 ├── bom/
 │   ├── BOM_TEMPLATE.md        ← copy of SELF_HEALING_BOM_TEMPLATE.md
@@ -297,7 +297,7 @@ Update `scripts/bootstrap-new-project.sh` to auto-copy `templates/bom/BOM_TEMPLA
 3. Use `semantic-release` or `release-please` to auto-generate `CHANGELOG.md` and version tags
 
 **Commit format:**
-```
+```text
 <type>(<scope>): <subject>
 
 Types: feat, fix, docs, style, refactor, test, chore, ci
@@ -319,7 +319,7 @@ chore(ci): add bom-self-heal workflow
 **Problem:** `docs/PROJECT_CATALOG.md` and `docs/REPO_CATALOG.md` exist but are not prominently linked. New team members and agents have trouble discovering what projects exist.
 
 **Solution:** Create `docs/catalog/` with auto-generated project index:
-```
+```text
 docs/catalog/
 ├── README.md           ← Quick-start "what is Revvel building?"
 ├── PROJECTS.md         ← All active projects with status, tech stack, BOM link
@@ -409,7 +409,7 @@ Audrey Evans' coding agent for the Revvel ecosystem. You follow Revvel Standards
 For each recommendation you want to implement:
 
 1. Open a GitHub Issue using this template:
-   ```
+   ```text
    Title: [Folder Structure] REC-00X: [Recommendation Name]
    Labels: enhancement, documentation, New Project
    Assign: midnghtsapphire

@@ -129,7 +129,7 @@ All workflows copied to `templates/cicd/` for easy reuse:
 
 ### Workflow Flow
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                         PR Opened (Draft)                        │
 └────────────────────────────┬────────────────────────────────────┘

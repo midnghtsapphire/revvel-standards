@@ -29,7 +29,7 @@ This standard defines the framework for auditing business entities, repositories
 
 For each business entity, discover and document:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │              ENTITY DISCOVERY CHECKLIST                       │
 ├─────────────────────────────────────────────────────────────┤

@@ -32,7 +32,7 @@ Automated brand content distribution across high-value platforms to establish E-
 
 ## File Structure
 
-```
+```text
 skills/openclaw-eeat/
 ├── SKILL.md                          # This documentation
 ├── openclaw-eeat.skill.yml           # Skill configuration

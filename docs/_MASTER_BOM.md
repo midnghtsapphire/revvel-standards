@@ -13,8 +13,8 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 
 ### P0 — Do Immediately
 
-| Project | Item | Provider | Est. Cost | Priority | Status |
-|---|---|---|---|---|---|
+| Project | Item | Purpose | Provider | Est. Cost | Priority | Status |
+|---|---|---|---|---|---|---|
 | Soul2bowl | DigitalOcean Spaces | Image / media CDN | DigitalOcean | $5/mo | P0 | ❌ Not yet |
 | Soul2bowl | Google Cloud Console project | Google OAuth | Google | $0 | P0 | ❌ Not set up |
 | Neurooz | OpenAI API (production tier) | AI/LLM features | OpenAI | Variable (~$20–100/mo) | P0 | ❌ Not set up |
@@ -34,8 +34,8 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 
 ### P1 — Do Soon
 
-| Project | Item | Provider | Est. Cost | Priority | Status |
-|---|---|---|---|---|---|
+| Project | Item | Purpose | Provider | Est. Cost | Priority | Status |
+|---|---|---|---|---|---|---|
 | Soul2bowl | Resend paid tier (if needed) | Transactional email beyond 3k/mo | Resend | $20/mo | P1 | ❌ Not yet |
 | Soul2bowl | Plausible Analytics | Privacy analytics | Plausible | $9/mo | P1 | ❌ Not yet |
 | Soul2bowl | Apple Developer Program | Apple Sign-In in production | Apple | $99/yr | P1 | ❌ Not purchased |
@@ -61,8 +61,8 @@ The following items are marked ❌ "Not purchased" across all project BOMs, sort
 
 ### P2 — Do When Ready for Stores
 
-| Project | Item | Provider | Est. Cost | Priority | Status |
-|---|---|---|---|---|---|
+| Project | Item | Purpose | Provider | Est. Cost | Priority | Status |
+|---|---|---|---|---|---|---|
 | Neurooz | Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased |
 | Neurooz | Google Play Developer account | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased |
 | Premolt | Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased |

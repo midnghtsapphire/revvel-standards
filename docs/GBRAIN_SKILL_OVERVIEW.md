@@ -158,7 +158,7 @@ GBrain is the memory layer that makes the EXRUP methodology sustainable over tim
 
 ## 5. Architecture Deep Dive
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    GBrain System                             │
 │                                                             │
@@ -188,7 +188,7 @@ GBrain is the memory layer that makes the EXRUP methodology sustainable over tim
 
 ### Data Flow
 
-```
+```text
 External Signal (meeting, email, call, tweet)
   → Integration recipe collects it
   → Agent writes to brain (put_page, file_upload)
@@ -218,7 +218,7 @@ Next conversation:
 ## 6. Complete Dependency Map
 
 ### Required
-```
+```text
 Bun >= 1.0
   └── GBrain CLI (github:garrytan/gbrain)
        ├── PGLite (embedded Postgres)
@@ -226,7 +226,7 @@ Bun >= 1.0
 ```
 
 ### Optional (unlock features)
-```
+```text
 OpenAI API Key
   └── text-embedding-3-large (vector embeddings — better search)
 
@@ -257,7 +257,7 @@ Circleback (meeting sync)
 ```
 
 ### Installation Environment
-```
+```text
 Mac: macOS 10.15+ (Catalina or newer)
      curl (built into macOS)
      bash (built into macOS)
@@ -399,7 +399,7 @@ cd ~/brain && git init
 
 After installation, `~/gbrain/` contains:
 
-```
+```text
 ~/gbrain/
 ├── docs/
 │   ├── GBRAIN_SKILLPACK.md     # The agent playbook — READ THIS
@@ -434,7 +434,7 @@ After installation, `~/gbrain/` contains:
 
 ### How GBrain Fits Into the Revvel Ecosystem
 
-```
+```text
 Revvel Standards Ecosystem
 │
 ├── EXRUP Methodology (speed, one-iteration delivery)

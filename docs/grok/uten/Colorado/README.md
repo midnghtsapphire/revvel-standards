@@ -17,7 +17,7 @@ This repository contains the complete design, plans, roadmaps, technical specifi
 
 ## Repository Structure
 
-```
+```text
 /revvel-standards/docs/grok/uten/Colorado/
 ├── README.md (this file)
 ├── bnat-uten-system-design.md

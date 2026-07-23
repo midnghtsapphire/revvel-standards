@@ -27,7 +27,7 @@ Create a folder: `archive-upload-{{DATE}}/`
 
 #### Files to Include
 
-```
+```text
 archive-upload-{{DATE}}/
 ├── brand-statement.pdf
 ├── projects/
@@ -176,12 +176,12 @@ Create `metadata.json`:
 4. Fill in metadata form:
 
 **Item Title:**
-```
+```text
 {{CREATOR_NAME}} — Professional Portfolio {{YEAR}}
 ```
 
 **Item Description:**
-```
+```text
 Citable documentation of professional work by {{CREATOR_NAME}}, including:
 
 {{#each PROJECTS}}
@@ -199,34 +199,34 @@ Licensed under {{LICENSE}}.
 ```
 
 **Subject Tags:**
-```
+```text
 {{#each SUBJECTS}}
 {{this}}; 
 {{/each}}
 ```
 
 **Creator:**
-```
+```text
 {{CREATOR_NAME}}
 ```
 
 **Date:**
-```
+```text
 {{DATE}}
 ```
 
 **License:**
-```
+```text
 {{LICENSE}}
 ```
 
 **Language:**
-```
+```text
 English
 ```
 
 **Collection:**
-```
+```text
 opensource
 ```
 
@@ -279,17 +279,17 @@ ia upload {{IDENTIFIER_SLUG}} \
 ### 5. Citing Your Archive.org Item
 
 **APA Format:**
-```
+```text
 {{CREATOR_NAME}}. ({{YEAR}}). {{TITLE}}. Internet Archive. https://archive.org/details/{{IDENTIFIER_SLUG}}
 ```
 
 **MLA Format:**
-```
+```text
 {{CREATOR_NAME}}. "{{TITLE}}." Internet Archive, {{DATE}}, archive.org/details/{{IDENTIFIER_SLUG}}.
 ```
 
 **Chicago Format:**
-```
+```text
 {{CREATOR_NAME}}. "{{TITLE}}." Internet Archive. {{DATE}}. https://archive.org/details/{{IDENTIFIER_SLUG}}.
 ```
 
@@ -339,7 +339,7 @@ Before uploading:
 - Update metadata.json with new projects/credentials
 
 **Naming Convention:**
-```
+```text
 {{CREATOR_SLUG}}-portfolio-{{YEAR}}
 {{CREATOR_SLUG}}-{{PROJECT_SLUG}}-{{VERSION}}
 ```

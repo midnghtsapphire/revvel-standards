@@ -14,7 +14,7 @@ Fill out the 7-section MVI Contract before every coding session to define scope,
 
 ### Section 1: Context Check
 Read `SYSTEM_STATE.md` before writing a single line of code.
-```
+```text
 Previous session completed: [describe what was finished]
 Current production state: [what is live and working]
 Known bugs relevant to this MVI: [from SYSTEM_STATE.md Known Bugs]
@@ -22,13 +22,13 @@ SYSTEM_STATE.md last updated: [date]
 ```
 
 ### Section 2: Feature Definition
-```
+```text
 Feature: [One clear sentence describing the user-observable outcome]
 User story: As a [role], I can [action], so that [outcome].
 ```
 
 ### Section 3: Dependency Map
-```
+```text
 Database tables required: [list]
 API routes required: [list]
 Environment variables required: [list]
@@ -37,7 +37,7 @@ Other features that must be complete first: [list or "none"]
 ```
 
 ### Section 4: Acceptance Gates
-```
+```text
 [ ] pnpm check — TypeScript compilation passes with zero errors
 [ ] pnpm test — All Vitest unit + integration tests pass
 [ ] pnpm test:e2e — Playwright E2E test for this feature passes
@@ -50,13 +50,13 @@ Other features that must be complete first: [list or "none"]
 List everything intentionally deferred. Anything not listed is out of scope by default.
 
 ### Section 6: Files to Touch
-```
+```text
 New files: [path/to/new-file.ts]
 Modified files: [path/to/existing-file.ts] — reason
 ```
 
 ### Section 7: Rollback Plan
-```
+```text
 Rollback steps:
 1. git revert <commit-hash> and push
 2. Run migration rollback if applicable: pnpm db:rollback
@@ -67,7 +67,7 @@ Rollback risk: [low/medium/high]
 ```
 
 ## Sign-Off (End of Session)
-```
+```text
 [ ] All acceptance gates passed
 [ ] SYSTEM_STATE.md updated
 [ ] No dangling TODOs that break functionality

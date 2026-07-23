@@ -91,7 +91,7 @@ significant), the owner takes over.
 
 Every auto-resolution commit uses a fixed message format:
 
-```
+```text
 chore: auto-resolve mechanical merge conflicts (version bumps + additive blocks)
 
 Resolved by scripts/auto-resolve-mechanical-conflicts.js per docs/CONFLICT_RESOLUTION_STANDARD.md.

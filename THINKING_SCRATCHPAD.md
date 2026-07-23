@@ -36,7 +36,7 @@ treat them as directional signals, not firm requirements." — `docs/WEEKLY_RESE
 
 ### Optional entry shape (use it or ignore it)
 
-```
+```text
 **When:** <timestamp or "no idea">
 **Who:** <human / agent name>
 **Mode:** [serious | sarcastic | both | venting | genuine-question | dead-end]

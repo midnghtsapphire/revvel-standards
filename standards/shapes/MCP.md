@@ -34,7 +34,7 @@
 
 ### Project Structure
 
-```
+```text
 build/mcp/
   src/
     index.ts            # MCP server entry point
@@ -159,7 +159,7 @@ MCP servers are invisible to end users, but still need:
 
 ### Landing Page
 
-```
+```text
 <server-name>.revvel.io   OR   revvel.io/mcp/<server-name>
 ```
 

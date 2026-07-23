@@ -191,7 +191,7 @@ TODO @goap: Find and evaluate 3 grant opportunities for Tikiwash bot
 
 ### Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  GitHub Event (Issue/PR/Push)                               │
 └─────────────────┬───────────────────────────────────────────┘

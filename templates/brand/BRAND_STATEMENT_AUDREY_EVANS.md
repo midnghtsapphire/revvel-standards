@@ -8,7 +8,7 @@
 
 ## Full Brand Statement
 
-```
+```text
 Audrey Evans
 Systems builder. Legal-tech operator. Intelligence researcher.
 Northern Colorado
@@ -35,7 +35,7 @@ Hard of hearing — written communication always preferred.
 
 ## Short Bio (150 chars)
 
-```
+```text
 Systems builder, legal-tech operator, intelligence researcher. Building platforms that translate complex information into actionable decisions.
 ```
 

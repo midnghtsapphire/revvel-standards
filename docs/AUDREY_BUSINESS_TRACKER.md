@@ -94,17 +94,17 @@
 ## Formulas (Google Sheets)
 
 ### Net Profit
-```
+```text
 =SUMIF(Business Column, "Reese Reviews", Income) - SUMIF(Business Column, "Reese Reviews", Expenses)
 ```
 
 ### Medicaid Status
-```
+```text
 =IF(Total_Taxable < 1574, "🟢 SAFE", IF(Total_Taxable < 1700, "🟡 WARNING", "🔴 DANGER"))
 ```
 
 ### YTD Totals
-```
+```text
 =SUMIF(Date_Column, ">="&DATE(2026,1,1), Income_Column)
 ```
 

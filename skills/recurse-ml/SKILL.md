@@ -21,7 +21,7 @@ RecurseML is an autonomous AI execution platform that integrates with GitHub to:
 
 ## Integration Architecture
 
-```
+```text
 Developer / Agent pushes code
         ↓
 recurse-ml.yml workflow triggers (on PR open/update, push to main)
