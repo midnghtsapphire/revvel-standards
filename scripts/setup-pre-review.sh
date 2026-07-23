@@ -25,7 +25,7 @@ cat > "$HOOK" <<'HOOK'
 set -e
 REPO="$(git rev-parse --show-toplevel)"
 [ -f "$REPO/.pre-commit-hooks/pre-review-gate.sh" ] && bash "$REPO/.pre-commit-hooks/pre-review-gate.sh"
-[ -f "$REPO/.pre-commit-hooks/wr-memory-jsonl.sh" ] && bash "$REPO/.pre-commit-hooks/wr-memory-jsonl.sh"
+[ -f "$REPO/.pre-commit-hooks/validate-memory-jsonl.sh" ] && bash "$REPO/.pre-commit-hooks/validate-memory-jsonl.sh"
 exit 0
 HOOK
 chmod +x "$HOOK"
