@@ -103,7 +103,8 @@ import sys
 try:
     import yaml
 except ImportError:
-    sys.exit(0)  # PyYAML not installed → skip silently
+    print('YAML validation unavailable: PyYAML is required', file=sys.stderr)
+    sys.exit(2)
 p = sys.argv[1]
 
 class StrictLoader(yaml.SafeLoader):
