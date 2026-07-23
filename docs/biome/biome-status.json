@@ -1,45 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-23T14:45:50.914Z",
+  "generated_at": "2026-07-23T15:39:48.270Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30017045147,
-            "name": "Stuck Label Detection & Auto-Progression",
-            "path": ".github/workflows/stuck-label-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30017045147",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30015641096,
+            "id": 30020128019,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30015641096",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30020128019",
             "conclusion": "failure"
           },
           {
-            "id": 30012338356,
+            "id": 30017829928,
             "name": "Stuck Check Watchdog",
             "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30012338356",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30011250098,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30011250098",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30017829928",
             "conclusion": "failure"
           }
         ],
@@ -65,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30010785987"
+        "last_run": null
       }
     },
     "sheaf": {
