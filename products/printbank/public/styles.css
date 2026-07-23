@@ -5,9 +5,9 @@
   --border: #e5e5e0;
   --accent: #264653;
   --accent-fg: #fff;
-  --good: #2a9d8f;
-  --warn: #e9c46a;
-  --bad: #e76f51;
+  --good: #087f71;
+  --warn: #7a5b00;
+  --bad: #b33a1f;
 }
 
 * { box-sizing: border-box; }
