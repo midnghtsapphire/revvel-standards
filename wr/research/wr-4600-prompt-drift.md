@@ -21,7 +21,7 @@ Canonical routes queries by class: `adverse → strict-mode LLM`, `research → 
 ### 3. INVENTORY
 Canonical enumerates the tool inventory (harvest, dose-engine, snapshot store, triage) so the model can reason about its own capabilities. Dashboard omits.
 
-**Impact:** Cosmetic. Tools are wired at the app layer.
+**Impact:** Functional gap. The shipped app currently exposes only static content and the local dose engine; harvest, snapshots, and triage are not wired.
 
 ### 4. n8n / Gumloop Principle
 Canonical: **"Every automation edge must be reversible or have a manual stop."** Dropped from embed.
