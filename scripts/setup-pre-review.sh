@@ -32,8 +32,8 @@ if [ -f "$REPO_ROOT/.pre-commit-hooks/pre-review-gate.sh" ]; then
   [ "$RC" -ne 0 ] && exit "$RC"
 fi
 
-if [ -f "$REPO_ROOT/.pre-commit-hooks/wr-memory-gate.sh" ]; then
-  bash "$REPO_ROOT/.pre-commit-hooks/wr-memory-gate.sh" || RC=$?
+if [ -f "$REPO_ROOT/.pre-commit-hooks/validate-memory-jsonl.sh" ]; then
+  bash "$REPO_ROOT/.pre-commit-hooks/validate-memory-jsonl.sh" || RC=$?
   [ "$RC" -ne 0 ] && exit "$RC"
 fi
 
