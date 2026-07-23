@@ -1,58 +1,149 @@
 # WR-4484 — Autonomous BNAT Invention Loop (Human-Gated)
 
-- **Band:** 44xx (autonomy directive — HUMAN MERGE REQUIRED, no auto-merge, per 4470-band policy)
-- **Status:** DRAFT rev 0
-- **Depends:** WR-4200, WR-4380, WR-4470, WR-4480, WR-4481, WR-4482 (Evidence-First), WR-4483 (Ensemble AHP), MATH_FRAMEWORK_CATALOG, CORE RULES (SCAN/TEARDOWN/DISCOVER/QUICK)
+**Register:** wr-register
+**Band:** 44xx
+**Revision:** 0
+**Status:** DRAFT — HUMAN MERGE REQUIRED
+**Related:** WR-4483 (Ensemble AHP + RICE Decision Framework)
 
-## Purpose
-Agents autonomously discover gaps, invent, build, and PREPARE new products (BNAT-class) end-to-end — authoring drafts, IP artifacts, and launch packages — but NOTHING launches, publishes, files, or merges without human approval. The human gate is the product's final validation stage, not an afterthought.
+---
 
-## The Loop (each stage emits a ledger entry; each formula cites the catalog)
-```
-1. SCAN     -> demand signals per CORE RULES (SEO, VOC, competitive/BAT, frontier)
-2. GAP      -> JTBD framing; Ulwick Opportunity Score: Opp = Imp + max(Imp - Sat, 0)
-              threshold: pursue only Opp >= 12 (survey-derived) OR operator-data signal
-3. INVENT   -> TRIZ contradiction -> inventive principle; reasoning topology per selector
-              (CoT/ToT/GoT matched to branching factor — v2 prompt section 0)
-4. SCREEN   -> DOE 5-point (feasibility, practicability, utility, safety, proprietary):
-              any FAIL = kill, log, next candidate. BAT compare: build only if candidate
-              dominates BAT on >= 2 DOE axes. BNAT check: if lab/patent-phase tech
-              dominates the candidate, pivot or park.
-5. DECIDE   -> WR-4483 ensemble AHP if multi-criteria; RICE for queue position
-              (Confidence printed; Brier-scored on resolution, target BS < 0.20)
-6. BUILD    -> M1 skeleton only (one upward rev per change); FAILURE-LEDGER JSONL;
-              lane routing WR-4480/4481; append-only files
-7. IP-PREP  -> agents DRAFT: provisional-patent-style disclosure (problem, prior art
-              search log, claims sketch), copyright headers, license file, attribution.
-              LEGAL CONSTRAINT: agents are tools, not inventors/authors of record.
-              US law requires a natural-person inventor (Thaler v. Vidal, Fed. Cir. 2022)
-              and human authorship for copyright (USCO guidance 2023). Inventor/author
-              of record = Audrey Evans; agent contribution logged in ledger for
-              disclosure. Agents NEVER file anything.
-8. GATE     -> WR-4470 validation gate + human review PR. Launch checklist attached.
-              HUMAN MERGE = the approval. No merge, no launch, no listing, no filing.
-9. LEARN    -> Brier update on stage-5 confidences; EWMA trust update per agent lane;
-              killed-candidate postmortems appended to FAILURE-LEDGER.
-```
+## 1. Purpose
 
-## Measurement (loop KPIs — all from proven metrics, no invented ratios)
-- Throughput: candidates entering SCREEN per week (count)
-- Kill discipline: DOE-5 kill rate (healthy loop kills most candidates; a 0% kill rate is a red flag, not a success)
-- Calibration: Brier score of stage-5 confidences, target < 0.20
-- Cost per gated candidate: full lane spend / candidates reaching GATE
-- Human gate outcomes: approve / revise / kill counts (approval rate is NOT the target metric — calibration is)
-- Cycle time: SCAN->GATE, tracked as distribution not average (Little's Law applies: WIP = throughput x cycle time; cap loop WIP)
+Define an autonomous **BNAT** (Best-Next-Action-Target) invention loop in which AI agents:
 
-## Hard constraints
-- Human merge required at GATE — no exception, no auto-merge, no self-approval
-- No external publishing, listing, filing, outreach, or spend commitments by agents
-- IP drafts are internal artifacts until human-approved
-- Append-only; kills are logged, never deleted
-- Evidence hierarchy (WR-4482) governs every stage: operator data > named methods > comps > analogies > sentiment
+1. **Scan** for opportunity gaps,
+2. **Invent** candidate solutions,
+3. **Screen** them with DOE-5 kill discipline,
+4. **Decide** via WR-4483 ensemble AHP + RICE,
+5. **Build** M1 skeletons (minimal viable artifacts),
+6. **Draft** IP artifacts (disclosures, claims, prior-art maps),
 
-## Acceptance checklist
-- [ ] Loop runs end-to-end on one seeded candidate and produces a gated PR with launch checklist + IP draft
-- [ ] DOE-5 kill correctly fires on a seeded infeasible candidate (test fixture)
-- [ ] Ledger shows stage entries, agent lanes, costs, and Brier-scorable confidence records
-- [ ] No external side effects occur pre-merge (verified by audit)
-- [ ] Inventor/author-of-record fields populated with human name; agent contribution disclosed
+…with a **hard human-merge gate** before any launch, listing, filing, or public release.
+
+This standard advances the prime directive ($10k/mo → $10M in 3 years) by turning invention throughput into a measured, calibrated, kill-disciplined pipeline rather than a stochastic hype engine.
+
+---
+
+## 2. Hard Constraints (Non-Negotiable)
+
+These constraints are **red-line**. Any PR violating them MUST be rejected.
+
+1. **Human merge gate.** No agent may auto-merge to `main`, publish to a registry (npm, PyPI, crates, Docker Hub, App Store, Polar.sh listing), or push to a public product surface without an explicit human approval on the PR.
+2. **No autonomous filing.** Agents **draft** patent disclosures, provisional specs, and claim scaffolds. A **human is the inventor/author of record** in all filings.
+ - Legal basis: *Thaler v. Vidal*, 43 F.4th 1207 (Fed. Cir. 2022) — an AI cannot be a named inventor under 35 U.S.C. §§ 100(f), 115.
+ - Copyright: U.S. Copyright Office, *Copyright Registration Guidance: Works Containing Material Generated by Artificial Intelligence*, 88 Fed. Reg. 16190 (Mar. 16, 2023) — human authorship required.
+3. **Kill discipline is a KPI.** A **0% kill rate is a red flag**, not a success signal. Target: 60–85% of screened ideas killed at DOE-5 before reaching the decision stage.
+4. **Calibration over approval.** The primary quality metric is **Brier score < 0.20** on forecasted outcomes, not the fraction of ideas approved.
+5. **WIP cap.** Concurrent BNAT items in-flight ≤ ⌊throughput × cycle_time⌋ (Little's Law). Default cap: **5 active inventions** until Phase 2.
+6. **Provenance.** Every artifact carries a signed manifest: agent model, prompt hash, human reviewer, timestamp, and citations.
+
+---
+
+## 3. Named Math (Cited at Each Stage)
+
+| Stage | Method | Citation |
+|-------|--------|----------|
+| SCAN | Ulwick **Opportunity Score** = Importance + max(0, Importance − Satisfaction) | Ulwick, *What Customers Want* (2005); JTBD framework |
+| INVENT | **TRIZ** 40 inventive principles + contradiction matrix | Altshuller, *The Innovation Algorithm* (1999) |
+| SCREEN | **DOE-5** kill discipline (5 orthogonal fail-fast experiments) | Fisher, *The Design of Experiments* (1935); Taguchi orthogonal arrays |
+| DECIDE | **AHP** pairwise + **RICE** (Reach × Impact × Confidence / Effort) | Saaty (1980); Intercom RICE framework — see WR-4483 |
+| FORECAST | **Brier score** = mean((p − o)²) for calibration | Brier, *Monthly Weather Review* 78(1), 1950 |
+| FLOW | **Little's Law** WIP = throughput × cycle-time | Little, *Ops. Res.* 9(3), 1961 |
+
+---
+
+## 4. Loop Stages
+
+### 4.1 SCAN
+- **Inputs:** issue backlog, market signals (Polar.sh trends, GitHub topic velocity, OSINT feeds), customer interviews.
+- **Method:** Compute Ulwick Opportunity Score per outcome statement. Rank descending. Keep top decile.
+- **Output:** `scan/YYYY-MM-DD-opportunities.json` with `{outcome, importance, satisfaction, score, sources[]}`.
+
+### 4.2 INVENT
+- **Inputs:** top opportunities from SCAN.
+- **Method:** Agent generates ≥ 3 candidate solutions per opportunity using TRIZ contradiction matrix. Each candidate names the contradiction resolved and the principle invoked.
+- **Output:** `invent/<opportunity-id>/candidates.md`.
+
+### 4.3 SCREEN (DOE-5 Kill Discipline)
+For each candidate, run **5 orthogonal kill-tests**:
+
+1. **Legal/IP kill:** prior art hit within claim scope? (search USPTO, Google Patents, arXiv).
+2. **Demand kill:** Ulwick score < threshold or no willingness-to-pay signal?
+3. **Feasibility kill:** M1 skeleton estimated at > 2 engineer-weeks?
+4. **Moat kill:** replicable by a competitor in < 30 days with public tooling?
+5. **Ethics/policy kill:** violates platform ToS, export control, or WR autonomy constraints?
+
+**Rule:** ANY kill = candidate is dropped and logged. Target overall kill rate 60–85%.
+
+- **Output:** `screen/<opportunity-id>/<candidate-id>.doe5.json`.
+
+### 4.4 DECIDE (WR-4483)
+- Survivors are scored via WR-4483 ensemble AHP + RICE.
+- Top-N (N ≤ WIP cap headroom) advance to BUILD.
+- **Output:** `decide/<candidate-id>.decision.json`.
+
+### 4.5 BUILD (M1 Skeleton)
+- Agent builds the **minimum falsifiable artifact**: a runnable stub + README + one integration test that would fail if the core hypothesis is false.
+- No public release. Branch only.
+- **Output:** PR labeled `bnat:m1-skeleton`, `human-review-required`.
+
+### 4.6 DRAFT IP
+- Agent drafts: (a) invention disclosure, (b) claim scaffold (independent + 3 dependent), (c) prior-art map.
+- Marked **DRAFT — HUMAN INVENTOR REQUIRED**. No filing.
+- **Output:** `ip/<candidate-id>/disclosure.md`.
+
+### 4.7 GATE (Hard Human Merge)
+**No automated action past this line.** A human reviewer MUST:
+
+- [ ] Confirm kill-discipline metrics for this cycle.
+- [ ] Confirm calibration (Brier) is within band.
+- [ ] Confirm inventor(s) of record are named humans.
+- [ ] Confirm no ToS / export / policy violation.
+- [ ] Approve merge.
+
+Merge without all five boxes checked is a **process violation** and MUST be reverted.
+
+---
+
+## 5. KPIs
+
+| KPI | Target | Red Flag |
+|-----|--------|----------|
+| DOE-5 kill rate | 60–85% | < 40% or > 95% |
+| Brier score (90-day) | < 0.20 | > 0.30 |
+| Cycle time (SCAN → GATE) | ≤ 10 days | > 21 days |
+| WIP | ≤ 5 (Phase 1) | > cap for > 3 days |
+| Human override rate at GATE | 5–25% | 0% or > 50% |
+| Revenue attribution / invention | tracked | untracked > 30 days |
+
+---
+
+## 6. Revenue Linkage (Prime Directive)
+
+This loop feeds the $10k → $10M ladder by:
+
+- **Phase 1 ($10k/mo):** 1–2 BNAT inventions/month → Polar.sh listings + OSINT tool SKUs.
+- **Phase 2 ($30k/mo):** 3–4/month, with ≥ 1 IP disclosure drafted per cycle.
+- **Phase 3 ($100k/mo):** portfolio effects — cross-sell across shipped BNAT inventions.
+- **Phase 4 ($10M cumulative):** licensable IP portfolio + productized OSINT tooling.
+
+---
+
+## 7. Change Control
+
+- Rev-0: initial draft (this document).
+- Amendments require WR council review and a linked calibration report.
+
+---
+
+## 8. References
+
+- *Thaler v. Vidal*, 43 F.4th 1207 (Fed. Cir. 2022).
+- U.S. Copyright Office, 88 Fed. Reg. 16190 (Mar. 16, 2023).
+- Ulwick, A. *What Customers Want* (McGraw-Hill, 2005).
+- Altshuller, G. *The Innovation Algorithm* (Technical Innovation Center, 1999).
+- Saaty, T. *The Analytic Hierarchy Process* (McGraw-Hill, 1980).
+- Brier, G.W. "Verification of Forecasts Expressed in Terms of Probability," *Monthly Weather Review* 78(1), 1950.
+- Little, J.D.C. "A Proof for the Queuing Formula: L = λW," *Operations Research* 9(3), 1961.
+- Fisher, R.A. *The Design of Experiments* (Oliver & Boyd, 1935).
