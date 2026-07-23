@@ -34,7 +34,7 @@ Claims of long-lived coherent domains in bulk water at physiological temperature
 Color-to-endocrine correspondences presented without dose data. Kept as a cultural/historical reference only.
 
 ### [SPECULATIVE] Circadian re-entrainment via arbitrary color temperature
-Broader than the melanopic-lux literature supports. Melanopic effects on SCN are proven; the infographic overgeneralizes. Bench uses melanopic-lux only.
+Broader than the melanopic-lux literature supports. The current Bench does not implement a circadian or melanopic-lux metric.
 
 ---
 
