@@ -1,186 +1,178 @@
 # WR-4485 — The Underdog Register
 
-**Band:** 44xx (Standards / Immune System)
-**Rev:** 0
-**Status:** ACTIVE — catalog immune system
-**Parent:** WR-4484 (BNAT invention loop)
-**Closes:** #16674, #16676, #16678
-**Cross-refs:** WR-4485 is the negative-knowledge index; every entry either (a) names a failure mode, (b) supplies underdog math, (c) formalizes folk wisdom, or (d) marks a gap for invention.
+**Band:** 44xx (Register / Catalog)
+**Revision:** 0
+**Status:** Living document
+**Labels:** wr-register, band-44xx, rev-0
+**Sibling:** WR-4484 (BNAT invention loop — consumes Section D as work queue)
+
+> The catalog's immune system. Negative knowledge, comeback math, formalized folk
+> wisdom, and explicit gaps. If it's in here it's either (a) a formula that got
+> people killed, (b) a formula that let a smaller party win anyway, (c) a saying
+> we finally pinned down, or (d) a hole we admit we haven't filled yet.
 
 ---
 
-## Purpose
+## A. Failed Formulas — Negative Knowledge
 
-The Underdog Register is the catalog's **immune system**. Where the main register enumerates what works, WR-4485 enumerates:
+Models that shipped, scaled, and detonated. Cited so nobody re-derives them
+thinking they're novel.
 
-- **What has demonstrably failed** (Section A) — with named sources so we cannot re-import broken formulas by accident.
-- **What lets small actors beat large ones** (Section B) — real, peer-reviewed asymmetric math.
-- **What the practitioner class already knows** but has not been formalized (Section C).
-- **What is missing** (Section D) — explicit gaps wired as invention targets for the WR-4484 BNAT loop.
+| # | Formula / Practice | Domain | Failure Mode | Named Source / Post-mortem |
+|---|---|---|---|---|
+| A1 | **Gaussian copula** (Li, 2000) — `C(u,v) = Φ₂(Φ⁻¹(u), Φ⁻¹(v); ρ)` | Credit derivatives (CDOs) | Assumes joint-normal tails; correlations → 1 in crisis; mispriced default clustering | Salmon, *Wired* 2009 "Recipe for Disaster"; MacKenzie & Spears 2014 |
+| A2 | **VaR under normality** — `VaR_α = μ + σΦ⁻¹(α)` | Bank risk mgmt | Thin-tail assumption; ignores regime shifts and endogenous liquidity | Taleb, *The Black Swan* (2007); Basel III post-2008 revisions |
+| A3 | **LTCM convergence trades** (Merton/Scholes dynamic hedging at 25:1 leverage) | Fixed-income arb | Correlation breakdown + liquidity spiral on Russia default (Aug 1998) | Lowenstein, *When Genius Failed* (2000) |
+| A4 | **COCOMO / COCOMO II effort estimation** — `E = a·KLOC^b · Π EM_i` | Software estimation | Systematic under-estimation drift; parameters non-stationary across tech generations | Molokken & Jorgensen 2003 meta-review; Standish CHAOS reports |
+| A5 | **Forced / stack ranking** ("rank-and-yank", GE/Microsoft) | People ops | Destroys collaboration; optimizes for visibility not output; Goodhart's Law in HR | Kwoh, *WSJ* 2012; Microsoft abandoned 2013; Cappelli & Tavis, *HBR* 2016 |
+| A6 | **MBTI** as hiring/team-composition signal | Org design | Test-retest reliability ~0.5; no predictive validity on job performance | Pittenger 1993, *Consulting Psych J*; Grant, *Psychology Today* 2013 |
+| A7 | **NPS as causal KPI** — `NPS = %promoters − %detractors` | Product / growth | Measures a summary, not a driver; goodharts into survey-gaming; no dose-response to revenue | Keiningham et al. 2007, *J. Marketing*; Fisher & Kordupleski 2019 |
+| A8 | **Last-click attribution** | Marketing analytics | Ignores assist channels; systematically overpays lower-funnel; kills brand & discovery spend | Google Analytics' own multi-touch docs; Berman 2018 *Mgmt Sci* on attribution bias |
 
-This register is how a $10k/month operation becomes a $10M operation without buying the losing side of every consensus trade.
-
----
-
-## Section A — Failed Formulas (Negative Knowledge)
-
-Each entry: **name → what it claimed → how it broke → named source**. Do not re-adopt without a rev bump and an explicit dominance argument over the failure mode.
-
-| # | Formula | Claim | Failure Mode | Named Source |
-|---|---------|-------|--------------|--------------|
-| A1 | **Gaussian copula** (Li, 2000) | Correlated default risk is tractable via a single ρ | Tail dependence collapses to independence assumption; 2008 CDO wipeout | Salmon, *Wired* "Recipe for Disaster" (2009); MacKenzie & Spears (2014) |
-| A2 | **VaR under normality** | 99% loss bounded by parametric sigma | Fat tails, non-stationarity; blew up repeatedly 1998, 2008, 2020 | Taleb, *The Black Swan* (2007); Danielsson (2002) |
-| A3 | **LTCM convergence trades** | Arbitrage spreads mean-revert on a knowable schedule | Liquidity risk + leverage → forced liquidation before reversion | Lowenstein, *When Genius Failed* (2000) |
-| A4 | **COCOMO / COCOMO II** | Software effort = a·KLOC^b with calibrated constants | Drift: real projects deviate 4x+ from estimate; assumptions violated in every modern stack | Boehm (1981); Kemerer (1987) empirical critique |
-| A5 | **Stack ranking** (forced curve) | Ranking employees on a curve maximizes performance | Destroys collaboration, gamed to sabotage peers; abandoned by GE, Microsoft | Kwoh, *WSJ* (2012); Ovide, *WSJ* (2013) |
-| A6 | **MBTI** | 16-type personality predicts job fit | Test-retest reliability ~50%; no predictive validity for job performance | Pittenger (1993); Grant (2013) |
-| A7 | **NPS as causal driver** | "Would you recommend" score → revenue growth | Correlational at best; Reichheld's original study non-replicable | Keiningham et al. (2007); Schneider et al. (2008) |
-| A8 | **Last-click attribution** | Credit the final touchpoint for conversion | Systematically undervalues discovery/consideration channels; distorts spend | Multiple; formalized in Berman (2018) counterfactual attribution |
-
-**Rule:** if a proposal in the main register reduces to one of A1–A8 under substitution, it is auto-rejected pending explicit dominance argument.
+**Rule of use:** if a proposed WR cites one of the above as its core mechanic
+without also citing its post-mortem, it fails intake.
 
 ---
 
-## Section B — Underdog Math (Real Asymmetric Wins)
+## B. Underdog Math — Comeback Formulas (Peer-Reviewed)
 
-Each entry: **result → mechanism → source → applicability**. These are the tools that let the small side win when the big side has more resources.
+Real studies where the smaller/weaker party's win rate is quantifiable.
 
-### B1. Arreguin-Toft asymmetric-conflict win rates
-- **Result:** In asymmetric conflicts 1800–1998, the weaker side wins ~28% overall — but ~63% when it adopts an *opposite strategy* to the stronger side.
-- **Mechanism:** Strategic mismatch dominates resource mismatch.
-- **Source:** Arreguin-Toft, *How the Weak Win Wars* (2001, *International Security*).
-- **Applicability:** Product/GTM strategy — if a $10B incumbent plays direct, play indirect; if they play indirect, play direct.
+### B1. Arreguin-Toft asymmetric conflict
+- **Claim:** In interstate wars 1800–2003, the materially weaker side won ~28.5%
+  overall, and won **~63%** when it adopted an *opposite-strategy* approach
+  (guerrilla vs. conventional, or vice-versa) against the stronger side.
+- **Source:** Arreguín-Toft, *How the Weak Win Wars* (Cambridge, 2005);
+  *International Security* 26(1), 2001.
+- **Catalog use:** pick the axis the incumbent can't rotate on.
 
-### B2. Pulled-goalie variance timing
-- **Result:** Optimal pulled-goalie time is ~6:10 remaining down one, not the traditional ~1:00 — because variance-injection value compounds with time left.
-- **Mechanism:** When behind, increase variance early; the losing-more downside is bounded, the tying-upside is not.
-- **Source:** Beaudoin & Swartz, *J. Quantitative Analysis in Sports* (2010).
-- **Applicability:** When behind on any metric with a hard deadline, inject variance *early*, not late. Late-stage hail-marys are mathematically dominated.
+### B2. Pulled-goalie timing (variance injection)
+- **Claim:** Optimal pull time in NHL is far earlier than convention — often
+  ~3:00–6:00 remaining when down one, earlier when down two. Trades expected
+  goals-against for a higher-variance state that dominates the trailing team's
+  utility function.
+- **Source:** Beaudoin & Swartz, *J. Quantitative Analysis in Sports* 6(1), 2010;
+  Asness & Brown 2018 replication.
+- **Catalog use:** when behind, deliberately increase outcome variance.
+  `E[V | behind] > E[V | behind, low-variance play]` even when `E[goals]` worsens.
 
 ### B3. Wald survivorship correction
-- **Result:** Reinforce the planes that come back *without* holes where you see holes on returners — because non-returners were hit there.
-- **Mechanism:** Conditioning on survival inverts the naive signal.
-- **Source:** Wald, Statistical Research Group memos (1943); Mangel & Samaniego (1984).
-- **Applicability:** Every "lessons from successful X" study is Wald-broken unless it samples failures too.
+- **Claim:** Observed damage on returning bombers marks *non-lethal* hit zones;
+  armor belongs where returning planes were *not* hit (engines, cockpit).
+- **Source:** Wald, Statistical Research Group memo (1943); Mangel & Samaniego
+  1984, *JASA*.
+- **Catalog use:** invert every "best practices from winners" dataset before
+  citing it.
 
 ### B4. Taleb barbell / convexity
-- **Result:** 90% in maximally-safe + 10% in maximally-convex dominates 100% in medium-risk, when payoffs are fat-tailed.
-- **Mechanism:** Bounded downside + unbounded upside > symmetric bet.
-- **Source:** Taleb, *Antifragile* (2012); formal in *Silent Risk* (2015).
-- **Applicability:** Capital allocation for a $10k → $10M ramp: 90% into cash-flow certainty (Polar.sh recurring), 10% into asymmetric bets (new OSINT verticals).
+- **Claim:** Portfolio of `w` in maximally safe + `(1−w)` in maximally convex
+  bets dominates the "prudent middle" under fat tails. Payoff `f(x)` with
+  `f''(x) > 0` benefits from volatility (Jensen's inequality).
+- **Source:** Taleb, *Antifragile* (2012); Taleb & Douady 2013 on convexity.
+- **Catalog use:** underdog capital allocation — no medium-risk positions.
 
 ### B5. UCB1 exploration bonus
-- **Result:** Optimal bandit policy: pick arm maximizing μ̂ᵢ + √(2 ln n / nᵢ).
-- **Mechanism:** Exploration bonus shrinks as evidence accumulates; guarantees O(log n) regret.
-- **Source:** Auer, Cesa-Bianchi, Fischer (2002).
-- **Applicability:** Product pipeline — do not fully exploit the current winner; reserve √(2 ln n / nᵢ) attention for the least-tested product line.
+- **Claim:** Pick arm `i` maximizing `x̄_i + √(2 ln n / n_i)`. Regret bound
+  `O(log n)`. The `√(ln n / n_i)` term is the mathematical justification for
+  exploring under-sampled options — literally an underdog bonus.
+- **Source:** Auer, Cesa-Bianchi, Fischer 2002, *Machine Learning* 47.
+- **Catalog use:** rank experiments; the least-tried live option gets a bonus
+  proportional to `√(ln n / n_i)`.
 
-### B6. Dyson sequential-search math
-- **Result:** Optimal search order over N options with cost cᵢ and success prob pᵢ is by pᵢ/cᵢ descending (Gittins-flavored).
-- **Mechanism:** Ratio ordering dominates any fixed schedule under independence.
-- **Source:** Freeman Dyson wartime bomber-search memo (RAF, 1943); generalized in Gittins (1979).
-- **Applicability:** Customer-discovery interviews, GitHub sponsor prospecting — order by (conversion prob / contact cost).
+### B6. Dyson sequential search / secretary-style
+- **Claim:** For an unknown-length sequence with a stopping cost, optimal policy
+  is threshold-based; the classic `1/e ≈ 36.8%` observation-then-commit rule
+  applies to hiring, deal-picking, and pivot-timing.
+- **Source:** Gilbert & Mosteller 1966, *JASA*; Ferguson 1989 review.
+- **Catalog use:** don't commit before `n/e`; don't wait past the last credible
+  candidate.
 
-### B7. Pivot-as-real-option
-- **Result:** A pivotable venture is worth strictly more than its expected DCF by the value of the option to pivot; Black-Scholes-analogous pricing applies.
-- **Mechanism:** Optionality has positive value under uncertainty; ignoring it under-prices resilient plans.
-- **Source:** Dixit & Pindyck, *Investment Under Uncertainty* (1994); McGrath (1999) applied to strategy.
-- **Applicability:** Budget the *cost of maintaining pivot capacity* (modularity, low burn, kill criteria) — it is not overhead, it is premium paid for the option.
-
----
-
-## Section C — Chatterings Formalized (Folk Wisdom → Math)
-
-Each entry: **name → informal statement → formal statement → operational rule**.
-
-### C1. Goodhart's Law
-- **Informal:** "When a measure becomes a target, it ceases to be a good measure."
-- **Formal:** For any statistic S correlated with goal G via mechanism M, optimizing S under agent pressure induces divergence in M such that ∂G/∂S → 0 or flips sign.
-- **Source:** Goodhart (1975); Strathern (1997) restatement.
-- **Operational rule:** No single KPI drives compensation; always pair with a *counter-metric* that catches the gaming vector.
-
-### C2. Lindy Effect
-- **Informal:** "For non-perishable things, expected remaining life is proportional to current age."
-- **Formal:** E[T_remaining | T_survived = t] ∝ t under Pareto-tailed lifetime distribution.
-- **Source:** Mandelbrot (1982); Taleb (2012) formalization.
-- **Operational rule:** Prefer 20-year-old tools/formats over 2-year-old ones for infrastructure decisions. Reverse for consumer-taste decisions.
-
-### C3. Brooks's Law
-- **Informal:** "Adding manpower to a late software project makes it later."
-- **Formal:** Communication overhead grows as n(n−1)/2; onboarding cost is front-loaded; net productivity is negative until t > t_onboard.
-- **Source:** Brooks, *The Mythical Man-Month* (1975).
-- **Operational rule:** Never scale headcount to hit a deadline. Scale scope down or slip.
-
-### C4. Parkinson's Law
-- **Informal:** "Work expands to fill the time available."
-- **Formal:** Given slack s and deadline d, delivered scope grows monotonically in d regardless of intrinsic scope.
-- **Source:** Parkinson, *The Economist* (1955).
-- **Operational rule:** Compress deadlines by 40% of first estimate; re-expand only on evidence.
-
-### C5. Hofstadter's Law
-- **Informal:** "It always takes longer than you expect, even when you take into account Hofstadter's Law."
-- **Formal:** Estimate distribution is log-normal with systematic right-tail; recursion of correction converges slowly.
-- **Source:** Hofstadter, *Gödel, Escher, Bach* (1979).
-- **Operational rule:** Multiply estimates by π for user-facing commitments; by e for internal planning.
-
-### C6. Cunningham's Law
-- **Informal:** "The best way to get the right answer on the internet is not to ask a question but to post the wrong answer."
-- **Formal:** Correction-motivation > help-motivation in most online populations; expected response quality is higher for provocative posts than for interrogative ones.
-- **Source:** Attributed to Ward Cunningham; empirically visible in Stack Overflow answer-vs-question latency.
-- **Operational rule:** For market research, publish a strong wrong claim, not a survey.
-
-### C7. K-factor (viral)
-- **Informal:** "Each user brings K new users."
-- **Formal:** K = i · c, where i = invites/user, c = conversion rate; sustained growth requires K > 1 with cycle time τ shorter than churn half-life.
-- **Source:** Skok, Draper, and epidemiological SIR literature.
-- **Operational rule:** Report K and τ together; K alone is Goodhart-vulnerable (see C1).
+### B7. Pivot as real option
+- **Claim:** A startup pivot is a call option on a new payoff distribution with
+  strike = switching cost. Black-Scholes-style: option value rises with
+  volatility of the new domain. Underdogs *should* pivot into higher-variance
+  markets.
+- **Source:** Dixit & Pindyck, *Investment Under Uncertainty* (1994); McGrath
+  1999 *AMR* on real options in entrepreneurship.
+- **Catalog use:** value a pivot at `max(0, E[V_new] − V_current − c_switch)`
+  with volatility premium.
 
 ---
 
-## Section D — Gaps (Invention Targets for WR-4484 BNAT Loop)
+## C. Chatterings Formalized
 
-These are the **five explicitly-missing formulas** that this register needs but does not yet have. Each is wired as a work item for the WR-4484 invention loop. Any adoption is marked **CONSTRUCTED** until backtested against out-of-sample data.
+Folk wisdom with a defensible mechanism. Included so we stop apologizing when
+we cite them.
 
-### D1. **The Underdog Composite** (CONSTRUCTED — not yet backtested)
-- **Need:** A single scalar U ∈ [0,1] estimating an underdog's win probability given (resource ratio r, strategy-mismatch m, time-horizon τ, optionality Ω).
-- **Provisional form:** U = σ(β₀ + β₁·log(1/r) + β₂·m + β₃·log(τ) + β₄·Ω) — logistic in log-resource-inverse, strategy mismatch (B1), time (B2), and optionality (B7).
-- **Status:** CONSTRUCTED. No backtest yet. Do not use for capital allocation.
-- **BNAT target:** Backtest against Arreguin-Toft dataset + startup-vs-incumbent outcomes 2000–2020.
-
-### D2. **Failure-mode dominance test**
-- **Need:** A formal predicate `dominates(new_formula, failure_A_i)` returning true only when the new formula does not reduce to A_i under substitution.
-- **Provisional form:** Symbolic reduction + assumption-set diff; needs formal grammar for register entries.
-- **BNAT target:** Grammar spec + automated checker as CI gate on register additions.
-
-### D3. **Chattering-to-formal conversion rate**
-- **Need:** Meta-metric on how many folk laws in Section C survive formalization vs. get falsified.
-- **Provisional form:** C_survive / C_attempted, tracked per rev.
-- **BNAT target:** Retrospective on rev-0 → rev-N of Section C to establish baseline.
-
-### D4. **Anti-Wald sampling protocol**
-- **Need:** Standard procedure for including failures in every case study we cite, quantifying survivorship bias correction.
-- **Provisional form:** Require failure-set citation ratio ≥ 1:3 (failures:successes) for any generalization claim.
-- **BNAT target:** Audit existing WR entries against this ratio; publish shortfall.
-
-### D5. **Convexity budget for the $10k→$10M ramp**
-- **Need:** Formula assigning % of monthly revenue to convex bets (per B4 barbell), varying with current MRR and runway.
-- **Provisional form:** convex_frac = min(0.10 + 0.05·log₁₀(MRR/10k), 0.30) — grows from 10% at $10k MRR to 30% ceiling.
-- **Status:** CONSTRUCTED. Coefficients are guesses.
-- **BNAT target:** Calibrate against startup outcome data by MRR band.
+| # | Name | Statement | Mechanism |
+|---|---|---|---|
+| C1 | **Goodhart's Law** | "When a measure becomes a target, it ceases to be a good measure." | Optimization pressure collapses proxy-target correlation (Manheim & Garrabrant 2018 taxonomy: regressional, extremal, causal, adversarial). |
+| C2 | **Lindy Effect** | Expected remaining life of a non-perishable ∝ current age. | Survivorship-implied hazard: `h(t) ∝ 1/t` ⇒ `E[T−t \| T>t] ≈ t`. |
+| C3 | **Brooks's Law** | "Adding manpower to a late software project makes it later." | Onboarding cost + communication edges grow `O(n²)` vs. linear labor gain. |
+| C4 | **Parkinson's Law** | "Work expands to fill the time available." | Absence of a binding constraint ⇒ scope inflation to fill slack. |
+| C5 | **Hofstadter's Law** | "It always takes longer than you expect, even accounting for Hofstadter's Law." | Planning-fallacy fixed point; recursive underestimation of unknown-unknowns. |
+| C6 | **Cunningham's Law** | "Best way to get the right answer is to post the wrong one." | Correction is lower-effort than generation; asymmetric response cost. |
+| C7 | **K-factor** (virality) | `K = i · c` where `i` = invites/user, `c` = conversion rate. Growth iff `K > 1`. | Branching process; `K` = basic reproduction number `R₀` from epidemiology. |
 
 ---
 
-## Review Focus
+## D. Gaps — Explicit Missing Formulas (→ WR-4484 work queue)
 
-Per the issue: **Section D is the primary review target.** Those five gaps become the invention loop's first work queue. Reviewers should:
+We do not have these yet. They are wired as invention targets for the BNAT loop.
 
-1. Confirm each D-item is genuinely missing (not already solved in another WR).
-2. Challenge the provisional forms — every CONSTRUCTED label is an invitation to falsify.
-3. Propose additional gaps. This list is explicitly non-exhaustive.
+### D1. **Underdog Composite Index** — `U = f(asymmetry, convexity, time_horizon, variance_budget)`
+- **Status:** CONSTRUCTED (not yet backtested).
+- **Sketch:** `U = w₁·A + w₂·C + w₃·log(T) + w₄·V` where `A` = Arreguin-Toft-
+  style strategy-axis mismatch score, `C` = convexity of payoff, `T` = horizon,
+  `V` = tolerated variance. Weights unknown.
+- **Blocker:** need a labeled dataset of underdog wins/losses to fit weights.
+- **Owner (WR-4484 ticket):** `BNAT-D1`.
+
+### D2. **Optimal variance-injection schedule under a scoreboard deficit**
+- **Status:** MISSING.
+- **Analog:** Beaudoin & Swartz solved it for hockey. We lack a general form for
+  business (deficit in revenue, users, runway).
+- **Blocker:** define the utility function whose second derivative flips sign
+  at the deficit threshold.
+- **Owner:** `BNAT-D2`.
+
+### D3. **Anti-Goodhart metric family** — metrics provably resistant to gaming
+- **Status:** MISSING (Manheim & Garrabrant give a taxonomy of failures, not a
+  constructive alternative).
+- **Sketch direction:** ensemble of orthogonal proxies + adversarial audit;
+  measure = infimum over gaming strategies.
+- **Owner:** `BNAT-D3`.
+
+### D4. **Pivot-timing rule with learning** — extension of B6 when observations
+  update the payoff distribution (Bayesian secretary)
+- **Status:** MISSING in closed form for the parameter regimes we care about.
+- **Related:** Bruss 2000 odds-algorithm; but assumes known success prob.
+- **Owner:** `BNAT-D4`.
+
+### D5. **Convexity budget under a fixed runway** — barbell (B4) constrained by
+  a hard cash-out date
+- **Status:** MISSING. Taleb's barbell assumes indefinite horizon; startups have
+  a runway cliff that truncates the tail.
+- **Sketch:** dynamic-programming reformulation of barbell with terminal-wealth
+  constraint at `T = runway`.
+- **Owner:** `BNAT-D5`.
 
 ---
 
-## Change Log
+## Intake rule (how this register is used)
 
-- **rev-0** — Initial register. Sections A (8 failures), B (7 underdog results), C (7 chatterings), D (5 gaps). All D-items marked CONSTRUCTED where provisional forms are given.
-- **rev-0 patch** — Header normalized: Band set to Standards / Immune System (function in Band, flavor in Status); Closes line restored from agent-fallback/issue-16681.
+1. Any new WR citing a Section A formula without its post-mortem → **reject**.
+2. Any new WR claiming an underdog strategy → must map to a B-row or a D-row.
+3. Any new WR quoting a chattering ("just Lindy it") → must cite the C-row
+   mechanism, not the slogan.
+4. Section D is the standing agenda for WR-4484. Closing a D-item requires:
+   named formula, derivation, ≥1 backtest, and a post-mortem stub for when it
+   fails (it will).
+
+---
+
+## Revision log
+
+- **rev-0** — initial register: 8 failed formulas, 7 underdog results, 7
+  chatterings, 5 gaps. Underdog Composite (D1) explicitly labeled CONSTRUCTED
+  until backtested.
