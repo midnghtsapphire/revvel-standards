@@ -29,10 +29,18 @@
       var card = document.createElement('div');
       card.className = 'card';
       card.setAttribute('data-id', p.id);
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
       card.innerHTML = PE.generateSvg(p.genre, p.seed, 500, 700) +
         '<div class="meta"><div class="title">' + escapeHtml(p.title) + '</div>' +
         '<div class="genre">' + escapeHtml(p.genre) + '</div></div>';
       card.addEventListener('click', function () { openModal(p); });
+      card.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openModal(p);
+        }
+      });
       grid.appendChild(card);
     });
     if (!filtered.length) {
