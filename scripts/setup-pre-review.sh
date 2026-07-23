@@ -28,8 +28,8 @@ cat > "$HOOK" <<'HOOK_EOF'
 set -e
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 bash "$REPO_ROOT/.pre-commit-hooks/pre-review-gate.sh"
-if [ -f "$REPO_ROOT/.pre-commit-hooks/wr-memory-jsonl.sh" ]; then
-  bash "$REPO_ROOT/.pre-commit-hooks/wr-memory-jsonl.sh"
+if [ -f "$REPO_ROOT/.pre-commit-hooks/validate-memory-jsonl.sh" ]; then
+  bash "$REPO_ROOT/.pre-commit-hooks/validate-memory-jsonl.sh"
 fi
 HOOK_EOF
 
