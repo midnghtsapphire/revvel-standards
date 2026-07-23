@@ -892,7 +892,7 @@ When running `scripts/setup-mcp.sh` on a new project, the following steps are pe
 
 Every Revvel project that exposes business logic to AI agents should package that logic as a custom MCP server using **FastMCP** — the de facto Python-native framework for building MCP servers and clients.
 
-### 11.1. What Is FastMCP?
+### 11.1. What Is FastMCP
 
 FastMCP ([jlowin/fastmcp](https://github.com/jlowin/fastmcp) · [gofastmcp.com](https://gofastmcp.com)) is the officially recommended Python framework for building MCP servers. It is maintained by Prefect and provides:
 
@@ -1008,7 +1008,7 @@ Or for development (running from source):
 
 Place all custom MCP server code in `mcp_server/` within the project:
 
-```
+```text
 [project-root]/
   mcp_server/
     __init__.py

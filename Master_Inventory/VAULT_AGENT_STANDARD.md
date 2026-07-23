@@ -36,7 +36,7 @@ Spawn the Vault Agent (do NOT handle credentials yourself) whenever any of the f
 
 ## 3. Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Coding Agent / CI                        │
 │  (Claude Code, GitHub Copilot, Cursor, Cline, Windsurf, etc.)  │
@@ -73,7 +73,7 @@ Spawn the Vault Agent (do NOT handle credentials yourself) whenever any of the f
 
 Every secret stored by the Vault Agent must follow this path convention:
 
-```
+```text
 revvel/apps/{APP_NAME}/{ENVIRONMENT}/{SERVICE}
 ```
 
@@ -84,7 +84,7 @@ revvel/apps/{APP_NAME}/{ENVIRONMENT}/{SERVICE}
 | `{SERVICE}` | kebab-case service name | `stripe`, `openai`, `database`, `github` |
 
 **Examples:**
-```
+```text
 revvel/apps/mind-mappr/prod/stripe
 revvel/apps/openclaw/staging/openai
 revvel/apps/growlingeyes/prod/database
@@ -220,7 +220,7 @@ gh secret set {SECRET_NAME} --body "$SECRET_VALUE" --repo {OWNER}/{REPO}
 
 ## 7. Vault Agent Lifecycle
 
-```
+```text
 1. SPAWN
    └─► Triggered by: project bootstrap, agent needing a credential, or vault-provisioning.yml workflow
 
@@ -250,7 +250,7 @@ gh secret set {SECRET_NAME} --body "$SECRET_VALUE" --repo {OWNER}/{REPO}
 
 When the Vault Agent fails to provision a credential (network error, service outage, 2FA block, quota exceeded, etc.), it must NOT silently fail. It triggers the **Ralph Loop**:
 
-### What Is the Ralph Loop?
+### What Is the Ralph Loop
 
 The Ralph Loop is a self-healing CI/error retry mechanism that:
 1. **Detects** a failure (Vault Agent failure, CI failure, or any non-zero exit).
@@ -266,7 +266,7 @@ The Ralph Loop is a self-healing CI/error retry mechanism that:
 - Credential validation fails after provisioning
 
 **GitHub Issue template (Vault Agent failure):**
-```
+```text
 ## Vault Agent Failure — Manual Intervention Required
 
 **App:** {APP_NAME}

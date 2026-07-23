@@ -8,7 +8,7 @@
 
 ---
 
-## 1. What Is a Lead?
+## 1. What Is a Lead
 
 A **lead** is any person who has expressed interest in a product or service but has not yet purchased. A lead has a lifecycle — they move through stages from first contact to closed deal (or lost).
 
@@ -29,7 +29,7 @@ When a lead purchases, they become a customer. Their lead record stays in the `l
 
 Every lead is always in exactly one stage. Stages are ordered — leads move forward (or are lost/disqualified).
 
-```
+```text
 NEW → CONTACTED → QUALIFIED → QUOTED → APPLIED → APPROVED → ISSUED
                                               ↓
                                            DECLINED

@@ -100,7 +100,7 @@ kebab-case. No metaphor, no brand identity required.
 
 ## 5. Decision checklist
 
-```
+```text
 Is it market-facing with its own domain?
 ├─ Yes → Codename tier
 │        ├─ Coin/fuse an evocative name (PascalCase display, lowercase slug)
@@ -114,6 +114,6 @@ Is it market-facing with its own domain?
 
 ---
 
-_Related: `templates/brand/BRAND_IDENTITY_TEMPLATE.md`,
+*Related: `templates/brand/BRAND_IDENTITY_TEMPLATE.md`,
 `templates/brand/REVVEL_EMBLEM_STANDARD.md`, `standards/PROJECT_MANAGEMENT.md`,
-`docs/DEFINITION_OF_DONE.md` (one-iteration scope)._
+`docs/DEFINITION_OF_DONE.md` (one-iteration scope).*

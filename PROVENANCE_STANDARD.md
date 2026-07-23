@@ -14,7 +14,7 @@ without guessing.
 
 Whenever you name a tool, write it as:
 
-```
+```text
 Tool name (Publisher / Sponsor) via `package@version` [nested: dep1, dep2]
 ```
 
@@ -30,7 +30,7 @@ Each piece:
 For internal artifacts (our own scripts, repos, workflows), still name the
 file path so the reader can click straight to it:
 
-```
+```text
 the coder (us) via `scripts/openrouter_coder.py` [models: Claude / Gemini / GPT triad]
 ```
 
@@ -39,36 +39,36 @@ the coder (us) via `scripts/openrouter_coder.py` [models: Claude / Gemini / GPT 
 ## Good vs bad
 
 ❌ **Bad** — ambiguous, agent has to guess
-```
+```text
 Jules reviews this PR.
 ```
 
 ✅ **Good** — agent knows exactly where to look
-```
+```text
 Jules (Google) via `BeksOmega/jules-action@v1.0.0` — see jules-invoke.yml.
 Note: `sanjay3290/jules-pr-reviewer@v1` (different author!) was SILENCED in
 #13974 because it was broken; only the BeksOmega family is active.
 ```
 
 ❌ **Bad**
-```
+```text
 The coder builds a PR.
 ```
 
 ✅ **Good**
-```
+```text
 The coder (us) via `openrouter-coder.yml`, which calls `scripts/openrouter_coder.py`
 [nested: OpenRouter API → Claude Opus 4.7 (anthropic/claude-opus-4-7) by default,
 fallback to Gemini Pro 1.5 then DeepSeek Chat].
 ```
 
 ❌ **Bad**
-```
+```text
 Mabl runs tests.
 ```
 
 ✅ **Good — and reflects current state**
-```
+```text
 Mabl (Mabl Inc., paused 2026-05-27 — see workflow header) via `@mablhq/mabl-cli`.
 Replaced by Keploy (Keploy Inc.) via the GitHub App + Chrome extension.
 ```

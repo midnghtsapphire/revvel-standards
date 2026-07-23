@@ -60,7 +60,7 @@ This PR implements task-based model routing with automatic fallback for OpenRout
 **Use case:** Multi-file edits, bug fixing, refactors, and "take initiative" tasks
 
 **Model fallback chain:**
-```
+```text
 anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
 ```
 
@@ -73,7 +73,7 @@ anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex
 **Use case:** Repetitive transforms, test generation, lint-fix loops, lower-cost bulk changes
 
 **Model fallback chain:**
-```
+```text
 deepseek/deepseek-v3.2 → anthropic/claude-sonnet-4
 ```
 
@@ -86,7 +86,7 @@ deepseek/deepseek-v3.2 → anthropic/claude-sonnet-4
 **Use case:** Difficult failures, ambiguous root-cause analysis, second-opinion patches
 
 **Model fallback chain:**
-```
+```text
 openai/gpt-5.2-codex → anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2
 ```
 
@@ -129,7 +129,7 @@ node scripts/openrouter-routing-eval.js "Refactor the database layer"
 ### Unit Tests
 All 11 unit tests pass:
 
-```
+```text
 ✅ Should have exactly 3 routing profiles
 ✅ repo_surgery should have correct model fallback chain
 ✅ repo_surgery should have correct description
@@ -335,9 +335,9 @@ To fully validate, reviewers should:
 
 ## Links
 
-- **OpenRouter Fallback Docs**: https://openrouter.ai/docs/guides/routing/model-fallbacks
-- **OpenRouter API Docs**: https://openrouter.ai/docs
-- **OpenRouter Model List**: https://openrouter.ai/docs/models
+- **OpenRouter Fallback Docs**: <https://openrouter.ai/docs/guides/routing/model-fallbacks>
+- **OpenRouter API Docs**: <https://openrouter.ai/docs>
+- **OpenRouter Model List**: <https://openrouter.ai/docs/models>
 
 ## Author Notes
 

@@ -173,17 +173,17 @@ node scripts/generate-daily-summary.js
 Open any `wr/summaries/YYYY-MM-DD.html` file directly
 
 ### Option 2: GitHub Pages
-```
+```text
 https://midnghtsapphire.github.io/revvel-standards/wr/summaries/YYYY-MM-DD.html
 ```
 
 ### Option 3: Index Page
-```
+```text
 https://midnghtsapphire.github.io/revvel-standards/wr/summaries/index.html
 ```
 
 ### Option 4: Raw GitHub
-```
+```text
 https://raw.githubusercontent.com/midnghtsapphire/revvel-standards/main/wr/summaries/YYYY-MM-DD.html
 ```
 

@@ -8,7 +8,7 @@
 
 ## The Core Strategy
 
-```
+```text
 AUDREY BUYS → AUDREY DONATES → BUSINESS RECEIVES → DEDUCTION CLAIMED
    Product        to LLC           Asset            FMV = Deduction
 ```
@@ -54,7 +54,7 @@ AUDREY BUYS → AUDREY DONATES → BUSINESS RECEIVES → DEDUCTION CLAIMED
 
 ### Required Tracking Fields
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │              DONATION TRACKER                               │
 ├─────────────────────────────────────────────────────────────┤
@@ -83,7 +83,7 @@ AUDREY BUYS → AUDREY DONATES → BUSINESS RECEIVES → DEDUCTION CLAIMED
 
 ### For Products (New)
 
-```
+```text
 FMV = Retail price at time of donation
     = What willing buyer would pay
     = Receipt from purchase
@@ -91,7 +91,7 @@ FMV = Retail price at time of donation
 
 ### For Products (Used)
 
-```
+```text
 FMV = Fair Market Value
     = Thrift store value
     = Comparable sales
@@ -100,7 +100,7 @@ FMV = Fair Market Value
 
 ### For Equipment
 
-```
+```text
 FMV = Replacement cost - depreciation
     = Comparable sales
     = Professional appraisal (if >$5,000)
@@ -159,7 +159,7 @@ FMV = Replacement cost - depreciation
 
 ### For the Business (After Donation)
 
-```
+```text
 Asset donated to business → Business gets to depreciate!
 
 Example:
@@ -190,7 +190,7 @@ Example:
 
 ### The Key Insight
 
-```
+```text
 Donations = DEDUCTIONS = LOWER TAXABLE INCOME
          = LOWER AGI
          = MEDICAID SAFE

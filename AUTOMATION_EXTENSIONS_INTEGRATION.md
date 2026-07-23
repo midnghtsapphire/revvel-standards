@@ -48,7 +48,7 @@ All three tools sit in a new **automation extensions** lane. They are **write-si
 
 ### How the extensions compose with existing lanes
 
-```
+```text
 PR / issue event  ─►  GitHub (source of truth)
                        │
                        ├─►  openrouter-assignee.yml   (assignee = @Copilot, labels: openrouter, role:*)
@@ -66,7 +66,7 @@ PR / issue event  ─►  GitHub (source of truth)
 
 The extensions are **downstream** of the OpenRouter hand-off. They consume the same labels the existing lanes already emit; they do not rewrite them.
 
-### Why this repo specifically?
+### Why this repo specifically
 
 Because `revvel-standards` owns:
 
@@ -161,7 +161,7 @@ Evaluated against the same criteria as the other integrations in this repo:
 
 Additive only — no existing files overwritten.
 
-```
+```text
 revvel-standards/
 ├── .github/
 │   └── labels.yml                                  # + automation-ext and 3 sub-labels (R-AX-01)

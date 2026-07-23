@@ -391,7 +391,7 @@ Every tax response must reflect these permanent changes:
 
 ## Response Formatting Standards
 
-### For Tax Questions:
+### For Tax Questions
 1. **Identify applicable IRC sections** (e.g., "Under §199A...")
 2. **State the rule clearly**
 3. **Apply to the specific facts**
@@ -399,21 +399,21 @@ Every tax response must reflect these permanent changes:
 5. **Flag risks or caveats**
 6. **Recommend next steps or action items**
 
-### For Tax Planning Responses:
+### For Tax Planning Responses
 - Lead with the dollar impact analysis
 - Present Option A (Optimal), Option B (Conservative), Option C (Alternative structure)
 - Include timing considerations
 - Flag documentation requirements
 - Note state tax implications
 
-### For Audit/Representation Responses:
+### For Audit/Representation Responses
 - Identify the specific IRS notice/form number
 - State the response deadline
 - Recommend documentation to gather
 - Draft response language if requested
 - Advise on appeal rights if applicable
 
-### Citation Standards:
+### Citation Standards
 - Federal: IRC §XXX; Treas. Reg. §X.XXXX-X; Rev. Rul. XXXX-XX; TC Memo XXXX-XX
 - IRS Publications: Pub. XXX (for client-facing explanation only; not primary authority)
 - Court cases: *Taxpayer v. Commissioner*, T.C. XXXX
@@ -613,7 +613,7 @@ Always use web_search for the following tax topics (law changes frequently):
 
 **District Court Local Rules (how to find them):**
 Always go directly to the specific court's website:
-```
+```text
 [district].uscourts.gov/local-rules
 ```
 Key variations court-to-court:
@@ -795,7 +795,7 @@ PDFiller (pdfiller.com) provides 85M+ fillable forms including virtually every f
 
 **Your Repos (risingaloha / midnghtsapphire):**
 Point this skill at your template repo by searching:
-```
+```text
 web_search: site:github.com/risingaloha [template type]
 web_fetch: https://raw.githubusercontent.com/[org]/[repo]/main/[path]
 ```
@@ -820,7 +820,7 @@ Or directly fetch raw file content from your private repo via GitHub API if toke
 
 #### Structured Legal Research Protocol
 
-```
+```text
 Step 1: IDENTIFY → What is the precise legal question?
          (jurisdiction, cause of action, elements, defenses)
 
@@ -847,7 +847,7 @@ Step 6: CITE → Proper citation format
 #### Bluebook Citation Format (21st ed.) — Quick Reference
 
 **Cases:**
-```
+```text
 Party v. Party, Volume Reporter Page (Court Year).
 Bush v. Gore, 531 U.S. 98 (2000).          ← SCOTUS (no court abbreviation needed)
 United States v. Jones, 565 U.S. 400 (2012).
@@ -856,19 +856,19 @@ In re Marriage of Jones, 123 Cal. App. 4th 456 (2004).  ← CA App
 ```
 
 **Statutes:**
-```
+```text
 26 U.S.C. § 199A (2025).     ← Internal Revenue Code
 Cal. Corp. Code § 17704.01 (West 2024).
 ```
 
 **Regulations:**
-```
+```text
 26 C.F.R. § 1.199A-1 (2025).
 Treas. Reg. § 1.199A-1.
 ```
 
 **IRS Primary Sources:**
-```
+```text
 Rev. Rul. 99-6, 1999-1 C.B. 432.
 Rev. Proc. 2021-45, 2021-49 I.R.B. 764.
 T.D. 9864, 84 Fed. Reg. 35,026 (July 22, 2019).
@@ -877,14 +877,14 @@ Tech. Adv. Mem. 2019-08-002.                   ← Not precedential
 ```
 
 **SSRN / Academic (for white papers):**
-```
+```text
 Audrey Evans, [Paper Title] (SSRN Working Paper No. XXXXXXX, 2025).
 Available at https://ssrn.com/abstract=XXXXXXX.
 ```
 
 #### Legal Memo Structure
 
-```
+```text
 MEMORANDUM
 
 TO:    [Client / File]
@@ -914,7 +914,7 @@ CONCLUSION
 
 #### Brief/Motion Structure (Litigation)
 
-```
+```text
 CAPTION (Court, case name, case number, document title)
 
 TABLE OF CONTENTS
@@ -1064,4 +1064,3 @@ For Audrey's SSRN publication workflow, the legal research layer adds:
 - **Transcript/court reporter questions**: Apply NCRA standards; distinguish rough draft vs. certified; flag ADA/CART requirements
 - **SSRN/white paper questions**: Provide full Bluebook citation chain + recommend secondary sources
 - **ALWAYS verify**: Any case cited, any current-year tax number, any local rule — use web_search to confirm before stating as fact
-

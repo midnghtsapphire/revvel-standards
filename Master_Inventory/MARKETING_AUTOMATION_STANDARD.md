@@ -187,7 +187,7 @@ export function buildUTMUrl(
 ```
 
 **Example UTM links:**
-```
+```text
 Instagram post → yourapp.com/products/planner?utm_source=instagram&utm_medium=social&utm_campaign=spring_2026&utm_content=carousel
 TikTok bio link → yourapp.com?utm_source=tiktok&utm_medium=social&utm_campaign=tiktok_bio
 Email newsletter → yourapp.com/products?utm_source=email&utm_medium=email&utm_campaign=april_newsletter
@@ -223,7 +223,7 @@ Before auto-posting works, these API credentials must be added to the app's envi
 
 The Marketing Dashboard's "Generate Campaign" button triggers this flow:
 
-```
+```text
 1. User selects: platforms, product/offer, audience, budget, schedule date
           ↓
 2. AI (OpenRouter) generates:
@@ -262,11 +262,11 @@ The campaign auto-posting Make.com scenario must:
 
 ## 6. Landing Page / Funnel Structure
 
-### 6.1. What Is a Funnel?
+### 6.1. What Is a Funnel
 
 A funnel is the path a stranger takes to become a paying customer. Every Revvel app has at minimum a 3-stage funnel:
 
-```
+```text
 AWARENESS       CONSIDERATION         CONVERSION
 (They find you) (They learn more)     (They buy)
      │                │                    │

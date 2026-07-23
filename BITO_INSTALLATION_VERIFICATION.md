@@ -24,11 +24,11 @@ This document tracks the installation status of the Bito AI GitHub App for the M
 
 The Bito AI GitHub App is installed with ID: **128849516**
 
-**Installation URL:** https://github.com/settings/installations/128849516
+**Installation URL:** <https://github.com/settings/installations/128849516>
 
 **To verify the installation:**
 
-1. Navigate to https://github.com/settings/installations
+1. Navigate to <https://github.com/settings/installations>
 2. Look for "Bito AI" or "Bito" in the list of installed GitHub Apps
 3. Verify the installation ID matches 128849516
 4. Confirm it has access to `midnghtsapphire/revvel-standards`
@@ -71,8 +71,8 @@ gh secret list --repo midnghtsapphire/revvel-standards | grep BITO_API_KEY
 
 **To configure the secret:**
 
-1. Get your API key from https://bito.ai → Settings → API Keys
-2. Go to https://github.com/midnghtsapphire/revvel-standards/settings/secrets/actions
+1. Get your API key from <https://bito.ai> → Settings → API Keys
+2. Go to <https://github.com/midnghtsapphire/revvel-standards/settings/secrets/actions>
 3. Click "New repository secret"
 4. Name: `BITO_API_KEY`
 5. Value: (paste your API key)
@@ -103,7 +103,7 @@ Run the integration test workflow:
 gh workflow run test-bito-integration.yml --repo midnghtsapphire/revvel-standards
 ```
 
-Or navigate to: https://github.com/midnghtsapphire/revvel-standards/actions/workflows/test-bito-integration.yml
+Or navigate to: <https://github.com/midnghtsapphire/revvel-standards/actions/workflows/test-bito-integration.yml>
 
 ### 3.2 Manual Verification
 
@@ -177,7 +177,7 @@ bito auth login
 
 **Solutions:**
 - Check `BITO_API_KEY` secret is configured
-- Verify the secret has a valid API key from https://bito.ai
+- Verify the secret has a valid API key from <https://bito.ai>
 - Check workflow logs for errors: Actions → BITO AI — Code Review → View logs
 - Ensure the GitHub App has `pull-requests: write` permission
 
@@ -221,8 +221,8 @@ Before marking Bito AI as fully operational:
 
 ## 7. References
 
-- **Bito AI Website:** https://bito.ai
-- **GitHub App Installation:** https://github.com/settings/installations/128849516
+- **Bito AI Website:** <https://bito.ai>
+- **GitHub App Installation:** <https://github.com/settings/installations/128849516>
 - **Integration Documentation:** [docs/BITO_AI_INTEGRATION.md](./BITO_AI_INTEGRATION.md)
 - **Integration Standard:** [standards/BITO_AI_INTEGRATION_STANDARD.md](../standards/BITO_AI_INTEGRATION_STANDARD.md)
 - **Skill Metadata:** [skills/bito-ai/SKILL.md](../skills/bito-ai/SKILL.md)
@@ -255,7 +255,7 @@ gh workflow run test-bito-integration.yml
 
 When rotating the BITO API key:
 
-1. Generate new key at https://bito.ai → Settings → API Keys
+1. Generate new key at <https://bito.ai> → Settings → API Keys
 2. Update GitHub secret: `gh secret set BITO_API_KEY --repo midnghtsapphire/revvel-standards`
 3. (Optional) Update Vault: `vault kv put revvel/shared/code-review/bito api_key="<new-key>"`
 4. Test connectivity: `./scripts/test-bito-api.sh`
@@ -269,7 +269,7 @@ Monitor for updates to `bito-core/bito-github-action`:
 uses: bito-core/bito-github-action@v1
 ```
 
-Check for updates at: https://github.com/bito-core/bito-github-action/releases
+Check for updates at: <https://github.com/bito-core/bito-github-action/releases>
 
 ---
 

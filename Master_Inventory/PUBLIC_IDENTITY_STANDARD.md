@@ -39,7 +39,7 @@ Some technical scenarios require your permanent numerical User ID (stable across
 - **API integrations** — Automated scripts and the [GitHub REST API](https://docs.github.com/en/rest/authentication/authenticating-to-the-rest-api) should reference accounts by numerical ID when persistence is required.
 - **No-reply email** — To keep your real email private while committing code, enable "Keep my email addresses private" in GitHub email settings and use the provided address in the form:
 
-  ```
+  ```text
   <ID>+<username>@users.noreply.github.com
   ```
 

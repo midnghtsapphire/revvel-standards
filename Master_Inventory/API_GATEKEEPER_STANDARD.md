@@ -28,7 +28,7 @@ The Gatekeeper is not a single product — it is a layered architecture that can
 
 ## 3. Gatekeeper Architecture
 
-```
+```text
 Client Request
       │
       ▼
@@ -625,7 +625,7 @@ http:
 
 ### 10.3. Caddy (Recommended for Simple/Edge Deployments)
 
-```
+```text
 # Caddyfile
 api.revvel.io {
     rate_limit {
@@ -810,7 +810,7 @@ jobs:
 
 ## 13. Gatekeeper Directory Structure
 
-```
+```text
 src/
 ├── gatekeeper.ts           # Main gateway entry point
 ├── auth/
@@ -878,8 +878,8 @@ OIDC_CLIENT_SECRET=<client-secret>   # In Vault, not here
 - `VAULT_AGENT_STANDARD.md` — secret storage for tokens and keys
 - `AGENT_FACTORY_STANDARD.md` — agent trigger and routing matrix
 - `templates/cicd/security.yml` — security workflow that includes gatekeeper tests
-- Open Policy Agent: https://www.openpolicyagent.org
-- Kong Gateway Docs: https://docs.konghq.com
-- Traefik Docs: https://doc.traefik.io/traefik
-- rate-limiter-flexible: https://github.com/animir/node-rate-limiter-flexible
-- OWASP API Security Top 10: https://owasp.org/www-project-api-security
+- Open Policy Agent: <https://www.openpolicyagent.org>
+- Kong Gateway Docs: <https://docs.konghq.com>
+- Traefik Docs: <https://doc.traefik.io/traefik>
+- rate-limiter-flexible: <https://github.com/animir/node-rate-limiter-flexible>
+- OWASP API Security Top 10: <https://owasp.org/www-project-api-security>

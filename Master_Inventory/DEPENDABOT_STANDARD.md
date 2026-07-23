@@ -34,7 +34,7 @@ Dependabot is a GitHub-native tool that does three things:
 
 ### Where It Fits in the Revvel Pipeline
 
-```
+```text
 Code Push / PR
       ↓
 CI Workflow (ci.yml)
@@ -222,7 +222,7 @@ updates:
 
 When Dependabot opens a PR, it triggers your standard CI workflow (`ci.yml`) exactly like any other PR. No special configuration is needed.
 
-```
+```text
 Dependabot opens PR
       ↓
 GitHub triggers: pull_request event
@@ -400,7 +400,7 @@ Always leave a comment explaining why it was closed.
 
 ## 8. Troubleshooting
 
-### 8.1. "Dependency review is not supported on this repository"
+### 8.1. "Dependency review is not supported on this repository
 
 **Cause:** `actions/dependency-review-action` requires GitHub Advanced Security and Dependency Graph.
 

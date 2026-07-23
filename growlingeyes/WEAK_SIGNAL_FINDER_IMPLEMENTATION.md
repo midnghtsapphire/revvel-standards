@@ -3,7 +3,7 @@
 **Date:** April 30, 2026  
 **Repository:** `midnghtsapphire/revvel-standards`  
 **PR Branch:** `copilot/add-to-growlingeyes`  
-**Issue:** [WR] add to growlingeyes.com https://github.com/LittleViewer/WeakSignalFinder/blob/main/README.md
+**Issue:** [WR] add to growlingeyes.com <https://github.com/LittleViewer/WeakSignalFinder/blob/main/README.md>
 
 ---
 
@@ -283,7 +283,7 @@ The tool was tested in a sandboxed CI environment with network restrictions. RSS
 
 ### Test Results
 
-```
+```text
 Testing Weak Signal Finder components...
 
 ✓ Text processing works
@@ -353,7 +353,7 @@ Testing Weak Signal Finder components...
 
 ## References
 
-- **Original WeakSignalFinder:** https://github.com/LittleViewer/WeakSignalFinder
+- **Original WeakSignalFinder:** <https://github.com/LittleViewer/WeakSignalFinder>
 - **GrowlingEyes Master Spec:** `docs/GROWLINGEYES_MASTER_SPEC.md`
 - **Tool Documentation:** `docs/growlingeyes/WEAK_SIGNAL_FINDER.md`
 - **Axion MCP Spec:** `docs/AXION_PLANETARY_MCP.md`

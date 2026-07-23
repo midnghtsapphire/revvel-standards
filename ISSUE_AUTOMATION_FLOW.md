@@ -5,7 +5,7 @@ owner: midnghtsapphire/revvel-standards
 updated: 2026-04-21
 ---
 
-# Issue Automation Flow
+## Issue Automation Flow
 
 ## Requirements (RFC 2119)
 

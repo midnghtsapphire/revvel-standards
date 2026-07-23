@@ -43,7 +43,7 @@ this is the summary:
 | Grouping | GitHub Actions non-major bumps → one PR; npm devDependencies non-major bumps → one PR; every major bump (either manager) → its own isolated PR |
 | Auto-merge | **Only** non-major GitHub Actions and non-major npm devDependencies, and only after required CI checks pass (`platformAutomerge: true` defers to GitHub's native branch-protection required-status-checks) |
 | Never auto-merged | Any major version bump, and any npm **production** dependency bump of any size (there are none today — `package.json` has only `devDependencies` — but the rule is defined pre-emptively) |
-| Vulnerability alerts | Separate lane, `schedule` doesn't apply — security PRs open immediately, `prPriority: 10` |
+| Vulnerability alerts | Separate lane, `schedule` doesn't apply — security PRs open immediately (Renovate prioritizes vulnerability-fix PRs automatically; `prPriority` is not a valid field inside `vulnerabilityAlerts` and was removed — see the "Validating the config" section) |
 | Lockfile maintenance | Weekly, same Wednesday window, lockfile-only PRs (no `package.json` changes) |
 | Dependency Dashboard | On — one tracking issue enumerating every pending update, labeled `dependencies`; majors require checking a box on the dashboard before Renovate even opens their PR (`dependencyDashboardApproval: true`) |
 | Commit/PR title style | `semanticCommits: enabled` + explicit type/scope so output matches this repo's `type(scope): description` convention (e.g. `chore(deps): ...`, `chore(actions): ...`), matching what `.github/pull_request_template.md` already requires |

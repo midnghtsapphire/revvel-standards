@@ -41,7 +41,7 @@ GitKraken is **not** a replacement for any existing tool listed in [`docs/revvel
 | Non-CLI contributor onboarding | `install/mac/` + `install/windows/` installers for GBrain; raw `git` for everything else | Point-and-click GUI; the Workspace + clone flow matches the "non-coder" onboarding goal in [`docs/NON_CODER_GUIDE.md`](./NON_CODER_GUIDE.md). |
 | PR → OpenRouter visibility | `openrouter-assignee.yml` first-line-of-sight comment + labels | Launchpad shows the same labels (`openrouter`, `role:orchestrator`, `graphite:stacked`) alongside CI status, so a contributor can *see* that the orchestrator is live on a PR without leaving the GUI. |
 
-### Why this repo specifically?
+### Why this repo specifically
 
 Because `revvel-standards` owns the canonical label set (`.github/labels.yml`) and the canonical repo catalog (`docs/REPO_CATALOG.md`), it is the natural home for:
 
@@ -59,7 +59,7 @@ The existing hand-off (see [`OPENROUTER_ASSIGNEE_PROCESS.md`](./OPENROUTER_ASSIG
 
 GitKraken adds a **read-side** surface on top of that:
 
-```
+```text
 PR opened ─► openrouter-assignee.yml ─► assignee = @Copilot
                                         ├─ label: openrouter
                                         ├─ label: role:orchestrator
@@ -147,7 +147,7 @@ Evaluated against the same criteria as other integrations in this repo:
 
 Additive only — no existing files overwritten.
 
-```
+```text
 revvel-standards/
 ├── .github/
 │   └── labels.yml                          # + gitkraken, + gitkraken:workspace (R-GK-03)

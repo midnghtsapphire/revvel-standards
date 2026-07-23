@@ -48,7 +48,7 @@ User reported multiple concerns:
 ### Issue 3: Agent Routing
 
 **Finding:** `agent-fallback.yml` had routing order:
-```
+```text
 OpenHands (paid, ~$50/task) → Cursor → OpenRouter (affordable)
 ```
 
@@ -136,12 +136,12 @@ jobs:
 **Changes:**
 
 **Old routing:**
-```
+```text
 OpenHands (paid) → Cursor → OpenRouter
 ```
 
 **New routing:**
-```
+```text
 OpenRouter (affordable) → Cursor → OpenHands (opt-in only)
 ```
 
@@ -231,8 +231,8 @@ OpenRouter (affordable) → Cursor → OpenHands (opt-in only)
    - Check workflow logs to verify routing order
 
 4. **Monitor Costs:**
-   - OpenRouter dashboard: https://openrouter.ai/usage
-   - CircleCI insights: https://app.circleci.com/
+   - OpenRouter dashboard: <https://openrouter.ai/usage>
+   - CircleCI insights: <https://app.circleci.com/>
    - Set budget alerts at $40/month (80% of $50 budget)
 
 ### For Other Contributors

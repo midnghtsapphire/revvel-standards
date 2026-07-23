@@ -446,7 +446,7 @@ The compliance auditor maps every finding to OWASP and CWE identifiers:
 
 ### 10.1. Remediation Priority Ladder
 
-```
+```text
 P0 — Critical CVE or verified secret leak
   → Immediate: block merge, open incident, attempt auto-fix PR within 5 minutes
 
@@ -609,7 +609,7 @@ The **Ralph Loop** (`templates/cicd/ralph-loop.yml`) is the CI implementation of
 
 ## 13. Audit Agent Directory Structure
 
-```
+```text
 scripts/
 └── audit/
     ├── quality_gate.py        # Quality threshold evaluator
@@ -653,6 +653,6 @@ reports/
 - `templates/cicd/security.yml` — base security workflow template
 - `templates/cicd/auto-fix.yml` — automated fix PR workflow
 - `templates/cicd/ralph-loop.yml` — self-healing CI loop
-- Semgrep: https://semgrep.dev/docs
-- OSV Scanner: https://google.github.io/osv-scanner
-- Lighthouse CI: https://github.com/GoogleChrome/lighthouse-ci
+- Semgrep: <https://semgrep.dev/docs>
+- OSV Scanner: <https://google.github.io/osv-scanner>
+- Lighthouse CI: <https://github.com/GoogleChrome/lighthouse-ci>

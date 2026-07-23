@@ -381,7 +381,7 @@ Every UI-to-database field test must produce a written evidence log. This log is
 ### 7.1. Evidence Log Format
 
 Store test evidence logs in:
-```
+```text
 docs/field-tests/[PROJECT_NAME]/[SCREEN_NAME]_FIELD_TEST_LOG.md
 ```
 
@@ -418,7 +418,7 @@ WHERE email = 'jane@example.com';
 **Result:**
 | id | first_name | email | role | created_at |
 |---|---|---|---|---|
-| 550e8400-... | Jane | jane@example.com | user | 2026-04-15 13:00:00+00 |
+| 550e8400-... | Jane | <jane@example.com> | user | 2026-04-15 13:00:00+00 |
 
 **Status:** ✅ PASS
 
@@ -454,7 +454,7 @@ SELECT id, email, deleted_at FROM users WHERE id = '550e8400-...';
 **Result:**
 | id | email | deleted_at |
 |---|---|---|
-| 550e8400-... | jane@example.com | 2026-04-15 13:02:00+00 |
+| 550e8400-... | <jane@example.com> | 2026-04-15 13:02:00+00 |
 
 **Status:** ✅ PASS
 
@@ -465,8 +465,8 @@ SELECT id, email, deleted_at FROM users WHERE id = '550e8400-...';
 | Constraint | Input | Expected Rejection | DB Error | API Status | Status |
 |---|---|---|---|---|---|
 | NOT NULL (first_name) | NULL | Yes | null value in column "first_name" | 400 | ✅ PASS |
-| UNIQUE (email) | jane@example.com (duplicate) | Yes | duplicate key value | 409 | ✅ PASS |
-```
+| UNIQUE (email) | <jane@example.com> (duplicate) | Yes | duplicate key value | 409 | ✅ PASS |
+```text
 
 ---
 
@@ -607,7 +607,7 @@ env:
 
 ### 9.2. CI Test Execution Order
 
-```
+```text
 1. Unit tests (Vitest)
 2. Integration tests (Vitest + Supertest)
 3. Schema validation (drizzle-kit check)     ← NEW: validates schema matches migrations
@@ -620,7 +620,7 @@ env:
 
 The test database is separate from development and production:
 
-```
+```text
 Test DB:   TEST_DATABASE_URL   ← used in CI, isolated, reset after each run
 Dev DB:    DATABASE_URL        ← used locally by developers
 Prod DB:   DATABASE_URL (prod) ← NEVER used in tests

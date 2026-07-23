@@ -129,7 +129,7 @@ All workflows copied to `templates/cicd/` for easy reuse:
 
 ### Workflow Flow
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                         PR Opened (Draft)                        │
 └────────────────────────────┬────────────────────────────────────┘
@@ -485,10 +485,10 @@ Common issues:
 
 ## Resources
 
-- **GitHub Actions Documentation:** https://docs.github.com/actions
-- **Shields.io Badge Service:** https://shields.io
-- **GitHub API Reference:** https://docs.github.com/rest
-- **GitHub CLI Documentation:** https://cli.github.com/manual/
+- **GitHub Actions Documentation:** <https://docs.github.com/actions>
+- **Shields.io Badge Service:** <https://shields.io>
+- **GitHub API Reference:** <https://docs.github.com/rest>
+- **GitHub CLI Documentation:** <https://cli.github.com/manual/>
 
 ---
 

@@ -3,7 +3,7 @@
 > **Last Updated**: Feb 25, 2026 4:35 PM MST
 > **Sprint**: Sprint 1 — Foundation & Core Apps
 > **Status**: Snapshot (see note below)
-
+>
 > [!NOTE]
 > **This document is a point-in-time snapshot from Feb 25, 2026.**
 > It is not automatically maintained. For live project status, see:
@@ -73,7 +73,7 @@
 
 ## Corporate Entity Hierarchy
 
-```
+```text
 Freedom Angel Corp (2010, CO, EIN: 86-1209156, Non-Profit, Good Standing)
 ├── Freedom Angel Fighters (Advocacy & Anti-Trafficking)
 ├── Angel Reporter(s) (Investigative Journalism, Copyright 2010 & 2018)
@@ -130,7 +130,7 @@ Freedom Angel Corp (2010, CO, EIN: 86-1209156, Non-Profit, Good Standing)
 | Domain | Points To | DNS At |
 |---|---|---|
 | meetaudreyevans.com | GitHub Pages (185.199.x.x) | GoDaddy |
-| www.meetaudreyevans.com | midnghtsapphire.github.io (CNAME) | GoDaddy |
+| <www.meetaudreyevans.com> | midnghtsapphire.github.io (CNAME) | GoDaddy |
 | reesereviews.com | TBD | TBD |
 | yumyumcode.com | GitHub Pages (`MIDNGHTSAPPHIRE/yumyumcode`) | GoDaddy / Namecheap — direction locked in [`YUMYUMCODE_EVAL_2026-04-28.md`](./YUMYUMCODE_EVAL_2026-04-28.md) |
 | growlingeyes.com | TBD | TBD |
@@ -202,12 +202,12 @@ Freedom Angel Corp (2010, CO, EIN: 86-1209156, Non-Profit, Good Standing)
 ## Affiliate Links
 | Platform | Link |
 |---|---|
-| Make.com | https://www.make.com/en/register?pc=risingaloha |
-| GoHighLevel | https://www.gohighlevel.com/?fp_ref=audrey51 |
-| VideoGen | https://videogen.io/?fpr=audrey21 |
-| Chime | https://www.chime.com/r/audreyevans44/?c=s |
-| DigitalOcean | https://m.do.co/c/fe8240d60588 |
-| Monday.com | https://try.monday.com/9828lfh0uct0 |
+| Make.com | <https://www.make.com/en/register?pc=risingaloha> |
+| GoHighLevel | <https://www.gohighlevel.com/?fp_ref=audrey51> |
+| VideoGen | <https://videogen.io/?fpr=audrey21> |
+| Chime | <https://www.chime.com/r/audreyevans44/?c=s> |
+| DigitalOcean | <https://m.do.co/c/fe8240d60588> |
+| Monday.com | <https://try.monday.com/9828lfh0uct0> |
 | Amazon Associates | Tag: meetaudreyeva-20 |
 
 ---

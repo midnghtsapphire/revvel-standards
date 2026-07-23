@@ -145,7 +145,7 @@ These requirements use **RFC 2119** keywords (MUST / SHOULD / MAY) so they are t
 
 ## 6. Proposed directory layout
 
-```
+```text
 revvel-standards/
 ├── package.json                       # scripts: test, test:markdown, test:links, test:yaml, ...
 ├── .markdownlint.jsonc                # markdownlint-cli2 config

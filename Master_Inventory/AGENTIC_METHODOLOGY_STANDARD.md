@@ -25,7 +25,7 @@
 
 ---
 
-## 1. What Is This Framework?
+## 1. What Is This Framework
 
 Use this openrouter combination:
 Swarms
@@ -369,12 +369,12 @@ National Ecological Observatory Network (NEON): Funded by the National Science F
 OpenTopography: A premier facility for accessing topographically focused LiDAR datasets, particularly useful for researchers and academic users.
 Texas Geographic Information Office (TNRIS): Offers a comprehensive DataHub for LiDAR projects in Texas, including status maps for ongoing acquisitions. 
 
-3. Europe
+2. Europe
 National Mapping Agency Portals: Many European countries, such as the UK (via Defra), Germany, and Scandinavian countries, maintain open-access, high-resolution LiDAR data for national terrain modeling.
 Beacons of the Past (UK): A dedicated project for mapping and researching hillforts in the Chilterns landscape. 
 GIM International
 GIM International
-4. International & Archaeological Repositories
+3. International & Archaeological Repositories
 LidArc Initiative: A dedicated initiative, often associated with Global Digital Heritage, focusing on applying LiDAR to map undocumented archaeological sites globally, especially in Latin America.
 GEDI (Global Ecosystem Dynamics Investigation): A space-based LiDAR instrument on the International Space Station (ISS) operated by NASA, providing worldwide 3D measurements of forest canopy structures, available on NASA Earthdata.
 CALIPSO (Cloud-Aerosol Lidar and Infrared Pathfinder Satellite Observation): A long-running NASA/CNES atmospheric LiDAR project. 
@@ -398,7 +398,7 @@ Emerging Trends
 Web-based 3D Viewers: Many repositories, including the USGS LidarExplorer, are moving toward Entwine Point Tile (EPT) formats to allow direct 3D visualization of massive datasets in web browsers.
 UAV LiDAR Surveys: Projects, such as those in Guatemala, are increasingly using drones (like the Quantum Systems Trinity) to conduct localized, high-density scans of remote areas, often achieving over 80 points per square meter.
 
-https://github.com/szenergy/awesome-lidar
+<https://github.com/szenergy/awesome-lidar>
 
 The best source for free, high-resolution old topographic maps is the USGS topoView, which contains over 185,000 maps published between 1884 and 2006. These maps, covering the entire US, are available as GeoTIFF, JPEG, and KMZ files for Google Earth, perfect for tracking landscape changes. 
 
@@ -424,8 +424,8 @@ National Archives (NARA): NARA holds the original applications and enrollment ja
 FamilySearch: Offers a massive, free Native American Records Collection for those looking to avoid paywalls. 
 
 Main DOI Repositories & Bureaus
-Department of the Interior (Main Site): https://www.doi.gov/
-Bureau of Indian Affairs (BIA): https://www.bia.gov/
+Department of the Interior (Main Site): <https://www.doi.gov/>
+Bureau of Indian Affairs (BIA): <https://www.bia.gov/>
 Bureau of Land Management (BLM) General Land Office Records: blm.gov (Best for land patents and survey notes).
 National Park Service (NPS) Records: nps.gov
 U.S. Geological Survey (USGS) Library: usgs.gov
@@ -437,7 +437,6 @@ RG 75: Records of the Bureau of Indian Affairs (Includes tribal census and enrol
 RG 49: Records of the Bureau of Land Management
 RG 79: Records of the National Park Service
 RG 57: Records of the U.S. Geological Survey 
-
 
 Unsecured Cloud Storage: Many massive datasets are found in public cloud storage buckets (e.g., Elasticsearch, Azure) 
 Top Dark Web Search Engine:
@@ -467,8 +466,7 @@ TorLock. ...
 TorrentDownloads. ...
 LimeTorrents.
 
-https://github.com/ngosang/trackerslist
-
+<https://github.com/ngosang/trackerslist>
 
 Other notable services include Have I Been Pwned, which is free for personal use but has limited depth compared to commercial databases. 
 
@@ -522,7 +520,7 @@ The **2040 Precog Methodology** anticipates this future by building for it today
 
 ### The Revvel Development Loop
 
-```
+```text
 RESEARCH → SPEC (SKILL.md) → BUILD (skill.yml) → TEST (promptfoo.yml)
     ↑                                                      |
     └─────── ITERATE ←── MONITOR ←── SHIP ←── VERIFY ──────┘
@@ -570,7 +568,7 @@ A **Pop-Up Skill** is a skill that installs itself, runs, and cleans up — all 
 
 ### Architecture Overview
 
-```
+```text
 User double-clicks installer
          │
          ▼
@@ -604,7 +602,7 @@ User double-clicks installer
 
 ### Pop-Up Skill File Structure
 
-```
+```text
 skills/<skill-name>/
 ├── SKILL.md                  # Human-readable spec & documentation
 ├── <skill-name>.skill.yml    # Machine-readable config for AI tools
@@ -686,7 +684,7 @@ farewell: |
 
 ### Skill States
 
-```
+```text
 DRAFT → REVIEW → BETA → STABLE → DEPRECATED
 ```
 
@@ -914,12 +912,12 @@ Skills are valued by their **ROI multiplier** — how much developer time they s
 
 ### ROI Calculation Formula
 
-```
+```text
 Skill Value = (Hours Saved Per Week × Developer Hourly Rate × 52) × 0.1
 ```
 
 Example: Code Review skill saves 3 hours/week for a $75/hr developer:
-```
+```text
 Value = (3 × $75 × 52) × 0.1 = $1,170/year → Price at $49–$99
 ```
 

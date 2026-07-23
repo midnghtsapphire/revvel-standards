@@ -64,9 +64,9 @@ Each row above is a **suite**. The harness wires them together.
 
 Same six criteria as the parent [`TEST_HARNESS_RESEARCH.md`](./TEST_HARNESS_RESEARCH.md) §4.1, plus three mobile-specific ones:
 
-7. **No local native toolchain required** — must runnable from CI without forcing every developer to install Xcode (≈ 12 GB) or Android Studio (≈ 8 GB) locally. Matches AGENTS.md "EAS Build handles App Store / Play Store builds in the cloud — no Xcode or Android Studio required."
-8. **Works with Expo managed workflow** — does not force ejecting to bare React Native, since Expo managed is the documented default.
-9. **Cross-platform parity** — the same test (or trivially-shared YAML) runs on both iOS and Android with one assertion model, not two.
+1. **No local native toolchain required** — must runnable from CI without forcing every developer to install Xcode (≈ 12 GB) or Android Studio (≈ 8 GB) locally. Matches AGENTS.md "EAS Build handles App Store / Play Store builds in the cloud — no Xcode or Android Studio required."
+2. **Works with Expo managed workflow** — does not force ejecting to bare React Native, since Expo managed is the documented default.
+3. **Cross-platform parity** — the same test (or trivially-shared YAML) runs on both iOS and Android with one assertion model, not two.
 
 ### 4.2. Recommended tools
 
@@ -79,7 +79,7 @@ Same six criteria as the parent [`TEST_HARNESS_RESEARCH.md`](./TEST_HARNESS_RESE
 | **E2E — iOS + Android (recommended default)** | **[Maestro](https://maestro.mobile.dev)** | Apache-2.0 | $0 (CLI + local + GH Actions); Maestro Cloud paid (optional) | Declarative YAML flows. One flow file runs on both iOS and Android. No native code wiring required (works with Expo managed). Survives small UI churn (`extendedWaitUntil`). Single CLI: `maestro test flows/`. Far less flaky than Appium. |
 | **E2E — alternative tier** | **[Detox](https://github.com/wix/Detox)** (when grey-box internals must be asserted) | MIT | $0 | More programmable (JavaScript), grey-box (synchronizes with RN bridge → far less flaky than Appium). Heavier setup; requires `expo prebuild` (bare workflow). Use only when Maestro can't reach a specific assertion. |
 | **E2E — REJECTED for default** | Appium | Apache-2.0 | $0 | Industry-standard but slowest, flakiest, and heaviest setup of the three. Listed for completeness; do not adopt as default. |
-| **Native build for E2E** | **[EAS Build](https://docs.expo.dev/build/introduction/)** with `--profile preview --platform ios|android` | Free tier sufficient for OSS / low volume | $0 within Expo's free monthly EAS Build minutes; otherwise EAS pricing applies (still cheaper than maintaining local Xcode runners) | Cloud builds → no local Xcode/Android Studio needed. Output `.app` (sim) and `.apk` (emu) consumed directly by Maestro / Detox. |
+| **Native build for E2E** | **[EAS Build](https://docs.expo.dev/build/introduction/)** with `--profile preview --platform ios\|android` | Free tier sufficient for OSS / low volume | $0 within Expo's free monthly EAS Build minutes; otherwise EAS pricing applies (still cheaper than maintaining local Xcode runners) | Cloud builds → no local Xcode/Android Studio needed. Output `.app` (sim) and `.apk` (emu) consumed directly by Maestro / Detox. |
 | **iOS simulator runtime** | **GitHub Actions `macos-14` runner** (free for public repos; paid for private at standard GH Actions rates) | — | $0 (public) | Has Xcode + iOS simulator pre-installed. No local install needed for any developer. |
 | **Android emulator runtime** | **GitHub Actions `ubuntu-latest`** + **[reactivecircus/android-emulator-runner](https://github.com/ReactiveCircus/android-emulator-runner)** | Apache-2.0 | $0 (public) | Boots a headless Android emulator on the runner; well-maintained. |
 | **App-store metadata lint** | Custom Node script (`scripts/check-app-json.js`) using `ajv` | MIT | $0 | Validates `app.json` / `app.config.ts` against Expo's published schema. ~80 LoC. |
@@ -162,7 +162,7 @@ This sits inside the existing Expo / EAS budget; no new line items required for 
 
 This is what an adopting Revvel app SHOULD look like. None of these files are added to `revvel-standards` — only the **starter copies** under `templates/mobile/testing/`.
 
-```
+```text
 my-revvel-app/
 ├── app.json                            # Expo config (linted by app-config suite)
 ├── eas.json                            # EAS Build profiles (preview profile required)

@@ -7,7 +7,7 @@
 
 ---
 
-## What Is This Folder?
+## What Is This Folder
 
 The **Universal BOM List** is the single source of truth for every tool, API, service, framework, and resource that the Revvel ecosystem uses or should evaluate. It lives here — not scattered across project BOMs — so the coding agent, Audrey, and every team member can find the complete picture at a glance.
 
@@ -34,7 +34,7 @@ This folder is the result of a full **self-healing evaluation** of the Revvel St
 
 Every Revvel project goes through 5 lifecycle phases. At each phase transition, the project's BOM is automatically evaluated — items are promoted, demoted, or removed based on what the project actually needs.
 
-```
+```text
 Phase 0: Inception       → Seed BOM from template; prioritize P0 blockers
 Phase 1: Planning        → Finalize stack choices; lock APIs; flag gaps
 Phase 2: Development     → Update BOM as actual usage is confirmed

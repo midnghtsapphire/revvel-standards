@@ -7,7 +7,7 @@
 
 ---
 
-## 1. Decision: PostgreSQL. Not MySQL.
+## 1. Decision: PostgreSQL. Not MySQL
 
 Every Revvel application uses **PostgreSQL** as its database engine. This is not a per-project decision — it is a platform-wide standard. MySQL is not used.
 
@@ -56,7 +56,7 @@ Since all Revvel apps already run on DigitalOcean Droplets, the managed Postgres
 6. Copy the connection string → add to GitHub Secrets as `DATABASE_URL`
 
 **Connection string format:**
-```
+```text
 DATABASE_URL=******db-postgresql-nyc3-xxxxx-do-user-xxxxxxx-0.b.db.ondigitalocean.com:25060/defaultdb?sslmode=require
 ```
 
@@ -85,7 +85,7 @@ Supabase is PostgreSQL under the hood. Use it **in addition to** or **instead of
 - Free tier is acceptable for early-stage apps
 
 **Supabase connection string format:**
-```
+```text
 DATABASE_URL=******db.abcdefghijklm.supabase.co:5432/postgres
 ```
 
@@ -121,7 +121,7 @@ Running PostgreSQL directly on the same Droplet as the app is acceptable **only 
 
 ## 4. Standard Architecture Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    DigitalOcean                             │
 │                                                             │

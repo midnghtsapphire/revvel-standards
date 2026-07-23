@@ -50,7 +50,7 @@ A single LLM prompt cannot produce reliable deep research for several reasons:
 
 The solution is **sub-agents**: specialized LLM instances that each own a focused slice of the research and report structured findings back to a coordinator.
 
-```
+```text
 User / Orchestrator
        │
        ├── Sub-Agent 1: Official documentation & specs
@@ -251,7 +251,7 @@ Write a clear, specific research question. Bad: "How do I use GitHub?" Good: "Sh
 
 Break the question into 5–8 focused sub-questions, one per agent:
 
-```
+```text
 Q: Should midnghtsapphire use GitHub App vs. GitHub EMU?
 
 Sub-questions:
@@ -373,7 +373,7 @@ Research output must pass these checks before being committed as a Revvel Standa
 
 When the Revvel Agent Factory detects these keywords in a task, it should route to the Research Module:
 
-```
+```text
 research, investigate, compare, evaluate, analyze options,
 which is better, pros and cons, deep dive, survey,
 should we use, what are the alternatives, trade-offs

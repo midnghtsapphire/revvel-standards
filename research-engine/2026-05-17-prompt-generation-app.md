@@ -55,7 +55,7 @@ We ship **due-diligence packets**, not prompt catalogs:
 1. Wire Polar.sh checkout to packet generator
 2. Add LLM-augmented source retrieval (v2)
 3. Ship `/api/packet` JSON endpoint for programmatic access ($99/mo tier)
-# Research Packet: Prompt Generation App
+## Research Packet: Prompt Generation App
 
 **Product:** Revvel PromptForge  
 **Branch:** `cursor/prompt-generation-app-e66e`  
@@ -66,7 +66,7 @@ We ship **due-diligence packets**, not prompt catalogs:
 
 Build the prompt generation app as a research-backed packet generator, not a generic prompt library. The crowded market already has large prompt catalogs and prompt optimizers. The open wedge is a Revvel-specific system that turns rough issue notes into a due-diligence packet with source logs, competitor gaps, blue/red-ocean scoring, implementation prompts, and review prompts.
 
-## What Problem Are We Solving?
+## What Problem Are We Solving
 
 Raw work requests often combine Audrey's notes, copied snippets, and LLM output. That material is useful signal, but it can be incomplete, unsourced, or shaped by another model's assumptions. PromptForge solves this by turning the raw idea into a structured packet that forces the agent to answer:
 
