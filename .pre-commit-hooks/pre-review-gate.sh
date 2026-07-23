@@ -76,11 +76,18 @@ for line in lines:
     fixed = url_re.sub(lambda m: '<' + m.group(1) + '>', line)
     out.append(fixed)
 
-# Collapse runs of >1 blank line to single blank
+# Collapse runs of >1 blank line to a single blank outside fenced code blocks.
 collapsed = []
 blank_run = 0
+in_fence = False
 for line in out:
-    if line.strip() == '':
+    if fence_re.match(line):
+        in_fence = not in_fence
+        blank_run = 0
+        collapsed.append(line)
+    elif in_fence:
+        collapsed.append(line)
+    elif line.strip() == '':
         blank_run += 1
         if blank_run <= 1:
             collapsed.append(line)
