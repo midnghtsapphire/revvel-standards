@@ -10,6 +10,7 @@ cd "$REPO_ROOT"
 HOOK=".git/hooks/pre-commit"
 GATE=".pre-commit-hooks/pre-review-gate.sh"
 JSONL_GATE_CANDIDATES=(
+  ".pre-commit-hooks/validate-memory-jsonl.sh"
   ".pre-commit-hooks/wr-memory-jsonl.sh"
   ".pre-commit-hooks/memory-jsonl.sh"
 )
