@@ -1,19 +1,40 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-23T13:33:38.167Z",
+  "generated_at": "2026-07-23T14:45:50.914Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30017045147,
+            "name": "Stuck Label Detection & Auto-Progression",
+            "path": ".github/workflows/stuck-label-automation.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30017045147",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30015641096,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30015641096",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30012338356,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30012338356",
+            "conclusion": "failure"
+          },
           {
             "id": 30011250098,
             "name": "Fleet Controller",
