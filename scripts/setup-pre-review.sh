@@ -36,8 +36,8 @@ REPO_ROOT="$(git rev-parse --show-toplevel)"
 if [ -f "$REPO_ROOT/.pre-commit-hooks/pre-review-gate.sh" ]; then
   bash "$REPO_ROOT/.pre-commit-hooks/pre-review-gate.sh"
 fi
-if [ -f "$REPO_ROOT/.pre-commit-hooks/wr-jsonl-gate.sh" ]; then
-  bash "$REPO_ROOT/.pre-commit-hooks/wr-jsonl-gate.sh"
+if [ -f "$REPO_ROOT/.pre-commit-hooks/validate-memory-jsonl.sh" ]; then
+  bash "$REPO_ROOT/.pre-commit-hooks/validate-memory-jsonl.sh"
 fi
 HOOK_EOF
 
