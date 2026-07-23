@@ -42,9 +42,7 @@ Broader than the melanopic-lux literature supports. The current Bench does not i
 
 _Items the infographic asserted that could not be tagged either way for lack of any parseable claim structure. Left blank intentionally — do not backfill._
 
-- [ ] 
-- [ ] 
-- [ ] 
+- No unparseable claims are recorded in this revision.
 
 ---
 
