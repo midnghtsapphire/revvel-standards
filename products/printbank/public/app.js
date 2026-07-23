@@ -32,8 +32,13 @@
       .forEach(p => {
         const card = document.createElement('div');
         card.className = 'card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
         card.innerHTML = p.svg + `<div class="meta"><span>${p.id}</span><span>${p.genre}</span></div>`;
         card.addEventListener('click', () => openModal(p));
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(p); }
+        });
         grid.appendChild(card);
       });
   }
