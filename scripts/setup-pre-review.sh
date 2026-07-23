@@ -9,7 +9,7 @@ cd "$REPO_ROOT"
 HOOK_DIR=".git/hooks"
 HOOK="$HOOK_DIR/pre-commit"
 GATE=".pre-commit-hooks/pre-review-gate.sh"
-JSONL_GATE=".pre-commit-hooks/jsonl-memory-gate.sh"
+JSONL_GATE=".pre-commit-hooks/validate-memory-jsonl.sh"
 
 if [ ! -f "$GATE" ]; then
   echo "error: $GATE not found" >&2
