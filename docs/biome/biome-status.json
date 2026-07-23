@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-22T23:21:18.283Z",
+  "generated_at": "2026-07-23T00:31:21.044Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,10 +15,10 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 29965821541,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29965821541",
+            "id": 29969270360,
+            "name": "Agent Dispatcher",
+            "path": ".github/workflows/agent-dispatcher.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29969270360",
             "conclusion": "failure"
           }
         ],
