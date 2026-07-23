@@ -65,7 +65,7 @@ All tools above are open-source, self-hostable, and already wired into the Revve
 
 The following architecture provides **equivalent or superior** control to StrongDM using FOSS tools.
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                     API Control Plane (Revvel)                       │
 │                                                                       │

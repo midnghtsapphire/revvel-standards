@@ -76,7 +76,7 @@ The `rfy-tracker` module (added in this PR) provides the watchlist side of the j
 
 ### 3.4 Future: Vine Helper CSV import
 To import Vine Helper CSV into the RFY watchlist, add an endpoint:
-```
+```text
 POST /api/rfy/import-csv
 Body: multipart/form-data with CSV file
 ```

@@ -26,7 +26,7 @@ Evaluate every core agent/system test on these five dimensions:
 Use actual external data and real priorities to validate agent intent.
 
 ### Example Structure
-```
+```text
 Given: [Real context data — e.g., Plaid shows $61.15 bill overdue 8 days + work deadline approaching]
 When: [User asks agent to plan next 48 hours]
 Then:

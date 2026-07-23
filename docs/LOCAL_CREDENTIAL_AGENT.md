@@ -84,7 +84,7 @@ chmod +x auto-fetch-credentials.sh
 
 ## How It Works
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                     YOUR DESKTOP                        │
 │                                                          │

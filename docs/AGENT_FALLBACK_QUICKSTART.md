@@ -7,7 +7,7 @@ free/lower-cost providers.
 
 ## Fallback Chain
 
-```
+```text
 Devin  →  Cursor  →  OpenRouter  →  OpenHands (opt-in)  →  manual
 ```
 

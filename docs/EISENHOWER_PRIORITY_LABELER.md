@@ -43,7 +43,7 @@ You may run **either or both**. When both are enabled, the `P1`–`P4` labels re
 
 ## 3. Eisenhower Matrix Mapping
 
-```
+```text
                          URGENCY
                   ┌───────────┬───────────┐
                   │    Now    │   Later   │

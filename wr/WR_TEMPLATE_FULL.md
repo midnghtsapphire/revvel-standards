@@ -1,4 +1,4 @@
-# [WR] {TITLE}
+# WR: {TITLE}
 
 ## Issue Context
 
@@ -26,6 +26,17 @@
 ## Risks & Mitigations
 
 <!-- Known risks, fragile files touched, rollback plan. -->
+
+## Competitor & Pricing Intelligence
+
+<!--
+For Competitor and GitHub Star Intelligence WRs, the competitor/pricing table
+must list actual prices (e.g. "$99-299/month"), not vague labels like "Paid tiers".
+If a competitor's price is unknown, write:
+"Pricing data pending — competitive benchmark research required."
+Do not ship incomplete competitive intelligence. This rule is kept in sync with
+scripts/research-engine.js by tests/research-engine.test.js.
+-->
 
 ## Learnings — What & Why
 

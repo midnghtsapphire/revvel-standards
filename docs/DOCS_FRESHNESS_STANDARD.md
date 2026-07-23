@@ -44,7 +44,7 @@ Sometimes the pairing genuinely doesn't apply — a typo fix on a workflow
 header doesn't need a doc update. The linter is **soft-warn only**; it
 never blocks merge. To suppress its noise, add one of these to the PR body:
 
-```
+```text
 docs-freshness: typo / formatting only — no behavioral change
 docs-freshness: deferred to PR #N — explanation
 docs-freshness: covered by docs/<file>.md (already up to date)

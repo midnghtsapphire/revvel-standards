@@ -8,7 +8,7 @@
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                     NOTION (Documentation & Templates)           │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐             │
@@ -46,7 +46,7 @@
 4. Now Lovable can read your Notion workspace!
 
 ### Build from Notion Docs
-```
+```text
 Notion PRD page
   ↓ (Lovable reads)
 Lovable generates code
@@ -57,7 +57,7 @@ Jules reviews + refines
 ```
 
 ### Example Prompt
-```
+```text
 Build a dashboard based on the requirements in our Notion workspace:
 - PRDs are in /Projects/CL4R1T4S Dashboard
 - Use the design system from /Design System
@@ -166,7 +166,7 @@ Build a dashboard based on the requirements in our Notion workspace:
 ## Workflow: Notion → Lovable → GitHub → Linear
 
 ### Step 1: Create WR in Notion
-```
+```text
 Notion database → New entry
   ↓
 Fill template (title, requirements, design links)
@@ -215,7 +215,7 @@ jobs:
 ```
 
 ### Step 3: Lovable Generates Code
-```
+```text
 Lovable reads Notion requirements
   ↓
 Generates code
@@ -226,7 +226,7 @@ Opens PR
 ```
 
 ### Step 4: Jules Reviews
-```
+```text
 PR opened
   ↓
 Jules reviews code
@@ -237,7 +237,7 @@ Human approves
 ```
 
 ### Step 5: Merge → Update Linear + Notion
-```
+```text
 PR merged
   ↓
 GitHub Actions:
@@ -274,7 +274,7 @@ Syncs:
 5. Copy the integration token
 
 ### 2. Add to GitHub Secrets
-```
+```text
 NOTION_API_KEY = ntn_xxxxxxxxxxxxxxxxxxxx
 ```
 
@@ -284,7 +284,7 @@ NOTION_API_KEY = ntn_xxxxxxxxxxxxxxxxxxxx
 3. Select your integration
 
 ### 4. Get Database ID
-```
+```text
 Notion database URL: https://notion.so/workspace/DATABASE_ID?v=...
 Database ID: DATABASE_ID (32 chars, with hyphens)
 ```

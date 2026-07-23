@@ -245,7 +245,7 @@ For more details, see [OpenRouter's fallback documentation](https://openrouter.a
 
 The module logs routing decisions to `stdout` by default:
 
-```
+```text
 🔀 Routing profile: repo_surgery
 📝 Description: Multi-file edits, bug fixing, refactors, and "take initiative" tasks
 🎯 Requested models (fallback order): anthropic/claude-sonnet-4 → deepseek/deepseek-v3.2 → openai/gpt-5.2-codex

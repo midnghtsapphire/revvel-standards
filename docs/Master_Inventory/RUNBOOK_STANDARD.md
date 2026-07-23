@@ -233,7 +233,7 @@ When something is broken, follow this order:
 | `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | If using Stripe |
 | [Add app-specific vars here] | | |
 
-```
+```text
 
 ---
 
@@ -244,7 +244,7 @@ your-app-repo/
 └── docs/
     └── runbooks/
         └── [app-name].md    # The runbook for this app
-```
+```text
 
 ---
 

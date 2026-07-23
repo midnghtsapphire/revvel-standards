@@ -65,7 +65,7 @@ See [`GO_TO_MARKET.md`](./GO_TO_MARKET.md) for launch channels, ROI model, and s
 
 Primary funding rail: **Polar.sh** (GitHub funding platform).
 Secondary: affiliate links, newsletter-driven upsells.
-# Revvel Skill Runner
+## Revvel Skill Runner
 
 **Port:** 3004  
 **Stack:** Next.js 15, React 19, Tailwind CSS, OpenRouter API

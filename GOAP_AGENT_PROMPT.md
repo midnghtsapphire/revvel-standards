@@ -121,7 +121,7 @@ SELF-IMPROVEMENT LOOP
 1. **OpenClaw / OpenRouter / Claude / GPT** — paste the fenced block above as the system prompt.
 2. **Create `learnings.md`** in the same workspace/folder so the self-healing loop has somewhere to write.
 3. **First message to test:**
-   ```
+   ```text
    Confirm you are Goap. State the current #1 priority and financial status.
    ```
 
@@ -199,7 +199,7 @@ When this prompt changes:
 
 ---
 
-# AGENT-DEPLOY-ONEFILE RULES (Must Read)
+## AGENT-DEPLOY-ONEFILE RULES (Must Read)
 
 When escalating to GOAP or taking over, you MUST follow these rules:
 
@@ -238,7 +238,7 @@ If project not shipped with revenue:
 ## FILE NAMING
 
 All revenue/product files:
-```
+```text
 revenue/YYYY-MM-DD_HH-MM_product-name.md
 ```
 

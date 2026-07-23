@@ -133,7 +133,7 @@ npm run dashboard urls
 - Source file location
 
 **Example output:**
-```
+```text
 🔗 Test URLs
 Found 37 URLs
 
@@ -226,7 +226,7 @@ Dashboard aggregates from:
 ## Testing
 
 **All tests passing:**
-```
+```text
 ✅ PASS: parseInventory parses service tables
 ✅ PASS: parseInventory handles empty content
 ✅ PASS: parseBOM parses BOM items

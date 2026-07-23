@@ -15,8 +15,8 @@ failure_behavior:
 # Usage
 - When to run, expected duration, and prerequisites.
 
-# Success Criteria
+## Success Criteria
 - What must be true for the command to be considered done.
 
-# Artifacts
+## Artifacts
 - Paths to logs/reports to persist.

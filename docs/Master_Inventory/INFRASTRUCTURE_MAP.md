@@ -98,7 +98,7 @@ All domains are managed through GoDaddy or Namecheap, with DNS pointing to Digit
 
 This hierarchy is used for all legal, branding, and SEO purposes. The anchor founding date for all properties is **2010**.
 
-```
+```text
 Freedom Angel Corp (2010, CO, EIN: 86-1209156, Non-Profit, Good Standing)
 ├── Freedom Angel Fighters (Advocacy & Anti-Trafficking)
 ├── Angel Reporter(s) (Investigative Journalism, Copyright 2010 & 2018)

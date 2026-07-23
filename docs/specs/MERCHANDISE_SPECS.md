@@ -21,7 +21,7 @@ Logo specifications, merchandise templates, and print-on-demand requirements.
 | **Black** | Light backgrounds | logo-black.png |
 
 ### Logo Storage
-```
+```text
 logos/
 ├── primary/              # Main logo files
 │   ├── logo.svg         # Vector source
@@ -133,7 +133,7 @@ logos/
 
 ## Merchandise Workflow
 
-```
+```text
 1. DESIGN
    ├── Create logo variations
    ├── Design merchandise graphics

@@ -104,7 +104,7 @@ does **not** spend money. Everything below is a **dry-run procurement plan** onl
 
 ## Automation Blueprint
 
-```
+```text
 Lead form (TrustedForm + LeadiD scripts)
       │
       ▼

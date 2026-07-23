@@ -11,20 +11,36 @@
  *  - Max one WR per run (schema returns a single object).
  *  - Confidence gate: drops low-confidence findings entirely.
  *  - Fail-open: missing key / API errors / parse errors log and exit 0.
- *  - Bounded scope: at most MAX_SCOPE_FILES files, 48h window.
+ *  - Bounded scope: only .github/workflows/*.yml and scripts/*.js, 48h window.
+ *
+ * The pure helpers (parsing, prompt construction, rendering) are exported and
+ * unit-tested in tests/daily-diagnostic-audit.test.js — keep them side-effect
+ * free.
  */
+
+'use strict';
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const MAX_SCOPE_FILES = 8;
 const WINDOW_HOURS = 48;
-const SCOPE_GLOBS = [/^\.github\/workflows\/.*\.ya?ml$/, /^scripts\/.*\.js$/];
+const MAX_SCOPE_FILES = 8;
 const MAX_FILE_BYTES = 20000;
 
+// Bounded blast radius: the audit only ever looks at workflow YAML and the
+// scripts that back them. Each entry is a { dir prefix, required extension }.
+const SCOPE_GLOBS = [
+  { dir: '.github/workflows/', ext: '.yml' },
+  { dir: 'scripts/', ext: '.js' },
+];
+
+const LEARNINGS_PLACEHOLDER = '{LEARNINGS}';
+const WR_LABELS = ['work-request', 'auto-diagnosed'];
+const WR_ASSIGNEES = ['oaudrey'];
+
 const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL_PRIMARY = 'anthropic/claude-3.5-sonnet';
+const MODEL_PRIMARY = 'anthropic/claude-opus-4.7';
 const MODEL_FALLBACK = 'deepseek/deepseek-r1';
 
 function log(...args) {
@@ -35,23 +51,323 @@ function warn(...args) {
   console.warn('[daily-diagnostic-audit][warn]', ...args);
 }
 
+// ── scope selection (pure) ───────────────────────────────────────────────────
+
+/**
+ * Parse `git log --name-only --pretty=format:` output into a deduped, ordered
+ * list of file paths. Blank and whitespace-only lines are dropped.
+ * @param {string|null|undefined} raw
+ * @returns {string[]}
+ */
+function parseGitLogNameOnly(raw) {
+  if (!raw) return [];
+  const seen = new Set();
+  const out = [];
+  for (const line of String(raw).split('\n')) {
+    const f = line.trim();
+    if (!f || seen.has(f)) continue;
+    seen.add(f);
+    out.push(f);
+  }
+  return out;
+}
+
+/**
+ * Keep only files inside the audit's bounded scope (SCOPE_GLOBS). Order is
+ * preserved.
+ * @param {string[]} files
+ * @returns {string[]}
+ */
+function filterInScope(files) {
+  return (files || []).filter((f) =>
+    SCOPE_GLOBS.some((g) => f.startsWith(g.dir) && f.endsWith(g.ext)),
+  );
+}
+
+// ── playbook grounding (pure-ish: reads a repo file) ─────────────────────────
+
+/**
+ * Load the self-healing pattern catalog to ground the diagnostic prompt.
+ * Returns the catalog section of the live playbook when present, else a small
+ * embedded fallback. Always non-empty and always contains the catalog marker.
+ * @returns {string}
+ */
+function loadPlaybookContext() {
+  const p = path.join(__dirname, '..', 'standards', 'AUDIT_AND_SELF_HEALING_PLAYBOOK.md');
+  try {
+    if (fs.existsSync(p)) {
+      const buf = fs.readFileSync(p, 'utf8');
+      const idx = buf.indexOf('Pattern Catalog');
+      const start = idx >= 0 ? Math.max(buf.lastIndexOf('\n#', idx) + 1, 0) : 0;
+      const slice = buf.slice(start, start + 8000);
+      return slice.includes('Pattern Catalog')
+        ? slice
+        : `## Self-Healing Correction Pattern Catalog\n\n${slice}`;
+    }
+  } catch (err) {
+    warn('playbook read failed:', err.message);
+  }
+  return `## Self-Healing Correction Pattern Catalog (embedded fallback)
+1. Missing continue-on-error/allowError on non-critical steps.
+2. Unguarded label races (concurrent issue re-labeling without a lock).
+3. Token permission gaps (missing scopes for POST endpoints).
+4. Exit-code used as a proxy metric (masking real failure).
+5. Unquoted shell interpolation of untrusted input.
+6. Missing timeout-minutes on long-running jobs.
+7. Cron collisions with other high-traffic workflows.
+8. Fail-closed on optional integrations (a missing OPENROUTER_API_KEY must not crash).`;
+}
+
+// ── model routing (reads agent-models.yml) ───────────────────────────────────
+
+/**
+ * Resolve the ordered model list for the review profile from
+ * .github/agent-models.yml (primary first, fallback appended). Falls back to
+ * the hard-coded defaults if the config is unreadable.
+ * @returns {string[]}
+ */
+function loadDiagnosticModels() {
+  try {
+    const YAML = require('yaml');
+    const configPath = path.join(__dirname, '..', '.github', 'agent-models.yml');
+    const parsed = YAML.parse(fs.readFileSync(configPath, 'utf8'));
+    const review = parsed && parsed.profiles && parsed.profiles.review;
+    if (review && review.primary) {
+      const models = [review.primary];
+      if (review.fallback) models.push(review.fallback);
+      return models;
+    }
+  } catch (err) {
+    warn('agent-models.yml read failed:', err.message);
+  }
+  return [MODEL_PRIMARY, MODEL_FALLBACK];
+}
+
+// ── prompt construction (pure) ───────────────────────────────────────────────
+
+/**
+ * @param {string} playbookContext
+ * @returns {string}
+ */
+function buildSystemPrompt(playbookContext) {
+  return `You are a code auditor for this repository. Diagnose AT MOST ONE real,
+code-level bug in the files supplied by the user message, grounded strictly in
+the code shown.
+
+Hard rules:
+- Do not manufacture an issue. If nothing is clearly wrong, return {"issueFound": false}.
+- Never invent a file, line, or behavior that is not present in the provided content.
+- If you find a real problem but cannot propose a concrete change, set
+  "proposedFix" to "No clear fix — needs human investigation".
+- "confidence" must be one of "high", "medium", or "low". Use "low" when unsure.
+
+Return JSON only (no prose, no markdown fence), matching this schema:
+{
+  "issueFound": boolean,
+  "file": "path/to/file",
+  "line": "line number or range",
+  "patternCategory": "catalog pattern name or 'other'",
+  "diagnosis": "what the bug is and why it matters",
+  "proposedFix": "concrete fix, or 'No clear fix — needs human investigation'",
+  "confidence": "high" | "medium" | "low",
+  "reasoning": "why you believe this, grounded in the shown code"
+}
+
+Ground your reasoning in this catalog:
+${playbookContext}`;
+}
+
+/**
+ * @param {Array<{path: string, content: string}>} scopeFiles
+ * @param {{sinceHours?: number, maxPromptChars?: number}} [opts]
+ * @returns {string}
+ */
+function buildUserPrompt(scopeFiles, opts = {}) {
+  const sinceHours = opts.sinceHours == null ? WINDOW_HOURS : opts.sinceHours;
+  const maxPromptChars = opts.maxPromptChars == null ? 60000 : opts.maxPromptChars;
+
+  const header = `These files changed in the last ${sinceHours} hours. Audit them and diagnose at most one real bug:\n\n`;
+  let body = '';
+  let omitted = 0;
+  for (let i = 0; i < scopeFiles.length; i++) {
+    const f = scopeFiles[i];
+    const block = `--- FILE: ${f.path} ---\n${f.content}\n\n`;
+    if (body.length > 0 && header.length + body.length + block.length > maxPromptChars) {
+      omitted = scopeFiles.length - i;
+      break;
+    }
+    body += block;
+  }
+
+  let out = header + body;
+  if (omitted > 0) {
+    out += `[... ${omitted} remaining files omitted to stay within the prompt budget ...]\n`;
+  }
+  return out;
+}
+
+// ── response parsing/validation (pure) ───────────────────────────────────────
+
+/**
+ * Parse and validate an LLM diagnostic response.
+ * @param {string|null|undefined} text
+ * @returns {{valid: boolean, diagnosis?: object, error?: string}}
+ */
+function parseDiagnosticResponse(text) {
+  if (!text || !String(text).trim()) {
+    return { valid: false, error: 'empty response' };
+  }
+  let cleaned = String(text).trim();
+  const fence = cleaned.match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/);
+  if (fence) cleaned = fence[1].trim();
+
+  let obj = null;
+  try {
+    obj = JSON.parse(cleaned);
+  } catch {
+    const m = cleaned.match(/\{[\s\S]*\}/);
+    if (m) {
+      try {
+        obj = JSON.parse(m[0]);
+      } catch {
+        obj = null;
+      }
+    }
+  }
+
+  if (!obj || typeof obj !== 'object') {
+    return { valid: false, error: 'unparseable response — no JSON object found' };
+  }
+  if (typeof obj.issueFound !== 'boolean') {
+    return { valid: false, error: 'missing required field: issueFound' };
+  }
+
+  const confidence = ['high', 'medium', 'low'].includes(obj.confidence) ? obj.confidence : 'low';
+  return { valid: true, diagnosis: { ...obj, confidence } };
+}
+
+/**
+ * Actionability gate: only issueFound + medium/high confidence + a real
+ * diagnosis string may open a WR. A wrong fix is worse than none.
+ * @param {object|null} d
+ * @returns {boolean}
+ */
+function isActionableDiagnosis(d) {
+  if (!d || typeof d !== 'object') return false;
+  if (d.issueFound !== true) return false;
+  if (!['high', 'medium'].includes(d.confidence)) return false;
+  if (!d.diagnosis || !String(d.diagnosis).trim()) return false;
+  return true;
+}
+
+// ── WR rendering (pure) ──────────────────────────────────────────────────────
+
+/**
+ * @param {object} diagnosis
+ * @returns {string}
+ */
+function renderWrTitle(diagnosis) {
+  const summary = String(diagnosis.diagnosis || 'code-level issue')
+    .split('\n')[0]
+    .slice(0, 80)
+    .trim();
+  return `[WR] Daily Diagnostic Audit: ${summary} (${diagnosis.file})`;
+}
+
+function buildLearnings() {
+  return `This WR is a **Machine-generated starting point** from the daily diagnostic
+audit — not a verified fix.
+
+- Ground the work in \`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md\` — the
+  fix-pattern catalog this diagnosis was framed against.
+- **Verify the proposed fix** against the current code before applying it; the
+  model can be wrong or the code may have moved on.
+- If this turns out to be a new recurring pattern, add it to the catalog.`;
+}
+
+/**
+ * Render the WR issue body from a template, substituting {TOKEN} placeholders.
+ * Leaves no raw {UPPER_CASE} token behind.
+ * @param {{
+ *   template: string,
+ *   diagnosis: object,
+ *   scopeFiles: string[],
+ *   sinceHours: number,
+ *   repoFull: string,
+ *   repoUrl: string,
+ *   today: string,
+ *   runUrl: string,
+ * }} params
+ * @returns {string}
+ */
+function renderWrBody(params) {
+  const { template, diagnosis, scopeFiles, sinceHours, repoFull, repoUrl, today, runUrl } = params;
+
+  const title = renderWrTitle(diagnosis).replace(/^\[WR\]\s*/, '');
+  const lineRef = diagnosis.line ? ` (line ${diagnosis.line})` : '';
+  const issueContext = [
+    `**File:** \`${diagnosis.file}\`${lineRef}`,
+    `**Pattern:** ${diagnosis.patternCategory || 'other'}`,
+    `**Confidence:** ${diagnosis.confidence}`,
+    `**Scope scanned:** ${(scopeFiles || []).join(', ')} (changed in the last ${sinceHours}h)`,
+    `**Audit run:** [${today}](${runUrl}) · [${repoFull}](${repoUrl})`,
+    '',
+    '## Diagnosis',
+    '',
+    diagnosis.diagnosis,
+    '',
+    '## Proposed Fix',
+    '',
+    diagnosis.proposedFix || 'No clear fix — needs human investigation',
+    '',
+    '## Reasoning',
+    '',
+    diagnosis.reasoning || '(no reasoning provided)',
+  ].join('\n');
+
+  const learnings = buildLearnings();
+
+  let body = template;
+  body = body.split('{TITLE}').join(title);
+  body = body.split('{ISSUE_CONTEXT}').join(issueContext);
+
+  if (body.includes(LEARNINGS_PLACEHOLDER)) {
+    body = body.split(LEARNINGS_PLACEHOLDER).join(learnings);
+  } else {
+    body += `\n\n## Learnings — What & Why\n\n${learnings}`;
+  }
+
+  // Sweep any remaining {TOKEN} placeholders the template carried but this
+  // caller doesn't populate, so no raw token ever reaches the issue.
+  body = body.replace(/\{[A-Z_]+\}/g, '');
+  return body;
+}
+
+/**
+ * The coder-facing comment posted on the WR — sets expectations that the
+ * proposed fix is a hypothesis, not a spec.
+ * @returns {string}
+ */
+function renderCoderComment() {
+  return `**For the implementing agent:** this WR was auto-opened by the daily
+diagnostic audit. Treat the **Proposed Fix** as a hypothesis, not a spec —
+**don't apply blindly**. Verify it against the current code first, then fill in
+the **Learnings — What & Why** section with what you actually found before you
+close this out.`;
+}
+
+// ── side-effecting runtime (not unit-tested) ─────────────────────────────────
+
 function getChangedFiles() {
   try {
     const since = new Date(Date.now() - WINDOW_HOURS * 3600 * 1000).toISOString();
-    const out = execSync(
-      `git log --since="${since}" --name-only --pretty=format: --no-merges origin/main 2>/dev/null || git log --since="${since}" --name-only --pretty=format: --no-merges HEAD`,
-      { encoding: 'utf8' }
-    );
-    const files = new Set();
-    for (const line of out.split('\n')) {
-      const f = line.trim();
-      if (!f) continue;
-      if (!SCOPE_GLOBS.some((r) => r.test(f))) continue;
-      if (!fs.existsSync(f)) continue;
-      files.add(f);
-      if (files.size >= MAX_SCOPE_FILES) break;
-    }
-    return Array.from(files);
+    const cmd =
+      `git log --since="${since}" --name-only --pretty=format: --no-merges origin/main 2>/dev/null || ` +
+      `git log --since="${since}" --name-only --pretty=format: --no-merges HEAD`;
+    const out = execSync(cmd, { encoding: 'utf8' });
+    return filterInScope(parseGitLogNameOnly(out))
+      .filter((f) => fs.existsSync(f))
+      .slice(0, MAX_SCOPE_FILES);
   } catch (err) {
     warn('git log failed:', err.message);
     return [];
@@ -65,57 +381,6 @@ function readFileBounded(p) {
   } catch {
     return null;
   }
-}
-
-function loadPlaybookContext() {
-  const p = 'standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md';
-  if (fs.existsSync(p)) {
-    const buf = fs.readFileSync(p, 'utf8');
-    return buf.length > 8000 ? buf.slice(0, 8000) : buf;
-  }
-  return `Fix-pattern catalog (embedded fallback):
-1. Missing continue-on-error/allowError on non-critical steps.
-2. Unguarded label races (concurrent issue re-labeling without lock).
-3. Token permission gaps (missing scopes for POST endpoints).
-4. Exit-code used as proxy metric (masking real failure).
-5. Unquoted shell interpolation of untrusted input.
-6. Missing timeout-minutes on long-running jobs.
-7. Cron collisions with other high-traffic workflows.
-8. Fail-closed on optional integrations (no OPENROUTER_API_KEY should not crash).`;
-}
-
-function buildPrompt(files, playbook) {
-  const fileBlocks = files
-    .map((f) => `--- FILE: ${f} ---\n${readFileBounded(f) || '(unreadable)'}\n`)
-    .join('\n');
-
-  const system = `You are a code auditor. Diagnose AT MOST ONE real, code-level bug in the provided files.
-
-RULES:
-- If you cannot ground a diagnosis in the actual code shown, return {"issueFound": false}.
-- Do NOT manufacture findings. Do NOT guess.
-- If you find something but can't propose a concrete fix, set proposedFix to "No clear fix — needs human investigation".
-- Confidence must be one of: "high", "medium", "low". Use "low" if unsure.
-- Return JSON only, matching this schema:
-{
-  "issueFound": boolean,
-  "confidence": "high"|"medium"|"low",
-  "file": "path/to/file",
-  "title": "short summary",
-  "category": "one of the catalog patterns or 'other'",
-  "description": "what the bug is and why it matters",
-  "proposedFix": "concrete code-level fix, or 'No clear fix — needs human investigation'",
-  "reasoning": "why you believe this, grounded in the file content"
-}
-
-FIX-PATTERN CATALOG:
-${playbook}`;
-
-  const user = `Audit these files (changed in the last ${WINDOW_HOURS}h):
-
-${fileBlocks}`;
-
-  return { system, user };
 }
 
 async function callOpenRouter(system, user, model) {
@@ -137,36 +402,14 @@ async function callOpenRouter(system, user, model) {
   });
   if (!res.ok) throw new Error(`OpenRouter ${model}: HTTP ${res.status}`);
   const data = await res.json();
-  return data.choices?.[0]?.message?.content || '';
-}
-
-function parseDiagnosis(text) {
-  if (!text) return null;
-  const match = text.match(/\{[\s\S]*\}/);
-  if (!match) return null;
-  try {
-    return JSON.parse(match[0]);
-  } catch {
-    return null;
-  }
-}
-
-function isActionableDiagnosis(d) {
-  if (!d || typeof d !== 'object') return false;
-  if (d.issueFound !== true) return false;
-  if (!['high', 'medium'].includes(d.confidence)) return false;
-  if (!d.file || !d.title || !d.description) return false;
-  return true;
+  return (data.choices && data.choices[0] && data.choices[0].message.content) || '';
 }
 
 async function hasExistingOpenDiagnosis(repo, token, file) {
   try {
     const url = `https://api.github.com/search/issues?q=repo:${repo}+is:issue+is:open+label:auto-diagnosed+${encodeURIComponent(file)}`;
     const res = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github+json',
-      },
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
     });
     if (!res.ok) return false;
     const data = await res.json();
@@ -176,91 +419,22 @@ async function hasExistingOpenDiagnosis(repo, token, file) {
   }
 }
 
-function renderBody(d) {
-  const learnings = `## Learnings — What & Why
-
-This was flagged by the daily-diagnostic-audit cron (file changed within the last ${WINDOW_HOURS}h).
-See \`standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md\` for the fix-pattern catalog.
-
-**Verify the proposed fix before applying** — the model can be wrong. Also
-consider whether this represents a new catalog-worthy pattern.`;
-
-  return `## [WR] Auto-diagnosed: ${d.title}
-
-**File:** \`${d.file}\`
-**Category:** ${d.category || 'other'}
-**Confidence:** ${d.confidence}
-
-### Description
-${d.description}
-
-### Proposed Fix
-${d.proposedFix || 'No clear fix — needs human investigation'}
-
-### Reasoning
-${d.reasoning || '(no reasoning provided)'}
-
-${learnings}
-
----
-🤖 Generated by daily-diagnostic-audit (see \`.github/workflows/daily-diagnostic-audit.yml\`).
-`;
-}
-
-async function fileWR(repo, token, d) {
-  const body = renderBody(d);
-  const title = `[WR] ${d.title} (${d.file})`;
-  const res = await fetch(`https://api.github.com/repos/${repo}/issues`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      title,
-      body,
-      labels: ['WR', 'auto-diagnosed', 'needs-review'],
-    }),
-  });
-  if (!res.ok) {
-    warn('issue POST failed:', res.status, await res.text());
-    return null;
-  }
-  const created = await res.json();
-  log('filed WR:', created.html_url);
-
-  // Coder-facing comment
-  try {
-    await fetch(`https://api.github.com/repos/${repo}/issues/${created.number}/comments`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        body: `@coding-agent: please verify the proposed fix in the issue body against the current file (\`${d.file}\`) before implementing. If the diagnosis is stale or wrong, close with a comment explaining why rather than "fixing" a non-issue.`,
-      }),
-    });
-  } catch (err) {
-    warn('comment POST failed:', err.message);
-  }
-
-  return created;
-}
-
 async function main() {
   if (!process.env.OPENROUTER_API_KEY) {
     warn('OPENROUTER_API_KEY not set — fail-open exit 0');
     return;
   }
   const token = process.env.GITHUB_TOKEN;
-  const repo = process.env.GITHUB_REPOSITORY;
-  if (!token || !repo) {
+  const repoFull = process.env.GITHUB_REPOSITORY;
+  if (!token || !repoFull) {
     warn('GITHUB_TOKEN or GITHUB_REPOSITORY missing — fail-open exit 0');
     return;
   }
+  const repoUrl = `https://github.com/${repoFull}`;
+  const runUrl = process.env.GITHUB_SERVER_URL && process.env.GITHUB_RUN_ID
+    ? `${process.env.GITHUB_SERVER_URL}/${repoFull}/actions/runs/${process.env.GITHUB_RUN_ID}`
+    : repoUrl;
+  const today = new Date().toISOString().slice(0, 10);
 
   const files = getChangedFiles();
   if (files.length === 0) {
@@ -269,38 +443,88 @@ async function main() {
   }
   log(`scope: ${files.length} file(s):`, files.join(', '));
 
-  const playbook = loadPlaybookContext();
-  const { system, user } = buildPrompt(files, playbook);
+  const scopeFiles = files.map((p) => ({ path: p, content: readFileBounded(p) || '(unreadable)' }));
+  const system = buildSystemPrompt(loadPlaybookContext());
+  const user = buildUserPrompt(scopeFiles, { sinceHours: WINDOW_HOURS });
 
-  let content;
-  try {
-    content = await callOpenRouter(system, user, MODEL_PRIMARY);
-  } catch (err) {
-    warn('primary model failed:', err.message, '- trying fallback');
+  const models = loadDiagnosticModels();
+  let content = null;
+  for (const model of models) {
     try {
-      content = await callOpenRouter(system, user, MODEL_FALLBACK);
-    } catch (err2) {
-      warn('fallback model failed:', err2.message, '- exit 0');
-      return;
+      content = await callOpenRouter(system, user, model);
+      break;
+    } catch (err) {
+      warn(`model ${model} failed:`, err.message);
     }
   }
-
-  const diagnosis = parseDiagnosis(content);
-  if (!diagnosis) {
-    warn('unparseable LLM response — exit 0');
+  if (content == null) {
+    warn('all models failed — exit 0');
     return;
   }
+
+  const parsed = parseDiagnosticResponse(content);
+  if (!parsed.valid) {
+    warn(`invalid LLM response (${parsed.error}) — exit 0`);
+    return;
+  }
+  const diagnosis = parsed.diagnosis;
   if (!isActionableDiagnosis(diagnosis)) {
-    log('no actionable diagnosis (issueFound=' + diagnosis.issueFound + ', confidence=' + diagnosis.confidence + ') — no-op');
+    log(`no actionable diagnosis (issueFound=${diagnosis.issueFound}, confidence=${diagnosis.confidence}) — no-op`);
     return;
   }
-
-  if (await hasExistingOpenDiagnosis(repo, token, diagnosis.file)) {
+  if (await hasExistingOpenDiagnosis(repoFull, token, diagnosis.file)) {
     log(`existing open auto-diagnosed WR for ${diagnosis.file} — skip`);
     return;
   }
 
-  await fileWR(repo, token, diagnosis);
+  let template = '';
+  try {
+    template = fs.readFileSync(path.join(__dirname, '..', 'wr', 'WR_TEMPLATE_BASIC.md'), 'utf8');
+  } catch {
+    template = '# [WR] {TITLE}\n\n## Issue Context\n\n{ISSUE_CONTEXT}\n\n## Learnings — What & Why\n\n{LEARNINGS}\n';
+  }
+
+  const title = renderWrTitle(diagnosis);
+  const body = renderWrBody({
+    template,
+    diagnosis,
+    scopeFiles: files,
+    sinceHours: WINDOW_HOURS,
+    repoFull,
+    repoUrl,
+    today,
+    runUrl,
+  });
+
+  const res = await fetch(`https://api.github.com/repos/${repoFull}/issues`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ title, body, labels: WR_LABELS, assignees: WR_ASSIGNEES }),
+  });
+  if (!res.ok) {
+    warn('issue POST failed:', res.status, await res.text());
+    return;
+  }
+  const created = await res.json();
+  log('filed WR:', created.html_url);
+
+  try {
+    await fetch(`https://api.github.com/repos/${repoFull}/issues/${created.number}/comments`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ body: renderCoderComment() }),
+    });
+  } catch (err) {
+    warn('comment POST failed:', err.message);
+  }
 }
 
 if (require.main === module) {
@@ -311,10 +535,21 @@ if (require.main === module) {
 }
 
 module.exports = {
-  getChangedFiles,
-  buildPrompt,
-  parseDiagnosis,
+  parseGitLogNameOnly,
+  filterInScope,
+  buildSystemPrompt,
+  buildUserPrompt,
+  parseDiagnosticResponse,
   isActionableDiagnosis,
-  renderBody,
+  renderWrTitle,
+  renderWrBody,
+  renderCoderComment,
   loadPlaybookContext,
+  loadDiagnosticModels,
+  LEARNINGS_PLACEHOLDER,
+  SCOPE_GLOBS,
+  WR_LABELS,
+  WR_ASSIGNEES,
+  // runtime helpers (not part of the tested surface)
+  getChangedFiles,
 };

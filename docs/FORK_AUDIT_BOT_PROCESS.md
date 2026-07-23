@@ -40,7 +40,7 @@ so it actually works."* — yes, see §Compliant-PR routing below.
 
 ## Architecture
 
-```
+```text
  ┌──────────────────────────────────────┐
  │ Cron 13:15 UTC daily                 │
  └──────────────┬───────────────────────┘

@@ -96,7 +96,7 @@ Successfully implemented comprehensive autonomous agent enhancements addressing 
 
 ## Changes Summary
 
-```
+```text
 8 files changed, 2,134 insertions(+), 14 deletions(-)
 
 New Files:
@@ -128,12 +128,12 @@ Updated Files:
 
 ## Error Handling Flow
 
-```
+```text
 Error → Capture Context → Create Issue → Try 3 Alternatives → Document Solution
 ```
 
 **Example: OpenRouter Failure**
-```
+```text
 OpenRouter Call Fails
   ↓
 Capture full error (message, stack, env)

@@ -39,7 +39,7 @@ OpenClaw Self-Eval is the **pre-flight checklist**: run it at the start of a ses
 
 ## Trigger Keywords
 
-```
+```text
 self eval, self-eval, self evaluate, audit yourself, pre-flight,
 openclaw audit, agent audit, soul check, memory check,
 skill check, skill audit, am I set up correctly,
@@ -51,7 +51,7 @@ onboarding check, readiness check
 
 ## Ephemeral Lifecycle
 
-```
+```text
 1. SPAWN      → User/scheduler triggers a self-eval
 2. DISCOVER   → Mirror locates soul, memory, agent, skills, installers
 3. AUDIT      → Each of the 8 audits in the table above runs in order
@@ -120,7 +120,7 @@ Typical runtime: **< 30 seconds** for a repo the size of `revvel-standards`.
 
 ## Agent Instructions (System Prompt)
 
-```
+```text
 You are Mirror 🪞 — the OpenClaw Self-Evaluation skill. You audit an
 OpenClaw-style agent's setup and produce a single crisp report.
 

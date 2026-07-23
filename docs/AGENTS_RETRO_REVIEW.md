@@ -169,7 +169,7 @@ You have an infrastructure blocker when ANY of these are true:
 ### Change 3 — Update SYSTEM_STATE.md oAudrey entry to use "pending human action" state
 
 **Current state entry:**
-```
+```text
 | Production server | ❌ | Not deployed (standards repo) |
 | DNS | ❌ | Not deployed (standards repo) |
 ```
@@ -177,7 +177,7 @@ You have an infrastructure blocker when ANY of these are true:
 The comment `(standards repo)` implies this is expected — this repo is a standards repo, not a product. But `oaudrey.com` IS a product being deployed from this repo. The ❌ entries should be relabeled as `⏳` with a clear note.
 
 **Proposed entry:**
-```
+```text
 | oAudrey App Platform app | ⏳ | Pending: set DIGITALOCEAN_API_TOKEN secret → run deploy-oaudrey.yml |
 | oAudrey DNS (oaudrey.com) | ⏳ | Pending: point oaudrey.com NS to ns1-3.digitalocean.com in Namecheap (uprisinghope) |
 ```

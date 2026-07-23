@@ -130,7 +130,7 @@ EVERY project MUST have:
 ALL projects MUST have in README.md:
 
 ### Test Section
-```
+```text
 ## Test
 
 | Feature | Status | URL |
@@ -141,7 +141,7 @@ ALL projects MUST have in README.md:
 ```
 
 ### Deployment Section
-```
+```text
 ## Deployment
 
 **Production:** [Vercel Production URL]
@@ -161,7 +161,7 @@ Save this prompt to:
 
 ## Example Usage
 
-```
+```text
 Run each repository one at a time through revvel-standards deep web research best app opportunities and redevelop, redesign if necessary. Follow all requirements in revvel-standards. All docs must have a URL in Vercel to test the app in the TEST section of the README file.
 ```
 

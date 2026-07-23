@@ -71,7 +71,7 @@ The application runs on `http://localhost:3003` by default.
 
 ## Live Demo
 
-🌐 **[View Live Demo](#)** - Coming soon
+🌐 **View Live Demo _(deploy link pending)_** - Coming soon
 
 ## Revenue Model
 

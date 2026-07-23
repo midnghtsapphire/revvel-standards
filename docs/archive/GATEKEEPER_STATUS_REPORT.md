@@ -160,7 +160,7 @@
 
 ## Architecture Overview
 
-```
+```text
 ┌────────────────────────────────────────────────────────────────┐
 │                    Gatekeeper Architecture                      │
 │                                                                  │

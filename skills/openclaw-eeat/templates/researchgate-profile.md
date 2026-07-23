@@ -23,7 +23,7 @@
 - **Location:** {{CITY}}, {{STATE}}, {{COUNTRY}}
 
 #### Professional Summary
-```
+```text
 {{BIO}}
 
 Expertise:
@@ -100,7 +100,7 @@ For each project, click "Add Research" → "Other":
 **Title:** {{name}}
 
 **Description:**
-```
+```text
 {{description}}
 
 Problem Solved:

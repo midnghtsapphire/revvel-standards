@@ -185,7 +185,7 @@ done
 
 ### 4.1. Pipeline Stages
 
-```
+```text
 Collect → Normalize → Correlate → Score → Alert → Archive
 ```
 
@@ -617,7 +617,7 @@ Below is a comprehensive mapping of OSINT data streams to their respective opera
 
 ## 10. OSINT Directory Structure
 
-```
+```text
 osint/
 ├── feeds/                  # Raw feed downloads (gitignored if large)
 │   ├── cisa-kev.json

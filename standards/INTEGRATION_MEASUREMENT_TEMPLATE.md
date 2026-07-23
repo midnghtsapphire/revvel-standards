@@ -25,7 +25,7 @@
 
 ## Acceptance Gates
 
-```
+```text
 Setup:
 [ ] MVI Contract filled
 [ ] System State initialized
@@ -128,7 +128,7 @@ Release:
 
 ## Required Files
 
-```
+```text
 /[product]/
 ├── README.md                    # Overview + quick start
 ├── QUALITY_STANDARDS.md        # Product-specific quality rules
@@ -154,7 +154,7 @@ Release:
 
 ## Dashboard Template
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │  [PRODUCT NAME] - LIVE METRICS              │
 ├─────────────────────────────────────────────┤

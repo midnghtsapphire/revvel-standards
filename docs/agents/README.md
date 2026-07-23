@@ -24,7 +24,7 @@ by what each agent leaves behind and what each one is actually good at.
 
 ## What goes in each profile
 
-```
+```text
 docs/agents/<name>/
   PROFILE.md             ← how this agent thinks; what prompt shape works;
                            what it over-engineers; what it hallucinates;

@@ -46,7 +46,7 @@
 
 ---
 
-# IMMEDIATE ACTIONS
+## IMMEDIATE ACTIONS
 
 ## TODAY
 
@@ -66,7 +66,7 @@
 
 ---
 
-# METRICS
+## METRICS
 
 | Week | Target | Actual | Delta |
 |------|--------|--------|-------|

@@ -53,7 +53,7 @@ Load this skill when the task involves:
 
 ### Phase 1: Research & Topic Ideation
 
-```
+```text
 User/Trigger Input (topic area, target audience)
          ↓
 AI Brainstorm Session (OpenRouter)
@@ -71,7 +71,7 @@ Output: ranked_topics.json
 
 ### Phase 2: Outline & Script Generation
 
-```
+```text
 Selected Topic + Brief
          ↓
 AI Outline Generator (OpenRouter)
@@ -89,7 +89,7 @@ Output: draft_content.md
 
 ### Phase 3: Refinement & Quality Gates
 
-```
+```text
 Draft Content
          ↓
 AI Editor Pass 1: Fact-checking
@@ -111,7 +111,7 @@ Output: final_content.md + metadata.json
 
 ### Phase 4: Multi-Format Export
 
-```
+```text
 Final Content
          ↓
 Format Adapters
@@ -248,7 +248,7 @@ Every piece of content must pass these automated checks before publishing:
 
 Generated content is stored in this structure:
 
-```
+```text
 content-automation-output/
 ├── YYYY-MM-DD-{slug}/
 │   ├── metadata.json         # Title, keywords, audience, timestamps
@@ -288,7 +288,7 @@ The skill includes pre-built templates for common content types:
 
 ### Example: Generate a Blog Post
 
-```
+```text
 Issue: "Write blog post about best budget headphones 2026"
 Label: content-automation
          ↓

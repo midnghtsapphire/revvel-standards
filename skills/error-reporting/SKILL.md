@@ -4,7 +4,7 @@ Implement three-tier error reporting (console → email → GitHub Issue) for al
 
 ## Three-Tier System
 
-```
+```text
 Tier 1 — Console (always)         → console.error with structured log
 Tier 2 — Email (severity ≥ medium) → via Resend to admin address
 Tier 3 — GitHub Issue (severity ≥ high, with cooldown) → auto-created issue

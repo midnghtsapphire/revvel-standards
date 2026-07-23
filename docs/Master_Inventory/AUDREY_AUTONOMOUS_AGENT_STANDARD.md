@@ -38,6 +38,7 @@ All AUDREY agents must comply with established standards such as:
 
 ## Conclusion  
 The AUDREY Autonomous Agent Standard aims to ensure a robust and comprehensive framework for the creation and operating of autonomous agents under the Revvel umbrella, aligning with existing standards and best practices
+
 ---
 
 ## [2026-04-15] Reusable Master Prompt
@@ -51,7 +52,7 @@ rules (append-only, artifact-first, auto-documentation, GitHub flow,
 entity, secrets hygiene, FOSS priority, self-heal) and fixes the
 output format to:
 
-```
+```text
 --- ISSUE MARKDOWN ---
 --- CHANGES ---
 --- VERIFICATION STEPS ---

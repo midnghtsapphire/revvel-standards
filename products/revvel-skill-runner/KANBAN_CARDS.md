@@ -13,7 +13,7 @@
 ## Done
 - Repo structure
 - EXRUP components
-# KANBAN CARDS
+## KANBAN CARDS
 
 - Implement core runner.
 - Build Next.js UI.
