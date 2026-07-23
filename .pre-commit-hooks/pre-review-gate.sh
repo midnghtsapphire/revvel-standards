@@ -96,7 +96,8 @@ import sys
 try:
     import yaml
 except ImportError:
-    sys.exit(0)  # not installed → skip silently
+    print("PyYAML is required for pre-review YAML validation", file=sys.stderr)
+    sys.exit(2)
 p = sys.argv[1]
 try:
     with open(p, 'r', encoding='utf-8') as fh: text = fh.read()
