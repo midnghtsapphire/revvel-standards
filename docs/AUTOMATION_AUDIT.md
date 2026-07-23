@@ -84,6 +84,7 @@ The revvel-standards repository has extensive automation infrastructure:
 3. ⏸ `mabl.yml` — Mabl test automation (PAUSED 2026-05-27; replaced by Keploy. Auto-triggers commented; manual `workflow_dispatch` still works. See header notes in the workflow file for the full evaluation.)
 4. ✅ `workflow-health-dashboard.yml` — Workflow monitoring
 5. ✅ `proof-of-life.yml` — App health checks
+6. ✅ `watchtower.yml` — WR-4600 daily PBM literature/adverse-event harvest via `tools/harvest.py` (NCBI E-utilities, ClinicalTrials.gov v2, Crossref — keyless). Reports DELTA not "breakthrough"; commits an immutable content-hashed snapshot even on quiet days; summons ONE triage issue only on a HARM/FLICKER/OCULAR row. 06:17 UTC cron + `workflow_dispatch`.
 
 #### Deployment & Infrastructure
 1. ✅ `deploy-oaudrey.yml` — oAudrey deployment
