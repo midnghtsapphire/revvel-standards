@@ -41,7 +41,9 @@ scripts/research-engine.js by tests/research-engine.test.js.
 
 ## Learnings — What & Why
 
-N/A — pending Jules refinement
+- **What:** This WR shipped as a skeleton with a deferral placeholder and was correctly rejected by `no-pending-placeholders` lint. **Why it matters:** the pipeline (`wr-pr-creation.yml`) opens the PR before the Jules rewrite pass completes, guaranteeing a red check on every WR of this type — the workflow should either hold PR creation until refinement lands, or open a [WR-BLOCKER] issue instead of committing placeholder text.
+- **What:** printbank's errors are classified *unsurvivable long-term* under a hard constraint from the owner: existing processes cannot be deleted or changed to accommodate printbank — printbank itself must change or be fixed. **Why it matters:** per WR-4485 §B1 (strategy-mismatch principle), when the surrounding process is immovable, the component adapts to the ecosystem, never the reverse; the eventual fix plan must route printbank around existing process, not through it.
+- **What:** The specific error inventory lives in issue #16721 and is not yet enumerated here. **Why it matters:** per WR-4482 claim hygiene, this document does not fabricate findings; the Scope/Approach sections remain to be filled by the rewrite pass from the issue's error list — each error classified by failure mode (survivable-with-mitigation vs unsurvivable-requires-redesign) before any fix is proposed.
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once
