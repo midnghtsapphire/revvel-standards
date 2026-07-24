@@ -22,16 +22,16 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Select docs
-        shell: bash
+        shell: pwsh
         run: |
-          npx markdownlint-cli2 "**/*.md" 2>lint.txt || true
+          npx markdownlint-cli2 "**/*.md" 2> lint.txt
           python scripts/wr_rewrite.py select --lint-report lint.txt --max-docs "${{ github.event.inputs.max_docs || 5 }}" --out queue.json
 
       - name: Rewrite and judge
-        shell: bash
+        shell: pwsh
         run: python scripts/wr_rewrite.py run --queue queue.json --ledger ledger/wr-rewrite.jsonl --retry-cap 2
 
       - name: Open PRs
-        shell: bash
+        shell: pwsh
         continue-on-error: true
         run: python scripts/wr_rewrite.py open-prs --ledger ledger/wr-rewrite.jsonl
