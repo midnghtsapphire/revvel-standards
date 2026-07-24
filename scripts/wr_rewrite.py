@@ -3,8 +3,8 @@
 
 Subcommands:
   select    -> parse lint report + placeholder scan, emit queue.json (WIP-capped)
-  run       -> rewrite (lane-0 LM Studio/Ollama -> lane-1 OpenRouter), judge
-               (distinct model families), gate (mean>=0.75, min>=0.50,
+  run       -> rewrite (lane-0 LM Studio -> lane-0b Ollama -> lane-1 OpenRouter),
+               judge (distinct model families), gate (mean>=0.75, min>=0.50,
                lint-clean), retry cap 2, JSONL ledger
   open-prs  -> one branch + PR per passed doc via gh CLI; failed docs flagged
 
@@ -71,7 +71,7 @@ def post_json(url: str, payload: dict, headers: dict, timeout: int = 180) -> dic
 def call_lmstudio(prompt: str) -> tuple[str, str, int]:
     endpoint = os.environ.get("LMSTUDIO_ENDPOINT", "").rstrip("/")
     if not endpoint:
-        raise RuntimeError("lane-0a unavailable: LMSTUDIO_ENDPOINT unset")
+        raise RuntimeError("lane-0 unavailable: LMSTUDIO_ENDPOINT unset")
     model = os.environ.get("LMSTUDIO_MODEL", "local-model")
     out = post_json(f"{endpoint}/chat/completions",
                     {"model": model,
@@ -121,7 +121,8 @@ def lint_checks(text: str) -> tuple[bool, list]:
 
 
 def strip_wrapper_fence(text: str) -> str:
-    m = re.match(r"^```(?:markdown|md)?\s*\n(.*)\n```\s*$", text.strip(), re.S)
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()
+    m = re.match(r"^```(?:markdown|md)?\s*\n(.*)\n```\s*$", text, re.S)
     return m.group(1) if m else text
 
 
@@ -154,6 +155,7 @@ def judge_prompt(doc: str) -> str:
 
 
 def parse_judge(text: str) -> tuple[dict, str]:
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.S)
     m = re.search(r"\{.*\}", text, re.S)
     if not m:
         raise ValueError("judge returned no JSON")
@@ -197,14 +199,14 @@ def cmd_select(args) -> int:
 def rewrite_via_lanes(prompt: str) -> tuple[str, str, str, int]:
     try:
         text, model, tokens = call_lmstudio(prompt)
-        return text, model, "lane-0a-lmstudio", tokens
+        return text, model, "lane-0-lmstudio", tokens
     except Exception as exc:  # noqa: BLE001 - lane failover by design (WR-4481)
-        print(f"  lane-0a unavailable ({exc}); trying Ollama")
+        print(f"  lane-0 lmstudio unavailable ({exc}); trying ollama")
     try:
         text, model, tokens = call_ollama(prompt)
         return text, model, "lane-0b-ollama", tokens
     except Exception as exc:  # noqa: BLE001
-        print(f"  lane-0b unavailable ({exc}); failing over to OpenRouter")
+        print(f"  lane-0b ollama unavailable ({exc}); failing over to OpenRouter")
     model = os.environ.get("REWRITE_MODEL", "moonshotai/kimi-k2")
     text, model, tokens = call_openrouter(prompt, model)
     return text, model, "lane-1-openrouter", tokens
