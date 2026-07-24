@@ -3,13 +3,14 @@
 
 Subcommands:
   select    -> parse lint report + placeholder scan, emit queue.json (WIP-capped)
-  run       -> rewrite (lane-0 Ollama -> lane-1 OpenRouter), judge (distinct
-               model families), gate (mean>=0.75, min>=0.50, lint-clean),
-               retry cap 2, JSONL ledger
+  run       -> rewrite (lane-0 LM Studio/Ollama -> lane-1 OpenRouter), judge
+               (distinct model families), gate (mean>=0.75, min>=0.50,
+               lint-clean), retry cap 2, JSONL ledger
   open-prs  -> one branch + PR per passed doc via gh CLI; failed docs flagged
 
-Stdlib only. Env: OLLAMA_ENDPOINT, OPENROUTER_API_KEY, REWRITE_MODEL,
-JUDGE_MODELS (csv), GITHUB_TOKEN (for gh).
+Stdlib only. Env: LMSTUDIO_ENDPOINT (e.g. http://127.0.0.1:1234/v1),
+LMSTUDIO_MODEL, OLLAMA_ENDPOINT, OLLAMA_MODEL, OPENROUTER_API_KEY,
+REWRITE_MODEL, JUDGE_MODELS (csv), GITHUB_TOKEN (for gh).
 Governing standard: standards/WR-4486-judge-gated-rewrite-sweep.md
 """
 import argparse
@@ -67,10 +68,23 @@ def post_json(url: str, payload: dict, headers: dict, timeout: int = 180) -> dic
         return json.loads(resp.read().decode())
 
 
+def call_lmstudio(prompt: str) -> tuple[str, str, int]:
+    endpoint = os.environ.get("LMSTUDIO_ENDPOINT", "").rstrip("/")
+    if not endpoint:
+        raise RuntimeError("lane-0a unavailable: LMSTUDIO_ENDPOINT unset")
+    model = os.environ.get("LMSTUDIO_MODEL", "local-model")
+    out = post_json(f"{endpoint}/chat/completions",
+                    {"model": model,
+                     "messages": [{"role": "user", "content": prompt}]}, {})
+    text = out["choices"][0]["message"]["content"]
+    tokens = (out.get("usage") or {}).get("total_tokens", 0)
+    return text, model, tokens
+
+
 def call_ollama(prompt: str, model: str = "") -> tuple[str, str, int]:
     endpoint = os.environ.get("OLLAMA_ENDPOINT", "").rstrip("/")
     if not endpoint:
-        raise RuntimeError("lane-0 unavailable: OLLAMA_ENDPOINT unset")
+        raise RuntimeError("lane-0b unavailable: OLLAMA_ENDPOINT unset")
     model = model or os.environ.get("OLLAMA_MODEL", "gemma3")
     out = post_json(f"{endpoint}/api/generate",
                     {"model": model, "prompt": prompt, "stream": False}, {})
@@ -182,10 +196,15 @@ def cmd_select(args) -> int:
 
 def rewrite_via_lanes(prompt: str) -> tuple[str, str, str, int]:
     try:
-        text, model, tokens = call_ollama(prompt)
-        return text, model, "lane-0-ollama", tokens
+        text, model, tokens = call_lmstudio(prompt)
+        return text, model, "lane-0a-lmstudio", tokens
     except Exception as exc:  # noqa: BLE001 - lane failover by design (WR-4481)
-        print(f"  lane-0 unavailable ({exc}); failing over to OpenRouter")
+        print(f"  lane-0a unavailable ({exc}); trying Ollama")
+    try:
+        text, model, tokens = call_ollama(prompt)
+        return text, model, "lane-0b-ollama", tokens
+    except Exception as exc:  # noqa: BLE001
+        print(f"  lane-0b unavailable ({exc}); failing over to OpenRouter")
     model = os.environ.get("REWRITE_MODEL", "moonshotai/kimi-k2")
     text, model, tokens = call_openrouter(prompt, model)
     return text, model, "lane-1-openrouter", tokens
