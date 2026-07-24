@@ -1,19 +1,40 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-24T20:29:58.236Z",
+  "generated_at": "2026-07-24T21:24:28.862Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "7/100 recent runs failed; 0 stuck item(s)",
+      "summary": "10/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 7,
+        "failed_runs": 10,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30126338812,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30126338812",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30124748418,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30124748418",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30124737593,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30124737593",
+            "conclusion": "failure"
+          },
           {
             "id": 30124258961,
             "name": "Update Project Dashboard",
