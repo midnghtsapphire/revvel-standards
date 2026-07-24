@@ -23,9 +23,11 @@ jobs:
 
       - name: Select docs
         shell: bash
+        env:
+          MAX_DOCS: ${{ github.event.inputs.max_docs || '5' }}
         run: |
           npx markdownlint-cli2 "**/*.md" 2> lint.txt || true
-          python3 scripts/wr_rewrite.py select --lint-report lint.txt --max-docs "${{ github.event.inputs.max_docs || 5 }}" --out queue.json
+          python3 scripts/wr_rewrite.py select --lint-report lint.txt --max-docs "$MAX_DOCS" --out queue.json
 
       - name: Rewrite and judge
         shell: bash
