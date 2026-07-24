@@ -1,19 +1,47 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-24T19:30:35.948Z",
+  "generated_at": "2026-07-24T20:29:58.236Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "summary": "7/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 7,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30124258961,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30124258961",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30124073729,
+            "name": "Stuck Label Detection & Auto-Progression",
+            "path": ".github/workflows/stuck-label-automation.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30124073729",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30121852699,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30121852699",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30121267977,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30121267977",
+            "conclusion": "failure"
+          },
           {
             "id": 30120272306,
             "name": "Fleet Controller",
@@ -33,13 +61,6 @@
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30117738598",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30117396182,
-            "name": "Agent Dispatcher",
-            "path": ".github/workflows/agent-dispatcher.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30117396182",
             "conclusion": "failure"
           }
         ],
