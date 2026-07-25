@@ -13,8 +13,6 @@ name: Subscription & Trial Tracker
 #     anything expiring/renewing inside the warning window.
 
 on:
-  schedule:
-    - cron: "0 13 * * 1" # weekly on Monday at 13:00 UTC
   workflow_dispatch:
     inputs:
       warn_within_days:

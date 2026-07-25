@@ -22,8 +22,6 @@ name: VEINS Monitor — Vital Engine INtelligence Surveillance
 # run (de-duplicates by checking for its own marker in recent comments).
 
 on:
-  schedule:
-    - cron: '28 * * * *'   # hourly — staggered off :00 to reduce runner bursts
   workflow_dispatch:
     inputs:
       dry_run:

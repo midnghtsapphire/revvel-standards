@@ -32,12 +32,6 @@ on:
   repository_dispatch:
     types:
       - openrouter-key-updated
-  schedule:
-    # 02:30 UTC daily — the instantiation-check cron runs at 06:17 UTC and
-    # flags failures; this sweep runs first and clears any that self-healed
-    # overnight so stalled items aren't re-escalated needlessly.
-    - cron: "30 2 * * *"
-
 permissions:
   issues: write
   pull-requests: write

@@ -1,7 +1,5 @@
 name: eeat-trust-cron
 on:
-  schedule:
-    - cron: 0 2 * * *
   workflow_dispatch:
     inputs:
       dry_run:

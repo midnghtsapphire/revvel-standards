@@ -18,19 +18,10 @@
 
 name: Auto-Approve Clean PRs
 
+# quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
+# run manually via workflow_dispatch if needed.
 on:
-  # Trigger when CI checks complete on a PR
-  check_suite:
-    types: [completed]
-  # Also trigger when labels change (backward compat with Bito workflow)
-  pull_request:
-    types: [labeled]
-  # Allow manual trigger for stuck PRs
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: 'PR number to auto-approve'
-        required: true
+  workflow_dispatch: null
 
 permissions:
   pull-requests: write

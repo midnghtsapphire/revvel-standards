@@ -18,8 +18,6 @@ on:
   check_run:
     types:
       - completed
-  schedule:
-    - cron: "*/30 * * * *"
   workflow_dispatch:
     inputs:
       pr_number:

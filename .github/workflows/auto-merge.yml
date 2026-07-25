@@ -1,9 +1,9 @@
 name: Auto-Merge on Approval
+# quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
+# run manually via workflow_dispatch if needed.
 on:
-  pull_request:
-    types:
-      - labeled
-      - unlabeled
+  workflow_dispatch: null
+
 concurrency:
   group: auto-merge-${{ github.event.pull_request.number }}
   cancel-in-progress: true

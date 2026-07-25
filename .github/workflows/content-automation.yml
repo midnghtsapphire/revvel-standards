@@ -1,7 +1,5 @@
 name: Content Automation
 on:
-  schedule:
-    - cron: 0 9 * * 0
   workflow_dispatch:
     inputs:
       topic:
