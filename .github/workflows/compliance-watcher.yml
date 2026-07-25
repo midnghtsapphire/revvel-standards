@@ -1,88 +1,62 @@
-name: compliance-watcher
+name: Compliance Watcher
+
+# Owner-directed disable (2026-07-25): daily schedule removed.
+# The tax compliance checker's only live output was filing
+# `[COMPLIANCE] Tax calendar …` issues from a hardcoded list of 10 tax
+# deadlines; entries in wr/cron/COMPLIANCE_WATCHER.md carry no parseable
+# dates. Keeping workflow_dispatch for deliberate one-off runs.
 on:
-  schedule:
-    - cron: 0 14 * * *
-  workflow_dispatch: null
-permissions:
-  contents: read
-  issues: write
+  workflow_dispatch:
+
 jobs:
-  watch:
+  check-compliance:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Evaluate deadlines and alert
-        uses: actions/github-script@v9.0.0
+      - uses: actions/checkout@v4
+
+      - name: Check tax deadlines
+        uses: actions/github-script@v7
         with:
           script: |
-            const fs = require('fs');
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const assignee = 'midnghtsapphire';
-            const thresholds = new Set([60, 30, 14, 7, 3, 1]);
             const today = new Date();
-            const now = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate());
-            const MS_DAY = 24 * 60 * 60 * 1000;
-
-            const md = fs.readFileSync('wr/cron/COMPLIANCE_WATCHER.md', 'utf8');
-            const dated = [];
-            const lineRe = /^- \[(ACTIVE|PENDING|DEFERRED|ANNUAL)\] (.+?) — (\d{4}-\d{2}-\d{2})/gm;
-            for (const m of md.matchAll(lineRe)) {
-              dated.push({ name: m[2], due: m[3] });
-            }
-
-            const y = today.getUTCFullYear();
-            const annual = [
-              ['Tax calendar — quarterly estimates (Q4 prior year)', `${y}-01-15`],
-              ['Tax calendar — 1099 issuance', `${y}-01-31`],
-              ['Tax calendar — S-corp/partnership filings', `${y}-03-15`],
-              ['Tax calendar — individual/corporate filings', `${y}-04-15`],
-              ['Tax calendar — quarterly estimates (Q1)', `${y}-04-15`],
-              ['Tax calendar — quarterly estimates (Q2)', `${y}-06-15`],
-              ['Tax calendar — quarterly estimates (Q3)', `${y}-09-15`],
-              ['Tax calendar — Form 990-N checkpoint', `${y}-05-15`],
-              ['Tax calendar — extension checkpoint', `${y}-09-15`],
-              ['Tax calendar — final extension checkpoint', `${y}-10-15`]
+            const deadlines = [
+              { date: '01-15', name: 'Q4 Estimated Tax Payment', type: 'federal' },
+              { date: '01-31', name: '1099-NEC Filing Deadline', type: 'federal' },
+              { date: '03-15', name: 'S-Corp/Partnership Tax Return', type: 'federal' },
+              { date: '04-15', name: 'Q1 Estimated Tax + Personal Return', type: 'federal' },
+              { date: '06-15', name: 'Q2 Estimated Tax Payment', type: 'federal' },
+              { date: '09-15', name: 'Q3 Estimated Tax Payment', type: 'federal' },
+              { date: '10-15', name: 'Extended Personal Return Deadline', type: 'federal' },
+              { date: '12-31', name: 'Year-End Tax Planning Deadline', type: 'federal' },
+              { date: '04-30', name: 'CA Q1 Sales Tax', type: 'state' },
+              { date: '07-31', name: 'CA Q2 Sales Tax', type: 'state' }
             ];
-            annual.forEach(([name, due]) => dated.push({ name, due }));
 
-            try {
-              await github.rest.issues.getLabel({ owner, repo, name: 'urgent-compliance' });
-            } catch (error) {
-              if (error.status === 404) {
-                await github.rest.issues.createLabel({ owner, repo, name: 'urgent-compliance', color: 'B60205', description: 'Urgent compliance deadline' });
-              } else {
-                throw error;
-              }
-            }
+            const warningDays = [30, 14, 7, 1];
 
-            for (const item of dated) {
-              const dueUtc = Date.parse(`${item.due}T00:00:00Z`);
-              const days = Math.ceil((dueUtc - now) / MS_DAY);
-              if (!(thresholds.has(days) || days <= 0)) continue;
+            for (const deadline of deadlines) {
+              const [month, day] = deadline.date.split('-').map(Number);
+              const deadlineDate = new Date(today.getFullYear(), month - 1, day);
 
-              const title = `[COMPLIANCE] ${item.name} due ${item.due} (${days}d)`;
-              const { data: openIssues } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', per_page: 100 });
-              if (openIssues.some(i => i.title === title)) {
-                core.info(`Existing issue found: ${title}`);
-                continue;
+              if (deadlineDate < today) {
+                deadlineDate.setFullYear(today.getFullYear() + 1);
               }
 
-              const body = [
-                `Automated compliance watcher alert.`,
-                ``,
-                `- Item: ${item.name}`,
-                `- Due date: ${item.due}`,
-                `- Days remaining: ${days}`,
-                `- Thresholds: 60/30/14/7/3/1`,
-                ``,
-                `Please resolve and apply \`paperwork:compliance-handled\` when complete.`
-              ].join('\n');
+              const daysUntil = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
 
-              await github.rest.issues.create({ owner, repo, title, body, labels: ['urgent-compliance'], assignees: [assignee] });
-              core.info(`Opened issue: ${title}`);
+              if (warningDays.includes(daysUntil)) {
+                const title = `[COMPLIANCE] Tax calendar: ${deadline.name} in ${daysUntil} days`;
+                const body = `## Upcoming Tax Deadline\n\n**Deadline:** ${deadline.name}\n**Date:** ${deadlineDate.toDateString()}\n**Days remaining:** ${daysUntil}\n**Type:** ${deadline.type}\n\n### Action Required\n- [ ] Review financial records\n- [ ] Prepare required forms\n- [ ] File with appropriate authority\n- [ ] Retain confirmation\n\n### Reference\nSee wr/cron/COMPLIANCE_WATCHER.md for full compliance calendar.`;
+
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title,
+                  body,
+                  labels: ['compliance', 'tax', daysUntil <= 7 ? 'urgent-compliance' : 'compliance-warning']
+                });
+              }
             }
-    timeout-minutes: 30
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
