@@ -59,3 +59,7 @@ wr/memory/last-remediation-plan.json
 # observed on PR #14684.
 docs/agents/*/transcripts/*.jsonl
 docs/agents/*/transcripts/*.md
+
+# wr-rewrite sweep pipeline artifacts (generated at repo root by wr-rewrite.yml)
+lint.txt
+queue.json

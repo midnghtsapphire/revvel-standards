@@ -29,7 +29,7 @@ All **gates** (the load-bearing safety rules) are faithful in the shipped embed.
 ## Non-goal
 
 No citations fabricated. This report is a diff, not a literature review.
-# WR-4600 prompt drift — canonical (Drive) vs shipped dashboard
+## WR-4600 prompt drift — canonical (Drive) vs shipped dashboard
 
 **Source of truth:** the `.md` files in the Drive WR-4600 folder
 (`WR-4200-Operating-Directive.md`, `WR-4600.1/.2/.4`).

@@ -102,6 +102,25 @@ function workflowRunMissingWorkflows(text) {
   return null;
 }
 
+// Windows-only shells (2026-07-24): wr-rewrite.yml ran every step with
+// `shell: powershell` on a Linux self-hosted runner. The runner has no
+// PowerShell, so every run died with "pwsh: command not found" before the
+// first command executed. All fleet runners are Linux — steps must use bash
+// (or sh/python). Line-based so it catches both step-level `shell:` and
+// `defaults.run.shell:`.
+const WINDOWS_ONLY_SHELL = /^\s*(?:-\s+)?shell:\s*['"]?(powershell|pwsh|cmd)\b/;
+
+function windowsOnlyShell(text) {
+  const lines = text.split('\n');
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(WINDOWS_ONLY_SHELL);
+    if (m) {
+      return `line ${i + 1}: 'shell: ${m[1]}' is Windows-only — fleet runners are Linux, use 'shell: bash' (fails at runtime with "pwsh: command not found")`;
+    }
+  }
+  return null;
+}
+
 /** @returns {{file:string,error:string}[]} */
 function findInvalidWorkflows() {
   const parser = tryLoadYamlParser();
@@ -130,11 +149,15 @@ function findInvalidWorkflows() {
     // 2) GitHub Actions schema checks (caught even when YAML is valid)
     const schemaErr = workflowRunMissingWorkflows(text);
     if (schemaErr) bad.push({ file: rel, error: schemaErr });
+
+    // 3) Runtime environment checks: shells that cannot exist on the runners
+    const shellErr = windowsOnlyShell(text);
+    if (shellErr) bad.push({ file: rel, error: shellErr });
   }
   return bad;
 }
 
-module.exports = { findInvalidWorkflows, listWorkflowFiles, heuristicError, workflowRunMissingWorkflows };
+module.exports = { findInvalidWorkflows, listWorkflowFiles, heuristicError, workflowRunMissingWorkflows, windowsOnlyShell };
 
 // CLI: print report, exit 1 if any invalid (usable as a CI gate too).
 if (require.main === module) {
