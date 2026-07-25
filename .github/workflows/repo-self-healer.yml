@@ -3,8 +3,6 @@ name: Repo Self-Healer
 # Part of the self-healing system
 
 on:
-  schedule:
-    - cron: '0 3 * * *'  # 3 AM daily
   workflow_dispatch:  # Manual trigger
 
 permissions:

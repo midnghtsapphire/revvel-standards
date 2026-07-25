@@ -14,9 +14,6 @@ name: Third-Party Action Freshness Audit
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:
-  schedule:
-    # 09:00 UTC on the 1st of Jan / Apr / Jul / Oct.
-    - cron: "0 9 1 1,4,7,10 *"
   workflow_dispatch:
     inputs:
       staleness_months:

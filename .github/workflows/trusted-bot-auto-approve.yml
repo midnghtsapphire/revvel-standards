@@ -6,13 +6,10 @@ name: Trusted Bot Auto-Approve
 #
 # Trusted bots: Devin, Jules, Copilot, Cursor, Octopus, CircleCI, Bito, OpenHands
 
+# quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
+# run manually via workflow_dispatch if needed.
 on:
-  check_suite:
-    types: [completed]
-  workflow_run:
-    workflows:
-      - "GitGuardian Security Checks"
-    types: [completed]
+  workflow_dispatch: null
 
 permissions:
   pull-requests: write

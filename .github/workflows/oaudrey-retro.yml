@@ -5,8 +5,6 @@ on:
       - Deploy oAudrey Hub → DigitalOcean App Platform
     types:
       - completed
-  schedule:
-    - cron: 0 6 * * 1
   workflow_dispatch:
     inputs:
       skip_health_check:

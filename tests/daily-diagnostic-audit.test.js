@@ -385,8 +385,11 @@ test('workflow schedule does not collide exactly with self-healing.yml or repo-s
     fs.readFileSync(path.join(REPO_ROOT, '.github', 'workflows', 'repo-self-healer.yml'), 'utf8'),
   );
 
-  assert.notStrictEqual(cronExpr, selfHealing.on.schedule[0].cron);
-  assert.notStrictEqual(cronExpr, repoSelfHealer.on.schedule[0].cron);
+  // A workflow with no schedule (quiet mode) cannot collide.
+  for (const other of [selfHealing, repoSelfHealer]) {
+    const cron = other.on?.schedule?.[0]?.cron;
+    if (cron !== undefined) assert.notStrictEqual(cronExpr, cron);
+  }
 });
 
 test('workflow uses the ADMIN_GITHUB_TOKEN-with-fallback pattern (CLAUDE.md gotcha #2)', () => {

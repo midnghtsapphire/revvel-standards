@@ -5,8 +5,6 @@ description: >
   Runs every 30 minutes to find issues stuck in triage:new for >1 hour.
 
 on:
-  schedule:
-    - cron: '*/30 * * * *'  # Every 30 minutes
   workflow_dispatch:  # Manual trigger
 
 permissions:
