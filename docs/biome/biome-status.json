@@ -1,38 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-25T10:31:02.585Z",
+  "generated_at": "2026-07-25T11:26:23.741Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "3/100 recent runs failed; 0 stuck item(s)",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
+            "id": 30156111857,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30156111857",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30155224870,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30155224870",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30154696654,
+            "name": "wr-rewrite-sweep",
+            "path": ".github/workflows/wr-rewrite.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30154696654",
+            "conclusion": "failure"
+          },
+          {
             "id": 30154562062,
             "name": "Agent Dispatcher",
             "path": ".github/workflows/agent-dispatcher.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30154562062",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30154557939,
-            "name": "Agent Dispatcher",
-            "path": ".github/workflows/agent-dispatcher.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30154557939",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30154557187,
-            "name": "Agent Dispatcher",
-            "path": ".github/workflows/agent-dispatcher.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30154557187",
             "conclusion": "failure"
           }
         ],
