@@ -1,1 +1,15 @@
-{}
+{
+  "generated_at": "1970-01-01T00:00:00.000Z",
+  "source": "dashboard-data.json",
+  "projects": {
+    "total": 0,
+    "status_breakdown": {},
+    "with_revenue_signal": 0
+  },
+  "surface": {
+    "urls": 0,
+    "domains": 0
+  },
+  "prime_directive": "$10k/month -> $10M in 3 years",
+  "gate": "REVENUE_GATE.md"
+}
