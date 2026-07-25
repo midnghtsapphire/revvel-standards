@@ -1,5 +1,19 @@
 # REVVEL-DISABLED | AGENT: claude-code | MODEL: claude-code | WR: #16804 | DATE: 2026-07-25 | STATUS: BYPASSED | REASON: Owner-directed disable - org has no SAML IdP, so the lookup always returned empty and this workflow posted a false 'SAML SSO Identity Not Linked' nag on every PR. Disabled per RVS-AGENT-001 (comment, don't delete); owner requested removal repeatedly.
 # OWNER: midnghtsapphire
+#
+# Minimal inert stub below keeps this file a valid workflow (automation-doctor
+# requires every workflow file to parse with a jobs section). No automatic
+# triggers; the job is if:false and can never run.
+name: SAML SSO Registration Check (disabled)
+on:
+  workflow_dispatch: null
+jobs:
+  disabled:
+    runs-on: ubuntu-latest
+    if: ${{ false }}
+    steps:
+      - run: echo "REVVEL-DISABLED - see header comment"
+#
 # name: SAML SSO Registration Check
 #
 # on:
