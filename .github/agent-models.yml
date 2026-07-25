@@ -126,11 +126,11 @@ profiles:
 
   # Triage - quick classification, cheap
   triage:
-    description: "Quick issue classification and routing - use cheap model"
+    description: "Quick issue classification and routing - cheap model with tight output budget"
     provider: openrouter
     primary: "openai/gpt-4o-mini"
     fallback: "anthropic/claude-haiku-4.5"
-    max_tokens: 4000
+    max_tokens: 1500
     temperature: 0.3
     use_for: ["triage", "classify", "route", "label"]
 

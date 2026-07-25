@@ -8,14 +8,15 @@
 
 - This repository does **not** depend on the paid GitHub Copilot Coding Agent for automation.
 - `@Copilot` / `copilot-swe-agent` assignee routing is **not used** in this flow.
-- Triage routing is implemented directly through OpenRouter API calls using `OPENROUTER_API_KEY`.
+- Triage routing is implemented through the `triage` profile in
+  [`.github/agent-models.yml`](../.github/agent-models.yml), with non-OpenRouter
+  fallbacks when the key is missing or unfunded.
 - To opt out of triage, apply label `no-triage`.
 
 ## Environment variables
 
 Required:
 
-- `OPENROUTER_API_KEY`
 - `GITHUB_TOKEN`
 - `GITHUB_REPOSITORY`
 - `ISSUE_NUMBER`
@@ -25,7 +26,11 @@ Required:
 
 Optional:
 
-- `MODEL` (default: `anthropic/claude-sonnet-4`)
+- `OPENROUTER_API_KEY` (enables the OpenRouter lanes; GitHub Models / keyless
+  Perplexity / static fallback still run without it)
+- `MODEL` (overrides the SSOT triage primary only for emergency operations)
+- `MODEL_FALLBACK` (overrides the SSOT triage fallback)
+- `MAX_OUTPUT_TOKENS` (default from SSOT triage profile: `1500`)
 
 ## OpenRouter request / response shape
 
@@ -33,12 +38,13 @@ Request (`POST https://openrouter.ai/api/v1/chat/completions`):
 
 ```json
 {
-  "model": "anthropic/claude-sonnet-4",
+  "models": ["openai/gpt-4o-mini", "anthropic/claude-haiku-4.5"],
   "messages": [
     { "role": "system", "content": "triage instructions" },
     { "role": "user", "content": "issue/pr payload" }
   ],
-  "temperature": 0.2
+  "temperature": 0.2,
+  "max_tokens": 1500
 }
 ```
 
@@ -55,24 +61,24 @@ Response use:
 
 ## Model selection table
 
-Source: [`skills/openrouter-swarms/SKILL.md`](../skills/openrouter-swarms/SKILL.md)
+Source: [`.github/agent-models.yml`](../.github/agent-models.yml)
 
-| Task Type | Recommended Model | OpenRouter ID |
+| Lane | Model policy | Cost posture |
 |---|---|---|
-| Code generation / debugging | Claude Sonnet 4 | `anthropic/claude-sonnet-4` |
-| Deep reasoning / architecture | Claude Opus 4 | `anthropic/claude-opus-4` |
-| Fast / cheap tasks | Claude Haiku 4.5 | `anthropic/claude-haiku-4-5` |
-| Code + physics problems | GitHub GPT-5 Nano | `github/gpt-5-nano` |
-| Cell sequencing / biology | GitHub o1 | `github/o1-cell-sequencing` |
-| General research | GPT-5 | `openai/gpt-5` |
-| Long documents | Gemini 2.5 Pro | `google/gemini-2.5-pro` |
-| Code completion (fast) | Codex 5.1 | `openai/codex-5.1` |
+| OpenRouter SSOT triage | `openai/gpt-4o-mini` → `anthropic/claude-haiku-4.5` | Cheap primary, explicit fallback |
+| GitHub Models | `gpt-4o-mini` | Uses `GITHUB_TOKEN`, no OpenRouter spend |
+| Keyless Perplexity | `perplexity/sonar` bridge | No API key required |
+| OpenRouter free-tier | `OR_FREE_MODELS` env or built-in `:free` list | Cheap, account-dependent |
+| OpenRouter backup | Explicit cheap backup models | Last paid lane; no `openrouter/auto` or `openrouter/fusion` |
+| Static fallback | Rule-based labels | No LLM spend |
 
 ## Cost guardrails
 
-- Default model: `anthropic/claude-sonnet-4`.
-- Escalate to larger models only when triage requires deep reasoning.
-- Keep output concise and actionable.
+- Default model comes from the SSOT `triage` profile: `openai/gpt-4o-mini`.
+- Output is capped at `1500` tokens by default, down from the prior uncapped
+  Sonnet request path.
+- Triage prompt is intentionally concise: no broad research packet, no repeated
+  issue text, and marketing/SEO only when it changes routing.
 - Hourly sweep only triages `triage:new` items missing `openrouter`.
 - Use `no-triage` to suppress unnecessary calls.
 
