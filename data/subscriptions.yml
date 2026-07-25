@@ -59,16 +59,16 @@ subscriptions:
     trial_end: null
     renewal_date: null
     billing_cycle: usage
-    cost: 100.00
+    cost: null
     currency: USD
     repositories: all
     dashboard_url: https://vercel.com/oaudrey-projects
     decision_doc: null
     notes: >-
       Website-in-Test + production deploys for Revvel projects (required for DB
-      integrations). Usage-based — owner reports it fluctuates around ~$100/mo
-      (2026-07-25); check the invoice monthly rather than assuming a fixed
-      charge.
+      integrations). Usage-based, cost left null per convention — owner
+      reports it fluctuates around ~$100/mo (2026-07-25); check the invoice
+      monthly rather than assuming a fixed charge.
 
   - name: OpenRouter
     vendor: OpenRouter
@@ -111,7 +111,7 @@ subscriptions:
     status: active
     trial_start: null
     trial_end: null
-    renewal_date: 2026-08-25
+    renewal_date: null
     billing_cycle: monthly
     cost: 80.00
     currency: USD
@@ -119,7 +119,8 @@ subscriptions:
     dashboard_url: https://app.devin.ai/settings/billing
     decision_doc: docs/agent-stack/DEVIN_OBSERVATIONS.md
     notes: >-
-      Paid for current cycle. In-repo lane via scripts/call-devin-api.sh +
+      Owner paid this cycle ~2026-07-25; exact renewal date unknown — fill
+      in from the billing page. In-repo lane via scripts/call-devin-api.sh +
       .github/workflows/devin.yml (PR #14375). GitHub App review surface is
       always-on. Re-evaluate keep vs cancel at next renewal.
 
@@ -267,7 +268,7 @@ subscriptions:
     status: active
     trial_start: null
     trial_end: null
-    renewal_date: 2026-08-25
+    renewal_date: null
     billing_cycle: monthly
     cost: 100.00
     currency: USD
@@ -276,8 +277,8 @@ subscriptions:
     decision_doc: null
     notes: >-
       GitHub plan billing (separate from Copilot). Owner paid $100 on
-      2026-07-25; renewal date estimated one month out — confirm exact date
-      and plan tier from the billing page.
+      2026-07-25. Renewal date left null per file convention (no guesses) —
+      fill in the exact date and plan tier from the billing page.
 
   - name: Claude
     vendor: Anthropic
