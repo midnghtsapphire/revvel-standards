@@ -10,7 +10,7 @@ on:
 jobs:
   disabled:
     runs-on: ubuntu-latest
-    if: ${{ false }}
+    if: false
     steps:
       - run: echo "REVVEL-DISABLED - see header comment"
 #
