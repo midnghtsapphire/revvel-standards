@@ -1,84 +1,183 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-25T18:18:53.156Z",
+  "generated_at": "2026-07-25T20:20:04.217Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "down",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "9/100 recent runs failed; 0 stuck item(s)",
+      "status": "down",
+      "summary": "19/100 recent runs failed; 4 stuck item(s)",
       "counts": {
-        "failed_runs": 9,
+        "failed_runs": 19,
         "total_runs": 100,
-        "stuck_issues": 0
+        "stuck_issues": 4
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30169058132,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30169058132",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30168120895,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30168120895",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30167165130,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30167165130",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30166016166,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30166016166",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30165361291,
+            "id": 30173342844,
             "name": "Update Project Dashboard",
             "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30165361291",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173342844",
             "conclusion": "failure"
           },
           {
-            "id": 30165128894,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30165128894",
+            "id": 30173341327,
+            "name": "Jules Invoke",
+            "path": ".github/workflows/jules-invoke.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173341327",
             "conclusion": "failure"
           },
           {
-            "id": 30164202468,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30164202468",
+            "id": 30173340842,
+            "name": "Jules Invoke",
+            "path": ".github/workflows/jules-invoke.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173340842",
             "conclusion": "failure"
           },
           {
-            "id": 30163230118,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30163230118",
+            "id": 30173340755,
+            "name": "Jules Invoke",
+            "path": ".github/workflows/jules-invoke.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173340755",
             "conclusion": "failure"
           },
           {
-            "id": 30162536443,
-            "name": "Agent Fingerprint Gate",
-            "path": ".github/workflows/agent-fingerprint-gate.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30162536443",
+            "id": 30173340749,
+            "name": "Jules Invoke",
+            "path": ".github/workflows/jules-invoke.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173340749",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30173340474,
+            "name": "Jules Invoke",
+            "path": ".github/workflows/jules-invoke.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173340474",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30173314192,
+            "name": "PR & Issue Recovery Engine",
+            "path": ".github/workflows/recovery-engine.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173314192",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30173310637,
+            "name": "Jules Invoke",
+            "path": ".github/workflows/jules-invoke.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173310637",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30173310483,
+            "name": "Jules Invoke",
+            "path": ".github/workflows/jules-invoke.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173310483",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30173310302,
+            "name": "Jules Invoke",
+            "path": ".github/workflows/jules-invoke.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173310302",
             "conclusion": "failure"
           }
         ],
-        "stuck": []
+        "stuck": [
+          {
+            "number": 16201,
+            "title": "add - name: GitHub Organization Readme Badge Generator   uses: joshjohanning/organization-readme-badge-generator@v2.0.3",
+            "updated_at": "2026-07-17T00:28:24Z",
+            "labels": [
+              "enhancement",
+              "auto-fix",
+              "copilot",
+              "triage",
+              "openrouter",
+              "priority-p3",
+              "role:orchestrator",
+              "wr:new",
+              "recovery:stale-wr"
+            ]
+          },
+          {
+            "number": 16113,
+            "title": "feat(wr-15279): implement WA My Health My Data Act (MHMDA) explicit opt-in consent flow @midnghtsapphire @Copilot @github-actions[bot] @devin-ai-integration[bot] @openhands-agent @google-labs-jules[bot] @Codex @dependabot[bot] @circleci-app[bot] @imgbot[bot] @claude @replit-agent @RadioChaser",
+            "updated_at": "2026-07-18T16:16:34Z",
+            "labels": [
+              "enhancement",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "priority-p2",
+              "role:orchestrator",
+              "wr:code",
+              "area:ui",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "wr-stuck",
+              "mindmappr",
+              "wr:reset"
+            ]
+          },
+          {
+            "number": 16112,
+            "title": "feat(wr-15279): implement FTC HBNR breach notification procedures for non-HIPAA health data",
+            "updated_at": "2026-07-18T16:16:35Z",
+            "labels": [
+              "enhancement",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "role:orchestrator",
+              "wr:code",
+              "area:ui",
+              "area:automation",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "wr:new",
+              "wr-stuck",
+              "recovery:stale-wr",
+              "mindmappr",
+              "wr:reset"
+            ]
+          },
+          {
+            "number": 16110,
+            "title": "feat(wr-15279): conduct Privacy Impact Assessment (PIA) before production launch",
+            "updated_at": "2026-07-18T16:16:36Z",
+            "labels": [
+              "bug",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority:p0",
+              "priority-p1",
+              "role:orchestrator",
+              "wr:code",
+              "area:ui",
+              "area:api",
+              "priority:high",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "wr:new",
+              "wr-stuck",
+              "recovery:stale-wr",
+              "mindmappr",
+              "wr:reset"
+            ]
+          }
+        ]
       }
     },
     "homeostat": {
