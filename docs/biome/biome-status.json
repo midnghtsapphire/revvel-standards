@@ -1,90 +1,19 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-25T20:20:04.217Z",
+  "generated_at": "2026-07-25T21:18:03.351Z",
   "credit_free": true,
-  "overall": "down",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "down",
-      "summary": "19/100 recent runs failed; 4 stuck item(s)",
+      "status": "degraded",
+      "summary": "0/100 recent runs failed; 4 stuck item(s)",
       "counts": {
-        "failed_runs": 19,
+        "failed_runs": 0,
         "total_runs": 100,
         "stuck_issues": 4
       },
       "detail": {
-        "recent_failures": [
-          {
-            "id": 30173342844,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173342844",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30173341327,
-            "name": "Jules Invoke",
-            "path": ".github/workflows/jules-invoke.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173341327",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30173340842,
-            "name": "Jules Invoke",
-            "path": ".github/workflows/jules-invoke.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173340842",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30173340755,
-            "name": "Jules Invoke",
-            "path": ".github/workflows/jules-invoke.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173340755",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30173340749,
-            "name": "Jules Invoke",
-            "path": ".github/workflows/jules-invoke.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173340749",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30173340474,
-            "name": "Jules Invoke",
-            "path": ".github/workflows/jules-invoke.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173340474",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30173314192,
-            "name": "PR & Issue Recovery Engine",
-            "path": ".github/workflows/recovery-engine.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173314192",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30173310637,
-            "name": "Jules Invoke",
-            "path": ".github/workflows/jules-invoke.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173310637",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30173310483,
-            "name": "Jules Invoke",
-            "path": ".github/workflows/jules-invoke.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173310483",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30173310302,
-            "name": "Jules Invoke",
-            "path": ".github/workflows/jules-invoke.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30173310302",
-            "conclusion": "failure"
-          }
-        ],
+        "recent_failures": [],
         "stuck": [
           {
             "number": 16201,
