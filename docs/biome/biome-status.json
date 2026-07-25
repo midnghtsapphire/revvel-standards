@@ -1,87 +1,38 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-24T23:22:23.082Z",
+  "generated_at": "2026-07-25T00:31:55.787Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "12/100 recent runs failed; 0 stuck item(s)",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 12,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30133560033,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30133560033",
+            "id": 30136474680,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30136474680",
             "conclusion": "failure"
           },
           {
-            "id": 30132408816,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30132408816",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30131114806,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30131114806",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30131112279,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30131112279",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30130609207,
+            "id": 30135996292,
             "name": "Stuck Label Detection & Auto-Progression",
             "path": ".github/workflows/stuck-label-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30130609207",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30135996292",
             "conclusion": "failure"
           },
           {
-            "id": 30129419424,
+            "id": 30135107466,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30129419424",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30128020132,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30128020132",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30127981055,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30127981055",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30126338812,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30126338812",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30124748418,
-            "name": "Stuck Check Watchdog",
-            "path": ".github/workflows/stuck-check-watchdog.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30124748418",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30135107466",
             "conclusion": "failure"
           }
         ],
