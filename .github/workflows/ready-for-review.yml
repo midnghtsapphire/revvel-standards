@@ -375,7 +375,7 @@ jobs:
                   repo: context.repo.repo,
                   issue_number: num,
                   name: 'in-review',
-                });
+                }).catch(err => { if (err.status !== 404) throw err; });
                 core.info(`  • Removed 'in-review' from issue #${num}`);
               } catch (e) {
                 // 404 = label was not present; ignore silently
