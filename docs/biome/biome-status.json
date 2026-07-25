@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-25T08:41:09.576Z",
+  "generated_at": "2026-07-25T09:33:06.936Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,17 +15,17 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 30151520650,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30151520650",
+            "id": 30152273955,
+            "name": "Agent Dispatcher",
+            "path": ".github/workflows/agent-dispatcher.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30152273955",
             "conclusion": "failure"
           },
           {
-            "id": 30151425285,
-            "name": "Stuck Label Detection & Auto-Progression",
-            "path": ".github/workflows/stuck-label-automation.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30151425285",
+            "id": 30152261992,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30152261992",
             "conclusion": "failure"
           }
         ],
