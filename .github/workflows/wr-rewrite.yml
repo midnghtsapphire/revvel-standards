@@ -1,0 +1,39 @@
+name: wr-rewrite-sweep
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_docs:
+        description: How many docs this run
+        default: "5"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sweep:
+    runs-on: self-hosted
+    env:
+      LMSTUDIO_ENDPOINT: http://127.0.0.1:1234/v1
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select docs
+        shell: bash
+        env:
+          MAX_DOCS: ${{ github.event.inputs.max_docs || '5' }}
+        run: |
+          npx markdownlint-cli2 "**/*.md" 2> lint.txt || true
+          python3 scripts/wr_rewrite.py select --lint-report lint.txt --max-docs "$MAX_DOCS" --out queue.json
+
+      - name: Rewrite and judge
+        shell: bash
+        run: python3 scripts/wr_rewrite.py run --queue queue.json --ledger ledger/wr-rewrite.jsonl --retry-cap 2
+
+      - name: Open PRs
+        shell: bash
+        continue-on-error: true
+        run: python3 scripts/wr_rewrite.py open-prs --ledger ledger/wr-rewrite.jsonl
