@@ -81,7 +81,6 @@ on:
       - "Lint Markdown (markdownlint-cli2)"
       - "No Root Junk"
       - "No-Destroy Guard"
-      - "SAML SSO Registration Check"
       - "Semgrep SAST"
       - "SEO + A11y Guard"
       - "Super-Linter"

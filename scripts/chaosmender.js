@@ -117,12 +117,17 @@ function scanWorkflowRunMissingWorkflowsList(repoRoot) {
       // Matches `workflow_run:` as an on: event key (indented or not)
       if (!/^\s+workflow_run\s*:/.test(lines[i])) continue;
 
-      // Look ahead for a `workflows:` key before the next top-level key
+      // Scan the whole workflow_run block for a `workflows:` key. The block is
+      // every following line that is blank, a comment, or indented deeper than
+      // the workflow_run key itself. A fixed lookahead window undercounts
+      // heavily-commented triggers (false positive on pr-lifecycle.yml, whose
+      // workflows: list sits ~35 comment lines below the trigger).
+      const indent = lines[i].match(/^(\s*)/)[1].length;
       let foundWorkflows = false;
-      for (let j = i + 1; j < Math.min(i + 15, lines.length); j++) {
+      for (let j = i + 1; j < lines.length; j++) {
         const ahead = lines[j];
-        // If we hit a new top-level YAML key (no leading space on a non-blank line), stop
-        if (/^[a-zA-Z]/.test(ahead) && ahead.trim() !== '') break;
+        if (ahead.trim() === '' || ahead.trim().startsWith('#')) continue;
+        if (ahead.match(/^(\s*)/)[1].length <= indent) break; // left the block
         if (/^\s+workflows\s*:/.test(ahead)) { foundWorkflows = true; break; }
       }
 

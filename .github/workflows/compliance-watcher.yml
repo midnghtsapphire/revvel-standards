@@ -1,7 +1,7 @@
 name: compliance-watcher
+# Schedule disabled 2026-07-25 by owner request: the tax-calendar checker is
+# turned off. Manual dispatch retained for one-off use.
 on:
-  schedule:
-    - cron: 0 14 * * *
   workflow_dispatch: null
 permissions:
   contents: read
