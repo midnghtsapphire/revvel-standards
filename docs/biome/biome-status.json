@@ -1,19 +1,76 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-24T03:03:28.216Z",
+  "generated_at": "2026-07-25T03:02:59.234Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "8/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 8,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 30141366543,
+            "name": "Stuck Label Detection & Auto-Progression",
+            "path": ".github/workflows/stuck-label-automation.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30141366543",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30140420528,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30140420528",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30139035478,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30139035478",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30138503060,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30138503060",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30137259468,
+            "name": "Stuck Check Watchdog",
+            "path": ".github/workflows/stuck-check-watchdog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30137259468",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30137258650,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30137258650",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30136704374,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30136704374",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30136526205,
+            "name": "Agent Dispatcher",
+            "path": ".github/workflows/agent-dispatcher.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30136526205",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
@@ -36,10 +93,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30138300598"
       }
     },
     "sheaf": {
