@@ -22,16 +22,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Select docs
-        shell: powershell
+        shell: bash
+        env:
+          MAX_DOCS: ${{ github.event.inputs.max_docs || '5' }}
         run: |
-          npx markdownlint-cli2 "**/*.md" 2> lint.txt
-          python scripts/wr_rewrite.py select --lint-report lint.txt --max-docs "${{ github.event.inputs.max_docs || 5 }}" --out queue.json
+          npx markdownlint-cli2 "**/*.md" 2> lint.txt || true
+          python3 scripts/wr_rewrite.py select --lint-report lint.txt --max-docs "$MAX_DOCS" --out queue.json
 
       - name: Rewrite and judge
-        shell: powershell
-        run: python scripts/wr_rewrite.py run --queue queue.json --ledger ledger/wr-rewrite.jsonl --retry-cap 2
+        shell: bash
+        run: python3 scripts/wr_rewrite.py run --queue queue.json --ledger ledger/wr-rewrite.jsonl --retry-cap 2
 
       - name: Open PRs
-        shell: powershell
+        shell: bash
         continue-on-error: true
-        run: python scripts/wr_rewrite.py open-prs --ledger ledger/wr-rewrite.jsonl
+        run: python3 scripts/wr_rewrite.py open-prs --ledger ledger/wr-rewrite.jsonl

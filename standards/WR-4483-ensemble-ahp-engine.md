@@ -18,7 +18,7 @@ Automated multi-criteria decision analysis exists but produces fake consensus (o
 | F5 | Cost claim ignored validation labor | R5: report full cost incl. critic + benchmark passes |
 
 ## Pipeline (Mode 1 = MCP tool)
-```
+```text
 input: goal statement, optional criteria/alternatives
   1. STRUCTURE   -> guide model proposes tree depth, k judges (default 5), n criteria (default 7)
   2. GENERATE    -> each judge (distinct model family) proposes criteria + alternatives
