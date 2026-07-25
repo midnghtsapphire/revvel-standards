@@ -37,8 +37,8 @@ subscriptions:
     vendor: RecurseML
     type: github_app
     status: trial
-    trial_start: 2026-06-13
-    trial_end: 2026-06-27        # 14-day free trial that began 2026-06-13
+    trial_start: 2026-07-25
+    trial_end: 2026-08-08        # rolling 14-day trial; owner re-reloaded 2026-07-25
     renewal_date: null
     billing_cycle: annual
     cost: 250
@@ -47,9 +47,12 @@ subscriptions:
     dashboard_url: https://app.recurse.ml
     decision_doc: docs/DARE_LOG.md
     notes: >-
-      Autonomous PR code-review GitHub App. 14-day free trial → ~$250/year.
-      Decide renew/cancel before trial_end using the Decision Gate in
-      skills/recurse-ml/SKILL.md. Workflow: .github/workflows/recurse-ml.yml.
+      Autonomous PR code-review GitHub App. Trial works on a rolling 14-day
+      reload: owner reloads it at app.recurse.ml before expiry and gets 14 more
+      days at no charge (last reload 2026-07-25 → next reload due by
+      2026-08-08). Paid conversion would be ~$250/year. Decide renew/cancel
+      using the Decision Gate in skills/recurse-ml/SKILL.md.
+      Workflow: .github/workflows/recurse-ml.yml.
 
   - name: Vercel
     vendor: Vercel
@@ -260,7 +263,8 @@ subscriptions:
     decision_doc: null
     notes: >-
       Usage-priced per Google plan. Per docs/TOOL_COST_INDEX.md — varies.
-      Fill in latest invoice total when known.
+      Fill in latest invoice total when known. Back online as of 2026-07-25 —
+      owner refreshed the expired API credentials.
 
   - name: GitHub
     vendor: GitHub
