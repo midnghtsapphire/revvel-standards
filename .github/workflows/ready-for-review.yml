@@ -220,15 +220,20 @@ jobs:
 
             // ── Fetch changed files (paginated) so the scanner can look
             //    at the added lines of the diff.
-            const files = await github.paginate(
-              github.rest.pulls.listFiles,
-              {
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.payload.pull_request.number,
-                per_page: 100,
-              }
-            );
+            let files = [];
+            try {
+              files = await github.paginate(
+                github.rest.pulls.listFiles,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.payload.pull_request.number,
+                  per_page: 100,
+                }
+              );
+            } catch (e) {
+              core.warning(`Failed to fetch PR files: ${e.message}`);
+            }
 
             const { checks } = scanDiff(files);
 
@@ -323,12 +328,12 @@ jobs:
               '_Reviewer bots that are not yet installed in this repo will silently no-op; add them via their GitHub App / Action when available._',
             ].join('\n');
 
-            await github.rest.issues.createComment({
+            try { await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
               body,
-            });
+            }); } catch (e) { core.warning(`Failed to create comment: ${e.message}`); }
     timeout-minutes: 15
   unlabel-on-close:
     name: Remove In-Review Label on PR Close
