@@ -1,10 +1,13 @@
 name: OpenRouter Coder
 
+# Demand-driven activation (2026-07-25): the coder fires ONLY when a human
+# applies `spec-approved` (via the Spec Approval Gate) or `wr:code`. The
+# issue_comment trigger was removed — bots posting "Research Findings:"
+# comments used to start builds with no human approval, which is how the
+# fleet ran away. See docs/DEFINITION_OF_DONE.md two-phase pipeline.
 on:
   issues:
     types: [labeled]
-  issue_comment:
-    types: [created]
   workflow_dispatch:
     inputs:
       issue_number:
@@ -21,7 +24,6 @@ jobs:
   code:
     if: |
       (github.event_name == 'issues' && (github.event.label.name == 'wr:code' || github.event.label.name == 'spec-approved')) ||
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, 'Research Findings:')) ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
