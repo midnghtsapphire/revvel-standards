@@ -1,87 +1,38 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-25T14:31:52.543Z",
+  "generated_at": "2026-07-25T15:23:30.820Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "10/100 recent runs failed; 0 stuck item(s)",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 10,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30160757842,
+            "id": 30163230118,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30160757842",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30163230118",
             "conclusion": "failure"
           },
           {
-            "id": 30159479339,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30159479339",
+            "id": 30162536443,
+            "name": "Agent Fingerprint Gate",
+            "path": ".github/workflows/agent-fingerprint-gate.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30162536443",
             "conclusion": "failure"
           },
           {
-            "id": 30158402385,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30158402385",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30157857732,
-            "name": "App Artifact Audit",
-            "path": ".github/workflows/app-artifact-audit.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30157857732",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30157790478,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30157790478",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30157518116,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30157518116",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30156846727,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30156846727",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30156111857,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30156111857",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30155224870,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30155224870",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30154696654,
-            "name": "wr-rewrite-sweep",
-            "path": ".github/workflows/wr-rewrite.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30154696654",
+            "id": 30162525913,
+            "name": "Social Media Automation",
+            "path": ".github/workflows/social-media-automation.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30162525913",
             "conclusion": "failure"
           }
         ],
@@ -107,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30159495988"
+        "last_run": null
       }
     },
     "sheaf": {
