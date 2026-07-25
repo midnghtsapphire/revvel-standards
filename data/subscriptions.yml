@@ -59,14 +59,16 @@ subscriptions:
     trial_end: null
     renewal_date: null
     billing_cycle: usage
-    cost: null
+    cost: 100.00
     currency: USD
     repositories: all
     dashboard_url: https://vercel.com/oaudrey-projects
     decision_doc: null
     notes: >-
       Website-in-Test + production deploys for Revvel projects (required for DB
-      integrations). Usage-based; no fixed renewal date.
+      integrations). Usage-based — owner reports it fluctuates around ~$100/mo
+      (2026-07-25); check the invoice monthly rather than assuming a fixed
+      charge.
 
   - name: OpenRouter
     vendor: OpenRouter
@@ -109,7 +111,7 @@ subscriptions:
     status: active
     trial_start: null
     trial_end: null
-    renewal_date: 2026-07-08
+    renewal_date: 2026-08-25
     billing_cycle: monthly
     cost: 80.00
     currency: USD
@@ -233,14 +235,14 @@ subscriptions:
     trial_end: null
     renewal_date: null
     billing_cycle: monthly
-    cost: 10.00
+    cost: 80.00
     currency: USD
     repositories: all
     dashboard_url: https://github.com/settings/billing
     decision_doc: null
     notes: >-
-      Individual plan ~$10/mo. Confirm tier and exact renewal date from
-      GitHub billing.
+      Owner reports $80/mo (2026-07-25). Confirm tier and exact renewal
+      date from GitHub billing.
 
   - name: Jules
     vendor: Google
@@ -258,3 +260,106 @@ subscriptions:
     notes: >-
       Usage-priced per Google plan. Per docs/TOOL_COST_INDEX.md — varies.
       Fill in latest invoice total when known.
+
+  - name: GitHub
+    vendor: GitHub
+    type: saas
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: 2026-08-25
+    billing_cycle: monthly
+    cost: 100.00
+    currency: USD
+    repositories: all
+    dashboard_url: https://github.com/settings/billing
+    decision_doc: null
+    notes: >-
+      GitHub plan billing (separate from Copilot). Owner paid $100 on
+      2026-07-25; renewal date estimated one month out — confirm exact date
+      and plan tier from the billing page.
+
+  - name: Claude
+    vendor: Anthropic
+    type: saas
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: 250.00
+    currency: USD
+    repositories: all
+    dashboard_url: https://claude.ai/settings/billing
+    decision_doc: null
+    notes: >-
+      Claude subscription (Claude Code sessions run on this). Owner reports
+      $250/mo (2026-07-25).
+
+  - name: Grok
+    vendor: xAI
+    type: saas
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: 100.00
+    currency: USD
+    repositories: all
+    dashboard_url: https://grok.com
+    decision_doc: null
+    notes: >-
+      Owner reports $100/mo (2026-07-25). Confirm plan tier and what it is
+      used for; candidate for the keep/cancel review.
+
+  - name: Perplexity
+    vendor: Perplexity AI
+    type: saas
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: 20.00
+    currency: USD
+    repositories: all
+    dashboard_url: https://www.perplexity.ai/settings
+    decision_doc: null
+    notes: >-
+      Owner reports ~$20/mo (2026-07-25). Used by the research personas
+      (perplexity/sonar-pro lane).
+
+  - name: ChatGPT
+    vendor: OpenAI
+    type: saas
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: 20.00
+    currency: USD
+    repositories: all
+    dashboard_url: https://chatgpt.com/#settings
+    decision_doc: null
+    notes: >-
+      Owner reports ~$20/mo (2026-07-25).
+
+  - name: Notebook
+    vendor: null
+    type: saas
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: 100.00
+    currency: USD
+    repositories: all
+    dashboard_url: null
+    decision_doc: null
+    notes: >-
+      Owner reports $100/mo (2026-07-25) for "notebook" — confirm which
+      product this is (e.g. Google NotebookLM / Google One AI) and fill in
+      vendor + dashboard URL.
