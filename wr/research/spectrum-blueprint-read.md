@@ -27,14 +27,14 @@
 
 ## BLANK
 
-_Reserved for future entries. Do not fill with speculation to look busy._
+*Reserved for future entries. Do not fill with speculation to look busy.*
 
 ---
 
 ## Handling rule
 
 Anything tagged **[SPECULATIVE]** must never enter a dose engine, a user-facing recommendation, or a citation. It lives here for context and to prevent us from unknowingly re-deriving debunked claims.
-# The Spectrum Blueprint — Tagged Read-Through
+## The Spectrum Blueprint — Tagged Read-Through
 
 **Provenance:** Source is "The Spectrum Blueprint.pdf" (a visual guide / infographic deck), read from the user's Google Drive (fileId `1Fx125c2G0e-D9c-xtIwwIQoheHAD5Dfp`) for research and learning. The deck credits the clinical research of Dr. Glen Jeffery (UCL) and cites The Huberman Lab. Photobiomodulation / red-light (red & near-infrared) subject matter.
 
