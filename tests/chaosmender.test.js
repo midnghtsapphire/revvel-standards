@@ -237,6 +237,25 @@ function writeWorkflow(dir, name, content) {
     assert.equal(findings.length, 0);
   });
 
+  await test('scanWorkflowRunMissingWorkflowsList: does NOT flag workflows key beyond a long comment block (pr-lifecycle regression)', () => {
+    const comments = Array.from({ length: 30 }, (_, i) => `    # explanatory comment line ${i + 1}`);
+    const root = writeWorkflow(tmpDir(), 'commented.yml', [
+      'name: Commented',
+      'on:',
+      '  workflow_run:',
+      ...comments,
+      '    workflows: ["CI"]',
+      '    types: [completed]',
+      'jobs:',
+      '  job:',
+      '    runs-on: ubuntu-latest',
+      '    steps: []',
+    ].join('\n'));
+
+    const findings = scanWorkflowRunMissingWorkflowsList(root);
+    assert.equal(findings.length, 0);
+  });
+
   await test('scanWorkflowRunMissingWorkflowsList: skips files with no workflow_run', () => {
     const root = writeWorkflow(tmpDir(), 'noevent.yml', [
       'name: No Event',
