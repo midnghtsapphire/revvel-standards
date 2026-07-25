@@ -1,7 +1,5 @@
 name: Commit Queue Monitor
 on:
-  schedule:
-    - cron: 0 * * * *
   workflow_dispatch: null
 permissions:
   issues: write

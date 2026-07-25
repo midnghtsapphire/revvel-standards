@@ -1,7 +1,5 @@
 name: OpenRouter Instantiation Check
 on:
-  schedule:
-    - cron: 17 6 * * *
   workflow_dispatch:
     inputs:
       force_escalate:

@@ -8,8 +8,6 @@ on:
         description: 'Repo to bootstrap (owner/repo)'
         required: false
         type: string
-  schedule:
-    - cron: '0 2 * * 0'  # Weekly Sundays 2AM UTC
 permissions:
   contents: write
   issues: write
