@@ -22,8 +22,6 @@ on:
       - Deploy oAudrey Hub → DigitalOcean App Platform
     types:
       - completed
-  schedule:
-    - cron: 30 6 * * 1
 permissions:
   contents: read
   issues: write

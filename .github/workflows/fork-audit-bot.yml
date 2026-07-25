@@ -1,7 +1,5 @@
 name: Fork-Audit Bot
 on:
-  schedule:
-    - cron: 15 13 * * *
   workflow_dispatch:
     inputs:
       dry_run:

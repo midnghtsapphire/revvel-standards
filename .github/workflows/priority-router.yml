@@ -9,8 +9,6 @@ on:
       - unlabeled
       - ready_for_review
       - closed
-  schedule:
-    - cron: 0 */6 * * *
   workflow_dispatch:
     inputs:
       dry_run:

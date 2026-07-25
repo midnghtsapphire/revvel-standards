@@ -1,7 +1,5 @@
 name: Dependency & Version Update Checker
 on:
-  schedule:
-    - cron: 0 9 * * 1
   workflow_dispatch: null
 permissions:
   issues: write

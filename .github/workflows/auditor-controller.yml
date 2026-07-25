@@ -6,8 +6,6 @@ name: Auditor Controller
 # Add new assertions by editing scripts/auditor-controller.js → CHECKS.
 
 on:
-  schedule:
-    - cron: "0 13 * * *"   # daily at 13:00 UTC
   workflow_dispatch:
   pull_request:
     paths:

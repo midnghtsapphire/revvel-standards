@@ -20,8 +20,6 @@ on:
       - '.github/workflows/**'
       - 'scripts/**'
       - 'config/error-ledger.json'
-  schedule:
-    - cron: '0 6 * * *'
   workflow_dispatch:
     inputs:
       file_issues:
