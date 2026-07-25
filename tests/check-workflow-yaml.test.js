@@ -8,6 +8,7 @@ const {
   listWorkflowFiles,
   heuristicError,
   workflowRunMissingWorkflows,
+  windowsOnlyShell,
 } = require('../scripts/check-workflow-yaml');
 
 // ── listWorkflowFiles ────────────────────────────────────────────────────────
@@ -180,4 +181,68 @@ test('workflowRunMissingWorkflows reports the offending line number', () => {
   const err = workflowRunMissingWorkflows(yaml);
   assert.ok(err !== null);
   assert.match(err, /line \d+/);
+});
+
+// ── windowsOnlyShell ────────────────────────────────────────────────────────
+
+test('windowsOnlyShell returns null when no shell is specified', () => {
+  const yaml = 'jobs:\n  a:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo hi\n';
+  assert.strictEqual(windowsOnlyShell(yaml), null);
+});
+
+test('windowsOnlyShell returns null for bash and sh shells', () => {
+  const yaml = [
+    'jobs:',
+    '  a:',
+    '    steps:',
+    '      - shell: bash',
+    '        run: echo hi',
+    '      - shell: sh',
+    '        run: echo hi',
+  ].join('\n');
+  assert.strictEqual(windowsOnlyShell(yaml), null);
+});
+
+test('windowsOnlyShell flags shell: powershell (the wr-rewrite.yml regression)', () => {
+  const yaml = [
+    'jobs:',
+    '  sweep:',
+    '    runs-on: self-hosted',
+    '    steps:',
+    '      - name: Select docs',
+    '        shell: powershell',
+    '        run: npx markdownlint-cli2 "**/*.md" 2> lint.txt',
+  ].join('\n');
+  const err = windowsOnlyShell(yaml);
+  assert.ok(err !== null, 'should flag shell: powershell');
+  assert.match(err, /line 6/);
+  assert.match(err, /powershell/);
+});
+
+test('windowsOnlyShell flags shell: pwsh and shell: cmd', () => {
+  assert.ok(windowsOnlyShell('steps:\n  - shell: pwsh\n    run: echo hi\n') !== null);
+  assert.ok(windowsOnlyShell('steps:\n  - shell: cmd\n    run: echo hi\n') !== null);
+});
+
+test('windowsOnlyShell flags defaults.run.shell form', () => {
+  const yaml = [
+    'defaults:',
+    '  run:',
+    '    shell: pwsh',
+  ].join('\n');
+  const err = windowsOnlyShell(yaml);
+  assert.ok(err !== null, 'should flag defaults.run.shell: pwsh');
+});
+
+test('windowsOnlyShell does not flag pwsh mentioned inside a run body', () => {
+  const yaml = 'steps:\n  - shell: bash\n    run: echo "pwsh is not installed here"\n';
+  assert.strictEqual(windowsOnlyShell(yaml), null);
+});
+
+test('no checked-in workflow uses a Windows-only shell', () => {
+  const fs = require('node:fs');
+  for (const f of listWorkflowFiles()) {
+    const err = windowsOnlyShell(fs.readFileSync(f, 'utf8'));
+    assert.strictEqual(err, null, `${f}: ${err}`);
+  }
 });
