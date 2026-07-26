@@ -1,19 +1,33 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-26T05:08:09.312Z",
+  "generated_at": "2026-07-26T06:56:25.109Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "9/100 recent runs failed; 0 stuck item(s)",
+      "summary": "10/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 9,
+        "failed_runs": 10,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30190852847,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30190852847",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30189144135,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30189144135",
+            "conclusion": "failure"
+          },
           {
             "id": 30188876113,
             "name": "Update Project Dashboard",
@@ -68,13 +82,6 @@
             "name": "OpenRouter Auto-Route",
             "path": ".github/workflows/openrouter-auto-route.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182746634",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30182746267,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182746267",
             "conclusion": "failure"
           }
         ],
