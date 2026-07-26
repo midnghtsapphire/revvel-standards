@@ -1,19 +1,47 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-26T03:03:38.589Z",
+  "generated_at": "2026-07-26T05:08:09.312Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "8/100 recent runs failed; 0 stuck item(s)",
+      "summary": "9/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 8,
+        "failed_runs": 9,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30188876113,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30188876113",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30187212810,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30187212810",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30185704087,
+            "name": "durability-mirror",
+            "path": ".github/workflows/durability-mirror.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30185704087",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30185642364,
+            "name": "Repo Organizer",
+            "path": ".github/workflows/repo-organizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30185642364",
+            "conclusion": "failure"
+          },
           {
             "id": 30185127270,
             "name": "Fleet Controller",
@@ -47,27 +75,6 @@
             "name": "OpenRouter Auto-Route",
             "path": ".github/workflows/openrouter-auto-route.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182746267",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30182746249,
-            "name": "Agent Dispatcher",
-            "path": ".github/workflows/agent-dispatcher.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182746249",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30182745928,
-            "name": "Agent Dispatcher",
-            "path": ".github/workflows/agent-dispatcher.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182745928",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30182745919,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182745919",
             "conclusion": "failure"
           }
         ],
