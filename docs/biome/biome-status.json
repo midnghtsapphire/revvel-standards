@@ -1,19 +1,26 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-26T13:30:55.677Z",
+  "generated_at": "2026-07-26T14:31:34.588Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "14/100 recent runs failed; 0 stuck item(s)",
+      "summary": "12/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 14,
+        "failed_runs": 12,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30205070280,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30205070280",
+            "conclusion": "failure"
+          },
           {
             "id": 30203767723,
             "name": "Fleet Controller",
@@ -75,13 +82,6 @@
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30198186686",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30197070057,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30197070057",
             "conclusion": "failure"
           }
         ],
