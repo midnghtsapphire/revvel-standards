@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-26T18:21:35.759Z",
+  "generated_at": "2026-07-26T19:27:25.374Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
@@ -14,6 +14,27 @@
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30216523756,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30216523756",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30215239764,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30215239764",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30214602549,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30214602549",
+            "conclusion": "failure"
+          },
           {
             "id": 30214160621,
             "name": "Fleet Controller",
@@ -62,27 +83,6 @@
             "path": ".github/workflows/fleet-controller.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30208813039",
             "conclusion": "failure"
-          },
-          {
-            "id": 30207778678,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30207778678",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30206539449,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30206539449",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30205070280,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30205070280",
-            "conclusion": "failure"
           }
         ],
         "stuck": []
@@ -110,7 +110,7 @@
       "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30203779205"
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30216532459"
       }
     },
     "sheaf": {
