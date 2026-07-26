@@ -1,19 +1,33 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-26T20:21:40.421Z",
+  "generated_at": "2026-07-26T21:19:01.367Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "14/100 recent runs failed; 0 stuck item(s)",
+      "summary": "12/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 14,
+        "failed_runs": 12,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30220539287,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30220539287",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30219416158,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30219416158",
+            "conclusion": "failure"
+          },
           {
             "id": 30218788507,
             "name": "Update Project Dashboard",
@@ -68,20 +82,6 @@
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30213114359",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30212102236,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30212102236",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30210889141,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30210889141",
             "conclusion": "failure"
           }
         ],
