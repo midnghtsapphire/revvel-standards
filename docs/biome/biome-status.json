@@ -1,169 +1,63 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-26T00:33:49.345Z",
+  "generated_at": "2026-07-26T01:34:14.766Z",
   "credit_free": true,
-  "overall": "down",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "down",
-      "summary": "8/100 recent runs failed; 4 stuck item(s)",
+      "status": "degraded",
+      "summary": "6/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 8,
+        "failed_runs": 6,
         "total_runs": 100,
-        "stuck_issues": 4
+        "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30181332783,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30181332783",
+            "id": 30182746660,
+            "name": "Agent Dispatcher",
+            "path": ".github/workflows/agent-dispatcher.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182746660",
             "conclusion": "failure"
           },
           {
-            "id": 30180282234,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30180282234",
+            "id": 30182746634,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182746634",
             "conclusion": "failure"
           },
           {
-            "id": 30179429894,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30179429894",
+            "id": 30182746267,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182746267",
             "conclusion": "failure"
           },
           {
-            "id": 30179186041,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30179186041",
+            "id": 30182746249,
+            "name": "Agent Dispatcher",
+            "path": ".github/workflows/agent-dispatcher.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182746249",
             "conclusion": "failure"
           },
           {
-            "id": 30178488286,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30178488286",
+            "id": 30182745928,
+            "name": "Agent Dispatcher",
+            "path": ".github/workflows/agent-dispatcher.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182745928",
             "conclusion": "failure"
           },
           {
-            "id": 30177551074,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30177551074",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30176561041,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30176561041",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30175597683,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30175597683",
+            "id": 30182745919,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30182745919",
             "conclusion": "failure"
           }
         ],
-        "stuck": [
-          {
-            "number": 16201,
-            "title": "add - name: GitHub Organization Readme Badge Generator   uses: joshjohanning/organization-readme-badge-generator@v2.0.3",
-            "updated_at": "2026-07-17T00:28:24Z",
-            "labels": [
-              "enhancement",
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p3",
-              "role:orchestrator",
-              "wr:new",
-              "recovery:stale-wr"
-            ]
-          },
-          {
-            "number": 16113,
-            "title": "feat(wr-15279): implement WA My Health My Data Act (MHMDA) explicit opt-in consent flow @midnghtsapphire @Copilot @github-actions[bot] @devin-ai-integration[bot] @openhands-agent @google-labs-jules[bot] @Codex @dependabot[bot] @circleci-app[bot] @imgbot[bot] @claude @replit-agent @RadioChaser",
-            "updated_at": "2026-07-18T16:16:34Z",
-            "labels": [
-              "enhancement",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "priority-p1",
-              "priority-p2",
-              "role:orchestrator",
-              "wr:code",
-              "area:ui",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr-stuck",
-              "mindmappr",
-              "wr:reset"
-            ]
-          },
-          {
-            "number": 16112,
-            "title": "feat(wr-15279): implement FTC HBNR breach notification procedures for non-HIPAA health data",
-            "updated_at": "2026-07-18T16:16:35Z",
-            "labels": [
-              "enhancement",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "priority-p1",
-              "role:orchestrator",
-              "wr:code",
-              "area:ui",
-              "area:automation",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr:new",
-              "wr-stuck",
-              "recovery:stale-wr",
-              "mindmappr",
-              "wr:reset"
-            ]
-          },
-          {
-            "number": 16110,
-            "title": "feat(wr-15279): conduct Privacy Impact Assessment (PIA) before production launch",
-            "updated_at": "2026-07-18T16:16:36Z",
-            "labels": [
-              "bug",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "priority:p0",
-              "priority-p1",
-              "role:orchestrator",
-              "wr:code",
-              "area:ui",
-              "area:api",
-              "priority:high",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr:new",
-              "wr-stuck",
-              "recovery:stale-wr",
-              "mindmappr",
-              "wr:reset"
-            ]
-          }
-        ]
+        "stuck": []
       }
     },
     "homeostat": {
