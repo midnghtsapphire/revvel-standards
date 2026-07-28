@@ -1,24 +1,87 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-25T19:26:40.495Z",
+  "generated_at": "2026-07-28T01:33:28.244Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "13/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 13,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30171291335,
+            "id": 30318605228,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30171291335",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30318605228",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30317745693,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30317745693",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30317424582,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30317424582",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30316516230,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30316516230",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30314984657,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30314984657",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30313933727,
+            "name": "Daily WR & PR Summary",
+            "path": ".github/workflows/daily-wr-summary.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30313933727",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30313518474,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30313518474",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30311592408,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30311592408",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30309999005,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30309999005",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30308039959,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30308039959",
             "conclusion": "failure"
           }
         ],
@@ -47,7 +110,7 @@
       "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30171304575"
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30319964388"
       }
     },
     "sheaf": {
