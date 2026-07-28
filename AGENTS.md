@@ -202,7 +202,13 @@ npm test             # product-specific tests (if defined)
  markdown files lint clean. Don't treat the root script's error flood as a
  regression you introduced.
 - **Port conflicts:** Always pass `-- -p <port>` to `npm run dev` when running
-  more than one product simultaneously; defaults all collide on 3000.
+ more than one product simultaneously; defaults all collide on 3000.
+- **Next.js "multiple lockfiles" warning is benign:** Each product ships its own
+ `package-lock.json` while the repo root also has one, so `npm run dev` inside a
+ product prints a "Next.js inferred your workspace root … detected additional
+ lockfiles" warning. The dev server still starts and serves normally — ignore it.
+ Root `npm install` does NOT install product deps; run `npm install` inside each
+ `products/<name>/` you intend to run.
 - **OpenRouter is NOT free-for-all:** `OPENROUTER_API_KEY` must belong to a
   **funded/verified** OpenRouter account. Even `:free` models need credits, so a
   missing or unfunded key returns `401/402/403/429`, not a completion. Automation
