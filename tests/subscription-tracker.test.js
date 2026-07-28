@@ -151,7 +151,10 @@ const AT = (iso) => Date.parse(iso);
     assert.ok(subs.length >= 1);
     const recurseml = subs.find((s) => s.name === 'RecurseML');
     assert.ok(recurseml, 'RecurseML must be seeded');
-    assert.equal(recurseml.trial_end, '2026-06-27');
+    // trial_end changes every ~14 days (rolling trial reload), so assert the
+    // shape, not a pinned date — the tracker only needs a parseable due date.
+    assert.match(String(recurseml.trial_end), /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(parseDate(String(recurseml.trial_end)) !== null);
   });
 
   await test('DEFAULT_WARN_WITHIN_DAYS is a sane positive default', () => {
