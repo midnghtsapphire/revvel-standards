@@ -66,7 +66,8 @@ async def fetch_dem(
     tmp = Path(tempfile.mkdtemp())
     # Use the validated dem_type (from allow-list) rather than raw user input as the filename.
     dem_path = tmp / f"dem_{dem_type}.tif"
-    dem_path.write_bytes(resp.content)
+    loop = asyncio.get_running_loop()
+    await loop.run_in_executor(None, dem_path.write_bytes, resp.content)
     return dem_path
 
 
@@ -74,5 +75,6 @@ async def _demo_dem(bbox: tuple[float, float, float, float]) -> Path:
     """Return a placeholder path in demo mode."""
     tmp = Path(tempfile.mkdtemp())
     path = tmp / "demo_dem.tif"
-    path.write_text("demo")
+    loop = asyncio.get_running_loop()
+    await loop.run_in_executor(None, path.write_text, "demo")
     return path

@@ -64,3 +64,4 @@ docs/agents/*/transcripts/*.md
 lint.txt
 queue.json
 target-repo/
+venv/
