@@ -63,3 +63,4 @@ docs/agents/*/transcripts/*.md
 # wr-rewrite sweep pipeline artifacts (generated at repo root by wr-rewrite.yml)
 lint.txt
 queue.json
+venv/
