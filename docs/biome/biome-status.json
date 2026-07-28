@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-28T00:30:21.774Z",
+  "generated_at": "2026-07-28T01:33:28.244Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
@@ -14,6 +14,20 @@
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30318605228,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30318605228",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30317745693,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30317745693",
+            "conclusion": "failure"
+          },
           {
             "id": 30317424582,
             "name": "Update Project Dashboard",
@@ -69,20 +83,6 @@
             "path": ".github/workflows/fleet-controller.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30308039959",
             "conclusion": "failure"
-          },
-          {
-            "id": 30306183812,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30306183812",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30303437240,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30303437240",
-            "conclusion": "failure"
           }
         ],
         "stuck": []
@@ -110,7 +110,7 @@
       "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30297721219"
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30319964388"
       }
     },
     "sheaf": {
