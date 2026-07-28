@@ -12,6 +12,11 @@ const {
   normalizeUrl,
   extractUrls,
   collectUrlContext,
+  loadAgentModelProfile,
+  MODEL,
+  MODEL_FALLBACK,
+  MAX_OUTPUT_TOKENS,
+  PRIMARY_OPENROUTER_MODELS,
   FAILURE_LABELS,
 } = require('../scripts/openrouter-triage.js');
 
@@ -33,10 +38,24 @@ test('buildSystemPrompt includes triage sections and provided labels', () => {
   const prompt = buildSystemPrompt(['triage:new', 'openrouter', 'role:orchestrator']);
   assert.ok(prompt.includes('Classification'));
   assert.ok(prompt.includes('Suggested Labels'));
+  assert.ok(prompt.includes('COST-GOVERNED TRIAGE'));
+  assert.ok(!prompt.includes('RESEARCH MANDATE'));
   assert.ok(prompt.includes('triage:new'));
   assert.ok(prompt.includes('openrouter'));
   assert.ok(prompt.includes('do NOT classify them as incomplete just because sections are empty'));
   assert.ok(prompt.includes('Infer the likely implementation ask from the title, labels, comments, and repository conventions'));
+});
+
+test('default triage routing comes from cheap SSOT profile with tight cap', () => {
+  const profile = loadAgentModelProfile('triage');
+  assert.strictEqual(profile.primary, 'openai/gpt-4o-mini');
+  assert.strictEqual(profile.fallback, 'anthropic/claude-haiku-4.5');
+  assert.strictEqual(profile.max_tokens, '1500');
+  assert.strictEqual(MODEL, profile.primary);
+  assert.strictEqual(MODEL_FALLBACK, profile.fallback);
+  assert.strictEqual(MAX_OUTPUT_TOKENS, 1500);
+  assert.deepStrictEqual(PRIMARY_OPENROUTER_MODELS, [profile.primary, profile.fallback]);
+  assert.ok(PRIMARY_OPENROUTER_MODELS.every((model) => !/sonnet/i.test(model)));
 });
 
 test('buildUserPrompt includes event kind and fallback body behavior', () => {
@@ -100,7 +119,7 @@ test('buildFailureComment(needs-key) surfaces the operator action and labels', (
   const body = buildFailureComment({
     kind: 'needs-key',
     detail: 'OPENROUTER_API_KEY missing',
-    model: 'anthropic/claude-sonnet-4',
+    model: MODEL,
     issueNumber: '42',
     eventKind: 'issue',
   });
@@ -108,7 +127,7 @@ test('buildFailureComment(needs-key) surfaces the operator action and labels', (
   assert.ok(body.includes(FAILURE_LABELS.NEEDS_KEY));
   assert.ok(body.includes(FAILURE_LABELS.NEEDS_HUMAN));
   assert.ok(body.includes('#42'));
-  assert.ok(body.includes('anthropic/claude-sonnet-4'));
+  assert.ok(body.includes('openai/gpt-4o-mini'));
 });
 
 test('buildFailureComment(triage-failed) captures the error and references recovery', () => {
@@ -116,7 +135,7 @@ test('buildFailureComment(triage-failed) captures the error and references recov
   const body = buildFailureComment({
     kind: 'triage-failed',
     detail,
-    model: 'anthropic/claude-sonnet-4',
+    model: MODEL,
     issueNumber: '99',
     eventKind: 'pull_request',
   });
