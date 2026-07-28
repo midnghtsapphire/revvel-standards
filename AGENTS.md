@@ -192,6 +192,15 @@ npm test             # product-specific tests (if defined)
  `npm install` aborts. Other products install cleanly; use a different product
  (e.g. `red-light-therapy-dosage-calculator`) when you just need a keyless
  sample app to run.
+- **Root `npm run lint` differs from the CI markdown gate.** The script's
+ ignore globs only exclude *root-level* `node_modules`/`transcripts`, so it
+ reports tens of thousands of errors from committed
+ `docs/agents/claude/transcripts/**` files and from any installed
+ `products/*/node_modules` (product deps are gitignored and absent in a fresh
+ CI checkout). The authoritative gate is `.github/workflows/lint-md.yml`
+ (`markdownlint-cli2`), which excludes those paths; the repo's own ~1000
+ markdown files lint clean. Don't treat the root script's error flood as a
+ regression you introduced.
 - **Port conflicts:** Always pass `-- -p <port>` to `npm run dev` when running
   more than one product simultaneously; defaults all collide on 3000.
 - **OpenRouter is NOT free-for-all:** `OPENROUTER_API_KEY` must belong to a
