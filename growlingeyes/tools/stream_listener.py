@@ -297,6 +297,12 @@ async def stream_rss(
         await asyncio.sleep(poll_interval)
 
 
+
+def _write_and_flush(fh, data: str) -> None:
+    """Helper to write and flush synchronously (to be run in a thread)."""
+    fh.write(data)
+    fh.flush()
+
 # ─── Multi-stream runner ──────────────────────────────────────────────────────
 
 async def run_streams(
@@ -343,8 +349,8 @@ async def run_streams(
                 )
                 console.print(f"  [cyan]{msg}[/]")
                 if out_fh:
-                    out_fh.write(event.to_jsonl() + "\n")
-                    out_fh.flush()
+                    data = event.to_jsonl() + "\n"
+                    await asyncio.to_thread(_write_and_flush, out_fh, data)
         finally:
             if out_fh:
                 out_fh.close()
