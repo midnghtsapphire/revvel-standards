@@ -88,8 +88,9 @@ jobs:
             echo "OPENROUTER_API_KEY is configured (ensure the OpenRouter account is funded)."
           fi
       # Runs WITH or WITHOUT a key: scripts/openrouter-triage.js cascades
-      # OpenRouter → keyless Perplexity so triage never dead-ends.
-      - name: Run triage (OpenRouter → keyless Perplexity fallback)
+      # through SSOT OpenRouter triage, GitHub Models, keyless Perplexity,
+      # explicit backup models, and static fallback so triage never dead-ends.
+      - name: Run cost-governed triage cascade
         if: steps.labels.outputs.skip_triage != 'true'
         # Best-effort, fail-soft per this workflow's "never dead-end" design: when
         # neither lane succeeds (e.g. no funded OPENROUTER_API_KEY *and* the keyless
@@ -107,7 +108,6 @@ jobs:
           ISSUE_TITLE: ${{ github.event.issue.title || github.event.pull_request.title }}
           ISSUE_BODY: ${{ github.event.issue.body || github.event.pull_request.body }}
           EVENT_KIND: ${{ github.event_name == 'issues' && 'issue' || 'pull_request' }}
-          MODEL: anthropic/claude-sonnet-4
           PROMPT: ${{ inputs.prompt }}
         run: node scripts/openrouter-triage.js
     timeout-minutes: 30
@@ -184,9 +184,9 @@ jobs:
             core.setOutput('matrix', JSON.stringify({ include: triageTargets }));
     timeout-minutes: 45
   sweep-triage:
-    name: Sweep triage (OpenRouter → keyless fallback)
+    name: Sweep cost-governed triage
     # Runs whenever there are queued items — even with no OpenRouter key, the
-    # script cuts over to the keyless Perplexity lane (never dead-end).
+    # script cuts over to GitHub Models, keyless Perplexity, and static fallback.
     if: needs.sweep-discover.outputs.count != '0'
     needs: sweep-discover
     runs-on: ubuntu-latest
@@ -208,7 +208,7 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-      - name: Run OpenRouter triage for each queued item
+      - name: Run cost-governed triage for each queued item
         # Fail-soft, same rationale as route-new: a per-item triage failure
         # already self-reports (comment + needs-human) and must not dead-end or
         # fail the sweep for the remaining matrix items.
@@ -221,7 +221,6 @@ jobs:
           ISSUE_TITLE: ${{ matrix.issue_title }}
           ISSUE_BODY: ${{ matrix.issue_body }}
           EVENT_KIND: ${{ matrix.event_kind }}
-          MODEL: anthropic/claude-sonnet-4
           PROMPT: ${{ inputs.prompt }}
         run: node scripts/openrouter-triage.js
     timeout-minutes: 15

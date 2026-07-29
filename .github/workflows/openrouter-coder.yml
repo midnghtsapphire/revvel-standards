@@ -14,6 +14,10 @@ on:
         description: 'Issue number to process'
         required: true
         type: string
+      prompt:
+        description: 'Optional dispatch prompt from agent-dispatcher'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -26,6 +30,7 @@ jobs:
       (github.event_name == 'issues' && (github.event.label.name == 'wr:code' || github.event.label.name == 'spec-approved')) ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -86,15 +91,15 @@ jobs:
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
           ISSUE_NUMBER: ${{ steps.ctx.outputs.issue_number }}
           ISSUE_TITLE: ${{ steps.ctx.outputs.issue_title }}
           ISSUE_BODY: ${{ steps.ctx.outputs.issue_body }}
         run: |
-          if [ -f scripts/openrouter_coder.py ]; then
-            python scripts/openrouter_coder.py
-          else
-            echo "No openrouter_coder.py script found; skipping."
-          fi
+          set -euo pipefail
+          test -f .github/scripts/openrouter_coder.py
+          python .github/scripts/openrouter_coder.py --output-path /tmp/openrouter-coder-result.json
+          test -s /tmp/openrouter-coder-result.json
 
       - name: Create Pull Request
         if: steps.ctx.outputs.skip != 'true'

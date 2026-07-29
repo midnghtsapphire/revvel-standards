@@ -24,6 +24,7 @@ jobs:
   fix-build:
     name: DependaFix — auto-remediate breaking dependency changes
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write
     # Only run on Dependabot PRs — never on human-authored branches
