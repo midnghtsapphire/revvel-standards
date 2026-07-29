@@ -1,19 +1,54 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-29T12:41:34.697Z",
+  "generated_at": "2026-07-29T13:34:53.069Z",
   "credit_free": true,
-  "overall": "down",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "down",
-      "summary": "3/100 recent runs failed; 1 stuck item(s)",
+      "status": "degraded",
+      "summary": "8/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 8,
         "total_runs": 100,
-        "stuck_issues": 1
+        "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30456091809,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30456091809",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30455930376,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30455930376",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30455915788,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30455915788",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30453346801,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30453346801",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30452816944,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30452816944",
+            "conclusion": "failure"
+          },
           {
             "id": 30452610383,
             "name": "Update Project Dashboard",
@@ -36,45 +71,7 @@
             "conclusion": "failure"
           }
         ],
-        "stuck": [
-          {
-            "number": 16500,
-            "title": "[WR] NEW TECH FOR GOAP AND SWARMS PLEASE SEE ATTACHED DOC",
-            "updated_at": "2026-07-22T07:48:29Z",
-            "labels": [
-              "documentation",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "priority-p2",
-              "role:orchestrator",
-              "area:ui",
-              "area:automation",
-              "priority:high",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "lifecycle:stuck",
-              "wr:new",
-              "wr-stuck",
-              "research-engine",
-              "research:blocked",
-              "research:marketing",
-              "research:seo",
-              "research:competitors",
-              "research:chatter",
-              "research:facts",
-              "research:technical",
-              "research:revenue",
-              "research:reviewer",
-              "recovery:stale-wr",
-              "mindmappr",
-              "wr:reset",
-              "research:repo-web"
-            ]
-          }
-        ]
+        "stuck": []
       }
     },
     "homeostat": {
@@ -96,10 +93,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30455891946"
       }
     },
     "sheaf": {
