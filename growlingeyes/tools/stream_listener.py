@@ -340,7 +340,7 @@ async def run_streams(
             ))
 
     try:
-        out_fh = open(output_file, "a", encoding="utf-8") if output_file else None
+        out_fh = await asyncio.to_thread(open, output_file, "a", encoding="utf-8") if output_file else None
         try:
             while True:
                 event: StreamEvent = await queue.get()
@@ -353,7 +353,7 @@ async def run_streams(
                     await asyncio.to_thread(_write_and_flush, out_fh, data)
         finally:
             if out_fh:
-                out_fh.close()
+                await asyncio.to_thread(out_fh.close)
     finally:
         for task in tasks:
             task.cancel()
