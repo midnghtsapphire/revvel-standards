@@ -1,109 +1,28 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-29T00:27:38.618Z",
+  "generated_at": "2026-07-29T01:34:20.268Z",
   "credit_free": true,
-  "overall": "down",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "down",
-      "summary": "10/100 recent runs failed; 1 stuck item(s)",
+      "status": "healthy",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 10,
+        "failed_runs": 1,
         "total_runs": 100,
-        "stuck_issues": 1
+        "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30411181139,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30411181139",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30410290644,
+            "id": 30412511888,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30410290644",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30408718288,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30408718288",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30407669153,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30407669153",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30407280600,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30407280600",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30405438363,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30405438363",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30403787997,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30403787997",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30401838960,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30401838960",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30399968600,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30399968600",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30397768797,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30397768797",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30412511888",
             "conclusion": "failure"
           }
         ],
-        "stuck": [
-          {
-            "number": 16467,
-            "title": "WR-4474 follow-up: wire Sentry → issue → agent-assignment path",
-            "updated_at": "2026-07-21T20:28:01Z",
-            "labels": [
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p1",
-              "role:orchestrator",
-              "area:ui",
-              "area:api",
-              "wr:new",
-              "recovery:stale-wr"
-            ]
-          }
-        ]
+        "stuck": []
       }
     },
     "homeostat": {
@@ -125,10 +44,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30413790864"
       }
     },
     "sheaf": {
