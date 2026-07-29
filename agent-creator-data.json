@@ -453,21 +453,6 @@
       ]
     },
     {
-      "name": "client_stacks",
-      "title": "Client Stacks — Hook Into Any Client Stack and Do the Work",
-      "category": "Agent Operations",
-      "path": "skills/client-stacks/",
-      "persona": null,
-      "triggers": [
-        "client stack",
-        "client contract",
-        "contract engagement",
-        "detect client stack",
-        "polyglot lane",
-        "engagement kit"
-      ]
-    },
-    {
       "name": "gbrain",
       "title": "GBrain — Persistent Agent Memory",
       "category": "Agent Operations",
@@ -1478,9 +1463,9 @@
     },
     {
       "id": "reasoning",
-      "description": "Hard reasoning, planning, hard debugging, math — Claude Fable 5, Opus 4.8 fallback",
+      "description": "Hard reasoning, planning, hard debugging, math — DeepSeek R1",
       "provider": "openrouter",
-      "primary": "anthropic/claude-fable-5",
+      "primary": "deepseek/deepseek-r1",
       "use_for": [
         "reason",
         "plan",
@@ -1503,19 +1488,6 @@
         "vision",
         "multimodal",
         "pdf-image"
-      ]
-    },
-    {
-      "id": "image_gen",
-      "description": "Image generation / image-to-image editing — Gemini 2.5 Flash Image, GPT Image 1 fallback",
-      "provider": "openrouter",
-      "primary": "google/gemini-2.5-flash-image",
-      "use_for": [
-        "image-gen",
-        "image-to-image",
-        "product-staging",
-        "creative-render",
-        "thumbnail"
       ]
     },
     {
@@ -1549,7 +1521,7 @@
     },
     {
       "id": "triage",
-      "description": "Quick issue classification and routing - cheap model with tight output budget",
+      "description": "Quick issue classification and routing - use cheap model",
       "provider": "openrouter",
       "primary": "openai/gpt-4o-mini",
       "use_for": [
@@ -1602,10 +1574,6 @@
     }
   ],
   "routing_tree": [
-    {
-      "when": "job GENERATES or edits images (image-to-image, product staging, creative renders)",
-      "profile": "image_gen"
-    },
     {
       "when": "job involves images, screenshots, diagrams, OCR, or PDF pages as pixels",
       "profile": "vision"

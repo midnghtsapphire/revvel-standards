@@ -1,117 +1,28 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-29T03:02:54.574Z",
+  "generated_at": "2026-07-25T19:26:40.495Z",
   "credit_free": true,
-  "overall": "down",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "down",
-      "summary": "3/100 recent runs failed; 3 stuck item(s)",
+      "status": "healthy",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 1,
         "total_runs": 100,
-        "stuck_issues": 3
+        "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30417787780,
+            "id": 30171291335,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30417787780",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30414831640,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30414831640",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30412511888,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30412511888",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30171291335",
             "conclusion": "failure"
           }
         ],
-        "stuck": [
-          {
-            "number": 16425,
-            "title": "usenixsecurity25-pape.pdf use for revvel-standards ",
-            "updated_at": "2026-07-22T01:34:48Z",
-            "labels": [
-              "enhancement",
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p3",
-              "role:orchestrator",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "lifecycle:stuck",
-              "wr:new",
-              "wr-stuck",
-              "recovery:stale-wr",
-              "mindmappr",
-              "wr:reset"
-            ]
-          },
-          {
-            "number": 16424,
-            "title": "Indirect Prompt Injection: The Hidden Threat Breaking Modern AI Systems | Lakera – Protecting AI teams that disrupt the world. add as a resource and to make our repository 92.7 times better",
-            "updated_at": "2026-07-22T01:34:49Z",
-            "labels": [
-              "enhancement",
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p3",
-              "role:orchestrator",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "lifecycle:stuck",
-              "wr:new",
-              "wr-stuck",
-              "recovery:stale-wr",
-              "mindmappr",
-              "wr:reset"
-            ]
-          },
-          {
-            "number": 16419,
-            "title": "use these in revvel-standards snd store in prompts provide detailed files-thought process, memory, learning, api, cli, mcp, skills, tools and sub agent system prompts using requirements",
-            "updated_at": "2026-07-22T01:34:50Z",
-            "labels": [
-              "enhancement",
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p2",
-              "role:orchestrator",
-              "area:ui",
-              "area:api",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "lifecycle:stuck",
-              "wr:new",
-              "wr-stuck",
-              "recovery:stale-wr",
-              "mindmappr",
-              "wr:reset"
-            ]
-          }
-        ]
+        "stuck": []
       }
     },
     "homeostat": {
@@ -136,7 +47,7 @@
       "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30413790864"
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30171304575"
       }
     },
     "sheaf": {

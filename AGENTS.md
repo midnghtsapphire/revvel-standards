@@ -176,39 +176,10 @@ npm test             # product-specific tests (if defined)
   not prevent the dev server from starting — check the product's `.env.example`
   and README for the required variables.
 - **Pre-existing workflow test failures:** A small number of root `npm test`
- failures stem from intentionally malformed YAML fixtures used to validate
- error paths. Treat the suite as green if only those known cases fail.
-- **Root `npm run lint` exits non-zero on a clean tree.** It runs
- `markdownlint-cli2`, which does **not** honor the repo's `.markdownlintignore`,
- so it still flags committed generated files under
- `docs/agents/**/transcripts/*.md`. It also recurses into any installed
- `products/*/node_modules/**/*.md`, producing tens of thousands of errors. These
- are pre-existing / environment noise, not caused by your change — scope the
- output to the specific `.md` files you touched (e.g.
- `npx markdownlint-cli2 <your-file>.md`) rather than trying to green the whole
- tree.
-- **`hvac-calc-service` install fails with `EOVERRIDE`.** Its `package.json`
- `overrides.postcss` range conflicts with its direct `postcss` devDependency, so
- `npm install` aborts. Other products install cleanly; use a different product
- (e.g. `red-light-therapy-dosage-calculator`) when you just need a keyless
- sample app to run.
-- **Root `npm run lint` differs from the CI markdown gate.** The script's
- ignore globs only exclude *root-level* `node_modules`/`transcripts`, so it
- reports tens of thousands of errors from committed
- `docs/agents/claude/transcripts/**` files and from any installed
- `products/*/node_modules` (product deps are gitignored and absent in a fresh
- CI checkout). The authoritative gate is `.github/workflows/lint-md.yml`
- (`markdownlint-cli2`), which excludes those paths; the repo's own ~1000
- markdown files lint clean. Don't treat the root script's error flood as a
- regression you introduced.
+  failures stem from intentionally malformed YAML fixtures used to validate
+  error paths. Treat the suite as green if only those known cases fail.
 - **Port conflicts:** Always pass `-- -p <port>` to `npm run dev` when running
- more than one product simultaneously; defaults all collide on 3000.
-- **Next.js "multiple lockfiles" warning is benign:** Each product ships its own
- `package-lock.json` while the repo root also has one, so `npm run dev` inside a
- product prints a "Next.js inferred your workspace root … detected additional
- lockfiles" warning. The dev server still starts and serves normally — ignore it.
- Root `npm install` does NOT install product deps; run `npm install` inside each
- `products/<name>/` you intend to run.
+  more than one product simultaneously; defaults all collide on 3000.
 - **OpenRouter is NOT free-for-all:** `OPENROUTER_API_KEY` must belong to a
   **funded/verified** OpenRouter account. Even `:free` models need credits, so a
   missing or unfunded key returns `401/402/403/429`, not a completion. Automation

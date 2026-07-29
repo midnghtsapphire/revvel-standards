@@ -77,7 +77,7 @@ jobs:
           pip install linkchecker
 
           # Sitemap generation
-          npm install -g sitemap-generator-cli googleapis
+          npm install -g sitemap-generator-cli
       - name: Load property configuration
         if: steps.quiet.outputs.active == 'true'
         id: config
@@ -270,105 +270,8 @@ jobs:
 
           if [ -n "${GOOGLE_SEARCH_CONSOLE_KEY:-}" ]; then
             echo "🔑 Google Search Console API key detected - checking status..." | tee -a "$REPORT_FILE"
-            # Write temporary JS script to check GSC
-            cat > /tmp/gsc-check.js << 'EOFJS'
-            const { google } = require('googleapis');
-
-            async function checkGSC() {
-              try {
-                const keyFile = process.env.GOOGLE_SEARCH_CONSOLE_KEY;
-                if (!keyFile) {
-                  console.log('- ⚠️  No GSC key provided.');
-                  process.exit(0);
-                }
-
-                let credentials;
-                try {
-                  credentials = JSON.parse(keyFile);
-                } catch (e) {
-                  console.error('- ❌ GOOGLE_SEARCH_CONSOLE_KEY must be a valid JSON service account key.');
-                  process.exit(0);
-                }
-
-                const auth = new google.auth.GoogleAuth({
-                  credentials,
-                  scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
-                });
-
-                const webmasters = google.webmasters({ version: 'v3', auth });
-                const searchconsole = google.searchconsole({ version: 'v1', auth });
-
-                const siteList = await webmasters.sites.list();
-                const sites = siteList.data.siteEntry || [];
-
-                if (sites.length === 0) {
-                  console.log('- ⚠️  No sites found in Search Console account');
-                  return;
-                }
-
-                for (const site of sites) {
-                  console.log(`\n### Site: ${site.siteUrl}`);
-                  console.log(`- Permission level: ${site.permissionLevel}`);
-
-                  try {
-                    const today = new Date();
-                    const threeDaysAgo = new Date(today.getTime() - (3 * 24 * 60 * 60 * 1000));
-                    const formatDate = (date) => date.toISOString().split('T')[0];
-
-                    const response = await searchconsole.searchanalytics.query({
-                      siteUrl: site.siteUrl,
-                      requestBody: {
-                        startDate: formatDate(threeDaysAgo),
-                        endDate: formatDate(today),
-                        dimensions: ['date']
-                      }
-                    });
-
-                    const rows = response.data.rows || [];
-                    const clicks = rows.reduce((sum, row) => sum + row.clicks, 0);
-                    const impressions = rows.reduce((sum, row) => sum + row.impressions, 0);
-
-                    console.log(`- ✅ API connection successful`);
-                    console.log(`- 📊 Last 3 days: ${clicks} clicks, ${impressions} impressions`);
-                  } catch (err) {
-                    console.log(`- ⚠️  Could not fetch analytics data: ${err.message}`);
-                  }
-
-                  try {
-                    const sitemaps = await webmasters.sitemaps.list({
-                      siteUrl: site.siteUrl
-                    });
-
-                    const smaps = sitemaps.data.sitemap || [];
-                    if (smaps.length > 0) {
-                      const latest = smaps[0];
-                      console.log(`- 🗺️  Sitemap: ${smaps.length} found`);
-                      console.log(`  - Latest submitted: ${latest.lastSubmitted || 'Unknown'}`);
-                      console.log(`  - Latest processed: ${latest.lastDownloaded || 'Unknown'}`);
-                      if (latest.errors > 0 || latest.warnings > 0) {
-                        console.log(`  - ⚠️  Issues: ${latest.errors} errors, ${latest.warnings} warnings`);
-                      } else {
-                        console.log(`  - ✅ No sitemap errors reported`);
-                      }
-                    } else {
-                      console.log(`- ⚠️  No sitemaps found`);
-                    }
-                  } catch (err) {
-                    console.log(`- ⚠️  Could not fetch sitemaps: ${err.message}`);
-                  }
-                }
-
-              } catch (err) {
-                console.error(`- ❌ Error checking Google Search Console: ${err.message}`);
-              }
-            }
-
-            checkGSC();
-            EOFJS
-            # Export the npm global prefix to module search path so it finds googleapis
-            export NODE_PATH=$(npm root -g)
-            node /tmp/gsc-check.js >> "$REPORT_FILE"
-            rm -f /tmp/gsc-check.js
+            # TODO: Implement GSC API check when key is available
+            echo "- ℹ️  API integration pending implementation" >> "$REPORT_FILE"
           else
             echo "- ⚠️  \`GOOGLE_SEARCH_CONSOLE_KEY\` not configured" >> "$REPORT_FILE"
             echo "- Manual check required:" >> "$REPORT_FILE"
@@ -459,7 +362,7 @@ jobs:
             - ✅ HTTPS certificate validation (with SSL verification)
             - ✅ Broken link detection (using linkchecker)
             - ✅ Lighthouse SEO audit (threshold from config)
-            - ✅ Google Search Console monitoring (if API key provided)
+            - ℹ️  Google Search Console monitoring (requires API key)
             - ℹ️  Knowledge Panel status (manual verification)
 
             ### Next Steps

@@ -48,7 +48,7 @@ This tracker monitors the Weekly Research (WR) status for all repositories in th
 | 3 | [certifixes](https://github.com/midnghtsapphire/certifixes) | 2025-05-09 | 2026-04-28 | ⭕ | P2 | TBD | - | 1 star |
 | 4 | [leaf2tree](https://github.com/midnghtsapphire/leaf2tree) | 2025-05-09 | 2026-03-05 | ⭕ | P3 | TBD | - | - |
 | 5 | [tikiwash-autofill-frontend-kit](https://github.com/midnghtsapphire/tikiwash-autofill-frontend-kit) | 2025-05-14 | 2026-03-05 | ⭕ | P3 | TBD | - | TypeScript |
-| 6 | [neurooz](https://github.com/midnghtsapphire/neurooz) | 2026-01-08 | 2026-05-02 | 🟡 | P0 | High | [WR](issues/issue-15777-fleet-maintenance-midnghtsapphire-neurooz.md) | AI-ADHD productivity |
+| 6 | [neurooz](https://github.com/midnghtsapphire/neurooz) | 2026-01-08 | 2026-05-02 | 🟡 | P0 | High | [WR](repos/neurooz.md) | AI-ADHD productivity |
 | 7 | [Meetaudreyevans](https://github.com/midnghtsapphire/Meetaudreyevans) | 2026-01-23 | 2026-05-02 | ⭕ | P1 | Medium | - | Life Hub |
 | 8 | [Mechatronopolis](https://github.com/midnghtsapphire/Mechatronopolis) | 2026-01-27 | 2026-05-02 | ⭕ | P2 | TBD | - | Mechatronics career |
 | 9 | [code-review-mcp-server](https://github.com/midnghtsapphire/code-review-mcp-server) | 2026-01-28 | 2026-03-05 | ⭕ | P1 | Medium | - | MCP server |

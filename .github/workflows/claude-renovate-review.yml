@@ -19,7 +19,6 @@ jobs:
     name: Claude Renovate Review
     if: github.event.pull_request.user.login == 'renovate[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 

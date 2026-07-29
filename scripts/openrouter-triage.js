@@ -12,6 +12,7 @@ const ISSUE_NUMBER = process.env.ISSUE_NUMBER || "";
 const ISSUE_TITLE = process.env.ISSUE_TITLE || "";
 const ISSUE_BODY = process.env.ISSUE_BODY || "";
 const EVENT_KIND = process.env.EVENT_KIND || "issue";
+const MODEL = process.env.MODEL || "anthropic/claude-sonnet-4";
 const PROMPT = process.env.PROMPT || "";
 
 const OPENROUTER_HOST = "openrouter.ai";
@@ -20,60 +21,6 @@ const MAX_PROMPT_COMMENTS = 8;
 const MAX_COMMENT_PREVIEW_CHARS = 500;
 const MAX_URLS_IN_CONTEXT = 25;
 const COMMENTS_PER_PAGE = 20;
-
-function unquoteYamlScalar(value) {
-  const trimmed = String(value || "").trim();
-  return trimmed.replace(/^["']|["']$/g, "");
-}
-
-function parsePositiveInt(value, fallback) {
-  const parsed = Number.parseInt(String(value || ""), 10);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-}
-
-function loadAgentModelProfile(profileName) {
-  const configPath = path.resolve(__dirname, "../.github/agent-models.yml");
-  try {
-    const raw = fs.readFileSync(configPath, "utf8");
-    const profile = {};
-    let inProfiles = false;
-    let inTargetProfile = false;
-
-    for (const line of raw.split(/\r?\n/)) {
-      if (/^profiles:\s*$/.test(line)) {
-        inProfiles = true;
-        continue;
-      }
-      if (!inProfiles) continue;
-
-      const profileHeader = line.match(/^ {2}([A-Za-z0-9_]+):\s*$/);
-      if (profileHeader) {
-        inTargetProfile = profileHeader[1] === profileName;
-        continue;
-      }
-      if (!inTargetProfile) continue;
-
-      const scalar = line.match(/^ {4}(primary|fallback|max_tokens|provider):\s*(.+?)\s*$/);
-      if (scalar) {
-        profile[scalar[1]] = unquoteYamlScalar(scalar[2]);
-      }
-    }
-
-    return profile;
-  } catch (error) {
-    console.log(`::warning::Could not read ${configPath}: ${error.message}`);
-    return {};
-  }
-}
-
-const TRIAGE_PROFILE = loadAgentModelProfile("triage");
-const MODEL = process.env.MODEL || TRIAGE_PROFILE.primary || "openai/gpt-4o-mini";
-const MODEL_FALLBACK = process.env.MODEL_FALLBACK || TRIAGE_PROFILE.fallback || "anthropic/claude-haiku-4.5";
-const MAX_OUTPUT_TOKENS = parsePositiveInt(
-  process.env.MAX_OUTPUT_TOKENS,
-  parsePositiveInt(TRIAGE_PROFILE.max_tokens, 1500),
-);
-const PRIMARY_OPENROUTER_MODELS = [...new Set([MODEL, MODEL_FALLBACK].filter(Boolean))];
 
 // Labels applied to an issue/PR to surface triage outcomes. Keep in sync with
 // `.github/labels.yml` so `sync-labels.yml` can propagate them to every repo.
@@ -115,20 +62,19 @@ function buildFailureComment({ kind, detail, model, issueNumber, eventKind }) {
     kind === "needs-key"
       ? "Add the secret under *Settings → Secrets and variables → Actions* and re-run this workflow (or wait for the hourly sweep). " +
         "This item has been labelled `openrouter:needs-key` + `needs-human` so it does not sit silently."
-      : "Triage tried every AI lane and all failed. This item has been labelled " +
+      : "Triage tried **both** lanes and both failed. This item has been labelled " +
         "`openrouter:triage-failed` + `needs-human` so it does not sit silently. " +
         "A later success will clear these labels automatically.",
     "",
     "<details><summary>For whoever is troubleshooting (you may not be the repo owner)</summary>",
     "",
-    "Triage cascades so it never dead-ends while keeping the hot path cheap:",
+    "Triage cascades so it never dead-ends:",
     "",
-    "1. **OpenRouter SSOT triage profile** — requires `OPENROUTER_API_KEY` tied to a **funded/verified** account. " +
+    "1. **OpenRouter** — requires `OPENROUTER_API_KEY` tied to a **funded/verified** account. " +
       "OpenRouter is *not* free-for-all: even `:free` models need a real, credited account, so a missing/unfunded key returns `401/402/403/429`, not a completion. Check the key **and** the account balance at <https://openrouter.ai/credits>.",
-    "2. **GitHub Models** — uses `GITHUB_TOKEN` and the same small-output triage budget.",
-    "3. **Perplexity (keyless)** — the no-API safety net. Needs `python3` + the `perplexity-ai` bridge (the workflow installs it). If this also failed, check the bridge install / network.",
+    "2. **Perplexity (keyless)** — the no-API safety net. Needs `python3` + the `perplexity-ai` bridge (the workflow installs it). If this also failed, check the bridge install / network.",
     "",
-    "If every AI lane is down, add another keyless or repository-local lane in `scripts/openrouter-triage.js` → `triageWithFallback()`. Rule: always fall back to something.",
+    "If both are down, add another keyless lane in `scripts/openrouter-triage.js` → `triageWithFallback()`. Rule: always fall back to something.",
     "</details>",
   ].join("\n");
   return body;
@@ -166,11 +112,12 @@ function buildSystemPrompt(labelNames) {
     "Infer the likely implementation ask from the title, labels, comments, and repository conventions, then propose the next concrete engineering action.",
     "Only require human attention when autonomous research still cannot determine a safe next step after using the available context.",
     "",
-    "COST-GOVERNED TRIAGE:",
-    "- Keep the response concise: short bullets, no broad research packet, no repeated issue text.",
-    "- Use only context already present in the issue, PR, comments, or observed URLs.",
-    "- Include marketing/SEO signals only when they change the immediate routing decision; otherwise write `N/A`.",
-    "- Cite submitted URLs when they are relevant; do not invent external citations.",
+    "RESEARCH MANDATE:",
+    "Every triage response must include (where applicable):",
+    "- Marketing viability signals (distribution, audience, monetization path)",
+    "- SEO keywords relevant to the topic or product",
+    "- GitHub star count / community traction for any tools referenced",
+    "- Factual citations — no ungrounded assertions",
     "",
     "Only suggest labels from this canonical `.github/labels.yml` set:",
     labelList,
@@ -306,7 +253,7 @@ function requestJson({ hostname, pathName, method, headers, payload }) {
   });
 }
 
-// OpenRouter free-tier models to try after the GitHub Models and keyless lanes.
+// OpenRouter free-tier models to try as lane 2 when the primary model fails.
 // These ":free" models still need a real OR account + API key, and are often
 // heavily rate-limited; treat this lane as "may work" rather than guaranteed.
 // Override via OR_FREE_MODELS env var (comma-separated) for operator flexibility.
@@ -341,13 +288,12 @@ async function callOpenRouter(systemPrompt, userPrompt) {
       "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage`,
     },
     payload: {
-      models: PRIMARY_OPENROUTER_MODELS,
+      model: MODEL,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
       temperature: 0.2,
-      max_tokens: MAX_OUTPUT_TOKENS,
     },
   });
 
@@ -356,8 +302,9 @@ async function callOpenRouter(systemPrompt, userPrompt) {
   return response?.choices?.[0]?.message?.content || "No triage output returned by model.";
 }
 
-// Lane 4: OpenRouter free-tier models. These can be cheaper than paid backup
-// models, but still need a funded/verified OpenRouter account in practice.
+// Lane 2: OpenRouter free-tier models — OR_FREE_MODELS don't consume credits,
+// so this can succeed even when the primary model hits a 402/balance error.
+// Requires a valid OPENROUTER_API_KEY (even unfunded).
 async function callOpenRouterFreeModels(systemPrompt, userPrompt) {
   if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY not configured");
   const referer = `https://github.com/${GITHUB_REPOSITORY}`;
@@ -377,7 +324,6 @@ async function callOpenRouterFreeModels(systemPrompt, userPrompt) {
         { role: "user", content: userPrompt },
       ],
       temperature: 0.2,
-      max_tokens: MAX_OUTPUT_TOKENS,
     },
   });
   const text = response?.choices?.[0]?.message?.content;
@@ -385,13 +331,11 @@ async function callOpenRouterFreeModels(systemPrompt, userPrompt) {
   return text;
 }
 
-// Lane 5: Explicit OpenRouter backup models. Do not use openrouter/fusion here:
-// `.github/agent-models.yml` deny-lists fusion/auto because they hide spend and
-// route choice. Keeping the fallback list explicit makes this hot path auditable.
-async function callOpenRouterBackupModels(systemPrompt, userPrompt) {
+// Lane 4: OpenRouter multi-provider fusion — routes across multiple providers;
+// may succeed when single-provider lanes fail due to provider-side outages.
+async function callOpenRouterFusion(systemPrompt, userPrompt) {
   if (!OPENROUTER_API_KEY) throw new Error("OPENROUTER_API_KEY not configured");
   const referer = `https://github.com/${GITHUB_REPOSITORY}`;
-  const backupModels = [...new Set(["deepseek/deepseek-chat", MODEL_FALLBACK, ...OR_FREE_MODELS].filter(Boolean))];
   const response = await requestJson({
     hostname: OPENROUTER_HOST,
     pathName: OPENROUTER_PATH,
@@ -399,20 +343,19 @@ async function callOpenRouterBackupModels(systemPrompt, userPrompt) {
     headers: {
       Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "HTTP-Referer": referer,
-      "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage (backup models)`,
+      "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage (fusion)`,
     },
     payload: {
-      models: backupModels,
+      models: ["openrouter/fusion", "anthropic/claude-haiku-4.5:beta", "deepseek/deepseek-v3:free"],
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt },
       ],
       temperature: 0.2,
-      max_tokens: MAX_OUTPUT_TOKENS,
     },
   });
   const text = response?.choices?.[0]?.message?.content;
-  if (!text) throw new Error("No triage output from OpenRouter backup models.");
+  if (!text) throw new Error("No triage output from OpenRouter fusion.");
   return text;
 }
 
@@ -731,36 +674,38 @@ async function reportTriageFailure({ kind, detail }) {
 }
 
 // Always-fall-back triage cascade. Returns { text, lane, model }.
-// Cascades through all 6 lanes in cost-governed order; lane 6 (static
-// rule-based) never throws, so this function always returns successfully.
-//   1. OpenRouter SSOT triage profile — cheap primary + explicit fallback.
-//   2. GitHub Models — gpt-4o-mini via Azure; uses GITHUB_TOKEN.
+// Cascades through all 6 lanes in order; lane 6 (static rule-based) never
+// throws, so this function always returns successfully.
+//   1. OpenRouter primary model — best quality, needs funded account key.
+//   2. OpenRouter free-tier models — no credits consumed, but needs valid key.
 //   3. Keyless Perplexity bridge — needs no API key (python3 + perplexity-ai).
-//   4. OpenRouter free-tier models — cheap but still account/key dependent.
-//   5. Explicit OpenRouter backup models — no auto/fusion hidden routing.
-//   6. Static rule-based fallback — never throws; keyword-only output so that
-//      every issue always receives some triage result.
+//   4. OpenRouter multi-provider fusion — routes across providers; may succeed
+//      when single-provider lanes fail due to provider-side outages.
+//   5. GitHub Models — gpt-4o-mini via Azure; uses GITHUB_TOKEN (always set
+//      in Actions), no OpenRouter key required.
+//   6. Static rule-based fallback — never throws; keyword-only stub so that
+//      every issue always receives some triage output.
 // Lane 6 never fails, so triageWithFallback always returns a result.
 async function triageWithFallback(systemPrompt, userPrompt) {
-  // Lane 1: OpenRouter SSOT triage profile.
+  // Lane 1: OpenRouter primary model
   if (OPENROUTER_API_KEY) {
     try {
       const text = await callOpenRouter(systemPrompt, userPrompt);
-      return { text, lane: "OpenRouter SSOT triage", model: PRIMARY_OPENROUTER_MODELS.join(" → ") };
+      return { text, lane: "OpenRouter", model: MODEL };
     } catch (err) {
       // 401/402/403/429 almost always means the account is not funded/verified.
       console.log(`::warning::Lane 1 (OpenRouter) failed (${err.message}). Trying lane 2.`);
     }
-  } else {
-    console.log("::warning::OPENROUTER_API_KEY not configured — skipping lane 1.");
-  }
 
-  // Lane 2: GitHub Models (gpt-4o-mini via Azure; always available in Actions)
-  try {
-    const text = await callGitHubModels(systemPrompt, userPrompt);
-    return { text, lane: "GitHub Models", model: "gpt-4o-mini" };
-  } catch (err) {
-    console.log(`::warning::Lane 2 (GitHub Models) failed (${err.message}). Trying lane 3.`);
+    // Lane 2: OpenRouter free-tier models
+    try {
+      const text = await callOpenRouterFreeModels(systemPrompt, userPrompt);
+      return { text, lane: "OpenRouter free-tier", model: OR_FREE_MODELS[0] };
+    } catch (err) {
+      console.log(`::warning::Lane 2 (OpenRouter free-tier) failed (${err.message}). Trying lane 3.`);
+    }
+  } else {
+    console.log("::warning::OPENROUTER_API_KEY not configured — skipping lanes 1 & 2.");
   }
 
   // Lane 3: Keyless Perplexity bridge
@@ -771,24 +716,22 @@ async function triageWithFallback(systemPrompt, userPrompt) {
     console.log(`::warning::Lane 3 (Perplexity keyless) failed (${err.message}). Trying lane 4.`);
   }
 
-  // Lane 4: OpenRouter free-tier models.
+  // Lane 4: OpenRouter fusion
   if (OPENROUTER_API_KEY) {
     try {
-      const text = await callOpenRouterFreeModels(systemPrompt, userPrompt);
-      return { text, lane: "OpenRouter free-tier", model: OR_FREE_MODELS[0] };
+      const text = await callOpenRouterFusion(systemPrompt, userPrompt);
+      return { text, lane: "OpenRouter fusion", model: "openrouter/fusion" };
     } catch (err) {
-      console.log(`::warning::Lane 4 (OpenRouter free-tier) failed (${err.message}). Trying lane 5.`);
+      console.log(`::warning::Lane 4 (OpenRouter fusion) failed (${err.message}). Trying lane 5.`);
     }
   }
 
-  // Lane 5: Explicit OpenRouter backup models.
-  if (OPENROUTER_API_KEY) {
-    try {
-      const text = await callOpenRouterBackupModels(systemPrompt, userPrompt);
-      return { text, lane: "OpenRouter backup models", model: "deepseek/deepseek-chat" };
-    } catch (err) {
-      console.log(`::warning::Lane 5 (OpenRouter backup models) failed (${err.message}). Falling back to lane 6.`);
-    }
+  // Lane 5: GitHub Models (gpt-4o-mini via Azure; always available in Actions)
+  try {
+    const text = await callGitHubModels(systemPrompt, userPrompt);
+    return { text, lane: "GitHub Models", model: "gpt-4o-mini" };
+  } catch (err) {
+    console.log(`::warning::Lane 5 (GitHub Models) failed (${err.message}). Falling back to lane 6.`);
   }
 
   // Lane 6: Static rule-based fallback — never throws
@@ -872,12 +815,5 @@ module.exports = {
   normalizeUrl,
   extractUrls,
   collectUrlContext,
-  loadAgentModelProfile,
-  parsePositiveInt,
-  TRIAGE_PROFILE,
-  MODEL,
-  MODEL_FALLBACK,
-  MAX_OUTPUT_TOKENS,
-  PRIMARY_OPENROUTER_MODELS,
   FAILURE_LABELS,
 };
