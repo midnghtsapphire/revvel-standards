@@ -293,6 +293,7 @@ STRIPE_SECRET_KEY          → /revvel/<project>/payments/stripe-secret
 RESEND_API_KEY             → /revvel/shared/email/resend
 BRAVE_SEARCH_API_KEY       → /revvel/shared/search/brave
 TAVILY_API_KEY             → /revvel/shared/search/tavily
+CREWAI_API_KEY             → /revvel/shared/ai/crewai
 ```
 
 ---
