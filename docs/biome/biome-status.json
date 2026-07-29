@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-29T03:02:54.574Z",
+  "generated_at": "2026-07-29T05:04:41.197Z",
   "credit_free": true,
   "overall": "down",
   "workers": {
@@ -15,24 +15,24 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 30417787780,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30417787780",
+            "id": 30423982437,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30423982437",
             "conclusion": "failure"
           },
           {
-            "id": 30414831640,
+            "id": 30420846828,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30414831640",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30420846828",
             "conclusion": "failure"
           },
           {
-            "id": 30412511888,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30412511888",
+            "id": 30420813191,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30420813191",
             "conclusion": "failure"
           }
         ],
@@ -133,10 +133,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30413790864"
+        "last_run": null
       }
     },
     "sheaf": {
