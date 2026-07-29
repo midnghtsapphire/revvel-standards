@@ -1,19 +1,40 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-29T16:30:42.320Z",
+  "generated_at": "2026-07-29T17:27:50.806Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "6/100 recent runs failed; 0 stuck item(s)",
+      "summary": "8/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 6,
+        "failed_runs": 8,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30473655646,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30473655646",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30471537529,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30471537529",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30471024193,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30471024193",
+            "conclusion": "failure"
+          },
           {
             "id": 30468448050,
             "name": "Fleet Controller",
@@ -48,13 +69,6 @@
             "path": ".github/workflows/openrouter-auto-route.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30455930376",
             "conclusion": "failure"
-          },
-          {
-            "id": 30455915788,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30455915788",
-            "conclusion": "failure"
           }
         ],
         "stuck": []
@@ -79,10 +93,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30455891946"
+        "last_run": null
       }
     },
     "sheaf": {
