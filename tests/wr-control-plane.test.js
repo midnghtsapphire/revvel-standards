@@ -124,7 +124,7 @@ test('module imports without FastMCP and registers all 4 tools', () => {
     "import json, sys; sys.path.insert(0, r'" +
       path.join(SERVER_DIR) +
       "'); from wr_control_plane.server import mcp; " +
-      'print(json.dumps(sorted(mcp.tools.keys())))'
+      'import asyncio; print(json.dumps(sorted([t.name for t in asyncio.run(mcp.list_tools())])))'
   );
   assertEq(
     data,
@@ -143,7 +143,7 @@ test('module exposes both documented MCP resources', () => {
     "import json, sys; sys.path.insert(0, r'" +
       path.join(SERVER_DIR) +
       "'); from wr_control_plane.server import mcp; " +
-      'print(json.dumps(sorted(mcp.resources.keys())))'
+      'import asyncio; print(json.dumps(sorted([str(r.uri) for r in asyncio.run(mcp.list_resources())])))'
   );
   assertEq(
     data,
