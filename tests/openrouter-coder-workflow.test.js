@@ -25,7 +25,7 @@ test('openrouter-coder workflow only starts from approved labels or manual dispa
   assert.deepStrictEqual(workflow.on.issues.types, ['labeled']);
   assert.ok(workflow.on.workflow_dispatch, 'manual dispatch must remain available');
   assert.ok(!Object.hasOwn(workflow.on, 'issue_comment'), 'issue_comment trigger must stay disabled');
-  assert.strictEqual(workflow.jobs.code['timeout-minutes'], 30);
+  assert.strictEqual(workflow.jobs.code['timeout-minutes'], 45);
   assert.match(workflow.jobs.code.if, /spec-approved/);
   assert.match(workflow.jobs.code.if, /wr:code/);
 });

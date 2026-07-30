@@ -154,6 +154,7 @@ GitHub-native control plane for the 2026 WR-PR Automation Blueprint. Inspects `[
     "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
     "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
     "TAVILY_API_KEY": "${TAVILY_API_KEY}",
+    "CREWAI_API_KEY": "${CREWAI_API_KEY}",
     "OBOT_BASE_URL": "${OBOT_BASE_URL}",
     "OBOT_IDP_CONFIG": "${OBOT_IDP_CONFIG}",
     "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS}",

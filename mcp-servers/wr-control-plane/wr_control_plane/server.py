@@ -114,6 +114,7 @@ class ControlPlaneConfig:
     composio_api_key: str
     firecrawl_api_key: str
     tavily_api_key: str
+    crewai_api_key: str
     obot_base_url: str
     obot_idp_config: str
     obot_allowed_hosts: str
@@ -129,6 +130,7 @@ class ControlPlaneConfig:
             composio_api_key=os.getenv("COMPOSIO_API_KEY", "").strip(),
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY", "").strip(),
             tavily_api_key=os.getenv("TAVILY_API_KEY", "").strip(),
+            crewai_api_key=os.getenv("CREWAI_API_KEY", "").strip(),
             obot_base_url=os.getenv("OBOT_BASE_URL", "").strip(),
             obot_idp_config=os.getenv("OBOT_IDP_CONFIG", "").strip(),
             obot_allowed_hosts=os.getenv("OBOT_ALLOWED_HOSTS", DEFAULT_ALLOWED_HOSTS).strip(),
@@ -260,6 +262,12 @@ def _credential_matrix(signals: IssueSignalSet) -> list[dict[str, object]]:
             ),
         },
         {
+            "secret": "CREWAI_API_KEY",
+            "required": False,
+            "configured": bool(cfg.crewai_api_key),
+            "reason": "Used for CrewAI multi-agent orchestration.",
+        },
+        {
             "secret": "ANTHROPIC_API_KEY",
             "required": True,
             "configured": bool(cfg.anthropic_api_key),
@@ -361,6 +369,7 @@ def control_plane_status() -> dict[str, object]:
             "composio": bool(cfg.composio_api_key),
             "firecrawl": bool(cfg.firecrawl_api_key),
             "tavily": bool(cfg.tavily_api_key),
+            "crewai": bool(cfg.crewai_api_key),
             "obot": bool(cfg.obot_base_url),
         },
         "readiness": _control_plane_readiness(empty_signals),
@@ -416,6 +425,7 @@ def render_control_plane_mcp_entry(profile: str = "repo") -> dict[str, object]:
                 "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
                 "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
                 "TAVILY_API_KEY": "${TAVILY_API_KEY}",
+                "CREWAI_API_KEY": "${CREWAI_API_KEY}",
                 "OBOT_BASE_URL": "${OBOT_BASE_URL}",
                 "OBOT_IDP_CONFIG": "${OBOT_IDP_CONFIG}",
                 "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS}",
@@ -458,6 +468,7 @@ def env_schema() -> dict[str, object]:
         "optional": [
             "FIRECRAWL_API_KEY",
             "TAVILY_API_KEY",
+            "CREWAI_API_KEY",
             "OBOT_ALLOWED_HOSTS",
             "WR_DEFAULT_REPO",
         ],
