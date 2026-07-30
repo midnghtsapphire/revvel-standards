@@ -1,31 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-30T20:26:58.433Z",
+  "generated_at": "2026-07-30T21:25:15.310Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30579131768,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30579131768",
+            "id": 30581744294,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30581744294",
             "conclusion": "failure"
           },
           {
-            "id": 30578149389,
+            "id": 30579864811,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30579864811",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30579667639,
             "name": "Intelligent Code Quality Scanner",
             "path": ".github/workflows/ship-quality.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30578149389",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30579667639",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30579564406,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30579564406",
             "conclusion": "failure"
           }
         ],
