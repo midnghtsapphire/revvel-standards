@@ -1,73 +1,28 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-29T09:58:12.326Z",
+  "generated_at": "2026-07-30T17:31:33.355Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "2/100 recent runs failed; 1 stuck item(s)",
+      "status": "healthy",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 1,
         "total_runs": 100,
-        "stuck_issues": 1
+        "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30439159761,
+            "id": 30563610791,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30439159761",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30438051586,
-            "name": "Vine → Marketplace Automation",
-            "path": ".github/workflows/vine-to-marketplace.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30438051586",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30563610791",
             "conclusion": "failure"
           }
         ],
-        "stuck": [
-          {
-            "number": 16500,
-            "title": "[WR] NEW TECH FOR GOAP AND SWARMS PLEASE SEE ATTACHED DOC",
-            "updated_at": "2026-07-22T07:48:29Z",
-            "labels": [
-              "documentation",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "priority-p2",
-              "role:orchestrator",
-              "area:ui",
-              "area:automation",
-              "priority:high",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "lifecycle:stuck",
-              "wr:new",
-              "wr-stuck",
-              "research-engine",
-              "research:blocked",
-              "research:marketing",
-              "research:seo",
-              "research:competitors",
-              "research:chatter",
-              "research:facts",
-              "research:technical",
-              "research:revenue",
-              "research:reviewer",
-              "recovery:stale-wr",
-              "mindmappr",
-              "wr:reset",
-              "research:repo-web"
-            ]
-          }
-        ]
+        "stuck": []
       }
     },
     "homeostat": {
