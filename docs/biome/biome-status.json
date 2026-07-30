@@ -1,59 +1,24 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-30T16:31:37.212Z",
+  "generated_at": "2026-07-30T17:31:33.355Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "6/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 6,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30561818263,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30561818263",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30560955063,
+            "id": 30563610791,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30560955063",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30558288402,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30558288402",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30554883463,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30554883463",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30550201275,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30550201275",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30547412917,
-            "name": "PR & Issue Recovery Engine",
-            "path": ".github/workflows/recovery-engine.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30547412917",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30563610791",
             "conclusion": "failure"
           }
         ],
