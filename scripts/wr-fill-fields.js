@@ -57,7 +57,7 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const DEFAULTS_PATH = path.join(REPO_ROOT, 'config/wr-field-defaults.yml');
 
 // Sentinels the GitHub issue form emits for blank fields.
-const BLANK_MARKERS = new Set(['_No response_', 'None', 'TBD', 'TODO', '']);
+const BLANK_MARKERS = new Set(['_No response_', 'None', 'TBD', '']);
 
 let defaultsCache = null;
 function loadDefaults() {
