@@ -1,38 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-30T18:30:54.609Z",
+  "generated_at": "2026-07-30T19:30:54.540Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "3/100 recent runs failed; 0 stuck item(s)",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30569782546,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30569782546",
+            "id": 30574876539,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30574876539",
             "conclusion": "failure"
           },
           {
-            "id": 30568621046,
-            "name": "Research Engine Orchestrator",
-            "path": ".github/workflows/research-engine.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30568621046",
+            "id": 30574873728,
+            "name": ".github/workflows/openrouter-coder.yml",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30574873728",
             "conclusion": "failure"
           },
           {
-            "id": 30568571678,
+            "id": 30574867797,
             "name": "Persona Comment Trigger",
             "path": ".github/workflows/persona-comment-trigger.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30568571678",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30574867797",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30574760864,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30574760864",
             "conclusion": "failure"
           }
         ],
@@ -58,10 +65,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30574288238"
       }
     },
     "sheaf": {
