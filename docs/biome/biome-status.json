@@ -1,19 +1,40 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-29T23:21:27.205Z",
+  "generated_at": "2026-07-30T00:29:05.709Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "13/100 recent runs failed; 0 stuck item(s)",
+      "summary": "15/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 13,
+        "failed_runs": 15,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30502738737,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30502738737",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30501872782,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30501872782",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30500293005,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30500293005",
+            "conclusion": "failure"
+          },
           {
             "id": 30499202895,
             "name": "Daily WR & PR Summary",
@@ -61,27 +82,6 @@
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30489244569",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30488088221,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30488088221",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30487808157,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30487808157",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30486147942,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30486147942",
             "conclusion": "failure"
           }
         ],
