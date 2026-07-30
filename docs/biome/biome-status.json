@@ -1,24 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-30T17:31:33.355Z",
+  "generated_at": "2026-07-30T19:30:54.540Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30563610791,
+            "id": 30574876539,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30574876539",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30574873728,
+            "name": ".github/workflows/openrouter-coder.yml",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30574873728",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30574867797,
+            "name": "Persona Comment Trigger",
+            "path": ".github/workflows/persona-comment-trigger.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30574867797",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30574760864,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30563610791",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30574760864",
             "conclusion": "failure"
           }
         ],
@@ -44,10 +65,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30574288238"
       }
     },
     "sheaf": {
