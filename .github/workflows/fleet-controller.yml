@@ -16,6 +16,8 @@ on:
 permissions:
   contents: write
   actions: write
+  # Needed by peter-evans/create-pull-request when falling back to GITHUB_TOKEN.
+  pull-requests: write
 
 concurrency:
   group: fleet-controller
@@ -107,13 +109,42 @@ jobs:
               git diff --cached --stat
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
+            # Drop timestamp-only working-tree edits (e.g. generated_at churn in
+            # controller-ingestion.json) so the PR action below only commits the
+            # staged semantic changes. `git checkout -- .` restores the working
+            # tree from the index, which keeps staged content intact.
+            git checkout -- .
           fi
 
-      - name: Commit controller state
+      # Branch protection on main requires changes to land via pull request
+      # (direct `git push` is rejected with GH013), so persist controller state
+      # through a rolling PR on a fixed branch. Reusing the same branch means
+      # subsequent runs update one open PR instead of spamming new ones.
+      - name: Open or update controller-state PR
         if: steps.stage.outputs.changed == 'true'
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore(controller): persist semantic fleet state"
-          git push
+        id: state_pr
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          commit-message: "chore(controller): persist semantic fleet state"
+          title: "chore(controller): persist semantic fleet state"
+          body: |
+            Automated fleet-controller state sync.
+
+            This PR persists durable reassignment state and semantically changed
+            monitor feeds under `docs/controller/`. It is updated in place by the
+            Fleet Controller workflow on each run with new state; direct pushes to
+            `main` are blocked by branch protection.
+
+            *Run ID: ${{ github.run_id }}*
+          branch: fleet-controller/state-sync
+          base: main
+          delete-branch: true
+
+      # Best-effort: let the PR land on its own once required checks pass. If
+      # auto-merge is disabled on the repo this fails harmlessly — the PR simply
+      # waits for a human merge, and the next controller run refreshes it.
+      - name: Enable auto-merge on controller-state PR
+        if: steps.stage.outputs.changed == 'true' && steps.state_pr.outputs.pull-request-number != ''
+        continue-on-error: true
+        run: gh pr merge --auto --squash "${{ steps.state_pr.outputs.pull-request-number }}"
