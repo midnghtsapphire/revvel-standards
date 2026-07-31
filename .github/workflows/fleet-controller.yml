@@ -115,5 +115,35 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Remember what we staged: if branch protection rejects the direct
+          # push below, these are the files we replay through the Contents API.
+          STAGED_FILES=$(git diff --cached --name-only)
+
           git commit -m "chore(controller): persist semantic fleet state"
-          git push
+
+          # Rebase onto any concurrent bot commit (biome feeds land every few
+          # minutes) so a stale HEAD doesn't turn into a spurious push failure.
+          git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+
+          # main enforces "changes via pull request" (GH013) for the default
+          # GITHUB_TOKEN used by checkout, so the direct push is expected to be
+          # rejected unless ADMIN_GITHUB_TOKEN is wired into git. Fall back to
+          # the Contents API with GH_TOKEN (the admin token, which is on the
+          # ruleset bypass list) — the same proven lane biome-inspector and
+          # biome-sheaf use to persist their feeds. If it fails, check that
+          # secrets.ADMIN_GITHUB_TOKEN exists and its owner can bypass the
+          # main-branch ruleset.
+          git push && echo "controller state pushed to ${GITHUB_REF_NAME}" || {
+            echo "::warning::Direct push blocked by branch protection — retrying via Contents API"
+            for f in $STAGED_FILES; do
+              [ -f "$f" ] || continue
+              existing_sha=$(gh api "repos/${GH_REPO}/contents/${f}?ref=${GITHUB_REF_NAME}" --jq '.sha' 2>/dev/null || true)
+              b64=$(base64 "$f" | tr -d '\n')
+              args=(--field "message=chore(controller): persist semantic fleet state [skip ci]" --field "content=${b64}" --field "branch=${GITHUB_REF_NAME}")
+              [ -n "$existing_sha" ] && args+=(--field "sha=${existing_sha}")
+              gh api "repos/${GH_REPO}/contents/${f}" -X PUT "${args[@]}" > /dev/null \
+                && echo "  ✓ updated ${f} via API" \
+                || { echo "::error::API update failed for ${f} — controller state not persisted"; exit 1; }
+            done
+          }
