@@ -16,6 +16,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write # gh pr create / merge for the state-sync PR
 
 concurrency:
   group: fleet-controller
@@ -109,11 +110,41 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           fi
 
-      - name: Commit controller state
+      # main is protected by a repository ruleset ("Changes must be made
+      # through a pull request" + required status checks), so a direct
+      # `git push` to main is always rejected with GH013. Persist state via a
+      # dedicated sync branch + PR instead. The branch is force-pushed each
+      # run: controller state is a snapshot, so the newest run always wins,
+      # and any already-open sync PR simply gets refreshed by the push.
+      - name: Commit and open state-sync PR
         if: steps.stage.outputs.changed == 'true'
+        env:
+          SYNC_BRANCH: fleet-controller/state-sync
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git commit -m "chore(controller): persist semantic fleet state"
-          git push
+          git push --force origin "HEAD:refs/heads/${SYNC_BRANCH}"
+
+          # Reuse the open sync PR if one exists; otherwise create it.
+          # If it fails to open (e.g. race with a just-merged PR), surface the
+          # error — exit code must reflect whether the state actually has a
+          # merge path, not just that the push finished.
+          EXISTING=$(gh pr list --head "$SYNC_BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            echo "Sync PR #$EXISTING already open; branch updated." >> "$GITHUB_STEP_SUMMARY"
+          else
+            gh pr create \
+              --title "chore(controller): persist semantic fleet state" \
+              --body "Automated fleet-controller state sync. Latest run: ${RUN_URL}. Direct pushes to main are blocked by repository rules, so durable controller state lands through this PR." \
+              --base main \
+              --head "$SYNC_BRANCH"
+          fi
+
+          # Best-effort auto-merge so the snapshot lands once required checks
+          # pass. Fails when auto-merge is disabled repo-wide — that's fine,
+          # the PR still exists for manual merge.
+          gh pr merge "$SYNC_BRANCH" --auto --squash || \
+            echo "Auto-merge unavailable; merge the sync PR manually." >> "$GITHUB_STEP_SUMMARY"
