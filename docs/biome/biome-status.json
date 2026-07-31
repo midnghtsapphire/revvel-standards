@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-31T18:31:23.865Z",
+  "generated_at": "2026-07-31T19:32:04.823Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
@@ -15,24 +15,24 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 30654617152,
+            "id": 30658915794,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30654617152",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30658915794",
             "conclusion": "failure"
           },
           {
-            "id": 30652060079,
+            "id": 30656794984,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30652060079",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30656794984",
             "conclusion": "failure"
           },
           {
-            "id": 30649130107,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30649130107",
+            "id": 30656616548,
+            "name": "OpenRouter Agent",
+            "path": ".github/workflows/openrouter-agent.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30656616548",
             "conclusion": "failure"
           }
         ],
@@ -58,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30658627664"
       }
     },
     "sheaf": {
