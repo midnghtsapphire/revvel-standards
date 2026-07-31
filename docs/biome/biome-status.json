@@ -1,38 +1,24 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-07-31T12:39:28.524Z",
+  "generated_at": "2026-07-31T13:34:27.551Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "3/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30631334114,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30631334114",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30630056072,
+            "id": 30632857849,
             "name": "Fleet Controller",
             "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30630056072",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30627022723,
-            "name": "Fleet Controller",
-            "path": ".github/workflows/fleet-controller.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30627022723",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30632857849",
             "conclusion": "failure"
           }
         ],
@@ -58,10 +44,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30634091749"
       }
     },
     "sheaf": {
