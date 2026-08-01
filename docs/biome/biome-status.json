@@ -1,19 +1,26 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-01T07:45:00.611Z",
+  "generated_at": "2026-08-01T08:47:03.135Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "down",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "down",
+      "summary": "3/100 recent runs failed; 1 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 3,
         "total_runs": 100,
-        "stuck_issues": 0
+        "stuck_issues": 1
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30692410906,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30692410906",
+            "conclusion": "failure"
+          },
           {
             "id": 30690152229,
             "name": "OpenRouter Auto-Route",
@@ -29,7 +36,29 @@
             "conclusion": "failure"
           }
         ],
-        "stuck": []
+        "stuck": [
+          {
+            "number": 16165,
+            "title": "[WR] please fix all merge issues permanently: @midnghtsapphire\r\n@openrouter\r\n/ openrouter\r\n@github-actions[bot]\r\n@devin-",
+            "updated_at": "2026-07-25T08:28:45Z",
+            "labels": [
+              "auto-fix",
+              "triage",
+              "openrouter",
+              "priority-p2",
+              "role:orchestrator",
+              "wr:code",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "lifecycle:stuck",
+              "wr-stuck",
+              "mindmappr",
+              "wr:reset"
+            ]
+          }
+        ]
       }
     },
     "homeostat": {
