@@ -1,16 +1,16 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-01T09:39:09.954Z",
+  "generated_at": "2026-08-01T10:32:34.883Z",
   "credit_free": true,
   "overall": "down",
   "workers": {
     "sentinel": {
       "status": "down",
-      "summary": "4/100 recent runs failed; 1 stuck item(s)",
+      "summary": "3/100 recent runs failed; 7 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 3,
         "total_runs": 100,
-        "stuck_issues": 1
+        "stuck_issues": 7
       },
       "detail": {
         "recent_failures": [
@@ -34,16 +34,179 @@
             "path": ".github/workflows/openrouter-auto-route.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30690152229",
             "conclusion": "failure"
-          },
-          {
-            "id": 30690144650,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30690144650",
-            "conclusion": "failure"
           }
         ],
         "stuck": [
+          {
+            "number": 16273,
+            "title": "[WR] add - name: dprint-check-action   uses: dprint/check@v2.3",
+            "updated_at": "2026-07-25T10:27:32Z",
+            "labels": [
+              "enhancement",
+              "auto-fix",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "role:orchestrator",
+              "area:ui",
+              "area:automation",
+              "priority:high",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "research-engine",
+              "research:blocked",
+              "research:marketing",
+              "research:seo",
+              "research:competitors",
+              "research:chatter",
+              "research:facts",
+              "research:technical",
+              "research:revenue",
+              "research:reviewer",
+              "wr:research-complete",
+              "wr:jules",
+              "mindmappr",
+              "research:repo-web"
+            ]
+          },
+          {
+            "number": 16270,
+            "title": "[WR] add - name: Markdown Image Alt-text Checker   uses: ruthtxh/markdown-image-alt-text-checker@v1",
+            "updated_at": "2026-07-25T10:27:29Z",
+            "labels": [
+              "documentation",
+              "enhancement",
+              "auto-fix",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "role:orchestrator",
+              "area:ui",
+              "area:automation",
+              "area:api",
+              "priority:high",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "research-engine",
+              "research:blocked",
+              "research:marketing",
+              "research:seo",
+              "research:competitors",
+              "research:chatter",
+              "research:facts",
+              "research:technical",
+              "research:revenue",
+              "research:reviewer",
+              "wr:research-complete",
+              "wr:jules",
+              "mindmappr",
+              "research:repo-web"
+            ]
+          },
+          {
+            "number": 16267,
+            "title": "[WR] add - name: markdownlint-cli   uses: nosborn/github-action-markdown-cli@v3.5.0",
+            "updated_at": "2026-07-25T10:27:23Z",
+            "labels": [
+              "enhancement",
+              "auto-fix",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "role:orchestrator",
+              "area:ui",
+              "area:automation",
+              "priority:high",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "research-engine",
+              "research:blocked",
+              "research:marketing",
+              "research:seo",
+              "research:competitors",
+              "research:chatter",
+              "research:facts",
+              "research:technical",
+              "research:revenue",
+              "research:reviewer",
+              "wr:research-complete",
+              "wr:jules",
+              "mindmappr",
+              "research:repo-web"
+            ]
+          },
+          {
+            "number": 16172,
+            "title": "[WR] fix all merge issues and reviewers comments: \nplease fix all merge issues permanently: @midnghtsapphire\n@openrouter",
+            "updated_at": "2026-07-25T10:32:33Z",
+            "labels": [
+              "auto-fix",
+              "triage",
+              "openrouter",
+              "priority-p2",
+              "role:orchestrator",
+              "wr:code",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "lifecycle:stuck",
+              "wr-stuck",
+              "mindmappr",
+              "wr:reset"
+            ]
+          },
+          {
+            "number": 16168,
+            "title": "[WR] fix all the code review and errors asap fix all merge issues and reviewers comments: \r\nplease fix all merge issues ",
+            "updated_at": "2026-07-25T10:32:18Z",
+            "labels": [
+              "auto-fix",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "role:orchestrator",
+              "wr:code",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "lifecycle:stuck",
+              "wr-stuck",
+              "mindmappr",
+              "wr:reset"
+            ]
+          },
+          {
+            "number": 16166,
+            "title": "[WR] fix all merge issues and reviewers comments: \r\nplease fix all merge issues permanently: @midnghtsapphire\r\n@openrout",
+            "updated_at": "2026-07-25T10:32:20Z",
+            "labels": [
+              "auto-fix",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "role:orchestrator",
+              "wr:code",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "lifecycle:stuck",
+              "wr-stuck",
+              "mindmappr",
+              "wr:reset"
+            ]
+          },
           {
             "number": 16165,
             "title": "[WR] please fix all merge issues permanently: @midnghtsapphire\r\n@openrouter\r\n/ openrouter\r\n@github-actions[bot]\r\n@devin-",
@@ -87,10 +250,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30690137704"
+        "last_run": null
       }
     },
     "sheaf": {
