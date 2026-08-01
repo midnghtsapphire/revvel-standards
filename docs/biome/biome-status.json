@@ -1,19 +1,26 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-01T08:47:03.135Z",
+  "generated_at": "2026-08-01T09:39:09.954Z",
   "credit_free": true,
   "overall": "down",
   "workers": {
     "sentinel": {
       "status": "down",
-      "summary": "3/100 recent runs failed; 1 stuck item(s)",
+      "summary": "4/100 recent runs failed; 1 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 1
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30692617918,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30692617918",
+            "conclusion": "failure"
+          },
           {
             "id": 30692410906,
             "name": "Update Project Dashboard",
