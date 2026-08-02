@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-02T08:48:09.098Z",
+  "generated_at": "2026-08-02T09:40:16.007Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
@@ -15,6 +15,13 @@
       "detail": {
         "recent_failures": [
           {
+            "id": 30740654754,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30740654754",
+            "conclusion": "failure"
+          },
+          {
             "id": 30740468729,
             "name": "Update Project Dashboard",
             "path": ".github/workflows/update-project-dashboard.yml",
@@ -26,13 +33,6 @@
             "name": "WR-4600 Watchtower",
             "path": ".github/workflows/watchtower.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30737222696",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30736817838,
-            "name": "App Artifact Audit",
-            "path": ".github/workflows/app-artifact-audit.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30736817838",
             "conclusion": "failure"
           }
         ],
