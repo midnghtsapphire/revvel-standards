@@ -1,112 +1,42 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-02T06:53:44.308Z",
+  "generated_at": "2026-08-02T07:46:22.098Z",
   "credit_free": true,
-  "overall": "down",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "down",
-      "summary": "3/100 recent runs failed; 3 stuck item(s)",
+      "status": "degraded",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
         "failed_runs": 3,
         "total_runs": 100,
-        "stuck_issues": 3
+        "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30737222696,
+            "name": "WR-4600 Watchtower",
+            "path": ".github/workflows/watchtower.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30737222696",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30736817838,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30736817838",
+            "conclusion": "failure"
+          },
           {
             "id": 30733463300,
             "name": "Update Project Dashboard",
             "path": ".github/workflows/update-project-dashboard.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30733463300",
             "conclusion": "failure"
-          },
-          {
-            "id": 30730115702,
-            "name": "durability-mirror",
-            "path": ".github/workflows/durability-mirror.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30730115702",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30730049036,
-            "name": "Repo Organizer",
-            "path": ".github/workflows/repo-organizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30730049036",
-            "conclusion": "failure"
           }
         ],
-        "stuck": [
-          {
-            "number": 16201,
-            "title": "add - name: GitHub Organization Readme Badge Generator   uses: joshjohanning/organization-readme-badge-generator@v2.0.3",
-            "updated_at": "2026-07-26T01:21:17Z",
-            "labels": [
-              "enhancement",
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p3",
-              "role:orchestrator",
-              "wr:new",
-              "recovery:stale-wr",
-              "self-heal"
-            ]
-          },
-          {
-            "number": 16112,
-            "title": "feat(wr-15279): implement FTC HBNR breach notification procedures for non-HIPAA health data",
-            "updated_at": "2026-07-26T01:23:52Z",
-            "labels": [
-              "enhancement",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "priority-p1",
-              "role:orchestrator",
-              "wr:code",
-              "area:ui",
-              "area:automation",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr-stuck",
-              "recovery:stale-wr",
-              "mindmappr",
-              "self-heal",
-              "wr:reset"
-            ]
-          },
-          {
-            "number": 16110,
-            "title": "feat(wr-15279): conduct Privacy Impact Assessment (PIA) before production launch",
-            "updated_at": "2026-07-26T01:23:54Z",
-            "labels": [
-              "bug",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "priority:p0",
-              "priority-p1",
-              "role:orchestrator",
-              "wr:code",
-              "area:ui",
-              "area:api",
-              "priority:high",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr-stuck",
-              "recovery:stale-wr",
-              "mindmappr",
-              "self-heal",
-              "wr:reset"
-            ]
-          }
-        ]
+        "stuck": []
       }
     },
     "homeostat": {
@@ -131,7 +61,7 @@
       "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30726888361"
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30738267902"
       }
     },
     "sheaf": {
