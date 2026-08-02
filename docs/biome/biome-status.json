@@ -1,35 +1,90 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-02T00:32:40.201Z",
+  "generated_at": "2026-08-02T01:34:43.421Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "0/100 recent runs failed; 3 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 0,
         "total_runs": 100,
-        "stuck_issues": 0
+        "stuck_issues": 3
       },
       "detail": {
-        "recent_failures": [
+        "recent_failures": [],
+        "stuck": [
           {
-            "id": 30725364448,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30725364448",
-            "conclusion": "failure"
+            "number": 16201,
+            "title": "add - name: GitHub Organization Readme Badge Generator   uses: joshjohanning/organization-readme-badge-generator@v2.0.3",
+            "updated_at": "2026-07-26T01:21:17Z",
+            "labels": [
+              "enhancement",
+              "auto-fix",
+              "copilot",
+              "triage",
+              "openrouter",
+              "priority-p3",
+              "role:orchestrator",
+              "wr:new",
+              "recovery:stale-wr",
+              "self-heal"
+            ]
           },
           {
-            "id": 30723071906,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30723071906",
-            "conclusion": "failure"
+            "number": 16112,
+            "title": "feat(wr-15279): implement FTC HBNR breach notification procedures for non-HIPAA health data",
+            "updated_at": "2026-07-26T01:23:52Z",
+            "labels": [
+              "enhancement",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "role:orchestrator",
+              "wr:code",
+              "area:ui",
+              "area:automation",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "wr-stuck",
+              "recovery:stale-wr",
+              "mindmappr",
+              "self-heal",
+              "wr:reset"
+            ]
+          },
+          {
+            "number": 16110,
+            "title": "feat(wr-15279): conduct Privacy Impact Assessment (PIA) before production launch",
+            "updated_at": "2026-07-26T01:23:54Z",
+            "labels": [
+              "bug",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority:p0",
+              "priority-p1",
+              "role:orchestrator",
+              "wr:code",
+              "area:ui",
+              "area:api",
+              "priority:high",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "wr-stuck",
+              "recovery:stale-wr",
+              "mindmappr",
+              "self-heal",
+              "wr:reset"
+            ]
           }
-        ],
-        "stuck": []
+        ]
       }
     },
     "homeostat": {
@@ -51,10 +106,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30726888361"
       }
     },
     "sheaf": {
