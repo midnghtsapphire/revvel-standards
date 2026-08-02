@@ -1,19 +1,41 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-02T03:03:49.638Z",
+  "generated_at": "2026-08-02T05:04:48.629Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "down",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "0/100 recent runs failed; 3 stuck item(s)",
+      "status": "down",
+      "summary": "3/100 recent runs failed; 3 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 3
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 30733463300,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30733463300",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30730115702,
+            "name": "durability-mirror",
+            "path": ".github/workflows/durability-mirror.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30730115702",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30730049036,
+            "name": "Repo Organizer",
+            "path": ".github/workflows/repo-organizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30730049036",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": [
           {
             "number": 16201,
