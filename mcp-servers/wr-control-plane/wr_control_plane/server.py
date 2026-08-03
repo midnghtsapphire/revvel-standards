@@ -61,21 +61,6 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
 
             return decorator(fn) if fn else decorator
 
-
-        async def list_tools(self):
-            import dataclasses
-            @dataclasses.dataclass
-            class Tool:
-                name: str
-            return [Tool(name=k) for k in self.tools.keys()]
-
-        async def list_resources(self):
-            import dataclasses
-            @dataclasses.dataclass
-            class Resource:
-                uri: str
-            return [Resource(uri=k) for k in self.resources.keys()]
-
         def resource(self, uri: str):
             def decorator(func: Callable[..., object]) -> Callable[..., object]:
                 self.resources[uri] = func
@@ -83,23 +68,30 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
 
             return decorator
 
-        async def list_tools(self) -> list[object]:
-            class Tool:
-                def __init__(self, name: str):
-                    self.name = name
-            return [Tool(name) for name in self.tools.keys()]
+        # FastMCP's introspection API, mirrored so the regression suite can
+        # enumerate the registered surface without installing FastMCP. Both are
+        # coroutines returning objects exposing `.name` / `.uri`, matching what
+        # the real client awaits. If a test fails here with AttributeError,
+        # FastMCP grew an accessor this shim has not mirrored yet.
+        async def list_tools(self) -> list["_ShimTool"]:
+            return [_ShimTool(name=name) for name in self.tools]
 
-        async def list_resources(self) -> list[object]:
-            class Resource:
-                def __init__(self, uri: str):
-                    self.uri = uri
-            return [Resource(uri) for uri in self.resources.keys()]
+        async def list_resources(self) -> list["_ShimResource"]:
+            return [_ShimResource(uri=uri) for uri in self.resources]
 
         def run(self) -> None:
             raise RuntimeError(
                 "FastMCP is not installed. Install dependencies in "
                 "mcp-servers/wr-control-plane/ to run this MCP server over stdio."
             )
+
+    @dataclass(frozen=True)
+    class _ShimTool:
+        name: str
+
+    @dataclass(frozen=True)
+    class _ShimResource:
+        uri: str
 
 
 mcp = FastMCP(

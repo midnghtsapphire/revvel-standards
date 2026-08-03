@@ -58,6 +58,12 @@ function listConflictedFiles() {
  * Iterate textual conflict hunks in a file's contents. Yields objects with
  * { start, end, ours, theirs } indices/strings. Returns [] for binary files
  * or files without recognizable `<<<<<<<`/`=======`/`>>>>>>>` markers.
+ *
+ * Handles both conflict styles: the default `merge` style and the 3-way
+ * `diff3`/`zdiff3` styles, which insert the merge base between `|||||||` and
+ * `=======`. Without that the base block would be read as part of "ours" and
+ * every hunk would look ambiguous — which is how this resolver silently
+ * degraded to MANUAL on any checkout with `merge.conflictStyle=zdiff3` set.
  */
 function iterHunks(content) {
   const hunks = [];
@@ -70,9 +76,17 @@ function iterHunks(content) {
       const ours = [];
       const theirs = [];
       i++;
-      while (i < lines.length && !lines[i].startsWith('=======')) {
+      while (
+        i < lines.length &&
+        !lines[i].startsWith('=======') &&
+        !lines[i].startsWith('|||||||')
+      ) {
         ours.push(lines[i]);
         i++;
+      }
+      // diff3/zdiff3: drop the merge-base block between ||||||| and =======.
+      if (i < lines.length && lines[i].startsWith('|||||||')) {
+        while (i < lines.length && !lines[i].startsWith('=======')) i++;
       }
       if (i >= lines.length) return hunks;
       i++; // skip =======
