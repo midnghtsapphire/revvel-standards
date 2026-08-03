@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-03T20:31:19.062Z",
+  "generated_at": "2026-08-03T21:24:54.484Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,10 +15,10 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 30850517849,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30850517849",
+            "id": 30854344736,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30854344736",
             "conclusion": "failure"
           }
         ],
