@@ -68,6 +68,20 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
 
             return decorator
 
+        class _Tool:
+            def __init__(self, name):
+                self.name = name
+
+        class _Resource:
+            def __init__(self, uri):
+                self.uri = uri
+
+        async def list_tools(self):
+            return [self._Tool(name) for name in self.tools.keys()]
+
+        async def list_resources(self):
+            return [self._Resource(uri) for uri in self.resources.keys()]
+
         def run(self) -> None:
             raise RuntimeError(
                 "FastMCP is not installed. Install dependencies in "
@@ -272,6 +286,18 @@ def _credential_matrix(signals: IssueSignalSet) -> list[dict[str, object]]:
             "required": True,
             "configured": bool(cfg.anthropic_api_key),
             "reason": "Used for Claude-based reasoning in the blueprint architecture.",
+        },
+        {
+            "secret": "XAI_API_KEY",
+            "required": False,
+            "configured": bool(os.getenv("XAI_API_KEY")),
+            "reason": "Used for the MOTU / Grok integration.",
+        },
+        {
+            "secret": "GROK_API_KEY",
+            "required": False,
+            "configured": bool(os.getenv("GROK_API_KEY")),
+            "reason": "Used for the MOTU / Grok integration.",
         },
         {
             "secret": "OBOT_BASE_URL",

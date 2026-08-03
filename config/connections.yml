@@ -389,3 +389,14 @@ connections:
     status: unverified
     connects_to: [roo, gemini, opus]
     note: "Owner: Jules has access to Roo and Gemini/Opus and may run recursively. Confirm which models + whether recursion is enabled."
+
+
+  - id: xai
+    name: xAI / Grok
+    type: api
+    auth: key
+    env: XAI_API_KEY
+    status: verified
+    access: [orchestration]
+    connects_to: [motu]
+    note: "MOTU orchestration engine via Grok"

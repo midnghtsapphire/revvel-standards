@@ -155,7 +155,6 @@
                 currentEnergy = 0.0;
                 document.getElementById('energy').innerText = currentEnergy.toFixed(2);
 
-                // Add H0 bar (born 10, never dies)
                 svg.innerHTML += `<circle cx="10" cy="10" r="2" fill="var(--cyan)"/>`;
             } else if (type === 'cycle') {
                 document.getElementById('dim-h0').innerText = '1';
@@ -163,9 +162,7 @@
                 currentEnergy = 0.0;
                 document.getElementById('energy').innerText = currentEnergy.toFixed(2);
 
-                // Add H0 bar
                 svg.innerHTML += `<circle cx="10" cy="10" r="2" fill="var(--cyan)"/>`;
-                // Add H1 bar (born 40, never dies - systemic tear)
                 svg.innerHTML += `<circle cx="40" cy="10" r="2" fill="var(--magenta)"/>`;
             } else if (type === 'conflict') {
                 document.getElementById('dim-h0').innerText = '0 (Conflicting sections)';
@@ -173,7 +170,6 @@
                 currentEnergy = 5.75;
                 document.getElementById('energy').innerText = currentEnergy.toFixed(2);
 
-                // Add H0 bars that die quickly
                 svg.innerHTML += `<circle cx="10" cy="80" r="2" fill="var(--cyan)"/>`;
                 svg.innerHTML += `<circle cx="20" cy="60" r="2" fill="var(--cyan)"/>`;
             }
@@ -193,7 +189,6 @@
             }
         }
 
-        // Initialize default view
         simulateGraph('path');
     </script>
 </body>

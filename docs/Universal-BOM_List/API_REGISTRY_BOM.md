@@ -299,3 +299,6 @@ CREWAI_API_KEY             → /revvel/shared/ai/crewai
 ---
 
 *Last updated: April 14, 2026. The coding agent should update this file whenever a new API is provisioned or an existing one is deprecated.*
+
+| XAI_API_KEY | Orchestration | `revvel/shared/ai/xai` | `MOTU/Grok integration` |
+| GROK_API_KEY | Orchestration | `revvel/shared/ai/xai` | `MOTU/Grok integration` |
