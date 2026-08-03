@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BNAT Sheaf Observatory | V.E.I.N.S. Topology Lab</title>
+    <style>
+        :root {
+            --sapphire: #0f1c3f;
+            --magenta: #ff00ff;
+            --cyan: #00ffff;
+            --void: #050505;
+            --text: #e0e0e0;
+        }
+        body {
+            background-color: var(--void);
+            color: var(--text);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        header {
+            border-bottom: 1px solid var(--sapphire);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        h1, h2, h3 {
+            color: var(--cyan);
+            text-shadow: 0 0 5px var(--cyan);
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .panel {
+            background-color: rgba(15, 28, 63, 0.3);
+            border: 1px solid var(--sapphire);
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+        }
+        .persistence-diagram {
+            width: 100%;
+            height: 300px;
+            background-color: #000;
+            border: 1px dashed var(--magenta);
+            position: relative;
+        }
+        .bar-h0 {
+            fill: none;
+            stroke: var(--cyan);
+            stroke-width: 4;
+        }
+        .bar-h1 {
+            fill: none;
+            stroke: var(--magenta);
+            stroke-width: 4;
+        }
+        button {
+            background: var(--sapphire);
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+            padding: 8px 16px;
+            cursor: pointer;
+            margin: 5px;
+            font-family: inherit;
+        }
+        button:hover {
+            background: var(--cyan);
+            color: var(--void);
+        }
+        .fleet-node {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            border: 1px solid var(--text);
+            border-radius: 4px;
+        }
+        .metric {
+            font-size: 1.2em;
+            color: var(--magenta);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>V.E.I.N.S. Topology Lab</h1>
+        <p>Self-healing governance as geometry. The BNAT Knowledge Sheaf tracks consensus and conflict via cohomology.</p>
+    </header>
+
+    <div class="container">
+        <!-- Cohomology Explorer -->
+        <div class="panel" id="cohomology-explorer">
+            <h2>Live Sheaf Cohomology Explorer</h2>
+            <div>
+                <button onclick="simulateGraph('path')">Simulate Path Graph</button>
+                <button onclick="simulateGraph('cycle')">Simulate Cycle</button>
+                <button onclick="simulateGraph('conflict')">Simulate Conflict</button>
+            </div>
+            <div style="margin-top:20px;">
+                <p>dim H⁰ (Consensus): <span class="metric" id="dim-h0">0</span></p>
+                <p>dim H¹ (Obstruction): <span class="metric" id="dim-h1">0</span></p>
+                <p>Residual Energy E(x): <span class="metric" id="energy">0.00</span></p>
+            </div>
+            <button style="margin-top:20px; border-color:var(--magenta); color:var(--magenta);" onclick="healNetwork()">Neural Sheaf Diffusion (Heal)</button>
+        </div>
+
+        <!-- Persistence Diagram -->
+        <div class="panel">
+            <h2>Persistence Diagram Studio</h2>
+            <svg class="persistence-diagram" viewBox="0 0 100 100" id="pd-svg">
+                <!-- Diagonal -->
+                <line x1="0" y1="100" x2="100" y2="0" stroke="#555" stroke-dasharray="2,2"/>
+                <!-- X/Y Axes -->
+                <line x1="0" y1="100" x2="100" y2="100" stroke="#888"/>
+                <line x1="0" y1="100" x2="0" y2="0" stroke="#888"/>
+                <text x="5" y="15" fill="#fff" font-size="4">Birth</text>
+                <text x="80" y="95" fill="#fff" font-size="4">Death</text>
+            </svg>
+            <p>Cyan: H⁰ components | Magenta: H¹ obstructions</p>
+        </div>
+
+        <!-- Fleet Constellation -->
+        <div class="panel" style="grid-column: span 2;">
+            <h2>Fleet Constellation (BIOME Crew)</h2>
+            <p>Every node maps to a vector stalk in the Cellular Sheaf. Restriction maps define translation between them.</p>
+            <div id="fleet">
+                <span class="fleet-node">Sentinel</span>
+                <span class="fleet-node">Medic</span>
+                <span class="fleet-node">Homeostat</span>
+                <span class="fleet-node">Inspector</span>
+                <span class="fleet-node" style="border-color:var(--magenta);">MOTU (Controller)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentEnergy = 0;
+
+        function simulateGraph(type) {
+            const svg = document.getElementById('pd-svg');
+            // Reset SVG bars
+            svg.innerHTML = `
+                <line x1="0" y1="100" x2="100" y2="0" stroke="#555" stroke-dasharray="2,2"/>
+                <line x1="0" y1="100" x2="100" y2="100" stroke="#888"/>
+                <line x1="0" y1="100" x2="0" y2="0" stroke="#888"/>
+                <text x="5" y="15" fill="#fff" font-size="4">Death</text>
+                <text x="80" y="95" fill="#fff" font-size="4">Birth</text>
+            `;
+
+            if (type === 'path') {
+                document.getElementById('dim-h0').innerText = '1';
+                document.getElementById('dim-h1').innerText = '0';
+                currentEnergy = 0.0;
+                document.getElementById('energy').innerText = currentEnergy.toFixed(2);
+
+                // Add H0 bar (born 10, never dies)
+                svg.innerHTML += `<circle cx="10" cy="10" r="2" fill="var(--cyan)"/>`;
+            } else if (type === 'cycle') {
+                document.getElementById('dim-h0').innerText = '1';
+                document.getElementById('dim-h1').innerText = '1';
+                currentEnergy = 0.0;
+                document.getElementById('energy').innerText = currentEnergy.toFixed(2);
+
+                // Add H0 bar
+                svg.innerHTML += `<circle cx="10" cy="10" r="2" fill="var(--cyan)"/>`;
+                // Add H1 bar (born 40, never dies - systemic tear)
+                svg.innerHTML += `<circle cx="40" cy="10" r="2" fill="var(--magenta)"/>`;
+            } else if (type === 'conflict') {
+                document.getElementById('dim-h0').innerText = '0 (Conflicting sections)';
+                document.getElementById('dim-h1').innerText = '0';
+                currentEnergy = 5.75;
+                document.getElementById('energy').innerText = currentEnergy.toFixed(2);
+
+                // Add H0 bars that die quickly
+                svg.innerHTML += `<circle cx="10" cy="80" r="2" fill="var(--cyan)"/>`;
+                svg.innerHTML += `<circle cx="20" cy="60" r="2" fill="var(--cyan)"/>`;
+            }
+        }
+
+        function healNetwork() {
+            if (currentEnergy > 0) {
+                let interval = setInterval(() => {
+                    currentEnergy -= 0.5;
+                    if (currentEnergy <= 0) {
+                        currentEnergy = 0;
+                        clearInterval(interval);
+                        document.getElementById('dim-h0').innerText = '1 (Consensus Reached)';
+                    }
+                    document.getElementById('energy').innerText = currentEnergy.toFixed(2);
+                }, 100);
+            }
+        }
+
+        // Initialize default view
+        simulateGraph('path');
+    </script>
+</body>
+</html>

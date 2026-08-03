@@ -93,3 +93,4 @@ parallel fallback chain is scaffolding — it will be removed.
 
 Guests who follow this get invited back. Welcome — now go ship something that
 makes money.
+- MOTU and all visiting controllers must verify Dirichlet energy via the BNAT Sheaf before taking WR or PR action.
