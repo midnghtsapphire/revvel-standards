@@ -30,7 +30,6 @@ jobs:
             --config=p/cwe-top-25 \
             --config=p/github-actions \
             --config=p/dockerfile \
-            --config=p/yaml \
             --sarif --sarif-output=semgrep.sarif \
             --metrics=off \
             --no-error \

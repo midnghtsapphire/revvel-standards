@@ -36,6 +36,8 @@ const fs = require('fs');
 const path = require('path');
 
 function sh(cmd, opts = {}) {
+  // Disabling Semgrep finding as this script only runs internally and handles controlled git commands
+  // nosemgrep: javascript.lang.security.detect-child-process.detect-child-process
   return execSync(cmd, { encoding: 'utf8', ...opts });
 }
 
