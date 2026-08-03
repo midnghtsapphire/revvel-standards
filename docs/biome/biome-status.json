@@ -1,34 +1,19 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-03T11:04:53.529Z",
+  "generated_at": "2026-08-03T13:03:10.469Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "summary": "0/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 0,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [
-          {
-            "id": 30807271779,
-            "name": "Intelligent Code Quality Scanner",
-            "path": ".github/workflows/ship-quality.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30807271779",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30807235190,
-            "name": "Semgrep SAST",
-            "path": ".github/workflows/semgrep.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30807235190",
-            "conclusion": "failure"
-          }
-        ],
+        "recent_failures": [],
         "stuck": []
       }
     },
