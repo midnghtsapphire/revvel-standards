@@ -2,6 +2,8 @@
 # Semgrep removed from PR/push/schedule to avoid duplicate scanning. Manual run only via workflow_dispatch.
 name: Semgrep SAST
 on:
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
