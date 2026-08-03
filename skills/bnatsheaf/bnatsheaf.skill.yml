@@ -1,0 +1,4 @@
+name: BNAT Sheaf Consistency
+description: Mathematically enforces consistency between an agent's worldview and the repository state using cellular sheaf theory.
+author: midnghtsapphire
+version: 1.0.0

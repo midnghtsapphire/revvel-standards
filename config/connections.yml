@@ -39,6 +39,28 @@ meta:
 
 connections:
   # ── Coding / orchestration agents ─────────────────────────────────────────
+  - id: xai
+    name: xAI
+    type: agent
+    auth: key
+    env: XAI_API_KEY
+    status: verified
+    access: [orchestration]
+    connects_to: []
+    used_by: [docs/bnatsheaf]
+    note: "MOTU Lead orchestration key."
+
+  - id: grok
+    name: Grok
+    type: agent
+    auth: key
+    env: GROK_API_KEY
+    status: verified
+    access: [orchestration]
+    connects_to: []
+    used_by: [docs/bnatsheaf]
+    note: "MOTU Lead orchestration key."
+
   - id: claude
     name: Claude (this assistant)
     type: agent
