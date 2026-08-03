@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-08-03T11:49:56.848Z",
+  "generated_at": "2026-08-03T12:52:53.481Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 4,
@@ -22,14 +22,14 @@
   },
   "orchestrators": [
     {
-      "id": 30811061047,
+      "id": 30815406048,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30811061047",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30815406048",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 13848,
-      "since_update_ms": 4848,
+      "age_ms": 10481,
+      "since_update_ms": 6481,
       "reason": "running within budget",
       "protected": true
     },
@@ -40,9 +40,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29262820826",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 1800908848,
-      "since_update_ms": 1800639848,
-      "reason": "running 30015m ≥ 60m budget",
+      "age_ms": 1804685481,
+      "since_update_ms": 1804416481,
+      "reason": "running 30078m ≥ 60m budget",
       "protected": false
     },
     {
@@ -52,9 +52,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 1805146848,
-      "since_update_ms": 1805058848,
-      "reason": "running 30086m ≥ 60m budget",
+      "age_ms": 1808923481,
+      "since_update_ms": 1808835481,
+      "reason": "running 30149m ≥ 60m budget",
       "protected": false
     },
     {
@@ -64,9 +64,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 1809385848,
-      "since_update_ms": 1808131848,
-      "reason": "running 30156m ≥ 60m budget",
+      "age_ms": 1813162481,
+      "since_update_ms": 1811908481,
+      "reason": "running 30219m ≥ 60m budget",
       "protected": false
     },
     {
@@ -136,7 +136,7 @@
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
-      "reason": "running 30015m ≥ 60m budget",
+      "reason": "running 30078m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -152,7 +152,7 @@
       "name": "No-Destroy Guard",
       "path": ".github/workflows/no-destroy-guard.yml",
       "health": "runaway",
-      "reason": "running 30086m ≥ 60m budget",
+      "reason": "running 30149m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -168,7 +168,7 @@
       "name": "Project Board Sync",
       "path": ".github/workflows/project-board-sync.yml",
       "health": "runaway",
-      "reason": "running 30156m ≥ 60m budget",
+      "reason": "running 30219m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
