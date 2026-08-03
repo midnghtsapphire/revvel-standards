@@ -77,7 +77,7 @@ jobs:
           pip install linkchecker
 
           # Sitemap generation
-          npm install -g sitemap-generator-cli googleapis
+          npm install -g sitemap-generator-cli
       - name: Load property configuration
         if: steps.quiet.outputs.active == 'true'
         id: config

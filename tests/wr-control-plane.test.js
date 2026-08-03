@@ -72,6 +72,7 @@ function runPython(snippet) {
     COMPOSIO_API_KEY: '',
     FIRECRAWL_API_KEY: '',
     TAVILY_API_KEY: '',
+    CREWAI_API_KEY: '',
     OBOT_BASE_URL: '',
     OBOT_IDP_CONFIG: '',
     OBOT_ALLOWED_HOSTS: '',
@@ -124,7 +125,7 @@ test('module imports without FastMCP and registers all 4 tools', () => {
     "import json, sys; sys.path.insert(0, r'" +
       path.join(SERVER_DIR) +
       "'); from wr_control_plane.server import mcp; " +
-      'print(json.dumps(sorted(mcp.tools.keys())))'
+      'import asyncio; print(json.dumps(sorted([t.name for t in asyncio.run(mcp.list_tools())])))'
   );
   assertEq(
     data,
@@ -143,7 +144,7 @@ test('module exposes both documented MCP resources', () => {
     "import json, sys; sys.path.insert(0, r'" +
       path.join(SERVER_DIR) +
       "'); from wr_control_plane.server import mcp; " +
-      'print(json.dumps(sorted(mcp.resources.keys())))'
+      'import asyncio; print(json.dumps(sorted([str(r.uri) for r in asyncio.run(mcp.list_resources())])))'
   );
   assertEq(
     data,
@@ -255,7 +256,7 @@ test('research_mode = firecrawl-agent when URLs + only Firecrawl key', () => {
     PYTHONPATH: path.join(SERVER_DIR),
     GITHUB_TOKEN: '', OPENROUTER_API_KEY: '', ANTHROPIC_API_KEY: '',
     JULES_API_KEY: '', COMPOSIO_API_KEY: '',
-    FIRECRAWL_API_KEY: 'fc-test', TAVILY_API_KEY: '',
+    FIRECRAWL_API_KEY: 'fc-test', TAVILY_API_KEY: '', CREWAI_API_KEY: '',
     OBOT_BASE_URL: '', OBOT_IDP_CONFIG: '', OBOT_ALLOWED_HOSTS: '',
     WR_DEFAULT_REPO: 'midnghtsapphire/revvel-standards',
   };
@@ -276,7 +277,7 @@ test('research_mode = tavily-search when URLs + only Tavily key', () => {
     PYTHONPATH: path.join(SERVER_DIR),
     GITHUB_TOKEN: '', OPENROUTER_API_KEY: '', ANTHROPIC_API_KEY: '',
     JULES_API_KEY: '', COMPOSIO_API_KEY: '',
-    FIRECRAWL_API_KEY: '', TAVILY_API_KEY: 'tvly-test',
+    FIRECRAWL_API_KEY: '', TAVILY_API_KEY: 'tvly-test', CREWAI_API_KEY: '',
     OBOT_BASE_URL: '', OBOT_IDP_CONFIG: '', OBOT_ALLOWED_HOSTS: '',
     WR_DEFAULT_REPO: 'midnghtsapphire/revvel-standards',
   };
@@ -297,7 +298,7 @@ test('research_mode = jules-plus-firecrawl-and-tavily when URLs + both keys', ()
     PYTHONPATH: path.join(SERVER_DIR),
     GITHUB_TOKEN: '', OPENROUTER_API_KEY: '', ANTHROPIC_API_KEY: '',
     JULES_API_KEY: '', COMPOSIO_API_KEY: '',
-    FIRECRAWL_API_KEY: 'fc-test', TAVILY_API_KEY: 'tvly-test',
+    FIRECRAWL_API_KEY: 'fc-test', TAVILY_API_KEY: 'tvly-test', CREWAI_API_KEY: '',
     OBOT_BASE_URL: '', OBOT_IDP_CONFIG: '', OBOT_ALLOWED_HOSTS: '',
     WR_DEFAULT_REPO: 'midnghtsapphire/revvel-standards',
   };
@@ -370,6 +371,7 @@ test('control_plane_status returns server, default_repo, providers, readiness', 
     'composio',
     'firecrawl',
     'tavily',
+    'crewai',
     'obot',
   ]) {
     assert(provider in data.providers, `providers.${provider} missing`);
@@ -407,6 +409,7 @@ test('render_control_plane_mcp_entry returns documented entry for repo profile',
     'COMPOSIO_API_KEY',
     'FIRECRAWL_API_KEY',
     'TAVILY_API_KEY',
+    'CREWAI_API_KEY',
     'OBOT_BASE_URL',
     'OBOT_IDP_CONFIG',
     'OBOT_ALLOWED_HOSTS',
@@ -467,7 +470,7 @@ test('env_schema lists every required and optional variable', () => {
   ]) {
     assert(data.required.includes(v), `required missing ${v}`);
   }
-  for (const v of ['FIRECRAWL_API_KEY', 'TAVILY_API_KEY', 'OBOT_ALLOWED_HOSTS', 'WR_DEFAULT_REPO']) {
+  for (const v of ['FIRECRAWL_API_KEY', 'TAVILY_API_KEY', 'CREWAI_API_KEY', 'OBOT_ALLOWED_HOSTS', 'WR_DEFAULT_REPO']) {
     assert(data.optional.includes(v), `optional missing ${v}`);
   }
   assertEq(
@@ -547,6 +550,7 @@ test('.env.example documents every required control-plane variable', () => {
     'COMPOSIO_API_KEY',
     'FIRECRAWL_API_KEY',
     'TAVILY_API_KEY',
+    'CREWAI_API_KEY',
     'OBOT_BASE_URL',
     'OBOT_IDP_CONFIG',
     'OBOT_ALLOWED_HOSTS',
@@ -567,6 +571,7 @@ test('templates/mcp/.env.mcp.example mirrors the control-plane variables', () =>
     'COMPOSIO_API_KEY',
     'FIRECRAWL_API_KEY',
     'TAVILY_API_KEY',
+    'CREWAI_API_KEY',
     'OBOT_BASE_URL',
     'OBOT_IDP_CONFIG',
     'OBOT_ALLOWED_HOSTS',
@@ -593,6 +598,8 @@ test('templates/mcp/mcp.revvel-custom.json exposes the wr-pr-control-plane entry
   );
   assert(entry.env && 'TAVILY_API_KEY' in entry.env,
     'template wr-pr-control-plane entry must wire TAVILY_API_KEY');
+  assert(entry.env && 'CREWAI_API_KEY' in entry.env,
+    'template wr-pr-control-plane entry must wire CREWAI_API_KEY');
 });
 
 test('scripts/setup-mcp.sh references the control-plane install path', () => {
@@ -614,6 +621,7 @@ test('docs/MCP_REVVEL_CATALOG.md documents the wr-pr-control-plane entry', () =>
   assert(/Tavily/i.test(cat), 'catalog must mention Tavily');
   assert(/v0\.1\.0 trade-offs/i.test(cat), 'catalog must include v0.1.0 trade-offs section');
   assert(/TAVILY_API_KEY/.test(cat), 'catalog must show TAVILY_API_KEY in MCP entry');
+  assert(/CREWAI_API_KEY/.test(cat), 'catalog must show CREWAI_API_KEY in MCP entry');
 });
 
 test('mcp-servers/wr-control-plane/README.md documents trade-offs and Tavily', () => {
@@ -624,6 +632,7 @@ test('mcp-servers/wr-control-plane/README.md documents trade-offs and Tavily', (
   assert(/research_mode|jules-only|tavily-search|firecrawl-agent/i.test(readme),
     'server README must document research_mode values');
   assert(/TAVILY_API_KEY/.test(readme), 'server README must list TAVILY_API_KEY in env block');
+  assert(/CREWAI_API_KEY/.test(readme), 'server README must list CREWAI_API_KEY in env block');
 });
 
 test('SYSTEM_STATE.md records the wr-pr-control-plane MCP server', () => {

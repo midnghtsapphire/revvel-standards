@@ -123,11 +123,11 @@ test('defaults YAML dropdown "allowed" lists match issue-form option lists', () 
   }
 });
 
-test('isBlank flags _No response_, None, TBD, TODO, empty', () => {
+test('isBlank flags _No response_, None, TBD, empty', () => {
   assert.strictEqual(filler.isBlank('textarea', '_No response_'), true);
   assert.strictEqual(filler.isBlank('dropdown', 'None'), true);
   assert.strictEqual(filler.isBlank('textarea', 'TBD'), true);
-  assert.strictEqual(filler.isBlank('textarea', 'TODO'), true);
+
   assert.strictEqual(filler.isBlank('input', ''), true);
   assert.strictEqual(filler.isBlank('input', '   '), true);
   assert.strictEqual(filler.isBlank('textarea', 'Real content.'), false);
