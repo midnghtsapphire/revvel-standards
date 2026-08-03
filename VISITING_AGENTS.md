@@ -13,6 +13,14 @@ This file is only the guest contract.
 
 ---
 
+## 0. Imprint at Spawn (Knowledge Sheaf)
+
+Before making any changes, you **must** ground your worldview by running:
+```bash
+python3 bnatsheaf/scripts/imprint_agent.py "visiting_agent"
+```
+If the Knowledge Sheaf is obstructed ($H^1 > 0$), you must stop and report the error. Do not hallucinate a starting state.
+
 ## 1. The Prime Directive
 
 **Ship working code, not plans.** No TODO stubs, no "this would do X" placeholders,

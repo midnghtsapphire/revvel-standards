@@ -10,6 +10,10 @@ This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) workin
 > API caller…) Read [`VISITING_AGENTS.md`](./VISITING_AGENTS.md) **first** — it's the
 > short guest contract: where you may write, where setup/API info lives, and how not to
 > scaffold over the repo.
+>
+> **Knowledge Sheaf / Imprint at Spawn:** Before beginning work, **all** agents must
+> restrict their initial worldview from the Knowledge Sheaf by running
+> `python3 bnatsheaf/scripts/imprint_agent.py`. Do not bypass topological consistency checks.
 
 ## PRIME DIRECTIVE
 
