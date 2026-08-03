@@ -11,7 +11,7 @@ free-tier auto-resolver + the LLM hand-off for genuinely ambiguous cases.
 > `docs/DOCS_FRESHNESS_STANDARD.md` (the rest of the docs/code drift loop) ·
 > `.github/workflows/conflict-helper.yml` (the runner) ·
 > `scripts/auto-resolve-mechanical-conflicts.js` (the deterministic engine) ·
-> [`docs/MERGE_CONFLICT_RESOLUTION.md`](./MERGE_CONFLICT_RESOLUTION.md)
+> [`docs/merge-conflict-resolution.md`](./merge-conflict-resolution.md)
 > (operator companion: the manual steps for the human lane).
 
 ---
