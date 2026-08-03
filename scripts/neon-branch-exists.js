@@ -23,7 +23,12 @@
 const DEFAULT_API_HOST = 'https://console.neon.tech/api/v2';
 const PAGE_SIZE = 100;
 
-class NeonApiError extends Error {}
+class NeonApiError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'NeonApiError';
+  }
+}
 
 async function branchExists({
   apiKey,
@@ -57,7 +62,12 @@ async function branchExists({
     }
 
     const body = await response.json();
-    const branches = Array.isArray(body.branches) ? body.branches : [];
+    if (!Array.isArray(body.branches)) {
+      throw new NeonApiError(
+        `Neon API returned a malformed response (missing "branches" array) for project ${projectId}`
+      );
+    }
+    const branches = body.branches;
     if (branches.some((branch) => branch && branch.name === branchName)) return true;
 
     const next = body.pagination && body.pagination.next;

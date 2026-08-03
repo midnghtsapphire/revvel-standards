@@ -95,3 +95,13 @@ test('branch lookup fails loudly on a non-200 response', async () => {
   const { fetchImpl } = fakeNeon([{ cursor: null, status: 401 }]);
   await assert.rejects(() => branchExists({ ...lookup, fetchImpl }), /HTTP 401/);
 });
+
+test('branch lookup throws NeonApiError on a malformed 200 response (missing branches array)', async () => {
+  // Regression for thread 14: a 200 with no "branches" key must not be silently
+  // treated as "branch absent" — that would skip deletion and leak the preview branch.
+  const { fetchImpl } = fakeNeon([{ cursor: null, body: { error: 'unexpected payload' } }]);
+  await assert.rejects(
+    () => branchExists({ ...lookup, fetchImpl }),
+    { name: 'NeonApiError', message: /malformed response/ }
+  );
+});

@@ -125,12 +125,6 @@ jobs:
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
-      # Checked out from the base branch (not the PR head, which may already be
-      # deleted on a merged PR) only to run scripts/neon-branch-exists.js.
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          ref: ${{ github.event.pull_request.base.ref }}
-          persist-credentials: false
       # A PR can stay open past the 14-day expiry, in which case Neon already
       # deleted the branch. delete-branch-action shells out to
       # `neonctl branches delete` unconditionally and fails on a missing branch,
@@ -138,6 +132,12 @@ jobs:
       # look the branch up first (following every page of the paginated listing)
       # and only skip the not-found case — a non-200 from the API (bad key,
       # outage) still fails the job.
+      #
+      # The check is embedded inline (curl + jq) rather than delegated to
+      # scripts/neon-branch-exists.js. That script lives in the PR head, which
+      # is absent from the base branch when closing an unmerged PR; a checkout
+      # of the base would therefore fail to resolve the file and leave the
+      # preview branch undeleted.
       - name: Check whether the Neon branch still exists
         id: check_branch
         env:
@@ -145,23 +145,49 @@ jobs:
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
           NEON_BRANCH: ${{ needs.setup.outputs.neon_branch }}
         run: |
-          set +e
-          node scripts/neon-branch-exists.js
-          rc=$?
-          set -e
-          case "$rc" in
-            0)
-              echo "exists=true" >> "$GITHUB_OUTPUT"
-              ;;
-            3)
-              echo "exists=false" >> "$GITHUB_OUTPUT"
-              echo "::notice::Neon branch ${NEON_BRANCH} not found (already expired or deleted); nothing to clean up"
-              ;;
-            *)
-              echo "::error::Could not determine whether Neon branch ${NEON_BRANCH} exists"
-              exit "$rc"
-              ;;
-          esac
+          api_host="${NEON_API_HOST:-https://console.neon.tech/api/v2}"
+          cursor=""
+          found=false
+
+          while true; do
+            url="${api_host}/projects/${NEON_PROJECT_ID}/branches?limit=100&search=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$NEON_BRANCH")"
+            if [ -n "$cursor" ]; then
+              url="${url}&cursor=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$cursor")"
+            fi
+
+            response=$(curl --silent --show-error --fail-with-body \
+              -H "Accept: application/json" \
+              -H "Authorization: ******" \
+              "$url") || {
+              echo "::error::Neon API request failed for project ${NEON_PROJECT_ID}"
+              exit 1
+            }
+
+            # A 200 with a missing "branches" key is a malformed payload; fail loudly.
+            if ! echo "$response" | jq -e '.branches | arrays' > /dev/null 2>&1; then
+              echo "::error::Neon API returned a malformed response (missing branches array)"
+              exit 1
+            fi
+
+            if echo "$response" | jq -e --arg name "$NEON_BRANCH" '.branches[] | select(.name == $name)' > /dev/null 2>&1; then
+              found=true
+              break
+            fi
+
+            next=$(echo "$response" | jq -r '.pagination.next // empty')
+            count=$(echo "$response" | jq '.branches | length')
+            if [ -z "$next" ] || [ "$count" -eq 0 ]; then
+              break
+            fi
+            cursor="$next"
+          done
+
+          if [ "$found" = "true" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Neon branch ${NEON_BRANCH} not found (already expired or deleted); nothing to clean up"
+          fi
       - name: Delete Neon Branch
         if: steps.check_branch.outputs.exists == 'true'
         uses: neondatabase/delete-branch-action@4468d825d5a88ef4012f1705a82f02ec3072f776 # v3
