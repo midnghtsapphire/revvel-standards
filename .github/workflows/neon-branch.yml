@@ -125,12 +125,19 @@ jobs:
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
+      # Checked out from the base branch (not the PR head, which may already be
+      # deleted on a merged PR) only to run scripts/neon-branch-exists.js.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          persist-credentials: false
       # A PR can stay open past the 14-day expiry, in which case Neon already
       # deleted the branch. delete-branch-action shells out to
       # `neonctl branches delete` unconditionally and fails on a missing branch,
       # which would turn routine cleanup into a red check on every such PR. So
-      # look the branch up first and only skip the not-found case — a non-200
-      # from the API (bad key, outage) still fails the job.
+      # look the branch up first (following every page of the paginated listing)
+      # and only skip the not-found case — a non-200 from the API (bad key,
+      # outage) still fails the job.
       - name: Check whether the Neon branch still exists
         id: check_branch
         env:
@@ -138,20 +145,23 @@ jobs:
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
           NEON_BRANCH: ${{ needs.setup.outputs.neon_branch }}
         run: |
-          status=$(curl -sS -o /tmp/neon-branches.json -w '%{http_code}' \
-            -H "Accept: application/json" \
-            -H "Authorization: Bearer ${NEON_API_KEY}" \
-            "https://console.neon.tech/api/v2/projects/${NEON_PROJECT_ID}/branches")
-          if [ "$status" != "200" ]; then
-            echo "::error::Neon API returned HTTP ${status} while listing branches for project ${NEON_PROJECT_ID}"
-            exit 1
-          fi
-          if jq -e --arg name "$NEON_BRANCH" 'any(.branches[]?; .name == $name)' /tmp/neon-branches.json >/dev/null; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Neon branch ${NEON_BRANCH} not found (already expired or deleted); nothing to clean up"
-          fi
+          set +e
+          node scripts/neon-branch-exists.js
+          rc=$?
+          set -e
+          case "$rc" in
+            0)
+              echo "exists=true" >> "$GITHUB_OUTPUT"
+              ;;
+            3)
+              echo "exists=false" >> "$GITHUB_OUTPUT"
+              echo "::notice::Neon branch ${NEON_BRANCH} not found (already expired or deleted); nothing to clean up"
+              ;;
+            *)
+              echo "::error::Could not determine whether Neon branch ${NEON_BRANCH} exists"
+              exit "$rc"
+              ;;
+          esac
       - name: Delete Neon Branch
         if: steps.check_branch.outputs.exists == 'true'
         uses: neondatabase/delete-branch-action@4468d825d5a88ef4012f1705a82f02ec3072f776 # v3

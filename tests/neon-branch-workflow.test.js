@@ -48,3 +48,50 @@ test('Neon workflow is wired correctly', () => {
     assert.match(line, /uses:\s*[\w.-]+\/[\w.-]+@[0-9a-f]{40}$/, `unpinned action: ${line}`);
   }
 });
+
+// ── branch lookup ───────────────────────────────────────────────────────────
+
+const { branchExists } = require('../scripts/neon-branch-exists');
+
+function fakeNeon(pages) {
+  const calls = [];
+  const fetchImpl = async (url) => {
+    calls.push(url);
+    const cursor = new URL(url).searchParams.get('cursor');
+    const page = pages.find((p) => (p.cursor ?? null) === cursor);
+    if (!page) throw new Error(`unexpected cursor: ${cursor}`);
+    return {
+      status: page.status ?? 200,
+      json: async () => page.body ?? {},
+    };
+  };
+  return { fetchImpl, calls };
+}
+
+const lookup = { apiKey: 'key', projectId: 'proj', branchName: 'preview/pr-1-feat', apiHost: 'https://neon.test/api/v2' };
+
+test('branch lookup follows every page of the paginated listing', async () => {
+  // Regression: a single unpaginated request missed branches past page 1 and
+  // skipped a delete that was needed, leaking the preview branch until expiry.
+  const { fetchImpl, calls } = fakeNeon([
+    { cursor: null, body: { branches: [{ name: 'preview/pr-2-other' }], pagination: { next: 'cur2' } } },
+    { cursor: 'cur2', body: { branches: [{ name: 'preview/pr-1-feat' }] } },
+  ]);
+  assert.equal(await branchExists({ ...lookup, fetchImpl }), true);
+  assert.equal(calls.length, 2);
+  assert.match(calls[0], /search=preview%2Fpr-1-feat/);
+});
+
+test('branch lookup reports a genuinely absent branch, and stops on a repeated cursor', async () => {
+  const { fetchImpl, calls } = fakeNeon([
+    { cursor: null, body: { branches: [{ name: 'main' }], pagination: { next: 'loop' } } },
+    { cursor: 'loop', body: { branches: [{ name: 'main' }], pagination: { next: 'loop' } } },
+  ]);
+  assert.equal(await branchExists({ ...lookup, fetchImpl }), false);
+  assert.equal(calls.length, 2);
+});
+
+test('branch lookup fails loudly on a non-200 response', async () => {
+  const { fetchImpl } = fakeNeon([{ cursor: null, status: 401 }]);
+  await assert.rejects(() => branchExists({ ...lookup, fetchImpl }), /HTTP 401/);
+});
