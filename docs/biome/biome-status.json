@@ -1,19 +1,55 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-03T13:03:10.469Z",
+  "generated_at": "2026-08-03T15:01:32.166Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "5/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 30823203000,
+            "name": "Persona Comment Trigger",
+            "path": ".github/workflows/persona-comment-trigger.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30823203000",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30823147968,
+            "name": "Persona Comment Trigger",
+            "path": ".github/workflows/persona-comment-trigger.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30823147968",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30822775447,
+            "name": "Persona Comment Trigger",
+            "path": ".github/workflows/persona-comment-trigger.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30822775447",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30819470109,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30819470109",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30819469256,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30819469256",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
