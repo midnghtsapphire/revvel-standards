@@ -68,6 +68,18 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
 
             return decorator
 
+        async def list_tools(self) -> list[object]:
+            return [
+                type("Tool", (), {"name": name, "description": func.__doc__ or ""})()
+                for name, func in self.tools.items()
+            ]
+
+        async def list_resources(self) -> list[object]:
+            return [
+                type("Resource", (), {"uri": uri, "name": func.__name__, "description": func.__doc__ or ""})()
+                for uri, func in self.resources.items()
+            ]
+
         def run(self) -> None:
             raise RuntimeError(
                 "FastMCP is not installed. Install dependencies in "
