@@ -50,58 +50,143 @@ test('Neon workflow is wired correctly', () => {
 });
 
 // ── branch lookup ───────────────────────────────────────────────────────────
+//
+// The lookup is inline in the workflow (it must run without a checkout), so the
+// tests extract that exact `run:` block and execute it against a stub Neon API.
+// Anything asserted here is therefore true of the code GitHub actually runs.
 
-const { branchExists } = require('../scripts/neon-branch-exists');
+const os = require('node:os');
+const http = require('node:http');
+const { execFile } = require('node:child_process');
+const yaml = require('yaml');
 
-function fakeNeon(pages) {
-  const calls = [];
-  const fetchImpl = async (url) => {
-    calls.push(url);
-    const cursor = new URL(url).searchParams.get('cursor');
-    const page = pages.find((p) => (p.cursor ?? null) === cursor);
-    if (!page) throw new Error(`unexpected cursor: ${cursor}`);
-    return {
-      status: page.status ?? 200,
-      json: async () => page.body ?? {},
-    };
-  };
-  return { fetchImpl, calls };
+const BRANCH = 'preview/pr-1-feat';
+
+function checkBranchScript() {
+  const doc = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
+  const step = doc.jobs.delete_neon_branch.steps.find((s) => s.id === 'check_branch');
+  assert.ok(step && step.run, 'expected a check_branch step with a run: block');
+  return step.run;
 }
 
-const lookup = { apiKey: 'key', projectId: 'proj', branchName: 'preview/pr-1-feat', apiHost: 'https://neon.test/api/v2' };
+// Serves one stubbed page per request, in order, so a lookup that stops at page 1
+// leaves entries unconsumed (asserted via `requests`).
+async function stubNeon(pages) {
+  const requests = [];
+  const server = http.createServer((req, res) => {
+    requests.push(req.url);
+    if (req.headers.authorization !== 'Bearer test-key') {
+      res.writeHead(401).end(JSON.stringify({ message: 'unauthorized' }));
+      return;
+    }
+    const cursor = new URL(req.url, 'http://stub').searchParams.get('cursor');
+    const page = pages.find((p) => (p.cursor ?? null) === cursor) || {};
+    res.writeHead(page.status ?? 200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(page.body ?? {}));
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  return { requests, port: server.address().port, close: () => new Promise((r) => server.close(r)) };
+}
 
-test('branch lookup follows every page of the paginated listing', async () => {
-  // Regression: a single unpaginated request missed branches past page 1 and
-  // skipped a delete that was needed, leaking the preview branch until expiry.
-  const { fetchImpl, calls } = fakeNeon([
+// Runs the extracted step the way the runner does, and reports what it wrote to
+// $GITHUB_OUTPUT (or how it failed).
+function runCheckBranch({ port, apiKey = 'test-key' }) {
+  const scriptPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'neon-step-')), 'check.sh');
+  fs.writeFileSync(scriptPath, checkBranchScript());
+  const outputFile = `${scriptPath}.output`;
+  fs.writeFileSync(outputFile, '');
+
+  return new Promise((resolve) => {
+    execFile(
+      'bash',
+      [scriptPath],
+      {
+        env: {
+          ...process.env,
+          NEON_API_KEY: apiKey,
+          NEON_PROJECT_ID: 'proj-1',
+          NEON_BRANCH: BRANCH,
+          NEON_API_HOST: `http://127.0.0.1:${port}/api/v2`,
+          GITHUB_OUTPUT: outputFile,
+        },
+      },
+      (error, stdout, stderr) => {
+        resolve({
+          code: error ? error.code : 0,
+          output: fs.readFileSync(outputFile, 'utf8').trim(),
+          stdout,
+          stderr,
+        });
+      }
+    );
+  });
+}
+
+test('cleanup lookup follows every page of the paginated listing', async () => {
+  // Regression: a single unpaginated request missed the branch when it sat past
+  // page 1, so cleanup skipped a delete it should have done and the preview
+  // branch (and its cost) survived until expiry.
+  const neon = await stubNeon([
     { cursor: null, body: { branches: [{ name: 'preview/pr-2-other' }], pagination: { next: 'cur2' } } },
-    { cursor: 'cur2', body: { branches: [{ name: 'preview/pr-1-feat' }] } },
+    { cursor: 'cur2', body: { branches: [{ name: BRANCH }] } },
   ]);
-  assert.equal(await branchExists({ ...lookup, fetchImpl }), true);
-  assert.equal(calls.length, 2);
-  assert.match(calls[0], /search=preview%2Fpr-1-feat/);
+  try {
+    const result = await runCheckBranch({ port: neon.port });
+    assert.equal(result.code, 0, result.stderr);
+    assert.equal(result.output, 'exists=true');
+    assert.equal(neon.requests.length, 2);
+    assert.match(neon.requests[0], /search=preview%2Fpr-1-feat/);
+    assert.match(neon.requests[1], /cursor=cur2/);
+  } finally {
+    await neon.close();
+  }
 });
 
-test('branch lookup reports a genuinely absent branch, and stops on a repeated cursor', async () => {
-  const { fetchImpl, calls } = fakeNeon([
+test('cleanup lookup reports a genuinely absent branch, and stops on a repeated cursor', async () => {
+  const neon = await stubNeon([
     { cursor: null, body: { branches: [{ name: 'main' }], pagination: { next: 'loop' } } },
     { cursor: 'loop', body: { branches: [{ name: 'main' }], pagination: { next: 'loop' } } },
   ]);
-  assert.equal(await branchExists({ ...lookup, fetchImpl }), false);
-  assert.equal(calls.length, 2);
+  try {
+    const result = await runCheckBranch({ port: neon.port });
+    assert.equal(result.code, 0, result.stderr);
+    assert.equal(result.output, 'exists=false');
+    assert.equal(neon.requests.length, 2, 'a repeated cursor must not loop forever');
+  } finally {
+    await neon.close();
+  }
 });
 
-test('branch lookup fails loudly on a non-200 response', async () => {
-  const { fetchImpl } = fakeNeon([{ cursor: null, status: 401 }]);
-  await assert.rejects(() => branchExists({ ...lookup, fetchImpl }), /HTTP 401/);
+test('cleanup lookup fails loudly on a rejected API key', async () => {
+  // Regression: the Authorization header was once emitted as literal `******`,
+  // so every request 401'd. Silently reading that as "branch absent" would skip
+  // cleanup on every closed PR; it must fail the job instead.
+  const neon = await stubNeon([{ cursor: null, body: { branches: [] } }]);
+  try {
+    const result = await runCheckBranch({ port: neon.port, apiKey: 'wrong-key' });
+    assert.notEqual(result.code, 0);
+    assert.match(result.stdout, /HTTP 401/);
+    assert.equal(result.output, '');
+  } finally {
+    await neon.close();
+  }
 });
 
-test('branch lookup throws NeonApiError on a malformed 200 response (missing branches array)', async () => {
-  // Regression for thread 14: a 200 with no "branches" key must not be silently
-  // treated as "branch absent" — that would skip deletion and leak the preview branch.
-  const { fetchImpl } = fakeNeon([{ cursor: null, body: { error: 'unexpected payload' } }]);
-  await assert.rejects(
-    () => branchExists({ ...lookup, fetchImpl }),
-    { name: 'NeonApiError', message: /malformed response/ }
-  );
+test('cleanup lookup fails loudly on a malformed 200 (no branches array)', async () => {
+  const neon = await stubNeon([{ cursor: null, body: { message: 'unexpected payload' } }]);
+  try {
+    const result = await runCheckBranch({ port: neon.port });
+    assert.notEqual(result.code, 0);
+    assert.match(result.stdout, /malformed response/);
+    assert.equal(result.output, '');
+  } finally {
+    await neon.close();
+  }
+});
+
+test('cleanup lookup keeps the API key out of argv', () => {
+  // CLAUDE.md gotcha #4: a secret on a command line is readable via ps/proc.
+  const script = checkBranchScript();
+  assert.doesNotMatch(script, /-H\s+"Authorization/);
+  assert.match(script, /curl[^|]*--config -/s);
 });

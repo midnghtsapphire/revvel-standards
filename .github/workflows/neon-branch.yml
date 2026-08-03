@@ -133,11 +133,12 @@ jobs:
       # and only skip the not-found case — a non-200 from the API (bad key,
       # outage) still fails the job.
       #
-      # The check is embedded inline (curl + jq) rather than delegated to
-      # scripts/neon-branch-exists.js. That script lives in the PR head, which
-      # is absent from the base branch when closing an unmerged PR; a checkout
-      # of the base would therefore fail to resolve the file and leave the
-      # preview branch undeleted.
+      # The check is embedded inline (curl + jq) rather than kept in a repo
+      # script: a script would need a checkout, and on a closed-but-unmerged PR
+      # neither the head (possibly deleted) nor the base (never had the file)
+      # reliably resolves it — leaving the preview branch undeleted.
+      # tests/neon-branch-workflow.test.js extracts this very block and runs it
+      # against a stub Neon API, so the tested code is the code that runs.
       - name: Check whether the Neon branch still exists
         id: check_branch
         env:
@@ -145,38 +146,57 @@ jobs:
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
           NEON_BRANCH: ${{ needs.setup.outputs.neon_branch }}
         run: |
+          set -euo pipefail
           api_host="${NEON_API_HOST:-https://console.neon.tech/api/v2}"
+          page=$(mktemp)
+          trap 'rm -f "$page"' EXIT
+
+          urlencode() {
+            python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$1"
+          }
+
           cursor=""
           found=false
 
           while true; do
-            url="${api_host}/projects/${NEON_PROJECT_ID}/branches?limit=100&search=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$NEON_BRANCH")"
+            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100&search=$(urlencode "$NEON_BRANCH")"
             if [ -n "$cursor" ]; then
-              url="${url}&cursor=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1]))" "$cursor")"
+              url="${url}&cursor=$(urlencode "$cursor")"
             fi
 
-            response=$(curl --silent --show-error --fail-with-body \
-              -H "Accept: application/json" \
-              -H "Authorization: ******" \
-              "$url") || {
+            # CLAUDE.md gotcha #4: the key goes in via a curl config file on
+            # stdin (printf is a builtin), never in argv where ps can read it.
+            status=$(printf 'header = "Authorization: Bearer %s"\n' "$NEON_API_KEY" \
+              | curl --silent --show-error --config - \
+                  -H "Accept: application/json" \
+                  -o "$page" -w '%{http_code}' \
+                  "$url") || {
               echo "::error::Neon API request failed for project ${NEON_PROJECT_ID}"
               exit 1
             }
 
-            # A 200 with a missing "branches" key is a malformed payload; fail loudly.
-            if ! echo "$response" | jq -e '.branches | arrays' > /dev/null 2>&1; then
+            if [ "$status" != "200" ]; then
+              echo "::error::Neon API returned HTTP ${status} while listing branches for project ${NEON_PROJECT_ID}"
+              exit 1
+            fi
+
+            # A 200 with a missing "branches" key is a malformed payload: treating
+            # it as "branch absent" would skip a delete that was needed.
+            if ! jq -e '.branches | arrays' "$page" > /dev/null 2>&1; then
               echo "::error::Neon API returned a malformed response (missing branches array)"
               exit 1
             fi
 
-            if echo "$response" | jq -e --arg name "$NEON_BRANCH" '.branches[] | select(.name == $name)' > /dev/null 2>&1; then
+            if jq -e --arg name "$NEON_BRANCH" 'any(.branches[]; .name == $name)' "$page" > /dev/null; then
               found=true
               break
             fi
 
-            next=$(echo "$response" | jq -r '.pagination.next // empty')
-            count=$(echo "$response" | jq '.branches | length')
-            if [ -z "$next" ] || [ "$count" -eq 0 ]; then
+            next=$(jq -r '.pagination.next // empty' "$page")
+            count=$(jq '.branches | length' "$page")
+            # Stop on the last page, an empty page, or a cursor that repeats
+            # itself (which would otherwise spin forever).
+            if [ -z "$next" ] || [ "$count" -eq 0 ] || [ "$next" = "$cursor" ]; then
               break
             fi
             cursor="$next"
