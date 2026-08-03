@@ -144,7 +144,7 @@ test('module exposes both documented MCP resources', () => {
     "import json, sys; sys.path.insert(0, r'" +
       path.join(SERVER_DIR) +
       "'); from wr_control_plane.server import mcp; " +
-      'import asyncio; print(json.dumps(sorted(["data://wr-control-plane/architecture", "data://wr-control-plane/env-schema"])))'
+      'import asyncio; resources = getattr(mcp, "_resources", getattr(mcp, "resources", {})); print(json.dumps(sorted([str(r.uri) if hasattr(r, "uri") else k for k, r in resources.items()] if isinstance(resources, dict) else [str(r.uri) if hasattr(r, "uri") else str(r.__name__) if hasattr(r, "__name__") else str(r.name) if hasattr(r, "name") else str(r) for r in resources])))'
   );
   assertEq(
     data,
