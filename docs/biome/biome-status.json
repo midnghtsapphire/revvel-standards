@@ -1,105 +1,84 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-04T06:53:13.501Z",
+  "generated_at": "2026-08-04T07:52:47.303Z",
   "credit_free": true,
-  "overall": "down",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "down",
-      "summary": "3/100 recent runs failed; 3 stuck item(s)",
+      "status": "degraded",
+      "summary": "9/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 9,
         "total_runs": 100,
-        "stuck_issues": 3
+        "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30882990874,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30882990874",
+            "id": 30889104045,
+            "name": "OpenRouter Coder",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30889104045",
             "conclusion": "failure"
           },
           {
-            "id": 30880549238,
+            "id": 30889100449,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30880549238",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30889100449",
             "conclusion": "failure"
           },
           {
-            "id": 30879609410,
+            "id": 30889098513,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30879609410",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30889098513",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30887726310,
+            "name": "BIOME Inspector",
+            "path": ".github/workflows/biome-inspector.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30887726310",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30886996656,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30886996656",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30886962789,
+            "name": "Octopus Review Fallback",
+            "path": ".github/workflows/octopus-review-fallback.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30886962789",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30886745557,
+            "name": "WR-4600 Watchtower",
+            "path": ".github/workflows/watchtower.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30886745557",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30886646818,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30886646818",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30885757826,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30885757826",
             "conclusion": "failure"
           }
         ],
-        "stuck": [
-          {
-            "number": 16169,
-            "title": "[WR] fix the grounding gate i am sick of seeing it for everry run create a script that fixes it triggered by the failure",
-            "updated_at": "2026-07-28T03:52:34Z",
-            "labels": [
-              "auto-fix",
-              "triage",
-              "openrouter",
-              "priority-p1",
-              "role:orchestrator",
-              "wr:code",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "needs-fix",
-              "work-request",
-              "lifecycle:stuck",
-              "wr-stuck",
-              "mindmappr",
-              "wr:reset"
-            ]
-          },
-          {
-            "number": 16113,
-            "title": "feat(wr-15279): implement WA My Health My Data Act (MHMDA) explicit opt-in consent flow @midnghtsapphire @Copilot @github-actions[bot] @devin-ai-integration[bot] @openhands-agent @google-labs-jules[bot] @Codex @dependabot[bot] @circleci-app[bot] @imgbot[bot] @claude @replit-agent @RadioChaser",
-            "updated_at": "2026-07-28T03:35:39Z",
-            "labels": [
-              "enhancement",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "priority-p1",
-              "priority-p2",
-              "role:orchestrator",
-              "wr:code",
-              "area:ui",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr-stuck",
-              "mindmappr",
-              "self-heal",
-              "wr:reset"
-            ]
-          },
-          {
-            "number": 16111,
-            "title": "feat(wr-15279): obtain written HIPAA scope determination from qualified counsel",
-            "updated_at": "2026-07-28T03:43:43Z",
-            "labels": [
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p1",
-              "role:orchestrator",
-              "area:ui",
-              "wr:new",
-              "recovery:stale-wr"
-            ]
-          }
-        ]
+        "stuck": []
       }
     },
     "homeostat": {
@@ -121,10 +100,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30889078943"
       }
     },
     "sheaf": {
