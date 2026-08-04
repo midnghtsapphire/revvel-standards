@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-04T13:34:28.177Z",
+  "generated_at": "2026-08-04T14:50:22.757Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
@@ -14,6 +14,13 @@
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30917984745,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30917984745",
+            "conclusion": "failure"
+          },
           {
             "id": 30913234442,
             "name": "WR Field Filler — no blanks ever ship",
@@ -40,13 +47,6 @@
             "name": "Octopus Review Fallback",
             "path": ".github/workflows/octopus-review-fallback.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30911626440",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30910230495,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30910230495",
             "conclusion": "failure"
           }
         ],
