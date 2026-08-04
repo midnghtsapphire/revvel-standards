@@ -1,45 +1,38 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-04T18:32:50.126Z",
+  "generated_at": "2026-08-04T19:32:12.262Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30937887189,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30937887189",
+            "id": 30941560724,
+            "name": "BIOME Inspector",
+            "path": ".github/workflows/biome-inspector.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30941560724",
             "conclusion": "failure"
           },
           {
-            "id": 30934724472,
+            "id": 30941434856,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30934724472",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30941434856",
             "conclusion": "failure"
           },
           {
-            "id": 30931672211,
+            "id": 30940668661,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30931672211",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30930141316,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30930141316",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30940668661",
             "conclusion": "failure"
           }
         ],
@@ -65,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30942770821"
       }
     },
     "sheaf": {
