@@ -1,19 +1,47 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-04T03:03:17.290Z",
+  "generated_at": "2026-08-04T05:03:39.924Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "down",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "6/100 recent runs failed; 0 stuck item(s)",
+      "status": "down",
+      "summary": "8/100 recent runs failed; 3 stuck item(s)",
       "counts": {
-        "failed_runs": 6,
+        "failed_runs": 8,
         "total_runs": 100,
-        "stuck_issues": 0
+        "stuck_issues": 3
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30879478143,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30879478143",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30879451095,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30879451095",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30875906571,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30875906571",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30874833271,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30874833271",
+            "conclusion": "failure"
+          },
           {
             "id": 30872350943,
             "name": "WR Field Filler — no blanks ever ship",
@@ -41,23 +69,72 @@
             "path": ".github/workflows/wr-field-filler.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30868459714",
             "conclusion": "failure"
-          },
-          {
-            "id": 30868459078,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30868459078",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30868459072,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30868459072",
-            "conclusion": "failure"
           }
         ],
-        "stuck": []
+        "stuck": [
+          {
+            "number": 16169,
+            "title": "[WR] fix the grounding gate i am sick of seeing it for everry run create a script that fixes it triggered by the failure",
+            "updated_at": "2026-07-28T03:52:34Z",
+            "labels": [
+              "auto-fix",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "role:orchestrator",
+              "wr:code",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "needs-fix",
+              "work-request",
+              "lifecycle:stuck",
+              "wr-stuck",
+              "mindmappr",
+              "wr:reset"
+            ]
+          },
+          {
+            "number": 16113,
+            "title": "feat(wr-15279): implement WA My Health My Data Act (MHMDA) explicit opt-in consent flow @midnghtsapphire @Copilot @github-actions[bot] @devin-ai-integration[bot] @openhands-agent @google-labs-jules[bot] @Codex @dependabot[bot] @circleci-app[bot] @imgbot[bot] @claude @replit-agent @RadioChaser",
+            "updated_at": "2026-07-28T03:35:39Z",
+            "labels": [
+              "enhancement",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "priority-p2",
+              "role:orchestrator",
+              "wr:code",
+              "area:ui",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "wr-stuck",
+              "mindmappr",
+              "self-heal",
+              "wr:reset"
+            ]
+          },
+          {
+            "number": 16111,
+            "title": "feat(wr-15279): obtain written HIPAA scope determination from qualified counsel",
+            "updated_at": "2026-07-28T03:43:43Z",
+            "labels": [
+              "auto-fix",
+              "copilot",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "role:orchestrator",
+              "area:ui",
+              "wr:new",
+              "recovery:stale-wr"
+            ]
+          }
+        ]
       }
     },
     "homeostat": {
