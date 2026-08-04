@@ -1,19 +1,40 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-04T11:46:07.170Z",
+  "generated_at": "2026-08-04T12:38:19.915Z",
   "credit_free": true,
   "overall": "down",
   "workers": {
     "sentinel": {
       "status": "down",
-      "summary": "7/100 recent runs failed; 5 stuck item(s)",
+      "summary": "9/100 recent runs failed; 5 stuck item(s)",
       "counts": {
-        "failed_runs": 7,
+        "failed_runs": 9,
         "total_runs": 100,
         "stuck_issues": 5
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30909943826,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30909943826",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30909907984,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30909907984",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30906791459,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30906791459",
+            "conclusion": "failure"
+          },
           {
             "id": 30903554982,
             "name": "WR Field Filler — no blanks ever ship",
@@ -54,13 +75,6 @@
             "name": "Vine → Marketplace Automation",
             "path": ".github/workflows/vine-to-marketplace.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30894616603",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30894348612,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30894348612",
             "conclusion": "failure"
           }
         ],
