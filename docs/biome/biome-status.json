@@ -1,270 +1,56 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-04T12:38:19.915Z",
+  "generated_at": "2026-08-04T13:34:28.177Z",
   "credit_free": true,
-  "overall": "down",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "down",
-      "summary": "9/100 recent runs failed; 5 stuck item(s)",
+      "status": "degraded",
+      "summary": "5/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 9,
+        "failed_runs": 5,
         "total_runs": 100,
-        "stuck_issues": 5
+        "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30909943826,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30909943826",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30909907984,
+            "id": 30913234442,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30909907984",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30913234442",
             "conclusion": "failure"
           },
           {
-            "id": 30906791459,
+            "id": 30912482656,
+            "name": "BIOME Inspector",
+            "path": ".github/workflows/biome-inspector.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30912482656",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30911670853,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30906791459",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30911670853",
             "conclusion": "failure"
           },
           {
-            "id": 30903554982,
+            "id": 30911626440,
+            "name": "Octopus Review Fallback",
+            "path": ".github/workflows/octopus-review-fallback.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30911626440",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30910230495,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30903554982",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30903456693,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30903456693",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30899651118,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30899651118",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30895657143,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30895657143",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30895353395,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30895353395",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30894616603,
-            "name": "Vine → Marketplace Automation",
-            "path": ".github/workflows/vine-to-marketplace.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30894616603",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30910230495",
             "conclusion": "failure"
           }
         ],
-        "stuck": [
-          {
-            "number": 16450,
-            "title": "[WR] add perm to revvel-standards",
-            "updated_at": "2026-07-28T08:06:04Z",
-            "labels": [
-              "enhancement",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "role:orchestrator",
-              "area:ui",
-              "area:automation",
-              "priority:high",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr-stuck",
-              "research-engine",
-              "research:blocked",
-              "research:marketing",
-              "research:seo",
-              "research:competitors",
-              "research:chatter",
-              "research:facts",
-              "research:technical",
-              "research:revenue",
-              "research:reviewer",
-              "wr:research-complete",
-              "wr:jules",
-              "mindmappr",
-              "self-heal",
-              "wr:reset",
-              "research:repo-web"
-            ]
-          },
-          {
-            "number": 16444,
-            "title": "[WR] scripts to include",
-            "updated_at": "2026-07-28T08:06:11Z",
-            "labels": [
-              "needs-human",
-              "triage",
-              "openrouter",
-              "role:orchestrator",
-              "area:ui",
-              "area:automation",
-              "area:api",
-              "priority:high",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr-stuck",
-              "research-engine",
-              "research:blocked",
-              "research:marketing",
-              "research:seo",
-              "research:competitors",
-              "research:chatter",
-              "research:facts",
-              "research:technical",
-              "research:revenue",
-              "research:reviewer",
-              "wr:research-complete",
-              "wr:jules",
-              "mindmappr",
-              "self-heal",
-              "wr:reset",
-              "research:repo-web"
-            ]
-          },
-          {
-            "number": 16441,
-            "title": "[WR] scripts for orchestration",
-            "updated_at": "2026-07-28T08:06:13Z",
-            "labels": [
-              "bug",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "role:orchestrator",
-              "area:ui",
-              "area:automation",
-              "area:api",
-              "priority:high",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr-stuck",
-              "research-engine",
-              "research:blocked",
-              "research:marketing",
-              "research:seo",
-              "research:competitors",
-              "research:chatter",
-              "research:facts",
-              "research:technical",
-              "research:revenue",
-              "research:reviewer",
-              "wr:research-complete",
-              "wr:jules",
-              "mindmappr",
-              "self-heal",
-              "wr:reset",
-              "research:repo-web"
-            ]
-          },
-          {
-            "number": 16438,
-            "title": "[WR] Build a production-grade orchestration engine",
-            "updated_at": "2026-07-28T08:06:00Z",
-            "labels": [
-              "bug",
-              "documentation",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "role:orchestrator",
-              "area:ui",
-              "area:automation",
-              "area:api",
-              "priority:high",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr-stuck",
-              "research-engine",
-              "research:blocked",
-              "research:marketing",
-              "research:seo",
-              "research:competitors",
-              "research:chatter",
-              "research:facts",
-              "research:technical",
-              "research:revenue",
-              "research:reviewer",
-              "wr:research-complete",
-              "wr:jules",
-              "mindmappr",
-              "self-heal",
-              "wr:reset",
-              "research:repo-web"
-            ]
-          },
-          {
-            "number": 16432,
-            "title": "[WR] develop this into something better for revvel-standards for a personal assistant",
-            "updated_at": "2026-07-28T08:06:25Z",
-            "labels": [
-              "documentation",
-              "enhancement",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "role:orchestrator",
-              "area:ui",
-              "area:automation",
-              "area:api",
-              "priority:high",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr-stuck",
-              "research-engine",
-              "research:blocked",
-              "research:marketing",
-              "research:seo",
-              "research:competitors",
-              "research:chatter",
-              "research:facts",
-              "research:technical",
-              "research:revenue",
-              "research:reviewer",
-              "wr:research-complete",
-              "wr:jules",
-              "mindmappr",
-              "self-heal",
-              "wr:reset",
-              "research:repo-web"
-            ]
-          }
-        ]
+        "stuck": []
       }
     },
     "homeostat": {
@@ -286,10 +72,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30913697356"
       }
     },
     "sheaf": {
