@@ -1,59 +1,52 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-04T00:31:42.016Z",
+  "generated_at": "2026-08-04T01:34:21.962Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "6/100 recent runs failed; 0 stuck item(s)",
+      "summary": "5/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 6,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30865797389,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30865797389",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30864602822,
+            "id": 30869127585,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30864602822",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30869127585",
             "conclusion": "failure"
           },
           {
-            "id": 30862872910,
+            "id": 30868459737,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30868459737",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30868459714,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30862872910",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30868459714",
             "conclusion": "failure"
           },
           {
-            "id": 30862110017,
-            "name": "OpenRouter Triage",
-            "path": ".github/workflows/openrouter-triage.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30862110017",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30862020360,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30862020360",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30861142645,
+            "id": 30868459078,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30861142645",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30868459078",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30868459072,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30868459072",
             "conclusion": "failure"
           }
         ],
