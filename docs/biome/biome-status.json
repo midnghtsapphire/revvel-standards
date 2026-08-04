@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-04T15:47:59.320Z",
+  "generated_at": "2026-08-04T16:37:24.711Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
@@ -14,6 +14,20 @@
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30929971874,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30929971874",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30928163628,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30928163628",
+            "conclusion": "failure"
+          },
           {
             "id": 30923349703,
             "name": "WR Field Filler — no blanks ever ship",
@@ -33,20 +47,6 @@
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30917984745",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30913234442,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30913234442",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30912482656,
-            "name": "BIOME Inspector",
-            "path": ".github/workflows/biome-inspector.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30912482656",
             "conclusion": "failure"
           }
         ],
@@ -72,10 +72,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30913697356"
+        "last_run": null
       }
     },
     "sheaf": {
