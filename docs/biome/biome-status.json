@@ -1,59 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-04T08:57:28.209Z",
+  "generated_at": "2026-08-04T09:58:05.594Z",
   "credit_free": true,
   "overall": "down",
   "workers": {
     "sentinel": {
       "status": "down",
-      "summary": "6/100 recent runs failed; 5 stuck item(s)",
+      "summary": "4/100 recent runs failed; 5 stuck item(s)",
       "counts": {
-        "failed_runs": 6,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 5
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30894125590,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30894125590",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30890387476,
+            "id": 30895657143,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30890387476",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30895657143",
             "conclusion": "failure"
           },
           {
-            "id": 30889104045,
-            "name": "OpenRouter Coder",
-            "path": ".github/workflows/openrouter-coder.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30889104045",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30889100449,
+            "id": 30895353395,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30889100449",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30895353395",
             "conclusion": "failure"
           },
           {
-            "id": 30889098513,
+            "id": 30894616603,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30894616603",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30894348612,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30889098513",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30887726310,
-            "name": "BIOME Inspector",
-            "path": ".github/workflows/biome-inspector.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30887726310",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30894348612",
             "conclusion": "failure"
           }
         ],
@@ -265,10 +251,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30889078943"
+        "last_run": null
       }
     },
     "sheaf": {
