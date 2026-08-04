@@ -1,19 +1,26 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-04T09:58:05.594Z",
+  "generated_at": "2026-08-04T10:57:22.170Z",
   "credit_free": true,
   "overall": "down",
   "workers": {
     "sentinel": {
       "status": "down",
-      "summary": "4/100 recent runs failed; 5 stuck item(s)",
+      "summary": "5/100 recent runs failed; 5 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 5
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30899651118,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30899651118",
+            "conclusion": "failure"
+          },
           {
             "id": 30895657143,
             "name": "WR Field Filler — no blanks ever ship",
