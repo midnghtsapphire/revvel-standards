@@ -1,25 +1,29 @@
 name: apply-revvel-command-project-fields
-# Idempotent: create governance catalog fields on user Project #5 via PAT.
+# Create "Revvel Command" project (optional) + catalog fields via PAT.
 on:
   workflow_dispatch:
     inputs:
+      mode:
+        description: "apply_fields | create_project_and_apply"
+        required: false
+        default: create_project_and_apply
       project_number:
-        description: User project number (default 5 = Revvel-Standards)
+        description: Existing user project number when mode=apply_fields
         required: false
         default: "5"
-      dry_run:
-        description: If true, only print plan
+      project_title:
+        description: Title when creating a new project
         required: false
-        default: "false"
+        default: Revvel Command
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   apply:
-    name: Create Project fields
+    name: Project fields
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Resolve token
         env:
@@ -29,160 +33,52 @@ jobs:
           MID2: ${{ secrets.MIDNGHTSAPPHIRE_PAT }}
         run: |
           set -euo pipefail
-          TOKEN=""
-          SRC=""
+          TOKEN=""; SRC=""
           if [ -n "${MID:-}" ]; then TOKEN="$MID"; SRC=MIDNGHTSAPPHIRE_TOKEN
           elif [ -n "${MID2:-}" ]; then TOKEN="$MID2"; SRC=MIDNGHTSAPPHIRE_PAT
           elif [ -n "${PROJECTS:-}" ]; then TOKEN="$PROJECTS"; SRC=PROJECTS_PAT
           elif [ -n "${ADMIN:-}" ]; then TOKEN="$ADMIN"; SRC=ADMIN_GITHUB_TOKEN
           fi
           if [ -z "$TOKEN" ]; then
-            echo "::error::No PAT available. Set MIDNGHTSAPPHIRE_TOKEN, MIDNGHTSAPPHIRE_PAT, PROJECTS_PAT, or ADMIN_GITHUB_TOKEN"
+            echo "::error::No PAT (MIDNGHTSAPPHIRE_TOKEN / PROJECTS_PAT / ADMIN_GITHUB_TOKEN)"
             exit 1
           fi
-          echo "Using secret: $SRC (value redacted)"
+          echo "Using secret: $SRC"
           echo "GH_TOKEN=$TOKEN" >> "$GITHUB_ENV"
 
-      - name: Create missing catalog fields
+      - uses: actions/checkout@v4
+
+      - name: Create project if needed + apply fields
         env:
+          MODE: ${{ inputs.mode }}
           PROJECT_NUMBER: ${{ inputs.project_number }}
-          DRY_RUN: ${{ inputs.dry_run }}
+          PROJECT_TITLE: ${{ inputs.project_title }}
           OWNER: midnghtsapphire
+        run: python3 scripts/apply-revvel-command-project-fields.py
+
+      - name: Commit field ID snapshot
+        if: success()
         run: |
           set -euo pipefail
-          python3 <<'PY2'
-          import json, os, subprocess, sys
+          if [ ! -f config/revvel-command-project-fields.json ]; then
+            echo "no snapshot"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/revvel-command-project-fields.json
+          if git diff --cached --quiet; then
+            echo "snapshot unchanged"
+          else
+            git commit -m "chore(config): snapshot Revvel Command Project field IDs"
+            git push origin HEAD:main
+          fi
 
-          def gh_graphql(query, variables=None):
-              path = "/tmp/gql.json"
-              open(path, "w").write(json.dumps({"query": query, "variables": variables or {}}))
-              r = subprocess.run(["gh", "api", "graphql", "--input", path], capture_output=True, text=True)
-              if r.returncode != 0:
-                  print(r.stderr or r.stdout, file=sys.stderr)
-                  raise SystemExit(r.returncode)
-              data = json.loads(r.stdout)
-              return data
-
-          owner = os.environ["OWNER"]
-          num = int(os.environ.get("PROJECT_NUMBER") or "5")
-          dry = (os.environ.get("DRY_RUN") or "false").lower() == "true"
-
-          q = """
-          query($login:String!, $number:Int!) {
-            user(login:$login) {
-              projectV2(number:$number) {
-                id title url
-                fields(first:100) {
-                  nodes {
-                    ... on ProjectV2Field { id name dataType }
-                    ... on ProjectV2SingleSelectField { id name dataType options { id name } }
-                    ... on ProjectV2IterationField { id name dataType }
-                  }
-                }
-              }
-            }
-          }
-          """
-          data = gh_graphql(q, {"login": owner, "number": num})
-          if data.get("errors"):
-              print(json.dumps(data["errors"], indent=2), file=sys.stderr)
-              raise SystemExit(2)
-          proj = data["data"]["user"]["projectV2"]
-          project_id = proj["id"]
-          existing = {n["name"] for n in proj["fields"]["nodes"] if n and n.get("name")}
-          print(f"Project: {proj['title']} ({project_id})")
-          print(f"URL: {proj['url']}")
-          print(f"Existing ({len(existing)}): {sorted(existing)}")
-
-          colors = ["BLUE","GREEN","YELLOW","ORANGE","RED","PURPLE","PINK","GRAY"]
-          selects = {
-            "Work Kind": ["WR","Bug","Feature","Research","Automation","Security","Content","Infra","Revenue"],
-            "Pipeline Stage": ["Triage","Spec","Research","Build","Formal Verify","Human Review","Ship","Done","Parked"],
-            "Agent": ["OpenRouter","Copilot","Codex","Devin","Jules","Human","Non-LLM Specialist"],
-            "Privilege Tier": ["Intern","Associate","Senior","Principal","Emergency"],
-            "Formal Verdict": ["pass","fail","needs_reaudit","structural_conflict","duplicate_risk","unscored"],
-            "Breakthrough": ["none","minor","major","paradigm"],
-            "Automation Surface": ["actions","n8n","make","zapier","gumloop","openrouter","other","none"],
-            "Human Gate": ["required","satisfied","waived"],
-            "Outside Work Eligible": ["no","candidate","approved"],
-            "Priority Scale": ["P0","P1","P2","P3"],
-          }
-          numbers = ["Agreement BPS","Risk Score","Loyalty Score","BNAT Score","Speed Score","Canonical Score","Feature Adoption"]
-          texts = ["Revenue Link","WR ID"]
-          dates = ["Due"]
-
-          created, skipped, failed = [], [], []
-
-          def create(data_type, name, options=None):
-              if name in existing:
-                  skipped.append(name)
-                  print(f"SKIP exists: {name}")
-                  return
-              if dry:
-                  print(f"DRY {data_type}: {name}")
-                  created.append(name)
-                  return
-              if data_type == "SINGLE_SELECT":
-                  opts = [{"name": o, "color": colors[i % len(colors)], "description": ""} for i, o in enumerate(options or [])]
-                  mut = """
-                  mutation($projectId:ID!, $name:String!, $opts:[ProjectV2SingleSelectFieldOptionInput!]!) {
-                    createProjectV2Field(input:{
-                      projectId:$projectId dataType:SINGLE_SELECT name:$name singleSelectOptions:$opts
-                    }) {
-                      projectV2Field { ... on ProjectV2SingleSelectField { id name options { id name } } }
-                    }
-                  }
-                  """
-                  res = gh_graphql(mut, {"projectId": project_id, "name": name, "opts": opts})
-              else:
-                  mut = """
-                  mutation($projectId:ID!, $name:String!, $dt:ProjectV2CustomFieldType!) {
-                    createProjectV2Field(input:{ projectId:$projectId dataType:$dt name:$name }) {
-                      projectV2Field { ... on ProjectV2Field { id name dataType } }
-                    }
-                  }
-                  """
-                  res = gh_graphql(mut, {"projectId": project_id, "name": name, "dt": data_type})
-              if res.get("errors"):
-                  failed.append({"name": name, "errors": res["errors"]})
-                  print(f"FAIL {name}: {res['errors'][0].get('message')}")
-              else:
-                  field = res["data"]["createProjectV2Field"]["projectV2Field"]
-                  created.append({"name": name, "id": field.get("id")})
-                  print(f"OK {name}: {field.get('id')}")
-                  existing.add(name)
-
-          for name, opts in selects.items():
-              create("SINGLE_SELECT", name, opts)
-          for name in numbers:
-              create("NUMBER", name)
-          for name in texts:
-              create("TEXT", name)
-          for name in dates:
-              create("DATE", name)
-
-          summary = {
-            "project_id": project_id,
-            "project_url": proj["url"],
-            "created_count": len(created),
-            "skipped_count": len(skipped),
-            "failed_count": len(failed),
-            "created": created,
-            "skipped": skipped,
-            "failed": failed,
-            "dry_run": dry,
-          }
-          open(os.environ.get("GITHUB_WORKSPACE", "/tmp") + "/field-apply-result.json", "w").write(json.dumps(summary, indent=2))
-          open("/tmp/field-apply-result.json", "w").write(json.dumps(summary, indent=2))
-          print(json.dumps({k: summary[k] for k in ("project_url","created_count","skipped_count","failed_count","dry_run")}, indent=2))
-          if failed:
-              raise SystemExit(1)
-          PY2
-
-      - name: Upload result artifact
+      - name: Upload result
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: revvel-command-fields-result
-          path: field-apply-result.json
+          path: |
+            field-apply-result.json
+            config/revvel-command-project-fields.json
           if-no-files-found: ignore
