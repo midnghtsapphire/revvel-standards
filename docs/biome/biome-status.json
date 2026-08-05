@@ -1,34 +1,19 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-05T14:48:13.082Z",
+  "generated_at": "2026-08-05T19:31:16.911Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "summary": "0/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 0,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [
-          {
-            "id": 31014927292,
-            "name": "CI Error Prevention Tests",
-            "path": ".github/workflows/ci-error-prevention.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31014927292",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31014927210,
-            "name": "Intelligent Code Quality Scanner",
-            "path": ".github/workflows/ship-quality.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31014927210",
-            "conclusion": "failure"
-          }
-        ],
+        "recent_failures": [],
         "stuck": []
       }
     },
