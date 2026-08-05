@@ -8,4 +8,4 @@
 | `agent-scorecard-governance.yml` | Pack privilege scorecard | **Named to avoid** live `agent-scorecard.yml` |
 
 Auth model: see `standards/GITHUB_AUTH_TOKEN_MATRIX.md`.
-Actions write via `GITHUB_TOKEN`. Grok connector is separate (currently read-only App token).
+Actions write via `GITHUB_TOKEN`. Grok connector is separate (write restored per reconnect; see `standards/GITHUB_AUTH_TOKEN_MATRIX.md`).
