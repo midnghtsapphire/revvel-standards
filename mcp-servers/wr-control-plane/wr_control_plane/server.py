@@ -45,14 +45,29 @@ from urllib import error, request
 try:
     from fastmcp import FastMCP
 except ImportError:  # pragma: no cover - compatibility path for local smoke tests
+    import dataclasses as _dc
+
+    @_dc.dataclass
+    class _ShimTool:
+        name: str
+
+    @_dc.dataclass
+    class _ShimResource:
+        uri: str
+
     class FastMCP:  # type: ignore[override]
-        """Minimal compatibility shim for import-time use without FastMCP."""
+        """Minimal compatibility shim for import-time use without FastMCP.
+
+        Provides list_tools() and list_resources() as async methods so that
+        the test suite can introspect registered tools/resources without
+        requiring a real FastMCP install in CI.
+        """
 
         def __init__(self, name: str, instructions: str):
             self.name = name
             self.instructions = instructions
-            self.tools: dict[str, Callable[..., object]] = {}
-            self.resources: dict[str, Callable[..., object]] = {}
+            self._tools: dict[str, Callable[..., object]] = {}
+            self._resources: dict[str, Callable[..., object]] = {}
 
         async def list_tools(self):
             return [type("Obj", (), {"name": k, "description": v.__doc__ or ""})() for k, v in self.tools.items()]
@@ -62,33 +77,23 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
 
         def tool(self, fn: Callable[..., object] | None = None):
             def decorator(func: Callable[..., object]) -> Callable[..., object]:
-                self.tools[func.__name__] = func
+                self._tools[func.__name__] = func
                 return func
 
             return decorator(fn) if fn else decorator
 
-
-        async def list_tools(self):
-            import dataclasses
-            @dataclasses.dataclass
-            class Tool:
-                name: str
-            return [Tool(name=k) for k in self.tools.keys()]
-
-        async def list_resources(self):
-            import dataclasses
-            @dataclasses.dataclass
-            class Resource:
-                uri: str
-            return [Resource(uri=k) for k in self.resources.keys()]
-
         def resource(self, uri: str):
             def decorator(func: Callable[..., object]) -> Callable[..., object]:
-                self.resources[uri] = func
+                self._resources[uri] = func
                 return func
 
             return decorator
 
+        async def list_tools(self) -> list:
+            return [_ShimTool(name=n) for n in self._tools]
+
+        async def list_resources(self) -> list:
+            return [_ShimResource(uri=u) for u in self._resources]
         async def list_tools(self) -> list[object]:
             class DummyTool:
                 def __init__(self, name: str):

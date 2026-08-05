@@ -16,6 +16,8 @@ on:
 permissions:
   contents: write
   actions: write
+  # Needed by peter-evans/create-pull-request in the state-PR fallback lane.
+  pull-requests: write
 
 concurrency:
   group: fleet-controller
@@ -31,6 +33,13 @@ jobs:
     name: Scan + preempt orchestrators
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      # The state-PR fallback needs a PAT / app-installation token. Pull requests
+      # authored by the default GITHUB_TOKEN never start the required
+      # `pull_request` checks (CLAUDE.md recurring gotcha #3), so such a PR could
+      # never merge and controller state would stall forever — hence no
+      # GITHUB_TOKEN fallback here. Empty means "fallback unavailable".
+      STATE_PR_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.AGENT_PR_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,6 +48,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      # If a previous run's state PR is still unmerged, `main` does not yet carry
+      # the newest scoreboard, and the controller would recompute from stale
+      # state — repeating the same cut/relaunch decisions and defeating
+      # convergence. Seed the durable state file from the pending branch so
+      # successive runs build on the latest state even before it lands.
+      - name: Seed durable state from pending state-sync branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch=fleet-controller/state-sync
+          state=docs/controller/controller-state.json
+          if git fetch --depth=1 origin "$branch" 2>/dev/null; then
+            if git cat-file -e "FETCH_HEAD:$state" 2>/dev/null; then
+              git show "FETCH_HEAD:$state" > "$state"
+              echo "seeded $state from pending $branch"
+            fi
+          else
+            echo "no pending $branch — using state from the base checkout"
+          fi
 
       - name: Run fleet controller
         env:
@@ -109,8 +138,23 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           fi
 
+          # Drop timestamp-only working-tree edits (e.g. generated_at churn in
+          # controller-ingestion.json) so nothing downstream commits them.
+          # `git checkout -- .` restores the working tree from the index, which
+          # keeps staged content intact. Unconditional on purpose: leaving the
+          # churn behind on the changed=false path would let any future step
+          # pick it up.
+          git checkout -- .
+
+      # Primary lane: direct push, falling back to the Contents API with the
+      # admin token (which is on the main-branch ruleset bypass list). Marked
+      # non-fatal so the state-PR lane below can still save the state when this
+      # repository has no bypass-capable token; the guard step at the end turns a
+      # "nothing persisted at all" outcome back into a job failure.
       - name: Commit controller state
+        id: persist
         if: steps.stage.outputs.changed == 'true'
+        continue-on-error: true
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -147,3 +191,54 @@ jobs:
                 || { echo "::error::API update failed for ${f} — controller state not persisted"; exit 1; }
             done
           }
+
+      # Fallback lane: when neither the push nor the Contents API can write to a
+      # protected `main` (GH013), persist the same files through a rolling PR on
+      # a fixed branch. Reusing one branch means the 15-minute cron updates a
+      # single open PR instead of spamming a new one per run.
+      - name: Open or update controller-state PR
+        if: steps.stage.outputs.changed == 'true' && steps.persist.outcome == 'failure' && env.STATE_PR_TOKEN != ''
+        id: state_pr
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ env.STATE_PR_TOKEN }}
+          # Restrict the commit to the controller's own state files. Without this
+          # the action commits everything in the tree, so any future artifact the
+          # controller happens to emit (logs, new feeds) would silently ride along.
+          add-paths: docs/controller/*.json
+          commit-message: "chore(controller): persist semantic fleet state"
+          title: "chore(controller): persist semantic fleet state"
+          body: |
+            Automated fleet-controller state sync.
+
+            This PR persists durable reassignment state and semantically changed
+            monitor feeds under `docs/controller/`. It is updated in place by the
+            Fleet Controller workflow on each run with new state; direct pushes to
+            `main` are blocked by branch protection.
+
+            *Run ID: ${{ github.run_id }}*
+          branch: fleet-controller/state-sync
+          base: main
+          delete-branch: true
+
+      # Best-effort: let the PR land on its own once required checks pass. If
+      # auto-merge is disabled on the repo this fails harmlessly — the PR simply
+      # waits for a human merge, and the next controller run refreshes it.
+      - name: Enable auto-merge on controller-state PR
+        if: steps.state_pr.outputs.pull-request-number != ''
+        continue-on-error: true
+        env:
+          # Read through env instead of inline `${{ }}` in `run:` so the value is
+          # never expanded into the shell as code (zizmor template-injection).
+          PR_NUMBER: ${{ steps.state_pr.outputs.pull-request-number }}
+          GH_TOKEN: ${{ env.STATE_PR_TOKEN }}
+        run: gh pr merge --auto --squash "$PR_NUMBER"
+
+      # Both lanes failed (or the fallback was unavailable): state is only in the
+      # runner's filesystem and will be lost. Fail loudly rather than reporting a
+      # green run that silently dropped the scoreboard.
+      - name: Verify controller state was persisted
+        if: steps.stage.outputs.changed == 'true' && steps.persist.outcome == 'failure' && steps.state_pr.outcome != 'success'
+        run: |
+          echo "::error::Controller state was not persisted. The direct push and the Contents API fallback both failed, and the state-PR fallback needs a bypass-capable PAT in secrets.ADMIN_GITHUB_TOKEN or secrets.AGENT_PR_TOKEN — the default GITHUB_TOKEN cannot be used because its pull requests never start the required checks."
+          exit 1
