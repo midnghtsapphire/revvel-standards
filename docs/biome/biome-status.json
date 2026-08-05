@@ -2,6 +2,7 @@
   "schema": "biome-status/v1",
   "generated_at": "2026-08-03T09:06:35.363Z",
   "generated_at": "2026-08-05T11:41:29.352Z",
+  "generated_at": "2026-08-03T18:35:21.745Z",
   "generated_at": "2026-08-05T12:36:55.189Z",
   "credit_free": true,
   "overall": "degraded",
@@ -25,6 +26,10 @@
         "stuck": []
         "recent_failures": [
           {
+            "id": 30841886721,
+            "name": "Intelligent Code Quality Scanner",
+            "path": ".github/workflows/ship-quality.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30841886721",
             "id": 31006313356,
             "name": "Update Project Dashboard",
             "path": ".github/workflows/update-project-dashboard.yml",
