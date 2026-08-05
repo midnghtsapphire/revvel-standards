@@ -1,63 +1,75 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-05T00:30:28.818Z",
+  "generated_at": "2026-08-05T01:33:55.903Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "down",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "6/100 recent runs failed; 0 stuck item(s)",
+      "status": "down",
+      "summary": "5/100 recent runs failed; 1 stuck item(s)",
       "counts": {
-        "failed_runs": 6,
+        "failed_runs": 5,
         "total_runs": 100,
-        "stuck_issues": 0
+        "stuck_issues": 1
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30963441665,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30963441665",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30962259029,
+            "id": 30966703164,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30962259029",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30966703164",
             "conclusion": "failure"
           },
           {
-            "id": 30960491281,
+            "id": 30965012104,
+            "name": "BIOME Inspector",
+            "path": ".github/workflows/biome-inspector.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30965012104",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30964540500,
+            "name": "Octopus Review Fallback",
+            "path": ".github/workflows/octopus-review-fallback.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30964540500",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30964457038,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30960491281",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30964457038",
             "conclusion": "failure"
           },
           {
-            "id": 30959736194,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30959736194",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30958889357,
+            "id": 30963752641,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30958889357",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30957287357,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30957287357",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30963752641",
             "conclusion": "failure"
           }
         ],
-        "stuck": []
+        "stuck": [
+          {
+            "number": 16467,
+            "title": "WR-4474 follow-up: wire Sentry → issue → agent-assignment path",
+            "updated_at": "2026-07-29T01:21:03Z",
+            "labels": [
+              "auto-fix",
+              "copilot",
+              "triage",
+              "openrouter",
+              "priority-p1",
+              "role:orchestrator",
+              "area:ui",
+              "area:api",
+              "wr:new",
+              "recovery:stale-wr",
+              "self-heal"
+            ]
+          }
+        ]
       }
     },
     "homeostat": {
@@ -79,10 +91,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30966093664"
       }
     },
     "sheaf": {
