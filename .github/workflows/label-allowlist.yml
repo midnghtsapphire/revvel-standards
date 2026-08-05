@@ -1,0 +1,88 @@
+# Label allowlist — routing-only labels; metrics live on Project fields.
+# Uses Actions GITHUB_TOKEN (writes comments/labels). Does not need Grok write.
+name: label-allowlist
+
+on:
+  issues:
+    types: [labeled]
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      labels:
+        description: "Comma-separated labels to validate"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: label-allowlist-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Allowlist check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate applied label
+        id: check
+        env:
+          LABEL: ${{ github.event.label.name || inputs.labels }}
+        run: |
+          set -euo pipefail
+          if [ ! -f config/labels-allowlist.yml ] || [ ! -f scripts/label-allowlist-check.mjs ]; then
+            echo "allowlist assets missing — noop until pack lands on default branch"
+            echo "status=missing" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ -z "${LABEL:-}" ]; then
+            echo "status=empty" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if node scripts/label-allowlist-check.mjs --strict "$LABEL"; then
+            echo "status=ok" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=bad" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      - name: Sticky note on unknown label
+        if: failure() && steps.check.outputs.status == 'bad'
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const number = context.payload.issue?.number || context.payload.pull_request?.number;
+            const label = context.payload.label?.name || 'unknown';
+            if (!number) return;
+            const marker = '<!-- label-allowlist:sticky -->';
+            const body = [
+              marker,
+              `## Label allowlist`,
+              ``,
+              `\`${label}\` is **not** on the canonical allowlist (\`config/labels-allowlist.yml\`).`,
+              ``,
+              `- Labels are for **routing only** (priority, role, triage, status).`,
+              `- Metrics / scorecards belong on **Project fields**, not new labels.`,
+              `- Prefer an allowlisted alias or open a WR to extend the allowlist.`,
+            ].join('\n');
+            const { owner, repo } = context.repo;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number: number, per_page: 100,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: number, body });
+            }
