@@ -125,7 +125,7 @@ test('module imports without FastMCP and registers all 4 tools', () => {
     "import json, sys; sys.path.insert(0, r'" +
       path.join(SERVER_DIR) +
       "'); from wr_control_plane.server import mcp; " +
-      'import asyncio; tools = getattr(mcp, "_tools", getattr(mcp, "tools", {})); print(json.dumps(sorted([t.__name__ if hasattr(t, "__name__") else t.name if hasattr(t, "name") else str(t) for t in tools.values()] if isinstance(tools, dict) else [t.__name__ if hasattr(t, "__name__") else t.name if hasattr(t, "name") else str(t) for t in tools])))'
+      'import asyncio; print(json.dumps(sorted([t.name for t in asyncio.run(mcp.list_tools())])))'
   );
   assertEq(
     data,
@@ -139,12 +139,24 @@ test('module imports without FastMCP and registers all 4 tools', () => {
   );
 });
 
+// Four merged PRs each appended their own fix to the shim, leaving six
+// list_tools definitions stacked; Python keeps the last one, which read the
+// pre-rename `self.tools` and made introspection raise AttributeError while
+// the suite stayed green by reading `_tools` directly.
+test('shim defines each introspection method exactly once', () => {
+  const src = fs.readFileSync(SERVER_FILE, 'utf8');
+  for (const method of ['list_tools', 'list_resources']) {
+    const defs = src.match(new RegExp(`^\\s*async def ${method}\\b`, 'gm')) || [];
+    assertEq(defs.length, 1, `${method} definition count`);
+  }
+});
+
 test('module exposes both documented MCP resources', () => {
   const data = pyJson(
     "import json, sys; sys.path.insert(0, r'" +
       path.join(SERVER_DIR) +
       "'); from wr_control_plane.server import mcp; " +
-      'import asyncio; resources = getattr(mcp, "_resources", getattr(mcp, "resources", {})); print(json.dumps(sorted([str(r.uri) if hasattr(r, "uri") else k for k, r in resources.items()] if isinstance(resources, dict) else [str(r.uri) if hasattr(r, "uri") else str(r.__name__) if hasattr(r, "__name__") else str(r.name) if hasattr(r, "name") else str(r) for r in resources])))'
+      'import asyncio; print(json.dumps(sorted([str(r.uri) for r in asyncio.run(mcp.list_resources())])))'
   );
   assertEq(
     data,
