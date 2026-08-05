@@ -12,6 +12,7 @@ const os = require("os");
 const path = require("path");
 const { execSync } = require("child_process");
 const {
+  iterHunks,
   pickNewerRef,
   tryVersionBump,
   tryAdditive,
@@ -230,6 +231,40 @@ test("tryAdditive preserves order (current first, incoming after)", () => {
   const aIndex = result.indexOf("A");
   const cIndex = result.indexOf("C");
   assert.ok(aIndex < cIndex, "Current should come before incoming");
+});
+
+// ─── iterHunks conflict-style tests ───────────────────────────────────────
+//
+// git writes the merge base between ||||||| and ======= under
+// merge.conflictStyle=diff3/zdiff3. Reading that block as part of "ours"
+// makes every hunk look multi-line and ambiguous, so the resolver reported
+// MANUAL for conflicts it can resolve on any checkout configured that way.
+
+console.log("\nTest Group: iterHunks (conflict styles)");
+
+test("iterHunks parses default merge-style markers", () => {
+  const hunks = iterHunks(
+    "a\n<<<<<<< HEAD\n  - uses: actions/checkout@v4\n=======\n  - uses: actions/checkout@v5\n>>>>>>> feature\nb\n"
+  );
+  assert.strictEqual(hunks.length, 1);
+  assert.strictEqual(hunks[0].ours, "  - uses: actions/checkout@v4");
+  assert.strictEqual(hunks[0].theirs, "  - uses: actions/checkout@v5");
+});
+
+test("iterHunks drops the merge-base block in diff3 style", () => {
+  const hunks = iterHunks(
+    "a\n<<<<<<< HEAD\n  - uses: actions/checkout@v4\n||||||| 258a595\n  - uses: actions/checkout@v3\n=======\n  - uses: actions/checkout@v5\n>>>>>>> feature\nb\n"
+  );
+  assert.strictEqual(hunks.length, 1);
+  assert.strictEqual(hunks[0].ours, "  - uses: actions/checkout@v4");
+  assert.strictEqual(hunks[0].theirs, "  - uses: actions/checkout@v5");
+});
+
+test("iterHunks resolves a diff3 hunk as a version bump", () => {
+  const [hunk] = iterHunks(
+    "<<<<<<< HEAD\n  - uses: actions/checkout@v4\n||||||| 258a595\n  - uses: actions/checkout@v3\n=======\n  - uses: actions/checkout@v5\n>>>>>>> feature\n"
+  );
+  assert.strictEqual(tryVersionBump(hunk.ours, hunk.theirs), "  - uses: actions/checkout@v5\n");
 });
 
 // ─── main() exit code tests ────────────────────────────────────────────────
