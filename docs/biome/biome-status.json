@@ -1,5 +1,6 @@
 {
   "schema": "biome-status/v1",
+  "generated_at": "2026-08-03T19:31:44.083Z",
   "generated_at": "2026-08-03T09:06:35.363Z",
   "generated_at": "2026-08-05T11:41:29.352Z",
   "generated_at": "2026-08-03T18:35:21.745Z",
@@ -17,7 +18,7 @@
       "status": "degraded",
       "summary": "1/100 recent runs failed; 3 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 0,
         "total_runs": 100,
         "stuck_issues": 3
       },
