@@ -76,6 +76,11 @@ function main() {
   const allowed = new Set(
     (cfg.labels || []).map((l) => (typeof l === "string" ? l : l.name)),
   );
+  const maxLabels = Number(cfg.max_labels_total);
+  if (Number.isFinite(maxLabels) && allowed.size > maxLabels) {
+    console.error(`allowlist has ${allowed.size} labels; maximum is ${maxLabels}`);
+    process.exit(2);
+  }
   const aliases = cfg.aliases || {};
 
   const checkList = process.argv.slice(2).filter((a) => !a.startsWith("--"));
