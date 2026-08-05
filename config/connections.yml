@@ -276,6 +276,14 @@ connections:
     status: verified
     access: [multi-agent-orchestration, workflow-automation]
     connects_to: [github]
+  - id: xai
+    name: xAI / Grok
+    type: api
+    auth: key
+    env: XAI_API_KEY, GROK_API_KEY
+    status: verified
+    access: [motu-bnat-controller]
+    connects_to: []
   - id: tavily
     name: Tavily
     type: api
