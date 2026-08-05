@@ -1,0 +1,58 @@
+# Governance pack scorecard — named distinctly so it does NOT overwrite
+# live `.github/workflows/agent-scorecard.yml` (fleet Trust Scorecard).
+# Computes privilege tier artifacts from pack scripts; human reviews promotions.
+name: agent-scorecard-governance
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 13 * * *"
+
+permissions:
+  contents: read
+  pull-requests: read
+  issues: write
+
+jobs:
+  score:
+    name: Governance scorecard
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Compute pack scorecard
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts logs/agent-scorecard
+          if [ -f disaster-recovery/grok-build-2026-08-05/formal/formal-report.json ]; then
+            cp disaster-recovery/grok-build-2026-08-05/formal/formal-report.json artifacts/ || true
+          fi
+          if [ -f scripts/agent-scorecard.mjs ]; then
+            node scripts/agent-scorecard.mjs
+          else
+            echo "scripts/agent-scorecard.mjs missing — skip"
+          fi
+
+      - name: Upload state
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-scorecard-governance-state
+          path: |
+            config/agent-scorecard-state.json
+            artifacts/
+          if-no-files-found: ignore
+
+      - name: Note
+        run: |
+          {
+            echo "## agent-scorecard-governance"
+            echo ""
+            echo "Pack-local scorecard only. Live fleet scorecard remains \`agent-scorecard.yml\`."
+            echo "Privilege tiers (Intern–Emergency): human promotion; Emergency outside-work is human-only."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,70 @@
+# Formal dual-path XOR → auto WR artifacts (and optional draft issue).
+# NEVER auto-merges. Human reviews WR + PR.
+name: formal-auto-wr
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 12 * * *"
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  formal-wr:
+    name: Formal → WR
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Ensure formal report
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          if [ ! -f artifacts/formal-report.json ]; then
+            if [ -f disaster-recovery/grok-build-2026-08-05/formal/formal-report.json ]; then
+              cp disaster-recovery/grok-build-2026-08-05/formal/formal-report.json artifacts/
+            elif [ -f disaster-recovery/formal-report.json ]; then
+              cp disaster-recovery/formal-report.json artifacts/
+            else
+              echo "No formal report yet — upload artifact or run verifier offline"
+              exit 0
+            fi
+          fi
+
+      - name: Generate auto-WRs
+        run: |
+          set -euo pipefail
+          if [ ! -f scripts/formal-auto-wr.mjs ]; then
+            echo "scripts/formal-auto-wr.mjs missing — pack not fully landed"
+            exit 0
+          fi
+          node scripts/formal-auto-wr.mjs
+
+      - name: Upload WR artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: formal-auto-wrs
+          path: wr/pending/formal/
+          if-no-files-found: ignore
+
+      # Optional: open draft issues for fail/needs_reaudit — still human-owned.
+      # Requires allowlisted labels only.
+      - name: Open draft WRs as issues (opt-in)
+        if: env.FORMAL_OPEN_ISSUES == 'true'
+        env:
+          FORMAL_OPEN_ISSUES: ${{ vars.FORMAL_OPEN_ISSUES }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # Placeholder: fleet may wire this to wr-field-filler / wr-pr-creation.
+          # Default OFF so formal never floods Issues without explicit enable.
+          echo "FORMAL_OPEN_ISSUES not enabled (default). Artifacts only."
