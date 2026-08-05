@@ -68,6 +68,20 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
 
             return decorator
 
+        @dataclass
+        class MockTool:
+            name: str
+
+        @dataclass
+        class MockResource:
+            uri: str
+
+        async def list_tools(self):
+            return [self.MockTool(name) for name in self.tools]
+
+        async def list_resources(self):
+            return [self.MockResource(uri) for uri in self.resources]
+
         def run(self) -> None:
             raise RuntimeError(
                 "FastMCP is not installed. Install dependencies in "
