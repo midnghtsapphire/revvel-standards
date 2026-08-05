@@ -1,87 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-05T08:56:43.994Z",
+  "generated_at": "2026-08-05T09:56:02.552Z",
   "credit_free": true,
   "overall": "down",
   "workers": {
     "sentinel": {
       "status": "down",
-      "summary": "10/100 recent runs failed; 3 stuck item(s)",
+      "summary": "4/100 recent runs failed; 3 stuck item(s)",
       "counts": {
-        "failed_runs": 10,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 3
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30991064112,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30991064112",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30987542004,
+            "id": 30992571102,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30987542004",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30992571102",
             "conclusion": "failure"
           },
           {
-            "id": 30984944673,
-            "name": "BIOME Inspector",
-            "path": ".github/workflows/biome-inspector.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30984944673",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30984255153,
+            "id": 30992263293,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30984255153",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30992263293",
             "conclusion": "failure"
           },
           {
-            "id": 30984224420,
-            "name": "Octopus Review Fallback",
-            "path": ".github/workflows/octopus-review-fallback.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30984224420",
+            "id": 30991506907,
+            "name": "Vine → Marketplace Automation",
+            "path": ".github/workflows/vine-to-marketplace.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30991506907",
             "conclusion": "failure"
           },
           {
-            "id": 30984023222,
-            "name": "WR-4600 Watchtower",
-            "path": ".github/workflows/watchtower.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30984023222",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30983925300,
+            "id": 30991252115,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30983925300",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30983137060,
-            "name": "App Artifact Audit",
-            "path": ".github/workflows/app-artifact-audit.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30983137060",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30980277871,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30980277871",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30977969976,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30977969976",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30991252115",
             "conclusion": "failure"
           }
         ],
@@ -188,10 +146,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30986292933"
+        "last_run": null
       }
     },
     "sheaf": {
