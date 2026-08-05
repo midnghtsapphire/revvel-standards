@@ -54,6 +54,12 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
             self.tools: dict[str, Callable[..., object]] = {}
             self.resources: dict[str, Callable[..., object]] = {}
 
+        async def list_tools(self):
+            return [type("Obj", (), {"name": k, "description": v.__doc__ or ""})() for k, v in self.tools.items()]
+
+        async def list_resources(self):
+            return [type("Obj", (), {"name": k, "description": v.__doc__ or "", "uri": k})() for k, v in self.resources.items()]
+
         def tool(self, fn: Callable[..., object] | None = None):
             def decorator(func: Callable[..., object]) -> Callable[..., object]:
                 self.tools[func.__name__] = func
