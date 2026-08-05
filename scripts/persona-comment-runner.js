@@ -672,11 +672,17 @@ async function main() {
     : task;
 
   console.log(`🫆 Summoning ${command.handle} (eager) for issue #${issueNumber}...`);
-  const result = await instantiate(command.handle, { mode: "eager", task: augmentedTask, silent: true });
 
-  const reply = `## ${result.name} ${result.role ? `— ${result.role}` : ""}\n\n${result.text}\n\n---\n_Summoned via comment trigger · model: ${result.modelUsed || "unknown"}_`;
-  postComment(repo, issueNumber, reply);
-  console.log(`✅ ${result.name} replied on issue #${issueNumber}`);
+  try {
+    const result = await instantiate(command.handle, { mode: "eager", task: augmentedTask, silent: true });
+
+    const reply = `## ${result.name} ${result.role ? `— ${result.role}` : ""}\n\n${result.text}\n\n---\n_Summoned via comment trigger · model: ${result.modelUsed || "unknown"}_`;
+    postComment(repo, issueNumber, reply);
+    console.log(`✅ ${result.name} replied on issue #${issueNumber}`);
+  } catch (err) {
+    console.error(`❌ Summon failed: ${err.message}`);
+    postComment(repo, issueNumber, `⚠️ **${command.handle.toUpperCase()} summon failed:** ${err.message}`);
+  }
 }
 
 if (require.main === module) {
