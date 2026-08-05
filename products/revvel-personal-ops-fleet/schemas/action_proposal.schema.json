@@ -1,0 +1,208 @@
+{
+  "$defs": {
+    "Evidence": {
+      "description": "Pointer to the observation that justifies a proposal.\n\nEvidence never stores message bodies or personal content. It stores an\nopaque source reference plus a digest so the reasoning can be audited\nwithout duplicating user data into the audit log.",
+      "properties": {
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "connector": {
+          "title": "Connector",
+          "type": "string"
+        },
+        "source_ref": {
+          "description": "Opaque provider-side identifier, never content.",
+          "title": "Source Ref",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "signal": {
+          "description": "Short machine-readable signal name, e.g. 'bulk_sender'.",
+          "title": "Signal",
+          "type": "string"
+        },
+        "digest": {
+          "default": "",
+          "description": "SHA-256 of the redacted observation summary.",
+          "title": "Digest",
+          "type": "string"
+        },
+        "notes": {
+          "default": "",
+          "maxLength": 280,
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "connector",
+        "source_ref",
+        "signal"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Permission": {
+      "description": "Separated permission verbs. Never collapse these into one grant.",
+      "enum": [
+        "read",
+        "suggest",
+        "write",
+        "delete",
+        "unsubscribe"
+      ],
+      "title": "Permission",
+      "type": "string"
+    },
+    "Reversibility": {
+      "enum": [
+        "reversible",
+        "conditionally_reversible",
+        "irreversible"
+      ],
+      "title": "Reversibility",
+      "type": "string"
+    },
+    "RiskTier": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "RiskTier",
+      "type": "string"
+    }
+  },
+  "description": "A single candidate action produced by a skill. Never self-executing.",
+  "properties": {
+    "schema_version": {
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "proposal_id": {
+      "title": "Proposal Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "skill": {
+      "description": "Skill that produced the proposal, e.g. 'email_cleanup'.",
+      "title": "Skill",
+      "type": "string"
+    },
+    "connector": {
+      "title": "Connector",
+      "type": "string"
+    },
+    "capability": {
+      "description": "Connector capability key, e.g. 'gmail.labels.apply'.",
+      "title": "Capability",
+      "type": "string"
+    },
+    "permission": {
+      "$ref": "#/$defs/Permission"
+    },
+    "identity": {
+      "description": "Allowlisted account this action would run as.",
+      "title": "Identity",
+      "type": "string"
+    },
+    "summary": {
+      "maxLength": 200,
+      "title": "Summary",
+      "type": "string"
+    },
+    "target_ref": {
+      "description": "Opaque target id (thread id, file id, ...).",
+      "title": "Target Ref",
+      "type": "string"
+    },
+    "parameters": {
+      "additionalProperties": true,
+      "title": "Parameters",
+      "type": "object"
+    },
+    "risk_tier": {
+      "$ref": "#/$defs/RiskTier",
+      "default": "high"
+    },
+    "reversibility": {
+      "$ref": "#/$defs/Reversibility",
+      "default": "irreversible"
+    },
+    "externally_visible": {
+      "default": true,
+      "title": "Externally Visible",
+      "type": "boolean"
+    },
+    "rollback_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "How to undo: label snapshot id, trash restore ref, git revert sha, ...",
+      "title": "Rollback Ref"
+    },
+    "rollback_procedure": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rollback Procedure"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/Evidence"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "heuristic_score": {
+      "default": 0,
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Heuristic Score",
+      "type": "integer"
+    },
+    "tags": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Tags",
+      "type": "array"
+    }
+  },
+  "required": [
+    "skill",
+    "connector",
+    "capability",
+    "permission",
+    "identity",
+    "summary",
+    "target_ref"
+  ],
+  "title": "ActionProposal",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revvel.local/schemas/action_proposal.schema.json"
+}

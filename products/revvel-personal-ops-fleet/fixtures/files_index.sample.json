@@ -1,0 +1,8 @@
+{
+  "_comment": "SYNTHETIC FIXTURE DATA representing metadata a local companion would index. Paths are fictional.",
+  "files": [
+    {"path": "C:\\Users\\<you>\\RevvelOps\\Inbox\\report-v1.pdf", "size": 184320, "mtime": "2026-05-02T10:00:00Z", "sha256": "aaaa1111", "duplicate_of": null},
+    {"path": "C:\\Users\\<you>\\RevvelOps\\Inbox\\report-v1 (copy).pdf", "size": 184320, "mtime": "2026-05-02T10:04:00Z", "sha256": "aaaa1111", "duplicate_of": "C:\\Users\\<you>\\RevvelOps\\Inbox\\report-v1.pdf"},
+    {"path": "C:\\Users\\<you>\\RevvelOps\\Inbox\\old-notes.txt", "size": 2048, "mtime": "2024-09-11T08:00:00Z", "sha256": "bbbb2222", "duplicate_of": null}
+  ]
+}

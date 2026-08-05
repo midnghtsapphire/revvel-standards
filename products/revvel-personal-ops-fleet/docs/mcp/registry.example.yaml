@@ -1,0 +1,68 @@
+# EXAMPLE MCP-style tool registry for the fleet's own surfaces.
+# Illustrative and non-secret. It exposes ONLY read/plan tools: there is no
+# execution tool, because the MVP has no execution path.
+# Every value is user-configurable. No credentials appear in this file.
+
+registry_version: 1
+transport: stdio            # stdio | http(local only)
+bind: 127.0.0.1             # never expose beyond loopback
+
+servers:
+  - name: revvel-ops-control-plane
+    command: ["python", "-m", "revvel_ops.cli"]
+    working_dir: .
+    env_refs:               # references only; resolved from the OS keychain
+      - REVVEL_AUTONOMY_MODE
+      - REVVEL_DEFAULT_IDENTITY
+    tools:
+      - name: ops_doctor
+        maps_to: "cli doctor"
+        permission: read
+        side_effects: none
+        description: Report effective autonomy mode, thresholds, identity allowlist.
+
+      - name: ops_list_connectors
+        maps_to: "cli connectors --json"
+        permission: read
+        side_effects: none
+        description: Return the capability matrix (scopes, gates, rollback, availability).
+
+      - name: ops_inventory_demo
+        maps_to: "cli inventory --demo"
+        permission: read
+        side_effects: writes local inventory JSON + audit event
+        description: Produce the labeled SAMPLE connector inventory. Statuses need runtime revalidation.
+
+      - name: ops_plan
+        maps_to: "cli plan"
+        permission: suggest
+        side_effects: writes local plan JSON + audit events
+        args:
+          skill: email_cleanup
+          mode: review_everything
+          identity: angelreporters@gmail.com
+        description: Build a scored, policy-gated plan from fixture metadata.
+
+      - name: ops_dry_run
+        maps_to: "cli dry-run"
+        permission: suggest
+        side_effects: writes audit events only
+        description: Simulate a plan. Guarantees zero external service calls.
+
+      - name: ops_verify_audit
+        maps_to: "cli verify-audit"
+        permission: read
+        side_effects: none
+        description: Recompute SHA-256 audit hash chains and report integrity.
+
+    denied_tools:
+      - name: ops_apply
+        reason: no execution path exists in the MVP; approval happens out-of-band
+      - name: ops_shell
+        reason: arbitrary command execution is never exposed
+
+policy:
+  default_disposition_for_unlisted_tool: deny
+  require_identity_argument: true
+  max_calls_per_minute: 30
+  audit_every_call: true

@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+var/
+*.egg-info/
+.pytest_cache/
+config/policy.yaml
+config/identities.yaml
+config/storage.yaml
+config/connectors.yaml
+.DS_Store

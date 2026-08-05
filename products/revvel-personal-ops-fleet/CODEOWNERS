@@ -1,0 +1,24 @@
+# Ownership. Every path has a named owner; policy and audit paths require owner review.
+# Replace the placeholder handle with a real one when this repository is hosted.
+
+*                                   @revvel-primary-operator
+
+# Safety-critical: policy engine, audit chain, identity binding
+/src/revvel_ops/policy.py           @revvel-primary-operator
+/src/revvel_ops/audit.py            @revvel-primary-operator
+/src/revvel_ops/models.py           @revvel-primary-operator
+/config/                            @revvel-primary-operator
+/schemas/                           @revvel-primary-operator
+
+# Connector contracts and companion boundaries
+/src/revvel_ops/connectors/         @revvel-primary-operator
+
+# Skills
+/src/revvel_ops/skills/             @revvel-primary-operator
+
+# Governance and documentation
+/docs/adr/                          @revvel-primary-operator
+/docs/                              @revvel-primary-operator
+/AGENTS.md                          @revvel-primary-operator
+/SECURITY.md                        @revvel-primary-operator
+/CODEOWNERS                         @revvel-primary-operator

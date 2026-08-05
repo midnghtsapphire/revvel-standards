@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "AutonomyMode": {
+      "description": "Fleet-wide autonomy posture. Defaults to the most conservative value.",
+      "enum": [
+        "review_everything",
+        "safe_automation",
+        "policy_automation"
+      ],
+      "title": "AutonomyMode",
+      "type": "string"
+    },
+    "ConnectorStatus": {
+      "description": "Non-secret, sample connector state. MUST be revalidated at runtime.",
+      "properties": {
+        "connector": {
+          "title": "Connector",
+          "type": "string"
+        },
+        "status": {
+          "default": "unknown",
+          "enum": [
+            "connected",
+            "requires_reauthorization",
+            "requires_connection",
+            "not_configured",
+            "unknown"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "permissions_granted": {
+          "items": {
+            "$ref": "#/$defs/Permission"
+          },
+          "title": "Permissions Granted",
+          "type": "array"
+        },
+        "identity_hint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Identity Hint"
+        },
+        "last_checked": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Checked"
+        },
+        "revalidation_required": {
+          "default": true,
+          "title": "Revalidation Required",
+          "type": "boolean"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "connector"
+      ],
+      "title": "ConnectorStatus",
+      "type": "object"
+    },
+    "Permission": {
+      "description": "Separated permission verbs. Never collapse these into one grant.",
+      "enum": [
+        "read",
+        "suggest",
+        "write",
+        "delete",
+        "unsubscribe"
+      ],
+      "title": "Permission",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "inventory_id": {
+      "title": "Inventory Id",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "sample_data": {
+      "default": true,
+      "title": "Sample Data",
+      "type": "boolean"
+    },
+    "autonomy_mode": {
+      "$ref": "#/$defs/AutonomyMode",
+      "default": "review_everything"
+    },
+    "connectors": {
+      "items": {
+        "$ref": "#/$defs/ConnectorStatus"
+      },
+      "title": "Connectors",
+      "type": "array"
+    },
+    "notes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Notes",
+      "type": "array"
+    }
+  },
+  "title": "Inventory",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revvel.local/schemas/inventory.schema.json"
+}

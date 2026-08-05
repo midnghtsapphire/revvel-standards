@@ -1,0 +1,100 @@
+{
+  "$defs": {
+    "AutonomyMode": {
+      "description": "Fleet-wide autonomy posture. Defaults to the most conservative value.",
+      "enum": [
+        "review_everything",
+        "safe_automation",
+        "policy_automation"
+      ],
+      "title": "AutonomyMode",
+      "type": "string"
+    },
+    "Disposition": {
+      "enum": [
+        "allow",
+        "propose",
+        "require_approval",
+        "deny"
+      ],
+      "title": "Disposition",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "decision_id": {
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "decided_at": {
+      "format": "date-time",
+      "title": "Decided At",
+      "type": "string"
+    },
+    "proposal_id": {
+      "title": "Proposal Id",
+      "type": "string"
+    },
+    "autonomy_mode": {
+      "$ref": "#/$defs/AutonomyMode"
+    },
+    "confidence": {
+      "maximum": 100,
+      "minimum": 0,
+      "title": "Confidence",
+      "type": "integer"
+    },
+    "disposition": {
+      "$ref": "#/$defs/Disposition"
+    },
+    "policy_rule_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Policy Rule Ids",
+      "type": "array"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "required_approvers": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Required Approvers",
+      "type": "array"
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expires At"
+    }
+  },
+  "required": [
+    "proposal_id",
+    "autonomy_mode",
+    "confidence",
+    "disposition"
+  ],
+  "title": "PolicyDecision",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revvel.local/schemas/policy_decision.schema.json"
+}

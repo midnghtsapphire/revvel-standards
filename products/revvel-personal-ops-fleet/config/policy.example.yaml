@@ -1,0 +1,72 @@
+# Revvel Personal Ops Fleet — policy configuration (EXAMPLE, no secrets).
+# Copy to config/policy.yaml to activate. Every right-hand side is user-editable.
+# Defaults are the most restrictive values available.
+
+autonomy_mode: review_everything   # review_everything | safe_automation | policy_automation
+dry_run_default: true
+
+thresholds:
+  allow_min_confidence: 90         # confidence >= 90 required before any auto-allow
+  propose_min_confidence: 55       # below this, escalate to require_approval
+
+weights:
+  evidence_count: 12               # points per evidence item
+  evidence_cap: 36                 # max points from evidence
+  reversible_bonus: 20
+  conditionally_reversible_bonus: 8
+  internal_only_bonus: 12          # not externally visible
+  rollback_ref_bonus: 10
+  heuristic_weight: 0.30           # weight applied to skill heuristic_score
+  risk_penalty:
+    low: 0
+    medium: 10
+    high: 25
+    critical: 45
+  permission_penalty:
+    read: 0
+    suggest: 0
+    write: 8
+    unsubscribe: 18
+    delete: 30
+
+# Permission verbs that always require a human, in every autonomy mode.
+always_require_approval_permissions:
+  - delete
+  - unsubscribe
+
+# Capability-level gates (independent of score).
+always_require_approval_capabilities:
+  - gmail.messages.send
+  - gmail.threads.trash
+  - calendar.events.invite_guests
+  - drive.permissions.share
+  - dropbox.sharing.create_link
+  - box.collaborations.create
+  - github.pulls.create
+  - n8n.workflows.trigger_production
+  - n8n.workflows.modify
+  - local.process.run_allowlisted_command
+  - mobile.notifications.summarize_optin
+  - mobile.files.upload_selected
+
+# Hard denials. These never reach a human queue; they are refused outright.
+deny_capabilities:
+  - github.repos.delete
+  - local.fs.delete
+  - mobile.device.read_arbitrary
+  - openrouter.chat.completion_raw_content
+
+externally_visible_requires_approval: true
+irreversible_requires_approval: true
+
+# safe_automation only auto-executes capabilities named here, and only at/above
+# allow_min_confidence. Keep this list small, reversible, and internal-only.
+safe_automation_allowed_capabilities:
+  - gmail.labels.apply
+  - gmail.threads.archive
+  - calendar.events.propose_hold
+  - drive.files.propose_organize
+
+approvers:
+  - primary_operator
+approval_ttl_minutes: 720

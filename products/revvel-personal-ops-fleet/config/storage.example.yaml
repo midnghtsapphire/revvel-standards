@@ -1,0 +1,8 @@
+# Local storage layout for evidence, plans and audit (EXAMPLE).
+# Nothing here points at a cloud bucket; the MVP is local-only.
+
+audit_dir: var/audit          # append-only JSONL, one file per run_id
+plan_dir: var/plans           # serialized Plan objects
+inventory_dir: var/inventory   # labeled sample inventories
+retention_days: 400           # audit retention; must exceed any provider trash window
+redact_content: true          # redact body/content/token-like keys before writing

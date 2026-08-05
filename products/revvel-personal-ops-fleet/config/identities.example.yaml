@@ -1,0 +1,53 @@
+# OAuth / service-account selection policy (EXAMPLE, no secrets or tokens).
+# Purpose: make it impossible to act over a signed-in identity by accident.
+#
+# Rules:
+#   * strict_identity_binding: every proposal carries an identity; a non-allowlisted
+#     identity is DENIED at policy rule R020 before scoring matters.
+#   * An identity present here but allowlisted: false is treated as explicitly
+#     forbidden (useful for other accounts that are signed in on the same browser).
+#   * Permissions are separated verbs. Granting read never grants write/delete.
+#   * Credentials themselves live in the OS keychain / secret manager, never here.
+
+strict_identity_binding: true
+default_identity: angelreporters@gmail.com
+
+identities:
+  - identity: angelreporters@gmail.com
+    provider: google
+    allowlisted: true
+    label: primary operator mailbox + calendar
+    # write is granted for reversible, internal-only mutations (labels, archive).
+    # delete and unsubscribe are intentionally NOT granted: any such proposal is
+    # denied at the identity layer (rule R021) before policy scoring can matter.
+    permissions: [read, suggest, write]
+
+  - identity: angelreporters@gmail.com
+    provider: google_drive          # same human, separate row because Drive scopes differ
+    allowlisted: true
+    label: Drive authorized; read-only, folder allowlist still empty
+    permissions: [read]
+
+  - identity: other-google-account@example.com
+    provider: google
+    allowlisted: false
+    label: EXPLICITLY FORBIDDEN — signed in but out of scope
+    permissions: []
+
+  - identity: revvel-ops-bot
+    provider: github
+    allowlisted: true
+    label: GitHub read/suggest only, repo allowlist enforced at connector layer
+    permissions: [read, suggest]
+
+  - identity: dropbox:primary
+    provider: dropbox
+    allowlisted: true
+    label: Dropbox metadata read
+    permissions: [read]
+
+  - identity: box:primary
+    provider: box
+    allowlisted: false
+    label: Box DISABLED by operator choice — reconnect is operator-initiated, never auto-prompted
+    permissions: []

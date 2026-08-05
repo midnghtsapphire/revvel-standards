@@ -1,0 +1,81 @@
+{
+  "_comment": "SYNTHETIC FIXTURE DATA. No real messages, addresses, or content. Metadata only.",
+  "generated_for": "email_cleanup skill offline demo",
+  "messages": [
+    {
+      "id": "m-0001", "thread_id": "t-0001",
+      "from": "news@example-newsletter.test", "sender_domain": "example-newsletter.test",
+      "subject": "Weekly roundup: five things worth reading",
+      "list_id": "weekly.example-newsletter.test", "list_unsubscribe": "<https://example-newsletter.test/u/abc>",
+      "last_message_at": "2026-02-02T09:00:00Z", "unread": true, "starred": false,
+      "sender_volume_90d": 12, "engaged_recently": false, "thread_message_count": 1
+    },
+    {
+      "id": "m-0002", "thread_id": "t-0002",
+      "from": "deals@example-shop.test", "sender_domain": "example-shop.test",
+      "subject": "40% off flash sale ends tonight",
+      "list_id": "promo.example-shop.test", "list_unsubscribe": "<mailto:unsub@example-shop.test>",
+      "last_message_at": "2025-11-14T17:30:00Z", "unread": false, "starred": false,
+      "sender_volume_90d": 31, "engaged_recently": false, "thread_message_count": 1
+    },
+    {
+      "id": "m-0003", "thread_id": "t-0003",
+      "from": "no-reply@example-ci.test", "sender_domain": "example-ci.test",
+      "subject": "Build #4821 completed",
+      "last_message_at": "2026-03-01T22:14:00Z", "unread": false, "starred": false,
+      "sender_volume_90d": 210, "engaged_recently": true, "thread_message_count": 1
+    },
+    {
+      "id": "m-0004", "thread_id": "t-0004",
+      "from": "security@example-bank.test", "sender_domain": "example-bank.test",
+      "subject": "Security alert: new sign-in attempt",
+      "last_message_at": "2026-07-28T08:05:00Z", "unread": true, "starred": true,
+      "sender_volume_90d": 3, "engaged_recently": true, "thread_message_count": 1
+    },
+    {
+      "id": "m-0005", "thread_id": "t-0005",
+      "from": "billing@example-saas.test", "sender_domain": "example-saas.test",
+      "subject": "Your invoice for July is ready",
+      "last_message_at": "2026-07-01T12:00:00Z", "unread": false, "starred": false,
+      "sender_volume_90d": 4, "engaged_recently": true, "thread_message_count": 2
+    },
+    {
+      "id": "m-0006", "thread_id": "t-0006",
+      "from": "colleague@example-partner.test", "sender_domain": "example-partner.test",
+      "subject": "Re: pilot scope for next quarter",
+      "in_reply_to": "<earlier@example-partner.test>", "personal_contact": true,
+      "last_message_at": "2026-07-30T15:41:00Z", "unread": true, "starred": false,
+      "sender_volume_90d": 6, "engaged_recently": true, "thread_message_count": 5
+    },
+    {
+      "id": "m-0007", "thread_id": "t-0007",
+      "from": "notifications@example-social.test", "sender_domain": "example-social.test",
+      "subject": "You have 7 new updates",
+      "list_id": "notify.example-social.test", "list_unsubscribe": "<https://example-social.test/settings>",
+      "last_message_at": "2025-12-20T06:12:00Z", "unread": true, "starred": false,
+      "sender_volume_90d": 88, "engaged_recently": false, "thread_message_count": 1
+    },
+    {
+      "id": "m-0008", "thread_id": "t-0008",
+      "from": "alerts@example-monitor.test", "sender_domain": "example-monitor.test",
+      "subject": "Disk usage above threshold on node-3",
+      "last_message_at": "2026-01-05T03:22:00Z", "unread": false, "starred": false,
+      "sender_volume_90d": 45, "engaged_recently": false, "thread_message_count": 1
+    },
+    {
+      "id": "m-0009", "thread_id": "t-0009",
+      "from": "hello@example-unknown.test", "sender_domain": "example-unknown.test",
+      "subject": "Quick question about your project",
+      "last_message_at": "2026-06-11T11:11:00Z", "unread": true, "starred": false,
+      "sender_volume_90d": 1, "engaged_recently": false, "thread_message_count": 1
+    },
+    {
+      "id": "m-0010", "thread_id": "t-0010",
+      "from": "digest@example-news.test", "sender_domain": "example-news.test",
+      "subject": "Morning briefing",
+      "list_id": "digest.example-news.test", "list_unsubscribe": "<https://example-news.test/unsub>",
+      "last_message_at": "2026-04-18T05:00:00Z", "unread": false, "starred": false,
+      "sender_volume_90d": 64, "engaged_recently": false, "thread_message_count": 1
+    }
+  ]
+}

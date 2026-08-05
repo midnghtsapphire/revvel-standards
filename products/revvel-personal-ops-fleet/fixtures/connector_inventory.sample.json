@@ -1,0 +1,86 @@
+{
+  "_comment": "CLEARLY LABELED SAMPLE. Non-secret. All values MUST be revalidated at runtime.",
+  "sample_data": true,
+  "captured_note": "Illustrative snapshot of connector state used to seed planning docs.",
+  "connectors": [
+    {
+      "connector": "gmail",
+      "status": "connected",
+      "permissions_granted": [
+        "read",
+        "suggest"
+      ],
+      "revalidation_required": true
+    },
+    {
+      "connector": "google_calendar",
+      "status": "connected",
+      "permissions_granted": [
+        "read",
+        "suggest"
+      ],
+      "revalidation_required": true
+    },
+    {
+      "connector": "github",
+      "status": "connected",
+      "permissions_granted": [
+        "read",
+        "suggest"
+      ],
+      "revalidation_required": true
+    },
+    {
+      "connector": "dropbox",
+      "status": "connected",
+      "permissions_granted": [
+        "read"
+      ],
+      "revalidation_required": true
+    },
+    {
+      "connector": "google_drive",
+      "status": "connected",
+      "permissions_granted": [
+        "read"
+      ],
+      "revalidation_required": true,
+      "note": "authorization succeeded; ready to revalidate at runtime"
+    },
+    {
+      "connector": "box",
+      "status": "disabled_by_user",
+      "permissions_granted": [],
+      "revalidation_required": true,
+      "note": "authorization dismissed by operator; disabled, reconnect required, do not retrigger"
+    },
+    {
+      "connector": "local_companion_windows",
+      "status": "not_configured",
+      "permissions_granted": [],
+      "revalidation_required": true
+    },
+    {
+      "connector": "mobile_companion",
+      "status": "not_configured",
+      "permissions_granted": [],
+      "revalidation_required": true
+    },
+    {
+      "connector": "n8n",
+      "status": "not_configured",
+      "permissions_granted": [],
+      "revalidation_required": true
+    },
+    {
+      "connector": "openrouter",
+      "status": "not_configured",
+      "permissions_granted": [],
+      "revalidation_required": true
+    }
+  ],
+  "status_change_log": [
+    "google_drive: requires_reauthorization -> connected (authorization succeeded; still ready-to-revalidate, not proven)",
+    "box: requires_connection -> disabled_by_user (operator dismissed authorization; reconnect is operator-initiated only)"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "_comment": "SYNTHETIC FIXTURE DATA for future calendar skills. No real events.",
+  "events": [
+    {"id": "e-001", "summary": "Focus block", "start": "2026-08-04T14:00:00Z", "end": "2026-08-04T16:00:00Z", "guests": 0, "private": true},
+    {"id": "e-002", "summary": "Partner sync", "start": "2026-08-04T15:30:00Z", "end": "2026-08-04T16:00:00Z", "guests": 3, "private": false},
+    {"id": "e-003", "summary": "Deep work", "start": "2026-08-05T09:00:00Z", "end": "2026-08-05T11:00:00Z", "guests": 0, "private": true}
+  ]
+}

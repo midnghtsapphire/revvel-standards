@@ -1,0 +1,111 @@
+# Capability / skills / integrations manifest.
+# This is the public contract of the fleet. Anything not listed here is NOT a
+# runtime capability (see docs/INTERNAL_CAPABILITIES_BOUNDARY.md).
+# No secrets, memory contents, system prompts, or proprietary internals appear here.
+
+manifest_version: 1
+fleet: revvel-personal-ops-fleet
+version: 0.1.0
+default_autonomy_mode: review_everything
+apply_enabled: false            # MVP is plan/dry-run only
+
+permission_verbs: [read, suggest, write, delete, unsubscribe]
+dispositions: [allow, propose, require_approval, deny]
+autonomy_modes: [review_everything, safe_automation, policy_automation]
+
+skills:
+  - name: email_cleanup
+    status: implemented
+    surface: cli, api
+    inputs: gmail thread metadata (fixtures in the MVP; bodies never read)
+    outputs:
+      - gmail.labels.apply           # reversible, internal-only
+      - gmail.threads.archive        # reversible, internal-only
+      - gmail.subscriptions.unsubscribe   # externally visible -> always approval-gated
+      - gmail.threads.trash          # delete -> always approval-gated, Trash only
+    categories: [newsletter, notification, receipt, promotion, personal, security, unknown]
+    protected_categories: [security, personal, receipt]   # never archived or trashed
+    determinism: rule-based, reproducible
+    evidence: one Evidence row per signal, digest-only
+
+  - name: calendar_hygiene
+    status: planned
+    outputs: [calendar.events.propose_hold, calendar.events.create_private_hold]
+    notes: guest-visible changes are always approval-gated
+
+  - name: file_consolidation
+    status: planned
+    outputs: [drive.files.propose_organize, dropbox.files.propose_dedupe, local.fs.propose_cleanup]
+    notes: metadata + content hashes only; every move records its prior location
+
+  - name: repo_hygiene
+    status: planned
+    outputs: [github.issues.propose]
+    notes: never creates or modifies cloud repositories in this MVP
+
+integrations:
+  - name: gmail
+    surface: cloud_api
+    sample_status: connected
+    granted: [read, suggest]
+    caveat: not all Gmail operations are exposed by the host connector; revalidate per capability
+  - name: google_calendar
+    surface: cloud_api
+    sample_status: connected
+    granted: [read, suggest]
+  - name: google_drive
+    surface: cloud_api
+    sample_status: connected
+    granted: [read]
+    caveat: authorization succeeded; ready-to-revalidate, folder allowlist still empty
+  - name: dropbox
+    surface: cloud_api
+    sample_status: connected
+    granted: [read]
+  - name: box
+    surface: cloud_api
+    sample_status: disabled_by_user
+    granted: []
+    caveat: authorization dismissed by operator; do not retrigger, reconnect is operator-initiated
+  - name: github
+    surface: cloud_api
+    sample_status: connected
+    granted: [read, suggest]
+    caveat: repo deletion denied; no repository is created or modified
+  - name: local_companion_windows
+    surface: local_companion
+    sample_status: not_configured
+    requires: [installed companion, folder allowlist, machine enrollment, local approval prompt]
+  - name: mobile_companion
+    surface: mobile_companion
+    sample_status: not_configured
+    requires: [installed companion app, user-approved OS permissions, separate local authorization]
+    caveat: no phone data is readable by default; device-initiated push only
+  - name: n8n
+    surface: self_hosted
+    sample_status: not_configured
+    caveat: production triggers are approval-gated; credentials stay inside n8n
+  - name: openrouter
+    surface: cloud_api
+    sample_status: not_configured
+    caveat: redacted payloads only; raw-content completion is denied
+
+hard_denials:
+  - github.repos.delete
+  - local.fs.delete
+  - mobile.device.read_arbitrary
+  - openrouter.chat.completion_raw_content
+
+always_require_approval:
+  permissions: [delete, unsubscribe]
+  properties: [externally_visible, irreversible, risk_tier>=high]
+
+artifacts:
+  audit: var/audit/<run_id>.jsonl   # append-only, SHA-256 chained
+  plans: var/plans/<plan_id>.json
+  inventory: var/inventory/<inventory_id>.json
+  schemas: schemas/*.json
+
+boundary_note: >
+  All statuses are non-secret samples and MUST be revalidated at runtime. Platform-internal
+  capabilities of any host agent runtime are out of scope and intentionally undocumented here.

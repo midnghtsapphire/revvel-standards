@@ -1,0 +1,167 @@
+{
+  "$defs": {
+    "Capability": {
+      "description": "One documented, addressable connector operation.",
+      "properties": {
+        "key": {
+          "description": "Stable capability id, e.g. 'gmail.labels.apply'.",
+          "title": "Key",
+          "type": "string"
+        },
+        "permission": {
+          "$ref": "#/$defs/Permission"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "scopes": {
+          "description": "Least-privilege provider scopes.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Scopes",
+          "type": "array"
+        },
+        "risk_tier": {
+          "$ref": "#/$defs/RiskTier",
+          "default": "high"
+        },
+        "reversibility": {
+          "$ref": "#/$defs/Reversibility",
+          "default": "irreversible"
+        },
+        "externally_visible": {
+          "default": false,
+          "title": "Externally Visible",
+          "type": "boolean"
+        },
+        "approval_gate": {
+          "default": "require_approval",
+          "description": "allow | propose | require_approval | deny (policy may only tighten this).",
+          "title": "Approval Gate",
+          "type": "string"
+        },
+        "rollback": {
+          "default": "none",
+          "description": "How the action is undone.",
+          "title": "Rollback",
+          "type": "string"
+        },
+        "availability": {
+          "default": "planned",
+          "description": "available | partial | planned | unavailable \u2014 revalidate at runtime.",
+          "title": "Availability",
+          "type": "string"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "permission",
+        "description"
+      ],
+      "title": "Capability",
+      "type": "object"
+    },
+    "Permission": {
+      "description": "Separated permission verbs. Never collapse these into one grant.",
+      "enum": [
+        "read",
+        "suggest",
+        "write",
+        "delete",
+        "unsubscribe"
+      ],
+      "title": "Permission",
+      "type": "string"
+    },
+    "Reversibility": {
+      "enum": [
+        "reversible",
+        "conditionally_reversible",
+        "irreversible"
+      ],
+      "title": "Reversibility",
+      "type": "string"
+    },
+    "RiskTier": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "title": "RiskTier",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "provider": {
+      "title": "Provider",
+      "type": "string"
+    },
+    "surface": {
+      "description": "cloud_api | local_companion | mobile_companion | self_hosted",
+      "title": "Surface",
+      "type": "string"
+    },
+    "identity_binding": {
+      "default": "explicit_allowlist",
+      "description": "How the operating identity is chosen and pinned.",
+      "title": "Identity Binding",
+      "type": "string"
+    },
+    "configurable": {
+      "default": true,
+      "description": "Every right-hand-side value (scopes, targets, gates) is user-configurable.",
+      "title": "Configurable",
+      "type": "boolean"
+    },
+    "default_permissions": {
+      "items": {
+        "$ref": "#/$defs/Permission"
+      },
+      "title": "Default Permissions",
+      "type": "array"
+    },
+    "capabilities": {
+      "items": {
+        "$ref": "#/$defs/Capability"
+      },
+      "title": "Capabilities",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "config_keys": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Config Keys",
+      "type": "array"
+    }
+  },
+  "required": [
+    "name",
+    "provider",
+    "surface"
+  ],
+  "title": "ConnectorManifest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revvel.local/schemas/connector_manifest.schema.json"
+}

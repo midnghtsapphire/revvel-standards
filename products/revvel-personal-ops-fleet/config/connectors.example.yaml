@@ -1,0 +1,59 @@
+# Connector wiring (EXAMPLE, no secrets). Values are illustrative and editable.
+# Status values are hints only and MUST be revalidated at runtime.
+
+connectors:
+  gmail:
+    identity: angelreporters@gmail.com
+    permissions: [read, suggest]
+    label_namespace: Revvel
+    max_threads_per_run: 250
+  google_calendar:
+    identity: angelreporters@gmail.com
+    permissions: [read, suggest]
+    calendar_ids: [primary]
+  google_drive:
+    identity: angelreporters@gmail.com
+    permissions: [read]
+    folder_allowlist: []            # still empty: authorization != access. Add folders explicitly.
+    note: authorization succeeded; revalidate scopes at runtime before first read
+  dropbox:
+    identity: dropbox:primary
+    permissions: [read]
+    path_allowlist: ["/Revvel/Ops"]
+  box:
+    identity: box:primary
+    enabled: false                  # disabled by operator choice
+    permissions: []
+    folder_allowlist: []
+    never_prompt_for_auth: true     # do NOT retrigger Box authorization
+    note: authorization dismissed by operator; reconnect is operator-initiated only
+  github:
+    identity: revvel-ops-bot
+    permissions: [read, suggest]
+    repo_allowlist: ["revvel/personal-ops-fleet"]
+  n8n:
+    base_url: http://localhost:5678
+    permissions: [read]
+    workflow_allowlist: []
+  openrouter:
+    default_model: configure-me
+    monthly_spend_cap_usd: 25
+    redaction_profile: strict
+
+companion:
+  local:
+    platform: windows
+    enrollment_id: unset
+    folder_allowlist:
+      - "C:\\Users\\<you>\\RevvelOps\\Inbox"
+      - "C:\\Users\\<you>\\RevvelOps\\Staging"
+    command_allowlist: []
+    staging_dir: "C:\\Users\\<you>\\RevvelOps\\Staging"
+    forbidden_roots:
+      - "C:\\Windows"
+      - "C:\\Program Files"
+      - "C:\\Users\\<you>"
+  mobile:
+    enrollment_id: unset
+    enabled_capabilities: []
+    note: no phone data is readable without an installed companion, OS permissions, and local authorization
