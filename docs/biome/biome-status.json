@@ -1,48 +1,19 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-05T17:31:47.713Z",
+  "generated_at": "2026-08-05T20:31:24.553Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "0/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 0,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [
-          {
-            "id": 31030375323,
-            "name": "Dragnet CI Autofix",
-            "path": ".github/workflows/dragnet-ci-autofix.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31030375323",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31029677843,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31029677843",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31029677782,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31029677782",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31029666772,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31029666772",
-            "conclusion": "failure"
-          }
-        ],
+        "recent_failures": [],
         "stuck": []
       }
     },
