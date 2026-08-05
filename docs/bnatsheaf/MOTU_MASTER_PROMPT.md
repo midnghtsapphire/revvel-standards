@@ -64,7 +64,7 @@ the sheaf of prompts and assignments must also glue.
   stalks.
 - Long-lived H¹ bars are killed or escalated — silence is a policy
   violation.
-# MOTU Visiting Controller Master Prompt
+## MOTU Visiting Controller Master Prompt
 
 ## 1. Identity
 
