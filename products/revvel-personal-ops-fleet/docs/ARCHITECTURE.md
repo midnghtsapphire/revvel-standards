@@ -8,7 +8,7 @@ audit trail. The fleet is a planner and a gatekeeper first; execution is the las
 
 ## 2. Component model
 
-```
+```text
                  ┌───────────────────────────────────────────────────────────┐
                  │                     CONTROL PLANE                          │
   fixtures /     │                                                            │
@@ -28,7 +28,7 @@ audit trail. The fleet is a planner and a gatekeeper first; execution is the las
         │ dropbox, box, github,      │        │ + outbound only),       │
         │ n8n, openrouter            │        │ mobile (contract only)  │
         └────────────────────────────┘        └─────────────────────────┘
-```
+```text
 
 ### Modules
 

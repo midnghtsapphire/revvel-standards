@@ -25,7 +25,7 @@ identity, permission, risk, reversibility, external-visibility and rollback chec
 Computed by `policy.score_confidence`, independent of the disposition. Defaults from
 `config/policy.example.yaml`:
 
-```
+```text
 score = 20 (base)
       + min(12 * evidence_count, 36)
       + 20 if reversible else 8 if conditionally_reversible else 0
@@ -35,7 +35,7 @@ score = 20 (base)
       - risk_penalty      {low 0, medium 10, high 25, critical 45}
       - permission_penalty{read 0, suggest 0, write 8, unsubscribe 18, delete 30}
       clamped to [0, 100]
-```
+```text
 
 Every term is recorded in `PolicyDecision.reasons` (e.g. `evidence(+36)`, `risk_high(-25)`), so a
 score is always explainable. **A high score never unlocks a gated capability** — scoring and gating

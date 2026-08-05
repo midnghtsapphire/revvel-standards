@@ -31,9 +31,9 @@ was never automatable (policy rule R070).
 | `n8n.workflows.modify` | Re-import the exported workflow JSON snapshot |
 | `n8n.workflows.trigger_production` | Run the workflow-specific compensating flow |
 
-4. **Record** the rollback as an audit event referencing the original `proposal_id` and
+1. **Record** the rollback as an audit event referencing the original `proposal_id` and
    `decision_id`. Rollbacks are appended, never overwritten.
-5. **Prevent recurrence:** tighten policy (move the capability back to `require_approval` or onto the
+2. **Prevent recurrence:** tighten policy (move the capability back to `require_approval` or onto the
    deny list), add a test, and file an ADR if the change is structural.
 
 ## Retention constraint

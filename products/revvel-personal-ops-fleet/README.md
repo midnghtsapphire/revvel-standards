@@ -7,10 +7,10 @@ and every step is written to an *append-only, SHA-256 hash-chained* audit log.
 This repository is an MVP. It is genuinely runnable and it deliberately cannot mutate anything
 outside its own `var/` directory.
 
-```
+```text
 plan  ->  score (0-100)  ->  policy disposition  ->  dry-run  ->  [human approval]  ->  apply
                                                                                       ^ refused in MVP
-```
+```text
 
 ## Safety posture (enforced in code, not just prose)
 
@@ -32,7 +32,7 @@ plan  ->  score (0-100)  ->  policy disposition  ->  dry-run  ->  [human approva
 python -m pip install -e ".[dev]"      # or: make setup
 make test                               # 54 unit tests, fully offline
 make demo                               # inventory + plan + dry-run + chain verification
-```
+```text
 
 CLI (installed as `revvel-ops`, or `python -m revvel_ops.cli`):
 
@@ -45,13 +45,13 @@ revvel-ops plan --mode review_everything     # build a plan from fixtures
 revvel-ops dry-run --mode policy_automation  # plan + simulate, zero external calls
 revvel-ops verify-audit                      # verify SHA-256 hash chains
 revvel-ops apply --plan var/plans/<id>.json  # blocked by design
-```
+```text
 
 Optional read/plan HTTP surface (localhost only, no apply endpoint):
 
 ```bash
 uvicorn revvel_ops.api:app --host 127.0.0.1 --port 8787
-```
+```text
 
 ## What the demo actually does
 
@@ -74,7 +74,7 @@ a decision, never loosen it.
 
 ## Repository map
 
-```
+```text
 src/revvel_ops/
   models.py            ActionProposal, PolicyDecision, AuditEvent, Evidence, Plan, Inventory
   config.py            policy / identities / storage loading (YAML, restrictive defaults)
@@ -92,7 +92,7 @@ schemas/   JSON Schema for every persisted object (generated: make schemas)
 fixtures/  synthetic sample data only
 docs/      architecture, security, policy, connectors, operations, ADRs, runbooks
 docs/deliverables/Revvel-Personal-Ops-Fleet-Architecture-and-Operations-Handbook.pdf
-```
+```text
 
 ## Documentation
 
