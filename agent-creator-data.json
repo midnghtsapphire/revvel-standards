@@ -307,6 +307,7 @@
     "DevOps & Automation",
     "DevOps & Deployment",
     "Developer Workflow",
+    "Fleet Consistency & Topology",
     "Marketing Automation",
     "Product Analytics",
     "Product Development",
@@ -318,6 +319,24 @@
     "Testing & Quality"
   ],
   "skills": [
+    {
+      "name": "bnatsheaf",
+      "title": "BNAT Knowledge Sheaf — Mathematical Sheaf Consistency (H1 ~ 0)",
+      "category": "Fleet Consistency & Topology",
+      "path": "skills/bnatsheaf/",
+      "persona": "verifier",
+      "triggers": [
+        "knowledge sheaf",
+        "sheaf consistency",
+        "H1",
+        "laplacian energy",
+        "persistent homology",
+        "barcode",
+        "imprint-at-spawn",
+        "MOTU",
+        "BNAT"
+      ]
+    },
     {
       "name": "bito_ai",
       "title": "BITO AI — Agentic Code Review & Desktop API Assistant",
