@@ -78,7 +78,7 @@ ${(audit.judgements || [])
 3. Keep human review: do **not** merge without midnghtsapphire approval.
 
 ### Labels
-\`wr\`, \`formal:auto-wr\`, \`formal:${v === "needs_reaudit" ? "reaudit" : v}\`, \`human-review-required\`, \`${priorityFor(v)}\`
+\`wr\`, \`formal:auto-wr\`, \`${formalLabelFor(v)}\`, \`human-review-required\`, \`${priorityFor(v)}\`
 
 ### Auto-filled by Research Engine
 - **Phase Alignment:** _(auto)_
