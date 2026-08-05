@@ -122,7 +122,7 @@ function main() {
   fs.writeFileSync(
     summaryPath,
     `# Formal auto-WR index\n\nGenerated ${new Date().toISOString()}\n\n` +
-      opened.map((o) => `- PR #${o.pr} ${o.verdict}: \`${o.file}\``).join("\n") +
+      opened.map((o) => `- PR #${o.pr} ${o.verdict}: \`${path.basename(o.file)}\``).join("\n") +
       (opened.length ? "\n" : "\n_No auto-WRs (all pass or empty)._\n"),
   );
 
