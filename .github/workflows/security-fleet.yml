@@ -1,0 +1,250 @@
+name: security-fleet
+
+# Wires scripts/security-fleet.js (skills/security-fleet/SKILL.md) into CI.
+#
+# This workflow did not exist before WR-2026-08-05-01 even though the SKILL
+# doc, the detector code, and SECURITY_FLEET.yml persona catalog all already
+# referenced it by name — the fleet was fully designed and coded but had
+# zero execution path. See wr/pending/audit-2026-08-05/WR-01-security-fleet-wiring.md.
+#
+# Event lane  — @sentinel scans new issue/comment/PR text for prompt-injection
+#               before any agent consumes it; @exfil scans the PR diff for
+#               leaked tokens. Both receive their text via `env:`, never
+#               interpolated into a `run:` shell string (CLAUDE.md gotcha #4 /
+#               this fleet's own @exprwatch rule).
+# Scheduled lane — @exprwatch, @permit, @redteam sweep the whole repo weekly.
+#               (@exfil has no directory-sweep mode in the CLI — it takes
+#               --text/--text-file only — so it runs in the event lane against
+#               PR diffs instead of the schedule lane the SKILL doc lists.
+#               Flagged as an intentional deviation in the WR, not a silent
+#               contradiction of the doc.)
+#
+# Report-only per charter rule (scripts/security-fleet.js docstring): the CLI
+# exits 0 unless --strict, and this workflow never fails a build or blocks a
+# merge — it only files/updates deduped tracking issues. That makes it a
+# validator, not a WR/PR generator, so it is intentionally exempt from the
+# 2026-07-25 "quiet mode" change (PR #16805) that turned off timer-driven
+# WR/PR generators for cost control.
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+  pull_request:
+    types: [opened, edited, synchronize]
+  schedule:
+    - cron: '30 6 * * 1' # weekly, Monday 06:30 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: security-fleet-${{ github.event_name }}-${{ github.event.issue.number || github.event.pull_request.number || 'scheduled' }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  event-lane:
+    name: "@sentinel + @exfil (event lane)"
+    if: github.event_name == 'issues' || github.event_name == 'issue_comment' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: "@sentinel — scan event text for instruction smuggling"
+        env:
+          EVENT_TITLE: ${{ github.event.issue.title || github.event.pull_request.title || '' }}
+          EVENT_TEXT: ${{ github.event.issue.body || github.event.comment.body || github.event.pull_request.body || '' }}
+        run: |
+          printf '%s\n\n%s\n' "$EVENT_TITLE" "$EVENT_TEXT" > /tmp/sentinel-input.txt
+          node scripts/security-fleet.js sentinel --text-file /tmp/sentinel-input.txt --json > /tmp/sentinel-findings.json
+          cat /tmp/sentinel-findings.json
+
+      - name: "@exfil — scan PR diff for leaked tokens"
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git diff "$BASE_SHA" "$HEAD_SHA" > /tmp/pr-diff.txt || true
+          node scripts/security-fleet.js exfil --text-file /tmp/pr-diff.txt --json > /tmp/exfil-findings.json
+          cat /tmp/exfil-findings.json
+
+      - name: File finding as a deduped issue if any hits
+        uses: actions/github-script@v9.0.0
+        env:
+          SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
+        with:
+          script: |
+            const fs = require('fs');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            for (const label of ['security', 'security-fleet']) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name: label });
+              } catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({ owner, repo, name: label, color: 'B60205', description: 'security-fleet automated finding' });
+                } else {
+                  throw e;
+                }
+              }
+            }
+
+            const reports = [];
+            try { reports.push({ handle: '@sentinel', report: JSON.parse(fs.readFileSync('/tmp/sentinel-findings.json', 'utf8')) }); } catch (e) { core.info('no sentinel report'); }
+            try { reports.push({ handle: '@exfil', report: JSON.parse(fs.readFileSync('/tmp/exfil-findings.json', 'utf8')) }); } catch (e) { core.info('no exfil report'); }
+
+            const withFindings = reports.filter((r) => (r.report.findings || []).length > 0);
+            if (withFindings.length === 0) {
+              core.info('No security-fleet findings on this event.');
+              return;
+            }
+
+            const subject = context.payload.issue?.number
+              ? `issue #${context.payload.issue.number}`
+              : context.payload.pull_request?.number
+                ? `PR #${context.payload.pull_request.number}`
+                : context.eventName;
+            const title = `[security-fleet] finding on ${subject}`;
+
+            const { data: open } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'security-fleet', per_page: 100 });
+            if (open.some((i) => i.title === title)) {
+              core.info(`Already filed for ${subject}, skipping.`);
+              return;
+            }
+
+            const body = [
+              'Automated finding from the `security-fleet` event lane (`scripts/security-fleet.js`).',
+              '',
+              `Source: ${process.env.SOURCE_URL || subject}`,
+              '',
+              ...withFindings.flatMap((r) => [
+                `**${r.handle}** (${r.report.findings.length} finding(s)):`,
+                ...r.report.findings.map((f) => `- \`${f.rule}\`: ${f.excerpt}`),
+                '',
+              ]),
+              'Report-only — a human must confirm before any action. See `skills/security-fleet/SKILL.md`.',
+            ].join('\n');
+
+            await github.rest.issues.create({ owner, repo, title, body, labels: ['security', 'security-fleet'] });
+
+  scheduled-sweep:
+    name: "@exprwatch + @permit + @redteam (weekly sweep)"
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run repo-wide sweeps
+        run: |
+          node scripts/security-fleet.js exprwatch --json > /tmp/exprwatch.json || true
+          node scripts/security-fleet.js permit --json > /tmp/permit.json || true
+          node scripts/security-fleet.js redteam --json > /tmp/redteam.json || true
+
+      - name: File/update one deduped tracking issue per member
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            for (const label of ['security', 'security-fleet']) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name: label });
+              } catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({ owner, repo, name: label, color: 'B60205', description: 'security-fleet automated finding' });
+                } else {
+                  throw e;
+                }
+              }
+            }
+
+            const members = [
+              { key: 'exprwatch', file: '/tmp/exprwatch.json', handle: '@exprwatch', desc: 'untrusted `${{ github.event.* }}` interpolated into run: shells' },
+              { key: 'permit', file: '/tmp/permit.json', handle: '@permit', desc: 'permissions: vs what jobs actually do' },
+              { key: 'redteam', file: '/tmp/redteam.json', handle: '@redteam', desc: 'adversarial payloads vs our own detectors + dependency lane' },
+            ];
+
+            const { data: open } = await github.rest.issues.listForRepo({ owner, repo, state: 'open', labels: 'security-fleet', per_page: 100 });
+
+            for (const m of members) {
+              let report;
+              try {
+                report = JSON.parse(fs.readFileSync(m.file, 'utf8'));
+              } catch (e) {
+                core.warning(`could not read ${m.file}: ${e.message}`);
+                continue;
+              }
+              const findings = report.findings || [];
+              const titlePrefix = `[security-fleet] ${m.handle} weekly sweep:`;
+              const title = `${titlePrefix} ${findings.length} finding(s)`;
+              const existing = open.find((i) => i.title.startsWith(titlePrefix));
+
+              if (findings.length === 0) {
+                if (existing) {
+                  await github.rest.issues.update({
+                    owner, repo, issue_number: existing.number, state: 'closed',
+                    body: `${existing.body}\n\n_Auto-closed: 0 findings on the latest weekly sweep._`,
+                  });
+                  core.info(`Closed resolved ${m.handle} issue #${existing.number}.`);
+                }
+                continue;
+              }
+
+              const body = [
+                `Automated weekly sweep from \`security-fleet\` ${m.handle} (${m.desc}).`,
+                '',
+                `Detector: \`scripts/security-fleet.js ${m.key}\`. First 50 findings shown below.`,
+                '',
+                ...findings.slice(0, 50).map((f) => `- \`${f.source}${f.job ? '#' + f.job : ''}\`: ${f.excerpt}`),
+                '',
+                findings.length > 50 ? `...and ${findings.length - 50} more. Re-run \`node scripts/security-fleet.js ${m.key} --json\` locally for the full list.` : '',
+                '',
+                'Report-only — a human must confirm before any permission/expression change. See `skills/security-fleet/SKILL.md`.',
+              ].join('\n');
+
+              if (existing) {
+                await github.rest.issues.update({ owner, repo, issue_number: existing.number, body });
+                core.info(`Updated existing ${m.handle} issue #${existing.number}.`);
+              } else {
+                await github.rest.issues.create({ owner, repo, title, body, labels: ['security', 'security-fleet'] });
+                core.info(`Filed new ${m.handle} issue.`);
+              }
+            }
