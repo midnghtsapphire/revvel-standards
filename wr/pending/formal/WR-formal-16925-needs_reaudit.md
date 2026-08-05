@@ -31,7 +31,8 @@ Formal dual-path verification (`boolean_xor_dual_path`, window 78h) produced ver
 ### Acceptance Criteria
 - formal re-run shows `pass` OR documented human override with evidence
 - scorecard event logged
-# [WR] Formal re-audit resolution — PR #16925 (feat: seed revvel-finishers foundation and WRs)
+
+## [WR] Formal re-audit resolution — PR #16925 (feat: seed revvel-finishers foundation and WRs)
 
 ## Output Type
 
@@ -101,10 +102,10 @@ provenance:
   generated_at: 2026-08-05T14:54:24.854Z
   filed_at: 2026-08-05T18:30:00Z
   human_gate: required
+  allowlist_labels: wr, formal:auto-wr, formal:reaudit, human-review-required, priority:p2
   agent: grok-build
   source_issue: midnghtsapphire/revvel-standards#16952
   related_pr: midnghtsapphire/revvel-standards#16925
   resolution: human_override
   resolved_at: 2026-08-05T18:45:00Z
   human_gate: satisfied (midnghtsapphire merged #16925 on 2026-08-05T13:32:16Z)
-  agent: copilot
