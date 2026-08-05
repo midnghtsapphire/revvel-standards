@@ -110,7 +110,8 @@ function main(argv) {
       for (const p of problems) console.error(`saved-replies: ${p}`);
       return 1;
     }
-    console.log(`saved-replies: ${registry.replies.length} entr(y|ies) valid`);
+    const n = registry.replies.length;
+    console.log(`saved-replies: ${n} ${n === 1 ? 'entry' : 'entries'} valid`);
     return 0;
   }
 
