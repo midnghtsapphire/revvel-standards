@@ -1,0 +1,77 @@
+# OpenClaw E-E-A-T PromptFoo Test Configuration
+# This test suite validates the openclaw-eeat skill's ability to generate
+# platform-specific content for E-E-A-T establishment.
+
+description: "OpenClaw E-E-A-T Content Distribution Skill Tests"
+
+prompts:
+  - file://../SKILL.md
+
+providers:
+  - id: anthropic:claude-sonnet-4-5
+    config:
+      temperature: 0.2
+      max_tokens: 4000
+
+  - id: anthropic:claude-haiku-4-5
+    config:
+      temperature: 0.1
+      max_tokens: 2000
+
+# Test cases will be added in follow-up PR
+tests:
+  - description: "Basic skill loading and understanding"
+    vars:
+      task: "Explain what the openclaw-eeat skill does in one sentence"
+    assert:
+      - type: contains
+        value: "E-E-A-T"
+      - type: contains
+        value: "platform"
+      - type: contains
+        value: "brand"
+
+  - description: "Platform tier classification"
+    vars:
+      task: "List the Tier 1 platforms supported by openclaw-eeat"
+    assert:
+      - type: contains
+        value: "ORCID"
+      - type: contains
+        value: "GitHub"
+
+  - description: "Wikidata priority recognition"
+    vars:
+      task: "Which platform is the highest priority and why?"
+    assert:
+      - type: contains
+        value: "Wikidata"
+      - type: contains
+        value: "Knowledge Graph"
+
+  - description: "JSON-LD template awareness"
+    vars:
+      task: "What JSON-LD templates are available?"
+    assert:
+      - type: contains
+        value: "organization"
+      - type: contains
+        value: "person"
+      - type: contains
+        value: "research-project"
+
+  - description: "Auto-submission capability"
+    vars:
+      task: "Which platforms support auto-submission?"
+    assert:
+      - type: contains
+        value: "ORCID"
+      - type: contains
+        value: "GitHub"
+
+defaultTest:
+  assert:
+    - type: llm-rubric
+      value: "Response should be accurate, concise, and demonstrate understanding of the openclaw-eeat skill"
+
+outputPath: ./promptfoo-results.json

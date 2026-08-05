@@ -1,0 +1,20 @@
+{
+  "product_slug": "TEMPLATE",
+  "intake_id": "TEMPLATE",
+  "revenue_target_monthly_usd": 0,
+  "goal_phase": 1,
+  "status": "new",
+  "steps": [],
+  "shape": "TEMPLATE",
+  "step": 0,
+  "step_name": "scaffolded",
+  "bom_ready": false,
+  "build_green": false,
+  "certified": false,
+  "monetized": false,
+  "deployed": false,
+  "marketed": false,
+  "created_at": null,
+  "last_updated_at": null,
+  "notes": []
+}

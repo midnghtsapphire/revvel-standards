@@ -1,0 +1,114 @@
+# Decision Systems Architecture
+
+> **Version:** 1.0
+> **Updated:** 2026-04-25
+> **Philosophy:** Silent autonomy, best-in-class analysis, ruthlessly pragmatic
+
+---
+
+## The Three Systems
+
+| System | Role | Mode | Trigger |
+|--------|------|------|--------|
+| **PLATO** | Pre-cognitive deep research | Silent → Deep analysis | Before major decisions |
+| **COUNTER** | Darwin survival testing | Silent → Stress test | After PLATO approves |
+| **JUDGE** | Matrix final authority | Silent → Report on trigger | Continuous |
+
+---
+
+## Execution Flow
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                  AUTONOMOUS DECISION FLOW                         │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                               │
+│  NEW DECISION / PROPOSAL                                          │
+│          │                                                   │
+│          ▼                                                   │
+│  ┌─────────────────────────────────────────────────────┐          │
+│  │            PLATO ANALYSIS                        │          │
+│  │  • Questions assumptions                   │          │
+│  │  • Counterfactual modeling              │          │
+│  │  • 5-year projection               │          │
+│  │  • Outputs: recommendation + conditions   │          │
+│  └─────────────────────────────────────────────────────┘          │
+│                    │                                             │
+│                    ▼ (If PLATO recommends PROCEED)              │
+│  ┌─────────────────────────────────────────────────────┐          │
+│  │           COUNTER SURVIVAL TEST                   │          │
+│  │  • Death by thousand cuts            │          │
+│  │  • Darwin pressure tests        │          │
+│  │  • Negative space mapping     │          │
+│  │  • Outputs: KILL conditions                   │          │
+│  └─────────────────────────────────────────────────────┘          │
+│                   │                                            │
+│                   ▼ (If COUNTER says SURVIVES)                     │
+│  ┌─────────────────────────────────────────────────────┐          │
+│  │            JUDGE MATRIX SCORING                      │          │
+│  │  • Financial: [0-100]                         │          │
+│  │  • Legal: [0-100]                           │          │
+│  │  • Operational: [0-100]                      │          │
+│  │  • Strategic: [0-100]                      │          │
+│  │  • Risk: [0-100]                            │          │
+│  │  • Values: [0-100]                          │          │
+│  │  • Outputs: GREEN/YELLOW/RED + verdict    │          │
+│  └─────────────────────────────────────────────────────┘          │
+│                    │                                            │
+│         ┌──────────────┴──────────────┐                    │
+│         ▼                         ▼                 │
+│   ┌─────────────┐          ┌─────────────┐            │
+│   │  GREEN    │          │  RED      │            │
+│   │ Execute   │          │   AUTO-KILL │            │
+│   └─────────────┘          └─────────────┘            │
+│                                                               │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## System Descriptions
+
+### PLATO: The Wise Elder
+- **What:** Deep research, counterfactual analysis, long-term consequence modeling
+- **Philosophy:** "I think silently, so you don't have to wonder."
+- **Runs:** Before proposals, entering new territory, weekly trajectory review
+
+### COUNTER: The Evolutionist  
+- **What:** Survival testing, ruthless pragmatism, negative space exploration
+- **Philosophy:** "Nature doesn't care about feelings. Neither do I."
+- **Runs:** After PLATO passes, before implementation, quarterly stress test
+
+### JUDGE: The Final Arbiter
+- **What:** Matrix scoring, threshold monitoring, automated judgment
+- **Philosophy:** "I silently watch. When I speak, listen."
+- **Runs:** Continuous background, outputs on trigger conditions
+
+---
+
+## Daily Autonomous Jobs
+
+| Job | System | Schedule | Purpose |
+|-----|--------|---------|---------|
+| `judge:daily-health` | JUDGE | 0 6 * * * | Morning health check |
+| `judge:compliance` | JUDGE | 0 8 * * * | Compliance deadline watch |
+| `judge:financials` | JUDGE | 0 9 * * * | Daily financial sync |
+| `judge:triggers` | JUDGE | 0 12 * * * | Trigger condition check |
+| `judge:evening` | JUDGE | 0 18 * * * | End of day review |
+| `judge:weekly-full` | JUDGE | 0 8 * * 1 | Full weekly review |
+| `judge:proposals` | JUDGE | 0 10 * * 5 | Weekly proposal scan |
+
+---
+
+## Files
+
+| File | Location |
+|------|----------|
+| PLATO System | `docs/systems/plato/README.md` |
+| COUNTER System | `docs/systems/counter/README.md` |
+| JUDGE System | `docs/systems/judge/README.md` |
+| This index | `docs/systems/README.md` |
+
+---
+
+*Three systems. One purpose: Silent, perfect decisions.*

@@ -1,0 +1,49 @@
+name: bito_ai
+title: "BITO AI — Agentic Code Review & Desktop API Assistant"
+version: "1.0.0"
+date: "2026-04-30"
+status: "active"
+platform: "https://bito.ai"
+standard: "standards/BITO_AI_INTEGRATION_STANDARD.md"
+workflow: ".github/workflows/bito-ai.yml"
+category: "Code Quality & Autonomous Review"
+access: all
+persona: reviewer
+
+description: >
+  Wire BITO AI into any Revvel repo for persistent-memory code review,
+  agentic PR workflows, desktop API/secret procurement via the BITO CLI,
+  and automated label updates (bito-ai:review, awaiting-approval,
+  bito-ai:changes-needed, changes-requested) based on review outcomes.
+
+labels:
+  - name: bito-ai
+    color: "0B6FFF"
+    description: "PR or issue touched by BITO AI review"
+  - name: "bito-ai:review"
+    color: "4D94FF"
+    description: "BITO AI review complete — see review comment"
+  - name: "bito-ai:changes-needed"
+    color: "D93F0B"
+    description: "BITO found blocking issues — address before merge"
+
+secrets:
+  - name: BITO_API_KEY
+    purpose: "Authenticates all BITO AI API calls from CI"
+    vault_path: "revvel/shared/code-review/bito"
+    obtain_at: "https://bito.ai → Settings → API Keys"
+    required: true
+
+triggers:
+  - "bito"
+  - "bito ai"
+  - "bito review"
+  - "persistent memory review"
+  - "bito cli"
+  - "bito secret"
+  - "bito index"
+  - "agentic code review"
+  - "desktop api procurement"
+  - "bito-ai label"
+  - "code review with memory"
+  - "repo memory review"

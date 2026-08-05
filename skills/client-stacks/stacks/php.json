@@ -1,0 +1,24 @@
+{
+  "stack": "php",
+  "language": "PHP",
+  "default_framework": "php",
+  "package_manager": "composer",
+  "test_runner": "phpunit",
+  "verify": [
+    "composer install --no-interaction --prefer-dist",
+    "vendor/bin/phpunit || php artisan test"
+  ],
+  "format": "vendor/bin/php-cs-fixer fix --dry-run --diff || true",
+  "prompt_pack": {
+    "idioms": [
+      "Laravel projects (artisan present): use artisan generators, Eloquent conventions, and the client's existing directory layout.",
+      "Match the client's PHP version constraint from composer.json and avoid newer syntax.",
+      "Use the client's test suite (PHPUnit vs Pest) — detect from composer require-dev.",
+      "Respect PSR-12 only if the client already follows it; otherwise mirror their style."
+    ],
+    "pr_style": "Match existing PR titles in the client repo. Default: imperative summary, link their issue.",
+    "never": [
+      "Never run composer update (lockfile churn) — composer install only, unless dependency updates ARE the task."
+    ]
+  }
+}

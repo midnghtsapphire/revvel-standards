@@ -1,0 +1,591 @@
+/* ============================================================
+ * Freedom Angel Corps Repo Manager — stylesheet
+ * Implements the 7 accessibility modes mandated by
+ * docs/Master_Inventory/ACCESSIBILITY_STANDARD.md §4.
+ * Zero external dependencies. Pure CSS custom properties.
+ * ============================================================ */
+
+:root {
+  /* Freedom Angel Corp / Revvel brand tokens */
+  --fa-navy: #0a2540;
+  --fa-gold: #f4b400;
+  --fa-ink: #1a1a1a;
+  --fa-paper: #ffffff;
+  --fa-muted: #f4f6f8;
+  --fa-border: #d8dee4;
+  --fa-success: #1b7a3a;
+  --fa-warn: #b45309;
+  --fa-error: #b91c1c;
+  --fa-link: #0645ad;
+
+  --bg: var(--fa-paper);
+  --fg: var(--fa-ink);
+  --muted-bg: var(--fa-muted);
+  --border: var(--fa-border);
+  --link: var(--fa-link);
+  --accent: var(--fa-navy);
+  --accent-fg: #ffffff;
+  --success: var(--fa-success);
+  --warn: var(--fa-warn);
+  --error: var(--fa-error);
+
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  --fs-base: 16px;
+  --fs-h1: 1.75rem;
+  --fs-h2: 1.25rem;
+  --fs-h3: 1.05rem;
+
+  --radius: 8px;
+  --tap-target: 44px;
+
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --transition: 150ms ease-in-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1720;
+    --fg: #e8eef5;
+    --muted-bg: #182230;
+    --border: #2a3548;
+    --link: #8ab4f8;
+    --accent: #f4b400;
+    --accent-fg: #0a2540;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: var(--fs-base);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--muted-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+}
+
+a {
+  color: var(--link);
+}
+
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--accent);
+  color: var(--accent-fg);
+  padding: 0.75rem 1rem;
+  z-index: 100;
+}
+.skip-link:focus {
+  left: 0;
+  outline: 3px solid var(--fa-gold);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------------
+ * Layout
+ * ------------------------------------------------------------ */
+
+.site-header {
+  background: var(--accent);
+  color: var(--accent-fg);
+  padding: 1rem 1.25rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow);
+}
+
+.site-title {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+.site-title h1 {
+  margin: 0;
+  font-size: var(--fs-h1);
+  line-height: 1.2;
+}
+.site-title .tagline {
+  margin: 0.15rem 0 0;
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+.emblem {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.header-controls select {
+  min-height: var(--tap-target);
+  padding: 0.5rem 0.75rem;
+  background: var(--bg);
+  color: var(--fg);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+main {
+  max-width: 1100px;
+  margin: 1.5rem auto;
+  padding: 0 1.25rem 3rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+main:focus {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: var(--fs-h2);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0.4rem;
+}
+
+/* ------------------------------------------------------------
+ * Forms
+ * ------------------------------------------------------------ */
+
+.form-row {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  align-items: end;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.form-field label {
+  font-weight: 600;
+}
+.form-field .hint {
+  font-weight: 400;
+  color: var(--fg);
+  opacity: 0.75;
+  font-size: 0.85rem;
+  margin: 0;
+}
+.form-field input {
+  min-height: var(--tap-target);
+  padding: 0.55rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  min-height: var(--tap-target);
+  min-width: var(--tap-target);
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--muted-bg);
+  color: var(--fg);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.btn:hover {
+  background: var(--border);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-color: var(--accent);
+}
+.btn-primary:hover {
+  background: var(--fa-gold);
+  color: var(--fa-ink);
+  border-color: var(--fa-gold);
+}
+.btn-small {
+  min-height: 36px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------
+ * Status & summary
+ * ------------------------------------------------------------ */
+
+.status {
+  background: var(--muted-bg);
+  border-left: 4px solid var(--accent);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 1rem;
+}
+.status.status-error {
+  border-color: var(--error);
+  color: var(--error);
+}
+.status.status-success {
+  border-color: var(--success);
+}
+
+.summary-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  margin-bottom: 1rem;
+}
+.metric {
+  background: var(--muted-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.metric-label {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.controls input[type="search"] {
+  flex: 1 1 240px;
+  min-height: var(--tap-target);
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 1rem;
+}
+
+/* ------------------------------------------------------------
+ * Repo list
+ * ------------------------------------------------------------ */
+
+.repo-list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+}
+
+.repo-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: var(--shadow);
+}
+.repo-card-header {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.repo-name {
+  margin: 0;
+  font-size: var(--fs-h3);
+  word-break: break-word;
+}
+.repo-visibility {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: var(--muted-bg);
+  border: 1px solid var(--border);
+}
+.repo-score {
+  margin-left: auto;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--muted-bg);
+  border: 1px solid var(--border);
+}
+.repo-score[data-tier="good"] {
+  background: #e6f4ea;
+  color: var(--success);
+  border-color: var(--success);
+}
+.repo-score[data-tier="fair"] {
+  background: #fff4e0;
+  color: var(--warn);
+  border-color: var(--warn);
+}
+.repo-score[data-tier="poor"] {
+  background: #fde8e8;
+  color: var(--error);
+  border-color: var(--error);
+}
+.repo-description {
+  margin: 0;
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+.repo-checks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.25rem;
+}
+.repo-checks li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.9rem;
+}
+.repo-checks li::before {
+  content: "•";
+  font-weight: 700;
+  width: 1rem;
+  text-align: center;
+}
+.repo-checks li[data-status="pass"]::before {
+  content: "✓";
+  color: var(--success);
+}
+.repo-checks li[data-status="fail"]::before {
+  content: "✗";
+  color: var(--error);
+}
+.repo-checks li[data-status="pending"]::before {
+  content: "…";
+  color: var(--warn);
+}
+
+.repo-card-footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.site-footer {
+  text-align: center;
+  padding: 1.25rem;
+  color: var(--fg);
+  opacity: 0.85;
+  font-size: 0.9rem;
+  border-top: 1px solid var(--border);
+}
+.site-footer .hint {
+  margin: 0.25rem 0 0;
+  opacity: 0.75;
+}
+
+/* ============================================================
+ * Accessibility modes — applied via [data-a11y-mode] on <html>
+ * ============================================================ */
+
+/* 2. WCAG AAA — maximum contrast, larger text, strong focus */
+html[data-a11y-mode="wcag_aaa"] {
+  --bg: #ffffff;
+  --fg: #000000;
+  --muted-bg: #ffffff;
+  --border: #000000;
+  --link: #0000ee;
+  --accent: #000000;
+  --accent-fg: #ffffff;
+  --fs-base: 18px;
+  --shadow: none;
+}
+html[data-a11y-mode="wcag_aaa"] *:focus-visible {
+  outline: 4px solid #ff9900;
+  outline-offset: 3px;
+}
+
+/* 3. Dyslexia-friendly — OpenDyslexic font fallback, cream bg, wider spacing */
+html[data-a11y-mode="dyslexia"] {
+  --bg: #fdf6e3;
+  --fg: #3a2f1b;
+  --muted-bg: #f6ecd0;
+  --border: #cfbf8f;
+  --font-body: "OpenDyslexic", "Comic Sans MS", "Lexend", system-ui,
+    sans-serif;
+}
+html[data-a11y-mode="dyslexia"] body {
+  letter-spacing: 0.05em;
+  word-spacing: 0.15em;
+  line-height: 1.7;
+}
+
+/* 4. ADHD / Focus mode — minimal decoration, dim non-active content */
+html[data-a11y-mode="adhd"] {
+  --shadow: none;
+}
+html[data-a11y-mode="adhd"] .card {
+  border-width: 1px;
+  box-shadow: none;
+}
+html[data-a11y-mode="adhd"] .site-footer,
+html[data-a11y-mode="adhd"] .tagline,
+html[data-a11y-mode="adhd"] .hint {
+  opacity: 0.6;
+}
+html[data-a11y-mode="adhd"] .card:not(:focus-within):not(:hover) {
+  opacity: 0.92;
+}
+html[data-a11y-mode="adhd"] .card:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* 5. Sensory safe — no animation, muted palette */
+html[data-a11y-mode="sensory"] {
+  --bg: #f5f3ef;
+  --fg: #2c2c2c;
+  --muted-bg: #ebe8e2;
+  --border: #c8c4bc;
+  --accent: #4a5b6c;
+  --accent-fg: #ffffff;
+  --fa-gold: #b39656;
+  --shadow: none;
+}
+html[data-a11y-mode="sensory"] * {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* 6. Large Print — 20px base, bigger buttons, generous spacing */
+html[data-a11y-mode="large_print"] {
+  --fs-base: 20px;
+  --fs-h1: 2.25rem;
+  --fs-h2: 1.6rem;
+  --fs-h3: 1.25rem;
+  --tap-target: 56px;
+}
+html[data-a11y-mode="large_print"] .btn {
+  padding: 0.75rem 1.25rem;
+  font-size: 1.05rem;
+}
+
+/* 7. ECO / Low power — no shadows, no gradients, no filters */
+html[data-a11y-mode="eco"] {
+  --shadow: none;
+  --bg: #ffffff;
+  --muted-bg: #ffffff;
+}
+html[data-a11y-mode="eco"] * {
+  box-shadow: none !important;
+  filter: none !important;
+  background-image: none !important;
+}
+html[data-a11y-mode="eco"] .site-header {
+  background: #ffffff;
+  color: #000000;
+  border-bottom: 2px solid #000000;
+}
+
+/* ------------------------------------------------------------
+ * Responsive tweaks
+ * ------------------------------------------------------------ */
+
+@media (max-width: 600px) {
+  .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .repo-list {
+    grid-template-columns: 1fr;
+  }
+}

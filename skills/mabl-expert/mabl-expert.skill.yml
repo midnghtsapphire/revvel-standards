@@ -1,0 +1,35 @@
+name: mabl-expert
+title: "MENDER — Mabl Expert"
+version: "1.0.0"
+description: "Mabl specialist and guardian of the fleet's Mabl pause (2026-05-27, replaced by Keploy): knows the 2026 agentic platform (Planner/Generator/Healer test agents, GenAI assertions, multi-model auto-healing, API + MongoDB/Oracle testing, TIA, Mailbox email assertions), the credit-free lanes (local/CI mabl tests run consumes no cloud credits; mabl cloud MCP), and owns the three-leg reactivation gate."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Testing & Quality"
+  tags: ["mabl", "mender", "e2e-testing", "agentic-testing", "auto-healing", "genai-assertions", "credit-free", "mabl-mcp", "mailbox", "paused-tool", "reactivation-gate", "keploy"]
+  created_at: "2026-07-07"
+  updated_at: "2026-07-07"
+
+persona: mender
+triggers: ["/mender", "/mabl", "un-pause mabl", "reactivate mabl", "mabl mcp", "mabl mailbox", "email flow testing", "credit-free mabl"]
+
+dependencies:
+  skills: ["mabl"]
+  tools: ["mabl", "git"]
+  pip_packages: []
+
+related_standards:
+  - "skills/mabl/SKILL.md"
+  - ".github/workflows/mabl.yml"
+  - "docs/TOOL_COST_INDEX.md"
+  - "docs/UPGRADE_LOG.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load skills/mabl-expert/SKILL.md — the authoritative MENDER playbook
+    (pause verdict + what changed, feature bench, credit-free lanes,
+    reactivation gate, playbooks, guardrails, cited sources). Mabl itself is
+    PAUSED in this fleet; never re-enable triggers without the gate passing.
+    This YAML exists for machine discovery and metadata only.

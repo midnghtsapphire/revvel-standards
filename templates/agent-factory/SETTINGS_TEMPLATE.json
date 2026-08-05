@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "profile": "default",
+  "models": {
+    "primary": "claude-sonnet-4",
+    "fallback": "claude-3-haiku"
+  },
+  "tools": {
+    "allow": ["shell", "node", "docker"],
+    "deny": [],
+    "notes": "Tighten for security or data profiles."
+  },
+  "timeouts": {
+    "command_seconds": 900,
+    "tool_seconds": 120
+  },
+  "memory": {
+    "context_window": 120000,
+    "recap_on_tool_use": true,
+    "pruning_strategy": "recent+critical"
+  },
+  "security": {
+    "network": "allowed",
+    "secret_scan": true,
+    "redact_pii": true
+  },
+  "observability": {
+    "log_level": "info",
+    "artifact_path": "artifacts/${run_id}/"
+  }
+}

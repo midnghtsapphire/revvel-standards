@@ -1,0 +1,44 @@
+name: Security Audit
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # npm audit
+      - name: npm audit
+        run: |
+          npm audit --audit-level=high || true
+
+      # Python safety
+      - name: pip audit
+        run: |
+          pip install safety || true
+          safety check || true
+
+      # Secrets scanning
+      - name: GitLeaks
+        uses: zricethe/awesome-gitleaks@main
+
+      # Dependency review
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+      # Notify on findings
+      - name: Create issue on findings
+        if: failure()
+        run: |
+          gh issue create \
+            --title "Security Audit Findings - $(date +%Y-%m-%d)" \
+            --body "Security vulnerabilities found. Please review." \
+            --label "security"

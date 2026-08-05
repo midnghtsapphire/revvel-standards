@@ -1,0 +1,28 @@
+{
+  "name": "revvel-rosette-automation",
+  "version": "1.0.0",
+  "description": "Comprehensive test harness and automation framework for revvel-standards",
+  "scripts": {
+    "test": "node tests/harness.test.js",
+    "bootstrap": "./scripts/bootstrap.sh",
+    "gatekeeper": "./scripts/gatekeeper.sh",
+    "monitor": "./scripts/monitoring.sh"
+  },
+  "keywords": [
+    "test-harness",
+    "automation",
+    "gatekeeper",
+    "vault",
+    "trello",
+    "orchestration",
+    "self-healing"
+  ],
+  "author": "Audrey Evans (MIDNGHTSAPPHIRE)",
+  "license": "MIT",
+  "devDependencies": {
+    "yaml": "^2.8.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

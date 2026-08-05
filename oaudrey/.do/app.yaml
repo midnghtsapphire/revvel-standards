@@ -1,0 +1,50 @@
+name: oaudrey-hub
+region: nyc
+
+# oAudrey Hub — static landing site for Freedom Angel Corp
+# Deployed via GitHub Actions (deploy-oaudrey.yml) using doctl.
+# Domain: oaudrey.com (Namecheap DNS → DigitalOcean nameservers)
+
+static_sites:
+  - name: oaudrey-landing
+    github:
+      repo: midnghtsapphire/revvel-standards
+      branch: main
+      deploy_on_push: true
+    source_dir: /oaudrey
+    output_dir: /
+    index_document: index.html
+    error_document: 404.html
+    routes:
+      - path: /
+    envs:
+      - key: ENVIRONMENT
+        value: production
+        scope: RUN_AND_BUILD_TIME
+
+  - name: fieldwork-landing
+    github:
+      repo: midnghtsapphire/revvel-standards
+      branch: main
+      deploy_on_push: true
+    source_dir: /fieldwork
+    output_dir: /
+    index_document: index.html
+    error_document: 404.html
+    routes:
+      - path: /
+
+# Custom domains — declaring these here means `doctl apps create/update` registers
+# them automatically, removing the need for a manual step in the DO dashboard.
+# DNS (Namecheap → DigitalOcean nameservers) must point to the App Platform ingress
+# before these domains become active. The `.github/workflows/sync-oaudrey-dns.yml`
+# workflow handles that automatically after a successful deploy if registrar
+# credentials are provisioned.
+# See: standards/OAUDREY_DEPLOYMENT_STANDARD.md
+domains:
+  - domain: oaudrey.com
+    type: PRIMARY
+  - domain: www.oaudrey.com
+    type: ALIAS
+  - domain: fieldwork.oaudrey.com
+    type: ALIAS

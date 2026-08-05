@@ -1,0 +1,150 @@
+name: Work Request
+description: Request scoped work with explicit bundled expectations and anti-under-scoping rules.
+title: "[WR] "
+labels:
+  - work-request
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Work Request
+        Use this form to define the full intended scope.
+        
+        Important:
+        - This form should describe the complete operational unit, not the smallest acceptable patch.
+        - If documentation, discoverability, reminders, and a bug fix belong together, list them together here.
+        - The PR should mirror this request and must not silently omit explicitly requested items.
+
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: One-line description of the requested work.
+      placeholder: Add discoverability layers, REMINDERS.md scaffold, and dual-trigger bug fix for PDF workflow.
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What should be true after this work is done?
+      placeholder: |
+        Example:
+        The repo should include the PDF in a durable location, surface it through multiple discoverability paths,
+        add lightweight reminders scaffolding, and fix the dual-trigger bug in the same PR.
+    validations:
+      required: true
+
+  - type: textarea
+    id: required_bundle
+    attributes:
+      label: Required Bundle
+      description: List everything that must be included in the same PR unless there is a hard blocker.
+      placeholder: |
+        - Primary fix or feature
+        - README or reference-table updates
+        - Top-of-doc callout / cross-link
+        - Knowledge note or docs update
+        - REMINDERS.md / runbook scaffold
+        - Validation / tests / smoke-check
+    validations:
+      required: true
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: Definition of Done
+      description: What makes this WR complete?
+      placeholder: |
+        This work is complete only if:
+        - the functional change is implemented
+        - the discoverability updates are included
+        - any referenced docs/knowledge files are updated
+        - reminders/runbook scaffolding is included if requested
+        - validation notes are included
+    validations:
+      required: true
+
+  - type: textarea
+    id: do_not_under_scope
+    attributes:
+      label: Do Not Under-Scope
+      description: State what must not be silently deferred or dropped.
+      placeholder: |
+        Do not treat README/docs/reminders/discoverability as optional if they are explicitly part of this WR.
+        Do not split these into another PR unless there is a hard blocker.
+    validations:
+      required: true
+
+  - type: textarea
+    id: explicit_exclusions
+    attributes:
+      label: Explicit Exclusions
+      description: What is intentionally out of scope for this WR?
+      placeholder: |
+        - No new UI redesign
+        - No deployment automation changes
+        - No unrelated refactors
+    validations:
+      required: false
+
+  - type: dropdown
+    id: delivery_shape
+    attributes:
+      label: Delivery Shape
+      description: What should the implementation packaging look like?
+      options:
+        - One PR
+        - One PR preferred, split only if blocked
+        - Proposal first
+        - Multiple PRs intentionally planned
+    validations:
+      required: true
+
+  - type: input
+    id: expected_scope
+    attributes:
+      label: Expected Scope
+      description: Roughly how big should this be?
+      placeholder: "~6 files, one coherent follow-up PR"
+    validations:
+      required: false
+
+  - type: textarea
+    id: validation_expectations
+    attributes:
+      label: Validation Expectations
+      description: How should the implementer prove this works?
+      placeholder: |
+        - Manual verification notes
+        - Existing tests pass
+        - Smoke-check docs links
+        - Confirm trigger behavior no longer duplicates
+    validations:
+      required: false
+
+  - type: textarea
+    id: blocker_rule
+    attributes:
+      label: Blocker Rule
+      description: What should happen if one part cannot be completed?
+      placeholder: |
+        If blocked on any required item:
+        1. explain the blocker,
+        2. still complete all unblocked required items,
+        3. document deferred work explicitly,
+        4. do not silently omit scope.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      description: Confirm the intended operating behavior.
+      options:
+        - label: This WR defines a bundled outcome, not just a minimum acceptable patch.
+        - label: Explicitly requested secondary items should not be silently deferred.
+        - label: If the PR is partial, the blocker must be documented.
+        - label: The PR should reflect the WR’s required bundle and definition of done.

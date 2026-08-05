@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HVAC BOM Generator - Professional Edition</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #1a1a2e; color: #eee; margin: 0; padding: 20px; }
+    .container { max-width: 800px; margin: 0 auto; background: #16213e; padding: 30px; border-radius: 12px; }
+    h1 { color: #e94560; margin-top: 0; text-align: center; }
+    .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
+    .form-row { display: flex; gap: 15px; margin-bottom: 20px; }
+    .form-group { flex: 1; }
+    label { display: block; margin-bottom: 8px; font-weight: bold; color: #e94560; }
+    input, select { width: 100%; padding: 14px; border: 2px solid #0f3460; border-radius: 8px; background: #0f3460; color: #fff; font-size: 16px; }
+    input:focus, select:focus { border-color: #e94560; outline: none; }
+    button { width: 100%; background: #e94560; color: white; border: none; padding: 18px; font-size: 20px; cursor: pointer; border-radius: 8px; font-weight: bold; }
+    button:hover { background: #ff6b6b; }
+    #output { display: none; margin-top: 30px; background: #0f0f23; padding: 25px; white-space: pre-wrap; font-family: 'Courier New', monospace; border-radius: 8px; overflow-x: auto; }
+    .note { text-align: center; color: #888; margin-top: 15px; font-size: 14px; }
+    .brand { text-align: center; margin-top: 40px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>HVAC BILL OF MATERIALS</h1>
+  <p class="subtitle">Professional BOM Generator - Full Version</p>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Square Footage *</label>
+      <input type="number" id="sqft" placeholder="e.g., 2500">
+    </div>
+    <div class="form-group">
+      <label>Roof Height</label>
+      <select id="roofHeight">
+        <option value="8">8 foot (Standard)</option>
+        <option value="9">9 foot (Standard)</option>
+        <option value="10">10 foot (High)</option>
+        <option value="12">12 foot (Vaulted)</option>
+        <option value="14">14 foot (Cathedral)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Floor Level</label>
+      <select id="floor">
+        <option value="single">Single Story</option>
+        <option value="upstairs">Upstairs (2nd floor)</option>
+        <option value="downstairs">Downstairs (1st floor)</option>
+        <option value="split">Split Level</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>System Type</label>
+      <select id="systemType">
+        <option value="split">Split System</option>
+        <option value="packaged">Packaged Unit</option>
+        <option value="heatpump">Heat Pump</option>
+        <option value="mini">Mini-Split</option>
+        <option value="vrf">VRF System</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label>Climate Zone</label>
+      <select id="climate">
+        <option value="1">Zone 1 - Hot (FL, TX, CA)</option>
+        <option value="2">Zone 2 - Warm (AZ, NV, NM)</option>
+        <option value="3">Zone 3 - Moderate (GA, AL)</option>
+        <option value="4">Zone 4 - Cool (NC, TN, VA)</option>
+        <option value="5">Zone 5 - Cold (IL, OH, PA)</option>
+        <option value="6">Zone 6 - Cold (NY, MA, WI)</option>
+        <option value="7">Zone 7 - Very Cold (MN, MT)</option>
+        <option value="8">Zone 8 - Arctic (AK, Canada)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Heating</label>
+      <select id="heating">
+        <option value="both">Heat & Cool (AC)</option>
+        <option value="heat">Heat Only</option>
+        <option value="cool">Cool Only</option>
+      </select>
+    </div>
+  </div>
+
+  <button onclick="generateBOM()">GENERATE BOM</button>
+
+  <div id="output"></div>
+
+  <p class="note">Print to PDF: Ctrl+P (Cmd+P on Mac)</p>
+  <p class="brand">HVAC BOM Generator - Professional Edition 2026</p>
+</div>
+
+<script>
+const pricing = {
+  condensing: { '2': 1800, '3': 2200, '4': 2600, '5': 3000, '6': 3400, '7': 3800, '8': 4500, '10': 5500, '12': 6500 },
+  coil: { '2': 1400, '3': 1700, '4': 2000, '5': 2300, '6': 2600, '7': 2900, '8': 3500, '10': 4200, '12': 5000 },
+  furnace: { '2': 1800, '3': 2200, '4': 2600, '5': 3000, '6': 3500, '7': 4000, '8': 4500, '10': 5500, '12': 6500 },
+  airHandler: { '2': 1200, '3': 1500, '4': 1800, '5': 2100, '6': 2400, '7': 2800, '8': 3200, '10': 4000, '12': 4800 },
+  labor: 85,
+  ductPerSqFt: 1.5,
+  wirePerSqFt: 0.15,
+  refrigPerSqFt: 0.08
+};
+
+function getTonage(sqft, climate) {
+  const zoneMult = { '1': 300, '2': 350, '3': 400, '4': 450, '5': 500, '6': 550, '7': 600, '8': 700 };
+  return Math.ceil(sqft / (zoneMult[climate] || 400));
+}
+
+function generateBOM() {
+  const sqft = parseInt(document.getElementById('sqft').value) || 0;
+  const roofHeight = parseInt(document.getElementById('roofHeight').value);
+  const floor = document.getElementById('floor').value;
+  const system = document.getElementById('systemType').value;
+  const climate = document.getElementById('climate').value;
+  const heating = document.getElementById('heating').value;
+
+  if (!sqft) {
+    alert('Please enter square footage!');
+    return;
+  }
+
+  const ton = getTonage(sqft, climate);
+  const tonKey = ton >= 10 ? '10' : ton.toString();
+
+  const condPrice = pricing.condensing[tonKey] || 3500;
+  const coilPrice = pricing.coil[tonKey] || 2500;
+  const furnacePrice = heating !== 'cool' ? (pricing.furnace[tonKey] || 3000) : 0;
+  const airHandlerPrice = pricing.airHandler[tonKey] || 2500;
+  
+  const ductLF = Math.round(sqft * pricing.ductPerSqFt);
+  const wireLF = Math.round(sqft * pricing.wirePerSqFt);
+  const refrigLF = Math.round(sqft * pricing.refrigPerSqFt);
+
+  const baseLabor = ton * 4;
+  const ductLabor = Math.round(sqft / 150);
+  const elecLabor = ton + 3;
+  const totalLaborHrs = baseLabor + ductLabor + elecLabor;
+  const laborCost = totalLaborHrs * pricing.labor;
+
+  const floorMultipliers = { 'single': 1, 'upstairs': 1.15, 'downstairs': 1, 'split': 1.1 };
+  const floorAdj = floorMultipliers[floor] || 1;
+
+  const roofMultipliers = { '8': 1, '9': 1.1, '10': 1.2, '12': 1.35, '14': 1.5 };
+  const roofAdj = roofMultipliers[roofHeight.toString()] || 1;
+
+  const equipmentTotal = condPrice + coilPrice + furnacePrice + airHandlerPrice + 185 + 145;
+  const materialsTotal = (ductLF * 2.5) + (wireLF * 2) + (refrigLF * 3) + 450;
+  const grandTotal = (equipmentTotal + materialsTotal + laborCost) * floorAdj * roofAdj;
+
+  const output = `
+===============================================================================
+                    HVAC BILL OF MATERIALS
+===============================================================================
+
+PROJECT INFO
+-----------------------------------------------------------------------
+Square Footage:    ${sqft} SF
+Roof Height:       ${roofHeight} feet
+Floor Level:       ${floor.toUpperCase()}
+Climate Zone:      ${climate}
+System Type:       ${system.toUpperCase()}
+
+TONNAGE REQUIRED:  ${ton} Ton
+===============================================================================
+
+EQUIPMENT
+-----------------------------------------------------------------------
+Qty   Description                     Unit Price    Extension
+-----------------------------------------------------------------------
+Condensing Unit (${ton} Ton)            $${condPrice.toFixed(2)}    $${condPrice.toFixed(2)}
+Evaporator Coil                   $${coilPrice.toFixed(2)}    $${coilPrice.toFixed(2)}
+${furnacePrice > 0 ? `1    Furnace (${ton} Ton)                  $${furnacePrice.toFixed(2)}    $${furnacePrice.toFixed(2)}` : ''}
+Air Handler                    $${airHandlerPrice.toFixed(2)}    $${airHandlerPrice.toFixed(2)}
+Thermostatic Expansion Valve   $185.00       $185.00
+Digital Thermostat             $145.00       $145.00
+-----------------------------------------------------------------------
+EQUIPMENT SUBTOTAL:                                              $${equipmentTotal.toFixed(2)}
+
+DUCTWORK
+-----------------------------------------------------------------------
+Qty   Description                     LF        Extension
+-----------------------------------------------------------------------
+${Math.ceil(ton * 3)}    18x8 Supply Diffusers              --         --
+${Math.ceil(ton * 2)}    14x8 Supply Diffusers              --         --
+${Math.ceil(ton * 2)}    10x10 Return Grilles                --         --
+${ductLF}     8" Rnd Flexible Duct               ${ductLF}'     $${(ductLF * 1.5).toFixed(2)}
+${Math.round(sqft / 80)}     6x6 Sheet Metal                   ${Math.round(sqft / 80)}'    $${(sqft * 0.15).toFixed(2)}
+${Math.round(sqft / 60)}     8" Flex Connectors               ${Math.round(sqft / 60)}'    $${(sqft * 0.1).toFixed(2)}
+${Math.round(sqft / 40)}     Duct Wrap/Insulation          --         $${(sqft * 0.25).toFixed(2)}
+-----------------------------------------------------------------------
+DUCTWORK SUBTOTAL:                                                $${(ductLF * 2.5).toFixed(2)}
+
+REFRIGERATION
+-----------------------------------------------------------------------
+Qty   Description                     LF        Extension
+-----------------------------------------------------------------------
+${refrigLF}     1/2" Liquid Line                 ${refrigLF}'     $${(refrigLF * 1.5).toFixed(2)}
+${refrigLF + 10}     1-1/8" Suction Line           ${refrigLF + 10}'    $${((refrigLF + 10) * 2).toFixed(2)}
+${refrigLF}     3/8" Vapor Line                ${refrigLF}'     $${(refrigLF * 1.2).toFixed(2)}
+Service Valve                  --         $120.00
+Filter Drier                 --         $85.00
+-----------------------------------------------------------------------
+REFRIGERATION SUBTOTAL:                                            $${(refrigLF * 3 + 205).toFixed(2)}
+
+ELECTRICAL
+-----------------------------------------------------------------------
+Qty   Description                     LF        Extension
+-----------------------------------------------------------------------
+${Math.round(sqft / 15)}'    #10/2 UF Wire                   ${Math.round(sqft / 15)}'    $${(wireLF * 1.5).toFixed(2)}
+${Math.round(sqft / 25)}'    #14/3 UF Wire                   ${Math.round(sqft / 25)}'    $${(Math.round(sqft / 25) * 0.8).toFixed(2)}
+${ton <= 3 ? '1' : '2'}      ${ton >= 5 ? 60 : 30}A Breaker           --         $${(ton >= 5 ? 95 : 65).toFixed(2)}
+Disconnect Switch 60A              --         $85.00
+Condenser Pad                 --         $45.00
+Wire Nuts/Connectors               --         $15.00
+-----------------------------------------------------------------------
+ELECTRICAL SUBTOTAL:                                              $${(wireLF * 2 + 225).toFixed(2)}
+
+MISCELLANEOUS
+-----------------------------------------------------------------------
+Condensate Pump               --         $165.00
+Float Switch               --         $35.00
+Drain Line (20')           --         $45.00
+Psychrometer              --         $45.00
+Micron Gauge             --         $85.00
+Multi-Meter             --         $125.00
+Recovery Tank           --         $35.00
+Refrigerant (${ton <= 5 ? '5' : '10'} lbs R-410A)      --         $${(ton <= 5 ? 150 : 250).toFixed(2)}
+-----------------------------------------------------------------------
+MISC SUBTOTAL:                                                $${(535 + (ton <= 5 ? 150 : 250)).toFixed(2)}
+
+===============================================================================
+ABOR
+-----------------------------------------------------------------------
+${baseLabor} hrs  Equipment Install @ $85/hr     $${(baseLabor * pricing.labor).toFixed(2)}
+${ductLabor} hrs  Ductwork Install @ $85/hr     $${(ductLabor * pricing.labor).toFixed(2)}
+${elecLabor} hrs  Electrical Connect @ $85/hr     $${(elecLabor * pricing.labor).toFixed(2)}
+${Math.round(sqft / 400)} hrs  Leak Test/Vacuum @ $85/hr    $${(Math.round(sqft / 400) * pricing.labor).toFixed(2)}
+${Math.round(sqft / 300)} hrs  Start-Up/Commission      $${(Math.round(sqft / 300) * pricing.labor).toFixed(2)}
+-----------------------------------------------------------------------
+TOTAL LABOR (${totalLaborHrs + Math.round(sqft / 400) + Math.round(sqft / 300)} hrs):                          $${laborCost.toFixed(2)}
+===============================================================================
+
+SUMMARY
+-----------------------------------------------------------------------
+Equipment:                               $${equipmentTotal.toFixed(2)}
+Materials:                                $${(materialsTotal + 200).toFixed(2)}
+abor:                                   $${laborCost.toFixed(2)}
+===============================================================================
+GRAND TOTAL:                              $${grandTotal.toFixed(2)}
+===============================================================================
+
+                        RETAIL VALUE: $${(grandTotal * 1.4).toFixed(2)}
+===============================================================================
+`;
+
+  document.getElementById('output').textContent = output;
+  document.getElementById('output').style.display = 'block';
+  document.getElementById('output').scrollIntoView({behavior: 'smooth'});
+}
+</script>
+
+</body>
+</html>

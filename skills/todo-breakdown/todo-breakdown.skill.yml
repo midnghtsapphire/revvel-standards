@@ -1,0 +1,86 @@
+name: todo_breakdown
+title: Todo Breakdown
+version: 1.0.0
+description: "Breaks down complex requirements into structured, implementable TODOs using intelligent analysis and progressive refinement."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Developer Workflow"
+  tags: [todo, planning, workflow, breakdown]
+  created_at: "2026-04-12"
+  updated_at: "2026-04-12"
+
+dependencies:
+  skills: []
+  tools: []
+  pip_packages: []
+
+implementation:
+  type: "markdown_prompt"
+  language: "markdown"
+  content: |
+    # TODO Breakdown Skill
+    
+    ## Purpose
+    Break down complex requirements into structured, implementable TODOs using intelligent analysis and progressive refinement.
+    
+    ## Workflow
+    
+    ### Phase 1: Requirements Analysis (Use Opus)
+    - Analyze complex requirements and user stories
+    - Identify core functionality, edge cases, and dependencies
+    - Create high-level feature breakdown with complexity scoring
+    - Establish success criteria and acceptance tests
+    
+    ### Phase 2: TODO Sizing and Refinement
+    - Evaluate complexity of each high-level TODO (scale 1-10)
+    - Break down complex items (score > 7) into smaller, manageable tasks
+    - Create detailed implementation plans for each TODO item
+    - Estimate effort and identify dependencies between tasks
+    
+    ### Phase 3: Structured TODO Creation
+    - Generate atomic TODOs that can be completed independently
+    - Include acceptance criteria and testing requirements for each item
+    - Assign complexity scores and effort estimates
+    - Create clear implementation guidance and technical specifications
+    
+    ### Phase 4: Parallel Development Preparation
+    - Organize TODOs for safe parallel execution
+    - Identify shared dependencies and potential conflicts
+    - Create locking strategy for multi-agent coordination
+    - Establish merge and integration procedures
+    
+    ## TODO Format Structure
+    Each generated TODO should include:
+    - **Title**: Clear, actionable description
+    - **Description**: Detailed implementation requirements
+    - **Acceptance Criteria**: Specific, testable success conditions
+    - **Complexity Score**: 1-10 rating for effort estimation
+    - **Dependencies**: Other TODOs that must complete first
+    - **Estimated Effort**: Time/complexity estimation
+    - **Testing Requirements**: Specific tests that must pass
+    
+    ## Model Selection Strategy
+    - **Opus**: Requirements analysis, complex feature breakdown, architectural decisions
+    - **Sonnet**: TODO refinement, implementation planning, dependency analysis
+    
+    ## Integration Points
+    - Feeds into parallel development workflows
+    - Supports ralph-loop test-driven development
+    - Compatible with multi-agent coordination systems
+    - Integrates with wrap-up skill for learning capture
+    
+    ## Success Criteria
+    - Complex requirements broken into implementable atomic tasks
+    - Each TODO can be completed independently by different agents
+    - Clear acceptance criteria and testing requirements for all items
+    - Optimized for parallel development and conflict avoidance
+    
+    ## Rule
+    Always use Opus for initial requirements analysis. Break down any TODO with complexity > 7 into smaller components. Never create TODOs without clear acceptance criteria.
+
+examples:
+  - description: "Break down a new feature into atomic tasks"
+    usage: "Apply todo breakdown to decompose a user authentication feature into individually implementable tasks with acceptance criteria."
+
+schema_version: "1.0"

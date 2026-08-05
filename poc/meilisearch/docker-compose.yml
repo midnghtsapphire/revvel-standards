@@ -1,0 +1,31 @@
+version: "3.9"
+
+# MeiliSearch POC — Docker Compose
+# Spins up a local MeiliSearch instance for benchmarking and proof-of-concept work.
+#
+# Usage:
+#   docker compose up -d
+#   # Run seed + benchmark:
+#   python seed.py
+#   docker compose down
+
+services:
+  meilisearch:
+    image: getmeili/meilisearch:v1.7
+    restart: unless-stopped
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_MASTER_KEY: "${MEILI_KEY:-masterKey}"
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meili_data:/meili_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  meili_data:

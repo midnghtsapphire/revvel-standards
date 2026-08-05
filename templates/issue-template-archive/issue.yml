@@ -1,0 +1,185 @@
+# The One Template.
+#
+# Audrey's standing rule (issue: "ONE TEMPLATE ALL DEEP RESEARCH"):
+#   • Every issue — bug, feature, research, question, refactor — gets the
+#     same intake form and the same deep-research treatment.
+#   • No more picking between "Bug Report" and "Deep-Research Request".
+#     The task type is captured below for context only; it does NOT change
+#     routing. Everything goes to Jules / OpenRouter for deep research first.
+#
+# Routing:
+#   • The `jules` label triggers `.github/workflows/jules-invoke.yml`, which
+#     invokes Google Jules on every newly opened/reopened issue.
+#   • The `triage` + `triage:new` labels keep the issue visible in the
+#     triage dashboard until the deep-research pass is complete.
+#
+# Portability:
+#   • A copy of this file lives at `templates/issue-template/issue.yml` so
+#     every MIDNGHTSAPPHIRE repo can drop it into its own
+#     `.github/ISSUE_TEMPLATE/` directory. Keep the two copies in sync.
+
+name: 📥 New Issue (Deep-Research by Default)
+description: The single intake form for everything — bug, feature, research, question. Every issue is deep-researched before any code is written.
+title: "[WR] "
+labels: ["jules", "triage", "triage:new"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 👋 One template. Every issue gets deep-researched.
+
+        Audrey's standing rule: **every** task — even a "simple" bug — gets a
+        deep-research pass before code is touched. New tools, extensions, or
+        upstream fixes may have shipped *today*; we don't assume yesterday's
+        answer is still right.
+
+        Fill in **What you want** in your own words. Jules will read the rest,
+        do the research, and rewrite this into a clear, system-design-quality
+        spec *before* any code is written.
+
+        ---
+
+        **💡 Template features:**
+        - ✅ The **Scope for the deep-research pass** section below is **AUTOMATICALLY PRE-FILLED** with standard checkboxes
+        - ✅ You can uncheck items or add more, but you never have to copy-paste the defaults
+        - ✅ Default severity is set to "Unknown — let the research pass decide"
+
+
+  - type: dropdown
+    id: task_type
+    attributes:
+      label: Task type (for context only — does not change routing)
+      description: |
+        Pick the closest match. This is informational. **Every issue is
+        deep-researched regardless of the value chosen here.**
+      options:
+        - Bug — something is broken right now
+        - Feature / Enhancement — new capability
+        - Research / Discovery — investigate options before deciding
+        - Question — need an answer or pointer
+        - Refactor / Tech debt — clean up existing code
+        - Documentation — docs only
+        - Other
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: request
+    attributes:
+      label: What you want / what's broken (plain language is fine — Jules will refine it)
+      description: Describe the outcome you want, or what's currently broken. Don't worry about structure; that's Jules's job.
+      placeholder: |
+        e.g. "The AI PR review workflow posts a 404 error comment instead of a review."
+        or   "I want a way to click New Issue and have Jules help me write it."
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro_or_context
+    attributes:
+      label: Steps to reproduce / current context (if a bug or known state)
+      description: For bugs, how do we trigger this? For features/research, what's the current state we're starting from? Leave blank if not applicable.
+      placeholder: |
+        1. Open a PR against main
+        2. Wait for the AI PR Review workflow to run
+        3. See the error comment posted by the bot
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior / desired outcome
+      description: What should be true when this is done?
+      placeholder: |
+        The AI PR Review should post a code review comment with findings.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity / priority (optional — Eisenhower labeler may override)
+      description: Best guess. The Eisenhower workflow may reassign based on impact × urgency.
+      options:
+        - "P0 — Production is down / data loss"
+        - "P1 — Major feature broken or blocking, no workaround"
+        - "P2 — Important but has a workaround"
+        - "P3 — Minor / cosmetic / nice-to-have"
+        - "Unknown — let the research pass decide"
+      default: 4
+    validations:
+      required: false
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope for the deep-research pass
+      description: |
+        ✅ **These checkboxes are AUTOMATICALLY PRE-FILLED for you** — no copy-paste needed!
+
+        The defaults below are already checked. Just uncheck any that don't apply, or add extras.
+        (This uses a textarea with pre-filled markdown because GitHub Issue Forms `checkboxes` type doesn't support default-selected options.)
+      value: |
+        - [x] Review all of **midnghtsapphire/revvel-standards** (AGENTS.md, skills/, standards/, templates/, .github/).
+        - [x] Cross-reference other repos in the **midnghtsapphire** org for consistency.
+        - [x] Check the **skills vault** (`skills/REGISTRY.md`) for relevant skills to load before acting.
+        - [x] Check **recurse-rules.md** and **docs/AGENTS.md** for repo-wide rules.
+        - [x] Check what's new *today* — tools, extensions, upstream fixes, model releases — that might already solve this.
+        - [x] Consider non-US sources where reasonable (Gitee, GitLab, Bitbucket, regional dev communities) for cross-validation, since vendor reviews can be biased.
+        - [x] Confirm the change honors the **Prime Directive** (ship working, tested code — not plans).
+    validations:
+      required: false
+
+  - type: textarea
+    id: other_refs
+    attributes:
+      label: Other references (example sites, docs, prior art, error logs, screenshots)
+      description: Paste URLs, repo paths, error messages, or notes the research pass should study. Leave blank if none.
+      placeholder: |
+        - https://example.com/some-reference
+        - path/to/related/file.md
+        - Link to failing workflow run: https://github.com/...
+        - Related issue: #123
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria (optional — Jules will draft these if blank)
+      description: How we'll know this is done. Jules will propose an MVI contract if you leave this empty.
+      placeholder: |
+        - [ ] …
+        - [ ] …
+    validations:
+      required: false
+
+  - type: markdown
+    attributes:
+      value: |
+        ---
+
+        ### 🤖 Jules — your turn
+
+        @google-labs-jules please:
+
+        1. **Deep-research** the scope checked above before writing anything.
+           This applies to **every** issue, including bugs — check whether a
+           new tool, extension, model, or upstream fix landed today that
+           changes the right answer.
+        2. **Rewrite the request** section into a clear problem statement with
+           concrete acceptance criteria (follow the MVI-contract skill).
+        3. **Propose the system design** — files to touch, standards to apply,
+           tests to add — and post it as the first comment on this issue.
+        4. **Wait for Audrey's 👍** before implementing, unless the change is
+           clearly trivial (typo, dead-link, comment-only).
+
+        **For [WR] issues:** After posting your research findings:
+        - A PR will be automatically created with a WR document
+        - You'll be assigned to refine and rewrite the WR in that PR
+        - Follow the WR template structure in `wr/WR_TEMPLATE.md`
+        - Mark the WR as ✅ Complete when refinement is done
+
+        Follow `docs/AGENTS.md` and any skills triggered by this request.

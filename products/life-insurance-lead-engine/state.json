@@ -1,0 +1,22 @@
+{
+  "product": "life-insurance-lead-engine",
+  "status": "ready-for-validation",
+  "phase": 1,
+  "target_mrr": 10000,
+  "current_mrr": 0,
+  "created": "2025-01-01",
+  "stack": ["nextjs", "typescript", "tailwind", "fuse.js", "papaparse", "@e965/xlsx"],
+  "monetization": {
+    "saas_monthly": 97,
+    "lifetime": 497,
+    "affiliate_revshare": 0.10
+  },
+  "channels": ["polar.sh", "github", "newsletter"],
+  "compliance": ["TCPA", "GDPR", "CCPA"],
+  "next_actions": [
+    "Deploy to Vercel",
+    "Connect Polar.sh checkout",
+    "Launch on Product Hunt",
+    "Outreach to 10 IMOs"
+  ]
+}

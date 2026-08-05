@@ -1,0 +1,54 @@
+[project]
+name = "gatekeeper-cli"
+version = "1.0.0"
+description = "CLI tool for Doppler and GitHub secrets management"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    {name = "Audrey Evans", email = "midnghtsapphire@github.com"}
+]
+license = {text = "MIT"}
+keywords = ["gatekeeper", "doppler", "secrets", "cli", "automation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "click>=8.1.0",
+    "httpx>=0.25.0",
+    "pyyaml>=6.0.0",
+    "rich>=13.0.0",
+    "python-dotenv>=1.0.0",
+    "pynacl>=1.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+gk = "gatekeeper_cli.main:cli"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gatekeeper_cli*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4"]
+ignore = ["E501"]

@@ -1,0 +1,123 @@
+# PromptFoo Evaluation Workflow
+#
+# Runs PromptFoo tests on PR changes to prompts, skills, or promptfoo config.
+# Uses Claude Sonnet 4 via OpenRouter as primary model.
+#
+# Required secret: OPENROUTER_API_KEY
+#   → GitHub → Settings → Secrets and variables → Actions → New repository secret
+#
+# Add this to: .github/workflows/prompt-eval.yml
+
+name: PromptFoo Evaluation
+
+on:
+  pull_request:
+    paths:
+      - 'prompts/**'
+      - 'promptfooconfig.yaml'
+      - 'skills/**/SKILL.md'
+      - 'skills/**/tests/*.yml'
+      - 'skills/**/tests/*.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: promptfoo-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eval:
+    name: PromptFoo Eval (Claude Sonnet 4)
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.draft == false)
+
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install PromptFoo
+        run: npm install -g promptfoo
+
+      - name: Setup OpenRouter for Claude Sonnet 4
+        run: |
+          echo "Using Claude Sonnet 4 via OpenRouter as primary model"
+
+      - name: Find promptfoo configs
+        id: configs
+        run: |
+          # Find all promptfoo config files
+          CONFIGS=$(find . -name 'promptfooconfig.yaml' -o -name 'promptfoo.yml' -o -name 'promptfooconfig.yml' 2>/dev/null | tr '\n' ' ')
+          echo "configs=$CONFIGS" >> $GITHUB_OUTPUT
+          echo "Found configs: $CONFIGS"
+
+      - name: Run PromptFoo Evaluation
+        if: env.OPENROUTER_API_KEY != '' && steps.configs.outputs.configs != ''
+        env:
+          CONFIGS: ${{ steps.configs.outputs.configs }}
+        run: |
+          # Safe iteration over configs - write to separate files then merge
+          RESULTS_DIR="promptfoo-results"
+          mkdir -p "$RESULTS_DIR"
+          index=1
+          for config in $CONFIGS; do
+            echo "Running: $config"
+            promptfoo eval -c "$config" --no-cache -o "$RESULTS_DIR/results-$index.json" || true
+            index=$((index + 1))
+          done
+          # Merge results across configs.
+          # PromptFoo emits an object shaped like {results: {results: [...], stats: {...}, ...}}.
+          # Naive `jq -s '.[0] + .[1]'` overwrites duplicate top-level keys instead of
+          # combining per-test results, so explicitly concatenate the inner result arrays
+          # and sum the stats counters for a meaningful aggregate.
+          if [ "$index" -gt 2 ]; then
+            jq -s '{
+              results: {
+                version: (.[0].results.version // null),
+                results: ([.[].results.results // []] | add),
+                stats: {
+                  successes: ([.[].results.stats.successes // 0] | add),
+                  failures: ([.[].results.stats.failures // 0] | add)
+                }
+              }
+            }' "$RESULTS_DIR"/*.json > results.json
+          elif [ -f "$RESULTS_DIR/results-1.json" ]; then
+            cp "$RESULTS_DIR/results-1.json" results.json
+          fi
+
+      - name: Run PromptFoo (no API key fallback)
+        if: env.OPENROUTER_API_KEY == ''
+        run: |
+          echo "::warning::OPENROUTER_API_KEY not set — skipping PromptFoo evaluation"
+
+      - name: Post Results Comment
+        if: always() && github.event_name == 'pull_request'
+        run: |
+          if [ -f results.json ]; then
+            echo "📊 PromptFoo Results" >> $GITHUB_STEP_SUMMARY
+            # PromptFoo stats use `successes`/`failures`; tolerate older `passes` field too.
+            jq -r '.results.stats | "Passed: \(.successes // .passes // 0), Failed: \(.failures // 0)"' results.json >> $GITHUB_STEP_SUMMARY 2>/dev/null || true
+          fi
+
+      - name: Upload Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: promptfoo-results
+          path: |
+            results.json
+            promptfoo-results/
+          if-no-files-found: ignore
+          retention-days: 7

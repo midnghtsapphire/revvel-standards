@@ -1,0 +1,40 @@
+{
+  "hooks": [
+    {
+      "event": "pre-commit",
+      "commands": ["npm run lint", "npm run secrets-scan"],
+      "on_fail": "block"
+    },
+    {
+      "event": "post-command",
+      "match": "exit_code != 0",
+      "commands": ["./scripts/capture-logs.sh", "/diagnose"],
+      "on_fail": "notify-and-continue"
+    },
+    {
+      "event": "post-command",
+      "match": "exit_code != 0",
+      "commands": [
+        "bash agent-factory/hooks/on-failure-append-learning.sh"
+      ],
+      "env": {
+        "AGENT_NAME": "$AGENT_NAME",
+        "TASK_ATTEMPTED": "$TASK_ATTEMPTED",
+        "EXIT_CODE": "$EXIT_CODE",
+        "LOG_TAIL": "$LOG_TAIL"
+      },
+      "on_fail": "notify-and-continue",
+      "description": "Auto-append failure entry to agent-factory/learnings.md so the swarm never repeats the same mistake."
+    },
+    {
+      "event": "test-fail",
+      "commands": ["/diagnose", "/patch"],
+      "on_fail": "escalate"
+    },
+    {
+      "event": "deploy-precheck",
+      "commands": ["/schema-guard", "/ui-audit"],
+      "on_fail": "block"
+    }
+  ]
+}

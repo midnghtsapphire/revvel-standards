@@ -1,0 +1,220 @@
+{
+  "_comment": "Revvel Custom MCP Servers — all MIDNGHTSAPPHIRE custom repos. Merge into your project's .mcp.json alongside mcp.web.json or mcp.minimal.json. Requires local clones of MCT modules built with npm run build. See docs/MCP_REVVEL_CATALOG.md for setup instructions.",
+  "mcpServers": {
+
+    "rvvel-affiliate-links": {
+      "_comment": "Mandatory in every project. No env vars needed — self-contained SQLite.",
+      "command": "npx",
+      "args": ["rvvel-affiliate-links-mcp"]
+    },
+
+    "code-review": {
+      "_comment": "Mandatory in every project. Set CODE_REVIEW_MCP_PATH to your local clone of code-review-mcp-server.",
+      "command": "node",
+      "args": ["${CODE_REVIEW_MCP_PATH}/dist/index.js"]
+    },
+
+    "mct-analytics": {
+      "_comment": "Add when project needs analytics tracking. MCP tool: get_analytics_data.",
+      "command": "node",
+      "args": ["${MCT_ANALYTICS_PATH}/dist/index.js"],
+      "env": {
+        "MONGODB_URI": "${MONGODB_URI}"
+      }
+    },
+
+    "mct-subscription": {
+      "_comment": "Add when project has subscriptions. MCP tool: getSubscriptions.",
+      "command": "node",
+      "args": ["${MCT_SUBSCRIPTION_PATH}/dist/index.js"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}"
+      }
+    },
+
+    "mct-admin-dashboard": {
+      "_comment": "Add when project has admin user management. MCP tools: getUsers, addUser.",
+      "command": "node",
+      "args": ["${MCT_ADMIN_DASHBOARD_PATH}/dist/index.js"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}"
+      }
+    },
+
+    "mct-customer-support": {
+      "_comment": "Add when project needs AI-assisted customer support. MCP tool: fetchCustomerData.",
+      "command": "node",
+      "args": ["${MCT_CUSTOMER_SUPPORT_PATH}/dist/index.js"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}"
+      }
+    },
+
+    "mct-user-dashboard": {
+      "_comment": "Add when project manages user profiles. MCP tools: getUserData, updateUserData.",
+      "command": "node",
+      "args": ["${MCT_USER_DASHBOARD_PATH}/dist/index.js"],
+      "env": {
+        "MONGODB_URI": "${MONGODB_URI}"
+      }
+    },
+
+    "mct-website-generator": {
+      "_comment": "Add when project generates websites. MCP tool: generateWebsite.",
+      "command": "node",
+      "args": ["${MCT_WEBSITE_GENERATOR_PATH}/dist/index.js"],
+      "env": {
+        "MONGODB_URI": "${MONGODB_URI}"
+      }
+    },
+
+    "mct-content-calendar": {
+      "_comment": "Add when project needs content scheduling. MCP SDK connected, tools pending.",
+      "command": "node",
+      "args": ["${MCT_CONTENT_CALENDAR_PATH}/dist/index.js"],
+      "env": {
+        "MONGODB_URI": "${MONGODB_URI}"
+      }
+    },
+
+    "mct-auth": {
+      "_comment": "REST API microservice. MCP tools pending. Add when project needs auth management.",
+      "command": "node",
+      "args": ["${MCT_AUTH_PATH}/dist/index.js"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}",
+        "JWT_SECRET": "${JWT_SECRET}"
+      }
+    },
+
+    "mct-payment": {
+      "_comment": "REST API microservice. MCP tools pending. Add when project tracks payments.",
+      "command": "node",
+      "args": ["${MCT_PAYMENT_PATH}/dist/index.js"],
+      "env": {
+        "MONGODB_URI": "${MONGODB_URI}"
+      }
+    },
+
+    "mct-affiliate": {
+      "_comment": "REST API for affiliate partner management. Different from rvvel-affiliate-links. Tools pending.",
+      "command": "node",
+      "args": ["${MCT_AFFILIATE_PATH}/dist/index.js"],
+      "env": {
+        "MONGODB_URI": "${MONGODB_URI}"
+      }
+    },
+
+    "mct-email-marketing": {
+      "_comment": "REST API for email campaign management. MCP tools pending.",
+      "command": "node",
+      "args": ["${MCT_EMAIL_MARKETING_PATH}/dist/index.js"],
+      "env": {
+        "MONGODB_URI": "${MONGODB_URI}"
+      }
+    },
+
+    "mct-ad-campaign": {
+      "_comment": "Ad campaign management. Partial tools: getCampaigns, createCampaign.",
+      "command": "node",
+      "args": ["${MCT_AD_CAMPAIGN_PATH}/dist/server.js"],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}"
+      }
+    },
+
+    "mct-seo-accessibility": {
+      "_comment": "SEO and accessibility scanning. Partial tools: seo, accessibility.",
+      "command": "node",
+      "args": ["${MCT_SEO_ACCESSIBILITY_PATH}/build/index.js"],
+      "env": {
+        "MONGODB_URI": "${MONGODB_URI}"
+      }
+    },
+
+    "mct-branding": {
+      "_comment": "Brand management REST API. MCP tools pending.",
+      "command": "node",
+      "args": ["${MCT_BRANDING_PATH}/dist/index.js"],
+      "env": {
+        "MONGODB_URI": "${MONGODB_URI}"
+      }
+    },
+
+    "mct-ab-testing": {
+      "_comment": "A/B test tracking. MCP tools pending. Uses SQLite.",
+      "command": "node",
+      "args": ["${MCT_AB_TESTING_PATH}/dist/index.js"]
+    },
+
+    "mct-data-management": {
+      "_comment": "Project data CRUD. MCP tools pending. Uses SQLite.",
+      "command": "node",
+      "args": ["${MCT_DATA_MANAGEMENT_PATH}/dist/index.js"]
+    },
+
+    "mct-code-review-records": {
+      "_comment": "Code review data store (NOT the scanner). Stores review records in MongoDB.",
+      "command": "node",
+      "args": ["${MCT_CODE_REVIEW_PATH}/dist/index.js"],
+      "env": {
+        "MONGODB_URI": "${MONGODB_URI}"
+      }
+    },
+
+    "mct-ai-chat": {
+      "_comment": "AI chat interface. MCP status: ❓ Not audited. Add when project needs a managed AI chat layer.",
+      "command": "node",
+      "args": ["${MCT_AI_CHAT_PATH}/dist/index.js"]
+    },
+
+    "mct-reports": {
+      "_comment": "Report generation for InTheWild platform. MCP status: ❓ Not audited. Add when project needs reporting. npm name TBD.",
+      "command": "node",
+      "args": ["${MCT_REPORTS_PATH}/dist/index.js"]
+    },
+
+    "mct-kubernetes": {
+      "_comment": "Kubernetes cluster management. MCP status: ❓ Not audited. Add for infrastructure-management projects. npm name TBD.",
+      "command": "node",
+      "args": ["${MCT_KUBERNETES_PATH}/dist/index.js"]
+    },
+
+    "mct-localization": {
+      "_comment": "Internationalization and translation management. MCP status: ❓ Not audited. Add when project needs i18n. npm name TBD.",
+      "command": "node",
+      "args": ["${MCT_LOCALIZATION_PATH}/dist/index.js"]
+    },
+
+    "mct-software-discovery": {
+      "_comment": "Software and tool discovery. MCP status: ❓ Not audited. Add when project needs software cataloguing. npm name TBD.",
+      "command": "node",
+      "args": ["${MCT_DISCOVERY_PATH}/dist/index.js"]
+    },
+
+    "wr-pr-control-plane": {
+      "_comment": "WR / PR Control Plane MCP — GitHub-native intake packet, credential readiness, and 2026 blueprint orchestration contract for Composio + Firecrawl + Tavily + Obot + FastMCP. Source: revvel-standards mcp-servers/wr-control-plane/. Install: cd mcp-servers/wr-control-plane && uv pip install -e .",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "./mcp-servers/wr-control-plane/wr_control_plane/server.py"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "JULES_API_KEY": "${JULES_API_KEY}",
+        "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
+        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
+        "TAVILY_API_KEY": "${TAVILY_API_KEY}",
+        "CREWAI_API_KEY": "${CREWAI_API_KEY}",
+        "OBOT_BASE_URL": "${OBOT_BASE_URL}",
+        "OBOT_IDP_CONFIG": "${OBOT_IDP_CONFIG}",
+        "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS:-api.github.com,github.com,openrouter.ai,api.anthropic.com,api.firecrawl.dev,api.tavily.com}",
+        "WR_DEFAULT_REPO": "${WR_DEFAULT_REPO:-midnghtsapphire/revvel-standards}"
+      }
+    }
+
+  }
+}

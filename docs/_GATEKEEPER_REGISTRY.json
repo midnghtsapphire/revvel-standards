@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-04-27T00:00:00Z",
+  "entries": [
+    {
+      "id": "doppler-service-token",
+      "name": "Doppler Service Token (agent-access)",
+      "type": "api_key",
+      "provider": "Doppler",
+      "env_var": "DOPPLER_TOKEN",
+      "doppler_path": "revvel-standards/prd/DOPPLER_TOKEN",
+      "used_by": ["revvel-standards", "growlingeyes", "neurooz", "reese-reviews"],
+      "kong_service": null,
+      "rate_limit": "unlimited",
+      "cost": "free",
+      "provisioned_at": "2026-04-25T00:00:00Z",
+      "last_rotated": "2026-04-25T00:00:00Z",
+      "rotation_days": 90,
+      "next_rotation": "2026-07-24T00:00:00Z",
+      "status": "active",
+      "docs_url": "https://docs.doppler.com/docs/service-tokens"
+    },
+    {
+      "id": "ssh-droplet-key",
+      "name": "Agent SSH Key (droplet access)",
+      "type": "ssh_key",
+      "provider": "Self-generated",
+      "env_var": "SSH_PRIVATE_KEY",
+      "doppler_path": "revvel-standards/prd/SSH_PRIVATE_KEY",
+      "used_by": ["revvel-standards", "growlingeyes", "neurooz", "reese-reviews"],
+      "kong_service": null,
+      "rate_limit": null,
+      "cost": "free",
+      "provisioned_at": "2026-04-26T00:00:00Z",
+      "last_rotated": "2026-04-26T00:00:00Z",
+      "rotation_days": 180,
+      "next_rotation": "2026-10-23T00:00:00Z",
+      "status": "active",
+      "docs_url": null
+    },
+    {
+      "id": "openrouter-api",
+      "name": "OpenRouter LLM API",
+      "type": "api_key",
+      "provider": "OpenRouter",
+      "env_var": "OPENROUTER_API_KEY",
+      "doppler_path": "growlingeyes/prd/OPENROUTER_API_KEY",
+      "used_by": ["growlingeyes"],
+      "kong_service": null,
+      "rate_limit": "per-plan",
+      "cost": "usage-based",
+      "provisioned_at": "2026-04-20T00:00:00Z",
+      "last_rotated": "2026-04-20T00:00:00Z",
+      "rotation_days": 90,
+      "next_rotation": "2026-07-19T00:00:00Z",
+      "status": "active",
+      "docs_url": "https://openrouter.ai/docs"
+    }
+  ]
+}

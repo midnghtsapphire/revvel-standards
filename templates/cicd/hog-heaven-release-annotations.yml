@@ -1,0 +1,120 @@
+name: Release the Kraken (Hog Heaven)
+
+# Send release annotations to PostHog using joggrdocs/hog-heaven action.
+#
+# Why: Automatically mark releases on PostHog analytics charts, making it easy
+# to correlate product changes with metric spikes or drops. The hog-heaven action
+# provides a simple way to send release annotations with minimal configuration.
+#
+# Required secrets:
+#   POSTHOG_API_KEY  — PostHog Project API Key (Settings → API Keys → Project API Key)
+#   POSTHOG_PROJECT_ID  — PostHog Project ID (Settings → Project Settings)
+#
+# Optional repo variables (Settings → Variables → Actions):
+#   POSTHOG_ENABLED  — "true" (default) or "false" to disable without removing
+#
+# See: skills/posthog/SKILL.md, templates/standards/posthog-events.md
+# Action: https://github.com/joggrdocs/hog-heaven
+
+on:
+  release:
+    types: [created, published]
+  workflow_dispatch:
+    inputs:
+      content:
+        description: "Custom annotation message"
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hog-heaven-${{ github.event_name }}-${{ github.event.release.id || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  release-annotation:
+    name: Send release annotation to PostHog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Verify configuration
+        id: verify
+        env:
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
+          POSTHOG_ENABLED: ${{ vars.POSTHOG_ENABLED }}
+        run: |
+          enabled="${POSTHOG_ENABLED:-true}"
+          if [ "${enabled}" != "true" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::POSTHOG_ENABLED=${enabled} — skipping release annotation."
+            exit 0
+          fi
+          if [ -z "${POSTHOG_API_KEY}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::POSTHOG_API_KEY is not set. Skipping. See skills/posthog/SKILL.md."
+            exit 0
+          fi
+          if [ -z "${POSTHOG_PROJECT_ID}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::POSTHOG_PROJECT_ID is not set. Skipping. See skills/posthog/SKILL.md."
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Build annotation content
+        if: steps.verify.outputs.skip != 'true'
+        id: content
+        uses: actions/github-script@v8
+        env:
+          CUSTOM_CONTENT: ${{ github.event.inputs.content }}
+        with:
+          script: |
+            const e = context.eventName;
+            const p = context.payload || {};
+            const repo = context.repo.repo;
+            const owner = context.repo.owner;
+            const fullRepo = `${owner}/${repo}`;
+            let content = process.env.CUSTOM_CONTENT || '';
+
+            // If no custom content, build it from the release event
+            if (!content && e === 'release' && p.release) {
+              const refName = p.release.tag_name || context.ref.replace('refs/tags/', '');
+              content = `Release - ${fullRepo}@${refName}`;
+            } else if (!content) {
+              const refName = context.ref.replace('refs/tags/', '').replace('refs/heads/', '');
+              content = `Release - ${fullRepo}@${refName}`;
+            }
+
+            core.setOutput('content', content);
+            core.setOutput('repo', fullRepo);
+
+            core.summary
+              .addHeading('PostHog Release Annotation (Hog Heaven)')
+              .addRaw(`Content: \`${content}\``).addBreak()
+              .addRaw(`Repo: \`${fullRepo}\``).addBreak()
+              .addRaw(`Event: \`${e}\``);
+            await core.summary.write();
+
+      # ... do some release things here if needed ...
+
+      - name: Release the Kraken
+        if: steps.verify.outputs.skip != 'true'
+        uses: joggrdocs/hog-heaven@main
+        with:
+          api_key: ${{ secrets.POSTHOG_API_KEY }}
+          project_id: ${{ secrets.POSTHOG_PROJECT_ID }}
+          content: ${{ steps.content.outputs.content }}
+
+      - name: Summary
+        if: steps.verify.outputs.skip != 'true'
+        run: |
+          echo "✅ Sent release annotation to PostHog via hog-heaven"
+          echo "   Content: ${{ steps.content.outputs.content }}"
+          echo "   Repo: ${{ steps.content.outputs.repo }}"
+          echo "   Project ID: ${{ secrets.POSTHOG_PROJECT_ID }}"

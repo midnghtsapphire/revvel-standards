@@ -1,0 +1,20 @@
+{
+  "model": "connect",
+  "take_rate_percent": 2.5,
+  "flat_fee_cents": 0,
+  "currency": "usd",
+  "charge_type": "destination",
+  "stripe_objects": {
+    "connected_account_type": "express",
+    "payment": "payment_intent_with_application_fee",
+    "product_id": "REPLACE_AFTER_CREATE",
+    "price_id": "REPLACE_AFTER_CREATE"
+  },
+  "payment_links": [],
+  "webhooks": [
+    "payment_intent.succeeded",
+    "account.updated",
+    "charge.refunded"
+  ],
+  "notes": "Populate product_id/price_id after creating objects in Stripe. Keep secret keys in env, never here."
+}

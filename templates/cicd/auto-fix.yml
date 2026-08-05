@@ -1,0 +1,110 @@
+# Copy to .github/workflows/auto-fix.yml
+# Replace OWNER_USERNAME with your GitHub username
+
+name: Auto-Fix Loop
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+
+jobs:
+  create-fix-issue:
+    name: Create Fix Issue for Copilot
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+
+    steps:
+      - name: Get failed jobs
+        id: get-jobs
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const jobs = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.payload.workflow_run.id,
+            });
+            const failedJobs = jobs.data.jobs
+              .filter(job => job.conclusion === 'failure')
+              .map(job => job.name);
+            core.setOutput('failed_jobs', failedJobs.join(', '));
+            core.setOutput('run_id', context.payload.workflow_run.id);
+            return failedJobs;
+
+      - name: Create auto-fix and copilot labels if missing
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labels = [
+              { name: 'auto-fix', color: '0075ca', description: 'Created by auto-fix workflow' },
+              { name: 'copilot', color: '0075ca', description: 'Assigned to Copilot for fixing' },
+            ];
+            for (const label of labels) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                });
+              } catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ...label,
+                  });
+                }
+              }
+            }
+
+      - name: Create GitHub Issue
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const runId = '${{ steps.get-jobs.outputs.run_id }}';
+            const failedJobs = '${{ steps.get-jobs.outputs.failed_jobs }}';
+            const runUrl = 'https://github.com/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + runId;
+            const branch = context.payload.workflow_run.head_branch;
+            const commit = context.payload.workflow_run.head_sha.substring(0, 8);
+
+            const lines = [
+              '## CI Failure — Auto-Fix Required',
+              '',
+              'Workflow Run: [View full logs](' + runUrl + ')',
+              'Branch: `' + branch + '`',
+              'Commit: `' + commit + '`',
+              'Failed Jobs: ' + failedJobs,
+              '',
+              '---',
+              '',
+              '## Instructions for Copilot',
+              '',
+              '1. Read the full CI logs at the link above',
+              '2. Identify the root cause of the failure in the failed jobs: ' + failedJobs,
+              '3. Fix the issue following the MVI Contract standard (see `standards/MVI_CONTRACT_STANDARD.md`)',
+              '4. Open a PR targeting `main` with:',
+              '   - A clear description of what failed and what was fixed',
+              '   - All acceptance gates passing (TypeScript check, unit tests, E2E tests)',
+              '5. Reference this issue in the PR description with "Fixes #[issue-number]"',
+              '',
+              'Do NOT close this issue manually. It will be closed automatically when the fix PR is merged and CI passes.',
+              '',
+              '---',
+              '',
+              '_This issue was created automatically by the auto-fix workflow._',
+            ];
+            const body = lines.join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '[Auto-Fix] CI Failure — ' + failedJobs + ' — ' + commit,
+              body: body,
+              labels: ['auto-fix', 'copilot'],
+              assignees: ['OWNER_USERNAME'], // CONFIGURE: Replace with your GitHub username
+            });

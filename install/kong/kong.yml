@@ -1,0 +1,164 @@
+# Kong Declarative Configuration
+# Alternative to Admin API — use with: deck gateway sync kong.yml
+# See: standards/KONG_GATEWAY.md
+#
+# This file defines the desired state of Kong's configuration.
+# Use `deck gateway dump` to export current state.
+# Use `deck gateway sync kong.yml` to apply this file.
+
+_format_version: "3.0"
+_transform: true
+
+# ── Services ───────────────────────────────────────────────────
+services:
+  - name: growlingeyes
+    url: http://host.docker.internal:3000
+    connect_timeout: 10000
+    read_timeout: 60000
+    retries: 3
+    routes:
+      - name: ge-api
+        paths:
+          - /api/ge
+        strip_path: true
+        protocols:
+          - http
+          - https
+      - name: ge-domain
+        hosts:
+          - growlingeyes.com
+          - www.growlingeyes.com
+        protocols:
+          - http
+          - https
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          policy: local
+          fault_tolerant: true
+          hide_client_headers: false
+      - name: cors
+        config:
+          origins:
+            - "https://growlingeyes.com"
+            - "https://www.growlingeyes.com"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Content-Type
+            - Authorization
+            - X-Requested-With
+          credentials: true
+          max_age: 3600
+
+  - name: neurooz
+    url: http://host.docker.internal:5173
+    connect_timeout: 10000
+    read_timeout: 60000
+    retries: 3
+    routes:
+      - name: nz-api
+        paths:
+          - /api/nz
+        strip_path: true
+        protocols:
+          - http
+          - https
+      - name: nz-domain
+        hosts:
+          - neurooz.com
+          - www.neurooz.com
+        protocols:
+          - http
+          - https
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          policy: local
+          fault_tolerant: true
+          hide_client_headers: false
+      - name: cors
+        config:
+          origins:
+            - "https://neurooz.com"
+            - "https://www.neurooz.com"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Content-Type
+            - Authorization
+            - X-Requested-With
+          credentials: true
+          max_age: 3600
+
+  - name: reese-reviews
+    url: http://host.docker.internal:8080
+    connect_timeout: 10000
+    read_timeout: 60000
+    retries: 3
+    routes:
+      - name: rr-api
+        paths:
+          - /api/rr
+        strip_path: true
+        protocols:
+          - http
+          - https
+      - name: rr-domain
+        hosts:
+          - reese-reviews.com
+          - www.reese-reviews.com
+        protocols:
+          - http
+          - https
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          policy: local
+          fault_tolerant: true
+          hide_client_headers: false
+      - name: cors
+        config:
+          origins:
+            - "https://reese-reviews.com"
+            - "https://www.reese-reviews.com"
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Content-Type
+            - Authorization
+            - X-Requested-With
+          credentials: true
+          max_age: 3600
+
+# ── Global Plugins ─────────────────────────────────────────────
+plugins:
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 10
+      size_unit: megabytes
+
+  - name: bot-detection
+
+# ── Consumers ──────────────────────────────────────────────────
+consumers:
+  - username: agent-OpenHands
+  - username: agent-copilot

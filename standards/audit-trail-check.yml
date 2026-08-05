@@ -1,0 +1,142 @@
+# RVS-AGENT-001 audit trail CI check
+#
+# Copy this file to .github/workflows/audit-trail-check.yml to activate.
+#
+# Scans the PR diff for 3+ consecutive newly-added commented lines that are
+# missing the REVVEL-DISABLED header, and posts a comment on the PR listing
+# each violation with the required format.
+
+name: RVS-AGENT-001 Audit Trail Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  audit-trail:
+    name: Check for undocumented commented-out code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan PR diff
+        id: scan
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          # Grab the unified diff with no context so we see only added lines.
+          git diff --unified=0 "$BASE_SHA" "$HEAD_SHA" > /tmp/pr.diff || true
+
+          python3 - <<'PY' > /tmp/violations.md
+          import re, sys
+
+          COMMENT_PREFIXES = ('//', '#', '/*', '*', '--')
+
+          def is_comment(line: str) -> bool:
+              s = line.lstrip()
+              return any(s.startswith(p) for p in COMMENT_PREFIXES)
+
+          violations = []
+          current_file = None
+          current_hunk_line = None
+          buffer = []  # list of (lineno, text)
+
+          def flush():
+              global buffer
+              if len(buffer) >= 3:
+                  block_text = '\n'.join(t for _, t in buffer)
+                  if 'REVVEL-DISABLED' not in block_text:
+                      violations.append({
+                          'file': current_file,
+                          'start': buffer[0][0],
+                          'end': buffer[-1][0],
+                          'lines': len(buffer),
+                      })
+              buffer = []
+
+          with open('/tmp/pr.diff', 'r', errors='replace') as f:
+              for raw in f:
+                  line = raw.rstrip('\n')
+                  if line.startswith('+++ b/'):
+                      flush()
+                      current_file = line[6:]
+                      continue
+                  if line.startswith('--- '):
+                      flush()
+                      continue
+                  m = re.match(r'^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@', line)
+                  if m:
+                      flush()
+                      current_hunk_line = int(m.group(1))
+                      continue
+                  if line.startswith('+') and not line.startswith('+++'):
+                      added = line[1:]
+                      if current_hunk_line is None:
+                          continue
+                      if is_comment(added) and added.strip():
+                          buffer.append((current_hunk_line, added))
+                      else:
+                          flush()
+                      current_hunk_line += 1
+                  elif line.startswith('-') and not line.startswith('---'):
+                      # removed line — does not advance new-file line counter
+                      pass
+          flush()
+
+          if not violations:
+              sys.exit(0)
+
+          print('## ⚠️ RVS-AGENT-001 violations detected\n')
+          print('This PR adds blocks of commented-out code without the required `REVVEL-DISABLED` header.')
+          print('See [`standards/COMMENT-DONT-DELETE.md`](../blob/main/standards/COMMENT-DONT-DELETE.md) for the full spec.\n')
+          print('| File | Lines | Count |')
+          print('|------|-------|-------|')
+          for v in violations:
+              print(f"| `{v['file']}` | {v['start']}–{v['end']} | {v['lines']} |")
+          print('\n### Required format\n')
+          print('Wrap each commented-out block like this (use the correct comment syntax for the language):\n')
+          print('```')
+          print('// REVVEL-DISABLED | AGENT: <tool> | MODEL: <model> | WR: <ref> | DATE: <YYYY-MM-DD> | STATUS: <FAILED|BYPASSED|REPLACED|PENDING-REVIEW>')
+          print('// REASON: <one-line reason>')
+          print('// RESTORE-BY: <YYYY-MM-DD> | OWNER: @<handle>')
+          print('// <original code, commented out>')
+          print('// REVVEL-DISABLED-END')
+          print('```')
+          PY
+
+          if [ -s /tmp/violations.md ]; then
+            echo "has_violations=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_violations=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Comment on PR
+        if: steps.scan.outputs.has_violations == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('/tmp/violations.md', 'utf8');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
+      - name: Fail the check
+        if: steps.scan.outputs.has_violations == 'true'
+        run: |
+          echo "RVS-AGENT-001 violations found. See PR comment for details."
+          exit 1

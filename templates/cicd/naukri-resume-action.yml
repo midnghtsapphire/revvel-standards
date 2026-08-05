@@ -1,0 +1,78 @@
+# Naukri Resume Action
+#
+# Marketplace: https://github.com/marketplace/actions/naukri-resume-action
+# Action repo: https://github.com/Prateek-Wayne/naukri-resume-action
+#
+# Refreshes one or more resumes on Naukri.com so the profile stays active.
+# Upstream requires a self-hosted runner in a region where Naukri.com is
+# reachable (for example AWS ap-south-1 / Mumbai).
+#
+# Secrets required: NAUKRI_USERNAME, NAUKRI_PASSWORD, NAUKRI_PROFILE_ID
+# Copy this file to: .github/workflows/naukri-resume-action.yml
+
+name: Naukri Resume Refresh
+
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+    inputs:
+      resume_path:
+        description: "Path(s) to resume file(s), one path per line"
+        required: false
+        default: "./resumes/resume.pdf"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: naukri-resume-refresh
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    name: Upload resume to Naukri
+    runs-on: self-hosted
+    timeout-minutes: 20
+    env:
+      NAUKRI_USERNAME: ${{ secrets.NAUKRI_USERNAME }}
+      NAUKRI_PASSWORD: ${{ secrets.NAUKRI_PASSWORD }}
+      NAUKRI_PROFILE_ID: ${{ secrets.NAUKRI_PROFILE_ID }}
+      RESUME_PATH: ${{ github.event.inputs.resume_path || './resumes/resume.pdf' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify credentials and resume paths
+        id: verify
+        run: |
+          ready=true
+
+          if [ -z "${NAUKRI_USERNAME}" ] || [ -z "${NAUKRI_PASSWORD}" ] || [ -z "${NAUKRI_PROFILE_ID}" ]; then
+            echo "::warning::NAUKRI_USERNAME, NAUKRI_PASSWORD, and NAUKRI_PROFILE_ID must all be configured."
+            ready=false
+          fi
+
+          if [ "${ready}" = "true" ]; then
+            printf '%s\n' "${RESUME_PATH}" | while IFS= read -r path; do
+              if [ -z "${path}" ]; then
+                continue
+              fi
+
+              if [ ! -f "${path}" ]; then
+                echo "::error::Resume path not found: ${path}"
+                exit 1
+              fi
+            done
+          fi
+
+          echo "ready=${ready}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload resume
+        if: steps.verify.outputs.ready == 'true'
+        uses: Prateek-Wayne/naukri-resume-action@v1.0.1
+        with:
+          username: ${{ secrets.NAUKRI_USERNAME }}
+          password: ${{ secrets.NAUKRI_PASSWORD }}
+          profile_id: ${{ secrets.NAUKRI_PROFILE_ID }}
+          resume_path: ${{ env.RESUME_PATH }}

@@ -1,0 +1,60 @@
+name: client_stacks
+title: "Client Stacks — Hook Into Any Client Stack and Do the Work"
+version: 1.0.0
+description: "Paid-contract engagement kit: detect a client repo's stack (language, framework, test runner, CI, package manager), load the matching polyglot lane pack (idiomatic prompt pack + the CLIENT'S verify commands), plan a client-style PR, and emit a per-client audit action log. Supports .NET/C#, Java, Python, TypeScript, PHP, Go, Ruby."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Agent Operations"
+  tags: [client-contract, stack-detection, polyglot, dotnet, java, python, typescript, php, engagement, audit-log]
+  created_at: "2026-07-09"
+  updated_at: "2026-07-09"
+
+dependencies:
+  skills: [project-router]
+  tools: []
+  pip_packages: []   # zero-dependency, Node stdlib only
+
+related:
+  detector: "skills/client-stacks/detect-stack.js"
+  runner: "skills/client-stacks/run-engagement.js"
+  lanes: "skills/client-stacks/stacks/"
+  playbook: "docs/CLIENT_ENGAGEMENT_KIT.md"
+  source_wr: "wr/pending/09-client-contract-fleet.md"
+
+triggers:
+  - "client stack"
+  - "client contract"
+  - "contract engagement"
+  - "detect client stack"
+  - "we do C#"
+  - "we do .NET"
+  - "polyglot lane"
+  - "run the client's tests"
+  - "engagement kit"
+
+implementation:
+  type: "node_script"
+  language: "javascript"
+  entrypoint: "skills/client-stacks/detect-stack.js"
+  invoke: "node skills/client-stacks/detect-stack.js <client-checkout> --json"
+  content: |
+    # Client Stacks Skill
+
+    ## Purpose
+    Enable paid contract engagements against any client stack. Detect the
+    stack, load the matching lane pack (prompt pack + the client's own
+    verify commands), plan a client-style PR, and audit every action.
+
+    ## Run
+    node skills/client-stacks/detect-stack.js <path> --json
+    node skills/client-stacks/run-engagement.js --repo <path> --task "..." --client <name> --json
+
+    ## Hard rules
+    - Run the CLIENT'S verify commands from the lane pack, never our suite.
+    - Client secrets NEVER enter this repo; per-client token scope only.
+    - Every action in a client system appends to
+      logs/client-engagements/<client>.jsonl (no secrets in the log).
+    - Follow prompt_pack.idioms / prompt_pack.never for the detected stack.
+    - Integration tiers, remedial-work menu, pricing hooks and the
+      engagement checklist: docs/CLIENT_ENGAGEMENT_KIT.md.

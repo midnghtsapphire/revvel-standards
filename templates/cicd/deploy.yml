@@ -1,0 +1,139 @@
+# ============================================================
+# REVVEL STANDARD CI/CD PIPELINE — GitHub Actions
+# ============================================================
+# MANDATORY for every Revvel/MIDNGHTSAPPHIRE app deployed to
+# a DigitalOcean Droplet via PM2 + Nginx.
+#
+# HOW TO USE:
+#   1. Copy this file to your repo at:
+#        .github/workflows/deploy.yml
+#   2. Replace ALL occurrences of:
+#        YOUR_APP_NAME    → your PM2 process name (e.g., growlingeyes)
+#        YOUR_DROPLET_IP  → your droplet's IP address
+#        YOUR_APP_DIR     → your app's directory on the droplet
+#        YOUR_DOMAIN      → your app's production domain (e.g., growlingeyes.com)
+#   3. Add SSH_PRIVATE_KEY to your repo's GitHub Actions secrets:
+#        GitHub → Repo → Settings → Secrets → Actions → New secret
+#        Name: SSH_PRIVATE_KEY
+#        Value: contents of your deploy private key
+#   4. Commit and push — every push to main auto-deploys.
+#
+# DEPLOYBOT INTEGRATION:
+#   This workflow creates GitHub Deployment records via the GitHub
+#   Deployments API. The deploybot-app (https://deploybot.app/) reads
+#   these records to track and display deployment status across all
+#   Revvel repos automatically — no extra configuration required once
+#   the app is installed on the organisation.
+# ============================================================
+
+name: Deploy to DigitalOcean Droplet
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  APP_NAME: "YOUR_APP_NAME"
+  DROPLET_IP: "YOUR_DROPLET_IP"
+  APP_DIR: "/var/www/YOUR_APP_DIR"
+  APP_DOMAIN: "https://YOUR_DOMAIN"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    # deployments: write is required for the GitHub Deployments API
+    # (used by deploybot-app to track deployment status)
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── DeployBot: create pending deployment record ──────────────
+      # deploybot-app (https://deploybot.app/) picks this up to track
+      # deployment status across the organisation.
+      - name: Create GitHub Deployment (pending)
+        id: deployment
+        uses: chrnorm/deployment-action@v2
+        with:
+          token: ${{ github.token }}
+          environment: production
+          ref: ${{ github.sha }}
+          description: "Deploying ${{ env.APP_NAME }} to production"
+
+      - name: Setup Node.js with corepack
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Enable pnpm via corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.4.1 --activate
+          pnpm --version
+
+      - name: Get pnpm store directory
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build project
+        run: pnpm build
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ env.DROPLET_IP }} >> ~/.ssh/known_hosts
+
+      - name: Upload build to droplet via rsync
+        run: |
+          rsync -az \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            dist/index.js dist/public/ package.json pnpm-lock.yaml \
+            root@${{ env.DROPLET_IP }}:${{ env.APP_DIR }}/
+
+      - name: Restart PM2 on droplet
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no root@${{ env.DROPLET_IP }} "
+            set -e
+            cd ${{ env.APP_DIR }}
+            pm2 restart ${{ env.APP_NAME }} --update-env
+            sleep 3
+            pm2 status
+            echo 'Deploy complete'
+          "
+
+      # ── DeployBot: update deployment status ──────────────────────
+      - name: Update deployment status (success)
+        if: success()
+        uses: chrnorm/deployment-status@v2
+        with:
+          token: ${{ github.token }}
+          state: success
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+          environment-url: ${{ env.APP_DOMAIN }}
+          description: "${{ env.APP_NAME }} deployed successfully"
+
+      - name: Update deployment status (failure)
+        if: failure()
+        uses: chrnorm/deployment-status@v2
+        with:
+          token: ${{ github.token }}
+          state: failure
+          deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+          description: "Deployment of ${{ env.APP_NAME }} failed"

@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Freedom Angel Corp — Public Hub</title>
+  <meta name="description" content="Public hub for Freedom Angel Corp / oAudrey — landing page, GitHub admin front-end, project management, and tax workspace, all in one place." />
+  <meta name="theme-color" content="#0B0F1A" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Freedom Angel Corp — Public Hub" />
+  <meta property="og:description" content="Landing page, GitHub admin front-end, project management, and tax workspace for Freedom Angel Corp." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://midnghtsapphire.github.io/revvel-standards/" />
+
+  <!-- Tailwind CSS via CDN — matches the convention used by oaudrey/ and fieldwork/ -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            void:   '#0B0F1A',
+            carbon: '#121828',
+            steel:  '#1E2638',
+            mist:   '#8A93A6',
+            ice:    '#E7ECF5',
+            iris:   '#7C5CFF',
+            cyan:   '#3DDCFF',
+            ember:  '#FF6B6B',
+            gold:   '#F7C948',
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['\"JetBrains Mono\"', 'ui-monospace', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0B0F1A; color: #E7ECF5; -webkit-font-smoothing: antialiased; }
+    .aurora {
+      background:
+        radial-gradient(900px 500px at 15% 15%, rgba(124,92,255,0.30), transparent 60%),
+        radial-gradient(800px 450px at 85% 25%, rgba(61,220,255,0.22), transparent 60%),
+        radial-gradient(700px 400px at 50% 90%, rgba(247,201,72,0.10), transparent 60%);
+    }
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(124,92,255,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(124,92,255,0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .card { background: rgba(30, 38, 56, 0.55); backdrop-filter: blur(8px); }
+    .card:hover { background: rgba(30, 38, 56, 0.85); }
+    a:focus-visible { outline: 2px solid #3DDCFF; outline-offset: 3px; }
+    .pill { letter-spacing: 0.18em; }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body class="font-sans text-ice min-h-screen relative">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-iris focus:text-void focus:px-3 focus:py-2 focus:font-mono focus:text-xs">Skip to content</a>
+
+  <div class="absolute inset-0 aurora pointer-events-none" aria-hidden="true"></div>
+  <div class="absolute inset-0 grid-bg opacity-40 pointer-events-none" aria-hidden="true"></div>
+
+  <header class="relative z-10 border-b border-steel/60">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <a href="./" class="flex items-center gap-3" aria-label="Freedom Angel Corp home">
+        <svg viewBox="0 0 40 40" width="32" height="32" aria-hidden="true">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#7C5CFF"/>
+              <stop offset="100%" stop-color="#3DDCFF"/>
+            </linearGradient>
+          </defs>
+          <circle cx="20" cy="20" r="14" fill="none" stroke="url(#g1)" stroke-width="2"/>
+          <circle cx="20" cy="20" r="3.5" fill="#3DDCFF"/>
+          <circle cx="33" cy="13" r="1.6" fill="#F7C948"/>
+        </svg>
+        <span class="font-extrabold tracking-tight">Freedom Angel Corp</span>
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm text-mist">
+        <a href="#skills-store" class="hover:text-ice text-gold">Skills</a>
+        <a href="#hub" class="hover:text-ice">Hub</a>
+        <a href="#admin" class="hover:text-ice">Admin</a>
+        <a href="#mission" class="hover:text-ice">Mission</a>
+        <a href="https://github.com/midnghtsapphire/revvel-standards" class="hover:text-ice" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="relative z-10 max-w-6xl mx-auto px-6 py-14 md:py-20">
+
+    <section aria-labelledby="hero-h" class="mb-14 md:mb-20">
+      <div class="font-mono pill text-[11px] uppercase text-mist mb-4">// Public Hub · Freedom Angel Corp · oAudrey</div>
+      <h1 id="hero-h" class="text-4xl md:text-6xl font-extrabold tracking-tight max-w-4xl">
+        One door to the
+        <span class="bg-gradient-to-r from-iris via-cyan to-iris bg-clip-text text-transparent">Freedom Angel Corp</span>
+        public surface.
+      </h1>
+      <p class="mt-6 text-mist max-w-2xl text-lg">
+        Landing page, GitHub admin front-end, project management, and the tax workspace —
+        all wired through a single static site, deployed straight from this repository.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="./oaudrey/" class="inline-flex items-center bg-gradient-to-r from-iris to-cyan px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-void hover:opacity-90">
+          Open oAudrey Hub →
+        </a>
+        <a href="./ui/freedom-angel-repo-manager/" class="inline-flex items-center border border-iris/60 px-5 py-3 font-mono text-xs font-bold uppercase tracking-widest text-ice hover:bg-iris/10">
+          Admin · GitHub Front-End →
+        </a>
+      </div>
+    </section>
+
+    <!-- Finisher-4: Skills Store CTAs — live Gumroad products -->
+    <section id="skills-store" aria-labelledby="skills-h" class="mb-14 md:mb-20">
+      <h2 id="skills-h" class="text-sm font-mono pill uppercase text-gold mb-6">// Skills Store · Instant PDF Delivery</h2>
+      <div class="card border border-gold/40 p-6 md:p-8">
+        <p class="text-mist max-w-3xl mb-6">
+          Production-ready AI agent skills for ops, workflow, review, DevOps, security, and growth.
+          Instant download. A portion of every sale supports trafficking survivors via Freedom Angel Fighters.
+        </p>
+        <div class="flex flex-wrap gap-3 mb-6">
+          <a href="https://angelreporter.gumroad.com/l/oefmwi" target="_blank" rel="noopener"
+             class="inline-flex items-center bg-gradient-to-r from-gold to-iris px-6 py-3.5 font-mono text-xs font-bold uppercase tracking-widest text-void hover:opacity-90 shadow-lg shadow-gold/20">
+            Skills Vault — $99 →
+          </a>
+        </div>
+        <p class="text-sm text-mist mb-3 font-mono uppercase tracking-wider text-[11px]">Individual packs · $29 each</p>
+        <div class="flex flex-wrap gap-2 text-sm">
+          <a href="https://angelreporter.gumroad.com/l/treilq" target="_blank" rel="noopener" class="border border-steel/70 px-3 py-1.5 rounded hover:border-iris hover:text-ice transition-colors">Agent Ops</a>
+          <a href="https://angelreporter.gumroad.com/l/kohdkz" target="_blank" rel="noopener" class="border border-steel/70 px-3 py-1.5 rounded hover:border-iris hover:text-ice transition-colors">Dev Workflow</a>
+          <a href="https://angelreporter.gumroad.com/l/harmm" target="_blank" rel="noopener" class="border border-steel/70 px-3 py-1.5 rounded hover:border-iris hover:text-ice transition-colors">Review & Testing</a>
+          <a href="https://angelreporter.gumroad.com/l/pkdjmy" target="_blank" rel="noopener" class="border border-steel/70 px-3 py-1.5 rounded hover:border-iris hover:text-ice transition-colors">DevOps</a>
+          <a href="https://angelreporter.gumroad.com/l/lmesfo" target="_blank" rel="noopener" class="border border-steel/70 px-3 py-1.5 rounded hover:border-iris hover:text-ice transition-colors">Security</a>
+          <a href="https://angelreporter.gumroad.com/l/gccegs" target="_blank" rel="noopener" class="border border-steel/70 px-3 py-1.5 rounded hover:border-iris hover:text-ice transition-colors">Growth</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="hub" aria-labelledby="hub-h" class="mb-14 md:mb-20">
+      <h2 id="hub-h" class="text-sm font-mono pill uppercase text-cyan mb-6">// Live tabs</h2>
+      <div id="hub-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <a href="./oaudrey/" class="card border border-steel/70 p-6 hover:border-iris transition-colors">
+          <div class="font-mono text-[10px] pill uppercase text-cyan mb-2">Landing</div>
+          <h3 class="text-xl font-bold">oAudrey Automation Hub</h3>
+          <p class="mt-2 text-sm text-mist">Public landing page for the umbrella of automation, mobile, marketing, and ecommerce products under Freedom Angel Corp.</p>
+          <p class="mt-4 font-mono text-[11px] text-iris">./oaudrey/ →</p>
+        </a>
+
+        <a id="admin" href="./ui/freedom-angel-repo-manager/" class="card border border-steel/70 p-6 hover:border-iris transition-colors">
+          <div class="font-mono text-[10px] pill uppercase text-cyan mb-2">Admin · GitHub</div>
+          <h3 class="text-xl font-bold">Repo Manager</h3>
+          <p class="mt-2 text-sm text-mist">Read-only admin front-end to GitHub. Lists every repository for an owner and audits each against the Revvel Standards. Bring your own fine-grained PAT.</p>
+          <p class="mt-4 font-mono text-[11px] text-iris">./ui/freedom-angel-repo-manager/ →</p>
+        </a>
+
+        <a href="./fieldwork/" class="card border border-steel/70 p-6 hover:border-iris transition-colors">
+          <div class="font-mono text-[10px] pill uppercase text-cyan mb-2">Product</div>
+          <h3 class="text-xl font-bold">FieldWork</h3>
+          <p class="mt-2 text-sm text-mist">FieldWork landing surface — extraction, PDFs, and field-ops tooling.</p>
+          <p class="mt-4 font-mono text-[11px] text-iris">./fieldwork/ →</p>
+        </a>
+
+        <a href="./osint-hub/" aria-label="Open OSINT Hub — Gen Z intelligence arsenal with 50+ tools" class="card border border-steel/70 p-6 hover:border-iris transition-colors">
+          <div class="font-mono text-[10px] pill uppercase text-cyan mb-2">Intelligence</div>
+          <h3 class="text-xl font-bold">OSINT Hub</h3>
+          <p class="mt-2 text-sm text-mist">Gen Z Intelligence Arsenal — AI-orchestrated OSINT platform with 50+ tools for threat intelligence, network recon, and automated analysis.</p>
+          <p class="mt-4 font-mono text-[11px] text-iris">./osint-hub/ →</p>
+        </a>
+
+        <a href="./hvac-bom-generator.html" class="card border border-steel/70 p-6 hover:border-iris transition-colors">
+          <div class="font-mono text-[10px] pill uppercase text-cyan mb-2">Tool</div>
+          <h3 class="text-xl font-bold">HVAC BOM Generator</h3>
+          <p class="mt-2 text-sm text-mist">Single-file HVAC bill-of-materials generator. Open in a browser, get a BOM.</p>
+          <p class="mt-4 font-mono text-[11px] text-iris">./hvac-bom-generator.html →</p>
+        </a>
+
+        <a href="https://github.com/orgs/midnghtsapphire/projects" target="_blank" rel="noopener" class="card border border-steel/70 p-6 hover:border-iris transition-colors">
+          <div class="font-mono text-[10px] pill uppercase text-gold mb-2">Project Mgt · external</div>
+          <h3 class="text-xl font-bold">Org Projects ↗</h3>
+          <p class="mt-2 text-sm text-mist">Project management lives on GitHub Projects today. A unified embedded dashboard is on the roadmap (pending design 👍).</p>
+          <p class="mt-4 font-mono text-[11px] text-iris">github.com/orgs/midnghtsapphire/projects →</p>
+        </a>
+
+        <a href="https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/proposals/draft/T004_tax-navigator-agent.md" rel="noopener" class="card border border-steel/70 p-6 hover:border-iris transition-colors">
+          <div class="font-mono text-[10px] pill uppercase text-gold mb-2">Taxes · workspace</div>
+          <h3 class="text-xl font-bold">Tax Navigator (draft)</h3>
+          <p class="mt-2 text-sm text-mist">Draft proposal for the Tax Navigator agent and central tax workspace. See <code class=\"font-mono text-xs\">skills/tax-legal-agent/</code> for the legal-tax skill that drives it.</p>
+          <p class="mt-4 font-mono text-[11px] text-iris">github.com/midnghtsapphire/revvel-standards/blob/main/docs/proposals/draft/T004_tax-navigator-agent.md →</p>
+        </a>
+
+      </div>
+    </section>
+
+    <section id="mission" aria-labelledby="mission-h" class="mb-14 md:mb-20">
+      <h2 id="mission-h" class="text-sm font-mono pill uppercase text-gold mb-4">// Mission · Giving Pledge</h2>
+      <div class="card border border-steel/70 p-6 md:p-8">
+        <p class="text-mist max-w-3xl">
+          A percentage of proceeds from every Freedom Angel Corp product — software, mobile apps,
+          autonomous systems, marketing and ecommerce — is donated to programs that support
+          <span class="text-ice font-semibold">trafficking survivors</span> with reskilling,
+          recovery, and restoration. Administered through
+          <span class="text-ice font-semibold">Freedom Angel Fighters</span>
+          (Colorado, EIN 86-1209156, Non-Profit, Good Standing).
+        </p>
+      </div>
+    </section>
+
+    <footer class="border-t border-steel/60 pt-8 text-xs text-mist flex flex-wrap items-center justify-between gap-4">
+      <div>© 2010–2026 Freedom Angel Corp · Audrey Evans (MIDNGHTSAPPHIRE).</div>
+      <div class="font-mono">
+        <a href="https://github.com/midnghtsapphire/revvel-standards" rel="noopener" class="hover:text-ice">source ↗</a>
+        <span class="mx-2 opacity-40">·</span>
+        <a href="./oaudrey/" class="hover:text-ice">oaudrey</a>
+        <span class="mx-2 opacity-40">·</span>
+        <a href="./ui/freedom-angel-repo-manager/" class="hover:text-ice">admin</a>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Website publication lane (issue #15510): cards for merged website WRs
+       are generated from hub-registry.js — built by scripts/build-hub-registry.js
+       from data/hub/entries/*.json. Never hand-edit the registry; the workflow
+       .github/workflows/website-publish.yml regenerates it on merge. The
+       hub-registry.json fetch is the fallback for HTTP contexts where the
+       window-global file is missing (e.g. a partial deploy). -->
+  <script src="hub-registry.js"></script>
+  <script>
+  "use strict";
+  (function () {
+    function renderHubEntries(registry) {
+      const grid = document.getElementById("hub-grid");
+      if (!grid || !registry || !Array.isArray(registry.entries)) return;
+      for (const entry of registry.entries) {
+        // Build with DOM APIs (not innerHTML) so WR-supplied titles and
+        // descriptions can never inject markup into the hub.
+        const card = document.createElement("a");
+        card.href = entry.path;
+        card.className = "card border border-steel/70 p-6 hover:border-iris transition-colors";
+
+        const tag = document.createElement("div");
+        tag.className = "font-mono text-[10px] pill uppercase text-cyan mb-2";
+        tag.textContent = entry.tag || "Website";
+
+        const title = document.createElement("h3");
+        title.className = "text-xl font-bold";
+        title.textContent = entry.title;
+
+        const desc = document.createElement("p");
+        desc.className = "mt-2 text-sm text-mist";
+        desc.textContent = entry.description;
+
+        const link = document.createElement("p");
+        link.className = "mt-4 font-mono text-[11px] text-iris";
+        link.textContent = entry.path + " →";
+
+        card.append(tag, title, desc, link);
+        grid.appendChild(card);
+      }
+    }
+
+    if (window.HUB_REGISTRY) {
+      renderHubEntries(window.HUB_REGISTRY);
+    } else if (location.protocol !== "file:") {
+      fetch("hub-registry.json")
+        .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+        .then(renderHubEntries)
+        .catch(() => { /* registry unavailable — static cards still render */ });
+    }
+  })();
+  </script>
+</body>
+</html>

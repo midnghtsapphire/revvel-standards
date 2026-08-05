@@ -1,0 +1,135 @@
+{
+  "_comment": "Revvel Web MCP Config — 18 servers for Next.js/React/Node web applications. Copy to .mcp.json at project root.",
+  "mcpServers": {
+
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
+    },
+
+    "sqlite": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "${SQLITE_DB_PATH}"]
+    },
+
+    "mongodb": {
+      "command": "npx",
+      "args": ["-y", "mcp-mongo-server", "${MONGODB_URI}"]
+    },
+
+    "duckduckgo": {
+      "command": "npx",
+      "args": ["-y", "duckduckgo-mcp-server"]
+    },
+
+    "tavily": {
+      "command": "npx",
+      "args": ["-y", "@tavily/mcp"],
+      "env": {
+        "TAVILY_API_KEY": "${TAVILY_API_KEY}"
+      }
+    },
+
+    "google-news": {
+      "command": "npx",
+      "args": ["-y", "server-google-news"]
+    },
+
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
+      }
+    },
+
+    "meilisearch": {
+      "command": "python",
+      "args": ["-m", "meilisearch_mcp.server"],
+      "env": {
+        "MEILI_HOST": "${MEILI_HOST}",
+        "MEILI_KEY": "${MEILI_KEY}"
+      }
+    },
+
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-slack"],
+      "env": {
+        "SLACK_BOT_TOKEN": "${SLACK_BOT_TOKEN}",
+        "SLACK_TEAM_ID": "${SLACK_TEAM_ID}"
+      }
+    },
+
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+
+    "memorymesh": {
+      "command": "npx",
+      "args": ["-y", "memorymesh"]
+    },
+
+    "mem0": {
+      "command": "npx",
+      "args": ["-y", "mem0-mcp"],
+      "env": {
+        "MEM0_API_KEY": "${MEM0_API_KEY}"
+      }
+    },
+
+    "obsidian": {
+      "command": "npx",
+      "args": ["-y", "mcp-obsidian"],
+      "env": {
+        "OBSIDIAN_API_KEY": "${OBSIDIAN_API_KEY}",
+        "OBSIDIAN_HOST": "${OBSIDIAN_HOST}"
+      }
+    },
+
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "notion-mcp-server"],
+      "env": {
+        "NOTION_API_KEY": "${NOTION_API_KEY}"
+      }
+    },
+
+    "calculator": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-calculator"]
+    },
+
+    "adobe-express": {
+      "command": "npx",
+      "args": ["-y", "@adobe/express-developer-mcp"]
+    },
+
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${PROJECT_ROOT}"]
+    },
+
+    "gdrive": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gdrive"],
+      "env": {
+        "GDRIVE_CLIENT_ID": "${GDRIVE_CLIENT_ID}",
+        "GDRIVE_CLIENT_SECRET": "${GDRIVE_CLIENT_SECRET}",
+        "GDRIVE_REFRESH_TOKEN": "${GDRIVE_REFRESH_TOKEN}"
+      }
+    },
+
+    "python": {
+      "command": "uvx",
+      "args": ["mcp-run-python"]
+    },
+
+    "desktop-commander": {
+      "command": "npx",
+      "args": ["-y", "@wonderwhy-er/desktop-commander"]
+    }
+
+  }
+}

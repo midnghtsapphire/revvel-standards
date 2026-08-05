@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Revvel operating notes
+    url: https://github.com/midnghtsapphire/revvel-standards
+    about: Review the operating system, routing logic, and standards before opening a work request.

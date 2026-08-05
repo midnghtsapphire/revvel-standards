@@ -1,0 +1,24 @@
+{
+  "stack": "ruby",
+  "language": "Ruby",
+  "default_framework": "ruby",
+  "package_manager": "bundler",
+  "test_runner": "rspec / rake test",
+  "verify": [
+    "bundle install",
+    "bundle exec rspec || bundle exec rake test"
+  ],
+  "format": "bundle exec rubocop || true",
+  "prompt_pack": {
+    "idioms": [
+      "Rails projects: use rails generators and the client's existing concerns/service-object patterns.",
+      "Match the client's Ruby version from .ruby-version / Gemfile.",
+      "Use the client's test framework (RSpec vs Minitest) — detect from Gemfile groups.",
+      "Respect the client's .rubocop.yml exactly; don't fight their cops."
+    ],
+    "pr_style": "Match existing PR titles in the client repo. Default: imperative summary, link their issue.",
+    "never": [
+      "Never run bundle update unless dependency updates ARE the task."
+    ]
+  }
+}

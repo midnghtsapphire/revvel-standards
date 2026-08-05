@@ -1,0 +1,24 @@
+{
+  "name": "devops-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3011",
+    "build": "next build",
+    "start": "next start -p 3011",
+    "lint": "tsc --noEmit",
+    "test": "node tests/dashboard.test.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^16.2.6",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5"
+  }
+}

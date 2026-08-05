@@ -1,0 +1,186 @@
+name: posthog
+title: "PostHog — All-in-One Product Analytics, Session Replay & Feature Flags"
+version: "1.0.0"
+description: "Integrate PostHog into any Revvel project (web, Node, mobile) for event tracking, session replay, feature flags, A/B tests, and error tracking with source maps — with PII-safe defaults and Revvel-standard event naming."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Product Analytics"
+  tags:
+    - posthog
+    - product-analytics
+    - session-replay
+    - feature-flags
+    - ab-testing
+    - error-tracking
+    - source-maps
+    - user-behavior
+    - events
+    - telemetry
+    - posthog-js
+    - posthog-node
+    - annotations
+  created_at: "2026-04-30"
+  updated_at: "2026-04-30"
+
+dependencies:
+  skills:
+    - vault_agent       # for POSTHOG_API_KEY and POSTHOG_PERSONAL_API_KEY provisioning
+    - security          # PII rules for event properties
+    - error_reporting   # baseline 'error_surfaced' event
+  tools:
+    - nodejs
+  pip_packages: []
+  npm_packages:
+    - posthog-js        # client / SPA / Next.js
+    - posthog-node      # Node / worker / server
+
+template_files:
+  - path: "templates/standards/posthog-init.ts"
+    description: "Drop-in browser + Node initializer with opt-out, DNT, and PII guardrails"
+  - path: "templates/standards/posthog-events.md"
+    description: "Event-naming standard, baseline event catalog, and PII rules"
+  - path: "templates/cicd/posthog-annotations.yml"
+    description: "GitHub Action to send annotations to PostHog on PR merges / releases"
+  - path: "templates/cicd/posthog-upload-sourcemaps.yml"
+    description: "GitHub Action to upload source maps to PostHog for error tracking"
+  - path: "templates/cicd/posthog-send-event.yml"
+    description: "GitHub Action to send custom events to PostHog from CI/CD"
+
+triggers:
+  - "posthog"
+  - "integrate posthog"
+  - "product analytics"
+  - "session replay"
+  - "feature flags"
+  - "ab testing"
+  - "a/b testing"
+  - "error tracking"
+  - "source maps"
+  - "user behavior analytics"
+  - "track event"
+  - "posthog-js"
+  - "posthog.capture"
+  - "telemetry"
+  - "annotations"
+  - "deployment annotations"
+
+implementation:
+  type: "markdown_prompt"
+  language: "markdown"
+  content_ref: "skills/posthog/SKILL.md"
+
+setup:
+  steps:
+    - step: 1
+      action: "Create a PostHog project"
+      url: "https://posthog.com"
+    - step: 2
+      action: "Retrieve POSTHOG_API_KEY, POSTHOG_PERSONAL_API_KEY, and POSTHOG_PROJECT_ID from Project Settings"
+      details: "API Key is client-safe; Personal API Key is server-only."
+    - step: 3
+      action: "Add secrets to GitHub repo and Vault"
+      details: "Vault path: revvel/apps/<app>/<env>/posthog"
+    - step: 4
+      action: "Install SDK"
+      command: "npm install posthog-js posthog-node"
+    - step: 5
+      action: "Copy initializer template"
+      command: "cp revvel-standards/templates/standards/posthog-init.ts <app>/src/lib/analytics-posthog.ts"
+    - step: 6
+      action: "Adopt event-naming standard from templates/standards/posthog-events.md"
+    - step: 7
+      action: "Wire opt-out / Do-Not-Track honoring (template handles this by default)"
+    - step: 8
+      action: "Verify events appear in PostHog Dashboard → Activity → Events"
+    - step: 9
+      action: "(Optional) Enable session replay in posthog-init.ts"
+    - step: 10
+      action: "(Optional) Add GitHub Actions for annotations and source maps"
+
+examples:
+  - description: "Track a signup conversion"
+    usage: |
+      import { captureEvent } from '@/lib/analytics-posthog';
+      captureEvent('user_signed_up', { signup_method: 'google', referrer_source: 'twitter' });
+  - description: "Server-side purchase event from Stripe webhook"
+    usage: |
+      import { PostHog } from 'posthog-node';
+      const posthog = new PostHog(process.env.POSTHOG_API_KEY!);
+      posthog.capture({
+        distinctId: hashedUserId,
+        event: 'purchase_completed',
+        properties: {
+          product_slug: 'asset-donation-engine',
+          amount_cents: 4900,
+          currency: 'usd',
+        },
+      });
+  - description: "Honor a user opt-out"
+    usage: |
+      import { optOut, optIn } from '@/lib/analytics-posthog';
+      // settings toggle
+      userOptedOut ? optOut() : optIn();
+  - description: "Check if a feature flag is enabled"
+    usage: |
+      import { posthog } from '@/lib/analytics-posthog';
+      if (posthog.isFeatureEnabled('new-checkout-flow')) {
+        // Show new checkout flow
+      }
+  - description: "Send annotation to PostHog from GitHub Actions"
+    usage: |
+      - uses: PostHog/posthog-annotations-github-action@v1
+        with:
+          posthog-token: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+          posthog-project-id: ${{ secrets.POSTHOG_PROJECT_ID }}
+          annotation-message: "Merged PR #${{ github.event.pull_request.number }}"
+
+pii_rules:
+  hard_lines:
+    - "Never send raw email, phone, full name, government ID, address, IP, or precise geolocation as a property."
+    - "distinct_id must be a hashed UUID, never the raw email or login."
+    - "optOut() makes captureEvent() a no-op; Do-Not-Track is treated as opt-out by default."
+    - "EU traffic → set api_host: 'https://eu.posthog.com'."
+    - "POSTHOG_PERSONAL_API_KEY is server-only — never reference it in client code."
+
+baseline_events:
+  - name: "app_loaded"
+    when: "First mount of the root component"
+    required_properties: ["app_version", "platform"]
+  - name: "user_signed_up"
+    when: "Server confirms new account"
+    required_properties: ["signup_method", "referrer_source"]
+  - name: "user_logged_in"
+    when: "Server confirms session"
+    required_properties: ["login_method"]
+  - name: "user_logged_out"
+    when: "User-initiated sign out"
+    required_properties: []
+  - name: "feature_used"
+    when: "Any non-nav user action worth tracking"
+    required_properties: ["feature_name", "surface"]
+  - name: "purchase_completed"
+    when: "Stripe webhook checkout.session.completed"
+    required_properties: ["product_slug", "amount_cents", "currency"]
+  - name: "error_surfaced"
+    when: "User saw a non-fatal error toast / page"
+    required_properties: ["error_code", "surface"]
+
+github_actions:
+  - name: "PostHog Annotations"
+    marketplace_url: "https://github.com/marketplace/actions/posthog-annotations"
+    repo: "PostHog/posthog-annotations-github-action"
+    template: "templates/cicd/posthog-annotations.yml"
+    description: "Send deployment annotations to PostHog from GitHub Actions"
+  - name: "PostHog Upload Source Maps"
+    marketplace_url: "https://github.com/marketplace/actions/posthog-upload-source-maps"
+    repo: "PostHog/upload-source-maps"
+    template: "templates/cicd/posthog-upload-sourcemaps.yml"
+    description: "Upload JavaScript source maps to PostHog for readable error stack traces"
+  - name: "Send Event to PostHog"
+    marketplace_url: "https://github.com/marketplace/actions/send-event-to-posthog"
+    repo: "daun/posthog-event-action"
+    template: "templates/cicd/posthog-send-event.yml"
+    description: "Send custom events to PostHog from GitHub Actions"
+
+schema_version: "1.0"

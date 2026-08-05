@@ -1,0 +1,30 @@
+name: fleet-ci
+on:
+  push: { paths: ['fraud-signal-verification-fleet/**'] }
+  pull_request: { paths: ['fraud-signal-verification-fleet/**'] }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10   # backstop: never let a hung agent burn the full 6h job limit
+    defaults: { run: { working-directory: fraud-signal-verification-fleet } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r requirements.txt
+      - name: unit tests (stdlib, no yaml needed)
+        run: python3 -m unittest discover -s tests -v
+      - name: pipeline smoke test
+        run: |
+          timeout 120 python3 src/orchestrator.py
+          # Invariant (not a magic number): an all-"alleged" case cannot reach the
+          # SUPPORTED band. 0.55 is the SUPPORTED floor in confidence.py/CONFIDENCE_FRAMEWORK.md,
+          # and the alleged stage ceiling (0.45) sits below it. If the seed case is
+          # recalibrated, this should still hold for alleged-stage claims.
+          python3 -c "import json; d=json.load(open('dashboard/dashboard-data.json')); \
+            SUPPORTED_FLOOR=0.55; \
+            assert any(c['refused'] for c in d['claims']), 'refusal gate missing'; \
+            assert d.get('mode') == 'offline', 'seed pipeline must run offline'; \
+            assert d['case_evidentiary_integrity'] < SUPPORTED_FLOOR, \
+              'alleged-stage case must stay below the SUPPORTED band'; \
+            print('smoke OK')"

@@ -1,0 +1,58 @@
+{
+  "_comment": "Revvel Minimal MCP Config — 8 essential servers: DB, search, memory, filesystem, coding. For lightweight CLIs, scripts, and utilities. Copy to .mcp.json at project root.",
+  "mcpServers": {
+
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
+    },
+
+    "sqlite": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "${SQLITE_DB_PATH}"]
+    },
+
+    "duckduckgo": {
+      "command": "npx",
+      "args": ["-y", "duckduckgo-mcp-server"]
+    },
+
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
+      }
+    },
+
+    "meilisearch": {
+      "command": "python",
+      "args": ["-m", "meilisearch_mcp.server"],
+      "env": {
+        "MEILI_HOST": "${MEILI_HOST}",
+        "MEILI_KEY": "${MEILI_KEY}"
+      }
+    },
+
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${PROJECT_ROOT}"]
+    },
+
+    "python": {
+      "command": "uvx",
+      "args": ["mcp-run-python"]
+    },
+
+    "calculator": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-calculator"]
+    }
+
+  }
+}

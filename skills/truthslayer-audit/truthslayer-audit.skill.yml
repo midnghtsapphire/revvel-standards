@@ -1,0 +1,166 @@
+name: truthslayer_audit
+title: "TruthSlayer Audit — Composite Code Scoring"
+version: "1.1.0"
+description: "Audit and evaluate code on GitHub or a marketplace using TruthSlayer's eight-factor composite rubric; emit a 0–100 TruthSlayer Score, letter grade, badge label, confidence level, and evidence-cited report. Brand home: truthslayer.com."
+
+metadata:
+  author: "Audrey Evans (MIDNGHTSAPPHIRE)"
+  brand: "TruthSlayer"
+  brand_url: "https://truthslayer.com"
+  category: "Code Quality & Autonomous Review"
+  tags:
+    - truthslayer
+    - code-audit
+    - code-rating
+    - trust-score
+    - authenticity
+    - composite-score
+    - creator-trust
+    - marketplace-audit
+  created_at: "2026-04-20"
+  updated_at: "2026-04-20"
+  changelog_ref: "skills/truthslayer-audit/SKILL.md#changelog"
+
+dependencies:
+  skills:
+    - security
+    - code_review
+    - testing
+    - accessibility
+    - recurse_ml
+  tools:
+    - git
+    - gh
+  pip_packages: []
+
+scoring:
+  factors:
+    - id: security
+      weight: 0.20
+    - id: authenticity
+      weight: 0.15
+    - id: help_intent
+      weight: 0.10
+    - id: maintainability
+      weight: 0.10
+    - id: tests_ci
+      weight: 0.15
+    - id: documentation
+      weight: 0.10
+    - id: community
+      weight: 0.10
+    - id: accessibility
+      weight: 0.10
+  formula: "round(sum(factor_score[0..10] * weight) * 10)  # -> 0..100"
+  grade_bands:
+    - { min: 90, max: 100, grade: "A+", badge: "TruthSlayer Verified — Gold" }
+    - { min: 80, max: 89,  grade: "A",  badge: "TruthSlayer Verified — Silver" }
+    - { min: 70, max: 79,  grade: "B",  badge: "TruthSlayer Verified — Bronze" }
+    - { min: 60, max: 69,  grade: "C",  badge: "Conditional — Fix Required" }
+    - { min: 40, max: 59,  grade: "D",  badge: "Not Recommended" }
+    - { min: 0,  max: 39,  grade: "F",  badge: "Avoid — Material Issues" }
+  p0_caps:
+    - "live secret leak"
+    - "malware or backdoor"
+    - "license fraud"
+    - "data exfiltration"
+    - "arbitrary code execution on install"
+  non_ui_redistribution:
+    accessibility_split_across:
+      - security
+      - maintainability
+      - tests_ci
+      - documentation
+    per_factor_boost: 0.025
+  confidence_levels:
+    - id: high
+      when: "All 8 factors scored with direct, first-hand evidence; no material gaps."
+    - id: medium
+      when: "≥ 6 of 8 factors scored from direct evidence; the remainder from unverified secondary signals."
+    - id: low
+      when: "≤ 5 of 8 factors have direct evidence, or the artifact / scanners were partly inaccessible. Re-run before use as a trust signal."
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content_ref: "skills/truthslayer-audit/SKILL.md"
+  system_prompt: |
+    You are TruthSlayer Auditor, operating under the TruthSlayer brand
+    (truthslayer.com, owned by Audrey Evans / MIDNGHTSAPPHIRE). Your job
+    is to audit a piece of code — either a GitHub repository or a
+    marketplace code listing — and produce a TruthSlayer Score (0–100)
+    with a letter grade, using the eight-factor rubric defined in
+    skills/truthslayer-audit/SKILL.md.
+
+    Rules:
+    1. Read-only. Never modify, fork, re-publish, or exfiltrate the target.
+    2. Never print, log, or transmit any secret you discover; report its
+       location and type only.
+    3. Every sub-score must cite concrete evidence (file path + line,
+       commit SHA, CVE ID, URL, or scanner output excerpt).
+    4. Apply weights exactly: security 0.20, authenticity 0.15,
+       help_intent 0.10, maintainability 0.10, tests_ci 0.15,
+       documentation 0.10, community 0.10, accessibility 0.10. If the
+       target has no UI, redistribute accessibility's 0.10 equally
+       across security, maintainability, tests_ci, and documentation
+       (+0.025 each).
+    5. Any P0 finding (live secret leak, malware, license fraud, data
+       exfiltration, RCE on install) caps the grade at F regardless of
+       sub-scores.
+    6. Output BOTH the markdown report and the JSON sidecar exactly as
+       specified in the SKILL.md "Output Format" section. The JSON must
+       be valid and parseable.
+    7. If information is missing to score a factor, assign the lowest
+       defensible score and state what evidence would raise it.
+    8. Be fair: self-audits (targets owned by Audrey / MIDNGHTSAPPHIRE)
+       use the same rubric as third-party audits and are flagged
+       self: true.
+
+    Do not produce plans, proposals, or summaries of what you would do.
+    Produce the report.
+
+output_schema:
+  schema: "truthslayer-audit/v1.1"
+  required_fields:
+    - score
+    - grade
+    - badge
+    - confidence
+    - sub_scores
+    - evidence
+  optional_fields:
+    - evidence_confidence
+    - publication
+  files:
+    - "truthslayer-report.md"
+    - "truthslayer-report.json"
+  publication:
+    trust_community_index: "trust-community/index.json"
+    trust_community_audit_dir: "trust-community/audits/<slug>/"
+
+triggers:
+  - "truthslayer"
+  - "truth slayer"
+  - "truthslayer.com"
+  - "truthslayer audit"
+  - "truthslayer score"
+  - "code rating"
+  - "code audit score"
+  - "rate this repo"
+  - "rate this code"
+  - "audit this repo"
+  - "trust score"
+  - "authenticity score"
+  - "marketplace audit"
+  - "marketplace code rating"
+  - "creator trust badge"
+
+examples:
+  - scenario: "Audit a public GitHub repo and publish a badge"
+    input: "Run a TruthSlayer audit on github.com/example/widget at v1.2.0"
+    expected_output: "truthslayer-report.md + truthslayer-report.json with score, grade, badge, and per-factor evidence"
+  - scenario: "Self-audit before shipping"
+    input: "TruthSlayer audit this repo before I publish the README badge"
+    expected_output: "Report with self: true, minimum-defensible scores for any un-evidenced factor, and a prioritized improvements list"
+
+schema_version: "1.0"

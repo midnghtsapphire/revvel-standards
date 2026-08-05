@@ -1,0 +1,84 @@
+# Context Management Skill
+
+## Purpose
+Optimize token usage and prevent cost explosion through intelligent session management and proactive context monitoring.
+
+## Key Insights from Production Data
+- Sessions >140k tokens: 5% of sessions but 12% of total costs
+- Optimal session limit: 120k tokens for cost efficiency
+- Reasoning quality degrades around 120k tokens
+- Smart handoffs prevent context bloat and cost explosion
+
+## Core Components
+
+### Token Monitoring
+- Real-time tracking of current session token usage
+- Warning thresholds at 100k tokens (preparation phase)
+- Hard limits at 120k tokens (forced handoff)
+- Cost tracking and optimization analytics
+
+### Smart Session Handoffs
+- Automated handoff preparation before context limits
+- Complete state transfer to new session
+- Preservation of critical context and working memory
+- Clean session initialization with essential information
+
+### Context Optimization Strategies
+- Aggressive summarization of older conversation turns
+- Selective preservation of critical information
+- Pruning of redundant or low-value context
+- Prioritization of recent and important interactions
+
+## Workflow
+
+### Phase 1: Continuous Monitoring
+- Track token usage in real-time
+- Monitor conversation depth and complexity
+- Identify optimization opportunities
+- Alert when approaching warning thresholds
+
+### Phase 2: Handoff Preparation (100k+ tokens)
+- Begin selective context summarization
+- Identify critical information to preserve
+- Prepare session handoff documentation
+- Ready new session initialization
+
+### Phase 3: Forced Handoff (120k+ tokens)
+- Execute wrap-up skill for complete state capture
+- Generate comprehensive handoff documentation
+- Initialize new session with essential context
+- Verify successful context transfer
+
+### Phase 4: Session Optimization
+- Apply learned patterns for context efficiency
+- Refine handoff procedures based on experience
+- Optimize preservation strategies
+- Feed improvements back into system
+
+## Handoff Documentation Format
+- **Session Summary**: Key decisions and outcomes
+- **Active Context**: Current work and priorities  
+- **Critical Information**: Must-preserve facts and preferences
+- **Next Actions**: Planned work and immediate priorities
+- **Lessons Learned**: Insights for future sessions
+
+## Cost Optimization Benefits
+- Prevent 12% cost explosion from oversized sessions
+- Maintain reasoning quality through optimal context size
+- Enable longer project continuity through smart handoffs
+- Reduce waste from context bloat and degraded performance
+
+## Integration Points
+- Automatic triggers for wrap-up skill execution
+- Compatible with all development workflows
+- Supports multi-session project continuity
+- Feeds optimization data into memory systems
+
+## Success Criteria
+- No sessions exceed 120k token limit
+- Smooth handoffs with preserved context continuity
+- Cost optimization targets achieved
+- Maintained reasoning quality throughout projects
+
+## Rule
+Never exceed 120k tokens in a single session. Always execute wrap-up skill before forced handoff. Optimize for long-term project success over short-term convenience.

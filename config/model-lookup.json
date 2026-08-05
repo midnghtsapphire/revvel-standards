@@ -1,0 +1,120 @@
+{
+  "models": [
+    {
+      "id": 1,
+      "provider": "perplexity",
+      "name": "sonar-pro",
+      "mode": "no-key",
+      "description": "Perplexity no API key"
+    },
+    {
+      "id": 2,
+      "provider": "anthropic",
+      "name": "claude-sonnet-4",
+      "mode": "openrouter",
+      "description": "Top performing openrouter model for code and logic"
+    },
+    {
+      "id": 3,
+      "provider": "deepseek",
+      "name": "deepseek-v3.2",
+      "mode": "openrouter",
+      "description": "Top performing openrouter model for code and logic"
+    },
+    {
+      "id": 4,
+      "provider": "openai",
+      "name": "gpt-5.2-codex",
+      "mode": "openrouter",
+      "description": "Top performing openrouter model for code"
+    },
+    {
+      "id": 5,
+      "provider": "meta",
+      "name": "llama-3-70b-instruct",
+      "mode": "openrouter",
+      "description": "Uncensored / general purpose"
+    },
+    {
+      "id": 6,
+      "provider": "ollama",
+      "name": "llama3",
+      "mode": "ollama",
+      "description": "Local Ollama fallback"
+    },
+    {
+      "id": 7,
+      "provider": "anthropic",
+      "name": "claude-3.5-sonnet",
+      "mode": "openrouter",
+      "description": "Deep search lead model"
+    },
+    {
+      "id": 8,
+      "provider": "openrouter",
+      "name": "fusion",
+      "mode": "openrouter",
+      "description": "OpenRouter fusion synthesis model"
+    }
+  ],
+  "domains": [
+    {
+      "id": 1,
+      "name": "seo",
+      "best_models": [2, 3]
+    },
+    {
+      "id": 2,
+      "name": "legal",
+      "best_models": [2, 4]
+    },
+    {
+      "id": 3,
+      "name": "patents",
+      "best_models": [2, 3]
+    },
+    {
+      "id": 4,
+      "name": "copyright",
+      "best_models": [2, 4]
+    },
+    {
+      "id": 5,
+      "name": "cancer",
+      "best_models": [1, 2]
+    },
+    {
+      "id": 6,
+      "name": "chemical_spills",
+      "best_models": [1, 2]
+    },
+    {
+      "id": 7,
+      "name": "dominance",
+      "best_models": [2, 5]
+    }
+  ],
+  "profiles": {
+    "repo_surgery": {
+      "id": 101,
+      "description": "Multi-file edits, bug fixing, refactors, and 'take initiative' tasks",
+      "models": [2, 3, 4]
+    },
+    "cheap_batch_edits": {
+      "id": 102,
+      "description": "Repetitive transforms, test generation, lint-fix loops, and lower-cost bulk changes",
+      "models": [3, 2]
+    },
+    "hard_debug": {
+      "id": 103,
+      "description": "Difficult failures, ambiguous root-cause analysis, and second-opinion patches",
+      "models": [4, 2, 3]
+    },
+    "deep_search": {
+      "id": 104,
+      "description": "Deep R&D research using DOE Screening, TRIZ, MEErP, LCA, and BNAT frameworks",
+      "models": [7, 8]
+    }
+  },
+  "fallback_chain": [1, 2, 3, 6]
+}

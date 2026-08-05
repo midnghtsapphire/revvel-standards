@@ -1,0 +1,104 @@
+name: parallel_development
+title: Parallel Development
+version: 1.0.0
+description: "Enables multiple agents to work on the same project simultaneously without conflicts through shared coordination and intelligent task management."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Developer Workflow"
+  tags: [parallel, multi-agent, workflow, git]
+  created_at: "2026-04-12"
+  updated_at: "2026-04-12"
+
+dependencies:
+  skills: [todo_breakdown, using_git_worktrees]
+  tools: []
+  pip_packages: []
+
+implementation:
+  type: "markdown_prompt"
+  language: "markdown"
+  content: |
+    # Parallel Development Skill
+    
+    ## Purpose
+    Enable multiple agents to work on the same project simultaneously without conflicts through shared coordination and intelligent task management.
+    
+    ## Core Components
+    
+    ### Shared TODO Locking System
+    - Maintain shared TODO pool accessible to all agents
+    - Implement atomic locking mechanism to prevent duplicate work
+    - Track TODO assignment, progress, and completion status
+    - Support task reassignment and escalation for blocked items
+    
+    ### Multi-Agent Coordination
+    - Enable multiple agent instances to work on different TODOs simultaneously
+    - Provide real-time status updates and progress visibility
+    - Handle agent failures and automatic task redistribution
+    - Coordinate merge timing and conflict resolution
+    
+    ### Branch and Merge Management
+    - Create feature branches for parallel development streams
+    - Implement safe merging strategies with conflict detection
+    - Maintain integration branch for continuous testing
+    - Support rollback and recovery procedures
+    
+    ## Workflow
+    
+    ### Phase 1: Initialization
+    - Create shared TODO pool from breakdown skill output
+    - Initialize locking mechanism and status tracking
+    - Set up parallel development branches
+    - Configure merge and testing procedures
+    
+    ### Phase 2: Agent Deployment
+    - Launch multiple agent instances or processes
+    - Each agent polls for available TODOs and acquires locks
+    - Agents work independently on assigned tasks
+    - Automatic progress reporting and status updates
+    
+    ### Phase 3: Continuous Integration
+    - Regular merging of completed work to integration branch
+    - Automated testing and conflict detection
+    - Ralph loop integration for test-driven validation
+    - Immediate feedback to agents on integration issues
+    
+    ### Phase 4: Completion and Cleanup
+    - Final integration testing and validation
+    - Cleanup of temporary branches and resources
+    - Documentation of lessons learned and process improvements
+    - Integration with wrap-up skill for session capture
+    
+    ## Conflict Prevention Strategies
+    - Atomic TODO locking prevents duplicate assignment
+    - Clear dependency management prevents order conflicts
+    - Regular integration testing catches issues early
+    - Automated rollback capabilities for failed integrations
+    
+    ## Agent Communication Protocol
+    - Shared status file for real-time coordination
+    - Standardized progress reporting format
+    - Error escalation and manual intervention triggers
+    - Success notification and completion tracking
+    
+    ## Integration Points
+    - Consumes TODO breakdown skill output
+    - Works with ralph-loop for continuous testing
+    - Feeds results into wrap-up skill for learning
+    - Compatible with any repository structure and workflow
+    
+    ## Success Criteria
+    - Multiple agents working simultaneously without conflicts
+    - Efficient TODO distribution and completion tracking
+    - Safe merging with automated conflict resolution
+    - Comprehensive testing and validation throughout process
+    
+    ## Rule
+    Always use atomic locking for TODO assignment. Never allow multiple agents to work on the same task. Continuous integration is mandatory for all parallel development.
+
+examples:
+  - description: "Deploy multiple agents to implement a feature set in parallel"
+    usage: "Use parallel development to coordinate three agents simultaneously implementing separate TODOs from a feature breakdown."
+
+schema_version: "1.0"

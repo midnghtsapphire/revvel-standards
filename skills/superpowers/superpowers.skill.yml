@@ -1,0 +1,106 @@
+schema_version: "1.0"
+name: superpowers
+title: "Superpowers — Structured Software Development Framework"
+version: "1.0.0"
+date: "2026-07-07"
+status: active
+category: "Developer Workflow"
+path: "skills/superpowers/"
+skill_file: "skills/superpowers/superpowers.skill.yml"
+source_url: "https://claude.com/plugins/superpowers"
+issue: 15426
+
+description: >
+  Composable skills framework that enforces structured software development
+  discipline in Claude. Provides five independently loadable modules:
+  /brainstorming (Socratic requirements refinement before coding),
+  /tdd (red-green-refactor cycles where tests must fail first),
+  /debug (four-phase root-cause methodology with architectural escalation
+  after three failed attempts), /execute-plan (batched implementation with
+  code-reviewer checkpoints), and /writing-skills (TDD applied to skill and
+  documentation authoring). Includes a code-reviewer subagent that evaluates
+  implementations against plans, coding standards, and architectural principles.
+
+persona: "🦸 Superpowers"
+lifecycle: composable
+type: on-demand
+
+llm:
+  primary: claude
+  tiers:
+    - haiku
+    - sonnet
+    - opus
+
+access: all
+
+modules:
+  - name: brainstorming
+    command: "/brainstorming"
+    description: "Socratic requirements refinement session; blocks implementation until sign-off"
+  - name: tdd
+    command: "/tdd"
+    description: "Red-green-refactor TDD cycle with mandatory RED phase enforcement"
+  - name: debug
+    command: "/debug"
+    description: "Four-phase debugging: root cause → pattern → hypothesis → fix; escalates after 3 failures"
+  - name: execute_plan
+    command: "/execute-plan"
+    description: "Batched implementation plans with code-reviewer checkpoints between each batch"
+  - name: writing_skills
+    command: "/writing-skills"
+    description: "TDD principles applied to skill and documentation authoring; requires ≥3 assertions"
+
+subagents:
+  - name: code-reviewer
+    spawned_by: execute_plan
+    evaluates:
+      - plan_adherence
+      - coding_standards
+      - architectural_principles
+      - test_coverage
+      - security
+
+composability_matrix:
+  new_feature:
+    - brainstorming
+    - tdd
+    - execute_plan
+  bug_fix:
+    - debug
+    - tdd
+  new_skill_or_doc:
+    - brainstorming
+    - writing_skills
+  implementation_review:
+    - code-reviewer
+  full_session:
+    - brainstorming
+    - tdd
+    - debug
+    - execute_plan
+    - writing_skills
+
+triggers:
+  - "superpowers"
+  - "/brainstorming"
+  - "/tdd"
+  - "/execute-plan"
+  - "/debug superpowers"
+  - "/writing-skills"
+  - "red-green-refactor"
+  - "structured tdd"
+  - "four-phase debug"
+  - "subagent code review"
+  - "composable skill framework"
+  - "claude superpowers plugin"
+  - "tdd cycle"
+  - "tests must fail first"
+  - "architectural review escalation"
+
+related_skills:
+  - brainstorming
+  - code-review
+  - testing
+  - skill-forge
+  - ralph-loop

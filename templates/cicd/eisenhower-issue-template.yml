@@ -1,0 +1,58 @@
+# Copy to .github/ISSUE_TEMPLATE/bug_report.yml (or feature_request.yml, etc.)
+# in your app repo. The `Impact` and `Urgency` dropdowns are REQUIRED for
+# the Eisenhower Priority Labeler action to assign a P1–P4 label.
+#
+# See: docs/EISENHOWER_PRIORITY_LABELER.md
+# Action: https://github.com/GeekZoneHQ/eisenhower
+
+name: Prioritized Issue (Eisenhower Matrix)
+description: File an issue that will be auto-prioritized by the Eisenhower Matrix
+title: "[Triage]: "
+labels: ["needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file an issue! This repo uses the
+        **Eisenhower Matrix** (Impact × Urgency) to prioritise work.
+        Please answer the two dropdowns below so an automated action can
+        label this issue with the correct `P1`–`P4` priority.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What is the issue? What did you expect? What actually happened?
+      placeholder: Describe the bug or feature request here.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      description: How important is this?
+      options:
+        - High
+        - Low
+    validations:
+      required: true
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency
+      description: Should this be fixed now or can it be done later?
+      options:
+        - Now
+        - Later
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Links, screenshots, stack traces, or anything else helpful.
+    validations:
+      required: false

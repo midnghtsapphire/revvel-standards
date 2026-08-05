@@ -1,0 +1,79 @@
+{
+  "MISP": {
+    "version": "2.4",
+    "meta": {
+      "profile_type": "organization",
+      "created": "{{CREATION_DATE}}",
+      "last_modified": "{{LAST_MODIFIED}}",
+      "creator": "{{CREATOR_NAME}}",
+      "description": "MISP community profile for {{ORGANIZATION_NAME}}"
+    }
+  },
+  "Organisation": {
+    "name": "{{ORGANIZATION_NAME}}",
+    "description": "{{ORGANIZATION_DESCRIPTION}}",
+    "type": "{{ORG_TYPE}}",
+    "nationality": "{{COUNTRY_CODE}}",
+    "sector": "{{SECTOR}}",
+    "contacts": "{{CONTACT_EMAIL}}",
+    "uuid": "{{ORG_UUID}}"
+  },
+  "User": {
+    "email": "{{USER_EMAIL}}",
+    "org_id": "{{ORG_UUID}}",
+    "role_id": 3,
+    "authkey": "{{AUTH_KEY}}",
+    "gpgkey": "{{GPG_KEY}}",
+    "certif_public": "{{CERT_PUBLIC}}",
+    "termsaccepted": true,
+    "disabled": false
+  },
+  "Expertise": {
+    "areas": [
+      {{#each EXPERTISE_AREAS}}
+      "{{this}}"{{#unless @last}},{{/unless}}
+      {{/each}}
+    ],
+    "threat_categories": [
+      {{#each THREAT_CATEGORIES}}
+      "{{this}}"{{#unless @last}},{{/unless}}
+      {{/each}}
+    ],
+    "technical_capabilities": [
+      {{#each TECHNICAL_CAPABILITIES}}
+      "{{this}}"{{#unless @last}},{{/unless}}
+      {{/each}}
+    ]
+  },
+  "Sharing": {
+    "sharing_group": "{{SHARING_GROUP}}",
+    "distribution": 3,
+    "threat_level_id": 2,
+    "analysis": 2
+  },
+  "Tags": [
+    {{#each TAGS}}
+    {
+      "name": "{{this}}",
+      "colour": "#0088cc",
+      "exportable": true
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  ],
+  "External_References": {
+    "github": "https://github.com/{{GITHUB_USERNAME}}",
+    "orcid": "https://orcid.org/{{ORCID_ID}}",
+    "wikidata": "{{WIKIDATA_URL}}",
+    "website": "{{WEBSITE_URL}}"
+  },
+  "Projects": [
+    {{#each PROJECTS}}
+    {
+      "name": "{{name}}",
+      "description": "{{description}}",
+      "repository": "{{url}}",
+      "relevance_to_threat_intel": "{{threat_intel_relevance}}"
+    }{{#unless @last}},{{/unless}}
+    {{/each}}
+  ]
+}

@@ -1,0 +1,60 @@
+# ReeseReviews .gitignore
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.credentials.txt
+*.backup.*
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# API keys and secrets
+*_api_key*
+*_secret*
+amazon-api-application.txt
+
+# Vine Marketplace — runtime data (inventory is tracked via Actions artifacts, not git)
+vine-marketplace/data/inventory.json
+vine-marketplace/data/rfy-watchlist.json
+vine-marketplace/node_modules/
+vine-marketplace/.env
