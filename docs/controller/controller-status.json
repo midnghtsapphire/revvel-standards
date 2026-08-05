@@ -1,6 +1,7 @@
 {
   "schema": "fleet-controller/v1",
   "generated_at": "2026-08-03T09:20:43.327Z",
+  "generated_at": "2026-08-05T12:19:26.293Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 4,
@@ -30,6 +31,14 @@
       "health": "healthy",
       "age_ms": 161327,
       "since_update_ms": 157327,
+      "id": 31005097427,
+      "name": "Fleet Controller",
+      "path": ".github/workflows/fleet-controller.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31005097427",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 11293,
+      "since_update_ms": 6293,
       "reason": "running within budget",
       "protected": true
     },
@@ -43,6 +52,9 @@
       "age_ms": 1791955327,
       "since_update_ms": 1791686327,
       "reason": "running 29866m ≥ 60m budget",
+      "age_ms": 1975478293,
+      "since_update_ms": 1975209293,
+      "reason": "running 32925m ≥ 60m budget",
       "protected": false
     },
     {
@@ -55,6 +67,9 @@
       "age_ms": 1796193327,
       "since_update_ms": 1796105327,
       "reason": "running 29937m ≥ 60m budget",
+      "age_ms": 1979716293,
+      "since_update_ms": 1979628293,
+      "reason": "running 32995m ≥ 60m budget",
       "protected": false
     },
     {
@@ -67,6 +82,9 @@
       "age_ms": 1800432327,
       "since_update_ms": 1799178327,
       "reason": "running 30007m ≥ 60m budget",
+      "age_ms": 1983955293,
+      "since_update_ms": 1982701293,
+      "reason": "running 33066m ≥ 60m budget",
       "protected": false
     },
     {
@@ -137,6 +155,7 @@
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
       "reason": "running 29866m ≥ 60m budget",
+      "reason": "running 32925m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -153,6 +172,7 @@
       "path": ".github/workflows/no-destroy-guard.yml",
       "health": "runaway",
       "reason": "running 29937m ≥ 60m budget",
+      "reason": "running 32995m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -169,6 +189,7 @@
       "path": ".github/workflows/project-board-sync.yml",
       "health": "runaway",
       "reason": "running 30007m ≥ 60m budget",
+      "reason": "running 33066m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
