@@ -1,21 +1,25 @@
 {
   "schema": "fleet-controller-stop/v1",
   "generated_at": "2026-08-03T18:26:09.125Z",
+  "generated_at": "2026-08-05T12:19:26.293Z",
   "stop": [
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
       "reason": "running 30411m ≥ 60m budget"
+      "reason": "running 32925m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
       "reason": "running 30482m ≥ 60m budget"
+      "reason": "running 32995m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
       "reason": "running 30553m ≥ 60m budget"
+      "reason": "running 33066m ≥ 60m budget"
     }
   ]
 }
