@@ -1,0 +1,109 @@
+# Revvel governance PR checks — compose with live ship-quality / pr-check-status.
+# Does NOT auto-merge. Human review remains the merge gate.
+name: pr-governance-checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Optional PR number for manual dry-run context"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: write
+  statuses: write
+
+concurrency:
+  group: pr-governance-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  governance:
+    name: Governance gates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
+        with:
+          node-version: "22"
+
+      - name: Label allowlist (PR labels)
+        if: github.event_name == 'pull_request'
+        env:
+          # Comma-joined; checker splits LABELS env (no xargs — apostrophes in won't-merge break xargs)
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          set -euo pipefail
+          if [ ! -f config/labels-allowlist.yml ]; then
+            echo "No config/labels-allowlist.yml yet — skip (pack not landed)"
+            exit 0
+          fi
+          if [ -z "${LABELS}" ]; then
+            echo "No labels on PR — ok"
+            exit 0
+          fi
+          echo "Checking labels: ${LABELS}"
+          node scripts/label-allowlist-check.mjs --strict
+
+      - name: Formal report schema (if present)
+        run: |
+          set -euo pipefail
+          REPORT=""
+          for p in artifacts/formal-report.json disaster-recovery/grok-build-2026-08-05/formal/formal-report.json; do
+            if [ -f "$p" ]; then REPORT="$p"; break; fi
+          done
+          if [ -z "$REPORT" ]; then
+            echo "No formal-report.json in tree — skip formal gate"
+            exit 0
+          fi
+          node -e '
+            const fs = require("fs");
+            const r = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            const required = ["verdicts", "generated_at"];
+            // soft schema: accept either array verdicts or cases
+            const ok = r && (Array.isArray(r.verdicts) || Array.isArray(r.cases) || r.summary);
+            if (!ok) {
+              console.error("formal-report.json missing expected shape");
+              process.exit(1);
+            }
+            console.log("formal-report.json shape ok:", process.argv[1]);
+          ' "$REPORT"
+
+      - name: Pack scripts smoke (if present)
+        run: |
+          set -euo pipefail
+          if [ -f scripts/label-allowlist-check.mjs ] && [ -f config/labels-allowlist.yml ]; then
+            node scripts/label-allowlist-check.mjs priority-p1 || true
+            # known-good should pass; unknown should fail
+            if node scripts/label-allowlist-check.mjs --strict 'this-label-must-not-exist-xyz' 2>/dev/null; then
+              echo "::error::allowlist check failed to reject unknown label"
+              exit 1
+            fi
+            echo "label-allowlist-check smoke ok"
+          else
+            echo "pack scripts not in this branch — skip"
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## pr-governance-checks"
+            echo ""
+            echo "- Label allowlist: enforced when \`config/labels-allowlist.yml\` exists"
+            echo "- Formal report: soft schema when file present"
+            echo "- **No auto-merge** — human review only"
+            echo "- Auth path: Actions \`GITHUB_TOKEN\` (not Grok connector)"
+          } >> "$GITHUB_STEP_SUMMARY"
