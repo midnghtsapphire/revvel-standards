@@ -117,6 +117,7 @@ aliases:
   "deploy-failure": "auto-error"
   "sla:breached": "priority:p0"
   "sla:warning": "priority:p1"
+  "triage:new": "triage"
 
   "status:checks-failing": "checks-failing"
   "status:checks-passing": "checks-passing"

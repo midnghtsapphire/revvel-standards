@@ -1,0 +1,84 @@
+name: apply-revvel-command-project-fields
+# Create "Revvel Command" project (optional) + catalog fields via PAT.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "apply_fields | create_project_and_apply"
+        required: false
+        default: create_project_and_apply
+      project_number:
+        description: Existing user project number when mode=apply_fields
+        required: false
+        default: "5"
+      project_title:
+        description: Title when creating a new project
+        required: false
+        default: Revvel Command
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    name: Project fields
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Resolve token
+        env:
+          ADMIN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          PROJECTS: ${{ secrets.PROJECTS_PAT }}
+          MID: ${{ secrets.MIDNGHTSAPPHIRE_TOKEN }}
+          MID2: ${{ secrets.MIDNGHTSAPPHIRE_PAT }}
+        run: |
+          set -euo pipefail
+          TOKEN=""; SRC=""
+          if [ -n "${MID:-}" ]; then TOKEN="$MID"; SRC=MIDNGHTSAPPHIRE_TOKEN
+          elif [ -n "${MID2:-}" ]; then TOKEN="$MID2"; SRC=MIDNGHTSAPPHIRE_PAT
+          elif [ -n "${PROJECTS:-}" ]; then TOKEN="$PROJECTS"; SRC=PROJECTS_PAT
+          elif [ -n "${ADMIN:-}" ]; then TOKEN="$ADMIN"; SRC=ADMIN_GITHUB_TOKEN
+          fi
+          if [ -z "$TOKEN" ]; then
+            echo "::error::No PAT (MIDNGHTSAPPHIRE_TOKEN / PROJECTS_PAT / ADMIN_GITHUB_TOKEN)"
+            exit 1
+          fi
+          echo "Using secret: $SRC"
+          echo "GH_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v4
+
+      - name: Create project if needed + apply fields
+        env:
+          MODE: ${{ inputs.mode }}
+          PROJECT_NUMBER: ${{ inputs.project_number }}
+          PROJECT_TITLE: ${{ inputs.project_title }}
+          OWNER: midnghtsapphire
+        run: python3 scripts/apply-revvel-command-project-fields.py
+
+      - name: Commit field ID snapshot
+        if: success()
+        run: |
+          set -euo pipefail
+          if [ ! -f config/revvel-command-project-fields.json ]; then
+            echo "no snapshot"; exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add config/revvel-command-project-fields.json
+          if git diff --cached --quiet; then
+            echo "snapshot unchanged"
+          else
+            git commit -m "chore(config): snapshot Revvel Command Project field IDs"
+            git push origin HEAD:main
+          fi
+
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: revvel-command-fields-result
+          path: |
+            field-apply-result.json
+            config/revvel-command-project-fields.json
+          if-no-files-found: ignore

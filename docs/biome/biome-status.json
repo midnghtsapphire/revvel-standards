@@ -1,19 +1,34 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-05T21:26:18.655Z",
+  "generated_at": "2026-08-05T22:24:20.561Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 31052549309,
+            "name": "apply-revvel-command-project-fields",
+            "path": ".github/workflows/apply-revvel-command-project-fields.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31052549309",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31052413875,
+            "name": "apply-revvel-command-project-fields",
+            "path": ".github/workflows/apply-revvel-command-project-fields.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31052413875",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
