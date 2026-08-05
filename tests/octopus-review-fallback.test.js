@@ -35,6 +35,8 @@ const {
   computePrimaryResetWaitMs,
   computeRetryDelayMs,
   githubRequest,
+  shouldReview,
+  postFallbackReview,
   RATE_LIMIT_MAX_INPROCESS_WAIT_MS,
 } = require('../scripts/octopus-review-fallback.js');
 
@@ -415,6 +417,74 @@ test('githubRequest does not retry a genuine permissions 403 (fails fast, still 
       /GitHub HTTP 403/
     );
     assert.strictEqual(mock.callCount(), 1, 'a genuine permissions 403 must not be retried');
+  } finally {
+    mock.restore();
+  }
+});
+
+// Regression coverage for the real-world bug this fixed: shouldReview() and
+// postFallbackReview() called githubRequest() with a { path, token, body }
+// shape it never accepted (it destructures pathName/payload and reads the
+// token from a module-level constant), and shouldReview() additionally tried
+// to JSON.parse() an already-parsed result. Both bugs were invisible to the
+// pre-existing githubRequest()-only tests above because nothing exercised
+// these two wrapper functions directly — every real invocation crashed
+// inside main()'s try/catch, logged a swallowed warning, and the job still
+// reported "success" despite never reading comments or posting a review.
+
+test('shouldReview reads the real comments endpoint and finds an existing fallback marker', async () => {
+  const mock = mockHttpsResponses([
+    {
+      status: 200,
+      data: JSON.stringify([
+        { body: 'unrelated comment' },
+        { body: '<!-- octopus-review-fallback:v1 -->\nalready reviewed' },
+      ]),
+    },
+  ]);
+  try {
+    const eligible = await shouldReview({
+      owner: 'midnghtsapphire',
+      repo: 'revvel-standards',
+      prNumber: 123,
+      markerRegex: /octopus-review-fallback:v1/,
+    });
+    assert.strictEqual(eligible, false, 'must detect the existing marker instead of throwing');
+  } finally {
+    mock.restore();
+  }
+});
+
+test('shouldReview returns true (eligible) when no fallback marker exists yet, without throwing', async () => {
+  const mock = mockHttpsResponses([
+    { status: 200, data: JSON.stringify([{ body: 'a normal comment' }]) },
+  ]);
+  try {
+    const eligible = await shouldReview({
+      owner: 'midnghtsapphire',
+      repo: 'revvel-standards',
+      prNumber: 124,
+      markerRegex: /octopus-review-fallback:v1/,
+    });
+    assert.strictEqual(eligible, true);
+  } finally {
+    mock.restore();
+  }
+});
+
+test('postFallbackReview posts to the real issues/comments endpoint with the body as JSON payload', async () => {
+  const mock = mockHttpsResponses([
+    { status: 201, data: JSON.stringify({ id: 1, body: 'posted' }) },
+  ]);
+  try {
+    const result = await postFallbackReview({
+      owner: 'midnghtsapphire',
+      repo: 'revvel-standards',
+      prNumber: 125,
+      body: '<!-- octopus-review-fallback:v1 -->\nfallback text',
+    });
+    assert.strictEqual(mock.callCount(), 1);
+    assert.strictEqual(result.id, 1, 'must resolve with the parsed response, not throw');
   } finally {
     mock.restore();
   }
