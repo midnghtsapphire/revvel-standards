@@ -80,7 +80,7 @@ MOTU Lead (Grok) access uses `XAI_API_KEY` (alias `GROK_API_KEY`) — names
 documented in `.env.example` with the Vault path
 `revvel/shared/llm/xai`. GitHub Actions inject secrets as environment
 variables; no special bidirectional protocol is needed.
-# MOTU BNAT Knowledge Sheaf
+## MOTU BNAT Knowledge Sheaf
 
 This directory contains the core documentation and standard foundation for the MOTU BNAT (Biomimetic Networked Agent Topology) Knowledge Sheaf.
 
