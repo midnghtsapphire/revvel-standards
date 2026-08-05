@@ -21,17 +21,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Synopsys Action
-        uses: synopsys-sig/synopsys-action@v1.6.0
+      - name: Black Duck Security Scan
+        uses: blackduck-inc/black-duck-security-scan@83489e3ec6c7c3367d114f96f59088530191d98b # v2.10.1
         with:
           #------------------------------------------COVERITY-----------------------------------------
           coverity_url: ${{ secrets.COVERITY_URL }}
           coverity_user: ${{ secrets.COVERITY_USER }}
-          coverity_passphrase: ${{ secrets.COVERITY_PASSPHRASE }}
+          coverity_password: ${{ secrets.COVERITY_PASSPHRASE }}
 
-          #------------------------------------------BLACKDUCK----------------------------------------
-          blackduck_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
-          blackduck_url: ${{ secrets.BLACKDUCK_URL }}
+          #------------------------------------------BLACK DUCK SCA-----------------------------------
+          blackducksca_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
+          blackducksca_url: ${{ secrets.BLACKDUCK_URL }}
 
           #------------------------------------------POLARIS------------------------------------------
           polaris_server_url: ${{ secrets.POLARIS_SERVER_URL }}
