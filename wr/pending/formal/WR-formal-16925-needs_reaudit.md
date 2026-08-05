@@ -1,3 +1,36 @@
+# [WR] Formal: needs_reaudit on midnghtsapphire/revvel-standards#16925 — feat: seed revvel-finishers foundation and WRs
+
+## Description
+
+Formal dual-path verification (`boolean_xor_dual_path`, window 78h) produced verdict **needs_reaudit** on PR #16925.
+
+**Allowlisted labels applied:** `wr`, `formal:auto-wr`, `formal:reaudit`, `human-review-required`, `priority:p2`
+
+### Formal summary
+- Winner path: `b`
+- Agreement: 8000 bps
+- Risk score: 2000
+- XOR bits: 144
+- Path A score: 8000 · Path B score: 9600
+- Rationale: method=boolean_xor_dual_path | A(defer-seed)=8000bps bits=0b0101101111 | B(finishers-seed)=9600bps bits=0b0111111111 | xor=0b0010010000 agree=8000bps | winner=b chosen=theirs verdict=needs_reaudit
+
+### Agent judgements
+- midnghtsapphire (author) stance=pro_theirs correct=true
+- openrouter (orchestrator) stance=approve correct=true
+
+### Desired outcome
+1. Re-open dual-path analysis with fresh predicates (finishers-seed vs defer-seed) after #16925 state changes.
+2. Confirm path B (finishers-seed) remains winner with higher agreement, or document human override.
+3. Keep human review: do **not** merge without midnghtsapphire approval.
+
+### Source artifacts
+- Pack WR: `wr/pending/formal/WR-formal-16925-needs_reaudit.md` (on PR #16944)
+- Related PR: #16925
+- Governance pack PR: #16944
+
+### Acceptance Criteria
+- formal re-run shows `pass` OR documented human override with evidence
+- scorecard event logged
 # [WR] Formal re-audit resolution — PR #16925 (feat: seed revvel-finishers foundation and WRs)
 
 ## Output Type
@@ -65,6 +98,10 @@ Verdict after override: **pass (human override — merged by required approver)*
 provenance:
   loop: formal-auto-wr
   source_report: formal-report.json
+  generated_at: 2026-08-05T14:54:24.854Z
+  filed_at: 2026-08-05T18:30:00Z
+  human_gate: required
+  agent: grok-build
   source_issue: midnghtsapphire/revvel-standards#16952
   related_pr: midnghtsapphire/revvel-standards#16925
   resolution: human_override
