@@ -1,19 +1,61 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-05T06:54:36.380Z",
+  "generated_at": "2026-08-05T07:53:25.230Z",
   "credit_free": true,
-  "overall": "down",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "down",
-      "summary": "3/100 recent runs failed; 1 stuck item(s)",
+      "status": "degraded",
+      "summary": "8/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 8,
         "total_runs": 100,
-        "stuck_issues": 1
+        "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30984944673,
+            "name": "BIOME Inspector",
+            "path": ".github/workflows/biome-inspector.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30984944673",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30984255153,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30984255153",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30984224420,
+            "name": "Octopus Review Fallback",
+            "path": ".github/workflows/octopus-review-fallback.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30984224420",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30984023222,
+            "name": "WR-4600 Watchtower",
+            "path": ".github/workflows/watchtower.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30984023222",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30983925300,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30983925300",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30983137060,
+            "name": "App Artifact Audit",
+            "path": ".github/workflows/app-artifact-audit.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30983137060",
+            "conclusion": "failure"
+          },
           {
             "id": 30980277871,
             "name": "WR Field Filler — no blanks ever ship",
@@ -27,35 +69,9 @@
             "path": ".github/workflows/wr-field-filler.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30977969976",
             "conclusion": "failure"
-          },
-          {
-            "id": 30977039505,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30977039505",
-            "conclusion": "failure"
           }
         ],
-        "stuck": [
-          {
-            "number": 16467,
-            "title": "WR-4474 follow-up: wire Sentry → issue → agent-assignment path",
-            "updated_at": "2026-07-29T01:21:03Z",
-            "labels": [
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p1",
-              "role:orchestrator",
-              "area:ui",
-              "area:api",
-              "wr:new",
-              "recovery:stale-wr",
-              "self-heal"
-            ]
-          }
-        ]
+        "stuck": []
       }
     },
     "homeostat": {
@@ -77,10 +93,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30986292933"
       }
     },
     "sheaf": {
