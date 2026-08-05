@@ -11,6 +11,10 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const os = require('node:os');
+const http = require('node:http');
+const { execFile } = require('node:child_process');
+const yaml = require('yaml');
 
 const root = path.resolve(__dirname, '..');
 const workflowPath = path.join(root, '.github/workflows/neon-branch.yml');
@@ -21,6 +25,16 @@ test('Neon workflow lives where GitHub Actions reads workflows', () => {
     !fs.existsSync(path.join(root, 'workflows/NEON_Workflow.yaml')),
     'the inert copy under workflows/ must not come back'
   );
+});
+
+test('Neon is registered in the connections SSOT', () => {
+  // docs/CONNECTIONS_REGISTRY_STANDARD.md: a new integration must be added to
+  // config/connections.yml, or the generated registry views go stale.
+  const registry = yaml.parse(fs.readFileSync(path.join(root, 'config/connections.yml'), 'utf8'));
+  const neon = registry.connections.find((c) => c.id === 'neon');
+  assert.ok(neon, 'expected a `neon` entry in config/connections.yml');
+  assert.equal(neon.env, 'NEON_API_KEY');
+  assert.ok(neon.used_by.includes('neon-branch.yml'));
 });
 
 test('Neon workflow is wired correctly', () => {
@@ -54,11 +68,6 @@ test('Neon workflow is wired correctly', () => {
 // The lookup is inline in the workflow (it must run without a checkout), so the
 // tests extract that exact `run:` block and execute it against a stub Neon API.
 // Anything asserted here is therefore true of the code GitHub actually runs.
-
-const os = require('node:os');
-const http = require('node:http');
-const { execFile } = require('node:child_process');
-const yaml = require('yaml');
 
 const BRANCH = 'preview/pr-1-feat';
 
