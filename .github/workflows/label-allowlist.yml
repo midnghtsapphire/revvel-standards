@@ -38,7 +38,7 @@ jobs:
       - name: Validate applied label
         id: check
         env:
-          LABEL: ${{ github.event.label.name || inputs.labels }}
+          LABELS: ${{ github.event.label.name || inputs.labels }}
         run: |
           set -euo pipefail
           if [ ! -f config/labels-allowlist.yml ] || [ ! -f scripts/label-allowlist-check.mjs ]; then
@@ -46,11 +46,11 @@ jobs:
             echo "status=missing" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if [ -z "${LABEL:-}" ]; then
+          if [ -z "${LABELS:-}" ]; then
             echo "status=empty" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          if node scripts/label-allowlist-check.mjs --strict "$LABEL"; then
+          if node scripts/label-allowlist-check.mjs --strict; then
             echo "status=ok" >> "$GITHUB_OUTPUT"
           else
             echo "status=bad" >> "$GITHUB_OUTPUT"
