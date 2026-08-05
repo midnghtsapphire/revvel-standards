@@ -26,6 +26,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 | If the task involves... | Load this skill |
 |---|---|
 | RecurseML, autonomous PR review, bug detection, code standards | [`recurse-ml`](#recurse-ml) |
+| Knowledge sheaf, sheaf consistency, H¹, Laplacian energy, persistent homology, barcodes, imprint-at-spawn, MOTU, BNAT | [`bnatsheaf`](#bnatsheaf) |
 | BITO AI, persistent-memory code review, desktop API procurement, bito cli, bito secret, repo memory, agentic review | [`bito-ai`](#bito-ai) |
 | TruthSlayer audit, composite code score, rate a repo, marketplace audit, trust/authenticity badge | [`truthslayer-audit`](#truthslayer-audit) |
 | AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
@@ -666,3 +667,13 @@ At the end of every session:
 - **Trigger:** "client stack", "client contract", "contract engagement", "detect client stack", "we do C#", "polyglot lane", "engagement kit"
 - **Documentation:** `docs/CLIENT_ENGAGEMENT_KIT.md`
 - **Status:** Active (tests: `tests/client-stacks.test.js`)
+
+#### bnatsheaf
+
+- **Path:** `skills/bnatsheaf/`
+- **Files:** `SKILL.md`
+- **Description:** BNAT Knowledge Sheaf — mathematical sheaf consistency (H¹ ≈ 0 hard rule) on top of the BIOME sheaf metaphor. Cellular sheaf with restriction maps and Laplacian energy E(x) (`scripts/bnatsheaf/sheaf.js`), persistent H⁰/H¹ homology barcodes over BIOME filtrations (`scripts/bnatsheaf/persistence.js`), and a test harness (`scripts/bnatsheaf/cli.js`) with `consistency_check`, `imprint_agent`, and `ph_monitor`. Every agent instantiation restricts from the knowledge sheaf and verifies H¹ ≈ 0 at spawn; long-lived H¹ bars are killed or escalated, never silently glued. Strictly additive to `scripts/biome/sheaf.js`.
+- **Tags:** knowledge-sheaf, cellular-sheaf, sheaf-laplacian, h1-obstruction, persistent-homology, barcodes, imprint-at-spawn, motu, biome, consistency
+- **Trigger:** "knowledge sheaf", "sheaf consistency", "H1", "Laplacian energy", "persistent homology", "barcode", "imprint-at-spawn", "MOTU", "BNAT", "obstruction"
+- **Documentation:** `docs/bnatsheaf/README.md` · `standards/BNAT_SHEAF_STANDARD.md`
+- **Status:** Active (tests: `tests/bnatsheaf.test.js`)
