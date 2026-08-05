@@ -116,6 +116,24 @@ function main() {
       mapped.push(`${raw} → ${aliases[raw]}`);
       continue;
     }
+    // Fleet bots mint status:* ephemera; map to lifecycle/check labels.
+    if (raw.startsWith("status:")) {
+      const s = raw.slice("status:".length).toLowerCase();
+      let target = "in-review";
+      if (s.includes("fail")) target = "checks-failing";
+      else if (s.includes("pass") || s.includes("success") || s.includes("green"))
+        target = "checks-passing";
+      else if (s.includes("block")) target = "blocked";
+      else if (s.includes("draft")) target = "draft";
+      else if (s.includes("approv")) target = "approved";
+      else if (s.includes("change")) target = "changes-requested";
+      else if (s.includes("wait") || s.includes("review") || s.includes("pending"))
+        target = "awaiting-approval";
+      if (allowed.has(target)) {
+        mapped.push(`${raw} → ${target} (status: prefix)`);
+        continue;
+      }
+    }
     unknown.push(raw);
   }
 
