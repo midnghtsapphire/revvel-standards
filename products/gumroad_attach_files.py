@@ -82,33 +82,33 @@ def upload_file(path: Path) -> str:
     if not presign.get("success"):
         raise RuntimeError(f"presign failed: {presign}")
 
-    content = path.read_bytes()
     etags = []
-    for part in presign["parts"]:
-        put = requests.put(
+    with open(path, "rb") as f:
+        data = f.read()
+    for part in presign.get("parts") or []:
+        resp = requests.put(
             part["presigned_url"],
-            data=content,
-            headers={"Content-Type": "application/pdf"},
+            data=data,
+            headers={"Content-Type": "application/octet-stream"},
             timeout=120,
         )
-        put.raise_for_status()
-        etags.append(
-            {
-                "part_number": part["part_number"],
-                "etag": put.headers.get("ETag", "").strip('"'),
-            }
-        )
+        resp.raise_for_status()
+        etag = (resp.headers.get("ETag") or resp.headers.get("etag") or "").strip('"')
+        if not etag:
+            raise RuntimeError(f"No ETag from S3 for part {part['part_number']}")
+        etags.append({"part_number": part["part_number"], "etag": etag})
 
-    cr = requests.post(
-        f"{API}/files/complete",
-        headers={**headers(), "Content-Type": "application/json"},
-        json={
-            "upload_id": presign["upload_id"],
-            "key": presign["key"],
-            "parts": etags,
-        },
-        timeout=30,
-    )
+    # complete
+    payload = {
+        "upload_id": presign["upload_id"],
+        "key": presign["key"],
+    }
+    # form array style
+    form = [("upload_id", presign["upload_id"]), ("key", presign["key"])]
+    for e in etags:
+        form.append(("parts[][part_number]", str(e["part_number"])))
+        form.append(("parts[][etag]", e["etag"]))
+    cr = requests.post(f"{API}/files/complete", headers=headers(), data=form, timeout=30)
     cr.raise_for_status()
     body = cr.json()
     if not body.get("success"):
