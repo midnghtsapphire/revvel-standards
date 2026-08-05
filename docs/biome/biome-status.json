@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-05T18:32:43.556Z",
+  "generated_at": "2026-08-05T22:24:20.561Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,17 +15,17 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 31035187201,
-            "name": "Dragnet CI Autofix",
-            "path": ".github/workflows/dragnet-ci-autofix.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31035187201",
+            "id": 31052549309,
+            "name": "apply-revvel-command-project-fields",
+            "path": ".github/workflows/apply-revvel-command-project-fields.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31052549309",
             "conclusion": "failure"
           },
           {
-            "id": 31035170435,
-            "name": "Dragnet CI Autofix",
-            "path": ".github/workflows/dragnet-ci-autofix.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31035170435",
+            "id": 31052413875,
+            "name": "apply-revvel-command-project-fields",
+            "path": ".github/workflows/apply-revvel-command-project-fields.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31052413875",
             "conclusion": "failure"
           }
         ],
