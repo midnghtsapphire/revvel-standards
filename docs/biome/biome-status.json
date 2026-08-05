@@ -1,59 +1,52 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-05T03:03:23.742Z",
+  "generated_at": "2026-08-05T05:03:11.094Z",
   "credit_free": true,
   "overall": "down",
   "workers": {
     "sentinel": {
       "status": "down",
-      "summary": "6/100 recent runs failed; 1 stuck item(s)",
+      "summary": "5/100 recent runs failed; 1 stuck item(s)",
       "counts": {
-        "failed_runs": 6,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 1
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 30969899351,
+            "id": 30976905369,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30969899351",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30976905369",
             "conclusion": "failure"
           },
           {
-            "id": 30966703164,
+            "id": 30973273464,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30966703164",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30973273464",
             "conclusion": "failure"
           },
           {
-            "id": 30965012104,
-            "name": "BIOME Inspector",
-            "path": ".github/workflows/biome-inspector.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30965012104",
+            "id": 30972352860,
+            "name": "Persona Comment Trigger",
+            "path": ".github/workflows/persona-comment-trigger.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30972352860",
             "conclusion": "failure"
           },
           {
-            "id": 30964540500,
-            "name": "Octopus Review Fallback",
-            "path": ".github/workflows/octopus-review-fallback.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30964540500",
+            "id": 30972276753,
+            "name": "Persona Comment Trigger",
+            "path": ".github/workflows/persona-comment-trigger.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30972276753",
             "conclusion": "failure"
           },
           {
-            "id": 30964457038,
+            "id": 30972254816,
             "name": "WR Field Filler — no blanks ever ship",
             "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30964457038",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30963752641,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30963752641",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30972254816",
             "conclusion": "failure"
           }
         ],
@@ -98,10 +91,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30966093664"
+        "last_run": null
       }
     },
     "sheaf": {
