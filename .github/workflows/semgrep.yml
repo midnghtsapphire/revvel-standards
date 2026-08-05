@@ -2,8 +2,6 @@
 # Semgrep removed from PR/push/schedule to avoid duplicate scanning. Manual run only via workflow_dispatch.
 name: Semgrep SAST
 on:
-  pull_request:
-    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -30,6 +28,7 @@ jobs:
             --config=p/cwe-top-25 \
             --config=p/github-actions \
             --config=p/dockerfile \
+            --config=p/yaml \
             --sarif --sarif-output=semgrep.sarif \
             --metrics=off \
             --no-error \

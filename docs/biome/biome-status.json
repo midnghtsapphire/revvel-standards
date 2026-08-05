@@ -1,22 +1,12 @@
 {
   "schema": "biome-status/v1",
-<<<<<<< HEAD
   "generated_at": "2026-08-03T19:31:44.083Z",
-  "generated_at": "2026-08-05T12:36:55.189Z",
-=======
-  "generated_at": "2026-08-05T15:44:21.971Z",
->>>>>>> origin/main
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
       "summary": "0/100 recent runs failed; 0 stuck item(s)",
-<<<<<<< HEAD
-      "status": "degraded",
-      "summary": "1/100 recent runs failed; 3 stuck item(s)",
-=======
->>>>>>> origin/main
       "counts": {
         "failed_runs": 0,
         "total_runs": 100,
@@ -25,100 +15,6 @@
       "detail": {
         "recent_failures": [],
         "stuck": []
-<<<<<<< HEAD
-        "recent_failures": [
-          {
-            "id": 31006313356,
-            "name": "Update Project Dashboard",
-            "path": ".github/workflows/update-project-dashboard.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31006313356",
-            "conclusion": "failure"
-          }
-        ],
-        "stuck": [
-          {
-            "number": 16425,
-            "title": "usenixsecurity25-pape.pdf use for revvel-standards ",
-            "updated_at": "2026-07-29T08:08:25Z",
-            "labels": [
-              "enhancement",
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p3",
-              "role:orchestrator",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "lifecycle:stuck",
-              "wr-stuck",
-              "wr:research-complete",
-              "wr:jules",
-              "recovery:stale-wr",
-              "mindmappr",
-              "self-heal",
-              "wr:reset"
-            ]
-          },
-          {
-            "number": 16424,
-            "title": "Indirect Prompt Injection: The Hidden Threat Breaking Modern AI Systems | Lakera – Protecting AI teams that disrupt the world. add as a resource and to make our repository 92.7 times better",
-            "updated_at": "2026-07-29T08:08:36Z",
-            "labels": [
-              "enhancement",
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p3",
-              "role:orchestrator",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "lifecycle:stuck",
-              "wr-stuck",
-              "wr:research-complete",
-              "wr:jules",
-              "recovery:stale-wr",
-              "mindmappr",
-              "self-heal",
-              "wr:reset"
-            ]
-          },
-          {
-            "number": 16419,
-            "title": "use these in revvel-standards snd store in prompts provide detailed files-thought process, memory, learning, api, cli, mcp, skills, tools and sub agent system prompts using requirements",
-            "updated_at": "2026-07-29T08:08:20Z",
-            "labels": [
-              "enhancement",
-              "auto-fix",
-              "copilot",
-              "triage",
-              "openrouter",
-              "priority-p2",
-              "role:orchestrator",
-              "area:ui",
-              "area:api",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "lifecycle:stuck",
-              "wr-stuck",
-              "wr:research-complete",
-              "wr:jules",
-              "recovery:stale-wr",
-              "mindmappr",
-              "self-heal",
-              "wr:reset"
-            ]
-          }
-        ]
-=======
->>>>>>> origin/main
       }
     },
     "homeostat": {

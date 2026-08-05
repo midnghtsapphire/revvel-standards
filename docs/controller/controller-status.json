@@ -1,11 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-<<<<<<< HEAD
   "generated_at": "2026-08-03T19:56:01.708Z",
-  "generated_at": "2026-08-05T12:19:26.293Z",
-=======
-  "generated_at": "2026-08-05T15:35:08.450Z",
->>>>>>> origin/main
   "preempt_enabled": true,
   "occupancy": {
     "running": 20,
@@ -27,7 +22,6 @@
   },
   "orchestrators": [
     {
-<<<<<<< HEAD
       "id": 30847921002,
       "name": "🎛️ PR State Orchestrator",
       "path": ".github/workflows/pr-state-orchestrator.yml",
@@ -48,17 +42,6 @@
       "health": "healthy",
       "age_ms": 8708,
       "since_update_ms": 5708,
-      "id": 31005097427,
-=======
-      "id": 31021016529,
->>>>>>> origin/main
-      "name": "Fleet Controller",
-      "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31021016529",
-      "status": "in_progress",
-      "health": "healthy",
-      "age_ms": 17450,
-      "since_update_ms": 7450,
       "reason": "running within budget",
       "protected": true
     },
@@ -249,18 +232,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29262820826",
       "status": "in_progress",
       "health": "runaway",
-<<<<<<< HEAD
       "age_ms": 1830073708,
       "since_update_ms": 1829804708,
       "reason": "running 30501m ≥ 60m budget",
-      "age_ms": 1975478293,
-      "since_update_ms": 1975209293,
-      "reason": "running 32925m ≥ 60m budget",
-=======
-      "age_ms": 1987220450,
-      "since_update_ms": 1986951450,
-      "reason": "running 33120m ≥ 60m budget",
->>>>>>> origin/main
       "protected": false
     },
     {
@@ -270,18 +244,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
       "status": "in_progress",
       "health": "runaway",
-<<<<<<< HEAD
       "age_ms": 1834311708,
       "since_update_ms": 1834223708,
       "reason": "running 30572m ≥ 60m budget",
-      "age_ms": 1979716293,
-      "since_update_ms": 1979628293,
-      "reason": "running 32995m ≥ 60m budget",
-=======
-      "age_ms": 1991458450,
-      "since_update_ms": 1991370450,
-      "reason": "running 33191m ≥ 60m budget",
->>>>>>> origin/main
       "protected": false
     },
     {
@@ -291,7 +256,6 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
       "status": "in_progress",
       "health": "runaway",
-<<<<<<< HEAD
       "age_ms": 1838550708,
       "since_update_ms": 1837296708,
       "reason": "running 30643m ≥ 60m budget",
@@ -331,14 +295,6 @@
       "age_ms": null,
       "since_update_ms": null,
       "reason": "awaiting a runner (trigger)",
-      "age_ms": 1983955293,
-      "since_update_ms": 1982701293,
-      "reason": "running 33066m ≥ 60m budget",
-=======
-      "age_ms": 1995697450,
-      "since_update_ms": 1994443450,
-      "reason": "running 33262m ≥ 60m budget",
->>>>>>> origin/main
       "protected": false
     },
     {
@@ -408,12 +364,7 @@
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
-<<<<<<< HEAD
       "reason": "running 30501m ≥ 60m budget",
-      "reason": "running 32925m ≥ 60m budget",
-=======
-      "reason": "running 33120m ≥ 60m budget",
->>>>>>> origin/main
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -429,12 +380,7 @@
       "name": "No-Destroy Guard",
       "path": ".github/workflows/no-destroy-guard.yml",
       "health": "runaway",
-<<<<<<< HEAD
       "reason": "running 30572m ≥ 60m budget",
-      "reason": "running 32995m ≥ 60m budget",
-=======
-      "reason": "running 33191m ≥ 60m budget",
->>>>>>> origin/main
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -450,12 +396,7 @@
       "name": "Project Board Sync",
       "path": ".github/workflows/project-board-sync.yml",
       "health": "runaway",
-<<<<<<< HEAD
       "reason": "running 30643m ≥ 60m budget",
-      "reason": "running 33066m ≥ 60m budget",
-=======
-      "reason": "running 33262m ≥ 60m budget",
->>>>>>> origin/main
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,

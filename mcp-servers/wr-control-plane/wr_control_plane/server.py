@@ -45,51 +45,29 @@ from urllib import error, request
 try:
     from fastmcp import FastMCP
 except ImportError:  # pragma: no cover - compatibility path for local smoke tests
-    import dataclasses as _dc
-
-    @_dc.dataclass
-    class _ShimTool:
-        name: str
-
-    @_dc.dataclass
-    class _ShimResource:
-        uri: str
-
     class FastMCP:  # type: ignore[override]
-        """Minimal compatibility shim for import-time use without FastMCP.
-
-        Provides list_tools() and list_resources() as async methods so that
-        the test suite can introspect registered tools/resources without
-        requiring a real FastMCP install in CI.
-        """
+        """Minimal compatibility shim for import-time use without FastMCP."""
 
         def __init__(self, name: str, instructions: str):
             self.name = name
             self.instructions = instructions
-            self._tools: dict[str, Callable[..., object]] = {}
-            self._resources: dict[str, Callable[..., object]] = {}
-
-        async def list_tools(self):
-            return [type("Obj", (), {"name": k, "description": v.__doc__ or ""})() for k, v in self.tools.items()]
-
-        async def list_resources(self):
-            return [type("Obj", (), {"name": k, "description": v.__doc__ or "", "uri": k})() for k, v in self.resources.items()]
+            self.tools: dict[str, Callable[..., object]] = {}
+            self.resources: dict[str, Callable[..., object]] = {}
 
         def tool(self, fn: Callable[..., object] | None = None):
             def decorator(func: Callable[..., object]) -> Callable[..., object]:
-                self._tools[func.__name__] = func
+                self.tools[func.__name__] = func
                 return func
 
             return decorator(fn) if fn else decorator
 
         def resource(self, uri: str):
             def decorator(func: Callable[..., object]) -> Callable[..., object]:
-                self._resources[uri] = func
+                self.resources[uri] = func
                 return func
 
             return decorator
 
-<<<<<<< HEAD
         async def list_tools(self):
             class Tool:
                 def __init__(self, name, description):
@@ -104,89 +82,12 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
                     self.name = name
                     self.description = description
             return [Resource(uri, func.__name__, func.__doc__ or "") for uri, func in self.resources.items()]
-=======
-        @dataclass
-        class MockTool:
-            name: str
-
-        @dataclass
-        class MockResource:
-            uri: str
-
-        async def list_tools(self):
-            return [self.MockTool(name) for name in self.tools]
-
-        async def list_resources(self):
-            return [self.MockResource(uri) for uri in self.resources]
-        # FastMCP's introspection API, mirrored so the regression suite can
-        # enumerate the registered surface without installing FastMCP. Both are
-        # coroutines returning objects exposing `.name` / `.uri`, matching what
-        # the real client awaits. If a test fails here with AttributeError,
-        # FastMCP grew an accessor this shim has not mirrored yet.
-        async def list_tools(self) -> list["_ShimTool"]:
-            return [_ShimTool(name=name) for name in self.tools]
-        async def list_tools(self) -> list:
-            return [_ShimTool(name=n) for n in self._tools]
-
-        async def list_resources(self) -> list:
-            return [_ShimResource(uri=u) for u in self._resources]
-        async def list_tools(self) -> list[object]:
-            class DummyTool:
-                def __init__(self, name: str):
-                    self.name = name
-            return [DummyTool(name) for name in self.tools.keys()]
-
-        async def list_resources(self) -> list[object]:
-            class DummyResource:
-                def __init__(self, uri: str):
-                    self.uri = uri
-            return [DummyResource(uri) for uri in self.resources.keys()]
-        class _ToolMeta:
-            def __init__(self, name: str):
-                self.name = name
-
-        class _ResourceMeta:
-            def __init__(self, uri: str):
-                self.uri = uri
-
-        async def list_tools(self):
-            return [self._ToolMeta(name) for name in self.tools.keys()]
-
-        async def list_resources(self):
-            return [self._ResourceMeta(uri) for uri in self.resources.keys()]
-        async def list_tools(self) -> list[object]:
-            return [
-                type("Tool", (), {"name": name, "description": func.__doc__ or ""})()
-                for name, func in self.tools.items()
-            ]
-
-        async def list_resources(self) -> list[object]:
-            return [
-                type("Resource", (), {"uri": uri, "name": func.__name__, "description": func.__doc__ or ""})()
-                for uri, func in self.resources.items()
-            ]
-            class Tool:
-                def __init__(self, name: str):
-                    self.name = name
-            return [Tool(name) for name in self.tools.keys()]
-
-        async def list_resources(self) -> list["_ShimResource"]:
-            return [_ShimResource(uri=uri) for uri in self.resources]
->>>>>>> origin/main
 
         def run(self) -> None:
             raise RuntimeError(
                 "FastMCP is not installed. Install dependencies in "
                 "mcp-servers/wr-control-plane/ to run this MCP server over stdio."
             )
-
-    @dataclass(frozen=True)
-    class _ShimTool:
-        name: str
-
-    @dataclass(frozen=True)
-    class _ShimResource:
-        uri: str
 
 
 mcp = FastMCP(
