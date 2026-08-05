@@ -18,13 +18,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+        with:
+          persist-credentials: false
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: "22"
 
       - name: Ensure formal report
+        id: report
         run: |
           set -euo pipefail
           mkdir -p artifacts
@@ -35,11 +38,14 @@ jobs:
               cp disaster-recovery/formal-report.json artifacts/
             else
               echo "No formal report yet — upload artifact or run verifier offline"
+              echo "found=false" >> "$GITHUB_OUTPUT"
               exit 0
             fi
           fi
+          echo "found=true" >> "$GITHUB_OUTPUT"
 
       - name: Generate auto-WRs
+        if: steps.report.outputs.found == 'true'
         run: |
           set -euo pipefail
           if [ ! -f scripts/formal-auto-wr.mjs ]; then
@@ -50,7 +56,7 @@ jobs:
 
       - name: Upload WR artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
         with:
           name: formal-auto-wrs
           path: wr/pending/formal/
@@ -59,7 +65,7 @@ jobs:
       # Optional: open draft issues for fail/needs_reaudit — still human-owned.
       # Requires allowlisted labels only.
       - name: Open draft WRs as issues (opt-in)
-        if: env.FORMAL_OPEN_ISSUES == 'true'
+        if: steps.report.outputs.found == 'true' && env.FORMAL_OPEN_ISSUES == 'true'
         env:
           FORMAL_OPEN_ISSUES: ${{ vars.FORMAL_OPEN_ISSUES }}
           GH_TOKEN: ${{ github.token }}
