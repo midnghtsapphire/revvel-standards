@@ -3,7 +3,7 @@
 
 Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what each can reach. **Generated from `config/connections.yml`** — edit the YAML, run `npm run connections`, never hand-edit this file.
 
-**41** connections · **38** verified · **3** unverified (confirm before relying on them).
+**43** connections · **40** verified · **3** unverified (confirm before relying on them).
 
 ## Agents & orchestration
 
@@ -45,6 +45,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `amplitude` (Amplitude) | ✅ verified | key | product-analytics | notion | amplitude-events.yml, amplitude-to-notion.yml | — |
 | `brave-search` (Brave Search) | ✅ verified | key | web-search | — | — | — |
 | `composio` (Composio) | ✅ verified | key | tool-integrations | — | — | — |
+| `crewai` (CrewAI) | ✅ verified | key | multi-agent-orchestration, workflow-automation | github | — | — |
 | `firecrawl` (Firecrawl) | ✅ verified | key | web-scrape, crawl | — | — | — |
 | `google-maps` (Google Maps) | ✅ verified | key | geocoding, places | — | — | — |
 | `groq` (Groq) | ✅ verified | key | fast-llm-inference | — | — | — |
@@ -55,6 +56,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `resend` (Resend) | ✅ verified | key | transactional-email | — | — | — |
 | `revenuecat` (RevenueCat) | ✅ verified | paid | subscriptions, iap | — | — | — |
 | `tavily` (Tavily) | ✅ verified | key | web-search | — | — | — |
+| `xai` (xAI / Grok) | ✅ verified | key | motu-bnat-controller | — | — | — |
 
 ## Libraries
 
@@ -71,4 +73,4 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `octopus` (Octopus Review) | ✅ verified | paid | pr-review | github | octopus-route.yml, octopus-cli.yml | Owner: found several different error classes in a single review. Currently over monthly AI quota — needs own API keys. |
 | `vercel` (Vercel) | ✅ verified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | Deploys a preview on every PR (observed via vercel[bot]). |
 
-*Last generated: 2026-06-13 from `config/connections.yml`.*
+*Last generated: 2026-08-03 from `config/connections.yml`.*
