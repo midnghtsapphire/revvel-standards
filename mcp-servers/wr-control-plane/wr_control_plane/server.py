@@ -89,6 +89,17 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
 
             return decorator
 
+        async def list_tools(self) -> list[object]:
+            class DummyTool:
+                def __init__(self, name: str):
+                    self.name = name
+            return [DummyTool(name) for name in self.tools.keys()]
+
+        async def list_resources(self) -> list[object]:
+            class DummyResource:
+                def __init__(self, uri: str):
+                    self.uri = uri
+            return [DummyResource(uri) for uri in self.resources.keys()]
         class _ToolMeta:
             def __init__(self, name: str):
                 self.name = name
