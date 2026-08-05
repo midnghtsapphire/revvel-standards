@@ -54,12 +54,33 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
             self.tools: dict[str, Callable[..., object]] = {}
             self.resources: dict[str, Callable[..., object]] = {}
 
+        async def list_tools(self):
+            return [type("Obj", (), {"name": k, "description": v.__doc__ or ""})() for k, v in self.tools.items()]
+
+        async def list_resources(self):
+            return [type("Obj", (), {"name": k, "description": v.__doc__ or "", "uri": k})() for k, v in self.resources.items()]
+
         def tool(self, fn: Callable[..., object] | None = None):
             def decorator(func: Callable[..., object]) -> Callable[..., object]:
                 self.tools[func.__name__] = func
                 return func
 
             return decorator(fn) if fn else decorator
+
+
+        async def list_tools(self):
+            import dataclasses
+            @dataclasses.dataclass
+            class Tool:
+                name: str
+            return [Tool(name=k) for k in self.tools.keys()]
+
+        async def list_resources(self):
+            import dataclasses
+            @dataclasses.dataclass
+            class Resource:
+                uri: str
+            return [Resource(uri=k) for k in self.resources.keys()]
 
         def resource(self, uri: str):
             def decorator(func: Callable[..., object]) -> Callable[..., object]:
@@ -81,6 +102,27 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
 
         async def list_resources(self):
             return [self._ResourceMeta(uri) for uri in self.resources.keys()]
+        async def list_tools(self) -> list[object]:
+            return [
+                type("Tool", (), {"name": name, "description": func.__doc__ or ""})()
+                for name, func in self.tools.items()
+            ]
+
+        async def list_resources(self) -> list[object]:
+            return [
+                type("Resource", (), {"uri": uri, "name": func.__name__, "description": func.__doc__ or ""})()
+                for uri, func in self.resources.items()
+            ]
+            class Tool:
+                def __init__(self, name: str):
+                    self.name = name
+            return [Tool(name) for name in self.tools.keys()]
+
+        async def list_resources(self) -> list[object]:
+            class Resource:
+                def __init__(self, uri: str):
+                    self.uri = uri
+            return [Resource(uri) for uri in self.resources.keys()]
 
         def run(self) -> None:
             raise RuntimeError(
