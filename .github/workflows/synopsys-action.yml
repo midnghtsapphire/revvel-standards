@@ -1,0 +1,43 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+name: Synopsys Security Testing
+
+on:
+  push:
+    # At this time, it is recommended to run Polaris only on pushes to main branches
+    # Pull request analysis will be supported by Polaris in the future
+    branches: [ "main" ]
+
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Black Duck Security Scan
+        uses: blackduck-inc/black-duck-security-scan@83489e3ec6c7c3367d114f96f59088530191d98b # v2.10.1
+        continue-on-error: true
+        with:
+          #------------------------------------------COVERITY-----------------------------------------
+          coverity_url: ${{ secrets.COVERITY_URL }}
+          coverity_user: ${{ secrets.COVERITY_USER }}
+          coverity_password: ${{ secrets.COVERITY_PASSPHRASE }}
+
+          #------------------------------------------BLACK DUCK SCA-----------------------------------
+          blackducksca_token: ${{ secrets.BLACKDUCK_API_TOKEN }}
+          blackducksca_url: ${{ secrets.BLACKDUCK_URL }}
+
+          #------------------------------------------POLARIS------------------------------------------
+          polaris_server_url: ${{ secrets.POLARIS_SERVER_URL }}
+          polaris_access_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
+          polaris_assessment_types: "SCA,SAST"
+
+
