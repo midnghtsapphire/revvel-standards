@@ -21,6 +21,27 @@ mandatory_session_end:
 
 skills:
 
+  - name: bnatsheaf
+    title: "BNAT Knowledge Sheaf — Mathematical Sheaf Consistency (H1 ~ 0)"
+    version: "1.0.0"
+    path: "skills/bnatsheaf/"
+    skill_file: "skills/bnatsheaf/SKILL.md"
+    category: "Fleet Consistency & Topology"
+    standard: "standards/BNAT_SHEAF_STANDARD.md"
+    integration_doc: "docs/bnatsheaf/README.md"
+    access: all
+    persona: verifier
+    triggers:
+      - "knowledge sheaf"
+      - "sheaf consistency"
+      - "H1"
+      - "laplacian energy"
+      - "persistent homology"
+      - "barcode"
+      - "imprint-at-spawn"
+      - "MOTU"
+      - "BNAT"
+
   # ─── Code Quality & Autonomous Review ─────────────────────────────────────
 
   - name: bito_ai
