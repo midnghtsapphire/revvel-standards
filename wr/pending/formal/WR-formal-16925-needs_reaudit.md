@@ -32,7 +32,7 @@ Formal dual-path verification (`boolean_xor_dual_path`, window 78h) produced ver
 - formal re-run shows `pass` OR documented human override with evidence
 - scorecard event logged
 
-# [WR] Formal re-audit resolution — PR #16925 (feat: seed revvel-finishers foundation and WRs)
+## [WR] Formal re-audit resolution — PR #16925 (feat: seed revvel-finishers foundation and WRs)
 
 ## Output Type
 

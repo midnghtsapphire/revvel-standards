@@ -126,4 +126,26 @@ aliases:
   "formal:needs_reaudit": "formal:reaudit"
   "needs_reaudit": "formal:reaudit"
 
+  "status:waiting-for-review": "awaiting-approval"
+
+  "status:awaiting-review": "awaiting-approval"
+
+  "status:ready-for-review": "in-review"
+
+  "status:in-review": "in-review"
+
+  "status:approved": "approved"
+
+  "status:changes-requested": "changes-requested"
+
+  "status:draft": "draft"
+
+  "status:blocked": "blocked"
+
+  "status:merged": "checks-passing"
+
+  "status:open": "in-review"
+
+  "status:closed": "wontfix"
+
 legacy_policy: comment_and_map
