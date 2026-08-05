@@ -2,8 +2,9 @@
   "schema": "biome-status/v1",
   "generated_at": "2026-08-03T09:06:35.363Z",
   "generated_at": "2026-08-05T11:41:29.352Z",
+  "generated_at": "2026-08-05T12:36:55.189Z",
   "credit_free": true,
-  "overall": "down",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "healthy",
@@ -12,8 +13,10 @@
         "failed_runs": 0,
       "status": "down",
       "summary": "7/100 recent runs failed; 3 stuck item(s)",
+      "status": "degraded",
+      "summary": "1/100 recent runs failed; 3 stuck item(s)",
       "counts": {
-        "failed_runs": 7,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 3
       },
@@ -22,52 +25,10 @@
         "stuck": []
         "recent_failures": [
           {
-            "id": 31000144788,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31000144788",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30999919039,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30999919039",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30996331077,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30996331077",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30992571102,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30992571102",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30992263293,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30992263293",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30991506907,
-            "name": "Vine → Marketplace Automation",
-            "path": ".github/workflows/vine-to-marketplace.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30991506907",
-            "conclusion": "failure"
-          },
-          {
-            "id": 30991252115,
-            "name": "WR Field Filler — no blanks ever ship",
-            "path": ".github/workflows/wr-field-filler.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30991252115",
+            "id": 31006313356,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31006313356",
             "conclusion": "failure"
           }
         ],
