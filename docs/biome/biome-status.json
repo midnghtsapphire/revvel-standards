@@ -1,19 +1,33 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-05T07:53:25.230Z",
+  "generated_at": "2026-08-05T08:56:43.994Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "down",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "8/100 recent runs failed; 0 stuck item(s)",
+      "status": "down",
+      "summary": "10/100 recent runs failed; 3 stuck item(s)",
       "counts": {
-        "failed_runs": 8,
+        "failed_runs": 10,
         "total_runs": 100,
-        "stuck_issues": 0
+        "stuck_issues": 3
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 30991064112,
+            "name": "Update Project Dashboard",
+            "path": ".github/workflows/update-project-dashboard.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30991064112",
+            "conclusion": "failure"
+          },
+          {
+            "id": 30987542004,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/30987542004",
+            "conclusion": "failure"
+          },
           {
             "id": 30984944673,
             "name": "BIOME Inspector",
@@ -71,7 +85,88 @@
             "conclusion": "failure"
           }
         ],
-        "stuck": []
+        "stuck": [
+          {
+            "number": 16425,
+            "title": "usenixsecurity25-pape.pdf use for revvel-standards ",
+            "updated_at": "2026-07-29T08:08:25Z",
+            "labels": [
+              "enhancement",
+              "auto-fix",
+              "copilot",
+              "triage",
+              "openrouter",
+              "priority-p3",
+              "role:orchestrator",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "lifecycle:stuck",
+              "wr-stuck",
+              "wr:research-complete",
+              "wr:jules",
+              "recovery:stale-wr",
+              "mindmappr",
+              "self-heal",
+              "wr:reset"
+            ]
+          },
+          {
+            "number": 16424,
+            "title": "Indirect Prompt Injection: The Hidden Threat Breaking Modern AI Systems | Lakera – Protecting AI teams that disrupt the world. add as a resource and to make our repository 92.7 times better",
+            "updated_at": "2026-07-29T08:08:36Z",
+            "labels": [
+              "enhancement",
+              "auto-fix",
+              "copilot",
+              "triage",
+              "openrouter",
+              "priority-p3",
+              "role:orchestrator",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "lifecycle:stuck",
+              "wr-stuck",
+              "wr:research-complete",
+              "wr:jules",
+              "recovery:stale-wr",
+              "mindmappr",
+              "self-heal",
+              "wr:reset"
+            ]
+          },
+          {
+            "number": 16419,
+            "title": "use these in revvel-standards snd store in prompts provide detailed files-thought process, memory, learning, api, cli, mcp, skills, tools and sub agent system prompts using requirements",
+            "updated_at": "2026-07-29T08:08:20Z",
+            "labels": [
+              "enhancement",
+              "auto-fix",
+              "copilot",
+              "triage",
+              "openrouter",
+              "priority-p2",
+              "role:orchestrator",
+              "area:ui",
+              "area:api",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "lifecycle:stuck",
+              "wr-stuck",
+              "wr:research-complete",
+              "wr:jules",
+              "recovery:stale-wr",
+              "mindmappr",
+              "self-heal",
+              "wr:reset"
+            ]
+          }
+        ]
       }
     },
     "homeostat": {
