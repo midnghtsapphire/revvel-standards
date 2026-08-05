@@ -18,7 +18,7 @@ Labels are flat, untyped, and explode (this repo had **301** labels with near-du
 
 ---
 
-## Recommended Project: "Revvel Command"
+## Recommended Project: Revvel Command
 
 Link all work repos (at minimum `revvel-standards` + product repos under `products/`).
 

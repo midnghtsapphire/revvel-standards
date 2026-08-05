@@ -41,29 +41,20 @@ jobs:
       - name: Label allowlist (PR labels)
         if: github.event_name == 'pull_request'
         env:
-          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+          # Comma-joined; checker splits LABELS env (no xargs — apostrophes in won't-merge break xargs)
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
         run: |
           set -euo pipefail
           if [ ! -f config/labels-allowlist.yml ]; then
             echo "No config/labels-allowlist.yml yet — skip (pack not landed)"
             exit 0
           fi
-          if [ -z "${PR_LABELS}" ]; then
+          if [ -z "${LABELS}" ]; then
             echo "No labels on PR — ok"
             exit 0
           fi
-          # Validate each label; unknown labels fail the check
-          IFS=',' read -ra LABELS <<< "$PR_LABELS"
-          FAIL=0
-          for L in "${LABELS[@]}"; do
-            L=$(echo "$L" | xargs)
-            [ -z "$L" ] && continue
-            if ! node scripts/label-allowlist-check.mjs --strict "$L"; then
-              echo "::error::Label not on allowlist: $L"
-              FAIL=1
-            fi
-          done
-          exit $FAIL
+          echo "Checking labels: ${LABELS}"
+          node scripts/label-allowlist-check.mjs --strict
 
       - name: Formal report schema (if present)
         run: |
