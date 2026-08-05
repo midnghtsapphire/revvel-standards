@@ -61,6 +61,21 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
 
             return decorator(fn) if fn else decorator
 
+
+        async def list_tools(self):
+            import dataclasses
+            @dataclasses.dataclass
+            class Tool:
+                name: str
+            return [Tool(name=k) for k in self.tools.keys()]
+
+        async def list_resources(self):
+            import dataclasses
+            @dataclasses.dataclass
+            class Resource:
+                uri: str
+            return [Resource(uri=k) for k in self.resources.keys()]
+
         def resource(self, uri: str):
             def decorator(func: Callable[..., object]) -> Callable[..., object]:
                 self.resources[uri] = func
