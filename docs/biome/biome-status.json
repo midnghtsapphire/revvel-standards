@@ -1,23 +1,31 @@
 {
   "schema": "biome-status/v1",
+<<<<<<< HEAD
   "generated_at": "2026-08-03T19:31:44.083Z",
   "generated_at": "2026-08-05T12:36:55.189Z",
+=======
+  "generated_at": "2026-08-05T15:44:21.971Z",
+>>>>>>> origin/main
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
       "summary": "0/100 recent runs failed; 0 stuck item(s)",
+<<<<<<< HEAD
       "status": "degraded",
       "summary": "1/100 recent runs failed; 3 stuck item(s)",
+=======
+>>>>>>> origin/main
       "counts": {
         "failed_runs": 0,
         "total_runs": 100,
-        "stuck_issues": 3
+        "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [],
         "stuck": []
+<<<<<<< HEAD
         "recent_failures": [
           {
             "id": 31006313356,
@@ -109,6 +117,8 @@
             ]
           }
         ]
+=======
+>>>>>>> origin/main
       }
     },
     "homeostat": {

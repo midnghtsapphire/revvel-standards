@@ -1,6 +1,10 @@
 {
   "schema": "fleet-controller-state/v1",
+<<<<<<< HEAD
   "updated_at": "2026-08-03T19:56:01.708Z",
   "updated_at": "2026-08-05T12:19:26.293Z",
+=======
+  "updated_at": "2026-08-05T15:35:08.450Z",
+>>>>>>> origin/main
   "workflows": {}
 }
