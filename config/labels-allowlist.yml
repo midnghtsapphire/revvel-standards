@@ -118,4 +118,12 @@ aliases:
   "sla:breached": "priority:p0"
   "sla:warning": "priority:p1"
 
+  "status:checks-failing": "checks-failing"
+  "status:checks-passing": "checks-passing"
+  "status:checks-pending": "in-review"
+  "formal:structural_conflict": "formal:fail"
+  "formal:duplicate_risk": "formal:fail"
+  "formal:needs_reaudit": "formal:reaudit"
+  "needs_reaudit": "formal:reaudit"
+
 legacy_policy: comment_and_map

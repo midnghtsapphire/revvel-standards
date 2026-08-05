@@ -31,6 +31,14 @@ function priorityFor(verdict) {
   return "priority:p3";
 }
 
+/** Map formal verdicts onto allowlisted formal:* labels only. */
+function formalLabelFor(verdict) {
+  if (verdict === "pass") return "formal:pass";
+  if (verdict === "needs_reaudit") return "formal:reaudit";
+  // fail | structural_conflict | duplicate_risk → formal:fail
+  return "formal:fail";
+}
+
 function shouldOpen(verdict) {
   return (
     verdict === "fail" ||

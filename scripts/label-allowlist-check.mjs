@@ -8,6 +8,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
 
 function loadYamlLite(file) {
   // Minimal YAML subset loader for this config (no external dep required).

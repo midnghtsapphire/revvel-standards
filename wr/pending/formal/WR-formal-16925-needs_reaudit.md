@@ -41,3 +41,4 @@ provenance:
   source_report: formal-report.json
   generated_at: 2026-08-05T14:54:24.854Z
   human_gate: required
+  allowlist_labels: wr, formal:auto-wr, formal:reaudit, human-review-required, priority:p2

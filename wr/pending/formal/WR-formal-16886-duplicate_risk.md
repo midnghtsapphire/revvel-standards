@@ -22,7 +22,7 @@ Formal dual-path verification (`boolean_xor_dual_path`, window 78h) produced ver
 3. Keep human review: do **not** merge without midnghtsapphire approval.
 
 ### Labels
-`wr`, `formal:auto-wr`, `formal:duplicate_risk`, `human-review-required`, `priority:p2`
+`wr`, `formal:auto-wr`, `formal:fail`, `human-review-required`, `priority:p2`
 
 ### Auto-filled by Research Engine
 - **Phase Alignment:** _(auto)_
@@ -41,3 +41,5 @@ provenance:
   source_report: formal-report.json
   generated_at: 2026-08-05T14:54:25.304Z
   human_gate: required
+  allowlist_labels: wr, formal:auto-wr, formal:fail, human-review-required, priority:p2
+  verdict_alias: duplicate_risk → formal:fail
