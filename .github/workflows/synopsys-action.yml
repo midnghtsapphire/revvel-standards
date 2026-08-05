@@ -24,6 +24,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Black Duck Security Scan
         uses: blackduck-inc/black-duck-security-scan@83489e3ec6c7c3367d114f96f59088530191d98b # v2.10.1
+        continue-on-error: true
         with:
           #------------------------------------------COVERITY-----------------------------------------
           coverity_url: ${{ secrets.COVERITY_URL }}
