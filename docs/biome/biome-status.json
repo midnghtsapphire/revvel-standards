@@ -1,31 +1,24 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-06T01:34:07.245Z",
+  "generated_at": "2026-08-06T03:03:02.428Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 31060441758,
-            "name": "Prioritize Starred Repositories",
-            "path": ".github/workflows/prioritize-stars.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31060441758",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31060251724,
-            "name": "pr-governance-checks",
-            "path": ".github/workflows/pr-governance-checks.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31060251724",
+            "id": 31067315633,
+            "name": "Persona Comment Trigger",
+            "path": ".github/workflows/persona-comment-trigger.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31067315633",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +44,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31062443478"
+        "last_run": null
       }
     },
     "sheaf": {
