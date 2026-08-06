@@ -1,0 +1,5 @@
+# Temporary stub for image automation connection config
+connections:
+  - id: image-seo-build
+    name: Image SEO Automator
+    type: cli

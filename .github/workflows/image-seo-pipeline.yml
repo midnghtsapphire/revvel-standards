@@ -1,0 +1,9 @@
+name: Image SEO Pipeline
+on: [workflow_dispatch]
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/image-seo-build-pack.mjs
