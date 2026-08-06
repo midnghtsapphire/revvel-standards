@@ -32,9 +32,10 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "22"
+          cache: ""
 
       - name: Write brief
         env:
@@ -58,10 +59,11 @@ jobs:
         run: node scripts/image-seo-build-pack.mjs --brief artifacts/image-automation/brief.json --out artifacts/image-automation/package.json
 
       - name: Upload pack artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
         with:
           name: image-creation-pack
           path: artifacts/image-automation/
+          retention-days: 1
 
       - name: Open draft PR with pack
         uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6

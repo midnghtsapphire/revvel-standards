@@ -25,14 +25,11 @@ jobs:
           fetch-depth: 0
       - name: Filename slug check
         env:
-          # Pass github context via env, not raw ${{ }} expansion inside the
-          # shell body — otherwise a crafted PR title/branch could inject bash
-          # via template expansion (zizmor: template-injection).
-          BASE_REF: ${{ github.base_ref }}
+          GITHUB_BASE_REF: "${{ github.base_ref }}"
         run: |
           set -e
           bad=0
-          base_ref="$BASE_REF"
+          base_ref="$GITHUB_BASE_REF"
           git fetch origin "$base_ref" --depth=1 || true
           while IFS= read -r f; do
             [ -z "$f" ] && continue
