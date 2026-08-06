@@ -16,6 +16,9 @@ class NeuralSheafDiffusion:
 
     def diffusion_step(self, x: np.ndarray) -> np.ndarray:
         laplacian = self.sheaf.sheaf_laplacian()
+        lambda_max = np.linalg.eigvalsh(laplacian)[-1] if laplacian.size else 0.0
+        if self.eta <= 0 or (lambda_max > 0 and self.eta >= 2.0 / lambda_max):
+            raise ValueError("eta must satisfy 0 < eta < 2 / lambda_max(laplacian)")
         return x - self.eta * (laplacian @ x)
 
     def diffuse(self, x: np.ndarray, steps: int = 10) -> np.ndarray:
