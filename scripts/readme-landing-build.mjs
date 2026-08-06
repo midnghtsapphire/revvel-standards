@@ -14,6 +14,8 @@ function args(argv) {
     repo: "",
     template: "midnghtsapphire",
     title: "",
+    ogImage: "",
+    ref: "main",
   };
   for (let i = 2; i < argv.length; i++) {
     const a = argv[i];
@@ -22,9 +24,19 @@ function args(argv) {
     else if (a === "--repo") o.repo = argv[++i];
     else if (a === "--template") o.template = argv[++i];
     else if (a === "--title") o.title = argv[++i];
+    else if (a === "--og-image") o.ogImage = argv[++i];
+    else if (a === "--ref") o.ref = argv[++i];
     else if (a === "--all") o.all = true;
   }
   return o;
+}
+
+// Compose the default OG image URL. jsDelivr proxies GitHub raw content with a
+// correct image/* Content-Type, which is what Twitter/LinkedIn/Slack need.
+// See products/covers/README.md for the vault cover pipeline.
+function defaultOgImage(repo, ref) {
+  if (!repo) return "";
+  return `https://cdn.jsdelivr.net/gh/${repo}@${ref || "main"}/products/covers/cover-vault.jpg`;
 }
 
 function esc(s) {
@@ -184,8 +196,15 @@ a{color:var(--accent)}
 `;
 }
 
-function buildPage({ title, badges, bodyHtml, repo, template }) {
+function buildPage({ title, badges, bodyHtml, repo, template, ogImage }) {
   const base = repo ? `https://github.com/${repo}` : "";
+  const ogTags = ogImage
+    ? `
+  <meta property="og:image" content="${esc(ogImage)}" />
+  <meta property="og:image:alt" content="${esc(title)} — cover" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="${esc(ogImage)}" />`
+    : "";
   const links = repo
     ? [
         ["Star", `${base}`],
@@ -213,7 +232,7 @@ function buildPage({ title, badges, bodyHtml, repo, template }) {
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(title)} — README landing (MIDNGHTSAPPHIRE automation)" />
   <meta property="og:title" content="${esc(title)}" />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content="website" />${ogTags}
   <style>
     *{box-sizing:border-box}
     body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.6}
@@ -260,12 +279,14 @@ ${bodyHtml}
 function processOne(readmePath, outPath, opt) {
   const md = fs.readFileSync(readmePath, "utf8");
   const { title, badges, body } = extract(md);
+  const ogImage = opt.ogImage || defaultOgImage(opt.repo, opt.ref);
   const html = buildPage({
     title: opt.title || title,
     badges,
     bodyHtml: mdToHtml(body),
     repo: opt.repo,
     template: opt.template,
+    ogImage,
   });
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, html);

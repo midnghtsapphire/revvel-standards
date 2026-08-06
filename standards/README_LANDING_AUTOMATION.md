@@ -21,7 +21,7 @@ README.md (+ docs/*.md)
   → extract title, badges (shields.io), first H1
   → render landing HTML (theme: glass | dark | midnghtsapphire)
   → inject GitHub quick links (Issues, PRs, Releases, Wiki, Star)
-  → optional: attach OG image from image_creation/v1 pack
+  → attach OG + Twitter Card image (defaults to products/covers/cover-vault.jpg via jsDelivr @ commit SHA)
   → artifact site/
   → deploy GitHub Pages (Actions)
   → on failure → WR issue
