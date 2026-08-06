@@ -2,7 +2,11 @@ name: Gumroad Covers
 
 on:
   workflow_dispatch:
+  # Only fire for pushes landing on main. Pushes to the automation branch
+  # (created by peter-evans/create-pull-request below) would otherwise loop:
+  # workflow → PR → auto-push to branch → workflow → PR to itself.
   push:
+    branches: [main]
     paths:
       - "products/covers/**"
       - "products/generate_covers.py"
@@ -41,6 +45,10 @@ jobs:
         id: cr
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1  # v8.1.1
         with:
+          # Always target main; this workflow can be dispatched from any branch
+          # (or during a dry-run on a feature branch) but the covers themselves
+          # need to land on main so jsDelivr can serve them.
+          base: main
           commit-message: "chore(covers): regenerate SEO product covers"
           title: "chore(covers): regenerate SEO product covers"
           body: |
