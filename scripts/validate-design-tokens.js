@@ -49,6 +49,15 @@ const DIMENSION_RE = /^(?:\d+(?:\.\d+)?)(?:px|rem)$/;
 // Kebab-case token names so they embed safely in CSS custom property names.
 const TOKEN_NAME_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+// Expected token `type` for each group — explicit so adding a new group to
+// REQUIRED_GROUPS forces a deliberate mapping choice instead of silently
+// falling into dimension validation.
+const TYPE_FOR_GROUP = {
+  color: "color",
+  spacing: "dimension",
+  radii: "dimension",
+};
+
 // Tailwind `theme.extend` keys for each token group.
 const TAILWIND_KEY_FOR_GROUP = {
   color: "colors",
@@ -103,31 +112,29 @@ function validateTokens(doc) {
         errors.push(`token "${label}" must be an object with "value" and "type"`);
         continue;
       }
-      if (typeof token.value !== "string" || token.value.trim() === "") {
+
+      const expectedType = TYPE_FOR_GROUP[group];
+      const hasValue = typeof token.value === "string" && token.value.trim() !== "";
+      if (!hasValue) {
         errors.push(`token "${label}" is missing a string "value"`);
-        continue;
       }
       if (typeof token.type !== "string" || token.type.trim() === "") {
         errors.push(`token "${label}" is missing a string "type"`);
+      } else if (token.type !== expectedType) {
+        errors.push(`token "${label}" must have type "${expectedType}" (got "${token.type}")`);
+      }
+      if (!hasValue) {
         continue;
       }
 
-      if (group === "color") {
-        if (token.type !== "color") {
-          errors.push(`token "${label}" must have type "color" (got "${token.type}")`);
-        }
+      if (expectedType === "color") {
         if (!HEX_COLOR_RE.test(token.value)) {
           errors.push(`token "${label}" value "${token.value}" is not a valid hex color`);
         }
-      } else {
-        if (token.type !== "dimension") {
-          errors.push(`token "${label}" must have type "dimension" (got "${token.type}")`);
-        }
-        if (!DIMENSION_RE.test(token.value)) {
-          errors.push(
-            `token "${label}" value "${token.value}" is not a valid px/rem dimension`
-          );
-        }
+      } else if (!DIMENSION_RE.test(token.value)) {
+        errors.push(
+          `token "${label}" value "${token.value}" is not a valid px/rem dimension`
+        );
       }
     }
   }

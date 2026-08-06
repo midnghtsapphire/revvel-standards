@@ -134,6 +134,14 @@ test('tokens missing value or type are reported', () => {
   assert.ok(errors.some((e) => e.includes('must be an object')), errors.join('; '));
 });
 
+test('value and type violations on the same token are both reported', () => {
+  const doc = validDoc();
+  doc.tokens.color['bg-primary'] = { type: 'dimension' };
+  const errors = validateTokens(doc).filter((e) => e.includes('"color.bg-primary"'));
+  assert.ok(errors.some((e) => e.includes('missing a string "value"')), errors.join('; '));
+  assert.ok(errors.some((e) => e.includes('must have type "color"')), errors.join('; '));
+});
+
 test('generateCssVariables emits a namespaced variable for every token', () => {
   const doc = validDoc();
   const css = generateCssVariables(doc);
