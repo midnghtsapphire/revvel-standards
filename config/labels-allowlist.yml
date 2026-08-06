@@ -8,6 +8,7 @@ owner: midnghtsapphire
 max_labels_total: 80
 policy:
   prefer_over_labels:
+  - name: recovery:gave-up
     - GitHub Projects custom fields
     - GitHub Actions workflows + check runs
     - n8n / Make / Zapier / Gumloop automations

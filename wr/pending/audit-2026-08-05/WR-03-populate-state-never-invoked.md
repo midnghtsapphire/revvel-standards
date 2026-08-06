@@ -53,7 +53,7 @@ $ node scripts/populate-state.js
 state.json written (802 bytes)
 $ grep lastUpdated state.json
 "lastUpdated": "2026-08-05T15:18:09.140Z"
-```
+```text
 
 ## Agent Learning Note
 

@@ -30,7 +30,7 @@
   remote: - Changes must be made through a pull request.
   remote: - Required status check "check-for-scaffolding, ci/circleci: lint-and-test, GitGuardian Security Checks" is expected.
    ! [remote rejected] main -> main (push declined due to repository rule violations)
-  ```
+  ```text
 - `gh api repos/midnghtsapphire/revvel-standards/rulesets/17149543` confirms
   the `main` ruleset has rule types `["deletion", "non_fast_forward",
   "pull_request", "required_status_checks"]` and a single bypass actor

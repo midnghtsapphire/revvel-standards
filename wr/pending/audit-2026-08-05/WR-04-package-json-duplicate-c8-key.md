@@ -11,7 +11,7 @@
   49:    "c8": "^12.0.0",
   50:
   51:    "c8": "^10.1.3",
-  ```
+  ```text
 - `git blame -L 45,55 -- package.json`: line 49 was added **today**,
   `2026-08-05 07:32:16` (commit `d08a35043`); line 51 dates to
   `2026-05-21` (commit `e1991a70b`). Nobody removed the old line when
@@ -50,8 +50,7 @@ Applied on this branch:
    12.0.0
    $ npm ci --no-audit --no-fund
    added 290 packages in 26s   # previously: hard error, 0 packages
-   ```
-
+   ```text
 This is a well-documented, easy-to-miss class of bug: RFC 8259 explicitly
 leaves duplicate-key behavior in a JSON object undefined ("the names within
 an object SHOULD be unique" — not a hard requirement), so "most parsers
