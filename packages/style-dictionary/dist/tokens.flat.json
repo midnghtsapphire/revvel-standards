@@ -1,0 +1,54 @@
+{
+  "color-bg-primary": {
+    "value": "#090d16",
+    "type": "color"
+  },
+  "color-bg-surface": {
+    "value": "#111827",
+    "type": "color"
+  },
+  "color-accent-brand": {
+    "value": "#ec4899",
+    "type": "color"
+  },
+  "color-text-main": {
+    "value": "#f9fafb",
+    "type": "color"
+  },
+  "color-border-subtle": {
+    "value": "#1f2937",
+    "type": "color"
+  },
+  "spacing-xs": {
+    "value": "4px",
+    "type": "dimension"
+  },
+  "spacing-sm": {
+    "value": "8px",
+    "type": "dimension"
+  },
+  "spacing-md": {
+    "value": "16px",
+    "type": "dimension"
+  },
+  "spacing-lg": {
+    "value": "24px",
+    "type": "dimension"
+  },
+  "spacing-xl": {
+    "value": "32px",
+    "type": "dimension"
+  },
+  "radii-sm": {
+    "value": "4px",
+    "type": "dimension"
+  },
+  "radii-md": {
+    "value": "8px",
+    "type": "dimension"
+  },
+  "radii-lg": {
+    "value": "12px",
+    "type": "dimension"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@revvel/prettier-config",
+  "version": "1.0.0",
+  "description": "Shared Prettier configuration for Revvel products",
+  "main": "index.json",
+  "exports": {
+    ".": "./index.json"
+  },
+  "files": [
+    "index.json"
+  ],
+  "keywords": [
+    "prettier",
+    "prettier-config",
+    "revvel"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "prettier": ">=3"
+  }
+}

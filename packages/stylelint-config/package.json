@@ -1,0 +1,22 @@
+{
+  "name": "@revvel/stylelint-config",
+  "version": "1.0.0",
+  "description": "Shared Stylelint configuration for Revvel products",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "stylelint",
+    "stylelint-config",
+    "revvel"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "stylelint": ">=16",
+    "stylelint-config-standard-scss": ">=13"
+  }
+}
