@@ -282,7 +282,7 @@ jobs:
           echo "CI recovery attempts logged" >> recovery_log.txt
       - name: Upload recovery log
         if: always()
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7
         with:
           name: recovery-log
           path: recovery_log.txt
