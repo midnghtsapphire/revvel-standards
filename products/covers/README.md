@@ -6,13 +6,13 @@ Branded JPEG covers for Gumroad products.
 
 jsDelivr (correct `image/jpeg` Content-Type):
 
-```
+```text
 https://cdn.jsdelivr.net/gh/midnghtsapphire/revvel-standards@main/products/covers/cover-vault.jpg
 ```
 
 Pin to a commit SHA after regeneration for cache safety:
 
-```
+```text
 https://cdn.jsdelivr.net/gh/midnghtsapphire/revvel-standards@<sha>/products/covers/cover-vault.jpg
 ```
 

@@ -7,7 +7,7 @@
 ## Evidence
 
 - `.github/workflows/ship-to-market.yml:508-509`:
-  ```
+  ```text
   if [[ -f scripts/record.ts || -f scripts/record.js ]]; then
     npx ts-node scripts/record.ts 2>/dev/null || node scripts/record.js
   ```
