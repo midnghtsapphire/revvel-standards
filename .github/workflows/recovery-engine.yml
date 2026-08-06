@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Walk open PRs and issues, apply recovery actions
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           MAX_INSPECTED: ${{ github.event.inputs.max_inspected || '200' }}

@@ -17,7 +17,7 @@ jobs:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Evaluate commit queue backlog
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: >

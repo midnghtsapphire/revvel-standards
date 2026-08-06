@@ -75,7 +75,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Translate labels + ensure [WR] title prefix
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         with:
@@ -136,7 +136,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Walk open octopus-review[bot] issues
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           RATE_LIMIT_MINUTES: ${{ github.event.inputs.rate_limit_minutes || '0' }}
           MAX_ISSUES: ${{ github.event.inputs.max_issues || '100' }}

@@ -39,7 +39,7 @@ jobs:
           fi
       - name: Check for no-triage label
         id: check-skip
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             let labels = [];
@@ -78,7 +78,7 @@ jobs:
     if: always() && needs.handle-review-request.result != 'skipped'
     steps:
       - name: Update PR comment with status badge
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         with:

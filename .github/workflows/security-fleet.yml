@@ -91,7 +91,7 @@ jobs:
           cat /tmp/exfil-findings.json
 
       - name: File finding as a deduped issue if any hits
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
         with:
@@ -177,7 +177,7 @@ jobs:
           node scripts/security-fleet.js redteam --json > /tmp/redteam.json || true
 
       - name: File/update one deduped tracking issue per member
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');

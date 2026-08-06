@@ -89,7 +89,7 @@ jobs:
 
       - name: Annotate PR with findings
         if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           github-token: ${{ env.GH_TOKEN }}
           script: |

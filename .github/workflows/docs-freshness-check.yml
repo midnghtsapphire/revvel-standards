@@ -71,7 +71,7 @@ jobs:
           exit 0
 
       - name: Evaluate rules and post warning
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');

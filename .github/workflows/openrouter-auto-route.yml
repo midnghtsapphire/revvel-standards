@@ -47,7 +47,7 @@ jobs:
         (github.event.action == 'labeled' && startsWith(github.event.label.name, 'output-type:'))))
     steps:
       - name: Parse Output Type and apply agent labels
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber =

@@ -245,7 +245,7 @@ jobs:
 
       - name: Post / update sticky comment
         if: steps.analyze.outputs.has_conflicts == 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');

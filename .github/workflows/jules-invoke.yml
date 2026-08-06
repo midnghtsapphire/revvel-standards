@@ -98,7 +98,7 @@ jobs:
       - name: Get issue details
         if: env.JULES_API_KEY != ''
         id: get_issue
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const issue = await github.rest.issues.get({

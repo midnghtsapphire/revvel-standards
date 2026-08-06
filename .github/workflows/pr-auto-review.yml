@@ -37,7 +37,7 @@ jobs:
           fi
       - name: Check if PR needs review
         id: check-needs-review
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const prNumber = context.payload.pull_request.number;

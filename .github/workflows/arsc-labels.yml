@@ -37,7 +37,7 @@ jobs:
     steps:
       - name: Manage Labels (ARSC)
         id: manage-labels
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           OBJECT_ID: ${{ github.event.inputs['object-id'] }}
           OPERATION: ${{ github.event.inputs.operation }}
@@ -116,7 +116,7 @@ jobs:
     if: github.event_name == 'issues' && github.event.action == 'opened'
     steps:
       - name: Ensure `triage` label exists
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
@@ -140,7 +140,7 @@ jobs:
             }
       - name: Add `triage` label to new issue
         if: toJSON(github.event.issue.labels) == '[]'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           script: |

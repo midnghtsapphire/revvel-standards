@@ -1,6 +1,6 @@
 # VEINS Intake Dedup
 #
-# Provenance: GitHub Actions (GitHub) via actions/github-script@v9.0.0 — no
+# Provenance: GitHub Actions (GitHub) via actions/github-script@v9 — no
 # external tools, secrets, or paid services.
 #
 # Why this exists: the external V.E.I.N.S. self-healing engine (it runs OUTSIDE
@@ -38,7 +38,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Find open twin and close newcomer
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         with:
           script: |
             const { owner, repo } = context.repo;

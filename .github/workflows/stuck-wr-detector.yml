@@ -53,7 +53,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Detect stuck WRs and heal
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@v9
         env:
           # For cron runs: cap at 48h so the sweep targets recently stuck WRs only.
           # For manual dispatch: use the provided value (default 168h = 7 days).
