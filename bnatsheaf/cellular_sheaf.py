@@ -21,7 +21,10 @@ class CellularSheaf:
     def set_restriction(self, node: Any, edge: Tuple[Any, Any], matrix: np.ndarray):
         if matrix.shape != (self.stalk_dim, self.stalk_dim):
             raise ValueError(f"Matrix must be {self.stalk_dim}x{self.stalk_dim}")
-        self.restrictions[(node, edge)] = matrix
+        key = (node, edge)
+        if key not in self.restrictions:
+            raise ValueError("Restriction must reference an existing node-edge incidence")
+        self.restrictions[key] = matrix
 
     def coboundary_matrix(self) -> np.ndarray:
         delta = np.zeros((self.n_edges * self.stalk_dim, self.n_nodes * self.stalk_dim))
