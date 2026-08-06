@@ -11,7 +11,7 @@ jobs:
 
       - name: Restore cached news
         id: cache-news
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: news-cache.json
           key: news-${{ hashFiles('scripts/fetch_news.py') }}-${{ steps.date.outputs.today }}
@@ -31,7 +31,7 @@ jobs:
         run: python scripts/process_news.py news-cache.json
 
       - name: Cache news
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: news-cache.json
           key: news-v2-${{ steps.date.outputs.today }} # change v2 → v3 to force refresh
