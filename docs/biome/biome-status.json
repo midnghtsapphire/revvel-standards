@@ -1,28 +1,148 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-06T14:47:39.107Z",
+  "generated_at": "2026-08-06T22:02:45.087Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "down",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "status": "down",
+      "summary": "44/100 recent runs failed; 2 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 44,
         "total_runs": 100,
-        "stuck_issues": 0
+        "stuck_issues": 2
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 31102706078,
-            "name": "Prioritize Starred Repositories",
-            "path": ".github/workflows/prioritize-stars.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31102706078",
+            "id": 31127626513,
+            "name": "Agent Monitor",
+            "path": ".github/workflows/agent-monitor.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31127626513",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31127432327,
+            "name": "BIOME Sheaf",
+            "path": ".github/workflows/biome-sheaf.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31127432327",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31127430413,
+            "name": "OpenRouter Triage",
+            "path": ".github/workflows/openrouter-triage.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31127430413",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31127371998,
+            "name": "PR & Issue Recovery Engine",
+            "path": ".github/workflows/recovery-engine.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31127371998",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31127103359,
+            "name": "BIOME Medic",
+            "path": ".github/workflows/biome-medic.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31127103359",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31127102471,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31127102471",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31126861900,
+            "name": "BIOME Homeostat",
+            "path": ".github/workflows/biome-homeostat.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31126861900",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31126724745,
+            "name": "BIOME Inspector",
+            "path": ".github/workflows/biome-inspector.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31126724745",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31126629291,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31126629291",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31126618470,
+            "name": "Agent Monitor",
+            "path": ".github/workflows/agent-monitor.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31126618470",
             "conclusion": "failure"
           }
         ],
-        "stuck": []
+        "stuck": [
+          {
+            "number": 16668,
+            "title": "WR-4483 M1: Scaffold Heterogeneous-Ensemble AHP Engine (MCP tool, 3 judges, steps 1-7)",
+            "updated_at": "2026-07-30T19:53:08Z",
+            "labels": [
+              "auto-fix",
+              "copilot",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "role:orchestrator",
+              "area:ui",
+              "area:automation",
+              "area:api",
+              "wr:new",
+              "recovery:stale-wr"
+            ]
+          },
+          {
+            "number": 16500,
+            "title": "[WR] NEW TECH FOR GOAP AND SWARMS PLEASE SEE ATTACHED DOC",
+            "updated_at": "2026-07-30T18:01:15Z",
+            "labels": [
+              "documentation",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority-p2",
+              "role:orchestrator",
+              "area:ui",
+              "area:automation",
+              "priority:high",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "wr-stuck",
+              "research-engine",
+              "research:blocked",
+              "research:marketing",
+              "research:seo",
+              "research:competitors",
+              "research:chatter",
+              "research:facts",
+              "research:technical",
+              "research:revenue",
+              "research:reviewer",
+              "wr:research-complete",
+              "wr:jules",
+              "recovery:stale-wr",
+              "mindmappr",
+              "self-heal",
+              "wr:reset",
+              "research:repo-web"
+            ]
+          }
+        ]
       }
     },
     "homeostat": {
@@ -43,11 +163,11 @@
       }
     },
     "medic": {
-      "status": "healthy",
-      "summary": "last run: success",
+      "status": "degraded",
+      "summary": "last run: failure",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31105652124"
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31127103359"
       }
     },
     "sheaf": {
