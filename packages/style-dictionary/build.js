@@ -63,7 +63,17 @@ function loadTokens(dir = TOKENS_DIR) {
   for (const file of files) {
     const parsed = JSON.parse(fs.readFileSync(path.join(dir, file), "utf8"));
     for (const [category, body] of Object.entries(parsed)) {
-      merged[category] = { ...(merged[category] || {}), ...body };
+      const existing = merged[category] || {};
+      for (const key of Object.keys(body)) {
+        // Never silently drop a token: a duplicate key across files would
+        // overwrite the earlier definition, so fail loudly instead.
+        if (Object.prototype.hasOwnProperty.call(existing, key)) {
+          throw new Error(
+            `Duplicate token "${category}.${key}" in ${file} — already defined in an earlier token file`,
+          );
+        }
+      }
+      merged[category] = { ...existing, ...body };
     }
   }
   return merged;

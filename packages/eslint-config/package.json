@@ -16,6 +16,7 @@
   ],
   "license": "MIT",
   "peerDependencies": {
+    "@eslint/eslintrc": ">=3",
     "eslint": ">=9",
     "eslint-config-next": ">=15"
   }
