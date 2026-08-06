@@ -46,7 +46,7 @@ is included in the same commit/PR-fallback path from WR-02.
 
 Verified locally (scratch run, reverted before committing so the branch
 doesn't carry a manually-generated snapshot):
-```
+```text
 $ node scripts/aggregate-project-dashboard.js
 ✅ Dashboard generation complete!
 $ node scripts/populate-state.js

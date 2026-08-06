@@ -7,7 +7,7 @@
 ## Evidence
 
 - `package.json` (pre-fix), lines 49 and 51:
-  ```
+  ```text
   49:    "c8": "^12.0.0",
   50:
   51:    "c8": "^10.1.3",
@@ -45,7 +45,7 @@ Applied on this branch:
 2. Ran `npm install` to re-sync `package-lock.json` — this both updates the
    resolved `c8` version to `12.0.0` and, as a side effect, restores the
    `require-directory@2.1.1` entry that `npm ci` needs. Verified:
-   ```
+   ```text
    $ node -e "console.log(require('./node_modules/c8/package.json').version)"
    12.0.0
    $ npm ci --no-audit --no-fund

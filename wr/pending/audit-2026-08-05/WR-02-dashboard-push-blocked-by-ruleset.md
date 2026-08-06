@@ -25,7 +25,7 @@
   updates` fails.
 - Raw job log (`gh api
   repos/midnghtsapphire/revvel-standards/actions/jobs/92321748223/logs`):
-  ```
+  ```text
   remote: error: GH013: Repository rule violations found for refs/heads/main.
   remote: - Changes must be made through a pull request.
   remote: - Required status check "check-for-scaffolding, ci/circleci: lint-and-test, GitGuardian Security Checks" is expected.
