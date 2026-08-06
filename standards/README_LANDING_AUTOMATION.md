@@ -16,7 +16,7 @@ Production path is **not** `pip install readme-peacock && peacock` on a laptop.
 
 ## Pipeline
 
-```
+```text
 README.md (+ docs/*.md)
   → extract title, badges (shields.io), first H1
   → render landing HTML (theme: glass | dark | midnghtsapphire)
