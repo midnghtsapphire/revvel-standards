@@ -8,7 +8,8 @@ class NeuralSheafDiffusion:
         self.eta = eta
 
     def set_diagonal_restriction(self, node: Any, edge: Any, weights: np.ndarray):
-        if weights.shape[0] != self.sheaf.stalk_dim or len(weights.shape) > 1:
+        # Check ndim first: a scalar (0-D) array has no shape[0] and would raise IndexError
+        if weights.ndim != 1 or weights.shape[0] != self.sheaf.stalk_dim:
             raise ValueError(f"Weights must be a 1D array of length {self.sheaf.stalk_dim}")
 
         diag_matrix = np.diag(weights)
@@ -16,6 +17,18 @@ class NeuralSheafDiffusion:
 
     def diffusion_step(self, x: np.ndarray) -> np.ndarray:
         laplacian = self.sheaf.sheaf_laplacian()
+        # Explicit Euler converges only when 0 < eta < 2/lambda_max.
+        # Validate the bound before applying so callers get a clear error instead of
+        # silently diverging energy — a large eta on a high-degree sheaf would increase
+        # energy rather than decrease it, breaking the healing guarantee.
+        eigenvalues = np.linalg.eigvalsh(laplacian)
+        lambda_max = float(eigenvalues.max())
+        if lambda_max > 0 and self.eta >= 2.0 / lambda_max:
+            raise ValueError(
+                f"Step size eta={self.eta} violates stability bound: "
+                f"eta must be < {2.0 / lambda_max:.6f} (= 2 / lambda_max). "
+                "Reduce eta or the sheaf's maximum degree."
+            )
         lambda_max = np.linalg.eigvalsh(laplacian)[-1] if laplacian.size else 0.0
         if self.eta <= 0 or (lambda_max > 0 and self.eta >= 2.0 / lambda_max):
             raise ValueError("eta must satisfy 0 < eta < 2 / lambda_max(laplacian)")

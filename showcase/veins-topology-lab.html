@@ -115,8 +115,8 @@
                 <!-- X/Y Axes -->
                 <line x1="0" y1="100" x2="100" y2="100" stroke="#888"/>
                 <line x1="0" y1="100" x2="0" y2="0" stroke="#888"/>
-                <text x="5" y="15" fill="#fff" font-size="4">Birth</text>
-                <text x="80" y="95" fill="#fff" font-size="4">Death</text>
+                <text x="5" y="15" fill="#fff" font-size="4">Death</text>
+                <text x="80" y="95" fill="#fff" font-size="4">Birth</text>
             </svg>
             <p>Cyan: H⁰ components | Magenta: H¹ obstructions</p>
         </div>
@@ -136,11 +136,123 @@
     </div>
 
     <script>
+        // ============================================================
+        // Minimal JS Cellular Sheaf — mirrors bnatsheaf/cellular_sheaf.py
+        // and bnatsheaf/nsd.py so display values are computed, not hardcoded.
+        // All matrices are dense, row-major Float64Arrays.
+        // ============================================================
+
+        /** Gaussian-elimination rank of a (rows × cols) matrix. */
+        function matRank(src, rows, cols) {
+            const m = Float64Array.from(src);
+            let rank = 0, pivotRow = 0;
+            for (let col = 0; col < cols && pivotRow < rows; col++) {
+                // Partial pivot
+                let maxRow = pivotRow, maxVal = 0;
+                for (let r = pivotRow; r < rows; r++) {
+                    const v = Math.abs(m[r * cols + col]);
+                    if (v > maxVal) { maxVal = v; maxRow = r; }
+                }
+                if (maxVal < 1e-10) continue;
+                // Swap rows
+                for (let c = 0; c < cols; c++) {
+                    const t = m[pivotRow * cols + c];
+                    m[pivotRow * cols + c] = m[maxRow * cols + c];
+                    m[maxRow * cols + c] = t;
+                }
+                const fac = m[pivotRow * cols + col];
+                for (let c = 0; c < cols; c++) m[pivotRow * cols + c] /= fac;
+                for (let r = 0; r < rows; r++) {
+                    if (r === pivotRow) continue;
+                    const f = m[r * cols + col];
+                    if (Math.abs(f) < 1e-10) continue;
+                    for (let c = 0; c < cols; c++) m[r * cols + c] -= f * m[pivotRow * cols + c];
+                }
+                rank++;
+                pivotRow++;
+            }
+            return rank;
+        }
+
+        /** Transpose of a (rows × cols) matrix → (cols × rows). */
+        function matT(m, rows, cols) {
+            const t = new Float64Array(rows * cols);
+            for (let r = 0; r < rows; r++)
+                for (let c = 0; c < cols; c++)
+                    t[c * rows + r] = m[r * cols + c];
+            return t;
+        }
+
+        /** Dense matrix–matrix product: (ar×ac) @ (ac×bc) → (ar×bc). */
+        function matMul(a, ar, ac, b, bc) {
+            const res = new Float64Array(ar * bc);
+            for (let r = 0; r < ar; r++)
+                for (let k = 0; k < ac; k++)
+                    for (let c = 0; c < bc; c++)
+                        res[r * bc + c] += a[r * ac + k] * b[k * bc + c];
+            return res;
+        }
+
+        /** Matrix–vector product: (rows×cols) @ vec → vec. */
+        function matVec(m, rows, cols, v) {
+            const res = new Float64Array(rows);
+            for (let r = 0; r < rows; r++)
+                for (let c = 0; c < cols; c++)
+                    res[r] += m[r * cols + c] * v[c];
+            return res;
+        }
+
+        /**
+         * Build coboundary matrix delta (nEdges × nNodes) for stalk_dim=1.
+         * edgeSpecs: Array of [uIdx, vIdx, rU, rV] — restriction scalars
+         *   delta[e, u] = -rU  (−R(u, edge))
+         *   delta[e, v] = +rV  (+R(v, edge))
+         * Matches bnatsheaf/cellular_sheaf.py::coboundary_matrix().
+         */
+        function buildCoboundary(nNodes, edgeSpecs) {
+            const nEdges = edgeSpecs.length;
+            const delta = new Float64Array(nEdges * nNodes);
+            edgeSpecs.forEach(([u, v, rU, rV], e) => {
+                delta[e * nNodes + u] = -rU;
+                delta[e * nNodes + v] =  rV;
+            });
+            return delta;
+        }
+
+        /** Sheaf Laplacian L = delta^T @ delta (nNodes × nNodes). */
+        function buildLaplacian(delta, nEdges, nNodes) {
+            const dt = matT(delta, nEdges, nNodes);
+            return matMul(dt, nNodes, nEdges, delta, nNodes);
+        }
+
+        /** Dirichlet energy E(x) = 0.5 · ‖delta · x‖². */
+        function dirichletEnergy(delta, nEdges, nNodes, x) {
+            const dx = matVec(delta, nEdges, nNodes, x);
+            let e = 0;
+            for (const v of dx) e += v * v;
+            return 0.5 * e;
+        }
+
+        /** One explicit-Euler NSD step: x ← x − η · L · x. */
+        function nsdStep(L, nNodes, x, eta) {
+            const Lx = matVec(L, nNodes, nNodes, x);
+            const xNew = new Float64Array(nNodes);
+            for (let i = 0; i < nNodes; i++) xNew[i] = x[i] - eta * Lx[i];
+            return xNew;
+        }
+
+        // ============================================================
+        // Global observable state
+        // ============================================================
+        let currentSheaf = null; // { nNodes, nEdges, delta, L, x }
         let currentEnergy = 0;
+        let healTimer = null;
 
         function simulateGraph(type) {
+            // Cancel any in-flight heal to avoid stale timers mutating a new graph.
+            if (healTimer !== null) { clearInterval(healTimer); healTimer = null; }
+
             const svg = document.getElementById('pd-svg');
-            // Reset SVG bars
             svg.innerHTML = `
                 <line x1="0" y1="100" x2="100" y2="0" stroke="#555" stroke-dasharray="2,2"/>
                 <line x1="0" y1="100" x2="100" y2="100" stroke="#888"/>
@@ -149,44 +261,73 @@
                 <text x="80" y="95" fill="#fff" font-size="4">Birth</text>
             `;
 
+            let nNodes, edgeSpecs, x;
+
             if (type === 'path') {
-                document.getElementById('dim-h0').innerText = '1';
-                document.getElementById('dim-h1').innerText = '0';
-                currentEnergy = 0.0;
-                document.getElementById('energy').innerText = currentEnergy.toFixed(2);
-
+                // Path A(0)–B(1)–C(2): no cycle; all identity restrictions.
+                // Computed: rank=2, H⁰=1, H¹=0, E(1,1,1)=0.
+                nNodes = 3;
+                edgeSpecs = [[0, 1, 1, 1], [1, 2, 1, 1]];
+                x = new Float64Array([1, 1, 1]);
                 svg.innerHTML += `<circle cx="10" cy="10" r="2" fill="var(--cyan)"/>`;
-            } else if (type === 'cycle') {
-                document.getElementById('dim-h0').innerText = '1';
-                document.getElementById('dim-h1').innerText = '1';
-                currentEnergy = 0.0;
-                document.getElementById('energy').innerText = currentEnergy.toFixed(2);
 
+            } else if (type === 'cycle') {
+                // Cycle A(0)–B(1)–C(2)–A: identity restrictions.
+                // Computed: rank=2, H⁰=1, H¹=1, E(1,1,1)=0 (consistent section).
+                nNodes = 3;
+                edgeSpecs = [[0, 1, 1, 1], [1, 2, 1, 1], [2, 0, 1, 1]];
+                x = new Float64Array([1, 1, 1]);
                 svg.innerHTML += `<circle cx="10" cy="10" r="2" fill="var(--cyan)"/>`;
                 svg.innerHTML += `<circle cx="40" cy="10" r="2" fill="var(--magenta)"/>`;
-            } else if (type === 'conflict') {
-                document.getElementById('dim-h0').innerText = '0 (Conflicting sections)';
-                document.getElementById('dim-h1').innerText = '0';
-                currentEnergy = 5.75;
-                document.getElementById('energy').innerText = currentEnergy.toFixed(2);
 
+            } else { // 'conflict'
+                // Triangle A(0)–B(1)–C(2)–A; edge A→B has R(B,AB)=−1 (sign conflict).
+                // Computed: rank=3 (full), H⁰=0 (no global section), H¹=0, E(1,1,1)=2.
+                nNodes = 3;
+                edgeSpecs = [[0, 1, 1, -1], [1, 2, 1, 1], [2, 0, 1, 1]];
+                x = new Float64Array([1, 1, 1]);
                 svg.innerHTML += `<circle cx="10" cy="80" r="2" fill="var(--cyan)"/>`;
                 svg.innerHTML += `<circle cx="20" cy="60" r="2" fill="var(--cyan)"/>`;
             }
+
+            const nEdges = edgeSpecs.length;
+            const delta = buildCoboundary(nNodes, edgeSpecs);
+            const L     = buildLaplacian(delta, nEdges, nNodes);
+            const rank  = matRank(Float64Array.from(delta), nEdges, nNodes);
+            const h0    = nNodes - rank;
+            const h1    = nEdges - rank;
+            currentEnergy = dirichletEnergy(delta, nEdges, nNodes, x);
+            currentSheaf  = { nNodes, nEdges, delta, L, x: Float64Array.from(x) };
+
+            document.getElementById('dim-h0').innerText    = h0.toString();
+            document.getElementById('dim-h1').innerText    = h1.toString();
+            document.getElementById('energy').innerText    = currentEnergy.toFixed(4);
         }
 
         function healNetwork() {
-            if (currentEnergy > 0) {
-                let interval = setInterval(() => {
-                    currentEnergy -= 0.5;
-                    if (currentEnergy <= 0) {
-                        currentEnergy = 0;
-                        clearInterval(interval);
-                        document.getElementById('dim-h0').innerText = '1 (Consensus Reached)';
-                    }
-                    document.getElementById('energy').innerText = currentEnergy.toFixed(2);
-                }, 100);
-            }
+            if (!currentSheaf || currentEnergy <= 1e-8) return;
+            // Guard: cancel any previously running heal so clicks do not stack timers.
+            if (healTimer !== null) { clearInterval(healTimer); healTimer = null; }
+
+            const { nNodes, nEdges, delta, L } = currentSheaf;
+            // Conservative η well below 2/λ_max for typical small graphs (λ_max ≤ 8).
+            const eta = 0.05;
+
+            healTimer = setInterval(() => {
+                currentSheaf.x = nsdStep(L, nNodes, currentSheaf.x, eta);
+                currentEnergy   = dirichletEnergy(delta, nEdges, nNodes, currentSheaf.x);
+                document.getElementById('energy').innerText = currentEnergy.toFixed(4);
+
+                if (currentEnergy < 1e-6) {
+                    clearInterval(healTimer);
+                    healTimer = null;
+                    currentEnergy = 0;
+                    document.getElementById('energy').innerText = '0.0000';
+                    const rank = matRank(Float64Array.from(delta), nEdges, nNodes);
+                    document.getElementById('dim-h0').innerText =
+                        (nNodes - rank) + ' (Consensus Reached)';
+                }
+            }, 100);
         }
 
         simulateGraph('path');

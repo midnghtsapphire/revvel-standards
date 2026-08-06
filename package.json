@@ -9,7 +9,7 @@
     "node": ">=22 <25"
   },
   "scripts": {
-    "test": "node --test 'tests/**/*.test.js' && bash tests/social_post_formatter.test.sh",
+    "test": "node --test 'tests/**/*.test.js' && bash tests/social_post_formatter.test.sh && python -m pytest bnatsheaf/tests/ -q",
     "test:all": "node --test tests",
     "verify": "npm run workflows:validate && npm run lint && npm test",
     "verify:fast": "npm run workflows:validate && npm run lint",

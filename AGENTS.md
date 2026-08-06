@@ -223,4 +223,4 @@ Comment **robustly, for the next human** (who may not be you and can't skim code
 as fast as an agent): explain *why*, document external-service gotchas at the
 call site, and always state the fallback / "what to check if it fails." See
 `standards/CODE_COMMENTING_STANDARD.md`.
-- Every agent must call the `bnatsheaf` restriction methods (`imprint_agent.py` logic) prior to taking operational action to verify the Knowledge Sheaf has $H^1 \approx 0$ and $E(x) < \varepsilon$.
+- Every agent must call `bnatsheaf.imprint_agent.imprint_agent(sheaf, x=state_vector)` prior to taking operational action to verify the Knowledge Sheaf has $H^1 = 0$ and $E(x) < \varepsilon$. The callable gate is implemented in `bnatsheaf/imprint_agent.py`; raise an error and halt if it returns `passed: false`.

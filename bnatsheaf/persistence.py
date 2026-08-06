@@ -50,25 +50,55 @@ class Filtration:
     def __init__(self, nodes: List[Any]):
         self.nodes = nodes
         self.edges_with_time = []
+        self.patches_with_time: List[Tuple[float, Tuple[Any, Any, Any]]] = []
 
     def add_edge(self, u: Any, v: Any, time: float):
         self.edges_with_time.append((time, (u, v)))
 
+    def add_patch(self, u: Any, v: Any, w: Any, time: float):
+        """Record a 2-cell (triangle u-v-w) entering the filtration at *time*.
+
+        Each 2-cell kills one open H¹ bar (the elder/oldest-born cycle) using the
+        standard persistence cancellation rule.  Call this after adding the three
+        bounding edges so that death times are always ≥ the corresponding birth time.
+        """
+        self.patches_with_time.append((time, (u, v, w)))
+
     def compute_diagram(self) -> PersistenceDiagram:
-        self.edges_with_time.sort(key=lambda x: x[0])
+        # Merge edges and 2-cells into a single chronological event stream.
+        events: list = [(t, 'edge', e) for t, e in self.edges_with_time]
+        events += [(t, 'patch', p) for t, p in self.patches_with_time]
+        events.sort(key=lambda x: x[0])
+
         diagram = PersistenceDiagram()
         uf = UnionFind(self.nodes)
+        open_h1_births: List[float] = []  # birth times of unresolved H¹ bars
 
         for n in self.nodes:
             uf.birth_time[n] = 0.0
 
-        for time, (u, v) in self.edges_with_time:
-            root_u = uf.find(u)
-            root_v = uf.find(v)
-            if root_u != root_v:
-                uf.union(u, v, time, diagram)
-            else:
-                diagram.add_h1_bar(time, float('inf'))
+        for event in events:
+            time = event[0]
+            if event[1] == 'edge':
+                u, v = event[2]
+                root_u = uf.find(u)
+                root_v = uf.find(v)
+                if root_u != root_v:
+                    uf.union(u, v, time, diagram)
+                else:
+                    # A new independent cycle is born at this time.
+                    open_h1_births.append(time)
+            elif event[1] == 'patch':
+                # A 2-cell fills one cycle, killing the oldest (smallest birth time)
+                # open H¹ class according to the elder/cancellation rule.
+                if open_h1_births:
+                    open_h1_births.sort()
+                    birth = open_h1_births.pop(0)
+                    diagram.add_h1_bar(birth, time)
+
+        # Remaining open H¹ bars have no death in this filtration.
+        for birth in open_h1_births:
+            diagram.add_h1_bar(birth, float('inf'))
 
         active_components = set(uf.find(n) for n in self.nodes)
         for root in active_components:
