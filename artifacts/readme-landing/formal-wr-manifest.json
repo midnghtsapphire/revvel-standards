@@ -1,0 +1,20 @@
+{
+  "schema": "midnghtsapphire.formal_wr_pack/v1",
+  "brand": "MIDNGHTSAPPHIRE",
+  "generated_at": "2026-08-05T00:00:00.000Z",
+  "repo": "midnghtsapphire/revvel-standards",
+  "branch": "automation/readme-landing-peacock",
+  "wr": "wr/pending/WR-readme-landing-peacock-2026-08-05.md",
+  "auto_merge": false,
+  "human_review_required": true,
+  "pattern": "readme-peacock",
+  "files": [
+    "wr/pending/WR-readme-landing-peacock-2026-08-05.md",
+    "standards/README_LANDING_AUTOMATION.md",
+    "scripts/readme-landing-build.mjs",
+    ".github/workflows/readme-landing.yml",
+    "workflows/blueprints/readme-landing.gumloop.json",
+    "config/connections.readme-landing.yml",
+    "README.md"
+  ]
+}

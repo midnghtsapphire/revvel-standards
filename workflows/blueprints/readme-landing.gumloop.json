@@ -1,0 +1,30 @@
+{
+  "schema": "midnghtsapphire.automation_package/v2",
+  "template_id": "readme-landing-peacock",
+  "brand": "MIDNGHTSAPPHIRE",
+  "human_gate": {
+    "auto_merge": false
+  },
+  "note": "Notify / mirror only; build stays in Actions.",
+  "trigger": {
+    "type": "webhook",
+    "name": "readme.updated"
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "github.file.read",
+      "name": "Read README"
+    },
+    {
+      "id": "n2",
+      "type": "actions.dispatch",
+      "name": "Dispatch readme-landing"
+    },
+    {
+      "id": "n3",
+      "type": "notify",
+      "name": "Notify pages URL"
+    }
+  ]
+}

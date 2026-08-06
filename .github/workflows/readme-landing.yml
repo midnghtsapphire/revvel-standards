@@ -1,0 +1,68 @@
+# README → static landing → GitHub Pages (automation-first)
+# Pattern: readme-peacock; default builder is first-party script (no pip).
+name: readme-landing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "docs/**.md"
+      - "scripts/readme-landing-build.mjs"
+      - ".github/workflows/readme-landing.yml"
+  workflow_dispatch:
+    inputs:
+      template:
+        description: Theme (midnghtsapphire | glass | dark)
+        required: false
+        default: midnghtsapphire
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  issues: write
+
+concurrency:
+  group: pages-readme-landing
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build landing from README (headless)
+        env:
+          TEMPLATE: ${{ github.event.inputs.template || 'midnghtsapphire' }}
+          REPO: ${{ github.repository }}
+        run: |
+          test -f README.md || echo '# ${{ github.event.repository.name }}' > README.md
+          node scripts/readme-landing-build.mjs             --readme README.md             --out site/index.html             --repo "$REPO"             --template "$TEMPLATE"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Open WR on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create             --title "[WR] readme-landing automation failed — ${{ github.repository }}"             --body "readme-landing workflow failed. Human review. formal:auto-wr path."             --label "wr" --label "human-review-required" --label "automation" || true
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
