@@ -1,7 +1,0 @@
-name: "Image SEO Blueprint"
-type: "blueprint"
-layers:
-  - id: background
-    type: image
-  - id: metadata
-    type: seo-lsi
