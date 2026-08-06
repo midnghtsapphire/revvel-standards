@@ -14,7 +14,7 @@ $$ E(x) = \frac{1}{2} x^T \Delta_{\mathcal{F}} x $$
 where $\Delta_{\mathcal{F}}$ is the Sheaf Laplacian. $E(x) = 0$ implies absolute consensus. $E(x) > 0$ indicates a local or global conflict.
 
 ## $H^1$ Obstruction
-The first cohomology group $H^1(\mathcal{F})$ measures the space of local consistencies that cannot be extended to a global consistency. A non-zero $H^1$ rank indicates an **obstruction**—a systemic tear or topological cycle of disagreement.
+The first cohomology group $H^1(\mathcal{F})$ measures the space of local consistencies that cannot be extended to a global consistency. A non-zero $H^1$ rank does **not** by itself constitute an obstruction—a cyclic interaction graph can have $\dim H^1 \geq 1$ while still admitting a consistent global section with $E(x) = 0$. An **obstruction** is declared only when a cohomology class $[\gamma] \in H^1(\mathcal{F})$ has no lift to a global section under the current restriction maps **and** the associated Dirichlet energy exceeds the threshold, i.e., $E(x) > \varepsilon$ for every candidate state $x$ in that cohomology class. Both conditions must hold simultaneously before the controller gate treats the cycle as a systemic tear.
 
 ## Persistent Homology Barcodes
 By tracking the addition of information over time (a filtration), we compute **persistence barcodes**.
