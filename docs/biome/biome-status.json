@@ -1,29 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-05T23:21:50.967Z",
-  "generated_at": "2026-08-06T03:03:02.428Z",
+  "generated_at": "2026-08-07T19:21:17.612Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 31056051285,
-            "name": "Daily WR & PR Summary",
-            "path": ".github/workflows/daily-wr-summary.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31056051285",
-            "id": 31067315633,
-            "name": "Persona Comment Trigger",
-            "path": ".github/workflows/persona-comment-trigger.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31067315633",
+            "id": 31211048749,
+            "name": "pr-governance-checks",
+            "path": ".github/workflows/pr-governance-checks.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31211048749",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31211045769,
+            "name": "label-allowlist",
+            "path": ".github/workflows/label-allowlist.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31211045769",
             "conclusion": "failure"
           }
         ],
