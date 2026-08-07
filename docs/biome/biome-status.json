@@ -1,14 +1,14 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-07T03:01:43.012Z",
+  "generated_at": "2026-08-07T04:39:25.671Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 0
       },
@@ -19,13 +19,6 @@
             "name": "label-allowlist",
             "path": ".github/workflows/label-allowlist.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31138936426",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31137777505,
-            "name": "Prioritize Starred Repositories",
-            "path": ".github/workflows/prioritize-stars.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31137777505",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +44,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31138916794"
+        "last_run": null
       }
     },
     "sheaf": {
