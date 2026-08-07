@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-08-07T11:54:29.655Z",
+  "generated_at": "2026-08-07T15:55:43.266Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 4,
@@ -8,9 +8,9 @@
     "over_capacity": false
   },
   "counts": {
-    "total": 12,
+    "total": 11,
     "running": 4,
-    "queued": 8,
+    "queued": 7,
     "done": 0,
     "healthy": 1,
     "stalled": 0,
@@ -22,14 +22,14 @@
   },
   "orchestrators": [
     {
-      "id": 31175960864,
+      "id": 31195032158,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31175960864",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31195032158",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 10655,
-      "since_update_ms": 7655,
+      "age_ms": 14266,
+      "since_update_ms": 5266,
       "reason": "running within budget",
       "protected": true
     },
@@ -40,9 +40,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29262820826",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 2146781655,
-      "since_update_ms": 2146512655,
-      "reason": "running 35780m ≥ 60m budget",
+      "age_ms": 2161255266,
+      "since_update_ms": 2160986266,
+      "reason": "running 36021m ≥ 60m budget",
       "protected": false
     },
     {
@@ -52,9 +52,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 2151019655,
-      "since_update_ms": 2150931655,
-      "reason": "running 35850m ≥ 60m budget",
+      "age_ms": 2165493266,
+      "since_update_ms": 2165405266,
+      "reason": "running 36092m ≥ 60m budget",
       "protected": false
     },
     {
@@ -64,21 +64,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 2155258655,
-      "since_update_ms": 2154004655,
-      "reason": "running 35921m ≥ 60m budget",
-      "protected": false
-    },
-    {
-      "id": 31137470264,
-      "name": "Update Naukri Resume",
-      "path": ".github/workflows/naukri-resume.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31137470264",
-      "status": "queued",
-      "health": "queued",
-      "age_ms": null,
-      "since_update_ms": null,
-      "reason": "awaiting a runner (trigger)",
+      "age_ms": 2169732266,
+      "since_update_ms": 2168478266,
+      "reason": "running 36162m ≥ 60m budget",
       "protected": false
     },
     {
@@ -172,7 +160,7 @@
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
-      "reason": "running 35780m ≥ 60m budget",
+      "reason": "running 36021m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -188,7 +176,7 @@
       "name": "No-Destroy Guard",
       "path": ".github/workflows/no-destroy-guard.yml",
       "health": "runaway",
-      "reason": "running 35850m ≥ 60m budget",
+      "reason": "running 36092m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -204,7 +192,7 @@
       "name": "Project Board Sync",
       "path": ".github/workflows/project-board-sync.yml",
       "health": "runaway",
-      "reason": "running 35921m ≥ 60m budget",
+      "reason": "running 36162m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
