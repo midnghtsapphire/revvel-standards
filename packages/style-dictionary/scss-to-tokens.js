@@ -48,8 +48,8 @@ function scssToTokens(source) {
     }
     const [, name, rawValue] = match;
     const value = rawValue.trim();
-    // SCSS maps and interpolation need a human decision, not auto-conversion.
-    if (value.startsWith("(") || value.includes("#{")) {
+    // SCSS maps, interpolation, and variable references need a human decision.
+    if (value.startsWith("(") || value.includes("#{") || /\$[\w-]+/.test(value)) {
       skipped.push({ line: i + 1, text: trimmed });
       continue;
     }
