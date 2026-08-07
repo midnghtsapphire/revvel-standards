@@ -124,6 +124,10 @@ test("committed dist output matches a fresh build (no drift)", () => {
   const flat = flattenTokens(loadTokens());
   assert.strictEqual(fs.readFileSync(path.join(distDir, "_variables.scss"), "utf8"), toScss(flat));
   assert.strictEqual(fs.readFileSync(path.join(distDir, "variables.css"), "utf8"), toCss(flat));
+  assert.strictEqual(
+    fs.readFileSync(path.join(distDir, "tokens.flat.json"), "utf8"),
+    `${JSON.stringify(flat, null, 2)}\n`,
+  );
 });
 
 test("scssToTokens converts simple declarations and reports unsafe ones", () => {
