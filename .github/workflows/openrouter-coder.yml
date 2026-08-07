@@ -30,7 +30,6 @@ jobs:
       (github.event_name == 'issues' && (github.event.label.name == 'wr:code' || github.event.label.name == 'spec-approved')) ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     timeout-minutes: 45
     steps:
       - name: Checkout
@@ -104,7 +103,7 @@ jobs:
 
       - name: Create Pull Request
         if: steps.ctx.outputs.skip != 'true'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "apply openrouter changes for #${{ steps.ctx.outputs.issue_number }}"

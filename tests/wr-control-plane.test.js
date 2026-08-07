@@ -125,7 +125,7 @@ test('module imports without FastMCP and registers all 4 tools', () => {
     "import json, sys; sys.path.insert(0, r'" +
       path.join(SERVER_DIR) +
       "'); from wr_control_plane.server import mcp; " +
-      'print(json.dumps(sorted(mcp.tools.keys())))'
+      'import asyncio; tools = getattr(mcp, "_tools", getattr(mcp, "tools", {})); print(json.dumps(sorted([t.__name__ if hasattr(t, "__name__") else t.name if hasattr(t, "name") else str(t) for t in tools.values()] if isinstance(tools, dict) else [t.__name__ if hasattr(t, "__name__") else t.name if hasattr(t, "name") else str(t) for t in tools])))'
   );
   assertEq(
     data,
@@ -144,7 +144,7 @@ test('module exposes both documented MCP resources', () => {
     "import json, sys; sys.path.insert(0, r'" +
       path.join(SERVER_DIR) +
       "'); from wr_control_plane.server import mcp; " +
-      'print(json.dumps(sorted(mcp.resources.keys())))'
+      'import asyncio; resources = getattr(mcp, "_resources", getattr(mcp, "resources", {})); print(json.dumps(sorted([str(r.uri) if hasattr(r, "uri") else k for k, r in resources.items()] if isinstance(resources, dict) else [str(r.uri) if hasattr(r, "uri") else str(r.__name__) if hasattr(r, "__name__") else str(r.name) if hasattr(r, "name") else str(r) for r in resources])))'
   );
   assertEq(
     data,

@@ -464,25 +464,36 @@ async function githubRequest({ pathName, method = "GET", payload, accept }) {
  * so a PR we bailed on (e.g. primary rate limit with a far-off reset)
  * remains eligible on the next 6-hourly sweep.
  */
-async function shouldReview({ owner, repo, prNumber, token, markerRegex }) {
-  const res = await githubRequest({
+async function shouldReview({ owner, repo, prNumber, markerRegex }) {
+  // githubRequest() already returns the parsed JSON body directly on success
+  // (see its `return data ? JSON.parse(data) : {}` on the 2xx path) — it does
+  // NOT return a { status, headers, body } wrapper. Previously this called
+  // githubRequest with a `path`/`token` shape it doesn't accept (the function
+  // destructures `pathName`, not `path`, and reads the token from the
+  // module-level GITHUB_TOKEN constant instead of a parameter), so `pathName`
+  // was undefined and the request went to the wrong endpoint; then this code
+  // additionally re-parsed the already-parsed result via `JSON.parse(res.body)`
+  // where `res.body` doesn't exist on an array, throwing `"undefined" is not
+  // valid JSON`. main()'s catch swallows that, so the job reports "success"
+  // while never actually reading comments or posting a review. Fixed: use the
+  // real parameter name and don't double-parse.
+  const comments = await githubRequest({
     method: 'GET',
-    path: `/repos/${owner}/${repo}/issues/${prNumber}/comments?per_page=100`,
-    token,
+    pathName: `/repos/${owner}/${repo}/issues/${prNumber}/comments?per_page=100`,
   });
-  const comments = JSON.parse(res.body);
   for (const c of comments) {
     if (markerRegex.test(c.body || '')) return false;
   }
   return true;
 }
 
-async function postFallbackReview({ owner, repo, prNumber, token, body }) {
+async function postFallbackReview({ owner, repo, prNumber, body }) {
+  // Same fix as shouldReview(): githubRequest() expects `pathName`/`payload`,
+  // not `path`/`body`, and doesn't take a `token` parameter at all.
   return githubRequest({
     method: 'POST',
-    path: `/repos/${owner}/${repo}/issues/${prNumber}/comments`,
-    token,
-    body: { body },
+    pathName: `/repos/${owner}/${repo}/issues/${prNumber}/comments`,
+    payload: { body },
   });
 }
 
@@ -498,7 +509,7 @@ async function main() {
     const [owner, repo] = repoFull.split('/');
     const marker = /octopus-review-fallback:v1/;
 
-    const eligible = await shouldReview({ owner, repo, prNumber, token, markerRegex: marker });
+    const eligible = await shouldReview({ owner, repo, prNumber, markerRegex: marker });
     if (!eligible) {
       console.log(`octopus-review-fallback: PR #${prNumber} already has a fallback review; skipping.`);
       return;
@@ -507,7 +518,7 @@ async function main() {
     const body =
       '<!-- octopus-review-fallback:v1 -->\n' +
       '_Octopus reviewer is unavailable (quota) — this is an automated fallback acknowledgement._';
-    await postFallbackReview({ owner, repo, prNumber, token, body });
+    await postFallbackReview({ owner, repo, prNumber, body });
     console.log(`octopus-review-fallback: posted fallback review on PR #${prNumber}.`);
   } catch (err) {
     // Preserve prior "never fail loud" behavior — the schedule sweep will
