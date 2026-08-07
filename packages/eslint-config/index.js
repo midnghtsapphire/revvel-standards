@@ -51,17 +51,17 @@ const IGNORE_PATTERNS = [
  */
 function buildConfig() {
   // eslint-disable-next-line global-require -- lazy: peer dep lives in the consuming project
-  const coreWebVitals = require("next/core-web-vitals");
+  const coreWebVitals = require("eslint-config-next/core-web-vitals");
 
   // eslint-config-next ≥ 16: entry points export flat-config arrays directly.
   if (Array.isArray(coreWebVitals)) {
     // eslint-disable-next-line global-require -- lazy: peer dep lives in the consuming project
-    const nextTypescript = require("next/typescript");
+    const nextTypescript = require("eslint-config-next/typescript");
     if (!Array.isArray(nextTypescript)) {
       throw new Error(
-        "@revvel/eslint-config: `next/typescript` did not export a flat-config " +
-          "array. This is unexpected for eslint-config-next ≥ 16. Check your " +
-          "installed version with `npm ls eslint-config-next`."
+        "@revvel/eslint-config: `eslint-config-next/typescript` did not export a " +
+          "flat-config array. This is unexpected for eslint-config-next ≥ 16. " +
+          "Check your installed version with `npm ls eslint-config-next`."
       );
     }
     return [
