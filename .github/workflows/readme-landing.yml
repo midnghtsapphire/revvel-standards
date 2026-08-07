@@ -27,6 +27,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       issues: write
@@ -63,15 +64,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
+          TITLE: "[WR] readme-landing automation failed — ${{ github.repository }}"
         run: |
-          gh issue create \
-            --title "[WR] readme-landing automation failed — $REPO" \
-            --body "readme-landing workflow failed. Human review. formal:auto-wr path." \
-            --label "wr" --label "human-review-required" --label "automation" || true
+          existing=$(gh issue list --repo "$REPO" --state open \
+            --search "$TITLE" --json number --jq 'length')
+          if [ "${existing:-0}" -eq 0 ]; then
+            gh issue create \
+              --repo "$REPO" \
+              --title "$TITLE" \
+              --body "readme-landing workflow failed. Human review. formal:auto-wr path." \
+              --label "wr" --label "human-review-required" --label "automation" || true
+          fi
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       pages: write
       id-token: write

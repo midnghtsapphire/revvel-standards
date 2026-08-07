@@ -62,11 +62,16 @@ function extract(md) {
     }
     const badgeRe = /!\[([^\]]*)\]\((https?:\/\/img\.shields\.io\/[^)]+)\)/g;
     let m;
+    let hasBadge = false;
     let rest = line;
     while ((m = badgeRe.exec(line))) {
       badges.push({ alt: m[1], src: m[2] });
+      rest = rest.replace(m[0], "");
+      hasBadge = true;
     }
-    // strip badge-only lines from body clutter in hero area later
+    // Skip lines that contained only badges (shields.io images) to avoid
+    // duplicating them in the body — they are already rendered in the hero.
+    if (hasBadge && !rest.trim()) continue;
     bodyLines.push(line);
   }
   return { title: title || "Project", badges, body: bodyLines.join("\n") };
@@ -155,15 +160,26 @@ function mdToHtml(md) {
   return out.join("\n");
 }
 
+function safeHref(raw) {
+  // Allow only safe URL schemes; reject javascript:, data:, vbscript:, etc.
+  const url = raw.trim();
+  if (/^(https?:|mailto:|#|\/)/i.test(url)) return url;
+  // Relative paths without a scheme are safe (links to same origin).
+  if (!/^[a-z][a-z0-9+\-.]*:/i.test(url)) return url;
+  return "#";
+}
+
 function inline(s) {
   let t = esc(s);
+  // Images: ![alt](url) or ![alt](url "title") — capture url before optional title
   t = t.replace(
-    /!\[([^\]]*)\]\(([^)]+)\)/g,
-    '<img src="$2" alt="$1" loading="lazy" />',
+    /!\[([^\]]*)\]\(([^)"'\s]+)(?:\s[^)]*?)?\)/g,
+    (_, alt, src) => `<img src="${safeHref(src)}" alt="${alt}" loading="lazy" />`,
   );
+  // Links: [text](url) or [text](url "title") — strip optional title
   t = t.replace(
-    /\[([^\]]+)\]\(([^)]+)\)/g,
-    '<a href="$2" rel="noopener noreferrer">$1<\/a>',
+    /\[([^\]]+)\]\(([^)"'\s]+)(?:\s[^)]*?)?\)/g,
+    (_, text, href) => `<a href="${safeHref(href)}" rel="noopener noreferrer">${text}<\/a>`,
   );
   t = t.replace(/`([^`]+)`/g, "<code>$1</code>");
   t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
