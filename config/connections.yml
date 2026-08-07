@@ -321,6 +321,15 @@ connections:
     access: [product-analytics]
     connects_to: [notion]
     used_by: [amplitude-events.yml, amplitude-to-notion.yml]
+  - id: neon
+    name: Neon
+    type: api
+    auth: key
+    env: NEON_API_KEY
+    status: verified
+    access: [serverless-postgres, preview-branches]
+    used_by: [neon-branch.yml]
+    note: "Actions-only secret (plus vars.NEON_PROJECT_ID); creates/deletes per-PR preview branches. Not read by any app or MCP server."
   - id: resend
     name: Resend
     type: api
