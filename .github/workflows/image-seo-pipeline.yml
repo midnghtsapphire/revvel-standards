@@ -32,6 +32,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+          cache: ""
 
       - name: Write brief
         env:
@@ -62,6 +71,14 @@ jobs:
 
       - name: Open draft PR with pack
         uses: peter-evans/create-pull-request@v6
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
+        with:
+          name: image-creation-pack
+          path: artifacts/image-automation/
+          retention-days: 1
+
+      - name: Open draft PR with pack
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6
         with:
           commit-message: "chore(image-seo): automated image_creation/v1 pack"
           title: "[automation] Image SEO pack — human review"

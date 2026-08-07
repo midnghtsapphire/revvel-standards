@@ -2,6 +2,8 @@
 
 **Status:** ACTIVE · **Updated:** 2026-08-05  
 **Brand:** MIDNGHTSAPPHIRE  
+**Status:** ACTIVE · **Updated:** 2026-08-05
+**Brand:** MIDNGHTSAPPHIRE
 **Schema:** `midnghtsapphire.image_creation/v1`
 
 ## Hard rule
@@ -9,6 +11,7 @@
 Image creation is **not** a manual attach-file or click-through studio ritual in production.
 
 **Allowed human actions:** merge PRs, approve first-run social posts, rotate secrets.  
+**Allowed human actions:** merge PRs, approve first-run social posts, rotate secrets.
 **Forbidden as the primary path:** hand-building alt/OG/prompts in a UI for every asset.
 
 ## Preference order (AUTOMATION_FIRST_STACK)
@@ -17,6 +20,10 @@ Image creation is **not** a manual attach-file or click-through studio ritual in
 2. **n8n / Make / Zapier / Gumloop** — blueprints in `workflows/blueprints/`  
 3. **OpenRouter** — LSI / copy agents inside those flows  
 4. **Allowlisted labels** — routing only  
+1. **GitHub Actions** — image-seo-pipeline, release-banner-social, image-seo-qa
+2. **n8n / Make / Zapier / Gumloop** — blueprints in `workflows/blueprints/`
+3. **OpenRouter** — LSI / copy agents inside those flows
+4. **Allowlisted labels** — routing only
 5. Studio UI — **dev/debug only**
 
 ## Pipeline (canonical)
@@ -25,6 +32,10 @@ Image creation is **not** a manual attach-file or click-through studio ritual in
 intake → LSI expand → discovery/creative → SEO pack → prompts → render
   → derivatives → QA → human approve (PR / first post) → publish
 ```
+```text
+intake → LSI expand → discovery/creative → SEO pack → prompts → render
+  → derivatives → QA → human approve (PR / first post) → publish
+```text
 
 ## LSI density
 

@@ -3,6 +3,7 @@
 ## Description
 
 **Problem:** Image creation, LSI expansion, SEO packaging, and release social banners risk being executed as **manual studio clicks**. That defeats automation-first work (2+ years): processes must run via Actions / n8n / Make / Zapier / Gumloop and land as **WR → draft PR → human merge only**.
+**Problem:** Image creation, LSI expansion, SEO packaging, and release social banners risk being executed as **manual studio clicks**. That defeats automation-first work (2+ years): processes must run via Actions / n8n / Make / Zapier / Gumloop and land as **WR → draft PR → human merge only**
 
 **Desired outcome:** Land this pack so image SEO + LSI + release-banner posting is **fully automated** after human merge of this WR/PR:
 
@@ -19,6 +20,11 @@
 - No API keys in blueprints.
 - Prefer Actions over labels (AUTOMATION_FIRST_STACK).
 - Studio UI is **dev/debug only**, not the production control plane.
+- Agents write WR + code + docs
+- **Humans merge only.**
+- No API keys in blueprints
+- Prefer Actions over labels (AUTOMATION_FIRST_STACK)
+- Studio UI is **dev/debug only**, not the production control plane
 
 ## Labels
 `wr`, `human-review-required`, `priority:p1`, `automation`, `area:automation`, `formal:auto-wr`
