@@ -1,77 +1,35 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-07T00:01:06.307Z",
+  "generated_at": "2026-08-07T03:01:43.012Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "0/100 recent runs failed; 2 stuck item(s)",
+      "status": "healthy",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 2,
         "total_runs": 100,
-        "stuck_issues": 2
+        "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
-        "stuck": [
+        "recent_failures": [
           {
-            "number": 16668,
-            "title": "WR-4483 M1: Scaffold Heterogeneous-Ensemble AHP Engine (MCP tool, 3 judges, steps 1-7)",
-            "updated_at": "2026-07-30T19:53:08Z",
-            "labels": [
-              "auto-fix",
-              "copilot",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "role:orchestrator",
-              "area:ui",
-              "area:automation",
-              "area:api",
-              "wr:new",
-              "recovery:stale-wr"
-            ]
+            "id": 31138936426,
+            "name": "label-allowlist",
+            "path": ".github/workflows/label-allowlist.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31138936426",
+            "conclusion": "failure"
           },
           {
-            "number": 16500,
-            "title": "[WR] NEW TECH FOR GOAP AND SWARMS PLEASE SEE ATTACHED DOC",
-            "updated_at": "2026-07-30T18:01:15Z",
-            "labels": [
-              "documentation",
-              "needs-human",
-              "triage",
-              "openrouter",
-              "priority-p2",
-              "role:orchestrator",
-              "area:ui",
-              "area:automation",
-              "priority:high",
-              "weekly-research",
-              "wr:in-progress",
-              "deep-research",
-              "work-request",
-              "wr-stuck",
-              "research-engine",
-              "research:blocked",
-              "research:marketing",
-              "research:seo",
-              "research:competitors",
-              "research:chatter",
-              "research:facts",
-              "research:technical",
-              "research:revenue",
-              "research:reviewer",
-              "wr:research-complete",
-              "wr:jules",
-              "recovery:stale-wr",
-              "mindmappr",
-              "self-heal",
-              "wr:reset",
-              "research:repo-web"
-            ]
+            "id": 31137777505,
+            "name": "Prioritize Starred Repositories",
+            "path": ".github/workflows/prioritize-stars.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31137777505",
+            "conclusion": "failure"
           }
-        ]
+        ],
+        "stuck": []
       }
     },
     "homeostat": {
@@ -93,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31138916794"
       }
     },
     "sheaf": {
