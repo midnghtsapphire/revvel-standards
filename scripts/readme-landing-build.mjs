@@ -170,21 +170,32 @@ function safeHref(raw) {
 }
 
 function inline(s) {
-  let t = esc(s);
-  // Images: ![alt](url) or ![alt](url "title") — capture url before optional title
-  t = t.replace(
-    /!\[([^\]]*)\]\(([^)"'\s]+)(?:\s[^)]*?)?\)/g,
-    (_, alt, src) => `<img src="${safeHref(src)}" alt="${alt}" loading="lazy" />`,
-  );
-  // Links: [text](url) or [text](url "title") — strip optional title
-  t = t.replace(
-    /\[([^\]]+)\]\(([^)"'\s]+)(?:\s[^)]*?)?\)/g,
-    (_, text, href) => `<a href="${safeHref(href)}" rel="noopener noreferrer">${text}<\/a>`,
-  );
-  t = t.replace(/`([^`]+)`/g, "<code>$1</code>");
-  t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  t = t.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-  return t;
+  // Process links/images on the raw string before HTML-escaping, so URL
+  // characters are not mangled by &quot; entities.
+  // URL group: everything except `)` and whitespace.
+  // Optional title group: whitespace + anything up to `)`.
+  const TOKEN_RE = /!\[([^\]]*)\]\(([^)\s]+)(?:\s[^)]*)?\)|\[([^\]]+)\]\(([^)\s]+)(?:\s[^)]*)?\)/g;
+  let result = "";
+  let last = 0;
+  let m;
+  while ((m = TOKEN_RE.exec(s)) !== null) {
+    // Escape the plain text preceding this token
+    result += esc(s.slice(last, m.index));
+    last = m.index + m[0].length;
+    if (m[0].startsWith("!")) {
+      // Image: ![alt](url) or ![alt](url "title")
+      result += `<img src="${safeHref(m[2])}" alt="${esc(m[1])}" loading="lazy" />`;
+    } else {
+      // Link: [text](url) or [text](url "title")
+      result += `<a href="${safeHref(m[4])}" rel="noopener noreferrer">${esc(m[3])}<\/a>`;
+    }
+  }
+  result += esc(s.slice(last));
+  // Inline code, bold, italic (on already-escaped text; safe from entity conflicts)
+  result = result.replace(/`([^`]+)`/g, "<code>$1</code>");
+  result = result.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  result = result.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+  return result;
 }
 
 function themeCss(template) {
