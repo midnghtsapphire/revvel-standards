@@ -53,6 +53,10 @@ function scssToTokens(source) {
       skipped.push({ line: i + 1, text: trimmed });
       continue;
     }
+    if (Object.prototype.hasOwnProperty.call(tokens, name)) {
+      skipped.push({ line: i + 1, text: trimmed });
+      continue;
+    }
     tokens[name] = { value };
   }
   return { tokens, skipped };
