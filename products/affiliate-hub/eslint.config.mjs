@@ -1,3 +1,3 @@
-import nextVitals from 'eslint-config-next/core-web-vitals'
+import { buildConfig } from "@revvel/eslint-config";
 
-export default nextVitals
+export default buildConfig();

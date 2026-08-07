@@ -1,10 +1,14 @@
 # Shared Tooling Packages (`packages/`)
 
 WR #16973 deliverable: one place for code-quality configuration and design
-tokens, consumed by every product as a dependency instead of hand-copied
-config files. **Script over agent:** the SCSS→JSON token conversion is a
+tokens, consumed by products as a dependency instead of hand-copied config
+files. **Script over agent:** the SCSS→JSON token conversion is a
 deterministic script (`packages/style-dictionary/scss-to-tokens.js`), not an
 LLM paste job — same input, same output, testable for parity.
+
+`products/affiliate-hub` is the reference integration — all six packages are
+wired in there. Use it as the copy-paste starting point when integrating other
+products.
 
 ## The packages
 

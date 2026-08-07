@@ -7,7 +7,12 @@ the generated SCSS/CSS instead of defining local variables — new values go in
 here, never in a product stylesheet (enforced by
 [`@revvel/stylelint-config`](../stylelint-config/README.md)).
 
-The token source mirrors the repo-root `tokens.json` UI token set.
+`packages/style-dictionary/tokens/tokens.json` is the **single canonical source**
+for all UI design tokens. The repo-root `tokens.json` is a legacy file retained
+for the `ui-audit-logger` workflow; it must not be edited manually — run
+`node packages/style-dictionary/build.js` to regenerate all outputs from this
+source. If you add or change a token, edit `tokens/tokens.json` here, then
+commit the updated `dist/` alongside it.
 
 ## Build
 

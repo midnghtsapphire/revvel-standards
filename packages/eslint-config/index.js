@@ -32,8 +32,39 @@ const IGNORE_PATTERNS = [
  * Build the flat config array. `eslint-config-next` is required lazily so the
  * package manifest itself can be validated (tests, audits) in environments
  * where the peer dependency is not installed.
+ *
+ * Version-gating rationale:
+ *   - eslint-config-next ≤ 15  exports a legacy eslintrc object; FlatCompat
+ *     adapts it to the flat-config shape.
+ *   - eslint-config-next ≥ 16  exports flat-config arrays directly from
+ *     `core-web-vitals` and `typescript` entry points; passing those through
+ *     FlatCompat fails because FlatCompat expects eslintrc objects, not arrays.
+ *
+ * Detection: require `next/core-web-vitals` and check whether the export is an
+ * Array.  If it is, spread it directly (Next 16+); otherwise fall back to the
+ * FlatCompat adapter (Next 15).
+ *
+ * Fallback / what to check if it fails: ensure `eslint-config-next` is
+ * installed as a devDependency in the consuming product (`npm install --save-dev
+ * eslint-config-next`).  If ESLint still errors on the config shape, check
+ * which major you're on with `npm ls eslint-config-next`.
  */
 function buildConfig() {
+  // eslint-disable-next-line global-require -- lazy: peer dep lives in the consuming project
+  const coreWebVitals = require("next/core-web-vitals");
+
+  // eslint-config-next ≥ 16: entry points export flat-config arrays directly.
+  if (Array.isArray(coreWebVitals)) {
+    // eslint-disable-next-line global-require -- lazy: peer dep lives in the consuming project
+    const nextTypescript = require("next/typescript");
+    return [
+      { ignores: IGNORE_PATTERNS },
+      ...(Array.isArray(coreWebVitals) ? coreWebVitals : [coreWebVitals]),
+      ...(Array.isArray(nextTypescript) ? nextTypescript : [nextTypescript]),
+    ];
+  }
+
+  // eslint-config-next ≤ 15: legacy eslintrc format — adapt via FlatCompat.
   // eslint-disable-next-line global-require -- lazy: peer dep lives in the consuming project
   const { FlatCompat } = require("@eslint/eslintrc");
   const compat = new FlatCompat({ baseDirectory: process.cwd() });

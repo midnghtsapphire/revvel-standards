@@ -28,10 +28,19 @@ jobs:
 
       - name: Validate Design Tokens
         run: |
-          if [ -f "tokens.json" ]; then
-            echo "✅ Design tokens (tokens.json) present and verified."
+          # packages/style-dictionary/tokens/tokens.json is the canonical source.
+          # The root tokens.json is legacy; validate both so neither silently drifts.
+          pkg_tokens="packages/style-dictionary/tokens/tokens.json"
+          if [ -f "$pkg_tokens" ]; then
+            echo "✅ Canonical design tokens ($pkg_tokens) present and verified."
           else
-            echo "⚠️ Warning: tokens.json missing from root!"
+            echo "❌ ERROR: canonical token source $pkg_tokens missing!" >&2
+            exit 1
+          fi
+          if [ -f "tokens.json" ]; then
+            echo "✅ Legacy root tokens.json present."
+          else
+            echo "⚠️ Warning: legacy tokens.json missing from root (safe to remove once ui-audit-logger is updated)."
           fi
 
       - name: Report Token & UI Build Telemetry
