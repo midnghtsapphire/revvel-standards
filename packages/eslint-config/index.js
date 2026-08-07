@@ -57,10 +57,17 @@ function buildConfig() {
   if (Array.isArray(coreWebVitals)) {
     // eslint-disable-next-line global-require -- lazy: peer dep lives in the consuming project
     const nextTypescript = require("next/typescript");
+    if (!Array.isArray(nextTypescript)) {
+      throw new Error(
+        "@revvel/eslint-config: `next/typescript` did not export a flat-config " +
+          "array. This is unexpected for eslint-config-next ≥ 16. Check your " +
+          "installed version with `npm ls eslint-config-next`."
+      );
+    }
     return [
       { ignores: IGNORE_PATTERNS },
-      ...(Array.isArray(coreWebVitals) ? coreWebVitals : [coreWebVitals]),
-      ...(Array.isArray(nextTypescript) ? nextTypescript : [nextTypescript]),
+      ...coreWebVitals,
+      ...nextTypescript,
     ];
   }
 
