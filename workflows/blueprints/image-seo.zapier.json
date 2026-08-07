@@ -1,0 +1,30 @@
+{
+  "title": "Image SEO pack \u2192 notify (task-conserving)",
+  "steps": [
+    {
+      "app": "Webhooks by Zapier",
+      "action": "Catch Hook"
+    },
+    {
+      "app": "Filter by Zapier",
+      "action": "Only continue if\u2026",
+      "config": {
+        "only_if": "release OR weekly_brief"
+      }
+    },
+    {
+      "app": "Webhooks by Zapier",
+      "action": "POST",
+      "config": {
+        "note": "headless pack builder"
+      }
+    },
+    {
+      "app": "GitHub",
+      "action": "Create Issue",
+      "config": {
+        "labels": "wr,automation,human-review-required"
+      }
+    }
+  ]
+}
