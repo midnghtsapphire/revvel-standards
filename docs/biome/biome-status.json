@@ -1,28 +1,77 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-06T11:44:50.316Z",
+  "generated_at": "2026-08-07T00:01:06.307Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "0/100 recent runs failed; 2 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 0,
         "total_runs": 100,
-        "stuck_issues": 0
+        "stuck_issues": 2
       },
       "detail": {
-        "recent_failures": [
+        "recent_failures": [],
+        "stuck": [
           {
-            "id": 31087393803,
-            "name": "Vine → Marketplace Automation",
-            "path": ".github/workflows/vine-to-marketplace.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31087393803",
-            "conclusion": "failure"
+            "number": 16668,
+            "title": "WR-4483 M1: Scaffold Heterogeneous-Ensemble AHP Engine (MCP tool, 3 judges, steps 1-7)",
+            "updated_at": "2026-07-30T19:53:08Z",
+            "labels": [
+              "auto-fix",
+              "copilot",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "role:orchestrator",
+              "area:ui",
+              "area:automation",
+              "area:api",
+              "wr:new",
+              "recovery:stale-wr"
+            ]
+          },
+          {
+            "number": 16500,
+            "title": "[WR] NEW TECH FOR GOAP AND SWARMS PLEASE SEE ATTACHED DOC",
+            "updated_at": "2026-07-30T18:01:15Z",
+            "labels": [
+              "documentation",
+              "needs-human",
+              "triage",
+              "openrouter",
+              "priority-p2",
+              "role:orchestrator",
+              "area:ui",
+              "area:automation",
+              "priority:high",
+              "weekly-research",
+              "wr:in-progress",
+              "deep-research",
+              "work-request",
+              "wr-stuck",
+              "research-engine",
+              "research:blocked",
+              "research:marketing",
+              "research:seo",
+              "research:competitors",
+              "research:chatter",
+              "research:facts",
+              "research:technical",
+              "research:revenue",
+              "research:reviewer",
+              "wr:research-complete",
+              "wr:jules",
+              "recovery:stale-wr",
+              "mindmappr",
+              "self-heal",
+              "wr:reset",
+              "research:repo-web"
+            ]
           }
-        ],
-        "stuck": []
+        ]
       }
     },
     "homeostat": {
