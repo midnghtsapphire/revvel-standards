@@ -21,8 +21,7 @@ class NeuralSheafDiffusion:
         # Validate the bound before applying so callers get a clear error instead of
         # silently diverging energy — a large eta on a high-degree sheaf would increase
         # energy rather than decrease it, breaking the healing guarantee.
-        eigenvalues = np.linalg.eigvalsh(laplacian)
-        lambda_max = float(eigenvalues.max())
+        lambda_max = float(np.linalg.eigvalsh(laplacian).max()) if laplacian.size else 0.0
         if lambda_max > 0 and self.eta >= 2.0 / lambda_max:
             raise ValueError(
                 f"Step size eta={self.eta} violates stability bound: "
