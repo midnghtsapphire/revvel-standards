@@ -10,8 +10,8 @@
  *
  * Usage (eslint.config.mjs in a product):
  *
- *   import revvel from "@revvel/eslint-config";
- *   export default revvel;
+ *   import { buildConfig } from "@revvel/eslint-config";
+ *   export default buildConfig();
  *
  * Fallback / what to check if it fails: this package resolves
  * `eslint-config-next` from the CONSUMING project (peer dependency), so if
