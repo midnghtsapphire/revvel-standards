@@ -42,9 +42,19 @@ function flattenTokens(tree, prefix = []) {
       );
     }
     if (Object.prototype.hasOwnProperty.call(node, "value")) {
-      flat[[...prefix, key].join("-")] = node;
+      const name = [...prefix, key].join("-");
+      if (Object.prototype.hasOwnProperty.call(flat, name)) {
+        throw new Error(`Duplicate flattened token "${name}"`);
+      }
+      flat[name] = node;
     } else {
-      Object.assign(flat, flattenTokens(node, [...prefix, key]));
+      const nested = flattenTokens(node, [...prefix, key]);
+      for (const [name, definition] of Object.entries(nested)) {
+        if (Object.prototype.hasOwnProperty.call(flat, name)) {
+          throw new Error(`Duplicate flattened token "${name}"`);
+        }
+        flat[name] = definition;
+      }
     }
   }
   return flat;
