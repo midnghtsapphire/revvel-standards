@@ -1,7 +1,21 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { calculateDosage, CompensationProfile, formatMinutes, normalizeDosageInput } from "./data/calculator";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import HealthDataRights from "./components/HealthDataRights";
+import MhmdaConsentGate from "./components/MhmdaConsentGate";
+import {
+  calculateDosage,
+  CompensationProfile,
+  formatMinutes,
+  normalizeDosageInput,
+} from "./data/calculator";
+import {
+  STORAGE_KEYS,
+  type DsarRequestRecord,
+  type HealthJournalEntry,
+  type MhmdaConsentRecord,
+} from "./data/mhmda-consent";
 
 interface FormState {
   irradianceMwPerCm2: number;
@@ -54,14 +68,71 @@ function NumberInput({
   );
 }
 
+function readStorage<T>(key: string): T | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
+}
+
+function writeStorage(key: string, value: unknown): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Quota or private mode — fail soft; in-memory state still works this session.
+  }
+}
+
 export default function Home() {
   const [state, setState] = useState<FormState>(INITIAL_STATE);
   const normalized = useMemo(() => normalizeDosageInput(state), [state]);
   const result = useMemo(() => calculateDosage(normalized), [normalized]);
 
+  const [hydrated, setHydrated] = useState(false);
+  const [consent, setConsent] = useState<MhmdaConsentRecord | null>(null);
+  const [entries, setEntries] = useState<HealthJournalEntry[]>([]);
+  const [requests, setRequests] = useState<DsarRequestRecord[]>([]);
+  const [showConsentForm, setShowConsentForm] = useState(false);
+  const [declinedHealthData, setDeclinedHealthData] = useState(false);
+
+  useEffect(() => {
+    const storedConsent = readStorage<MhmdaConsentRecord>(STORAGE_KEYS.consent);
+    const storedEntries = readStorage<HealthJournalEntry[]>(STORAGE_KEYS.journal) ?? [];
+    const storedRequests = readStorage<DsarRequestRecord[]>(STORAGE_KEYS.dsar) ?? [];
+    setConsent(storedConsent);
+    setEntries(Array.isArray(storedEntries) ? storedEntries : []);
+    setRequests(Array.isArray(storedRequests) ? storedRequests : []);
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (consent) writeStorage(STORAGE_KEYS.consent, consent);
+    else if (typeof window !== "undefined") {
+      window.localStorage.removeItem(STORAGE_KEYS.consent);
+    }
+  }, [consent, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    writeStorage(STORAGE_KEYS.journal, entries);
+  }, [entries, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    writeStorage(STORAGE_KEYS.dsar, requests);
+  }, [requests, hydrated]);
+
   const handleNumberChange = (key: keyof FormState, value: number) => {
     setState((previous) => ({ ...previous, [key]: value }));
   };
+
+  const consentActive = Boolean(consent?.isValid);
 
   return (
     <div className="min-h-screen bg-grid text-slate-900">
@@ -77,6 +148,11 @@ export default function Home() {
             Enter irradiance and your target dose. The calculator uses the universal formula:
             <strong> time = (dose × 1000) / irradiance</strong>, then applies pulse and
             compensation adjustments for practical session timing.
+          </p>
+          <p className="mt-3 text-sm text-slate-600">
+            <Link href="/privacy" className="font-semibold text-cyan-800 underline">
+              Privacy Policy (MHMDA disclosures)
+            </Link>
           </p>
         </section>
 
@@ -149,7 +225,9 @@ export default function Home() {
             <div className="mt-4 space-y-3">
               <div className="rounded-2xl bg-cyan-50 p-4">
                 <p className="text-sm text-cyan-900">Estimated Session Time</p>
-                <p className="text-3xl font-bold text-cyan-950">{formatMinutes(result.adjustedTimeSeconds)}</p>
+                <p className="text-3xl font-bold text-cyan-950">
+                  {formatMinutes(result.adjustedTimeSeconds)}
+                </p>
               </div>
               <p className="text-sm text-slate-700">
                 Base time: <strong>{formatMinutes(result.baseTimeSeconds)}</strong>
@@ -162,10 +240,12 @@ export default function Home() {
                 Compensation multiplier: <strong>x{result.compensationMultiplier}</strong>
               </p>
               <p className="text-sm text-slate-700">
-                Total energy per session: <strong>{result.totalEnergyJoules.toFixed(0)} J</strong>
+                Total energy per session:{" "}
+                <strong>{result.totalEnergyJoules.toFixed(0)} J</strong>
               </p>
               <p className="text-sm text-slate-700">
-                Weekly dose load: <strong>{result.weeklyDoseJPerCm2.toFixed(1)} J/cm2</strong>
+                Weekly dose load:{" "}
+                <strong>{result.weeklyDoseJPerCm2.toFixed(1)} J/cm2</strong>
               </p>
             </div>
             <div className="mt-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
@@ -176,6 +256,87 @@ export default function Home() {
             </div>
           </aside>
         </section>
+
+        {hydrated && !consentActive && !showConsentForm && !declinedHealthData ? (
+          <section className="rounded-3xl border border-violet-200 bg-white p-5 shadow-md">
+            <h2 className="text-lg font-semibold text-slate-900">
+              Optional health progress journal
+            </h2>
+            <p className="mt-2 text-sm text-slate-700">
+              Want to store stretch mark photos, symptom notes, postpartum timeline markers, or
+              severity self-assessments? Washington MHMDA and similar state laws require an
+              explicit opt-in first — separate from any terms acceptance.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => setShowConsentForm(true)}
+                className="rounded-xl bg-violet-700 px-4 py-2 text-sm font-semibold text-white"
+                data-testid="open-consent"
+              >
+                Review MHMDA consent
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeclinedHealthData(true)}
+                className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800"
+                data-testid="skip-health-data"
+              >
+                Calculator only
+              </button>
+            </div>
+          </section>
+        ) : null}
+
+        {hydrated && showConsentForm && !consentActive ? (
+          <MhmdaConsentGate
+            onConsented={(record) => {
+              setConsent(record);
+              setShowConsentForm(false);
+              setDeclinedHealthData(false);
+            }}
+            onDecline={() => {
+              setShowConsentForm(false);
+              setDeclinedHealthData(true);
+              setConsent(null);
+            }}
+          />
+        ) : null}
+
+        {hydrated && declinedHealthData && !consentActive && !showConsentForm ? (
+          <section className="rounded-3xl border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
+            Health data collection is off.{" "}
+            <button
+              type="button"
+              className="font-semibold text-violet-800 underline"
+              onClick={() => setShowConsentForm(true)}
+              data-testid="reopen-consent"
+            >
+              Enable MHMDA consent
+            </button>{" "}
+            anytime. See the{" "}
+            <Link href="/privacy" className="font-semibold text-cyan-800 underline">
+              privacy policy
+            </Link>
+            .
+          </section>
+        ) : null}
+
+        {hydrated ? (
+          <HealthDataRights
+            consent={consent}
+            entries={entries}
+            requests={requests}
+            onConsentChange={(record) => {
+              setConsent(record);
+              if (!record?.isValid) {
+                setShowConsentForm(false);
+              }
+            }}
+            onEntriesChange={setEntries}
+            onRequestsChange={setRequests}
+          />
+        ) : null}
       </main>
     </div>
   );

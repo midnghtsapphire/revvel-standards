@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start -p 3010",
     "lint": "eslint",
-    "test": "tsx tests/calculator.test.ts",
+    "test": "tsx tests/calculator.test.ts && tsx tests/mhmda-consent.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
