@@ -304,7 +304,8 @@ function scoreDimensions(inventory) {
   if (workflowsWithAdversarial >= 2) adversarial += 20;
   if (workflowsWithSchema >= 1) adversarial += 20;
   if (allSignals.some((s) => s.includes('pipeline') || s.includes('parallel'))) adversarial += 10;
-  if (allSignals.some((s) => s.includes('dimensions') || s.includes('DEFAULT_DIMENSIONS'))) {
+  // Signal name from analyzeText is "dimensions" (see SIGNAL_PATTERNS).
+  if (allSignals.some((s) => s.includes('dimensions'))) {
     adversarial += 10;
   }
   adversarial = clamp(adversarial, 0, 100);
@@ -743,7 +744,12 @@ function dedupeFindings(findings) {
 }
 
 function escapeTable(s) {
-  return String(s).replace(/\|/g, '\\|').replace(/\n/g, ' ');
+  // Escape backslashes first so later \| insertions are not double-processed
+  // in reverse (CodeQL js/incomplete-sanitization).
+  return String(s)
+    .replace(/\\/g, '\\\\')
+    .replace(/\|/g, '\\|')
+    .replace(/\n/g, ' ');
 }
 
 function listFiles(root, rel = '') {
@@ -860,7 +866,9 @@ function main(argv = process.argv.slice(2)) {
   const payloads = [];
   if (args.json) payloads.push(JSON.stringify(report, null, 2));
   if (args.markdown) payloads.push(renderMarkdown(report));
-  if (!args.json && !args.markdown) payloads.push(JSON.stringify(report, null, 2));
+  // Default parseArgs sets markdown=true; if the caller passed --no-markdown
+  // without --json, still emit JSON so the CLI is never silent.
+  if (payloads.length === 0) payloads.push(JSON.stringify(report, null, 2));
 
   const body = payloads.join('\n\n');
   if (args.out) {
