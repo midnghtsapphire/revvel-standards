@@ -171,7 +171,9 @@ describe("CLI", () => {
     assert.ok(html.includes("<h1>Test Project</h1>"), "H1 in hero");
     assert.ok(html.includes("<strong>world</strong>"), "bold rendered");
     assert.ok(html.includes("<code>npm install</code>"), "inline code rendered");
-    assert.ok(html.includes("https://github.com/owner/repo"), "repo links present");
+    // Check repo quick links appear as anchored href attributes
+    assert.ok(html.includes('href="https://github.com/owner/repo"'), "repo star link present");
+    assert.ok(html.includes('href="https://github.com/owner/repo/issues"'), "repo issues link present");
     assert.ok(html.includes("og:title"), "OG title meta");
     assert.ok(html.includes("og:image"), "OG image meta");
 
