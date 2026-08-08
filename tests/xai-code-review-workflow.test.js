@@ -100,9 +100,12 @@ test('active workflow pins tarmojussila/xai-code-review to the v0.1.0 commit SHA
   assert.match(text, /#\s*v0\.1\.0|pin:.*v0\.1\.0/);
 });
 
-test('template references the marketplace action (tag ok; SHA preferred in active)', () => {
+test('template also pins tarmojussila/xai-code-review to the v0.1.0 commit SHA', () => {
   const text = read(TEMPLATE);
-  assert.match(text, new RegExp(`uses:\\s*${ACTION}@`));
+  const re = new RegExp(`uses:\\s*${ACTION}@([0-9a-f]{40})`);
+  const match = text.match(re);
+  assert.ok(match, `expected SHA-pinned uses: ${ACTION}@<40-hex> in template`);
+  assert.equal(match[1], PIN_SHA);
   assert.match(text, /marketplace\/actions\/xai-code-review/);
 });
 

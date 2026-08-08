@@ -61,7 +61,8 @@ jobs:
         if: env.XAI_API_KEY != ''
         # Advisory only — never block merge on a transient xAI outage.
         continue-on-error: true
-        uses: tarmojussila/xai-code-review@v0.1.0
+        # pin: tarmojussila/xai-code-review@v0.1.0 (CLAUDE.md #8 — full SHA)
+        uses: tarmojussila/xai-code-review@0a0ec8e6ae59ed29819ac73ba1b8a983f40ca255
         with:
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           XAI_MODEL: ${{ vars.XAI_MODEL || 'grok-3' }}
