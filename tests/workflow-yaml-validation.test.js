@@ -169,3 +169,42 @@ describe('pr-lifecycle check-state workflow allowlist', () => {
     expect(allowlist).not.toContain('*');
   });
 });
+
+describe('paralysis-recovery workflow guards', () => {
+  test('apisec archived workflow stays parse-valid and keeps a single steps array', () => {
+    if (!yaml) return;
+    const filePath = path.join(WORKFLOWS_DIR, 'apisec-scan.yml');
+    const doc = yaml.load(fs.readFileSync(filePath, 'utf8'));
+    assert.ok(doc.jobs?.archived?.steps);
+    assert.ok(Array.isArray(doc.jobs.archived.steps));
+    assert.equal(doc.jobs.archived.steps.length, 1);
+  });
+
+  test('trusted-bot auto-approve listens to completed check suites', () => {
+    if (!yaml) return;
+    const filePath = path.join(WORKFLOWS_DIR, 'trusted-bot-auto-approve.yml');
+    const doc = yaml.load(fs.readFileSync(filePath, 'utf8'));
+    assert.ok(doc.on?.check_suite);
+    assert.deepStrictEqual(doc.on.check_suite.types, ['completed']);
+  });
+
+  test('agent dispatcher routes wr:research-complete to openrouter before wr:research', () => {
+    const filePath = path.join(WORKFLOWS_DIR, 'agent-dispatcher.yml');
+    const content = fs.readFileSync(filePath, 'utf8');
+    const codeRoute = content.indexOf('*,wr:research-complete,*|*,wr:code,*|*,octopus-review,*)');
+    const researchRoute = content.indexOf('*,wr:research,*|*,lifecycle:stuck,*)');
+    assert.ok(codeRoute >= 0, 'openrouter routing pattern missing');
+    assert.ok(researchRoute >= 0, 'research routing pattern missing');
+    assert.ok(codeRoute < researchRoute, 'wr:research-complete must be matched before wr:research');
+  });
+
+  test('ci-error-prevention checks package-lock sync before npm ci', () => {
+    const filePath = path.join(WORKFLOWS_DIR, 'ci-error-prevention.yml');
+    const content = fs.readFileSync(filePath, 'utf8');
+    const gateIndex = content.indexOf('name: Validate package-lock sync');
+    const installIndex = content.indexOf('name: Install dependencies');
+    assert.ok(gateIndex >= 0, 'package-lock sync gate missing');
+    assert.ok(installIndex >= 0, 'install step missing');
+    assert.ok(gateIndex < installIndex, 'lockfile gate must run before npm ci');
+  });
+});
