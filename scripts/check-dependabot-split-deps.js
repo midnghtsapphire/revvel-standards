@@ -121,19 +121,25 @@ function checkDependabotSplitDeps(text, filePath = 'dependabot.yml') {
       }
 
       const ownerKey = `${entry['package-ecosystem'] || 'any'}::${normalized}`;
+      // Sentinel when directory: is absent (e.g. directories:-only entry) so
+      // two multi-dir entries sharing a group name still collide.
+      const ownerLabel =
+        typeof directory === 'string' && directory.trim()
+          ? directory
+          : `<missing-directory@updates[${i}]>`;
       if (groupOwners.has(ownerKey)) {
         const prior = groupOwners.get(ownerKey);
-        if (prior !== directory) {
+        if (prior !== ownerLabel) {
           findings.push({
             rule: 'unique-group-per-directory',
             message:
               `${label}: group "${groupName}" is reused across directories ` +
-              `"${prior}" and "${directory}". Shared group names let Dependabot ` +
+              `"${prior}" and "${ownerLabel}". Shared group names let Dependabot ` +
               `open multi-directory bumps (path B). Scope the name per directory.`,
           });
         }
       } else {
-        groupOwners.set(ownerKey, directory);
+        groupOwners.set(ownerKey, ownerLabel);
       }
     }
   }

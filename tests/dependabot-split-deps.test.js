@@ -146,6 +146,33 @@ updates:
     const result = checkDependabotSplitDeps(good, 'fixture.yml');
     assert.equal(result.ok, true, JSON.stringify(result.findings));
   });
+
+  test('checker flags shared groups across directories:-only entries', () => {
+    const bad = `
+version: 2
+updates:
+  - package-ecosystem: npm
+    directories: ["/", "/a"]
+    groups:
+      shared-group:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directories: ["/b", "/c"]
+    groups:
+      shared-group:
+        patterns: ["*"]
+`;
+    const result = checkDependabotSplitDeps(bad, 'fixture.yml');
+    assert.equal(result.ok, false);
+    assert.ok(
+      result.findings.some((f) => f.rule === 'unique-group-per-directory'),
+      JSON.stringify(result.findings),
+    );
+    assert.ok(
+      result.findings.some((f) => f.rule === 'no-directories-plural'),
+      JSON.stringify(result.findings),
+    );
+  });
 });
 
 describe('formal re-run + scorecard event for #16950', () => {
