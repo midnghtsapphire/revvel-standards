@@ -43,7 +43,7 @@ jobs:
       count: ${{ steps.list.outputs.count }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
@@ -69,10 +69,6 @@ jobs:
           shopt -s nullglob
           for path in .github/workflows/*.yml .github/workflows/*.yaml; do
             base="$(basename "$path")"
-            # Skip non-workflow docs accidentally dropped in the folder.
-            if [[ "$base" == "REVVEL_GOVERNANCE_WORKFLOWS.md" ]]; then
-              continue
-            fi
             if [[ -n "${EXCLUDE[$base]+x}" ]]; then
               echo "exclude: $path"
               continue
@@ -126,7 +122,7 @@ jobs:
         file: ${{ fromJson(needs.discover.outputs.files) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
