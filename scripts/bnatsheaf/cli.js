@@ -24,6 +24,15 @@
  *       long-lived H¹ bar exists (must be killed or escalated, never
  *       silently glued).
  *
+ *   node scripts/bnatsheaf/cli.js fingerprint [--status <path>] [--out <path>]
+ *       Compute the topological fingerprint (dim_H0, dim_H1, rank_delta,
+ *       energy, long-lived H¹ bars) and optionally write it to
+ *       docs/biome/bnat-fingerprint.json (companion file — BIOME schema
+ *       untouched). Exit 0 iff the sheaf is consistent (E(x) < ε).
+ *
+ *   node scripts/bnatsheaf/cli.js cohomology [--status <path>]
+ *       Rank-nullity H⁰/H¹ summary of the BIOME sheaf (proof surface).
+ *
  * Fallback / what to check if it fails:
  *   - Missing docs/biome/biome-status.json → exit 2 with a named error
  *     (BIOME feed not generated yet; run biome-sheaf.yml or scripts/biome/sheaf.js).
@@ -34,8 +43,18 @@ const fs = require('fs');
 const path = require('path');
 const { sheafFromBiomeStatus } = require('./sheaf');
 const { barcodesFromBiomeStatus } = require('./persistence');
+const { topologicalFingerprint } = require('./fingerprint');
+const { computeCohomology } = require('./cohomology');
 
 const DEFAULT_STATUS = path.join(__dirname, '..', '..', 'docs', 'biome', 'biome-status.json');
+const DEFAULT_FINGERPRINT = path.join(
+  __dirname,
+  '..',
+  '..',
+  'docs',
+  'biome',
+  'bnat-fingerprint.json'
+);
 
 function parseArgs(argv) {
   const args = { _: [] };
@@ -136,7 +155,28 @@ function main(argv) {
     console.log(JSON.stringify(result, null, 2));
     return result.persistentH1.length === 0 ? 0 : 1;
   }
-  console.error('Usage: cli.js <consistency_check|imprint_agent|ph_monitor> [--status <path>] [--epsilon <e>] [--agent <name>] [--min-lifetime <t>]');
+  if (command === 'fingerprint') {
+    const fp = topologicalFingerprint(status, {
+      epsilon: Number(args.epsilon || 1e-9),
+      minLifetime: Number(args['min-lifetime'] || 0.5),
+    });
+    console.log(JSON.stringify(fp, null, 2));
+    const outPath = args.out || DEFAULT_FINGERPRINT;
+    if (args.out !== undefined || args.write === '1' || args.write === 'true') {
+      fs.mkdirSync(path.dirname(outPath), { recursive: true });
+      fs.writeFileSync(outPath, `${JSON.stringify(fp, null, 2)}\n`);
+    }
+    return fp.consistent ? 0 : 1;
+  }
+  if (command === 'cohomology') {
+    const sheaf = sheafFromBiomeStatus(status);
+    const coh = computeCohomology(sheaf, { epsilon: Number(args.epsilon || 1e-9) });
+    console.log(JSON.stringify(coh, null, 2));
+    return coh.inH0 ? 0 : 1;
+  }
+  console.error(
+    'Usage: cli.js <consistency_check|imprint_agent|ph_monitor|fingerprint|cohomology> [--status <path>] [--epsilon <e>] [--agent <name>] [--min-lifetime <t>] [--out <path>]'
+  );
   return 2;
 }
 
@@ -144,4 +184,15 @@ if (require.main === module) {
   process.exitCode = main(process.argv.slice(2));
 }
 
-module.exports = { parseArgs, loadStatus, consistencyCheck, imprintAgent, phMonitor, main, DEFAULT_STATUS };
+module.exports = {
+  parseArgs,
+  loadStatus,
+  consistencyCheck,
+  imprintAgent,
+  phMonitor,
+  main,
+  DEFAULT_STATUS,
+  DEFAULT_FINGERPRINT,
+  topologicalFingerprint,
+  computeCohomology,
+};

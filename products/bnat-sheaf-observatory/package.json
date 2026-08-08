@@ -1,0 +1,30 @@
+{
+  "name": "bnat-sheaf-observatory",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BNAT Knowledge Sheaf Observatory — interactive H0/H1 proofs, Laplacian energy, and topological fingerprints",
+  "scripts": {
+    "dev": "next dev -p 3012",
+    "build": "next build",
+    "start": "next start -p 3012",
+    "lint": "eslint",
+    "test": "tsx tests/observatory.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.2.12",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "tsx": "^4.22.3",
+    "typescript": "^5"
+  }
+}
