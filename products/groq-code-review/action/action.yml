@@ -1,0 +1,88 @@
+name: "Groq Code Review (Revvel)"
+description: "Chunk a pull request diff, review with Groq (local fallback), and post a consolidated PR comment."
+author: "MIDNGHTSAPPHIRE / Revvel"
+
+branding:
+  icon: "check-circle"
+  color: "green"
+
+inputs:
+  apiKey:
+    description: "Groq API key (prefer secrets.GROQ_API_KEY). Empty => local heuristics only."
+    required: false
+    default: ""
+  githubToken:
+    description: "GitHub token with pull-requests:write"
+    required: true
+  githubRepository:
+    description: "owner/repo"
+    required: true
+  githubPullRequestNumber:
+    description: "Pull request number"
+    required: true
+  gitCommitHash:
+    description: "Head commit SHA (optional, included in comment metadata)"
+    required: false
+    default: ""
+  pullRequestDiff:
+    description: "Unified diff text to review"
+    required: true
+  pullRequestDiffChunkSize:
+    description: "Max characters per review chunk"
+    required: false
+    default: "4000"
+  repoId:
+    description: "Groq model id (historical name from marketplace action)"
+    required: false
+    default: "llama-3.3-70b-versatile"
+  temperature:
+    description: "Sampling temperature"
+    required: false
+    default: "0.2"
+  topP:
+    description: "top_p"
+    required: false
+    default: "0.95"
+  topK:
+    description: "Reserved for API parity (unused by Groq chat completions)"
+    required: false
+    default: "40"
+  maxNewTokens:
+    description: "max_tokens for each chunk completion"
+    required: false
+    default: "512"
+  logLevel:
+    description: "DEBUG | INFO | WARN"
+    required: false
+    default: "INFO"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "22"
+
+    - name: Install product deps
+      shell: bash
+      working-directory: products/groq-code-review
+      run: npm install --no-fund --no-audit
+
+    - name: Run review and comment
+      shell: bash
+      working-directory: products/groq-code-review
+      env:
+        GROQ_API_KEY: ${{ inputs.apiKey }}
+        GROQ_MODEL: ${{ inputs.repoId }}
+        GITHUB_TOKEN: ${{ inputs.githubToken }}
+        GITHUB_REPOSITORY: ${{ inputs.githubRepository }}
+        PR_NUMBER: ${{ inputs.githubPullRequestNumber }}
+        GIT_COMMIT: ${{ inputs.gitCommitHash }}
+        PULL_REQUEST_DIFF: ${{ inputs.pullRequestDiff }}
+        CHUNK_SIZE: ${{ inputs.pullRequestDiffChunkSize }}
+        TEMPERATURE: ${{ inputs.temperature }}
+        TOP_P: ${{ inputs.topP }}
+        MAX_NEW_TOKENS: ${{ inputs.maxNewTokens }}
+        LOG_LEVEL: ${{ inputs.logLevel }}
+      run: node action/run-review.mjs

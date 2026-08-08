@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground: #e2e8f0;
+  --background: #020617;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+@layer utilities {
+  .bg-aurora {
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(16, 185, 129, 0.18), transparent 32%),
+      radial-gradient(circle at 82% 8%, rgba(59, 130, 246, 0.2), transparent 30%),
+      radial-gradient(circle at 50% 90%, rgba(168, 85, 247, 0.12), transparent 35%),
+      linear-gradient(160deg, #020617 0%, #0f172a 55%, #020617 100%);
+  }
+}
