@@ -1,7 +1,7 @@
 {
   "schema": "midnghtsapphire.image_creation/v1",
   "brand": "MIDNGHTSAPPHIRE",
-  "generated_at": "2026-08-08T03:29:08.144Z",
+  "generated_at": "2026-08-08T03:34:27.220Z",
   "source": "scripts/image-seo-build-pack.mjs",
   "automation": true,
   "input": {
