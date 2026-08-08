@@ -81,6 +81,16 @@ test('third-party action is pinned to the full v0.71.0 commit SHA', () => {
   assert.match(read(TEMPLATE), new RegExp(ACTION_SHA));
 });
 
+test('github-script and checkout are SHA-pinned in workflow and template', () => {
+  for (const file of [WORKFLOW, TEMPLATE]) {
+    const raw = read(file);
+    assert.match(raw, /actions\/github-script@[0-9a-f]{40}/, `${file} github-script must be SHA-pinned`);
+    assert.match(raw, /actions\/checkout@[0-9a-f]{40}/, `${file} checkout must be SHA-pinned`);
+    assert.doesNotMatch(raw, /actions\/github-script@v\d/, `${file} must not float github-script tag`);
+    assert.doesNotMatch(raw, /actions\/checkout@v\d/, `${file} must not float checkout tag`);
+  }
+});
+
 test('soft-skips when OPENROUTER_API_KEY is missing', () => {
   const raw = read(WORKFLOW);
   assert.match(raw, /OPENROUTER_API_KEY/);
