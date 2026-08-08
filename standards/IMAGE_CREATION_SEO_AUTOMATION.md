@@ -1,8 +1,6 @@
 # Image Creation + SEO Automation (Automation-First)
 
 **Status:** ACTIVE · **Updated:** 2026-08-05  
-**Brand:** MIDNGHTSAPPHIRE  
-**Status:** ACTIVE · **Updated:** 2026-08-05
 **Brand:** MIDNGHTSAPPHIRE
 **Schema:** `midnghtsapphire.image_creation/v1`
 
