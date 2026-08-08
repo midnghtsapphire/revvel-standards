@@ -129,6 +129,8 @@ This document lists ALL secrets and API keys required for the video production s
 |-------------|----------|---------|--------------|
 | `ADMIN_GITHUB_TOKEN` | GitHub | PR automation | GitHub Settings > Developer |
 | `DOPPLER_TOKEN` | Doppler | Secrets management | doppler.com/workplace |
+| `AZURE_COMPUTER_VISION_KEY` | Azure | Optional alt-text suggestions for markdown-image-alt-text-checker (WR #16270) | portal.azure.com Computer Vision resource |
+| `AZURE_COMPUTER_VISION_ENDPOINT` | Azure | Computer Vision endpoint URL (e.g. `https://NAME.cognitiveservices.azure.com`) | portal.azure.com Computer Vision resource |
 
 ---
 
