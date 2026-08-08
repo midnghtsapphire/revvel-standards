@@ -17,15 +17,6 @@ permissions:
 jobs:
   qa:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Filename slug check
-        run: |
-          set -e
-          bad=0
-          base_ref="${{ github.base_ref }}"
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
