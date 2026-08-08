@@ -60,10 +60,12 @@ two possible futures for PR
   for `midnghtsapphire/ocean2-v2-research` and keep the maintenance-shaped
   changes. Score: 9600 bps, bits `0b0111111111`.
 
-The two paths agreed 10000 bps of the time (XOR `0b0000000000`, 0 XOR bits,
-risk score 400). Perfect agreement with equal scores produced a **tie**, so the
-checker returned **duplicate_risk** (hybrid) instead of auto-pass and required
-a human decision before treating the case as closed.
+Path quality scores were equal (9600 bps each). Separately, the dual-path
+**agreement** metric was 10000 bps because the predicate bitmasks were identical
+(XOR `0b0000000000`, 0 XOR bits, risk score 400). Equal path scores + perfect
+bit agreement produced a **tie**, so the checker returned **duplicate_risk**
+(hybrid) instead of auto-pass and required a human decision before treating
+the case as closed.
 
 ## Duplicate confirmation (desired outcome 1)
 
