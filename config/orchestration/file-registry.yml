@@ -1,0 +1,43 @@
+# File registry for the multi-persona orchestration loop (WR-16441).
+# Validated by: node scripts/orchestration/file-registry.js --registry <this>
+version: "1.0"
+description: >
+  Canonical inventory of orchestration scripts, auto-heal workflow, n8n OAuth
+  docs, secrets map, and the orchestration-console product surface.
+files:
+  - path: scripts/orchestration/file-registry.js
+    role: script
+    description: File registry validator CLI/library
+  - path: scripts/orchestration/structural-heal.js
+    role: script
+    description: Structural markdown heal orchestrator
+  - path: scripts/heal-markdown.js
+    role: script
+    description: Deterministic MD003/MD025/MD056 healer
+  - path: .github/workflows/structural-auto-heal.yml
+    role: workflow
+    description: PR-safe structural auto-heal workflow
+  - path: docs/n8n/OAUTH_PROVIDERS.md
+    role: doc
+    description: Multi-provider OAuth 2.0 parameters for n8n
+  - path: docs/SECRETS_MAP.md
+    role: doc
+    description: Secret names used by orchestration automation
+  - path: docs/orchestration/STRUCTURAL_AUTO_HEAL.md
+    role: doc
+    description: Structural auto-heal operator guide
+  - path: products/orchestration-console/package.json
+    role: config
+    description: Orchestration console package manifest
+  - path: products/orchestration-console/app/page.tsx
+    role: app
+    description: Orchestration console UI
+  - path: products/orchestration-console/lib/heal.ts
+    role: app
+    description: Client-side structural heal helpers
+  - path: products/orchestration-console/lib/registry.ts
+    role: app
+    description: Client-side registry validation helpers
+  - path: products/orchestration-console/lib/oauth.ts
+    role: app
+    description: n8n OAuth provider parameter catalog

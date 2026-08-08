@@ -16,11 +16,12 @@
  *         MD025 (multiple top-level headings — the WR generator prepends its
  *                own `# WR: <title>` header above bodies that already carry H1s)
  *         MD003 (setext `===`/`---` underline headings pasted from issue bodies)
- *   This script heals BOTH classes: a conservative, code-fence-aware custom
- *   pass converts setext headings to ATX and demotes extra H1s to H2, then
- *   `markdownlint-cli2 --fix` (the FOSS tool we already depend on) cleans up
- *   the mechanical findings. A final plain lint reports whatever genuinely
- *   needs a human (e.g. MD056 table column mismatches).
+ *         MD056 (table column count mismatches — agent tables often drop a cell)
+ *   This script heals those classes: a conservative, code-fence-aware custom
+ *   pass converts setext headings to ATX, demotes extra H1s to H2, and balances
+ *   Markdown table columns, then `markdownlint-cli2 --fix` (the FOSS tool we
+ *   already depend on) cleans up the mechanical findings. A final plain lint
+ *   reports whatever genuinely needs a human.
  *
  *   Callers:
  *     - .github/workflows/markdown-lint-auto-heal.yml  (PR-time healing)
@@ -182,14 +183,111 @@ function demoteExtraH1s(text) {
 }
 
 /**
+ * Split a Markdown table row into cells, preserving leading/trailing pipes.
+ * Empty outer cells from leading/trailing `|` are kept so we can rebuild.
+ *
+ * @param {string} line
+ * @returns {string[] | null} cell contents without surrounding pipes, or null if not a table row
+ */
+function splitTableRow(line) {
+  const trimmed = line.trim();
+  if (!trimmed.includes("|")) return null;
+  const hasOuterPipes = trimmed.startsWith("|") && trimmed.endsWith("|");
+  // GFM table rows almost always use outer pipes. Allow a single-cell row
+  // like `| only |` (common MD056 failure). Without outer pipes, require at
+  // least two cells so prose like "use A | B sparingly" is not a table row.
+  let body = trimmed;
+  if (body.startsWith("|")) body = body.slice(1);
+  if (body.endsWith("|") && body.length > 0) body = body.slice(0, -1);
+  const cells = body.split("|").map((c) => c.trim());
+  if (hasOuterPipes) {
+    // `|` alone → one empty cell after strip; still a degenerate table row
+    return cells.length >= 1 ? cells : [""];
+  }
+  if (cells.length < 2) return null;
+  return cells;
+}
+
+/**
+ * True when a row is a GFM separator (`| --- | :---: |`).
+ *
+ * @param {string[]} cells
+ * @returns {boolean}
+ */
+function isSeparatorRow(cells) {
+  return cells.every((c) => /^:?-{1,}:?$/.test(c.replace(/\s+/g, "")));
+}
+
+/**
+ * Rebuild a table row with exactly `width` cells.
+ * Pads missing cells with empty strings; trims excess cells from the right.
+ *
+ * @param {string[]} cells
+ * @param {number} width
+ * @returns {string}
+ */
+function formatTableRow(cells, width) {
+  const next = cells.slice(0, width);
+  while (next.length < width) next.push("");
+  return `| ${next.join(" | ")} |`;
+}
+
+/**
+ * Balance Markdown table column counts (MD056). Outside code fences only.
+ * For each contiguous table block, the expected width is taken from the
+ * separator row when present, otherwise from the first row. Every other row
+ * is padded or trimmed so dividers match.
+ *
+ * @param {string} text
+ * @returns {string}
+ */
+function balanceTableColumns(text) {
+  const { lines, inFence } = mapFences(text);
+  const out = lines.slice();
+  let i = 0;
+  while (i < out.length) {
+    if (inFence[i]) {
+      i += 1;
+      continue;
+    }
+    const cells = splitTableRow(out[i]);
+    if (!cells) {
+      i += 1;
+      continue;
+    }
+    // Collect contiguous table rows
+    const start = i;
+    const rows = [];
+    while (i < out.length && !inFence[i]) {
+      const c = splitTableRow(out[i]);
+      if (!c) break;
+      rows.push(c);
+      i += 1;
+    }
+    if (rows.length < 2) {
+      // single pipe-looking line — leave alone
+      continue;
+    }
+    const sepIdx = rows.findIndex(isSeparatorRow);
+    const width = sepIdx >= 0 ? rows[sepIdx].length : rows[0].length;
+    if (width < 1) continue;
+    for (let r = 0; r < rows.length; r++) {
+      out[start + r] = formatTableRow(rows[r], width);
+    }
+  }
+  return out.join("\n");
+}
+
+/**
  * Apply all custom (non-`--fix`-able) transforms. Order matters: setext
- * conversion first so a setext H1 participates in single-title demotion.
+ * conversion first so a setext H1 participates in single-title demotion,
+ * then MD056 table column balancing.
  *
  * @param {string} text
  * @returns {{text: string, changed: boolean}}
  */
 function heal(text) {
-  const healed = demoteExtraH1s(convertSetextToAtx(text));
+  const healed = balanceTableColumns(demoteExtraH1s(convertSetextToAtx(text)));
   return { text: healed, changed: healed !== text };
 }
 
@@ -366,7 +464,7 @@ function main() {
 
   console.log(
     `Structural pass: ${structuralFixes}/${files.length} file(s) rewritten ` +
-      "(setext→ATX, extra H1s demoted)."
+      "(setext→ATX, extra H1s demoted, table columns balanced)."
   );
   console.log("Running markdownlint-cli2 --fix on the same files…");
   runMarkdownlint(files, { fix: true });
@@ -401,8 +499,13 @@ if (require.main === module) {
 module.exports = {
   convertSetextToAtx,
   demoteExtraH1s,
+  balanceTableColumns,
+  splitTableRow,
+  isSeparatorRow,
+  formatTableRow,
   heal,
   countLintErrors,
+  runMarkdownlint,
   parseArgs,
   mapFences,
   globToRegExp,

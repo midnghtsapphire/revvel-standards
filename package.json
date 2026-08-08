@@ -36,7 +36,9 @@
     "deploy:vercel": "node scripts/deploy-vercel.js",
     "bootstrap:web": "echo Use: npm run deploy:vercel -- --repo=owner/project",
     "ui-engine": "node scripts/ui-creation-engine.js",
-    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'"
+    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'",
+    "orchestration:heal": "node scripts/orchestration/structural-heal.js",
+    "orchestration:registry": "node scripts/orchestration/file-registry.js --registry config/orchestration/file-registry.yml"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"

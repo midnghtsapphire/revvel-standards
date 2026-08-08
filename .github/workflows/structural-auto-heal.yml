@@ -1,0 +1,128 @@
+# Structural Auto-Heal — deterministic MD003/MD025/MD056 repair.
+#
+# WHY not the WR draft's "push straight to the branch" design:
+#   markdown-lint-auto-heal.yml was deliberately made advisory after surprise
+#   formatting commits hit contributor branches. This workflow keeps the
+#   healing power but lands fixes on a dedicated self-heal PR via
+#   peter-evans/create-pull-request (SHA-pinned).
+#
+# Healer: scripts/orchestration/structural-heal.js → scripts/heal-markdown.js
+# Registry gate: scripts/orchestration/file-registry.js
+name: "Revvel Standards: Structural Auto-Heal"
+
+on:
+  schedule:
+    # Daily 06:17 UTC — offset from other healers to reduce Actions stampede
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+    inputs:
+      root:
+        description: "Directory to walk for Markdown (repo-relative)"
+        required: false
+        default: "docs"
+        type: string
+      dry_run:
+        description: "If true, compute heals but do not open a PR"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: structural-auto-heal
+  cancel-in-progress: true
+
+jobs:
+  registry-gate:
+    name: File registry gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate orchestration file registry
+        run: node scripts/orchestration/file-registry.js --registry config/orchestration/file-registry.yml
+
+  lint-and-heal:
+    name: Structural heal
+    needs: registry-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Need write credentials so create-pull-request can push a branch.
+          persist-credentials: true
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run structural healer
+        id: heal
+        env:
+          HEAL_ROOT: ${{ inputs.root || 'docs' }}
+          DRY_RUN: ${{ inputs.dry_run || false }}
+        run: |
+          set -euo pipefail
+          ARGS=(--root "${HEAL_ROOT}" --json)
+          if [ "${DRY_RUN}" = "true" ]; then
+            ARGS+=(--dry-run)
+          fi
+          node scripts/orchestration/structural-heal.js "${ARGS[@]}" | tee /tmp/heal-report.json
+          HEALED=$(node -e "const r=require('/tmp/heal-report.json'); process.stdout.write(String((r.healed||[]).length))")
+          echo "healed_count=${HEALED}" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Structural auto-heal"
+            echo
+            echo "- Root: \`${HEAL_ROOT}\`"
+            echo "- Dry run: \`${DRY_RUN}\`"
+            echo "- Files rewritten: **${HEALED}**"
+            echo
+            echo '```json'
+            cat /tmp/heal-report.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open self-heal PR when there is a diff
+        if: steps.heal.outputs.healed_count != '0' && (inputs.dry_run != true)
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.AGENT_PR_TOKEN != '' && secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
+          commit-message: "chore(auto-heal): structural fixes for MD003/MD025/MD056"
+          title: "chore(auto-heal): structural markdown fixes"
+          body: |
+            ## Structural auto-heal
+
+            Deterministic repairs from `scripts/orchestration/structural-heal.js`
+            (MD003 setext→ATX, MD025 single H1, MD056 table column balance).
+
+            - Trigger: `${{ github.event_name }}`
+            - Root: `${{ inputs.root || 'docs' }}`
+
+            Closes nothing by default — review the diff, then merge.
+          branch: auto-heal/structural-markdown
+          delete-branch: true
+          labels: self-heal,auto-fix

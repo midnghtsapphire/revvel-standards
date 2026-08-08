@@ -6,6 +6,7 @@ const assert = require("node:assert/strict");
 const {
   convertSetextToAtx,
   demoteExtraH1s,
+  balanceTableColumns,
   heal,
   countLintErrors,
   parseArgs,
@@ -77,6 +78,41 @@ test("heal: setext H1 counts toward single-title demotion", () => {
   const input = "Top Title\n=========\n\n# Second Title";
   const { text } = heal(input);
   assert.equal(text, "# Top Title\n\n## Second Title");
+});
+
+test("balanceTableColumns: pads short data rows to header width (MD056)", () => {
+  const input = "| A | B | C |\n| --- | --- | --- |\n| 1 | 2 |\n| x | y | z |";
+  const out = balanceTableColumns(input);
+  assert.equal(
+    out,
+    "| A | B | C |\n| --- | --- | --- |\n| 1 | 2 |  |\n| x | y | z |"
+  );
+});
+
+test("balanceTableColumns: trims excess cells to separator width", () => {
+  const input = "| A | B |\n| --- | --- |\n| 1 | 2 | 3 | extra |";
+  const out = balanceTableColumns(input);
+  assert.equal(out, "| A | B |\n| --- | --- |\n| 1 | 2 |");
+});
+
+test("balanceTableColumns: leaves fenced code tables alone", () => {
+  const input = "```\n| A | B |\n| 1 |\n```\n";
+  assert.equal(balanceTableColumns(input), input);
+});
+
+test("balanceTableColumns: non-table pipe prose is untouched", () => {
+  const input = "Use A | B sparingly in prose.\n";
+  assert.equal(balanceTableColumns(input), input);
+});
+
+test("heal: runs table balancing after heading fixes", () => {
+  const input = "# One\n\n# Two\n\n| A | B |\n| --- | --- |\n| only-one |";
+  const { text, changed } = heal(input);
+  assert.equal(changed, true);
+  assert.equal(
+    text,
+    "# One\n\n## Two\n\n| A | B |\n| --- | --- |\n| only-one |  |"
+  );
 });
 
 test("heal: is idempotent (auto-heal workflow loop safety)", () => {

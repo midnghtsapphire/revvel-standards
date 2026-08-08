@@ -48,6 +48,7 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/printbank` | digital-download, e-commerce, static | Vector print generator, photo print sizer (tested in `tests/printbank.test.js`) | needs review |
 | `products/prompt-generation-app` | OSINT, prompt | — | needs review |
 | `products/screen-recorder-finder` | utility/finder | — | needs review |
+| `products/orchestration-console` | orchestration, SaaS, ops | structural heal, file registry, n8n OAuth catalog | ✅ (WR-16441) |
 | `products/ugc-review-generator` | review/content | — | (restored in #13915) |
 | `reesereviews/vine-marketplace` | review/marketplace (nested) | — | needs review |
 | `mcp-servers/github-issues` | MCP server | — | needs review |
