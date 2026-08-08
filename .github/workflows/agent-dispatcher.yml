@@ -108,10 +108,16 @@ jobs:
           # REVVEL-DISABLED-END
           case "$LABELS" in
             *,wr:research-complete,*)
-              # Spec-to-action bridge (issue #15507): research done -> code
-              # lane. Must be matched before wr:research so completed research
-              # dispatches a coder instead of another research pass.
-              echo "agent=openrouter" >> $GITHUB_OUTPUT
+              # Spec-to-action bridge (issue #15507) runs through the Spec
+              # Approval Gate: spec-approval-gate.yml owns this label (it adds
+              # needs-spec-approval and asks the owner), and openrouter-coder
+              # fires ONLY on human-applied spec-approved or wr:code
+              # (demand-driven activation, 2026-07-25). Dispatching a coder
+              # here would bypass that owner-approval gate (flagged by PR
+              # review on #17091). Matched before wr:research so completed
+              # research no longer misroutes into another research pass —
+              # this branch is an intentional no-op.
+              echo "agent=none" >> $GITHUB_OUTPUT
               ;;
             *,wr:code,*|*,octopus-review,*)
               echo "agent=openrouter" >> $GITHUB_OUTPUT

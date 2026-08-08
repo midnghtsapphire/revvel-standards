@@ -188,14 +188,20 @@ describe('paralysis-recovery workflow guards', () => {
     assert.deepStrictEqual(doc.on.check_suite.types, ['completed']);
   });
 
-  test('agent dispatcher routes wr:research-complete to openrouter before wr:research', () => {
+  test('agent dispatcher handles wr:research-complete before wr:research without bypassing the spec-approval gate', () => {
     const filePath = path.join(WORKFLOWS_DIR, 'agent-dispatcher.yml');
     const content = fs.readFileSync(filePath, 'utf8');
-    const completeLabelPos = content.indexOf('wr:research-complete');
+    const completeCasePos = content.indexOf('*,wr:research-complete,*)');
     const researchLabelPos = content.indexOf(',wr:research,*|*,lifecycle:stuck,');
-    assert.ok(completeLabelPos >= 0, 'wr:research-complete routing token missing');
+    assert.ok(completeCasePos >= 0, 'wr:research-complete case branch missing');
     assert.ok(researchLabelPos >= 0, 'wr:research routing token missing');
-    assert.ok(completeLabelPos < researchLabelPos, 'wr:research-complete must be matched before wr:research');
+    assert.ok(completeCasePos < researchLabelPos, 'wr:research-complete must be matched before wr:research');
+    // The branch must NOT dispatch a coder: openrouter-coder fires only on
+    // human-applied spec-approved / wr:code (spec-approval-gate.yml owns the
+    // wr:research-complete label). It must be an explicit no-op.
+    const branchBody = content.slice(completeCasePos, content.indexOf(';;', completeCasePos));
+    assert.ok(branchBody.includes('agent=none'), 'wr:research-complete branch must be a no-op (agent=none)');
+    assert.ok(!branchBody.includes('agent=openrouter'), 'wr:research-complete must not bypass the spec-approval gate');
   });
 
   test('ci-error-prevention checks package-lock sync before npm ci', () => {
