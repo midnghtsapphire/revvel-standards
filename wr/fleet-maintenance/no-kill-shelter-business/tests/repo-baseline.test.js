@@ -20,11 +20,11 @@ const REQUIRED_DOCS = [
   "CONTRIBUTING.md",
   "AGENTS.md",
   "CHANGELOG.md",
+  "LICENSE",
   "docs/OVERVIEW.md",
   "docs/README.md",
   "package.json",
 ];
-
 const REQUIRED_WORKFLOWS = [
   "ai-pr-review-openrouter.yml",
   "jules-pr-reviewer.yml",

@@ -26,6 +26,7 @@ const REQUIRED = [
   "CONTRIBUTING.md",
   "AGENTS.md",
   "CHANGELOG.md",
+  "LICENSE",
   "APPLY.md",
   "package.json",
   "docs/OVERVIEW.md",
