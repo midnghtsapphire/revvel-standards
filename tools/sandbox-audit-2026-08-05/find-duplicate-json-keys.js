@@ -10,8 +10,12 @@
  * it works even on files that already have this bug (a strict parser would
  * just silently succeed).
  *
- * Report-only, no network calls, exits 0 (findings printed) or 1 (parse
- * error) -- never modifies the file.
+ * Report-only, no network calls. Exits 0 when clean, 1 when duplicates (or
+ * parse errors) are found — never modifies the file.
+ *
+ * Production gate (preferred): `node scripts/check-package-integrity.js`
+ * (wired into CircleCI lint-and-test before npm ci; see issue #16904 / job 11069).
+ * This sandbox copy remains as the audit-session artifact from 2026-08-05.
  *
  * Usage: node tools/sandbox-audit-2026-08-05/find-duplicate-json-keys.js <file.json> [file2.json ...]
  *        node tools/sandbox-audit-2026-08-05/find-duplicate-json-keys.js   (defaults to package.json)
@@ -100,7 +104,11 @@ function main() {
   }
 
   console.log(JSON.stringify({ report }, null, 2));
-  process.exit(0);
+  // Fail closed so this scanner is safe to drop into CI (matches
+  // scripts/check-package-integrity.js). Parse errors and duplicate keys
+  // both exit 1; a clean scan exits 0.
+  const hasError = report.some((r) => r.error || (r.duplicateKeyCount || 0) > 0);
+  process.exit(hasError || anyDuplicates ? 1 : 0);
 }
 
 main();

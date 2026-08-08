@@ -28,6 +28,14 @@ jobs:
     executor: node-executor
     steps:
       - checkout
+      # Fail fast with a clear message before the node orb's `npm ci`.
+      # CircleCI job 11069 (issue #16904) died at "Installing NPM packages"
+      # with EUSAGE because package.json had a duplicate "c8" key that
+      # desynced the lockfile (last-key-wins → ^10.1.3 vs lock c8@12.0.0).
+      # This gate uses only node built-ins so it can run pre-install.
+      - run:
+          name: Check package.json / lockfile integrity
+          command: node scripts/check-package-integrity.js
       - node/install-packages:
           pkg-manager: npm
       # Real gate, scoped to changed Markdown so it enforces standards on new
