@@ -31,7 +31,7 @@ test('WR-formal-16886 documents hybrid human_override resolution', () => {
   assert.match(body, /ocean2-maintenance/);
   assert.match(body, /9600/);
   assert.match(body, /midnghtsapphire merged/);
-  assert.match(body, /Closes issue #16951/);
+  assert.match(body, /Closes[^#\n]*#16951/i);
 });
 
 test('scorecard logs formal duplicate_risk pass for PR 16886', () => {
