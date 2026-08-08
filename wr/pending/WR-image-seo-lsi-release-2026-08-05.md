@@ -3,7 +3,6 @@
 ## Description
 
 **Problem:** Image creation, LSI expansion, SEO packaging, and release social banners risk being executed as **manual studio clicks**. That defeats automation-first work (2+ years): processes must run via Actions / n8n / Make / Zapier / Gumloop and land as **WR → draft PR → human merge only**.
-**Problem:** Image creation, LSI expansion, SEO packaging, and release social banners risk being executed as **manual studio clicks**. That defeats automation-first work (2+ years): processes must run via Actions / n8n / Make / Zapier / Gumloop and land as **WR → draft PR → human merge only**
 
 **Desired outcome:** Land this pack so image SEO + LSI + release-banner posting is **fully automated** after human merge of this WR/PR:
 
