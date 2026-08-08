@@ -57,10 +57,14 @@ describe('workflow permissions (WR-16450)', () => {
       'utf8'
     );
     assert.match(content, /createWorkflowDispatch/);
-    // The deliver-mobile job must re-declare permissions including actions: write.
+    // Slice from deliver-mobile: to the next sibling job key (2-space indent +
+    // word + colon at line start) so long comments/env blocks cannot push
+    // `actions: write` past a fixed byte budget.
     const mobileIdx = content.indexOf('deliver-mobile:');
     assert.ok(mobileIdx >= 0, 'deliver-mobile job missing');
-    const slice = content.slice(mobileIdx, mobileIdx + 1200);
+    const after = content.slice(mobileIdx + 'deliver-mobile:'.length);
+    const nextJob = after.search(/\n  [A-Za-z0-9_-]+:\s*(?:#.*)?\n/);
+    const slice = nextJob >= 0 ? after.slice(0, nextJob) : after;
     assert.match(slice, /permissions:\s*\n(?:[ \t]+[a-z-]+:[ \t]*[a-z]+\s*\n)*[ \t]+actions:\s*write/);
   });
 
