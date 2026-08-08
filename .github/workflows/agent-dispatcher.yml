@@ -78,7 +78,7 @@ jobs:
           # openrouter-coder dispatch instead of two. Per oAudrey diagnosis on
           # PR #14068.
           case "$LABELS" in
-            *,wr:research-complete,*|*,wr:code,*|*,octopus-review,*)
+            *,wr:code,*|*,octopus-review,*)
               echo "agent=openrouter" >> $GITHUB_OUTPUT
               ;;
             *,wr:research,*|*,lifecycle:stuck,*)
