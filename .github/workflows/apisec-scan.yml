@@ -29,8 +29,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
-    # Archived body is commented below (REVVEL-DISABLED-BODY). Keep a single
-    # steps: key so YAML stays unique-key-valid for automation-doctor / Actions.
+    # Duplicate active steps: block removed (invalid YAML unique-key). Full
+    # original body remains commented in REVVEL-DISABLED-BODY below; restore
+    # from that block or git history when re-enabling.
     steps:
       - run: echo "archived per RVS-AGENT-001; see file header for restore steps"
 

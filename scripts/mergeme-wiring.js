@@ -255,9 +255,16 @@ function externalSetupSteps() {
 
 function main() {
   const report = auditWiring(ROOT);
-  const outPath = process.argv.includes('--out')
-    ? process.argv[process.argv.indexOf('--out') + 1]
-    : null;
+  let outPath = null;
+  if (process.argv.includes('--out')) {
+    const raw = process.argv[process.argv.indexOf('--out') + 1];
+    if (!raw || raw.startsWith('-')) {
+      console.error('mergeme-wiring: --out requires a file path argument');
+      process.exitCode = 2;
+      return;
+    }
+    outPath = raw;
+  }
   const json = JSON.stringify(report, null, 2);
   if (outPath) {
     fs.mkdirSync(path.dirname(path.resolve(outPath)), { recursive: true });
