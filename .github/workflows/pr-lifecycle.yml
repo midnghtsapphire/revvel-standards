@@ -78,7 +78,7 @@ on:
       - "Docs Freshness Check"
       - "Fix-WR Gate"
       - "Intelligent Code Quality Scanner"
-      - "Lint Markdown (markdownlint-cli2)"
+      - "Lint Markdown (markdownlint-cli)"
       - "No Root Junk"
       - "No-Destroy Guard"
       - "Semgrep SAST"
