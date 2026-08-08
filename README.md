@@ -314,6 +314,7 @@ Zero-downtime automation when AI agents hit rate limits — the orchestrator can
 **Code Quality:**
 - **ESLint** (<https://eslint.org>) - JavaScript linting
 - **Biome** (<https://biomejs.dev>) - Fast linter/formatter (Rust-based)
+- **flake8** (`py-actions/flake8@v2.3.0`) - Python style/error lint in CI — see [docs/PYTHON_FLAKE8_LINT.md](docs/PYTHON_FLAKE8_LINT.md)
 - **Prettier** (<https://prettier.io>) - Code formatter
 - **SonarLint** (VS Code extension) - Real-time code analysis
 - **CodeClimate** (<https://codeclimate.com>) - Automated code review
