@@ -1,0 +1,153 @@
+:root {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --panel: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --good: #3fb950;
+  --bad: #f85149;
+  --warn: #d29922;
+  --code: #0b1020;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+a {
+  color: var(--accent);
+}
+
+code,
+pre,
+textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+textarea {
+  width: 100%;
+  min-height: 280px;
+  resize: vertical;
+  background: var(--code);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  line-height: 1.45;
+}
+
+button.primary {
+  background: #238636;
+  color: #fff;
+  border: 1px solid #2ea043;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+}
+
+button.secondary {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.badge.ok {
+  background: rgba(63, 185, 80, 0.15);
+  color: var(--good);
+  border: 1px solid rgba(63, 185, 80, 0.35);
+}
+
+.badge.fail {
+  background: rgba(248, 81, 73, 0.15);
+  color: var(--bad);
+  border: 1px solid rgba(248, 81, 73, 0.35);
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 960px) {
+  .grid.two {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+}
+
+.findings {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.findings li {
+  border-top: 1px solid var(--border);
+  padding: 0.7rem 0;
+}
+
+.findings li:first-child {
+  border-top: 0;
+}
+
+.sev-error {
+  color: var(--bad);
+  font-weight: 700;
+}
+
+.sev-warning {
+  color: var(--warn);
+  font-weight: 700;
+}
+
+pre.snippet {
+  background: var(--code);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 0.9rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

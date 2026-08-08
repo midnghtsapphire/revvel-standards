@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>terraform-lint-guard — Revvel app</title>
+<meta name="description" content="Terraform Lint Guard — live fmt checker and CI gate using ShubhamTatvamasi/terraform-lint-action@v1.">
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 16px/1.5 system-ui, sans-serif; max-width: 760px; margin: 3rem auto; padding: 0 1.2rem; }
+  h1 { margin-bottom: .2rem; }
+  .meta { color: #888; margin-bottom: 1.5rem; }
+  .score { font-weight: 700; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #8883; }
+  td:first-child { width: 2rem; text-align: center; }
+  .btn { display: inline-block; padding: .55rem 1rem; margin: .2rem .4rem .2rem 0;
+          border: 1px solid #8886; border-radius: 8px; text-decoration: none; }
+  pre { background: #1113; border: 1px solid #8883; border-radius: 8px; padding: .8rem 1rem; overflow: auto; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+</style>
+</head>
+<body>
+<main>
+  <h1>terraform-lint-guard</h1>
+  <p class="meta">Revvel app · <span class="score">6/7 Definition-of-Done met</span></p>
+  <nav aria-label="App actions">
+    <a class="btn" href="https://github.com/midnghtsapphire/revvel-standards/tree/main/products/terraform-lint-guard">View source</a>
+    <a class="btn" href="./ARTIFACTS.md">Delivery artifacts</a>
+    <a class="btn" href="https://github.com/midnghtsapphire/revvel-standards/blob/main/.github/workflows/terraform-lint.yml">CI workflow</a>
+  </nav>
+
+  <h2>What you can test here</h2>
+  <p>
+    This hub page is the live deployment surface for the monorepo static site.
+    The full interactive Next.js checker runs from
+    <code>products/terraform-lint-guard</code> (<code>npm run dev -- -p 3012</code>).
+  </p>
+
+  <h2>CI gate (authoritative)</h2>
+  <pre><code>name: Terraform Lint Action
+uses: ShubhamTatvamasi/terraform-lint-action@v1
+
+# Repo workflow also installs Terraform first:
+# hashicorp/setup-terraform + terraform fmt -check -recursive</code></pre>
+
+  <h2>Definition of Done</h2>
+  <table>
+    <thead><tr><th></th><th>Requirement</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>✅</td><td>Live deployment URL</td><td>https://revvel-standards.vercel.app/docs/terraform-lint-guard/</td></tr>
+      <tr><td>✅</td><td>README <code>## Live Deployment</code></td><td>present</td></tr>
+      <tr><td>✅</td><td>Live web test interface</td><td>hub page + Next.js app</td></tr>
+      <tr><td>❌</td><td>.mcp.json at root</td><td>not required for this product</td></tr>
+      <tr><td>✅</td><td>Monetization wired</td><td>Polar SaaS path documented</td></tr>
+      <tr><td>✅</td><td>Tests</td><td>product + workflow regression tests</td></tr>
+      <tr><td>✅</td><td>Listed in APP_REGISTRY.md</td><td>listed</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Local verification</h2>
+  <pre><code>cd products/terraform-lint-guard &amp;&amp; npm install &amp;&amp; npm test &amp;&amp; npm run build
+# CI equivalent:
+terraform fmt -check -recursive</code></pre>
+</main>
+</body>
+</html>

@@ -1,0 +1,93 @@
+# Terraform Lint — fmt gate for infrastructure-as-code
+#
+# Uses ShubhamTatvamasi/terraform-lint-action@v1 (composite wrapper around
+# `terraform fmt -check -recursive`). That action does NOT install Terraform,
+# so we install it first via hashicorp/setup-terraform.
+#
+# Origin WR: https://github.com/midnghtsapphire/revvel-standards/issues/15861
+# Action:    https://github.com/ShubhamTatvamasi/terraform-lint-action (tag v1)
+#
+# Path-filtered to Terraform sources + this workflow so the job does not add
+# latency to unrelated product PRs. Failures block the pipeline (no continue-on-error).
+
+name: Terraform Lint
+
+on:
+  pull_request:
+    paths:
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - "**/*.hcl"
+      - ".github/workflows/terraform-lint.yml"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.tf"
+      - "**/*.tfvars"
+      - "**/*.hcl"
+      - ".github/workflows/terraform-lint.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  terraform-lint:
+    name: Terraform fmt (lint action)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # The lint action shells out to `terraform fmt`; install a stable CLI first.
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: "1.9.8"
+          terraform_wrapper: false
+
+      - name: Verify Terraform is available
+        run: |
+          set -euo pipefail
+          terraform version
+          # Surface how many .tf files the recursive check will cover (informational).
+          count=$(find . \
+            -type f \( -name '*.tf' -o -name '*.tfvars' -o -name '*.hcl' \) \
+            -not -path '*/node_modules/*' \
+            -not -path '*/.git/*' \
+            -not -path '*/.terraform/*' \
+            | wc -l | tr -d ' ')
+          echo "Terraform source files found: ${count}"
+          echo "tf_file_count=${count}" >> "$GITHUB_OUTPUT"
+          if [ "${count}" = "0" ]; then
+            echo "::notice::No Terraform files present — fmt check will still run and succeed with nothing to format."
+          fi
+
+      - name: Terraform Lint Action
+        # Pin to the full commit SHA for tag v1 (supply-chain hygiene; CLAUDE.md #8).
+        # Tag v1 → 7f0d5124b29cf2b76e2c87964e35329aa8900f67
+        uses: ShubhamTatvamasi/terraform-lint-action@7f0d5124b29cf2b76e2c87964e35329aa8900f67 # v1
+
+      - name: Summarize
+        if: always()
+        run: |
+          {
+            echo "### Terraform Lint"
+            echo ""
+            echo "Action: \`ShubhamTatvamasi/terraform-lint-action@v1\` (SHA-pinned)"
+            echo ""
+            echo "Gate: \`terraform fmt -check -recursive\` — fails the job when any"
+            echo "\`.tf\` / \`.tfvars\` file is not formatted."
+            echo ""
+            echo "Local fix:"
+            echo '```bash'
+            echo "terraform fmt -recursive"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

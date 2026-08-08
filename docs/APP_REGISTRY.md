@@ -49,6 +49,7 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/prompt-generation-app` | OSINT, prompt | — | needs review |
 | `products/screen-recorder-finder` | utility/finder | — | needs review |
 | `products/ugc-review-generator` | review/content | — | (restored in #13915) |
+| `products/terraform-lint-guard` | infra/CI quality, SaaS | fmt checker, CI snippet, lint API | needs review |
 | `reesereviews/vine-marketplace` | review/marketplace (nested) | — | needs review |
 | `mcp-servers/github-issues` | MCP server | — | needs review |
 | `revvel-rosette-automation` | automation | — | needs review |
