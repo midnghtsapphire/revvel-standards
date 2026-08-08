@@ -53,6 +53,6 @@ npm run validate:workflows
 
 ## Applied
 
-- Draft PR: _(filled after target PR opens)_
+- Draft PR: <https://github.com/midnghtsapphire/no-kill-shelter-business/pull/1>
 - Branch: `fleet/no-kill-shelter-business-baseline`
 - Date: 2026-08-08

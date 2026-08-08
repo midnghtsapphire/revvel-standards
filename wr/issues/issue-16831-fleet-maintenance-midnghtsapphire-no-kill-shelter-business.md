@@ -140,7 +140,7 @@ donor stewardship nonprofit, spay-neuter funding checklist, adopter screening.
 
 ### Target draft PR
 
-- **URL:** _(filled after apply)_
+- **URL:** <https://github.com/midnghtsapphire/no-kill-shelter-business/pull/1>
 - **Branch:** `fleet/no-kill-shelter-business-baseline`
 - **Title:** `chore(fleet): docs refresh + full review jury`
 - **Body:** references `Closes midnghtsapphire/revvel-standards#16831`
