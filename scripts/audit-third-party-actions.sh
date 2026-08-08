@@ -72,6 +72,9 @@ ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #15672: Devin code-review lane (devin-code-review.yml); pinned to the
   # full v1 commit SHA per docs/THIRD_PARTY_ACTION_AUDIT.md disposition rules.
   "aaronsteers/devin-action"
+  # WR #15863: Easy Env Vars — briantist/ezenv@v1.0.0 pinned to full commit SHA
+  # in easy-env-vars.yml; pre-validated by products/easy-env-vars/lib before use.
+  "briantist/ezenv"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
