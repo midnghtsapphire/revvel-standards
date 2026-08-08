@@ -109,6 +109,7 @@ describe('image-seo-build-pack', () => {
 describe('image-seo-filename-qa', () => {
   test('flags blocker basenames and passes SEO slugs', async () => {
     const { findBadFilenames, filterImagePaths } = await loadEsm('scripts/image-seo-filename-qa.mjs');
+    const { isNonSeoFilename, buildPack } = await loadEsm('scripts/image-seo-build-pack.mjs');
     const paths = filterImagePaths([
       'assets/IMG_1234.png',
       'public/DSC_0001.jpg',
@@ -116,6 +117,7 @@ describe('image-seo-filename-qa', () => {
       'y/image.png',
       'z/readme.md',
       'ok/github-release-banner-og.webp',
+      'ok/image-seo-guide-og.webp',
     ]);
     assert.deepEqual(
       paths.filter((p) => p.endsWith('.md')),
@@ -126,10 +128,16 @@ describe('image-seo-filename-qa', () => {
       'public/DSC_0001.jpg',
       'x/Screenshot-1.webp',
       'y/image.png',
+      'y/image_1.jpg',
       'ok/github-release-banner-og.webp',
+      'ok/image-seo-guide-og.webp',
     ]);
-    assert.equal(bad.length, 4);
+    assert.equal(bad.length, 5);
     assert.ok(bad.every((b) => b.basename));
+    assert.equal(isNonSeoFilename('image-seo-guide-og.webp'), false);
+    // primaryKeyword starting with "image" must still build
+    const pack = buildPack({ primaryKeyword: 'image seo guide', kind: 'og', topic: 'Image SEO' });
+    assert.equal(pack.seo.filename, 'image-seo-guide-og.webp');
   });
 
   test('CLI exits 1 on bad names and 0 on good', () => {

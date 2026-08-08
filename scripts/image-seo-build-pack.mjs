@@ -49,12 +49,13 @@ export function unique(arr, limit = 24) {
  * SEO slugs like automation-asset-generator-og.webp pass.
  */
 export const NON_SEO_FILENAME_RE =
-  /^(?:IMG_.*|DSC_.*|Screenshot.*|image(?:[_.-].*)?)$/i;
+  /^(?:IMG_.*|DSC_.*|Screenshot.*|image(?:[_.-]\d.*)?)$/i;
 
 export function isNonSeoFilename(basename) {
   const b = String(basename || "").trim();
   if (!b) return false;
-  // Strip extension for pattern match so image.png and IMG_1.JPG both hit.
+  // Strip extension so image.png and IMG_1.JPG both hit. SEO slugs that
+  // merely start with "image-" (image-seo-guide-og) must PASS.
   const stem = b.replace(/\.(webp|png|jpe?g)$/i, "");
   return NON_SEO_FILENAME_RE.test(stem);
 }
