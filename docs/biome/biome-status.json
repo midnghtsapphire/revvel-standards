@@ -1,24 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-07T20:13:11.311Z",
+  "generated_at": "2026-08-08T02:38:48.519Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "1/100 recent runs failed; 0 stuck item(s)",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 1,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 31214871532,
-            "name": "pr-governance-checks",
-            "path": ".github/workflows/pr-governance-checks.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31214871532",
+            "id": 31235410833,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31235410833",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31235410511,
+            "name": ".github/workflows/apisec-scan.yml",
+            "path": ".github/workflows/apisec-scan.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31235410511",
             "conclusion": "failure"
           }
         ],
