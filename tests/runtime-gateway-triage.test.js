@@ -208,6 +208,9 @@ test('decideRoute: infra is runbook-first; issue only on 24h recurrence', () => 
   assert.equal(again.action, 'infra-recurrence-issue');
   assert.equal(again.openIssue, true);
   assert.equal(again.assignFixAgent, false);
+  const labels = issueLabels(c, again);
+  assert.ok(labels.includes('infrastructure'));
+  assert.ok(!labels.includes('auto-fix'), 'infra recurrence is not a fix-agent path');
 });
 
 test('decideRoute: 402/429 forces lane-failover (no code-change issue)', () => {

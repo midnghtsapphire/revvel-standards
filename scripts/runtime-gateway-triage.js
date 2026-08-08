@@ -424,7 +424,9 @@ function issueLabels(classification, route) {
     labels.push('auto-fix', 'openrouter');
   }
   if (classification.isInfra) {
-    labels.push('auto-error');
+    // Distinguish infra recurrence from app-500 fix-agent issues.
+    // `infrastructure` is on the canonical allowlist (config/labels-allowlist.yml).
+    labels.push('infrastructure');
   }
   if (route.escalateNeedsHuman) {
     labels.push('needs-human');
@@ -538,7 +540,8 @@ async function triageRuntimeEvent(rawEvent, opts = {}) {
       taskRef: event.traceUrl || event.eventId || event.fingerprint,
       repo,
       agent,
-      skipSleep: opts.skipSleep !== false, // default skip in automation unless overridden
+      // Default: honor 429 backoff. Tests pass skipSleep:true to avoid delays.
+      skipSleep: opts.skipSleep === true,
       writeLedger: failoverWrite,
       callTier2: opts.callTier2,
       routing: opts.routing,
