@@ -53,6 +53,7 @@ MULTI_AUTHOR_OWNERS=(
   "peter-evans"
   "peaceiris"
   "mentimeter"
+  "neondatabase"
   "Mergifyio"
   "eco-infra"
   "green-coding-solutions"
