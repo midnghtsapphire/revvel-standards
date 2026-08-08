@@ -1,14 +1,5 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-08T07:53:44.656Z",
-  "workflows": {
-    ".github/workflows/codeql.yml": {
-      "count": 2,
-      "tried": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
-      ],
-      "last_cut_at": "2026-08-08T05:35:30.458Z"
-    }
-  }
+  "updated_at": "2026-08-08T11:58:24.774Z",
+  "workflows": {}
 }
