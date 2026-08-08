@@ -1,21 +1,12 @@
 # Automation Doctor Report
 
-Generated: 2026-08-08T03:27:40.365Z
+Generated: 2026-08-08T03:29:58.468Z
 
 ## Workflow Validation
 
-- Valid workflows: 204
-- Invalid workflows: 1
+- Valid workflows: 205
+- Invalid workflows: 0
 - Jobs missing timeout: 7
-
-### Invalid Workflows
-
-- `apisec-scan.yml`: Map keys must be unique at line 48, column 5:
-
-          sarif_file: ./apisec-results.sarif
-    steps:
-    ^
-
 
 ### Jobs Missing timeout-minutes
 
