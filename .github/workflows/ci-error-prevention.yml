@@ -46,12 +46,30 @@ jobs:
           echo "Changed files between $BASE_SHA and $HEAD_SHA:"
           echo "$CHANGED"
 
-          if echo "$CHANGED" | grep -qx 'package.json'; then
-            if ! echo "$CHANGED" | grep -qx 'package-lock.json'; then
-              echo "❌ package.json changed without matching package-lock.json update."
-              echo "Run npm install locally and commit the lockfile."
-              exit 1
-            fi
+          PKG_FILES="$(echo "$CHANGED" | grep -E '(^|/)package\.json$' || true)"
+          if [ -n "$PKG_FILES" ]; then
+            while IFS= read -r pkg; do
+              [ -n "$pkg" ] || continue
+              pkg_dir="$(dirname "$pkg")"
+              lockfile="$pkg_dir/package-lock.json"
+              if [ "$pkg_dir" = "." ]; then
+                lockfile="package-lock.json"
+              fi
+
+              if echo "$CHANGED" | grep -qx "$lockfile"; then
+                continue
+              fi
+
+              if [ -f "$lockfile" ]; then
+                echo "❌ $pkg changed without matching $lockfile update."
+                echo "Run npm install in $pkg_dir and commit the lockfile."
+                exit 1
+              else
+                echo "❌ $pkg changed but $lockfile is missing."
+                echo "Generate and commit $lockfile before merging."
+                exit 1
+              fi
+            done <<< "$PKG_FILES"
           fi
           echo "✅ package-lock sync check passed"
 
