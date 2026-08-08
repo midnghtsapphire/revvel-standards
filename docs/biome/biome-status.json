@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-07T20:13:11.311Z",
+  "generated_at": "2026-08-08T01:31:55.445Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,10 +15,10 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 31214871532,
-            "name": "pr-governance-checks",
-            "path": ".github/workflows/pr-governance-checks.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31214871532",
+            "id": 31230053188,
+            "name": "Prioritize Starred Repositories",
+            "path": ".github/workflows/prioritize-stars.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31230053188",
             "conclusion": "failure"
           }
         ],
@@ -44,10 +44,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31232347454"
       }
     },
     "sheaf": {
