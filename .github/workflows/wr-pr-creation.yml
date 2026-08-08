@@ -1087,12 +1087,13 @@ jobs:
 
             for (const name of labelsToRemove) {
               try {
+                // LABEL-RACE-001: 404 = label already gone = success; only non-404 surfaces.
                 await github.rest.issues.removeLabel({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   issue_number: issueNumber,
                   name,
-                });
+                }).catch(err => { if (err.status !== 404) throw err; });
                 core.info(`Removed recovered WR label: ${name}`);
               } catch (error) {
                 core.notice(`Could not remove label "${name}": ${error.message}`);
