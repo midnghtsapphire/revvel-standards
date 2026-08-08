@@ -75,6 +75,153 @@ jobs:
       - name: Get branch expiration date as an env variable (2 weeks from now)
         id: get_expiration_date
         run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+      # The Neon project has a hard branch quota (10 on the free plan). Preview
+      # branches live 14 days and are only deleted when their own PR closes, so
+      # with this repo's PR volume the quota fills up and every subsequent
+      # create fails with HTTP 422 ("branches limit exceeded") — that outage
+      # took down this check for every open PR on 2026-08-08. To keep the
+      # newest PRs working, prune the OLDEST preview/pr-* branches before
+      # creating, keeping the count under a cap (default 8: quota 10 minus the
+      # default branch minus headroom; override via the
+      # vars.NEON_PREVIEW_BRANCH_CAP repository variable).
+      #
+      # Like check_branch below, this is inline (no checkout in this job) and
+      # tests/neon-branch-workflow.test.js extracts this exact block and runs
+      # it against a stub Neon API. Only branches named preview/pr-* that are
+      # neither default nor protected are ever deleted; individual delete
+      # failures (e.g. a branch with children) warn and continue — if no
+      # capacity was actually freed, the create step below still fails loudly.
+      - name: Prune oldest preview branches when near the project quota
+        id: prune_preview_branches
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+          NEON_BRANCH: ${{ needs.setup.outputs.neon_branch }}
+          NEON_PREVIEW_BRANCH_CAP: ${{ vars.NEON_PREVIEW_BRANCH_CAP }}
+        run: |
+          set -euo pipefail
+          api_host="${NEON_API_HOST:-https://console.neon.tech/api/v2}"
+          cap="${NEON_PREVIEW_BRANCH_CAP:-8}"
+          page=$(mktemp)
+          all=$(mktemp)
+          trap 'rm -f "$page" "$all"' EXIT
+          echo '[]' > "$all"
+
+          urlencode() {
+            python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$1"
+          }
+
+          cursor=""
+
+          while true; do
+            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100"
+            if [ -n "$cursor" ]; then
+              url="${url}&cursor=$(urlencode "$cursor")"
+            fi
+
+            # CLAUDE.md gotcha #4: the key goes in via a curl config file on
+            # stdin (printf is a builtin), never in argv where ps can read it.
+            status=$(printf 'header = "Authorization: Bearer %s"\n' "$NEON_API_KEY" \
+              | curl --silent --show-error --config - \
+                  -H "Accept: application/json" \
+                  -o "$page" -w '%{http_code}' \
+                  "$url") || {
+              echo "::error::Neon API request failed for project ${NEON_PROJECT_ID}"
+              exit 1
+            }
+
+            if [ "$status" != "200" ]; then
+              echo "::error::Neon API returned HTTP ${status} while listing branches for project ${NEON_PROJECT_ID}"
+              exit 1
+            fi
+
+            # A 200 with a missing "branches" key is a malformed payload:
+            # pruning against it could either delete nothing (quota stays full)
+            # or miscount, so fail loudly instead of guessing.
+            if ! jq -e '.branches | arrays' "$page" > /dev/null 2>&1; then
+              echo "::error::Neon API returned a malformed response (missing branches array)"
+              exit 1
+            fi
+
+            jq -s '.[0] + .[1].branches' "$all" "$page" > "${all}.next"
+            mv "${all}.next" "$all"
+
+            next=$(jq -r '.pagination.next // empty' "$page")
+            count=$(jq '.branches | length' "$page")
+            # Stop on the last page, an empty page, or a cursor that repeats
+            # itself (which would otherwise spin forever).
+            if [ -z "$next" ] || [ "$count" -eq 0 ] || [ "$next" = "$cursor" ]; then
+              break
+            fi
+            cursor="$next"
+          done
+
+          # A `synchronize` run reuses the branch created on `opened`, so no
+          # new quota slot is needed and nothing should be pruned.
+          if jq -e --arg name "$NEON_BRANCH" 'any(.[]; .name == $name)' "$all" > /dev/null; then
+            echo "::notice::Neon branch ${NEON_BRANCH} already exists; skipping prune"
+            exit 0
+          fi
+
+          # Oldest first; only ephemeral preview branches are candidates. The
+          # default branch never matches the prefix, but guard on the flags
+          # anyway in case a preview branch was manually promoted/protected.
+          mapfile -t candidates < <(jq -r --arg name "$NEON_BRANCH" '
+            [ .[]
+              | select(.name | startswith("preview/pr-"))
+              | select(.name != $name)
+              | select(.default != true)
+              | select(.protected != true) ]
+            | sort_by(.created_at)
+            | .[] | [.id, .name] | @tsv' "$all")
+
+          preview_count=${#candidates[@]}
+          if [ "$preview_count" -lt "$cap" ]; then
+            echo "::notice::${preview_count} preview branch(es) (cap ${cap}); no pruning needed"
+            exit 0
+          fi
+
+          # Free exactly enough slots for the branch about to be created.
+          to_delete=$(( preview_count - cap + 1 ))
+          echo "::warning::${preview_count} preview branches at/over cap ${cap}; deleting the ${to_delete} oldest"
+
+          deleted=0
+          for entry in "${candidates[@]}"; do
+            if [ "$deleted" -ge "$to_delete" ]; then
+              break
+            fi
+            branch_id=${entry%%$'\t'*}
+            branch_name=${entry#*$'\t'}
+            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches/$(urlencode "$branch_id")"
+            status=$(printf 'header = "Authorization: Bearer %s"\n' "$NEON_API_KEY" \
+              | curl --silent --show-error --config - \
+                  -X DELETE \
+                  -H "Accept: application/json" \
+                  -o "$page" -w '%{http_code}' \
+                  "$url") || {
+              echo "::warning::Neon API request failed while deleting ${branch_name}; continuing"
+              continue
+            }
+            case "$status" in
+              200)
+                echo "Deleted expired-capacity preview branch ${branch_name}"
+                deleted=$(( deleted + 1 ))
+                ;;
+              404)
+                # Already gone (expired or a racing cleanup): the slot is free.
+                echo "Preview branch ${branch_name} already deleted"
+                deleted=$(( deleted + 1 ))
+                ;;
+              *)
+                # e.g. a branch with children cannot be deleted; try the next
+                # candidate rather than failing the whole job here — if no
+                # slot opens up, the create step surfaces the real 422.
+                echo "::warning::Neon API returned HTTP ${status} deleting ${branch_name}; skipping"
+                ;;
+            esac
+          done
+
+          echo "deleted=${deleted}" >> "$GITHUB_OUTPUT"
       - name: Create Neon Branch
         id: create_neon_branch
         uses: neondatabase/create-branch-action@fb620d43d4c565abaf088b848a4e28e5c4ea4d9c # v6

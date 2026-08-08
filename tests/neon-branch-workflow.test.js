@@ -199,3 +199,167 @@ test('cleanup lookup keeps the API key out of argv', () => {
   assert.doesNotMatch(script, /-H\s+"Authorization/);
   assert.match(script, /curl[^|]*--config -/s);
 });
+
+// ── quota prune (create job) ────────────────────────────────────────────────
+//
+// Regression: on 2026-08-08 the Neon project hit its branch quota and every
+// create failed with HTTP 422 across all open PRs (runs #146+). The create job
+// now prunes the oldest preview/pr-* branches before creating. Same extraction
+// approach as check_branch: the tested code is the code that runs.
+
+function pruneScript() {
+  const doc = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
+  const step = doc.jobs.create_neon_branch.steps.find((s) => s.id === 'prune_preview_branches');
+  assert.ok(step && step.run, 'expected a prune_preview_branches step with a run: block');
+  return step.run;
+}
+
+// Stub that also records DELETE calls and serves list pages by cursor.
+async function stubNeonPrune(pages) {
+  const requests = [];
+  const deletes = [];
+  const server = http.createServer((req, res) => {
+    requests.push(`${req.method} ${req.url}`);
+    if (req.headers.authorization !== 'Bearer test-key') {
+      res.writeHead(401).end(JSON.stringify({ message: 'unauthorized' }));
+      return;
+    }
+    if (req.method === 'DELETE') {
+      const id = decodeURIComponent(req.url.split('/branches/')[1]);
+      deletes.push(id);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ branch: { id } }));
+      return;
+    }
+    const cursor = new URL(req.url, 'http://stub').searchParams.get('cursor');
+    const page = pages.find((p) => (p.cursor ?? null) === cursor) || {};
+    res.writeHead(page.status ?? 200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(page.body ?? {}));
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  return {
+    requests,
+    deletes,
+    port: server.address().port,
+    close: () => new Promise((r) => server.close(r)),
+  };
+}
+
+function runPrune({ port, apiKey = 'test-key', cap = '2', branch = BRANCH }) {
+  const scriptPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'neon-prune-')), 'prune.sh');
+  fs.writeFileSync(scriptPath, pruneScript());
+  const outputFile = `${scriptPath}.output`;
+  fs.writeFileSync(outputFile, '');
+
+  return new Promise((resolve) => {
+    execFile(
+      'bash',
+      [scriptPath],
+      {
+        env: {
+          ...process.env,
+          NEON_API_KEY: apiKey,
+          NEON_PROJECT_ID: 'proj-1',
+          NEON_BRANCH: branch,
+          NEON_PREVIEW_BRANCH_CAP: cap,
+          NEON_API_HOST: `http://127.0.0.1:${port}/api/v2`,
+          GITHUB_OUTPUT: outputFile,
+        },
+      },
+      (error, stdout, stderr) => {
+        resolve({
+          code: error ? error.code : 0,
+          output: fs.readFileSync(outputFile, 'utf8').trim(),
+          stdout,
+          stderr,
+        });
+      }
+    );
+  });
+}
+
+const preview = (n, created, extra = {}) => ({
+  id: `br-${n}`,
+  name: `preview/pr-${n}-x`,
+  created_at: created,
+  ...extra,
+});
+
+test('prune deletes the oldest preview branches when at/over the cap', async () => {
+  // 3 preview branches, cap 2: after pruning, the survivors plus the incoming
+  // branch must fit the cap, so the TWO oldest (br-2, br-3) go — oldest first,
+  // never main and never the newest preview.
+  const neon = await stubNeonPrune([
+    {
+      cursor: null,
+      body: {
+        branches: [
+          { id: 'br-main', name: 'main', default: true, created_at: '2026-01-01T00:00:00Z' },
+          preview(3, '2026-08-03T00:00:00Z'),
+          preview(2, '2026-08-02T00:00:00Z'),
+          preview(4, '2026-08-04T00:00:00Z'),
+        ],
+      },
+    },
+  ]);
+  try {
+    const result = await runPrune({ port: neon.port, cap: '2' });
+    assert.equal(result.code, 0, result.stderr);
+    assert.deepEqual(neon.deletes, ['br-2', 'br-3']);
+    assert.equal(result.output, 'deleted=2');
+  } finally {
+    await neon.close();
+  }
+});
+
+test('prune is a no-op below the cap and when the branch already exists', async () => {
+  const belowCap = await stubNeonPrune([
+    { cursor: null, body: { branches: [preview(9, '2026-08-01T00:00:00Z')] } },
+  ]);
+  try {
+    const result = await runPrune({ port: belowCap.port, cap: '2' });
+    assert.equal(result.code, 0, result.stderr);
+    assert.deepEqual(belowCap.deletes, []);
+  } finally {
+    await belowCap.close();
+  }
+
+  // `synchronize` reruns reuse the existing branch: no new slot is consumed,
+  // so even an over-cap listing must not trigger deletes.
+  const exists = await stubNeonPrune([
+    {
+      cursor: null,
+      body: {
+        branches: [
+          { id: 'br-self', name: BRANCH, created_at: '2026-08-05T00:00:00Z' },
+          preview(2, '2026-08-02T00:00:00Z'),
+          preview(3, '2026-08-03T00:00:00Z'),
+        ],
+      },
+    },
+  ]);
+  try {
+    const result = await runPrune({ port: exists.port, cap: '2' });
+    assert.equal(result.code, 0, result.stderr);
+    assert.deepEqual(exists.deletes, []);
+    assert.match(result.stdout, /already exists; skipping prune/);
+  } finally {
+    await exists.close();
+  }
+});
+
+test('prune fails loudly on a rejected API key and keeps the key out of argv', async () => {
+  const neon = await stubNeonPrune([{ cursor: null, body: { branches: [] } }]);
+  try {
+    const result = await runPrune({ port: neon.port, apiKey: 'wrong-key' });
+    assert.notEqual(result.code, 0);
+    assert.match(result.stdout, /HTTP 401/);
+  } finally {
+    await neon.close();
+  }
+
+  // CLAUDE.md gotcha #4, same as check_branch.
+  const script = pruneScript();
+  assert.doesNotMatch(script, /-H\s+"Authorization/);
+  assert.match(script, /curl[^|]*--config -/s);
+});
