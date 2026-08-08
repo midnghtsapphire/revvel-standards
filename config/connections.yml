@@ -330,6 +330,15 @@ connections:
     access: [serverless-postgres, preview-branches]
     used_by: [neon-branch.yml]
     note: "Actions-only secret (plus vars.NEON_PROJECT_ID); creates/deletes per-PR preview branches. Not read by any app or MCP server."
+  - id: organization-readme-badge-generator
+    name: GitHub Organization Readme Badge Generator
+    type: github-action
+    auth: token
+    env: ORG_README_BADGES_TOKEN
+    status: verified
+    access: [org-readme-badges, shields-io]
+    used_by: [organization-readme-badges.yml]
+    note: "WR #16201. joshjohanning/organization-readme-badge-generator@v2.0.3 (SHA-pinned). Requires vars.ORG_README_BADGES_ORG (org login). Optional ORG_README_BADGES_TOKEN for private orgs; falls back to GITHUB_TOKEN."
   - id: resend
     name: Resend
     type: api

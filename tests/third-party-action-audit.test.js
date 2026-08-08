@@ -27,4 +27,11 @@ test('stale audited actions are removed or explicitly dispositioned', () => {
   const auditScript = read('scripts/audit-third-party-actions.sh');
   assert.match(auditScript, /ACCEPTED_SINGLE_AUTHOR_ACTIONS=\(/);
   assert.match(auditScript, /robvanderleek\/create-issue-branch/);
+  // WR #16201: joshjohanning/organization-readme-badge-generator@v2.0.3
+  assert.match(auditScript, /joshjohanning\/organization-readme-badge-generator/);
+  const orgBadges = read('.github/workflows/organization-readme-badges.yml');
+  assert.match(
+    orgBadges,
+    /joshjohanning\/organization-readme-badge-generator@[0-9a-f]{40}/
+  );
 });

@@ -72,6 +72,9 @@ ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #15672: Devin code-review lane (devin-code-review.yml); pinned to the
   # full v1 commit SHA per docs/THIRD_PARTY_ACTION_AUDIT.md disposition rules.
   "aaronsteers/devin-action"
+  # WR #16201: org README badge generator; active v2.0.3 release (2026-06),
+  # pinned to full commit SHA in organization-readme-badges.yml.
+  "joshjohanning/organization-readme-badge-generator"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────

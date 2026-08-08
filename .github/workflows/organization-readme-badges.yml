@@ -1,0 +1,163 @@
+# Organization README Badge Generator
+# Issue: #16201
+# Action: joshjohanning/organization-readme-badge-generator@v2.0.3
+#
+# Generates shields.io markdown badges (repo count + recent PR activity) for a
+# GitHub *organization* and injects them between markers in README.md.
+#
+# Configuration (required before the job does real work):
+#   - Repository variable ORG_README_BADGES_ORG = the org login to query, OR
+#   - workflow_dispatch input `organization`
+#
+# midnghtsapphire is a user account, not an org. The upstream GraphQL query is
+# organization(login:...), so leave ORG_README_BADGES_ORG unset until badges
+# should target a real org (e.g. after Freedom Angel Corps migration). When
+# unset, the job exits 0 with a notice instead of failing the schedule.
+#
+# Fallback if the action or GraphQL call fails: re-run via workflow_dispatch
+# with an explicit organization input, confirm the GITHUB_TOKEN can read the
+# org, and check upstream releases at
+# https://github.com/joshjohanning/organization-readme-badge-generator/releases
+
+name: Organization README Badge Generator
+
+on:
+  schedule:
+    # Daily 07:00 UTC — matches upstream sample cadence.
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    inputs:
+      organization:
+        description: GitHub organization login (overrides vars.ORG_README_BADGES_ORG)
+        required: false
+        type: string
+      days:
+        description: Window in days for PR-created / PR-merged stats
+        required: false
+        default: '30'
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: organization-readme-badges
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  generate-badges:
+    name: Generate organization README badges
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # Need a token that can push the badge commit on main.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve organization
+        id: org
+        env:
+          INPUT_ORG: ${{ github.event.inputs.organization || '' }}
+          CONFIGURED_ORG: ${{ vars.ORG_README_BADGES_ORG || '' }}
+        run: |
+          set -euo pipefail
+          org="${INPUT_ORG:-}"
+          if [ -z "${org}" ]; then
+            org="${CONFIGURED_ORG:-}"
+          fi
+          if [ -z "${org}" ]; then
+            echo "::notice::No organization configured. Set repository variable ORG_README_BADGES_ORG or pass workflow_dispatch input 'organization'. Skipping badge generation."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Basic login hygiene — GraphQL org login is alphanumeric / hyphen.
+          if ! printf '%s' "${org}" | grep -Eq '^[A-Za-z0-9]([A-Za-z0-9-]{0,37}[A-Za-z0-9])?$'; then
+            echo "::error::Invalid organization login: ${org}"
+            exit 1
+          fi
+          echo "organization=${org}" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: GitHub Organization Readme Badge Generator
+        if: steps.org.outputs.skip != 'true'
+        id: organization-readme-badge-generator
+        uses: joshjohanning/organization-readme-badge-generator@55eed124ca46c09a654d886a98413c5bfc6c3803 # v2.0.3
+        with:
+          organization: ${{ steps.org.outputs.organization }}
+          # Default GITHUB_TOKEN is enough for public org stats. For private
+          # orgs, replace with an app installation token or fine-scoped PAT
+          # (secrets.ORG_README_BADGES_TOKEN) that can read the org.
+          token: ${{ secrets.ORG_README_BADGES_TOKEN || secrets.GITHUB_TOKEN }}
+          days: ${{ github.event.inputs.days || '30' }}
+          color: blue
+          label_color: '555'
+
+      - name: Write badges to job summary
+        if: steps.org.outputs.skip != 'true'
+        env:
+          BADGES: ${{ steps.organization-readme-badge-generator.outputs.badges }}
+          ORG: ${{ steps.org.outputs.organization }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### Organization README badges (\`${ORG}\`)"
+            echo ""
+            # BADGES is already markdown image syntax from the action.
+            printf '%s\n' "${BADGES}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Update README badge markers
+        if: steps.org.outputs.skip != 'true'
+        id: write
+        env:
+          BADGES: ${{ steps.organization-readme-badge-generator.outputs.badges }}
+        run: |
+          set -euo pipefail
+          readme=README.md
+          startMarker="<!-- start organization badges -->"
+          endMarker="<!-- end organization badges -->"
+
+          if ! grep -Fq "${startMarker}" "${readme}" || ! grep -Fq "${endMarker}" "${readme}"; then
+            echo "::error::README.md must contain ${startMarker} and ${endMarker}"
+            exit 1
+          fi
+
+          beforeHash=$(sha256sum "${readme}" | awk '{ print $1 }')
+
+          # Escape replacement for perl so shields.io URLs with / $ ( ) @ stay literal.
+          replacementEscaped=$(printf '%s\n' "${BADGES}" | perl -pe 's/([\\\/\$\(\)@])/\\$1/g')
+
+          perl -i -pe "BEGIN{undef \$/;} s/\Q${startMarker}\E.*?\Q${endMarker}\E/${startMarker}\n${replacementEscaped}\n${endMarker}/smg" "${readme}"
+
+          afterHash=$(sha256sum "${readme}" | awk '{ print $1 }')
+          if [ "${afterHash}" = "${beforeHash}" ]; then
+            echo "No badge content changes."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit organization readme badges
+        # Only push from the default branch so a manual dispatch on a feature
+        # branch cannot rewrite main. Schedule always runs on the default ref.
+        if: >
+          steps.org.outputs.skip != 'true'
+          && steps.write.outputs.changed == 'true'
+          && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        run: |
+          set -euo pipefail
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "No organization badge changes to commit."
+            exit 0
+          fi
+          git commit -m "docs: update organization readme badges"
+          git pull --rebase origin "${{ github.event.repository.default_branch }}"
+          git push origin "HEAD:${{ github.event.repository.default_branch }}"
