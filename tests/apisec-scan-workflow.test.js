@@ -29,7 +29,7 @@ test('apisec-scan.yml is an inert REVVEL-DISABLED archive stub', () => {
   const workflow = YAML.parse(source);
 
   assert.match(source, /REVVEL-DISABLED/);
-  assert.equal(workflow.on.workflow_dispatch !== undefined, true);
+  assert.ok(workflow.on.workflow_dispatch !== undefined);
   assert.ok(workflow.jobs.archived, 'archived job must exist');
   assert.equal(workflow.jobs.archived.if, false);
   assert.equal(workflow.jobs.archived['timeout-minutes'], 45);
