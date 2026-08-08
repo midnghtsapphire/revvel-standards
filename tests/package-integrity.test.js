@@ -77,6 +77,34 @@ describe("findDuplicateKeys", () => {
 `;
     assert.deepEqual(findDuplicateKeys(text), []);
   });
+
+  it("ignores braces inside string values when tracking object scope", () => {
+    // Regression for code-review: structural brace counting must skip
+    // `{` / `}` that appear inside JSON string literals.
+    const text = `{
+  "description": "uses {placeholders} and {more}",
+  "devDependencies": {
+    "c8": "^12.0.0"
+  },
+  "scripts": {
+    "echo": "printf '{ok}'"
+  }
+}
+`;
+    assert.deepEqual(findDuplicateKeys(text), []);
+
+    const withDup = `{
+  "description": "uses {placeholders}",
+  "devDependencies": {
+    "c8": "^12.0.0",
+    "c8": "^10.1.3"
+  }
+}
+`;
+    const dups = findDuplicateKeys(withDup);
+    assert.equal(dups.length, 1);
+    assert.equal(dups[0].key, "c8");
+  });
 });
 
 describe("checkPackageJsonText", () => {

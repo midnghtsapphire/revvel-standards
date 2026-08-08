@@ -51,19 +51,51 @@ const { execFileSync } = require("child_process");
  * @param {string} jsonText
  * @returns {{ key: string, firstSeenLine: number, duplicateAtLine: number }[]}
  */
+/**
+ * Count `{` / `}` that are structural (outside JSON string literals).
+ * Braces inside values like `"description": "uses {placeholders}"` must not
+ * push/pop object scopes or the duplicate-key scan drifts.
+ */
+function countStructuralBraces(line) {
+  let openBraces = 0;
+  let closeBraces = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (inString) {
+      if (ch === "\\") {
+        escaped = true;
+      } else if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+    } else if (ch === "{") {
+      openBraces++;
+    } else if (ch === "}") {
+      closeBraces++;
+    }
+  }
+  return { openBraces, closeBraces };
+}
+
 function findDuplicateKeys(jsonText) {
   const lines = String(jsonText).split("\n");
   const stack = [new Map()];
   const duplicates = [];
+  // Match a JSON object key at the start of a pretty-printed line.
   const keyRe = /^\s*"((?:[^"\\]|\\.)*)"\s*:/;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    // Count braces outside of strings is good-enough for package.json-style
-    // pretty-printed files (one key per line). Nested `{` on the same line
-    // as a key still works because we push scopes after recording the key.
-    const openBraces = (line.match(/\{/g) || []).length;
-    const closeBraces = (line.match(/\}/g) || []).length;
+    const { openBraces, closeBraces } = countStructuralBraces(line);
 
     const match = line.match(keyRe);
     if (match && stack.length > 0) {
@@ -80,6 +112,8 @@ function findDuplicateKeys(jsonText) {
       }
     }
 
+    // Nested `{` on the same line as a key still works because we push
+    // scopes after recording the key on that line.
     for (let b = 0; b < openBraces; b++) stack.push(new Map());
     for (let b = 0; b < closeBraces; b++) {
       if (stack.length > 1) stack.pop();
@@ -253,9 +287,8 @@ Exit 0 when clean; exit 1 on duplicate keys or lockfile drift.
   const result = runChecks(options);
   if (result.ok) {
     console.log("package integrity: ok");
-    if (result.details.duplicates) {
-      console.log(`  duplicate keys: 0`);
-    }
+    const dupCount = (result.details.duplicates || []).length;
+    console.log(`  duplicate keys: ${dupCount}`);
     if (!options.skipLock) {
       console.log(`  lockfile sync: ok (npm ci --dry-run)`);
     }
