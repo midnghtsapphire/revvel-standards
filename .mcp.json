@@ -92,6 +92,23 @@
       "disabled": true,
       "disabledReason": "Enable after installing the local server (cd mcp-servers/wr-control-plane && uv pip install -e .) and provisioning credentials in your secrets manager: GITHUB_TOKEN, COMPOSIO_API_KEY, OBOT_BASE_URL, and OBOT_IDP_CONFIG. FIRECRAWL_API_KEY and TAVILY_API_KEY are strongly recommended when WRs include docs, PDFs, or external research targets."
     },
+    "ensemble-ahp-engine": {
+      "_comment": "WR-4483 M1 Heterogeneous-Ensemble AHP Decision Engine (FastMCP). Steps 1-7 only: STRUCTURE→CHECK with 3 distinct model-family judges, geometric-mean aggregate, CR + per-cell CV dispersion, FAILURE-LEDGER JSONL. See mcp-servers/ensemble-ahp-engine/README.md.",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "./mcp-servers/ensemble-ahp-engine/ensemble_ahp/server.py"
+      ],
+      "env": {
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+        "AHP_LEDGER_DIR": "${AHP_LEDGER_DIR:-logs/ensemble-ahp}",
+        "AHP_REPO": "${AHP_REPO:-midnghtsapphire/revvel-standards}",
+        "AHP_FORCE_MOCK": "${AHP_FORCE_MOCK:-}"
+      },
+      "disabled": true,
+      "disabledReason": "Enable after: cd mcp-servers/ensemble-ahp-engine && pip install -e . (or uv pip install -e .). Without OPENROUTER_API_KEY the engine runs labelled mock judges so steps 1-7 still complete offline. Live heterogeneous judges require a funded OpenRouter key (WR-4481 keyless failover still applies on 402/429)."
+    },
     "chrome-devtools-mcp": {
       "_comment": "Chrome DevTools Protocol (CDP) as MCP tools. Fork: midnghtsapphire/chrome-devtools-mcp. Docs: docs/MCP_REVVEL_CATALOG.md. SECURITY: token/cookie tools scoped to localhost and authorized test origins ONLY.",
       "command": "node",

@@ -1,0 +1,23 @@
+[project]
+name = "ensemble-ahp-engine"
+version = "0.1.0"
+description = "WR-4483 M1 Heterogeneous-Ensemble AHP Decision Engine (FastMCP, steps 1-7)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastmcp>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = []
+
+[project.scripts]
+ensemble-ahp-engine = "ensemble_ahp.server:main"
+ensemble-ahp-run = "ensemble_ahp.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["ensemble_ahp"]

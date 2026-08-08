@@ -186,7 +186,61 @@ GitHub-native control plane for the 2026 WR-PR Automation Blueprint. Inspects `[
 
 ---
 
-### 4. `chrome-devtools-mcp`
+### 4. `ensemble-ahp-engine` (in-tree, WR-4483 M1)
+
+| Field | Value |
+|---|---|
+| **Repo** | In-tree: `mcp-servers/ensemble-ahp-engine/` (revvel-standards) |
+| **Language** | Python (FastMCP) |
+| **Transport** | stdio |
+| **Database** | None (append-only JSONL ledger under `logs/ensemble-ahp/`) |
+| **Run** | `uv run python ./mcp-servers/ensemble-ahp-engine/ensemble_ahp/server.py` |
+| **CLI sample** | `PYTHONPATH=mcp-servers/ensemble-ahp-engine AHP_FORCE_MOCK=1 python -m ensemble_ahp.cli --sample --pretty` |
+| **MCP Status** | ✅ M1 complete (disabled by default until deps installed) |
+| **WR** | [WR-4483](../standards/WR-4483-ensemble-ahp-engine.md) / issue [#16668](https://github.com/midnghtsapphire/revvel-standards/issues/16668) |
+
+**What it does:**
+Heterogeneous-ensemble Analytic Hierarchy Process (AHP) decision engine. Three judges from **distinct model families** (OpenRouter lanes per WR-4480) run pipeline steps 1–7 only: STRUCTURE → GENERATE → VOTE → COMPARE → AGGREGATE (geometric mean) → SOLVE → CHECK (Consistency Ratio **and** per-cell coefficient of variation across judges). Every judge call is appended to a FAILURE-LEDGER-compatible JSONL file; the ledger asserts ≥2 families were actually invoked. WR-4481 failover: HTTP 402 → immediate keyless tier-2; HTTP 429 → one backoff then failover.
+
+**Tools (3):**
+
+| Tool | Description |
+|---|---|
+| `ahp_engine_status` | Readiness, judge panel, mock mode, deferred M2/M3 scope |
+| `run_ahp(goal, …)` | Full M1 pipeline → ranked alternatives, weights, CR, dispersion, cost line |
+| `render_ensemble_ahp_mcp_entry(profile)` | Ready-to-paste `.mcp.json` snippet |
+
+**Resources (2):**
+
+| Resource | Description |
+|---|---|
+| `data://ensemble-ahp/env-schema` | Optional env vars (`OPENROUTER_API_KEY`, `AHP_LEDGER_DIR`, mock flags) |
+| `data://ensemble-ahp/architecture` | M1 architecture binding and explicit out-of-scope list |
+
+**`.mcp.json` entry:**
+```json
+"ensemble-ahp-engine": {
+  "command": "uv",
+  "args": [
+    "run", "python",
+    "./mcp-servers/ensemble-ahp-engine/ensemble_ahp/server.py"
+  ],
+  "env": {
+    "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+    "AHP_LEDGER_DIR": "${AHP_LEDGER_DIR:-logs/ensemble-ahp}",
+    "AHP_REPO": "${AHP_REPO:-midnghtsapphire/revvel-standards}",
+    "AHP_FORCE_MOCK": "${AHP_FORCE_MOCK:-}"
+  }
+}
+```
+
+**When to use:** Multi-criteria vendor/tool selection, grant option ranking, or any decision that needs honest inter-model dispersion rather than single-model multi-persona theatre. Without `OPENROUTER_API_KEY` the engine runs **labelled** mock judges so local acceptance still completes (mock is never silent).
+
+**Out of scope in M1 (do not expand):** critic gate + sensitivity (M2), REST wrapper/pricing (M3), PDF report (M4), human-panel benchmark (M5).
+
+---
+
+### 5. `chrome-devtools-mcp`
 
 | Field | Value |
 |---|---|
