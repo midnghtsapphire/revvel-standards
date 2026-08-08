@@ -1,0 +1,74 @@
+name: CodeQL
+
+# If GitHub default code scanning setup is enabled, disable it before this
+# advanced workflow can upload SARIF (Settings → Security → Code scanning).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "25 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+  pull-requests: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        language: [actions, javascript-typescript, python]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@c3400c2f38909e0dcf3c3a41f2030a8217be5d3e  # v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        id: analyze
+        continue-on-error: true
+        uses: github/codeql-action/analyze@c3400c2f38909e0dcf3c3a41f2030a8217be5d3e  # v3
+        with:
+          category: "/language:${{ matrix.language }}"
+          upload: never
+          output: sarif-results
+
+      - name: Verify SARIF was generated
+        id: verify_sarif
+        run: |
+          set -euo pipefail
+          SARIF_FILES=$(find sarif-results -maxdepth 1 -name '*.sarif' -type f 2>/dev/null || true)
+          if [ -z "$SARIF_FILES" ]; then
+            echo "::error::CodeQL analysis did not produce SARIF output."
+            exit 1
+          fi
+          echo "sarif_ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Upload SARIF
+        if: steps.verify_sarif.outputs.sarif_ok == 'true'
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@c3400c2f38909e0dcf3c3a41f2030a8217be5d3e  # v3
+        with:
+          sarif_file: sarif-results
+          category: "/language:${{ matrix.language }}"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

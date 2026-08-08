@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs and coverage
+logs/
+*.log
+coverage/
+.nyc_output/
+
+# Build / cache
+dist/
+build/
+.cache/
+.tmp/
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,65 @@
+name: Semgrep SAST
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+concurrency:
+  group: semgrep-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  semgrep:
+    name: semgrep
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.actor != 'dependabot[bot]'
+    container:
+      image: semgrep/semgrep:1.161.0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+
+      - name: Mark workspace safe
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Run Semgrep scan (OSS rule packs)
+        run: |
+          semgrep scan \
+            --config=p/security-audit \
+            --config=p/secrets \
+            --config=p/owasp-top-ten \
+            --config=p/cwe-top-25 \
+            --config=p/github-actions \
+            --sarif --sarif-output=semgrep.sarif \
+            --metrics=off \
+            --no-error \
+            || true
+
+      - name: Upload SARIF to GitHub Code Scanning
+        if: hashFiles('semgrep.sarif') != ''
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@c3400c2f38909e0dcf3c3a41f2030a8217be5d3e  # v3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
+      - name: Semgrep blocking gate (ERROR severity)
+        run: |
+          semgrep scan \
+            --config=p/secrets \
+            --config=p/security-audit \
+            --severity=ERROR \
+            --error \
+            --metrics=off
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

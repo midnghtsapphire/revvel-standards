@@ -1,0 +1,56 @@
+name: AI PR Review (OpenRouter)
+
+# Fleet standard jury lane. Secret: OPENROUTER_API_KEY (funded account).
+# Title opt-out: include [skip-review] in the PR title.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ai-pr-review-openrouter-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: AI PR review
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.draft == false &&
+       !contains(github.event.pull_request.title, '[skip-review]'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Verify OPENROUTER_API_KEY is configured
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::warning::OPENROUTER_API_KEY is not set — skipping AI PR review."
+          else
+            echo "OPENROUTER_API_KEY is configured."
+          fi
+
+      - name: AI PR Review
+        if: env.OPENROUTER_API_KEY != ''
+        continue-on-error: true
+        uses: maxlim0/AI-PR-Reviewer@0b958782fcd8f3b1b4a94b3fd506f51a989055cd  # v0.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
+          model: anthropic/claude-sonnet-4
+          prompt_template: |
+            You are a rewrite assistant, not a gatekeeper. Improve, never block.
+            Keep feedback under 200 words. Lead with rewrites, then brief notes.
+            Diff:
+            {{DIFF}}
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
