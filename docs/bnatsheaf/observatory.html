@@ -390,8 +390,9 @@
           edges: [{ u: 'a', v: 'b' }, { u: 'b', v: 'c' }, { u: 'c', v: 'a' }],
         });
       }
+      // Match scripts/bnatsheaf/cohomology.js syntheticComplex('conflict')
       return new CellularSheaf({
-        stalks: { a: [0], b: [2], c: [0] },
+        stalks: { a: [0], b: [1], c: [0] },
         edges: [{ u: 'a', v: 'b' }, { u: 'b', v: 'c' }, { u: 'c', v: 'a' }],
       });
     }
@@ -431,12 +432,17 @@
     const pdEl = document.getElementById('pd');
 
     function renderMetrics(c) {
-      const obstructed = c.energy > 1e-9 || c.dimH1 > 0 && kind === 'conflict';
+      const energyBad = c.energy > 1e-9;
+      // Obstructed when energy is positive OR the complex carries essential H¹
+      // with a disagreeing assignment (conflict). Drives metric panel border.
+      const obstructed = energyBad || (c.dimH1 > 0 && kind === 'conflict');
+      metricsEl.style.outline = obstructed ? '1px solid rgba(255,107,138,0.45)' : '1px solid transparent';
+      metricsEl.style.borderRadius = '14px';
       metricsEl.innerHTML = [
         ['dim H⁰', c.dimH0, 'cyan'],
         ['dim H¹', c.dimH1, c.dimH1 ? 'mag' : 'ok'],
         ['rank δ', c.rankDelta, ''],
-        ['E(x)', c.energy.toFixed(4), c.energy > 1e-9 ? 'bad' : 'ok'],
+        ['E(x)', c.energy.toFixed(4), energyBad ? 'bad' : 'ok'],
       ].map(([k, v, cls]) =>
         '<div class="metric"><div class="k">' + k + '</div><div class="v ' + cls + '">' + v + '</div></div>'
       ).join('');
@@ -446,9 +452,9 @@
         'H⁰ ≅ ker δ    ⇒  dim H⁰ = dim C⁰ − rank δ = ' + c.dimC0 + ' − ' + c.rankDelta + ' = ' + c.dimH0 + '\n' +
         'H¹ ≅ coker δ  ⇒  dim H¹ = dim C¹ − rank δ = ' + c.dimC1 + ' − ' + c.rankDelta + ' = ' + c.dimH1 + '\n' +
         'E(x) = Σₑ ‖Rᵤxᵤ − Rᵥxᵥ‖² = ' + c.energy.toFixed(6) + '\n' +
-        (c.energy < 1e-9
-          ? '⇒ current assignment is a <b>global section</b> (in ker δ).'
-          : '⇒ obstruction present — escalate / heal, never silently glue.');
+        (obstructed
+          ? '⇒ <b>obstruction</b> present — escalate / heal, never silently glue.'
+          : '⇒ current assignment is a <b>global section</b> (in ker δ).');
     }
 
     function renderPD(sheaf) {

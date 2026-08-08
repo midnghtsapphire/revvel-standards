@@ -44,12 +44,10 @@ const {
  */
 function coboundaryMatrix(sheaf) {
   const names = Object.keys(sheaf.stalks);
-  const colOf = new Map();
   let col = 0;
   const colStarts = {};
   for (const name of names) {
     colStarts[name] = col;
-    colOf.set(name, col);
     col += sheaf.stalks[name].length;
   }
   const nCols = col;
