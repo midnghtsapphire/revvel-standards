@@ -72,6 +72,9 @@ ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #15672: Devin code-review lane (devin-code-review.yml); pinned to the
   # full v1 commit SHA per docs/THIRD_PARTY_ACTION_AUDIT.md disposition rules.
   "aaronsteers/devin-action"
+  # WR #15811: Renovate config CI gate (renovate-config-validator.yml). Active
+  # releases through v2.1.0; pinned to the full v2.1.0 commit SHA.
+  "suzuki-shunsuke/github-action-renovate-config-validator"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
