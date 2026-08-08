@@ -66,10 +66,13 @@ jobs:
           labels: automation,covers,gumroad
 
       - name: Attach covers to Gumroad
-        # Only attach when a PR is created/updated (i.e. covers actually changed).
+        # Only attach when covers actually changed (PR created or updated).
+        # pull-request-operation is 'none' when the branch exists but this run
+        # made no new commits, so gating on number alone would re-attach unchanged
+        # images on every rerun of the workflow.
         # Pin the CDN ref to that PR's head so Gumroad fetches the exact bytes
         # this run produced, not whatever is on `main` right now.
-        if: steps.cr.outputs.pull-request-number != ''
+        if: steps.cr.outputs.pull-request-operation == 'created' || steps.cr.outputs.pull-request-operation == 'updated'
         env:
           GUMROAD_ACCESS_TOKEN: ${{ secrets.GUMROAD_ACCESS_TOKEN }}
           REF: ${{ steps.cr.outputs.pull-request-head-sha }}
