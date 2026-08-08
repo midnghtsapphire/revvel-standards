@@ -1,0 +1,148 @@
+# WR title template registry — single source of truth for autocreated titles.
+#
+# Used by:
+#   - scripts/wr-autotitle.js (cleanup, suggest, mine, format)
+#   - .github/workflows/wr-autotitle.yml (issue open/edit + /wr-title comments)
+#   - products/wr-title-studio (browse / pick / copy titles)
+#   - config/saved-replies.yml (mirrored starters for GitHub saved replies)
+#
+# Templates are ordered: first match on keywords wins. Keep keys kebab-case.
+# Patterns may include {subject} which is filled from cleaned free text.
+#
+# Mining note (local wr/issues + open WR sample, 2026-08):
+#   top verbs: add, create, fleet, research, update, wire, fix, ship, implement
+#   top bigrams: fleet maintenance, wire in, ship to, create a, deep research
+
+version: 1
+
+defaults:
+  prefix: "[WR]"
+  max_length: 100
+  # If the cleaned title is shorter than this (excluding prefix), treat as sparse
+  # and try template suggestion from body/summary.
+  min_substance_length: 12
+  # Collapse repeated whitespace and strip trailing punctuation noise.
+  collapse_whitespace: true
+  strip_trailing_punctuation: true
+  # Do not overwrite a title the human already polished unless forced via /wr-title force
+  skip_if_already_clean: true
+
+# Tokens stripped from free-text before templating (slash commands, noise).
+noise_tokens:
+  - "/dragnet"
+  - "/scaffold"
+  - "/builder"
+  - "/product-build"
+  - "/professor"
+  - "/oaudrey"
+  - "/mindmappr"
+  - "/openrouter"
+  - "/orbit"
+  - "/circleci"
+  - "/octo"
+  - "/octopus"
+  - "/mabl"
+  - "/persona"
+  - "/wr-title"
+  - "/title"
+
+templates:
+  - key: fleet-maintenance
+    title: "Fleet maintenance — {subject}"
+    usage: Recurring org/repo maintenance WRs
+    keywords: ["fleet maintenance", "fleet-maintenance", "fleet maint"]
+    example: "Fleet maintenance — midnghtsapphire/ocean2-v2-research"
+
+  - key: wire-in
+    title: "Wire in {subject}"
+    usage: Integrate an external tool, action, MCP, or service
+    keywords: ["wire in", "wire-in", "integrate", "hook up"]
+    example: "Wire in chrome-devtools-mcp"
+
+  - key: ship-to-market
+    title: "Ship to market — {subject}"
+    usage: Launch / store deploy / go-to-market packaging
+    keywords: ["ship to market", "ship-to-market", "go to market", "launch"]
+    example: "Ship to market — openmythos"
+
+  - key: deep-research
+    title: "Deep research — {subject}"
+    usage: Research-first WRs (tools, repos, markets)
+    keywords: ["deep research", "research this", "investigate", "evaluate"]
+    example: "Deep research — caspian-sdk"
+
+  - key: fix-ci
+    title: "Fix CI — {subject}"
+    usage: Broken checks, workflows, secrets, gates
+    keywords: ["fix ci", "ci failure", "workflow fail", "broken ci", "asap"]
+    example: "Fix CI — OPENROUTER_API_KEY header character"
+
+  - key: add-feature
+    title: "Add {subject}"
+    usage: New capability inside an existing system
+    keywords: ["add ", "need ability", "need a", "we need"]
+    example: "Add WR title autocreate"
+
+  - key: create-product
+    title: "Create {subject}"
+    usage: Greenfield product / app / engine
+    keywords: ["create a", "create product", "build a", "new app", "greenfield"]
+    example: "Create prompt generation website"
+
+  - key: implement
+    title: "Implement {subject}"
+    usage: Spec already exists; build it
+    keywords: ["implement", "implementation", "blue team"]
+    example: "Implement blue-team review lane"
+
+  - key: update
+    title: "Update {subject}"
+    usage: Refresh existing docs, templates, engines
+    keywords: ["update ", "refresh ", "fine tune", "fine-tune"]
+    example: "Update research engine prompt stack"
+
+  - key: formal-audit
+    title: "Formal audit — {subject}"
+    usage: Formal / structural / duplicate-risk audit tickets
+    keywords: ["formal:", "duplicate_risk", "structural_conflict", "weekly audit"]
+    example: "Formal audit — npm_and_yarn group bump"
+
+  - key: dragnet-scaffold
+    title: "DRAGNET scaffold — {subject}"
+    usage: Product scaffold / error triage via DRAGNET
+    keywords: ["dragnet", "scaffold"]
+    example: "DRAGNET scaffold — self-optimizing star magnet"
+
+  - key: generic
+    title: "{subject}"
+    usage: Fallback when no specialty template matches
+    keywords: []
+    example: "Organize chat into correct deployment"
+
+# Saved-reply style one-click starters (also mirrored into saved-replies.yml).
+# Body is the title text a human can paste when opening a WR.
+starters:
+  - key: wr-title-fleet
+    title: "WR title: Fleet maintenance"
+    body: "[WR] Fleet maintenance — <org/repo>"
+  - key: wr-title-wire-in
+    title: "WR title: Wire in"
+    body: "[WR] Wire in <tool-or-service>"
+  - key: wr-title-ship
+    title: "WR title: Ship to market"
+    body: "[WR] Ship to market — <product>"
+  - key: wr-title-research
+    title: "WR title: Deep research"
+    body: "[WR] Deep research — <topic-or-url>"
+  - key: wr-title-fix-ci
+    title: "WR title: Fix CI"
+    body: "[WR] Fix CI — <failing check>"
+  - key: wr-title-add
+    title: "WR title: Add feature"
+    body: "[WR] Add <capability>"
+  - key: wr-title-create
+    title: "WR title: Create product"
+    body: "[WR] Create <product-or-engine>"
+  - key: wr-title-implement
+    title: "WR title: Implement"
+    body: "[WR] Implement <spec-or-feature>"

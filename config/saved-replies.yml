@@ -21,3 +21,65 @@ replies:
       want the Copilot coding agent to rebase/merge and resolve them. The
       @copilot mention hands the PR to the agent; it pushes the conflict
       resolution back to the same PR branch.
+
+  # --- WR title starters (WR #16923) -----------------------------------------
+  # Paste into the issue TITLE box (or use products/wr-title-studio). For an
+  # already-open WR, comment `/wr-title` or `/wr-title force` instead.
+  - key: wr-title-regenerate
+    title: "WR title: regenerate (/wr-title)"
+    body: "/wr-title force"
+    usage: >-
+      Post as an issue comment on a Work Request to force the wr-autotitle
+      workflow to rebuild the title from templates. Use when the current title
+      is messy, doubled, or still has /dragnet noise.
+
+  - key: wr-title-fleet
+    title: "WR title: Fleet maintenance"
+    body: "[WR] Fleet maintenance — <org/repo>"
+    usage: >-
+      Starter for recurring org/repo maintenance WRs. Replace <org/repo> before
+      submitting. Also available in config/wr-title-templates.yml starters.
+
+  - key: wr-title-wire-in
+    title: "WR title: Wire in"
+    body: "[WR] Wire in <tool-or-service>"
+    usage: >-
+      Starter when integrating an external tool, GitHub Action, MCP server, or
+      service into revvel-standards.
+
+  - key: wr-title-ship
+    title: "WR title: Ship to market"
+    body: "[WR] Ship to market — <product>"
+    usage: >-
+      Starter for launch / store deploy / go-to-market packaging WRs.
+
+  - key: wr-title-research
+    title: "WR title: Deep research"
+    body: "[WR] Deep research — <topic-or-url>"
+    usage: >-
+      Starter for research-first WRs (tools, repos, markets). Prefer a short
+      topic; put long URLs in the Summary field, not the title.
+
+  - key: wr-title-fix-ci
+    title: "WR title: Fix CI"
+    body: "[WR] Fix CI — <failing check>"
+    usage: >-
+      Starter for broken checks, workflows, secrets, or gates.
+
+  - key: wr-title-add
+    title: "WR title: Add feature"
+    body: "[WR] Add <capability>"
+    usage: >-
+      Starter for a new capability inside an existing system.
+
+  - key: wr-title-create
+    title: "WR title: Create product"
+    body: "[WR] Create <product-or-engine>"
+    usage: >-
+      Starter for greenfield product / app / engine WRs.
+
+  - key: wr-title-implement
+    title: "WR title: Implement"
+    body: "[WR] Implement <spec-or-feature>"
+    usage: >-
+      Starter when a spec already exists and the work is to build it.

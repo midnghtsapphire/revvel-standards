@@ -25,6 +25,27 @@ test('copilot merge-conflict saved reply exists with the exact body', () => {
   assert.ok(reply.usage && reply.usage.length > 0);
 });
 
+test('WR title starter saved replies exist for autocreate flow', () => {
+  const regenerate = getReply('wr-title-regenerate');
+  assert.ok(regenerate, 'expected wr-title-regenerate entry');
+  assert.equal(regenerate.body, '/wr-title force');
+
+  for (const key of [
+    'wr-title-fleet',
+    'wr-title-wire-in',
+    'wr-title-ship',
+    'wr-title-research',
+    'wr-title-fix-ci',
+    'wr-title-add',
+    'wr-title-create',
+    'wr-title-implement',
+  ]) {
+    const reply = getReply(key);
+    assert.ok(reply, `expected ${key}`);
+    assert.match(reply.body, /^\[WR\] /);
+  }
+});
+
 test('getReply returns undefined for unknown keys', () => {
   assert.equal(getReply('does-not-exist'), undefined);
 });
