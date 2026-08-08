@@ -975,13 +975,15 @@ def _self_test() -> int:
     def always_bad(_p: str, _m: Sequence[Mapping[str, str]]) -> str:
         return "not-json-at-all"
 
-    orch2 = AIResponseValidator(schema=schema, max_retries=1, source_hint="https://example.com")
+    hint = "https://docs.revvel.local/source"
+    orch2 = AIResponseValidator(schema=schema, max_retries=1, source_hint=hint)
     degraded = orch2.run("give json", always_bad)
     check("fallback_on_exhaustion", degraded.ok is False and degraded.fallback is not None)
     check(
         "fallback_message_safe",
         degraded.fallback is not None
-        and "example.com" in degraded.fallback.message
+        and degraded.fallback.message.endswith("directly.")
+        and hint in degraded.fallback.message
         and degraded.fallback.degraded is True,
     )
     check("fallback_no_data_leak", degraded.data is None)
