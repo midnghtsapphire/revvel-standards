@@ -70,25 +70,15 @@ avoid rewriting collaborators' history.
 
 ## 3. Handling reviewer bots and personas
 
-The repository receives review comments from many automated reviewers. Per
-`standards/SUGGESTION_HANDLING_STANDARD.md`, **no review comment from any
-source — bot, agent, or human, including the repository owner — may block a
-workflow, PR, or merge gate.** Only a red required check blocks:
+The repository receives comments from automated and human reviewers. This guide
+does not change GitHub branch protections, required checks, or required-review
+rules. Always follow whatever gates are configured on the target branch.
 
-| Reviewer | Blocks merge? | Action |
-|---|---|---|
-| `github-actions[bot]` (red required check) | Yes — the *check* blocks, not the comment | Fix the failing job |
-| `circleci-app[bot]` (red required check) | Yes — the *check* blocks, not the comment | Fix the failing step |
-| `dependabot[bot]` | No | Merge if tests pass, otherwise pin |
-| `imgbot[bot]` | No | Accept optimized images |
-| `devin-ai-integration[bot]` | No — advisory | Address or dismiss with reason |
-| `openhands-agent` | No — advisory | Address or dismiss with reason |
-| `google-labs-jules[bot]` | No — advisory | Address or dismiss with reason |
-| `claude` / `codex` / `replit-agent` | No — advisory | Address or dismiss with reason |
-| Human reviewers (incl. @midnghtsapphire) | No — advisory | Prioritize highly, reply or rewrite; never gate on it |
+Practical operator rule:
 
-Rule of thumb: **red required checks are the only gate; every comment —
-human or bot — is advisory input, with human comments prioritized first.**
+- Fix any red required check.
+- Treat review comments as input to evaluate and address.
+- Prioritize security and correctness concerns first.
 
 ---
 
