@@ -59,7 +59,15 @@ test('dprint-check.yml style job uses dprint/check@v2.3 on Linux', () => {
 
   const dprintStep = steps.find((s) => String(s.uses || '').startsWith('dprint/check@'));
   assert.ok(dprintStep, 'missing dprint/check step');
-  assert.equal(dprintStep.uses, 'dprint/check@v2.3');
+  // Prefer SHA pin (40 hex) with "# v2.3" comment; still accept floating @v2.3.
+  const uses = String(dprintStep.uses);
+  assert.ok(
+    /^dprint\/check@(v2\.3|[0-9a-f]{40})$/.test(uses),
+    `unexpected dprint/check ref: ${uses}`,
+  );
+  if (/^[0-9a-f]{40}$/.test(uses.split('@')[1])) {
+    assert.match(raw, /dprint\/check@[0-9a-f]{40}\s*#\s*v2\.3/);
+  }
   assert.equal(dprintStep.name, 'dprint-check-action');
   assert.equal(dprintStep.with && dprintStep.with['config-path'], 'dprint.json');
 

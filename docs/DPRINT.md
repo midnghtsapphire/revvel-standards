@@ -6,13 +6,13 @@ code formatter. CI enforces formatting via the official
 
 ## Workflow
 
-| Item          | Value                                                    |
-| ------------- | -------------------------------------------------------- |
-| Workflow file | `.github/workflows/dprint-check.yml`                     |
-| Job name      | `style` / step `dprint-check-action`                     |
-| Action        | `dprint/check@v2.3`                                      |
-| Config        | `dprint.json` (repo root)                                |
-| Runner        | `ubuntu-latest` (Linux only — avoids Windows CRLF noise) |
+| Item          | Value                                                              |
+| ------------- | ------------------------------------------------------------------ |
+| Workflow file | `.github/workflows/dprint-check.yml`                               |
+| Job name      | `style` / step `dprint-check-action`                               |
+| Action        | `dprint/check@9cb3a2b17a8e606d37aae341e49df3654933fc23` (`# v2.3`) |
+| Config        | `dprint.json` (repo root)                                          |
+| Runner        | `ubuntu-latest` (Linux only — avoids Windows CRLF noise)           |
 
 Triggers: `pull_request`, `push` to `main`, and `workflow_dispatch`.
 
