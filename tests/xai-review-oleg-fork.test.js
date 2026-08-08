@@ -108,6 +108,10 @@ test('template mirrors the active workflow contract', () => {
   assert.equal(templateRun.uses, workflowRun.uses);
   assert.equal(templateRun.env.LLM__PROVIDER, 'OPENROUTER');
   assert.equal(templateRun.env.LLM__PROVIDER, workflowRun.env.LLM__PROVIDER);
+  assert.equal(
+    template.jobs.review.env.FORCE_JAVASCRIPT_ACTIONS_TO_NODE24,
+    workflow.jobs.review.env.FORCE_JAVASCRIPT_ACTIONS_TO_NODE24
+  );
 });
 
 test('docs inventory lists the oleg-fork marketplace action', () => {
