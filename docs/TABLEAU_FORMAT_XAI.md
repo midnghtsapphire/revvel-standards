@@ -26,7 +26,7 @@ workflow:
 2. Resolves a JSON style guide (`style_guide/tableau_style_guide.json` by default).
 3. Collects changed `.twb` / `.twbx` / `.tds` / `.tdsx` paths (or every tracked
    Tableau file on manual runs).
-4. Runs `dsmdavid/action-test-tableau-format@v0.1.6` against those paths.
+4. Runs `dsmdavid/action-test-tableau-format` pinned to the `v0.1.6` commit SHA against those paths.
 5. Uploads `outputs.txt` as a workflow artifact and writes a step summary.
 
 When the style guide or Tableau files are missing, the job emits a

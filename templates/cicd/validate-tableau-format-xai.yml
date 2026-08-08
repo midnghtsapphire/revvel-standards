@@ -61,7 +61,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
@@ -168,15 +168,15 @@ jobs:
 
       - name: Validate Tableau format
         if: steps.guide.outputs.ready == 'true' && steps.files.outputs.ready == 'true'
-        # Latest upstream release tag (2021-06-28). SHA: 010ef76d6e9a68d0ebb19842b01f95d7879bd04f
-        uses: dsmdavid/action-test-tableau-format@v0.1.6
+        # Latest upstream release v0.1.6 (2021-06-28)
+        uses: dsmdavid/action-test-tableau-format@010ef76d6e9a68d0ebb19842b01f95d7879bd04f # v0.1.6
         with:
           modified_files: ${{ steps.files.outputs.list }}
           path_to_json: ${{ steps.guide.outputs.path }}
 
       - name: Upload validation outputs
         if: always() && steps.guide.outputs.ready == 'true' && steps.files.outputs.ready == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: tableau-format-xai-outputs
           path: |

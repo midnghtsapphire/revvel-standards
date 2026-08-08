@@ -50,24 +50,40 @@ test('tableau format template path-filters Tableau assets and style guide', () =
 test('tableau format template pins upstream action and uploads artifacts', () => {
   const content = read(templateRel);
   const doc = YAML.parse(content);
+  const sha40 = '[0-9a-f]{40}';
 
   assert.match(
     content,
-    /uses:\s*dsmdavid\/action-test-tableau-format@v0\.1\.6/,
-    'must pin dsmdavid/action-test-tableau-format@v0.1.6'
+    new RegExp(`uses:\\s*dsmdavid\\/action-test-tableau-format@${sha40}`),
+    'must pin dsmdavid/action-test-tableau-format to a full commit SHA'
+  );
+  assert.match(
+    content,
+    /action-test-tableau-format@[0-9a-f]{40}\s*#\s*v0\.1\.6/,
+    'must annotate the pin with # v0.1.6'
   );
   assert.match(
     content,
     /https:\/\/github\.com\/marketplace\/actions\/validate-tableau-format-xai/,
     'must cite the Marketplace listing'
   );
+  assert.match(
+    content,
+    new RegExp(`uses:\\s*actions\\/checkout@${sha40}`),
+    'must pin actions/checkout to a full commit SHA'
+  );
+  assert.match(
+    content,
+    new RegExp(`uses:\\s*actions\\/upload-artifact@${sha40}`),
+    'must pin actions/upload-artifact to a full commit SHA'
+  );
 
   const steps = doc.jobs.validate.steps || [];
   const validateStep = steps.find((s) => s.name === 'Validate Tableau format');
   assert.ok(validateStep, 'must include Validate Tableau format step');
-  assert.equal(
-    validateStep.uses,
-    'dsmdavid/action-test-tableau-format@v0.1.6'
+  assert.match(
+    String(validateStep.uses || ''),
+    /^dsmdavid\/action-test-tableau-format@[0-9a-f]{40}$/
   );
   assert.equal(
     validateStep.with?.modified_files,
@@ -80,7 +96,10 @@ test('tableau format template pins upstream action and uploads artifacts', () =>
 
   const upload = steps.find((s) => s.name === 'Upload validation outputs');
   assert.ok(upload, 'must upload validation outputs');
-  assert.equal(upload.uses, 'actions/upload-artifact@v4');
+  assert.match(
+    String(upload.uses || ''),
+    /^actions\/upload-artifact@[0-9a-f]{40}$/
+  );
   assert.equal(upload.with?.name, 'tableau-format-xai-outputs');
 });
 
