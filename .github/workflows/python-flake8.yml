@@ -75,5 +75,9 @@ jobs:
       - name: flake8 baseline ratchet gate
         run: node scripts/flake8-baseline-gate.js
 
+      # tests/python-flake8-workflow.test.js requires the `yaml` package from package.json.
+      - name: Install Node dependencies
+        run: npm ci
+
       - name: Workflow regression tests
         run: node --test tests/python-flake8-workflow.test.js
