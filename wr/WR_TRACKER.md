@@ -2,8 +2,8 @@
 
 **Total Repositories:** 140
 **WRs Created:** 2
-**WRs In Progress:** 2
-**WRs Completed:** 0
+**WRs In Progress:** 1
+**WRs Completed:** 1
 **Ship-to-Market Ready:** 0
 
 **Last Updated:** 2026-06-22
@@ -48,7 +48,7 @@ This tracker monitors the Weekly Research (WR) status for all repositories in th
 | 3 | [certifixes](https://github.com/midnghtsapphire/certifixes) | 2025-05-09 | 2026-04-28 | ⭕ | P2 | TBD | - | 1 star |
 | 4 | [leaf2tree](https://github.com/midnghtsapphire/leaf2tree) | 2025-05-09 | 2026-03-05 | ⭕ | P3 | TBD | - | - |
 | 5 | [tikiwash-autofill-frontend-kit](https://github.com/midnghtsapphire/tikiwash-autofill-frontend-kit) | 2025-05-14 | 2026-03-05 | ⭕ | P3 | TBD | - | TypeScript |
-| 6 | [neurooz](https://github.com/midnghtsapphire/neurooz) | 2026-01-08 | 2026-05-02 | 🟡 | P0 | High | [WR](issues/issue-15777-fleet-maintenance-midnghtsapphire-neurooz.md) | AI-ADHD productivity |
+| 6 | [neurooz](https://github.com/midnghtsapphire/neurooz) | 2026-01-08 | 2026-08-08 | ✅ | P0 | High | [WR #16830](issues/issue-16830-fleet-maintenance-midnghtsapphire-neurooz.md) ([PR](https://github.com/midnghtsapphire/neurooz/pull/25)) | AI-ADHD productivity |
 | 7 | [Meetaudreyevans](https://github.com/midnghtsapphire/Meetaudreyevans) | 2026-01-23 | 2026-05-02 | ⭕ | P1 | Medium | - | Life Hub |
 | 8 | [Mechatronopolis](https://github.com/midnghtsapphire/Mechatronopolis) | 2026-01-27 | 2026-05-02 | ⭕ | P2 | TBD | - | Mechatronics career |
 | 9 | [code-review-mcp-server](https://github.com/midnghtsapphire/code-review-mcp-server) | 2026-01-28 | 2026-03-05 | ⭕ | P1 | Medium | - | MCP server |
@@ -105,7 +105,7 @@ cd wr
 | Category | Count | Est. Monthly Revenue | Notes |
 | --- | --- | --- | --- |
 | Ship-Ready | 0 | $0 | Target: 5 repos by end of May |
-| In Progress | 1 | $0 (potential) | neurooz WR being completed |
+| Complete | 1 | $0 (potential unlocked) | neurooz WR #16830 shipped via PR #25 |
 | Identified P0 | ~10 | $5000+ (potential) | High-value opportunities |
 | Total Repositories | 140 | TBD | Full audit needed |
 
@@ -129,7 +129,7 @@ cd wr
 
 These repositories have immediate revenue potential and should be addressed first:
 
-1. **neurooz** - AI-ADHD productivity tool
+1. **neurooz** - AI-ADHD productivity tool ✅ WR #16830 / neurooz#25
    - Revenue potential: $500-2000/month
    - Market: Growing ADHD tech market
    - Status: Recently updated, needs deployment
