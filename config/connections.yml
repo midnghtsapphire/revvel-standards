@@ -327,9 +327,9 @@ connections:
     auth: key
     env: NEON_API_KEY
     status: verified
-    access: [serverless-postgres, preview-branches]
-    used_by: [neon-branch.yml]
-    note: "Actions-only secret (plus vars.NEON_PROJECT_ID); creates/deletes per-PR preview branches. Not read by any app or MCP server."
+    access: [serverless-postgres, preview-branches, neonctl-cli, control-console]
+    used_by: [neon-branch.yml, products/neon-control-console]
+    note: "NEON_API_KEY secret + vars.NEON_PROJECT_ID. Actions create/delete per-PR preview branches; products/neon-control-console is the API playground + neonctl/GitHub Actions generator (demo mode without the key)."
   - id: resend
     name: Resend
     type: api

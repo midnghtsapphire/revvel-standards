@@ -50,7 +50,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `google-maps` (Google Maps) | ✅ verified | key | geocoding, places | — | — | — |
 | `groq` (Groq) | ✅ verified | key | fast-llm-inference | — | — | — |
 | `namecheap` (Namecheap) | ✅ verified | key | domains, dns | digitalocean | — | — |
-| `neon` (Neon) | ✅ verified | key | serverless-postgres, preview-branches | — | neon-branch.yml | Actions-only secret (plus vars.NEON_PROJECT_ID); creates/deletes per-PR preview branches. Not read by any app or MCP server. |
+| `neon` (Neon) | ✅ verified | key | serverless-postgres, preview-branches, neonctl-cli, control-console | — | neon-branch.yml, products/neon-control-console | NEON_API_KEY secret + vars.NEON_PROJECT_ID. Actions create/delete per-PR preview branches; products/neon-control-console is the API playground + neonctl/GitHub Actions generator (demo mode without the key). |
 | `noimosai` (NoimosAI) | ✅ verified | key | code-review | — | noimosai.yml | — |
 | `openai` (OpenAI) | ✅ verified | paid | llm, embeddings | — | — | — |
 | `perplexity` (Perplexity) | ✅ verified | free | research, grounded-answers | openrouter | scripts/llm.js, perplexity-research-issue.js | No-key-first lane in scripts/llm.js; OpenRouter is the keyed backup. |
@@ -74,4 +74,4 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `octopus` (Octopus Review) | ✅ verified | paid | pr-review | github | octopus-route.yml, octopus-cli.yml | Owner: found several different error classes in a single review. Currently over monthly AI quota — needs own API keys. |
 | `vercel` (Vercel) | ✅ verified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | Deploys a preview on every PR (observed via vercel[bot]). |
 
-*Last generated: 2026-08-05 from `config/connections.yml`.*
+*Last generated: 2026-08-08 from `config/connections.yml`.*

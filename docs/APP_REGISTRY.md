@@ -43,6 +43,7 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/affiliate-hub` | affiliate, lead | — | needs review |
 | `products/ai-video-toolkit` | video, lead | — | needs review |
 | `products/cli-engine` | subscription, SaaS, CLI/MCP | — | needs review |
+| `products/neon-control-console` | SaaS, Neon API, neonctl CLI, GitHub Actions | API playground, CLI builder, workflow generator | ✅ |
 | `products/creator-payout-tracker` | payout, subscription, video | — | needs review |
 | `products/openmythos` | (unclassified) | — | needs review |
 | `products/printbank` | digital-download, e-commerce, static | Vector print generator, photo print sizer (tested in `tests/printbank.test.js`) | needs review |
