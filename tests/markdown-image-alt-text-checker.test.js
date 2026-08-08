@@ -128,7 +128,7 @@ test('workflow file exists and parses', () => {
   assert.deepEqual(doc.permissions, { contents: 'read', checks: 'write' });
 });
 
-test('workflow pins marketplace action to the v1 commit SHA', () => {
+test('workflow pins every third-party action to a full commit SHA', () => {
   const raw = fs.readFileSync(workflowPath, 'utf8');
   assert.match(
     raw,
@@ -137,13 +137,15 @@ test('workflow pins marketplace action to the v1 commit SHA', () => {
     ),
     `expected pinned uses: ${ACTION_REF}`
   );
-  // Must not float on @v1 / @main in a live `uses:` line (CLAUDE.md gotcha #8).
-  // Comments may mention @v1 for humans; only the executable ref is guarded.
+  // CLAUDE.md gotcha #8: no floating tags on live uses: lines.
   const usesLines = raw.split('\n').filter((l) => /^\s*uses:\s*/.test(l));
+  assert.ok(usesLines.length >= 3, 'checkout + setup-node + marketplace');
   for (const line of usesLines) {
-    if (!line.includes('ruthtxh/markdown-image-alt-text-checker@')) continue;
-    assert.match(line, new RegExp(`@${PINNED_SHA}\\b`));
-    assert.doesNotMatch(line, /@(v1|main)\b/);
+    assert.match(
+      line,
+      /uses:\s*[\w.-]+\/[\w.-]+@[0-9a-f]{40}\b/,
+      `unpinned action: ${line.trim()}`
+    );
   }
 });
 

@@ -46,8 +46,11 @@ const DEFAULT_EXCLUDES = [
 ];
 
 // Same pattern the marketplace action looks for: empty alt brackets.
-// Also catch optional title form `![](url "title")` and angle-bracket URLs.
-const EMPTY_ALT_RE = /!\[\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+// Also catch optional title form `![](url "title")`. Built fresh per scan so
+// callers never share a stateful `/g` lastIndex across invocations.
+function emptyAltRegex() {
+  return /!\[\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+}
 
 /**
  * @param {string} root
@@ -112,9 +115,9 @@ function findEmptyAltInContent(filePath, content) {
     }
     if (inFence) continue;
 
-    EMPTY_ALT_RE.lastIndex = 0;
+    const re = emptyAltRegex();
     let m;
-    while ((m = EMPTY_ALT_RE.exec(line)) !== null) {
+    while ((m = re.exec(line)) !== null) {
       findings.push({
         file: filePath,
         line: i + 1,
@@ -223,6 +226,6 @@ module.exports = {
   checkMarkdownImageAlt,
   findEmptyAltInContent,
   listMarkdownFiles,
-  EMPTY_ALT_RE,
+  emptyAltRegex,
   DEFAULT_EXCLUDES,
 };
