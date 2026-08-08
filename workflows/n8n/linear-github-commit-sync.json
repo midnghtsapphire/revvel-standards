@@ -1,0 +1,95 @@
+{
+  "name": "Linear API Synchronization - Agent Factory Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "github-commit-receiver",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+      "name": "GitHub Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [200, 300],
+      "webhookId": "github-commit-receiver"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract commit strings and capture associated Linear Issue IDs (e.g. 'ENG-105')\nconst items = $input.all();\nconst output = [];\nconst seen = new Set();\n\nfunction pushCommit(commit) {\n  if (!commit || !commit.message) return;\n  const message = String(commit.message);\n  const matches = message.match(/\\b([A-Z][A-Z0-9]+-\\d+)\\b/g) || [];\n  const issueIds = [...new Set(matches)];\n  if (!issueIds.length) return;\n  const url = commit.url || '';\n  const sha = commit.id || commit.sha || '';\n  const author = (commit.author && (commit.author.name || commit.author.username)) || 'unknown';\n  for (const issueId of issueIds) {\n    const key = issueId + '|' + sha + '|' + message;\n    if (seen.has(key)) continue;\n    seen.add(key);\n    output.push({\n      json: {\n        issueId,\n        commitMessage: message,\n        author,\n        url,\n        sha,\n        commentText: [\n          'Automated Synchronization Success via Agent Factory Platform.',\n          '',\n          '**Commit:** ' + message.split('\\n')[0],\n          '**Author:** ' + author,\n          url ? '**URL:** ' + url : null,\n          sha ? '**SHA:** `' + sha + '`' : null,\n          '',\n          '_Healed / shipped code linked from the repository push webhook._'\n        ].filter(Boolean).join('\\n')\n      }\n    });\n  }\n}\n\nfor (const item of items) {\n  const root = item.json || {};\n  const body = root.body && typeof root.body === 'object' ? root.body : root;\n  if (body.head_commit) pushCommit(body.head_commit);\n  if (Array.isArray(body.commits)) {\n    for (const c of body.commits) pushCommit(c);\n  }\n  if (typeof body.message === 'string') {\n    pushCommit({\n      message: body.message,\n      url: body.url,\n      id: body.sha || body.id,\n      author: typeof body.author === 'string' ? { name: body.author } : body.author\n    });\n  }\n}\n\nreturn output;"
+      },
+      "id": "b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e",
+      "name": "Parse Linear Issue ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.linear.app/graphql",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"query\": \"mutation AgentFactorySync($id: String!, $commentText: String!, $stateId: String!) { issueUpdate(id: $id, input: { stateId: $stateId }) { success issue { id identifier url } } commentCreate(input: { issueId: $id, body: $commentText }) { success comment { id url } } }\",\n  \"variables\": {\n    \"id\": \"{{ $json.issueId }}\",\n    \"commentText\": {{ JSON.stringify($json.commentText) }},\n    \"stateId\": \"{{ $env.LINEAR_DONE_STATE_ID || 'DONE_STATE_ID_HERE' }}\"\n  }\n}",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "id": "c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f",
+      "name": "Linear GraphQL API Update",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [720, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "YOUR_LINEAR_API_HEADER_CREDENTIAL_ID",
+          "name": "Linear API Header Auth (Authorization)"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "GitHub Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parse Linear Issue ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Linear Issue ID": {
+      "main": [
+        [
+          {
+            "node": "Linear GraphQL API Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionTimeout": 45
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "description": "GitHub push → parse Linear issue keys → GraphQL issueUpdate + commentCreate. Pair with products/linear-api-sync or run standalone in n8n."
+  }
+}

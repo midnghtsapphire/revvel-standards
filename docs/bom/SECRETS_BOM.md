@@ -132,6 +132,16 @@ This document lists ALL secrets and API keys required for the video production s
 
 ---
 
+
+
+## Project Management & Issue Sync
+
+| Secret Name | Provider | Purpose | Where to Get |
+|-------------|----------|---------|--------------|
+| `LINEAR_API_KEY` | Linear | GraphQL issue update + comments (Agent Factory sync) | linear.app → Settings → API |
+| `LINEAR_DONE_STATE_ID` | Linear | Workflow state id for Done | linear.app → Settings → Workflow |
+| `GITHUB_WEBHOOK_SECRET` | GitHub / app | Authenticate push webhooks to linear-api-sync | generate locally; store in Vercel |
+
 ## Setup Instructions
 
 ### 1. GitHub Secrets (Recommended)

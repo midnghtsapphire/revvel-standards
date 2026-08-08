@@ -48,6 +48,21 @@ These will be implemented once the n8n instance is configured for secret managem
 
 ---
 
+
+
+### 2. Linear GitHub Commit Sync (Agent Factory)
+
+**File**: `linear-github-commit-sync.json`
+
+**Purpose**: Receive GitHub push webhooks, extract Linear issue keys (`ENG-105`),
+mark the issue Done, and post an Agent Factory sync comment via Linear GraphQL.
+
+**Companion app**: `products/linear-api-sync` (playground + `POST /api/github-commit-receiver`)  
+**CLI**: `node scripts/linear-api-sync.js --message "fix: ENG-105" --dry-run`
+
+**Import**: Workflows → Import from File → select the JSON → attach Header Auth
+credential (`Authorization` = `LINEAR_API_KEY`) → set `LINEAR_DONE_STATE_ID`.
+
 ## Installation
 
 ### Option 1: Docker (Recommended)
