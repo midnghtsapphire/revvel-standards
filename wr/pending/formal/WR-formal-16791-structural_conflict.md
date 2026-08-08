@@ -1,5 +1,11 @@
 # [WR] Formal: structural_conflict on midnghtsapphire/revvel-standards#16791 — chore(deps): bump the npm_and_yarn group across 10 directories
 
+> **RESOLVED 2026-08-08** — path A (`split-deps-per-directory`) landed.  
+> Full write-up: [`wr/resolved/formal/WR-formal-16791-structural_conflict-RESOLVED.md`](../../resolved/formal/WR-formal-16791-structural_conflict-RESOLVED.md)  
+> Formal re-run: [`artifacts/formal/formal-report-16791-rerun.json`](../../../artifacts/formal/formal-report-16791-rerun.json) → **pass**  
+> Scorecard: [`wr/memory/agent-scorecard.jsonl`](../../memory/agent-scorecard.jsonl)  
+> Closes issue #16950 (human merge gate still required).
+
 ## Description
 
 Formal dual-path verification (`boolean_xor_dual_path`, window 78h) produced verdict **structural_conflict**.
@@ -22,6 +28,12 @@ Formal dual-path verification (`boolean_xor_dual_path`, window 78h) produced ver
 2. If `fail` / structural: land a fix PR that restores the formal winner side predicates.
 3. Keep human review: do **not** merge without midnghtsapphire approval.
 
+### Resolution (2026-08-08)
+- Updated `.github/dependabot.yml` to one `directory:` per entry + unique scoped groups for the 10 directories from #16791.
+- Added `scripts/check-dependabot-split-deps.js` + `tests/dependabot-split-deps.test.js` vaccine.
+- Formal re-run verdict: **pass** (agreement 10000 bps, xor 0).
+- Scorecard event logged. PR #16791 remains closed/unmerged.
+
 ### Labels
 `wr`, `formal:auto-wr`, `formal:fail`, `human-review-required`, `priority:p1`
 
@@ -41,6 +53,8 @@ provenance:
   loop: formal-auto-wr
   source_report: formal-report.json
   generated_at: 2026-08-05T14:54:25.847Z
+  resolved_at: 2026-08-08T03:59:00.000Z
+  resolution_report: artifacts/formal/formal-report-16791-rerun.json
   human_gate: required
   allowlist_labels: wr, formal:auto-wr, formal:fail, human-review-required, priority:p1
   verdict_alias: structural_conflict → formal:fail

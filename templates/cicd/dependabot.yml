@@ -1,6 +1,11 @@
 # Copy to .github/dependabot.yml in your app repo
 # Replace OWNER_USERNAME with your GitHub username
 # See DEPENDABOT_STANDARD.md for full documentation
+#
+# MONOREPO / path A (formal WR #16950): one directory: per entry.
+# Never use directories: (plural) or a shared npm_and_yarn group across
+# package roots — that is path B and triggers structural_conflict.
+# Validate: node scripts/check-dependabot-split-deps.js
 
 version: 2
 
@@ -27,6 +32,7 @@ updates:
       prefix-development: "chore"
       include: "scope"
     # Group patch and minor updates into a single PR per type — reduces PR noise
+    # Keep group names unique if you add more directory: entries below.
     groups:
       production-dependencies:
         dependency-type: "production"

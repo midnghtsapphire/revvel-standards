@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "method": "boolean_xor_dual_path",
+  "window_hours": 78,
+  "repo": "midnghtsapphire/revvel-standards",
+  "generated_at": "2026-08-08T03:59:00.000Z",
+  "source_issue": 16950,
+  "source_pr_conflict": 16791,
+  "fix_branch": "copilot/fix-structural-conflict-verification",
+  "summary": {
+    "audits": 1,
+    "pass": 1,
+    "fail": 0,
+    "structural_conflict": 0,
+    "needs_reaudit": 0,
+    "duplicate_risk": 0
+  },
+  "predicates": [
+    "grounding",
+    "no_secrets",
+    "ci_contract",
+    "standards_alignment",
+    "structural_integrity",
+    "single_directory_scope",
+    "unique_group_names",
+    "no_npm_and_yarn_multidir",
+    "major_bumps_human_gated",
+    "scorecard_event_logged"
+  ],
+  "audits": [
+    {
+      "pr_number": 16791,
+      "issue_number": 16950,
+      "title": "chore(deps): bump the npm_and_yarn group across 10 directories with 6 updates",
+      "verdict": "pass",
+      "winner": "a",
+      "chosen_path": "split-deps-per-directory",
+      "agreement_bps": 10000,
+      "risk_score": 0,
+      "xor_bits": 0,
+      "path_a_score": 10000,
+      "path_b_score": 0,
+      "path_a_bits": "0b1111111111",
+      "path_b_bits": "0b0000000000",
+      "rationale": "method=boolean_xor_dual_path | A(split-deps-per-directory)=10000bps bits=0b1111111111 | B(dependabot-group-bump)=0bps bits=0b0000000000 | xor=0b0000000000 agree=10000bps | winner=a chosen=ours verdict=pass | evidence=.github/dependabot.yml one directory per entry + unique scoped groups; scripts/check-dependabot-split-deps.js vaccine; PR #16791 closed unmerged; scorecard event wr/memory/agent-scorecard.jsonl",
+      "resolution": {
+        "status": "resolved",
+        "strategy": "split-deps-per-directory",
+        "files": [
+          ".github/dependabot.yml",
+          "scripts/check-dependabot-split-deps.js",
+          "tests/dependabot-split-deps.test.js",
+          "docs/Master_Inventory/DEPENDABOT_STANDARD.md",
+          "wr/resolved/formal/WR-formal-16791-structural_conflict-RESOLVED.md",
+          "artifacts/formal/formal-report-16791-rerun.json",
+          "wr/memory/agent-scorecard.jsonl"
+        ],
+        "supersedes_pr": 16791,
+        "closes_issue": 16950,
+        "human_gate": "required — do not merge without midnghtsapphire approval"
+      },
+      "judgements": [
+        {
+          "agent": "dependabot[bot]",
+          "role": "author",
+          "stance": "pro_theirs",
+          "was_correct": false,
+          "note": "Original multi-directory npm_and_yarn group bump (path B)"
+        },
+        {
+          "agent": "openrouter",
+          "role": "orchestrator",
+          "stance": "block",
+          "was_correct": true,
+          "note": "Correctly blocked path B structural_conflict"
+        },
+        {
+          "agent": "Copilot",
+          "role": "fixer",
+          "stance": "pro_path_a",
+          "was_correct": true,
+          "note": "Landed split-deps-per-directory config + regression vaccine"
+        },
+        {
+          "agent": "midnghtsapphire",
+          "role": "approver",
+          "stance": "pending_human_review",
+          "was_correct": null,
+          "note": "Human merge gate still required"
+        }
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "login": "openrouter",
+      "correct": 1,
+      "wrong": 0,
+      "reviews": 1,
+      "accuracy_bps": 10000
+    },
+    {
+      "login": "Copilot",
+      "correct": 1,
+      "wrong": 0,
+      "reviews": 1,
+      "accuracy_bps": 10000
+    },
+    {
+      "login": "dependabot[bot]",
+      "correct": 0,
+      "wrong": 1,
+      "reviews": 1,
+      "accuracy_bps": 0
+    }
+  ]
+}
