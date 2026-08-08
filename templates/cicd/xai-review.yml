@@ -1,0 +1,164 @@
+# XAI Review (OpenRouter)
+#
+# Marketplace: https://github.com/marketplace/actions/xai-review
+# Action repo: https://github.com/Nikita-Filonov/ai-review
+# Package:     https://pypi.org/project/xai-review/
+#
+# Opt-in AI code review that posts inline / context / summary comments on a
+# PR using OpenRouter. Soft-skips when OPENROUTER_API_KEY is missing so you
+# can ship the template before the secret is provisioned.
+#
+# Triggers (all opt-in — no automatic PR open/sync noise):
+#   * workflow_dispatch with PR number + review command
+#   * `xai-review` label on a non-draft PR
+#   * `/xai-review` (optional command token) comment on a PR
+#
+# Bypass: add `[skip-review]` to the PR title.
+#
+# Secrets required: OPENROUTER_API_KEY
+# Copy this file to: .github/workflows/xai-review.yml
+#
+# VERSION PINNING:
+#   Nikita-Filonov/ai-review is single-author — pin to the full commit SHA
+#   of a released tag (v0.71.0 below). Bump deliberately.
+
+name: XAI Review
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      pull-request-number:
+        description: "PR number to review"
+        required: true
+        type: string
+      review-command:
+        description: "Review mode"
+        required: true
+        type: choice
+        default: run-summary
+        options:
+          - run
+          - run-inline
+          - run-context
+          - run-summary
+          - run-inline-reply
+          - run-summary-reply
+          - clear-inline
+          - clear-summary
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: xai-review-${{ github.event.pull_request.number || github.event.issue.number || github.event.inputs.pull-request-number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  xai-review:
+    name: XAI Review
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (
+        github.event_name == 'pull_request' &&
+        github.event.label.name == 'xai-review' &&
+        github.event.pull_request.draft == false &&
+        !contains(github.event.pull_request.title, '[skip-review]')
+      ) ||
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request != null &&
+        github.event.comment.user.type != 'Bot' &&
+        (
+          github.event.comment.author_association == 'OWNER' ||
+          github.event.comment.author_association == 'MEMBER' ||
+          github.event.comment.author_association == 'COLLABORATOR'
+        ) &&
+        startsWith(github.event.comment.body, '/xai-review')
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+    steps:
+      - name: Verify OPENROUTER_API_KEY is configured
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::warning::OPENROUTER_API_KEY is not set — skipping XAI Review."
+            echo "XAI_SKIP=true" >> "$GITHUB_ENV"
+          else
+            echo "OPENROUTER_API_KEY is configured."
+            echo "XAI_SKIP=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Resolve review target
+        if: env.XAI_SKIP == 'false'
+        id: target
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const ALLOWED = new Set([
+              'run', 'run-inline', 'run-context', 'run-summary',
+              'run-inline-reply', 'run-summary-reply',
+              'clear-inline', 'clear-summary',
+            ]);
+            let prNumber = null;
+            let command = 'run-summary';
+
+            if (context.eventName === 'workflow_dispatch') {
+              prNumber = String(context.payload.inputs['pull-request-number'] || '').trim();
+              command = String(context.payload.inputs['review-command'] || 'run-summary').trim();
+            } else if (context.eventName === 'pull_request') {
+              prNumber = String(context.payload.pull_request.number);
+            } else if (context.eventName === 'issue_comment') {
+              prNumber = String(context.payload.issue.number);
+              const parts = String(context.payload.comment.body || '').trim().split(/\s+/);
+              if (parts.length >= 2 && ALLOWED.has(parts[1])) {
+                command = parts[1];
+              }
+            }
+
+            if (!prNumber || !/^\d+$/.test(prNumber)) {
+              core.setFailed(`Invalid PR number: ${JSON.stringify(prNumber)}`);
+              return;
+            }
+            if (!ALLOWED.has(command)) {
+              core.setFailed(`Invalid review command: ${JSON.stringify(command)}`);
+              return;
+            }
+
+            core.setOutput('pr_number', prNumber);
+            core.setOutput('review_command', command);
+
+      - name: Checkout repository
+        if: env.XAI_SKIP == 'false'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run XAI Review
+        if: env.XAI_SKIP == 'false'
+        continue-on-error: true
+        uses: Nikita-Filonov/ai-review@52a2012d13644cfb7bf91b96d8d2373e07a4137e # v0.71.0
+        with:
+          review-command: ${{ steps.target.outputs.review_command }}
+        env:
+          LLM__PROVIDER: OPENROUTER
+          LLM__META__MODEL: google/gemini-2.5-flash
+          LLM__META__MAX_TOKENS: "8000"
+          LLM__META__TEMPERATURE: "0.2"
+          LLM__HTTP_CLIENT__API_URL: https://openrouter.ai/api/v1
+          LLM__HTTP_CLIENT__API_TOKEN: ${{ secrets.OPENROUTER_API_KEY }}
+
+          VCS__PROVIDER: GITHUB
+          VCS__PIPELINE__OWNER: ${{ github.repository_owner }}
+          VCS__PIPELINE__REPO: ${{ github.event.repository.name }}
+          VCS__PIPELINE__PULL_NUMBER: ${{ steps.target.outputs.pr_number }}
+          VCS__HTTP_CLIENT__API_URL: https://api.github.com
+          VCS__HTTP_CLIENT__API_TOKEN: ${{ secrets.GITHUB_TOKEN }}

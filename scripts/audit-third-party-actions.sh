@@ -72,6 +72,10 @@ ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #15672: Devin code-review lane (devin-code-review.yml); pinned to the
   # full v1 commit SHA per docs/THIRD_PARTY_ACTION_AUDIT.md disposition rules.
   "aaronsteers/devin-action"
+  # WR #16875: XAI Review marketplace action (xai-review.yml); active releases
+  # (v0.71.0), pinned to the full commit SHA
+  # 52a2012d13644cfb7bf91b96d8d2373e07a4137e.
+  "Nikita-Filonov/ai-review"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────

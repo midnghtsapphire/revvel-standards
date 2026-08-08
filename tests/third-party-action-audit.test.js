@@ -24,7 +24,12 @@ test('stale audited actions are removed or explicitly dispositioned', () => {
   const createIssueBranch = read('.github/workflows/create-issue-branch.yml');
   assert.match(createIssueBranch, /robvanderleek\/create-issue-branch@[0-9a-f]{40}/);
 
+  // WR #16875: XAI Review is single-author → must be SHA-pinned + allowlisted.
+  const xaiReview = read('.github/workflows/xai-review.yml');
+  assert.match(xaiReview, /Nikita-Filonov\/ai-review@[0-9a-f]{40}/);
+
   const auditScript = read('scripts/audit-third-party-actions.sh');
   assert.match(auditScript, /ACCEPTED_SINGLE_AUTHOR_ACTIONS=\(/);
   assert.match(auditScript, /robvanderleek\/create-issue-branch/);
+  assert.match(auditScript, /Nikita-Filonov\/ai-review/);
 });

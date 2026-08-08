@@ -52,6 +52,17 @@ This document clarifies the current state of code review automation in `revvel-s
 **Config:** `DEVIN_API_KEY` repo secret + `DEVIN_ORG_ID` repo variable; soft-skips (stays green) when either is missing  
 **Notes:** Operational strengths/weaknesses in `docs/agent-stack/DEVIN_OBSERVATIONS.md` — verify Devin's "✅ Resolved" claims before trusting them
 
+### 6. XAI Review (Opt-In)
+**Workflow:** `.github/workflows/xai-review.yml`  
+**Status:** ✅ **ACTIVE** — opt-in only (WR #16875)  
+**Trigger:** `/xai-review` (optional command token) on a PR comment, `xai-review` label on a non-draft PR, or manual dispatch — deliberately no automatic PR open/sync trigger (avoids multi-bot auto-noise)  
+**Action:** `Nikita-Filonov/ai-review` (Marketplace: [xai-review](https://github.com/marketplace/actions/xai-review); SHA-pinned to v0.71.0; listed in `ACCEPTED_SINGLE_AUTHOR_ACTIONS`)  
+**Config:** `OPENROUTER_API_KEY` repo secret (shared); soft-skips (stays green) when missing; `continue-on-error: true` so reviews stay advisory  
+**Default model / command:** `google/gemini-2.5-flash` via OpenRouter, `run-summary`  
+**Bypass:** `[skip-review]` in the PR title (label lane)  
+**Template:** `templates/cicd/xai-review.yml` for downstream repos  
+**Notes:** Posts inline / context / summary reviews depending on command. Complementary to `ai-pr-review-openrouter.yml` (sticky summary). See `docs/OPENROUTER_MARKETPLACE_ACTIONS.md`.
+
 ## Disabled Workflows (Manual Dispatch Only)
 
 ### 1. pr-auto-review.yml
@@ -167,6 +178,7 @@ All workflows now use **valid OpenRouter model IDs**:
 |----------|--------|-----------------|
 | BITO AI | `BITO_API_KEY` | [bito.ai](https://bito.ai) → Settings → API Keys |
 | OpenRouter fallbacks | `OPENROUTER_API_KEY` | [openrouter.ai](https://openrouter.ai) → API Keys |
+| XAI Review | `OPENROUTER_API_KEY` | Same as above (no new vendor) |
 | PromptFoo | `OPENROUTER_API_KEY` | Same as above |
 
 ## FAQs

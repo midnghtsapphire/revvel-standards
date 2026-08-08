@@ -124,3 +124,7 @@ labels:
     color: d93f0b
     description: Bito AI review found changes needed.
     axis: review
+  - name: "xai-review"
+    color: 6f42c1
+    description: Opt-in XAI Review (Nikita-Filonov/ai-review) on this PR.
+    axis: review
