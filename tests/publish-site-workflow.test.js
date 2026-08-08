@@ -110,7 +110,8 @@ test('job has a hard timeout and concurrency group', () => {
 
 test('publish directory rejects path traversal', () => {
   // The resolve step must reject absolute paths and ".." segments so a
-  // misconfigured secret cannot rsync outside the checkout.
-  assert.match(raw, /\.\./);
+  // misconfigured dir input cannot rsync outside the checkout.
+  // Match the case arm itself — a bare /\.\./ would also hit unrelated text.
+  assert.match(raw, /\/\*|~\*|\*"\.\."\*/);
   assert.match(raw, /relative path inside the repo/);
 });
