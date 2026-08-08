@@ -88,6 +88,8 @@ Raise Amazon Vine review completion rate from **47% → 90%+** within 4–6 week
 | **[`wr/NORTH_STAR.md`](wr/NORTH_STAR.md)** | Overriding rules — above all other rules | Rules |
 | **[`SYSTEM_STATE.md`](SYSTEM_STATE.md)** | Current production state | State |
 | **[`docs/AGENTS.md`](docs/AGENTS.md)** | Universal agent instructions for all agents | Instructions |
+| **[`standards/GOAP_SWARM_RULES.md`](standards/GOAP_SWARM_RULES.md)** | Validated GOAP+swarm production rules (WR-16500) | Rules |
+| **[`products/goap-swarm-console`](products/goap-swarm-console)** | Interactive GOAP swarm planner SaaS | Product |
 
 ---
 

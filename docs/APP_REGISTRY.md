@@ -44,6 +44,7 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/ai-video-toolkit` | video, lead | — | needs review |
 | `products/cli-engine` | subscription, SaaS, CLI/MCP | — | needs review |
 | `products/creator-payout-tracker` | payout, subscription, video | — | needs review |
+| `products/goap-swarm-console` | agent/planner, SaaS, swarm | GOAP engine, research eval, export API | ✅ WR-16500 |
 | `products/openmythos` | (unclassified) | — | needs review |
 | `products/printbank` | digital-download, e-commerce, static | Vector print generator, photo print sizer (tested in `tests/printbank.test.js`) | needs review |
 | `products/prompt-generation-app` | OSINT, prompt | — | needs review |
