@@ -1,76 +1,21 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-08-08T05:35:30.458Z",
+  "generated_at": "2026-08-08T05:53:56.266Z",
   "stop": [
-    {
-      "id": 31239139050,
-      "name": "CodeQL",
-      "reason": "running 77m ≥ 60m budget"
-    },
-    {
-      "id": 31238647919,
-      "name": "CodeQL",
-      "reason": "running 91m ≥ 60m budget"
-    },
-    {
-      "id": 31238629139,
-      "name": "CodeQL",
-      "reason": "running 91m ≥ 60m budget"
-    },
-    {
-      "id": 31238613988,
-      "name": "CodeQL",
-      "reason": "running 91m ≥ 60m budget"
-    },
-    {
-      "id": 31238562592,
-      "name": "CodeQL",
-      "reason": "running 93m ≥ 60m budget"
-    },
-    {
-      "id": 31238326482,
-      "name": "CodeQL",
-      "reason": "running 99m ≥ 60m budget"
-    },
-    {
-      "id": 31238240877,
-      "name": "CodeQL",
-      "reason": "running 101m ≥ 60m budget"
-    },
-    {
-      "id": 31237830658,
-      "name": "CodeQL",
-      "reason": "running 112m ≥ 60m budget"
-    },
-    {
-      "id": 31237577358,
-      "name": "CodeQL",
-      "reason": "running 119m ≥ 60m budget"
-    },
-    {
-      "id": 31237348042,
-      "name": "CodeQL",
-      "reason": "running 125m ≥ 60m budget"
-    },
-    {
-      "id": 31237328517,
-      "name": "CodeQL",
-      "reason": "running 125m ≥ 60m budget"
-    },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 36841m ≥ 60m budget"
+      "reason": "running 36859m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 36911m ≥ 60m budget"
+      "reason": "running 36930m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 36982m ≥ 60m budget"
+      "reason": "running 37000m ≥ 60m budget"
     }
   ]
 }
