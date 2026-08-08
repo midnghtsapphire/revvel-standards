@@ -1,23 +1,24 @@
 # [WR] Finisher-2: Gumroad storefront
 
 ## Problem
-We have drafted products but no live checkout or gated delivery.
+Listing copy exists; live SKUs and anti-cannibalization (stop free full leak) do not.
 
 ## Outcome
-Set up live SKUs on Gumroad ($29 packs, $99 vault, $399 R&D fleet). Stop full free leaks by keeping only a teaser free on GitHub.
+Live Gumroad products: vault $99, packs $29, R&D fleet $399 with gated delivery.
 
 ## REVENUE_GATE
-Direct path to first $1 (Time to first $ = Days).
-
-## Research Gate
-Validate Gumroad API/setup for digital file delivery.
+- Buyer: operators buying skills vault / R&D fleet
+- Channel: Gumroad
+- Price: $29 / $99 / $399
+- First-$ signal: Days
 
 ## Acceptance Criteria
-- Live SKUs on Gumroad with file uploads, cover images, tags, and thank-you emails.
-- Free cannibalization stopped (raw GitHub is for free samples only).
+- [ ] Three live SKUs with payment + download
+- [ ] Public raw tarball no longer substitutes for paid R&D SKU
+- [ ] Listing URLs recorded in products/GUMROAD-LISTING.md
 
 ## Dependencies
-02-WR-Finisher-1-produce-dist-sellables.md
+Finisher-1 dist artifacts.
 
 ## Effort
 Medium

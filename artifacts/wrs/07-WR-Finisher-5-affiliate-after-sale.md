@@ -1,22 +1,24 @@
 # [WR] Finisher-5: Affiliate after sale
 
 ## Problem
-Affiliate/content sites exist (affiliate-hub, AI video toolkit) but aren't live with real links.
+Affiliate product deploys before first paid vault/pack sale dilute focus.
 
 ## Outcome
-Deploy affiliate content sites only *after* achieving at least 1 paid sale on Gumroad.
+Affiliate trio deploys only after ≥1 verified paid sale on Finisher-2 SKUs.
 
 ## REVENUE_GATE
-Secondary revenue stream ($200-$2k/mo).
-
-## Research Gate
-Gather real affiliate links for tools.
+- Buyer: affiliate end-users
+- Channel: Vercel product sites + affiliate networks
+- Price: commission
+- First-$ signal: After sale
 
 ## Acceptance Criteria
-- Affiliate sites deployed on Vercel with real links.
+- [ ] Sale evidence recorded (order id redacted OK)
+- [ ] Affiliate deploys gated in docs/scripts
+- [ ] Real affiliate links (no placeholders)
 
 ## Dependencies
-Wait on ≥1 paid sale from Gumroad.
+≥1 paid Gumroad sale.
 
 ## Effort
 Medium

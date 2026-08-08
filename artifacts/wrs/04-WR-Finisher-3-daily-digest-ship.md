@@ -1,26 +1,27 @@
-# [WR] Finisher-3: Daily-digest ship
+# [WR] Finisher-3: daily-digest ship
 
 ## Problem
-Daily Digest app is built in a workspace but not deployed to its own repo or Vercel.
+Daily Digest app was built in a chat workspace but not pushed to its own GitHub repo / Vercel project.
 
 ## Outcome
-Push the full Daily Digest app to `midnghtsapphire/daily-digest` and connect it to Vercel for a live URL.
+Public GitHub repo + Vercel HTTPS URL for Daily Digest portfolio proof.
 
 ## REVENUE_GATE
-Portfolio / soft revenue. Validates app shipping capabilities.
-
-## Research Gate
-Review daily-digest Vercel deployment requirements.
+- Buyer: portfolio / soft lead-in
+- Channel: Vercel public URL
+- Price: free tier → upsell organizer / vault
+- First-$ signal: Portfolio / soft $
 
 ## Acceptance Criteria
-- `daily-digest` repo populated.
-- Vercel URL live and accessible.
+- [ ] Repo exists (or monorepo product path documented)
+- [ ] `npm run build` green
+- [ ] Vercel URL in README test section
 
 ## Dependencies
-App access granted for `daily-digest`.
+GitHub createRepository / App install scope.
 
 ## Effort
-Low
+Medium
 
 ## Next WR
 05-WR-revvel-fixer-fleet-sweep.md

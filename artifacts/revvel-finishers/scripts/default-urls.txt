@@ -1,0 +1,3 @@
+# Default live URLs for audit-404s.sh (one per line).
+# Add product Vercel URLs here as they ship.
+https://midnghtsapphire.github.io/revvel-standards/

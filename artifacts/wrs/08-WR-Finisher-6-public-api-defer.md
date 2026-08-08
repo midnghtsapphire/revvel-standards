@@ -1,26 +1,24 @@
-# [WR] Finisher-6: Public API defer
+# [WR] Finisher-6: Public API (defer)
 
 ## Problem
-Public APIs are 404ing and take time/money to host and meter.
+Public `/api/*` product surface is attractive but premature before commerce loop closes.
 
 ## Outcome
-Explicitly defer public API hosting and Stripe metering until the core digital packs prove traction.
+Explicit deferral with reopen criteria — not a silent drop.
 
 ## REVENUE_GATE
-Preserves capital and focus.
-
-## Research Gate
-N/A.
+- Buyer: API customers (future)
+- Channel: metered API
+- Price: TBD usage billing
+- First-$ signal: Defer
 
 ## Acceptance Criteria
-- API endpoints documented as deferred.
-- No infrastructure spend wasted on unused APIs.
+- [x] Documented as deferred in ORDERED_WRS and organizer pipeline
+- [ ] Reopen only after Finisher-2 sale + Finisher-5 gate
+- [ ] No half-wired public API stubs on main
 
 ## Dependencies
-Wait on sales validation.
+Finisher-2 + Finisher-5.
 
 ## Effort
-Low
-
-## Next WR
-None
+Low (documentation) / High (when reopened)

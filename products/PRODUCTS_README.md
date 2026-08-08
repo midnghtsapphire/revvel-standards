@@ -8,6 +8,15 @@ Live product portfolio targeting **$10k/month → $10M in 3 years**.
 |---------|------|--------|--------|------|
 | prompt-generation-app | 3006 | promptforge.revvel.co | Shipped | $29 / $99mo / $499 |
 
+
+
+### Chat Deployment Organizer
+**Location:** `chat-deployment-organizer/`  
+**Port:** 3012  
+**Description:** Filter huge research chats and organize them into the correct Finisher deployment order with paste-ready WRs  
+**Revenue Model:** $29 one-shot pack, $99/mo workspace, $499 done-with-you  
+**Status:** ✅ Production Ready
+
 ## Local Development
 
 ```bash

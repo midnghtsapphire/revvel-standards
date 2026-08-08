@@ -1,23 +1,24 @@
 # [WR] Finisher-4: Landing CTAs
 
 ## Problem
-The Hub has static pages but no clear calls-to-action directing to the new Gumroad store.
+Hub landing does not reliably send buyers to live Gumroad SKUs.
 
 ## Outcome
-Wire up 3 CTAs on the Vercel hub (or a dedicated landing page) pointing directly to Gumroad checkouts.
+Primary CTAs on hub → Gumroad vault/packs with UTM tracking.
 
 ## REVENUE_GATE
-Critical for converting traffic to sales.
-
-## Research Gate
-Review UX for highest conversion paths.
+- Buyer: inbound hub traffic
+- Channel: hub → Gumroad
+- Price: same as Finisher-2 SKUs
+- First-$ signal: After Finisher-2
 
 ## Acceptance Criteria
-- Clear CTAs on landing page.
-- Links successfully route to Gumroad products.
+- [ ] CTA buttons resolve to live Gumroad URLs
+- [ ] No “coming soon” commerce CTAs
+- [ ] Screenshot or preview URL attached to PR
 
 ## Dependencies
-03-WR-Finisher-2-gumroad-storefront.md
+Finisher-2 live SKUs.
 
 ## Effort
 Low

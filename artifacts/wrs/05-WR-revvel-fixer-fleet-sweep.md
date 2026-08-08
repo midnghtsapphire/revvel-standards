@@ -1,27 +1,27 @@
 # [WR] revvel-fixer: Fleet sweep
 
 ## Problem
-The repo has 404s, dead workflows, incomplete TODOs, and "shipped" items that aren't actually live.
+404s, dead workflows, TODO stubs, and shipped-vs-live drift burn trust and block sales.
 
 ## Outcome
-Sweep the fleet using scripts. Fix broken links, bad merges, and unfinished projects.
+Script-first sweep with fail-closed exit codes; atomic PRs only for localized fixes.
 
 ## REVENUE_GATE
-Indirect. Ensures quality and removes friction for buyers.
-
-## Research Gate
-Use scripts (`audit-404s.sh`, etc.) first before assigning multi-hunk repair to agents.
+- Buyer: internal reliability
+- Channel: green main
+- Price: indirect (protects paid SKUs)
+- First-$ signal: Indirect
 
 ## Acceptance Criteria
-- 404s resolved.
-- Dead workflows pruned or fixed.
-- "Shipped" status accurately reflects reality.
+- [ ] `artifacts/revvel-finishers/scripts/audit-404s.sh` runs in CI or on demand
+- [ ] Dead workflow paths listed and fixed or intentionally removed
+- [ ] No silent `exit 0` when postcondition fails
 
 ## Dependencies
-01-WR-Finisher-0-bootstrap-revvel-finishers.md
+Can parallel after Finisher-1.
 
 ## Effort
-High
+Medium
 
 ## Next WR
 06-WR-Finisher-4-landing-ctas.md

@@ -1,0 +1,11 @@
+Ctrl+K
+Worked for 26s
+Skip to content
+I want to create repository revvel-finishers that clean up fragmented code.
+REVENUE_GATE — name buyer, channel, price. Scripts before agents.
+0 Finisher-0 Create revvel-finishers + SYSTEM_PROMPT
+1 Finisher-1 build_skills_vault.py + build_packs.py → products/dist
+2 Finisher-2 Gumroad live vault $99 packs $29 R&D $399
+3 Finisher-3 daily-digest push + Vercel
+Issue create returned 403 permission gap.
+Bottom line: commerce last-mile is the blocker.
