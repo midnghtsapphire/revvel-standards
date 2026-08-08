@@ -89,44 +89,12 @@ def days_between(now: datetime, then: datetime | None) -> int | None:
     return max((now - then).days, 0)
 
 
-def calculate_priority_score(
-    repo: dict[str, Any],
-    *,
-    now: datetime | None = None,
-) -> float:
-    """Weighted score: push recency + release recency + log stars + starred age."""
-    clock = now or datetime.now(timezone.utc)
-
-    days_since_push = days_between(clock, parse_iso(repo.get("pushedAt")))
-    score_push = math.exp(-(days_since_push or 3650) / 60) * 40 if days_since_push is not None else 0.0
-
-    releases = (repo.get("releases") or {}).get("nodes") or []
-    if releases:
-        days_since_release = days_between(clock, parse_iso(releases[0].get("createdAt")))
-        score_release = (
-            math.exp(-(days_since_release or 3650) / 90) * 30
-            if days_since_release is not None
-            else 0.0
-        )
-    else:
-        score_release = 0.0
-
-    stars = int(repo.get("stargazerCount") or 0)
-    score_stars = min(math.log10(max(stars, 1)) * 10, 20)
-
-    days_starred = days_between(clock, parse_iso(repo.get("starredAt")))
-    score_starred = (
-        math.exp(-(days_starred or 3650) / 14) * 10 if days_starred is not None else 0.0
-    )
-
-    return round(score_push + score_release + score_stars + score_starred, 2)
-
-
 def score_breakdown(
     repo: dict[str, Any],
     *,
     now: datetime | None = None,
 ) -> dict[str, float]:
+    """Component scores + total. Single source of truth for the formula."""
     clock = now or datetime.now(timezone.utc)
     days_since_push = days_between(clock, parse_iso(repo.get("pushedAt")))
     score_push = math.exp(-(days_since_push or 3650) / 60) * 40 if days_since_push is not None else 0.0
@@ -154,6 +122,15 @@ def score_breakdown(
         "starred_at": round(score_starred, 2),
         "total": total,
     }
+
+
+def calculate_priority_score(
+    repo: dict[str, Any],
+    *,
+    now: datetime | None = None,
+) -> float:
+    """Weighted score: push recency + release recency + log stars + starred age."""
+    return score_breakdown(repo, now=now)["total"]
 
 
 STARRED_REPOS_QUERY = """
