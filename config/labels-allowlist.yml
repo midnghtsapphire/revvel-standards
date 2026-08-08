@@ -51,6 +51,11 @@ labels:
   - name: "won't-merge"
   - name: checks-passing
   - name: checks-failing
+  # Canonical lifecycle state applied by pr-check-status / pr-lifecycle /
+  # pr-state-orchestrator / stuck-label-watchdog when a PR is green and
+  # approved. Was applied by those workflows but missing here, so every
+  # green PR failed the Governance gate on its own success label (PR #17091).
+  - name: ready-to-merge
   - name: credentials-missing
   - name: credentials-ready
   - name: ready-to-implement
