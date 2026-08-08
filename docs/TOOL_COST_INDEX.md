@@ -24,6 +24,8 @@ upgrade decision can be made.
 | Mabl | **PAUSED 2026-05-27** | $0 | — | est. starts $150+ / mo; note: local/CI CLI runs are credit-free (see `skills/mabl-expert/`) | **cut** (replaced by Keploy; D010) | mabl.com/pricing (verify) |
 | Octopus Review | **REPLACED 2026-07-08** | $0 (hosted; monthly AI quota hit) | BYOK / self-host | $0 platform + provider usage | **replace → ai-pr-review-openrouter.yml** (D008) | octopus-review.ai (verify) |
 | Augment Code | Free (limited) | $0 | per their pricing | per their pricing | keep | augmentcode.com |
+| Stacker (stacker-bot) | Free (installed #16874, install `150619571`) | $0 | — | n/a (free indefinitely) | **keep** (stacked-PR TOC + merge-order guard; legacy CLI) | github.com/apps/stacker-bot · stacker-site.now.sh |
+| Graphite | Free tier (public / ≤10 users) | $0 | Team | est. $25 / user / mo | keep (preferred modern stacking; see GRAPHITE_INTEGRATION.md) | graphite.dev/pricing |
 | Cypress | OSS / Free | $0 | Cypress Cloud — est. $75/mo team | est. $75 / mo | keep | cypress.io/pricing (verify) |
 | Applitools | Free (100 checkpoints/mo) | $0 | Starter | est. $45 / mo | keep | applitools.com/pricing (verify) |
 | Postman | Free | $0 | Basic | est. $14 / user / mo | keep | postman.com/pricing (verify) |

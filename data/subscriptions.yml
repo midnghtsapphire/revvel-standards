@@ -258,3 +258,25 @@ subscriptions:
     notes: >-
       Usage-priced per Google plan. Per docs/TOOL_COST_INDEX.md — varies.
       Fill in latest invoice total when known.
+
+  - name: Stacker (stacker-bot)
+    vendor: stackedpr
+    type: github_app
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: free
+    cost: 0
+    currency: USD
+    repositories:
+      - midnghtsapphire/revvel-standards
+    dashboard_url: https://github.com/settings/installations/150619571
+    decision_doc: docs/STACKER_BOT_INSTALLATION.md
+    notes: >-
+      Free stacked-PR GitHub App installed 2026-08-01 (installation ID
+      150619571, app slug stacker-bot). No API key or paid plan. Manages
+      stacked PR TOCs and blocks out-of-order merges via status checks.
+      CLI: brew tap stackedpr/stacker && brew install stacker.
+      Marketplace: https://github.com/marketplace/stacked-pull-requests
+      App page: https://github.com/apps/stacker-bot

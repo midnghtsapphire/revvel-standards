@@ -124,3 +124,11 @@ labels:
     color: d93f0b
     description: Bito AI review found changes needed.
     axis: review
+  - name: "stacker"
+    color: f97316
+    description: Touched by stacker-bot (stacked PR tooling).
+    axis: review
+  - name: "stacker:stacked"
+    color: ea580c
+    description: PR is part of a multi-PR stack managed by stacker-bot.
+    axis: review

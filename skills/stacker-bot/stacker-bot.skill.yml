@@ -1,0 +1,38 @@
+name: stacker_bot
+title: "Stacker Bot — Stacked Pull Requests"
+version: "1.0.0"
+date: "2026-08-08"
+status: "active"
+platform: "https://github.com/apps/stacker-bot"
+installation_id: "150619571"
+integration_doc: "docs/STACKER_BOT_INTEGRATION.md"
+verification_doc: "docs/STACKER_BOT_INSTALLATION.md"
+category: "PR Workflow & Merge Hygiene"
+access: all
+persona: reviewer
+
+description: >
+  Free stacked-PR GitHub App (stacker-bot, installation 150619571). Splits
+  large changes into dependent PR stacks, maintains a TOC on the main stack
+  PR, and blocks out-of-order merges with status checks. No API key required.
+  Complementary to Graphite.
+
+labels:
+  - name: stacker
+    color: "f97316"
+    description: "Touched by stacker-bot (stacked PR tooling)"
+  - name: "stacker:stacked"
+    color: "ea580c"
+    description: "PR is part of a multi-PR stack managed by stacker-bot"
+
+secrets: []
+
+triggers:
+  - stacker
+  - stacker-bot
+  - stacked pr
+  - stacked pull request
+  - pr stack
+  - stack toc
+  - merge order
+  - stacker cli
