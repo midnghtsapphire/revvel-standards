@@ -4,10 +4,12 @@ out/
 .gitbutler/*
 !.gitbutler/config.json
 
-# Logs (but keep audit logs)
+# Logs (but keep audit logs + FAILURE-LEDGER)
 logs/*
 !logs/agent-audit/
 logs/agent-audit/*.log
+!logs/failure-ledger/
+!logs/failure-ledger/**
 *.log
 
 # Python artifacts (applies repo-wide; sub-projects have their own ignores too)
