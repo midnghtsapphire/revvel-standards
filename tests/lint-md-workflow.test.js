@@ -70,6 +70,18 @@ test('lint-md is least-privilege and has a hard timeout', () => {
   assert.ok(doc.jobs.markdownlint['timeout-minutes'] <= 15);
 });
 
+test('lint-md pins every third-party uses: line to a full commit SHA', () => {
+  const uses = raw.split('\n').filter((line) => /^\s*-?\s*uses:\s*[\w.-]+\/[\w.-]+@/.test(line));
+  assert.ok(uses.length >= 2, 'expected checkout + nosborn uses lines');
+  for (const line of uses) {
+    assert.match(
+      line,
+      /uses:\s*[\w.\/-]+@[0-9a-f]{40}\b/,
+      `unpinned action: ${line.trim()}`,
+    );
+  }
+});
+
 test('.markdownlint.yaml and .markdownlintignore exist for the action inputs', () => {
   assert.ok(fs.existsSync(configYamlPath), 'expected .markdownlint.yaml');
   assert.ok(fs.existsSync(ignorePath), 'expected .markdownlintignore');
