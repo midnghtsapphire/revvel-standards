@@ -7,6 +7,13 @@ sheaf consistency, persistent sheaf cohomology, and imprint-at-spawn built
 
 ## Contents
 
+- [`observatory.html`](./observatory.html) — **VEINS Topology Lab** public
+  shell (persistence diagrams, cohomology explorer, fleet constellation,
+  investor/employer surface). Linked from the root hub as
+  **Method · Living Manifold**.
+- [`COHOMOLOGY_PROOFS.md`](./COHOMOLOGY_PROOFS.md) — rank-nullity /
+  ker–coker identities for $H^0$ / $H^1$ with synthetic Path / Cycle /
+  Conflict table.
 - [`MOTU_MASTER_PROMPT.md`](./MOTU_MASTER_PROMPT.md) — full MOTU master
   prompt with dual (algebraic + chemistry/cognitive) embedding language.
 - [`NSD_EXPLORATION.md`](./NSD_EXPLORATION.md) — sheaf neural networks
@@ -27,8 +34,11 @@ a metaphorical sheaf. BNAT makes that geometry rigorous:
 | Restriction maps | per-edge linear maps `ru`/`rv` (identity by default) |
 | Sheaf Laplacian energy E(x) | `laplacianEnergy()` — E(x) = Σₑ ‖Rᵤxᵤ − Rᵥxᵥ‖² |
 | H¹ obstruction detection + transition patches | `h1Obstructions(ε)` |
-| Persistent homology barcodes | `scripts/bnatsheaf/persistence.js` (`computeBarcodes`) |
+| Sheaf cohomology groups $H^0\cong\ker\delta$, $H^1\cong\operatorname{coker}\delta$ | `scripts/bnatsheaf/cohomology.js` |
+| Persistent homology barcodes + diagrams | `scripts/bnatsheaf/persistence.js` (`PersistenceDiagram`) |
+| Neural Sheaf Diffusion stub (optional) | `scripts/bnatsheaf/nsd.js` |
 | Imprint-at-spawn | `scripts/bnatsheaf/cli.js imprint_agent --agent <name>` |
+| Public Observatory | [`observatory.html`](./observatory.html) |
 
 A **global section** exists exactly when every overlap agrees:
 `E(x) = 0 ⇔ x ∈ H⁰`. Positive energy localizes the obstruction — the

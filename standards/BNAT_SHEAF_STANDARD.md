@@ -35,8 +35,12 @@ global section is a rubber stamp, not a sheaf.
 | Layer | File | Responsibility |
 | --- | --- | --- |
 | Core sheaf | `scripts/bnatsheaf/sheaf.js` | Cellular sheaf, restriction maps, E(x), H¹ obstruction + transition patches |
-| Persistence | `scripts/bnatsheaf/persistence.js` | Filtration, H⁰/H¹ barcodes (union-find, elder rule), long-lived-bar detection |
+| Cohomology | `scripts/bnatsheaf/cohomology.js` | $H^0\cong\ker\delta$, $H^1\cong\operatorname{coker}\delta$, rank-nullity certificates |
+| Persistence | `scripts/bnatsheaf/persistence.js` | Filtration, H⁰/H¹ barcodes, `PersistenceDiagram`, topological fingerprint |
+| NSD (optional) | `scripts/bnatsheaf/nsd.js` | Learnable scalar restrictions + discrete diffusion healing flow |
 | Harness | `scripts/bnatsheaf/cli.js` | `consistency_check`, `imprint_agent`, `ph_monitor` |
+| Observatory | `docs/bnatsheaf/observatory.html` | Public Topology Lab shell (hub: Method · Living Manifold) |
+| Proofs | `docs/bnatsheaf/COHOMOLOGY_PROOFS.md` | Formal ker/coker + energy identities |
 | Tests | `tests/bnatsheaf.test.js` | Unit, integration, property, topological-regression |
 | Skill | `skills/bnatsheaf/SKILL.md` | Imprints the invariant into every agent instantiation |
 | Docs | `docs/bnatsheaf/` | README, MOTU master prompt, NSD follow-on |

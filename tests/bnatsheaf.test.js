@@ -21,7 +21,21 @@ const {
   computeBarcodes,
   longLivedH1,
   barcodesFromBiomeStatus,
+  PersistenceDiagram,
+  diagramFromBiomeStatus,
 } = require('../scripts/bnatsheaf/persistence');
+const {
+  sheafCohomology,
+  cohomologyFromBiomeStatus,
+  syntheticComplex,
+  matrixRank,
+  coboundaryMatrix,
+} = require('../scripts/bnatsheaf/cohomology');
+const {
+  learnScalarRestriction,
+  diffuse,
+  freezeScalarRestriction,
+} = require('../scripts/bnatsheaf/nsd');
 const {
   consistencyCheck,
   imprintAgent,
@@ -258,4 +272,95 @@ test('additive guarantee: BIOME sheaf exports are untouched and still glue', () 
   assert.equal(status.schema, 'biome-status/v1');
   // and the mathematical layer consumes the same feed shape
   assert.equal(consistencyCheck(status).consistent, true);
+});
+
+// ── unit: sheaf cohomology groups + proofs ──────────────────────────────────
+
+test('cohomology: path has dim H⁰=1, dim H¹=0 and rank-nullity holds', () => {
+  const c = sheafCohomology(syntheticComplex('path'));
+  assert.equal(c.dimH0, 1);
+  assert.equal(c.dimH1, 0);
+  assert.equal(c.obstructed, false);
+  assert.equal(c.rankNullityHolds, true);
+  assert.equal(c.cokerIdentityHolds, true);
+});
+
+test('cohomology: cycle has dim H⁰=1, dim H¹=1 (essential loop)', () => {
+  const c = sheafCohomology(syntheticComplex('cycle'));
+  assert.equal(c.dimH0, 1);
+  assert.equal(c.dimH1, 1);
+  assert.equal(c.energy, 0);
+  assert.equal(c.rankNullityHolds, true);
+});
+
+test('cohomology: conflict keeps H¹ and raises energy (never silent glue)', () => {
+  const c = sheafCohomology(syntheticComplex('conflict'));
+  assert.equal(c.dimH1, 1);
+  assert.ok(c.energy > 0);
+  assert.equal(c.obstructed, true);
+});
+
+test('cohomologyFromBiomeStatus: degraded feed is obstructed', () => {
+  const c = cohomologyFromBiomeStatus(degradedStatus);
+  assert.equal(c.obstructed, true);
+  assert.ok(c.energy > 0);
+});
+
+test('matrixRank of identity is full and of zero matrix is 0', () => {
+  assert.equal(matrixRank(identity(3)), 3);
+  assert.equal(matrixRank([[0, 0], [0, 0]]), 0);
+  const { matrix } = coboundaryMatrix(syntheticComplex('path'));
+  assert.equal(matrixRank(matrix), 2); // tree on 3 verts → rank 2
+});
+
+// ── unit: persistence diagrams + fingerprint ────────────────────────────────
+
+test('PersistenceDiagram builds plot points and flags systemic tears', () => {
+  const barcodes = computeBarcodes(['a', 'b', 'c'], [
+    { u: 'a', v: 'b', weight: 1 },
+    { u: 'b', v: 'c', weight: 2 },
+    { u: 'a', v: 'c', weight: 3 },
+  ]);
+  const diagram = new PersistenceDiagram(barcodes, 3);
+  assert.ok(diagram.points.some((p) => p.dim === 1 && p.death === null));
+  const fp = diagram.fingerprint(0);
+  assert.equal(fp.schema, 'bnatsheaf-topological-fingerprint/v1');
+  assert.ok(fp.immortalH1 >= 1);
+  assert.ok(diagram.plotPoints().every((p) => typeof p.x === 'number'));
+});
+
+test('diagramFromBiomeStatus: degraded feed surfaces systemic tears', () => {
+  const fp = diagramFromBiomeStatus(degradedStatus).fingerprint(0);
+  assert.ok(fp.systemicTears.length >= 1 || fp.longLivedH1 >= 1);
+});
+
+// ── unit: Neural Sheaf Diffusion stub ───────────────────────────────────────
+
+test('NSD learnScalarRestriction recovers the ratio that glues stalks', () => {
+  const w = learnScalarRestriction(1, 2, { lr: 0.05, steps: 300 });
+  assert.ok(Math.abs(w - 2) < 1e-3, `expected w≈2, got ${w}`);
+  const sheaf = freezeScalarRestriction(1, 2);
+  assert.ok(sheaf.laplacianEnergy() < 1e-6);
+});
+
+test('NSD diffuse decreases Dirichlet energy on a conflict complex', () => {
+  const start = syntheticComplex('conflict');
+  const before = start.laplacianEnergy();
+  const { finalEnergy, trajectory } = diffuse(start, { steps: 12, eta: 0.2 });
+  assert.ok(trajectory.length === 12);
+  assert.ok(finalEnergy < before, `energy should fall: ${before} → ${finalEnergy}`);
+});
+
+// ── docs / observatory surface ──────────────────────────────────────────────
+
+test('Observatory HTML shell ships with cohomology + PD studio markers', () => {
+  const html = fs.readFileSync(
+    path.join(__dirname, '..', 'docs', 'bnatsheaf', 'observatory.html'),
+    'utf8'
+  );
+  assert.ok(html.includes('VEINS Topology Lab'));
+  assert.ok(html.includes('Persistence Diagram'));
+  assert.ok(html.includes('Sheaf Cohomology'));
+  assert.ok(html.includes('Investor / Employer'));
+  assert.ok(html.includes('prefers-reduced-motion'));
 });

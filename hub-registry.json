@@ -3,5 +3,15 @@
   "repo": "midnghtsapphire/revvel-standards",
   "generated_by": "scripts/build-hub-registry.js",
   "pages_base_url": "https://midnghtsapphire.github.io/revvel-standards/",
-  "entries": []
+  "entries": [
+    {
+      "slug": "veins-topology-lab",
+      "title": "VEINS Topology Lab",
+      "description": "Interactive sheaf cohomology + persistence diagram observatory. Self-healing governance as geometry — BIOME fleet constellation, imprint-at-spawn, investor-ready surface.",
+      "path": "./docs/bnatsheaf/observatory.html",
+      "tag": "Method · Living Manifold",
+      "issue": 16901,
+      "live_url": "https://midnghtsapphire.github.io/revvel-standards/docs/bnatsheaf/observatory.html"
+    }
+  ]
 }

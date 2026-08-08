@@ -47,6 +47,14 @@ Do not relax epsilon; do not delete edges.
 
 ```js
 const { CellularSheaf, sheafFromBiomeStatus } = require('./scripts/bnatsheaf/sheaf');
-const { computeBarcodes } = require('./scripts/bnatsheaf/persistence');
+const { computeBarcodes, PersistenceDiagram } = require('./scripts/bnatsheaf/persistence');
+const { sheafCohomology, syntheticComplex } = require('./scripts/bnatsheaf/cohomology');
+const { diffuse, learnScalarRestriction } = require('./scripts/bnatsheaf/nsd');
 const { consistencyCheck, imprintAgent, phMonitor } = require('./scripts/bnatsheaf/cli');
 ```
+
+## Public surface
+
+Open `docs/bnatsheaf/observatory.html` (hub card: **Method · Living Manifold**)
+for interactive cohomology, persistence diagrams, fleet constellation, and the
+investor/employer narrative. Proof note: `docs/bnatsheaf/COHOMOLOGY_PROOFS.md`.
