@@ -31,6 +31,9 @@ Thumbs.db
 .env
 .env.local
 
+# Optional cached third-party prompt bodies (indexes stay committed)
+prompts/external/**/cache/
+
 # Scratch files occasionally committed by automation (Jules, Copilot, etc.)
 pr-body.md
 .jules/
