@@ -56,7 +56,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          # Need a token that can push the badge commit on main.
+          # Default GITHUB_TOKEN on purpose: badge-only docs commits must not
+          # fan out a full CI storm on main (CLAUDE.md gotcha #3). Use
+          # secrets.AGENT_PR_TOKEN only if a downstream workflow must run.
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Resolve organization
@@ -83,16 +85,32 @@ jobs:
           echo "organization=${org}" >> "$GITHUB_OUTPUT"
           echo "skip=false" >> "$GITHUB_OUTPUT"
 
+      # secrets.A || secrets.B is not a real fallback in Actions expressions —
+      # an unset secret becomes "" and the right-hand side is never used. Pick
+      # the token in the shell and export it for the next step instead.
+      - name: Resolve badge API token
+        if: steps.org.outputs.skip != 'true'
+        env:
+          ORG_TOKEN: ${{ secrets.ORG_README_BADGES_TOKEN }}
+          DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -n "${ORG_TOKEN}" ]; then
+            echo "BADGE_API_TOKEN=${ORG_TOKEN}" >> "$GITHUB_ENV"
+          else
+            echo "BADGE_API_TOKEN=${DEFAULT_TOKEN}" >> "$GITHUB_ENV"
+          fi
+
       - name: GitHub Organization Readme Badge Generator
         if: steps.org.outputs.skip != 'true'
         id: organization-readme-badge-generator
         uses: joshjohanning/organization-readme-badge-generator@55eed124ca46c09a654d886a98413c5bfc6c3803 # v2.0.3
         with:
           organization: ${{ steps.org.outputs.organization }}
-          # Default GITHUB_TOKEN is enough for public org stats. For private
-          # orgs, replace with an app installation token or fine-scoped PAT
-          # (secrets.ORG_README_BADGES_TOKEN) that can read the org.
-          token: ${{ secrets.ORG_README_BADGES_TOKEN || secrets.GITHUB_TOKEN }}
+          # BADGE_API_TOKEN is ORG_README_BADGES_TOKEN when set, else GITHUB_TOKEN.
+          # GITHUB_TOKEN is enough for public org stats; set the optional secret
+          # for private orgs that the default token cannot read.
+          token: ${{ env.BADGE_API_TOKEN }}
           days: ${{ github.event.inputs.days || '30' }}
           color: blue
           label_color: '555'
@@ -118,29 +136,33 @@ jobs:
           BADGES: ${{ steps.organization-readme-badge-generator.outputs.badges }}
         run: |
           set -euo pipefail
-          readme=README.md
-          startMarker="<!-- start organization badges -->"
-          endMarker="<!-- end organization badges -->"
-
-          if ! grep -Fq "${startMarker}" "${readme}" || ! grep -Fq "${endMarker}" "${readme}"; then
-            echo "::error::README.md must contain ${startMarker} and ${endMarker}"
-            exit 1
-          fi
-
-          beforeHash=$(sha256sum "${readme}" | awk '{ print $1 }')
-
-          # Escape replacement for perl so shields.io URLs with / $ ( ) @ stay literal.
-          replacementEscaped=$(printf '%s\n' "${BADGES}" | perl -pe 's/([\\\/\$\(\)@])/\\$1/g')
-
-          perl -i -pe "BEGIN{undef \$/;} s/\Q${startMarker}\E.*?\Q${endMarker}\E/${startMarker}\n${replacementEscaped}\n${endMarker}/smg" "${readme}"
-
-          afterHash=$(sha256sum "${readme}" | awk '{ print $1 }')
-          if [ "${afterHash}" = "${beforeHash}" ]; then
-            echo "No badge content changes."
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
+          # Node replaces the marker window without shell-interpolating badge
+          # markdown into a perl -e string (newlines / $ / / would break that).
+          node <<'NODE'
+          const fs = require('fs');
+          const readmePath = 'README.md';
+          const start = '<!-- start organization badges -->';
+          const end = '<!-- end organization badges -->';
+          const badges = process.env.BADGES || '';
+          const text = fs.readFileSync(readmePath, 'utf8');
+          const startIdx = text.indexOf(start);
+          const endIdx = text.indexOf(end);
+          if (startIdx < 0 || endIdx < 0 || endIdx < startIdx) {
+            console.error(`README.md must contain ${start} before ${end}`);
+            process.exit(1);
+          }
+          const before = text;
+          const next =
+            text.slice(0, startIdx + start.length) +
+            '\n' +
+            badges +
+            '\n' +
+            text.slice(endIdx);
+          fs.writeFileSync(readmePath, next);
+          const changed = before !== next;
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed=${changed}\n`);
+          console.log(changed ? 'Badge markers updated.' : 'No badge content changes.');
+          NODE
 
       - name: Commit organization readme badges
         # Only push from the default branch so a manual dispatch on a feature
@@ -158,6 +180,7 @@ jobs:
             echo "No organization badge changes to commit."
             exit 0
           fi
-          git commit -m "docs: update organization readme badges"
+          # [skip ci] keeps badge-only docs commits from re-entering the CI fan-out.
+          git commit -m "docs: update organization readme badges [skip ci]"
           git pull --rebase origin "${{ github.event.repository.default_branch }}"
           git push origin "HEAD:${{ github.event.repository.default_branch }}"

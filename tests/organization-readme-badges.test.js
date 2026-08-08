@@ -57,8 +57,14 @@ test('organization badge workflow is wired for #16201', () => {
   // Marker injection + default-branch-only commit (no surprise pushes from forks).
   assert.match(wf, /<!-- start organization badges -->/);
   assert.match(wf, /<!-- end organization badges -->/);
-  assert.match(wf, /docs: update organization readme badges/);
+  assert.match(wf, /docs: update organization readme badges \[skip ci\]/);
   assert.match(wf, /github\.event\.repository\.default_branch/);
+
+  // Token fallback must not use secrets.A || secrets.B (empty secret wins).
+  assert.doesNotMatch(wf, /secrets\.ORG_README_BADGES_TOKEN\s*\|\|\s*secrets\.GITHUB_TOKEN/);
+  assert.match(wf, /BADGE_API_TOKEN/);
+  // Marker rewrite must go through Node (not shell-interpolated perl -e).
+  assert.match(wf, /node <<'NODE'/);
 
   // CLAUDE.md gotcha #8: every remote action ref is a full 40-char SHA.
   const uses = wf.match(/uses:\s*\S+/g) || [];
@@ -66,6 +72,35 @@ test('organization badge workflow is wired for #16201', () => {
   for (const line of uses) {
     assert.match(line, /uses:\s*[\w.-]+\/[\w.-]+@[0-9a-f]{40}$/, `unpinned action: ${line}`);
   }
+});
+
+test('README marker injection handles multi-line badge markdown', () => {
+  // Mirrors the workflow's node <<'NODE' block so a regression in the
+  // replacement window is caught without needing a live Actions runner.
+  const os = require('node:os');
+  const start = '<!-- start organization badges -->';
+  const end = '<!-- end organization badges -->';
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'org-badges-'));
+  const readmePath = path.join(dir, 'README.md');
+  fs.writeFileSync(readmePath, `# Title\n${start}\nold\n${end}\nfooter\n`);
+  const badges = '![a](https://img.shields.io/badge/a-1-blue)\n![b](https://img.shields.io/badge/b-2-blue)';
+  const text = fs.readFileSync(readmePath, 'utf8');
+  const startIdx = text.indexOf(start);
+  const endIdx = text.indexOf(end);
+  const next =
+    text.slice(0, startIdx + start.length) +
+    '\n' +
+    badges +
+    '\n' +
+    text.slice(endIdx);
+  fs.writeFileSync(readmePath, next);
+  const updated = fs.readFileSync(readmePath, 'utf8');
+  assert.match(updated, /!\[a\]/);
+  assert.match(updated, /!\[b\]/);
+  assert.ok(updated.indexOf(start) < updated.indexOf('![a]'));
+  assert.ok(updated.indexOf('![b]') < updated.indexOf(end));
+  assert.match(updated, /footer/);
+  fs.rmSync(dir, { recursive: true, force: true });
 });
 
 test('README has organization badge markers for injection', () => {
