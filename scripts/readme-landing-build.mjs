@@ -69,6 +69,12 @@ function extract(md) {
       rest = rest.replace(m[0], "");
       hasBadge = true;
     }
+    // After stripping badge images, linked badges leave an empty link wrapper
+    // like `[](https://example.com)`. Strip those too before deciding if the
+    // line is badge-only (e.g. `[![img](shields)](link)`).
+    if (hasBadge) {
+      rest = rest.replace(/\[[^\]]*\]\([^)]*\)/g, "");
+    }
     // Skip lines that contained only badges (shields.io images) to avoid
     // duplicating them in the body — they are already rendered in the hero.
     if (hasBadge && !rest.trim()) continue;
@@ -184,10 +190,13 @@ function inline(s) {
     last = m.index + m[0].length;
     if (m[0].startsWith("!")) {
       // Image: ![alt](url) or ![alt](url "title")
-      result += `<img src="${safeHref(m[2])}" alt="${esc(m[1])}" loading="lazy" />`;
+      // esc() is applied to the href/src after safeHref() to prevent attribute
+      // injection — a URL like http://x.com/"onmouseover="alert(1) must have
+      // the quote neutralised before it lands in the attribute value.
+      result += `<img src="${esc(safeHref(m[2]))}" alt="${esc(m[1])}" loading="lazy" />`;
     } else {
       // Link: [text](url) or [text](url "title")
-      result += `<a href="${safeHref(m[4])}" rel="noopener noreferrer">${esc(m[3])}<\/a>`;
+      result += `<a href="${esc(safeHref(m[4]))}" rel="noopener noreferrer">${esc(m[3])}<\/a>`;
     }
   }
   result += esc(s.slice(last));
@@ -326,7 +335,10 @@ if (opt.all) {
   const dir = process.cwd();
   for (const f of fs.readdirSync(dir)) {
     if (!f.endsWith(".md")) continue;
-    const outName = f.toLowerCase() === "readme.md" ? "index.html" : f.replace(/\.md$/i, ".html");
+    const outName =
+      f.toLowerCase() === "readme.md"
+        ? "index.html"
+        : f.toLowerCase().replace(/\.md$/i, ".html");
     results.push(
       processOne(path.join(dir, f), path.join("site", outName), opt),
     );
