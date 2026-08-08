@@ -17,10 +17,7 @@
 const https = require("https");
 const fs = require('fs');
 const path = require('path');
-const {
-  getOpenRouterKey,
-  openRouterAuthHeader,
-} = require("./utils/openrouter-key");
+const { openRouterAuthHeader } = require("./utils/openrouter-key");
 
 const OPENROUTER_HOST = "openrouter.ai";
 const OPENROUTER_PATH = "/api/v1/chat/completions";
@@ -107,9 +104,10 @@ if (lookupData && lookupData.profiles && lookupData.models) {
  * @returns {Promise<Object>} Response with content, modelUsed, and requestedModels
  */
 async function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000, apiKey, timeout = 60000, httpReferer, appTitle }) {
-  // Sanitize via shared helper so a secret pasted with a trailing newline/CR
-  // (issue #16942) cannot crash Node header construction again.
-  const key = getOpenRouterKey({ apiKey, required: true });
+  // Sanitize + validate once via shared helper so a secret pasted with a
+  // trailing newline/CR (issue #16942) cannot crash Node header construction.
+  // openRouterAuthHeader throws if the key is empty after sanitization.
+  const authorization = openRouterAuthHeader(apiKey);
 
   if (!models || !Array.isArray(models) || models.length === 0) {
     throw new Error("models array is required and must contain at least one model");
@@ -138,7 +136,7 @@ async function callOpenRouter({ models, messages, temperature = 0.7, max_tokens 
       headers: {
         "Content-Type": "application/json",
         "Content-Length": Buffer.byteLength(body),
-        "Authorization": openRouterAuthHeader(key),
+        "Authorization": authorization,
         "HTTP-Referer": referer,
         "X-Title": title,
       },
