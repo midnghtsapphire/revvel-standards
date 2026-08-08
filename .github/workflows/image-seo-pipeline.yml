@@ -59,13 +59,6 @@ jobs:
         run: node scripts/image-seo-build-pack.mjs --brief artifacts/image-automation/brief.json --out artifacts/image-automation/package.json
 
       - name: Upload pack artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: image-creation-pack
-          path: artifacts/image-automation/
-
-      - name: Open draft PR with pack
-        uses: peter-evans/create-pull-request@v6
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
         with:
           name: image-creation-pack

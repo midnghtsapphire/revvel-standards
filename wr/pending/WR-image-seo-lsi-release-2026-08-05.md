@@ -19,11 +19,6 @@
 - No API keys in blueprints.
 - Prefer Actions over labels (AUTOMATION_FIRST_STACK).
 - Studio UI is **dev/debug only**, not the production control plane.
-- Agents write WR + code + docs
-- **Humans merge only.**
-- No API keys in blueprints
-- Prefer Actions over labels (AUTOMATION_FIRST_STACK)
-- Studio UI is **dev/debug only**, not the production control plane
 
 ## Labels
 `wr`, `human-review-required`, `priority:p1`, `automation`, `area:automation`, `formal:auto-wr`

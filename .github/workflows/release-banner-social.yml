@@ -51,10 +51,6 @@ jobs:
           node scripts/image-seo-build-pack.mjs --brief artifacts/image-automation/brief.json --out artifacts/image-automation/release-pack.json
 
       - name: Upload SEO pack
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-banner-pack
-          path: artifacts/image-automation/
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
         with:
           name: release-banner-pack
