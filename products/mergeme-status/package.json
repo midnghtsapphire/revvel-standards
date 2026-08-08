@@ -1,0 +1,26 @@
+{
+  "name": "mergeme-status",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MergeMe.dev wiring status and setup console for revvel-standards (WR #16824)",
+  "scripts": {
+    "dev": "next dev -p 3012",
+    "build": "next build",
+    "start": "next start -p 3012",
+    "lint": "tsc --noEmit",
+    "test": "tsx tests/wiring.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^16.2.6",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "tsx": "^4.22.3",
+    "typescript": "^5"
+  }
+}
