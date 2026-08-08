@@ -31,6 +31,30 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Validate package-lock sync
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            echo "No usable base SHA for diff; skipping lockfile gate."
+            exit 0
+          fi
+
+          CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" || true)"
+          echo "Changed files between $BASE_SHA and $HEAD_SHA:"
+          echo "$CHANGED"
+
+          if echo "$CHANGED" | grep -qx 'package.json'; then
+            if ! echo "$CHANGED" | grep -qx 'package-lock.json'; then
+              echo "❌ package.json changed without matching package-lock.json update."
+              echo "Run npm install locally and commit the lockfile."
+              exit 1
+            fi
+          fi
+          echo "✅ package-lock sync check passed"
+
       - name: Install dependencies
         run: npm ci
 
