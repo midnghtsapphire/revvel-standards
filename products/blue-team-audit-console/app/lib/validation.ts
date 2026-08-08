@@ -64,7 +64,11 @@ export function validateGroupName(name: unknown): ValidationResult {
 }
 
 export function validateTraceName(name: unknown): ValidationResult {
-  if (typeof name !== 'string' || !/^[a-zA-Z0-9_./-]{1,200}$/.test(name)) {
+  if (typeof name !== 'string' || !/^[a-zA-Z0-9_.-]{1,200}$/.test(name)) {
+    return { ok: false, error: 'Invalid trace name' };
+  }
+  // Reject path traversal / hidden segments even if charset is narrowed later.
+  if (name.includes('..') || name.startsWith('.') || name.includes('/') || name.includes('\\')) {
     return { ok: false, error: 'Invalid trace name' };
   }
   return { ok: true };

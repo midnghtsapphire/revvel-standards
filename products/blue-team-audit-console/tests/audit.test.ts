@@ -85,8 +85,13 @@ for (const key of [
   'AI_AUDIT.md',
 ]) {
   assert.ok(key in files, `bundle missing ${key}`);
-  assert.ok(files[key].length > 0, `${key} should not be empty when model has data`);
 }
+// Populated artifacts when commits/groups exist; empty JSONL is valid for unused kinds.
+assert.ok(files['manifest.json'].length > 0);
+assert.ok(files['items/commits.jsonl'].length > 0);
+assert.ok(files['groups/user_groups.jsonl'].length > 0);
+assert.ok(files['AI_AUDIT.md'].length > 0);
+assert.ok(files['status/coverage.json'].length > 0);
 const manifest = JSON.parse(files['manifest.json']);
 assert.equal(manifest.schema_version, 2);
 assert.equal(manifest.counts.commits, 1);
