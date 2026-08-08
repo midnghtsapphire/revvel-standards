@@ -52,72 +52,124 @@ const { execFileSync } = require("child_process");
  * @returns {{ key: string, firstSeenLine: number, duplicateAtLine: number }[]}
  */
 /**
- * Count `{` / `}` that are structural (outside JSON string literals).
- * Braces inside values like `"description": "uses {placeholders}"` must not
- * push/pop object scopes or the duplicate-key scan drifts.
+ * Scan JSON text for duplicate object keys at every object depth.
+ *
+ * Single left-to-right pass so inline forms like `"scripts": { "test": "x" }`
+ * attribute nested keys to the child scope (open brace pushes before the
+ * nested key is recorded) and braces inside string values are ignored.
+ *
+ * JSON.parse cannot catch duplicates — RFC 8259 leaves the behavior
+ * undefined and V8 keeps the last value silently.
+ *
+ * @param {string} jsonText
+ * @returns {{ key: string, firstSeenLine: number, duplicateAtLine: number }[]}
  */
-function countStructuralBraces(line) {
-  let openBraces = 0;
-  let closeBraces = 0;
+function findDuplicateKeys(jsonText) {
+  const text = String(jsonText);
+  const stack = [new Map()];
+  const duplicates = [];
   let inString = false;
   let escaped = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (escaped) {
-      escaped = false;
+  let lineNo = 1;
+  let i = 0;
+
+  function currentScope() {
+    return stack[stack.length - 1];
+  }
+
+  function recordKey(key) {
+    if (stack.length === 0) return;
+    const scope = currentScope();
+    if (scope.has(key)) {
+      duplicates.push({
+        key,
+        firstSeenLine: scope.get(key),
+        duplicateAtLine: lineNo,
+      });
+    } else {
+      scope.set(key, lineNo);
+    }
+  }
+
+  while (i < text.length) {
+    const ch = text[i];
+
+    if (ch === "\n") {
+      lineNo++;
+      i++;
       continue;
     }
+
+    if (escaped) {
+      escaped = false;
+      i++;
+      continue;
+    }
+
     if (inString) {
       if (ch === "\\") {
         escaped = true;
       } else if (ch === '"') {
         inString = false;
       }
+      i++;
       continue;
     }
-    if (ch === '"') {
-      inString = true;
-    } else if (ch === "{") {
-      openBraces++;
-    } else if (ch === "}") {
-      closeBraces++;
+
+    // Outside strings: structural braces adjust scope immediately.
+    if (ch === "{") {
+      stack.push(new Map());
+      i++;
+      continue;
     }
-  }
-  return { openBraces, closeBraces };
-}
-
-function findDuplicateKeys(jsonText) {
-  const lines = String(jsonText).split("\n");
-  const stack = [new Map()];
-  const duplicates = [];
-  // Match a JSON object key at the start of a pretty-printed line.
-  const keyRe = /^\s*"((?:[^"\\]|\\.)*)"\s*:/;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const { openBraces, closeBraces } = countStructuralBraces(line);
-
-    const match = line.match(keyRe);
-    if (match && stack.length > 0) {
-      const key = match[1];
-      const currentScope = stack[stack.length - 1];
-      if (currentScope.has(key)) {
-        duplicates.push({
-          key,
-          firstSeenLine: currentScope.get(key),
-          duplicateAtLine: i + 1,
-        });
-      } else {
-        currentScope.set(key, i + 1);
-      }
-    }
-
-    // Nested `{` on the same line as a key still works because we push
-    // scopes after recording the key on that line.
-    for (let b = 0; b < openBraces; b++) stack.push(new Map());
-    for (let b = 0; b < closeBraces; b++) {
+    if (ch === "}") {
       if (stack.length > 1) stack.pop();
+      i++;
+      continue;
     }
+
+    // Potential object key: "name" followed by optional space and `:`.
+    if (ch === '"') {
+      let j = i + 1;
+      let keyEscaped = false;
+      let key = "";
+      while (j < text.length) {
+        const kc = text[j];
+        if (keyEscaped) {
+          key += kc;
+          keyEscaped = false;
+          j++;
+          continue;
+        }
+        if (kc === "\\") {
+          keyEscaped = true;
+          j++;
+          continue;
+        }
+        if (kc === '"') break;
+        if (kc === "\n") break;
+        key += kc;
+        j++;
+      }
+      if (j < text.length && text[j] === '"') {
+        let k = j + 1;
+        while (k < text.length && (text[k] === " " || text[k] === "\t")) k++;
+        if (k < text.length && text[k] === ":") {
+          // This is a key (not a bare string value). Record against the
+          // current object scope, then resume after the colon so the value
+          // (including a following `{`) is scanned normally.
+          recordKey(key);
+          i = k + 1;
+          continue;
+        }
+      }
+      // Not a key — treat as ordinary string value.
+      inString = true;
+      i++;
+      continue;
+    }
+
+    i++;
   }
 
   return duplicates;
@@ -250,16 +302,32 @@ function parseArgs(argv) {
     packageJsonPath: null,
     skipLock: false,
     npmBin: "npm",
+    errors: [],
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === "--skip-lock") options.skipLock = true;
-    else if (a === "--json" || a === "--package-json") {
-      options.packageJsonPath = argv[++i];
+    if (a === "--skip-lock") {
+      options.skipLock = true;
+    } else if (a === "--json" || a === "--package-json") {
+      const val = argv[i + 1];
+      if (!val || val.startsWith("--")) {
+        options.errors.push(`${a} requires a path argument`);
+      } else {
+        options.packageJsonPath = val;
+        i++;
+      }
     } else if (a === "--cwd") {
-      options.cwd = path.resolve(argv[++i] || process.cwd());
+      const val = argv[i + 1];
+      if (!val || val.startsWith("--")) {
+        options.errors.push(`${a} requires a path argument`);
+      } else {
+        options.cwd = path.resolve(val);
+        i++;
+      }
     } else if (a === "--help" || a === "-h") {
       options.help = true;
+    } else if (a.startsWith("-")) {
+      options.errors.push(`unknown option: ${a}`);
     }
   }
   if (options.packageJsonPath && !path.isAbsolute(options.packageJsonPath)) {
@@ -282,6 +350,11 @@ Options:
 Exit 0 when clean; exit 1 on duplicate keys or lockfile drift.
 `);
     return 0;
+  }
+  if (options.errors && options.errors.length > 0) {
+    console.error("package integrity: FAILED");
+    for (const err of options.errors) console.error(`  - ${err}`);
+    return 1;
   }
 
   const result = runChecks(options);

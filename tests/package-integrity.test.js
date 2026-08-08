@@ -105,6 +105,28 @@ describe("findDuplicateKeys", () => {
     assert.equal(dups.length, 1);
     assert.equal(dups[0].key, "c8");
   });
+
+  it("attributes nested keys on inline object lines to the child scope", () => {
+    // `"scripts": { "test": "jest" }` must not record "test" on the parent.
+    const text = `{
+  "scripts": { "test": "jest" },
+  "devDependencies": {
+    "test": "^1.0.0"
+  }
+}
+`;
+    assert.deepEqual(findDuplicateKeys(text), []);
+
+    // True parent-level duplicate still fires.
+    const parentDup = `{
+  "scripts": { "test": "jest" },
+  "scripts": { "lint": "eslint ." }
+}
+`;
+    const dups = findDuplicateKeys(parentDup);
+    assert.equal(dups.length, 1);
+    assert.equal(dups[0].key, "scripts");
+  });
 });
 
 describe("checkPackageJsonText", () => {
@@ -271,5 +293,10 @@ describe("CLI main()", () => {
       { cwd: REPO_ROOT, encoding: "utf8" }
     );
     assert.match(out, /package integrity: ok/);
+  });
+
+  it("exits 1 when --json is missing its path argument", () => {
+    assert.equal(main(["--json", "--skip-lock"]), 1);
+    assert.equal(main(["--cwd"]), 1);
   });
 });
