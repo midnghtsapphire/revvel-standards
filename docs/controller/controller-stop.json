@@ -1,21 +1,46 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-08-08T03:10:03.017Z",
+  "generated_at": "2026-08-08T05:22:09.160Z",
   "stop": [
+    {
+      "id": 31237553244,
+      "name": "CodeQL",
+      "reason": "running 106m ≥ 60m budget"
+    },
+    {
+      "id": 31237546891,
+      "name": "CodeQL",
+      "reason": "running 106m ≥ 60m budget"
+    },
+    {
+      "id": 31237493195,
+      "name": "CodeQL",
+      "reason": "running 108m ≥ 60m budget"
+    },
+    {
+      "id": 31237118739,
+      "name": "CodeQL",
+      "reason": "running 118m ≥ 60m budget"
+    },
+    {
+      "id": 31236946587,
+      "name": "CodeQL",
+      "reason": "running 123m ≥ 60m budget"
+    },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 36695m ≥ 60m budget"
+      "reason": "running 36827m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 36766m ≥ 60m budget"
+      "reason": "running 36898m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 36837m ≥ 60m budget"
+      "reason": "running 36969m ≥ 60m budget"
     }
   ]
 }
