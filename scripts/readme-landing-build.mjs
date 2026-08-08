@@ -163,9 +163,9 @@ function mdToHtml(md) {
 function safeHref(raw) {
   // Allow only safe URL schemes; reject javascript:, data:, vbscript:, etc.
   const url = raw.trim();
-  if (/^(https?:|mailto:|#|\/)/i.test(url)) return url;
+  if (/^(https?:|mailto:|#|\/)/i.test(url)) return esc(url);
   // Relative paths without a scheme are safe (links to same origin).
-  if (!/^[a-z][a-z0-9+\-.]*:/i.test(url)) return url;
+  if (!/^[a-z][a-z0-9+\-.]*:/i.test(url)) return esc(url);
   return "#";
 }
 
