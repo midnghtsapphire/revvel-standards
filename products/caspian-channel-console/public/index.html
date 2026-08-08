@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Caspian Channel Console — Multi-Channel Agent Planner</title>
+  <meta name="description" content="Plan, simulate, and export multi-channel AI agent deployments powered by Caspian SDK research. One identity across email, Slack, Discord, Telegram, and more." />
+  <meta name="keywords" content="caspian sdk, agent communication, multi channel ai agent, slack discord telegram bot, agent messaging gateway, ai agent email" />
+  <meta property="og:title" content="Caspian Channel Console" />
+  <meta property="og:description" content="SaaS console to design multi-channel agent identities, estimate cost, simulate one-handler replies, and export Caspian integration code." />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">◈</span>
+      <span class="brand-name">Caspian Channel Console</span>
+      <span class="brand-tag">one agent identity · every human channel</span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Primary">
+      <button class="tab active" data-tab="planner" role="tab" aria-selected="true">Planner</button>
+      <button class="tab" data-tab="simulator" role="tab" aria-selected="false">Simulator</button>
+      <button class="tab" data-tab="export" role="tab" aria-selected="false">Code &amp; Export</button>
+      <button class="tab" data-tab="research" role="tab" aria-selected="false">Research</button>
+      <button class="tab" data-tab="pricing" role="tab" aria-selected="false">Pricing</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- PLANNER -->
+    <section id="panel-planner" class="panel active">
+      <div class="hero">
+        <span class="pill">SaaS · WR-16898 · Caspian SDK</span>
+        <h1>Design a multi-channel agent in minutes</h1>
+        <p>
+          Built from deep research on
+          <strong>TryCaspian/caspian-sdk</strong> — the open agent communication layer.
+          Pick channels, estimate monthly cost, compose etiquette prompts, and export
+          production-ready Python or TypeScript that uses one <code>on_message</code> handler.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h2>Agent blueprint</h2>
+          <label>
+            Agent name (email local-part)
+            <input id="agent-name" type="text" value="revvel-scout" maxlength="32" autocomplete="off" />
+          </label>
+          <label>
+            Persona
+            <textarea id="persona">Helpful revenue ops agent for Revvel. Be concise, cite sources, never invent credentials.</textarea>
+          </label>
+          <label>
+            SDK language
+            <select id="language">
+              <option value="python">Python</option>
+              <option value="typescript">TypeScript</option>
+            </select>
+          </label>
+          <label>
+            Messages / month (planning)
+            <input id="messages" type="number" min="0" max="10000000" step="1000" value="10000" />
+          </label>
+          <label>
+            Console plan
+            <select id="plan"></select>
+          </label>
+
+          <h3>Use-case presets</h3>
+          <div class="usecase-row" id="usecase-row"></div>
+
+          <h3>Channels</h3>
+          <div class="channel-grid" id="channel-grid" aria-label="Channel picker"></div>
+
+          <div class="btn-row">
+            <button class="btn primary" id="btn-build">Build blueprint</button>
+            <button class="btn" id="btn-clear-channels">Clear channels</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Live summary</h2>
+          <div class="stat-row" id="summary-stats"></div>
+          <p class="small muted" id="email-line" style="margin-top:14px"></p>
+          <h3 style="margin-top:18px">Cost estimate</h3>
+          <div id="cost-box" class="small muted">Select channels and click Build blueprint.</div>
+          <h3 style="margin-top:18px">Warnings</h3>
+          <ul class="list small" id="warnings-list"></ul>
+          <h3 style="margin-top:18px">Behavior prompt</h3>
+          <pre id="behavior-preview">Select channels to compose etiquette.</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIMULATOR -->
+    <section id="panel-simulator" class="panel">
+      <div class="hero">
+        <span class="pill">Offline · zero network</span>
+        <h1>One-handler conversation simulator</h1>
+        <p>
+          Inject messages from any selected channel. The console mirrors Caspian's model:
+          a single handler replies in-thread on the arriving channel — no per-platform bots.
+        </p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h2>Inbound message</h2>
+          <label>
+            Channel
+            <select id="sim-channel"></select>
+          </label>
+          <label>
+            Sender
+            <input id="sim-sender" type="text" value="customer@example.com" />
+          </label>
+          <label>
+            Message text
+            <textarea id="sim-text">Hi — can you summarize open support tickets?</textarea>
+          </label>
+          <div class="btn-row">
+            <button class="btn primary" id="btn-sim-send">Send through handler</button>
+            <button class="btn" id="btn-sim-reset">Reset transcript</button>
+            <button class="btn ghost" id="btn-sim-demo">Load demo thread</button>
+          </div>
+          <p class="small muted" style="margin-top:12px">
+            Simulation is fully client-side. For live Caspian gateway tests, use the checklist on the Research tab.
+          </p>
+        </div>
+        <div class="card">
+          <h2>Transcript</h2>
+          <div id="sim-transcript" class="small muted">No events yet.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPORT -->
+    <section id="panel-export" class="panel">
+      <div class="hero">
+        <span class="pill">Ship-ready artifacts</span>
+        <h1>Integration code &amp; blueprint export</h1>
+        <p>
+          Copy generated Caspian SDK glue, or download a Markdown runbook / JSON blueprint
+          for your agent fleet ledger.
+        </p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h2>Generated integration</h2>
+          <div class="btn-row">
+            <button class="btn primary" id="btn-copy-code">Copy code</button>
+            <button class="btn" id="btn-download-md">Download Markdown</button>
+            <button class="btn" id="btn-download-json">Download JSON</button>
+          </div>
+          <pre id="code-preview" style="margin-top:14px">Build a blueprint on the Planner tab first.</pre>
+        </div>
+        <div class="card">
+          <h2>Gateway go-live checklist</h2>
+          <ol class="small" id="checklist" style="line-height:1.55;padding-left:1.2rem;color:var(--muted)"></ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESEARCH -->
+    <section id="panel-research" class="panel">
+      <div class="hero">
+        <span class="pill">Deep research packet</span>
+        <h1>Caspian SDK — facts, competitors, monetization</h1>
+        <p id="research-blurb"></p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h2>Repository facts</h2>
+          <div class="table-wrap">
+            <table id="research-table"></table>
+          </div>
+          <h3 style="margin-top:18px">SEO / marketing keywords</h3>
+          <div id="keyword-chips" class="usecase-row"></div>
+          <h3 style="margin-top:18px">Channel matrix</h3>
+          <div class="table-wrap">
+            <table id="channel-table"></table>
+          </div>
+        </div>
+        <div class="card">
+          <h2>Competitors &amp; edge</h2>
+          <div id="competitor-list"></div>
+          <h3 style="margin-top:18px">Monetization path (this console)</h3>
+          <ul class="small" style="color:var(--muted);line-height:1.55">
+            <li><strong>SaaS subscriptions</strong> — Starter $29 / Pro $99 / Enterprise $399 per month (planning list prices).</li>
+            <li><strong>Usage overage</strong> — $2 per 1k messages above plan inclusion.</li>
+            <li><strong>Services upsell</strong> — custom adapter coaching + self-hosted gateway runbooks.</li>
+            <li><strong>Affiliate / Polar.sh</strong> — link teams into Caspian hosted credit top-ups + Revvel agent fleet tooling.</li>
+            <li><strong>Strategic fit</strong> — sells the missing ops layer on top of OSS agent communication (Phase 1 $10k/mo path).</li>
+          </ul>
+          <p class="small muted">
+            Citations: GitHub API snapshot for stars/forks/license; Caspian README +
+            <code>https://api.trycaspianai.com/SKILL.md</code> for channel/live-gateway behavior.
+            Quantitative claims above are labeled as planning list prices (confidence: product design).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="panel-pricing" class="panel">
+      <div class="hero">
+        <span class="pill">Commercial · saas-app</span>
+        <h1>Simple pricing for agent channel ops teams</h1>
+        <p>
+          The console is the paid surface. Caspian gateway free channels stay free;
+          prepaid Caspian channels still bill on Caspian's dashboard. Waitlist captures
+          early-access teams.
+        </p>
+      </div>
+      <div class="pricing" id="pricing-grid"></div>
+      <div class="card" style="margin-top:16px">
+        <h2>Early access waitlist</h2>
+        <form id="waitlist-form" class="grid-2" style="align-items:end">
+          <label>
+            Work email
+            <input id="waitlist-email" type="text" placeholder="you@company.com" required />
+          </label>
+          <label>
+            Team size
+            <select id="waitlist-size">
+              <option>Solo</option>
+              <option>2–10</option>
+              <option>11–50</option>
+              <option>51+</option>
+            </select>
+          </label>
+          <div class="btn-row">
+            <button class="btn primary" type="submit">Join waitlist</button>
+          </div>
+        </form>
+        <p class="small muted" id="waitlist-status" style="margin-top:10px">
+          Stored locally in this browser only (no server PII). Connect Stripe/Polar checkout in deploy env when ready.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>
+      Caspian Channel Console · part of the Revvel product line · research source
+      <a href="https://github.com/TryCaspian/caspian-sdk" rel="noopener noreferrer" target="_blank">TryCaspian/caspian-sdk</a>
+      · not affiliated with Caspian; uses public SDK docs under their license terms for integration guidance.
+    </p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="caspian-engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

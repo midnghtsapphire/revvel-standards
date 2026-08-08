@@ -46,6 +46,7 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/creator-payout-tracker` | payout, subscription, video | — | needs review |
 | `products/openmythos` | (unclassified) | — | needs review |
 | `products/printbank` | digital-download, e-commerce, static | Vector print generator, photo print sizer (tested in `tests/printbank.test.js`) | needs review |
+| `products/caspian-channel-console` | SaaS, agent-comms, static | Channel planner, cost estimator, one-handler simulator, code export (tested in `tests/caspian-channel-console.test.js`) | ✅ |
 | `products/prompt-generation-app` | OSINT, prompt | — | needs review |
 | `products/screen-recorder-finder` | utility/finder | — | needs review |
 | `products/ugc-review-generator` | review/content | — | (restored in #13915) |

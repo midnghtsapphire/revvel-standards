@@ -1,5 +1,10 @@
 # Caspian SDK Research
 
+> **Shipped product (WR-16898):** [`products/caspian-channel-console`](../../caspian-channel-console/README.md)  
+> **Deep research packet:** [`../../caspian-channel-console/research/CASPIAN_SDK_DEEP_RESEARCH.md`](../../caspian-channel-console/research/CASPIAN_SDK_DEEP_RESEARCH.md)  
+> **Live:** https://revvel-standards.vercel.app/docs/caspian-channel-console/  
+> **Upstream stars:** 527★ observed 2026-08-07 (GitHub API)
+
 ## Overview
 
 Caspian is an agent communication SDK that allows an AI agent to communicate across multiple channels (Slack, Discord, Email, Telegram, WhatsApp, Instagram, etc.) using a single unified identity and handler.

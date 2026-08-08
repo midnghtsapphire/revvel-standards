@@ -35,7 +35,9 @@ Most agent frameworks (like LangChain or CrewAI) spend a significant amount of e
 
 ## Competitor & Pricing Intelligence
 
-Pricing data pending — competitive benchmark research required.
+Shipped in `products/caspian-channel-console` (WR-16898): competitor matrix
+(DIY LangChain adapters, Composio, Botpress/Voiceflow, n8n/Make), SaaS list
+pricing $29/$99/$399, and upstream **527★** / 135 forks (observed 2026-08-07).
 
 ## Learnings — What & Why
 
