@@ -113,7 +113,8 @@ export default function Home() {
     anchor.href = url;
     anchor.download = `${String((manifest as { persona_id?: string }).persona_id || 'manifest')}.json`;
     anchor.click();
-    URL.revokeObjectURL(url);
+    // Delay revoke so the browser can start the download from the blob URL.
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const callApi = async () => {

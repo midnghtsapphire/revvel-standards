@@ -38,14 +38,24 @@ export async function POST(request: Request) {
 
   const payload: Record<string, unknown> = { ...result };
 
-  if (wrapper?.simulate_alert || !result.valid) {
+  // Circuit-breaker cargo is only meaningful on failure. simulate_alert on a
+  // valid manifest returns a distinct OK notice so downstream routers never
+  // treat success as CRITICAL.
+  if (!result.valid) {
     payload.alert_payload = formatValidationAlert({
       workflowName: 'Agent Manifest Validator API',
       executionId: `api-${result.checked_at}`,
-      errorName: result.valid ? 'None' : 'SchemaViolationException',
+      errorName: 'SchemaViolationException',
       errorMessage: result.summary,
-      executionUrl: 'https://revvel-standards.vercel.app/docs/agent-manifest-validator/',
+      executionUrl:
+        'https://revvel-standards.vercel.app/docs/agent-manifest-validator/',
     });
+  } else if (wrapper?.simulate_alert) {
+    payload.alert_payload =
+      `✅ **Revvel Standards: Manifest Validation Passed**\n\n` +
+      `• **Summary:** ${result.summary}\n` +
+      `• **Skills remaining:** ${result.skill_budget_remaining ?? 'n/a'}\n` +
+      `• **Checked at:** ${result.checked_at}`;
   }
 
   return NextResponse.json(payload, { status: result.valid ? 200 : 422 });
