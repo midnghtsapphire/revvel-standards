@@ -151,7 +151,11 @@ test('vendor register inventories analytics crash cloud and LLM processors', () 
   const llm = vendors.processors.find((p) => p.category === 'llm_api');
   assert.ok(llm, 'llm processor required');
   assert.equal(llm.status, 'not_in_mvp', 'LLM health features must stay out of MVP');
-  assert.equal(vendors.policy.default_health_data_sale, false);
+  assert.equal(
+    vendors.policy.default_health_data_sale,
+    false,
+    'default health data sale must be false'
+  );
 });
 
 test('risk register has mitigations for each risk', () => {

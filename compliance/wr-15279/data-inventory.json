@@ -171,7 +171,7 @@
       "lawful_basis_gdpr": "legitimate_interests_security",
       "sensitivity": "personal_data",
       "consumer_health_data": false,
-      "phi_if_ce_ba": true,
+      "phi_if_ce_ba": false,
       "ccpa_sensitive": false,
       "retention": "90_days_in_edge_logs_unless_security_hold",
       "storage_locations": ["cdn_edge_logs", "hosting_logs"],
