@@ -107,7 +107,7 @@ test('README has organization badge markers for injection', () => {
   const readme = read('README.md');
   assert.match(readme, /<!-- start organization badges -->/);
   assert.match(readme, /<!-- end organization badges -->/);
-  // Markers must appear in order so the perl replace window is well-defined.
+  // Markers must appear in order so the Node replace window is well-defined.
   const start = readme.indexOf('<!-- start organization badges -->');
   const end = readme.indexOf('<!-- end organization badges -->');
   assert.ok(start >= 0 && end > start, 'end marker must follow start marker');
