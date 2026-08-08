@@ -55,17 +55,22 @@ jobs:
     steps:
       - name: Determine agent to dispatch
         id: determine
+        env:
+          # zizmor template-injection fix (PR #17091): expression values reach
+          # the shell via env vars instead of ${{ }} interpolation inside run.
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+          DISPATCH_AGENT: ${{ inputs.agent }}
         run: |
           # Read agent-prompts.yml to get triggers
           echo "Looking for label triggers..."
-          
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.agent }}" ]; then
-            echo "agent=${{ inputs.agent }}" >> $GITHUB_OUTPUT
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "$DISPATCH_AGENT" ]; then
+            echo "agent=$DISPATCH_AGENT" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           # Check issue labels
-          LABELS=",${{ join(github.event.issue.labels.*.name, ',') }},"
+          LABELS=",${ISSUE_LABELS},"
           
           # Belt-and-suspenders: route octopus-review[bot] issues to openrouter
           # even if the octopus-route.yml translator hasn't applied wr:code yet.
@@ -77,7 +82,37 @@ jobs:
           # level concurrency group (added above) dedups them into a single
           # openrouter-coder dispatch instead of two. Per oAudrey diagnosis on
           # PR #14068.
+          # REVVEL-DISABLED | AGENT: claude-code | MODEL: claude-5 | WR: #17091 | DATE: 2026-08-08 | STATUS: REPLACED
+          # REASON: original un-anchored patterns let wr:research-complete false-match *wr:research*;
+          # replaced below with comma-anchored patterns + an explicit research-complete -> code-lane branch.
+          # case "$LABELS" in
+          #   *wr:research*)
+          #     echo "agent=perplexity" >> $GITHUB_OUTPUT
+          #     ;;
+          #   *wr:jules*)
+          #     echo "agent=jules" >> $GITHUB_OUTPUT
+          #     ;;
+          #   *octopus-review*)
+          #     echo "agent=openrouter" >> $GITHUB_OUTPUT
+          #     ;;
+          #   *wr:code*)
+          #     echo "agent=openrouter" >> $GITHUB_OUTPUT
+          #     ;;
+          #   *lifecycle:stuck*)
+          #     echo "agent=perplexity" >> $GITHUB_OUTPUT
+          #     ;;
+          #   *)
+          #     echo "agent=triage" >> $GITHUB_OUTPUT
+          #     ;;
+          # esac
+          # REVVEL-DISABLED-END
           case "$LABELS" in
+            *,wr:research-complete,*)
+              # Spec-to-action bridge (issue #15507): research done -> code
+              # lane. Must be matched before wr:research so completed research
+              # dispatches a coder instead of another research pass.
+              echo "agent=openrouter" >> $GITHUB_OUTPUT
+              ;;
             *,wr:code,*|*,octopus-review,*)
               echo "agent=openrouter" >> $GITHUB_OUTPUT
               ;;
