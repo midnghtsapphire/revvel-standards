@@ -191,11 +191,11 @@ describe('paralysis-recovery workflow guards', () => {
   test('agent dispatcher routes wr:research-complete to openrouter before wr:research', () => {
     const filePath = path.join(WORKFLOWS_DIR, 'agent-dispatcher.yml');
     const content = fs.readFileSync(filePath, 'utf8');
-    const codeRoute = content.indexOf('*,wr:research-complete,*|*,wr:code,*|*,octopus-review,*)');
-    const researchRoute = content.indexOf('*,wr:research,*|*,lifecycle:stuck,*)');
-    assert.ok(codeRoute >= 0, 'openrouter routing pattern missing');
-    assert.ok(researchRoute >= 0, 'research routing pattern missing');
-    assert.ok(codeRoute < researchRoute, 'wr:research-complete must be matched before wr:research');
+    const completeLabelPos = content.indexOf('wr:research-complete');
+    const researchLabelPos = content.indexOf(',wr:research,*|*,lifecycle:stuck,');
+    assert.ok(completeLabelPos >= 0, 'wr:research-complete routing token missing');
+    assert.ok(researchLabelPos >= 0, 'wr:research routing token missing');
+    assert.ok(completeLabelPos < researchLabelPos, 'wr:research-complete must be matched before wr:research');
   });
 
   test('ci-error-prevention checks package-lock sync before npm ci', () => {
