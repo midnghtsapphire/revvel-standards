@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-08T08:57:10.885Z",
+  "updated_at": "2026-08-08T09:20:05.503Z",
   "workflows": {
     ".github/workflows/codeql.yml": {
       "count": 2,
