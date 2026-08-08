@@ -1,5 +1,9 @@
-from typing import List, Tuple, Dict, Any, Optional
+from __future__ import annotations
+from typing import TYPE_CHECKING, List, Tuple, Dict, Any, Optional
 import numpy as np
+
+if TYPE_CHECKING:
+    from .cellular_sheaf import CellularSheaf
 
 class PersistenceDiagram:
     def __init__(self):
@@ -103,5 +107,85 @@ class Filtration:
         active_components = set(uf.find(n) for n in self.nodes)
         for root in active_components:
             diagram.add_h0_bar(uf.birth_time.get(root, 0.0), float('inf'))
+
+        return diagram
+
+
+class SheafFiltration:
+    """Sheaf-aware persistence that tracks H¹ births and deaths using coboundary
+    rank changes across a sequence of :class:`CellularSheaf` snapshots.
+
+    Unlike :class:`Filtration`, which only records graph topology, this class
+    accepts full sheaf snapshots (including restriction maps) at successive
+    time steps.  H¹ bars open/close as the coboundary rank changes, so the
+    resulting persistence diagram reflects actual knowledge-sheaf obstructions
+    rather than mere graph cycles.
+
+    Usage::
+
+        sf = SheafFiltration()
+        sf.add_snapshot(sheaf_t0, time=0.0)
+        sf.add_snapshot(sheaf_t1, time=1.0)
+        diagram = sf.compute_diagram()
+    """
+
+    def __init__(self) -> None:
+        self._snapshots: List[Tuple[float, "CellularSheaf"]] = []
+
+    def add_snapshot(self, sheaf: "CellularSheaf", time: float) -> None:
+        """Record a sheaf snapshot at the given filtration time."""
+        self._snapshots.append((time, sheaf))
+
+    @staticmethod
+    def _coboundary_rank(sheaf: "CellularSheaf") -> int:
+        delta = sheaf.coboundary_matrix().astype(float)
+        if delta.size == 0:
+            return 0
+        tol = (
+            max(delta.shape)
+            * np.finfo(delta.dtype).eps
+            * float(np.linalg.norm(delta, ord=2))
+        )
+        return int(np.linalg.matrix_rank(delta, tol=tol))
+
+    def compute_diagram(self) -> PersistenceDiagram:
+        """Compute H¹ persistence by monitoring rank changes across snapshots.
+
+        A new H¹ bar is opened whenever ``dim H¹ = (n_edges - rank)`` increases
+        (a new obstruction appears) and closed when it decreases (the obstruction
+        is healed).  Bars that survive to the last snapshot are given infinite
+        death.
+        """
+        if not self._snapshots:
+            return PersistenceDiagram()
+
+        sorted_snaps = sorted(self._snapshots, key=lambda t: t[0])
+        diagram = PersistenceDiagram()
+        # Track currently open H¹ bars as a heap of birth times (ascending).
+        open_h1: List[float] = []
+        prev_dim_h1 = 0
+
+        for time, sheaf in sorted_snaps:
+            rank = self._coboundary_rank(sheaf)
+            dim_h1 = max(0, sheaf.n_edges * sheaf.stalk_dim - rank)
+
+            delta = dim_h1 - prev_dim_h1
+            if delta > 0:
+                # New H¹ classes born at this snapshot.
+                for _ in range(delta):
+                    open_h1.append(time)
+            elif delta < 0:
+                # H¹ classes healed; close oldest-born bars first (O(1) pops).
+                open_h1.sort(reverse=True)
+                for _ in range(-delta):
+                    if open_h1:
+                        birth = open_h1.pop()  # pops smallest after reverse sort
+                        diagram.add_h1_bar(birth, time)
+
+            prev_dim_h1 = dim_h1
+
+        # Remaining open bars have no death within this filtration.
+        for birth in open_h1:
+            diagram.add_h1_bar(birth, float("inf"))
 
         return diagram

@@ -66,3 +66,57 @@ def test_nsd_diffusion():
     energy_after = sheaf.dirichlet_energy(x_healed)
 
     assert energy_after < energy_before, "Diffusion should reduce Dirichlet energy"
+
+def test_sheaf_filtration_tracks_h1_via_coboundary_rank():
+    """SheafFiltration should open/close H1 bars based on restriction-map rank,
+    not raw graph topology."""
+    from bnatsheaf.persistence import SheafFiltration
+
+    # Snapshot 0: no edges — H1 = 0.
+    sheaf0 = CellularSheaf(nodes=['A', 'B', 'C'], edges=[], stalk_dim=1)
+    # Snapshot 1: triangle with identity restrictions — rank=2, H1=1 (cycle born).
+    sheaf1 = CellularSheaf(nodes=['A', 'B', 'C'],
+                           edges=[('A', 'B'), ('B', 'C'), ('C', 'A')],
+                           stalk_dim=1)
+
+    sf = SheafFiltration()
+    sf.add_snapshot(sheaf0, time=0.0)
+    sf.add_snapshot(sheaf1, time=1.0)
+
+    diagram = sf.compute_diagram()
+
+    # H1 opens at t=1 and remains open (no later snapshot heals it).
+    assert len(diagram.h1_bars) == 1, f"Expected 1 H1 bar, got {diagram.h1_bars}"
+    birth, death = diagram.h1_bars[0]
+    assert birth == 1.0
+    assert death == float('inf')
+
+
+def test_sheaf_filtration_closes_h1_on_rank_increase():
+    """When rank increases between snapshots, an existing H1 bar should close."""
+    from bnatsheaf.persistence import SheafFiltration
+
+    # Full-rank (no cycle) — 3 nodes, 3 edges but diagonal restriction makes
+    # coboundary full rank so H1 = 0.
+    nodes = ['A', 'B', 'C']
+    edges = [('A', 'B'), ('B', 'C'), ('C', 'A')]
+
+    # Triangle with default identity restrictions: rank = 2, H1 = 1.
+    s_low_rank = CellularSheaf(nodes=nodes, edges=edges, stalk_dim=1)
+
+    # Triangle with a restriction that breaks the global section:
+    # scale (A, AB) restriction by -1 so no consistent section → rank 3, H1=0.
+    s_high_rank = CellularSheaf(nodes=nodes, edges=edges, stalk_dim=1)
+    s_high_rank.set_restriction('A', ('A', 'B'), np.array([[-1.0]]))
+
+    sf = SheafFiltration()
+    sf.add_snapshot(s_low_rank, time=0.0)
+    sf.add_snapshot(s_high_rank, time=1.0)
+
+    diagram = sf.compute_diagram()
+
+    # H1 opens at t=0 (rank=2 → H1=1), closes at t=1 (rank=3 → H1=0).
+    assert len(diagram.h1_bars) == 1, f"Expected 1 H1 bar, got {diagram.h1_bars}"
+    birth, death = diagram.h1_bars[0]
+    assert birth == 0.0
+    assert death == 1.0

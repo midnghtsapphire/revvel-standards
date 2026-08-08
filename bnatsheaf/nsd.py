@@ -21,6 +21,8 @@ class NeuralSheafDiffusion:
         # Validate the bound before applying so callers get a clear error instead of
         # silently diverging energy — a large eta on a high-degree sheaf would increase
         # energy rather than decrease it, breaking the healing guarantee.
+        if self.eta <= 0:
+            raise ValueError("eta must be positive.")
         lambda_max = float(np.linalg.eigvalsh(laplacian).max()) if laplacian.size else 0.0
         if lambda_max > 0 and self.eta >= 2.0 / lambda_max:
             raise ValueError(
@@ -28,9 +30,6 @@ class NeuralSheafDiffusion:
                 f"eta must be < {2.0 / lambda_max:.6f} (= 2 / lambda_max). "
                 "Reduce eta or the sheaf's maximum degree."
             )
-        lambda_max = np.linalg.eigvalsh(laplacian)[-1] if laplacian.size else 0.0
-        if self.eta <= 0 or (lambda_max > 0 and self.eta >= 2.0 / lambda_max):
-            raise ValueError("eta must satisfy 0 < eta < 2 / lambda_max(laplacian)")
         return x - self.eta * (laplacian @ x)
 
     def diffuse(self, x: np.ndarray, steps: int = 10) -> np.ndarray:
