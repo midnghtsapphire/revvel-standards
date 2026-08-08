@@ -65,11 +65,17 @@ test('workflow routes through OpenRouter and pins HomeBake/ai-review', () => {
   const raw = read(workflowPath);
   const workflow = loadYaml(workflowPath);
   const steps = workflow.jobs.review.steps;
+  const checkoutStep = steps.find((s) => s.name === 'Checkout');
   const runStep = steps.find((s) => s.name === 'Run XAI Review (oleg fork)');
 
   assert.ok(runStep, 'Run XAI Review step must exist');
   assert.equal(runStep.uses, ACTION_REF);
   assert.match(raw, new RegExp(`${PINNED_SHA}.*v1\\.2\\.4`));
+  assert.match(
+    String(checkoutStep?.uses || ''),
+    /actions\/checkout@[0-9a-f]{40}/,
+    'checkout must be SHA-pinned'
+  );
   assert.equal(runStep['continue-on-error'], true);
 
   assert.equal(runStep.env.LLM__PROVIDER, 'OPENROUTER');
