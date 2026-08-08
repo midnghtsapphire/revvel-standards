@@ -37,15 +37,28 @@ const DEFAULT_BASELINE = path.join(ROOT, 'config', 'flake8-baseline.txt');
 const FLAKE8_EXCLUDE =
   '.git,node_modules,venv,.venv,__pycache__,dist,build,.tox,.mypy_cache,.eggs,*.egg-info,.pytest_cache';
 
+function requireArgValue(argv, index, flag) {
+  if (index + 1 >= argv.length || String(argv[index + 1]).startsWith('--')) {
+    throw new Error(`${flag} requires a value`);
+  }
+  return argv[index + 1];
+}
+
 function parseArgs(argv) {
   const out = { printBaseline: false, fixture: null, baseline: DEFAULT_BASELINE, target: '.' };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === '--print-baseline') out.printBaseline = true;
-    else if (a === '--fixture') out.fixture = argv[++i];
-    else if (a === '--baseline') out.baseline = path.resolve(argv[++i]);
-    else if (a === '--target') out.target = argv[++i];
-    else if (a === '--help' || a === '-h') out.help = true;
+    else if (a === '--fixture') {
+      out.fixture = requireArgValue(argv, i, '--fixture');
+      i += 1;
+    } else if (a === '--baseline') {
+      out.baseline = path.resolve(requireArgValue(argv, i, '--baseline'));
+      i += 1;
+    } else if (a === '--target') {
+      out.target = requireArgValue(argv, i, '--target');
+      i += 1;
+    } else if (a === '--help' || a === '-h') out.help = true;
   }
   return out;
 }

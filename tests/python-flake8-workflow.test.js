@@ -33,6 +33,9 @@ const {
   countViolations,
   compareToBaseline,
   formatBaseline,
+  normalizeRepoPath,
+  parseArgs,
+  ROOT: GATE_ROOT,
 } = require('../scripts/flake8-baseline-gate.js');
 
 test('python-flake8 workflow exists and parses', () => {
@@ -109,17 +112,35 @@ test('baseline file exists and parses', () => {
   }
 });
 
-test('countViolations aggregates path::CODE lines', () => {
+test('normalizeRepoPath strips ./ and ROOT prefixes', () => {
+  assert.equal(normalizeRepoPath('./scripts/foo.py'), 'scripts/foo.py');
+  assert.equal(normalizeRepoPath('scripts/foo.py'), 'scripts/foo.py');
+  assert.equal(
+    normalizeRepoPath(path.join(GATE_ROOT, 'scripts', 'foo.py')),
+    'scripts/foo.py'
+  );
+});
+
+test('countViolations aggregates path::CODE lines after normalization', () => {
+  const abs = path.join(GATE_ROOT, 'scripts', 'foo.py');
   const sample = [
     './scripts/foo.py::F401',
     'scripts/foo.py::F401',
+    `${abs}::F401`,
     'scripts/bar.py::E501',
     '',
     'not-a-violation',
   ].join('\n');
   const counts = countViolations(sample);
-  assert.equal(counts.get('scripts/foo.py::F401'), 2);
+  assert.equal(counts.get('scripts/foo.py::F401'), 3);
   assert.equal(counts.get('scripts/bar.py::E501'), 1);
+  assert.equal(counts.has(`${abs}::F401`), false);
+});
+
+test('parseArgs rejects flags that are missing values', () => {
+  assert.throws(() => parseArgs(['--fixture']), /--fixture requires a value/);
+  assert.throws(() => parseArgs(['--baseline']), /--baseline requires a value/);
+  assert.throws(() => parseArgs(['--target']), /--target requires a value/);
 });
 
 test('compareToBaseline flags only counts above baseline', () => {
