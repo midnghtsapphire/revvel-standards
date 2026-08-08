@@ -58,7 +58,9 @@ jobs:
           # ...co-change loop: pass if lockfile path appeared in the diff,
           #    fail otherwise (see git history for the full block)...
           # REVVEL-DISABLED-END
-          if ! CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"; then
+          # core.quotepath=off keeps non-ASCII/space paths unquoted so the
+          # per-file existence checks below see literal paths (Jules nit).
+          if ! CHANGED="$(git -c core.quotepath=off diff --name-only "$BASE_SHA" "$HEAD_SHA")"; then
             echo "❌ git diff $BASE_SHA..$HEAD_SHA failed (shallow clone or unknown SHA)."
             echo "The lockfile gate cannot verify this change; failing loud instead of passing silently."
             exit 1

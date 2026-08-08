@@ -107,6 +107,13 @@ jobs:
           # esac
           # REVVEL-DISABLED-END
           case "$LABELS" in
+            *,wr:code,*|*,octopus-review,*)
+              # Matched FIRST so an issue carrying BOTH wr:research-complete
+              # and wr:code still dispatches the coder — wr:code is the
+              # human/gate approval signal and must win (Jules review,
+              # PR #17091).
+              echo "agent=openrouter" >> $GITHUB_OUTPUT
+              ;;
             *,wr:research-complete,*)
               # Spec-to-action bridge (issue #15507) runs through the Spec
               # Approval Gate: spec-approval-gate.yml owns this label (it adds
@@ -118,9 +125,6 @@ jobs:
               # research no longer misroutes into another research pass —
               # this branch is an intentional no-op.
               echo "agent=none" >> $GITHUB_OUTPUT
-              ;;
-            *,wr:code,*|*,octopus-review,*)
-              echo "agent=openrouter" >> $GITHUB_OUTPUT
               ;;
             *,wr:research,*|*,lifecycle:stuck,*)
               echo "agent=perplexity" >> $GITHUB_OUTPUT
