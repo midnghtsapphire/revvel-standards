@@ -83,9 +83,9 @@ out = orch.run(prompt, call_openrouter)
 ```
 
 On structural or low-confidence failure the validator appends a correction
-turn (“You generated an invalid response. Error: …”) and retries, capped by
-`max_retries` (default 3 total correction attempts beyond the first call’s
-budget is `max_retries`, total calls = `max_retries + 1`).
+turn (“You generated an invalid response. Error: …”) and retries. The retry
+budget is `max_retries` correction attempts beyond the first call; total model
+calls = `max_retries + 1` (default `max_retries=3` → up to 4 calls).
 
 ### 4. Factuality / heuristics
 

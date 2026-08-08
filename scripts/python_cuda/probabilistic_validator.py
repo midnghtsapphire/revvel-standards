@@ -304,11 +304,12 @@ def extract_json_payload(text: str) -> JSONType:
 
 
 def _type_name(value: Any) -> str:
+    # bool is a subclass of int in Python — check it before int.
     if value is None:
         return "null"
     if isinstance(value, bool):
         return "boolean"
-    if isinstance(value, int) and not isinstance(value, bool):
+    if isinstance(value, int):
         return "integer"
     if isinstance(value, float):
         return "number"

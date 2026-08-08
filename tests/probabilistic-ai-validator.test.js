@@ -96,9 +96,10 @@ test('CLI rejects type-mismatched AI output (probabilistic failure path)', () =>
     },
   });
   let exitCode = 0;
-  let out = '';
+  let stdout = '';
+  let stderr = '';
   try {
-    out = execFileSync(
+    stdout = execFileSync(
       py,
       [
         VALIDATOR,
@@ -111,10 +112,16 @@ test('CLI rejects type-mismatched AI output (probabilistic failure path)', () =>
     );
   } catch (err) {
     exitCode = err.status;
-    out = (err.stdout || '') + (err.stderr || '');
+    // Parse JSON from stdout only — stderr is diagnostics, not payload.
+    stdout = err.stdout || '';
+    stderr = err.stderr || '';
   }
-  assert.equal(exitCode, 2, `expected exit 2 on schema failure, got ${exitCode}: ${out}`);
-  const payload = JSON.parse(out);
+  assert.equal(
+    exitCode,
+    2,
+    `expected exit 2 on schema failure, got ${exitCode}: stdout=${stdout} stderr=${stderr}`
+  );
+  const payload = JSON.parse(stdout);
   assert.equal(payload.ok, false);
   assert.ok(payload.errors.length >= 1);
 });
