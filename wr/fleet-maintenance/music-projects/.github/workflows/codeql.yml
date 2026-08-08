@@ -34,10 +34,10 @@ jobs:
         language: [actions, javascript-typescript, python]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@c3400c2f38909e0dcf3c3a41f2030a8217be5d3e  # v3
         with:
           languages: ${{ matrix.language }}
           build-mode: none
@@ -45,7 +45,7 @@ jobs:
       - name: Perform CodeQL Analysis
         id: analyze
         continue-on-error: true
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@c3400c2f38909e0dcf3c3a41f2030a8217be5d3e  # v3
         with:
           category: "/language:${{ matrix.language }}"
           upload: never
@@ -65,7 +65,7 @@ jobs:
       - name: Upload SARIF
         if: steps.verify_sarif.outputs.sarif_ok == 'true'
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@c3400c2f38909e0dcf3c3a41f2030a8217be5d3e  # v3
         with:
           sarif_file: sarif-results
           category: "/language:${{ matrix.language }}"

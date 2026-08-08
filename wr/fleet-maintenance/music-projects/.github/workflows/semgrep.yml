@@ -26,7 +26,7 @@ jobs:
       image: semgrep/semgrep:1.161.0
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
 
       - name: Mark workspace safe
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -47,7 +47,7 @@ jobs:
       - name: Upload SARIF to GitHub Code Scanning
         if: hashFiles('semgrep.sarif') != ''
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@c3400c2f38909e0dcf3c3a41f2030a8217be5d3e  # v3
         with:
           sarif_file: semgrep.sarif
           category: semgrep

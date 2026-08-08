@@ -39,7 +39,7 @@ jobs:
       - name: AI PR Review
         if: env.OPENROUTER_API_KEY != ''
         continue-on-error: true
-        uses: maxlim0/AI-PR-Reviewer@v0.3
+        uses: maxlim0/AI-PR-Reviewer@0b958782fcd8f3b1b4a94b3fd506f51a989055cd  # v0.3
         env:
           GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
