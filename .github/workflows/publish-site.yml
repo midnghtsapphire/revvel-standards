@@ -1,0 +1,149 @@
+name: Publish site
+
+# Optional custom-host publish lane (WR #16213).
+#
+# Adds the requested step:
+#   - name: Publish site
+#     uses: publish-site/action@v2
+#
+# pinned to the full v2 commit SHA (CLAUDE.md gotcha #8 / third-party action
+# audit). This is an *optional* SSH/rsync path for operators who host the
+# static hub on their own nginx box. The default public path remains
+# GitHub Pages via static.yml + the hub registry loop in website-publish.yml.
+#
+# Required secrets (all missing → job exits 0 with a skip notice):
+#   PUBLISH_SITE_URL      — hostname or IP of the target host
+#   PUBLISH_SITE_PRIVKEY  — SSH private key (or use PUBLISH_SITE_CERT)
+#
+# Optional secrets:
+#   PUBLISH_SITE_CERT     — alternate client key material accepted by the action
+#
+# Manual dispatch input `dir` selects the local directory (default ".").
+#
+# Security note: upstream deploy.sh uses StrictHostKeyChecking=no. Only enable
+# this lane for hosts you control, and rotate PUBLISH_SITE_PRIVKEY if leaked.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - 404.html
+      - hub-registry.js
+      - hub-registry.json
+      - data/hub/entries/**
+      - .github/workflows/publish-site.yml
+  workflow_dispatch:
+    inputs:
+      dir:
+        description: Local directory to publish (relative to repo root)
+        required: false
+        default: "."
+      force:
+        description: Run even when secrets look incomplete (will fail loudly)
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-site
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish site
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify publish-site secrets
+        id: verify
+        env:
+          PUBLISH_SITE_URL: ${{ secrets.PUBLISH_SITE_URL }}
+          PUBLISH_SITE_PRIVKEY: ${{ secrets.PUBLISH_SITE_PRIVKEY }}
+          PUBLISH_SITE_CERT: ${{ secrets.PUBLISH_SITE_CERT }}
+          FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force || 'false' }}
+        run: |
+          missing=()
+          if [ -z "${PUBLISH_SITE_URL}" ]; then
+            missing+=("PUBLISH_SITE_URL")
+          fi
+          if [ -z "${PUBLISH_SITE_PRIVKEY}" ] && [ -z "${PUBLISH_SITE_CERT}" ]; then
+            missing+=("PUBLISH_SITE_PRIVKEY or PUBLISH_SITE_CERT")
+          fi
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "::notice::Publish site skipped — missing secrets: ${missing[*]}"
+            echo "Default public deploy path is GitHub Pages (static.yml)."
+            echo "Set the secrets above to enable the optional custom-host lane."
+            if [ "${FORCE}" = "true" ]; then
+              echo "::error::force=true but secrets are incomplete: ${missing[*]}"
+              exit 1
+            fi
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve publish directory
+        if: steps.verify.outputs.skip != 'true'
+        id: dir
+        env:
+          # inputs.* is empty on push; default to repo root (static hub).
+          INPUT_DIR: ${{ inputs.dir || '' }}
+        run: |
+          dir="${INPUT_DIR:-.}"
+          # Reject path traversal / absolute paths — publish only from the checkout.
+          case "$dir" in
+            /*|~*|*".."*)
+              echo "::error::Publish directory must be a relative path inside the repo (got: $dir)"
+              exit 1
+              ;;
+          esac
+          if [ ! -d "$dir" ]; then
+            echo "::error::Publish directory does not exist: $dir"
+            exit 1
+          fi
+          echo "dir=$dir" >> "$GITHUB_OUTPUT"
+
+      - name: Publish site
+        if: steps.verify.outputs.skip != 'true'
+        # v2 — pin full SHA so an upstream retag cannot rewrite this step.
+        # Intentionally omit port/user/webdir when unset: empty strings would
+        # override deploy.sh defaults (`: "${PORT:=2222}"` only fills unset).
+        uses: publish-site/action@87b4aac36b939dece84e413b179523af1c7c9d8b # v2
+        with:
+          dir: ${{ steps.dir.outputs.dir }}
+          url: ${{ secrets.PUBLISH_SITE_URL }}
+          privkey: ${{ secrets.PUBLISH_SITE_PRIVKEY }}
+          cert: ${{ secrets.PUBLISH_SITE_CERT }}
+
+      - name: Summarize
+        if: always()
+        env:
+          SKIPPED: ${{ steps.verify.outputs.skip }}
+          DIR: ${{ steps.dir.outputs.dir }}
+        run: |
+          {
+            echo "## Publish site"
+            if [ "$SKIPPED" = "true" ]; then
+              echo ""
+              echo "⏭️ Skipped — custom-host secrets not configured."
+              echo ""
+              echo "GitHub Pages remains the default public path via \`static.yml\`."
+              echo "To enable this lane, add repository secrets:"
+              echo "- \`PUBLISH_SITE_URL\`"
+              echo "- \`PUBLISH_SITE_PRIVKEY\` (or \`PUBLISH_SITE_CERT\`)"
+            else
+              echo ""
+              echo "✅ Published local directory \`${DIR:-.}\` via \`publish-site/action@v2\`."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

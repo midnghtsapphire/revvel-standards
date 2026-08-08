@@ -27,4 +27,10 @@ test('stale audited actions are removed or explicitly dispositioned', () => {
   const auditScript = read('scripts/audit-third-party-actions.sh');
   assert.match(auditScript, /ACCEPTED_SINGLE_AUTHOR_ACTIONS=\(/);
   assert.match(auditScript, /robvanderleek\/create-issue-branch/);
+  // WR #16213: optional publish-site lane is dispositioned + SHA-pinned.
+  assert.match(auditScript, /publish-site\/action/);
+  assert.match(
+    read('.github/workflows/publish-site.yml'),
+    /publish-site\/action@[0-9a-f]{40}/,
+  );
 });

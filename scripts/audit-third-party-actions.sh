@@ -72,6 +72,10 @@ ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #15672: Devin code-review lane (devin-code-review.yml); pinned to the
   # full v1 commit SHA per docs/THIRD_PARTY_ACTION_AUDIT.md disposition rules.
   "aaronsteers/devin-action"
+  # WR #16213: optional custom-host publish lane (publish-site.yml). SHA-pinned
+  # to the v2 tag commit; secret-gated so main stays green without credentials.
+  # Default public path remains GitHub Pages (static.yml).
+  "publish-site/action"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
