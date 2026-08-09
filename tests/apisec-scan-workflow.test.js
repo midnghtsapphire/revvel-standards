@@ -17,8 +17,8 @@ const WORKFLOW = path.join(__dirname, '..', '.github', 'workflows', 'apisec-scan
 const source = fs.readFileSync(WORKFLOW, 'utf8');
 
 test('apisec-scan.yml parses with unique keys', () => {
-  const doc = YAML.parseDocument(source);
-  assert.deepEqual(
+  const doc = YAML.parseDocument(source, { uniqueKeys: true });
+  assert.deepStrictEqual(
     doc.errors.map((e) => e.message),
     [],
     'duplicate YAML keys (e.g. two steps: blocks) make GitHub and automation-doctor reject the workflow'
