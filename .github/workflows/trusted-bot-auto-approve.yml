@@ -8,8 +8,15 @@ name: Trusted Bot Auto-Approve
 
 # quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
 # run manually via workflow_dispatch if needed.
+#   ^ ARCHIVED 2026-08-08 by @midnghtsapphire (owner decision: "no more quiet
+#   mode" / "i want the agents out of silent mode" — see exit-quiet-mode issue
+#   #17099 and DECISIONS.md D017). Automatic triggers restored below. The
+#   2026-07-25 directive comment is preserved per RVS-PRESERVE-001 (archive
+#   with who/date/why — never delete an owner policy directive).
 on:
-  workflow_dispatch: null
+  check_suite:
+    types: [completed]
+  workflow_dispatch: {}
 
 permissions:
   pull-requests: write
