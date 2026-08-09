@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   ui-audit-and-health:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
