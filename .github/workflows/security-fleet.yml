@@ -107,7 +107,7 @@ jobs:
                 if (e.status === 404) {
                   await github.rest.issues.createLabel({ owner, repo, name: label, color: 'B60205', description: 'security-fleet automated finding' });
                 } else {
-                  throw e;
+                  if (e.status === 403) { core.warning("Rate limit exceeded for label operations, skipping."); return; } throw e;
                 }
               }
             }
@@ -191,7 +191,7 @@ jobs:
                 if (e.status === 404) {
                   await github.rest.issues.createLabel({ owner, repo, name: label, color: 'B60205', description: 'security-fleet automated finding' });
                 } else {
-                  throw e;
+                  if (e.status === 403) { core.warning("Rate limit exceeded for label operations, skipping."); return; } throw e;
                 }
               }
             }
