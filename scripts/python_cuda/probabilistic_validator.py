@@ -849,13 +849,18 @@ def _cli_validate(args: argparse.Namespace) -> int:
     validator = AIResponseValidator(schema=schema)
     result = validator.validate_structured(args.validate_json)
     payload = result.to_dict()
+    confidence_ok = True
     if result.ok and args.heuristics_json:
         conf = validator.check_factuality(
             result.data, heuristics=json.loads(args.heuristics_json)
         )
         payload["confidence"] = conf.to_dict()
+        confidence_ok = conf.score >= validator.confidence_threshold
+        if not confidence_ok:
+            payload["ok"] = False
+            payload["errors"] = list(payload.get("errors", [])) + conf.reasons
     print(json.dumps(payload, indent=2, sort_keys=True))
-    return 0 if result.ok else 2
+    return 0 if result.ok and confidence_ok else 2
 
 
 def _self_test() -> int:
