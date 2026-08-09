@@ -457,13 +457,12 @@ function getBadgeClass(status) {
 /**
  * Generate HTML dashboard
  */
-function generateDashboard(data) {
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MIDNGHTSAPPHIRE Project Dashboard</title>
+
+/**
+ * Generate CSS styles
+ */
+function generateStyles() {
+  return `
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -579,18 +578,16 @@ function generateDashboard(data) {
     .search-box::placeholder {
       color: rgba(255, 255, 255, 0.6);
     }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <h1>🚀 MIDNGHTSAPPHIRE Project Dashboard</h1>
-      <p class="subtitle">Centralized visibility into all projects, BOM, inventory, and status</p>
-    </header>
+  </style>`;
+}
 
-    <input type="text" class="search-box" id="searchBox" placeholder="Search projects, domains, URLs..." onkeyup="filterAll()">
+/**
+ * Generate Summary Card HTML
+ */
+function generateSummaryCard(data) {
+  const activeServicesCount = data.inventory.masterInventory?.services.filter(s => s.status.includes('Active') || s.status.includes('✅')).length || 0;
 
-    <div class="grid">
+  return `
       <!-- Summary Card -->
       <div class="card">
         <h2>📊 Summary</h2>
@@ -600,7 +597,7 @@ function generateDashboard(data) {
         </div>
         <div class="stat">
           <span class="stat-label">Active Services:</span>
-          <span class="stat-value">${data.inventory.masterInventory?.services.filter(s => s.status.includes('Active') || s.status.includes('✅')).length || 0}</span>
+          <span class="stat-value">${activeServicesCount}</span>
         </div>
         <div class="stat">
           <span class="stat-label">Test URLs:</span>
@@ -614,8 +611,22 @@ function generateDashboard(data) {
           <span class="stat-label">Last Updated:</span>
           <span class="stat-value">${new Date(data.lastUpdated).toLocaleString()}</span>
         </div>
-      </div>
+      </div>`;
+}
 
+/**
+ * Generate Key Domains Card HTML
+ */
+function generateKeyDomainsCard(domains) {
+  const domainsRows = domains.slice(0, 10).map(d => `
+              <tr>
+                <td>${escapeHtml(d.name)}</td>
+                <td><span class="badge ${getBadgeClass(d.status)}">${escapeHtml(d.status)}</span></td>
+                <td>${escapeHtml(d.purpose)}</td>
+              </tr>
+            `).join('');
+
+  return `
       <!-- Key Domains Card -->
       <div class="card">
         <h2>🌐 Key Domains</h2>
@@ -628,18 +639,27 @@ function generateDashboard(data) {
             </tr>
           </thead>
           <tbody>
-            ${data.domains.slice(0, 10).map(d => `
-              <tr>
-                <td>${escapeHtml(d.name)}</td>
-                <td><span class="badge ${getBadgeClass(d.status)}">${escapeHtml(d.status)}</span></td>
-                <td>${escapeHtml(d.purpose)}</td>
-              </tr>
-            `).join('')}
+            ${domainsRows}
           </tbody>
         </table>
-      </div>
-    </div>
+      </div>`;
+}
 
+/**
+ * Generate Projects Table HTML
+ */
+function generateProjectsTable(projects) {
+  const projectRows = projects.map(p => `
+            <tr>
+              <td><strong>${escapeHtml(p.name)}</strong></td>
+              <td><span class="badge ${getBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
+              <td>${escapeHtml(p.description || p.notes || p.revenue || '')}</td>
+              <td>${escapeHtml(p.source || 'N/A')}</td>
+              <td>${p.link && /^https?:\/\//i.test(p.link) ? `<a href="${escapeHtml(p.link)}" target="_blank" rel="noopener noreferrer">View</a>` : 'N/A'}</td>
+            </tr>
+          `).join('');
+
+  return `
     <!-- Projects Table -->
     <div class="card">
       <h2>📦 All Projects</h2>
@@ -654,19 +674,26 @@ function generateDashboard(data) {
           </tr>
         </thead>
         <tbody>
-          ${data.projects.map(p => `
-            <tr>
-              <td><strong>${escapeHtml(p.name)}</strong></td>
-              <td><span class="badge ${getBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
-              <td>${escapeHtml(p.description || p.notes || p.revenue || '')}</td>
-              <td>${escapeHtml(p.source || 'N/A')}</td>
-              <td>${p.link && /^https?:\/\//i.test(p.link) ? `<a href="${escapeHtml(p.link)}" target="_blank" rel="noopener noreferrer">View</a>` : 'N/A'}</td>
-            </tr>
-          `).join('')}
+          ${projectRows}
         </tbody>
       </table>
-    </div>
+    </div>`;
+}
 
+/**
+ * Generate Test URLs Table HTML
+ */
+function generateTestURLsTable(urls) {
+  const urlRows = urls.map(u => `
+            <tr>
+              <td><a href="${escapeHtml(u.url)}" target="_blank">${escapeHtml(u.url)}</a></td>
+              <td>${escapeHtml(u.project)}</td>
+              <td><span class="badge badge-${escapeHtml(u.type)}">${escapeHtml(u.type)}</span></td>
+              <td>${escapeHtml(u.source)}</td>
+            </tr>
+          `).join('');
+
+  return `
     <!-- Test URLs Table -->
     <div class="card">
       <h2>🔗 Test URLs</h2>
@@ -680,18 +707,26 @@ function generateDashboard(data) {
           </tr>
         </thead>
         <tbody>
-          ${data.urls.map(u => `
-            <tr>
-              <td><a href="${escapeHtml(u.url)}" target="_blank">${escapeHtml(u.url)}</a></td>
-              <td>${escapeHtml(u.project)}</td>
-              <td><span class="badge badge-${escapeHtml(u.type)}">${escapeHtml(u.type)}</span></td>
-              <td>${escapeHtml(u.source)}</td>
-            </tr>
-          `).join('')}
+          ${urlRows}
         </tbody>
       </table>
-    </div>
+    </div>`;
+}
 
+/**
+ * Generate Active Services Table HTML
+ */
+function generateActiveServicesTable(services) {
+  const serviceRows = services.slice(0, 20).map(s => `
+            <tr>
+              <td><strong>${escapeHtml(s.name)}</strong></td>
+              <td>${escapeHtml(s.description.substring(0, 100))}...</td>
+              <td>${escapeHtml(s.status)}</td>
+              <td>${escapeHtml(s.usedBy)}</td>
+            </tr>
+          `).join('');
+
+  return `
     <!-- Active Services -->
     <div class="card">
       <h2>⚙️ Active Services (Inventory)</h2>
@@ -705,25 +740,17 @@ function generateDashboard(data) {
           </tr>
         </thead>
         <tbody>
-          ${(data.inventory.masterInventory?.services || []).slice(0, 20).map(s => `
-            <tr>
-              <td><strong>${escapeHtml(s.name)}</strong></td>
-              <td>${escapeHtml(s.description.substring(0, 100))}...</td>
-              <td>${escapeHtml(s.status)}</td>
-              <td>${escapeHtml(s.usedBy)}</td>
-            </tr>
-          `).join('')}
+          ${serviceRows}
         </tbody>
       </table>
-    </div>
+    </div>`;
+}
 
-    <div class="last-updated">
-      Dashboard generated at ${new Date(data.lastUpdated).toLocaleString()}
-      <br>
-      <small>Auto-updates every 4 hours via GitHub Actions cron job</small>
-    </div>
-  </div>
-
+/**
+ * Generate JavaScript Scripts
+ */
+function generateScripts() {
+  return `
   <script>
     function filterAll() {
       const query = document.getElementById('searchBox').value.toLowerCase();
@@ -749,12 +776,56 @@ function generateDashboard(data) {
         row.style.display = text.includes(query) ? '' : 'none';
       });
     }
-  </script>
+  </script>`;
+}
+
+/**
+ * Generate HTML dashboard
+ */
+function generateDashboard(data) {
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIDNGHTSAPPHIRE Project Dashboard</title>
+${generateStyles()}
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🚀 MIDNGHTSAPPHIRE Project Dashboard</h1>
+      <p class="subtitle">Centralized visibility into all projects, BOM, inventory, and status</p>
+    </header>
+
+    <input type="text" class="search-box" id="searchBox" placeholder="Search projects, domains, URLs..." onkeyup="filterAll()">
+
+    <div class="grid">
+${generateSummaryCard(data)}
+
+${generateKeyDomainsCard(data.domains)}
+    </div>
+
+${generateProjectsTable(data.projects)}
+
+${generateTestURLsTable(data.urls)}
+
+${generateActiveServicesTable(data.inventory.masterInventory?.services || [])}
+
+    <div class="last-updated">
+      Dashboard generated at ${new Date(data.lastUpdated).toLocaleString()}
+      <br>
+      <small>Auto-updates every 4 hours via GitHub Actions cron job</small>
+    </div>
+  </div>
+
+${generateScripts()}
 </body>
 </html>`;
 
   return html;
 }
+
 
 /**
  * Main execution
