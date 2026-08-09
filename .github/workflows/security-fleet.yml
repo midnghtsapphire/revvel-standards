@@ -95,6 +95,7 @@ jobs:
         env:
           SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const owner = context.repo.owner;
@@ -179,6 +180,7 @@ jobs:
       - name: File/update one deduped tracking issue per member
         uses: actions/github-script@v9.0.0
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
             const owner = context.repo.owner;
