@@ -11,12 +11,12 @@
  * Response body is capped at 5 MB to prevent memory exhaustion.
  */
 
-import { fetch } from 'undici';
-import * as cheerio from 'cheerio';
-import { ProductData, ProductReview } from '../types';
+import { fetch } from "undici";
+import * as cheerio from "cheerio";
+import { ProductData, ProductReview } from "../types";
 
 const USER_AGENT =
-  'Mozilla/5.0 (compatible; RevvelBot/1.0; +https://revvel.ai/bot)';
+  "Mozilla/5.0 (compatible; RevvelBot/1.0; +https://revvel.ai/bot)";
 
 const TIMEOUT_MS = 15_000;
 const MAX_RESPONSE_BYTES = 5 * 1024 * 1024; // 5 MB
@@ -31,18 +31,18 @@ const BLOCKED_HOSTNAME_RE =
 export class ScraperClientError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'ScraperClientError';
+    this.name = "ScraperClientError";
   }
 }
 
 function isBlockedUrl(urlStr: string): boolean {
   try {
     const { hostname, protocol } = new URL(urlStr);
-    if (protocol !== 'http:' && protocol !== 'https:') return true;
+    if (protocol !== "http:" && protocol !== "https:") return true;
     if (BLOCKED_HOSTNAME_RE.test(hostname)) return true;
     // Block numeric IPs that look like private ranges not caught above
     if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
-      const parts = hostname.split('.').map(Number);
+      const parts = hostname.split(".").map(Number);
       // Block RFC 6598 CGNAT (100.64.0.0/10 = second octet 64–127), 169.254, 240-255
       if (parts[0] === 100 && parts[1] >= 64 && parts[1] <= 127) return true;
       if (parts[0] === 169 && parts[1] === 254) return true;
@@ -54,9 +54,148 @@ function isBlockedUrl(urlStr: string): boolean {
   }
 }
 
+function extractMetadata($: cheerio.CheerioAPI) {
+  const ogTitle = $('meta[property="og:title"]').attr("content") || "";
+  const ogDesc = $('meta[property="og:description"]').attr("content") || "";
+  const ogImage = $('meta[property="og:image"]').attr("content") || "";
+  const ogSiteName = $('meta[property="og:site_name"]').attr("content") || "";
+  const twitterTitle = $('meta[name="twitter:title"]').attr("content") || "";
+  const twitterDesc =
+    $('meta[name="twitter:description"]').attr("content") || "";
+  const twitterImage = $('meta[name="twitter:image"]').attr("content") || "";
+  const pageTitle = $("title").first().text().trim() || "";
+  const metaDesc = $('meta[name="description"]').attr("content") || "";
+
+  return {
+    ogTitle,
+    ogDesc,
+    ogImage,
+    ogSiteName,
+    twitterTitle,
+    twitterDesc,
+    twitterImage,
+    pageTitle,
+    metaDesc,
+  };
+}
+
+function extractJsonLd($: cheerio.CheerioAPI) {
+  let jsonLdTitle = "";
+  let jsonLdDesc = "";
+  let jsonLdPrice = "";
+  let jsonLdCurrency = "";
+  let jsonLdBrand = "";
+  let jsonLdImages: string[] = [];
+
+  $('script[type="application/ld+json"]').each((_, el) => {
+    try {
+      const raw = $(el).html() || "";
+      const data = JSON.parse(raw);
+      const items = Array.isArray(data) ? data : [data];
+
+      for (const item of items) {
+        const type = item["@type"] || "";
+        if (type === "Product" || type === "ItemPage") {
+          jsonLdTitle = jsonLdTitle || item.name || "";
+          jsonLdDesc = jsonLdDesc || item.description || "";
+          jsonLdBrand =
+            jsonLdBrand ||
+            (typeof item.brand === "string"
+              ? item.brand
+              : item.brand?.name || "");
+
+          const offers = item.offers;
+          if (offers) {
+            const offer = Array.isArray(offers) ? offers[0] : offers;
+            jsonLdPrice = jsonLdPrice || String(offer.price || "");
+            jsonLdCurrency = jsonLdCurrency || offer.priceCurrency || "";
+          }
+
+          if (item.image) {
+            const imgs = Array.isArray(item.image) ? item.image : [item.image];
+            jsonLdImages = [
+              ...jsonLdImages,
+              ...imgs.map((i: any) => (typeof i === "string" ? i : i.url)),
+            ];
+          }
+        }
+      }
+    } catch {
+      // malformed JSON-LD — skip silently
+    }
+  });
+
+  return {
+    jsonLdTitle,
+    jsonLdDesc,
+    jsonLdPrice,
+    jsonLdCurrency,
+    jsonLdBrand,
+    jsonLdImages,
+  };
+}
+
+function extractHeuristicPrice($: cheerio.CheerioAPI): string {
+  const priceSelectors = [
+    '[itemprop="price"]',
+    ".price",
+    "#price",
+    ".product-price",
+    "[data-price]",
+    ".a-price .a-offscreen",
+  ];
+  for (const sel of priceSelectors) {
+    const el = $(sel).first();
+    const candidate =
+      el.attr("content") || el.attr("data-price") || el.text().trim();
+    if (candidate && /[\d.,]+/.test(candidate)) {
+      return candidate;
+    }
+  }
+  return "";
+}
+
+function extractImages(
+  $: cheerio.CheerioAPI,
+  initialImages: string[],
+): string[] {
+  const imgSet = new Set<string>(initialImages);
+  $("img").each((_, el) => {
+    const src =
+      $(el).attr("src") ||
+      $(el).attr("data-src") ||
+      $(el).attr("data-lazy-src") ||
+      "";
+    const w = parseInt($(el).attr("width") || "0", 10);
+    const h = parseInt($(el).attr("height") || "0", 10);
+    if (
+      src &&
+      src.startsWith("http") &&
+      (w === 0 || w >= 200) &&
+      (h === 0 || h >= 200)
+    ) {
+      imgSet.add(src);
+    }
+  });
+  return [...imgSet];
+}
+
+function extractReviews($: cheerio.CheerioAPI): ProductReview[] {
+  const reviews: ProductReview[] = [];
+  $('[itemprop="reviewBody"], .review-body, .review-text').each((_, el) => {
+    const text = $(el).text().trim();
+    if (text.length > 20) {
+      reviews.push({ text: text.slice(0, 200) });
+    }
+  });
+  return reviews;
+}
+
 export async function scrapeProduct(url: string): Promise<ProductData> {
   if (isBlockedUrl(url)) {
-    throw new ScraperClientError('URL points to a disallowed destination (private/loopback address)');
+    throw new ScraperClientError(
+      "URL points to a disallowed destination (private/loopback address)",
+    );
   }
 
   let html: string;
@@ -67,18 +206,20 @@ export async function scrapeProduct(url: string): Promise<ProductData> {
   try {
     const res = await fetch(url, {
       headers: {
-        'User-Agent': USER_AGENT,
-        Accept: 'text/html,application/xhtml+xml',
-        'Accept-Language': 'en-US,en;q=0.9',
+        "User-Agent": USER_AGENT,
+        Accept: "text/html,application/xhtml+xml",
+        "Accept-Language": "en-US,en;q=0.9",
       },
       signal: controller.signal,
       // Do not silently follow redirects to private addresses; re-check final URL
-      redirect: 'follow',
+      redirect: "follow",
     });
 
     // Re-validate the resolved URL after any redirect hops
     if (isBlockedUrl(res.url)) {
-      throw new ScraperClientError('URL redirected to a disallowed destination');
+      throw new ScraperClientError(
+        "URL redirected to a disallowed destination",
+      );
     }
 
     if (!res.ok) {
@@ -86,7 +227,7 @@ export async function scrapeProduct(url: string): Promise<ProductData> {
     }
 
     // Guard against huge responses — fast-path via Content-Length header
-    const contentLength = Number(res.headers.get('content-length') || 0);
+    const contentLength = Number(res.headers.get("content-length") || 0);
     if (contentLength > MAX_RESPONSE_BYTES) {
       throw new Error(`Response too large (${contentLength} bytes)`);
     }
@@ -102,7 +243,9 @@ export async function scrapeProduct(url: string): Promise<ProductData> {
         if (value) {
           totalBytes += value.byteLength;
           if (totalBytes > MAX_RESPONSE_BYTES) {
-            throw new Error(`Response too large (>${MAX_RESPONSE_BYTES} bytes)`);
+            throw new Error(
+              `Response too large (>${MAX_RESPONSE_BYTES} bytes)`,
+            );
           }
           chunks.push(value);
         }
@@ -129,151 +272,60 @@ export async function scrapeProduct(url: string): Promise<ProductData> {
 
   const $ = cheerio.load(html);
 
-  // ── Open Graph ──────────────────────────────────────────────────────────────
-  const ogTitle = $('meta[property="og:title"]').attr('content') || '';
-  const ogDesc = $('meta[property="og:description"]').attr('content') || '';
-  const ogImage = $('meta[property="og:image"]').attr('content') || '';
-  const ogSiteName = $('meta[property="og:site_name"]').attr('content') || '';
+  const {
+    ogTitle,
+    ogDesc,
+    ogImage,
+    ogSiteName,
+    twitterTitle,
+    twitterDesc,
+    twitterImage,
+    pageTitle,
+    metaDesc,
+  } = extractMetadata($);
 
-  // ── Twitter card ────────────────────────────────────────────────────────────
-  const twitterTitle =
-    $('meta[name="twitter:title"]').attr('content') || '';
-  const twitterDesc =
-    $('meta[name="twitter:description"]').attr('content') || '';
-  const twitterImage =
-    $('meta[name="twitter:image"]').attr('content') || '';
+  const {
+    jsonLdTitle,
+    jsonLdDesc,
+    jsonLdPrice,
+    jsonLdCurrency,
+    jsonLdBrand,
+    jsonLdImages,
+  } = extractJsonLd($);
 
-  // ── <title> + meta description ───────────────────────────────────────────
-  const pageTitle =
-    $('title').first().text().trim() || '';
-  const metaDesc =
-    $('meta[name="description"]').attr('content') || '';
+  const heuristicPrice = extractHeuristicPrice($);
 
-  // ── JSON-LD structured data (Product schema) ─────────────────────────────
-  let jsonLdTitle = '';
-  let jsonLdDesc = '';
-  let jsonLdPrice = '';
-  let jsonLdCurrency = '';
-  let jsonLdBrand = '';
-  let jsonLdImages: string[] = [];
+  // Combine initial images from JSON-LD and meta tags
+  const initialImages: string[] = [...jsonLdImages];
+  if (ogImage) initialImages.push(ogImage);
+  if (twitterImage) initialImages.push(twitterImage);
 
-  $('script[type="application/ld+json"]').each((_, el) => {
-    try {
-      const raw = $(el).html() || '';
-      const data = JSON.parse(raw);
-      const items = Array.isArray(data) ? data : [data];
-
-      for (const item of items) {
-        const type = item['@type'] || '';
-        if (type === 'Product' || type === 'ItemPage') {
-          jsonLdTitle = jsonLdTitle || item.name || '';
-          jsonLdDesc = jsonLdDesc || item.description || '';
-          jsonLdBrand =
-            jsonLdBrand ||
-            (typeof item.brand === 'string'
-              ? item.brand
-              : item.brand?.name || '');
-
-          const offers = item.offers;
-          if (offers) {
-            const offer = Array.isArray(offers) ? offers[0] : offers;
-            jsonLdPrice = jsonLdPrice || String(offer.price || '');
-            jsonLdCurrency = jsonLdCurrency || offer.priceCurrency || '';
-          }
-
-          if (item.image) {
-            const imgs = Array.isArray(item.image)
-              ? item.image
-              : [item.image];
-            jsonLdImages = [
-              ...jsonLdImages,
-              ...imgs.map((i: string | { url: string }) =>
-                typeof i === 'string' ? i : i.url
-              ),
-            ];
-          }
-        }
-      }
-    } catch {
-      // malformed JSON-LD — skip silently
-    }
-  });
-
-  // ── Price heuristics ─────────────────────────────────────────────────────
-  const priceSelectors = [
-    '[itemprop="price"]',
-    '.price',
-    '#price',
-    '.product-price',
-    '[data-price]',
-    '.a-price .a-offscreen', // Amazon
-  ];
-  let heuristicPrice = '';
-  for (const sel of priceSelectors) {
-    const el = $(sel).first();
-    const candidate = el.attr('content') || el.attr('data-price') || el.text().trim();
-    if (candidate && /[\d.,]+/.test(candidate)) {
-      heuristicPrice = candidate;
-      break;
-    }
-  }
-
-  // ── Product images heuristics ────────────────────────────────────────────
-  const imgSet = new Set<string>(jsonLdImages);
-  if (ogImage) imgSet.add(ogImage);
-  if (twitterImage) imgSet.add(twitterImage);
-
-  // gather <img> tags with reasonable dimensions
-  $('img').each((_, el) => {
-    const src =
-      $(el).attr('src') ||
-      $(el).attr('data-src') ||
-      $(el).attr('data-lazy-src') ||
-      '';
-    const w = parseInt($(el).attr('width') || '0', 10);
-    const h = parseInt($(el).attr('height') || '0', 10);
-    if (src && src.startsWith('http') && (w === 0 || w >= 200) && (h === 0 || h >= 200)) {
-      imgSet.add(src);
-    }
-  });
-
-  // ── Reviews heuristics ───────────────────────────────────────────────────
-  const reviews: ProductReview[] = [];
-  $('[itemprop="reviewBody"], .review-body, .review-text').each((_, el) => {
-    const text = $(el).text().trim();
-    if (text.length > 20) {
-      reviews.push({ text: text.slice(0, 200) });
-    }
-  });
+  const images = extractImages($, initialImages).slice(0, 6);
+  const reviews = extractReviews($).slice(0, 5);
 
   // ── Compose final result ─────────────────────────────────────────────────
   const title =
     jsonLdTitle ||
     ogTitle ||
     twitterTitle ||
-    pageTitle.split('|')[0].split(' – ')[0].trim();
+    pageTitle.split("|")[0].split(" – ")[0].trim();
 
-  const description =
-    jsonLdDesc ||
-    ogDesc ||
-    twitterDesc ||
-    metaDesc;
+  const description = jsonLdDesc || ogDesc || twitterDesc || metaDesc;
 
   const price = jsonLdPrice || heuristicPrice;
-  const currency = jsonLdCurrency || (price.includes('$') ? 'USD' : '');
+  const currency = jsonLdCurrency || (price.includes("$") ? "USD" : "");
   const brand = jsonLdBrand || ogSiteName;
-  const images = [...imgSet].slice(0, 6);
 
   return {
     url,
-    title: title || 'Unknown Product',
-    description: description || '',
+    title: title || "Unknown Product",
+    description: description || "",
     price: price || undefined,
     currency: currency || undefined,
     images,
     ogImage: ogImage || undefined,
     brand: brand || undefined,
-    reviews: reviews.slice(0, 5),
+    reviews,
     scrapedAt: new Date().toISOString(),
   };
 }
