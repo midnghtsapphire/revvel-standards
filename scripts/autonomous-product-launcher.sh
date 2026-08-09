@@ -541,10 +541,14 @@ TODO: Based on research, define:
 
 ## Market Size
 
-TODO: Estimate addressable market:
-- Total potential users
-- Realistic capture rate
-- Revenue potential
+$(node -e "
+const { ask } = require('$SCRIPT_DIR/llm.js');
+ask('Estimate addressable market for a product named \"$PRODUCT_NAME\", including total potential users, realistic capture rate, and revenue potential. Be concise.', { silent: true })
+  .then(res => console.log(res.text))
+  .catch(err => {
+    console.log('TODO: Estimate addressable market:\n- Total potential users\n- Realistic capture rate\n- Revenue potential');
+  });
+" 2>/dev/null || echo -e "TODO: Estimate addressable market:\n- Total potential users\n- Realistic capture rate\n- Revenue potential")
 
 ---
 
