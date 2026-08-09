@@ -51,7 +51,9 @@
     "markdownlint-cli2": "^0.23.2",
     "semver": "^7.8.5",
     "sitemap-generator-cli": "^7.5.0",
-    "typescript": "^5.7.0",
+    "typescript": "^5.7.0"
+  },
+  "dependencies": {
     "yaml": "^2.9.0"
   }
 }
