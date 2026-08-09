@@ -50,6 +50,11 @@ test('Neon workflow is wired correctly', () => {
   assert.match(wf, /^permissions:\n {2}contents: read$/m);
   assert.match(wf, /github\.event\.pull_request\.head\.repo\.full_name == github\.repository/);
   assert.match(wf, /github\.actor != 'dependabot\[bot\]'/);
+  assert.match(wf, /if: steps\.check_branch\.outputs\.exists != 'true'/);
+
+  // The Neon API `search=` filter misses some slash-containing branch names, so
+  // both existence probes must scan the paginated full listing instead.
+  assert.doesNotMatch(wf, /search=\$\(urlencode "\$NEON_BRANCH"\)/);
 
   // Cleanup tolerates an already-expired branch without failing the check.
   assert.match(wf, /if: steps\.check_branch\.outputs\.exists == 'true'/);
@@ -71,20 +76,20 @@ test('Neon workflow is wired correctly', () => {
 
 const BRANCH = 'preview/pr-1-feat';
 
-function checkBranchScript() {
+function checkBranchScript(jobName = 'delete_neon_branch') {
   const doc = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
-  const step = doc.jobs.delete_neon_branch.steps.find((s) => s.id === 'check_branch');
+  const step = doc.jobs[jobName].steps.find((s) => s.id === 'check_branch');
   assert.ok(step && step.run, 'expected a check_branch step with a run: block');
   return step.run;
 }
 
 // Serves one stubbed page per request, in order, so a lookup that stops at page 1
 // leaves entries unconsumed (asserted via `requests`).
-async function stubNeon(pages) {
+async function stubNeon(pages, expectedAuth = ['Bearer', 'test-key'].join(' ')) {
   const requests = [];
   const server = http.createServer((req, res) => {
     requests.push(req.url);
-    if (req.headers.authorization !== 'Bearer test-key') {
+    if (req.headers.authorization !== expectedAuth) {
       res.writeHead(401).end(JSON.stringify({ message: 'unauthorized' }));
       return;
     }
@@ -99,9 +104,9 @@ async function stubNeon(pages) {
 
 // Runs the extracted step the way the runner does, and reports what it wrote to
 // $GITHUB_OUTPUT (or how it failed).
-function runCheckBranch({ port, apiKey = 'test-key' }) {
+function runCheckBranch({ port, apiKey = 'test-key', jobName = 'delete_neon_branch' }) {
   const scriptPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'neon-step-')), 'check.sh');
-  fs.writeFileSync(scriptPath, checkBranchScript());
+  fs.writeFileSync(scriptPath, checkBranchScript(jobName));
   const outputFile = `${scriptPath}.output`;
   fs.writeFileSync(outputFile, '');
 
@@ -131,6 +136,23 @@ function runCheckBranch({ port, apiKey = 'test-key' }) {
   });
 }
 
+test('create lookup scans the full branch listing so reruns skip duplicate branch creation', async () => {
+  const neon = await stubNeon([
+    { cursor: null, body: { branches: [{ name: 'preview/pr-2-other' }], pagination: { next: 'cur2' } } },
+    { cursor: 'cur2', body: { branches: [{ name: BRANCH }] } },
+  ]);
+  try {
+    const result = await runCheckBranch({ port: neon.port, jobName: 'create_neon_branch' });
+    assert.equal(result.code, 0, result.stderr);
+    assert.equal(result.output, 'exists=true');
+    assert.equal(neon.requests.length, 2);
+    assert.doesNotMatch(neon.requests[0], /[?&]search=/);
+    assert.match(neon.requests[1], /cursor=cur2/);
+  } finally {
+    await neon.close();
+  }
+});
+
 test('cleanup lookup follows every page of the paginated listing', async () => {
   // Regression: a single unpaginated request missed the branch when it sat past
   // page 1, so cleanup skipped a delete it should have done and the preview
@@ -144,7 +166,7 @@ test('cleanup lookup follows every page of the paginated listing', async () => {
     assert.equal(result.code, 0, result.stderr);
     assert.equal(result.output, 'exists=true');
     assert.equal(neon.requests.length, 2);
-    assert.match(neon.requests[0], /search=preview%2Fpr-1-feat/);
+    assert.doesNotMatch(neon.requests[0], /[?&]search=/);
     assert.match(neon.requests[1], /cursor=cur2/);
   } finally {
     await neon.close();
