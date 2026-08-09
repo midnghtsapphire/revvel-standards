@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-09T20:07:45.509Z",
+  "generated_at": "2026-08-09T21:09:12.871Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,17 +15,17 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 31328426701,
-            "name": "Prioritize Starred Repositories",
-            "path": ".github/workflows/prioritize-stars.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31328426701",
+            "id": 31335631083,
+            "name": "OpenRouter Coder",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31335631083",
             "conclusion": "failure"
           },
           {
-            "id": 31328319839,
-            "name": "App Artifact Audit",
-            "path": ".github/workflows/app-artifact-audit.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31328319839",
+            "id": 31335491272,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31335491272",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31330781615"
+        "last_run": null
       }
     },
     "sheaf": {
