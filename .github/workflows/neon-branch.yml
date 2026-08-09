@@ -57,9 +57,9 @@ jobs:
             | tr '[:upper:]' '[:lower:]' \
             | tr -c 'a-z0-9' '-' \
             | sed -e 's/--*/-/g' -e 's/^-//' -e 's/-$//' \
-            | cut -c1-40)
+            | cut -c1-30)
           slug=${slug%-}
-          echo "name=preview-pr-${PR_NUMBER}-${slug}" >> "$GITHUB_OUTPUT"
+          echo "name=pr-${PR_NUMBER}-${slug}" >> "$GITHUB_OUTPUT"
 
   create_neon_branch:
     name: Create Neon Branch
