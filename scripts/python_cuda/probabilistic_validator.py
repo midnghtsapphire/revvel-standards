@@ -553,8 +553,8 @@ def score_factuality(
             sc = 0.0
         sc = max(0.0, min(1.0, sc))
         checks["self_confidence_present"] = True
-        # Blend: 70% heuristics, 30% self-report.
-        score = 0.70 * score + 0.30 * sc
+        # Self-report may dampen, but must never raise, the heuristic score.
+        score = min(score, 0.70 * score + 0.30 * sc)
         reasons.append(f"blended model self-confidence={sc:.2f}")
 
     if not reasons:
