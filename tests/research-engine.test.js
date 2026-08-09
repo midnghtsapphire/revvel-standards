@@ -1,36 +1,21 @@
 #!/usr/bin/env node
 "use strict";
 
-const assert = require("assert");
+const { describe, test } = require('node:test');
+const assert = require('node:assert');
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
 const engine = require("../scripts/research-engine.js");
 
-let passed = 0;
-let failed = 0;
 
-async function test(name, fn) {
-  try {
-    await fn();
-    console.log(`PASS: ${name}`);
-    passed += 1;
-  } catch (error) {
-    console.log(`FAIL: ${name}`);
-    console.log(error.stack || error.message);
-    failed += 1;
-  }
-}
 
-async function run() {
-  const tests = [];
 
-  function queue(name, fn) {
-    tests.push({ name, fn });
-  }
 
-  queue("defines the full research lane set requested by the WR", () => {
+describe('research-engine', () => {
+
+  test("defines the full research lane set requested by the WR", () => {
     const laneIds = engine.LANE_DEFINITIONS.map((lane) => lane.id);
     for (const required of [
       "market-positioning",
@@ -47,13 +32,13 @@ async function run() {
     assert.ok(engine.MASTER_CHECKLIST.length >= 8);
   });
 
-  queue("uses three OpenRouter models for triangulated research", () => {
+  test("uses three OpenRouter models for triangulated research", () => {
     assert.deepStrictEqual(engine.selectModels("triangulated"), engine.MODEL_TRIAD);
     assert.strictEqual(engine.selectModels("standard").length, 1);
     assert.strictEqual(engine.parseDepth("swarm"), "swarm");
   });
 
-  queue("builds lane prompts with checklist and automatic-fix requirements", () => {
+  test("builds lane prompts with checklist and automatic-fix requirements", () => {
     const lane = engine.LANE_DEFINITIONS.find((item) => item.id === "review-autofix");
     const prompt = engine.buildLaneUserPrompt(lane, {
       query: "Research engine PR",
@@ -66,7 +51,7 @@ async function run() {
     assert.ok(prompt.includes("Recommend"));
   });
 
-  queue("keeps the competitor-pricing rule in sync with wr/WR_TEMPLATE_FULL.md", () => {
+  test("keeps the competitor-pricing rule in sync with wr/WR_TEMPLATE_FULL.md", () => {
     // Guards the manual cross-file obligation described in buildSynthesisPrompt
     // (scripts/research-engine.js) and wr/WR_TEMPLATE_FULL.md: both must state the same
     // competitor-pricing rule. If either file's wording drifts, this test fails so the pair is re-synced.
@@ -87,7 +72,7 @@ async function run() {
     assert.ok(template.includes("Paid tiers"), "WR template must reference the vague-label example");
   });
 
-  queue("review comment carries the coder trigger phrase only for PRs", () => {
+  test("review comment carries the coder trigger phrase only for PRs", () => {
     const lanes = engine.LANE_DEFINITIONS;
     const issueComment = engine.buildReviewRequestComment({ outputFile: "/tmp/x.md", laneReports: lanes });
     const prComment = engine.buildReviewRequestComment({ outputFile: "/tmp/x.md", laneReports: lanes, includeCoderTrigger: true });
@@ -97,7 +82,7 @@ async function run() {
     assert.ok(prComment.includes("Research Findings:"), "PR comment must include the coder trigger phrase");
   });
 
-  queue("findings comment carries synthesis so WR generation can proceed without a committed packet", () => {
+  test("findings comment carries synthesis so WR generation can proceed without a committed packet", () => {
     const comment = engine.buildFindingsComment({
       outputFile: "docs/research-engine/run-123.md",
       synthesis: "## Executive Summary\n\nActionable findings live here.",
@@ -108,7 +93,7 @@ async function run() {
     assert.ok(comment.includes("Actionable findings live here."));
   });
 
-  queue("formats missing-key packets as visible infrastructure blockers", () => {
+  test("formats missing-key packets as visible infrastructure blockers", () => {
     const packet = engine.buildMissingKeyReport({
       query: "research",
       outputFile: "docs/research-engine/research.md",
@@ -118,7 +103,7 @@ async function run() {
     assert.ok(packet.synthesis.includes("infrastructure blocker"));
   });
 
-  queue("runs the engine offline with mocked model calls and writes output", async () => {
+  test("runs the engine offline with mocked model calls and writes output", async () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "research-engine-"));
     const outputFile = path.join(tmpDir, "packet.md");
     const calls = [];
@@ -152,7 +137,7 @@ async function run() {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
-  queue("findAndRequestLinkedPrReviews processes all linked PRs concurrently", async () => {
+  test("findAndRequestLinkedPrReviews processes all linked PRs concurrently", async () => {
     const labelCalls = [];
     const commentCalls = [];
     const prs = [{ number: 1 }, { number: 2 }, { number: 3 }];
@@ -176,7 +161,7 @@ async function run() {
     );
   });
 
-  queue("findAndRequestLinkedPrReviews is skipped when context.prNumber is set", async () => {
+  test("findAndRequestLinkedPrReviews is skipped when context.prNumber is set", async () => {
     let listCalled = false;
     await engine.findAndRequestLinkedPrReviews(
       { githubToken: "token", issueNumber: "42", prNumber: "10", repository: "owner/repo", outputFile: "out.md" },
@@ -185,7 +170,7 @@ async function run() {
     assert.strictEqual(listCalled, false, "should not list PRs when prNumber is set");
   });
 
-  queue("findAndRequestLinkedPrReviews continues and logs when one PR write fails", async () => {
+  test("findAndRequestLinkedPrReviews continues and logs when one PR write fails", async () => {
     const commentCalls = [];
     const warnings = [];
     const origLog = console.log;
@@ -216,15 +201,4 @@ async function run() {
     assert.ok(warnings[0].includes("#1"), "warning should identify the failed PR number");
   });
 
-  for (const item of tests) {
-    await test(item.name, item.fn);
-  }
-
-  console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);
-  process.exit(failed === 0 ? 0 : 1);
-}
-
-run().catch((error) => {
-  console.error(error);
-  process.exit(1);
 });
