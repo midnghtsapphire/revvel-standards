@@ -78,6 +78,81 @@ def load_skills():
     return data, data["skills"]
 
 
+
+def _build_cover(story, hero_kicker, hero_title, hero_sub, version_line):
+    story += [Spacer(1, 2.4 * inch)]
+    story += [Paragraph(hero_kicker, H_SUB)]
+    story += [Paragraph(hero_title, H_TITLE)]
+    story += [Spacer(1, 0.18 * inch)]
+    story += [Paragraph(hero_sub, H_SUB)]
+    if version_line:
+        story += [Spacer(1, 0.5 * inch), Paragraph(version_line, H_SUB)]
+    story += [NextPageTemplate("body"), PageBreak()]
+
+
+def _build_intro(story, doc_width, closing_title, num_skills, n_cats):
+    story.append(Paragraph(closing_title, H_CAT))
+    story.append(Paragraph(
+        "A <b>skill</b> is a focused, copy-paste playbook that gives an AI agent expert "
+        "instructions for one domain. Load it at the start of a task and the agent instantly "
+        "knows the rules, workflow and tools for that domain — no trial and error.", P_LEAD))
+    story.append(Spacer(1, 8))
+    story.append(Paragraph(
+        f"This pack contains <b>{num_skills} skills</b> across <b>{n_cats} categories</b>. "
+        "Each entry below lists what it does and the trigger keywords that activate it.", P_LEAD))
+    story.append(Spacer(1, 12))
+
+    how = Table([[Paragraph(
+        "<b>How to use</b>&nbsp;&nbsp;1) Pick the skill for your task.&nbsp; "
+        "2) Paste its playbook into your agent / project rules.&nbsp; "
+        "3) Use a trigger keyword and the agent applies the workflow automatically.",
+        P_BODY)]], colWidths=[doc_width])
+    how.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, -1), PALE),
+        ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#D9DCEC")),
+        ("LEFTPADDING", (0, 0), (-1, -1), 12), ("RIGHTPADDING", (0, 0), (-1, -1), 12),
+        ("TOPPADDING", (0, 0), (-1, -1), 10), ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+    ]))
+    story.append(how)
+    story.append(PageBreak())
+
+
+def _build_catalogue(story, doc_width, order, groups):
+    story.append(Paragraph("The Catalogue", H_CAT))
+    story.append(HRFlowable(width="100%", thickness=2, color=ACCENT, spaceAfter=6))
+
+    for cat in order:
+        story.append(KeepTogether([Paragraph(cat.upper(), st(
+            "catlabel", fontName="Helvetica-Bold", fontSize=9.5,
+            textColor=ACCENT, spaceBefore=10, spaceAfter=2))]))
+        for s in groups[cat]:
+            rows = [Paragraph(s.get("title", s.get("name", "")), H_SKILL)]
+            if s.get("persona"):
+                rows.append(Paragraph(f"Persona: {s['persona']}", P_TRIG))
+            if s.get("triggers"):
+                rows.append(Paragraph("Triggers: " + ", ".join(s["triggers"][:6]), P_TRIG))
+            tbl = Table([[r] for r in rows], colWidths=[doc_width])
+            tbl.setStyle(TableStyle([
+                ("LEFTPADDING", (0, 0), (-1, -1), 10), ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+                ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                ("LINEBEFORE", (0, 0), (0, -1), 2, ACCENT2),
+                ("BACKGROUND", (0, 0), (-1, -1), colors.white),
+            ]))
+            story.append(KeepTogether([tbl, Spacer(1, 6)]))
+
+
+def _build_closing(story, closing_lead, price_line):
+    story.append(PageBreak())
+    story.append(Paragraph("Get it", H_CAT))
+    if closing_lead:
+        story.append(Paragraph(closing_lead, P_LEAD))
+        story.append(Spacer(1, 10))
+    if price_line:
+        story.append(Paragraph(price_line, H_CAT))
+    story.append(Paragraph(
+        "Licensed for use in your own projects. Not for resale or redistribution as a competing pack.",
+        P_TRIG))
+
 def category_name(skill):
     return skill.get("category") or "Other"
 
@@ -113,75 +188,16 @@ def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
     story = []
 
     # ---------- COVER ----------
-    story += [Spacer(1, 2.4 * inch)]
-    story += [Paragraph(hero_kicker, H_SUB)]
-    story += [Paragraph(hero_title, H_TITLE)]
-    story += [Spacer(1, 0.18 * inch)]
-    story += [Paragraph(hero_sub, H_SUB)]
-    if version_line:
-        story += [Spacer(1, 0.5 * inch), Paragraph(version_line, H_SUB)]
-    story += [NextPageTemplate("body"), PageBreak()]
+    _build_cover(story, hero_kicker, hero_title, hero_sub, version_line)
 
     # ---------- INTRO ----------
-    story.append(Paragraph(closing_title, H_CAT))
-    story.append(Paragraph(
-        "A <b>skill</b> is a focused, copy-paste playbook that gives an AI agent expert "
-        "instructions for one domain. Load it at the start of a task and the agent instantly "
-        "knows the rules, workflow and tools for that domain — no trial and error.", P_LEAD))
-    story.append(Spacer(1, 8))
-    story.append(Paragraph(
-        f"This pack contains <b>{len(skills)} skills</b> across <b>{n_cats} categories</b>. "
-        "Each entry below lists what it does and the trigger keywords that activate it.", P_LEAD))
-    story.append(Spacer(1, 12))
-
-    how = Table([[Paragraph(
-        "<b>How to use</b>&nbsp;&nbsp;1) Pick the skill for your task.&nbsp; "
-        "2) Paste its playbook into your agent / project rules.&nbsp; "
-        "3) Use a trigger keyword and the agent applies the workflow automatically.",
-        P_BODY)]], colWidths=[doc.width])
-    how.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), PALE),
-        ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#D9DCEC")),
-        ("LEFTPADDING", (0, 0), (-1, -1), 12), ("RIGHTPADDING", (0, 0), (-1, -1), 12),
-        ("TOPPADDING", (0, 0), (-1, -1), 10), ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
-    ]))
-    story.append(how)
-    story.append(PageBreak())
+    _build_intro(story, doc.width, closing_title, len(skills), n_cats)
 
     # ---------- CATALOGUE ----------
-    story.append(Paragraph("The Catalogue", H_CAT))
-    story.append(HRFlowable(width="100%", thickness=2, color=ACCENT, spaceAfter=6))
-
-    for cat in order:
-        story.append(KeepTogether([Paragraph(cat.upper(), st(
-            "catlabel", fontName="Helvetica-Bold", fontSize=9.5,
-            textColor=ACCENT, spaceBefore=10, spaceAfter=2))]))
-        for s in groups[cat]:
-            rows = [Paragraph(s.get("title", s.get("name", "")), H_SKILL)]
-            if s.get("persona"):
-                rows.append(Paragraph(f"Persona: {s['persona']}", P_TRIG))
-            if s.get("triggers"):
-                rows.append(Paragraph("Triggers: " + ", ".join(s["triggers"][:6]), P_TRIG))
-            tbl = Table([[r] for r in rows], colWidths=[doc.width])
-            tbl.setStyle(TableStyle([
-                ("LEFTPADDING", (0, 0), (-1, -1), 10), ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-                ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-                ("LINEBEFORE", (0, 0), (0, -1), 2, ACCENT2),
-                ("BACKGROUND", (0, 0), (-1, -1), colors.white),
-            ]))
-            story.append(KeepTogether([tbl, Spacer(1, 6)]))
+    _build_catalogue(story, doc.width, order, groups)
 
     # ---------- CLOSING ----------
-    story.append(PageBreak())
-    story.append(Paragraph("Get it", H_CAT))
-    if closing_lead:
-        story.append(Paragraph(closing_lead, P_LEAD))
-        story.append(Spacer(1, 10))
-    if price_line:
-        story.append(Paragraph(price_line, H_CAT))
-    story.append(Paragraph(
-        "Licensed for use in your own projects. Not for resale or redistribution as a competing pack.",
-        P_TRIG))
+    _build_closing(story, closing_lead, price_line)
 
     doc.build(story)
     print("WROTE", out_path, "(%.0f KB)" % (os.path.getsize(out_path) / 1024))
