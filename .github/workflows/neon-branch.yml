@@ -79,6 +79,7 @@ jobs:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch_name: ${{ needs.setup.outputs.neon_branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
+          suspend_timeout: 300
 
 # The step above creates a new Neon branch.
 # You may want to do something with the new branch, such as run migrations, run tests
