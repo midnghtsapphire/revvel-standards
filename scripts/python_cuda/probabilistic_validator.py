@@ -535,9 +535,9 @@ def score_factuality(
                     f"cross-ref '{path}'={val} diverges >{tol:.0%} from expected {exp}"
                 )
 
-    # Tokens that should be grounded in context or the answer.
+    # Tokens that must be present in the authoritative context.
     tokens = heuristics.get("required_context_tokens") or []
-    ctx_blob = f"{context}\n{blob}".lower()
+    ctx_blob = context.lower()
     for tok in tokens:
         present = str(tok).lower() in ctx_blob
         checks[f"token:{tok}"] = present
