@@ -1,6 +1,7 @@
 """Gatekeeper operations commands."""
 
 import subprocess
+import concurrent.futures
 
 import click
 from rich.console import Console
@@ -134,18 +135,27 @@ def sync(project: str, config_name: str, repo: str, secrets: str):
         synced = []
         failed = []
 
-        for secret in secret_list:
+        def sync_secret(secret):
+            secret_name = secret["name"]
             try:
-                secret_name = secret["name"]
                 secret_data = doppler_api.get_secret(secret_name, project, config_name)
                 secret_value = secret_data.get("value", {}).get("computed", "")
 
                 github_api.set_repo_secret(owner, repo_name, secret_name, secret_value)
-                synced.append(secret_name)
                 console.print(f"[green]✓[/green] Synced: {secret_name}")
+                return (True, secret_name, None)
             except Exception as e:
-                failed.append((secret_name, str(e)))
                 console.print(f"[red]✗[/red] Failed: {secret_name} - {e}")
+                return (False, secret_name, e)
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            results = executor.map(sync_secret, secret_list)
+
+        for success, secret_name, error in results:
+            if success:
+                synced.append(secret_name)
+            else:
+                failed.append((secret_name, str(error)))
 
         console.print(f"\n[cyan]Summary:[/cyan] {len(synced)} synced, {len(failed)} failed")
 
