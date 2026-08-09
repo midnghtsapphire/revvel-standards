@@ -122,6 +122,16 @@
     const REPO_NAME = 'revvel-standards';
     let allIssues = [];
 
+    function escapeHtml(unsafe) {
+      if (!unsafe) return '';
+      return unsafe.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     async function loadIssues() {
       try {
         const response = await fetch(`${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/issues?state=all&per_page=100`);
@@ -183,10 +193,10 @@
 
       container.innerHTML = issues.map(issue => {
         const labels = issue.labels.map(l => 
-          `<span class="label-badge" style="background: #${l.color}; color: ${getBestTextColor(l.color)};">${l.name}</span>`
+          `<span class="label-badge" style="background: #${l.color}; color: ${getBestTextColor(l.color)};">${escapeHtml(l.name)}</span>`
         ).join('');
         
-        const assignees = issue.assignees.map(a => a.login).join(', ') || 'Unassigned';
+        const assignees = issue.assignees.map(a => escapeHtml(a.login)).join(', ') || 'Unassigned';
         const stateColor = issue.state === 'open' ? 'text-green-400' : 'text-purple-400';
         const stateIcon = issue.state === 'open' ? '🟢' : '🟣';
 
@@ -196,7 +206,7 @@
               <div class="flex-1">
                 <div class="flex items-center gap-2 mb-1">
                   <span class="${stateColor} font-bold">${stateIcon} #${issue.number}</span>
-                  <span class="text-white font-bold">${issue.title}</span>
+                  <span class="text-white font-bold">${escapeHtml(issue.title)}</span>
                 </div>
                 <div class="text-gray-400 text-sm mb-2">${labels}</div>
               </div>
