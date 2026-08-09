@@ -827,12 +827,27 @@ class AIResponseValidator:
             source_hint=self.source_hint,
         )
         self.log.record("fallback", reason, attempt=attempts, extra={"errors": errors})
+        # Redact the invalid parsed payload and raw model reply so they are not
+        # serialized by to_dict() and leaked to the caller.  Keep only the error
+        # list and layer label for diagnostic purposes; full diagnostics are
+        # preserved internally via the anomaly log.
+        redacted_validation = (
+            ValidationResult(
+                ok=False,
+                data=None,
+                errors=list(last_validation.errors),
+                layer=last_validation.layer,
+                raw=None,
+            )
+            if last_validation is not None
+            else None
+        )
         elapsed = (time.perf_counter() - t0) * 1000.0
         return OrchestrationResult(
             ok=False,
             data=None,
             attempts=attempts,
-            validation=last_validation,
+            validation=redacted_validation,
             confidence=last_confidence,
             fallback=fb,
             anomalies=self.log.to_list(),
