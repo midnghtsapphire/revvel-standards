@@ -16,6 +16,15 @@ name: Trusted Bot Auto-Approve
 on:
   check_suite:
     types: [completed]
+  workflow_run:
+    # `workflow_run.workflows` matches workflow `name:` (not filename).
+    # Keep this list aligned with CI workflows whose successful completion
+    # should re-evaluate trusted-bot auto-approval.
+    workflows:
+      - "CI Error Prevention Tests" # .github/workflows/ci-error-prevention.yml
+      - "PR Check Status Automation" # .github/workflows/pr-check-status.yml
+      - "PR Lifecycle" # .github/workflows/pr-lifecycle.yml
+    types: [completed]
   workflow_dispatch: {}
 
 permissions:

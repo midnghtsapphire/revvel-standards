@@ -42,60 +42,9 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: |
-          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
-            echo "No usable base SHA for diff; skipping lockfile gate."
-            exit 0
-          fi
-
-          # REVVEL-DISABLED | AGENT: claude-code | MODEL: claude-5 | WR: #17091 | DATE: 2026-08-08 | STATUS: REPLACED
-          # REASON: filename-co-change check produced both false passes (any lockfile
-          # line touched = pass) and false failures (metadata-only manifest edits =
-          # fail), and `|| true` let a failed git diff silently skip the gate — all
-          # flagged by PR #17091 review. Replaced with npm's own sync validation.
-          # CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" || true)"
-          # PKG_FILES="$(echo "$CHANGED" | grep -E '(^|/)package\.json$' || true)"
-          # ...co-change loop: pass if lockfile path appeared in the diff,
-          #    fail otherwise (see git history for the full block)...
-          # REVVEL-DISABLED-END
-          # core.quotepath=off keeps non-ASCII/space paths unquoted so the
-          # per-file existence checks below see literal paths (Jules nit).
-          if ! CHANGED="$(git -c core.quotepath=off diff --name-only "$BASE_SHA" "$HEAD_SHA")"; then
-            echo "❌ git diff $BASE_SHA..$HEAD_SHA failed (shallow clone or unknown SHA)."
-            echo "The lockfile gate cannot verify this change; failing loud instead of passing silently."
-            exit 1
-          fi
-          echo "Changed files between $BASE_SHA and $HEAD_SHA:"
-          echo "$CHANGED"
-
-          PKG_FILES="$(echo "$CHANGED" | grep -E '(^|/)package\.json$' || true)"
-          if [ -n "$PKG_FILES" ]; then
-            while IFS= read -r pkg; do
-              [ -n "$pkg" ] || continue
-              [ -f "$pkg" ] || { echo "Skipping deleted manifest: $pkg"; continue; }
-              pkg_dir="$(dirname "$pkg")"
-              lockfile="$pkg_dir/package-lock.json"
-
-              if [ ! -f "$lockfile" ]; then
-                echo "❌ $pkg changed but $lockfile is missing."
-                echo "Generate and commit $lockfile before merging."
-                exit 1
-              fi
-
-              # npm's own integrity check (npm >= 8.6): `npm ci` EUSAGE-fails
-              # when the lockfile does not satisfy the manifest; --dry-run
-              # validates without touching node_modules. Metadata-only manifest
-              # edits pass; real dependency drift fails.
-              ci_output=""
-              if ! ci_output="$(cd "$pkg_dir" && npm ci --dry-run --ignore-scripts --audit=false --fund=false 2>&1)"; then
-                echo "❌ $pkg and $lockfile are not synchronized."
-                echo "Run npm install --package-lock-only in $pkg_dir and commit the result."
-                echo "$ci_output" | tail -15
-                exit 1
-              fi
-            done <<< "$PKG_FILES"
-          fi
-          echo "✅ package-lock sync check passed"
+        # Inline gate logic moved to scripts/validate-package-locks.sh
+        # (PR #17097) so it is unit-testable; see tests/validate-package-locks.test.js.
+        run: bash scripts/validate-package-locks.sh
 
       - name: Install dependencies
         run: npm ci
