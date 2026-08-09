@@ -65,3 +65,4 @@ lint.txt
 queue.json
 target-repo/
 venv/
+.coverage
