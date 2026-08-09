@@ -159,7 +159,7 @@ jobs:
           found=false
 
           while true; do
-            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100&search=$(urlencode "$NEON_BRANCH")"
+            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=10&search=$(urlencode "$NEON_BRANCH")"
             if [ -n "$cursor" ]; then
               url="${url}&cursor=$(urlencode "$cursor")"
             fi
