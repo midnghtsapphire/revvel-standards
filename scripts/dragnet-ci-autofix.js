@@ -48,7 +48,8 @@ const { routedChat } = require("./openrouter-routing.js");
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN || "";
 const GH_DISPATCH_TOKEN = process.env.GH_TOKEN || GITHUB_TOKEN;
-const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
+const GITHUB_REPOSITORY =
+  process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
 const PR_NUMBER = parseInt(process.env.PR_NUMBER || "0", 10);
 const CHECK_SUITE_URL = process.env.CHECK_SUITE_URL || "";
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
@@ -56,9 +57,9 @@ const DEFAULT_BRANCH = process.env.DEFAULT_BRANCH || "main";
 
 // ─── Tuning ──────────────────────────────────────────────────────────────────
 
-const MAX_LOG_CHARS = 8000;   // per-job log snippet sent to the model
+const MAX_LOG_CHARS = 8000; // per-job log snippet sent to the model
 const MAX_DIFF_CHARS = 15000; // PR diff sent to the model
-const MAX_FAILED_JOBS = 3;    // only look at the first N failed jobs for brevity
+const MAX_FAILED_JOBS = 3; // only look at the first N failed jobs for brevity
 
 // Dedupe marker — if this appears anywhere in PR comments, a previous run
 // already dispatched a fix for the same PR; skip silently.
@@ -100,11 +101,17 @@ function requestJson({ hostname, pathName, method, headers = {}, payload }) {
       },
       (res) => {
         let data = "";
-        res.on("data", (chunk) => { data += chunk; });
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
         res.on("end", () => {
           const status = res.statusCode || 0;
           let parsed = {};
-          try { parsed = data ? JSON.parse(data) : {}; } catch (_) { /* ok */ }
+          try {
+            parsed = data ? JSON.parse(data) : {};
+          } catch (_) {
+            /* ok */
+          }
           if (status < 200 || status >= 300) {
             const msg = parsed?.message || data || "unknown error";
             reject(new Error(`GitHub API HTTP ${status}: ${msg}`));
@@ -132,12 +139,19 @@ function requestText({ hostname, pathName, headers = {} }) {
         // GitHub log downloads redirect to a presigned S3 URL.
         if (res.statusCode === 302 && res.headers.location) {
           const loc = new URL(res.headers.location);
-          requestText({ hostname: loc.hostname, pathName: loc.pathname + loc.search, headers: {} })
-            .then(resolve).catch(reject);
+          requestText({
+            hostname: loc.hostname,
+            pathName: loc.pathname + loc.search,
+            headers: {},
+          })
+            .then(resolve)
+            .catch(reject);
           return;
         }
         let data = "";
-        res.on("data", (chunk) => { data += chunk; });
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
         res.on("end", () => {
           if ((res.statusCode || 0) >= 400) {
             reject(new Error(`HTTP ${res.statusCode} fetching log`));
@@ -179,7 +193,9 @@ async function getPRDiff(prNumber) {
       },
       (res) => {
         let data = "";
-        res.on("data", (chunk) => { data += chunk; });
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
         res.on("end", () => resolve(data));
       },
     );
@@ -227,7 +243,9 @@ async function getJobLog(jobId) {
           } else if (res.statusCode === 200) {
             // Some installations return the log directly.
             let buf = "";
-            res.on("data", (c) => { buf += c; });
+            res.on("data", (c) => {
+              buf += c;
+            });
             res.on("end", () => resolve(`data:${buf}`));
           } else {
             res.resume(); // drain
@@ -251,7 +269,10 @@ async function getJobLog(jobId) {
     }
     // Return the TAIL — failures are at the end of the log.
     if (raw.length > MAX_LOG_CHARS) {
-      return `…(truncated — showing last ${MAX_LOG_CHARS} chars)\n` + raw.slice(-MAX_LOG_CHARS);
+      return (
+        `…(truncated — showing last ${MAX_LOG_CHARS} chars)\n` +
+        raw.slice(-MAX_LOG_CHARS)
+      );
     }
     return raw;
   } catch (err) {
@@ -298,7 +319,13 @@ async function updateComment(commentId, body) {
  * Requires GH_DISPATCH_TOKEN to have repo:write scope so the dispatch fires
  * downstream workflows (GITHUB_TOKEN cannot do this — see CLAUDE.md §3).
  */
-async function dispatchSelfHealPR({ fixDescription, fixType, patchContent, branchSuffix, issueNumber }) {
+async function dispatchSelfHealPR({
+  fixDescription,
+  fixType,
+  patchContent,
+  branchSuffix,
+  issueNumber,
+}) {
   const { owner, repo } = splitRepository();
   return requestJson({
     hostname: GITHUB_HOST,
@@ -327,12 +354,16 @@ async function dispatchSelfHealPR({ fixDescription, fixType, patchContent, branc
  */
 async function analyzeFailure({ prTitle, prDiff, failedJobs }) {
   const jobSummaries = failedJobs
-    .map((j) => `### Job: ${j.name}\nConclusion: ${j.conclusion}\n\n\`\`\`\n${j.log}\n\`\`\``)
+    .map(
+      (j) =>
+        `### Job: ${j.name}\nConclusion: ${j.conclusion}\n\n\`\`\`\n${j.log}\n\`\`\``,
+    )
     .join("\n\n");
 
-  const trimmedDiff = prDiff.length > MAX_DIFF_CHARS
-    ? prDiff.slice(0, MAX_DIFF_CHARS) + "\n…(diff truncated)"
-    : prDiff;
+  const trimmedDiff =
+    prDiff.length > MAX_DIFF_CHARS
+      ? prDiff.slice(0, MAX_DIFF_CHARS) + "\n…(diff truncated)"
+      : prDiff;
 
   const systemPrompt = [
     "You are the Dragnet CI Autofix agent for the revvel-standards monorepo.",
@@ -383,11 +414,15 @@ async function analyzeFailure({ prTitle, prDiff, failedJobs }) {
     httpReferer: `https://github.com/${GITHUB_REPOSITORY}`,
   });
 
-  const rootCauseMatch = response.match(/##\s*Root Cause\s*\n([\s\S]*?)(?=##\s*Fix|$)/i);
+  const rootCauseMatch = response.match(
+    /##\s*Root Cause\s*\n([\s\S]*?)(?=##\s*Fix|$)/i,
+  );
   const patchMatch = response.match(/```diff\s*\n([\s\S]*?)```/i);
 
   return {
-    rootCause: rootCauseMatch ? rootCauseMatch[1].trim() : response.slice(0, 600).trim(),
+    rootCause: rootCauseMatch
+      ? rootCauseMatch[1].trim()
+      : response.slice(0, 600).trim(),
     patch: patchMatch ? patchMatch[1].trim() : "",
     fullResponse: response,
   };
@@ -395,71 +430,37 @@ async function analyzeFailure({ prTitle, prDiff, failedJobs }) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-async function main() {
-  if (!PR_NUMBER) {
-    console.log("PR_NUMBER not set — nothing to do.");
-    process.exit(0);
-  }
-
-  if (!GITHUB_TOKEN) {
-    console.error("GITHUB_TOKEN is required.");
-    process.exit(1);
-  }
-
-  console.log(`\n🔍 Dragnet CI Autofix — PR #${PR_NUMBER} in ${GITHUB_REPOSITORY}`);
-
-  // ── Fetch PR metadata ──────────────────────────────────────────────────────
-  let pr;
+async function findExistingComment(prNumber) {
   try {
-    pr = await getPR(PR_NUMBER);
-  } catch (err) {
-    console.error(`Could not fetch PR #${PR_NUMBER}: ${err.message}`);
-    process.exit(1);
-  }
-
-  const headBranch = pr.head?.ref || "";
-  const prTitle = pr.title || `PR #${PR_NUMBER}`;
-
-  // Loop prevention: skip self-heal PRs to avoid infinite fix cycles.
-  if (headBranch.startsWith("self-heal/")) {
-    console.log(`Skipping self-heal branch (${headBranch}) — loop prevention.`);
-    process.exit(0);
-  }
-
-  // Skip-signal in title.
-  if (prTitle.includes("[dragnet-skip]") || prTitle.includes("[skip-ci]")) {
-    console.log(`Skipping — PR title contains skip signal.`);
-    process.exit(0);
-  }
-
-  // ── Dedupe: skip if we already handled this PR ─────────────────────────────
-  let existingCommentId = null;
-  try {
-    const comments = await listPRComments(PR_NUMBER);
-    const existing = comments.find((c) => c.body && c.body.includes(AUTOFIX_MARKER));
+    const comments = await listPRComments(prNumber);
+    const existing = comments.find(
+      (c) => c.body && c.body.includes(AUTOFIX_MARKER),
+    );
     if (existing) {
-      // Update the existing comment to reflect the latest run rather than
-      // posting a duplicate. Store the id for the update step below.
-      existingCommentId = existing.id;
-      console.log(`Existing autofix comment found (id: ${existingCommentId}) — will update in place.`);
+      console.log(
+        `Existing autofix comment found (id: ${existing.id}) — will update in place.`,
+      );
+      return existing.id;
     }
   } catch (err) {
     console.warn(`Could not list PR comments: ${err.message}`);
   }
+  return null;
+}
 
-  // ── Collect failing check runs ─────────────────────────────────────────────
+async function collectFailedJobs(prNumber) {
   let failedJobs = [];
   try {
-    const checkRuns = await getCheckRunsForPR(PR_NUMBER);
+    const checkRuns = await getCheckRunsForPR(prNumber);
     const failed = checkRuns
-      .filter((cr) => cr.conclusion === "failure" || cr.conclusion === "timed_out")
+      .filter(
+        (cr) => cr.conclusion === "failure" || cr.conclusion === "timed_out",
+      )
       .slice(0, MAX_FAILED_JOBS);
 
     console.log(`Found ${failed.length} failed check run(s).`);
 
     for (const cr of failed) {
-      // Check runs backed by Actions jobs expose a details_url containing
-      // the job id: .../actions/runs/<run_id>/jobs/<job_id>
       const jobIdMatch = (cr.details_url || "").match(/\/jobs\/(\d+)/);
       const log = jobIdMatch ? await getJobLog(jobIdMatch[1]) : "";
       failedJobs.push({ name: cr.name, conclusion: cr.conclusion, log });
@@ -467,60 +468,72 @@ async function main() {
   } catch (err) {
     console.warn(`Could not fetch check runs: ${err.message}`);
   }
+  return failedJobs;
+}
 
-  if (failedJobs.length === 0) {
-    console.log("No failed check runs found — nothing to fix.");
-    process.exit(0);
-  }
-
-  // ── Fetch PR diff ──────────────────────────────────────────────────────────
-  let prDiff = "";
-  try {
-    prDiff = await getPRDiff(PR_NUMBER);
-  } catch (err) {
-    console.warn(`Could not fetch PR diff: ${err.message}`);
-  }
-
-  // ── Post "working on it" placeholder comment ───────────────────────────────
+async function postPlaceholderComment(
+  prNumber,
+  prTitle,
+  failedJobs,
+  existingCommentId,
+) {
   const workingBody = [
     AUTOFIX_MARKER,
     "## 🤖 Dragnet CI Autofix — Analyzing failure…",
     "",
-    `**PR:** #${PR_NUMBER} — ${prTitle}`,
+    `**PR:** #${prNumber} — ${prTitle}`,
     `**Failed jobs:** ${failedJobs.map((j) => `\`${j.name}\``).join(", ")}`,
     CHECK_SUITE_URL ? `**Check suite:** ${CHECK_SUITE_URL}` : "",
     "",
     "_Analysis in progress — this comment will be updated with the root cause and fix._",
-  ].filter(Boolean).join("\n");
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   try {
     if (existingCommentId) {
       await updateComment(existingCommentId, workingBody);
+      return existingCommentId;
     } else {
-      const newComment = await postComment(PR_NUMBER, workingBody);
-      existingCommentId = newComment.id;
+      const newComment = await postComment(prNumber, workingBody);
+      return newComment.id;
     }
   } catch (err) {
     console.warn(`Could not post placeholder comment: ${err.message}`);
+    return existingCommentId;
   }
+}
 
-  // ── AI analysis ─────────────────────────────────────────────────────────────
+async function performAIAnalysis(
+  prNumber,
+  prTitle,
+  prDiff,
+  failedJobs,
+  existingCommentId,
+) {
   if (!OPENROUTER_API_KEY) {
-    console.warn("OPENROUTER_API_KEY not set — skipping AI analysis; posting fallback comment.");
+    console.warn(
+      "OPENROUTER_API_KEY not set — skipping AI analysis; posting fallback comment.",
+    );
     const fallbackBody = [
       AUTOFIX_MARKER,
       "## ❌ CI Checks Failed",
       "",
-      `**PR:** #${PR_NUMBER} — ${prTitle}`,
+      `**PR:** #${prNumber} — ${prTitle}`,
       `**Failed jobs:** ${failedJobs.map((j) => `\`${j.name}\``).join(", ")}`,
       CHECK_SUITE_URL ? `**Logs:** ${CHECK_SUITE_URL}` : "",
       "",
       "_AI analysis unavailable (OPENROUTER_API_KEY not configured). Review the logs above manually._",
-    ].filter(Boolean).join("\n");
+    ]
+      .filter(Boolean)
+      .join("\n");
     try {
-      if (existingCommentId) await updateComment(existingCommentId, fallbackBody);
-      else await postComment(PR_NUMBER, fallbackBody);
-    } catch (_) { /* best-effort */ }
+      if (existingCommentId)
+        await updateComment(existingCommentId, fallbackBody);
+      else await postComment(prNumber, fallbackBody);
+    } catch (_) {
+      /* best-effort */
+    }
     process.exit(0);
   }
 
@@ -528,34 +541,48 @@ async function main() {
   try {
     analysis = await analyzeFailure({ prTitle, prDiff, failedJobs });
     console.log(`\n📋 Root cause identified:\n${analysis.rootCause}\n`);
-    console.log(`\n🔧 Patch produced: ${analysis.patch ? `${analysis.patch.split("\n").length} lines` : "(none)"}`);
+    console.log(
+      `\n🔧 Patch produced: ${analysis.patch ? `${analysis.patch.split("\n").length} lines` : "(none)"}`,
+    );
+    return analysis;
   } catch (err) {
     console.error(`AI analysis failed: ${err.message}`);
     const errorBody = [
       AUTOFIX_MARKER,
       "## ❌ CI Checks Failed — Analysis Error",
       "",
-      `**PR:** #${PR_NUMBER} — ${prTitle}`,
+      `**PR:** #${prNumber} — ${prTitle}`,
       `**Failed jobs:** ${failedJobs.map((j) => `\`${j.name}\``).join(", ")}`,
       "",
       `_AI analysis encountered an error: ${err.message}_`,
       "_Please review the failing check logs manually._",
       CHECK_SUITE_URL ? `\n**Logs:** ${CHECK_SUITE_URL}` : "",
-    ].filter(Boolean).join("\n");
+    ]
+      .filter(Boolean)
+      .join("\n");
     try {
       if (existingCommentId) await updateComment(existingCommentId, errorBody);
-      else await postComment(PR_NUMBER, errorBody);
-    } catch (_) { /* best-effort */ }
-    process.exit(0); // non-fatal so the workflow stays green
+      else await postComment(prNumber, errorBody);
+    } catch (_) {
+      /* best-effort */
+    }
+    process.exit(0);
   }
+}
 
-  // ── Post final analysis comment ───────────────────────────────────────────
+async function postFinalComment(
+  prNumber,
+  prTitle,
+  failedJobs,
+  existingCommentId,
+  analysis,
+) {
   const hasPatch = Boolean(analysis.patch && analysis.patch.trim().length > 10);
   const finalBody = [
     AUTOFIX_MARKER,
     `## ${hasPatch ? "🔧" : "🔍"} Dragnet CI Autofix — ${hasPatch ? "Fix dispatched" : "Analysis complete"}`,
     "",
-    `**PR:** #${PR_NUMBER} — ${prTitle}`,
+    `**PR:** #${prNumber} — ${prTitle}`,
     `**Failed jobs:** ${failedJobs.map((j) => `\`${j.name}\``).join(", ")}`,
     CHECK_SUITE_URL ? `**Check suite:** ${CHECK_SUITE_URL}` : "",
     "",
@@ -587,18 +614,124 @@ async function main() {
         ].join("\n"),
     "",
     "_Automated by [Dragnet CI Autofix](.github/workflows/dragnet-ci-autofix.yml)_",
-  ].filter((l) => l !== null && l !== undefined).join("\n");
+  ]
+    .filter((l) => l !== null && l !== undefined)
+    .join("\n");
 
   try {
     if (existingCommentId) {
       await updateComment(existingCommentId, finalBody);
     } else {
-      await postComment(PR_NUMBER, finalBody);
+      await postComment(prNumber, finalBody);
     }
     console.log("✅ Analysis comment posted on PR.");
   } catch (err) {
     console.warn(`Could not post analysis comment: ${err.message}`);
   }
+  return hasPatch;
+}
+
+async function dispatchFix(prNumber, prTitle, analysis) {
+  const fixDescription = `Fix CI failure on PR #${prNumber}: ${prTitle.slice(0, 100)}`;
+  try {
+    await dispatchSelfHealPR({
+      fixDescription,
+      fixType: "workflow",
+      patchContent: analysis.patch,
+      branchSuffix: `ci-autofix-pr${prNumber}`,
+      issueNumber: "",
+    });
+    console.log(`✅ Dispatched self-heal-pr.yml to implement the fix.`);
+  } catch (err) {
+    console.error(`Could not dispatch self-heal-pr.yml: ${err.message}`);
+    console.error(
+      "Check that GH_TOKEN has repo:write scope (ADMIN_GITHUB_TOKEN).",
+    );
+  }
+}
+
+async function main() {
+  if (!PR_NUMBER) {
+    console.log("PR_NUMBER not set — nothing to do.");
+    process.exit(0);
+  }
+
+  if (!GITHUB_TOKEN) {
+    console.error("GITHUB_TOKEN is required.");
+    process.exit(1);
+  }
+
+  console.log(
+    `\n🔍 Dragnet CI Autofix — PR #${PR_NUMBER} in ${GITHUB_REPOSITORY}`,
+  );
+
+  // ── Fetch PR metadata ──────────────────────────────────────────────────────
+  let pr;
+  try {
+    pr = await getPR(PR_NUMBER);
+  } catch (err) {
+    console.error(`Could not fetch PR #${PR_NUMBER}: ${err.message}`);
+    process.exit(1);
+  }
+
+  const headBranch = pr.head?.ref || "";
+  const prTitle = pr.title || `PR #${PR_NUMBER}`;
+
+  // Loop prevention: skip self-heal PRs to avoid infinite fix cycles.
+  if (headBranch.startsWith("self-heal/")) {
+    console.log(`Skipping self-heal branch (${headBranch}) — loop prevention.`);
+    process.exit(0);
+  }
+
+  // Skip-signal in title.
+  if (prTitle.includes("[dragnet-skip]") || prTitle.includes("[skip-ci]")) {
+    console.log(`Skipping — PR title contains skip signal.`);
+    process.exit(0);
+  }
+
+  // ── Dedupe: skip if we already handled this PR ─────────────────────────────
+  let existingCommentId = await findExistingComment(PR_NUMBER);
+
+  // ── Collect failing check runs ─────────────────────────────────────────────
+  const failedJobs = await collectFailedJobs(PR_NUMBER);
+  if (failedJobs.length === 0) {
+    console.log("No failed check runs found — nothing to fix.");
+    process.exit(0);
+  }
+
+  // ── Fetch PR diff ──────────────────────────────────────────────────────────
+  let prDiff = "";
+  try {
+    prDiff = await getPRDiff(PR_NUMBER);
+  } catch (err) {
+    console.warn(`Could not fetch PR diff: ${err.message}`);
+  }
+
+  // ── Post "working on it" placeholder comment ───────────────────────────────
+  existingCommentId = await postPlaceholderComment(
+    PR_NUMBER,
+    prTitle,
+    failedJobs,
+    existingCommentId,
+  );
+
+  // ── AI analysis ─────────────────────────────────────────────────────────────
+  const analysis = await performAIAnalysis(
+    PR_NUMBER,
+    prTitle,
+    prDiff,
+    failedJobs,
+    existingCommentId,
+  );
+
+  // ── Post final analysis comment ───────────────────────────────────────────
+  const hasPatch = await postFinalComment(
+    PR_NUMBER,
+    prTitle,
+    failedJobs,
+    existingCommentId,
+    analysis,
+  );
 
   // ── Dispatch self-heal-pr if we have a patch ──────────────────────────────
   if (!hasPatch) {
@@ -606,22 +739,7 @@ async function main() {
     process.exit(0);
   }
 
-  const fixDescription = `Fix CI failure on PR #${PR_NUMBER}: ${prTitle.slice(0, 100)}`;
-  try {
-    await dispatchSelfHealPR({
-      fixDescription,
-      fixType: "workflow",
-      patchContent: analysis.patch,
-      branchSuffix: `ci-autofix-pr${PR_NUMBER}`,
-      issueNumber: "",
-    });
-    console.log(`✅ Dispatched self-heal-pr.yml to implement the fix.`);
-  } catch (err) {
-    // Log but don't exit non-zero — the analysis comment is already posted and
-    // dispatch failure is transient (token scope issue, rate-limit, etc.).
-    console.error(`Could not dispatch self-heal-pr.yml: ${err.message}`);
-    console.error("Check that GH_TOKEN has repo:write scope (ADMIN_GITHUB_TOKEN).");
-  }
+  await dispatchFix(PR_NUMBER, prTitle, analysis);
 
   console.log("\n✅ Dragnet CI Autofix complete.");
 }
