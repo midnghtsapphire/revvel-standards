@@ -84,6 +84,7 @@ jobs:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch_name: ${{ needs.setup.outputs.neon_branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
+          fail_on_branch_exists: false
           expires_at: ${{ env.EXPIRES_AT }}
 
 # The step above creates a new Neon branch.
