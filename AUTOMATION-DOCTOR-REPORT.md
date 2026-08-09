@@ -1,6 +1,6 @@
 # Automation Doctor Report
 
-Generated: 2026-08-06T02:33:37.770Z
+Generated: 2026-08-09T03:13:10.705Z
 
 ## Workflow Validation
 
@@ -12,7 +12,7 @@ Generated: 2026-08-06T02:33:37.770Z
 
 - `gumroad-covers.yml`: generate-and-attach
 - `neon-branch.yml`: setup, create_neon_branch, delete_neon_branch
-- `neuralegion.yml`: neuralegion_scan
+- `neuralegion.yml`: archived
 - `ossar.yml`: OSSAR-Scan
 - `prioritize-stars.yml`: prioritize
 - `synopsys-action.yml`: build
