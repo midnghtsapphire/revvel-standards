@@ -8,6 +8,7 @@ on:
 
 jobs:
   ui-audit-and-health:
+    timeout-minutes: 45
     runs-on: ubuntu-latest
 
     steps:
