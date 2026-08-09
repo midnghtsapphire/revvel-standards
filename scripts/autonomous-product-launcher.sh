@@ -505,6 +505,9 @@ if [ "$AUTO_RESEARCH" = true ]; then
   RESEARCH_BRIEF="$RESEARCH_DIR/brief.md"
   
   if [ "$DRY_RUN" = false ]; then
+    log "Running competitor analysis for $PRODUCT_NAME..."
+    COMPETITOR_ANALYSIS=$(node -e "const { ask } = require('$SCRIPT_DIR/llm.js'); (async () => { try { const res = await ask('Identify the top 10 competitors for a product named \"$PRODUCT_NAME\" in the market. Analyze their pricing, features, positive/negative reviews, SEO keywords, and market gaps.', { silent: true }); console.log(res.text); } catch (err) { console.log('TODO: Identify top 10 competitors and analyze:\n- Pricing\n- Features\n- Reviews (positive/negative)\n- SEO keywords\n- Market gaps\n\n(Automated research failed: ' + err.message + ')'); } })();")
+
     cat > "$RESEARCH_BRIEF" <<EOF
 # Research Brief: $PRODUCT_NAME
 
@@ -517,12 +520,7 @@ TODO: Run Tavily/Perplexity search to identify top pain points
 
 ## Competitor Analysis
 
-TODO: Identify top 10 competitors and analyze:
-- Pricing
-- Features
-- Reviews (positive/negative)
-- SEO keywords
-- Market gaps
+$COMPETITOR_ANALYSIS
 
 ## Target Audience
 
@@ -560,6 +558,9 @@ else
   RESEARCH_BRIEF="$RESEARCH_DIR/brief.md"
   
   if [ "$DRY_RUN" = false ]; then
+    log "Running competitor analysis for $PRODUCT_NAME..."
+    COMPETITOR_ANALYSIS=$(node -e "const { ask } = require('$SCRIPT_DIR/llm.js'); (async () => { try { const res = await ask('Identify the top 10 competitors for a product named \"$PRODUCT_NAME\" in the market. Analyze their pricing, features, positive/negative reviews, SEO keywords, and market gaps.', { silent: true }); console.log(res.text); } catch (err) { console.log('TODO: Identify top 10 competitors and analyze:\n- Pricing\n- Features\n- Reviews (positive/negative)\n- SEO keywords\n- Market gaps\n\n(Automated research failed: ' + err.message + ')'); } })();")
+
     cat > "$RESEARCH_BRIEF" <<EOF
 # Research Brief: $PRODUCT_NAME
 
