@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-09T05:22:04.937Z",
+  "generated_at": "2026-08-09T06:15:45.734Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,10 +15,10 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 31296524526,
+            "id": 31297205328,
             "name": ".github/workflows/release-banner-social.yml",
             "path": ".github/workflows/release-banner-social.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31296524526",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31297205328",
             "conclusion": "failure"
           }
         ],
