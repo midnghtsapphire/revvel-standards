@@ -56,6 +56,16 @@ labels:
   # approved. Was applied by those workflows but missing here, so every
   # green PR failed the Governance gate on its own success label (PR #17091).
   - name: ready-to-merge
+  # Conflict lifecycle label: applied by recovery-engine / stuck-pr-sweep when
+  # mergeable_state is dirty, consumed by conflict-helper (fires on the label).
+  # Was applied by those workflows but missing here, so any PR that ever hit a
+  # conflict failed the Governance gate on its own recovery label (PR #17097).
+  - name: has-conflicts
+  # Reviewer-bot escape hatch: jules-pr-reviewer.yml declares
+  # `bypass_label: jules-override` so a human can clear a false-positive
+  # blocking verdict, but the label was never allowlisted — using the
+  # documented bypass would itself turn the Governance gate red (PR #17097).
+  - name: jules-override
   - name: credentials-missing
   - name: credentials-ready
   - name: ready-to-implement

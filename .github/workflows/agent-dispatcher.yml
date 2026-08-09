@@ -60,11 +60,14 @@ jobs:
           # the shell via env vars instead of ${{ }} interpolation inside run.
           ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
           DISPATCH_AGENT: ${{ inputs.agent }}
+          # Not an injection vector (system-controlled enum), routed through
+          # env anyway for consistency with the zizmor fix above (Jules nit).
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           # Read agent-prompts.yml to get triggers
           echo "Looking for label triggers..."
 
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "$DISPATCH_AGENT" ]; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$DISPATCH_AGENT" ]; then
             echo "agent=$DISPATCH_AGENT" >> $GITHUB_OUTPUT
             exit 0
           fi
