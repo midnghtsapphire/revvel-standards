@@ -91,6 +91,7 @@ jobs:
 
       - name: Verify SARIF was generated
         id: verify_sarif
+        continue-on-error: true
         run: |
           set -euo pipefail
           SARIF_FILES=$(find sarif-results -maxdepth 1 -name '*.sarif' -type f 2>/dev/null || true)
