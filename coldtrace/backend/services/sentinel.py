@@ -7,28 +7,51 @@ Register at https://www.sentinel-hub.com to get credentials.
 from __future__ import annotations
 
 import asyncio
+import time
 from typing import Any
 
 import httpx
 
 from ..config import settings
 
+
 _TOKEN_URL = "https://services.sentinel-hub.com/auth/realms/main/protocol/openid-connect/token"
 _PROCESS_URL = "https://services.sentinel-hub.com/api/v1/process"
 
+_token_cache: str | None = None
+_token_expires_at: float = 0.0
+_token_lock = asyncio.Lock()
+
 
 async def _get_token() -> str:
-    async with httpx.AsyncClient() as client:
-        resp = await client.post(
-            _TOKEN_URL,
-            data={
-                "grant_type": "client_credentials",
-                "client_id": settings.sentinel_hub_client_id,
-                "client_secret": settings.sentinel_hub_client_secret,
-            },
-        )
-        resp.raise_for_status()
-        return resp.json()["access_token"]
+    global _token_cache, _token_expires_at
+
+    # Fast path: Return token if it's cached and valid (with a 60-second buffer)
+    if _token_cache and time.monotonic() < _token_expires_at - 60:
+        return _token_cache
+
+    async with _token_lock:
+        # Double-check inside the lock to prevent redundant fetches if another coroutine just updated it
+        if _token_cache and time.monotonic() < _token_expires_at - 60:
+            return _token_cache
+
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(
+                _TOKEN_URL,
+                data={
+                    "grant_type": "client_credentials",
+                    "client_id": settings.sentinel_hub_client_id,
+                    "client_secret": settings.sentinel_hub_client_secret,
+                },
+            )
+            resp.raise_for_status()
+            data = resp.json()
+
+            _token_cache = data["access_token"]
+            expires_in = data.get("expires_in", 3600)  # Default to 1 hour if missing
+            _token_expires_at = time.monotonic() + expires_in
+
+            return _token_cache
 
 
 async def fetch_sentinel_ndvi(
