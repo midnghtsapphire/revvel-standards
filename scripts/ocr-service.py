@@ -55,7 +55,7 @@ from typing import Any
 # Lazy import — fail gracefully with an actionable message
 # ---------------------------------------------------------------------------
 try:
-    from paddleocr import PaddleOCR, PPStructure  # type: ignore
+    from paddleocr import PaddleOCR, PPStructureV3 as PPStructure  # type: ignore
 except ImportError:
     print(
         "❌  PaddleOCR is not installed.\n"
@@ -187,22 +187,26 @@ class StructuredOCR:
 # Utility: HTML table → Markdown table (minimal, no external deps)
 # ---------------------------------------------------------------------------
 
+import re
+
+_RE_TR = re.compile(r"<tr[^>]*>(.*?)</tr>", re.DOTALL | re.IGNORECASE)
+_RE_TD_TH = re.compile(r"<t[dh][^>]*>(.*?)</t[dh]>", re.DOTALL | re.IGNORECASE)
+_RE_TAG = re.compile(r"<[^>]+>")
+_RE_TH = re.compile(r"<th", re.IGNORECASE)
+
 def _html_table_to_markdown(html: str) -> str:
     """Very small HTML-table-to-Markdown converter (no external libs)."""
-    import re
 
-    rows = re.findall(r"<tr[^>]*>(.*?)</tr>", html, re.DOTALL | re.IGNORECASE)
+    rows = _RE_TR.findall(html)
     md_rows: list[list[str]] = []
     header_row: int | None = None
 
     for i, row_html in enumerate(rows):
-        cells = re.findall(
-            r"<t[dh][^>]*>(.*?)</t[dh]>", row_html, re.DOTALL | re.IGNORECASE
-        )
-        cleaned = [re.sub(r"<[^>]+>", "", c).strip() for c in cells]
+        cells = _RE_TD_TH.findall(row_html)
+        cleaned = [_RE_TAG.sub("", c).strip() for c in cells]
         if cleaned:
             md_rows.append(cleaned)
-            if header_row is None and re.search(r"<th", row_html, re.IGNORECASE):
+            if header_row is None and _RE_TH.search(row_html):
                 header_row = i
 
     if not md_rows:
