@@ -173,6 +173,16 @@
       renderIssues(filtered);
     }
 
+    function escapeHtml(unsafe) {
+      if (!unsafe) return '';
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     function renderIssues(issues) {
       const container = document.getElementById('issues-container');
       
@@ -183,20 +193,20 @@
 
       container.innerHTML = issues.map(issue => {
         const labels = issue.labels.map(l => 
-          `<span class="label-badge" style="background: #${l.color}; color: ${getBestTextColor(l.color)};">${l.name}</span>`
+          `<span class="label-badge" style="background: #${escapeHtml(l.color)}; color: ${getBestTextColor(l.color)};">${escapeHtml(l.name)}</span>`
         ).join('');
         
-        const assignees = issue.assignees.map(a => a.login).join(', ') || 'Unassigned';
+        const assignees = issue.assignees.map(a => escapeHtml(a.login)).join(', ') || 'Unassigned';
         const stateColor = issue.state === 'open' ? 'text-green-400' : 'text-purple-400';
         const stateIcon = issue.state === 'open' ? '🟢' : '🟣';
 
         return `
-          <div class="issue-card bg-gray-900 rounded-lg p-4" onclick="window.open('${issue.html_url}', '_blank')">
+          <div class="issue-card bg-gray-900 rounded-lg p-4" onclick="window.open('${escapeHtml(issue.html_url)}', '_blank')">
             <div class="flex justify-between items-start mb-2">
               <div class="flex-1">
                 <div class="flex items-center gap-2 mb-1">
                   <span class="${stateColor} font-bold">${stateIcon} #${issue.number}</span>
-                  <span class="text-white font-bold">${issue.title}</span>
+                  <span class="text-white font-bold">${escapeHtml(issue.title)}</span>
                 </div>
                 <div class="text-gray-400 text-sm mb-2">${labels}</div>
               </div>
