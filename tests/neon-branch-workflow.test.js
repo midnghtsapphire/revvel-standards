@@ -112,7 +112,8 @@ async function stubNeon(pages) {
 // Runs the extracted step the way the runner does, and reports what it wrote to
 // $GITHUB_OUTPUT (or how it failed).
 function runCheckBranch({ port, apiKey = 'test-key' }) {
-  const scriptPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'neon-step-')), 'check.sh');
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'neon-step-'));
+  const scriptPath = path.join(tmpDir, 'check.sh');
   fs.writeFileSync(scriptPath, checkBranchScript());
   const outputFile = `${scriptPath}.output`;
   fs.writeFileSync(outputFile, '');
@@ -132,9 +133,11 @@ function runCheckBranch({ port, apiKey = 'test-key' }) {
         },
       },
       (error, stdout, stderr) => {
+        const output = fs.readFileSync(outputFile, 'utf8').trim();
+        fs.rmSync(tmpDir, { recursive: true, force: true });
         resolve({
           code: error ? error.code : 0,
-          output: fs.readFileSync(outputFile, 'utf8').trim(),
+          output,
           stdout,
           stderr,
         });
@@ -144,7 +147,8 @@ function runCheckBranch({ port, apiKey = 'test-key' }) {
 }
 
 function runCreateCheckBranch({ port, apiKey = 'test-key' }) {
-  const scriptPath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'neon-create-step-')), 'check.sh');
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'neon-create-step-'));
+  const scriptPath = path.join(tmpDir, 'check.sh');
   fs.writeFileSync(scriptPath, checkCreateBranchScript());
   const outputFile = `${scriptPath}.output`;
   fs.writeFileSync(outputFile, '');
@@ -164,9 +168,11 @@ function runCreateCheckBranch({ port, apiKey = 'test-key' }) {
         },
       },
       (error, stdout, stderr) => {
+        const output = fs.readFileSync(outputFile, 'utf8').trim();
+        fs.rmSync(tmpDir, { recursive: true, force: true });
         resolve({
           code: error ? error.code : 0,
-          output: fs.readFileSync(outputFile, 'utf8').trim(),
+          output,
           stdout,
           stderr,
         });
