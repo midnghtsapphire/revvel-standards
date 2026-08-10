@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hardware Selection Dashboard — oAudrey</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+<header class="bg-slate-800 border-b border-slate-700 px-6 py-4">
+  <h1 class="text-2xl font-bold">Hardware Selection Dashboard</h1>
+  <p class="text-slate-400 text-sm">JIT compute provisioning · $10k → $10M revenue path</p>
+</header>
+
+<main class="p-6 max-w-7xl mx-auto">
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <!-- CPU -->
+    <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-emerald-500 transition">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">CPU</h2>
+        <span class="text-xs bg-emerald-600 px-2 py-0.5 rounded">Phase 1</span>
+      </div>
+      <p class="text-3xl font-bold">$0.05<span class="text-sm text-slate-400">/hr</span></p>
+      <p class="text-xs text-slate-400 mt-2">Latency: 500ms+</p>
+      <p class="text-xs text-slate-400">Use: Prototyping, batch</p>
+    </div>
+    <!-- T4 -->
+    <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-emerald-500 transition">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">T4</h2>
+        <span class="text-xs bg-emerald-600 px-2 py-0.5 rounded">Phase 1</span>
+      </div>
+      <p class="text-3xl font-bold">$0.35<span class="text-sm text-slate-400">/hr</span></p>
+      <p class="text-xs text-slate-400 mt-2">Latency: 50ms</p>
+      <p class="text-xs text-slate-400">Use: Small model inference</p>
+    </div>
+    <!-- A10G -->
+    <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-yellow-500 transition">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">A10G</h2>
+        <span class="text-xs bg-yellow-600 px-2 py-0.5 rounded">Phase 2</span>
+      </div>
+      <p class="text-3xl font-bold">$1.00<span class="text-sm text-slate-400">/hr</span></p>
+      <p class="text-xs text-slate-400 mt-2">Latency: 30ms</p>
+      <p class="text-xs text-slate-400">Use: Medium models</p>
+    </div>
+    <!-- A100 -->
+    <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-orange-500 transition">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">A100</h2>
+        <span class="text-xs bg-orange-600 px-2 py-0.5 rounded">Phase 3</span>
+      </div>
+      <p class="text-3xl font-bold">$3.00<span class="text-sm text-slate-400">/hr</span></p>
+      <p class="text-xs text-slate-400 mt-2">Latency: 20ms</p>
+      <p class="text-xs text-slate-400">Use: LLM training</p>
+    </div>
+    <!-- H100 -->
+    <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-red-500 transition">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold">H100</h2>
+        <span class="text-xs bg-red-600 px-2 py-0.5 rounded">Phase 4</span>
+      </div>
+      <p class="text-3xl font-bold">$8.00<span class="text-sm text-slate-400">/hr</span></p>
+      <p class="text-xs text-slate-400 mt-2">Latency: 15ms</p>
+      <p class="text-xs text-slate-400">Use: Frontier training</p>
+    </div>
+  </section>
+
+  <section class="mt-8 bg-slate-800 rounded-lg p-6 border border-slate-700">
+    <h2 class="text-xl font-bold mb-4">Recommended Provisioning</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+      <div>
+        <p class="font-semibold text-emerald-400">Phase 1 · $10k/mo</p>
+        <p class="text-slate-300">CPU + T4 spot instances. Focus: cheap inference APIs.</p>
+      </div>
+      <div>
+        <p class="font-semibold text-yellow-400">Phase 2 · $30k/mo</p>
+        <p class="text-slate-300">Add A10G for premium products.</p>
+      </div>
+      <div>
+        <p class="font-semibold text-orange-400">Phase 3+ · $100k+/mo</p>
+        <p class="text-slate-300">A100/H100 fleet with spot bidding.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="mt-8 text-center text-slate-500 text-xs">
+    <a href="index.html" class="text-emerald-400 hover:underline">← Back to oAudrey Hub</a>
+  </footer>
+</main>
+</body>
+</html>

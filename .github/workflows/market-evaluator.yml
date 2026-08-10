@@ -1,0 +1,26 @@
+name: Market Evaluator (Scheduled)
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run market evaluator (dry run)
+        run: python products/ai-architecture-framework/market_evaluator.py
+      - name: Run tests
+        run: |
+          cd products/ai-architecture-framework
+          python -m unittest discover tests -v
