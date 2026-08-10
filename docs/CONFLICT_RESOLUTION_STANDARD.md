@@ -1,138 +1,75 @@
-# Conflict Resolution Standard — don't make the owner pick "current / incoming / both
+# Conflict Resolution Standard
 
-The owner kept hitting merge conflicts where they didn't know whether to take
-the current change, the incoming change, or both. For mechanical cases that
-question shouldn't reach a human at all. This standard is the rule + the
-free-tier auto-resolver + the LLM hand-off for genuinely ambiguous cases.
+## 1. Purpose
 
-> Cross-refs:
-> `docs/THIRD_PARTY_ACTION_AUDIT.md` (version-pinning rules informing the
-> "newer ref wins" call) ·
-> `docs/DOCS_FRESHNESS_STANDARD.md` (the rest of the docs/code drift loop) ·
-> `.github/workflows/conflict-helper.yml` (the runner) ·
-> `scripts/auto-resolve-mechanical-conflicts.js` (the deterministic engine).
+Automate merge-conflict resolution on PRs so the maintainer never has to hand-patch a rebase again. The workflow runs in three phases and always leaves a sticky comment explaining what it did.
 
----
+## 2. Trigger surface
 
-## 1. The three lanes
+- `pull_request` open/sync/reopen/label
+- `issue_comment` containing `/resolve-conflicts` or `/resolve` (gated to `OWNER`/`MEMBER`/`COLLABORATOR`)
+- `workflow_dispatch` with `pr_number`
 
-Every PR with conflicts gets routed through this ladder. Cheapest first.
+## 3. Phase 1 — annotate
 
-| Lane | What handles it | Cost | Patterns |
-| --- | --- | --- | --- |
-| **Mechanical** | `scripts/auto-resolve-mechanical-conflicts.js` (deterministic, free) | **Free** — runs in GH Actions on every PR with conflicts | Version bumps in `uses:` lines, additive table rows / list items |
-| **Semantic** | Jules via `jules-coding-agent.yml` | Already covered by the Jules API key — **no per-PR add-on** | Value swaps, function-signature changes, prose edits in the same paragraph |
-| **Human** | The owner | Time | Anything Jules also can't decide (label `conflicts:needs-human` if Jules surrenders) |
+Perform a dry-run merge against `main`; collect the list of files with conflict markers. If clean, exit.
 
-Explicitly **not** used:
+## 4. Phase 2 — mechanical auto-resolve
 
-- **Copilot** — per-PR cost adds up on a high-PR-volume repo.
-- **Bito** — review-only; can't push commits to a branch, so it can't resolve.
-- **openrouter-triage** — that lane is the Ralph Loop CI-fixer; mixing concerns muddies the audit trail.
+Attempt `git merge origin/main -X theirs` for the common mechanical cases (version bumps, additive blocks, lockfile churn). If the merge lands, push the resulting commit back to the PR head branch.
 
-## 2. The mechanical patterns (auto-resolved every time)
+## 5. Phase 3 — hand to Jules
 
-### 2a. Version bump
+If Phase 2 fails, dispatch `jules-coding-agent.yml` with `issue_number=<PR number>` (PRs and issues share GitHub's number space). See #17248 — the Jules callee is currently a scaffolding stub.
 
-A conflict hunk where both sides are exactly one line and both match
-`uses: <owner>/<repo>@<ref>` with the same `owner/repo`. The newer ref wins.
+## 6. Sticky comment
 
-Ranking (high to low):
+One comment per PR, marked with `<!-- conflict-helper-sticky -->`. Updated in place on every run.
 
-1. **40-char commit SHA** — immutable, can't be re-tagged → always wins over a tag.
-2. **Higher semver** (`v8.1.1` > `v7.0.0` > `v6.10.2`).
-3. **Same SHA / same semver** — ambiguous, leave for Jules.
+## 7. Outcome labels
 
-This implements the `peter-evans/create-pull-request@SHA # v8.1.1` vs
-`peter-evans/create-pull-request@v7` case the owner reported on the
-`jules-affiliate-engine` branch: SHA-pinned newer version wins, indent
-preserved, trailing comment retained.
+| Label | Meaning |
+|-------|---------|
+| `conflicts:auto-resolved` | Phase 2 succeeded. Safe to merge once CI is green. |
+| `conflicts:needs-jules` | Phase 3 dispatched. Wait for Jules commit. |
+| `conflicts:needs-human` | Both phases failed. Maintainer must resolve manually. |
 
-### 2b. Additive structural lines
+## 8. Manual slash-command
 
-A conflict hunk where every non-blank line on both sides matches a
-recognizable additive shape:
+Comment `/resolve-conflicts` (or the shorthand `/resolve`) on any PR to re-run the workflow. Restricted to trusted associations.
 
-- Markdown table row: `|` … `|`
-- Markdown table separator: `| --- | --- |`
-- Markdown bullet: `-` / `*` / `+` followed by content
-- Markdown numbered: `1.` etc.
+## 9. Sticky-comment anatomy
 
-And no single line appears on both sides (no duplicate row). When the
-test passes, current + incoming are concatenated in that order so the
-diff baseline is preserved.
+The sticky comment always leads with an outcome block:
 
-**Conservative on purpose**: arbitrary one-liners that just *happen* to
-not overlap (`foo = "a"` vs `foo = "b"`) do NOT match this pattern.
-They're value swaps and only Jules / a human should resolve them.
+```
+### Conflict Helper — outcome
 
-## 3. The semantic lane (Jules)
+<emoji> **<title>** <one-line explanation>.
 
-When the script returns `exit_code: 2`, the workflow:
+**Your job:** <next action>.
 
-1. Aborts the in-progress merge so the worktree is clean.
-2. Applies label `conflicts:needs-jules` to the PR.
-3. Dispatches `jules-coding-agent.yml` with `pr_number=N`.
-
-Jules sees the PR, reads the conflicting hunks, and pushes a resolution
-commit. The `jules:review` status records its work for audit.
-
-Jules is the right tool here because:
-
-- It's already a coding agent (pushes commits, not just comments).
-- The API key is already paid — no per-PR add-on cost.
-- Its track record on the repo (the BeksOmega lane) shows it handles
-  small-scope code edits well.
-
-If Jules also can't decide (rare — usually means architecturally
-significant), the owner takes over.
-
-## 4. The audit trail
-
-Every auto-resolution commit uses a fixed message format:
-
-```text
-chore: auto-resolve mechanical merge conflicts (version bumps + additive blocks)
-
-Resolved by scripts/auto-resolve-mechanical-conflicts.js per docs/CONFLICT_RESOLUTION_STANDARD.md.
-Safe patterns only — see commit diff for the rules each hunk matched.
+<details><summary>Phase details</summary>
+- Phase 2 (mechanical) outcome: `success|failure|skipped`
+- Phase 3 (Jules) dispatched: `true|false|not-attempted`
+- Phase decision: `resolved|dispatched-to-jules|needs-human`
+</details>
 ```
 
-That makes every auto-resolution discoverable via `git log --grep` and the
-PR comment trail shows which hunks ran which rule.
+## 10. Filtering PRs by outcome
 
-## 5. Originating case + the gap it closes
+Bookmark the following URL to see PRs still needing manual attention:
 
-| Date | PR | Conflict | Old path | New path |
-| --- | --- | --- | --- | --- |
-| 2026-05-29 | `jules-affiliate-engine-…` (TikTok affiliate engine branch) | `uses: peter-evans/create-pull-request@v7` vs `@SHA # v8.1.1` | Owner had to manually pick "incoming" in the web UI for every PR that hit this | Auto-resolved by the script the next time the workflow runs |
-| 2026-05-29 | (general) | "I never know if I need both" | One-by-one human decision | Script handles two safe cases; Jules handles the rest; human only sees architecturally significant ambiguities |
+```
+https://github.com/<org>/<repo>/pulls?q=is%3Apr+is%3Aopen+label%3Aconflicts%3Aneeds-human
+```
 
-## 6. When to extend the rules
+## 11. When the workflow surrenders
 
-When a new mechanical pattern emerges (the same conflict shape across
-multiple PRs), add it to `tryXxx` in
-`scripts/auto-resolve-mechanical-conflicts.js`. Keep the rules:
+If you see `conflicts:needs-human`:
 
-- Deterministic — same input always same output.
-- Conservative — false negatives (leave for Jules) are fine; false
-  positives (silently pick wrong side) are not.
-- Tested — add a row to the in-script test harness.
+1. Check `git log` on the PR branch for the last clean state.
+2. Rebase locally (`git rebase origin/main`), resolve conflicts, force-push.
+3. Re-trigger via `/resolve-conflicts` if you want the workflow to re-verify.
 
-## 7. Disabling for a specific PR
-
-If you want a PR's conflicts handled entirely by hand (you're rewriting
-the history anyway), add `conflicts:hands-off` to the PR. The
-conflict-helper job skips the resolve + Jules-dispatch steps and only
-posts the annotation comment from Phase 1.
-
----
-
-## Quick reference
-
-| Phase | When it fires | What it does |
-| --- | --- | --- |
-| **Phase 1: Annotate** | Always when `mergeable_state: dirty` | Posts a sticky comment naming current vs incoming with PR provenance |
-| **Phase 2: Mechanical** | After Phase 1 | Runs the script; resolves version bumps + additive blocks; pushes a single audit-trail commit |
-| **Phase 3: Jules** | If Phase 2 left anything ambiguous | Applies `conflicts:needs-jules` and dispatches `jules-coding-agent.yml` |
-| **Phase 4: Human** | If Phase 3 surrenders (`conflicts:needs-human`) | The owner takes over |
+If the workflow keeps surrendering on a class of conflict, file a WR to teach the mechanical resolver about the pattern.
