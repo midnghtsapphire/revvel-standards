@@ -8,6 +8,10 @@ on:
     - cron: '*/15 * * * *'  # Every 15 min
   workflow_dispatch:
 
+# Least privilege: external HTTP probes only; no repo write APIs.
+permissions:
+  contents: read
+
 jobs:
   check-health:
     runs-on: ubuntu-latest

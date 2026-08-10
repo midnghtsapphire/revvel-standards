@@ -180,12 +180,17 @@ describe('paralysis-recovery workflow guards', () => {
     assert.equal(doc.jobs.archived.steps.length, 1);
   });
 
-  test('trusted-bot auto-approve listens to completed check suites', () => {
+  test('trusted-bot auto-approve listens to workflow_run and keeps check_suite fallback', () => {
     if (!yaml) return;
     const filePath = path.join(WORKFLOWS_DIR, 'trusted-bot-auto-approve.yml');
     const doc = yaml.load(fs.readFileSync(filePath, 'utf8'));
     assert.ok(doc.on?.check_suite);
     assert.deepStrictEqual(doc.on.check_suite.types, ['completed']);
+    assert.ok(doc.on?.workflow_run);
+    assert.deepStrictEqual(doc.on.workflow_run.types, ['completed']);
+    assert.ok(doc.on.workflow_run.workflows.includes('CI Error Prevention Tests'));
+    assert.ok(doc.on.workflow_run.workflows.includes('PR Check Status Automation'));
+    assert.ok(doc.on.workflow_run.workflows.includes('PR Lifecycle'));
   });
 
   test('agent dispatcher handles wr:research-complete before wr:research without bypassing the spec-approval gate', () => {
@@ -204,7 +209,7 @@ describe('paralysis-recovery workflow guards', () => {
     assert.ok(!branchBody.includes('agent=openrouter'), 'wr:research-complete must not bypass the spec-approval gate');
   });
 
-  test('ci-error-prevention checks package-lock sync before npm ci', () => {
+  test('ci-error-prevention validates lockfile sync via script before npm ci', () => {
     const filePath = path.join(WORKFLOWS_DIR, 'ci-error-prevention.yml');
     const content = fs.readFileSync(filePath, 'utf8');
     const gateIndex = content.indexOf('name: Validate package-lock sync');
@@ -212,5 +217,18 @@ describe('paralysis-recovery workflow guards', () => {
     assert.ok(gateIndex >= 0, 'package-lock sync gate missing');
     assert.ok(installIndex >= 0, 'install step missing');
     assert.ok(gateIndex < installIndex, 'lockfile gate must run before npm ci');
+    assert.ok(
+      content.includes('run: bash scripts/validate-package-locks.sh'),
+      'lockfile sync gate must call validate-package-locks.sh'
+    );
+  });
+
+  test('ci-error-prevention pull_request paths include package manifests and lockfiles', () => {
+    const filePath = path.join(WORKFLOWS_DIR, 'ci-error-prevention.yml');
+    const content = fs.readFileSync(filePath, 'utf8');
+    assert.ok(content.includes("- 'package.json'"), 'missing root package.json trigger');
+    assert.ok(content.includes("- 'package-lock.json'"), 'missing root package-lock.json trigger');
+    assert.ok(content.includes("- '**/package.json'"), 'missing recursive package.json trigger');
+    assert.ok(content.includes("- '**/package-lock.json'"), 'missing recursive package-lock.json trigger');
   });
 });
