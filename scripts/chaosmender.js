@@ -180,6 +180,12 @@ function scanGithubScriptColumn0(repoRoot) {
       // An empty line doesn't end the block
       if (line.trim() === '') continue;
 
+      // YAML comments (lines whose first non-whitespace character is #) are
+      // structurally neutral in block scalars — they do NOT terminate the
+      // block, regardless of indentation. Skip them so we don't emit a false
+      // positive for col-0 YAML comments that appear after a script: | body.
+      if (line.trimStart().startsWith('#')) continue;
+
       const indent = line.search(/\S/);
 
       // A line at column 0 while we think we're still inside a script block

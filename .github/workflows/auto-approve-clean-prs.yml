@@ -230,9 +230,8 @@ jobs:
                 const labelNames = labels.map(l => l.name);
                 for (const label of CLEANUP_LABELS) {
                   if (labelNames.includes(label)) {
-                    try {
-                      await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
-                    } catch (e) { /* label may already be removed */ }
+                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
+                      .catch(err => { if (err.status !== 404) throw err; });
                   }
                 }
 
