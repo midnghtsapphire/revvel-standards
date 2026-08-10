@@ -149,6 +149,20 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 
 **Next Action:** The recorded intent for that PR's fleet review was verification of the two proven fixes (WR-01, WR-02/03) and the two small dependency fixes (WR-04), rather than re-derivation. Three items need an owner/product decision before any agent writes code: WR-05 (`ship-to-market.yml`'s missing `record.js` — build it or comment out the video-deliverable step), WR-06/WR-07 (`label-inventory.js` / `validate_jsonl.py` — wire in or archive-with-attribution, never delete per standing owner preference). WR-08 flags that the WR-drafting pipeline itself — 35 fully-drafted WRs across two prior audits, never filed as GitHub issues — is the largest unwired-flow pattern in the repo by volume; needs an owner pass over `wr/pending/` to mark stale/superseded items before a bulk-filing workflow gets built. WR-09's 16 scanner hits are queued for the next audit to individually root-cause. Two proposed CI vaccines from this session (`find-duplicate-json-keys.js`-style package.json lint; "named test/workflow file must exist" check for `scripts/**` and `skills/**/SKILL.md`) are not yet wired into `scripts/automation-doctor.js` — good candidates for a fast follow-up WR once this PR lands.
 
+**Date/Time:** 2026-08-08
+
+**Task Attempted:** WR-16450 — add perm to revvel-standards (missing workflow `permissions:` blocks + permanent Acknowledgements for every WR type).
+
+**Outcome:** Success — granted least-privilege `permissions:` on 8 bare workflows; fixed real write-scope gaps on `ship-to-market.yml` (`actions: write` for mobile dispatch) and `conflict-helper.yml` (`issues: write` for `gh issue edit`); made Acknowledgements permanent on heavy + OpenHands forms and BASIC/FULL markdown templates; fixed duplicate `steps:` key that made `apisec-scan.yml` invalid YAML; added regression tests + `docs/WORKFLOW_PERMISSIONS_STANDARD.md`.
+
+**Root Cause of Failure (If any):** (1) Several workflows never declared `permissions:`, relying on the repo default token matrix — fine until a job needs a write scope and gets a silent 403. (2) OpenHands quick WR form and markdown WR templates omitted the Acknowledgements / continue-the-loop contract that the heavy form already had. (3) A REVVEL-DISABLED `apisec-scan.yml` stub accidentally kept two `steps:` keys, so `workflows:validate` reported 1 invalid.
+
+**Self-Healing Fix / Learned Lesson:** (1) Every workflow file must declare `permissions:` — enforce with `tests/workflow-permissions.test.js`. (2) Job-level overrides that add a write scope must re-declare every other scope the job still needs (setting `permissions:` resets unlisted scopes to none). (3) Acknowledgements are permanent for every WR type — enforce with `tests/wr-acknowledgements-permanent.test.js` and keep portable copies under `templates/issue-template/` in sync. (4) Disabled stubs must still be valid single-`steps` YAML or automation-doctor fails the whole suite.
+
+**Next Action:** Merge this PR; CI should stay green on `npm test` + `workflows:validate`. No secrets added.
+
+---
+
 **Date/Time:** 2026-08-08T20:30:00Z
 
 **Task Attempted:** Take over Copilot's stranded recovery PRs #17091/#17097 (owner out of Copilot credits) and execute the owner's exit-quiet-mode decision, following RVS-AGENT-001 / RVS-PRESERVE-001.
