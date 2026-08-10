@@ -1,3 +1,15 @@
+---
+template: work/planner-pmo
+version: 1
+fleet: research → planner → owner-approval → coder → reviewer
+requires-owner-approval-before-coding: true
+requires-owner-approval-before-shipping: true
+scaffolding-allowed: false
+labels-to-apply:
+  - wr:plan
+  - work-request
+  - status:awaiting-research
+---
 <!--
   wr/templates/work/planner-pmo.md
   Use this when you have an idea and want it turned into a testable spec
@@ -11,19 +23,6 @@
   This template implements DECISIONS.md D019 (planner-first workflow) once
   D019 is recorded.
 -->
----
-template: work/planner-pmo
-version: 1
-fleet: research → planner → owner-approval → coder → reviewer
-requires-owner-approval-before-coding: true
-requires-owner-approval-before-shipping: true
-scaffolding-allowed: false
-labels-to-apply:
-  - wr:plan
-  - work-request
-  - status:awaiting-research
----
-
 # [PLAN] {TITLE — one sentence, no jargon}
 
 ## Problem statement (in your own words)
@@ -36,7 +35,7 @@ stop, think, come back. Vagueness here poisons everything downstream.
 
 {PROBLEM_STATEMENT}
 
-## Who is this for?
+## Who is this for
 
 - **Primary user:** <!-- a specific person or role, not "everyone" -->
 - **How often will they use it:** <!-- daily / weekly / one-time -->

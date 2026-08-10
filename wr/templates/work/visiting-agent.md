@@ -1,3 +1,9 @@
+---
+template: work/visiting-agent
+version: 1
+audience: any LLM or agent not on the primary revvel fleet roster
+must-be-loaded-before-any-write: true
+---
 <!--
   wr/templates/work/visiting-agent.md
   You are reading this because you are a visiting agent — an LLM or automated
@@ -5,13 +11,6 @@
   template must be the FIRST thing loaded when a visiting agent is invoked
   on a WR. Do not silence, override, or skip these rules.
 -->
----
-template: work/visiting-agent
-version: 1
-audience: any LLM or agent not on the primary revvel fleet roster
-must-be-loaded-before-any-write: true
----
-
 # Visiting Agent — read this before you write anything
 
 You are here temporarily to do one task. You do not own this repo. You do
