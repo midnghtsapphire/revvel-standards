@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>oAudrey — Hardware Selection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<header class="border-b border-slate-800">
+  <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+    <a href="index.html" class="text-lg font-semibold">← oAudrey Hub</a>
+    <h1 class="text-xl font-bold">Hardware Selection</h1>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+  <section>
+    <h2 class="text-2xl font-bold mb-2">JIT GPU Cost Comparison</h2>
+    <p class="text-slate-400 mb-4">Pick the cheapest device that fits the workload's memory + latency budget.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="cards"></div>
+  </section>
+
+  <section class="bg-slate-900/60 border border-slate-800 rounded-lg p-4">
+    <h3 class="font-semibold mb-2">Live Compute Manifest (mock)</h3>
+    <pre id="manifest" class="text-xs text-emerald-300 overflow-x-auto"></pre>
+  </section>
+</main>
+
+<script>
+const devices = [
+  { name: "RTX 4090 (local)",   kind: "gpu", memory_mb: 24576, cost: 0.35, note: "best $/TFLOP for local dev" },
+  { name: "A100 40GB (cloud)",  kind: "gpu", memory_mb: 40960, cost: 1.10, note: "training tier" },
+  { name: "L4 24GB (cloud)",    kind: "gpu", memory_mb: 24576, cost: 0.55, note: "inference tier" },
+  { name: "T4 16GB (spot)",     kind: "gpu", memory_mb: 16384, cost: 0.18, note: "cheap batch jobs" },
+  { name: "CPU fallback",       kind: "cpu", memory_mb: 0,     cost: 0.00, note: "always available" },
+];
+
+const cards = document.getElementById("cards");
+cards.innerHTML = devices.map(d => `
+  <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+    <div class="flex items-center justify-between">
+      <span class="font-semibold">${d.name}</span>
+      <span class="text-xs uppercase tracking-wide ${d.kind === 'gpu' ? 'text-emerald-400' : 'text-slate-400'}">${d.kind}</span>
+    </div>
+    <div class="mt-2 text-sm text-slate-300">${d.memory_mb ? (d.memory_mb/1024).toFixed(0)+' GB VRAM' : 'system RAM'}</div>
+    <div class="mt-1 text-sm">$${d.cost.toFixed(2)}/hr</div>
+    <div class="mt-2 text-xs text-slate-500">${d.note}</div>
+  </div>
+`).join("");
+
+const manifest = {
+  provider: "mock",
+  devices: devices.filter(d => d.cost <= 1.0),
+  total_cost_per_hour_usd: devices.filter(d => d.cost <= 1.0).reduce((s,d)=>s+d.cost,0).toFixed(2),
+};
+document.getElementById("manifest").textContent = JSON.stringify(manifest, null, 2);
+</script>
+</body>
+</html>
