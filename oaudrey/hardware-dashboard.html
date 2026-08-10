@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>oAudrey · Hardware Selection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<header class="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+  <h1 class="text-xl font-semibold">Hardware Selection</h1>
+  <a href="index.html" class="text-sm text-sky-400 hover:text-sky-300">← Hub</a>
+</header>
+
+<main class="max-w-6xl mx-auto p-6 space-y-8">
+  <section>
+    <h2 class="text-lg font-medium mb-3">JIT Compute Tiers</h2>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <article class="rounded-xl bg-slate-900 border border-slate-800 p-4">
+        <h3 class="font-semibold">CPU · c7i.large</h3>
+        <p class="text-xs text-slate-400 mt-1">Batch OSINT, embeddings (ONNX)</p>
+        <p class="mt-3 text-2xl font-bold">$0.05<span class="text-xs text-slate-400">/hr</span></p>
+      </article>
+      <article class="rounded-xl bg-slate-900 border border-slate-800 p-4">
+        <h3 class="font-semibold">GPU · T4 / L4</h3>
+        <p class="text-xs text-slate-400 mt-1">LLM &lt; 7B, low-latency inference</p>
+        <p class="mt-3 text-2xl font-bold">$0.35<span class="text-xs text-slate-400">/hr</span></p>
+      </article>
+      <article class="rounded-xl bg-slate-900 border border-slate-800 p-4">
+        <h3 class="font-semibold">GPU · A10G</h3>
+        <p class="text-xs text-slate-400 mt-1">7-13B inference, LoRA fine-tune</p>
+        <p class="mt-3 text-2xl font-bold">$1.00<span class="text-xs text-slate-400">/hr</span></p>
+      </article>
+      <article class="rounded-xl bg-slate-900 border border-slate-800 p-4">
+        <h3 class="font-semibold">GPU · A100 80GB</h3>
+        <p class="text-xs text-slate-400 mt-1">70B inference, full fine-tune</p>
+        <p class="mt-3 text-2xl font-bold">$3.05<span class="text-xs text-slate-400">/hr</span></p>
+      </article>
+      <article class="rounded-xl bg-slate-900 border border-slate-800 p-4">
+        <h3 class="font-semibold">GPU · H100</h3>
+        <p class="text-xs text-slate-400 mt-1">Frontier training bursts</p>
+        <p class="mt-3 text-2xl font-bold">$4.50<span class="text-xs text-slate-400">/hr</span></p>
+      </article>
+      <article class="rounded-xl bg-slate-900 border border-slate-800 p-4">
+        <h3 class="font-semibold">Serverless</h3>
+        <p class="text-xs text-slate-400 mt-1">Lambda / Modal · pay per call</p>
+        <p class="mt-3 text-2xl font-bold">$0.00<span class="text-xs text-slate-400">/idle</span></p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="text-lg font-medium mb-3">Revenue Mapping</h2>
+    <div class="overflow-x-auto rounded-xl border border-slate-800">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-900 text-slate-300">
+          <tr>
+            <th class="text-left px-4 py-2">Phase</th>
+            <th class="text-left px-4 py-2">Target</th>
+            <th class="text-left px-4 py-2">Product</th>
+            <th class="text-left px-4 py-2">Platform</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          <tr><td class="px-4 py-2">1</td><td class="px-4 py-2">$10k/mo</td><td class="px-4 py-2">OSINT + prompt packs</td><td class="px-4 py-2">Gumroad</td></tr>
+          <tr><td class="px-4 py-2">2</td><td class="px-4 py-2">$30k/mo</td><td class="px-4 py-2">SaaS wrappers</td><td class="px-4 py-2">Polar.sh</td></tr>
+          <tr><td class="px-4 py-2">3</td><td class="px-4 py-2">$100k/mo</td><td class="px-4 py-2">Managed AI infra</td><td class="px-4 py-2">Stripe</td></tr>
+          <tr><td class="px-4 py-2">4</td><td class="px-4 py-2">$10M total</td><td class="px-4 py-2">Marketplace</td><td class="px-4 py-2">Multi</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+</body>
+</html>
