@@ -1,0 +1,29 @@
+name: ai-architecture-eval
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.7
+      - name: Setup Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: "3.11"
+      - name: Run tests
+        run: python products/ai-architecture-framework/tests/test_harness.py
+      - name: Run market evaluator
+        run: python products/ai-architecture-framework/market_evaluator.py
+      - name: Upload artifact
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        with:
+          name: market-evaluator-report
+          path: products/ai-architecture-framework/artifacts/market_evaluator_report.json

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>oAudrey · Hardware Selection Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<meta name="description" content="AI hardware selection dashboard: pick GPUs, estimate cost, and schedule product launches." />
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="px-6 py-5 border-b border-slate-800 flex flex-wrap gap-3 items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold">Hardware Selection</h1>
+      <p class="text-slate-400 text-sm">JIT compute · cost audit · product pipeline</p>
+    </div>
+    <a href="index.html" class="text-sm text-emerald-400 hover:text-emerald-300">← back to oAudrey hub</a>
+  </header>
+
+  <main class="p-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="text-lg font-semibold mb-3">Workload profile</h2>
+      <form id="workload" class="space-y-3 text-sm">
+        <label class="block">
+          <span class="text-slate-400">Model params (B)</span>
+          <input type="number" name="params" value="7" min="0.1" step="0.1"
+                 class="mt-1 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" />
+        </label>
+        <label class="block">
+          <span class="text-slate-400">Batch size</span>
+          <input type="number" name="batch" value="8" min="1"
+                 class="mt-1 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" />
+        </label>
+        <label class="block">
+          <span class="text-slate-400">Precision</span>
+          <select name="precision" class="mt-1 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+            <option value="fp16">fp16</option>
+            <option value="bf16">bf16</option>
+            <option value="fp8">fp8</option>
+            <option value="fp32">fp32</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="text-slate-400">Latency SLO (ms)</span>
+          <input type="number" name="slo" value="250" min="10"
+                 class="mt-1 w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2" />
+        </label>
+      </form>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="text-lg font-semibold mb-3">Recommendation</h2>
+      <div id="reco" class="space-y-2 text-sm text-slate-200"></div>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="text-lg font-semibold mb-3">Product pipeline (auto)</h2>
+      <ul id="pipeline" class="text-sm space-y-2"></ul>
+      <p class="text-xs text-slate-500 mt-3">Refreshed daily by <code>market_evaluator.py</code>.</p>
+    </section>
+  </main>
+
+<script>
+const CATALOG = [
+  { name: "CPU-only",    hourly: 0.05, vram: 0,   tflops: 0.5 },
+  { name: "RTX 4090",     hourly: 0.55, vram: 24,  tflops: 82 },
+  { name: "A100-40GB",    hourly: 1.10, vram: 40,  tflops: 156 },
+  { name: "A100-80GB",    hourly: 1.80, vram: 80,  tflops: 156 },
+  { name: "H100-80GB",    hourly: 3.20, vram: 80,  tflops: 989 }
+];
+
+function pickHardware(params, precision) {
+  const bytesPerParam = precision === "fp32" ? 4 : (precision === "fp8" ? 1 : 2);
+  const vramNeededGB = (params * 1e9 * bytesPerParam * 1.4) / (1024 ** 3);
+  const viable = CATALOG.filter(c => c.vram >= vramNeededGB);
+  const chosen = viable[0] || CATALOG[CATALOG.length - 1];
+  const hours = Math.max(1, Math.round((params * 20) / (chosen.tflops || 1)));
+  return { chosen, vramNeededGB, hours, totalCost: (chosen.hourly * hours).toFixed(2) };
+}
+
+function renderReco() {
+  const f = document.getElementById("workload");
+  const params = parseFloat(f.params.value);
+  const precision = f.precision.value;
+  const r = pickHardware(params, precision);
+  document.getElementById("reco").innerHTML = `
+    <div><span class="text-slate-400">Recommended:</span> <strong>${r.chosen.name}</strong></div>
+    <div><span class="text-slate-400">VRAM needed:</span> ${r.vramNeededGB.toFixed(1)} GB</div>
+    <div><span class="text-slate-400">Est. training hours:</span> ${r.hours}</div>
+    <div><span class="text-slate-400">Est. total cost:</span> $${r.totalCost}</div>
+    <div class="text-xs text-emerald-400 mt-2">Prime directive: ship a product about this today.</div>
+  `;
+}
+
+const PIPELINE = [
+  { platform: "gumroad", tier: "free-test",    title: "GPU hardware selection cheatsheet" },
+  { platform: "stripe",  tier: "paid ($29)",   title: "JIT CUDA provisioning playbook" },
+  { platform: "gumroad", tier: "lead-magnet",  title: "Training cost reduction audit" }
+];
+function renderPipeline() {
+  document.getElementById("pipeline").innerHTML = PIPELINE.map(p => `
+    <li class="flex justify-between border-b border-slate-800 pb-1">
+      <span>${p.title}</span>
+      <span class="text-slate-400">${p.platform} · ${p.tier}</span>
+    </li>
+  `).join("");
+}
+
+document.getElementById("workload").addEventListener("input", renderReco);
+renderReco();
+renderPipeline();
+</script>
+</body>
+</html>
