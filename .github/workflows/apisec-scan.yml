@@ -5,7 +5,7 @@
 # The secrets required to authenticate are not provisioned in this org, so
 # every run failed at the API-call step. Rather than accumulate red check-runs
 # on every PR, the workflow body is archived below per RVS-AGENT-001
-# (\`standards/COMMENT-DONT-DELETE.md\`).
+# (`standards/COMMENT-DONT-DELETE.md`).
 #
 # To re-enable:
 #   1. Provision the required secrets in repo/org settings.
