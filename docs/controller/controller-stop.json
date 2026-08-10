@@ -1,26 +1,21 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-08-10T14:41:48.838Z",
+  "generated_at": "2026-08-10T20:37:56.553Z",
   "stop": [
-    {
-      "id": 31396941362,
-      "name": "github_actions in / for apisec-inc/apisec-run-scan, aaronsteers/devin-action, eco-infra/ecoinfra-action, sanjay3290/jules-pr-reviewer, neondatabase/create-branch-action, docker/login-action, github/codeql-action/upload-sarif - Update #1517723779",
-      "reason": "no progress for 29m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 40267m ≥ 60m budget"
+      "reason": "running 40623m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 40338m ≥ 60m budget"
+      "reason": "running 40694m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 40408m ≥ 60m budget"
+      "reason": "running 40764m ≥ 60m budget"
     }
   ]
 }
