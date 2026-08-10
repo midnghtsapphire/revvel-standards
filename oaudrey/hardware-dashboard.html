@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oAudrey · Hardware Selection</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="border-b border-slate-800 px-6 py-4">
+    <h1 class="text-2xl font-bold text-emerald-400">Hardware Selection Dashboard</h1>
+    <p class="text-sm text-slate-400">JIT compute picks for the $10k → $10M mission.</p>
+  </header>
+
+  <main class="p-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <section class="bg-slate-900 rounded-xl p-5 border border-slate-800">
+      <h2 class="text-lg font-semibold text-emerald-300">Latency-Critical Inference</h2>
+      <p class="text-slate-400 text-sm mt-1">&lt;100ms p95, small models</p>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li class="flex justify-between"><span>NVIDIA T4</span><span class="text-emerald-400">$0.35/hr</span></li>
+        <li class="flex justify-between"><span>NVIDIA A10G</span><span class="text-emerald-400">$0.75/hr</span></li>
+        <li class="flex justify-between"><span>CPU (fallback)</span><span class="text-slate-400">$0.05/hr</span></li>
+      </ul>
+    </section>
+
+    <section class="bg-slate-900 rounded-xl p-5 border border-slate-800">
+      <h2 class="text-lg font-semibold text-sky-300">Batch Training</h2>
+      <p class="text-slate-400 text-sm mt-1">Spot-first, kill idle @ 90s</p>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li class="flex justify-between"><span>A100 40GB spot</span><span class="text-sky-400">$1.10/hr</span></li>
+        <li class="flex justify-between"><span>A100 80GB spot</span><span class="text-sky-400">$1.90/hr</span></li>
+        <li class="flex justify-between"><span>H100 reserved</span><span class="text-sky-400">$2.99/hr</span></li>
+      </ul>
+    </section>
+
+    <section class="bg-slate-900 rounded-xl p-5 border border-slate-800">
+      <h2 class="text-lg font-semibold text-fuchsia-300">Fine-Tune (7B–13B)</h2>
+      <p class="text-slate-400 text-sm mt-1">LoRA / QLoRA optimized</p>
+      <ul class="mt-4 space-y-2 text-sm">
+        <li class="flex justify-between"><span>1× A100 80GB</span><span class="text-fuchsia-400">$1.90/hr</span></li>
+        <li class="flex justify-between"><span>2× A100 40GB</span><span class="text-fuchsia-400">$2.20/hr</span></li>
+        <li class="flex justify-between"><span>Colab Pro+</span><span class="text-fuchsia-400">$50/mo</span></li>
+      </ul>
+    </section>
+
+    <section class="bg-slate-900 rounded-xl p-5 border border-slate-800 lg:col-span-3">
+      <h2 class="text-lg font-semibold text-amber-300">JIT Provisioning Log (mock)</h2>
+      <pre id="log" class="mt-3 text-xs bg-slate-950 rounded-lg p-3 overflow-x-auto text-emerald-200">loading…</pre>
+    </section>
+  </main>
+
+  <footer class="px-6 py-4 text-xs text-slate-500 border-t border-slate-800">
+    Powered by the AI Architecture Framework · <code>products/ai-architecture-framework/</code>
+  </footer>
+
+  <script>
+    const sample = {
+      timestamp: Date.now() / 1000,
+      action: "provision:demo-job",
+      backend: "cpu-fallback",
+      gpus: [],
+      note: "nvidia-smi unavailable; using CPU fallback"
+    };
+    document.getElementById("log").textContent = JSON.stringify(sample, null, 2);
+  </script>
+</body>
+</html>
