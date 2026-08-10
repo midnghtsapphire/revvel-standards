@@ -109,7 +109,7 @@ See `scripts/bnatsheaf/persistence.js` (`PersistenceDiagram`, `fingerprint`).
 
 Discrete healing flow $x\leftarrow x-\eta\Delta_{\mathcal{F}}x$ decreases
 $E(x)$ for small $\eta$ (see `scripts/bnatsheaf/nsd.js`). Learned restriction
-maps freeze into deterministic `CellularSheaf.restrictions` for runtime.
+maps freeze into deterministic edge `ru` / `rv` matrices on `CellularSheaf` for runtime.
 Research note: `NSD_EXPLORATION.md`.
 
 ## References
