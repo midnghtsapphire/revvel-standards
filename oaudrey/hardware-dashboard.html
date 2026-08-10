@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>oAudrey — Hardware Selection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<header class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+  <h1 class="text-xl font-semibold">Hardware Selection Dashboard</h1>
+  <a href="index.html" class="text-sm text-sky-400 hover:underline">&larr; Back to hub</a>
+</header>
+
+<main class="p-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+  <section class="bg-slate-900 rounded-xl p-5 shadow">
+    <h2 class="text-lg font-semibold mb-3">Available Tiers</h2>
+    <ul class="space-y-2 text-sm">
+      <li class="flex justify-between"><span>NVIDIA T4</span><span class="text-emerald-400">$0.35/hr</span></li>
+      <li class="flex justify-between"><span>NVIDIA A10</span><span class="text-emerald-400">$0.75/hr</span></li>
+      <li class="flex justify-between"><span>NVIDIA A100</span><span class="text-amber-400">$2.10/hr</span></li>
+      <li class="flex justify-between"><span>NVIDIA H100</span><span class="text-rose-400">$4.50/hr</span></li>
+      <li class="flex justify-between"><span>CPU fallback</span><span class="text-slate-400">$0.05/hr</span></li>
+    </ul>
+  </section>
+
+  <section class="bg-slate-900 rounded-xl p-5 shadow">
+    <h2 class="text-lg font-semibold mb-3">JIT Provisioning</h2>
+    <p class="text-sm text-slate-300 mb-3">Detects GPU via <code class="bg-slate-800 px-1 rounded">nvidia-smi</code>; falls back to CPU when unavailable.</p>
+    <button id="provision" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-medium py-2 rounded">Simulate Provision</button>
+    <pre id="provision-out" class="mt-3 text-xs bg-slate-800 p-3 rounded overflow-x-auto">(idle)</pre>
+  </section>
+
+  <section class="bg-slate-900 rounded-xl p-5 shadow">
+    <h2 class="text-lg font-semibold mb-3">Cost Guardrails</h2>
+    <label class="block text-sm mb-1">Max $/hr</label>
+    <input id="budget" type="number" value="1.00" step="0.05" min="0"
+      class="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm" />
+    <p id="guardrail" class="mt-3 text-sm text-slate-300">Recommended tier will appear here.</p>
+  </section>
+</main>
+
+<script>
+const tiers = [
+  { name: 'CPU fallback', price: 0.05 },
+  { name: 'NVIDIA T4',    price: 0.35 },
+  { name: 'NVIDIA A10',   price: 0.75 },
+  { name: 'NVIDIA A100',  price: 2.10 },
+  { name: 'NVIDIA H100',  price: 4.50 },
+];
+
+function recommend(budget) {
+  const affordable = tiers.filter(t => t.price <= budget);
+  return affordable.length ? affordable[affordable.length - 1] : tiers[0];
+}
+
+const budgetEl = document.getElementById('budget');
+const guardEl = document.getElementById('guardrail');
+function updateGuardrail() {
+  const b = parseFloat(budgetEl.value || '0');
+  const r = recommend(b);
+  guardEl.textContent = `Recommended: ${r.name} @ $${r.price.toFixed(2)}/hr`;
+}
+budgetEl.addEventListener('input', updateGuardrail);
+updateGuardrail();
+
+document.getElementById('provision').addEventListener('click', () => {
+  const mock = {
+    device: 'cpu',
+    gpu_name: null,
+    memory_mb: 0,
+    estimated_cost_per_hour_usd: 0.05,
+    mocked: true,
+    note: 'MOCK_MODE=1 — no external calls'
+  };
+  document.getElementById('provision-out').textContent = JSON.stringify(mock, null, 2);
+});
+</script>
+</body>
+</html>
