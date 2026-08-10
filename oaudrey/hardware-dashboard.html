@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>oAudrey — Hardware Selection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<header class="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+  <a href="index.html" class="text-sm text-slate-400 hover:text-white">← oAudrey Hub</a>
+  <h1 class="text-lg font-semibold">Hardware Selection</h1>
+  <span class="text-xs text-emerald-400">JIT · Cost-aware</span>
+</header>
+
+<main class="max-w-6xl mx-auto p-6 space-y-8">
+  <section class="grid gap-4 md:grid-cols-3">
+    <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800">
+      <div class="text-xs uppercase text-slate-400">Target MRR</div>
+      <div class="text-3xl font-bold mt-2">$10k → $10M</div>
+      <div class="text-xs text-slate-500 mt-1">36-month plan</div>
+    </div>
+    <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800">
+      <div class="text-xs uppercase text-slate-400">Idle spend</div>
+      <div class="text-3xl font-bold mt-2 text-emerald-400">$0.00</div>
+      <div class="text-xs text-slate-500 mt-1">JIT provisioning only</div>
+    </div>
+    <div class="bg-slate-900 rounded-2xl p-5 border border-slate-800">
+      <div class="text-xs uppercase text-slate-400">Products / run</div>
+      <div class="text-3xl font-bold mt-2">3</div>
+      <div class="text-xs text-slate-500 mt-1">Stripe + Gumroad (mock)</div>
+    </div>
+  </section>
+
+  <section class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden">
+    <div class="px-5 py-3 border-b border-slate-800 flex items-center justify-between">
+      <h2 class="font-semibold">Recommended tiers</h2>
+      <span class="text-xs text-slate-500">spot pricing, USD/hr</span>
+    </div>
+    <table class="w-full text-sm">
+      <thead class="bg-slate-950/60 text-slate-400">
+        <tr>
+          <th class="text-left px-5 py-2">Workload</th>
+          <th class="text-left px-5 py-2">Hardware</th>
+          <th class="text-left px-5 py-2">Cost</th>
+          <th class="text-left px-5 py-2">JIT trigger</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-800">
+        <tr><td class="px-5 py-3">&lt; 7B inference</td><td>CPU / T4</td><td>$0.02–0.11</td><td>API request</td></tr>
+        <tr><td class="px-5 py-3">7B–70B inference</td><td>A10 / L4 / A100-40G</td><td>$0.28–1.10</td><td>Warm pool, 5 min idle</td></tr>
+        <tr><td class="px-5 py-3">LoRA fine-tune</td><td>A100-80G ×1–2</td><td>$1.10–2.20</td><td>Nightly batch</td></tr>
+        <tr><td class="px-5 py-3">Pretraining</td><td>H100 ×8+</td><td>$17.60+</td><td>Paid contract only</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="grid md:grid-cols-2 gap-4">
+    <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+      <h3 class="font-semibold mb-2">Live snapshot</h3>
+      <pre id="snapshot" class="text-xs text-slate-300 whitespace-pre-wrap">Run <code>python products/ai-architecture-framework/cuda_mlops_wrapper.py</code> to populate.</pre>
+    </div>
+    <div class="bg-slate-900 rounded-2xl border border-slate-800 p-5">
+      <h3 class="font-semibold mb-2">Next product creations</h3>
+      <ol class="list-decimal list-inside space-y-1 text-sm text-slate-300">
+        <li>OSINT Recon Kit — Gumroad — $29</li>
+        <li>Polar.sh Funding Launch Pack — Stripe — $19</li>
+        <li>AI Architecture Playbook — Gumroad — $49</li>
+      </ol>
+      <p class="text-xs text-slate-500 mt-3">Scheduled daily via GitHub Actions.</p>
+    </div>
+  </section>
+</main>
+</body>
+</html>
