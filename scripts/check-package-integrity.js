@@ -136,7 +136,7 @@ function findDuplicateKeys(jsonText) {
       while (j < text.length) {
         const kc = text[j];
         if (keyEscaped) {
-          key += kc;
+          key += `\\${kc}`;
           keyEscaped = false;
           j++;
           continue;
@@ -153,13 +153,13 @@ function findDuplicateKeys(jsonText) {
       }
       if (j < text.length && text[j] === '"') {
         let k = j + 1;
-        while (k < text.length && (text[k] === " " || text[k] === "\t")) k++;
+        while (k < text.length && /[ \t\r\n]/.test(text[k])) k++;
         if (k < text.length && text[k] === ":") {
           // This is a key (not a bare string value). Record against the
-          // current object scope, then resume after the colon so the value
-          // (including a following `{`) is scanned normally.
-          recordKey(key);
-          i = k + 1;
+          // current object scope, then resume after the closing quote so
+          // whitespace is scanned normally and line numbers stay accurate.
+          recordKey(JSON.parse(`"${key}"`));
+          i = j + 1;
           continue;
         }
       }
