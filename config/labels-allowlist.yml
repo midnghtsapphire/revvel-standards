@@ -98,6 +98,12 @@ labels:
   - name: codex
   - name: "role:orchestrator"
   - name: "role:fixer"
+  # Ceremonial override role — grants any agent the authority to file a
+  # WR for a bug it discovered but did not introduce, without violating
+  # its task-scope guardrails. See standards/TRIAGE_ROLE_STANDARD.md.
+  # Codifies the pattern that "out of scope" is not a valid reason to
+  # ignore a bug; instead file a Triage-role WR and keep working.
+  - name: "role:triage"
   - name: needs-decision
   - name: "privilege:intern"
   - name: "privilege:associate"
