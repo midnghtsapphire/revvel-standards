@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>oAudrey — Hardware Selection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-bold">Hardware Selection</h1>
+      <p class="text-sm text-slate-400">JIT compute · $10k/mo → $10M in 3 years</p>
+    </div>
+    <a href="index.html" class="text-sm text-sky-400 hover:text-sky-300">← Back to hub</a>
+  </header>
+
+  <main class="p-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="font-semibold text-lg mb-2">LLM Inference (&lt;7B)</h2>
+      <p class="text-slate-400 text-sm mb-3">Consumer GPU · int8 fallback</p>
+      <div class="flex items-center justify-between">
+        <span class="text-emerald-400 font-mono">RTX 4090 / L4</span>
+        <span class="text-xs bg-emerald-900/40 text-emerald-300 px-2 py-1 rounded">$0.60/hr</span>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="font-semibold text-lg mb-2">LLM Inference (≥13B)</h2>
+      <p class="text-slate-400 text-sm mb-3">A100 / H100 · JIT rental</p>
+      <div class="flex items-center justify-between">
+        <span class="text-emerald-400 font-mono">H100 (spot)</span>
+        <span class="text-xs bg-emerald-900/40 text-emerald-300 px-2 py-1 rounded">$1.90/hr</span>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="font-semibold text-lg mb-2">Embeddings</h2>
+      <p class="text-slate-400 text-sm mb-3">CPU, batched</p>
+      <div class="flex items-center justify-between">
+        <span class="text-emerald-400 font-mono">CPU (16 core)</span>
+        <span class="text-xs bg-emerald-900/40 text-emerald-300 px-2 py-1 rounded">$0.05/hr</span>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="font-semibold text-lg mb-2">Fine-tuning</h2>
+      <p class="text-slate-400 text-sm mb-3">Spot preferred</p>
+      <div class="flex items-center justify-between">
+        <span class="text-emerald-400 font-mono">H100 spot</span>
+        <span class="text-xs bg-emerald-900/40 text-emerald-300 px-2 py-1 rounded">$1.20/hr</span>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="font-semibold text-lg mb-2">OSINT Scraping</h2>
+      <p class="text-slate-400 text-sm mb-3">I/O bound</p>
+      <div class="flex items-center justify-between">
+        <span class="text-emerald-400 font-mono">CPU (many cores)</span>
+        <span class="text-xs bg-emerald-900/40 text-emerald-300 px-2 py-1 rounded">$0.03/hr</span>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="font-semibold text-lg mb-2">Image / Video Gen</h2>
+      <p class="text-slate-400 text-sm mb-3">VRAM &gt; FLOPs</p>
+      <div class="flex items-center justify-between">
+        <span class="text-emerald-400 font-mono">RTX 4090 / A10G</span>
+        <span class="text-xs bg-emerald-900/40 text-emerald-300 px-2 py-1 rounded">$0.75/hr</span>
+      </div>
+    </section>
+  </main>
+
+  <section class="px-6 pb-10">
+    <div class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="font-semibold text-lg mb-3">JIT Provisioning Rules</h2>
+      <ul class="list-disc pl-6 text-slate-300 space-y-1 text-sm">
+        <li>Never hold a GPU idle for &gt;5 minutes.</li>
+        <li>Prefer spot / preemptible before on-demand.</li>
+        <li>Cache model weights on local NVMe; egress kills margins.</li>
+        <li>Minimum batch size of 8 before spinning a GPU.</li>
+        <li>Shutdown hook must fire within 60s of last job.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer class="border-t border-slate-800 px-6 py-4 text-xs text-slate-500">
+    oAudrey · AI Architecture Framework · products/ai-architecture-framework
+  </footer>
+</body>
+</html>
