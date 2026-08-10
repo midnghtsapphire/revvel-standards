@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oAudrey · Hardware Selection</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="border-b border-slate-800 p-6">
+    <h1 class="text-2xl font-bold">Hardware Selection Dashboard</h1>
+    <p class="text-slate-400 text-sm mt-1">JIT compute provisioning · CUDA-aware · CPU fallback</p>
+  </header>
+
+  <main class="p-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="text-lg font-semibold mb-2">Entry Tier</h2>
+      <p class="text-slate-400 text-sm mb-3">$10k/mo target · Inference only</p>
+      <ul class="text-sm space-y-1">
+        <li>· RTX 4090 (24GB) — spot</li>
+        <li>· Latency p95: ~450ms</li>
+        <li>· Est cost: $0.35/hr</li>
+      </ul>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="text-lg font-semibold mb-2">Growth Tier</h2>
+      <p class="text-slate-400 text-sm mb-3">$30k–$100k/mo · Fine-tuning</p>
+      <ul class="text-sm space-y-1">
+        <li>· A100 40GB × 2</li>
+        <li>· Latency p95: ~220ms</li>
+        <li>· Est cost: $2.20/hr</li>
+      </ul>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg">
+      <h2 class="text-lg font-semibold mb-2">Scale Tier</h2>
+      <p class="text-slate-400 text-sm mb-3">$10M target · Multi-tenant</p>
+      <ul class="text-sm space-y-1">
+        <li>· H100 80GB × 8</li>
+        <li>· Latency p95: ~90ms</li>
+        <li>· Est cost: $24/hr</li>
+      </ul>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 shadow-lg md:col-span-2 lg:col-span-3">
+      <h2 class="text-lg font-semibold mb-2">Live Provisioning</h2>
+      <pre id="provision-output" class="text-xs bg-black/40 rounded-lg p-3 overflow-auto">Run: python products/ai-architecture-framework/cuda_mlops_wrapper.py</pre>
+    </section>
+  </main>
+
+  <footer class="p-6 text-xs text-slate-500 border-t border-slate-800">
+    Part of the oAudrey ecosystem · Prime directive: $10k/mo → $10M in 3 years.
+  </footer>
+</body>
+</html>
