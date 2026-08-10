@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hardware Selection Framework — oAudrey</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              void: "#0B0F1A",
+              carbon: "#121828",
+              steel: "#1E2638",
+              ice: "#E7ECF5",
+              mist: "#8A93A6",
+              iris: "#7C5CFF",
+              cyan: "#3DDCFF",
+            },
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              mono: ["JetBrains Mono", "monospace"],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .glass {
+        background: rgba(18, 24, 40, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(231, 236, 245, 0.05);
+      }
+    </style>
+  </head>
+  <body class="bg-void text-ice antialiased min-h-screen flex flex-col items-center p-8">
+
+    <header class="w-full max-w-5xl mb-12">
+      <h1 class="text-3xl font-black text-ice mb-4">AI Hardware Selection Framework</h1>
+      <p class="text-mist font-mono text-sm max-w-2xl">
+        Formal auditing and auto-correcting cost-benefit analysis for model training and inference pipelines.
+        Evaluating CPU, GPU, TPU, and NPU architectures for cost-efficient self-managed MLOps.
+      </p>
+    </header>
+
+    <main class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-8">
+
+      <!-- Cost-Benefit Analysis Tree -->
+      <section class="glass p-6 rounded-lg">
+        <h2 class="text-xl font-bold text-iris mb-4">Hardware Decision Tree</h2>
+        <ul class="font-mono text-xs text-mist space-y-4">
+          <li>
+            <strong class="text-ice">Are you training foundation models?</strong>
+            <ul class="pl-4 mt-2 border-l border-steel space-y-2">
+              <li>Yes → <span class="text-cyan">TPU</span> (Cloud-scale, massive batch sizes)</li>
+              <li>No ↓</li>
+            </ul>
+          </li>
+          <li>
+            <strong class="text-ice">Do you need high-throughput batch inference or deep learning training?</strong>
+            <ul class="pl-4 mt-2 border-l border-steel space-y-2">
+              <li>Yes → <span class="text-cyan">GPU</span> (HBM2/3, Tensor Cores)</li>
+              <li>No ↓</li>
+            </ul>
+          </li>
+          <li>
+            <strong class="text-ice">Is it a power-constrained edge application?</strong>
+            <ul class="pl-4 mt-2 border-l border-steel space-y-2">
+              <li>Yes → <span class="text-cyan">NPU</span> (Real-time local inference, low power)</li>
+              <li>No ↓</li>
+            </ul>
+          </li>
+          <li>
+            <strong class="text-ice">Default:</strong> <span class="text-cyan">CPU</span> (ETL processing, XGBoost, low-latency single request)
+          </li>
+        </ul>
+      </section>
+
+      <!-- Cost Reduction Chart Wireframe -->
+      <section class="glass p-6 rounded-lg">
+        <h2 class="text-xl font-bold text-cyan mb-4">JIT Provisioning Savings</h2>
+        <div class="h-48 w-full border border-steel flex items-end p-4 gap-4">
+          <!-- Wireframe Bar Chart -->
+          <div class="flex-1 bg-steel relative group">
+            <div class="absolute bottom-0 w-full bg-mist h-full opacity-50"></div>
+            <span class="absolute -top-6 text-xs font-mono text-mist w-full text-center group-hover:text-ice">Always On</span>
+          </div>
+          <div class="flex-1 bg-steel relative group flex items-end">
+            <div class="w-full bg-cyan h-[23.1%]"></div>
+            <span class="absolute -top-6 text-xs font-mono text-cyan w-full text-center">-76.9%</span>
+          </div>
+        </div>
+        <p class="font-mono text-[10px] text-mist mt-4 text-center">
+          Dynamic compute provisioning via custom resource manager vs. always-on instances.
+        </p>
+      </section>
+
+      <!-- Architecture Specs -->
+      <section class="glass p-6 rounded-lg md:col-span-2">
+        <h2 class="text-xl font-bold text-ice mb-4">Architectural Specs</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full font-mono text-xs text-left">
+            <thead>
+              <tr class="text-mist border-b border-steel">
+                <th class="pb-2">Architecture</th>
+                <th class="pb-2">Primary Use Case</th>
+                <th class="pb-2">Limitation</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-steel">
+              <tr>
+                <td class="py-3 text-cyan">CPU</td>
+                <td class="py-3 text-mist">Traditional ML, Data Ingestion, Orchestration</td>
+                <td class="py-3 text-mist">Poor parallel processing, memory bandwidth limit</td>
+              </tr>
+              <tr>
+                <td class="py-3 text-cyan">GPU</td>
+                <td class="py-3 text-mist">DL Training from scratch, Batch Inference</td>
+                <td class="py-3 text-mist">High power (250W-700W), memory bottlenecks</td>
+              </tr>
+              <tr>
+                <td class="py-3 text-cyan">TPU</td>
+                <td class="py-3 text-mist">Foundation Models (JAX/TF)</td>
+                <td class="py-3 text-mist">Framework lock-in, poor sparse efficiency</td>
+              </tr>
+              <tr>
+                <td class="py-3 text-cyan">NPU</td>
+                <td class="py-3 text-mist">Mobile/Edge real-time inference</td>
+                <td class="py-3 text-mist">Lower peak throughput, requires quantization</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </body>
+</html>

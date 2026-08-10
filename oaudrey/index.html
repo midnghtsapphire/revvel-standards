@@ -488,6 +488,15 @@
           >
             + More Soon
           </button>
+          <button
+            role="tab"
+            id="tab-hardware"
+            aria-controls="panel-hardware"
+            aria-selected="false"
+            class="px-4 py-2 border hairline font-mono text-[11px] uppercase tracking-widest hover:text-ice"
+          >
+            Hardware Selection
+          </button>
         </div>
 
         <!-- FieldWork panel -->
@@ -1057,6 +1066,33 @@
             subdomain and a tab in this hub.
           </p>
         </div>
+        <!-- Hardware Selection panel -->
+        <div
+          role="tabpanel"
+          id="panel-hardware"
+          aria-labelledby="tab-hardware"
+          hidden
+          class="grid grid-cols-1 lg:grid-cols-12 gap-10"
+        >
+          <div class="lg:col-span-7 glass p-8 md:p-10">
+            <h3 class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]">
+              AI Hardware Selection Framework
+            </h3>
+            <p class="mt-6 text-mist leading-relaxed">
+              A formal auditing and cost-benefit analysis dashboard for specific model training and inference pipelines.
+              Evaluates CPU, GPU, TPU, and NPU architectures for cost-efficient self-managed MLOps.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a
+                href="hardware-dashboard.html"
+                class="inline-flex items-center bg-gradient-to-r from-iris to-cyan px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-widest text-void hover:opacity-90"
+              >
+                Open Dashboard →
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
