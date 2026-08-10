@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>oAudrey — Hardware Selection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<header class="p-6 border-b border-slate-800">
+  <h1 class="text-2xl font-bold">Hardware Selection Dashboard</h1>
+  <p class="text-slate-400 text-sm">JIT compute tier selector — PRIME DIRECTIVE: $10k/mo → $10M / 3yr</p>
+</header>
+<main class="p-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+  <section class="rounded-2xl bg-slate-900 p-5 border border-slate-800">
+    <h2 class="font-semibold">CPU (default)</h2>
+    <p class="text-emerald-400 text-3xl font-bold mt-2">$0.00/hr</p>
+    <p class="text-slate-400 text-sm mt-1">≤ 4k tokens, no vision</p>
+  </section>
+  <section class="rounded-2xl bg-slate-900 p-5 border border-slate-800">
+    <h2 class="font-semibold">T4 spot</h2>
+    <p class="text-amber-300 text-3xl font-bold mt-2">$0.20/hr</p>
+    <p class="text-slate-400 text-sm mt-1">4k–32k tokens, batch</p>
+  </section>
+  <section class="rounded-2xl bg-slate-900 p-5 border border-slate-800">
+    <h2 class="font-semibold">A10</h2>
+    <p class="text-amber-500 text-3xl font-bold mt-2">$0.60/hr</p>
+    <p class="text-slate-400 text-sm mt-1">Long-context inference</p>
+  </section>
+  <section class="rounded-2xl bg-slate-900 p-5 border border-slate-800">
+    <h2 class="font-semibold">A100</h2>
+    <p class="text-rose-400 text-3xl font-bold mt-2">$1.90/hr</p>
+    <p class="text-slate-400 text-sm mt-1">Fine-tune / >32k ctx</p>
+  </section>
+</main>
+<section class="p-6">
+  <div class="rounded-2xl bg-slate-900 p-5 border border-slate-800">
+    <h2 class="font-semibold mb-3">Selector</h2>
+    <form id="f" class="grid gap-3 md:grid-cols-3">
+      <label class="flex flex-col">
+        <span class="text-sm text-slate-400">Prompt tokens</span>
+        <input id="tokens" type="number" value="1024" min="1"
+          class="mt-1 rounded-lg bg-slate-800 border border-slate-700 p-2" />
+      </label>
+      <label class="flex items-center gap-2 mt-6">
+        <input id="ft" type="checkbox" class="h-4 w-4" />
+        <span class="text-sm">Needs fine-tune</span>
+      </label>
+      <label class="flex items-center gap-2 mt-6">
+        <input id="paid" type="checkbox" class="h-4 w-4" />
+        <span class="text-sm">ALLOW_PAID</span>
+      </label>
+    </form>
+    <pre id="out" class="mt-4 text-sm bg-black/40 p-3 rounded-lg overflow-auto"></pre>
+  </div>
+</section>
+<script>
+function pick(tokens, ft, paid) {
+  if (!paid) return { hardware: 'cpu', provider: 'local', cost: 0.0 };
+  if (ft || tokens > 32000) return { hardware: 'a100', provider: 'runpod', cost: 1.9 };
+  if (tokens > 4000) return { hardware: 't4', provider: 'runpod', cost: 0.2 };
+  return { hardware: 'cpu', provider: 'local', cost: 0.0 };
+}
+function render() {
+  const t = parseInt(document.getElementById('tokens').value || '0', 10);
+  const ft = document.getElementById('ft').checked;
+  const paid = document.getElementById('paid').checked;
+  document.getElementById('out').textContent = JSON.stringify(pick(t, ft, paid), null, 2);
+}
+document.getElementById('f').addEventListener('input', render);
+render();
+</script>
+</body>
+</html>
