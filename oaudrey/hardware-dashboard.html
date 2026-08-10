@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hardware Selection Dashboard — oAudrey</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="border-b border-slate-800 px-6 py-4">
+    <h1 class="text-2xl font-bold">🖥️ Hardware Selection Dashboard</h1>
+    <p class="text-slate-400 text-sm">AI Architecture Framework · JIT Compute Provisioning</p>
+  </header>
+
+  <main class="p-6 max-w-6xl mx-auto space-y-6">
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-slate-900 rounded-lg p-4 border border-slate-800">
+        <div class="text-slate-400 text-sm">Recommended Tier</div>
+        <div id="tier" class="text-2xl font-semibold mt-1">—</div>
+      </div>
+      <div class="bg-slate-900 rounded-lg p-4 border border-slate-800">
+        <div class="text-slate-400 text-sm">Est. Cost / 1M req</div>
+        <div id="cost" class="text-2xl font-semibold mt-1">—</div>
+      </div>
+      <div class="bg-slate-900 rounded-lg p-4 border border-slate-800">
+        <div class="text-slate-400 text-sm">Latency (p50)</div>
+        <div id="latency" class="text-2xl font-semibold mt-1">—</div>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 rounded-lg p-6 border border-slate-800">
+      <h2 class="text-lg font-semibold mb-4">Workload Profile</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label class="block">
+          <span class="text-sm text-slate-400">Model Size (B params)</span>
+          <input id="params" type="number" value="7" min="0.1" step="0.1"
+            class="mt-1 w-full bg-slate-800 border border-slate-700 rounded px-3 py-2" />
+        </label>
+        <label class="block">
+          <span class="text-sm text-slate-400">Requests / day</span>
+          <input id="rpd" type="number" value="10000" min="1"
+            class="mt-1 w-full bg-slate-800 border border-slate-700 rounded px-3 py-2" />
+        </label>
+        <label class="block">
+          <span class="text-sm text-slate-400">Latency Target (ms)</span>
+          <input id="latencyTarget" type="number" value="500" min="10"
+            class="mt-1 w-full bg-slate-800 border border-slate-700 rounded px-3 py-2" />
+        </label>
+        <label class="block">
+          <span class="text-sm text-slate-400">Quantization</span>
+          <select id="quant" class="mt-1 w-full bg-slate-800 border border-slate-700 rounded px-3 py-2">
+            <option value="fp16">FP16</option>
+            <option value="int8">INT8</option>
+            <option value="int4">INT4</option>
+          </select>
+        </label>
+      </div>
+      <button id="eval" class="mt-4 bg-emerald-600 hover:bg-emerald-500 px-4 py-2 rounded font-semibold">
+        Evaluate
+      </button>
+    </section>
+
+    <section class="bg-slate-900 rounded-lg p-6 border border-slate-800">
+      <h2 class="text-lg font-semibold mb-4">Hardware Options</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead class="text-slate-400 border-b border-slate-800">
+            <tr>
+              <th class="text-left py-2">GPU</th>
+              <th class="text-left">VRAM</th>
+              <th class="text-left">$/hr (spot)</th>
+              <th class="text-left">Best For</th>
+            </tr>
+          </thead>
+          <tbody id="gpuTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+<script>
+const GPUS = [
+  { name: "NVIDIA T4",   vram: 16,  cost: 0.20, bestFor: "Small models, batch inference" },
+  { name: "NVIDIA A10",  vram: 24,  cost: 0.60, bestFor: "7B-13B FP16 inference" },
+  { name: "NVIDIA A100", vram: 80,  cost: 1.10, bestFor: "70B FP16, fine-tuning" },
+  { name: "NVIDIA H100", vram: 80,  cost: 2.50, bestFor: "Large models, ultra-low latency" },
+];
+
+function render() {
+  const tbody = document.getElementById("gpuTable");
+  tbody.innerHTML = GPUS.map(g => `
+    <tr class="border-b border-slate-800">
+      <td class="py-2 font-medium">${g.name}</td>
+      <td>${g.vram} GB</td>
+      <td>$${g.cost.toFixed(2)}</td>
+      <td class="text-slate-400">${g.bestFor}</td>
+    </tr>`).join("");
+}
+
+function evaluate() {
+  const params = parseFloat(document.getElementById("params").value);
+  const rpd = parseFloat(document.getElementById("rpd").value);
+  const latencyTarget = parseFloat(document.getElementById("latencyTarget").value);
+  const quant = document.getElementById("quant").value;
+
+  const bytesPerParam = { fp16: 2, int8: 1, int4: 0.5 }[quant];
+  const vramNeeded = params * bytesPerParam * 1.3; // overhead
+
+  const candidate = GPUS.find(g => g.vram >= vramNeeded) || GPUS[GPUS.length - 1];
+  const requestsPerHour = 3600 / (latencyTarget / 1000);
+  const hoursFor1M = 1_000_000 / requestsPerHour;
+  const costPer1M = hoursFor1M * candidate.cost;
+
+  document.getElementById("tier").textContent = candidate.name;
+  document.getElementById("cost").textContent = `$${costPer1M.toFixed(2)}`;
+  document.getElementById("latency").textContent = `${Math.round(latencyTarget * 0.6)} ms`;
+}
+
+document.getElementById("eval").addEventListener("click", evaluate);
+render();
+evaluate();
+</script>
+</body>
+</html>
