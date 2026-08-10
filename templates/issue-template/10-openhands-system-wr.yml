@@ -207,30 +207,3 @@ body:
         If there is a new 2025–2026 API, agent framework, or MCP pattern that materially improves this, surface it.
     validations:
       required: false
-
-  - type: markdown
-    attributes:
-      value: |
-        ---
-        ### After implementation — PR and continuation
-
-        Permanent for **every** WR type (including this quick/internal form): when the
-        work is implemented, the run must not stop at the issue.
-
-        - **Open one PR** that contains the full required bundle (not a partial patch).
-        - **Continue the loop:** reset the routing labels (remove `wr:code`) and let the
-          PR lifecycle / review / merge workflows carry it forward automatically.
-        - **If it stalls,** add `wr:reset` to force a fresh WR PR/artifact pass
-          (`wr-pr-creation.yml`) instead of leaving the issue parked.
-
-  - type: checkboxes
-    id: acknowledgements
-    attributes:
-      label: Acknowledgements
-      description: Confirm the intended operating behavior. Permanent for every WR type.
-      options:
-        - label: This WR defines a bundled outcome, not just a minimum acceptable patch.
-        - label: Explicitly requested secondary items should not be silently deferred.
-        - label: If the PR is partial, the blocker must be documented.
-        - label: The PR should reflect the WR's required bundle and definition of done.
-        - label: After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.

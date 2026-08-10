@@ -13,40 +13,6 @@ This file is only the guest contract.
 
 ---
 
-## 0. First command — bootstrap your sandbox
-
-**Run this once, before your first write:**
-
-```bash
-bash scripts/sandbox-bootstrap.sh <your-agent-name>
-```
-
-Pick a stable lowercase-hyphenated identifier — `openhands`, `cursor`, `jules`,
-`copilot-swe-agent`, `devin`, `roo`, `kilo`, etc. — and stick with it across
-every session.
-
-That one command creates `.sandbox/<your-name>/` with the full canonical folder
-tree (`sessions/ memory/ thoughts/ scripts/ api-calls/ cli/ mcp/ tools/`
-`skills/ artifacts/`), writes a starter `AGENT.md`, and opens today's session
-log. It's idempotent — safe to re-run — and never overwrites existing files.
-
-**Why this is step zero, not step ten:** blackouts (credit exhaustion,
-timeouts, tab crashes) are the norm here. Data not saved to `.sandbox/`
-**before** the blackout is lost. Bootstrap first, work second — that ordering
-is the whole point.
-
-If you skip this step, a workflow ([`.github/workflows/sandbox-guardrail.yml`](.github/workflows/sandbox-guardrail.yml))
-will politely nudge you on the PR you open. It doesn't block — but the
-onboarding cost is one second, so please just do it.
-
-The three mandatory standards to read after bootstrapping:
-
-1. [`standards/VISITING_AGENT_SANDBOX_STANDARD.md`](./standards/VISITING_AGENT_SANDBOX_STANDARD.md) — sandbox usage rules
-2. [`standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md`](./standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md) — "not my bug" without a filed WR is banned
-3. [`standards/TRIAGE_ROLE_STANDARD.md`](./standards/TRIAGE_ROLE_STANDARD.md) — override authority every agent has to file that WR
-
----
-
 ## 1. The Prime Directive
 
 **Ship working code, not plans.** No TODO stubs, no "this would do X" placeholders,

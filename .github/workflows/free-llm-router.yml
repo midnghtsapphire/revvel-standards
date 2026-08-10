@@ -9,11 +9,6 @@ on:
         type: string
   workflow_call:
 
-# Least privilege: checkout-free routing job only needs contents read for
-# workflow_call consumers that may check out; no GitHub write APIs are used.
-permissions:
-  contents: read
-
 jobs:
   route:
     name: Route LLM Call

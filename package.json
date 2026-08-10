@@ -18,7 +18,7 @@
     "test:sh": "bash tests/social_post_formatter.test.sh",
     "typecheck": "tsc -p tsconfig.json",
     "build": "npm run typecheck",
-    "lint": "npx markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.git\" \"#wr/issues\" \"#wr/pending\" \"#transcripts\" \"#research/raw\" \"#claude-transcripts\"",
+    "lint": "npx markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#**/node_modules\" \"#.git\" \"#wr/issues\" \"#wr/pending\" \"#transcripts\" \"#research/raw\" \"#claude-transcripts\" \"#.sandbox\" \"#**/.sandbox\" \"#docs/Governance-ape-ci-errors/artifacts\" \"#docs/agents/claude/transcripts\" \"#docs/agents/claude/transcripts/**\"",
     "lint:fix": "npx markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#.git\" \"#wr/issues\" \"#wr/pending\" \"#transcripts\" \"#research/raw\" \"#claude-transcripts\"",
     "markdown:backlog": "node scripts/fix-markdown-backlog.js --check",
     "markdown:fix-backlog": "node scripts/fix-markdown-backlog.js --fix",

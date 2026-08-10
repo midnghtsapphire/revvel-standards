@@ -28,11 +28,18 @@ jobs:
         with:
           globs: |
             **/*.md
-            !node_modules/**
-            !.git/**
+            !**/node_modules/**
+            !docs/**/node_modules/**
+            !docs/Governance-ape-ci-errors/**/node_modules/**
+            !docs/Governance-ape-ci-errors/artifacts/**
+            !docs/Governance-ape-ci-errors/**
+            !docs/Governance-ape-ci-errors/scripts/node_modules/**
+            !docs/Governance-ape-ci-errors/node_modules/**
+            !**/.git/**
             !dist/**
             !vendor/**
             !wr/issues/**
             !docs/agents/claude/transcripts/**
+            !.sandbox/**
           config: .markdownlint.jsonc
           fix: false

@@ -31,10 +31,6 @@ on:
 permissions:
   contents: write       # needed by "git push" in the commit step
   pull-requests: write
-  # issues: write is required for `gh issue edit --add-label` on the PR number
-  # (PRs are issues in the REST API). Without it the Jules hand-off label is a
-  # silent no-op every time leftovers remain after auto-resolve.
-  issues: write
   actions: write         # needed by "gh workflow run" to dispatch Jules
 
 concurrency:

@@ -46,23 +46,11 @@ const CHECKS = {
 /**
  * LABEL-RACE-001
  * Find github.rest.issues.removeLabel calls that are NOT followed by a
- * .catch within the next 15 lines. Accepts:
+ * .catch within the next 5 lines. Accepts:
  *   - .catch(err => { if (err.status !== 404) throw err; })  (preferred)
  *   - .catch(() => {})  (silent swallow — acceptable but not ideal)
- *   - .then(...).catch(...)  (log-on-success + 404-swallow pattern)
  *   - a wrapper function named removeLabelSafe (veins-monitor pattern)
- *
- * The window was widened from 5 → 15 lines after PR #17147 (2026-08-10):
- * Copilot correctly changed a bare removeLabel to
- *   removeLabel({ ...multiline args... }).then(() => log).catch(err => ...)
- * The multi-line call body + .then handler pushed the .catch past the old
- * 5-line window, so the detector kept flagging code that was actually fixed.
- * 15 lines comfortably covers a well-formed args object + one .then/.catch
- * pair. A .catch farther away than that is almost certainly on a different
- * statement and should be flagged.
  */
-const LABEL_RACE_LOOKAHEAD_LINES = 15;
-
 function scanBareRemoveLabel(repoRoot) {
   const findings = [];
   const workflowDir = path.join(repoRoot, '.github', 'workflows');
@@ -85,8 +73,8 @@ function scanBareRemoveLabel(repoRoot) {
       const fileContent = lines.join('\n');
       if (/function\s+removeLabelSafe\b/.test(fileContent)) continue;
 
-      // Look ahead up to LABEL_RACE_LOOKAHEAD_LINES lines for a .catch
-      const windowEnd = Math.min(i + 1 + LABEL_RACE_LOOKAHEAD_LINES, lines.length);
+      // Look ahead up to 5 lines for a .catch
+      const windowEnd = Math.min(i + 6, lines.length);
       const window = lines.slice(i, windowEnd).join('\n');
       if (/\.catch/.test(window)) continue;
 
@@ -191,12 +179,6 @@ function scanGithubScriptColumn0(repoRoot) {
 
       // An empty line doesn't end the block
       if (line.trim() === '') continue;
-
-      // YAML comments (lines whose first non-whitespace character is #) are
-      // structurally neutral in block scalars — they do NOT terminate the
-      // block, regardless of indentation. Skip them so we don't emit a false
-      // positive for col-0 YAML comments that appear after a script: | body.
-      if (line.trimStart().startsWith('#')) continue;
 
       const indent = line.search(/\S/);
 
