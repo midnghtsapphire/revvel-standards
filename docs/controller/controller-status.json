@@ -1,37 +1,49 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-08-10T09:52:56.008Z",
+  "generated_at": "2026-08-10T10:34:44.569Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 4,
+    "running": 5,
     "cap": 20,
     "over_capacity": false
   },
   "counts": {
-    "total": 11,
-    "running": 4,
+    "total": 12,
+    "running": 5,
     "queued": 7,
     "done": 0,
     "healthy": 1,
-    "stalled": 0,
+    "stalled": 1,
     "runaway": 3,
     "protected": 1,
-    "occupancy": 4,
+    "occupancy": 5,
     "occupancyCap": 20,
     "overCapacity": false
   },
   "orchestrators": [
     {
-      "id": 31376623487,
+      "id": 31379727030,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31376623487",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31379727030",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 17008,
-      "since_update_ms": 14008,
+      "age_ms": 11569,
+      "since_update_ms": 8569,
       "reason": "running within budget",
       "protected": true
+    },
+    {
+      "id": 31378015808,
+      "name": "github_actions in / for apisec-inc/apisec-run-scan, aaronsteers/devin-action, eco-infra/ecoinfra-action, sanjay3290/jules-pr-reviewer, neondatabase/create-branch-action, docker/login-action, github/codeql-action/upload-sarif - Update #1517198486",
+      "path": "dynamic/dependabot/dependabot-updates",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31378015808",
+      "status": "in_progress",
+      "health": "stalled",
+      "age_ms": 1419569,
+      "since_update_ms": 1408569,
+      "reason": "no progress for 23m ≥ 15m",
+      "protected": false
     },
     {
       "id": 29262820826,
@@ -40,9 +52,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29262820826",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 2398688008,
-      "since_update_ms": 2398419008,
-      "reason": "running 39978m ≥ 60m budget",
+      "age_ms": 2401196569,
+      "since_update_ms": 2400927569,
+      "reason": "running 40020m ≥ 60m budget",
       "protected": false
     },
     {
@@ -52,9 +64,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 2402926008,
-      "since_update_ms": 2402838008,
-      "reason": "running 40049m ≥ 60m budget",
+      "age_ms": 2405434569,
+      "since_update_ms": 2405346569,
+      "reason": "running 40091m ≥ 60m budget",
       "protected": false
     },
     {
@@ -64,9 +76,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 2407165008,
-      "since_update_ms": 2405911008,
-      "reason": "running 40119m ≥ 60m budget",
+      "age_ms": 2409673569,
+      "since_update_ms": 2408419569,
+      "reason": "running 40161m ≥ 60m budget",
       "protected": false
     },
     {
@@ -156,11 +168,27 @@
   ],
   "preemptions": [
     {
+      "id": 31378015808,
+      "name": "github_actions in / for apisec-inc/apisec-run-scan, aaronsteers/devin-action, eco-infra/ecoinfra-action, sanjay3290/jules-pr-reviewer, neondatabase/create-branch-action, docker/login-action, github/codeql-action/upload-sarif - Update #1517198486",
+      "path": "dynamic/dependabot/dependabot-updates",
+      "health": "stalled",
+      "reason": "no progress for 23m ≥ 15m",
+      "planned": "reassign",
+      "next_model": "anthropic/claude-opus-4.8",
+      "reassign_count": 1,
+      "tried_models": [
+        "anthropic/claude-opus-4.8"
+      ],
+      "cut": "cancelled",
+      "reassign_outcome": "reassign-failed: GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/workflows/dependabot-updates/dispatches -> 404 {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"404\"}",
+      "error": null
+    },
+    {
       "id": 29262820826,
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
-      "reason": "running 39978m ≥ 60m budget",
+      "reason": "running 40020m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -176,7 +204,7 @@
       "name": "No-Destroy Guard",
       "path": ".github/workflows/no-destroy-guard.yml",
       "health": "runaway",
-      "reason": "running 40049m ≥ 60m budget",
+      "reason": "running 40091m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -192,7 +220,7 @@
       "name": "Project Board Sync",
       "path": ".github/workflows/project-board-sync.yml",
       "health": "runaway",
-      "reason": "running 40119m ≥ 60m budget",
+      "reason": "running 40161m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
