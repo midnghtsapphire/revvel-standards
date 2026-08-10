@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-10T15:13:09.098Z",
+  "updated_at": "2026-08-10T16:09:48.217Z",
   "workflows": {
     "dynamic/dependabot/dependabot-updates": {
       "count": 2,
