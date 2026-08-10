@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>oAudrey · Hardware Selection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div class="max-w-6xl mx-auto p-6">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold">Hardware Selection Dashboard</h1>
+    <p class="text-slate-400 mt-1">JIT compute provisioning · CUDA-aware · Cost-optimized for $10k→$10M mission.</p>
+  </header>
+
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+      <div class="text-xs uppercase text-slate-500">Detected Device</div>
+      <div id="device" class="text-2xl font-bold mt-1">—</div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+      <div class="text-xs uppercase text-slate-500">Cost / hour</div>
+      <div id="cost" class="text-2xl font-bold mt-1">—</div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+      <div class="text-xs uppercase text-slate-500">Products This Run</div>
+      <div class="text-2xl font-bold mt-1">3</div>
+    </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+      <div class="text-xs uppercase text-slate-500">Revenue Target</div>
+      <div class="text-2xl font-bold mt-1">$10k/mo</div>
+    </div>
+  </section>
+
+  <section class="bg-slate-900 border border-slate-800 rounded-lg p-6 mb-8">
+    <h2 class="text-xl font-semibold mb-4">Hardware Matrix</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-sm">
+        <thead class="text-slate-400 border-b border-slate-800">
+          <tr><th class="py-2">Tier</th><th>Workload</th><th>Cost/hr</th><th>Best For</th></tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800">
+          <tr><td class="py-2">CPU</td><td>Inference (small)</td><td>$0.05</td><td>Chat, embeddings</td></tr>
+          <tr><td class="py-2">T4</td><td>Inference (mid)</td><td>$0.35</td><td>LLM 7B</td></tr>
+          <tr><td class="py-2">A10</td><td>Inference (large)</td><td>$0.60</td><td>LLM 13B</td></tr>
+          <tr><td class="py-2">A100</td><td>Training</td><td>$2.00</td><td>Fine-tune</td></tr>
+          <tr><td class="py-2">H100</td><td>Training (heavy)</td><td>$4.50</td><td>Foundation models</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="bg-slate-900 border border-slate-800 rounded-lg p-6">
+    <h2 class="text-xl font-semibold mb-4">Latest Product Pipeline</h2>
+    <ul id="pipeline" class="space-y-2 text-sm text-slate-300">
+      <li>· [TEST VERSION] AI Architecture Playbook → Stripe</li>
+      <li>· [TEST VERSION] OSINT Recon Toolkit → Gumroad</li>
+      <li>· [TEST VERSION] Polar.sh Launch Kit → Stripe</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+  // Static demo values; real dashboard fetches from reports/*.json
+  document.getElementById('device').textContent = 'CPU (fallback)';
+  document.getElementById('cost').textContent = '$0.05';
+</script>
+</body>
+</html>
