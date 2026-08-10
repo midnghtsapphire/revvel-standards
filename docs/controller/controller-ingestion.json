@@ -1,19 +1,5 @@
 {
   "schema": "fleet-controller-ingestion/v1",
-  "generated_at": "2026-08-10T14:41:48.838Z",
-  "needs_healing": [
-    {
-      "id": 31396941362,
-      "name": "github_actions in / for apisec-inc/apisec-run-scan, aaronsteers/devin-action, eco-infra/ecoinfra-action, sanjay3290/jules-pr-reviewer, neondatabase/create-branch-action, docker/login-action, github/codeql-action/upload-sarif - Update #1517723779",
-      "path": "dynamic/dependabot/dependabot-updates",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31396941362",
-      "health": "stalled",
-      "reassign_count": 2,
-      "tried_models": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
-      ],
-      "reason": "no progress for 29m ≥ 15m; 2 reassignment(s) exhausted — handing to self-healing"
-    }
-  ]
+  "generated_at": "2026-08-10T15:13:09.098Z",
+  "needs_healing": []
 }
