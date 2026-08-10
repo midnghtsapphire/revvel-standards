@@ -1091,8 +1091,9 @@ jobs:
                 repo: context.repo.repo,
                 issue_number: issueNumber,
                 name,
+              }).then(() => {
+                core.info(`Removed recovered WR label: ${name}`);
               }).catch(err => { if (err.status !== 404) throw err; });
-              core.info(`Removed recovered WR label: ${name}`);
             }
       - name: Handle workflow failure
         if: failure()
