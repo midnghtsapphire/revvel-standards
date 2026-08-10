@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>oAudrey — Hardware Selection</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="px-6 py-5 border-b border-slate-800 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold">Hardware Selection</h1>
+      <p class="text-slate-400 text-sm">JIT compute picker — cheapest tier that meets SLA.</p>
+    </div>
+    <a href="index.html" class="text-sm text-sky-400 hover:text-sky-300">← Back to hub</a>
+  </header>
+
+  <main class="px-6 py-8 max-w-6xl mx-auto space-y-8">
+    <section>
+      <h2 class="text-lg font-semibold mb-3">Workload → Hardware</h2>
+      <div class="overflow-x-auto rounded-lg border border-slate-800">
+        <table class="min-w-full text-sm">
+          <thead class="bg-slate-900 text-slate-300">
+            <tr>
+              <th class="text-left px-4 py-2">Workload</th>
+              <th class="text-left px-4 py-2">Preferred</th>
+              <th class="text-left px-4 py-2">Fallback</th>
+              <th class="text-left px-4 py-2">Est $/hr</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800">
+            <tr><td class="px-4 py-2">&lt;1B inference</td><td class="px-4 py-2">CPU (Modal/Fly)</td><td class="px-4 py-2">T4 spot</td><td class="px-4 py-2">$0.00–0.10</td></tr>
+            <tr><td class="px-4 py-2">1B–7B inference</td><td class="px-4 py-2">T4 / L4 spot</td><td class="px-4 py-2">A10G</td><td class="px-4 py-2">$0.20–0.60</td></tr>
+            <tr><td class="px-4 py-2">7B–13B LoRA</td><td class="px-4 py-2">A10G / L40S spot</td><td class="px-4 py-2">A100 40GB</td><td class="px-4 py-2">$0.80–1.50</td></tr>
+            <tr><td class="px-4 py-2">&gt;13B fine-tune</td><td class="px-4 py-2">A100 80GB / H100 spot</td><td class="px-4 py-2">Multi-A100</td><td class="px-4 py-2">$1.80–3.50</td></tr>
+            <tr><td class="px-4 py-2">Embeddings / RAG</td><td class="px-4 py-2">CPU + pgvector</td><td class="px-4 py-2">T4 spot</td><td class="px-4 py-2">$0.00–0.15</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="grid gap-4 md:grid-cols-3">
+      <div class="rounded-lg border border-slate-800 p-4">
+        <div class="text-slate-400 text-xs uppercase">Guardrail</div>
+        <div class="text-lg font-semibold mt-1">Max $2/hr</div>
+        <p class="text-slate-400 text-sm mt-2">Anything above requires written ROI justification.</p>
+      </div>
+      <div class="rounded-lg border border-slate-800 p-4">
+        <div class="text-slate-400 text-xs uppercase">Idle policy</div>
+        <div class="text-lg font-semibold mt-1">Kill @ 5m idle</div>
+        <p class="text-slate-400 text-sm mt-2">Enable checkpointing on spot instances.</p>
+      </div>
+      <div class="rounded-lg border border-slate-800 p-4">
+        <div class="text-slate-400 text-xs uppercase">Prime directive</div>
+        <div class="text-lg font-semibold mt-1">$10k → $10M</div>
+        <p class="text-slate-400 text-sm mt-2">Every lease must move revenue forward.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="text-lg font-semibold mb-3">Live lease (mock)</h2>
+      <pre id="lease" class="bg-slate-900 border border-slate-800 rounded-lg p-4 text-xs overflow-x-auto">{
+  "device": "cpu",
+  "name": "mock-cpu",
+  "memory_mb": 2048,
+  "provider": "local",
+  "est_cost_per_hour_usd": 0.0,
+  "mock": true
+}</pre>
+      <p class="text-slate-500 text-xs mt-2">Populated by <code>cuda_mlops_wrapper.py</code> in CI.</p>
+    </section>
+  </main>
+</body>
+</html>
