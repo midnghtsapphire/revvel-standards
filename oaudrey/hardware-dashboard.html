@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>oAudrey — Hardware Selection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen">
+    <header class="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-semibold">Hardware Selection</h1>
+      <a href="./index.html" class="text-sm text-sky-400 hover:text-sky-300">← Back to hub</a>
+    </header>
+
+    <main class="p-6 max-w-6xl mx-auto space-y-8">
+      <section>
+        <h2 class="text-lg font-semibold mb-3">Choose a workload</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button data-params="3"   class="tier-btn rounded-lg bg-slate-900 border border-slate-800 p-4 text-left hover:border-sky-500">
+            <div class="text-sm text-slate-400">Small</div>
+            <div class="text-lg font-semibold">&lt; 7B</div>
+            <div class="text-xs text-slate-500">Embeddings, chat</div>
+          </button>
+          <button data-params="13"  class="tier-btn rounded-lg bg-slate-900 border border-slate-800 p-4 text-left hover:border-sky-500">
+            <div class="text-sm text-slate-400">Medium</div>
+            <div class="text-lg font-semibold">7B – 34B</div>
+            <div class="text-xs text-slate-500">RAG, agents</div>
+          </button>
+          <button data-params="70"  class="tier-btn rounded-lg bg-slate-900 border border-slate-800 p-4 text-left hover:border-sky-500">
+            <div class="text-sm text-slate-400">Large</div>
+            <div class="text-lg font-semibold">70B</div>
+            <div class="text-xs text-slate-500">Batch inference</div>
+          </button>
+          <button data-params="120" class="tier-btn rounded-lg bg-slate-900 border border-slate-800 p-4 text-left hover:border-sky-500">
+            <div class="text-sm text-slate-400">XL</div>
+            <div class="text-lg font-semibold">100B+</div>
+            <div class="text-xs text-slate-500">Training</div>
+          </button>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold mb-3">Recommendation</h2>
+        <div id="rec" class="rounded-lg bg-slate-900 border border-slate-800 p-6">
+          <p class="text-slate-400">Select a workload above.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold mb-3">Tier reference</h2>
+        <div class="overflow-x-auto rounded-lg border border-slate-800">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-900 text-slate-400">
+              <tr>
+                <th class="text-left px-4 py-2">Tier</th>
+                <th class="text-left px-4 py-2">USD / hr</th>
+                <th class="text-left px-4 py-2">Best for</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800">
+              <tr><td class="px-4 py-2">CPU</td>  <td>$0.05</td><td>Embeddings, tiny models</td></tr>
+              <tr><td class="px-4 py-2">T4</td>   <td>$0.35</td><td>&lt; 7B inference</td></tr>
+              <tr><td class="px-4 py-2">A10</td>  <td>$1.00</td><td>7B – 34B inference</td></tr>
+              <tr><td class="px-4 py-2">A100</td> <td>$3.20</td><td>34B – 70B</td></tr>
+              <tr><td class="px-4 py-2">H100</td> <td>$8.00</td><td>70B+ / training</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const PRICING = { CPU: 0.05, T4: 0.35, A10: 1.00, A100: 3.20, H100: 8.00 };
+      function pickTier(b) {
+        if (b < 7) return 'T4';
+        if (b < 34) return 'A10';
+        if (b < 70) return 'A100';
+        return 'H100';
+      }
+      document.querySelectorAll('.tier-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const b = parseFloat(btn.dataset.params);
+          const tier = pickTier(b);
+          const price = PRICING[tier];
+          document.getElementById('rec').innerHTML = `
+            <div class="flex flex-wrap items-baseline gap-4">
+              <div class="text-3xl font-bold text-sky-400">${tier}</div>
+              <div class="text-slate-300">$${price.toFixed(2)} / hr</div>
+              <div class="text-slate-500 text-sm">for a ${b}B parameter workload</div>
+            </div>
+            <p class="text-slate-400 mt-3 text-sm">JIT provision only. Set a budget ceiling before running.</p>
+          `;
+        });
+      });
+    </script>
+  </body>
+</html>
