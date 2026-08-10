@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hardware Selection Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen">
+<div class="max-w-6xl mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-2">🖥️ Hardware Selection Dashboard</h1>
+  <p class="text-gray-400 mb-6">JIT compute provisioning · cost-aware selection</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+      <div class="text-sm text-gray-400">Provisioned</div>
+      <div class="text-2xl font-bold text-green-400" id="stat-provisioned">0</div>
+    </div>
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+      <div class="text-sm text-gray-400">Est. $/month</div>
+      <div class="text-2xl font-bold text-yellow-400" id="stat-cost">$0</div>
+    </div>
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+      <div class="text-sm text-gray-400">Fallback</div>
+      <div class="text-2xl font-bold text-blue-400">CPU ready</div>
+    </div>
+  </div>
+
+  <h2 class="text-xl font-semibold mb-3">Available Hardware</h2>
+  <div class="overflow-x-auto">
+    <table class="w-full bg-gray-800 rounded-lg overflow-hidden">
+      <thead class="bg-gray-700">
+        <tr>
+          <th class="px-4 py-2 text-left">Type</th>
+          <th class="px-4 py-2 text-left">Name</th>
+          <th class="px-4 py-2 text-right">Memory</th>
+          <th class="px-4 py-2 text-right">$/hr</th>
+          <th class="px-4 py-2">Action</th>
+        </tr>
+      </thead>
+      <tbody id="hw-body">
+        <tr><td class="px-4 py-3">CUDA</td><td>NVIDIA T4</td><td class="text-right">16 GB</td><td class="text-right">$0.35</td><td class="text-center"><button class="bg-green-600 hover:bg-green-500 px-3 py-1 rounded" onclick="provision('T4',0.35)">Provision</button></td></tr>
+        <tr class="bg-gray-750"><td class="px-4 py-3">CUDA</td><td>NVIDIA L4</td><td class="text-right">24 GB</td><td class="text-right">$1.00</td><td class="text-center"><button class="bg-green-600 hover:bg-green-500 px-3 py-1 rounded" onclick="provision('L4',1.00)">Provision</button></td></tr>
+        <tr><td class="px-4 py-3">CUDA</td><td>NVIDIA A100</td><td class="text-right">40 GB</td><td class="text-right">$3.50</td><td class="text-center"><button class="bg-green-600 hover:bg-green-500 px-3 py-1 rounded" onclick="provision('A100',3.50)">Provision</button></td></tr>
+        <tr><td class="px-4 py-3">CPU</td><td>Host CPU</td><td class="text-right">—</td><td class="text-right">$0.05</td><td class="text-center"><button class="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded" onclick="provision('CPU',0.05)">Provision</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-6 text-sm text-gray-500">
+    Part of the <a class="text-blue-400" href="index.html">oAudrey</a> ecosystem · AI Architecture Framework
+  </div>
+</div>
+<script>
+let provisioned = 0, cost = 0;
+function provision(name, rate){
+  provisioned++;
+  cost += rate * 4 * 30; // 4hr/day
+  document.getElementById('stat-provisioned').textContent = provisioned;
+  document.getElementById('stat-cost').textContent = '$' + cost.toFixed(2);
+}
+</script>
+</body>
+</html>
