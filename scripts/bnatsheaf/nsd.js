@@ -24,14 +24,25 @@ const { CellularSheaf } = require('./sheaf');
  * Returns the learned weight (≈ xv/xu when xu ≠ 0).
  */
 function learnScalarRestriction(xu, xv, { lr = 0.05, steps = 200 } = {}) {
-  if (typeof xu !== 'number' || typeof xv !== 'number') {
-    throw new TypeError('learnScalarRestriction expects numeric stalks');
+  if (!Number.isFinite(xu) || !Number.isFinite(xv)) {
+    throw new TypeError('learnScalarRestriction expects finite numeric stalks');
+  }
+  if (!Number.isFinite(lr) || lr <= 0 || lr >= 1) {
+    throw new RangeError('lr must be a finite number between 0 and 1');
+  }
+  if (!Number.isInteger(steps) || steps < 0) {
+    throw new RangeError('steps must be a non-negative integer');
+  }
+  if (xu === 0) {
+    if (xv === 0) return 1;
+    throw new RangeError('no scalar restriction can map a zero stalk to a non-zero stalk');
   }
   let w = 1;
+  const scale = xu * xu;
   for (let i = 0; i < steps; i++) {
     const residual = w * xu - xv;
     const grad = 2 * residual * xu;
-    w -= lr * grad;
+    w -= (lr * grad) / scale;
   }
   return w;
 }
