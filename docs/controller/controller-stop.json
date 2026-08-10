@@ -1,26 +1,21 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-08-10T23:34:28.348Z",
+  "generated_at": "2026-08-10T23:50:56.795Z",
   "stop": [
-    {
-      "id": 31441675015,
-      "name": "github_actions in / for apisec-inc/apisec-run-scan, aaronsteers/devin-action, eco-infra/ecoinfra-action, sanjay3290/jules-pr-reviewer, neondatabase/create-branch-action, docker/login-action, github/codeql-action/upload-sarif - Update #1518679933",
-      "reason": "no progress for 18m ≥ 15m"
-    },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 40800m ≥ 60m budget"
+      "reason": "running 40816m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 40870m ≥ 60m budget"
+      "reason": "running 40887m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 40941m ≥ 60m budget"
+      "reason": "running 40957m ≥ 60m budget"
     }
   ]
 }
