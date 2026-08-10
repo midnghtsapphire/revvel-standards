@@ -1,31 +1,24 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-10T01:32:18.991Z",
+  "generated_at": "2026-08-10T15:22:09.033Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 31344544066,
-            "name": "Prioritize Starred Repositories",
-            "path": ".github/workflows/prioritize-stars.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31344544066",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31344193061,
-            "name": "App Artifact Audit",
-            "path": ".github/workflows/app-artifact-audit.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31344193061",
+            "id": 31402443314,
+            "name": "pr-governance-checks",
+            "path": ".github/workflows/pr-governance-checks.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31402443314",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +44,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31346778616"
+        "last_run": null
       }
     },
     "sheaf": {
