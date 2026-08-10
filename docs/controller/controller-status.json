@@ -1,6 +1,6 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-08-10T16:09:48.217Z",
+  "generated_at": "2026-08-10T19:55:15.394Z",
   "preempt_enabled": true,
   "occupancy": {
     "running": 4,
@@ -8,9 +8,9 @@
     "over_capacity": false
   },
   "counts": {
-    "total": 13,
+    "total": 11,
     "running": 4,
-    "queued": 9,
+    "queued": 7,
     "done": 0,
     "healthy": 1,
     "stalled": 0,
@@ -22,14 +22,14 @@
   },
   "orchestrators": [
     {
-      "id": 31407455336,
+      "id": 31426454900,
       "name": "Fleet Controller",
       "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31407455336",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31426454900",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 23217,
-      "since_update_ms": 13217,
+      "age_ms": 11394,
+      "since_update_ms": 7394,
       "reason": "running within budget",
       "protected": true
     },
@@ -40,9 +40,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29262820826",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 2421300217,
-      "since_update_ms": 2421031217,
-      "reason": "running 40355m ≥ 60m budget",
+      "age_ms": 2434827394,
+      "since_update_ms": 2434558394,
+      "reason": "running 40580m ≥ 60m budget",
       "protected": false
     },
     {
@@ -52,9 +52,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 2425538217,
-      "since_update_ms": 2425450217,
-      "reason": "running 40426m ≥ 60m budget",
+      "age_ms": 2439065394,
+      "since_update_ms": 2438977394,
+      "reason": "running 40651m ≥ 60m budget",
       "protected": false
     },
     {
@@ -64,33 +64,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 2429777217,
-      "since_update_ms": 2428523217,
-      "reason": "running 40496m ≥ 60m budget",
-      "protected": false
-    },
-    {
-      "id": 31407487737,
-      "name": "Ready for Review Automation",
-      "path": ".github/workflows/ready-for-review.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31407487737",
-      "status": "queued",
-      "health": "queued",
-      "age_ms": null,
-      "since_update_ms": null,
-      "reason": "awaiting a runner (trigger)",
-      "protected": false
-    },
-    {
-      "id": 31407485683,
-      "name": "PR #17173",
-      "path": "dynamic/github-code-scanning/codeql",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31407485683",
-      "status": "queued",
-      "health": "queued",
-      "age_ms": null,
-      "since_update_ms": null,
-      "reason": "awaiting a runner (trigger)",
+      "age_ms": 2443304394,
+      "since_update_ms": 2442050394,
+      "reason": "running 40722m ≥ 60m budget",
       "protected": false
     },
     {
@@ -184,7 +160,7 @@
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
-      "reason": "running 40355m ≥ 60m budget",
+      "reason": "running 40580m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -200,7 +176,7 @@
       "name": "No-Destroy Guard",
       "path": ".github/workflows/no-destroy-guard.yml",
       "health": "runaway",
-      "reason": "running 40426m ≥ 60m budget",
+      "reason": "running 40651m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -216,7 +192,7 @@
       "name": "Project Board Sync",
       "path": ".github/workflows/project-board-sync.yml",
       "health": "runaway",
-      "reason": "running 40496m ≥ 60m budget",
+      "reason": "running 40722m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
