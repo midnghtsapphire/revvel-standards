@@ -1,19 +1,55 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-10T09:32:18.798Z",
+  "generated_at": "2026-08-10T10:29:24.698Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "5/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 31376389046,
+            "name": "Website green-o-meter",
+            "path": ".github/workflows/green-website.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31376389046",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31375105750,
+            "name": "label-allowlist",
+            "path": ".github/workflows/label-allowlist.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31375105750",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31375105727,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31375105727",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31375086197,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31375086197",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31375086146,
+            "name": "label-allowlist",
+            "path": ".github/workflows/label-allowlist.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31375086146",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
