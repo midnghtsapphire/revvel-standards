@@ -252,11 +252,18 @@ function checkLockfileSync(opts = {}) {
         .slice(0, 12)
         .join("\n") || combined.slice(0, 1500) || (e && e.message) || "npm ci --dry-run failed";
 
-    errors.push(
-      `package-lock.json is out of sync with package.json (npm ci --dry-run failed).\n` +
-        `Run \`npm install\` at the repo root and commit the updated lockfile.\n` +
-        `npm said:\n${snippet}`
-    );
+    if (/EUSAGE|can only install|Invalid:|Missing:/i.test(combined)) {
+      errors.push(
+        `package-lock.json is out of sync with package.json (npm ci --dry-run failed).\n` +
+          `Run \`npm install\` at the repo root and commit the updated lockfile.\n` +
+          `npm said:\n${snippet}`
+      );
+    } else {
+      errors.push(
+        `Unable to verify package-lock.json sync because npm ci --dry-run failed.\n` +
+          `npm said:\n${snippet}`
+      );
+    }
     return { ok: false, errors, output: combined };
   }
 }
