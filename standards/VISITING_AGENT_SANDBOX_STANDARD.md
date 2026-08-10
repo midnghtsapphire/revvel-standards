@@ -16,7 +16,7 @@ Data not persisted before the blackout is data lost.
 
 ## Folder layout (per agent)
 
-```
+```text
 .sandbox/
 ├── README.md
 └── <agent-name>/                 ← lowercase, hyphenated, stable
@@ -31,7 +31,7 @@ Data not persisted before the blackout is data lost.
     ├── tools/                    ← external tool binaries / configs
     ├── skills/                   ← draft skills before promotion
     └── artifacts/                ← generated PDFs, images, docs
-```
+```text
 
 ## Required — every visiting agent
 
