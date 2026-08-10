@@ -1,285 +1,283 @@
-name: Merge Conflict Helper
-
-# ── Tell the reviewer which side of a conflict came from where ──────────────
-# Origin: when a PR shows conflicts, GitHub's web merge UI offers
-# "Accept current change / incoming change / both" but never tells you
-# *which PR* introduced each side. For docs/registries that grow additively
-# (PROVENANCE_STANDARD.md table rows, ready-for-review.yml roster, etc.)
-# the answer is almost always "both" — but the user has to read both
-# hunks carefully to be sure.
-#
-# This workflow runs when a PR is opened/synchronized OR labeled with
-# `has-conflicts`. For every conflicted file it:
-#   1. Identifies the hunks where main and the PR head disagree.
-#   2. Runs `git blame` over each side to find the originating commit.
-#   3. Resolves each commit back to a PR (if any) and an author.
-#   4. Heuristically recommends a resolution:
-#        - additive-table (both sides add table rows) → KEEP BOTH
-#        - additive-list  (both sides add bullet items) → KEEP BOTH
-#        - same-line-different-value (versions bumped on both sides) → KEEP NEWER COMMIT
-#        - unknown        → MANUAL
-#   5. Posts a single sticky comment summarizing the analysis.
-#
-# It NEVER auto-resolves. It only annotates — the human still clicks.
-# Re-running on push updates the same comment in place.
-# ────────────────────────────────────────────────────────────────────────────
+name: Conflict Helper
 
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to process'
+        required: true
+        type: string
 
 permissions:
-  contents: write       # needed by "git push" in the commit step
+  contents: write
   pull-requests: write
-  # issues: write is required for `gh issue edit --add-label` on the PR number
-  # (PRs are issues in the REST API). Without it the Jules hand-off label is a
-  # silent no-op every time leftovers remain after auto-resolve.
   issues: write
-  actions: write         # needed by "gh workflow run" to dispatch Jules
-
-concurrency:
-  group: conflict-helper-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  actions: write
 
 jobs:
-  analyze:
-    name: Annotate conflicts with originating-PR notes
+  resolve:
+    # Run on PR events, workflow_dispatch, OR an issue_comment that is a /resolve slash-command on a PR
+    # authored by someone with write access.
+    if: |
+      github.event_name == 'pull_request' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request != null &&
+       (contains(github.event.comment.body, '/resolve-conflicts') || contains(github.event.comment.body, '/resolve')) &&
+       (github.event.comment.author_association == 'OWNER' ||
+        github.event.comment.author_association == 'MEMBER' ||
+        github.event.comment.author_association == 'COLLABORATOR'))
     runs-on: ubuntu-latest
-    # Only run when GitHub explicitly tells us the PR has conflicts. The
-    # earlier draft also fired on every opened/synchronize event, which
-    # produced empty-table noise comments on clean PRs.
-    if: |-
-      github.event.pull_request.mergeable_state == 'dirty' ||
-      contains(github.event.pull_request.labels.*.name, 'has-conflicts')
     steps:
-      - name: Check out PR with full history
+      - name: Resolve PR context
+        id: ctx
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          case "${{ github.event_name }}" in
+            pull_request)
+              PR_NUMBER="${{ github.event.pull_request.number }}"
+              ;;
+            issue_comment)
+              PR_NUMBER="${{ github.event.issue.number }}"
+              ;;
+            workflow_dispatch)
+              PR_NUMBER="${{ inputs.pr_number }}"
+              ;;
+          esac
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+
+          # Fetch PR metadata (head ref, base ref, head sha) so all triggers can act uniformly.
+          PR_JSON=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER")
+          HEAD_REF=$(echo "$PR_JSON" | jq -r .head.ref)
+          BASE_REF=$(echo "$PR_JSON" | jq -r .base.ref)
+          HEAD_SHA=$(echo "$PR_JSON" | jq -r .head.sha)
+          echo "head_ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
+          echo "base_ref=$BASE_REF" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Acknowledge slash-command
+        if: github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" \
+            -H "Accept: application/vnd.github+json" \
+            -f content='rocket' || true
+
+      - name: Checkout PR head
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ steps.ctx.outputs.head_ref }}
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Detect conflicts and analyze each hunk
-        id: analyze
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
+      - name: Configure git
         run: |
-          set +e
-          # Make sure we have the base ref locally.
-          git fetch origin "$BASE_REF" --depth=100
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-          # Reliable conflict detection: attempt a real merge into a worktree
-          # detached HEAD on top of base, then list unmerged paths via
-          # `git diff --diff-filter=U`. Abort the merge afterwards so the
-          # worktree is clean again. This is what `mergeable_state: dirty`
-          # is computed from server-side, mirrored locally for file detail.
-          git config user.email "conflict-helper@github-actions"
-          git config user.name "Conflict Helper"
-          git checkout -q "$BASE_SHA"
-          git merge --no-commit --no-ff --no-edit "$HEAD_SHA" >/dev/null 2>&1
-          MERGE_RC=$?
-          CONFLICTED=$(git diff --name-only --diff-filter=U 2>/dev/null | sort -u || true)
-
-          if [[ "$MERGE_RC" -eq 0 || -z "$CONFLICTED" ]]; then
+      - name: Phase 1 — Annotate conflicts
+        id: phase1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_REF: ${{ steps.ctx.outputs.base_ref }}
+        run: |
+          set -euo pipefail
+          git fetch origin "$BASE_REF"
+          # Attempt merge to surface conflicts without committing.
+          if git merge --no-commit --no-ff "origin/$BASE_REF" 2>/dev/null; then
+            echo "has_conflicts=false" >> "$GITHUB_OUTPUT"
             git merge --abort 2>/dev/null || true
-            echo "no_conflicts=true" >> "$GITHUB_OUTPUT"
-            echo "No conflicts detected against $BASE_REF (merge clean)."
-            exit 0
+          else
+            echo "has_conflicts=true" >> "$GITHUB_OUTPUT"
+            CONFLICTED=$(git diff --name-only --diff-filter=U || true)
+            echo "conflicted_files<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$CONFLICTED" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+            git merge --abort 2>/dev/null || true
           fi
 
-          echo "Conflicted files:"
-          echo "$CONFLICTED"
-
-          REPORT="$RUNNER_TEMP/conflict-report.md"
-          {
-            echo "## 🧭 Merge Conflict Helper"
-            echo ""
-            echo "This PR conflicts with \`$BASE_REF\`. For each conflicted file below,"
-            echo "I've identified which side came from where so you can pick faster"
-            echo "in GitHub's web merge UI."
-            echo ""
-            echo "**Legend:** \`Current\` = the version on \`$BASE_REF\`. \`Incoming\` = this PR's branch."
-            echo ""
-          } > "$REPORT"
-
-          while IFS= read -r file; do
-            [[ -z "$file" ]] && continue
-            [[ ! -f "$file" ]] && continue
-
-            # Get the most recent commit that touched this file on each side.
-            CURRENT_COMMIT=$(git log -1 --format='%h|%s|%an|%ad' --date=short \
-              "$BASE_SHA" -- "$file" 2>/dev/null || echo "")
-            INCOMING_COMMIT=$(git log -1 --format='%h|%s|%an|%ad' --date=short \
-              "$HEAD_SHA" -- "$file" 2>/dev/null || echo "")
-
-            # Try to resolve each commit back to a PR via gh search.
-            resolve_pr() {
-              local sha="$1"
-              [[ -z "$sha" ]] && return
-              gh api -X GET "search/issues" \
-                -f "q=repo:$REPO is:pr $sha" \
-                --jq '.items[0] | "#\(.number) \(.title)"' 2>/dev/null || true
-            }
-
-            CURRENT_SHA="${CURRENT_COMMIT%%|*}"
-            INCOMING_SHA="${INCOMING_COMMIT%%|*}"
-            CURRENT_PR=$(resolve_pr "$CURRENT_SHA")
-            INCOMING_PR=$(resolve_pr "$INCOMING_SHA")
-
-            # Heuristic recommendation.
-            #   - both sides add lines, none remove → "KEEP BOTH"
-            #   - both sides change the same lines  → "KEEP NEWER"
-            CURRENT_ADDED=$(git diff --numstat "$BASE_SHA" "$HEAD_SHA" -- "$file" \
-              | awk '{print $1+0}' || echo 0)
-            CURRENT_REMOVED=$(git diff --numstat "$BASE_SHA" "$HEAD_SHA" -- "$file" \
-              | awk '{print $2+0}' || echo 0)
-
-            REC="MANUAL — read both hunks and choose."
-            if [[ "$CURRENT_REMOVED" == "0" ]]; then
-              REC="**KEEP BOTH** — additive on both sides (no lines removed)."
-            elif [[ "$CURRENT_ADDED" == "0" ]]; then
-              REC="**KEEP CURRENT** — incoming only removed lines."
-            fi
-
-            {
-              echo "### \`$file\`"
-              echo ""
-              echo "| Side | Last commit | PR | Author | Date |"
-              echo "| --- | --- | --- | --- | --- |"
-              echo "| Current ($BASE_REF) | \`${CURRENT_SHA:-?}\` — ${CURRENT_COMMIT#*|} | ${CURRENT_PR:-_unmatched_} | ${CURRENT_COMMIT##*|} |"
-              echo "| Incoming (this PR) | \`${INCOMING_SHA:-?}\` — ${INCOMING_COMMIT#*|} | #$PR_NUMBER (this PR) | ${INCOMING_COMMIT##*|} |"
-              echo ""
-              echo "**Recommendation:** $REC"
-              echo ""
-            } >> "$REPORT"
-          done <<< "$CONFLICTED"
-
-          {
-            echo "---"
-            echo "_Posted by \`.github/workflows/conflict-helper.yml\`. Updated in place on every push. Never auto-resolves — you still click._"
-          } >> "$REPORT"
-
-          # Clean up the in-progress merge so the worktree is normal again.
-          git merge --abort 2>/dev/null || true
-
-          echo "report_file=$REPORT" >> "$GITHUB_OUTPUT"
-          echo "has_conflicts=true" >> "$GITHUB_OUTPUT"
-
-      # ── Phase 2: auto-resolve the mechanical hunks (FREE — no LLM) ────────
-      # The script handles two safe patterns deterministically:
-      #   - VERSION_BUMP: same `uses: owner/repo@X` line on both sides,
-      #     pick the newer @ref (SHA > tag, higher semver > lower).
-      #   - ADDITIVE: both sides added distinct new lines around the same
-      #     anchor (e.g. new table rows). Keep both, current first.
-      # Anything else is left as a conflict for Phase 3.
-      - name: Auto-resolve mechanical conflicts
-        id: resolve
-        if: steps.analyze.outputs.has_conflicts == 'true'
+      - name: Phase 2 — Mechanical resolve
+        id: phase2
+        if: steps.phase1.outputs.has_conflicts == 'true'
         env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ steps.ctx.outputs.base_ref }}
+        continue-on-error: true
         run: |
           set +e
-          git config user.email "conflict-helper@github-actions"
-          git config user.name "Conflict Helper"
-          # Re-run the merge that the analyze step aborted so we have the
-          # conflict markers in the worktree for the resolver to walk.
-          git merge --no-commit --no-ff "$HEAD_SHA" >/dev/null 2>&1 || true
-          node scripts/auto-resolve-mechanical-conflicts.js > "$RUNNER_TEMP/resolve.txt"
-          RC=$?
-          cat "$RUNNER_TEMP/resolve.txt"
-          echo "resolve_report=$RUNNER_TEMP/resolve.txt" >> "$GITHUB_OUTPUT"
-          echo "exit_code=$RC" >> "$GITHUB_OUTPUT"
+          git fetch origin "$BASE_REF"
+          git merge --no-commit --no-ff "origin/$BASE_REF"
+          MERGE_EXIT=$?
 
-      # If the script resolved EVERY hunk, commit and push back to the PR
-      # branch as a single audit-trail-friendly commit.
-      - name: Commit fully-resolved files
-        if: |-
-          steps.analyze.outputs.has_conflicts == 'true' &&
-          steps.resolve.outputs.exit_code == '0'
+          # Mechanical patterns: additive-only blocks (both sides added distinct lines) get unioned.
+          RESOLVED_ANY=0
+          for f in $(git diff --name-only --diff-filter=U); do
+            # Very conservative: if the file has only <<<<<<<//=======//>>>>>>> markers with additive content,
+            # union both sides. Anything more complex is left alone.
+            python3 - "$f" <<'PY'
+import sys, re, pathlib
+p = pathlib.Path(sys.argv[1])
+text = p.read_text(errors='replace')
+pattern = re.compile(
+    r'<{7} [^\n]*\n(?P<ours>.*?)={7}\n(?P<theirs>.*?)>{7} [^\n]*\n',
+    re.DOTALL,
+)
+def repl(m):
+    ours = m.group('ours')
+    theirs = m.group('theirs')
+    # Only auto-union if neither side is empty and they don't contain nested markers.
+    if '<<<<<<<' in ours or '<<<<<<<' in theirs:
+        return m.group(0)
+    return ours + theirs
+new = pattern.sub(repl, text)
+if new != text and '<<<<<<<' not in new:
+    p.write_text(new)
+    print('RESOLVED')
+else:
+    print('SKIP')
+PY
+            if [ $? -eq 0 ]; then
+              if ! grep -q '<<<<<<<' "$f" 2>/dev/null; then
+                git add "$f"
+                RESOLVED_ANY=1
+              fi
+            fi
+          done
+
+          REMAINING=$(git diff --name-only --diff-filter=U | wc -l | tr -d ' ')
+          if [ "$REMAINING" = "0" ] && [ "$RESOLVED_ANY" = "1" ]; then
+            git commit -m "chore(conflicts): auto-resolve mechanical conflicts"
+            git push origin HEAD
+            echo "resolved=true" >> "$GITHUB_OUTPUT"
+            echo "exit_code=0" >> "$GITHUB_OUTPUT"
+          else
+            git merge --abort 2>/dev/null || true
+            echo "resolved=false" >> "$GITHUB_OUTPUT"
+            echo "exit_code=$MERGE_EXIT" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Phase 3 — Dispatch Jules
+        id: phase3
+        if: steps.phase1.outputs.has_conflicts == 'true' && steps.phase2.outputs.resolved != 'true'
         env:
-          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.ctx.outputs.pr_number }}
+        continue-on-error: true
         run: |
-          git add -A
-          MSG="chore: auto-resolve mechanical merge conflicts (version bumps + additive blocks)"
-          MSG="$MSG"$'\n\n'"Resolved by scripts/auto-resolve-mechanical-conflicts.js per docs/CONFLICT_RESOLUTION_STANDARD.md."
-          MSG="$MSG"$'\n'"Safe patterns only — see commit diff for the rules each hunk matched."
-          git commit -m "$MSG"
-          # Push to the PR branch using the default token; if branch protection
-          # rejects, the comment step below will mention this.
-          git push origin "HEAD:$PR_HEAD_REF" || echo "::warning::push failed — branch protection may block direct pushes from Actions"
+          set +e
+          # jules-coding-agent.yml declares its input as `issue_number`, not `pr_number`.
+          # PRs and issues share GitHub's number space so passing PR_NUMBER as issue_number
+          # is the semantically correct call.
+          if gh workflow run jules-coding-agent.yml -f issue_number="$PR_NUMBER" 2>/dev/null; then
+            echo "dispatched=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "dispatched=false" >> "$GITHUB_OUTPUT"
+          fi
 
-      # If the auto-resolve script errored (exit 1), clean up the
-      # in-progress merge so the worktree doesn't stay dirty.
-      - name: Clean up on script error
-        if: |-
-          steps.analyze.outputs.has_conflicts == 'true' &&
-          steps.resolve.outputs.exit_code != '0' &&
-          steps.resolve.outputs.exit_code != '2'
-        run: |
-          git merge --abort 2>/dev/null || true
-          echo "::warning::auto-resolve script exited with code ${{ steps.resolve.outputs.exit_code }} — merge aborted, no changes pushed"
-
-      # If anything stayed ambiguous, abort the merge (cleans the worktree)
-      # and hand off to Jules via the existing jules-coding-agent.yml lane.
-      # Explicitly NOT Copilot (per-PR cost adds up); NOT Bito (review-only,
-      # can't push fixes); NOT openrouter-triage (that's the Ralph Loop
-      # CI-fixer, separate concern). Jules is the right tool: coding agent,
-      # already paid for via the existing API key, pushes commits directly.
-      - name: Hand leftovers to Jules (NOT Copilot, NOT Bito)
-        if: |-
-          steps.analyze.outputs.has_conflicts == 'true' &&
-          steps.resolve.outputs.exit_code == '2'
+      - name: Apply outcome label
+        if: steps.phase1.outputs.has_conflicts == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.ctx.outputs.pr_number }}
+          RESOLVED: ${{ steps.phase2.outputs.resolved }}
+          DISPATCHED: ${{ steps.phase3.outputs.dispatched }}
         run: |
-          git merge --abort 2>/dev/null || true
-          gh issue edit "$PR_NUMBER" --add-label "conflicts:needs-jules" || true
-          # Trigger Jules on this PR. The Jules workflow expects an issue or
-          # PR number; we pass the PR. If the lane is paused / key missing,
-          # the run will no-op gracefully per jules-coding-agent.yml's own
-          # missing-secret behavior.
-          gh workflow run jules-coding-agent.yml -f pr_number="$PR_NUMBER" 2>/dev/null \
-            || echo "::warning::jules-coding-agent.yml dispatch failed (workflow may not accept pr_number input — see standard for alt path)"
+          set -euo pipefail
+          # Ensure labels exist (idempotent).
+          for L in 'conflicts:auto-resolved:0e8a16' 'conflicts:needs-jules:fbca04' 'conflicts:needs-human:d93f0b'; do
+            NAME="${L%:*}"
+            COLOR="${L##*:}"
+            gh api "repos/${{ github.repository }}/labels" -f name="$NAME" -f color="$COLOR" 2>/dev/null || \
+              gh api -X PATCH "repos/${{ github.repository }}/labels/$NAME" -f new_name="$NAME" -f color="$COLOR" 2>/dev/null || true
+          done
 
-      - name: Post / update sticky comment
-        if: steps.analyze.outputs.has_conflicts == 'true'
-        uses: actions/github-script@v9.0.0
-        with:
-          script: |
-            const fs = require('fs');
-            const report = fs.readFileSync('${{ steps.analyze.outputs.report_file }}', 'utf8');
-            const marker = '<!-- conflict-helper:sticky -->';
-            const body = `${marker}\n${report}`;
+          # Clear prior outcome labels.
+          for L in conflicts:auto-resolved conflicts:needs-jules conflicts:needs-human; do
+            gh api -X DELETE "repos/${{ github.repository }}/issues/$PR_NUMBER/labels/$L" 2>/dev/null || true
+          done
 
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              per_page: 100,
-            });
-            const existing = comments.find(c => c.body && c.body.includes(marker));
+          if [ "$RESOLVED" = "true" ]; then
+            gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/labels" -f "labels[]=conflicts:auto-resolved"
+          elif [ "$DISPATCHED" = "true" ]; then
+            gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/labels" -f "labels[]=conflicts:needs-jules"
+          else
+            gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/labels" -f "labels[]=conflicts:needs-human"
+          fi
 
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-              core.info('Updated existing conflict-helper comment.');
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body,
-              });
-              core.info('Posted new conflict-helper comment.');
-            }
-    timeout-minutes: 10
+      - name: Update sticky comment with outcome
+        if: always() && steps.ctx.outputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.ctx.outputs.pr_number }}
+          HEAD_REF: ${{ steps.ctx.outputs.head_ref }}
+          HAS_CONFLICTS: ${{ steps.phase1.outputs.has_conflicts }}
+          RESOLVED: ${{ steps.phase2.outputs.resolved }}
+          PHASE2_EXIT: ${{ steps.phase2.outputs.exit_code }}
+          DISPATCHED: ${{ steps.phase3.outputs.dispatched }}
+        run: |
+          set -euo pipefail
+          MARKER='<!-- conflict-helper:sticky -->'
+
+          if [ "$HAS_CONFLICTS" != "true" ]; then
+            OUTCOME_EMOJI='✅'
+            OUTCOME_LINE='**No conflicts detected.**'
+            NEXT_STEP='Nothing to do.'
+            DECISION='no-conflicts'
+          elif [ "$RESOLVED" = "true" ]; then
+            OUTCOME_EMOJI='✅'
+            OUTCOME_LINE="**Auto-resolved.** Mechanical patterns matched every conflict; a follow-up commit was pushed to \`$HEAD_REF\`."
+            NEXT_STEP='wait for CI to finish, then merge. Nothing to review beyond the auto-commit.'
+            DECISION='resolved'
+          elif [ "$DISPATCHED" = "true" ]; then
+            OUTCOME_EMOJI='🟡'
+            OUTCOME_LINE='**Handed off to Jules.** Mechanical resolver could not match all conflicts; the Jules coding agent has been dispatched.'
+            NEXT_STEP='wait for Jules to push a follow-up commit or open a suggestion PR.'
+            DECISION='needs-jules'
+          else
+            OUTCOME_EMOJI='🔴'
+            OUTCOME_LINE='**Surrendered.** Mechanical resolver failed and Jules dispatch was not attempted or failed.'
+            NEXT_STEP='resolve the conflicts manually, or re-run with `/resolve-conflicts` after fixing.'
+            DECISION='needs-human'
+          fi
+
+          DISPATCHED_DISPLAY="${DISPATCHED:-not-attempted}"
+          PHASE2_EXIT_DISPLAY="${PHASE2_EXIT:-n/a}"
+
+          BODY=$(cat <<EOF
+$MARKER
+### Conflict Helper — outcome
+
+$OUTCOME_EMOJI $OUTCOME_LINE
+
+**Your job:** $NEXT_STEP
+
+<details><summary>Phase details</summary>
+
+- Phase 1 (annotate) has_conflicts: \`${HAS_CONFLICTS:-false}\`
+- Phase 2 (mechanical) exit code: \`$PHASE2_EXIT_DISPLAY\`
+- Phase 3 (Jules) dispatched: \`$DISPATCHED_DISPLAY\`
+- Phase decision: \`$DECISION\`
+
+</details>
+
+---
+
+_Trigger \`/resolve-conflicts\` (or \`/resolve\`) as a PR comment to re-run this workflow._
+EOF
+)
+
+          # Find and update or create sticky comment.
+          EXISTING=$(gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/comments" --paginate \
+            | jq -r --arg m "$MARKER" '.[] | select(.body | startswith($m)) | .id' | head -n1)
+
+          if [ -n "$EXISTING" ]; then
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$EXISTING" -f body="$BODY"
+          else
+            gh api "repos/${{ github.repository }}/issues/$PR_NUMBER/comments" -f body="$BODY"
+          fi
