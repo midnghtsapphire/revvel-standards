@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>oAudrey — Hardware Selection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-semibold">Hardware Selection</h1>
+    <a href="index.html" class="text-sm text-sky-400 hover:underline">← Back to Hub</a>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-6 space-y-6">
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-slate-900 rounded-2xl p-5 shadow border border-slate-800">
+        <h2 class="text-lg font-semibold mb-2">Inference &lt; 7B</h2>
+        <p class="text-sm text-slate-400 mb-3">Best cost/perf for chatbots and light RAG.</p>
+        <ul class="text-sm space-y-1">
+          <li>• 1× NVIDIA L4 — <span class="text-emerald-400">$0.44/hr</span></li>
+          <li>• 1× RTX 4090 — <span class="text-emerald-400">$0.39/hr</span></li>
+          <li>• CPU int8 fallback — <span class="text-emerald-400">$0.05/hr</span></li>
+        </ul>
+      </div>
+      <div class="bg-slate-900 rounded-2xl p-5 shadow border border-slate-800">
+        <h2 class="text-lg font-semibold mb-2">Inference 7–70B</h2>
+        <p class="text-sm text-slate-400 mb-3">Production-grade LLM serving.</p>
+        <ul class="text-sm space-y-1">
+          <li>• 1× A100 40GB — <span class="text-amber-400">$1.29/hr</span></li>
+          <li>• 2× L4 — <span class="text-amber-400">$0.88/hr</span></li>
+        </ul>
+      </div>
+      <div class="bg-slate-900 rounded-2xl p-5 shadow border border-slate-800">
+        <h2 class="text-lg font-semibold mb-2">Training</h2>
+        <p class="text-sm text-slate-400 mb-3">Fine-tune to full pretrain.</p>
+        <ul class="text-sm space-y-1">
+          <li>• 1× A100 80GB spot — <span class="text-rose-400">$1.89/hr</span></li>
+          <li>• 8× H100 cluster — <span class="text-rose-400">$23.92/hr</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="bg-slate-900 rounded-2xl p-5 border border-slate-800">
+      <h2 class="text-lg font-semibold mb-3">JIT Provisioner Output</h2>
+      <pre id="jit-output" class="bg-slate-950 rounded p-4 text-xs overflow-x-auto text-emerald-300">Loading mock provisioner…</pre>
+      <button id="provision-btn" class="mt-3 bg-sky-600 hover:bg-sky-500 rounded px-4 py-2 text-sm font-medium">Run JIT Provisioner</button>
+    </section>
+
+    <footer class="text-xs text-slate-500 pt-6">
+      TEST VERSION — pricing indicative. All revenue routes through Polar / Stripe / Gumroad.
+    </footer>
+  </main>
+
+  <script>
+    function mockProvision() {
+      const gpus = [
+        { device: "cuda", gpu_name: "NVIDIA L4", est_cost_per_hour_usd: 0.44 },
+        { device: "cuda", gpu_name: "NVIDIA A100 40GB", est_cost_per_hour_usd: 1.29 },
+        { device: "cpu", gpu_name: null, est_cost_per_hour_usd: 0.05 },
+      ];
+      const pick = gpus[Math.floor(Math.random() * gpus.length)];
+      return {
+        job_id: "job-" + Math.random().toString(16).slice(2, 10),
+        jit: true,
+        started_at: Date.now() / 1000,
+        ...pick,
+      };
+    }
+    const out = document.getElementById("jit-output");
+    const btn = document.getElementById("provision-btn");
+    function render() { out.textContent = JSON.stringify(mockProvision(), null, 2); }
+    btn.addEventListener("click", render);
+    render();
+  </script>
+</body>
+</html>
