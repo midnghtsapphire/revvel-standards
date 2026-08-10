@@ -1,31 +1,38 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-10T19:21:35.659Z",
+  "generated_at": "2026-08-10T22:12:45.166Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 31418659294,
-            "name": "Prioritize Starred Repositories",
-            "path": ".github/workflows/prioritize-stars.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31418659294",
+            "id": 31436177293,
+            "name": "OpenRouter Coder",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31436177293",
             "conclusion": "failure"
           },
           {
-            "id": 31418409818,
-            "name": "App Artifact Audit",
-            "path": ".github/workflows/app-artifact-audit.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31418409818",
+            "id": 31436170334,
+            "name": "OpenRouter Coder",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31436170334",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31436168674,
+            "name": "OpenRouter Coder",
+            "path": ".github/workflows/openrouter-coder.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31436168674",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31422965689"
+        "last_run": null
       }
     },
     "sheaf": {

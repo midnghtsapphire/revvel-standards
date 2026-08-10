@@ -72,6 +72,12 @@ ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #15672: Devin code-review lane (devin-code-review.yml); pinned to the
   # full v1 commit SHA per docs/THIRD_PARTY_ACTION_AUDIT.md disposition rules.
   "aaronsteers/devin-action"
+  # WR #16270: markdown image empty-alt checker. Single-author, last release
+  # 2023-04-21 (node16). Pinned to the v1 commit SHA in
+  # markdown-image-alt-text-checker.yml; the local script is the PR gate so an
+  # abandoned upstream cannot stick a required check. Accept the exact action
+  # so the quarterly audit does not re-open a tracking WR every run.
+  "ruthtxh/markdown-image-alt-text-checker"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
