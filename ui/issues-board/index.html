@@ -202,7 +202,7 @@
         const stateIcon = issue.state === 'open' ? '🟢' : '🟣';
 
         return `
-          <div class="issue-card bg-gray-900 rounded-lg p-4" onclick="window.open('${escapeHTML(issue.html_url)}', '_blank')">
+          <div class="issue-card bg-gray-900 rounded-lg p-4" data-issue-url="${escapeHTML(issue.html_url)}" onclick="const url = new URL(this.dataset.issueUrl); if (url.origin === 'https://github.com') window.open(url.href, '_blank', 'noopener')">
             <div class="flex justify-between items-start mb-2">
               <div class="flex-1">
                 <div class="flex items-center gap-2 mb-1">
