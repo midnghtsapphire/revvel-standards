@@ -1,69 +1,19 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-11T21:17:07.860Z",
+  "generated_at": "2026-08-11T22:15:29.105Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "7/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "0/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 7,
+        "failed_runs": 0,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [
-          {
-            "id": 31535290739,
-            "name": "Ralph Loop — Self-Healing CI",
-            "path": ".github/workflows/ralph-loop.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31535290739",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31534009630,
-            "name": "Push on main",
-            "path": "dynamic/github-code-scanning/codeql",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31534009630",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31534007712,
-            "name": "Push on main",
-            "path": "dynamic/github-code-scanning/codeql",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31534007712",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31534007092,
-            "name": "Push on main",
-            "path": "dynamic/github-code-scanning/codeql",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31534007092",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31533654687,
-            "name": "security-fleet",
-            "path": ".github/workflows/security-fleet.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31533654687",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31533653801,
-            "name": "Jules Invoke",
-            "path": ".github/workflows/jules-invoke.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31533653801",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31533517109,
-            "name": "Jules Invoke",
-            "path": ".github/workflows/jules-invoke.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31533517109",
-            "conclusion": "failure"
-          }
-        ],
+        "recent_failures": [],
         "stuck": []
       }
     },
