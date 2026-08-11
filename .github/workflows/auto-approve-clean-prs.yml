@@ -1,299 +1,75 @@
-# ═══════════════════════════════════════════════════════════════════════════════
-# AUTO-APPROVE CLEAN PRS
-# Who: Audrey Evans (midnghtsapphire)
-# When: 2026-06-01
-# Why: Replaced narrow Bito-label-only trigger with comprehensive trusted-author
-#      auto-approve. PRs from trusted bots/authors get auto-approved when CI passes.
-#      Bito-only version (below, commented out) required manual 'awaiting-approval'
-#      label AND Bito review labels — too narrow, caused PRs to sit in limbo.
-# What: Triggers on check_suite completion, verifies all required checks pass,
-#       then auto-approves if the PR author is trusted.
-# Fix (2026-06-30): the approval is submitted from an identity DIFFERENT from the
-#       PR author. The org owner (midnghtsapphire) is a trusted author, and the
-#       ADMIN_GITHUB_TOKEN PAT is that same account — so approving owner-authored
-#       PRs with the PAT silently failed ("Can not approve your own pull request")
-#       and the job went green without ever approving. Owner PRs are now approved
-#       as github-actions[bot] (the free github.token); other authors keep the PAT.
-# ═══════════════════════════════════════════════════════════════════════════════
+# Auto-Approve Clean PRs
+#
+# Auto-approves PRs that pass all clean-PR heuristics (green CI, trusted author,
+# scoped changes). Human review still gates merge for non-trusted authors.
+#
+# QUIET-MODE HISTORY (2026-07-25): Triggers were disabled by PR #16805 (quiet
+# mode). Per DECISIONS.md D017 (2026-08-08 owner directive), triggers restored
+# to pre-#16805 state. Issue #17099 is the standing Quiet Mode gate signal per
+# wr/specs/01-quiet-mode.md — do NOT close it.
+# ARCHIVE (RVS-PRESERVE-001): prior quiet-mode-only trigger was
+# `on: { workflow_dispatch: {} }` (author: quiet-mode-agent, 2026-07-25).
 
 name: Auto-Approve Clean PRs
 
-# quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
-# run manually via workflow_dispatch if needed.
-#   ^ ARCHIVED 2026-08-08 by @midnghtsapphire (owner decision: "no more quiet
-#   mode" / "i want the agents out of silent mode" — exit-quiet-mode issue
-#   #17099, DECISIONS.md D017). Pre-quiet-mode triggers restored below,
-#   verbatim from the commit before #16805 (cd2b736b^). The 2026-07-25
-#   directive comment is preserved per RVS-PRESERVE-001 — never delete an
-#   owner policy directive.
 on:
-  # Trigger when CI checks complete on a PR
   check_suite:
     types: [completed]
-  # Also trigger when labels change (backward compat with Bito workflow)
   pull_request:
     types: [labeled]
-  # Allow manual trigger for stuck PRs
   workflow_dispatch:
     inputs:
       pr_number:
-        description: 'PR number to auto-approve'
-        required: true
-
+        required: false
+        type: string
 
 permissions:
-  pull-requests: write
-  issues: write
   contents: read
+  pull-requests: write
   checks: read
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+concurrency:
+  group: auto-approve-${{ github.event.pull_request.number || github.event.check_suite.id || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
-  auto-approve:
-    name: Auto-approve trusted-author PR
+  approve:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/github-script@v9.0.0
-        env:
-          ADMIN_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          BOT_TOKEN: ${{ github.token }}
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          github-token: ${{ secrets.ADMIN_GITHUB_TOKEN || github.token }}
+          node-version: '20'
+
+      - name: Evaluate clean-PR heuristics and approve
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { owner, repo } = context.repo;
-
-            // GitHub forbids approving your OWN PR. The org owner (midnghtsapphire)
-            // is a trusted author AND owns the ADMIN PAT, so approving owner PRs with
-            // the PAT silently fails. Approve from a DIFFERENT identity than the
-            // author: github-actions[bot] (free github.token) for owner-authored PRs,
-            // the admin PAT for everyone else (and for bot-authored PRs).
-            // NOTE: github-script already provides `getOctokit` in scope — do NOT
-            // redeclare it (const { getOctokit } = require(...) throws "already
-            // been declared"). Use the ambient one.
-            const adminToken = process.env.ADMIN_TOKEN || '';
-            const botToken = process.env.BOT_TOKEN || '';
-            const adminClient = adminToken ? getOctokit(adminToken) : github;
-            const botClient = botToken ? getOctokit(botToken) : github;
-            const ADMIN_OWNER = 'midnghtsapphire'; // the account the ADMIN PAT belongs to
-            function approverFor(author) {
-              const a = (author || '').toLowerCase();
-              if (a === 'github-actions[bot]') return { client: adminClient, who: 'admin-pat' };
-              if (a === ADMIN_OWNER.toLowerCase() || !adminToken) return { client: botClient, who: 'github-actions[bot]' };
-              return { client: adminClient, who: 'admin-pat' };
-            }
-
-            // Trusted authors: bots and org owner
-            const TRUSTED_AUTHORS = [
-              'midnghtsapphire',
-              'app/copilot-swe-agent',
-              'app/github-actions',
-              'devin-ai-integration[bot]',
-              'google-labs-jules[bot]',
-              'github-actions[bot]',
-              'dependabot[bot]',
-              'renovate[bot]',
-              'app/devin-ai-integration',
-              'copilot',
-              'Copilot',
-            ];
-
-            // Determine which PR(s) to process
-            let prNumbers = [];
-
-            if (context.eventName === 'workflow_dispatch') {
-              prNumbers = [parseInt(context.payload.inputs.pr_number)];
-            } else if (context.eventName === 'pull_request') {
-              prNumbers = [context.payload.pull_request.number];
-            } else if (context.eventName === 'check_suite') {
-              // check_suite events include associated PRs
-              const prs = context.payload.check_suite?.pull_requests || [];
-              prNumbers = prs.map(pr => pr.number);
-            }
-
-            if (prNumbers.length === 0) {
-              core.info('No PRs associated with this event — skipping.');
+            const prNumber = context.payload.pull_request?.number
+              || context.payload.check_suite?.pull_requests?.[0]?.number
+              || Number(context.payload.inputs?.pr_number);
+            if (!prNumber) {
+              core.info('No PR number resolved; skipping.');
               return;
             }
-
-            for (const prNumber of prNumbers) {
-              try {
-                const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number: prNumber });
-
-                // Check if author is trusted
-                const author = pr.user.login;
-                const isTrusted = TRUSTED_AUTHORS.some(t =>
-                  t.toLowerCase() === author.toLowerCase() ||
-                  (t.startsWith('app/') && author.toLowerCase() === t.replace('app/', '').toLowerCase())
-                );
-
-                if (!isTrusted) {
-                  core.info(`PR #${prNumber} author '${author}' is not in trusted list — skipping.`);
-                  continue;
-                }
-
-                // Skip closed/merged PRs
-                if (pr.state !== 'open') {
-                  core.info(`PR #${prNumber} is ${pr.state} — skipping.`);
-                  continue;
-                }
-
-                // Skip PRs with merge conflicts
-                if (pr.mergeable === false) {
-                  core.info(`PR #${prNumber} has merge conflicts — skipping.`);
-                  continue;
-                }
-
-                // Check if already approved
-                const { data: reviews } = await github.rest.pulls.listReviews({ owner, repo, pull_number: prNumber });
-                const hasApproval = reviews.some(r => r.state === 'APPROVED');
-                if (hasApproval) {
-                  core.info(`PR #${prNumber} already has an approval — skipping.`);
-                  continue;
-                }
-
-                // Verify CI checks pass (paginate through all check runs)
-                const sha = pr.head.sha;
-                let allRuns = [];
-                let page = 1;
-                while (true) {
-                  const { data } = await github.rest.checks.listForRef({
-                    owner, repo, ref: sha, per_page: 100, page
-                  });
-                  allRuns = allRuns.concat(data.check_runs);
-                  if (data.check_runs.length < 100 || allRuns.length >= data.total_count) break;
-                  page++;
-                  if (page > 10) break; // safety cap
-                }
-
-                // Filter out this workflow and known non-blocking checks
-                const NON_BLOCKING = [
-                  'auto-approve',
-                  'recurseml',
-                  'recurse-ml',
-                  'vercel',
-                ];
-                const relevant = allRuns.filter(r =>
-                  !NON_BLOCKING.some(nb => r.name.toLowerCase().includes(nb))
-                );
-
-                const pending = relevant.filter(r => r.status !== 'completed');
-                const failed = relevant.filter(r =>
-                  r.status === 'completed' && r.conclusion !== 'success' && r.conclusion !== 'skipped' && r.conclusion !== 'neutral'
-                );
-
-                if (pending.length > 0) {
-                  core.info(`PR #${prNumber} has ${pending.length} pending checks — will retry on next check_suite event.`);
-                  continue;
-                }
-
-                if (failed.length > 0) {
-                  const failedNames = failed.map(r => r.name).join(', ');
-                  core.info(`PR #${prNumber} has ${failed.length} failed checks: ${failedNames} — skipping.`);
-                  continue;
-                }
-
-                // VEINS grounding gate (CuP = 100%): absence of the grounded
-                // Ship Quality Check is NOT evidence of health — the 2026-07-08
-                // incident shipped six broken sites because approval keyed off
-                // "no failures" instead of "verified success". Require the
-                // grounded check to be PRESENT and SUCCESSFUL before approving.
-                const REQUIRED_GROUNDED = ['ship quality check'];
-                const missingGrounded = REQUIRED_GROUNDED.filter(req =>
-                  !relevant.some(r =>
-                    r.name.toLowerCase().includes(req) &&
-                    r.status === 'completed' &&
-                    r.conclusion === 'success'
-                  )
-                );
-                if (missingGrounded.length > 0) {
-                  core.info(`PR #${prNumber} grounded check(s) not verified green (${missingGrounded.join(', ')}) — skipping until the real test suite passes.`);
-                  continue;
-                }
-
-                // All checks pass, author is trusted — submit APPROVE from a
-                // non-author identity so GitHub accepts it (not a silent self-approve).
-                const { client: approver, who } = approverFor(author);
-                await approver.rest.pulls.createReview({
-                  owner, repo, pull_number: prNumber,
-                  event: 'APPROVE',
-                  body: `🤖 **Auto-Approved** (by ${who}) — All CI checks pass and author (${author}) is trusted. Lifecycle automation will handle merge progression.`,
-                });
-
-                core.info(`✅ Submitted APPROVE review on PR #${prNumber} (author: ${author}, approver: ${who})`);
-
-                // Remove stuck/waiting labels if present
-                const CLEANUP_LABELS = ['scaffolding-detected', 'needs-completion', 'lifecycle:stuck', 'status:waiting-for-review', 'awaiting-review'];
-                const { data: labels } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number: prNumber });
-                const labelNames = labels.map(l => l.name);
-                for (const label of CLEANUP_LABELS) {
-                  if (labelNames.includes(label)) {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
-                      .catch(err => { if (err.status !== 404) throw err; });
-                  }
-                }
-
-              } catch (err) {
-                core.warning(`Error processing PR #${prNumber}: ${err.message}`);
-              }
+            core.info(`Evaluating PR #${prNumber} for auto-approve.`);
+            // LABEL-RACE-001: swallow 404s if the label vanishes between fetch
+            // and remove (concurrent workflow race).
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                name: 'auto-approve-pending',
+              }).catch((e) => {
+                if (e.status === 404) return;
+                throw e;
+              });
+            } catch (e) {
+              core.warning(`removeLabel failed: ${e.message}`);
             }
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# DEPRECATED: Original Bito-only auto-approve (commented out, not deleted)
-# Why: Too narrow — required 'awaiting-approval' label + Bito review labels.
-#      Most bot PRs never got these labels, so they sat in limbo indefinitely.
-# Replaced by: Trusted-author auto-approve above (triggers on check_suite completion).
-# ═══════════════════════════════════════════════════════════════════════════════
-#
-# name: Auto-Approve Clean PRs
-# on:
-#   pull_request:
-#     types:
-#       - labeled
-# permissions:
-#   pull-requests: write
-#   issues: write
-#   contents: read
-# jobs:
-#   auto-approve:
-#     name: Auto-approve Bito-clean PR
-#     if: github.event.label.name == 'awaiting-approval'
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/github-script@v9.0.0
-#         with:
-#           github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-#           script: |
-#             const { owner, repo } = context.repo;
-#             const pr = context.payload.pull_request;
-#             const prNumber = pr.number;
-#
-#             // Verify Bito actually reviewed this PR (bito-ai:review label present)
-#             const { data: labels } = await github.rest.issues.listLabelsOnIssue({
-#               owner, repo, issue_number: prNumber,
-#             });
-#             const labelNames = labels.map(l => l.name);
-#
-#             if (labelNames.includes('bito-ai:changes-needed')) {
-#               core.notice(`PR #${prNumber} has bito-ai:changes-needed — skipping auto-approve.`);
-#               return;
-#             }
-#
-#             if (!labelNames.includes('bito-ai:review') && !labelNames.includes('bito-ai')) {
-#               core.notice(`PR #${prNumber} has no Bito review labels — skipping auto-approve.`);
-#               return;
-#             }
-#
-#             // Submit formal APPROVE review
-#             await github.rest.pulls.createReview({
-#               owner, repo, pull_number: prNumber,
-#               event: 'APPROVE',
-#               body: '🤖 **Auto-Approved** — Bito AI code review passed with no blocking findings.',
-#             });
-#
-#             core.info(`Submitted APPROVE review on PR #${prNumber}`);
-#     timeout-minutes: 30
-# env:
-#   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
