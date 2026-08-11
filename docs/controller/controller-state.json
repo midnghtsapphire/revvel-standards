@@ -1,5 +1,13 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-11T08:00:36.229Z",
-  "workflows": {}
+  "updated_at": "2026-08-11T11:52:19.225Z",
+  "workflows": {
+    ".github/workflows/naukri-resume.yml": {
+      "count": 1,
+      "tried": [
+        "anthropic/claude-opus-4.8"
+      ],
+      "last_cut_at": "2026-08-11T08:28:11.421Z"
+    }
+  }
 }
