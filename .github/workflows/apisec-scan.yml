@@ -27,7 +27,7 @@ jobs:
   archived:
     if: false
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 5
 
     steps:
        - name: APIsec scan
