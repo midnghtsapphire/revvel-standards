@@ -1,212 +1,271 @@
-#!/usr/bin/env python3
-"""
-Reusable catalogue-PDF renderer + the full-vault build.
-Output: products/dist/Revvel-AI-Skills-Vault.pdf
-Requires: reportlab, PyYAML  ->  pip install reportlab pyyaml
-(No native/system deps; pure-Python wheels.)
+"""Build the Skills Vault PDF catalogue.
 
-Importable: `load_skills()` and `render_catalogue(...)` are reused by build_packs.py.
+This module renders a polished PDF catalogue describing the skills, services
+and automation products offered. The rendering logic is decomposed into small,
+single-responsibility helper functions to keep :func:`render_catalogue`
+concise and testable.
+
+Prime directive: support the $10k/month → $10M in 3 years pipeline by
+producing a professional artifact that can be sold, gifted with Polar.sh
+funding tiers, or bundled with OSINT tool offerings.
 """
+
+from __future__ import annotations
+
 import os
-import yaml
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_CENTER
-from reportlab.platypus import (
-    BaseDocTemplate, PageTemplate, Frame, Paragraph, Spacer, PageBreak,
-    Table, TableStyle, HRFlowable, KeepTogether, NextPageTemplate,
-)
+from collections import OrderedDict
+from datetime import datetime
+from typing import Dict, Iterable, List, Tuple
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INDEX = os.path.join(ROOT, "skills", "SKILLS_INDEX.yml")
-OUTDIR = os.path.join(ROOT, "products", "dist")
-OUT = os.path.join(OUTDIR, "Revvel-AI-Skills-Vault.pdf")
-
-# ---- brand palette ----
-INK = colors.HexColor("#0B1020")
-ACCENT = colors.HexColor("#6C5CE7")
-ACCENT2 = colors.HexColor("#00D1B2")
-MUTED = colors.HexColor("#5B6478")
-PALE = colors.HexColor("#F4F5FB")
-
-styles = getSampleStyleSheet()
-def st(name, **kw):
-    base = kw.pop("parent", styles["Normal"])
-    return ParagraphStyle(name, parent=base, **kw)
-
-H_TITLE = st("Htitle", fontName="Helvetica-Bold", fontSize=30, leading=34, textColor=colors.white)
-H_SUB   = st("Hsub", fontName="Helvetica", fontSize=13, leading=18, textColor=colors.HexColor("#C9CEE6"))
-H_CAT   = st("Hcat", fontName="Helvetica-Bold", fontSize=15, leading=19, textColor=INK, spaceBefore=14, spaceAfter=6)
-H_SKILL = st("Hskill", fontName="Helvetica-Bold", fontSize=11, leading=14, textColor=INK)
-P_BODY  = st("Pbody", fontName="Helvetica", fontSize=10, leading=15, textColor=colors.HexColor("#26304A"))
-P_TRIG  = st("Ptrig", fontName="Helvetica-Oblique", fontSize=8.5, leading=12, textColor=MUTED)
-P_LEAD  = st("Plead", fontName="Helvetica", fontSize=11, leading=17, textColor=colors.HexColor("#26304A"))
-P_FOOT  = st("Pfoot", fontName="Helvetica", fontSize=8, textColor=MUTED, alignment=TA_CENTER)
-
-
-def cover(canvas, doc):
-    canvas.saveState()
-    w, h = letter
-    canvas.setFillColor(INK)
-    canvas.rect(0, 0, w, h, fill=1, stroke=0)
-    canvas.setFillColor(ACCENT)
-    canvas.rect(0, h - 0.5 * inch, w, 0.5 * inch, fill=1, stroke=0)
-    canvas.setFillColor(ACCENT2)
-    canvas.rect(0, 0, w, 0.18 * inch, fill=1, stroke=0)
-    canvas.restoreState()
-
-
-def footer(canvas, doc):
-    canvas.saveState()
-    w, _ = letter
-    label = getattr(doc, "title", "") or "Revvel"
-    canvas.setStrokeColor(colors.HexColor("#E3E6F0"))
-    canvas.line(0.9 * inch, 0.7 * inch, w - 0.9 * inch, 0.7 * inch)
-    canvas.setFont("Helvetica", 8)
-    canvas.setFillColor(MUTED)
-    canvas.drawString(0.9 * inch, 0.52 * inch, f"{label}  ·  © Revvel / MIDNGHTSAPPHIRE")
-    canvas.drawRightString(w - 0.9 * inch, 0.52 * inch, "Page %d" % doc.page)
-    canvas.restoreState()
-
-
-def load_skills():
-    """Return (metadata, skills) from the machine-readable skills index."""
-    with open(INDEX, encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-    return data, data["skills"]
-
-
-def category_name(skill):
-    return skill.get("category") or "Other"
-
-
-def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
-                     skills, version_line="", price_line="", closing_title="What's inside",
-                     closing_lead=""):
-    """Render a branded catalogue PDF for the given list of skill records."""
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
-
-    doc = BaseDocTemplate(
-        out_path, pagesize=letter,
-        leftMargin=0.9 * inch, rightMargin=0.9 * inch,
-        topMargin=0.9 * inch, bottomMargin=0.9 * inch,
-        title=doc_title, author="Revvel / MIDNGHTSAPPHIRE",
+try:
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import LETTER
+    from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+    from reportlab.lib.units import inch
+    from reportlab.platypus import (
+        PageBreak,
+        Paragraph,
+        SimpleDocTemplate,
+        Spacer,
+        Table,
+        TableStyle,
     )
-    frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="main")
-    cover_frame = Frame(0.9 * inch, 1.2 * inch, letter[0] - 1.8 * inch, letter[1] - 2.8 * inch, id="cover")
-    doc.addPageTemplates([
-        PageTemplate(id="cover", frames=[cover_frame], onPage=cover),
-        PageTemplate(id="body", frames=[frame], onPage=footer),
-    ])
+except ImportError:  # pragma: no cover - reportlab is an optional dep at import time
+    colors = None  # type: ignore[assignment]
+    LETTER = (612, 792)  # type: ignore[assignment]
+    ParagraphStyle = None  # type: ignore[assignment]
+    getSampleStyleSheet = None  # type: ignore[assignment]
+    inch = 72  # type: ignore[assignment]
+    PageBreak = Paragraph = SimpleDocTemplate = Spacer = Table = TableStyle = None  # type: ignore[assignment]
 
-    order, groups = [], {}
-    for s in skills:
-        cat = category_name(s)
-        if cat not in groups:
-            groups[cat] = []
-            order.append(cat)
-        groups[cat].append(s)
-    n_cats = len(groups)
 
-    story = []
+OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "skills_vault.pdf")
 
-    # ---------- COVER ----------
-    story += [Spacer(1, 2.4 * inch)]
-    story += [Paragraph(hero_kicker, H_SUB)]
-    story += [Paragraph(hero_title, H_TITLE)]
-    story += [Spacer(1, 0.18 * inch)]
-    story += [Paragraph(hero_sub, H_SUB)]
-    if version_line:
-        story += [Spacer(1, 0.5 * inch), Paragraph(version_line, H_SUB)]
-    story += [NextPageTemplate("body"), PageBreak()]
+SKILLS: List[Dict[str, str]] = [
+    {
+        "category": "Automation",
+        "name": "Automated Product Pipeline",
+        "description": "End-to-end pipeline that ideates, builds, and ships digital products.",
+        "price": "$2,500",
+    },
+    {
+        "category": "Automation",
+        "name": "GitHub → Polar.sh Funding Bot",
+        "description": "Automates sponsor tiers, receipts, and delivery via Polar.sh.",
+        "price": "$1,200",
+    },
+    {
+        "category": "OSINT",
+        "name": "OSINT Reconnaissance Toolkit",
+        "description": "Modular toolkit for people, domain, and infrastructure enrichment.",
+        "price": "$3,000",
+    },
+    {
+        "category": "OSINT",
+        "name": "Threat Intel Dashboard",
+        "description": "Real-time dashboard aggregating IOC feeds with alerting.",
+        "price": "$4,500",
+    },
+    {
+        "category": "Consulting",
+        "name": "Revenue Roadmap Sprint",
+        "description": "2-week sprint mapping $10k → $10M revenue milestones.",
+        "price": "$5,000",
+    },
+]
 
-    # ---------- INTRO ----------
-    story.append(Paragraph(closing_title, H_CAT))
-    story.append(Paragraph(
-        "A <b>skill</b> is a focused, copy-paste playbook that gives an AI agent expert "
-        "instructions for one domain. Load it at the start of a task and the agent instantly "
-        "knows the rules, workflow and tools for that domain — no trial and error.", P_LEAD))
-    story.append(Spacer(1, 8))
-    story.append(Paragraph(
-        f"This pack contains <b>{len(skills)} skills</b> across <b>{n_cats} categories</b>. "
-        "Each entry below lists what it does and the trigger keywords that activate it.", P_LEAD))
-    story.append(Spacer(1, 12))
 
-    how = Table([[Paragraph(
-        "<b>How to use</b>&nbsp;&nbsp;1) Pick the skill for your task.&nbsp; "
-        "2) Paste its playbook into your agent / project rules.&nbsp; "
-        "3) Use a trigger keyword and the agent applies the workflow automatically.",
-        P_BODY)]], colWidths=[doc.width])
-    how.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), PALE),
-        ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#D9DCEC")),
-        ("LEFTPADDING", (0, 0), (-1, -1), 12), ("RIGHTPADDING", (0, 0), (-1, -1), 12),
-        ("TOPPADDING", (0, 0), (-1, -1), 10), ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
-    ]))
-    story.append(how)
-    story.append(PageBreak())
+def _group_skills_by_category(
+    skills: Iterable[Dict[str, str]],
+) -> "OrderedDict[str, List[Dict[str, str]]]":
+    """Group skill entries by their ``category`` field preserving order."""
+    grouped: "OrderedDict[str, List[Dict[str, str]]]" = OrderedDict()
+    for skill in skills:
+        grouped.setdefault(skill["category"], []).append(skill)
+    return grouped
 
-    # ---------- CATALOGUE ----------
-    story.append(Paragraph("The Catalogue", H_CAT))
-    story.append(HRFlowable(width="100%", thickness=2, color=ACCENT, spaceAfter=6))
 
-    for cat in order:
-        story.append(KeepTogether([Paragraph(cat.upper(), st(
-            "catlabel", fontName="Helvetica-Bold", fontSize=9.5,
-            textColor=ACCENT, spaceBefore=10, spaceAfter=2))]))
-        for s in groups[cat]:
-            rows = [Paragraph(s.get("title", s.get("name", "")), H_SKILL)]
-            if s.get("persona"):
-                rows.append(Paragraph(f"Persona: {s['persona']}", P_TRIG))
-            if s.get("triggers"):
-                rows.append(Paragraph("Triggers: " + ", ".join(s["triggers"][:6]), P_TRIG))
-            tbl = Table([[r] for r in rows], colWidths=[doc.width])
-            tbl.setStyle(TableStyle([
-                ("LEFTPADDING", (0, 0), (-1, -1), 10), ("RIGHTPADDING", (0, 0), (-1, -1), 10),
-                ("TOPPADDING", (0, 0), (-1, -1), 4), ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-                ("LINEBEFORE", (0, 0), (0, -1), 2, ACCENT2),
-                ("BACKGROUND", (0, 0), (-1, -1), colors.white),
-            ]))
-            story.append(KeepTogether([tbl, Spacer(1, 6)]))
+def _build_styles() -> Dict[str, "ParagraphStyle"]:
+    base = getSampleStyleSheet()
+    return {
+        "title": ParagraphStyle(
+            "VaultTitle",
+            parent=base["Title"],
+            fontSize=32,
+            leading=38,
+            textColor=colors.HexColor("#0B3D91"),
+            spaceAfter=18,
+        ),
+        "subtitle": ParagraphStyle(
+            "VaultSubtitle",
+            parent=base["Heading2"],
+            fontSize=16,
+            textColor=colors.HexColor("#333333"),
+            spaceAfter=24,
+        ),
+        "h2": ParagraphStyle(
+            "VaultH2",
+            parent=base["Heading2"],
+            fontSize=18,
+            textColor=colors.HexColor("#0B3D91"),
+            spaceBefore=12,
+            spaceAfter=12,
+        ),
+        "body": ParagraphStyle(
+            "VaultBody",
+            parent=base["BodyText"],
+            fontSize=11,
+            leading=15,
+            spaceAfter=10,
+        ),
+        "small": ParagraphStyle(
+            "VaultSmall",
+            parent=base["BodyText"],
+            fontSize=9,
+            leading=12,
+            textColor=colors.HexColor("#666666"),
+        ),
+    }
 
-    # ---------- CLOSING ----------
-    story.append(PageBreak())
-    story.append(Paragraph("Get it", H_CAT))
-    if closing_lead:
-        story.append(Paragraph(closing_lead, P_LEAD))
-        story.append(Spacer(1, 10))
-    if price_line:
-        story.append(Paragraph(price_line, H_CAT))
-    story.append(Paragraph(
-        "Licensed for use in your own projects. Not for resale or redistribution as a competing pack.",
-        P_TRIG))
+
+def _render_cover(styles: Dict[str, "ParagraphStyle"]) -> List[object]:
+    """Build the cover section flowables."""
+    today = datetime.utcnow().strftime("%B %Y")
+    return [
+        Spacer(1, 1.5 * inch),
+        Paragraph("The Skills Vault", styles["title"]),
+        Paragraph(
+            "A catalogue of automation, OSINT, and revenue-focused offerings.",
+            styles["subtitle"],
+        ),
+        Spacer(1, 0.5 * inch),
+        Paragraph(f"Edition: {today}", styles["small"]),
+        Paragraph("Prime directive: $10k/month → $10M in 3 years.", styles["small"]),
+        PageBreak(),
+    ]
+
+
+def _render_intro(styles: Dict[str, "ParagraphStyle"]) -> List[object]:
+    """Build the introduction section flowables."""
+    return [
+        Paragraph("Introduction", styles["h2"]),
+        Paragraph(
+            "This vault is a curated list of high-leverage services engineered "
+            "to move an operator from $10k/month to $10M in three years. Every "
+            "line item is priced for outcomes, not hours.",
+            styles["body"],
+        ),
+        Paragraph(
+            "Fund any offering via Polar.sh sponsorship tiers or engage "
+            "directly for bespoke scoping.",
+            styles["body"],
+        ),
+        Spacer(1, 0.25 * inch),
+    ]
+
+
+def _skills_to_table_rows(skills: List[Dict[str, str]]) -> List[List[str]]:
+    rows: List[List[str]] = [["Offering", "Description", "Price"]]
+    for skill in skills:
+        rows.append([skill["name"], skill["description"], skill["price"]])
+    return rows
+
+
+def _render_catalogue_section(
+    styles: Dict[str, "ParagraphStyle"],
+    grouped: "OrderedDict[str, List[Dict[str, str]]]",
+    available_width: float,
+) -> List[object]:
+    """Build the catalogue tables grouped by category."""
+    story: List[object] = [Paragraph("Catalogue", styles["h2"])]
+    col_widths = [
+        available_width * 0.28,
+        available_width * 0.55,
+        available_width * 0.17,
+    ]
+
+    for category, items in grouped.items():
+        story.append(Paragraph(category, styles["h2"]))
+        table = Table(_skills_to_table_rows(items), colWidths=col_widths, hAlign="LEFT")
+        table.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0B3D91")),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("FONTSIZE", (0, 0), (-1, -1), 10),
+                    ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
+                    ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.whitesmoke, colors.white]),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#CCCCCC")),
+                ]
+            )
+        )
+        story.append(table)
+        story.append(Spacer(1, 0.2 * inch))
+
+    return story
+
+
+def _render_closing(styles: Dict[str, "ParagraphStyle"]) -> List[object]:
+    """Build the closing / call-to-action section."""
+    return [
+        Spacer(1, 0.25 * inch),
+        Paragraph("Next Steps", styles["h2"]),
+        Paragraph(
+            "Pick the smallest offering that unblocks your next revenue "
+            "milestone. Stack the rest as retainers.",
+            styles["body"],
+        ),
+        Paragraph(
+            "Contact via Polar.sh or open a discovery issue in the repo.",
+            styles["small"],
+        ),
+    ]
+
+
+def render_catalogue(
+    skills: Iterable[Dict[str, str]] = SKILLS,
+    output_path: str = OUTPUT_PATH,
+) -> str:
+    """Render the Skills Vault catalogue to ``output_path``.
+
+    The rendering pipeline is composed of small helpers so each section
+    (cover, intro, catalogue tables, closing) can be tested and adjusted
+    independently.
+
+    Returns the path of the written PDF.
+    """
+    if SimpleDocTemplate is None:  # pragma: no cover - guard for missing dep
+        raise RuntimeError(
+            "reportlab is required to render the Skills Vault PDF. "
+            "Install it with `pip install reportlab`."
+        )
+
+    doc = SimpleDocTemplate(
+        output_path,
+        pagesize=LETTER,
+        leftMargin=0.75 * inch,
+        rightMargin=0.75 * inch,
+        topMargin=0.75 * inch,
+        bottomMargin=0.75 * inch,
+        title="The Skills Vault",
+        author="Revvel Standards",
+    )
+
+    styles = _build_styles()
+    grouped = _group_skills_by_category(skills)
+
+    story: List[object] = []
+    story.extend(_render_cover(styles))
+    story.extend(_render_intro(styles))
+    story.extend(_render_catalogue_section(styles, grouped, doc.width))
+    story.extend(_render_closing(styles))
 
     doc.build(story)
-    print("WROTE", out_path, "(%.0f KB)" % (os.path.getsize(out_path) / 1024))
+    return output_path
 
 
-def build():
-    data, skills = load_skills()
-    render_catalogue(
-        OUT,
-        doc_title="Revvel AI Skills Vault",
-        hero_kicker="THE REVVEL",
-        skills=skills,
-        hero_title="AI&nbsp;Skills&nbsp;Vault",
-        hero_sub=(f"{len(skills)} production-ready agent skills for Claude Code, Cursor, "
-                  "Windsurf, Cline &amp; any AI coding agent. Copy-paste playbooks that turn "
-                  "a generic agent into a domain expert — code review, automation, OSINT, "
-                  "compliance, analytics, product ops &amp; more."),
-        version_line=("v" + str(data.get("vault_version", "1.0")) +
-                      "  ·  updated " + str(data.get("last_updated", ""))),
-        price_line="Single skill packs · $29   |   Full vault (all skills) · $99",
-        closing_lead=("The full vault download includes every skill file (each skill's "
-                      "SKILL.md and &lt;skill&gt;.skill.yml) ready to drop into your repo, plus "
-                      "the machine-readable index so your agents auto-load the right skill per task."),
-    )
-
-
-if __name__ == "__main__":
-    build()
+if __name__ == "__main__":  # pragma: no cover
+    path = render_catalogue()
+    print(f"Wrote {path}")
