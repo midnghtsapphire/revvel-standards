@@ -6,7 +6,7 @@ GitHub App bot activity).
 
 ## Call 1: fetch last 30 PRs
 
-```
+```text
 GET https://api.github.com/repos/midnghtsapphire/revvel-standards/pulls
   ?state=all&per_page=30&sort=updated&direction=desc
 Header: Authorization: Bearer <user PAT>
@@ -18,14 +18,14 @@ noisy for the sandbox.
 
 ## Call 2 (per PR): fetch issue comments
 
-```
+```text
 GET https://api.github.com/repos/midnghtsapphire/revvel-standards/issues/<PR_NUMBER>/comments
   ?per_page=100
 ```
 
 ## Call 3 (per PR): fetch reviews
 
-```
+```text
 GET https://api.github.com/repos/midnghtsapphire/revvel-standards/pulls/<PR_NUMBER>/reviews
   ?per_page=100
 ```
