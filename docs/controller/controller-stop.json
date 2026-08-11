@@ -1,21 +1,26 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-08-11T08:00:36.229Z",
+  "generated_at": "2026-08-11T08:28:11.421Z",
   "stop": [
+    {
+      "id": 31445685498,
+      "name": "Update Naukri Resume",
+      "reason": "running 488m ≥ 60m budget"
+    },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 41306m ≥ 60m budget"
+      "reason": "running 41333m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 41376m ≥ 60m budget"
+      "reason": "running 41404m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 41447m ≥ 60m budget"
+      "reason": "running 41475m ≥ 60m budget"
     }
   ]
 }
