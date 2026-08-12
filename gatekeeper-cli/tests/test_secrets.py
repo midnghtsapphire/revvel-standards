@@ -27,8 +27,10 @@ def mock_api():
 
 @pytest.fixture
 def mock_config():
-    with patch.object(secrets_module, "load_config", create=True) as cfg:
-        cfg.return_value = {"token": "dop_test_token", "project": "proj", "config": "dev"}
+    with patch.object(secrets_module, "config") as cfg:
+        cfg.get_doppler_token.return_value = "dop_test_token"
+        cfg.get_doppler_project.return_value = "proj"
+        cfg.get_doppler_config.return_value = "dev"
         yield cfg
 
 
