@@ -1,0 +1,6 @@
+# Polar.sh + GitHub Sponsors funding config
+# Prime directive: $10k/mo → $10M in 3 years
+github: [zoe-osint]
+polar: zoe-osint
+custom:
+  - https://polar.sh/zoe-osint
