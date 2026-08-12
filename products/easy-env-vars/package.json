@@ -1,0 +1,25 @@
+{
+  "name": "easy-env-vars",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SaaS UI + safe parser for briantist/ezenv-style GitHub Actions environment blocks (WR #15863)",
+  "scripts": {
+    "dev": "next dev -p 3012",
+    "build": "next build",
+    "start": "next start -p 3012",
+    "lint": "tsc --noEmit",
+    "test": "node --test tests/parser.test.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^15.5.7",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.7.0"
+  }
+}
