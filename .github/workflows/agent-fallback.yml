@@ -1,60 +1,8 @@
 name: Agent Fallback Handler
 # quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
 # run manually via workflow_dispatch if needed.
-#   ^ ARCHIVED 2026-08-08 by @midnghtsapphire (owner decision: "no more quiet
-#   mode" / "i want the agents out of silent mode" — exit-quiet-mode issue
-#   #17099, DECISIONS.md D017). Pre-quiet-mode triggers restored below,
-#   verbatim from the commit before #16805 (cd2b736b^). The 2026-07-25
-#   directive comment is preserved per RVS-PRESERVE-001 — never delete an
-#   owner policy directive.
 on:
-  issues:
-    types:
-      - opened
-      - labeled
-  pull_request_target:
-    types:
-      - opened
-      - reopened
-      - ready_for_review
-      - labeled
-  workflow_call:
-    inputs:
-      task_description:
-        description: Description of the task to execute
-        required: false
-        type: string
-        default: ""
-      issue_number:
-        description: GitHub issue number
-        required: true
-        type: number
-      prefer_agent:
-        description: Preferred agent (openrouter, OpenHands, auto)
-        required: false
-        type: string
-        default: openrouter
-    outputs:
-      agent_used:
-        description: Which agent completed the task
-        value: ${{ jobs.execute.outputs.agent_used }}
-      success:
-        description: Whether the task completed successfully
-        value: ${{ jobs.execute.outputs.success }}
-      pr_url:
-        description: Pull request URL if created
-        value: ${{ jobs.execute.outputs.pr_url }}
-  workflow_dispatch:
-    inputs:
-      issue_number:
-        description: Issue number to process
-        required: true
-        type: number
-      prefer_agent:
-        description: Preferred agent (openrouter, OpenHands, auto)
-        required: false
-        type: string
-        default: openrouter
+  workflow_dispatch: null
 
 concurrency:
   group: agent-fallback-${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number || github.run_id }}

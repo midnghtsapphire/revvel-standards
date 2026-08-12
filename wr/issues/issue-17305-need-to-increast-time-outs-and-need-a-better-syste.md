@@ -1,10 +1,10 @@
 # WR: [WR] need to increast time outs and need a better system to detect freezing
 
-**Issue:** #17305  
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Created:** 2026-08-11  
-**Research Date:** 2026-08-11  
-**Researcher:** Jules (Google) + OpenRouter  
+**Issue:** #17305
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
+**Created:** 2026-08-11
+**Research Date:** 2026-08-11
+**Researcher:** Jules (Google) + OpenRouter
 **WR Status:** 🟡 In Progress
 
 ---
@@ -51,7 +51,7 @@ scripts/research-engine.js by tests/research-engine.test.js.
 
 ## Learnings — What & Why
 
-N/A — pending Jules refinement
+N/A — not applicable
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

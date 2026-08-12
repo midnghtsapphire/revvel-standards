@@ -8,16 +8,9 @@ the entries into their own GitHub settings once, following the steps below.
 
 ## Current replies
 
-| Key | Title | When to use |
+| Key | Title | Body |
 | --- | --- | --- |
-| `copilot-resolve-merge-conflicts` | Copilot: resolve merge conflicts | PR has conflicts and you want Copilot to rebase and resolve them |
-| `owner-request-changes-before-approval` | Owner: request changes before I approve | Owner wants to approve but needs one or two things fixed first |
-| `owner-block-until-i-test` | Owner: do NOT merge — I need to test first | Owner needs hands-on before ship — usually new product surface |
-| `hand-off-to-openrouter-review` | Hand off: OpenRouter review | Route to OpenRouter review lane for a model-diverse second pass |
-| `hand-off-to-devin-deep-review` | Hand off: Devin deep review | Cross-file logic review that stateless reviewers keep missing (paid — opt-in) |
-| `escalate-owner-decision-needed` | Escalate: owner decision needed | Any irreversible / ambiguous choice that must go to the owner |
-| `rescue-stuck-wr` | Rescue: WR is stuck, diagnose | Force a diagnostic-first pass on any stalled or looping WR |
-| `split-multi-idea-wr` | Split: this WR bundles multiple ideas | Grok-style zip / chat-transcript WR that must be split into atomic units |
+| `copilot-resolve-merge-conflicts` | Copilot: resolve merge conflicts | `@copilot resolve the merge conflicts in this pull request` |
 
 **When to use `copilot-resolve-merge-conflicts`:** a pull request shows
 "This branch has conflicts that must be resolved". Posting this comment on

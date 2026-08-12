@@ -10,22 +10,6 @@ This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) workin
 > API caller…) Read [`VISITING_AGENTS.md`](./VISITING_AGENTS.md) **first** — it's the
 > short guest contract: where you may write, where setup/API info lives, and how not to
 > scaffold over the repo.
->
-> **Every agent (fleet or visiting) — three mandatory standards, load these before any write:**
->
-> 1. [`standards/VISITING_AGENT_SANDBOX_STANDARD.md`](./standards/VISITING_AGENT_SANDBOX_STANDARD.md)
->    — save every thought / script / API call / decision to `.sandbox/<your-name>/` as
->    you work so a credit blackout does not lose the session's data.
-> 2. [`standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md`](./standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md)
->    — when you find a bug you did not introduce or feel is out of scope, immediately
->    file a Triage-role WR before continuing. "Not my bug" without a filed WR is banned.
-> 3. [`standards/TRIAGE_ROLE_STANDARD.md`](./standards/TRIAGE_ROLE_STANDARD.md)
->    — the override authority every agent has, at all times, to file the out-of-scope
->    WR the above standard requires.
->
-> Every error is a training module. Append lessons to [`learnings.md`](./learnings.md)
-> using the TM-NNNN format at the bottom of that file — future agents (and future
-> auto-fix scripts) read those modules as their curriculum.
 
 ## PRIME DIRECTIVE
 
@@ -142,7 +126,6 @@ collisions:
 | FDA Design Controls | `products/fda-design-controls` | 3010 | Next.js. Interactive 21 CFR 820.30 compliance checklist and DHF generator with Markdown/CSV export. |
 | MedDevice Compliance Navigator | `products/meddevice-compliance-navigator` | 3010 | Next.js. Medical device compliance tracker: FDA 510(k), ISO 13485, IEC 60601, ISO 10993, EU MDR pathways. |
 | DevOps Dashboard | `products/devops-dashboard` | 3011 | Next.js. Real-time DevOps monitoring: self-healing PRs, CI/CD pipeline health, agent status, workflow run history. |
-| Personal Assistant | `products/personal-assistant` | 3012 | Next.js. Multi-source personal data (Gmail/Outlook/Yahoo/Keep/Drive/SMS) → PII-safe GitHub directory + commit plans. |
 
 Start a specific product on its assigned port:
 
@@ -159,7 +142,6 @@ cd products/red-light-therapy-dosage-calculator && npm run dev -- -p 3010
 cd products/fda-design-controls  && npm run dev -- -p 3010
 cd products/meddevice-compliance-navigator && npm run dev -- -p 3010
 cd products/devops-dashboard     && npm run dev -- -p 3011
-cd products/personal-assistant   && npm run dev -- -p 3012
 ```
 
 ### Running and testing
