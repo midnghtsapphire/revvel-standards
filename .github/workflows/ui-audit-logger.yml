@@ -9,6 +9,7 @@ on:
 jobs:
   ui-audit-and-health:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout Repository
