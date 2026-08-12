@@ -1,0 +1,65 @@
+{
+  "document_id": "RLT-HIPAA-TRIGGERS-2026-08",
+  "issue": 16111,
+  "parent_wr": 15279,
+  "version": 1,
+  "rule": "Any true trigger voids the current HIPAA entity classification until counsel re-determines scope.",
+  "triggers": [
+    {
+      "id": "T1",
+      "key": "clinic_provider_partnership",
+      "description": "Clinic, med-spa, hospital, or provider partnership involving patient or client health data."
+    },
+    {
+      "id": "T2",
+      "key": "telehealth_or_clinician_workflow",
+      "description": "Telehealth, clinician dashboard, e-consult, or share-with-provider features."
+    },
+    {
+      "id": "T3",
+      "key": "insurance_or_hipaa_transactions",
+      "description": "Insurance billing or any 45 CFR Part 162 standard transaction."
+    },
+    {
+      "id": "T4",
+      "key": "hsa_fsa_clinical_substantiation",
+      "description": "HSA/FSA flows that depend on medical-care substantiation or clinical coding."
+    },
+    {
+      "id": "T5",
+      "key": "baa_requested_or_signed",
+      "description": "A Business Associate Agreement is requested or executed."
+    },
+    {
+      "id": "T6",
+      "key": "phi_from_covered_entity",
+      "description": "PHI is received from a Covered Entity (EHR export, FHIR/HL7, clinic photos, etc.)."
+    },
+    {
+      "id": "T7",
+      "key": "identifiable_cloud_health_profile",
+      "description": "Operator-controlled storage of identifiable health journals, scores, postpartum status, or body photos."
+    },
+    {
+      "id": "T8",
+      "key": "hipaa_compliant_marketing",
+      "description": "Any public claim of HIPAA compliance/certification without a completed, attested HIPAA program."
+    },
+    {
+      "id": "T9",
+      "key": "operating_entity_change",
+      "description": "Acquisition by a Covered Entity, white-label inside a CE workflow, or operating-entity change."
+    },
+    {
+      "id": "T10",
+      "key": "scheduled_review_due",
+      "description": "Calendar review: six months after last signed opinion, or after provisional date if still unsigned."
+    }
+  ],
+  "on_trigger": [
+    "Set compliance/red-light-therapy/status.json status to REEVAL_REQUIRED",
+    "Void current Path B reliance",
+    "Block shipping the triggering feature",
+    "Engage counsel with updated facts"
+  ]
+}
