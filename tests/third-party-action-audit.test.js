@@ -27,4 +27,6 @@ test('stale audited actions are removed or explicitly dispositioned', () => {
   const auditScript = read('scripts/audit-third-party-actions.sh');
   assert.match(auditScript, /ACCEPTED_SINGLE_AUTHOR_ACTIONS=\(/);
   assert.match(auditScript, /robvanderleek\/create-issue-branch/);
+  // Issue #16876 — xAI Code Review marketplace action (SHA-pinned, soft-skip).
+  assert.match(auditScript, /tarmojussila\/xai-code-review/);
 });
