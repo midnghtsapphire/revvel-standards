@@ -75,6 +75,11 @@ jobs:
       - name: Get branch expiration date as an env variable (2 weeks from now)
         id: get_expiration_date
         run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+      # Neon returns HTTP 422 when asked to create a branch that already exists.
+      # We therefore probe first and skip the create action on reruns. The probe
+      # must scan every page itself instead of using Neon `search=`: branch names
+      # here contain slashes (`preview/pr-...`), and the search filter can miss
+      # those names even though a later create call rejects them as duplicates.
       # On `synchronize` events the branch already exists from the `opened` run.
       # Attempting to create it again returns HTTP 422 and fails the job.
       # This step checks the Neon API first so the create step can be skipped
@@ -99,11 +104,14 @@ jobs:
           found=false
 
           while true; do
+            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100"
             url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100&search=$(urlencode "$NEON_BRANCH")"
             if [ -n "$cursor" ]; then
               url="${url}&cursor=$(urlencode "$cursor")"
             fi
 
+            # CLAUDE.md gotcha #4: the key goes in via a curl config file on
+            # stdin (printf is a builtin), never in argv where ps can read it.
             # CLAUDE.md gotcha #4: secret on stdin via curl config file, never in argv.
             status=$(printf 'header = "Authorization: Bearer %s"\n' "$NEON_API_KEY" \
               | curl --silent --show-error --config - \
@@ -115,6 +123,7 @@ jobs:
             }
 
             if [ "$status" != "200" ]; then
+              echo "::error::Neon API returned HTTP ${status} while listing branches for project ${NEON_PROJECT_ID}"
               echo "::error::Neon API returned HTTP ${status} while listing branches"
               exit 1
             fi
@@ -231,7 +240,7 @@ jobs:
           found=false
 
           while true; do
-            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100&search=$(urlencode "$NEON_BRANCH")"
+            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100"
             if [ -n "$cursor" ]; then
               url="${url}&cursor=$(urlencode "$cursor")"
             fi
