@@ -104,6 +104,12 @@ def test_doppler_health_check_failure(doppler_api):
         assert result["status"] == "error"
         assert result["authenticated"] is False
 
+
+def test_doppler_list_projects_success(doppler_api):
+    with patch.object(doppler_api, "_request", return_value={"projects": [{"name": "proj1"}, {"name": "proj2"}]}) as mock_request:
+        result = doppler_api.list_projects()
+
+        assert result == [{"name": "proj1"}, {"name": "proj2"}]
 def test_doppler_list_projects(doppler_api):
     mock_projects = [
         {"id": "project-1", "name": "Project 1"},
