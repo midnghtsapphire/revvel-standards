@@ -110,6 +110,16 @@ def test_doppler_list_projects_success(doppler_api):
         result = doppler_api.list_projects()
 
         assert result == [{"name": "proj1"}, {"name": "proj2"}]
+def test_doppler_list_projects(doppler_api):
+    mock_projects = [
+        {"id": "project-1", "name": "Project 1"},
+        {"id": "project-2", "name": "Project 2"}
+    ]
+
+    with patch.object(doppler_api, "_request", return_value={"projects": mock_projects}) as mock_request:
+        result = doppler_api.list_projects()
+
+        assert result == mock_projects
         mock_request.assert_called_once_with("GET", "/projects")
 
 def test_doppler_list_projects_empty(doppler_api):
