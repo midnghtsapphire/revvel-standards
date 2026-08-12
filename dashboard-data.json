@@ -1224,6 +1224,12 @@
       "source": "/products/fda-design-controls/README.md"
     },
     {
+      "url": "https://revvel-standards.vercel.app/docs/agent-manifest-validator/",
+      "project": "agent-manifest-validator",
+      "type": "vercel",
+      "source": "/products/agent-manifest-validator/README.md"
+    },
+    {
       "url": "https://revvel-standards.vercel.app/docs/life-insurance-lead-saas/",
       "project": "life-insurance-lead-saas",
       "type": "vercel",
@@ -1545,5 +1551,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-11T20:17:12.957Z"
+  "lastUpdated": "2026-08-12T14:10:12.232Z"
 }
