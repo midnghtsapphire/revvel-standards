@@ -308,7 +308,6 @@
     "DevOps & Deployment",
     "Developer Workflow",
     "Fleet Consistency & Topology",
-    "Fleet Operations / Agent Guardrails",
     "Marketing Automation",
     "Product Analytics",
     "Product Development",
@@ -1461,20 +1460,6 @@
         "market analysis",
         "design standards",
         "ui creation engine"
-      ]
-    },
-    {
-      "name": "probabilistic_orchestration",
-      "title": "Probabilistic Orchestration",
-      "category": "Fleet Operations / Agent Guardrails",
-      "path": "skills/probabilistic-orchestration/",
-      "persona": "dragnet",
-      "triggers": [
-        "/probabilistic",
-        "/orchestration",
-        "/ai-validation",
-        "probabilistic-orchestration",
-        "probabilistic orchestration"
       ]
     }
   ],

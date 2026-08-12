@@ -6,11 +6,11 @@
 
 When implementing a process, pick the **highest** row that works:
 
-1. **GitHub Actions** (in-repo, reviewable, badges, check runs)  
-2. **n8n / Make / Zapier / Gumloop** (cross-SaaS glue; store blueprints under `workflows/` or `ops/automations/`)  
-3. **OpenRouter / agent lanes** (reasoning + code; still ends in PR)  
-4. **Project custom fields + views** (state machine)  
-5. **Allowlisted labels** (routing only)  
+1. **GitHub Actions** (in-repo, reviewable, badges, check runs)
+2. **n8n / Make / Zapier / Gumloop** (cross-SaaS glue; store blueprints under `workflows/` or `ops/automations/`)
+3. **OpenRouter / agent lanes** (reasoning + code; still ends in PR)
+4. **Project custom fields + views** (state machine)
+5. **Allowlisted labels** (routing only)
 6. **Chat instructions** (last resort — evaporates)
 
 Labels are not a workflow engine.
@@ -19,10 +19,10 @@ Labels are not a workflow engine.
 
 See `config/connections.yml` for existing endpoints. New automations MUST:
 
-- Add a row to the registry (name, system, trigger, secret **name**, owner)  
-- Ship a blueprint file (JSON/YAML) in-repo  
-- Emit failure → `auto-error` issue or formal auto-WR  
-- Never store API keys in blueprints  
+- Add a row to the registry (name, system, trigger, secret **name**, owner)
+- Ship a blueprint file (JSON/YAML) in-repo
+- Emit failure → `auto-error` issue or formal auto-WR
+- Never store API keys in blueprints
 
 ## Suggested blueprints to add (WRs)
 
@@ -37,7 +37,7 @@ See `config/connections.yml` for existing endpoints. New automations MUST:
 
 ## Anti-patterns
 
-- Creating `deployment-down:hostname` labels per host  
-- Encoding privilege solely as labels without scorecard  
-- Cron workflows that cannot report failure  
+- Creating `deployment-down:hostname` labels per host
+- Encoding privilege solely as labels without scorecard
+- Cron workflows that cannot report failure
 - Docs that claim "automatic" when only `workflow_dispatch` exists

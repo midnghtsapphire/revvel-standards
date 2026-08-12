@@ -55,7 +55,7 @@ improve on.
   these are the deliberate, owner-requested 2026-07-25 "quiet mode" change
   (PR #16805, ~80 machine PRs/day and ~$400/week OpenRouter cost). **Do not
   recommend re-enabling schedules on these without explicitly flagging the
-  cost/volume tradeoff to the owner** — check `git log -1 --format=%ad -- 
+  cost/volume tradeoff to the owner** — check `git log -1 --format=%ad --
   <file>` against 2026-07-25 first; if the commit date matches the
   quiet-mode PR, it's very likely intentional, not a fresh finding.
 

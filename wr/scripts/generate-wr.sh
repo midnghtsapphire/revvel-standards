@@ -20,7 +20,7 @@ esac; done
 # assignment the override is silently ignored and test runs mutate tracked
 # fixture files).
 HERE="${HERE:-$(cd "$(dirname "$0")/.." && pwd)}"
-ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || echo "No issue body provided." )"
+ISSUE_BODY="$( [[ -n "$BODY_FILE" && -f "$BODY_FILE" ]] && cat "$BODY_FILE" || echo "_No issue body provided._" )"
 
 # ---- FIX (class 2): select template by issue class instead of always FULL ----
 # ERE doesn't support \b word boundaries — they're matched literally and the
@@ -109,7 +109,7 @@ subst DATE              "$DATE"
 subst RESEARCH_DATE     "$DATE"
 subst RESEARCHER        "$(jq_get researcher)"
 subst STATUS            "🟡 In Progress"
-subst ISSUE_CONTEXT     "$ISSUE_BODY"
+subst ISSUE_BODY        "$ISSUE_BODY"
 subst SUMMARY           "$(jq_get summary)"
 subst OBJECTIVE         "$(jq_get objective)"
 subst REQUIRED_BUNDLE   "$(jq_get required_bundle)"
@@ -130,8 +130,6 @@ subst RISKS             "$(jq_get risks)"
 # Any token left unfilled becomes an explicit N/A marker, never a raw {TOKEN} or empty.
 out="$(echo "$out" | sed -E 's/\{[A-Z_]+\}/N\/A/g')"
 # Any empty filled section line -> N/A with reason (basic class has no market sections to worry about).
-# Replace any lingering _No response_ in the output with N/A
-out="${out//_No response_/N/A}"
 out="$(echo "$out" | sed -E 's/^([A-Za-z].*:)[[:space:]]*$/\1 N\/A/')"
 
 SLUG="$(echo "$TITLE" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+|-+$//g' | cut -c1-50)"

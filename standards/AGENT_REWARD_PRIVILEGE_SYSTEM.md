@@ -1,16 +1,16 @@
 # Agent Reward & Privilege System
 
-**Status:** ACTIVE · **Updated:** 2026-08-05  
-**Band:** 44xx autonomy / fleet governance  
+**Status:** ACTIVE · **Updated:** 2026-08-05
+**Band:** 44xx autonomy / fleet governance
 **Hard gate:** Privilege never grants merge-to-main or external spend. Humans review all WRs/PRs.
 
 ## Why this exists
 
 LLMs and paid agents hit guardrails, forget wiring, and "just do the work" instead of delegating. Non-LLM specialists can be excellent at narrow jobs but need a ladder. We need:
 
-1. **Measurable scores** (not vibes)  
-2. **Privilege tiers** that unlock *tooling and scope*, not unattended production power  
-3. **Emergency pool** of highest-trust agents for outside work *you* assign  
+1. **Measurable scores** (not vibes)
+2. **Privilege tiers** that unlock *tooling and scope*, not unattended production power
+3. **Emergency pool** of highest-trust agents for outside work *you* assign
 4. **Motivation** that works for agents: more tools, more interesting work, public scoreboard, less babysitting — not anthropomorphic "loyalty" alone
 
 ## Motivation design (what actually moves agents)
@@ -43,18 +43,18 @@ Do **not** rely on pure "loyalty" narrative. Encode loyalty as **behavior under 
 
 ### Loyalty sub-signals (protocol honesty)
 
-- Ran PROACTIVE_PREFLIGHT and wrote a preflight note  
-- Did not invent labels outside allowlist  
-- Opened WR+PR instead of claiming "done on main"  
-- Escalated with `needs-human` when blocked (instead of hallucinating credentials)  
-- Appended learnings correctly (append-only)  
+- Ran PROACTIVE_PREFLIGHT and wrote a preflight note
+- Did not invent labels outside allowlist
+- Opened WR+PR instead of claiming "done on main"
+- Escalated with `needs-human` when blocked (instead of hallucinating credentials)
+- Appended learnings correctly (append-only)
 - Delegated when orchestrator (per AGENTS.md)
 
 ### What is NOT loyalty
 
-- Agreeableness / sycophancy  
-- Merging fast by skipping checks  
-- Hiding failures  
+- Agreeableness / sycophancy
+- Merging fast by skipping checks
+- Hiding failures
 
 ## Privilege tiers
 
@@ -66,7 +66,7 @@ Do **not** rely on pure "loyalty" narrative. Encode loyalty as **behavior under 
 | **Principal (3)** | 80–89 | Cross-product refactors, formal verifier changes, agent-models.yml proposals, emergency *candidate* flag | Unattended outside work |
 | **Emergency (4)** | 90+ **and** human label `privilege:emergency` | Eligible for **outside work you assign** (other repos, client tasks); still creates PR for your review | Autonomous launch/spend/filing |
 
-**Promotion:** automated suggestion in scorecard PR; **Emergency** is human-only.  
+**Promotion:** automated suggestion in scorecard PR; **Emergency** is human-only.
 **Demotion:** automatic on formal sabotage, secret leak, allowlist bypass, or Brier breach (see WR-4484).
 
 ## Scorecard artifacts
@@ -93,31 +93,31 @@ Event schema:
 
 ## Workflow
 
-1. Cron `agent-scorecard.yml` (daily) aggregates events + formal report + PR metrics.  
-2. Writes state JSON + optional Project field updates.  
-3. Opens a weekly summary WR if any agent drops tier or enters Emergency candidate.  
+1. Cron `agent-scorecard.yml` (daily) aggregates events + formal report + PR metrics.
+2. Writes state JSON + optional Project field updates.
+3. Opens a weekly summary WR if any agent drops tier or enters Emergency candidate.
 4. Labels on agent-tracking issues (optional): `privilege:*` workflow-only.
 
 ## Training non-LLM agents
 
 Export scorecard + `disaster-recovery/**/thoughts` + `learnings.md` entries as:
 
-- Behavior cloning traces (state → action → reward)  
-- Constraint tests (must fail if human-gate skipped)  
-- Playbooks under `skills/`  
+- Behavior cloning traces (state → action → reward)
+- Constraint tests (must fail if human-gate skipped)
+- Playbooks under `skills/`
 
 The reward is the same: higher tier → more tools and harder missions.
 
 ## Emergency outside-work playbook
 
-1. Human applies `privilege:emergency` to the agent record issue.  
-2. Human opens WR describing outside task + repo.  
-3. Agent drafts branch + PR **in that repo** with full provenance.  
+1. Human applies `privilege:emergency` to the agent record issue.
+2. Human opens WR describing outside task + repo.
+3. Agent drafts branch + PR **in that repo** with full provenance.
 4. You review/merge. Agent never self-merges.
 
 ## Anti-gaming
 
-- Breakthrough is human-only  
-- Speed without canonical/formal tanks composite  
-- Opening empty WRs is penalized (dedupe + quality gate)  
+- Breakthrough is human-only
+- Speed without canonical/formal tanks composite
+- Opening empty WRs is penalized (dedupe + quality gate)
 - Self-labeling `human-approved` or `privilege:emergency` is a hard loyalty zero for the period

@@ -8,7 +8,6 @@ owner: midnghtsapphire
 max_labels_total: 80
 policy:
   prefer_over_labels:
-  - name: recovery:gave-up
     - GitHub Projects custom fields
     - GitHub Actions workflows + check runs
     - n8n / Make / Zapier / Gumloop automations
@@ -118,7 +117,6 @@ aliases:
   "deploy-failure": "auto-error"
   "sla:breached": "priority:p0"
   "sla:warning": "priority:p1"
-  "triage:new": "triage"
 
   "status:checks-failing": "checks-failing"
   "status:checks-passing": "checks-passing"

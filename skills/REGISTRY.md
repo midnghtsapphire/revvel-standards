@@ -14,7 +14,6 @@ This registry is the **master index of all skills** available in the Revvel Skil
 A skill is a text file that gives an AI agent specialized, focused instructions for a specific domain. Loading a skill at the start of a task is equivalent to handing an expert their playbook — the agent instantly knows the rules, workflow, and requirements for that domain without needing to rediscover them.
 
 **How to load a skill:**
-
 1. Identify which skill(s) apply to the current task (use the trigger keywords below).
 2. Read the skill's `SKILL.md` or `.skill.yml` file at the path shown.
 3. Apply all rules and workflows defined in the skill to your task.
@@ -24,64 +23,63 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 
 ## Quick-Reference Trigger Table
 
-| If the task involves...                                                                                                 | Load this skill                                               |
-| ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| RecurseML, autonomous PR review, bug detection, code standards                                                          | [`recurse-ml`](#recurse-ml)                                   |
-| Knowledge sheaf, sheaf consistency, H¹, Laplacian energy, persistent homology, barcodes, imprint-at-spawn, MOTU, BNAT   | [`bnatsheaf`](#bnatsheaf)                                     |
-| BITO AI, persistent-memory code review, desktop API procurement, bito cli, bito secret, repo memory, agentic review     | [`bito-ai`](#bito-ai)                                         |
-| TruthSlayer audit, composite code score, rate a repo, marketplace audit, trust/authenticity badge                       | [`truthslayer-audit`](#truthslayer-audit)                     |
-| AI model selection, cost optimization, Sonnet vs Opus                                                                   | [`model-router`](#model-router)                               |
-| OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens                                              | [`openrouter-swarms`](#openrouter-swarms)                     |
-| 49Agents, agentic IDE, visual monitoring, parallel research, agent HQ, desktop agents                                   | [`49agents`](#49agents)                                       |
-| Agent fallback, OpenHands backup, Cursor, rate limits, high availability                                                | [`agent-fallback`](#agent-fallback)                           |
-| Session token limits, context handoffs, memory management                                                               | [`context-management`](#context-management)                   |
-| Memory pruning, session logs, half-life retention                                                                       | [`memory-pruning`](#memory-pruning)                           |
-| OpenClaw agent self-audit, soul/memory/agent/skill check, readiness/pre-flight                                          | [`openclaw-self-eval`](#openclaw-self-eval)                   |
-| Persistent agent memory, brain repo, knowledge base, gbrain                                                             | [`gbrain`](#gbrain)                                           |
-| Activating a persona, greeting, guided session, character                                                               | [`persona-engine`](#persona-engine)                           |
-| Building, creating, or scaffolding a new skill                                                                          | [`skill-forge`](#skill-forge)                                 |
-| Breaking down features into atomic TODOs                                                                                | [`todo-breakdown`](#todo-breakdown)                           |
-| Multiple agents working simultaneously                                                                                  | [`parallel-development`](#parallel-development)               |
-| Git worktrees, parallel branches                                                                                        | [`using-git-worktrees`](#using-git-worktrees)                 |
-| Wrapping up a session, publishing artifacts                                                                             | [`wrap-up`](#wrap-up)                                         |
-| Brainstorming, ideation, creative problem solving                                                                       | [`brainstorming`](#brainstorming)                             |
-| Code review, PR review, quality gates                                                                                   | [`code-review`](#code-review)                                 |
-| Security, OWASP, secrets, API keys, auth                                                                                | [`security`](#security)                                       |
-| API key / token / credential provisioning, vault, MCP connection                                                        | [`vault-agent`](#vault-agent)                                 |
-| Accessibility, WCAG, screen readers, TTY/TDD                                                                            | [`accessibility`](#accessibility)                             |
-| Probabilistic orchestration, AI validation layers, self-correction, structural validation                               | [`probabilistic-orchestration`](#probabilistic-orchestration) |
-| ADA compliance audits, free certifications, autonomous monitoring, accessibility agent                                  | [`ada-compliance-agent`](#ada-compliance-agent)               |
-| Deploying to DigitalOcean, PM2, Nginx, CI/CD                                                                            | [`deployment`](#deployment)                                   |
-| CircleCI, circleci CLI, .circleci/config.yml, orbs, pipeline tuning, test splitting, config policies, ORBIT             | [`circleci-expert`](#circleci-expert)                         |
-| Octopus Review, usage limit banner, octp CLI, repo index, review-bot model routing, OCTO                                | [`octopus-expert`](#octopus-expert)                           |
-| Mabl expertise, un-pause/reactivate Mabl, credit-free test runs, mabl MCP, Mailbox email testing, MENDER                | [`mabl-expert`](#mabl-expert)                                 |
-| OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph                    | [`openclaw-eeat`](#openclaw-eeat)                             |
-| SEO, metadata, Open Graph, JSON-LD, Lighthouse                                                                          | [`seo-metadata`](#seo-metadata)                               |
-| Schema.org validation, JSON-LD checker, Google Rich Results, structured data, rich snippets                             | [`schema-rich-results`](#schema-rich-results)                 |
-| E-E-A-T, Google trust signals, Knowledge Panel, schema.org authority, brand identity, ORCID                             | [`eeat-trust-authority`](#eeat-trust-authority)               |
-| Writing tests, Vitest, Playwright, coverage                                                                             | [`testing`](#testing)                                         |
-| Testing iOS / Android / Expo / React Native apps, Maestro, jest-expo                                                    | [`mobile-testing`](#mobile-testing)                           |
-| Mabl, AI test automation, self-healing tests, cross-browser, deployment events                                          | [`mabl`](#mabl)                                               |
-| Mixpanel, product analytics, user-behavior events, funnels, retention, cohorts, telemetry                               | [`mixpanel`](#mixpanel)                                       |
-| PostHog, product analytics, session replay, feature flags, A/B testing, error tracking, source maps, annotations        | [`posthog`](#posthog)                                         |
-| Amplitude → Notion sync, governance metrics in Notion, scheduled analytics-into-Notion agent                            | [`amplitude-notion-agent`](#amplitude-notion-agent)           |
-| NoimosAI, autonomous marketing team, SEO, content, social media, affiliate links, email marketing, marketing automation | [`noimosai`](#noimosai)                                       |
-| Generating and running skill/unit/E2E tests (ephemeral agent)                                                           | [`testing-agent`](#testing-agent)                             |
-| Error monitoring, server jobs, GitHub issue alerts                                                                      | [`error-reporting`](#error-reporting)                         |
-| CI failure auto-fix, self-healing loop, @copilot retry, won't merge                                                     | [`ralph-loop`](#ralph-loop)                                   |
-| Starting a coding session, defining scope                                                                               | [`mvi-contract`](#mvi-contract)                               |
-| Checking production state, session handoff                                                                              | [`system-state`](#system-state)                               |
-| Tracking decisions, risks, issues (DARE/RAID)                                                                           | [`dare-log`](#dare-log)                                       |
-| Generating docs, changelogs, API references                                                                             | [`auto-documentation`](#auto-documentation)                   |
-| Concurrent branches, merging, conflict resolution                                                                       | [`concurrent-development`](#concurrent-development)           |
-| Agent behavior testing, evaluator agents, WoZ                                                                           | [`shift-testing`](#shift-testing)                             |
-| Tax returns, IRS, legal research, court filing                                                                          | [`tax-legal-agent`](#tax-legal-agent)                         |
-| USDA loans, rural development, loan packagers, property eligibility, income limits                                      | [`usda-loan-agent`](#usda-loan-agent)                         |
-| Creating a new bot, bot spec, visual bot styles (glassmorphic/bt21/pacman/etc.)                                         | [`bot-creator`](#bot-creator)                                 |
-| Daily product pipeline, social listening, ROI gate, Stripe wiring, marketplace deploy, agent-generated products         | [`product-pipeline`](#product-pipeline)                       |
-| Agent prompt detection, TODO @agent routing, @bito @goap @roo tags, HANDOFF.md execution                                | [`prompt-routing`](#prompt-routing)                           |
-| Roo-Cline, local development, VS Code agent, multi-file refactoring, @roo tag                                           | [`roo-cline`](#roo-cline)                                     |
-| TDD red-green-refactor, structured debugging, Socratic brainstorming, /execute-plan, subagent code review, Superpowers  | [`superpowers`](#superpowers)                                 |
+| If the task involves... | Load this skill |
+|---|---|
+| RecurseML, autonomous PR review, bug detection, code standards | [`recurse-ml`](#recurse-ml) |
+| Knowledge sheaf, sheaf consistency, H¹, Laplacian energy, persistent homology, barcodes, imprint-at-spawn, MOTU, BNAT | [`bnatsheaf`](#bnatsheaf) |
+| BITO AI, persistent-memory code review, desktop API procurement, bito cli, bito secret, repo memory, agentic review | [`bito-ai`](#bito-ai) |
+| TruthSlayer audit, composite code score, rate a repo, marketplace audit, trust/authenticity badge | [`truthslayer-audit`](#truthslayer-audit) |
+| AI model selection, cost optimization, Sonnet vs Opus | [`model-router`](#model-router) |
+| OpenRouter, multi-agent systems, swarms, agent naming, GitHub model tokens | [`openrouter-swarms`](#openrouter-swarms) |
+| 49Agents, agentic IDE, visual monitoring, parallel research, agent HQ, desktop agents | [`49agents`](#49agents) |
+| Agent fallback, OpenHands backup, Cursor, rate limits, high availability | [`agent-fallback`](#agent-fallback) |
+| Session token limits, context handoffs, memory management | [`context-management`](#context-management) |
+| Memory pruning, session logs, half-life retention | [`memory-pruning`](#memory-pruning) |
+| OpenClaw agent self-audit, soul/memory/agent/skill check, readiness/pre-flight | [`openclaw-self-eval`](#openclaw-self-eval) |
+| Persistent agent memory, brain repo, knowledge base, gbrain | [`gbrain`](#gbrain) |
+| Activating a persona, greeting, guided session, character | [`persona-engine`](#persona-engine) |
+| Building, creating, or scaffolding a new skill | [`skill-forge`](#skill-forge) |
+| Breaking down features into atomic TODOs | [`todo-breakdown`](#todo-breakdown) |
+| Multiple agents working simultaneously | [`parallel-development`](#parallel-development) |
+| Git worktrees, parallel branches | [`using-git-worktrees`](#using-git-worktrees) |
+| Wrapping up a session, publishing artifacts | [`wrap-up`](#wrap-up) |
+| Brainstorming, ideation, creative problem solving | [`brainstorming`](#brainstorming) |
+| Code review, PR review, quality gates | [`code-review`](#code-review) |
+| Security, OWASP, secrets, API keys, auth | [`security`](#security) |
+| API key / token / credential provisioning, vault, MCP connection | [`vault-agent`](#vault-agent) |
+| Accessibility, WCAG, screen readers, TTY/TDD | [`accessibility`](#accessibility) |
+| ADA compliance audits, free certifications, autonomous monitoring, accessibility agent | [`ada-compliance-agent`](#ada-compliance-agent) |
+| Deploying to DigitalOcean, PM2, Nginx, CI/CD | [`deployment`](#deployment) |
+| CircleCI, circleci CLI, .circleci/config.yml, orbs, pipeline tuning, test splitting, config policies, ORBIT | [`circleci-expert`](#circleci-expert) |
+| Octopus Review, usage limit banner, octp CLI, repo index, review-bot model routing, OCTO | [`octopus-expert`](#octopus-expert) |
+| Mabl expertise, un-pause/reactivate Mabl, credit-free test runs, mabl MCP, Mailbox email testing, MENDER | [`mabl-expert`](#mabl-expert) |
+| OpenClaw E-E-A-T, brand distribution, Wikidata, ORCID, ResearchGate, OSINT profiles, Knowledge Graph | [`openclaw-eeat`](#openclaw-eeat) |
+| SEO, metadata, Open Graph, JSON-LD, Lighthouse | [`seo-metadata`](#seo-metadata) |
+| Schema.org validation, JSON-LD checker, Google Rich Results, structured data, rich snippets | [`schema-rich-results`](#schema-rich-results) |
+| E-E-A-T, Google trust signals, Knowledge Panel, schema.org authority, brand identity, ORCID | [`eeat-trust-authority`](#eeat-trust-authority) |
+| Writing tests, Vitest, Playwright, coverage | [`testing`](#testing) |
+| Testing iOS / Android / Expo / React Native apps, Maestro, jest-expo | [`mobile-testing`](#mobile-testing) |
+| Mabl, AI test automation, self-healing tests, cross-browser, deployment events | [`mabl`](#mabl) |
+| Mixpanel, product analytics, user-behavior events, funnels, retention, cohorts, telemetry | [`mixpanel`](#mixpanel) |
+| PostHog, product analytics, session replay, feature flags, A/B testing, error tracking, source maps, annotations | [`posthog`](#posthog) |
+| Amplitude → Notion sync, governance metrics in Notion, scheduled analytics-into-Notion agent | [`amplitude-notion-agent`](#amplitude-notion-agent) |
+| NoimosAI, autonomous marketing team, SEO, content, social media, affiliate links, email marketing, marketing automation | [`noimosai`](#noimosai) |
+| Generating and running skill/unit/E2E tests (ephemeral agent) | [`testing-agent`](#testing-agent) |
+| Error monitoring, server jobs, GitHub issue alerts | [`error-reporting`](#error-reporting) |
+| CI failure auto-fix, self-healing loop, @copilot retry, won't merge | [`ralph-loop`](#ralph-loop) |
+| Starting a coding session, defining scope | [`mvi-contract`](#mvi-contract) |
+| Checking production state, session handoff | [`system-state`](#system-state) |
+| Tracking decisions, risks, issues (DARE/RAID) | [`dare-log`](#dare-log) |
+| Generating docs, changelogs, API references | [`auto-documentation`](#auto-documentation) |
+| Concurrent branches, merging, conflict resolution | [`concurrent-development`](#concurrent-development) |
+| Agent behavior testing, evaluator agents, WoZ | [`shift-testing`](#shift-testing) |
+| Tax returns, IRS, legal research, court filing | [`tax-legal-agent`](#tax-legal-agent) |
+| USDA loans, rural development, loan packagers, property eligibility, income limits | [`usda-loan-agent`](#usda-loan-agent) |
+| Creating a new bot, bot spec, visual bot styles (glassmorphic/bt21/pacman/etc.) | [`bot-creator`](#bot-creator) |
+| Daily product pipeline, social listening, ROI gate, Stripe wiring, marketplace deploy, agent-generated products | [`product-pipeline`](#product-pipeline) |
+| Agent prompt detection, TODO @agent routing, @bito @goap @roo tags, HANDOFF.md execution | [`prompt-routing`](#prompt-routing) |
+| Roo-Cline, local development, VS Code agent, multi-file refactoring, @roo tag | [`roo-cline`](#roo-cline) |
+| TDD red-green-refactor, structured debugging, Socratic brainstorming, /execute-plan, subagent code review, Superpowers | [`superpowers`](#superpowers) |
 
 ---
 
@@ -145,7 +143,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ### Agent Operations
 
 #### agent-fallback
-
 - **Path:** `.github/workflows/agent-fallback.yml` · `docs/AGENT_FALLBACK_PROCESS.md`
 - **Description:** Automatic agent fallback system that switches between OpenHands AI, Cursor, and OpenRouter when rate limits are reached or agents are unavailable. Implements the fallback chain: OpenHands → Cursor → OpenRouter → Manual escalation. Monitors agent health, logs fallback events, and creates visibility issues for tracking. Ensures zero-downtime automation.
 - **Tags:** agent-fallback, OpenHands, cursor, openrouter, rate-limit, backup, high-availability, automation
@@ -153,7 +150,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Lifecycle:** System-level — always active as part of automation infrastructure.
 
 #### persona-engine
-
 - **Path:** `skills/persona-engine/`
 - **Files:** `SKILL.md` · `persona-engine.skill.yml` · `tests/promptfoo.yml`
 - **Description:** Ephemeral persona engine that attaches a named character to any skill session. Activates on demand, delivers greeting + guided first prompt, maintains persona voice throughout, and signs off cleanly. Eliminates the cold-start UX problem. Ships with 6 built-in personas: Aria (code review), Forge (skill building), Vault (security), Scout (research), Sage (documentation), Nexus (deployment).
@@ -162,7 +158,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Lifecycle:** Ephemeral — session-scoped, terminates at session end.
 
 #### gbrain
-
 - **Path:** `skills/gbrain/`
 - **Files:** `SKILL.md` · `gbrain.skill.yml`
 - **Description:** Connects an AI agent to a persistent, searchable knowledge base built from markdown files. The brain-agent loop: read from brain before every response, write back after. Knowledge compounds with every session. Derived from garrytan/gbrain (PGLite + pgvector, 30 MCP tools).
@@ -170,7 +165,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Persistent agent memory, brain repo, knowledge compounding, remember between sessions, gbrain.
 
 #### openrouter-swarms
-
 - **Path:** `skills/openrouter-swarms/`
 - **Files:** `SKILL.md` · `openrouter-swarms.skill.yml`
 - **Description:** Decision framework for routing tasks to the right model via OpenRouter, choosing the correct agent topology (single / MAS / swarm), and assigning human names to every spawned agent. Includes the Revvel Agent Name Registry, GitHub model tokens (o1 Cell Sequencing, GPT-5 Nano Physics Coding), cost governance, and deep research protocols.
@@ -179,7 +173,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Persona:** 🔭 Scout
 
 #### model-router
-
 - **Path:** `skills/model-router/`
 - **Files:** `SKILL.md` · `model-router.skill.yml`
 - **Description:** Intelligent model selection (Sonnet vs Opus) based on task complexity for cost-effective AI operations.
@@ -187,7 +180,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Any task where model selection matters; default to Sonnet, escalate to Opus for complex analysis.
 
 #### context-management
-
 - **Path:** `skills/context-management/`
 - **Files:** `SKILL.md` · `context-management.skill.yml`
 - **Description:** Optimize token usage and prevent cost explosion through intelligent session management.
@@ -195,7 +187,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Sessions approaching 100k tokens; multi-session projects; context handoffs.
 
 #### memory-pruning
-
 - **Path:** `skills/memory-pruning/`
 - **Files:** `SKILL.md` · `memory-pruning.skill.yml`
 - **Description:** Aggressive memory management with half-life strategies to prevent information bloat.
@@ -203,7 +194,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Memory files growing large; end of long sessions; wrap-up procedures.
 
 #### openclaw-self-eval
-
 - **Path:** `skills/openclaw-self-eval/`
 - **Files:** `SKILL.md` · `openclaw-self-eval.skill.yml` · `tests/promptfoo.yml`
 - **Description:** Ephemeral pre-flight auditor for any OpenClaw-style agent. Runs 8 read-only audits (soul, memory, agent manifest, skill files, installers, persona, vault/secrets, drift) and emits a markdown report + JSON sidecar with a prioritized P0/P1/P2 fix list. Never reads secret values; never writes to memory.
@@ -217,7 +207,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ### Developer Workflow
 
 #### skill-forge
-
 - **Path:** `skills/skill-forge/`
 - **Files:** `SKILL.md` · `skill-forge.skill.yml` · `tests/promptfoo.yml`
 - **Description:** The meta-skill that builds new skills. Interviews the user with 10 discovery questions, then generates all required skill files in one shot: SKILL.md, .skill.yml, persona.yml, PromptFoo tests, Windows .bat installer, Mac .command installer, README, and a marketplace listing draft. Adds the skill to SKILLS_INDEX.yml and REGISTRY.md automatically. Uses the Forge persona.
@@ -227,7 +216,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Persona:** 🔨 Forge
 
 #### brainstorming
-
 - **Path:** `skills/brainstorming/`
 - **Files:** `SKILL.md` · `brainstorming.skill.yml`
 - **Description:** Structured brainstorming methodology for software development ideation.
@@ -235,7 +223,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Feature ideation, architecture exploration, creative problem-solving sessions.
 
 #### todo-breakdown
-
 - **Path:** `skills/todo-breakdown/`
 - **Files:** `SKILL.md` · `todo-breakdown.skill.yml`
 - **Description:** Break complex requirements into structured, independently implementable TODOs with acceptance criteria.
@@ -243,7 +230,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Any time complex requirements need to be broken into implementable tasks.
 
 #### parallel-development
-
 - **Path:** `skills/parallel-development/`
 - **Files:** `SKILL.md` · `parallel-development.skill.yml`
 - **Description:** Coordinate multiple agents working on the same project simultaneously without conflicts.
@@ -251,7 +237,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Multiple agents assigned to the same project; large feature sets needing parallel execution.
 
 #### using-git-worktrees
-
 - **Path:** `skills/using-git-worktrees/`
 - **Files:** `SKILL.md` · `using-git-worktrees.skill.yml`
 - **Description:** Manage multiple working directories under a single repository for parallel development.
@@ -259,7 +244,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Working on multiple branches simultaneously; parallel development setup.
 
 #### wrap-up
-
 - **Path:** `skills/wrap-up/`
 - **Files:** `SKILL.md` · `wrap-up.skill.yml`
 - **Description:** Four-phase session wrap-up workflow: Ship It, Remember It, Review & Apply, Publish It.
@@ -267,7 +251,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Closing any coding session; before context limit is reached; end of MVI.
 
 #### code-review
-
 - **Path:** `skills/code-review/`
 - **Files:** `SKILL.md` · `code-review.skill.yml`
 - **Description:** Enforce Revvel code review standards including security, accessibility, test coverage, and style gates.
@@ -275,7 +258,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Reviewing any PR or code change before merging.
 
 #### testing
-
 - **Path:** `skills/testing/`
 - **Files:** `SKILL.md` · `testing.skill.yml`
 - **Description:** Apply Revvel testing standards with Vitest, Playwright E2E, and mandatory coverage thresholds.
@@ -283,7 +265,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Writing any tests; setting up test infrastructure; validating coverage thresholds.
 
 #### mvi-contract
-
 - **Path:** `skills/mvi-contract/`
 - **Files:** `SKILL.md` · `mvi-contract.skill.yml`
 - **Description:** Fill out the 7-section MVI Contract before every coding session to define scope and acceptance gates.
@@ -291,7 +272,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** **MANDATORY** — start of every coding session. Fill the contract before writing any code.
 
 #### system-state
-
 - **Path:** `skills/system-state/`
 - **Files:** `SKILL.md` · `system-state.skill.yml`
 - **Description:** Maintain SYSTEM_STATE.md as the single source of truth for production status.
@@ -299,7 +279,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** **MANDATORY** — read at session start, update at session end.
 
 #### dare-log
-
 - **Path:** `skills/dare-log/`
 - **Files:** `SKILL.md` · `dare-log.skill.yml`
 - **Description:** Track decisions and risks using the DARE framework (Define, Assess, Respond, Evaluate).
@@ -307,7 +286,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Major architectural decisions; tracking unresolved issues; agent failure analysis.
 
 #### auto-documentation
-
 - **Path:** `skills/auto-documentation/`
 - **Files:** `SKILL.md` · `auto-documentation.skill.yml`
 - **Description:** Automatically generate and maintain project documentation, changelogs, and API docs.
@@ -315,7 +293,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** After shipping any feature; generating changelogs; creating API reference docs.
 
 #### concurrent-development
-
 - **Path:** `skills/concurrent-development/`
 - **Files:** `SKILL.md` · `concurrent-development.skill.yml`
 - **Description:** Coordinate concurrent development across multiple branches with safe merging strategies.
@@ -323,7 +300,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Multiple developers or agents working on the same codebase simultaneously.
 
 #### shift-testing
-
 - **Path:** `skills/shift-testing/`
 - **Files:** `SKILL.md` · `shift-testing.skill.yml`
 - **Description:** Evaluate AI agent behavior across five quality dimensions using the S.H.I.F.T. methodology.
@@ -345,7 +321,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Persona:** 🪐 ORBIT (Pipeline Commander)
 
 #### deployment
-
 - **Path:** `skills/deployment/`
 - **Files:** `SKILL.md` · `deployment.skill.yml`
 - **Description:** Deploy Revvel applications to DigitalOcean using PM2, Nginx, and GitHub Actions CI/CD.
@@ -353,7 +328,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Deploying any application to production or staging.
 
 #### error-reporting
-
 - **Path:** `skills/error-reporting/`
 - **Files:** `SKILL.md` · `error-reporting.skill.yml`
 - **Description:** Implement three-tier error reporting (console → email → GitHub Issue) for all server jobs.
@@ -361,7 +335,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Writing any scheduled job, background worker, webhook handler, or payment function.
 
 #### ralph-loop
-
 - **Path:** `skills/ralph-loop/`
 - **Files:** `SKILL.md` · `ralph-loop.skill.yml`
 - **Description:** Self-healing CI loop — when a check fails, Ralph triggers @copilot via a PR comment, blocks the merge with a `won't-merge` label, and retries on every subsequent commit push until all checks pass (auto-merge) or the retry limit is reached (escalate to human). RALPH: Retry → Analyze → Log → Patch → reCheck.
@@ -373,7 +346,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ### Security & Compliance
 
 #### vault-agent
-
 - **Path:** `skills/vault-agent/`
 - **Files:** `SKILL.md` · `vault_agent.skill.yml`
 - **Description:** Ephemeral gatekeeper agent that provisions, stores, and rotates all secrets (API keys, OAuth tokens, DB credentials, MCP connections) via HashiCorp Vault. Spawns on demand, provisions with minimum privilege, and terminates. Triggers the Ralph Loop on failure.
@@ -381,7 +353,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** `api key`, `oauth token`, `vault`, `credential`, `secret`, `database url`, `mcp credential`, `provision`, `register api`, `github secret`, `expired token`, `rotate credential`, new project bootstrap.
 
 #### security
-
 - **Path:** `skills/security/`
 - **Files:** `SKILL.md` · `security.skill.yml`
 - **Description:** Apply OWASP top 10 protections, secret management, input sanitization, and authentication standards.
@@ -389,7 +360,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Any work touching authentication, API keys, user inputs, or data storage.
 
 #### security-fleet
-
 - **Path:** `skills/security-fleet/`
 - **Files:** `SKILL.md` · `security-fleet.skill.yml` · `SECURITY_FLEET.yml`
 - **Description:** Five single-job AI-exploit red-team experts on the agentic-workflow-fleet model: `@sentinel` (prompt-injection tripwire on agent-consumed text), `@exprwatch` (untrusted `${{ github.event.* }}` in `run:` shells), `@exfil` (leaked tokens in diffs/logs, extends secrets-sentinel), `@permit` (per-workflow `permissions:` vs actual usage), `@redteam` (patch-agent dependency lane + adversarial tests against our own detectors). Personas are derived from `SECURITY_FLEET.yml`; detectors live in `scripts/security-fleet.js`; lanes in `.github/workflows/security-fleet.yml` file `security-fleet`-labeled findings.
@@ -397,7 +367,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** `security fleet`, `red team`, `prompt injection`, `instruction smuggling`, `expression injection`, `secret exfil`, `leaked token`, `permission audit`, `least privilege`, `adversarial tests`.
 
 #### grc-compliance
-
 - **Path:** `skills/grc-compliance/`
 - **Files:** `SKILL.md` · `grc-compliance.skill.yml`
 - **Fork:** [`midnghtsapphire/Claude-Skills-Governance-Risk-and-Compliance`](https://github.com/midnghtsapphire/Claude-Skills-Governance-Risk-and-Compliance) (upstream: `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance` v0.3.0)
@@ -410,7 +379,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ### Accessibility & Compliance
 
 #### accessibility
-
 - **Path:** `skills/accessibility/`
 - **Files:** `SKILL.md` · `accessibility.skill.yml`
 - **Description:** Implement WCAG 2.2 AA/AAA, TTY/TDD support, 7 UI modes, and ADA compliance for insurance.
@@ -418,7 +386,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Building any UI component; insurance/financial app features; public-facing pages.
 
 #### ada-compliance-agent
-
 - **Path:** `skills/ada-compliance-agent/`
 - **Files:** `SKILL.md` · `ada-compliance-agent.skill.yml` · `README.md` · `EXAMPLES.md` · `IMPLEMENTATION_SUMMARY.md` · `.github/workflows/ada-compliance-check.yml`
 - **Description:** Autonomous agent for researching, learning, and enforcing ADA compliance. Monitors for new certifications, audits code for WCAG 2.2 AA/AAA compliance, and ensures all accessibility standards are met. Can run on-demand, scheduled, or 24/7 via OpenRouter. Tracks free and paid ADA certification courses, auto-fixes safe violations, and continuously learns from new courses and standards updates.
@@ -431,7 +398,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ### Content & Marketing
 
 #### openclaw-eeat
-
 - **Path:** `skills/openclaw-eeat/`
 - **Files:** `SKILL.md` · `openclaw-eeat.skill.yml` · `README.md` · `templates/` · `tests/promptfoo.yml`
 - **Description:** Automated brand content distribution across 12 high-value platforms (ORCID, Wikidata, ResearchGate, Internet Archive, MISP, Bellingcat, etc.) to establish E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) signals for Google Knowledge Graph eligibility and OSINT community presence. Generates platform-specific schemas (JSON-LD, ORCID XML, Wikidata RDF), auto-submits where APIs permit, and drafts manual submissions with step-by-step instructions.
@@ -441,7 +407,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Lifecycle:** Ephemeral
 
 #### seo-metadata
-
 - **Path:** `skills/seo-metadata/`
 - **Files:** `SKILL.md` · `seo-metadata.skill.yml`
 - **Description:** Apply mandatory SEO metadata, Open Graph, Twitter Cards, JSON-LD schemas, targeting Lighthouse 90+.
@@ -449,7 +414,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Trigger:** Creating or updating any public-facing page; adding new routes; content publishing.
 
 #### schema-rich-results
-
 - **Path:** `skills/schema-rich-results/`
 - **Files:** `SKILL.md` · `schema-rich-results.skill.yml`
 - **Script:** `scripts/schema-rich-results-checker.js`
@@ -477,9 +441,7 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Description:** Wire NoimosAI's autonomous marketing agent fleet into any Revvel project. NoimosAI handles SEO audits, content creation, social media scheduling, affiliate link management, and email marketing automatically. Triggered by GitHub issue labels (`noimosai`, `marketing`, `seo`, `content`, `affiliate`) and a daily 08:00 UTC cron. Ships `.github/workflows/noimosai.yml`, `standards/NOIMOSAI_INTEGRATION_STANDARD.md`, and `.env.example` entries for `NOIMOSAI_API_KEY` / `NOIMOSAI_WORKSPACE_ID`.
 - **Tags:** noimosai, marketing-automation, autonomous-marketing, seo, content, social-media, affiliate, email-marketing, marketing-agent
 - **Trigger:** "noimosai", "marketing automation", "autonomous marketing", "seo agent", "content agent", "social media automation", "affiliate optimization", "email campaign", any issue labelled `marketing`, `seo`, `content`, `affiliate`, or `noimosai`.
-
 #### eeat-trust-authority
-
 - **Path:** `skills/eeat-trust-authority/`
 - **Files:** `SKILL.md` · `eeat-trust-authority.skill.yml`
 - **Agent Name:** TrustForge
@@ -492,7 +454,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ### Tax & Legal
 
 #### tax-legal-agent
-
 - **Path:** `skills/tax-legal-agent/`
 - **Files:** `SKILL.md` · `tax-legal-agent.skill.yml`
 - **Description:** Activate for any tax or legal query — returns, IRS correspondence, case law, court filings, contracts.
@@ -536,7 +497,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ---
 
 #### testing-agent
-
 - **Path:** `skills/testing-agent/`
 - **Files:** `SKILL.md` · `testing-agent.skill.yml` · `tests/promptfoo.yml`
 - **Description:** Ephemeral agent that generates and evaluates tests for Revvel skills and projects. Understands PromptFoo (skill tests), Vitest (unit tests), and Playwright (E2E). Spawns on demand, terminates after delivery.
@@ -593,7 +553,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 ### Bot Creation
 
 #### bot-creator
-
 - **Path:** `skills/bot-creator/`
 - **Files:** `SKILL.md` · `bot-creator.skill.yml`
 - **Description:** Turns a plain-language idea into a complete, scaffolded bot spec. Runs a 5-question interview, locks one functional category (adulting, creative, study, coding, productivity, social, finance, wellness, gaming, shopping, weaponized, guardian), and composes 1–2 visual styles from a 14-style library (dimensional: `1d`, `2d`, `3d`, `glassmorphic`, `pacman`; persona/culture: `weaponized`, `adulting`, `bt21`, `pretty-pony`, `memelord`, `genz`, `genx`, `millennial`, `boomer`). Enforces combo rules (max 2 styles, no `boomer × memelord`, etc.), defaults backgrounds to `minimal` (dioramas off by default), and emits a `bots/<bot-slug>/` scaffold with `BOT.md`, `bot.yml`, `persona.yml`, `theme.json`. Weaponized category ships with firm safety rails.
@@ -617,7 +576,6 @@ A skill is a text file that gives an AI agent specialized, focused instructions 
 - **Persona:** 🕵️ DRAGNET (SCAFFOLD MODE)
 
 #### product-pipeline
-
 - **Path:** `skills/product-pipeline/`
 - **Files:** `SKILL.md` · `skill.yml`
 - **Description:** Operates the daily Revvel product creation pipeline defined in [`standards/AUTOMATED_PRODUCT_PIPELINE.md`](../standards/AUTOMATED_PRODUCT_PIPELINE.md). Listens across X / Reddit / TikTok / YouTube / app-store / Amazon reviews for high-volume complaints, clusters and ranks them by `volume × payability × blue_ocean / age`, scans competitors and reviews for SEO/SEM gaps, runs an ROI gate that auto-approves only cheap reversible shapes (PDF, MCP, CLI, skill) and otherwise pings Audrey, routes the candidate to the cheapest viable solution shape (PDF / one-button app / extension / Alexa skill / API / CLI / MCP / booklet / full app), hands the per-product `BOM.md` to the BOM gatekeeper, builds with the shape-specific scaffold, runs every cert (code, security, a11y, store, tax/legal), wires Stripe idempotently keyed on `product_slug`, deploys to the highest-volume marketplaces for that shape (Gumroad/Etsy/App Store/Play/Chrome Web Store/RapidAPI/npm+brew+scoop/mcp.so/own domain), runs UTM-tagged SEM + paid social capped at `min($20, est_daily_revenue / 5)`, and rolls Stripe + analytics back into the next day's listening payability weights. Per-product folders live at `projects/agent-generated/<slug>/`, scaffolded by `scripts/init-product.sh` from `templates/agent-generated-product/`.
@@ -646,7 +604,9 @@ These skills **must** be loaded at the start of every agent session:
 3. **`model-router`** — Route tasks to the correct model (Sonnet/Opus).
 4. **`context-management`** — Monitor token usage throughout the session.
 
-At the end of every session: 5. **`wrap-up`** — Ship, Remember, Review, Publish. 6. **`memory-pruning`** — Prune session logs to stay under limits.
+At the end of every session:
+5. **`wrap-up`** — Ship, Remember, Review, Publish.
+6. **`memory-pruning`** — Prune session logs to stay under limits.
 
 ---
 
@@ -661,7 +621,7 @@ At the end of every session: 5. **`wrap-up`** — Ship, Remember, Review, Publis
 
 ---
 
-_This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: May 3, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent, bito-ai, prompt-routing, roo-cline skills._
+*This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: May 3, 2026. Added: ada-compliance-agent, usda-loan-agent, gbrain, openrouter-swarms, ralph-loop, testing-agent, mabl, bot-creator, mixpanel, amplitude-notion-agent, bito-ai, prompt-routing, roo-cline skills.*
 
 ---
 
@@ -717,9 +677,3 @@ _This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: Ma
 - **Trigger:** "knowledge sheaf", "sheaf consistency", "H1", "Laplacian energy", "persistent homology", "barcode", "imprint-at-spawn", "MOTU", "BNAT", "obstruction"
 - **Documentation:** `docs/bnatsheaf/README.md` · `standards/BNAT_SHEAF_STANDARD.md`
 - **Status:** Active (tests: `tests/bnatsheaf.test.js`)
-
-### `probabilistic-orchestration`
-
-- **Path:** `skills/probabilistic-orchestration/SKILL.md`
-- **Persona:** DRAGNET (PROBABILISTIC MODE)
-- **Description:** Defensive guardrails, validation layers, and self-correction loops for handling unpredictable AI outputs. Use this skill when parsing LLM outputs or building AI-driven pipelines.

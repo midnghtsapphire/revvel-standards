@@ -26,18 +26,18 @@ Badges are **at-a-glance health**, not decoration. Every badge must resolve to a
 
 ## Badge types we use
 
-1. **GitHub Actions badge** — `…/actions/workflows/<file>.yml/badge.svg`  
+1. **GitHub Actions badge** — `…/actions/workflows/<file>.yml/badge.svg`
    Source of truth for pass/fail of a named workflow.
-2. **Shields.io static** — only for *stable* facts (license, site URL, phase).  
+2. **Shields.io static** — only for *stable* facts (license, site URL, phase).
    Never use static green for CI health.
 3. **Shields.io dynamic** (endpoint / GitHub) — optional for open issue count, last commit.
 4. **Commit status / checks** — the real gate for merge; badges only *display* them.
 
 ## Rules
 
-- Every new workflow that matters gets a badge **or** a Project status field — not both noise.  
-- Prefer **check runs** for merge gates; badges for humans scanning the README.  
-- Agents must refresh badge links when renaming workflows.  
+- Every new workflow that matters gets a badge **or** a Project status field — not both noise.
+- Prefer **check runs** for merge gates; badges for humans scanning the README.
+- Agents must refresh badge links when renaming workflows.
 - Do not invent custom emoji-status in issues when a badge/check exists.
 
 ## PR status comment (preferred over badge spam)
@@ -57,6 +57,6 @@ Workflows should post a single sticky comment:
 
 After `formal-auto-wr` lands:
 
-- `formal:pass` / `formal:fail` / `formal:reaudit` labels (allowlisted)  
-- Project field **Formal Verdict**  
+- `formal:pass` / `formal:fail` / `formal:reaudit` labels (allowlisted)
+- Project field **Formal Verdict**
 - Optional shields endpoint later from `artifacts/formal-report.json` published as a gist or Pages JSON

@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-08T02:38:48.519Z",
+  "generated_at": "2026-08-05T22:24:20.561Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,17 +15,17 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 31235410833,
-            "name": ".github/workflows/release-banner-social.yml",
-            "path": ".github/workflows/release-banner-social.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31235410833",
+            "id": 31052549309,
+            "name": "apply-revvel-command-project-fields",
+            "path": ".github/workflows/apply-revvel-command-project-fields.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31052549309",
             "conclusion": "failure"
           },
           {
-            "id": 31235410511,
-            "name": ".github/workflows/apisec-scan.yml",
-            "path": ".github/workflows/apisec-scan.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31235410511",
+            "id": 31052413875,
+            "name": "apply-revvel-command-project-fields",
+            "path": ".github/workflows/apply-revvel-command-project-fields.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31052413875",
             "conclusion": "failure"
           }
         ],

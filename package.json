@@ -48,8 +48,8 @@
     "ajv-formats": "^3.0.1",
     "c8": "^12.0.0",
     "googleapis": "^173.0.0",
-    "markdownlint-cli2": "^0.23.2",
-    "semver": "^7.8.5",
+    "markdownlint-cli2": "^0.22.1",
+    "semver": "^7.6.3",
     "sitemap-generator-cli": "^7.5.0",
     "typescript": "^5.7.0",
     "yaml": "^2.9.0"

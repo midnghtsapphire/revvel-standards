@@ -4,13 +4,6 @@ All midnghtsapphire projects MUST follow these security standards.
 
 ## Injection Prevention
 
-### Prompt Injection (AI/LLM)
-
-Agents and LLM-backed workflows must follow
-[`INDIRECT_PROMPT_INJECTION_STANDARD.md`](./INDIRECT_PROMPT_INJECTION_STANDARD.md)
-— treat fetched webpages, issue/PR text, tool metadata, and memory entries as
-untrusted data, never as instructions.
-
 ### SQL Injection
 
 **NEVER do this:**

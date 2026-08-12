@@ -7,10 +7,10 @@
 ## Evidence
 
 - `.github/workflows/ship-to-market.yml:508-509`:
-  ```text
+  ```
   if [[ -f scripts/record.ts || -f scripts/record.js ]]; then
     npx ts-node scripts/record.ts 2>/dev/null || node scripts/record.js
-  ```text
+  ```
 - `.github/workflows/ship-to-market.yml:533` (the `else` branch, confirmed
   present): `⚠️ **Video step** — no \`scripts/record.ts\` found. Create it
   with a Playwright script and re-run with \`deliver:video\`.`

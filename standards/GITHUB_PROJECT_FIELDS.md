@@ -1,19 +1,19 @@
 # GitHub Project Custom Fields — Revvel Canonical Catalog
 
-**Status:** ACTIVE  
-**Updated:** 2026-08-05  
-**Owner:** midnghtsapphire  
+**Status:** ACTIVE
+**Updated:** 2026-08-05
+**Owner:** midnghtsapphire
 **Related:** `config/labels-allowlist.yml`, `standards/AGENT_REWARD_PRIVILEGE_SYSTEM.md`, `standards/FORMAL_VERIFY_AUTO_WR.md`
 
 ## Why fields beat labels
 
-Labels are flat, untyped, and explode (this repo had **301** labels with near-duplicates like `priority:p0` vs `priority-p0`).  
+Labels are flat, untyped, and explode (this repo had **301** labels with near-duplicates like `priority:p0` vs `priority-p0`).
 **Project custom fields** are typed, filterable, graphable, and automation-friendly via GraphQL + Actions.
 
 **Rule:** put *state and metrics* on Project fields. Keep labels to *routing* only (allowlist ≤ 80).
 
-> Note: the GitHub MCP token for this session cannot list Projects V2 (403).  
-> Apply the field catalog below in the UI or via a PAT with `project` scope.  
+> Note: the GitHub MCP token for this session cannot list Projects V2 (403).
+> Apply the field catalog below in the UI or via a PAT with `project` scope.
 > Track as Project number once created (suggested title: **Revvel Command**).
 
 ---
@@ -60,25 +60,25 @@ Link all work repos (at minimum `revvel-standards` + product repos under `produc
 
 ### Status column options (board)
 
-1. Backlog  
-2. Ready  
-3. In Progress  
-4. Formal Check  
-5. Human Review  ← hard stop  
-6. Blocked  
-7. Done  
-8. Parked  
+1. Backlog
+2. Ready
+3. In Progress
+4. Formal Check
+5. Human Review  ← hard stop
+6. Blocked
+7. Done
+8. Parked
 
 ---
 
 ## Issue fields (org-level preview, May 2026)
 
-GitHub now supports **org Issue Fields** (single-select, text, number, date) that appear on every issue.  
+GitHub now supports **org Issue Fields** (single-select, text, number, date) that appear on every issue.
 When/if the account moves to an org with Issue Fields enabled, mirror:
 
-- Priority  
-- Work Kind  
-- Human Gate  
+- Priority
+- Work Kind
+- Human Gate
 
 …as org fields so they work *even outside* Projects. Until then, Project fields + allowlisted labels are the SSOT.
 
@@ -111,16 +111,16 @@ Use `gh api graphql` in Actions with a fine-grained PAT that has **Projects read
 
 ## What NOT to put in fields
 
-- Secrets or tokens  
-- Full agent transcripts (store under `docs/agents/**` or `wr/memory/`)  
-- Free-text essays — use issue body  
+- Secrets or tokens
+- Full agent transcripts (store under `docs/agents/**` or `wr/memory/`)
+- Free-text essays — use issue body
 
 ---
 
 ## Migration from 301 labels
 
-1. Land `config/labels-allowlist.yml` + checker workflow.  
-2. Create Project fields above.  
-3. Run one-time script mapping aliases → canonical labels.  
-4. Archive legacy labels (do not delete for 90 days — COMMENT-DONT-DELETE spirit).  
+1. Land `config/labels-allowlist.yml` + checker workflow.
+2. Create Project fields above.
+3. Run one-time script mapping aliases → canonical labels.
+4. Archive legacy labels (do not delete for 90 days — COMMENT-DONT-DELETE spirit).
 5. Prefer Project views for triage over label soup.

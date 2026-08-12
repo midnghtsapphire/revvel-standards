@@ -106,26 +106,26 @@ Do **not** re-invent blindly — compose with these:
 
 ## Reconnect checklist (Grok connector write)
 
-1. Grok → Connected apps → GitHub → disconnect if stuck  
+1. Grok → Connected apps → GitHub → disconnect if stuck
 2. Reconnect and grant:
    - Contents: **Read and write**
    - Pull requests: **Read and write**
    - Issues: **Read and write**
-   - Metadata: Read  
-   Optional: Projects R/W, Workflows R/W, Checks R  
-3. Reply `github reconnected` — agent re-probes create branch + COMMENT review  
+   - Metadata: Read
+   Optional: Projects R/W, Workflows R/W, Checks R
+3. Reply `github reconnected` — agent re-probes create branch + COMMENT review
 4. If still 403: check org SSO authorization for the App; fine-grained install may be user-only vs org
 
 ## Anti-patterns
 
-- Assuming MCP tool names mean the session can write  
-- Putting `ghu_` / PATs into pack files or workflow YAML  
-- Overwriting live `agent-scorecard.yml` with a weaker pack version  
-- Enabling auto-merge for Emergency / outside-work / BNAT WR-4484 lanes  
+- Assuming MCP tool names mean the session can write
+- Putting `ghu_` / PATs into pack files or workflow YAML
+- Overwriting live `agent-scorecard.yml` with a weaker pack version
+- Enabling auto-merge for Emergency / outside-work / BNAT WR-4484 lanes
 - Using Actions to merge without human review (violates hard rule)
 
 ## Related
 
-- [AUTOMATION_FIRST_STACK.md](./AUTOMATION_FIRST_STACK.md) — Actions > n8n/Make > agent lanes > Project fields > labels  
-- [AGENT_REWARD_PRIVILEGE_SYSTEM.md](./AGENT_REWARD_PRIVILEGE_SYSTEM.md) — Intern–Emergency; Emergency human-only outside work  
-- [FORMAL_VERIFY_AUTO_WR.md](./FORMAL_VERIFY_AUTO_WR.md) — fail opens WR, never merge  
+- [AUTOMATION_FIRST_STACK.md](./AUTOMATION_FIRST_STACK.md) — Actions > n8n/Make > agent lanes > Project fields > labels
+- [AGENT_REWARD_PRIVILEGE_SYSTEM.md](./AGENT_REWARD_PRIVILEGE_SYSTEM.md) — Intern–Emergency; Emergency human-only outside work
+- [FORMAL_VERIFY_AUTO_WR.md](./FORMAL_VERIFY_AUTO_WR.md) — fail opens WR, never merge

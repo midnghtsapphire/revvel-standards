@@ -35,8 +35,6 @@ const FIX_SIGNAL = /\b(fix|resolve|repair|correct|patch|remove|add (missing|the)
 const changed = changedRaw.split(/[\n,]/).map((s) => s.trim()).filter(Boolean);
 
 function isRealFix(path) {
-  if (path.startsWith("wr/scripts/")) return true;
-
   if (path.startsWith("wr/")) return false;                 // WR tracking docs don't count
   if (/^docs\/.*\.md$/i.test(path)) return true;            // a docs FIX (e.g. broken link) IS the fix
   return true;                                              // any code/config/workflow file counts
