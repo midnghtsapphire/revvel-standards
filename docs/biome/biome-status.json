@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-10T20:13:34.726Z",
+  "generated_at": "2026-08-12T14:30:56.098Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,17 +15,17 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 31418659294,
-            "name": "Prioritize Starred Repositories",
-            "path": ".github/workflows/prioritize-stars.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31418659294",
+            "id": 31607192769,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607192769",
             "conclusion": "failure"
           },
           {
-            "id": 31418409818,
-            "name": "App Artifact Audit",
-            "path": ".github/workflows/app-artifact-audit.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31418409818",
+            "id": 31607192018,
+            "name": ".github/workflows/apisec-scan.yml",
+            "path": ".github/workflows/apisec-scan.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607192018",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31422965689"
+        "last_run": null
       }
     },
     "sheaf": {

@@ -23,6 +23,20 @@ write session artifacts under `.sandbox/<agent-name>/` in the repo.
 └── jules/
     └── log-20250101.md
 ```
+├── README.md
+└── <agent-name>/                 ← lowercase, hyphenated, stable
+    ├── AGENT.md                  ← identity + resume instructions
+    ├── sessions/                 ← YYYY-MM-DD-HHMM-<slug>.md
+    ├── memory/                   ← persistent-facts.md + topic files
+    ├── thoughts/                 ← reasoning / brainstorm logs
+    ├── scripts/                  ← any script the agent wrote
+    ├── api-calls/                ← saved API request/response pairs
+    ├── cli/                      ← saved shell commands + outputs
+    ├── mcp/                      ← MCP tool calls + payloads
+    ├── tools/                    ← external tool binaries / configs
+    ├── skills/                   ← draft skills before promotion
+    └── artifacts/                ← generated PDFs, images, docs
+```text
 
 ## Rationale
 
