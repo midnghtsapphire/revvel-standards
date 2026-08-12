@@ -186,7 +186,7 @@ new format for anything appended after this line so scripts can consume the file
 
 **Format:**
 
-```
+```text
 ### TM-<NNNN> — <One-line pattern name>
 
 **Discovered:** YYYY-MM-DD  **Discovered-by:** <agent> during <task>  **PR/issue:** #NNNN
@@ -233,7 +233,7 @@ never worked (wrong auth model). The Apps may or may not have been active — th
 had to be verified by looking at bot-comment authorship, which nobody did.
 
 **Detection heuristic:**
-```
+```text
 python3 .sandbox/openhands/scripts/count-reviewer-bot-comments.py \
   midnghtsapphire revvel-standards --prs 30
 ```
@@ -244,7 +244,7 @@ or its billing has lapsed. Fix in the App-installation UI, NOT the workflow.
 **Autofix pattern:**
 - Archive the workflow-based `.github/workflows/<tool>.yml` in place per
   RVS-PRESERVE-001 with a header saying "Integration is a GitHub App, not
-  a CI job. Configure at: https://github.com/apps/<tool>"
+  a CI job. Configure at: `https://github.com/apps/<tool>`"
 - Delete the `<TOOL>_API_KEY` secret (it was orphan by definition)
 - Add the tool to `data/subscriptions.yml` with `type: github_app` and its
   dashboard URL
@@ -283,7 +283,7 @@ open a Triage WR per file whose header describes a `schedule:` / `push:` /
 `pull_request:` trigger that the `on:` block does not implement.
 
 **Autofix pattern:**
-```
+```text
  on:
 +  schedule:
 +    - cron: '0 14 * * MON'
@@ -318,7 +318,7 @@ casings of the same integration (`GH_TOKEN` vs `ADMIN_GITHUB_TOKEN`) so
 you end up with 3 secrets doing the job of 1. Nothing scans for orphans.
 
 **Detection heuristic:**
-```
+```text
 python3 .sandbox/openhands/scripts/audit-secrets.py
 ```
 Zero-ref secrets have not been used in any file in the repo. Delete-safe
@@ -364,7 +364,7 @@ credit-limit error, do NOT trust the "verified" section of the summary.
 Re-run the specific verifications the summary claims.
 
 **Autofix pattern:** As the reviewer:
-```
+```text
 git checkout <agent's-branch>
 npm test
 node scripts/chaosmender.js --changed-only
@@ -408,7 +408,7 @@ governance-gates on a label the fleet itself applied.
 **Autofix pattern:** Add every workflow-applied label to
 `config/labels-allowlist.yml` with a comment naming the workflow that
 applies it AND the historical PR that flushed out the omission:
-```
+```text
   # <label> applied by <workflow>.yml when <condition>. Was applied by
   # that workflow but missing here, so any PR the workflow tagged failed
   # governance on its own annotation label (PR #<historical>).
@@ -421,12 +421,12 @@ extended to detect `ensureLabel(...)` / `addLabels(...)` calls whose
 target names are not in the allowlist and fail the PR check.
 
 **Related:** DECISIONS.md D020 (adds `review:stuck`), historical PRs
-#17091 / #17097 (same class of bug), TM-0002 (both are wiring-drift
+\#17091 / #17097 (same class of bug), TM-0002 (both are wiring-drift
 patterns).
 
 ---
 
-### TM-0006 — Detector lookahead window too tight for well-formatted code
+## TM-0006 — Detector lookahead window too tight for well-formatted code
 
 **Discovered:** 2026-08-10  **Discovered-by:** openhands during Copilot fix verification  **PR/issue:** #17147, D021
 **Category:** detector-tuning
@@ -448,7 +448,7 @@ behavior correct) but formatted-too-spread-out for the scanner window.
 This is the classic "code correct, detector wrong" pattern.
 
 **Autofix pattern (for the detector, not the code):**
-```
+```text
 - const windowEnd = Math.min(i + 6, lines.length);   // was 5 lines
 + const LABEL_RACE_LOOKAHEAD_LINES = 15;
 + const windowEnd = Math.min(i + 1 + LABEL_RACE_LOOKAHEAD_LINES, lines.length);
