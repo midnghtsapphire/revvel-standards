@@ -12,11 +12,11 @@
 
 It implements the WR-16432 architecture without requiring a live OAuth mesh on day one:
 
-1. **IngestAgent** — normalize multi-source fragments  
-2. **PrivacyAgent** — redact emails, phones, and @handles  
-3. **TriageAgent** — classify into action items, docs, research, meetings, finance, code, personal  
-4. **StructureAgent** — map categories to repository paths  
-5. **CommitPlanAgent** — emit directory tree, markdown/CSV exports, and PR steps  
+1. **IngestAgent** — normalize multi-source fragments
+2. **PrivacyAgent** — redact emails, phones, and @handles
+3. **TriageAgent** — classify into action items, docs, research, meetings, finance, code, personal
+4. **StructureAgent** — map categories to repository paths
+5. **CommitPlanAgent** — emit directory tree, markdown/CSV exports, and PR steps
 
 The core `runPipeline()` path is **fully offline** (no `OPENROUTER_API_KEY` required), so demos and CI stay green. Optional Polar checkout powers Assistant Pro upgrades.
 

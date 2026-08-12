@@ -192,3 +192,5 @@ def test_sync_missing_tokens(runner, monkeypatch):
 
     assert result.exit_code != 0
     assert "Error: GITHUB_TOKEN not configured" in result.output
+
+# trigger CI
