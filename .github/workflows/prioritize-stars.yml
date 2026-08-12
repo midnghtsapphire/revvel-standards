@@ -1,9 +1,8 @@
 name: Prioritize Starred Repositories
 
 on:
-  schedule:
-    # Runs every 6 hours (4 times a day)
-    - cron: '0 */6 * * *'
+  # Hourly cadence moved to hourly-growth-prioritizer.yml (prioritize_and_optimize.py).
+  # Keep manual dispatch for the legacy checkpointed prioritize_stars.py path.
   workflow_dispatch:
 
 # Prevents concurrent execution runs from stomping state
@@ -14,6 +13,7 @@ concurrency:
 jobs:
   prioritize:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: write
 
@@ -35,7 +35,9 @@ jobs:
       - name: Run Prioritization Script
         env:
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
         run: |
+          # Legacy entrypoint; prefer prioritize_and_optimize.py / hourly workflow.
           python prioritize_stars.py
 
       - name: Commit & Push Updated Priority List
