@@ -46,6 +46,7 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/creator-payout-tracker` | payout, subscription, video | — | needs review |
 | `products/personal-assistant` | personal-os, SaaS, multi-agent, GitHub | Multi-source ingest, PII redaction, structure plan API (tested in `tests/personal-assistant-pipeline.test.js`) | needs review |
 | `products/openmythos` | (unclassified) | — | needs review |
+| `products/awesome-grok-build` | SaaS, skills, Grok Build, developer-tools | Skill catalog, install planner, REST APIs (tested in `tests/awesome-grok-build.test.js`) | ✅ wired from DominikTobureto/awesome-grok-build |
 | `products/printbank` | digital-download, e-commerce, static | Vector print generator, photo print sizer (tested in `tests/printbank.test.js`) | needs review |
 | `products/prompt-generation-app` | OSINT, prompt | — | needs review |
 | `products/screen-recorder-finder` | utility/finder | — | needs review |

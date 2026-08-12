@@ -30,6 +30,7 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - run: echo "archived per RVS-AGENT-001; see file header for restore steps"
        - name: APIsec scan
          uses: apisec-inc/apisec-run-scan@025432089674a28ba8fb55f8ab06c10215e772ea
          with:
