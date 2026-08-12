@@ -244,7 +244,7 @@ or its billing has lapsed. Fix in the App-installation UI, NOT the workflow.
 **Autofix pattern:**
 - Archive the workflow-based `.github/workflows/<tool>.yml` in place per
   RVS-PRESERVE-001 with a header saying "Integration is a GitHub App, not
-  a CI job. Configure at: <https://github.com/apps/<tool>>"
+  a CI job. Configure at: `https://github.com/apps/<tool>`"
 - Delete the `<TOOL>_API_KEY` secret (it was orphan by definition)
 - Add the tool to `data/subscriptions.yml` with `type: github_app` and its
   dashboard URL
@@ -421,12 +421,12 @@ extended to detect `ensureLabel(...)` / `addLabels(...)` calls whose
 target names are not in the allowlist and fail the PR check.
 
 **Related:** DECISIONS.md D020 (adds `review:stuck`), historical PRs
-Issue 17091 / #17097 (same class of bug), TM-0002 (both are wiring-drift
+\#17091 / #17097 (same class of bug), TM-0002 (both are wiring-drift
 patterns).
 
 ---
 
-### TM-0006 — Detector lookahead window too tight for well-formatted code
+## TM-0006 — Detector lookahead window too tight for well-formatted code
 
 **Discovered:** 2026-08-10  **Discovered-by:** openhands during Copilot fix verification  **PR/issue:** #17147, D021
 **Category:** detector-tuning
