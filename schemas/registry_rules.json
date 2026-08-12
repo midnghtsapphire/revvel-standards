@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://revvel.dev/schemas/registry_rules.json",
+  "title": "RevvelStandardsAgentManifest",
+  "description": "Governs structural metadata parameters for agent personas, tools, and deployment environments. Enforces skill budget (max 5), allowed target domains, and absolute resource constraints.",
+  "type": "object",
+  "required": [
+    "persona_id",
+    "version",
+    "skills",
+    "target_artifact_domains",
+    "system_constraints"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "persona_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+-agent$",
+      "description": "Kebab-case persona identifier ending in -agent."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "SemVer X.Y.Z without prerelease suffix."
+    },
+    "skills": {
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "description": "Ordered skill allow-list. Hard ceiling of five skills per persona.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "web_scrape",
+          "keyword_extract",
+          "mcp_file_read",
+          "github_api_commit",
+          "linear_task_update",
+          "terminal_cli_command"
+        ]
+      }
+    },
+    "target_artifact_domains": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "description": "Domains the agent may emit artifacts into.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "meetaudreyevans",
+          "oaudrey",
+          "openaudrey"
+        ]
+      }
+    },
+    "system_constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_timeout_seconds",
+        "allow_local_shell_access"
+      ],
+      "properties": {
+        "execution_timeout_seconds": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 300
+        },
+        "allow_local_shell_access": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
