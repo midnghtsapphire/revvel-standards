@@ -81,7 +81,7 @@ class TestGetCommand:
 class TestSetCommand:
     def test_set_success(self, runner, mock_api, mock_config):
         mock_api.set_secret.return_value = True
-        result = runner.invoke(secrets_module.secrets, ["set", "API_KEY", "newval"])
+        result = runner.invoke(secrets_module.secrets, ["set", "API_KEY", "--value", "newval"])
         assert result.exit_code == 0
         mock_api.set_secret.assert_called_once()
 
