@@ -36,7 +36,10 @@ def mock_config():
 
 class TestListCommand:
     def test_list_success(self, runner, mock_api, mock_config):
-        mock_api.list_secrets.return_value = {"DB_URL": "postgres://x", "API_KEY": "abc"}
+        mock_api.list_secrets.return_value = [
+            {"name": "DB_URL", "computed": {"source": "manual"}},
+            {"name": "API_KEY", "computed": {"source": "manual"}},
+        ]
         result = runner.invoke(secrets_module.secrets, ["list"])
         assert result.exit_code == 0
         assert "DB_URL" in result.output or "API_KEY" in result.output
