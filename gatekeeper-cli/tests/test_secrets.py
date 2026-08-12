@@ -9,16 +9,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from click.testing import CliRunner
 
-try:
-    from gatekeeper_cli.commands import secrets as secrets_module
-except ImportError:  # pragma: no cover
-    secrets_module = None
-
-
-pytestmark = pytest.mark.skipif(
-    secrets_module is None,
-    reason="gatekeeper_cli.commands.secrets not importable in this environment",
-)
+from gatekeeper_cli.commands import secrets as secrets_module
 
 
 @pytest.fixture
