@@ -189,6 +189,17 @@ export default function Home() {
             </div>
           </aside>
         </section>
+
+        <footer className="rounded-3xl border border-slate-200 bg-white/80 px-5 py-4 text-sm text-slate-600 shadow-sm">
+          <a href="/privacy" className="font-semibold text-cyan-800 underline-offset-2 hover:underline">
+            Privacy policy
+          </a>
+          <span className="mx-2 text-slate-400">·</span>
+          <span>
+            FTC HBNR breach notice timelines: users ≤60 calendar days; FTC ≤60 calendar days or ≤10
+            business days if &gt;500 residents of any state/jurisdiction are affected.
+          </span>
+        </footer>
       </main>
     </div>
   );
