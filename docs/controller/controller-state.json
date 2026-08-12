@@ -1,5 +1,13 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-12T16:09:48.221Z",
-  "workflows": {}
+  "updated_at": "2026-08-12T16:38:55.013Z",
+  "workflows": {
+    ".github/workflows/issue-state-machine.yml": {
+      "count": 1,
+      "tried": [
+        "anthropic/claude-opus-4.8"
+      ],
+      "last_cut_at": "2026-08-12T16:38:55.013Z"
+    }
+  }
 }
