@@ -1,6 +1,5 @@
-# Prime Directive: $10k/mo → $10M in 3 years
-# Primary funding channel: Polar.sh
-polar: mrpk1
-github: [mrpk1]
+# Polar.sh is the primary funding channel — aligned with $10M/3yr directive.
+polar: automated-repo
+github: []
 custom:
-  - "https://polar.sh/mrpk1"
+  - "https://polar.sh/automated-repo"
