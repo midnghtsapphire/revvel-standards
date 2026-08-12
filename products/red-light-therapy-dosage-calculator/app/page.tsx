@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { calculateDosage, CompensationProfile, formatMinutes, normalizeDosageInput } from "./data/calculator";
 
 interface FormState {
@@ -77,6 +78,13 @@ export default function Home() {
             Enter irradiance and your target dose. The calculator uses the universal formula:
             <strong> time = (dose × 1000) / irradiance</strong>, then applies pulse and
             compensation adjustments for practical session timing.
+          </p>
+          <p className="mt-3 max-w-3xl text-xs leading-relaxed text-slate-600 sm:text-sm">
+            Direct-to-consumer wellness tool. Inputs stay in your browser for this session. We do{" "}
+            <strong>not</strong> claim HIPAA compliance.{" "}
+            <Link href="/privacy" className="font-medium text-cyan-800 underline-offset-2 hover:underline">
+              Privacy policy
+            </Link>
           </p>
         </section>
 
@@ -172,7 +180,12 @@ export default function Home() {
               This app is for general wellness and informational purposes only. It is not a medical
               device and does not diagnose, treat, cure, or prevent any condition. Red light and PBM
               session parameters vary by device, wavelength, distance, and individual response.
-              Consult a qualified clinician for medical decisions.
+              Consult a qualified clinician for medical decisions. Wellness disclaimers do not create
+              HIPAA coverage or any claim of HIPAA compliance. See the{" "}
+              <Link href="/privacy" className="font-semibold underline underline-offset-2">
+                privacy policy
+              </Link>{" "}
+              for actual data handling.
             </div>
           </aside>
         </section>
