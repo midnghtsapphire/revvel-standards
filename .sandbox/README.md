@@ -13,7 +13,7 @@ its own folder here and writes to it as it works. The purpose is simple:
 
 ## Folder layout
 
-```
+```text
 .sandbox/
 ├── README.md                     ← this file
 └── <agent-name>/                 ← one folder per agent identity
