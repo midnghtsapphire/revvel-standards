@@ -57,7 +57,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `resend` (Resend) | ✅ verified | key | transactional-email | — | — | — |
 | `revenuecat` (RevenueCat) | ✅ verified | paid | subscriptions, iap | — | — | — |
 | `tavily` (Tavily) | ✅ verified | key | web-search | — | — | — |
-| `xai` (xAI / Grok) | ✅ verified | key | motu-bnat-controller | — | — | — |
+| `xai` (xAI / Grok) | ✅ verified | key | motu-bnat-controller, xai-code-review | — | xai-code-review.yml | — |
 
 ## Libraries
 
@@ -74,4 +74,4 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `octopus` (Octopus Review) | ✅ verified | paid | pr-review | github | octopus-route.yml, octopus-cli.yml | Owner: found several different error classes in a single review. Currently over monthly AI quota — needs own API keys. |
 | `vercel` (Vercel) | ✅ verified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | Deploys a preview on every PR (observed via vercel[bot]). |
 
-*Last generated: 2026-08-05 from `config/connections.yml`.*
+*Last generated: 2026-08-08 from `config/connections.yml`.*
