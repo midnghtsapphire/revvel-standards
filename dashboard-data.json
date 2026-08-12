@@ -1254,6 +1254,12 @@
       "source": "/products/revvel-skill-runner/README.md"
     },
     {
+      "url": "https://revvel-standards.vercel.app/docs/self-optimizing-star-magnet/",
+      "project": "self-optimizing-star-magnet",
+      "type": "vercel",
+      "source": "/products/self-optimizing-star-magnet/README.md"
+    },
+    {
       "url": "https://revvel-standards.vercel.app/docs/affiliate-hub/",
       "project": "affiliate-hub",
       "type": "vercel",
@@ -1563,5 +1569,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-12T14:54:55.734Z"
+  "lastUpdated": "2026-08-12T14:57:25.588Z"
 }
