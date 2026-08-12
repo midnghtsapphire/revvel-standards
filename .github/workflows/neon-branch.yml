@@ -56,7 +56,7 @@ jobs:
         run: |
           slug=$(printf '%s' "$HEAD_REF" \
             | tr '[:upper:]' '[:lower:]' \
-            | tr -c 'a-z0-9' '-' \
+            | tr -c 'a-zA-Z0-9' '-' \
             | sed -e 's/--*/-/g' -e 's/^-//' -e 's/-$//' \
             | cut -c1-20)
           slug=${slug%-}
