@@ -1,19 +1,26 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-13T13:30:08.894Z",
+  "generated_at": "2026-08-13T14:27:27.109Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 31705334891,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31705334891",
+            "conclusion": "failure"
+          },
           {
             "id": 31705132739,
             "name": "scheduled-market-evaluator",
