@@ -1,19 +1,26 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-13T15:21:13.394Z",
+  "generated_at": "2026-08-13T16:18:18.110Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "summary": "3/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 3,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 31715073594,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31715073594",
+            "conclusion": "failure"
+          },
           {
             "id": 31711254772,
             "name": "BIOME Sentinel",
@@ -26,20 +33,6 @@
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31710450754",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31705334891,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31705334891",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31705132739,
-            "name": "scheduled-market-evaluator",
-            "path": ".github/workflows/automate-gumroad-artifacts.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31705132739",
             "conclusion": "failure"
           }
         ],
@@ -65,10 +58,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31704216689"
+        "last_run": null
       }
     },
     "sheaf": {
