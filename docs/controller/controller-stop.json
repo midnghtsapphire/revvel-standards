@@ -1,46 +1,46 @@
 {
   "schema": "fleet-controller-stop/v1",
-  "generated_at": "2026-08-14T04:29:40.536Z",
+  "generated_at": "2026-08-14T05:12:52.268Z",
   "stop": [
     {
       "id": 31608261441,
       "name": "Devin Code Review",
-      "reason": "running 2267m ≥ 60m budget"
+      "reason": "running 2310m ≥ 60m budget"
     },
     {
       "id": 31607544739,
       "name": "PR Lifecycle",
-      "reason": "running 2275m ≥ 60m budget"
+      "reason": "running 2318m ≥ 60m budget"
     },
     {
       "id": 31607480387,
       "name": "AI PR Review (OpenRouter)",
-      "reason": "running 2276m ≥ 60m budget"
+      "reason": "running 2319m ≥ 60m budget"
     },
     {
       "id": 31607475332,
       "name": "Agent Fingerprint Gate",
-      "reason": "running 2276m ≥ 60m budget"
+      "reason": "running 2319m ≥ 60m budget"
     },
     {
       "id": 31607177890,
       "name": "GOAP Assignment Router",
-      "reason": "running 2279m ≥ 60m budget"
+      "reason": "running 2322m ≥ 60m budget"
     },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
-      "reason": "running 45415m ≥ 60m budget"
+      "reason": "running 45458m ≥ 60m budget"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
-      "reason": "running 45486m ≥ 60m budget"
+      "reason": "running 45529m ≥ 60m budget"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
-      "reason": "running 45556m ≥ 60m budget"
+      "reason": "running 45599m ≥ 60m budget"
     }
   ]
 }
