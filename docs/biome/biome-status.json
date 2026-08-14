@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-14T12:16:30.893Z",
+  "generated_at": "2026-08-14T13:28:38.852Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,17 +15,17 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 31799386233,
-            "name": "market-evaluator",
-            "path": ".github/workflows/market-evaluator.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31799386233",
+            "id": 31804824795,
+            "name": "scheduled-market-evaluator",
+            "path": ".github/workflows/automate-gumroad-artifacts.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31804824795",
             "conclusion": "failure"
           },
           {
-            "id": 31795598151,
+            "id": 31799830061,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31795598151",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31799830061",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31804041748"
       }
     },
     "sheaf": {
