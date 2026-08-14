@@ -1,4 +1,3 @@
-name: Conflict Helper
 name: Merge Conflict Helper
 
 # ── Four-lane conflict resolver: annotate → mechanical → Jules → human ─────
@@ -60,6 +59,7 @@ jobs:
   gate:
     name: Gate (slash-command or PR event)
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       should_run: ${{ steps.decide.outputs.should_run }}
       pr_number: ${{ steps.decide.outputs.pr_number }}
@@ -155,7 +155,6 @@ concurrency:
     }}
   cancel-in-progress: true
 
-jobs:
   analyze:
     name: Run conflict resolver (annotate → mechanical → Jules)
     runs-on: ubuntu-latest
@@ -375,25 +374,25 @@ jobs:
           p2="${PHASE2_OUTCOME:-not-attempted}"
           p3="${PHASE3_DISPATCHED:-not-attempted}"
           body=$(cat <<EOF
-$marker
-### Conflict Helper — outcome
+          $marker
+          ### Conflict Helper — outcome
 
-$EMOJI $HEADLINE
+          $EMOJI $HEADLINE
 
-**Your job:** $JOB
+          **Your job:** $JOB
 
-<details><summary>Phase details</summary>
+          <details><summary>Phase details</summary>
 
-- Phase 2 (mechanical) outcome: \`$p2\`
-- Phase 3 (Jules) dispatched: \`$p3\`
-- Phase decision: \`$PHASE_DECISION\`
-- Run: [$GITHUB_RUN_ID](https://github.com/${{ github.repository }}/actions/runs/$GITHUB_RUN_ID)
+          - Phase 2 (mechanical) outcome: \`$p2\`
+          - Phase 3 (Jules) dispatched: \`$p3\`
+          - Phase decision: \`$PHASE_DECISION\`
+          - Run: [$GITHUB_RUN_ID](https://github.com/${{ github.repository }}/actions/runs/$GITHUB_RUN_ID)
 
-</details>
+          </details>
 
-<sub>Trigger a retry by commenting \`/resolve\` on this PR.</sub>
-EOF
-)
+          <sub>Trigger a retry by commenting \`/resolve\` on this PR.</sub>
+          EOF
+          )
           existing=$(gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
             --jq ".[] | select(.body | contains(\"$marker\")) | .id" | head -n1 || true)
           if [ -n "$existing" ]; then
