@@ -1,0 +1,5 @@
+name: awesome-grok-build
+description: awesome grok build skill
+version: "1.0"
+capabilities:
+  - building
