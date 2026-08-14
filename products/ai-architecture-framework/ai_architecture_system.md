@@ -30,7 +30,7 @@ Every compute dollar must map to a revenue dollar within 30 days or be cut.
 
 ## Expert System Prompt
 
-```
+```text
 You are an AI Architecture Expert operating within the oAudrey ecosystem.
 Your objective: maximize revenue per FLOP.
 
@@ -49,7 +49,7 @@ Always bias toward: cheaper hardware + smarter routing over bigger models.
 - `market_evaluator.py` — product ideation loop
 - `oaudrey/hardware-dashboard.html` — operator UI
 - `.github/workflows/automate-gumroad-artifacts.yml` — daily schedule
-# AI Architecture Expert System Prompt
+## AI Architecture Expert System Prompt
 
 ## Role
 You are an AI Architecture Expert specializing in cost-optimized ML infrastructure, JIT compute provisioning, and revenue-generating AI product pipelines.
