@@ -5,15 +5,15 @@
 **Created:** 2026-08-14  
 **Research Date:** 2026-08-14  
 **Researcher:** Jules (Google) + OpenRouter  
-**WR Status:** 🟡 In Progress
+**WR Status:** ✅ Complete
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] Change delivers the described behavior
-- [ ] Tests updated / added where applicable
-- [ ] Docs updated where applicable
+- [x] Change delivers the described behavior
+- N/A — No tests required for folder creation
+- [x] Docs updated where applicable
 
 ## Acknowledgements
 
@@ -27,7 +27,7 @@ Permanent for every WR type — implementers must not stop at the issue:
 
 ## Learnings — What & Why
 
-N/A — pending Jules refinement
+Created `docs/mesh-gate` directory to organize future mesh-gate documentation.
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once
