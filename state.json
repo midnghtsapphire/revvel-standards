@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "source": "dashboard-data.json",
-  "lastUpdated": "2026-08-14T04:33:49.081Z",
+  "lastUpdated": "2026-08-14T08:28:27.574Z",
   "projects": {
     "total": 33,
     "byStatus": {
