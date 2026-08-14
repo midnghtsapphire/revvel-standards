@@ -1,19 +1,33 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-13T23:15:31.240Z",
+  "generated_at": "2026-08-14T00:21:57.391Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "3/100 recent runs failed; 0 stuck item(s)",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
+          {
+            "id": 31756886336,
+            "name": "PR & Issue Recovery Engine",
+            "path": ".github/workflows/recovery-engine.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31756886336",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31753220003,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31753220003",
+            "conclusion": "failure"
+          },
           {
             "id": 31753082834,
             "name": "Daily WR & PR Summary",
@@ -26,13 +40,6 @@
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31749250295",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31744988725,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31744988725",
             "conclusion": "failure"
           }
         ],
