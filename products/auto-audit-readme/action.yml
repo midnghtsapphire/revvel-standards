@@ -1,0 +1,7 @@
+name: "Auto-Audit README"
+description: "Automatically audits README files for completeness."
+runs:
+  using: "composite"
+  steps:
+    - run: python3 ${{ github.action_path }}/audit.py
+      shell: bash
