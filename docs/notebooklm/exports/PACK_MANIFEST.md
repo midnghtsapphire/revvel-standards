@@ -1,6 +1,6 @@
 # NotebookLM pack manifest
 
-Updated: 2026-08-15T18:47:06.717Z
+Updated: 2026-08-15T20:19:58.402Z
 
 Source count: 499
 

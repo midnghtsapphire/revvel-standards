@@ -3,7 +3,7 @@
   "id": "revvel.prompt-knowledge-repo",
   "title": "Revvel Prompt Knowledge Repository",
   "description": "Living catalog of internal system prompts (thought-process, memory, learning, api, cli, mcp, skills, tools, sub-agents), external source indexes (system_prompts_leaks and others), concepts, LLM combos, and NotebookLM packs for GitHub-request workflows. Inventory is unfiltered.",
-  "updated_at": "2026-08-15T18:47:06.931Z",
+  "updated_at": "2026-08-15T20:19:58.634Z",
   "policy": {
     "censor": false,
     "external_bodies": "by-url",

@@ -60,16 +60,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-          SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
         with:
           fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
-        env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-          SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
         with:
           node-version: '22'
 
@@ -77,6 +72,7 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: "@sentinel — scan event text for instruction smuggling"
+        env:
           EVENT_TITLE: ${{ github.event.issue.title || github.event.pull_request.title || '' }}
           EVENT_TEXT: ${{ github.event.issue.body || github.event.comment.body || github.event.pull_request.body || '' }}
         run: |
@@ -96,9 +92,9 @@ jobs:
 
       - name: File finding as a deduped issue if any hits
         uses: actions/github-script@v9.0.0
+        env:
           ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
           SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
-        env:
         with:
           script: |
             const fs = require('fs');
@@ -166,14 +162,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-          SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
-        env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-          SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
         with:
           node-version: '22'
 
@@ -188,6 +179,7 @@ jobs:
 
       - name: File/update one deduped tracking issue per member
         uses: actions/github-script@v9.0.0
+        env:
           ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
           SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
         with:

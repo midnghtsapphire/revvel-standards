@@ -59,6 +59,7 @@ jobs:
   gate:
     name: Gate (slash-command or PR event)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     outputs:
       should_run: ${{ steps.decide.outputs.should_run }}
       pr_number: ${{ steps.decide.outputs.pr_number }}
@@ -116,6 +117,7 @@ jobs:
     needs: gate
     if: needs.gate.outputs.should_run == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -141,7 +143,6 @@ jobs:
         with:
           repository: ${{ steps.pr.outputs.head_repo }}
           ref: ${{ steps.pr.outputs.head_ref }}
-  actions: write         # needed by "gh workflow run" to dispatch Jules
 
 concurrency:
   # PR number lives on `pull_request` events; on `issue_comment` events it
@@ -154,10 +155,10 @@ concurrency:
     }}
   cancel-in-progress: true
 
-jobs:
   analyze:
     name: Run conflict resolver (annotate → mechanical → Jules)
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     # Fire on: (a) PRs GitHub reports as `dirty`, (b) PRs carrying the
     # `has-conflicts` label, or (c) an `/resolve-conflicts` (or `/resolve`)
     # comment on a PR. The comment lane is the manual "kick it now" lever
@@ -373,26 +374,26 @@ jobs:
           marker="<!-- conflict-helper:sticky -->"
           p2="${PHASE2_OUTCOME:-not-attempted}"
           p3="${PHASE3_DISPATCHED:-not-attempted}"
-          body=$(cat <<EOF
-$marker
-### Conflict Helper — outcome
+          body=$(cat <<'EOF'
+          $marker
+          ### Conflict Helper — outcome
 
-$EMOJI $HEADLINE
+          $EMOJI $HEADLINE
 
-**Your job:** $JOB
+          **Your job:** $JOB
 
-<details><summary>Phase details</summary>
+          <details><summary>Phase details</summary>
 
-- Phase 2 (mechanical) outcome: \`$p2\`
-- Phase 3 (Jules) dispatched: \`$p3\`
-- Phase decision: \`$PHASE_DECISION\`
-- Run: [$GITHUB_RUN_ID](https://github.com/${{ github.repository }}/actions/runs/$GITHUB_RUN_ID)
+          - Phase 2 (mechanical) outcome: \`$p2\`
+          - Phase 3 (Jules) dispatched: \`$p3\`
+          - Phase decision: \`$PHASE_DECISION\`
+          - Run: [$GITHUB_RUN_ID](https://github.com/${{ github.repository }}/actions/runs/$GITHUB_RUN_ID)
 
-</details>
+          </details>
 
-<sub>Trigger a retry by commenting \`/resolve\` on this PR.</sub>
-EOF
-)
+          <sub>Trigger a retry by commenting \`/resolve\` on this PR.</sub>
+          EOF
+          )
           existing=$(gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
             --jq ".[] | select(.body | contains(\"$marker\")) | .id" | head -n1 || true)
           if [ -n "$existing" ]; then
@@ -545,4 +546,3 @@ EOF
               });
               core.info('Posted new conflict-helper comment.');
             }
-    timeout-minutes: 10
