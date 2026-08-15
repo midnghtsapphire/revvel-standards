@@ -17,3 +17,6 @@ docs/claudecoworker/**
 docs/chatgpt/**
 docs/notebook/**
 docs/grok/**
+prompts/external/system_prompts_leaks/**
+skills/REGISTRY.md
+sql/README.md
