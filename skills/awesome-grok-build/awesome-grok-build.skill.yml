@@ -1,0 +1,21 @@
+schema_version: "2.0"
+skill:
+  name: "awesome-grok-build"
+  version: "1.0.0"
+  description: "A comprehensive build skill for awesome Grok applications."
+  author: "midnghtsapphire"
+  license: "MIT"
+  capabilities:
+    - code-review
+    - architecture
+    - frontend
+    - git
+    - hooks
+    - nextjs
+    - performance
+    - python
+    - refactor
+    - repo-health
+    - research
+    - security
+    - tdd

@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "id": "notebooklm.revvel-prompt-knowledge",
   "title": "NotebookLM pack — Revvel prompt knowledge",
-  "updated_at": "2026-08-15T18:39:12.553Z",
+  "updated_at": "2026-08-15T18:47:06.717Z",
   "policy": {
     "censor": false
   },

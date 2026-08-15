@@ -1,5 +1,4 @@
 name: Conflict Helper
-name: Merge Conflict Helper
 
 # ── Four-lane conflict resolver: annotate → mechanical → Jules → human ─────
 # When a PR shows conflicts, the GitHub web UI offers "current / incoming /
