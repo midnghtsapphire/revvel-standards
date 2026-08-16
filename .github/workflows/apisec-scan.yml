@@ -14,10 +14,6 @@
 #
 # The scaffolding below keeps the file parse-clean for the Actions runner and
 # for zizmor, but never actually fires (workflow_dispatch only + `if: false`).
-#
-# 2026-08-08: removed duplicate `steps:` key that made the YAML invalid
-# (automation-doctor / workflows:validate). Archived scan steps remain in
-# REVVEL-DISABLED-BODY below.
 
 name: APIsec Security Scan (archived — see REVVEL-DISABLED header)
 
@@ -33,9 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Archived placeholder
-        run: echo "archived per RVS-AGENT-001; see file header for restore steps"
-
+      - run: echo "archived per RVS-AGENT-001; see file header for restore steps"
 
 # REVVEL-DISABLED-BODY
 # # This workflow uses actions that are not certified by GitHub.
