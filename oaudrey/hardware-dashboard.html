@@ -1,3 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>oAudrey · Hardware Selection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<header class="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+  <h1 class="text-xl font-semibold">Hardware Selection</h1>
+  <a href="./index.html" class="text-sm text-sky-400 hover:underline">← Back to hub</a>
+</header>
+<main class="max-w-6xl mx-auto p-6 space-y-8">
+  <section>
+    <h2 class="text-lg font-semibold mb-2">Mission</h2>
+    <p class="text-slate-300">Route every workload to the cheapest viable hardware. Maximize revenue per FLOP on the path to $10M in 3 years.</p>
+  </section>
+
+  <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">LLM Inference &lt; 7B</h3>
+      <p class="text-sm text-slate-400 mt-1">RTX 4090 / A10</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: quantized CPU</p>
+    </div>
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">LLM Training</h3>
+      <p class="text-sm text-slate-400 mt-1">H100 / A100</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: cloud spot</p>
+    </div>
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">Embeddings</h3>
+      <p class="text-sm text-slate-400 mt-1">T4 / L4</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: CPU</p>
+    </div>
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">Batch OSINT</h3>
+      <p class="text-sm text-slate-400 mt-1">CPU cluster</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: single node</p>
+    </div>
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">Vision (small)</h3>
+      <p class="text-sm text-slate-400 mt-1">L4 / T4</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: CPU (ONNX)</p>
+    </div>
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">Realtime API</h3>
+      <p class="text-sm text-slate-400 mt-1">A10 / L40S</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: hosted API</p>
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <h2 class="text-lg font-semibold mb-2">JIT Provisioning</h2>
+    <p class="text-slate-300 text-sm">The <code class="text-sky-300">cuda_mlops_wrapper</code> detects GPUs via <code>nvidia-smi</code> and gracefully falls back to CPU. Only pay for compute you use.</p>
+    <ul class="list-disc list-inside text-sm text-slate-400 mt-3 space-y-1">
+      <li>Detect → match → route → bill</li>
+      <li>Kill-switch: cost / request &gt; 0.05 USD</li>
+      <li>Every $ of compute must map to $ of revenue within 30 days</li>
+    </ul>
+  </section>
+
+  <section class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <h2 class="text-lg font-semibold mb-2">Daily Market Evaluator</h2>
+    <p class="text-slate-300 text-sm">A scheduled workflow drafts 3 TEST VERSION products across Stripe/Gumroad each day, and uploads a JSON report as an artifact.</p>
+  </section>
+</main>
 <!DOCTYPE html>
 <html lang="en">
 <head>

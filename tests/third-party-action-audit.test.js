@@ -27,6 +27,11 @@ test('stale audited actions are removed or explicitly dispositioned', () => {
   const auditScript = read('scripts/audit-third-party-actions.sh');
   assert.match(auditScript, /ACCEPTED_SINGLE_AUTHOR_ACTIONS=\(/);
   assert.match(auditScript, /robvanderleek\/create-issue-branch/);
+  // WR #15863: briantist/ezenv accepted with SHA pin + pre-validation gate.
+  assert.match(auditScript, /briantist\/ezenv/);
+
+  const easyEnv = read('.github/workflows/easy-env-vars.yml');
+  assert.match(easyEnv, /briantist\/ezenv@[0-9a-f]{40}/);
   // Issue #16876 — xAI Code Review marketplace action (SHA-pinned, soft-skip).
   assert.match(auditScript, /tarmojussila\/xai-code-review/);
 });
