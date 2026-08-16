@@ -534,7 +534,7 @@ TODO: Define primary audience segments:
 
 ## MVP Definition
 
-Based on research, define:
+TODO: Based on research, define:
 - Core problem solved
 - Minimum feature set
 - Differentiation from competitors
