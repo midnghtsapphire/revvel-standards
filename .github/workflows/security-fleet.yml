@@ -101,7 +101,6 @@ jobs:
         env:
           ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
           SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
-        env:
         with:
           script: |
             const fs = require('fs');
