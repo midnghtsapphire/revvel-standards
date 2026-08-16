@@ -11,7 +11,7 @@ on:
 jobs:
   generate-and-attach:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     permissions:
       contents: write
     steps:
