@@ -75,6 +75,17 @@ This document lists ALL secrets and API keys required for the video production s
 | `SENDGRID_API_KEY` | SendGrid | Email notifications | app.sendgrid.com/settings/api_keys |
 | `RESEND_API_KEY` | Resend | Email delivery | resend.com/api-keys |
 | `MAILGUN_API_KEY` | Mailgun | Transactional email | mailgun.com/dashboard |
+| `VALIDATION_ALERT_FROM_EMAIL` | SMTP / n8n | From address for agent-manifest validation failure mail | Your mail provider / n8n SMTP credential |
+| `VALIDATION_ALERT_TO_EMAIL` | SMTP / n8n | To address for agent-manifest validation failure mail | Operator inbox |
+
+## Agent Manifest Validation Alerts (n8n)
+
+Used by `workflows/n8n/defensive-validation-guardrail-alerting.json` and documented in `products/agent-manifest-validator/README.md`.
+
+| Secret Name | Provider | Purpose | Where to Get |
+|-------------|----------|---------|--------------|
+| `SLACK_LOG_CHANNEL_ID` | Slack | Channel ID for CRITICAL validation circuit-breaker alerts | Slack channel details (starts with `C`) |
+| `DISCORD_INCIDENT_WEBHOOK_URL` | Discord | Incoming webhook for validation failure posts | Discord channel → Integrations → Webhooks |
 
 ## Storage
 

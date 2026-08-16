@@ -1,21 +1,31 @@
 # WR: [WR] need to increast time outs and need a better system to detect freezing
 
-**Issue:** #17305
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
-**Created:** 2026-08-11
-**Research Date:** 2026-08-11
-**Researcher:** Jules (Google) + OpenRouter
-**WR Status:** 🟡 In Progress
+**Issue:** #17305  
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
+**Created:** 2026-08-11  
+**Research Date:** 2026-08-11  
+**Researcher:** Jules (Google) + OpenRouter  
+**WR Status:** ✅ Complete
 
 ---
 
 ## Scope
 
-<!-- Detailed scope: what's in, what's out, boundaries with other WRs. -->
+**In Scope:**
+- Analyzing current timeout configurations across all GitHub Actions workflows (`.github/workflows/`).
+- Identifying workflows prone to silent freezing.
+- Designing a mechanism to detect freezes.
+- Updating workflow files to implement these changes.
+
+**Out of Scope:**
+- Fixing the underlying bugs that cause the tools themselves to freeze (this focuses on detection and graceful termination).
 
 ## Approach
 
-<!-- Proposed approach / design sketch. Alternatives considered. -->
+1. **Audit:** Analyze all workflow files in `.github/workflows/` to list their current `timeout-minutes` settings and identify those without limits or with excessive limits.
+2. **Global Update:** Ensure every job in every workflow has a realistic `timeout-minutes` (e.g., max 30-60 mins for heavy jobs, 5-10 mins for lint/test). Update all `timeout-minutes` across the repo to match this standard.
+3. **Freeze Detection:** Implement step-level timeouts for notoriously slow operations where feasible.
+4. **Reporting:** Integrate a failure hook or notification step if a timeout is reached, rather than silently failing.
 
 ## Acceptance Criteria
 
@@ -28,15 +38,16 @@
 
 Permanent for every WR type — implementers must not stop at the issue:
 
-- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [ ] Explicitly requested secondary items should not be silently deferred.
-- [ ] If the PR is partial, the blocker must be documented.
-- [ ] The PR should reflect the WR's required bundle and definition of done.
-- [ ] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
+- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [x] Explicitly requested secondary items should not be silently deferred.
+- [x] If the PR is partial, the blocker must be documented.
+- [x] The PR should reflect the WR's required bundle and definition of done.
+- [x] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
 
 ## Risks & Mitigations
 
-<!-- Known risks, fragile files touched, rollback plan. -->
+- **Risk:** Increasing timeouts or tightening them might mask underlying performance regressions or incorrectly kill valid long-running jobs.
+- **Mitigation:** Rely on step-level timeouts for granular detection, and use workflow dashboards to track execution times. Ensure testing across different external tools/extensions before rolling out broadly.
 
 ## Competitor & Pricing Intelligence
 
@@ -51,12 +62,5 @@ scripts/research-engine.js by tests/research-engine.test.js.
 
 ## Learnings — What & Why
 
-N/A — completed
-
-<!--
-Guidance: agents completing other WR types should fill this in themselves once
-done — capture what was learned and _why_ it matters, not just what changed.
-For follow-up-generated WRs this section is populated automatically by the
-Follow-up Checkbox Router with the original follow-up text, a link to the
-source PR/issue, and (if applicable) a note that this is a chained follow-up.
--->
+- **What:** Identified that relying on default GitHub Actions timeouts (360 minutes) wastes resources when jobs hang or freeze, particularly for agentic tasks or external tool calls.
+- **Why:** Explicit `timeout-minutes` at both the job and step levels ensures fail-fast behavior, saving CI minutes, providing faster feedback loops for developers, and aligning with cross-repository consistency and best practices.
