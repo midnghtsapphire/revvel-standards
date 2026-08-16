@@ -4,14 +4,8 @@
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
-const {
-  getOpenRouterKey,
-  openRouterAuthHeader,
-} = require("./utils/openrouter-key");
 
-// Sanitize once at load so a secret pasted with trailing CR/LF cannot break
-// Authorization headers (issue #16942). Empty string means "no key configured".
-const OPENROUTER_API_KEY = getOpenRouterKey();
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || "";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || "";
 const GITHUB_REPOSITORY = process.env.GITHUB_REPOSITORY || "midnghtsapphire/revvel-standards";
 const ISSUE_NUMBER = process.env.ISSUE_NUMBER || "";
@@ -342,7 +336,7 @@ async function callOpenRouter(systemPrompt, userPrompt) {
     pathName: OPENROUTER_PATH,
     method: "POST",
     headers: {
-      Authorization: openRouterAuthHeader(OPENROUTER_API_KEY),
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "HTTP-Referer": referer,
       "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage`,
     },
@@ -372,7 +366,7 @@ async function callOpenRouterFreeModels(systemPrompt, userPrompt) {
     pathName: OPENROUTER_PATH,
     method: "POST",
     headers: {
-      Authorization: openRouterAuthHeader(OPENROUTER_API_KEY),
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "HTTP-Referer": referer,
       "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage (free-tier)`,
     },
@@ -403,7 +397,7 @@ async function callOpenRouterBackupModels(systemPrompt, userPrompt) {
     pathName: OPENROUTER_PATH,
     method: "POST",
     headers: {
-      Authorization: openRouterAuthHeader(OPENROUTER_API_KEY),
+      Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       "HTTP-Referer": referer,
       "X-Title": `${GITHUB_REPOSITORY} OpenRouter Triage (backup models)`,
     },

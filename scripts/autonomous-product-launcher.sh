@@ -534,7 +534,7 @@ Define primary audience segments based on demographics and use cases:
 
 ## MVP Definition
 
-Based on research, define:
+TODO: Based on research, define:
 - Core problem solved
 - Minimum feature set
 - Differentiation from competitors
