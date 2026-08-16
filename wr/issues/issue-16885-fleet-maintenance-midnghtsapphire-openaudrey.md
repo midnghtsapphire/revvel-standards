@@ -25,7 +25,7 @@ the revvel-standards pipeline (research-engine → coder → full review jury).
 
 ## Implementation
 
-**Draft PR opened:** https://github.com/midnghtsapphire/openaudrey/pull/1
+**Draft PR opened:** <https://github.com/midnghtsapphire/openaudrey/pull/1>
 
 Branch: `chore/fleet-maintenance-wr-16885`
 
@@ -121,8 +121,8 @@ Related public hub landing lives in this monorepo at `oaudrey/` (apex
 
 ## Next human steps (click-by-click)
 
-1. Open https://github.com/midnghtsapphire/openaudrey/pull/1
+1. Open <https://github.com/midnghtsapphire/openaudrey/pull/1>
 2. Wait for CI / Semgrep / CodeQL checks (Actions tab on the PR).
 3. When green: click **Ready for review** (removes draft) if you want OpenRouter review to run (it skips drafts).
 4. Click **Merge pull request** → **Confirm merge**.
-5. Back on https://github.com/midnghtsapphire/revvel-standards/issues/16885 add label `wr:complete` (or merge the coordination PR that closes #16885).
+5. Back on <https://github.com/midnghtsapphire/revvel-standards/issues/16885> add label `wr:complete` (or merge the coordination PR that closes #16885).
