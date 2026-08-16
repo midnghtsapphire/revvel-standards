@@ -6,14 +6,9 @@ on:
   pull_request:
     branches: [main]
 
-# Least privilege: checkout + local token checks only; no GitHub write APIs.
-permissions:
-  contents: read
-
 jobs:
   ui-audit-and-health:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
 
     steps:
       - name: Checkout Repository
