@@ -282,8 +282,9 @@ connections:
     auth: key
     env: XAI_API_KEY, GROK_API_KEY
     status: verified
-    access: [motu-bnat-controller]
+    access: [motu-bnat-controller, xai-code-review]
     connects_to: []
+    used_by: [xai-code-review.yml]
   - id: tavily
     name: Tavily
     type: api
