@@ -1,0 +1,20 @@
+{
+  "document_id": "RLT-HIPAA-STATUS-2026-08",
+  "issue": 16111,
+  "parent_wr": 15279,
+  "product": "red-light-therapy-dosage-calculator",
+  "status": "UNSIGNED",
+  "provisional_path": "B",
+  "provisional_classification": "neither_covered_entity_nor_business_associate",
+  "allows_hipaa_compliance_claim": false,
+  "provisional_on": "2026-08-08",
+  "signed_on": null,
+  "counsel_name": null,
+  "opinion_path": null,
+  "next_review_due": "2027-02-08",
+  "entity_classification_path": "compliance/red-light-therapy/entity-classification.md",
+  "counsel_brief_path": "compliance/red-light-therapy/counsel-engagement-brief.md",
+  "triggers_path": "compliance/red-light-therapy/re-evaluation-triggers.json",
+  "privacy_policy_path": "products/red-light-therapy-dosage-calculator/app/privacy/page.tsx",
+  "notes": "Provisional internal Path B only. Not legal advice. Do not claim HIPAA compliance. Human must retain counsel and update this file after sign-off."
+}
