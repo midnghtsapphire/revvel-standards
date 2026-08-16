@@ -47,6 +47,7 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `eco-infra-action.yml` | Uploads infra plan JSON to Eco Infra for emissions reporting ([`eco-infra/ecoinfra-action`](https://github.com/eco-infra/ecoinfra-action)) | `.github/workflows/eco-infra-action.yml` |
 | `naukri-resume-action.yml` | Refreshes Naukri resumes from a self-hosted runner ([`Prateek-Wayne/naukri-resume-action`](https://github.com/Prateek-Wayne/naukri-resume-action)) | `.github/workflows/naukri-resume-action.yml` |
 | `reno-auto.yml` | AI-generated reno release notes for new PRs via OpenAI ([`vblagoje/reno-auto`](https://github.com/vblagoje/reno-auto)) | `.github/workflows/reno-auto.yml` |
+| `xai-code-review.yml` | xAI Grok PR code review — advisory comments via Grok ([`tarmojussila/xai-code-review`](https://github.com/tarmojussila/xai-code-review)) | `.github/workflows/xai-code-review.yml` |
 
 > **OpenRouter-backed actions.** The templates from `ai-weekly-changelog.yml` through 
 > `bc-ai-code-reviewer.yml` all share the single `OPENROUTER_API_KEY` secret 
@@ -63,6 +64,10 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 > `naukri-resume-action.yml` are documented together in
 > [`docs/ECO_MARKETPLACE_ACTIONS.md`](../../docs/ECO_MARKETPLACE_ACTIONS.md),
 > including latest release pins, repo fit, and rollout caveats.
+> **xAI / Grok review.** `xai-code-review.yml` uses the existing `XAI_API_KEY`
+> secret (Vault path `revvel/shared/llm/xai`). Soft-skips when the key is
+> missing and is advisory-only (`continue-on-error`). See
+> [`docs/XAI_CODE_REVIEW.md`](../../docs/XAI_CODE_REVIEW.md).
 
 ---
 
