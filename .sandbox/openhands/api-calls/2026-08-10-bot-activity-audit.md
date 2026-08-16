@@ -6,11 +6,11 @@ GitHub App bot activity).
 
 ## Call 1: fetch last 30 PRs
 
-```
+```text
 GET https://api.github.com/repos/midnghtsapphire/revvel-standards/pulls
   ?state=all&per_page=30&sort=updated&direction=desc
 Header: Authorization: Bearer <user PAT>
-```
+```text
 
 Response: 30 PRs (878831 bytes JSON). Saved to /tmp/prs.json during the session.
 Not committed — contains full PR bodies which include user quotes and are
@@ -18,17 +18,17 @@ noisy for the sandbox.
 
 ## Call 2 (per PR): fetch issue comments
 
-```
+```text
 GET https://api.github.com/repos/midnghtsapphire/revvel-standards/issues/<PR_NUMBER>/comments
   ?per_page=100
-```
+```text
 
 ## Call 3 (per PR): fetch reviews
 
-```
+```text
 GET https://api.github.com/repos/midnghtsapphire/revvel-standards/pulls/<PR_NUMBER>/reviews
   ?per_page=100
-```
+```text
 
 ## Analysis logic
 

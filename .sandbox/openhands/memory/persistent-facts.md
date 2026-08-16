@@ -71,3 +71,30 @@ Facts that should survive session boundaries. Append-only.
 - Slash-command router (`/rescue` `/plan` `/deploy` `/conflict-reviewer`)
 - Verify Bito + RecurseML app scopes in browser (owner action)
 - 11 obvious duplicate secrets ready to delete (owner action)
+
+## 2026-08-10 — Conflict-helper deep facts (session 23:10 UTC)
+
+- **Phase 3 dispatch bug (fixed in PR #17249):** conflict-helper.yml passed
+  `pr_number` to jules-coding-agent.yml, which only declares `issue_number`.
+  Silent no-op since inception. Root of "I don't know if dragnet is working."
+- **jules-coding-agent.yml is a stub (issue #17248):** the "Run Jules agent"
+  step echoes and exits. Even with the dispatch-name fix, Phase 3 lands on
+  an empty callee.
+- **Jules MCP integrations already wired for owner:** Neon, Supabase, Render.
+- **Outcome labels auto-applied by PR #17249:**
+  `conflicts:auto-resolved`, `conflicts:needs-jules`, `conflicts:needs-human`.
+- **Manual trigger:** `/resolve-conflicts` or `/resolve` in a PR comment.
+
+## 2026-08-11 — Post-merge lint fallout inherited
+
+Owner merged PR #17247 (daughter onboarding) despite 14-error lint failure
+carried in from other merged PRs (#17147, #17163). Owner prioritized getting
+the docs to daughter over blocking on lint that came from UPSTREAM merged
+code, not from #17247 itself. Fix in branch `fix-lint-fallout-from-merged-prs`.
+
+## 2026-08-11 — Meta-learning: eat your own dogfood
+
+Wrote `standards/VISITING_AGENT_SANDBOX_STANDARD.md` at 22:28 UTC and then
+failed to write to `.sandbox/openhands/` for 45 minutes. Owner caught it.
+Just-written standards are the hardest to follow — the assumption is "I
+already know this". Read new standards TWICE.
