@@ -2,6 +2,11 @@ name: News with Cache
 on:
   schedule:
     - cron: '0 */6 * * *' # every 6h
+
+# Least privilege: checkout + cache + local script only; no GitHub write APIs.
+permissions:
+  contents: read
+
 jobs:
   fetch:
     runs-on: ubuntu-latest
