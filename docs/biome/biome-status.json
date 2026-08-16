@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-10T07:32:01.139Z",
+  "generated_at": "2026-08-16T18:04:17.414Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -36,10 +36,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31365374474"
+        "last_run": null
       }
     },
     "sheaf": {

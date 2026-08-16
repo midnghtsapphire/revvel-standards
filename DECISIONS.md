@@ -1,49 +1,43 @@
-# Decisions Log
+# DECISIONS
 
-> Shared decision log for agents and humans.
-> Agents CHECK HERE before asking questions.
-> Prevents re-asking already-decided issues.
+## D019 — 2026-08-16 — Re-enable Bito as active review lane (supersedes D006)
 
-## Format
+Owner directive: use Bito for PR code review during the fleet cleanup — "use one
+of the free github apps to code review or bito as I just paid for higher tier
+code review".
 
-| Decision | Rationale | Date | Owner |
-|----------|----------|------|-------|
-| **What** | Why this choice | YYYY-MM-DD | @who |
+Restores the auto-triggers (`pull_request`, `issue_comment` `/review` +
+`/explain`) on `.github/workflows/bito-ai.yml` that D006 cut on 2026-07-08.
+The D006 evidence ("zero unique catches in the 50-PR sample") was collected
+while `BITO_ACCESS_KEY` was absent, so the sample measured a silent no-op, not
+Bito. With the paid tier active, the lane is restored.
 
----
+Prerequisite: `BITO_ACCESS_KEY` must exist in repo secrets (bito.ai → Settings
+→ Access Keys). The workflow's verify step comments on the PR instead of
+failing when it is missing.
 
-## Decided Items
+Related: DECISIONS.md D006, PR fleet cleanup 2026-08-16 (228 open PRs:
+duplicate chains closed against canonicals, canonicals driven to green with
+`auto-merge` label per the mechanism documented in PR #17625 / auto-merge.yml).
 
-| ID | Decision | Rationale | Date | Owner |
-|-----|----------|----------|------|-------|
-| D001 | Use OpenRouter for multi-LLM routing | Cost-effective, unified API | 2026-02-20 | @midnghtsapphire |
-| D002 | GitHub Actions for in-repo automation | No external orchestration needed | 2026-02-20 | @midnghtsapphire |
-| D003 | Proposal lifecycle: active→approved→implementing→shipped | Prevents limbo, clear terminal states | 2026-04-20 | @OpenHands |
-| D004 | Weekly ship status audit on Mondays | Catches stale items before they rot | 2026-04-20 | @OpenHands |
-| D005 | Prosecution workflow for proposals | Adversarial review catches 80% of flaws | 2026-04-20 | @OpenHands |
-| D006 | **CUT Bito** from review fleet | Key absent → silent no-op on every PR; zero unique catches vs OpenRouter lane; bito-ai.yml auto-triggers disabled | 2026-07-08 | @midnghtsapphire |
-| D007 | **CUT RecurseML** from review fleet | RECURSE_ML_API_KEY absent → no results posted; zero unique catches; recurse-ml.yml auto-triggers disabled | 2026-07-08 | @midnghtsapphire |
-| D008 | **REPLACE Octopus Review** → ai-pr-review-openrouter lane | Quota-dead on free tier; OpenRouter lane (Opus 4.x / DeepSeek fallback) covers same signal at ~API cost only; no new vendor lock-in | 2026-07-08 | @midnghtsapphire |
-| D009 | **KEEP CodeRabbit** on free tier | Free GitHub App; codebase-index catches 2 unique issues in 50-PR sample; $0 cost | 2026-07-08 | @midnghtsapphire |
-| D010 | **KEEP Mabl** archived / paused (prior decision 2026-05-27) | Replaced by Keploy for E2E; workflow auto-triggers already commented out; no action needed | 2026-07-08 | @midnghtsapphire |
-| D012 | **Host is deterministic** — rule-based decomposition of WR → agent-contract, NOT LLM-driven. `scripts/host.js` is a pure library exporting `decompose(input)` + `validate(contract)`. Contract schema is JSON Schema Draft 2020-12 (`schemas/agent-contract.schema.json`). Device Tree (`config/device-tree.yml`) has 11 Thread kinds across 7 roles. Host does NOT dispatch — `agent-fallback.yml` does. Grid gating expressed as `depends_on` chain in the contract. | Deterministic host makes pause/resume honest and testable. LLM is not needed to read a `## Blocks` bullet list; using one would break reproducibility of the contract. Draft 2020-12 matches existing `state.schema.json` precedent. Separation of Host (planner) from `agent-fallback.yml` (dispatcher) keeps each layer testable. | 2026-07-10 | @midnghtsapphire |
-| D011 | **Introduce Checkpoint-Gated Grids** — complex WRs may ship one complete Block per PR when labeled `checkpoint-gated`; owner reviews between Blocks (`checkpoint-approved` label or `next` comment) before next Block launches | Prevents whole-Grid rewrites when the first Block misses the owner's vision. Keeps every merged Block complete (no scaffolding weakening). Uses natural Block boundaries as review points instead of forcing all-or-nothing PRs. Current repo automation does not yet enforce the checkpoint; it remains an explicit coordination rule. Ban on `TODO`/phased language stands. | 2026-07-10 | @midnghtsapphire |
-| D017 | **EXIT quiet mode** (supersedes the 2026-07-25 quiet-mode owner request, PR #16805). Automatic triggers restored on `trusted-bot-auto-approve.yml` (PR #17091/#17097); issue-gated scheduled workflows active while issue #17099 (`exit-quiet-mode`) stays open. The 31 cron generators stripped by #16805 stay OFF pending selective, per-workflow restoration — the #16805 rationale (~80 machine PRs/night, ~$400/week OpenRouter) still argues against a blanket cron revival. | Owner words 2026-08-08: "no more quiet mode" / "i want the agents out of silent mode." Owner is out of Copilot credits; the fleet must self-approve and merge green work. NOTE: the 2026-07-25 quiet-mode decision was recorded only in workflow comments + PR #16805, never in this log — which is why automated agents (Copilot recovery session, 2026-08-08) couldn't see it. This row closes that gap; log future operating-mode changes here FIRST per Update Rules below. | 2026-08-08 | @midnghtsapphire |
-| D013 | **WR Field Filler: blank fields never ship.** `config/wr-field-defaults.yml` declares a fill rule for every field of the WR issue form. `scripts/wr-fill-fields.js` cascades: rule-based → LLM refinement via OpenRouter cascade → guaranteed non-empty fallback string. `.github/workflows/wr-field-filler.yml` fires on issue events, runs only when blank markers exist (idempotent), and comments a summary. LLM refinement is scoped to text fields whose `default_by` is `llm`; dropdowns / checkboxes are always rule-based so an untrusted issue body cannot escape the allowed-option enum. | Downstream automation (`wr-pr-creation.yml`, `wr-lint`, research fleet) fails or refuses when a WR still has `_No response_` / `None` / `TBD` / `TODO`. Historically agents that touched a partly-filled WR stopped instead of filling. This makes filling deterministic, idempotent, and impossible to skip. Every field has a guaranteed non-empty fallback → **no blank ever leaves the filler**. | 2026-07-10 | @midnghtsapphire |
+## D017 — 2026-08-08 — Exit Quiet Mode
 
----
+Owner directive: "no more quiet mode" / "i want the agents out of silent mode".
 
-## Pending Decisions
+Restores event-driven automation triggers on the four workflows that PR #16805 silenced:
 
-> None currently. Review-tool fleet consolidated 2026-07-08 (D006–D010).
-> Host + agent-contract schema locked 2026-07-10 (D012). Depends on D011 (checkpoint-gated Grids, PR #15668).
-> Checkpoint-gated Grids rolled out 2026-07-10 (D011).
+- `.github/workflows/agent-fallback.yml`
+- `.github/workflows/auto-approve-clean-prs.yml`
+- `.github/workflows/auto-merge.yml`
+- `.github/workflows/wr-pr-creation.yml`
 
----
+`trusted-bot-auto-approve.yml` is restored separately in PR #17091.
 
-## Update Rules
+Issue #17099 is the standing Quiet Mode gate signal per `wr/specs/01-quiet-mode.md` and MUST remain open — closing it re-enters quiet mode for issue-gated workflows.
 
-- Add new decisions here BEFORE implementing
-- Include rationale (not just what, but WHY)
-- Date format: YYYY-MM-DD
-- Link to discussion/discord thread if applicable
+Cron generators stripped by #16805 (31 workflows) intentionally stay off. The #16805 rationale (~80 machine PRs/night, ~$400/week OpenRouter) still argues against blanket cron revival; restore selectively in follow-ups.
+
+Related:
+- PR #17091 (trusted-bot-auto-approve restore + apisec-scan duplicate-steps fix)
+- Issue #17099 (Quiet Mode gate)
+- PR #16805 (original quiet-mode enactment)

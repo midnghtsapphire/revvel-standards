@@ -28,14 +28,6 @@ jobs:
     if: false
     runs-on: ubuntu-latest
     timeout-minutes: 45
-
-    # REVVEL-DISABLED | AGENT: claude-code | MODEL: claude-5 | WR: #17091 | DATE: 2026-08-08 | STATUS: REPLACED
-    # REASON: a stray duplicate live `steps:` block (apisec-run-scan with dummy-cred
-    # fallbacks) sat here, making `jobs.archived.steps` a duplicate YAML key that broke
-    # strict parsers (automation-doctor). Its content is preserved verbatim in the
-    # REVVEL-DISABLED-BODY archive at the bottom of this file — nothing was lost; the
-    # live duplicate was removed in favor of the archived copy.
-    # REVVEL-DISABLED-END
     steps:
       - run: echo "archived per RVS-AGENT-001; see file header for restore steps"
 

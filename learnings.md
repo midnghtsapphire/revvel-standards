@@ -149,6 +149,20 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 
 **Next Action:** The recorded intent for that PR's fleet review was verification of the two proven fixes (WR-01, WR-02/03) and the two small dependency fixes (WR-04), rather than re-derivation. Three items need an owner/product decision before any agent writes code: WR-05 (`ship-to-market.yml`'s missing `record.js` — build it or comment out the video-deliverable step), WR-06/WR-07 (`label-inventory.js` / `validate_jsonl.py` — wire in or archive-with-attribution, never delete per standing owner preference). WR-08 flags that the WR-drafting pipeline itself — 35 fully-drafted WRs across two prior audits, never filed as GitHub issues — is the largest unwired-flow pattern in the repo by volume; needs an owner pass over `wr/pending/` to mark stale/superseded items before a bulk-filing workflow gets built. WR-09's 16 scanner hits are queued for the next audit to individually root-cause. Two proposed CI vaccines from this session (`find-duplicate-json-keys.js`-style package.json lint; "named test/workflow file must exist" check for `scripts/**` and `skills/**/SKILL.md`) are not yet wired into `scripts/automation-doctor.js` — good candidates for a fast follow-up WR once this PR lands.
 
+**Date/Time:** 2026-08-08
+
+**Task Attempted:** WR-16450 — add perm to revvel-standards (missing workflow `permissions:` blocks + permanent Acknowledgements for every WR type).
+
+**Outcome:** Success — granted least-privilege `permissions:` on 8 bare workflows; fixed real write-scope gaps on `ship-to-market.yml` (`actions: write` for mobile dispatch) and `conflict-helper.yml` (`issues: write` for `gh issue edit`); made Acknowledgements permanent on heavy + OpenHands forms and BASIC/FULL markdown templates; fixed duplicate `steps:` key that made `apisec-scan.yml` invalid YAML; added regression tests + `docs/WORKFLOW_PERMISSIONS_STANDARD.md`.
+
+**Root Cause of Failure (If any):** (1) Several workflows never declared `permissions:`, relying on the repo default token matrix — fine until a job needs a write scope and gets a silent 403. (2) OpenHands quick WR form and markdown WR templates omitted the Acknowledgements / continue-the-loop contract that the heavy form already had. (3) A REVVEL-DISABLED `apisec-scan.yml` stub accidentally kept two `steps:` keys, so `workflows:validate` reported 1 invalid.
+
+**Self-Healing Fix / Learned Lesson:** (1) Every workflow file must declare `permissions:` — enforce with `tests/workflow-permissions.test.js`. (2) Job-level overrides that add a write scope must re-declare every other scope the job still needs (setting `permissions:` resets unlisted scopes to none). (3) Acknowledgements are permanent for every WR type — enforce with `tests/wr-acknowledgements-permanent.test.js` and keep portable copies under `templates/issue-template/` in sync. (4) Disabled stubs must still be valid single-`steps` YAML or automation-doctor fails the whole suite.
+
+**Next Action:** Merge this PR; CI should stay green on `npm test` + `workflows:validate`. No secrets added.
+
+---
+
 **Date/Time:** 2026-08-08T20:30:00Z
 
 **Task Attempted:** Take over Copilot's stranded recovery PRs #17091/#17097 (owner out of Copilot credits) and execute the owner's exit-quiet-mode decision, following RVS-AGENT-001 / RVS-PRESERVE-001.
@@ -160,3 +174,294 @@ This file logs lessons learned from self-healing fixes, incidents, and other ope
 **Self-Healing Fix / Learned Lesson:** (1) **Operating-mode decisions must land in DECISIONS.md at decision time** — a directive that exists only as a workflow comment is invisible to agents that triage from labels/CI, and the next agent will read it as a bug. (2) **A test asserting a behavior is not the behavior** — Copilot's routing test asserted `wr:research-complete` handling that its own diff never added; always run the test file you ship against the branch you ship it on. (3) zizmor template-injection on `${{ }}`-in-`run:` is fixed by `env:` indirection, not by suppression. (4) Per-PR Neon preview branches with 14-day expiry + a stuck 90-PR backlog = quota exhaustion; preview-infra capacity must be sized against open-PR count, or stuck PRs must be closed promptly.
 
 **Next Action:** (Historical state snapshot, recorded 2026-08-08.) PR #17091 is the ordering dependency for PR #17097, whose review findings at the time of writing were: byte-compare `cmp` of regenerated lockfiles false-fails across npm versions, and temp-dir regeneration cannot resolve `file:` dependencies. `Create Neon Branch` remains red everywhere until the Neon project's branch quota is cleared from the Neon console (or a scheduled cleanup lands). A backlog of `awaiting-approval` PRs exists that only becomes mergeable through the repo's normal review process once auto-approve triggers are active again.
+
+---
+
+## Training-Module Format — new entries as of 2026-08-10
+
+Effective 2026-08-10, new lessons in this file follow the **Training Module** format below.
+The older narrative entries above stay as-is per RVS-PRESERVE-001 (COMMENT-DONT-DELETE);
+they are still valid learnings, just in a different shape. Future auditors: prefer the
+new format for anything appended after this line so scripts can consume the file.
+
+**Format:**
+
+```text
+### TM-<NNNN> — <One-line pattern name>
+
+**Discovered:** YYYY-MM-DD  **Discovered-by:** <agent> during <task>  **PR/issue:** #NNNN
+**Category:** [measurement | wiring-drift | scope | detector-tuning | secret-hygiene | app-vs-workflow | credit-blackout | ...]
+
+**Symptom:** What was observed on the surface.
+
+**Root cause:** What was actually broken underneath.
+
+**Detection heuristic:** How to notice this pattern in the wild — a grep, a script,
+a behavior. If a script already exists to detect it, link it. If not, describe what a
+detector would look like.
+
+**Autofix pattern:** The minimal correct fix, as a code/config diff sketch. Not
+prose — actual before/after where possible.
+
+**Prevention rule:** The standing rule (from a standard, workflow, or test) that
+prevents recurrence. If none exists yet, propose one.
+
+**Related:** Links to related TMs, DECISIONS.md rows, standards, PRs.
+```text
+
+---
+
+### TM-0001 — GitHub App vs. workflow-based integration confusion
+
+**Discovered:** 2026-08-09  **Discovered-by:** openhands during Bito/Recurse D006/D007 audit  **PR/issue:** context for PR #17150 and future revive PRs
+**Category:** measurement, app-vs-workflow
+
+**Symptom:** A review-tool "workflow" is silent for 30+ days, so an agent concludes
+the tool is broken or providing no value, and files a decision to "cut" it.
+Meanwhile the tool's actual output — GitHub App bot comments — is either happening
+(app healthy, workflow orphan) or NOT happening (app scope wrong, unrelated to
+workflow), and nobody checked.
+
+**Root cause:** Confusing two independent integration surfaces:
+1. **Workflow-based integration** — a `.yml` file in `.github/workflows/` that
+   calls the tool's REST API using a `secrets.TOOL_API_KEY`
+2. **GitHub App integration** — a Marketplace-installed App that authenticates
+   with its own installation token and posts as `tool-name[bot]`
+
+Bito and RecurseML are Apps, not workflow tools. The workflow attempts existed but
+never worked (wrong auth model). The Apps may or may not have been active — that
+had to be verified by looking at bot-comment authorship, which nobody did.
+
+**Detection heuristic:**
+```text
+python3 .sandbox/openhands/scripts/count-reviewer-bot-comments.py \
+  midnghtsapphire revvel-standards --prs 30
+```text
+If a tool listed in `data/subscriptions.yml` as `type: github_app` shows 0
+bot activity in the last 30 PRs, the App is either not scoped to this repo
+or its billing has lapsed. Fix in the App-installation UI, NOT the workflow.
+
+**Autofix pattern:**
+- Archive the workflow-based `.github/workflows/<tool>.yml` in place per
+  RVS-PRESERVE-001 with a header saying "Integration is a GitHub App, not
+  a CI job. Configure at: `https://github.com/apps/<tool>`"
+- Delete the `<TOOL>_API_KEY` secret (it was orphan by definition)
+- Add the tool to `data/subscriptions.yml` with `type: github_app` and its
+  dashboard URL
+- Verify the App has repo access; push a test commit; check for a `[bot]`
+  comment; renew billing if applicable
+
+**Prevention rule:** Before writing any code to "revive" or "cut" a review tool,
+run `count-reviewer-bot-comments.py` first. If the tool is an App, workflow
+output is not the ground truth. Codified in
+`standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md` (rule against cost-based
+cuts without ground-truth measurement).
+
+**Related:** DECISIONS.md D006/D007 (the misdiagnosis), D020 (subscription
+tracker as the fix for this class), TM-0004 below (credit-blackout false claims).
+
+---
+
+### TM-0002 — Header/body mismatch: comment describes behavior code does not implement
+
+**Discovered:** 2026-08-09  **Discovered-by:** openhands during subscription-tracker audit  **PR/issue:** #17150
+**Category:** wiring-drift
+
+**Symptom:** A workflow, script, or config file has a header comment that
+confidently describes cron/trigger/behavior, but the code below implements only
+partial or none of it. The file looks wired from static reading of the header.
+It is not.
+
+**Root cause:** Someone wrote the header comment describing the *intended*
+behavior, then never came back to wire it up. No test caught the mismatch
+because there was no cron for the test suite to verify the presence of.
+
+**Detection heuristic:** Grep workflow headers for cron-describing words and
+diff against the actual `on:` block. A future workflow
+(`workflow-header-body-consistency.yml`, not yet built) should run weekly and
+open a Triage WR per file whose header describes a `schedule:` / `push:` /
+`pull_request:` trigger that the `on:` block does not implement.
+
+**Autofix pattern:**
+```text
+ on:
++  schedule:
++    - cron: '0 14 * * MON'
++  pull_request:
++    paths: [data/subscriptions.yml, scripts/subscription-tracker.js]
+   workflow_dispatch:
+```text
+Plus a note in the file: "Restored YYYY-MM-DD (D0NN) — header always claimed cron; schedule was never wired."
+
+**Prevention rule:** New workflow files that describe scheduled behavior in
+their header must have that schedule wired in the same PR that adds the file.
+The prevention detector (see Detection heuristic) files a Triage WR for any
+mismatch found later.
+
+**Related:** DECISIONS.md D020 (this specific case), D017/D018 (quiet-mode
+cron drift is the same pattern at scale), `standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md`.
+
+---
+
+### TM-0003 — Orphaned Actions secret pattern
+
+**Discovered:** 2026-08-09  **Discovered-by:** openhands during 99-secrets-at-100-cap audit  **PR/issue:** future secret cleanup PR
+**Category:** secret-hygiene, wiring-drift
+
+**Symptom:** GitHub Actions secrets slowly accumulate to the 100-secret cap.
+When at cap, adding a new secret requires deleting another, which risks
+breaking active workflows.
+
+**Root cause:** An agent adds a secret for an integration it plans to build,
+then never writes the workflow that uses it. Or two agents pick different
+casings of the same integration (`GH_TOKEN` vs `ADMIN_GITHUB_TOKEN`) so
+you end up with 3 secrets doing the job of 1. Nothing scans for orphans.
+
+**Detection heuristic:**
+```text
+python3 .sandbox/openhands/scripts/audit-secrets.py
+```text
+Zero-ref secrets have not been used in any file in the repo. Delete-safe
+unless they're for products not yet shipped (Stripe/RevenueCat) — those
+are "kept for imminent use" and belong in a doc, not the delete pile.
+
+**Autofix pattern:**
+1. Run the audit
+2. For each zero-ref secret, decide: delete OR document why it's kept
+3. Delete via `gh api -X DELETE /repos/OWNER/REPO/actions/secrets/NAME`
+4. Add remaining "keep for imminent use" entries to `docs/SECRETS_MAP.md`
+   with the target workflow / integration date
+
+**Prevention rule:** `.github/workflows/secret-usage-audit.yml` (not yet
+built) should run monthly and file a Triage WR listing every secret with
+zero references and >30 days since last workflow use. Any secret added
+without a corresponding workflow in the same PR should also fail the
+`anti-scaffolding-enforcer.yml` check.
+
+**Related:** TM-0001 (orphan secrets often come from app-vs-workflow
+confusion), `AGENTS.md` skills-vault entry `skills/vault-agent`.
+
+---
+
+### TM-0004 — Credit-blackout false "complete" claims
+
+**Discovered:** 2026-08-10  **Discovered-by:** openhands verifying Copilot's ChaosMender fix on PR #17147
+**Category:** credit-blackout, measurement
+
+**Symptom:** An agent posts a "Completed ✅ all validation green" summary
+listing specific verification results (`X tests pass, Y linter clean, Z
+scanner reports 0 findings`). Some of those results are stale from an
+earlier iteration; the final commit(s) were never re-verified before
+the credit/timeout blackout cut the session short.
+
+**Root cause:** Verification steps are done sequentially, and the last
+one to run before the summary is the one that "counts" — but if the
+agent hit a rate limit or timeout between the last commit and the
+verification, the summary reflects intent, not result.
+
+**Detection heuristic:** If the agent's session ended with a timeout /
+credit-limit error, do NOT trust the "verified" section of the summary.
+Re-run the specific verifications the summary claims.
+
+**Autofix pattern:** As the reviewer:
+```text
+git checkout <agent's-branch>
+npm test
+node scripts/chaosmender.js --changed-only
+```text
+If findings appear that the agent claimed were fixed, either:
+- Widen the detector so it recognizes the fix (this session, D021), OR
+- Revert the offending commit and re-do the fix in a way that satisfies the detector
+
+**Prevention rule:** Agent summary sections must distinguish "verified"
+(actually re-ran after last commit) from "expected" (haven't re-run since
+last commit). The wrap-up template (in `wr/templates/work/visiting-agent.md`
+future update) will force this distinction. Additionally, session logs in
+`.sandbox/<agent>/sessions/` MUST log every verification command as it
+runs, so a reviewer can see which verifications happened after the last
+commit and which are stale.
+
+**Related:** DECISIONS.md D021 (the specific chaosmender-window widening),
+`standards/VISITING_AGENT_SANDBOX_STANDARD.md` (sandbox usage rule that
+would have surfaced this), TM-0001 (measurement errors more broadly).
+
+---
+
+### TM-0005 — Label allowlist blocks its own recovery labels
+
+**Discovered:** 2026-08-09  **Discovered-by:** openhands + Copilot recovery session  **PR/issue:** #17091 (ready-to-merge), #17097 (has-conflicts), #17150 (review:stuck)
+**Category:** detector-tuning, wiring-drift
+
+**Symptom:** Governance-gates workflow fails with `UNKNOWN labels: <label>`
+even though `<label>` is a valid state applied by a real workflow. Every PR
+that has ever hit that workflow's state fails governance on its own state.
+
+**Root cause:** Workflows (`recovery-engine.yml`, `pr-lifecycle.yml`,
+`stuck-label-watchdog.yml`, etc.) apply state labels programmatically, but
+those labels were never added to `config/labels-allowlist.yml`. When the
+`label-allowlist` workflow runs on a PR carrying such a label, it fails
+governance-gates on a label the fleet itself applied.
+
+**Detection heuristic:** For every label named as `ensureLabel` /
+`addLabels` target in any workflow, verify it exists in the allowlist.
+
+**Autofix pattern:** Add every workflow-applied label to
+`config/labels-allowlist.yml` with a comment naming the workflow that
+applies it AND the historical PR that flushed out the omission:
+```text
+  # <label> applied by <workflow>.yml when <condition>. Was applied by
+  # that workflow but missing here, so any PR the workflow tagged failed
+  # governance on its own annotation label (PR #<historical>).
+  - name: "<label>"
+```text
+
+**Prevention rule:** A workflow adding a label MUST also PR-add that
+label to the allowlist. `anti-scaffolding-enforcer.yml` should be
+extended to detect `ensureLabel(...)` / `addLabels(...)` calls whose
+target names are not in the allowlist and fail the PR check.
+
+**Related:** DECISIONS.md D020 (adds `review:stuck`), historical PRs
+\#17091 / #17097 (same class of bug), TM-0002 (both are wiring-drift
+patterns).
+
+---
+
+## TM-0006 — Detector lookahead window too tight for well-formatted code
+
+**Discovered:** 2026-08-10  **Discovered-by:** openhands during Copilot fix verification  **PR/issue:** #17147, D021
+**Category:** detector-tuning
+
+**Symptom:** A static-analysis detector (chaosmender `LABEL-RACE-001`)
+flags code that is actually correctly guarded, because the guard is
+formatted across more lines than the detector's lookahead window covers.
+
+**Root cause:** The detector's `.catch` lookahead was 5 lines from a
+`removeLabel` call. Correct code like a multi-line args object plus
+`.then(log).catch(404-swallow)` puts `.catch` on line 4+ from the call
+opening — outside the window. The detector was correct in principle
+(catch handlers should be near the call) but wrong in practice
+(well-formatted multi-line code is common and legitimate).
+
+**Detection heuristic:** Whenever a "fix" of a scanner finding leaves
+the scanner still flagging, check whether the fix is real (runtime
+behavior correct) but formatted-too-spread-out for the scanner window.
+This is the classic "code correct, detector wrong" pattern.
+
+**Autofix pattern (for the detector, not the code):**
+```text
+- const windowEnd = Math.min(i + 6, lines.length);   // was 5 lines
++ const LABEL_RACE_LOOKAHEAD_LINES = 15;
++ const windowEnd = Math.min(i + 1 + LABEL_RACE_LOOKAHEAD_LINES, lines.length);
+```text
+Plus regression tests: one for the pattern that was being false-positive'd,
+and one boundary test proving a truly-distant `.catch` still triggers.
+
+**Prevention rule:** New scanner windows should be sized to accommodate
+the most common well-formatted representation of the pattern being
+detected, then + 3-5 lines slack. Tests for the scanner should cover
+both the tight and the well-formatted cases.
+
+**Related:** DECISIONS.md D021, `scripts/chaosmender.js` (the widened
+detector), `tests/chaosmender.test.js` (the regression tests).
+
+---
