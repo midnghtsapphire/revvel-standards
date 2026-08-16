@@ -22,9 +22,9 @@ revvel-standards change.
 
 ## Tasks
 
-- [x] Update / refresh the docs (README, overview, contributing).
-- [x] Research concrete improvements (deps, security, tests, DX, performance).
-- [x] Ensure the target repo has the standard review workflows (OpenRouter code
+- [ ] Update / refresh the docs (README, overview, contributing).
+- [ ] Research concrete improvements (deps, security, tests, DX, performance).
+- [ ] Ensure the target repo has the standard review workflows (OpenRouter code
       review, Jules, Semgrep, CodeQL) so the PR gets the full jury; add them if missing.
 - [ ] Implement the agreed improvements as a **draft PR** on the target repo.
 
@@ -43,13 +43,13 @@ revvel-standards change.
 
 ## Research Checklist
 
-- [x] Deep market research
-- [x] BOM
-- [x] Community chatter
-- [x] Competitor analysis
-- [x] Domain strategy
-- [x] Monetization
-- [x] Every statistic/percentage cited with a source link or labeled as an estimate
+- [ ] Deep market research
+- [ ] BOM
+- [ ] Community chatter
+- [ ] Competitor analysis
+- [ ] Domain strategy
+- [ ] Monetization
+- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Research Findings
 

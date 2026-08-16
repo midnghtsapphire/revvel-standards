@@ -378,10 +378,10 @@ Primary: "red light therapy app", "photobiomodulation app", "red light therapy p
 
 ## Research Checklist
 
-- [x] Deep market research
-- [x] BOM (see tech stack and pricing tiers above)
-- [x] Community chatter (r/biohacking, r/photobiomodulation, r/longevity)
-- [x] Competitor analysis (table with actual prices above)
-- [x] Domain strategy (Section 9)
-- [x] Monetization (Section 8 with pricing tiers and revenue projections)
-- [x] Every statistic/percentage cited with a source link or labeled as an estimate
+- [ ] Deep market research
+- [ ] BOM (see tech stack and pricing tiers above)
+- [ ] Community chatter (r/biohacking, r/photobiomodulation, r/longevity)
+- [ ] Competitor analysis (table with actual prices above)
+- [ ] Domain strategy (Section 9)
+- [ ] Monetization (Section 8 with pricing tiers and revenue projections)
+- [ ] Every statistic/percentage cited with a source link or labeled as an estimate

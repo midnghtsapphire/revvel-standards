@@ -18,18 +18,18 @@
 
 ### Research Checklist
 
-- [x] **Deep market research** — keywords, audience, mechanics (below)
-- [x] **BOM (Bill of Materials)** — stack/tooling already in target repo, mapped below
-- [x] **Community chatter** — dog-owner community needs (below)
-- [x] **Competitor analysis** — Nextdoor/BringFido/Meetup dog groups (below)
-- [x] **Domain name strategy** — N/A for this maintenance pass (target already has a brand surface)
-- [x] **Marketing best practices** — SEO keywords + GTM doc already present in target; gaps noted
-- [x] **Revenue / monetization model** — memberships + partner sponsorships + affiliate pet products (below)
-- [x] **Compliance & legal surface** — static frontend; no PII collected; documented below
-- [x] **Product / output selections** — docs refresh + 4 review workflows wired into target repo
-- [x] **Platform defaults** — Vite static build, deployable to Vercel/GitHub Pages
-- [x] **Artifact engine map** — mapped in closing section
-- [x] **Agent self-healing journal** — institutionalized learnings in closing section
+- [ ] **Deep market research** — keywords, audience, mechanics (below)
+- [ ] **BOM (Bill of Materials)** — stack/tooling already in target repo, mapped below
+- [ ] **Community chatter** — dog-owner community needs (below)
+- [ ] **Competitor analysis** — Nextdoor/BringFido/Meetup dog groups (below)
+- [ ] **Domain name strategy** — N/A for this maintenance pass (target already has a brand surface)
+- [ ] **Marketing best practices** — SEO keywords + GTM doc already present in target; gaps noted
+- [ ] **Revenue / monetization model** — memberships + partner sponsorships + affiliate pet products (below)
+- [ ] **Compliance & legal surface** — static frontend; no PII collected; documented below
+- [ ] **Product / output selections** — docs refresh + 4 review workflows wired into target repo
+- [ ] **Platform defaults** — Vite static build, deployable to Vercel/GitHub Pages
+- [ ] **Artifact engine map** — mapped in closing section
+- [ ] **Agent self-healing journal** — institutionalized learnings in closing section
 - [ ] **A/B test hypothesis** — N/A (no new UI component shipped in this WR)
 - [ ] **Affiliate / reseller program** — deferred (noted in monetization section)
 
@@ -270,8 +270,8 @@ if full Jules review is required.
 - [ ] Target repo `k9-community-site` carries `codeql.yml`, `semgrep.yml`, `ai-pr-review-openrouter.yml`, `jules-pr-reviewer.yml` under `.github/workflows/`.
 - [ ] A draft PR on the target repo applies the docs refresh (items 5–7) and passes the full jury (OpenRouter, Jules, Semgrep, CodeQL).
 - [ ] README has a `## Live Deployment` section with the live URL (per `docs/DEFINITION_OF_DONE.md`).
-- [x] WR research/design artifact recorded in `revvel-standards/wr/issues/`.
-- [x] WR tracker updated to link this WR.
+- [ ] WR research/design artifact recorded in `revvel-standards/wr/issues/`.
+- [ ] WR tracker updated to link this WR.
 
 ## Validation (hub-side)
 

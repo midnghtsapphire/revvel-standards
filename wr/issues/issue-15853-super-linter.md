@@ -72,11 +72,11 @@ Super-Linter is a ready-to-run collection of linters and code analyzers that:
 
 ## Definition of Done
 
-- [x] `.github/workflows/super-linter.yml` created with correct permissions and configuration
-- [x] Action version `v8.7.0` checked against GitHub Advisory Database (no vulnerabilities found)
-- [x] WR document created at `wr/issues/issue-15853-super-linter.md`
-- [x] Workflow YAML validates (parseable, has `name` and `on` keys)
-- [x] Existing tests pass without regression
+- [ ] `.github/workflows/super-linter.yml` created with correct permissions and configuration
+- [ ] Action version `v8.7.0` checked against GitHub Advisory Database (no vulnerabilities found)
+- [ ] WR document created at `wr/issues/issue-15853-super-linter.md`
+- [ ] Workflow YAML validates (parseable, has `name` and `on` keys)
+- [ ] Existing tests pass without regression
 
 ## Validation
 

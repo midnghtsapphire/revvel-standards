@@ -22,7 +22,7 @@ See issue for details.
 | Archived | N/A — CI automation |
 
 ## Research Checklist
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+<!-- Mark [ ] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter

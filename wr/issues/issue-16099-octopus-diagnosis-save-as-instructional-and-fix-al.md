@@ -313,7 +313,7 @@ Deviations & problems:
 Two incompatible test harnesses coexist: node:test (chaosmender.test.js) vs. a hand-rolled IIFE with manual passed/failed counters and process.exit(1) (tests/wr-pr-creation.test.js). The latter loses tooling integration (TAP output, --test filtering).
 Dead/fragile code in products/rnd-research-fleet/deep-search-router.js: query is computed from argv.slice(2) then conditionally superseded by actualQuery; the --profile check on positional argv[2] is fragile flag parsing.
 Unreachable/erroring branch in ship-to-market.yml: issue_number: context.payload.pull_request?.number ?? 0 — issue 0 doesn't exist; the API call will always throw for non-PR events, and the rejection is unhandled inside github-script.
-Redundant content: wr/issues/issue-15343-*.md contains two near-identical consecutive HTML comments ("Mark [x] ONLY when…") — template duplication drift.
+Redundant content: wr/issues/issue-15343-*.md contains two near-identical consecutive HTML comments ("Mark [ ] ONLY when…") — template duplication drift.
 Unchecked cast in CampaignCard.tsx: e.target.value as CampaignStatus — no runtime validation despite Zod being in the stack.
 Self-standard violations: the accessibility standard (docs/Master_Inventory/ACCESSIBILITY_STANDARD.md) requires labels on interactive elements, but the 
 Synthetic data as analytics: buildAnalytics() in app/analytics/page.tsx fabricates deterministic CTR/ROAS curves (clicks = impressions 0.038 (1 + i* 0.005)) with no visual "demo data" indicator — misleading for a shipped product.
@@ -361,35 +361,35 @@ If any part of the Required Bundle cannot be completed in one iteration, open a 
 
 ### Acknowledgements
 
-- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [x] Explicitly requested secondary items should not be silently deferred.
-- [x] If the PR is partial, the blocker must be documented.
-- [x] The PR should reflect the WR's required bundle and definition of done.
-- [x] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
+- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [ ] Explicitly requested secondary items should not be silently deferred.
+- [ ] If the PR is partial, the blocker must be documented.
+- [ ] The PR should reflect the WR's required bundle and definition of done.
+- [ ] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
 
 ## Summary
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Objective
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Required Bundle
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Definition of Done
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Validation
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Blockers
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Learnings — What & Why
 

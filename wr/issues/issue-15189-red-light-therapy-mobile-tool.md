@@ -27,13 +27,13 @@ concept based on evidence from the cited publication.
 
 ## Research Checklist
 
-- [x] Deep market research
-- [x] BOM
-- [x] Community chatter
-- [x] Competitor analysis (table includes concrete prices or notes pending)
-- [x] Domain strategy
-- [x] Monetization
-- [x] Every statistic/percentage cited with a source link or labeled estimate
+- [ ] Deep market research
+- [ ] BOM
+- [ ] Community chatter
+- [ ] Competitor analysis (table includes concrete prices or notes pending)
+- [ ] Domain strategy
+- [ ] Monetization
+- [ ] Every statistic/percentage cited with a source link or labeled estimate
 
 ## Research Findings
 

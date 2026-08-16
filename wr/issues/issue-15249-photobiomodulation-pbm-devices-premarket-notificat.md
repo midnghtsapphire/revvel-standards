@@ -24,13 +24,13 @@ Build an FDA-compliant app or tool for Photobiomodulation Therapy (PBMT) — cov
 
 ## Research Checklist
 
-- [x] Deep market research
-- [x] BOM
-- [x] Community chatter
-- [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
-- [x] Domain strategy
-- [x] Monetization
-- [x] Every statistic/percentage cited with a source link or labeled as an estimate
+- [ ] Deep market research
+- [ ] BOM
+- [ ] Community chatter
+- [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
+- [ ] Domain strategy
+- [ ] Monetization
+- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Research Findings
 

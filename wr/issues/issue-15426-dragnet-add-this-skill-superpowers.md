@@ -103,10 +103,10 @@ Add `skills/superpowers/` to the Revvel Skills Vault, register it in `SKILLS_IND
 ## Build Requirements and Acceptance Gates
 
 ### Core Deliverables
-- [x] `skills/superpowers/SKILL.md` — human-readable spec with all five modules, code-reviewer agent, composability matrix, agent system prompt, and skill assertions
-- [x] `skills/superpowers/superpowers.skill.yml` — machine-readable config for all agents
-- [x] `skills/REGISTRY.md` — quick-reference trigger row + full catalog entry added
-- [x] `skills/SKILLS_INDEX.yml` — superpowers entry added under Developer Workflow
+- [ ] `skills/superpowers/SKILL.md` — human-readable spec with all five modules, code-reviewer agent, composability matrix, agent system prompt, and skill assertions
+- [ ] `skills/superpowers/superpowers.skill.yml` — machine-readable config for all agents
+- [ ] `skills/REGISTRY.md` — quick-reference trigger row + full catalog entry added
+- [ ] `skills/SKILLS_INDEX.yml` — superpowers entry added under Developer Workflow
 
 ### Acceptance Criteria
 - [ ] Agent loading the skill refuses to write implementation code when a new feature is requested without a `/brainstorming` session
@@ -129,11 +129,11 @@ Add `skills/superpowers/` to the Revvel Skills Vault, register it in `SKILLS_IND
 
 ## Research Checklist
 
-- [x] Deep market research
-- [x] Competitor analysis
-- [x] Community chatter / demand signals
-- [x] SEO keywords
-- [x] Factual validation
+- [ ] Deep market research
+- [ ] Competitor analysis
+- [ ] Community chatter / demand signals
+- [ ] SEO keywords
+- [ ] Factual validation
 - [ ] BOM (N/A — skill addition, no product build)
 - [ ] Monetization path (future: ClawMarket listing for the skill suite)
 

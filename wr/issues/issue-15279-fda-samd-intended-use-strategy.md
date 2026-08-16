@@ -57,11 +57,11 @@ The current product provides:
 - Educational information about photobiomodulation
 
 **Mitigations applied:**
-- [x] All output labeled as "Estimated" or "Calculated" — never "Recommended" or "Prescribed"
-- [x] Required wellness disclaimer displayed on output screens
-- [x] No diagnostic claims in UI copy, protocol guides, or metadata
-- [x] No dosimetry recommendations that constitute treatment guidance — calculator is a math tool, not a protocol engine
-- [x] Intended-use statement documented (this document)
+- [ ] All output labeled as "Estimated" or "Calculated" — never "Recommended" or "Prescribed"
+- [ ] Required wellness disclaimer displayed on output screens
+- [ ] No diagnostic claims in UI copy, protocol guides, or metadata
+- [ ] No dosimetry recommendations that constitute treatment guidance — calculator is a math tool, not a protocol engine
+- [ ] Intended-use statement documented (this document)
 
 ### Phase 2 — AI Skin Analysis (Future)
 

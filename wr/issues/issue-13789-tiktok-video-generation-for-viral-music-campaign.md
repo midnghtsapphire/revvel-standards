@@ -26,18 +26,18 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
-- [x] **Product / output selections** — explicitly choose artifact shapes (API, CLI, MCP, skill, PDF, deck, video, UI, docs, agent automation)
-- [x] **Platform defaults** — Website in Test on Vercel, DigitalOcean integration default, website auth/admin requirements when UI is in scope
-- [x] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
-- [x] **Agent self-healing journal** — institutionalize durable findings back into revvel-standards
+- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [ ] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [ ] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [ ] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [ ] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [ ] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [ ] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [ ] **Product / output selections** — explicitly choose artifact shapes (API, CLI, MCP, skill, PDF, deck, video, UI, docs, agent automation)
+- [ ] **Platform defaults** — Website in Test on Vercel, DigitalOcean integration default, website auth/admin requirements when UI is in scope
+- [ ] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
+- [ ] **Agent self-healing journal** — institutionalize durable findings back into revvel-standards
 - [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
 - [ ] **Affiliate / reseller program** — only if a distribution network is in scope
 
@@ -172,10 +172,10 @@ _No response_
 
 ### Acknowledgements
 
-- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [x] Explicitly requested secondary items should not be silently deferred.
-- [x] If the PR is partial, the blocker must be documented.
-- [x] The PR should reflect the WR's required bundle and definition of done. |
+- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [ ] Explicitly requested secondary items should not be silently deferred.
+- [ ] If the PR is partial, the blocker must be documented.
+- [ ] The PR should reflect the WR's required bundle and definition of done. |
 | Private | {IS_PRIVATE} |
 | Archived | {IS_ARCHIVED} |
 
@@ -768,7 +768,7 @@ This prevents copy/paste execution of low-quality or conflicting ideas and keeps
 
 ### Saved Locations
 
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
+- [ ] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
 - [ ] Pushed to revvel-standards repository
 - [ ] WR_TRACKER.md updated
 - [ ] Issue created in revvel-standards: #[number]

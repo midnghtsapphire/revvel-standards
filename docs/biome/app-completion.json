@@ -1,13 +1,13 @@
 {
   "schema": "biome-app-completion/v1",
-  "generated_at": "2026-08-16T12:47:15.025Z",
+  "generated_at": "2026-08-11T18:49:50.075Z",
   "credit_free": true,
   "base_url": "https://revvel-standards.vercel.app",
-  "overall": "incomplete",
+  "overall": "all-testable-live",
   "summary": {
     "total": 19,
-    "live": 0,
-    "unreachable": 18,
+    "live": 18,
+    "unreachable": 0,
     "no_link": 0,
     "external": 1
   },
@@ -16,137 +16,137 @@
       "name": "affiliate-hub",
       "url": "https://revvel-standards.vercel.app/docs/affiliate-hub/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "ai-video-toolkit",
       "url": "https://revvel-standards.vercel.app/docs/ai-video-toolkit/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "cli-engine",
       "url": "https://revvel-standards.vercel.app/docs/cli-engine/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "coldtrace",
       "url": "https://revvel-standards.vercel.app/docs/coldtrace/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "creator-payout-tracker",
       "url": "https://revvel-standards.vercel.app/docs/creator-payout-tracker/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "fieldwork",
       "url": "https://revvel-standards.vercel.app/docs/fieldwork/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "graphify-evaluator",
       "url": "https://revvel-standards.vercel.app/docs/graphify-evaluator/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "life-insurance-lead-engine",
       "url": "https://revvel-standards.vercel.app/docs/life-insurance-lead-engine/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "life-insurance-lead-saas",
       "url": "https://revvel-standards.vercel.app/docs/life-insurance-lead-saas/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "music-video-creator",
       "url": "https://revvel-standards.vercel.app/docs/music-video-creator/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "oaudrey",
       "url": "https://revvel-standards.vercel.app/docs/oaudrey/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "openmythos",
       "url": "https://revvel-standards.vercel.app/docs/openmythos/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "osint-hub",
       "url": "https://revvel-standards.vercel.app/docs/osint-hub/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "prompt-generation-app",
       "url": "https://revvel-standards.vercel.app/docs/prompt-generation-app/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "reesereviews",
       "url": "https://revvel-standards.vercel.app/docs/reesereviews/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "revvel-skill-runner",
       "url": "https://revvel-standards.vercel.app/docs/revvel-skill-runner/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "screen-recorder-finder",
       "url": "https://revvel-standards.vercel.app/docs/screen-recorder-finder/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     },
     {
       "name": "sessiono",
@@ -160,9 +160,9 @@
       "name": "ugc-review-generator",
       "url": "https://revvel-standards.vercel.app/docs/ugc-review-generator/",
       "external": false,
-      "http_status": 402,
-      "reachable": false,
-      "state": "unreachable"
+      "http_status": 200,
+      "reachable": true,
+      "state": "live"
     }
   ]
 }

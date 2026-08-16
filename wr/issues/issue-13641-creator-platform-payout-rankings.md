@@ -14,16 +14,16 @@
 
 ### Research Checklist
 
-- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [x] **Compliance & legal surface** — Terms of Service constraints, data sourcing, GDPR
-- [x] **A/B test hypothesis** — UI/UX component is being shipped
-- [x] **Affiliate / reseller program** — distribution via creator communities
+- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [ ] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [ ] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [ ] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [ ] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [ ] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [ ] **Compliance & legal surface** — Terms of Service constraints, data sourcing, GDPR
+- [ ] **A/B test hypothesis** — UI/UX component is being shipped
+- [ ] **Affiliate / reseller program** — distribution via creator communities
 
 ---
 
@@ -386,18 +386,18 @@ interface Platform {
 
 ### Deliverables
 
-- [x] WR Research Document (this file)
-- [x] `products/creator-payout-tracker/` Next.js 16 app (port 3005)
-- [x] Platform rankings table with sorting
-- [x] Earnings calculator (view-based + subscription-based)
-- [x] Recommendation engine + Markdown/CSV strategy brief export
-- [x] `/api/report` programmatic report endpoint
-- [x] Creator Pro checkout CTA (`NEXT_PUBLIC_POLAR_CHECKOUT_URL`)
-- [x] Engine unit test + TypeScript/build validation
-- [x] README.md
-- [x] CHANGELOG.md
-- [x] DEPLOYMENT_GUIDE.md
-- [x] GO_TO_MARKET.md
+- [ ] WR Research Document (this file)
+- [ ] `products/creator-payout-tracker/` Next.js 16 app (port 3005)
+- [ ] Platform rankings table with sorting
+- [ ] Earnings calculator (view-based + subscription-based)
+- [ ] Recommendation engine + Markdown/CSV strategy brief export
+- [ ] `/api/report` programmatic report endpoint
+- [ ] Creator Pro checkout CTA (`NEXT_PUBLIC_POLAR_CHECKOUT_URL`)
+- [ ] Engine unit test + TypeScript/build validation
+- [ ] README.md
+- [ ] CHANGELOG.md
+- [ ] DEPLOYMENT_GUIDE.md
+- [ ] GO_TO_MARKET.md
 
 ---
 

@@ -96,13 +96,13 @@ Medium (2–4 weeks for MVP). Core scope: wizard UI, scoring engine, PDF export,
 
 ## Research Checklist
 
-- [x] Deep market research
-- [x] BOM
-- [x] Community chatter
-- [x] Competitor analysis (table lists actual prices)
-- [x] Domain strategy
-- [x] Monetization
-- [x] Every statistic/percentage cited with a source link or labeled as an estimate
+- [ ] Deep market research
+- [ ] BOM
+- [ ] Community chatter
+- [ ] Competitor analysis (table lists actual prices)
+- [ ] Domain strategy
+- [ ] Monetization
+- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ---
 

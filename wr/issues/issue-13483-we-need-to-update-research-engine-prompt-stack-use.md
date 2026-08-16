@@ -224,12 +224,12 @@ In the current AI automation ecosystem, development speed is high, but distribut
 
 **Readiness Checklist:**
 
-- [x] All tests passing
-- [x] No linting errors
-- [x] No security vulnerabilities
-- [x] Deployment configured
-- [x] Documentation complete
-- [x] TEST section in README
+- [ ] All tests passing
+- [ ] No linting errors
+- [ ] No security vulnerabilities
+- [ ] Deployment configured
+- [ ] Documentation complete
+- [ ] TEST section in README
 
 ---
 
@@ -306,9 +306,9 @@ In the current AI automation ecosystem, development speed is high, but distribut
 
 **revvel-affiliate-links MCP:**
 
-- [x] MCP server configured
-- [x] Affiliate links identified
-- [x] Links integrated in content
+- [ ] MCP server configured
+- [ ] Affiliate links identified
+- [ ] Links integrated in content
 - [ ] Tracking configured
 
 **Links to Add:**
@@ -327,8 +327,8 @@ In the current AI automation ecosystem, development speed is high, but distribut
 
 **To Implement:**
 
-- [x] Revenue tracking
-- [x] Conversion tracking
+- [ ] Revenue tracking
+- [ ] Conversion tracking
 
 ---
 
@@ -340,8 +340,8 @@ In the current AI automation ecosystem, development speed is high, but distribut
 
 **Configuration:**
 
-- [x] Environment variables set
-- [x] Secrets configured
+- [ ] Environment variables set
+- [ ] Secrets configured
 
 **Deployment Issues:**
 None.
@@ -350,7 +350,7 @@ None.
 
 **Verification Checklist:**
 
-- [x] Action workflow executes correctly
+- [ ] Action workflow executes correctly
 
 **Issues Found:**
 
@@ -386,9 +386,9 @@ None.
 
 **Existing Documentation:**
 
-- [x] README.md
-- [x] CONTRIBUTING.md
-- [x] LICENSE
+- [ ] README.md
+- [ ] CONTRIBUTING.md
+- [ ] LICENSE
 
 **Missing Documentation:**
 
@@ -400,8 +400,8 @@ None.
 
 ### Saved Locations
 
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/issues/issue-13483-we-need-to-update-research-engine-prompt-stack-use.md` (this file)
-- [x] WR_TRACKER.md updated
+- [ ] `/home/runner/work/revvel-standards/revvel-standards/wr/issues/issue-13483-we-need-to-update-research-engine-prompt-stack-use.md` (this file)
+- [ ] WR_TRACKER.md updated
 
 ### Implementation Tasks Created
 
@@ -411,8 +411,8 @@ None.
 
 ### Next Steps
 
-1. [x] Update `scripts/openrouter-triage.js` system prompts - @midnghtsapphire - Immediate
-2. [x] Update `docs/WEEKLY_RESEARCH_PROCESS.md` checklist - @midnghtsapphire - Immediate
+1. [ ] Update `scripts/openrouter-triage.js` system prompts - @midnghtsapphire - Immediate
+2. [ ] Update `docs/WEEKLY_RESEARCH_PROCESS.md` checklist - @midnghtsapphire - Immediate
 
 ---
 
@@ -582,19 +582,19 @@ This directly serves the **$10M Prime Directive** by ensuring no engineering cyc
 ## 5. Implementation Plan
 
 ### Phase A — Prompt Modules (Week 1)
-- [x] Draft `seo-keyword-research.md` — inputs: product idea; outputs: 10 keywords with volume/KD/intent
-- [x] Draft `marketing-plan.md` — inputs: product + ICP; outputs: 3 channels, 5 hooks, 30-day calendar skeleton
-- [x] Draft `competitor-stars-tracker.md` — inputs: domain; outputs: top 10 repos, star velocity, gaps
-- [x] Draft `factual-validator.md` — inputs: claim list; outputs: validated/flagged with sources
+- [ ] Draft `seo-keyword-research.md` — inputs: product idea; outputs: 10 keywords with volume/KD/intent
+- [ ] Draft `marketing-plan.md` — inputs: product + ICP; outputs: 3 channels, 5 hooks, 30-day calendar skeleton
+- [ ] Draft `competitor-stars-tracker.md` — inputs: domain; outputs: top 10 repos, star velocity, gaps
+- [ ] Draft `factual-validator.md` — inputs: claim list; outputs: validated/flagged with sources
 
 ### Phase B — Integration (Week 1-2)
-- [x] Synthesizer prompt updated to require all 4 modules' output before emitting WR
-- [x] WR template extended with `## GTM Validation` block
-- [x] Polar.sh funding link auto-inserted into every generated product README
+- [ ] Synthesizer prompt updated to require all 4 modules' output before emitting WR
+- [ ] WR template extended with `## GTM Validation` block
+- [ ] Polar.sh funding link auto-inserted into every generated product README
 
 ### Phase C — Validation (Week 2)
-- [x] Run 5 historical issues through new stack; verify GTM block populated
-- [x] Confirm zero hallucinated stats (factual-validator catches them)
+- [ ] Run 5 historical issues through new stack; verify GTM block populated
+- [ ] Confirm zero hallucinated stats (factual-validator catches them)
 
 ---
 

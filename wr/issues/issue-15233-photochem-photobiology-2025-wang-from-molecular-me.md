@@ -27,13 +27,13 @@ https://lymphoedemaeducation.com.au/wp-content/uploads/2025/04/Photochem-Photobi
 
 ## Research Checklist
 
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [x] Deep market research
-- [x] BOM
-- [x] Community chatter
-- [x] Competitor analysis (table with prices below)
-- [x] Domain strategy
-- [x] Monetization
+<!-- Mark [ ] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+- [ ] Deep market research
+- [ ] BOM
+- [ ] Community chatter
+- [ ] Competitor analysis (table with prices below)
+- [ ] Domain strategy
+- [ ] Monetization
 - [ ] Every statistic/percentage cited with a source link or labeled as an estimate — needs citations/estimate labels for community sizes, device pricing, and adoption/market figures
 
 ## Research Findings

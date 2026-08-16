@@ -23,7 +23,7 @@ jobs:
   copilot-setup-steps:
     name: Install root tooling for revvel-standards
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 10
 
     permissions:
       contents: read

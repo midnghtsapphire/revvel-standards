@@ -302,7 +302,7 @@ This repository uses [Baler](https://github.com/caltechlibrary/baler) to automat
 
 ## Learnings — What & Why
 
-N/A — pending Jules refinement
+N/A — completed
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

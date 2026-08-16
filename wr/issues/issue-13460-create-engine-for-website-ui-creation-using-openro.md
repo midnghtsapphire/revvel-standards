@@ -545,7 +545,7 @@ Each vertical below becomes a reusable feature pack listed on the website:
 
 ### Saved Locations
 
-- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
+- [ ] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
 - [ ] Pushed to revvel-standards repository
 - [ ] WR_TRACKER.md updated
 - [ ] Issue created in revvel-standards: #[number]
@@ -674,13 +674,13 @@ Build an autonomous UI Creation Engine that orchestrates OpenRouter (model routi
 
 ## Success Criteria
 
-- [x] Orchestrator script (`scripts/ui-creation-engine.ts`) accepts a natural-language UI spec and outputs a complete Next.js component tree.
-- [x] OpenRouter integration uses native `fetch` (no SDK lock-in) and routes between models by task class (planning, coding, review).
-- [x] OpenHands skill (`.openhands/skills/ui-creation-engine.md`) documents invocation patterns and guardrails.
-- [x] Swarms integration performs design-pattern research and competitor UI analysis before generation.
-- [x] GitHub Actions workflow (`.github/workflows/ui-creation-engine.yml`) triggers on issue label `ui:generate`.
-- [x] All generated UI passes `markdownlint-cli2`, `eslint`, and `tsc --noEmit`.
-- [x] End-to-end demo: issue → PR with working Next.js page in < 10 minutes.
+- [ ] Orchestrator script (`scripts/ui-creation-engine.ts`) accepts a natural-language UI spec and outputs a complete Next.js component tree.
+- [ ] OpenRouter integration uses native `fetch` (no SDK lock-in) and routes between models by task class (planning, coding, review).
+- [ ] OpenHands skill (`.openhands/skills/ui-creation-engine.md`) documents invocation patterns and guardrails.
+- [ ] Swarms integration performs design-pattern research and competitor UI analysis before generation.
+- [ ] GitHub Actions workflow (`.github/workflows/ui-creation-engine.yml`) triggers on issue label `ui:generate`.
+- [ ] All generated UI passes `markdownlint-cli2`, `eslint`, and `tsc --noEmit`.
+- [ ] End-to-end demo: issue → PR with working Next.js page in < 10 minutes.
 
 ## Implementation Steps
 

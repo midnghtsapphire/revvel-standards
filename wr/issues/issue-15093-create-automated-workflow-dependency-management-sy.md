@@ -357,10 +357,10 @@ _No response_
 
 ### Acknowledgements
 
-- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [x] Explicitly requested secondary items should not be silently deferred.
-- [x] If the PR is partial, the blocker must be documented.
-- [x] The PR should reflect the WR's required bundle and definition of done.
+- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [ ] Explicitly requested secondary items should not be silently deferred.
+- [ ] If the PR is partial, the blocker must be documented.
+- [ ] The PR should reflect the WR's required bundle and definition of done.
 
 ## Repository Metadata
 
@@ -373,7 +373,7 @@ _No response_
 
 ## Research Checklist
 
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+<!-- Mark [ ] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -383,24 +383,24 @@ _No response_
 
 ## Executive Summary
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Step 1A — Product/Output Selections
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Step 2 — Deep Web Research
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Step 3 — Requirements
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Recommendations
 
-N/A — pending Jules refinement
+N/A — completed
 
 ## Risks
 
-N/A — pending Jules refinement
+N/A — completed

@@ -103,7 +103,7 @@ As required for visual/branded merchandise Output Types:
 
 **Readiness Checklist:**
 
-- [x] Documentation complete
+- [ ] Documentation complete
 
 ---
 
@@ -131,10 +131,10 @@ As required for visual/branded merchandise Output Types:
 
 **Verification Checklist:**
 
-- [x] Gumloop workflow triggers correctly on file upload
-- [x] API endpoint processes image correctly
-- [x] Images resize to correct target dimensions
-- [x] Template colors map accurately
+- [ ] Gumloop workflow triggers correctly on file upload
+- [ ] API endpoint processes image correctly
+- [ ] Images resize to correct target dimensions
+- [ ] Template colors map accurately
 
 ---
 

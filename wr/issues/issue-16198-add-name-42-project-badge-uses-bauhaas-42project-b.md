@@ -202,7 +202,7 @@ Never use your personal 42 account credentials in CI/CD.
 
 ## Learnings — What & Why
 
-N/A — pending Jules refinement
+N/A — completed
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

@@ -346,10 +346,10 @@ make sure to check all fables files and process and ruminating just don't accept
 
 ### Acknowledgements
 
-- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [x] Explicitly requested secondary items should not be silently deferred.
-- [x] If the PR is partial, the blocker must be documented.
-- [x] The PR should reflect the WR's required bundle and definition of done.
+- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [ ] Explicitly requested secondary items should not be silently deferred.
+- [ ] If the PR is partial, the blocker must be documented.
+- [ ] The PR should reflect the WR's required bundle and definition of done.
 
 ## Repository Metadata
 
@@ -362,13 +362,13 @@ make sure to check all fables files and process and ruminating just don't accept
 
 ## Research Checklist
 
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [x] Deep market research
-- [x] BOM
-- [x] Community chatter
-- [x] Competitor analysis
-- [x] Domain strategy
-- [x] Monetization
+<!-- Mark [ ] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+- [ ] Deep market research
+- [ ] BOM
+- [ ] Community chatter
+- [ ] Competitor analysis
+- [ ] Domain strategy
+- [ ] Monetization
 
 ## Executive Summary
 

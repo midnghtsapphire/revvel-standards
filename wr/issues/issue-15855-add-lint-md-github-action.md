@@ -91,12 +91,12 @@ Rules are set to severity levels: 0 (off), 1 (warning), 2 (error).
 
 ## Definition of Done
 
-- [x] `.github/workflows/lint-md.yml` created with correct permissions and configuration
-- [x] `.lintmdrc` configuration file created with appropriate rules and exclusions
-- [x] Action version `v0.2.0` checked against GitHub Advisory Database (no vulnerabilities found)
-- [x] WR document created at `wr/issues/issue-15855-add-lint-md-github-action.md`
-- [x] Workflow YAML validates (parseable, has `name` and `on` keys)
-- [x] Existing tests pass without regression
+- [ ] `.github/workflows/lint-md.yml` created with correct permissions and configuration
+- [ ] `.lintmdrc` configuration file created with appropriate rules and exclusions
+- [ ] Action version `v0.2.0` checked against GitHub Advisory Database (no vulnerabilities found)
+- [ ] WR document created at `wr/issues/issue-15855-add-lint-md-github-action.md`
+- [ ] Workflow YAML validates (parseable, has `name` and `on` keys)
+- [ ] Existing tests pass without regression
 
 ## Validation
 

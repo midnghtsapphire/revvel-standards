@@ -19,12 +19,12 @@ The request is to "wire in chrome devtools MCP find where tools can be used espe
 | Archived | false |
 
 ## Research Checklist
-- [x] Deep market research
-- [x] BOM
-- [x] Community chatter
-- [x] Competitor analysis
-- [x] Domain strategy
-- [x] Monetization
+- [ ] Deep market research
+- [ ] BOM
+- [ ] Community chatter
+- [ ] Competitor analysis
+- [ ] Domain strategy
+- [ ] Monetization
 
 ## Executive Summary
 This Work Request outlines the plan to integrate the `chrome-devtools-mcp` (or similar Puppeteer/Chrome DevTools MCP server) into the Revvel Standard ecosystem. By incorporating Chrome DevTools over MCP, agentic tools can connect to active browser sessions to extract DOM structures, execute JavaScript, and importantly, retrieve authentication tokens, cookies, `localStorage`, and `sessionStorage` values without relying on complex, brittle scraping configurations. This approach enhances the automation capabilities of OSINT and marketing tools.

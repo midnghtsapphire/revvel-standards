@@ -52,7 +52,7 @@ Build a production web app that compares thyroid-focused red light therapy devic
 - Output type: `production-app`
 - Primary route tag: `#app`
 - Product shape: consumer-facing comparison web application
-- Core JTBD: "Help me choose a thyroid-targeted red light therapy device confidently in under 5 minutes."
+- Core JTo be determined: "Help me choose a thyroid-targeted red light therapy device confidently in under 5 minutes."
 - First ship mode: MVP comparison engine with affiliate-ready outbound links
 
 ## Step 2 — Deep Web Research

@@ -22,13 +22,13 @@
 
 ## Research Checklist
 
-- [x] Deep market research
+- [ ] Deep market research
 - [ ] BOM (Bill of Materials) — pending (add tool/service/cost table)
-- [x] Community chatter
+- [ ] Community chatter
 - [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
-- [x] Domain strategy
-- [x] Monetization
-- [x] Every statistic/percentage cited with a source link or labeled as an estimate
+- [ ] Domain strategy
+- [ ] Monetization
+- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Research Findings
 

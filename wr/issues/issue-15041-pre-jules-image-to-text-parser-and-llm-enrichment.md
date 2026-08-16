@@ -19,13 +19,13 @@ into a WR that carries every requirement Jules needs to rewrite the WR and PR.
 
 ## Research Checklist
 
-<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [x] Deep market research
+<!-- Mark [ ] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+- [ ] Deep market research
 - [ ] BOM — N/A, software-only automation step
-- [x] Community chatter
-- [x] Competitor analysis
+- [ ] Community chatter
+- [ ] Competitor analysis
 - [ ] Domain strategy — N/A, internal pipeline component
-- [x] Monetization
+- [ ] Monetization
 
 ## Executive Summary
 

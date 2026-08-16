@@ -14,16 +14,16 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
-- [x] **A/B test hypothesis** — only if a UI/UX component is being shipped
-- [x] **Affiliate / reseller program** — only if a distribution network is in scope
+- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [ ] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [ ] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [ ] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [ ] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [ ] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [ ] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
+- [ ] **Affiliate / reseller program** — only if a distribution network is in scope
 
 ### GitHub Actions Workflow Dispatch Inputs (for automated WR runs)
 
@@ -369,9 +369,9 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **Status Values:**
 
-- [x] `eligible` (Score >= 80)
-- [x] `manual_review` (Score 50-79)
-- [x] `blocked` (Score < 50)
+- [ ] `eligible` (Score >= 80)
+- [ ] `manual_review` (Score 50-79)
+- [ ] `blocked` (Score < 50)
 
 **Score Range:** 0-100
 
@@ -392,8 +392,8 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **Audit Trail Required:**
 
-- [x] Model version recorded (implicitly via deterministic hash)
-- [x] Factor values recorded in the output markdown
+- [ ] Model version recorded (implicitly via deterministic hash)
+- [ ] Factor values recorded in the output markdown
 
 **Tenant / Client Separation:**
 
@@ -406,14 +406,14 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **Readiness Checklist:**
 
-- [x] All tests passing (`npm test` passes)
-- [x] No linting errors
-- [x] No security vulnerabilities
-- [x] Deployment configured (Vercel)
-- [x] UI verified
-- [x] Documentation complete
-- [x] TEST section in README
-- [x] Vercel URL available
+- [ ] All tests passing (`npm test` passes)
+- [ ] No linting errors
+- [ ] No security vulnerabilities
+- [ ] Deployment configured (Vercel)
+- [ ] UI verified
+- [ ] Documentation complete
+- [ ] TEST section in README
+- [ ] Vercel URL available
 
 ---
 
@@ -477,12 +477,12 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **Required:**
 
-- [x] Keyboard navigation
-- [x] Screen reader support
-- [x] Color contrast improvements via high-contrast and enhanced-contrast themes
-- [x] Alt text for images
-- [x] ARIA labels
-- [x] Focus indicators
+- [ ] Keyboard navigation
+- [ ] Screen reader support
+- [ ] Color contrast improvements via high-contrast and enhanced-contrast themes
+- [ ] Alt text for images
+- [ ] ARIA labels
+- [ ] Focus indicators
 - **Added:** Dyslexia-friendly, focus mode, high-contrast, large text, monospace modes.
 
 #### Performance Optimization
@@ -507,8 +507,8 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **Polar.sh:**
 
-- [x] Account setup
-- [x] Products created
+- [ ] Account setup
+- [ ] Products created
 - [ ] Integration implemented (Next step)
 
 **Recommended Platform:** Polar.sh for OSS ecosystem alignment.
@@ -517,7 +517,7 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **To Implement:**
 
-- [x] Plausible Analytics (privacy-friendly alternative)
+- [ ] Plausible Analytics (privacy-friendly alternative)
 
 ---
 
@@ -529,9 +529,9 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **Configuration:**
 
-- [x] `next.config.js` with `output: 'export'`
-- [x] Build command correct (`npm run build`)
-- [x] Output directory correct (`out`)
+- [ ] `next.config.js` with `output: 'export'`
+- [ ] Build command correct (`npm run build`)
+- [ ] Output directory correct (`out`)
 
 **URLs:**
 
@@ -541,13 +541,13 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **Verification Checklist:**
 
-- [x] Homepage renders correctly
-- [x] All forms work
-- [x] Mobile responsive
-- [x] Tablet responsive
-- [x] Desktop responsive
-- [x] No console errors
-- [x] No 404 errors
+- [ ] Homepage renders correctly
+- [ ] All forms work
+- [ ] Mobile responsive
+- [ ] Tablet responsive
+- [ ] Desktop responsive
+- [ ] No console errors
+- [ ] No 404 errors
 
 ---
 
@@ -589,10 +589,10 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 **Existing Documentation:**
 
-- [x] README.md
-- [x] PRODUCTS_README.md updated
-- [x] DEPLOYMENT.md updated
-- [x] tests/prompt-generation-app.test.js
+- [ ] README.md
+- [ ] PRODUCTS_README.md updated
+- [ ] DEPLOYMENT.md updated
+- [ ] tests/prompt-generation-app.test.js
 
 ---
 
@@ -600,9 +600,9 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 ### Saved Locations
 
-- [x] `wr/issues/issue-13546-create-a-website-that-generates-prompts-i-have-use.md` (this file)
-- [x] WR_TRACKER.md updated
-- [x] Issue created in revvel-standards: #13546
+- [ ] `wr/issues/issue-13546-create-a-website-that-generates-prompts-i-have-use.md` (this file)
+- [ ] WR_TRACKER.md updated
+- [ ] Issue created in revvel-standards: #13546
 
 ### Implementation Tasks Created
 
@@ -614,7 +614,7 @@ User prompts and brainstorms are inputs, not immutable specs.
 
 ### Next Steps
 
-1. [x] Wire Polar.sh checkout to packet generator - @midnghtsapphire
+1. [ ] Wire Polar.sh checkout to packet generator - @midnghtsapphire
 2. [ ] Add LLM-augmented source retrieval (v2) - @midnghtsapphire
 3. [ ] Ship `/api/packet` JSON endpoint - @midnghtsapphire
 
@@ -799,7 +799,7 @@ The platform addresses the #1 pain point in AI adoption: **users don't know how 
 5. `app/dashboard` - User workspace
 
 ### MVP Scope (4 weeks)
-- [x] Prompt packet generator library (`generatePromptPacket`, `packetToMarkdown`)
+- [ ] Prompt packet generator library (`generatePromptPacket`, `packetToMarkdown`)
 - [ ] 20 starter templates across 5 verticals
 - [ ] Next.js landing + signup flow
 - [ ] Polar.sh checkout integration
@@ -864,10 +864,10 @@ The platform addresses the #1 pain point in AI adoption: **users don't know how 
 
 ## 10. Deliverables Checklist
 
-- [x] Work Request documented and approved
-- [x] Core `prompt-generator.js` library with `generatePromptPacket` + `packetToMarkdown`
-- [x] Test suite (`tests/prompt-generation-app.test.js`)
-- [x] Package dependencies pinned (`products/prompt-generation-app/package.json`)
+- [ ] Work Request documented and approved
+- [ ] Core `prompt-generator.js` library with `generatePromptPacket` + `packetToMarkdown`
+- [ ] Test suite (`tests/prompt-generation-app.test.js`)
+- [ ] Package dependencies pinned (`products/prompt-generation-app/package.json`)
 - [ ] Template library (20 prompts)
 - [ ] Next.js app shell
 - [ ] Polar.sh checkout flow

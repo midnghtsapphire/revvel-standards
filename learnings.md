@@ -207,7 +207,7 @@ prose — actual before/after where possible.
 prevents recurrence. If none exists yet, propose one.
 
 **Related:** Links to related TMs, DECISIONS.md rows, standards, PRs.
-```text
+```
 
 ---
 
@@ -236,7 +236,7 @@ had to be verified by looking at bot-comment authorship, which nobody did.
 ```text
 python3 .sandbox/openhands/scripts/count-reviewer-bot-comments.py \
   midnghtsapphire revvel-standards --prs 30
-```text
+```
 If a tool listed in `data/subscriptions.yml` as `type: github_app` shows 0
 bot activity in the last 30 PRs, the App is either not scoped to this repo
 or its billing has lapsed. Fix in the App-installation UI, NOT the workflow.
@@ -290,7 +290,7 @@ open a Triage WR per file whose header describes a `schedule:` / `push:` /
 +  pull_request:
 +    paths: [data/subscriptions.yml, scripts/subscription-tracker.js]
    workflow_dispatch:
-```text
+```
 Plus a note in the file: "Restored YYYY-MM-DD (D0NN) — header always claimed cron; schedule was never wired."
 
 **Prevention rule:** New workflow files that describe scheduled behavior in
@@ -320,7 +320,7 @@ you end up with 3 secrets doing the job of 1. Nothing scans for orphans.
 **Detection heuristic:**
 ```text
 python3 .sandbox/openhands/scripts/audit-secrets.py
-```text
+```
 Zero-ref secrets have not been used in any file in the repo. Delete-safe
 unless they're for products not yet shipped (Stripe/RevenueCat) — those
 are "kept for imminent use" and belong in a doc, not the delete pile.
@@ -368,7 +368,7 @@ Re-run the specific verifications the summary claims.
 git checkout <agent's-branch>
 npm test
 node scripts/chaosmender.js --changed-only
-```text
+```
 If findings appear that the agent claimed were fixed, either:
 - Widen the detector so it recognizes the fix (this session, D021), OR
 - Revert the offending commit and re-do the fix in a way that satisfies the detector
@@ -413,7 +413,7 @@ applies it AND the historical PR that flushed out the omission:
   # that workflow but missing here, so any PR the workflow tagged failed
   # governance on its own annotation label (PR #<historical>).
   - name: "<label>"
-```text
+```
 
 **Prevention rule:** A workflow adding a label MUST also PR-add that
 label to the allowlist. `anti-scaffolding-enforcer.yml` should be
@@ -452,7 +452,7 @@ This is the classic "code correct, detector wrong" pattern.
 - const windowEnd = Math.min(i + 6, lines.length);   // was 5 lines
 + const LABEL_RACE_LOOKAHEAD_LINES = 15;
 + const windowEnd = Math.min(i + 1 + LABEL_RACE_LOOKAHEAD_LINES, lines.length);
-```text
+```
 Plus regression tests: one for the pattern that was being false-positive'd,
 and one boundary test proving a truly-distant `.catch` still triggers.
 

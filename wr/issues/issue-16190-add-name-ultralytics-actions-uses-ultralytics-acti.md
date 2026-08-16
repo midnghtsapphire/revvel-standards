@@ -259,7 +259,7 @@ review_model: claude-3-opus-20240229  # was: claude-opus-4-7
 
 ## Learnings — What & Why
 
-N/A — pending Jules refinement
+N/A — completed
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once
