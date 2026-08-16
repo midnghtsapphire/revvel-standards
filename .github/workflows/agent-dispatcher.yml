@@ -155,19 +155,19 @@ jobs:
           case "$AGENT" in
             perplexity)
               # Trigger Perplexity workflow
-              gh workflow run perplexity-research-agent.yml -f issue_number=$ISSUE_NUMBER -f prompt="$PROMPT"
+              gh workflow run perplexity-research-agent.yml -f issue_number=$ISSUE_NUMBER -f prompt="$(cat <<< "$PROMPT")"
               ;;
             jules)
               # Trigger Jules - uses your JULES_TOKEN
-              gh workflow run jules-coding-agent.yml -f issue_number=$ISSUE_NUMBER -f prompt="$PROMPT"
+              gh workflow run jules-coding-agent.yml -f issue_number=$ISSUE_NUMBER -f prompt="$(cat <<< "$PROMPT")"
               ;;
             openrouter)
               # Trigger OpenRouter coder
-              gh workflow run openrouter-coder.yml -f issue_number=$ISSUE_NUMBER -f prompt="$PROMPT"
+              gh workflow run openrouter-coder.yml -f issue_number=$ISSUE_NUMBER -f prompt="$(cat <<< "$PROMPT")"
               ;;
             triage)
               # Trigger OpenRouter triage
-              gh workflow run openrouter-triage.yml -f issue_number=$ISSUE_NUMBER -f prompt="$PROMPT"
+              gh workflow run openrouter-triage.yml -f issue_number=$ISSUE_NUMBER -f prompt="$(cat <<< "$PROMPT")"
               ;;
           esac
 

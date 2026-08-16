@@ -138,7 +138,11 @@ jobs:
           echo "base=$BASE_SHA" >> $GITHUB_OUTPUT
           echo "head=$HEAD_SHA" >> $GITHUB_OUTPUT
           FILES=$(git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'wr/issues/*.md' || true)
-          echo "files=$FILES" >> $GITHUB_OUTPUT
+          {
+            echo 'files<<EOF'
+            echo "$FILES"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
           echo "Changed WR files: $FILES"
 
       - name: Run WR Lint
