@@ -50,18 +50,26 @@ name: BITO AI — Code Review
 # (ai-pr-review-openrouter.yml) covers the same signal at ~API cost only.
 # Auto-triggers commented out; kept for on-demand / audit runs.
 # See: DECISIONS.md D006, docs/TOOL_COST_INDEX.md, wr/issues/issue-15517-*.md
+#   ^ ARCHIVED 2026-08-16 by owner decision (D019): Bito is BACK in the active
+#   review fleet — the owner purchased a paid higher-tier Bito plan and asked
+#   for Bito as the primary AI review lane for the PR-fleet cleanup. The D006
+#   "zero unique catches" sample was taken while BITO_ACCESS_KEY was absent
+#   (silent no-op), so it never measured Bito itself. Auto-triggers restored
+#   below verbatim from the pre-D006 block. Preserved per RVS-PRESERVE-001.
+#   NOTE: requires the BITO_ACCESS_KEY repo secret (bito.ai → Settings →
+#   Access Keys); the verify step below comments on the PR if it is missing.
 # ──────────────────────────────────────────────────────────────────────────────
 
 on:
-  # pull_request:
-  #   types:
-  #     - opened
-  #     - synchronize
-  #     - reopened
-  #     - ready_for_review
-  # issue_comment:
-  #   types:
-  #     - created
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  issue_comment:
+    types:
+      - created
   workflow_dispatch:
     inputs:
       pr_number:
