@@ -93,7 +93,6 @@ jobs:
       - name: File finding as a deduped issue if any hits
         uses: actions/github-script@v9.0.0
         env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
           SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
         with:
           script: |
@@ -180,7 +179,6 @@ jobs:
       - name: File/update one deduped tracking issue per member
         uses: actions/github-script@v9.0.0
         env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
           SOURCE_URL: ${{ github.event.issue.html_url || github.event.comment.html_url || github.event.pull_request.html_url || '' }}
         with:
           script: |

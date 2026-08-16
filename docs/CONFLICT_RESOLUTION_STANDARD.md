@@ -77,7 +77,7 @@ https://github.com/OWNER/REPO/pulls?q=is%3Apr+is%3Aopen+label%3Aconflicts%3Aneed
 
 ## 10. Sticky-comment anatomy
 
-```text
+```markdown
 ### Conflict Helper — outcome
 
 <emoji> <headline>
