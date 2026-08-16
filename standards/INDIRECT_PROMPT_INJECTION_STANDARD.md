@@ -128,6 +128,7 @@ highlights.
 | [EVA framework (arXiv:2505.14289)](https://arxiv.org/abs/2505.14289) | Academic | Red-teaming GUI agents against interface-embedded injections |
 | `standards/SUGGESTION_HANDLING_STANDARD.md` | Internal | When AI-generated injection content is blockable |
 | `wr/scripts/wr-lint.mjs` + `tests/wr-lint-injection.test.js` | Internal | Enforced shell-injection gate for workflow snippets |
+| [`PROMPT_OBFUSCATION_STANDARD.md`](./PROMPT_OBFUSCATION_STANDARD.md) | Internal (WR-16425) | Protects system-prompt IP after extraction; complementary to IPI |
 
 ## 7. WR research metadata
 

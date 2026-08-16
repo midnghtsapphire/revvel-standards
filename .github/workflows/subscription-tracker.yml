@@ -13,6 +13,18 @@ name: Subscription & Trial Tracker
 #     anything expiring/renewing inside the warning window.
 
 on:
+  # Weekly sweep — Monday 14:00 UTC (mid-morning US Eastern / US Central start of week).
+  # The header comment above has always described this as "Runs weekly (Monday, cron)"
+  # but the schedule was never wired. Restored 2026-08-09 (D020) — the RecurseML trial
+  # this workflow was BUILT to catch lapsed on 2026-06-27 and no warning ever fired.
+  schedule:
+    - cron: '0 14 * * MON'
+  # Also run when data/subscriptions.yml is edited, so a PR updating a renewal date
+  # gives an instant preview of the tracker output before it merges.
+  pull_request:
+    paths:
+      - data/subscriptions.yml
+      - scripts/subscription-tracker.js
   workflow_dispatch:
     inputs:
       warn_within_days:

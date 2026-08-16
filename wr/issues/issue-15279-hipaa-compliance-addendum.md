@@ -1,14 +1,15 @@
 # HIPAA Compliance Addendum — Issue #15279
 
-**Status:** DRAFT — Legal review required before implementation
+**Status:** ACTIVE ADDENDUM — provisional entity pack shipped under #16111; counsel signature still required
 **Supersedes:** HIPAA guidance in `wr/issues/issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md` (line 190)
-**Related Issues:** #16058, #16065, #16075, #15279
+**Related Issues:** #16058, #16065, #16075, #15279, #16111
+**SSOT (entity scope):** `compliance/red-light-therapy/`
 **PR:** #15280
 # HIPAA Compliance Addendum — Issue #15279 (Red Light Therapy Stretch Marks App)
 
-**Status:** Corrective addendum to WR for issue #15279
+**Status:** Corrective addendum to WR for issue #15279 (entity pack: #16111)
 **Supersedes:** Section on HIPAA compliance (line ~190) in `wr/issues/issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md`
-**Related Issues:** #16058, #16065
+**Related Issues:** #16058, #16065, #16111
 **Prime Directive Alignment:** Protect the $10k → $10M revenue path by eliminating regulatory liability that could halt operations.
 
 ---
@@ -76,16 +77,18 @@ Most stretch-mark / red-light-therapy consumer apps are **NOT** HIPAA-regulated 
 
 Document in writing that the app is not a covered entity and does not enter business associate relationships. Then implement:
 
-- [ ] Written data classification memo signed by legal counsel
-- [ ] Privacy policy compliant with CCPA/CPRA, MHMDA, GDPR (if EU users)
+- [x] Written internal data classification / entity memo + counsel engagement brief (`compliance/red-light-therapy/`) — **counsel countersignature still open**
+- [x] Honest privacy policy for shipped calculator (`products/red-light-therapy-dosage-calculator/app/privacy/page.tsx`) — **does not claim HIPAA compliance**
+- [ ] Privacy policy expansions for CCPA/CPRA, MHMDA, GDPR if/when identifiable health data or EU targeting is added
 - [ ] FTC Health Breach Notification Rule compliance (breach response plan, 60-day notification)
 - [ ] Explicit opt-in consent for any health data collection (MHMDA requires this)
-- [ ] Right-to-delete, right-to-access workflows
-- [ ] Data minimization — collect only what the feature requires
-- [ ] No sale/share of health data (MHMDA prohibits without separate consent)
-- [ ] Vendor review: any analytics/crash/AI vendor touching health data needs DPA + review
-- [ ] Remove any language implying provider/clinical relationship
-- [ ] FDA SaMD analysis — separate track (see §4)
+- [ ] Right-to-delete, right-to-access workflows (required before tracker/accounts)
+- [x] Data minimization for shipped calculator — ephemeral numerics only (see data inventory)
+- [x] No sale/share of health data in shipped calculator (no ad pixels on inputs)
+- [x] Vendor review for shipped calculator (host/CDN only; re-run before new processors)
+- [x] Remove language implying provider/clinical relationship or HIPAA-compliant architecture (WR + UI + README)
+- [x] Re-evaluation triggers established (`re-evaluation-triggers.md` / `.json`)
+- [ ] FDA SaMD analysis — separate track (see §4 / fda-samd strategy WR)
 
 ### Path B — HIPAA-Covered (Required if partnering with providers/insurers)
 
@@ -241,11 +244,14 @@ These are **independent** regulatory tracks and must be assessed separately.
 ## 5. Action Items
 
 1. **Immediate (Week 1):** Legal counsel review to formally classify entity status (CE / BA / neither). Document the determination in `/compliance/entity-classification.md`.
+   - **Done (internal pack):** `compliance/red-light-therapy/entity-classification.md` + `counsel-engagement-brief.md` + `status.json` (`UNSIGNED` until human counsel signs). Issue #16111.
 2. **Immediate (Week 1):** Data inventory — enumerate every field collected, whether it is health data, identifiability status, retention period.
+   - **Done (shipped calculator):** `compliance/red-light-therapy/data-inventory.md`.
 3. **Pre-launch (Week 2-3):** Publish privacy policy compliant with WA MHMD + GDPR Art. 9 + CCPA sensitive-data disclosures.
-4. **Pre-launch (Week 3):** Implement user-facing data export + deletion.
+   - **Done (honest baseline for shipped calculator):** product `/privacy` — no HIPAA claim; expand before identifiable health-data features.
+4. **Pre-launch (Week 3):** Implement user-facing data export + deletion (required before accounts/tracker).
 5. **Pre-launch (Week 4):** DPA (or BAA if applicable) signed with every processor; catalog in `/compliance/vendor-register.md`.
-6. **Ongoing:** Annual privacy impact assessment; re-run entity classification if business model changes (e.g., B2B clinic partnerships).
+6. **Ongoing:** Annual privacy impact assessment; re-run entity classification if business model changes (e.g., B2B clinic partnerships) — triggers codified in `compliance/red-light-therapy/re-evaluation-triggers.json`.
 
 ---
 
