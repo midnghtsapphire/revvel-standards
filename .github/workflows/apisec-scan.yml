@@ -29,8 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Archived placeholder
-        run: echo "archived per RVS-AGENT-001; see file header for restore steps"
+      - run: echo "archived per RVS-AGENT-001; see file header for restore steps"
 
 # REVVEL-DISABLED-BODY
 # # This workflow uses actions that are not certified by GitHub.
