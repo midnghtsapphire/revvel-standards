@@ -1,8 +1,8 @@
 # Privacy Policy — Red Light Therapy Dosage Calculator
 
-**Effective date:** 2026-08-08  
-**Product:** Red Light Therapy Dosage Calculator  
-**Contact:** <privacy@revvel.io>  
+**Effective date:** 2026-08-08
+**Product:** Red Light Therapy Dosage Calculator
+**Contact:** <privacy@revvel.io>
 **Owner:** Audrey Evans (@midnghtsapphire)
 
 This policy describes how the Red Light Therapy Dosage Calculator (“the app,” “we”) handles information. It is written for a direct-to-consumer wellness product. **We are not a HIPAA covered entity or business associate at launch.** Separate rules still apply to consumer health data, including the FTC Health Breach Notification Rule.
@@ -34,10 +34,10 @@ We practice **data minimization**: we collect only what a feature needs. Feature
 
 ## 3. How we use information
 
-- Provide and improve calculator results and product reliability  
-- Secure the service and prevent abuse  
-- Comply with law and respond to lawful requests  
-- Communicate about the product, security, and privacy matters  
+- Provide and improve calculator results and product reliability
+- Secure the service and prevent abuse
+- Comply with law and respond to lawful requests
+- Communicate about the product, security, and privacy matters
 
 We do **not** sell personal health information. We do not use health inputs for cross-context behavioral advertising without a separate, explicit opt-in where required (for example under Washington My Health My Data Act or CCPA/CPRA sensitive-data rules).
 
@@ -47,9 +47,9 @@ We do **not** sell personal health information. We do not use health inputs for 
 
 We share information only with:
 
-- **Processors** who help us host, secure, or operate the app under a data processing agreement  
-- **Authorities** when required by law  
-- **Successors** in a merger or acquisition, with notice if legally required  
+- **Processors** who help us host, secure, or operate the app under a data processing agreement
+- **Authorities** when required by law
+- **Successors** in a merger or acquisition, with notice if legally required
 
 We do not share PHR-identifiable health information with third parties for their own independent marketing.
 
@@ -57,8 +57,8 @@ We do not share PHR-identifiable health information with third parties for their
 
 ## 5. Retention and deletion
 
-- Calculator inputs kept only on your device remain under your control until you clear site data.  
-- Server-side account or health logs (if enabled) are retained only as long as needed for the feature, security, and legal obligations.  
+- Calculator inputs kept only on your device remain under your control until you clear site data.
+- Server-side account or health logs (if enabled) are retained only as long as needed for the feature, security, and legal obligations.
 - You may request access or deletion at <privacy@revvel.io>. We complete verified deletion requests within **30 days** unless a narrower legal retention duty applies.
 
 ---
@@ -73,19 +73,19 @@ We use industry-standard safeguards appropriate to a consumer wellness app, incl
 
 If we experience a breach of security involving your **unsecured personal health record (PHR) identifiable health information**, and the FTC Health Breach Notification Rule (16 CFR Part 318) applies, we will:
 
-1. **Notify you** without unreasonable delay and **no later than 60 calendar days** after we discover the breach.  
-2. **Notify the Federal Trade Commission.** If a breach affects **more than 500 residents of any state or jurisdiction**, we will notify the FTC within **10 business days** of discovery.  
-3. **Notify prominent media** in each state or jurisdiction where **500 or more residents** are affected.  
+1. **Notify you** without unreasonable delay and **no later than 60 calendar days** after we discover the breach.
+2. **Notify the Federal Trade Commission.** If a breach affects **more than 500 residents of any state or jurisdiction**, we will notify the FTC within **10 business days** of discovery.
+3. **Notify prominent media** in each state or jurisdiction where **500 or more residents** are affected.
 
 Notices will describe what happened, the types of information involved, the steps we are taking, the steps you can take, and how to contact us (<privacy@revvel.io>).
 
 Operational procedures live in:
 
-- `compliance/breach-notification-runbook.md`  
-- `docs/runbooks/red-light-therapy-dosage-calculator.md`  
+- `compliance/breach-notification-runbook.md`
+- `docs/runbooks/red-light-therapy-dosage-calculator.md`
 - `scripts/hbnr-procedures.js`
 
-More information about the rule:  
+More information about the rule:
 <https://www.ftc.gov/legal-library/browse/rules/health-breach-notification-rule>
 
 ---
@@ -116,6 +116,6 @@ We will update this policy when our practices change. The effective date at the 
 
 ## 12. Contact
 
-- Privacy: <privacy@revvel.io>  
-- Security: <security@revvel.io>  
+- Privacy: <privacy@revvel.io>
+- Security: <security@revvel.io>
 - GitHub issues (non-sensitive): [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards/issues)

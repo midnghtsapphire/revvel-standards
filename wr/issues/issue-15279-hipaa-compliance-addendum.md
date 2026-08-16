@@ -135,7 +135,7 @@ The following statements in `issue-15279-reclaiming-your-skin-how-contour-light-
 
 ---
 
-## 6. Action Items (Owners TBD)
+## 6. Action Items (Owners To Be Determined)
 
 1. **Legal:** written data classification memo — is app a covered entity / BA? (blocking launch)
 2. **Product:** inventory every health data field collected, its purpose, retention, and sharing.

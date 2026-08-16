@@ -1,10 +1,10 @@
 # Runbook: Red Light Therapy Dosage Calculator
 
-**Service:** Red Light Therapy Dosage Calculator (Next.js wellness tool)  
-**Owner:** Audrey Evans (@midnghtsapphire)  
-**Product path:** `products/red-light-therapy-dosage-calculator`  
-**Dev port:** 3010  
-**Last updated:** 2026-08-08  
+**Service:** Red Light Therapy Dosage Calculator (Next.js wellness tool)
+**Owner:** Audrey Evans (@midnghtsapphire)
+**Product path:** `products/red-light-therapy-dosage-calculator`
+**Dev port:** 3010
+**Last updated:** 2026-08-08
 **Related issue:** [#16112](https://github.com/midnghtsapphire/revvel-standards/issues/16112) (FTC HBNR breach procedures)
 
 ---
@@ -21,9 +21,9 @@ curl -I http://127.0.0.1:3010/privacy
 
 Expected:
 
-- Home page returns HTTP 200 and renders the dosage calculator  
-- `/privacy` returns HTTP 200 and shows breach-notification timelines  
-- `npm test` inside the product directory passes  
+- Home page returns HTTP 200 and renders the dosage calculator
+- `/privacy` returns HTTP 200 and shows breach-notification timelines
+- `npm test` inside the product directory passes
 
 Root regression for HBNR procedures:
 
@@ -61,12 +61,12 @@ npm run start -- -p 3010
 
 ## Escalation path (HBNR)
 
-1. Discoverer pages `#incident-response` and opens an incident ticket within **15 minutes**.  
-2. **Security Lead** confirms containment and evidence preservation within **1 hour**.  
-3. **Privacy Lead** opens `products/red-light-therapy-dosage-calculator/compliance/breach-notification-runbook.md` and records `discoveredOn`.  
-4. **Legal counsel** reviews reportability within **1 business day** (same day if any state may exceed 500 residents).  
-5. **Executive owner** approves individual / FTC / media notice packages before send.  
-6. **Privacy Lead** files FTC notice and sends user notices; stores proof of send.  
+1. Discoverer pages `#incident-response` and opens an incident ticket within **15 minutes**.
+2. **Security Lead** confirms containment and evidence preservation within **1 hour**.
+3. **Privacy Lead** opens `products/red-light-therapy-dosage-calculator/compliance/breach-notification-runbook.md` and records `discoveredOn`.
+4. **Legal counsel** reviews reportability within **1 business day** (same day if any state may exceed 500 residents).
+5. **Executive owner** approves individual / FTC / media notice packages before send.
+6. **Privacy Lead** files FTC notice and sends user notices; stores proof of send.
 7. Post-incident review within **10 business days**; update runbooks and vendor controls.
 
 ### Deadline cheat sheet
@@ -104,8 +104,8 @@ node -e "console.log(require('./scripts/hbnr-procedures').buildBreachNotificatio
 
 ## Related documents
 
-- Entity classification: `products/red-light-therapy-dosage-calculator/compliance/hbnr-entity-classification.md`  
-- Breach runbook: `products/red-light-therapy-dosage-calculator/compliance/breach-notification-runbook.md`  
-- Privacy policy: `products/red-light-therapy-dosage-calculator/PRIVACY.md`  
-- HIPAA addendum (D2C posture): `wr/issues/issue-15279-hipaa-compliance-addendum.md`  
+- Entity classification: `products/red-light-therapy-dosage-calculator/compliance/hbnr-entity-classification.md`
+- Breach runbook: `products/red-light-therapy-dosage-calculator/compliance/breach-notification-runbook.md`
+- Privacy policy: `products/red-light-therapy-dosage-calculator/PRIVACY.md`
+- HIPAA addendum (D2C posture): `wr/issues/issue-15279-hipaa-compliance-addendum.md`
 - Implementation module: `scripts/hbnr-procedures.js`

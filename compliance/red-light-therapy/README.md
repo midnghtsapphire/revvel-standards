@@ -1,7 +1,7 @@
 # Red Light Therapy — HIPAA / Privacy Compliance Pack
 
-**Issue:** #16111  
-**Parent WR:** #15279  
+**Issue:** #16111
+**Parent WR:** #15279
 **Product:** `products/red-light-therapy-dosage-calculator`
 
 This folder is the system of record for HIPAA **entity scope** documentation for the red light therapy consumer surface.

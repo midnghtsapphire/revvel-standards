@@ -32,7 +32,7 @@ NotebookLM notebook named **Revvel Prompt Knowledge** with sources covering:
    (filter JSON client-side by `"kind": "external-url"` if the UI is slow —
    do not delete entries from the manifest itself).
 8. Wait until NotebookLM finishes processing sources (each source shows ready).
-9. Ask a test question:  
+9. Ask a test question:
    `Summarize the github-requests system prompt and list LLM combo github-request-default models.`
 10. Success: the answer cites the internal system prompt and the combo file.
 

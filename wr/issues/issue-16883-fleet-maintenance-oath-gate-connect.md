@@ -1,10 +1,10 @@
 # WR: [WR] Fleet maintenance — midnghtsapphire/oath-gate-connect
 
-**Issue:** #16883  
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Target:** [midnghtsapphire/oath-gate-connect](https://github.com/midnghtsapphire/oath-gate-connect)  
-**Research Date:** 2026-08-08  
-**Researcher:** Copilot Coding Agent  
+**Issue:** #16883
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
+**Target:** [midnghtsapphire/oath-gate-connect](https://github.com/midnghtsapphire/oath-gate-connect)
+**Research Date:** 2026-08-08
+**Researcher:** Copilot Coding Agent
 **WR Status:** 🟢 Complete (implementation PR opened)
 
 ---
