@@ -82,6 +82,12 @@ permissions:
   pull-requests: write
   issues: write
 
+# Workflow-level env lives here (not after the last job) so a column-0 `env:`
+# never sits directly below a `script: |` block scalar — that layout is the
+# GITHUB-SCRIPT-INLINE-001 footgun ChaosMender guards against.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 concurrency:
   group: bito-ai-${{ github.event.pull_request.number || github.event.issue.number || github.run_id }}
   cancel-in-progress: true
@@ -313,6 +319,3 @@ jobs:
               issue_number: prNumber,
               body: `⚠️ **BITO AI review skipped** — missing secrets: \`${process.env.MISSING}\`\n\nSee \`standards/BITO_AI_INTEGRATION_STANDARD.md\`.`,
             });
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
