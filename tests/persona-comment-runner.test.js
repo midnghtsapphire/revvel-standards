@@ -13,6 +13,7 @@ const {
   isEmoticonBankRequest,
   isResearchRequest,
   renderEmoticonBankMarkdown,
+  formatSummonFailureComment,
 } = require("../scripts/persona-comment-runner");
 
 let passed = 0;
@@ -140,6 +141,25 @@ test("sanitizeMentions defangs @mentions so a reply never pings a real user", ()
   assert.ok(out.includes("@​TheProfessor"), "mention is defanged with a zero-width space");
   // Visible text is unchanged once the zero-width space is stripped.
   assert.strictEqual(out.replace(/​/g, ""), "cc @TheProfessor and @mindmappr please");
+});
+
+
+test("formatSummonFailureComment surfaces handle + error (issue #16942 visible failure)", () => {
+  const body = formatSummonFailureComment(
+    "dragnet",
+    new Error('Invalid character in header content ["Authorization"]')
+  );
+  assert.ok(body.includes("DRAGNET summon failed"));
+  assert.ok(body.includes("Invalid character in header content"));
+  assert.ok(body.includes("OPENROUTER_API_KEY"));
+  // Must not embed a stack dump (function frames look like "at foo (file:line)").
+  assert.ok(!/at\s+\S+\s+\(/.test(body));
+});
+
+test("formatSummonFailureComment accepts a bare string error", () => {
+  const body = formatSummonFailureComment("professor", "boom");
+  assert.ok(body.includes("PROFESSOR summon failed"));
+  assert.ok(body.includes("boom"));
 });
 
 console.log(`\nTest Summary: ${passed} passed, ${failed} failed`);
