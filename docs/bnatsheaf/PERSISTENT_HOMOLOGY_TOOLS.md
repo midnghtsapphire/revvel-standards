@@ -86,7 +86,7 @@ Graph H¹ bars never die on their own (no 2-cells). A bar born at weight 0 with
 perfect agreement is topology-only and harmless. A bar born at positive weight
 is a **persistent obstruction** — CI turns red via `ph_monitor`.
 
-## Why not make Ripser/GUDHI required?
+## Why Ripser and GUDHI stay optional
 
 1. **Credit-free invariant** — BIOME and BNAT must run on `GITHUB_TOKEN` alone
    with no native build toolchain in Actions.

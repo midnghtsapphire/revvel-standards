@@ -59,7 +59,7 @@ H^1(X;\mathcal{F})=\operatorname{coker}\delta=C^1/\operatorname{im}\delta.
 \]
 
 **Proof sketch.** A class \([r]\in H^1\) is an assignment of local residuals
-on edges that is *not* of the form \(\delta x\) for any global 0-cochain \(x\).
+on edges that is _not_ of the form \(\delta x\) for any global 0-cochain \(x\).
 Algebraically this means the local data will not glue: no choice of vertex
 values cancels every residual simultaneously. On a graph (no 2-cells) every
 cocycle is closed, so \(H^1=\operatorname{coker}\delta\). ∎
@@ -145,8 +145,8 @@ Exit codes reflect the postcondition (consistency holds), not process completion
 
 ## References
 
-- Hansen & Ghrist — *Toward a Spectral Theory of Cellular Sheaves*,
+- Hansen & Ghrist — _Toward a Spectral Theory of Cellular Sheaves_,
   J. Appl. Comput. Topology 2019. <https://arxiv.org/abs/1808.01513>
-- Curry — *Sheaves, Cosheaves and Applications*, 2014.
-- Bodnar et al. — *Neural Sheaf Diffusion*, NeurIPS 2022.
+- Curry — _Sheaves, Cosheaves and Applications_, 2014.
+- Bodnar et al. — _Neural Sheaf Diffusion_, NeurIPS 2022.
   <https://arxiv.org/abs/2202.04579>
