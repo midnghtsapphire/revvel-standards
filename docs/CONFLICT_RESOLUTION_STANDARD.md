@@ -71,13 +71,13 @@ Useful when:
 
 Bookmark this URL for the "PRs I need to touch" view:
 
-```
+```text
 https://github.com/OWNER/REPO/pulls?q=is%3Apr+is%3Aopen+label%3Aconflicts%3Aneeds-human
 ```
 
 ## 10. Sticky-comment anatomy
 
-```
+```text
 ### Conflict Helper — outcome
 
 <emoji> <headline>
