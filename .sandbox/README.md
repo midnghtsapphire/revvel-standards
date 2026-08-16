@@ -13,7 +13,7 @@ its own folder here and writes to it as it works. The purpose is simple:
 
 ## Folder layout
 
-```
+```text
 .sandbox/
 ├── README.md                     ← this file
 └── <agent-name>/                 ← one folder per agent identity
@@ -28,7 +28,7 @@ its own folder here and writes to it as it works. The purpose is simple:
     ├── tools/                    ← any tool binary or config the agent used
     ├── skills/                   ← draft skills the agent produced
     └── artifacts/                ← PDFs, images, generated docs, etc.
-```
+```text
 
 ## Rules — for every visiting agent
 
