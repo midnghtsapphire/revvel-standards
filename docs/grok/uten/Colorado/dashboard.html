@@ -445,6 +445,16 @@
     </footer>
 
     <script>
+                function escapeHtml(unsafe) {
+            if (unsafe == null) return '';
+            return String(unsafe)
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
         // Tailwind script
         function initializeTailwind() {
             document.documentElement.style.setProperty('--accent', '#0ea5e9');
@@ -468,10 +478,10 @@
                 const row = document.createElement('tr');
                 row.className = 'border-b hover:bg-slate-50';
                 row.innerHTML = `
-                    <td class="px-4 py-3 font-semibold">${item.state}</td>
-                    <td class="px-4 py-3 text-right font-mono">${item.electricity}</td>
-                    <td class="px-4 py-3 text-right font-mono text-emerald-600">${item.heat}</td>
-                    <td class="px-4 py-3 text-right"><span class="px-3 py-1 text-xs rounded-2xl bg-emerald-100 text-emerald-700 font-medium">${item.impact}</span></td>
+                    <td class="px-4 py-3 font-semibold">${escapeHtml(item.state)}</td>
+                    <td class="px-4 py-3 text-right font-mono">${escapeHtml(item.electricity)}</td>
+                    <td class="px-4 py-3 text-right font-mono text-emerald-600">${escapeHtml(item.heat)}</td>
+                    <td class="px-4 py-3 text-right"><span class="px-3 py-1 text-xs rounded-2xl bg-emerald-100 text-emerald-700 font-medium">${escapeHtml(item.impact)}</span></td>
                 `;
                 tbody.appendChild(row);
             });
