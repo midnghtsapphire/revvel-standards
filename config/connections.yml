@@ -282,8 +282,9 @@ connections:
     auth: key
     env: XAI_API_KEY, GROK_API_KEY
     status: verified
-    access: [motu-bnat-controller]
+    access: [motu-bnat-controller, xai-code-review]
     connects_to: []
+    used_by: [xai-code-review.yml]
   - id: tavily
     name: Tavily
     type: api
@@ -381,6 +382,17 @@ connections:
     status: verified
     access: [domains, dns]
     connects_to: [digitalocean]
+
+  - id: markdown-image-alt-text-checker
+    name: Markdown Image Alt-text Checker
+    type: github-action
+    auth: token
+    env: GITHUB_TOKEN
+    status: verified
+    access: [markdown-a11y, seo]
+    connects_to: [github]
+    used_by: [markdown-image-alt-text-checker.yml]
+    note: "WR #16270. Marketplace action ruthtxh/markdown-image-alt-text-checker@v1 (SHA-pinned). Local script scripts/markdown-image-alt-text-checker.js is the PR gate; marketplace step is workflow_dispatch-only. Optional Azure Computer Vision secrets: AZURE_COMPUTER_VISION_KEY, AZURE_COMPUTER_VISION_ENDPOINT."
 
   # ── Asserted by owner, NOT yet verified — confirm before relying on these ──
   - id: vader

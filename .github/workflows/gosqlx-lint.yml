@@ -1,0 +1,77 @@
+# GoSQLX Lint Action — multi-dialect SQL validation for CI.
+# Uses ajitpratap0/GoSQLX@v1.14.0 (commit be25753025f5cf74c1ed40c2b7bb6fc16ca061f7).
+#
+# Scope: curated SQL under sql/** only. Existing schema DDL under schemas/ and
+# skills/** intentionally excluded — they use CREATE FUNCTION / PL/pgSQL that
+# GoSQLX v1.14 does not parse (E2002). Do not broaden the glob without first
+# validating those paths with `gosqlx validate`.
+#
+# Developer guide: standards/SQL_CODE_STANDARDS.md
+# Playground SaaS: products/gosqlx-sql-linter
+
+name: GoSQLX Lint
+
+on:
+  pull_request:
+    paths:
+      - "sql/**"
+      - ".gosqlx.yml"
+      - ".github/workflows/gosqlx-lint.yml"
+      - "products/gosqlx-sql-linter/**/*.sql"
+  push:
+    branches: [main]
+    paths:
+      - "sql/**"
+      - ".gosqlx.yml"
+      - ".github/workflows/gosqlx-lint.yml"
+      - "products/gosqlx-sql-linter/**/*.sql"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gosqlx-lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gosqlx:
+    name: GoSQLX SQL validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: GoSQLX Lint Action (sql fixtures)
+        # Pin: v1.14.0 → be25753025f5cf74c1ed40c2b7bb6fc16ca061f7
+        # WR #15862 requires the v1.14.0 tag; action-ref audit accepts tags.
+        # Note: GoSQLX globs need a concrete path segment before ** (sql/** fails).
+        uses: ajitpratap0/GoSQLX@v1.14.0
+        with:
+          files: "sql/fixtures/**/*.sql"
+          config: .gosqlx.yml
+          dialect: postgresql
+          validate: "true"
+          lint: "false"
+          format-check: "false"
+          fail-on-error: "true"
+          severity: warning
+          show-stats: "true"
+          gosqlx-version: "v1.14.0"
+
+      - name: GoSQLX Lint Action (product fixtures)
+        uses: ajitpratap0/GoSQLX@v1.14.0
+        with:
+          files: "products/gosqlx-sql-linter/fixtures/**/*.sql"
+          config: .gosqlx.yml
+          dialect: postgresql
+          validate: "true"
+          lint: "false"
+          format-check: "false"
+          fail-on-error: "true"
+          severity: warning
+          show-stats: "true"
+          gosqlx-version: "v1.14.0"
