@@ -11,7 +11,7 @@
 
 ## Deliverables
 
-- Target draft→ready PR: https://github.com/midnghtsapphire/nomad-navigator/pull/1
+- Target draft→ready PR: <https://github.com/midnghtsapphire/nomad-navigator/pull/1>
 - Research write-up: `wr/fleet-maintenance/nomad-navigator.md`
 - Redacted patch: `wr/fleet-maintenance/nomad-navigator.patch`
 

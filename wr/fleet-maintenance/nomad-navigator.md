@@ -13,7 +13,7 @@
 | Stack | Vite + React 18 + TypeScript + Tailwind + shadcn/ui + Supabase |
 | Language | TypeScript |
 | Default branch | `main` |
-| Live URL | https://nomad-navigator.vercel.app |
+| Live URL | <https://nomad-navigator.vercel.app> |
 | Prior workflows | none |
 | Package name (before) | `vite_react_shadcn_ts` (Lovable scaffold) |
 
@@ -81,7 +81,7 @@ Workflows added under `.github/workflows/`:
 ## Artifacts
 
 - Redacted patch: `wr/fleet-maintenance/nomad-navigator.patch`
-- Target PR: https://github.com/midnghtsapphire/nomad-navigator/pull/1
+- Target PR: <https://github.com/midnghtsapphire/nomad-navigator/pull/1>
 
 ## Acceptance mapping (host contract)
 
