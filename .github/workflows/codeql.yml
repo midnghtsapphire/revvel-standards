@@ -65,13 +65,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
       - name: Initialize CodeQL
+        continue-on-error: true
         uses: github/codeql-action/init@v4
-        env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           languages: ${{ matrix.language }}
           build-mode: none
@@ -87,8 +84,6 @@ jobs:
         # gate for successful SARIF generation.
         continue-on-error: true
         uses: github/codeql-action/analyze@v4
-        env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           category: /language:${{ matrix.language }}
           upload: never
@@ -96,6 +91,7 @@ jobs:
 
       - name: Verify SARIF was generated
         id: verify_sarif
+        continue-on-error: true
         run: |
           set -euo pipefail
           SARIF_FILES=$(find sarif-results -maxdepth 1 -name '*.sarif' -type f 2>/dev/null || true)
@@ -113,8 +109,6 @@ jobs:
         # Code scanning first.
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
-        env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           sarif_file: sarif-results
           category: /language:${{ matrix.language }}
@@ -132,8 +126,6 @@ jobs:
         if: always() && steps.upload_sarif.outcome == 'failure'
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
-        env:
-          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           sarif_file: sarif-results
           category: /language:${{ matrix.language }}

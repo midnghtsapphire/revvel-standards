@@ -4,134 +4,18 @@ DoppleMCP - Doppler Secrets MCP Server
 Provides programmatic access to Doppler secrets management via MCP.
 """
 
+import os
 import asyncio
 import logging
-import os
-from typing import Any
+from typing import Any, Optional
 
-import httpx
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
-from mcp.types import TextContent, Tool
+from mcp.types import Tool, TextContent
+import httpx
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
-TOOLS = [
-    Tool(
-        name="doppler_secrets_list",
-        description="List all secrets in a Doppler config",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "project": {"type": "string", "description": "Project name"},
-                "config": {"type": "string", "description": "Config name"},
-            },
-        },
-    ),
-    Tool(
-        name="doppler_secrets_get",
-        description="Get a specific secret value",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "secret_name": {"type": "string", "description": "Secret name"},
-                "project": {"type": "string", "description": "Project name"},
-                "config": {"type": "string", "description": "Config name"},
-            },
-            "required": ["secret_name"],
-        },
-    ),
-    Tool(
-        name="doppler_secrets_set",
-        description="Set or update a secret",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "secret_name": {"type": "string", "description": "Secret name"},
-                "secret_value": {"type": "string", "description": "Secret value"},
-                "project": {"type": "string", "description": "Project name"},
-                "config": {"type": "string", "description": "Config name"},
-            },
-            "required": ["secret_name", "secret_value"],
-        },
-    ),
-    Tool(
-        name="doppler_secrets_delete",
-        description="Delete a secret",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "secret_name": {"type": "string", "description": "Secret name"},
-                "project": {"type": "string", "description": "Project name"},
-                "config": {"type": "string", "description": "Config name"},
-            },
-            "required": ["secret_name"],
-        },
-    ),
-    Tool(
-        name="doppler_projects_list",
-        description="List all Doppler projects",
-        inputSchema={"type": "object", "properties": {}},
-    ),
-    Tool(
-        name="doppler_configs_list",
-        description="List configs in a project",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "project": {"type": "string", "description": "Project name"},
-            },
-        },
-    ),
-    Tool(
-        name="doppler_tokens_create",
-        description="Create a service token",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "name": {"type": "string", "description": "Token name"},
-                "project": {"type": "string", "description": "Project name"},
-                "config": {"type": "string", "description": "Config name"},
-                "expires_at": {"type": "string", "description": "Expiry ISO date"},
-            },
-            "required": ["name"],
-        },
-    ),
-    Tool(
-        name="doppler_tokens_list",
-        description="List service tokens",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "project": {"type": "string", "description": "Project name"},
-            },
-        },
-    ),
-    Tool(
-        name="doppler_tokens_revoke",
-        description="Revoke a service token",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "token": {"type": "string", "description": "Token key to revoke"},
-                "project": {"type": "string", "description": "Project name"},
-            },
-            "required": ["token"],
-        },
-    ),
-    Tool(
-        name="doppler_health",
-        description="Check Doppler API health",
-        inputSchema={"type": "object", "properties": {}},
-    ),
-    Tool(
-        name="doppler_me",
-        description="Get current Doppler user info",
-        inputSchema={"type": "object", "properties": {}},
-    ),
-]
 
 
 class DopplerMCP:
@@ -150,15 +34,121 @@ class DopplerMCP:
 
         @self.server.list_tools()
         async def list_tools() -> list[Tool]:
-            return TOOLS
+            return [
+                Tool(
+                    name="doppler_secrets_list",
+                    description="List all secrets in a Doppler config",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "project": {"type": "string", "description": "Project name"},
+                            "config": {"type": "string", "description": "Config name"},
+                        },
+                    },
+                ),
+                Tool(
+                    name="doppler_secrets_get",
+                    description="Get a specific secret value",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "secret_name": {"type": "string", "description": "Secret name"},
+                            "project": {"type": "string", "description": "Project name"},
+                            "config": {"type": "string", "description": "Config name"},
+                        },
+                        "required": ["secret_name"],
+                    },
+                ),
+                Tool(
+                    name="doppler_secrets_set",
+                    description="Set or update a secret",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "secret_name": {"type": "string", "description": "Secret name"},
+                            "secret_value": {"type": "string", "description": "Secret value"},
+                            "project": {"type": "string", "description": "Project name"},
+                            "config": {"type": "string", "description": "Config name"},
+                        },
+                        "required": ["secret_name", "secret_value"],
+                    },
+                ),
+                Tool(
+                    name="doppler_secrets_delete",
+                    description="Delete a secret",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "secret_name": {"type": "string", "description": "Secret name"},
+                            "project": {"type": "string", "description": "Project name"},
+                            "config": {"type": "string", "description": "Config name"},
+                        },
+                        "required": ["secret_name"],
+                    },
+                ),
+                Tool(
+                    name="doppler_projects_list",
+                    description="List all Doppler projects",
+                    inputSchema={"type": "object", "properties": {}},
+                ),
+                Tool(
+                    name="doppler_configs_list",
+                    description="List configs in a project",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "project": {"type": "string", "description": "Project name"},
+                        },
+                    },
+                ),
+                Tool(
+                    name="doppler_tokens_create",
+                    description="Create a service token",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string", "description": "Token name"},
+                            "project": {"type": "string", "description": "Project name"},
+                            "config": {"type": "string", "description": "Config name"},
+                            "expires_at": {"type": "string", "description": "Expiry ISO date"},
+                        },
+                        "required": ["name"],
+                    },
+                ),
+                Tool(
+                    name="doppler_tokens_list",
+                    description="List service tokens",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "project": {"type": "string", "description": "Project name"},
+                        },
+                    },
+                ),
+                Tool(
+                    name="doppler_tokens_revoke",
+                    description="Revoke a service token",
+                    inputSchema={
+                        "type": "object",
+                        "properties": {
+                            "token": {"type": "string", "description": "Token key to revoke"},
+                            "project": {"type": "string", "description": "Project name"},
+                        },
+                        "required": ["token"],
+                    },
+                ),
+                Tool(
+                    name="doppler_health",
+                    description="Check Doppler API health",
+                    inputSchema={"type": "object", "properties": {}},
+                ),
+                Tool(
+                    name="doppler_me",
+                    description="Get current Doppler user info",
+                    inputSchema={"type": "object", "properties": {}},
+                ),
+            ]
         
-            tools = []
-            tools.extend(self._get_secrets_tools())
-            tools.extend(self._get_project_tools())
-            tools.extend(self._get_token_tools())
-            tools.extend(self._get_system_tools())
-            return tools
-
         @self.server.call_tool()
         async def call_tool(name: str, arguments: Any) -> list[TextContent]:
             try:
@@ -167,134 +157,6 @@ class DopplerMCP:
             except Exception as e:
                 logger.error(f"Tool error: {name} - {e}")
                 return [TextContent(type="text", text=str(self._error_response(name, arguments, e)))]
-
-    def _get_secrets_tools(self) -> list[Tool]:
-        return [
-            Tool(
-                name="doppler_secrets_list",
-                description="List all secrets in a Doppler config",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "project": {"type": "string", "description": "Project name"},
-                        "config": {"type": "string", "description": "Config name"},
-                    },
-                },
-            ),
-            Tool(
-                name="doppler_secrets_get",
-                description="Get a specific secret value",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "secret_name": {"type": "string", "description": "Secret name"},
-                        "project": {"type": "string", "description": "Project name"},
-                        "config": {"type": "string", "description": "Config name"},
-                    },
-                    "required": ["secret_name"],
-                },
-            ),
-            Tool(
-                name="doppler_secrets_set",
-                description="Set or update a secret",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "secret_name": {"type": "string", "description": "Secret name"},
-                        "secret_value": {"type": "string", "description": "Secret value"},
-                        "project": {"type": "string", "description": "Project name"},
-                        "config": {"type": "string", "description": "Config name"},
-                    },
-                    "required": ["secret_name", "secret_value"],
-                },
-            ),
-            Tool(
-                name="doppler_secrets_delete",
-                description="Delete a secret",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "secret_name": {"type": "string", "description": "Secret name"},
-                        "project": {"type": "string", "description": "Project name"},
-                        "config": {"type": "string", "description": "Config name"},
-                    },
-                    "required": ["secret_name"],
-                },
-            ),
-        ]
-
-    def _get_project_tools(self) -> list[Tool]:
-        return [
-            Tool(
-                name="doppler_projects_list",
-                description="List all Doppler projects",
-                inputSchema={"type": "object", "properties": {}},
-            ),
-            Tool(
-                name="doppler_configs_list",
-                description="List configs in a project",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "project": {"type": "string", "description": "Project name"},
-                    },
-                },
-            ),
-        ]
-
-    def _get_token_tools(self) -> list[Tool]:
-        return [
-            Tool(
-                name="doppler_tokens_create",
-                description="Create a service token",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "name": {"type": "string", "description": "Token name"},
-                        "project": {"type": "string", "description": "Project name"},
-                        "config": {"type": "string", "description": "Config name"},
-                        "expires_at": {"type": "string", "description": "Expiry ISO date"},
-                    },
-                    "required": ["name"],
-                },
-            ),
-            Tool(
-                name="doppler_tokens_list",
-                description="List service tokens",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "project": {"type": "string", "description": "Project name"},
-                    },
-                },
-            ),
-            Tool(
-                name="doppler_tokens_revoke",
-                description="Revoke a service token",
-                inputSchema={
-                    "type": "object",
-                    "properties": {
-                        "token": {"type": "string", "description": "Token key to revoke"},
-                        "project": {"type": "string", "description": "Project name"},
-                    },
-                    "required": ["token"],
-                },
-            ),
-        ]
-
-    def _get_system_tools(self) -> list[Tool]:
-        return [
-            Tool(
-                name="doppler_health",
-                description="Check Doppler API health",
-                inputSchema={"type": "object", "properties": {}},
-            ),
-            Tool(
-                name="doppler_me",
-                description="Get current Doppler user info",
-                inputSchema={"type": "object", "properties": {}},
-            ),
-        ]
 
     def _error_response(self, tool: str, args: Any, error: Exception) -> dict:
         """Create standardized error response."""
@@ -339,12 +201,12 @@ class DopplerMCP:
                     return {"error": f"Unknown tool: {name}"}
             except httpx.HTTPStatusError as e:
                 if e.response.status_code == 401:
-                    raise Exception("Authentication failed - check DOPPLER_TOKEN") from e
+                    raise Exception("Authentication failed - check DOPPLER_TOKEN")
                 if attempt < 2:
                     await asyncio.sleep(2 ** attempt)
                     continue
                 raise
-            except Exception:
+            except Exception as e:
                 if attempt < 2:
                     await asyncio.sleep(2 ** attempt)
                     continue
@@ -365,7 +227,7 @@ class DopplerMCP:
         return {"project": project, "config": config, "secrets": [{"name": s["name"]} for s in secrets], "count": len(secrets)}
 
     async def _get_secret(self, name: str, project: str, config: str) -> dict:
-        await self._request("GET", f"/projects/{project}/configs/{config}/secrets/{name}")
+        data = await self._request("GET", f"/projects/{project}/configs/{config}/secrets/{name}")
         return {"name": name, "project": project, "config": config, "value": "***REDACTED***"}
 
     async def _set_secret(self, name: str, value: str, project: str, config: str) -> dict:
@@ -384,7 +246,7 @@ class DopplerMCP:
         data = await self._request("GET", f"/projects/{project}/configs")
         return {"project": project, "configs": data.get("configs", [])}
 
-    async def _create_token(self, name: str, project: str, config: str, expires_at: str | None = None) -> dict:
+    async def _create_token(self, name: str, project: str, config: str, expires_at: Optional[str] = None) -> dict:
         payload = {"name": name, "config": config}
         if expires_at:
             payload["expires_at"] = expires_at
