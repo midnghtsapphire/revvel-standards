@@ -21,7 +21,7 @@ Image creation is **not** a manual attach-file or click-through studio ritual in
 
 ## Pipeline (canonical)
 
-```
+```txt
 intake → LSI expand → discovery/creative → SEO pack → prompts → render
   → derivatives → QA → human approve (PR / first post) → publish
 ```
