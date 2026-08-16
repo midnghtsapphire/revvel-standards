@@ -55,17 +55,25 @@ jobs:
     steps:
       - name: Determine agent to dispatch
         id: determine
+        env:
+          # zizmor template-injection fix (PR #17091): expression values reach
+          # the shell via env vars instead of ${{ }} interpolation inside run.
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+          DISPATCH_AGENT: ${{ inputs.agent }}
+          # Not an injection vector (system-controlled enum), routed through
+          # env anyway for consistency with the zizmor fix above (Jules nit).
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           # Read agent-prompts.yml to get triggers
           echo "Looking for label triggers..."
-          
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.agent }}" ]; then
-            echo "agent=${{ inputs.agent }}" >> $GITHUB_OUTPUT
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$DISPATCH_AGENT" ]; then
+            echo "agent=$DISPATCH_AGENT" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           # Check issue labels
-          LABELS="${{ join(github.event.issue.labels.*.name, ',') }}"
+          LABELS=",${ISSUE_LABELS},"
           
           # Belt-and-suspenders: route octopus-review[bot] issues to openrouter
           # even if the octopus-route.yml translator hasn't applied wr:code yet.
@@ -77,21 +85,55 @@ jobs:
           # level concurrency group (added above) dedups them into a single
           # openrouter-coder dispatch instead of two. Per oAudrey diagnosis on
           # PR #14068.
+          # REVVEL-DISABLED | AGENT: claude-code | MODEL: claude-5 | WR: #17091 | DATE: 2026-08-08 | STATUS: REPLACED
+          # REASON: original un-anchored patterns let wr:research-complete false-match *wr:research*;
+          # replaced below with comma-anchored patterns + an explicit research-complete -> code-lane branch.
+          # case "$LABELS" in
+          #   *wr:research*)
+          #     echo "agent=perplexity" >> $GITHUB_OUTPUT
+          #     ;;
+          #   *wr:jules*)
+          #     echo "agent=jules" >> $GITHUB_OUTPUT
+          #     ;;
+          #   *octopus-review*)
+          #     echo "agent=openrouter" >> $GITHUB_OUTPUT
+          #     ;;
+          #   *wr:code*)
+          #     echo "agent=openrouter" >> $GITHUB_OUTPUT
+          #     ;;
+          #   *lifecycle:stuck*)
+          #     echo "agent=perplexity" >> $GITHUB_OUTPUT
+          #     ;;
+          #   *)
+          #     echo "agent=triage" >> $GITHUB_OUTPUT
+          #     ;;
+          # esac
+          # REVVEL-DISABLED-END
           case "$LABELS" in
-            *wr:research*)
+            *,wr:code,*|*,octopus-review,*)
+              # Matched FIRST so an issue carrying BOTH wr:research-complete
+              # and wr:code still dispatches the coder — wr:code is the
+              # human/gate approval signal and must win (Jules review,
+              # PR #17091).
+              echo "agent=openrouter" >> $GITHUB_OUTPUT
+              ;;
+            *,wr:research-complete,*)
+              # Spec-to-action bridge (issue #15507) runs through the Spec
+              # Approval Gate: spec-approval-gate.yml owns this label (it adds
+              # needs-spec-approval and asks the owner), and openrouter-coder
+              # fires ONLY on human-applied spec-approved or wr:code
+              # (demand-driven activation, 2026-07-25). Dispatching a coder
+              # here would bypass that owner-approval gate (flagged by PR
+              # review on #17091). Matched before wr:research so completed
+              # research no longer misroutes into another research pass —
+              # this branch is an intentional no-op.
+              echo "agent=none" >> $GITHUB_OUTPUT
+              ;;
+            *,wr:research,*|*,lifecycle:stuck,*)
               echo "agent=perplexity" >> $GITHUB_OUTPUT
               ;;
-            *wr:jules*)
+            *,wr:jules,*)
               echo "agent=jules" >> $GITHUB_OUTPUT
-              ;;
-            *octopus-review*)
-              echo "agent=openrouter" >> $GITHUB_OUTPUT
-              ;;
-            *wr:code*)
-              echo "agent=openrouter" >> $GITHUB_OUTPUT
-              ;;
-            *lifecycle:stuck*)
-              echo "agent=perplexity" >> $GITHUB_OUTPUT
               ;;
             *)
               echo "agent=triage" >> $GITHUB_OUTPUT
