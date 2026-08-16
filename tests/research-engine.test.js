@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 "use strict";
 
-const { describe, test } = require("node:test");
-const assert = require("node:assert");
+const { describe, test } = require('node:test');
+const assert = require('node:assert');
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
 const engine = require("../scripts/research-engine.js");
+
+
+
+
+
 describe('research-engine', () => {
 
   test("defines the full research lane set requested by the WR", () => {
@@ -101,38 +106,35 @@ describe('research-engine', () => {
   test("runs the engine offline with mocked model calls and writes output", async () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "research-engine-"));
     const outputFile = path.join(tmpDir, "packet.md");
-    try {
-      const calls = [];
-      const result = await engine.runResearchEngine(
-        {
-          apiKey: "test-key",
-          githubToken: "",
-          repository: "midnghtsapphire/revvel-standards",
-          issueNumber: "",
-          prNumber: "",
-          query: "Build a research engine",
-          issueTitle: "",
-          issueBody: "",
-          outputFile,
-          depth: "standard",
-          extraContext: "",
-          dryRun: true,
-        },
-        async ({ model, systemPrompt, userPrompt }) => {
-          calls.push({ model, systemPrompt, userPrompt });
-          return `Mocked ${model} output with source https://example.com/${calls.length}`;
-        },
-      );
-      assert.strictEqual(result.status, "complete");
-      assert.ok(fs.existsSync(outputFile));
-      const output = fs.readFileSync(outputFile, "utf8");
-      assert.ok(output.includes("Research Engine Packet"));
-      assert.ok(output.includes("Code Review Handoff"));
-      assert.ok(output.includes("Mocked"));
-      assert.strictEqual(calls.length, engine.LANE_DEFINITIONS.length + 1);
-    } finally {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
-    }
+    const calls = [];
+    const result = await engine.runResearchEngine(
+      {
+        apiKey: "test-key",
+        githubToken: "",
+        repository: "midnghtsapphire/revvel-standards",
+        issueNumber: "",
+        prNumber: "",
+        query: "Build a research engine",
+        issueTitle: "",
+        issueBody: "",
+        outputFile,
+        depth: "standard",
+        extraContext: "",
+        dryRun: true,
+      },
+      async ({ model, systemPrompt, userPrompt }) => {
+        calls.push({ model, systemPrompt, userPrompt });
+        return `Mocked ${model} output with source https://example.com/${calls.length}`;
+      },
+    );
+    assert.strictEqual(result.status, "complete");
+    assert.ok(fs.existsSync(outputFile));
+    const output = fs.readFileSync(outputFile, "utf8");
+    assert.ok(output.includes("Research Engine Packet"));
+    assert.ok(output.includes("Code Review Handoff"));
+    assert.ok(output.includes("Mocked"));
+    assert.strictEqual(calls.length, engine.LANE_DEFINITIONS.length + 1);
+    fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
   test("findAndRequestLinkedPrReviews processes all linked PRs concurrently", async () => {
