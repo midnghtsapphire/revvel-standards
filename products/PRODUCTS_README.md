@@ -89,3 +89,5 @@ npm test
 ## Deployment
 
 See [`DEPLOYMENT.md`](./DEPLOYMENT.md).
+
+- `awesome-grok-build` — Grok Build skill browser & install planner (port 3012)
