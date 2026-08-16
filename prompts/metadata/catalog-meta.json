@@ -1,0 +1,8 @@
+{
+  "owner": "midnghtsapphire",
+  "default_repo": "midnghtsapphire/revvel-standards",
+  "issue_seed": 16419,
+  "external_primary": "asgeirtj/system_prompts_leaks",
+  "notebooklm_pack": "docs/notebooklm",
+  "censor_inventory": false
+}
