@@ -1,0 +1,264 @@
+{
+  "schema_version": "1.0.0",
+  "id": "revvel.prompt-knowledge-repo",
+  "title": "Revvel Prompt Knowledge Repository",
+  "description": "Living catalog of internal system prompts (thought-process, memory, learning, api, cli, mcp, skills, tools, sub-agents), external source indexes (system_prompts_leaks and others), concepts, LLM combos, and NotebookLM packs for GitHub-request workflows. Inventory is unfiltered.",
+  "updated_at": "2026-08-08T03:22:41.475Z",
+  "policy": {
+    "censor": false,
+    "external_bodies": "by-url",
+    "github_requests_scope": "Owner GitHub issues/PRs against midnghtsapphire/*; default issue repo midnghtsapphire/revvel-standards"
+  },
+  "roots": {
+    "internal": "prompts/internal",
+    "external": "prompts/external",
+    "concepts": "prompts/concepts",
+    "llm_combos": "prompts/llm-combos",
+    "metadata": "prompts/metadata",
+    "processes": "prompts/processes",
+    "notebooklm": "docs/notebooklm"
+  },
+  "entries": [
+    {
+      "id": "sp.thought-process",
+      "kind": "system-prompt",
+      "path": "prompts/internal/thought-process/SYSTEM_PROMPT.md",
+      "title": "Thought-process system prompt",
+      "tags": [
+        "thought-process",
+        "reasoning",
+        "github-request"
+      ],
+      "scope": "internal"
+    },
+    {
+      "id": "sp.memory",
+      "kind": "system-prompt",
+      "path": "prompts/internal/memory/SYSTEM_PROMPT.md",
+      "title": "Memory system prompt",
+      "tags": [
+        "memory",
+        "jsonl",
+        "provenance"
+      ],
+      "scope": "internal"
+    },
+    {
+      "id": "sp.learning",
+      "kind": "system-prompt",
+      "path": "prompts/internal/learning/SYSTEM_PROMPT.md",
+      "title": "Learning system prompt",
+      "tags": [
+        "learning",
+        "learnings.md",
+        "self-heal"
+      ],
+      "scope": "internal"
+    },
+    {
+      "id": "sp.api",
+      "kind": "system-prompt",
+      "path": "prompts/internal/api/SYSTEM_PROMPT.md",
+      "title": "API system prompt",
+      "tags": [
+        "api",
+        "openrouter",
+        "github"
+      ],
+      "scope": "internal"
+    },
+    {
+      "id": "sp.cli",
+      "kind": "system-prompt",
+      "path": "prompts/internal/cli/SYSTEM_PROMPT.md",
+      "title": "CLI system prompt",
+      "tags": [
+        "cli",
+        "scripts",
+        "gh"
+      ],
+      "scope": "internal"
+    },
+    {
+      "id": "sp.mcp",
+      "kind": "system-prompt",
+      "path": "prompts/internal/mcp/SYSTEM_PROMPT.md",
+      "title": "MCP system prompt",
+      "tags": [
+        "mcp",
+        "tools",
+        "servers"
+      ],
+      "scope": "internal"
+    },
+    {
+      "id": "sp.skills",
+      "kind": "system-prompt",
+      "path": "prompts/internal/skills/SYSTEM_PROMPT.md",
+      "title": "Skills system prompt",
+      "tags": [
+        "skills",
+        "skill-forge",
+        "registry"
+      ],
+      "scope": "internal"
+    },
+    {
+      "id": "sp.tools",
+      "kind": "system-prompt",
+      "path": "prompts/internal/tools/SYSTEM_PROMPT.md",
+      "title": "Tools system prompt",
+      "tags": [
+        "tools",
+        "scripts",
+        "automation"
+      ],
+      "scope": "internal"
+    },
+    {
+      "id": "sp.sub-agents",
+      "kind": "system-prompt",
+      "path": "prompts/internal/sub-agents/SYSTEM_PROMPT.md",
+      "title": "Sub-agent system prompt",
+      "tags": [
+        "sub-agents",
+        "orchestration",
+        "openrouter"
+      ],
+      "scope": "internal"
+    },
+    {
+      "id": "sp.github-requests",
+      "kind": "github-request-template",
+      "path": "prompts/internal/github-requests/SYSTEM_PROMPT.md",
+      "title": "GitHub request system prompt",
+      "tags": [
+        "github",
+        "issues",
+        "prs",
+        "wr"
+      ],
+      "scope": "internal"
+    },
+    {
+      "id": "ext.system_prompts_leaks",
+      "kind": "external-index",
+      "path": "prompts/external/system_prompts_leaks/INDEX.json",
+      "title": "system_prompts_leaks full index (unfiltered)",
+      "tags": [
+        "external",
+        "leaks",
+        "anthropic",
+        "openai",
+        "google",
+        "xai"
+      ],
+      "scope": "external",
+      "source_url": "https://github.com/asgeirtj/system_prompts_leaks",
+      "description": "Complete structural inventory of upstream leaked/captured system prompts. Bodies referenced by URL; optional cache via CLI."
+    },
+    {
+      "id": "proc.prompt-knowledge-repo",
+      "kind": "process",
+      "path": "prompts/processes/ADD_CONCEPT_LLM_COMBO.md",
+      "title": "Process: add concepts, LLM combos, metadata, folders",
+      "tags": [
+        "process",
+        "extensible"
+      ],
+      "scope": "shared"
+    },
+    {
+      "id": "res.notebooklm-manifest",
+      "kind": "resource",
+      "path": "docs/notebooklm/sources/SOURCES.json",
+      "title": "NotebookLM sources manifest",
+      "tags": [
+        "notebooklm",
+        "knowledge"
+      ],
+      "scope": "shared"
+    }
+  ],
+  "concepts": [
+    {
+      "id": "concept.prompt-knowledge-repo",
+      "name": "Prompt Knowledge Repository",
+      "summary": "Extensible store for system prompts, external indexes, concepts, LLM combos, and NotebookLM packs used on owner GitHub requests.",
+      "path": "prompts/concepts/prompt-knowledge-repo.md",
+      "related_entries": [
+        "sp.thought-process",
+        "sp.memory",
+        "sp.learning",
+        "sp.api",
+        "sp.cli",
+        "sp.mcp",
+        "sp.skills",
+        "sp.tools",
+        "sp.sub-agents",
+        "sp.github-requests",
+        "ext.system_prompts_leaks"
+      ]
+    },
+    {
+      "id": "concept.uncensored-inventory",
+      "name": "Uncensored inventory",
+      "summary": "Catalog and inventory listings include every discovered path and vendor; no content-based filtering of the index.",
+      "path": "prompts/concepts/uncensored-inventory.md",
+      "related_entries": [
+        "ext.system_prompts_leaks"
+      ]
+    }
+  ],
+  "llm_combos": [
+    {
+      "id": "combo.github-request-default",
+      "name": "GitHub request default ladder",
+      "models": [
+        "openrouter/auto",
+        "anthropic/claude-sonnet-4",
+        "openai/gpt-4.1-mini",
+        "perplexity/sonar"
+      ],
+      "path": "prompts/llm-combos/github-request-default.md",
+      "use_when": "Owner-filed GitHub issues/PRs that need triage + build + research fallback",
+      "system_prompt_ids": [
+        "sp.github-requests",
+        "sp.thought-process",
+        "sp.sub-agents"
+      ]
+    },
+    {
+      "id": "combo.prompt-engineering-research",
+      "name": "Prompt engineering research ladder",
+      "models": [
+        "perplexity/sonar-pro",
+        "anthropic/claude-sonnet-4",
+        "google/gemini-2.5-pro"
+      ],
+      "path": "prompts/llm-combos/prompt-engineering-research.md",
+      "use_when": "Comparing vendor system-prompt patterns and drafting internal prompts",
+      "system_prompt_ids": [
+        "sp.learning",
+        "sp.thought-process",
+        "ext.system_prompts_leaks"
+      ]
+    }
+  ],
+  "notebooklm": {
+    "pack_dir": "docs/notebooklm",
+    "sources_manifest": "docs/notebooklm/sources/SOURCES.json",
+    "export_dir": "docs/notebooklm/exports"
+  },
+  "metadata": {
+    "issue": "https://github.com/midnghtsapphire/revvel-standards/issues/16419",
+    "cli": "scripts/prompt-knowledge-repo.js",
+    "schema": "schemas/prompt-knowledge-catalog.schema.json",
+    "owner": "midnghtsapphire",
+    "default_repo": "midnghtsapphire/revvel-standards",
+    "issue_seed": 16419,
+    "external_primary": "asgeirtj/system_prompts_leaks",
+    "notebooklm_pack": "docs/notebooklm",
+    "censor_inventory": false
+  }
+}
