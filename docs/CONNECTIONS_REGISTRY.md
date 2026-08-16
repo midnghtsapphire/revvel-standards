@@ -57,7 +57,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `resend` (Resend) | ✅ verified | key | transactional-email | — | — | — |
 | `revenuecat` (RevenueCat) | ✅ verified | paid | subscriptions, iap | — | — | — |
 | `tavily` (Tavily) | ✅ verified | key | web-search | — | — | — |
-| `xai` (xAI / Grok) | ✅ verified | key | motu-bnat-controller | — | — | — |
+| `xai` (xAI / Grok) | ✅ verified | key | motu-bnat-controller, xai-code-review | — | xai-code-review.yml | — |
 
 ## Libraries
 
