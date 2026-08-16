@@ -553,6 +553,31 @@ function openWorkRequest({ repo, handle, action, task, requestedOn }) {
   return m ? m[1] : out.trim();
 }
 
+
+/**
+ * User-visible failure comment for a persona summon.
+ * Issue #16942: OpenRouter key/header failures used to die silently in logs;
+ * always surface the error on the issue/PR so humans see it.
+ *
+ * @param {string} handle - persona handle (e.g. "dragnet")
+ * @param {Error|string|{message?: string}} err
+ * @returns {string} markdown comment body
+ */
+function formatSummonFailureComment(handle, err) {
+  const name = String(handle || "persona").toUpperCase();
+  const message =
+    err && typeof err === "object" && err.message
+      ? String(err.message)
+      : String(err || "unknown error");
+  // Keep the comment short and non-secret-leaking: message only, no stack/env.
+  return (
+    `⚠️ **${name} summon failed:** ${message}\n\n` +
+    `_If this mentions OPENROUTER_API_KEY or Authorization headers, re-check the ` +
+    `repo secret under Settings → Secrets → Actions (no trailing newline) and ` +
+    `confirm the key is funded at openrouter.ai/credits._`
+  );
+}
+
 async function main() {
   const body = process.env.COMMENT_BODY || "";
   const repo = process.env.REPO;
@@ -681,13 +706,26 @@ async function main() {
     console.log(`✅ ${result.name} replied on issue #${issueNumber}`);
   } catch (err) {
     console.error(`❌ Summon failed: ${err.message}`);
-    postComment(repo, issueNumber, `⚠️ **${command.handle.toUpperCase()} summon failed:** ${err.message}`);
+    // Visible failure on the issue — never die silently (issue #16942).
+    postComment(repo, issueNumber, formatSummonFailureComment(command.handle, err));
   }
 }
 
 if (require.main === module) {
   main().catch((err) => {
     console.error("Error:", err.message);
+    // Best-effort visible failure when we know which issue the comment hit.
+    try {
+      const repo = process.env.REPO;
+      const issueNumber = process.env.ISSUE_NUMBER;
+      const body = process.env.COMMENT_BODY || "";
+      const command = parsePersonaCommand(body);
+      if (repo && issueNumber && command) {
+        postComment(repo, issueNumber, formatSummonFailureComment(command.handle, err));
+      }
+    } catch (_postErr) {
+      // ignore secondary failures — primary error already logged
+    }
     process.exit(1);
   });
 }
@@ -699,4 +737,5 @@ module.exports = {
   isEmoticonBankRequest,
   isResearchRequest,
   renderEmoticonBankMarkdown,
+  formatSummonFailureComment,
 };
