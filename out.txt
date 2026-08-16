@@ -1,1 +1,30 @@
-EXISTS: False
+236:       # ── Phase 2: auto-resolve the mechanical hunks (FREE — no LLM) ────────
+237:       # The script handles two safe patterns deterministically:
+238:       #   - VERSION_BUMP: same `uses: owner/repo@X` line on both sides,
+239:       #     pick the newer @ref (SHA > tag, higher semver > lower).
+240:       #   - ADDITIVE: both sides added distinct new lines around the same
+241:       #     anchor (e.g. new table rows). Keep both, current first.
+242:       # Anything else is left as a conflict for Phase 3.
+243:       - name: Auto-resolve mechanical conflicts
+244:         id: resolve
+245:         if: steps.analyze.outputs.has_conflicts == 'true'
+246:         env:
+247:           BASE_REF: ${{ steps.pr.outputs.base_ref }}
+248:           HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
+249:         run: |
+250:           set +e
+251:           git config user.email "conflict-helper@github-actions"
+252:           git config user.name "Conflict Helper"
+253:           # Re-run the merge that the analyze step aborted so we have the
+254:           # conflict markers in the worktree for the resolver to walk.
+255:           git merge --no-commit --no-ff "$HEAD_SHA" >/dev/null 2>&1 || true
+256:           node scripts/auto-resolve-mechanical-conflicts.js > "$RUNNER_TEMP/resolve.txt"
+257:           RC=$?
+258:           cat "$RUNNER_TEMP/resolve.txt"
+259:           echo "resolve_report=$RUNNER_TEMP/resolve.txt" >> "$GITHUB_OUTPUT"
+260:           echo "exit_code=$RC" >> "$GITHUB_OUTPUT"
+261:
+262:       # If the script resolved EVERY hunk, commit and push back to the PR
+263:       # branch as a single audit-trail-friendly commit.
+264:       - name: Commit fully-resolved files
+265:         if: |-
