@@ -28,9 +28,6 @@ jobs:
     if: false
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    # Single inert steps block only. The live APIsec steps live in the
-    # commented REVVEL-DISABLED-BODY below — never duplicate the `steps:` key
-    # here (YAML unique-key rule; breaks automation-doctor / npm test).
     steps:
       - run: echo "archived per RVS-AGENT-001; see file header for restore steps"
 

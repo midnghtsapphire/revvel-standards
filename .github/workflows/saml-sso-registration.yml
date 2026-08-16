@@ -7,6 +7,11 @@
 name: SAML SSO Registration Check (disabled)
 on:
   workflow_dispatch: null
+
+# Least privilege: inert disabled stub never touches the API.
+permissions:
+  contents: read
+
 jobs:
   disabled:
     runs-on: ubuntu-latest
