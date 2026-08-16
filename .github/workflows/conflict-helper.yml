@@ -138,17 +138,7 @@ jobs:
           echo "base_ref=$base_ref"     >> "$GITHUB_OUTPUT"
           echo "mergeable=$mergeable"   >> "$GITHUB_OUTPUT"
 
-      - name: Checkout base repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.pr.outputs.base_ref }}
-          persist-credentials: false
 
-      - name: Fetch PR head
-        run: |
-          git remote add pr_head "https://github.com/${{ steps.pr.outputs.head_repo }}"
-          git fetch pr_head "${{ steps.pr.outputs.head_ref }}"
-          git switch -c local-pr-head FETCH_HEAD
 
 concurrency:
   # PR number lives on `pull_request` events; on `issue_comment` events it
@@ -214,10 +204,10 @@ concurrency:
           echo "base_sha=$base_sha"       >> "$GITHUB_OUTPUT"
           echo "base_ref=$base_ref"       >> "$GITHUB_OUTPUT"
 
-      - name: Check out PR with full history
+      - name: Check out base with full history
         uses: actions/checkout@v4
         with:
-          ref: ${{ steps.pr.outputs.head_sha }}
+          ref: ${{ steps.pr.outputs.base_sha }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -232,6 +222,8 @@ concurrency:
           REPO: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
         run: |
+          git fetch origin ${{ steps.pr.outputs.head_sha }}:pr_head
+          git checkout pr_head
           git config user.name  "conflict-helper[bot]"
           git config user.email "conflict-helper@users.noreply.github.com"
 
