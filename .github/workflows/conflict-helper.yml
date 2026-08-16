@@ -138,11 +138,17 @@ jobs:
           echo "base_ref=$base_ref"     >> "$GITHUB_OUTPUT"
           echo "mergeable=$mergeable"   >> "$GITHUB_OUTPUT"
 
-      - name: Checkout PR head
+      - name: Checkout base repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ steps.pr.outputs.head_repo }}
-          ref: ${{ steps.pr.outputs.head_ref }}
+          ref: ${{ steps.pr.outputs.base_ref }}
+          persist-credentials: false
+
+      - name: Fetch PR head
+        run: |
+          git remote add pr_head https://github.com/${{ steps.pr.outputs.head_repo }}
+          git fetch pr_head ${{ steps.pr.outputs.head_ref }}
+          git checkout pr_head/${{ steps.pr.outputs.head_ref }}
 
 concurrency:
   # PR number lives on `pull_request` events; on `issue_comment` events it
