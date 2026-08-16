@@ -1,21 +1,32 @@
-schema_version: "2.0"
-skill:
-  name: "awesome-grok-build"
-  version: "1.0.0"
-  description: "A comprehensive build skill for awesome Grok applications."
-  author: "midnghtsapphire"
-  license: "MIT"
-  capabilities:
-    - code-review
-    - architecture
-    - frontend
-    - git
-    - hooks
-    - nextjs
-    - performance
-    - python
-    - refactor
-    - repo-health
-    - research
-    - security
-    - tdd
+name: awesome-grok-build
+title: "Awesome Grok Build — vendored xAI Grok Build library wire-up"
+version: 1.0.0
+description: "Use when configuring xAI Grok Build, installing .grok/skills, choosing AGENTS.md templates, or generating stack install plans from the vendored DominikTobureto/awesome-grok-build library."
+
+metadata:
+  author: "revvel-standards"
+  category: "Agent Operations"
+  tags: [grok, grok-build, xai, agents-md, skills-library, scaffolding]
+  created_at: "2026-08-16"
+  updated_at: "2026-08-16"
+
+dependencies:
+  skills: []
+  tools: []
+  pip_packages: []
+
+related:
+  upstream: "https://github.com/DominikTobureto/awesome-grok-build"
+  entrypoint_doc: "skills/awesome-grok-build/SKILL.md"
+
+triggers:
+  - "grok build"
+  - "awesome-grok-build"
+  - ".grok/skills"
+  - "AGENTS.md template"
+  - "grok stack install plan"
+
+implementation:
+  type: "markdown_prompt"
+  language: "markdown"
+  entrypoint: "skills/awesome-grok-build/SKILL.md"
