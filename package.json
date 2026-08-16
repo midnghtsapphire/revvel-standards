@@ -36,7 +36,9 @@
     "deploy:vercel": "node scripts/deploy-vercel.js",
     "bootstrap:web": "echo Use: npm run deploy:vercel -- --repo=owner/project",
     "ui-engine": "node scripts/ui-creation-engine.js",
-    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'"
+    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'",
+    "prompts:validate": "node scripts/prompt-knowledge-repo.js validate",
+    "prompts:export-notebooklm": "node scripts/prompt-knowledge-repo.js export-notebooklm"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"
@@ -48,10 +50,10 @@
     "ajv-formats": "^3.0.1",
     "c8": "^12.0.0",
     "googleapis": "^173.0.0",
-    "markdownlint-cli2": "^0.22.1",
-    "semver": "^7.6.3",
+    "markdownlint-cli2": "^0.23.2",
+    "semver": "^7.8.5",
     "sitemap-generator-cli": "^7.5.0",
     "typescript": "^5.7.0",
-    "yaml": "^2.9.0"
+    "yaml": "^2.7.0"
   }
 }

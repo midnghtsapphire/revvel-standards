@@ -1,0 +1,73 @@
+# Release → banner SEO pack → Discord (optional) / WR on failure
+name: release-banner-social
+
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag override
+        required: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  banner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "22"
+          cache: ""
+
+      - name: Build release banner SEO pack
+        env:
+          TAG: ${{ github.event.release.tag_name || github.event.inputs.tag || 'dev' }}
+          REPO: ${{ github.repository }}
+          SERVER: ${{ github.server_url }}
+        run: |
+          mkdir -p artifacts/image-automation
+          node -e "
+            const fs=require('fs');
+            const tag=process.env.TAG;
+            const repo=process.env.REPO;
+            fs.writeFileSync('artifacts/image-automation/brief.json', JSON.stringify({
+              topic: 'GitHub release ' + tag + ' announcement for ' + repo,
+              primaryKeyword: 'github release banner',
+              kind: 'release_banner',
+              product: repo,
+              secondaryKeywords: 'changelog, release notes, discord, open source',
+              pinnedLsi: ['release notes', 'changelog announcement', 'discord release webhook'],
+              pageUrl: process.env.SERVER + '/' + repo + '/releases/tag/' + tag
+            }, null, 2));
+          "
+          node scripts/image-seo-build-pack.mjs --brief artifacts/image-automation/brief.json --out artifacts/image-automation/release-pack.json
+
+      - name: Upload SEO pack
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
+        with:
+          name: release-banner-pack
+          path: artifacts/image-automation/
+          retention-days: 1
+
+      - name: Notify Discord (optional)
+        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          MSG=$(node -e "const p=require('./artifacts/image-automation/release-pack.json');console.log('Release banner pack ready: '+p.seo.filename+' — '+p.seo.altText)")
+          curl -sS -H 'Content-Type: application/json'             -d "{"content": $(node -e 'console.log(JSON.stringify(process.argv[1]))' "$MSG")}"             "$DISCORD_WEBHOOK_URL" || true
+
+      - name: Open WR on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create             --title "[WR] Release banner automation failed — ${{ github.repository }}"             --body "release-banner-social workflow failed. Human review required. Labels: wr, human-review-required, automation, formal:auto-wr"             --label "wr" --label "human-review-required" --label "automation" || true
