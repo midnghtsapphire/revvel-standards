@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-16T21:04:28.951Z",
+  "generated_at": "2026-08-16T22:03:27.091Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,17 +15,17 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 31971012790,
-            "name": "WR Lint",
-            "path": ".github/workflows/wr-lint.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31971012790",
+            "id": 31975185418,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31975185418",
             "conclusion": "failure"
           },
           {
-            "id": 31971012183,
-            "name": ".github/workflows/release-banner-social.yml",
-            "path": ".github/workflows/release-banner-social.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31971012183",
+            "id": 31975184983,
+            "name": ".github/workflows/conflict-helper.yml",
+            "path": ".github/workflows/conflict-helper.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31975184983",
             "conclusion": "failure"
           }
         ],
