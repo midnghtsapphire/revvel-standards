@@ -1164,46 +1164,10 @@
   },
   "urls": [
     {
-      "url": "https://revvel-standards.vercel.app/docs/fieldwork/",
-      "project": "fieldwork",
+      "url": "https://revvel-standards.vercel.app/docs/osint-hub/",
+      "project": "osint-hub",
       "type": "vercel",
-      "source": "/fieldwork/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/coldtrace/",
-      "project": "coldtrace",
-      "type": "vercel",
-      "source": "/coldtrace/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/oaudrey/",
-      "project": "oaudrey",
-      "type": "vercel",
-      "source": "/oaudrey/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/creator-payout-tracker/",
-      "project": "creator-payout-tracker",
-      "type": "vercel",
-      "source": "/products/creator-payout-tracker/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/ai-video-toolkit/",
-      "project": "ai-video-toolkit",
-      "type": "vercel",
-      "source": "/products/ai-video-toolkit/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/screen-recorder-finder/",
-      "project": "screen-recorder-finder",
-      "type": "vercel",
-      "source": "/products/screen-recorder-finder/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/personal-assistant/",
-      "project": "personal-assistant",
-      "type": "vercel",
-      "source": "/products/personal-assistant/README.md"
+      "source": "/osint-hub/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/prompt-generation-app/",
@@ -1212,16 +1176,28 @@
       "source": "/products/prompt-generation-app/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/affiliate-hub/",
-      "project": "affiliate-hub",
+      "url": "https://revvel-standards.vercel.app/products/awesome-grok-build/",
+      "project": "awesome-grok-build",
       "type": "vercel",
-      "source": "/products/affiliate-hub/README.md"
+      "source": "/products/awesome-grok-build/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/fda-design-controls/",
-      "project": "fda-design-controls",
+      "url": "https://revvel-standards.vercel.app/docs/personal-assistant/",
+      "project": "personal-assistant",
       "type": "vercel",
-      "source": "/products/fda-design-controls/README.md"
+      "source": "/products/personal-assistant/README.md"
+    },
+    {
+      "url": "https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app/products/printbank/public/>",
+      "project": "printbank",
+      "type": "vercel",
+      "source": "/products/printbank/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/creator-payout-tracker/",
+      "project": "creator-payout-tracker",
+      "type": "vercel",
+      "source": "/products/creator-payout-tracker/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/agent-manifest-validator/",
@@ -1230,16 +1206,10 @@
       "source": "/products/agent-manifest-validator/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/life-insurance-lead-saas/",
-      "project": "life-insurance-lead-saas",
+      "url": "https://revvel-standards.vercel.app/docs/hvac-calc-service/",
+      "project": "hvac-calc-service",
       "type": "vercel",
-      "source": "/products/life-insurance-lead-saas/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/self-optimizing-star-magnet/",
-      "project": "self-optimizing-star-magnet",
-      "type": "vercel",
-      "source": "/products/self-optimizing-star-magnet/README.md"
+      "source": "/products/hvac-calc-service/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/life-insurance-lead-engine/",
@@ -1248,22 +1218,58 @@
       "source": "/products/life-insurance-lead-engine/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/music-video-creator/",
-      "project": "music-video-creator",
-      "type": "vercel",
-      "source": "/products/music-video-creator/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/easy-env-vars/",
-      "project": "easy-env-vars",
-      "type": "vercel",
-      "source": "/products/easy-env-vars/README.md"
-    },
-    {
       "url": "https://revvel-standards.vercel.app/docs/ugc-review-generator/",
       "project": "ugc-review-generator",
       "type": "vercel",
       "source": "/products/ugc-review-generator/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/ai-video-toolkit/",
+      "project": "ai-video-toolkit",
+      "type": "vercel",
+      "source": "/products/ai-video-toolkit/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/cli-engine/",
+      "project": "cli-engine",
+      "type": "vercel",
+      "source": "/products/cli-engine/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/fda-design-controls/",
+      "project": "fda-design-controls",
+      "type": "vercel",
+      "source": "/products/fda-design-controls/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/screen-recorder-finder/",
+      "project": "screen-recorder-finder",
+      "type": "vercel",
+      "source": "/products/screen-recorder-finder/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/revvel-skill-runner/",
+      "project": "revvel-skill-runner",
+      "type": "vercel",
+      "source": "/products/revvel-skill-runner/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/self-optimizing-star-magnet/",
+      "project": "self-optimizing-star-magnet",
+      "type": "vercel",
+      "source": "/products/self-optimizing-star-magnet/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/affiliate-hub/",
+      "project": "affiliate-hub",
+      "type": "vercel",
+      "source": "/products/affiliate-hub/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/life-insurance-lead-saas/",
+      "project": "life-insurance-lead-saas",
+      "type": "vercel",
+      "source": "/products/life-insurance-lead-saas/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/graphify-evaluator/",
@@ -1284,28 +1290,16 @@
       "source": "/products/graphify-evaluator/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/cli-engine/",
-      "project": "cli-engine",
+      "url": "https://revvel-standards.vercel.app/docs/music-video-creator/",
+      "project": "music-video-creator",
       "type": "vercel",
-      "source": "/products/cli-engine/README.md"
+      "source": "/products/music-video-creator/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/products/awesome-grok-build/",
-      "project": "awesome-grok-build",
+      "url": "https://revvel-standards.vercel.app/docs/easy-env-vars/",
+      "project": "easy-env-vars",
       "type": "vercel",
-      "source": "/products/awesome-grok-build/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/hvac-calc-service/",
-      "project": "hvac-calc-service",
-      "type": "vercel",
-      "source": "/products/hvac-calc-service/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/openmythos/",
-      "project": "openmythos",
-      "type": "vercel",
-      "source": "/products/openmythos/README.md"
+      "source": "/products/easy-env-vars/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/gosqlx-sql-linter/",
@@ -1314,16 +1308,16 @@
       "source": "/products/gosqlx-sql-linter/README.md"
     },
     {
-      "url": "https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app/products/printbank/public/>",
-      "project": "printbank",
+      "url": "https://revvel-standards.vercel.app/docs/openmythos/",
+      "project": "openmythos",
       "type": "vercel",
-      "source": "/products/printbank/README.md"
+      "source": "/products/openmythos/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/revvel-skill-runner/",
-      "project": "revvel-skill-runner",
+      "url": "https://revvel-standards.vercel.app/docs/coldtrace/",
+      "project": "coldtrace",
       "type": "vercel",
-      "source": "/products/revvel-skill-runner/README.md"
+      "source": "/coldtrace/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/reesereviews/",
@@ -1332,34 +1326,16 @@
       "source": "/reesereviews/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/grok/uten/Colorado/dashboard.html>",
-      "project": "Colorado",
+      "url": "https://revvel-standards.vercel.app/docs/oaudrey/",
+      "project": "oaudrey",
       "type": "vercel",
-      "source": "/docs/grok/uten/Colorado/README.md"
+      "source": "/oaudrey/README.md"
     },
     {
-      "url": "https://soul2bowl.vercel.app",
-      "project": "Soul2Bowl",
+      "url": "https://revvel-standards.vercel.app/docs/fieldwork/",
+      "project": "fieldwork",
       "type": "vercel",
-      "source": "/docs/Soul2Bowl/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/vine-orders/>",
-      "project": "vine-orders",
-      "type": "vercel",
-      "source": "/docs/vine-orders/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/>",
-      "project": "vine-orders",
-      "type": "vercel",
-      "source": "/docs/vine-orders/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/osint-hub/",
-      "project": "osint-hub",
-      "type": "vercel",
-      "source": "/osint-hub/README.md"
+      "source": "/fieldwork/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/grok/uten/Colorado/dashboard.html",
@@ -1528,6 +1504,30 @@
       "project": "revvel-standards",
       "type": "test",
       "source": "/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/vine-orders/>",
+      "project": "vine-orders",
+      "type": "vercel",
+      "source": "/docs/vine-orders/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/>",
+      "project": "vine-orders",
+      "type": "vercel",
+      "source": "/docs/vine-orders/README.md"
+    },
+    {
+      "url": "https://soul2bowl.vercel.app",
+      "project": "Soul2Bowl",
+      "type": "vercel",
+      "source": "/docs/Soul2Bowl/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/grok/uten/Colorado/dashboard.html>",
+      "project": "Colorado",
+      "type": "vercel",
+      "source": "/docs/grok/uten/Colorado/README.md"
     }
   ],
   "domains": [
@@ -1575,5 +1575,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-14T00:21:10.188Z"
+  "lastUpdated": "2026-08-15T04:09:13.305Z"
 }
