@@ -199,6 +199,63 @@ function writeWorkflow(dir, name, content) {
     assert.deepEqual(findings, []);
   });
 
+  await test('scanBareRemoveLabel: does NOT flag multi-line .then().catch() pattern (regression PR #17147)', () => {
+    // Regression for PR #17147, 2026-08-10 — Copilot correctly wrapped a
+    // removeLabel in .then(log).catch(404-swallow), but the .catch landed 8
+    // lines below the removeLabel line because of the multi-line args object
+    // plus the .then handler. The old 5-line lookahead flagged this as unfixed.
+    // With the widened 15-line window it must be recognized as guarded.
+    const root = writeWorkflow(tmpDir(), 'multiline.yml', [
+      'name: Test',
+      'on: [push]',
+      'jobs:',
+      '  job:',
+      '    runs-on: ubuntu-latest',
+      '    steps:',
+      '      - uses: actions/github-script@v9',
+      '        with:',
+      '          script: |',
+      '            for (const name of labelsToRemove) {',
+      '              await github.rest.issues.removeLabel({',
+      '                owner: context.repo.owner,',
+      '                repo: context.repo.repo,',
+      '                issue_number: issueNumber,',
+      '                name,',
+      '              }).then(() => {',
+      '                core.info(`Removed recovered WR label: ${name}`);',
+      '              }).catch(err => { if (err.status !== 404) throw err; });',
+      '            }',
+    ].join('\n'));
+
+    const findings = scanBareRemoveLabel(root);
+    assert.equal(findings.length, 0,
+      'multi-line .then().catch() with 404-swallow should not be flagged');
+  });
+
+  await test('scanBareRemoveLabel: still flags a .catch that is truly too far away', () => {
+    // Boundary: a .catch 20 lines below the removeLabel call is NOT the same
+    // statement's handler — it belongs to something else. We must still flag
+    // the unguarded call.
+    const gap = Array(20).fill('              // filler').join('\n');
+    const root = writeWorkflow(tmpDir(), 'toofar.yml', [
+      'name: Test',
+      'on: [push]',
+      'jobs:',
+      '  job:',
+      '    runs-on: ubuntu-latest',
+      '    steps:',
+      '      - uses: actions/github-script@v9',
+      '        with:',
+      '          script: |',
+      '            await github.rest.issues.removeLabel({ owner, repo, issue_number: 1, name: "x" });',
+      gap,
+      '            someOther().catch(() => {});',
+    ].join('\n'));
+
+    const findings = scanBareRemoveLabel(root);
+    assert.equal(findings.length, 1, 'a .catch 20 lines away is not the removeLabel handler');
+  });
+
   // ---------------------------------------------------------------------------
   // scanWorkflowRunMissingWorkflowsList
   // ---------------------------------------------------------------------------
