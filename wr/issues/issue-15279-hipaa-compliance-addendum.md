@@ -4,6 +4,13 @@
 **Supersedes:** HIPAA guidance in `wr/issues/issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md` (line 190)
 **Related Issues:** #16058, #16065, #16075, #15279
 **PR:** #15280
+# HIPAA Compliance Addendum — Issue #15279 (Red Light Therapy Stretch Marks App)
+
+**Status:** Corrective addendum to WR for issue #15279
+**Supersedes:** Section on HIPAA compliance (line ~190) in `wr/issues/issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md`
+**Related Issues:** #16058, #16065
+**Prime Directive Alignment:** Protect the $10k → $10M revenue path by eliminating regulatory liability that could halt operations.
+
 ---
 
 ## 1. Problem Statement
@@ -125,7 +132,7 @@ The following statements in `issue-15279-reclaiming-your-skin-how-contour-light-
 
 ---
 
-## 6. Action Items (Owners Pending)
+## 6. Action Items (Owners TBD)
 
 1. **Legal:** written data classification memo — is app a covered entity / BA? (blocking launch)
 2. **Product:** inventory every health data field collected, its purpose, retention, and sharing.

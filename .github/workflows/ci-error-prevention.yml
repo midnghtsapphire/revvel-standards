@@ -138,12 +138,19 @@ jobs:
           echo "base=$BASE_SHA" >> $GITHUB_OUTPUT
           echo "head=$HEAD_SHA" >> $GITHUB_OUTPUT
           FILES=$(git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'wr/issues/*.md' || true)
-          echo "files=$FILES" >> $GITHUB_OUTPUT
+          {
+            echo 'files<<EOF'
+            echo "$FILES"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
           echo "Changed WR files: $FILES"
 
       - name: Run WR Lint
         if: steps.changed.outputs.files != ''
-        run: node wr/scripts/wr-lint.mjs ${{ steps.changed.outputs.files }}
+        run: |
+          # Convert multiline string to space-separated list of arguments
+          FILES_LIST=$(echo "${{ steps.changed.outputs.files }}" | tr '\n' ' ')
+          node wr/scripts/wr-lint.mjs $FILES_LIST
 
   automation-health:
     name: Automation Health Check

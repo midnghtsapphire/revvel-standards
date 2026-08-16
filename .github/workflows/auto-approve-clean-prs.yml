@@ -213,7 +213,7 @@ jobs:
                 for (const label of CLEANUP_LABELS) {
                   if (labelNames.includes(label)) {
                     try {
-                      await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label });
+                      await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label }).catch(err => { if (err.status !== 404) throw err; });
                     } catch (e) { /* label may already be removed */ }
                   }
                 }
