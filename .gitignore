@@ -1,35 +1,56 @@
-node_modules/
-.next/
-out/
-.gitbutler/*
-!.gitbutler/config.json
-
-# Logs (but keep audit logs)
-logs/*
-!logs/agent-audit/
-logs/agent-audit/*.log
-*.log
-
-# Python artifacts (applies repo-wide; sub-projects have their own ignores too)
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-*.pyo
-*.pyd
 
-# OS
-.DS_Store
-Thumbs.db
+# Coverage reports
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
 
-# Editors
-.vscode/
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.env
+.env.*
+!.env.example
+.venv
+env/
+venv/
+ENV/
+
+# IDE
 .idea/
+.vscode/
 *.swp
 *.swo
 
 # Secrets / env
 .env
 .env.local
+
+# Optional cached third-party prompt bodies (indexes stay committed)
+prompts/external/**/cache/
 
 # Scratch files occasionally committed by automation (Jules, Copilot, etc.)
 pr-body.md
@@ -52,16 +73,12 @@ wr/memory/last-remediation-plan.json
 !.claude/hooks/
 !.claude/hooks/**
 !.claude/settings.json
+# OS
+.DS_Store
+Thumbs.db
 
-# Captured Claude sessions stay on local disk under
-# docs/agents/claude/transcripts/ but aren't committed by default. Force-add
-# (`git add -f`) any session worth preserving in the repo. Per stop-hook race
-# observed on PR #14684.
-docs/agents/*/transcripts/*.jsonl
-docs/agents/*/transcripts/*.md
+# Logs
+*.log
 
-# wr-rewrite sweep pipeline artifacts (generated at repo root by wr-rewrite.yml)
-lint.txt
-queue.json
-target-repo/
-venv/
+# Node
+node_modules/
