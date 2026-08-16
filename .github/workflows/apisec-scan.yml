@@ -28,10 +28,6 @@ jobs:
     if: false
     runs-on: ubuntu-latest
     timeout-minutes: 45
-
-    # Duplicate active steps: block removed (invalid YAML unique-key). Full
-    # original body remains commented in REVVEL-DISABLED-BODY below; restore
-    # from that block or git history when re-enabling.
     steps:
       - run: echo "archived per RVS-AGENT-001; see file header for restore steps"
 
