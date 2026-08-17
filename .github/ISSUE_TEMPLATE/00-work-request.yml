@@ -311,7 +311,7 @@ body:
     id: acknowledgements
     attributes:
       label: Acknowledgements
-      description: Confirm the intended operating behavior. Permanent for every WR type (full form, OpenHands quick form, and markdown WR templates).
+      description: Confirm the intended operating behavior.
       options:
         - label: This WR defines a bundled outcome, not just a minimum acceptable patch.
         - label: Explicitly requested secondary items should not be silently deferred.
