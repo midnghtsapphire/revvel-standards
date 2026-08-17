@@ -1,257 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Revvel Issues Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
-    body { font-family: 'Space Mono', monospace; background: #0a0a0f; color: #e0e0e0; }
-    .card { background: linear-gradient(145deg, #12121a, #0f0f14); border: 1px solid #1f1f2e; }
-    .issue-card { transition: all 0.2s; cursor: pointer; }
-    .issue-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
-    .label-badge { display: inline-block; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; margin-right: 0.25rem; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Issues Board</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; margin: 0; padding: 20px; }
+  h1 { color: #58a6ff; }
+  .issue { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 16px; margin-bottom: 12px; }
+  .issue-title { color: #58a6ff; text-decoration: none; font-weight: 600; font-size: 16px; }
+  .issue-title:hover { text-decoration: underline; }
+  .issue-meta { color: #8b949e; font-size: 12px; margin-top: 6px; }
+  .label { display: inline-block; background: #1f6feb; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-right: 4px; }
+  .assignee { display: inline-block; background: #238636; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-right: 4px; }
+  #controls { margin-bottom: 20px; }
+  input, button { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 8px 12px; border-radius: 6px; }
+  button { cursor: pointer; }
+  button:hover { background: #30363d; }
+</style>
 </head>
-<body class="min-h-screen p-8">
-  <div class="max-w-7xl mx-auto">
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-purple-400 mb-2">🎯 ISSUES COMMAND CENTER</h1>
-      <p class="text-gray-500">Enhanced GitHub Issues UI with automation</p>
-    </div>
-
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-5 gap-4 mb-8">
-      <div class="card rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-red-400" id="stat-open">0</div>
-        <div class="text-sm text-gray-500">Open</div>
-      </div>
-      <div class="card rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-green-400" id="stat-closed">0</div>
-        <div class="text-sm text-gray-500">Closed</div>
-      </div>
-      <div class="card rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-yellow-400" id="stat-in-progress">0</div>
-        <div class="text-sm text-gray-500">In Progress</div>
-      </div>
-      <div class="card rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-blue-400" id="stat-needs-triage">0</div>
-        <div class="text-sm text-gray-500">Needs Triage</div>
-      </div>
-      <div class="card rounded-xl p-6 text-center">
-        <div class="text-3xl font-bold text-purple-400" id="stat-jules">0</div>
-        <div class="text-sm text-gray-500">Jules Assigned</div>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="card rounded-xl p-6 mb-8">
-      <h2 class="text-xl font-bold text-purple-400 mb-4">⚡ Quick Actions</h2>
-      <div class="grid grid-cols-4 gap-3">
-        <button onclick="createIssue()" class="bg-purple-600 hover:bg-purple-700 rounded-lg p-3 text-center transition">
-          <div class="font-bold">➕ New Issue</div>
-        </button>
-        <button onclick="viewDocs()" class="bg-cyan-600 hover:bg-cyan-700 rounded-lg p-3 text-center transition">
-          <div class="font-bold">📚 Documentation</div>
-        </button>
-        <button onclick="viewWorkflows()" class="bg-green-600 hover:bg-green-700 rounded-lg p-3 text-center transition">
-          <div class="font-bold">🤖 Workflows</div>
-        </button>
-        <button onclick="exportIssues()" class="bg-yellow-600 hover:bg-yellow-700 rounded-lg p-3 text-center transition">
-          <div class="font-bold">📥 Export CSV</div>
-        </button>
-      </div>
-    </div>
-
-    <!-- Filters -->
-    <div class="card rounded-xl p-6 mb-8">
-      <h2 class="text-xl font-bold text-cyan-400 mb-4">🔍 Filters</h2>
-      <div class="grid grid-cols-4 gap-4">
-        <div>
-          <label class="text-sm text-gray-400">State</label>
-          <select id="filter-state" class="w-full bg-gray-800 rounded p-2 mt-1" onchange="applyFilters()">
-            <option value="all">All</option>
-            <option value="open" selected>Open</option>
-            <option value="closed">Closed</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-sm text-gray-400">Label</label>
-          <select id="filter-label" class="w-full bg-gray-800 rounded p-2 mt-1" onchange="applyFilters()">
-            <option value="">All Labels</option>
-            <option value="bug">Bug</option>
-            <option value="enhancement">Enhancement</option>
-            <option value="documentation">Documentation</option>
-            <option value="jules">Jules</option>
-            <option value="triage">Triage</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-sm text-gray-400">Assignee</label>
-          <select id="filter-assignee" class="w-full bg-gray-800 rounded p-2 mt-1" onchange="applyFilters()">
-            <option value="">All Assignees</option>
-            <option value="copilot">@copilot</option>
-            <option value="jules">@jules</option>
-            <option value="none">Unassigned</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-sm text-gray-400">Sort</label>
-          <select id="filter-sort" class="w-full bg-gray-800 rounded p-2 mt-1" onchange="applyFilters()">
-            <option value="created">Created</option>
-            <option value="updated">Updated</option>
-            <option value="comments">Comments</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Issues List -->
-    <div class="card rounded-xl p-6">
-      <h2 class="text-xl font-bold text-green-400 mb-4">📋 Issues</h2>
-      <div id="issues-container" class="space-y-3">
-        <div class="text-center text-gray-500 py-8">Loading issues...</div>
-      </div>
-    </div>
+<body>
+  <h1>📋 Issues Board</h1>
+  <div id="controls">
+    <input id="repo" placeholder="owner/repo" value="" />
+    <button id="load">Load Issues</button>
   </div>
+  <div id="issues">Loading...</div>
 
-  <script>
-    const GITHUB_API = 'https://api.github.com';
-    const REPO_OWNER = 'midnghtsapphire';
-    const REPO_NAME = 'revvel-standards';
-    let allIssues = [];
+<script>
+/**
+ * Escape HTML-sensitive characters to prevent XSS injection.
+ * All user-controlled strings (issue titles, labels, logins, URLs) MUST
+ * be passed through this before being interpolated into innerHTML.
+ */
+function escapeHTML(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
-    async function loadIssues() {
-      try {
-        const response = await fetch(`${GITHUB_API}/repos/${REPO_OWNER}/${REPO_NAME}/issues?state=all&per_page=100`);
-        allIssues = await response.json();
-        updateStats();
-        applyFilters();
-      } catch (error) {
-        document.getElementById('issues-container').innerHTML = '<div class="text-red-400">Error loading issues. Check console for details.</div>';
-        console.error('Error:', error);
-      }
+async function loadIssues(repo) {
+  const container = document.getElementById('issues');
+  container.textContent = 'Loading...';
+  try {
+    const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(repo.split('/')[0])}/${encodeURIComponent(repo.split('/')[1])}/issues?state=open&per_page=30`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const issues = await res.json();
+    if (!Array.isArray(issues) || issues.length === 0) {
+      container.textContent = 'No open issues.';
+      return;
     }
+    container.innerHTML = issues.map(issue => {
+      const title = escapeHTML(issue.title);
+      const url = escapeHTML(issue.html_url);
+      const number = escapeHTML(issue.number);
+      const user = escapeHTML(issue.user && issue.user.login);
+      const labels = (issue.labels || [])
+        .map(l => `<span class="label">${escapeHTML(l.name)}</span>`)
+        .join('');
+      const assignees = (issue.assignees || [])
+        .map(a => `<span class="assignee">@${escapeHTML(a.login)}</span>`)
+        .join('');
+      return `
+        <div class="issue">
+          <a class="issue-title" href="${url}" target="_blank" rel="noopener noreferrer">#${number} ${title}</a>
+          <div class="issue-meta">by @${user} ${labels} ${assignees}</div>
+        </div>`;
+    }).join('');
+  } catch (err) {
+    container.textContent = 'Error loading issues: ' + escapeHTML(err.message);
+  }
+}
 
-    function updateStats() {
-      const open = allIssues.filter(i => i.state === 'open').length;
-      const closed = allIssues.filter(i => i.state === 'closed').length;
-      const inProgress = allIssues.filter(i => i.labels.some(l => l.name === 'in-progress' || l.name === 'wip')).length;
-      const needsTriage = allIssues.filter(i => i.labels.some(l => l.name === 'needs-triage' || l.name === 'triage')).length;
-      const jules = allIssues.filter(i => i.labels.some(l => l.name === 'jules')).length;
-
-      document.getElementById('stat-open').textContent = open;
-      document.getElementById('stat-closed').textContent = closed;
-      document.getElementById('stat-in-progress').textContent = inProgress;
-      document.getElementById('stat-needs-triage').textContent = needsTriage;
-      document.getElementById('stat-jules').textContent = jules;
-    }
-
-    function applyFilters() {
-      const state = document.getElementById('filter-state').value;
-      const label = document.getElementById('filter-label').value;
-      const assignee = document.getElementById('filter-assignee').value;
-      const sort = document.getElementById('filter-sort').value;
-
-      let filtered = allIssues.filter(issue => {
-        if (state !== 'all' && issue.state !== state) return false;
-        if (label && !issue.labels.some(l => l.name === label)) return false;
-        if (assignee === 'none' && issue.assignees.length > 0) return false;
-        if (assignee && assignee !== 'none' && !issue.assignees.some(a => a.login.includes(assignee))) return false;
-        return true;
-      });
-
-      // Sort
-      filtered.sort((a, b) => {
-        if (sort === 'created') return new Date(b.created_at) - new Date(a.created_at);
-        if (sort === 'updated') return new Date(b.updated_at) - new Date(a.updated_at);
-        if (sort === 'comments') return b.comments - a.comments;
-        return 0;
-      });
-
-      renderIssues(filtered);
-    }
-
-    function renderIssues(issues) {
-      const container = document.getElementById('issues-container');
-
-      if (issues.length === 0) {
-        container.innerHTML = '<div class="text-center text-gray-500 py-8">No issues found</div>';
-        return;
-      }
-
-      container.innerHTML = issues.map(issue => {
-        const labels = issue.labels.map(l =>
-          `<span class="label-badge" style="background: #${l.color}; color: ${getBestTextColor(l.color)};">${l.name}</span>`
-        ).join('');
-
-        const assignees = issue.assignees.map(a => a.login).join(', ') || 'Unassigned';
-        const stateColor = issue.state === 'open' ? 'text-green-400' : 'text-purple-400';
-        const stateIcon = issue.state === 'open' ? '🟢' : '🟣';
-
-        return `
-          <div class="issue-card bg-gray-900 rounded-lg p-4" onclick="window.open('${issue.html_url}', '_blank')">
-            <div class="flex justify-between items-start mb-2">
-              <div class="flex-1">
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="${stateColor} font-bold">${stateIcon} #${issue.number}</span>
-                  <span class="text-white font-bold">${issue.title}</span>
-                </div>
-                <div class="text-gray-400 text-sm mb-2">${labels}</div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm text-gray-400">💬 ${issue.comments}</div>
-              </div>
-            </div>
-            <div class="flex justify-between items-center text-sm text-gray-500">
-              <div>👤 ${assignees}</div>
-              <div>�� ${new Date(issue.updated_at).toLocaleDateString()}</div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function getBestTextColor(hexColor) {
-      const r = parseInt(hexColor.substring(0, 2), 16);
-      const g = parseInt(hexColor.substring(2, 4), 16);
-      const b = parseInt(hexColor.substring(4, 6), 16);
-      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-      return brightness > 128 ? '#000' : '#fff';
-    }
-
-    function createIssue() {
-      window.open(`https://github.com/${REPO_OWNER}/${REPO_NAME}/issues/new/choose`, '_blank');
-    }
-
-    function viewDocs() {
-      window.open(`https://github.com/${REPO_OWNER}/${REPO_NAME}/blob/main/docs/GITHUB_ISSUES_UI_ENHANCEMENTS.md`, '_blank');
-    }
-
-    function viewWorkflows() {
-      window.open(`https://github.com/${REPO_OWNER}/${REPO_NAME}/actions`, '_blank');
-    }
-
-    function exportIssues() {
-      const csv = 'Number,Title,State,Labels,Assignees,Comments,Created,Updated\n' +
-        allIssues.map(i =>
-          `${i.number},"${i.title}",${i.state},"${i.labels.map(l => l.name).join(';')}","${i.assignees.map(a => a.login).join(';')}",${i.comments},${i.created_at},${i.updated_at}`
-        ).join('\n');
-
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `issues-${REPO_NAME}-${new Date().toISOString().split('T')[0]}.csv`;
-      a.click();
-    }
-
-    // Load issues on page load
-    loadIssues();
-    // Refresh every 60 seconds to respect GitHub API rate limits
-    // (60 requests/hour for unauthenticated requests)
-    setInterval(loadIssues, 60000);
-  </script>
+document.getElementById('load').addEventListener('click', () => {
+  const repo = document.getElementById('repo').value.trim();
+  if (repo.includes('/')) loadIssues(repo);
+});
+</script>
 </body>
 </html>

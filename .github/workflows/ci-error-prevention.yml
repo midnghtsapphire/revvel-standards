@@ -5,6 +5,12 @@ on:
   pull_request:
     paths:
       - '.github/workflows/**'
+      # Manifest/lockfile patterns so the package-lock sync gate actually runs
+      # on the PRs it protects (PR #17091 review finding).
+      - 'package.json'
+      - 'package-lock.json'
+      - '**/package.json'
+      - '**/package-lock.json'
       - 'wr/scripts/**'
       - 'scripts/**'
       - 'tests/**'
@@ -30,6 +36,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Validate package-lock sync
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        # Inline gate logic moved to scripts/validate-package-locks.sh
+        # (PR #17097) so it is unit-testable; see tests/validate-package-locks.test.js.
+        run: bash scripts/validate-package-locks.sh
 
       - name: Install dependencies
         run: npm ci
@@ -138,19 +153,12 @@ jobs:
           echo "base=$BASE_SHA" >> $GITHUB_OUTPUT
           echo "head=$HEAD_SHA" >> $GITHUB_OUTPUT
           FILES=$(git diff --name-only --diff-filter=AM "$BASE_SHA" "$HEAD_SHA" -- 'wr/issues/*.md' || true)
-          {
-            echo 'files<<EOF'
-            echo "$FILES"
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
+          echo "files=$FILES" >> $GITHUB_OUTPUT
           echo "Changed WR files: $FILES"
 
       - name: Run WR Lint
         if: steps.changed.outputs.files != ''
-        run: |
-          # Convert multiline string to space-separated list of arguments
-          FILES_LIST=$(echo "${{ steps.changed.outputs.files }}" | tr '\n' ' ')
-          node wr/scripts/wr-lint.mjs $FILES_LIST
+        run: node wr/scripts/wr-lint.mjs ${{ steps.changed.outputs.files }}
 
   automation-health:
     name: Automation Health Check
