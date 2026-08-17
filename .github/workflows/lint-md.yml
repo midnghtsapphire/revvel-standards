@@ -1,14 +1,25 @@
-# Markdown lint — markdownlint-cli2 (David Anson). Single markdown gate for the repo.
-# Replaced the @lint-md action 2026-07-16: it was a duplicate linter with conflicting rules.
-# Config: .markdownlint.jsonc
-name: Lint Markdown (markdownlint-cli2)
+# Markdown lint — nosborn/github-action-markdown-cli (markdownlint-cli).
+# Single markdown style gate for the repo on PR/push.
+# Config: .markdownlint.yaml + .markdownlintignore
+# Local equivalent: npm run lint (markdownlint-cli2 with .markdownlint.jsonc)
+name: Lint Markdown (markdownlint-cli)
 
 on:
   pull_request:
-    paths: ["**/*.md"]
+    paths:
+      - "**/*.md"
+      - ".markdownlint.yaml"
+      - ".markdownlint.jsonc"
+      - ".markdownlintignore"
+      - ".github/workflows/lint-md.yml"
   push:
     branches: [main]
-    paths: ["**/*.md"]
+    paths:
+      - "**/*.md"
+      - ".markdownlint.yaml"
+      - ".markdownlint.jsonc"
+      - ".markdownlintignore"
+      - ".github/workflows/lint-md.yml"
   workflow_dispatch:
 
 permissions:
@@ -16,23 +27,20 @@ permissions:
 
 jobs:
   markdownlint:
-    name: markdownlint-cli2
+    name: markdownlint-cli
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      - name: Run markdownlint-cli2
-        uses: DavidAnson/markdownlint-cli2-action@v23
+
+      # nosborn/github-action-markdown-cli@v3.5.0 — pin full commit SHA
+      # (CLAUDE.md gotcha #8). Annotated tag v3.5.0 → 508d6cef...
+      - name: markdownlint-cli
+        uses: nosborn/github-action-markdown-cli@508d6cefd8f0cc99eab5d2d4685b1d5f470042c1 # v3.5.0
         with:
-          globs: |
-            **/*.md
-            !node_modules/**
-            !.git/**
-            !dist/**
-            !vendor/**
-            !wr/issues/**
-            !docs/agents/claude/transcripts/**
-          config: .markdownlint.jsonc
-          fix: false
+          files: .
+          config_file: .markdownlint.yaml
+          dot: true
+          ignore_path: .markdownlintignore

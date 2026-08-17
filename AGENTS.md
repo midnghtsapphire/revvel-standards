@@ -149,6 +149,8 @@ collisions:
 | Awesome Grok Build | `products/awesome-grok-build` | 3012 | Next.js. Grok Build skill browser + stack install planner (vendored DominikTobureto/awesome-grok-build). |
 | Agent Manifest Validator | `products/agent-manifest-validator` | 3012 | Next.js. SaaS guardrail for `registry_rules.json` agent personas (skill budget, domains, n8n alert preview). |
 | Personal Assistant | `products/personal-assistant` | 3012 | Next.js. Multi-source personal data (Gmail/Outlook/Yahoo/Keep/Drive/SMS) → PII-safe GitHub directory + commit plans. |
+| Caspian Channel Console | `products/caspian-channel-console` | 3012 | Static SPA. Multi-channel agent planner/simulator from Caspian SDK research (WR-16898). |
+| Greenfield UI Lab | `products/greenfield-ui-lab` | 3012 | Next.js. Modernized idea board + day wallet from rgn/greenfield-ui research patterns. |
 
 Start a specific product on its assigned port:
 
@@ -171,6 +173,8 @@ cd products/easy-env-vars        && npm run dev -- -p 3012
 cd products/awesome-grok-build   && npm run dev -- -p 3012
 cd products/agent-manifest-validator && npm run dev -- -p 3012
 cd products/personal-assistant   && npm run dev -- -p 3012
+# Static: python3 -m http.server 3012 -d products/caspian-channel-console/public
+cd products/greenfield-ui-lab     && npm run dev -- -p 3012
 ```
 
 ### Running and testing
