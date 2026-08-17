@@ -2,139 +2,144 @@
 'use strict';
 
 /**
- * Neural Sheaf Diffusion (NSD) — minimal learnable-restriction stub.
+ * Discrete Neural Sheaf Diffusion (NSD) — credit-free offline layer.
  *
- * Research / optional path (WR-MOTU-BNAT-SHEAF PR6). Not required on the
- * credit-free BIOME runtime. Pure Node; no torch.
+ * Production BNAT keeps restriction maps deterministic (usually identity) so
+ * imprint-at-spawn and the VEINS grounding gate stay auditable. NSD is the
+ * *offline* path that learns diagonal restriction weights from stalk pairs,
+ * then freezes them into a CellularSheaf for deterministic diffusion.
  *
- * Discrete diffusion step under a sheaf Laplacian:
- *   x ← x − η Δ_ℱ x
- * For a single edge with diagonal (scalar) restriction w on u:
- *   E(w) = (w·x_u − x_v)²
- *   dE/dw = 2(w·x_u − x_v)·x_u
+ * References:
+ *   Bodnar et al., Neural Sheaf Diffusion, NeurIPS 2022 (arXiv:2202.04579)
+ *   Hansen & Ghrist, Toward a Spectral Theory of Cellular Sheaves (arXiv:1808.01513)
  *
- * Learned maps freeze into CellularSheaf restriction matrices for runtime.
- * See docs/bnatsheaf/NSD_EXPLORATION.md (Bodnar et al., NeurIPS 2022).
+ * No autodiff framework — pure gradient steps on diagonal maps. Optional; the
+ * core consistency path never requires this module.
  */
 
-const { CellularSheaf } = require('./sheaf');
+const { CellularSheaf, matVec, vecSub, normSq, identity } = require('./sheaf');
 
 /**
- * Learn a scalar restriction w such that w·xu ≈ xv by gradient descent.
- * Returns the learned weight (≈ xv/xu when xu ≠ 0).
+ * Learn a scalar restriction weight w such that w·x_u ≈ x_v.
+ * Energy E(w) = (w·xu − xv)², dE/dw = 2(w·xu − xv)·xu.
  */
 function learnScalarRestriction(xu, xv, { lr = 0.05, steps = 200 } = {}) {
-  if (!Number.isFinite(xu) || !Number.isFinite(xv)) {
-    throw new TypeError('learnScalarRestriction expects finite numeric stalks');
-  }
-  if (!Number.isFinite(lr) || lr <= 0 || lr >= 1) {
-    throw new RangeError('lr must be a finite number between 0 and 1');
-  }
-  if (!Number.isInteger(steps) || steps < 0) {
-    throw new RangeError('steps must be a non-negative integer');
-  }
-  if (xu === 0) {
-    if (xv === 0) return 1;
-    throw new RangeError('no scalar restriction can map a zero stalk to a non-zero stalk');
-  }
   let w = 1;
-  const scale = xu * xu;
   for (let i = 0; i < steps; i++) {
-    const residual = w * xu - xv;
-    const grad = 2 * residual * xu;
-    w -= (lr * grad) / scale;
+    const grad = 2 * (w * xu - xv) * xu;
+    w -= lr * grad;
   }
   return w;
 }
 
 /**
- * One explicit-Euler diffusion step on a CellularSheaf's stalk assignment.
- * For identity restrictions this is ordinary graph Laplacian smoothing:
- * each vertex moves toward the mean of its neighbors.
- *
- * Mutates a copy of stalks; returns { stalks, energyBefore, energyAfter }.
+ * Learn a diagonal restriction map R = diag(w) of size d so R x_u ≈ x_v.
+ * Independent 1-d problems per coordinate.
  */
-function diffuseStep(sheaf, eta = 0.25) {
-  if (!(sheaf instanceof CellularSheaf) && !(sheaf && sheaf.stalks && sheaf.edges)) {
-    throw new TypeError('diffuseStep requires a CellularSheaf');
+function learnDiagonalRestriction(xu, xv, opts = {}) {
+  if (!Array.isArray(xu) || !Array.isArray(xv) || xu.length !== xv.length) {
+    throw new RangeError('learnDiagonalRestriction requires equal-length vectors');
   }
-  const energyBefore = sheaf.laplacianEnergy();
-  // Accumulate Δx per vertex from edge residuals.
-  const delta = {};
-  for (const name of Object.keys(sheaf.stalks)) {
-    delta[name] = sheaf.stalks[name].map(() => 0);
+  const weights = xu.map((a, i) => learnScalarRestriction(a, xv[i], opts));
+  return weights.map((w, i) => {
+    const row = Array(xu.length).fill(0);
+    row[i] = w;
+    return row;
+  });
+}
+
+/**
+ * One discrete sheaf-diffusion step: x ← x − η · δ* δ x
+ * For identity restrictions this is ordinary graph Laplacian smoothing on
+ * each stalk coordinate. For diagonal learned maps it is sheaf diffusion.
+ *
+ * Returns a new stalks object (does not mutate input).
+ */
+function diffuseStep(sheaf, eta = 0.1) {
+  const residuals = sheaf.edgeResiduals(); // r_e = Ru xu − Rv xv
+  // Accumulate δ* r on each vertex stalk (adjoint of coboundary).
+  const grad = {};
+  for (const v of Object.keys(sheaf.stalks)) {
+    grad[v] = Array(sheaf.stalks[v].length).fill(0);
   }
-  for (const e of sheaf.edges) {
-    const xu = sheaf.stalks[e.u];
-    const xv = sheaf.stalks[e.v];
-    // For identity (or general) maps: residual r = Ru xu − Rv xv
-    // Contribution to gradient of ½||r||² w.r.t. xu is Ruᵀ r; w.r.t. xv is −Rvᵀ r.
-    const ruXu = e.ru.map((row) => row.reduce((a, v, j) => a + v * xu[j], 0));
-    const rvXv = e.rv.map((row) => row.reduce((a, v, j) => a + v * xv[j], 0));
-    const r = ruXu.map((v, i) => v - rvXv[i]);
-    // Ruᵀ r
-    for (let j = 0; j < xu.length; j++) {
-      let s = 0;
-      for (let i = 0; i < r.length; i++) s += e.ru[i][j] * r[i];
-      delta[e.u][j] += s;
-    }
-    // −Rvᵀ r
-    for (let j = 0; j < xv.length; j++) {
-      let s = 0;
-      for (let i = 0; i < r.length; i++) s += e.rv[i][j] * r[i];
-      delta[e.v][j] -= s;
-    }
+  sheaf.edges.forEach((e, idx) => {
+    const r = residuals[idx].residual;
+    // ⟨δx, r⟩ = Σ_e ⟨Ru xu − Rv xv, r_e⟩
+    // ⇒ (δ* r)_u += Ru^T r,  (δ* r)_v −= Rv^T r
+    const RuT_r = matVecTranspose(e.ru, r);
+    const RvT_r = matVecTranspose(e.rv, r);
+    for (let i = 0; i < RuT_r.length; i++) grad[e.u][i] += RuT_r[i];
+    for (let i = 0; i < RvT_r.length; i++) grad[e.v][i] -= RvT_r[i];
+  });
+
+  const next = {};
+  for (const v of Object.keys(sheaf.stalks)) {
+    next[v] = sheaf.stalks[v].map((x, i) => x - eta * grad[v][i]);
   }
-  const nextStalks = {};
-  for (const name of Object.keys(sheaf.stalks)) {
-    nextStalks[name] = sheaf.stalks[name].map((v, i) => v - eta * delta[name][i]);
-  }
-  const next = new CellularSheaf({
-    stalks: nextStalks,
+  return new CellularSheaf({
+    stalks: next,
     edges: sheaf.edges.map((e) => ({ u: e.u, v: e.v, ru: e.ru, rv: e.rv })),
   });
-  return {
-    stalks: nextStalks,
-    sheaf: next,
-    energyBefore,
-    energyAfter: next.laplacianEnergy(),
-  };
 }
 
-/**
- * Run several diffusion steps; energy is non-increasing for small η on
- * undirected sheaves (healing flow toward global sections).
- */
-function diffuse(sheaf, { steps = 8, eta = 0.25 } = {}) {
-  let current = sheaf;
-  const trajectory = [];
-  for (let i = 0; i < steps; i++) {
-    const step = diffuseStep(current, eta);
-    trajectory.push({
-      step: i + 1,
-      energyBefore: step.energyBefore,
-      energyAfter: step.energyAfter,
-    });
-    current = step.sheaf;
+/** Multiply matrix^T by vector. */
+function matVecTranspose(matrix, vector) {
+  if (!matrix.length) return [];
+  const cols = matrix[0].length;
+  const out = Array(cols).fill(0);
+  for (let i = 0; i < matrix.length; i++) {
+    for (let j = 0; j < cols; j++) out[j] += matrix[i][j] * vector[i];
   }
-  return { sheaf: current, trajectory, finalEnergy: current.laplacianEnergy() };
+  return out;
 }
 
 /**
- * Freeze a learned scalar restriction into a CellularSheaf edge.
- * Core WR does not require a trained model — this is the upgrade path.
+ * Run T steps of sheaf diffusion. Returns { sheaf, energies[] }.
+ * Energies are monotonically non-increasing for small enough η on undirected
+ * identity sheaves (discrete heat flow to H⁰).
  */
-function freezeScalarRestriction(xu, xv, edge = { u: 'a', v: 'b' }) {
-  const w = learnScalarRestriction(xu, xv);
-  return new CellularSheaf({
-    stalks: { [edge.u]: [xu], [edge.v]: [xv] },
-    edges: [{ u: edge.u, v: edge.v, ru: [[w]] }],
+function diffuse(sheaf, { steps = 25, eta = 0.1 } = {}) {
+  let current = sheaf;
+  const energies = [current.laplacianEnergy()];
+  for (let t = 0; t < steps; t++) {
+    current = diffuseStep(current, eta);
+    energies.push(current.laplacianEnergy());
+  }
+  return { sheaf: current, energies };
+}
+
+/**
+ * Fit diagonal restrictions on every edge from the current stalk assignment,
+ * freeze them into a new sheaf, and optionally diffuse to the learned H⁰.
+ */
+function fitAndDiffuse(sheaf, opts = {}) {
+  const edges = sheaf.edges.map((e) => {
+    const xu = sheaf.stalks[e.u];
+    const xv = sheaf.stalks[e.v];
+    // Only fit when dims match (edge stalk = vertex stalk for diagonal case).
+    if (xu.length !== xv.length) {
+      return { u: e.u, v: e.v, ru: e.ru, rv: e.rv };
+    }
+    const ru = learnDiagonalRestriction(xu, xv, opts);
+    return { u: e.u, v: e.v, ru, rv: identity(xv.length) };
   });
+  const fitted = new CellularSheaf({ stalks: sheaf.stalks, edges });
+  if (opts.diffuse === false) {
+    return { sheaf: fitted, energies: [fitted.laplacianEnergy()] };
+  }
+  return diffuse(fitted, opts);
 }
 
 module.exports = {
   learnScalarRestriction,
+  learnDiagonalRestriction,
   diffuseStep,
   diffuse,
-  freezeScalarRestriction,
+  fitAndDiffuse,
+  matVecTranspose,
+  CellularSheaf,
+  matVec,
+  vecSub,
+  normSq,
+  identity,
 };
