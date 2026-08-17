@@ -1296,6 +1296,12 @@
       "source": "/products/openmythos/README.md"
     },
     {
+      "url": "https://revvel-standards.vercel.app/docs/mergeme-status/",
+      "project": "mergeme-status",
+      "type": "vercel",
+      "source": "/products/mergeme-status/README.md"
+    },
+    {
       "url": "https://revvel-standards.vercel.app/docs/coldtrace/",
       "project": "coldtrace",
       "type": "vercel",
@@ -1593,5 +1599,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-17T11:19:51.472Z"
+  "lastUpdated": "2026-08-17T11:22:26.346Z"
 }
