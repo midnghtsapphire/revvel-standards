@@ -90,7 +90,7 @@ def score_claim(claim: dict, sources: dict, cfg: dict) -> ClaimScore:
     base = tier_cap * prov.get(best.get("provenance", "anonymous_report"), 0.25)
     rationale.append(
         f"Best source tier {best_tier} ({tiers[best_tier]['name']}, cap {tier_cap:.2f}); "
-        f"provenance '{best.get('provenance')}' x{prov.get(best.get('provenance','anonymous_report'),0.25):.2f} -> base {base:.2f}.")
+        f"provenance '{best.get('provenance')}' x{prov.get(best.get('provenance', 'anonymous_report'), 0.25):.2f} -> base {base:.2f}.")
 
     # Rule 3: corroboration from OTHER independent sources at >= best_tier.
     corr = [s for s in supporting
