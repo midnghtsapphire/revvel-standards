@@ -1,45 +1,52 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-17T14:07:38.528Z",
+  "generated_at": "2026-08-17T15:06:47.166Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "summary": "5/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 5,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32037877823,
-            "name": "label-allowlist",
-            "path": ".github/workflows/label-allowlist.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037877823",
+            "id": 32041251166,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32041251166",
             "conclusion": "failure"
           },
           {
-            "id": 32037877064,
-            "name": "PR & Issue Recovery Engine",
-            "path": ".github/workflows/recovery-engine.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037877064",
+            "id": 32041199103,
+            "name": "🎛️ PR State Orchestrator",
+            "path": ".github/workflows/pr-state-orchestrator.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32041199103",
             "conclusion": "failure"
           },
           {
-            "id": 32037844404,
+            "id": 32041142420,
+            "name": "Ralph Loop — Self-Healing CI",
+            "path": ".github/workflows/ralph-loop.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32041142420",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32041104395,
             "name": "Intelligent Code Quality Scanner",
             "path": ".github/workflows/ship-quality.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037844404",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32041104395",
             "conclusion": "failure"
           },
           {
-            "id": 32037844400,
-            "name": "Neon Preview Branch",
-            "path": ".github/workflows/neon-branch.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037844400",
+            "id": 32041104363,
+            "name": "Synopsys Security Testing",
+            "path": ".github/workflows/synopsys-action.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32041104363",
             "conclusion": "failure"
           }
         ],
