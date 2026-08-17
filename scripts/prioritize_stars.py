@@ -97,7 +97,7 @@ def score_breakdown(
     """Component scores + total. Single source of truth for the formula."""
     clock = now or datetime.now(timezone.utc)
     days_since_push = days_between(clock, parse_iso(repo.get("pushedAt")))
-    score_push = math.exp(-(days_since_push or 3650) / 60) * 40 if days_since_push is not None else 0.0
+    score_push = math.exp(-days_since_push / 60) * 40 if days_since_push is not None else 0.0
     releases = (repo.get("releases") or {}).get("nodes") or []
     if releases:
         days_since_release = days_between(clock, parse_iso(releases[0].get("createdAt")))
