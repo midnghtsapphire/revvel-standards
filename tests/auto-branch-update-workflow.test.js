@@ -108,6 +108,21 @@ test('token selection keeps the AGENT_PR_TOKEN fallback and stays parseable', ()
   );
 });
 
+test('no template expansion inside the github-script body', () => {
+  // zizmor template-injection (alert 3380). `${{ }}` is substituted as text
+  // before the script executes, so interpolating a dispatch input directly
+  // into JS lets a crafted value close the string literal and run arbitrary
+  // code under a token with `contents: write`. Values must arrive via env.
+  const collect = wf.jobs['update-pr-branches'].steps.find((s) => s.id === 'collect');
+  assert.doesNotMatch(
+    collect.with.script,
+    /\$\{\{/,
+    'pass values through `env:` and read them with process.env, never `${{ }}` in the script body'
+  );
+  assert.match(collect.env.INPUT_PR_NUMBER, /inputs\.pr_number/);
+  assert.match(collect.with.script, /process\.env\.INPUT_PR_NUMBER/);
+});
+
 test('workflow_dispatch input is read through the inputs context', () => {
   // `github.event.inputs` is the legacy spelling and is flagged as undeclared
   // by the actions-lint check. `inputs.<name>` is the documented context for

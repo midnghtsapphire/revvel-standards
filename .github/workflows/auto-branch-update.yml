@@ -46,11 +46,18 @@ jobs:
       - name: Collect PR branches to update
         id: collect
         uses: actions/github-script@v9.0.0
+        env:
+          # Passed through the environment, never interpolated into the script
+          # body. `${{ }}` expansion is text substitution performed before the
+          # script runs, so a crafted dispatch input could otherwise close the
+          # string literal and execute arbitrary JS under this job's token
+          # (zizmor template-injection, alert 3380).
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
         with:
           github-token: ${{ secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            const inputPR = '${{ inputs.pr_number }}';
+            const inputPR = process.env.INPUT_PR_NUMBER || '';
 
             // Fetch every open PR, not just the ones based on main. We need the
             // full set to identify stacks: any branch that another open PR uses
