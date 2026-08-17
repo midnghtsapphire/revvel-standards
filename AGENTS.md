@@ -38,6 +38,23 @@ Every change should be evaluated against this north star. Prefer work that:
 3. Improves Polar.sh / GitHub funding integrations
 4. Strengthens OSINT tooling that we monetize
 
+## BNAT Knowledge Sheaf — imprint before work
+
+Every agent instantiation should call the imprint path and assert the geometric
+invariant before high-blast edits:
+
+```bash
+node scripts/bnatsheaf/cli.js imprint_agent --agent <name>
+node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
+```
+
+- Standard: `standards/BNAT_SHEAF_STANDARD.md`
+- Skill: `skills/bnatsheaf/SKILL.md`
+- Math + PH + cohomology: `scripts/bnatsheaf/`
+- Public Observatory (Method · Living Manifold): `docs/bnatsheaf/observatory.html`
+- Long-lived H¹ bars escalate — never silently glue
+  (`wr/pending/14-veins-grounding-gate.md`).
+
 ## Goal Structure
 
 - **Phase 1:** $10k/month (Month 1–6)
