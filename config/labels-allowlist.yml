@@ -3,12 +3,11 @@
 # Enforcement: scripts/label-allowlist-check.mjs + .github/workflows/label-allowlist.yml
 
 version: 1
-updated: 2026-08-05
+updated: 2026-08-08
 owner: midnghtsapphire
 max_labels_total: 80
 policy:
   prefer_over_labels:
-  - name: recovery:gave-up
     - GitHub Projects custom fields
     - GitHub Actions workflows + check runs
     - n8n / Make / Zapier / Gumloop automations
@@ -53,27 +52,13 @@ labels:
   - name: "won't-merge"
   - name: checks-passing
   - name: checks-failing
-  # Canonical lifecycle state applied by pr-check-status / pr-lifecycle /
-  # pr-state-orchestrator / stuck-label-watchdog when a PR is green and
-  # approved. Was applied by those workflows but missing here, so every
-  # green PR failed the Governance gate on its own success label (PR #17091).
+  # Merge-routing labels the fleet applies in practice. These were reachable
+  # only through `aliases` (status:ready-to-merge -> ready-to-merge,
+  # conflicts:needs-human -> has-conflicts), but an alias whose target is not
+  # itself allowlisted still resolves to a rejected label — so the strict
+  # checker failed on a bare `ready-to-merge` even though automation sets it.
   - name: ready-to-merge
-  # Conflict lifecycle label: applied by recovery-engine / stuck-pr-sweep when
-  # mergeable_state is dirty, consumed by conflict-helper (fires on the label).
-  # Was applied by those workflows but missing here, so any PR that ever hit a
-  # conflict failed the Governance gate on its own recovery label (PR #17097).
   - name: has-conflicts
-  # Reviewer-bot escape hatch: jules-pr-reviewer.yml declares
-  # `bypass_label: jules-override` so a human can clear a false-positive
-  # blocking verdict, but the label was never allowlisted — using the
-  # documented bypass would itself turn the Governance gate red (PR #17097).
-  - name: jules-override
-  # Stuck-reviewer annotation applied by recovery-engine.yml when reviewers
-  # have been pending for >4h. Was applied by that workflow but missing here,
-  # so any PR the recovery engine tagged failed the Governance gate on its
-  # own annotation label (owner audit 2026-08-09). Same class of bug as
-  # `ready-to-merge` (fixed PR #17091) and `has-conflicts` (fixed PR #17097):
-  # a workflow applies a label, the allowlist doesn't know it, gate fails.
   - name: "review:stuck"
   - name: credentials-missing
   - name: credentials-ready
@@ -100,12 +85,6 @@ labels:
   - name: codex
   - name: "role:orchestrator"
   - name: "role:fixer"
-  # Ceremonial override role — grants any agent the authority to file a
-  # WR for a bug it discovered but did not introduce, without violating
-  # its task-scope guardrails. See standards/TRIAGE_ROLE_STANDARD.md.
-  # Codifies the pattern that "out of scope" is not a valid reason to
-  # ignore a bug; instead file a Triage-role WR and keep working.
-  - name: "role:triage"
   - name: needs-decision
   - name: "privilege:intern"
   - name: "privilege:associate"
@@ -119,6 +98,7 @@ labels:
   - name: noimosai
   - name: bnat
   - name: deep-research
+  - name: work-request
 
 aliases:
   "priority-p0": "priority:p0"
@@ -135,6 +115,7 @@ aliases:
   "wontfix": "wontfix"
   "won't-merge": "won't-merge"
   "awaiting-review": "in-review"
+  "waiting-for-review": "awaiting-approval"
   "review-started": "in-review"
   "review-fix:in-progress": "wr:code"
   "review-fix:complete": "checks-passing"
@@ -149,10 +130,18 @@ aliases:
   "sla:breached": "priority:p0"
   "sla:warning": "priority:p1"
   "triage:new": "triage"
+  "weekly-research": "research"
+  "dependabot": "dependencies"
+  "conflicts:needs-human": "has-conflicts"
+  "recovery:stale-wr": "wr:reset"
+  "recovery:gave-up": "needs-human"
+  "bito-ai": "automation"
+  "mindmappr": "automation"
 
   "status:checks-failing": "checks-failing"
   "status:checks-passing": "checks-passing"
   "status:checks-pending": "in-review"
+  "status:ready-to-merge": "ready-to-merge"
   "formal:structural_conflict": "formal:fail"
   "formal:duplicate_risk": "formal:fail"
   "formal:needs_reaudit": "formal:reaudit"

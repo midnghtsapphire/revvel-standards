@@ -1,0 +1,37 @@
+# flake8 config for revvel-standards (WR #15858).
+# CI entrypoint: .github/workflows/python-flake8.yml (py-actions/flake8@v2.3.0).
+# Gate behavior: scripts/flake8-baseline-gate.js ratchets against config/flake8-baseline.txt
+# so pre-existing debt does not red-main (GREEN_MAIN_STANDARD + WR explicit exclusion).
+# New path::CODE counts above baseline fail the build.
+
+[flake8]
+# Required style families from WR #15858: pycodestyle (E/W) + pyflakes (F).
+select = E,W,F
+# W503 and W504 are mutually exclusive: a multi-line binary expression breaks
+# either BEFORE the operator (W503) or AFTER it (W504), so with both selected
+# there is no compliant way to write one. `select = E,W,F` turned both on,
+# which is why the committed baseline carries 6 W503 *and* 4 W504 entries —
+# both halves of a rule that cannot be satisfied.
+#
+# flake8 disables both by default for exactly this reason. PEP 8 recommends
+# breaking before the operator (Knuth style), so W503 is the one to drop;
+# leaving W504 selected still enforces that choice consistently.
+extend-ignore = W503
+max-line-length = 120
+max-complexity = 15
+# Exclude only cache/vendor noise — never drop tests/, scripts/, tools/, or product code.
+exclude =
+    .git,
+    node_modules,
+    venv,
+    .venv,
+    __pycache__,
+    dist,
+    build,
+    .tox,
+    .mypy_cache,
+    .eggs,
+    *.egg-info,
+    .pytest_cache
+show-source = True
+statistics = True

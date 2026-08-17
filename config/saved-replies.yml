@@ -22,101 +22,64 @@ replies:
       @copilot mention hands the PR to the agent; it pushes the conflict
       resolution back to the same PR branch.
 
-  - key: owner-request-changes-before-approval
-    title: "Owner: request changes before I approve"
-    body: |-
-      I want to approve this, but first please:
-      - [ ] <specific change 1>
-      - [ ] <specific change 2>
-
-      Ping me back when done. Approval will follow.
+  # --- WR title starters (WR #16923) -----------------------------------------
+  # Paste into the issue TITLE box (or use products/wr-title-studio). For an
+  # already-open WR, comment `/wr-title` or `/wr-title force` instead.
+  - key: wr-title-regenerate
+    title: "WR title: regenerate (/wr-title)"
+    body: "/wr-title force"
     usage: >-
-      Owner uses this on a PR they intend to approve but not yet. Faster
-      than typing "please fix X and Y" freeform every time. Keeps the
-      request structured so the agent knows exactly what to change.
+      Post as an issue comment on a Work Request to force the wr-autotitle
+      workflow to rebuild the title from templates. Use when the current title
+      is messy, doubled, or still has /dragnet noise.
 
-  - key: owner-block-until-i-test
-    title: "Owner: do NOT merge — I need to test first"
-    body: |-
-      Please do NOT merge until I have tested this myself. Deploy the
-      preview URL and tag @midnghtsapphire when it is live. I will
-      approve or request changes after hands-on testing.
+  - key: wr-title-fleet
+    title: "WR title: Fleet maintenance"
+    body: "[WR] Fleet maintenance — <org/repo>"
     usage: >-
-      Owner uses this on PRs that touch a new product surface or a live
-      customer-facing flow. Explicit block on auto-merge for cases where
-      "green CI" is not sufficient — the owner has to click through the
-      real thing before ship.
+      Starter for recurring org/repo maintenance WRs. Replace <org/repo> before
+      submitting. Also available in config/wr-title-templates.yml starters.
 
-  - key: hand-off-to-openrouter-review
-    title: "Hand off: OpenRouter review"
-    body: "@openrouter review this PR against the security template"
+  - key: wr-title-wire-in
+    title: "WR title: Wire in"
+    body: "[WR] Wire in <tool-or-service>"
     usage: >-
-      Route a PR to the OpenRouter review lane (Opus 4.7 → DeepSeek R1
-      fallback per .github/agent-models.yml). Use when Octopus, Bito, or
-      Devin have already reviewed and a second, model-diverse pass is
-      wanted before merge.
+      Starter when integrating an external tool, GitHub Action, MCP server, or
+      service into revvel-standards.
 
-  - key: hand-off-to-devin-deep-review
-    title: "Hand off: Devin deep review"
-    body: "/devin deep-scan this PR for logic bugs and missing edge cases"
+  - key: wr-title-ship
+    title: "WR title: Ship to market"
+    body: "[WR] Ship to market — <product>"
     usage: >-
-      Route a PR to Devin for a deeper multi-file logic review. Devin is
-      paid per session (~ACUs) so this reply is deliberate opt-in — use
-      when a review needs cross-file reasoning that stateless reviewers
-      keep missing.
+      Starter for launch / store deploy / go-to-market packaging WRs.
 
-  - key: escalate-owner-decision-needed
-    title: "Escalate: owner decision needed"
-    body: |-
-      @midnghtsapphire this needs a decision from you before we can proceed.
-
-      Summary of what is blocking:
-      - <point 1>
-      - <point 2>
-
-      Options as I see them:
-      1. <option A — tradeoffs>
-      2. <option B — tradeoffs>
-
-      Recommended: <one of the above, with the one-sentence reason>
+  - key: wr-title-research
+    title: "WR title: Deep research"
+    body: "[WR] Deep research — <topic-or-url>"
     usage: >-
-      Any agent uses this when it hits an irreversible or ambiguous
-      choice — the ones AGENTS.md says must go to the owner (spending
-      money, deleting data, changing auth, or a genuinely ambiguous
-      call). Never file this for a reversible decision — make an
-      assumption, document it in ASSUMPTIONS.md, and keep going.
+      Starter for research-first WRs (tools, repos, markets). Prefer a short
+      topic; put long URLs in the Summary field, not the title.
 
-  - key: rescue-stuck-wr
-    title: "Rescue: WR is stuck, diagnose"
-    body: |-
-      /rescue this WR appears stuck. Please:
-      1. Enumerate every workflow that fired on it and its current status.
-      2. List the last 5 comments and who made them.
-      3. Identify the specific blocker (missing key / failed check /
-         waiting for owner / silent workflow / etc.).
-      4. Do NOT retry anything yet. Post the diagnostic first.
-
-      I will decide the next step from your diagnostic.
+  - key: wr-title-fix-ci
+    title: "WR title: Fix CI"
+    body: "[WR] Fix CI — <failing check>"
     usage: >-
-      Owner uses this on any WR that has gone quiet or looped. Forces a
-      diagnostic pass BEFORE any recovery action, so the fleet does not
-      thrash. Diagnostic-first is the pattern from
-      standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md.
+      Starter for broken checks, workflows, secrets, or gates.
 
-  - key: split-multi-idea-wr
-    title: "Split: this WR bundles multiple ideas"
-    body: |-
-      This WR contains multiple independent ideas that cannot be
-      atomically scored or shipped together. Splitting into separate WRs:
-
-      - [ ] Idea 1: <one-sentence summary> → new WR
-      - [ ] Idea 2: <one-sentence summary> → new WR
-      - [ ] Idea 3: <one-sentence summary> → new WR
-
-      Closing this WR as a bundle. Reopen the child WRs individually so
-      the fleet can score and sequence them.
+  - key: wr-title-add
+    title: "WR title: Add feature"
+    body: "[WR] Add <capability>"
     usage: >-
-      Use on WRs where a chat transcript or zip drop got dumped in as
-      one WR (grok pattern, see wr/templates/work/visiting-agent.md
-      known-mistakes list). Splitting is the correct response — the
-      fleet cannot RICE-score a bundle.
+      Starter for a new capability inside an existing system.
+
+  - key: wr-title-create
+    title: "WR title: Create product"
+    body: "[WR] Create <product-or-engine>"
+    usage: >-
+      Starter for greenfield product / app / engine WRs.
+
+  - key: wr-title-implement
+    title: "WR title: Implement"
+    body: "[WR] Implement <spec-or-feature>"
+    usage: >-
+      Starter when a spec already exists and the work is to build it.

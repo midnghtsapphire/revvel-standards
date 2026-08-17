@@ -57,7 +57,7 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | `resend` (Resend) | ✅ verified | key | transactional-email | — | — | — |
 | `revenuecat` (RevenueCat) | ✅ verified | paid | subscriptions, iap | — | — | — |
 | `tavily` (Tavily) | ✅ verified | key | web-search | — | — | — |
-| `xai` (xAI / Grok) | ✅ verified | key | motu-bnat-controller, xai-code-review | — | xai-code-review.yml | — |
+| `xai` (xAI / Grok) | ✅ verified | key | motu-bnat-controller | — | — | — |
 
 ## Libraries
 
@@ -71,8 +71,9 @@ Every tool, API, MCP server, CLI, agent, and GitHub app in the fleet, and what e
 | --- | :---: | :---: | --- | --- | --- | --- |
 | `augment` (Augment Code) | ✅ verified | key | code-review | github | augment-check.yml | — |
 | `bito` (Bito AI) | ✅ verified | key | code-review | github | bito-ai.yml | — |
+| `mergeme` (MergeMe (mergeme.dev)) | ✅ verified | oauth | pr-slack-cards, review-thread-mirroring, mention-routing | github, slack | mergeme-status.yml, products/mergeme-status | Slack PR cards (one updating message per PR). Repo-side wiring audited by scripts/mergeme-wiring.js (WR #16824). GitHub App + Slack OAuth installed at https://mergeme.dev / marketplace — no MERGEME_API_KEY in this repo. |
 | `octopus` (Octopus Review) | ✅ verified | paid | pr-review | github | octopus-route.yml, octopus-cli.yml | Owner: found several different error classes in a single review. Currently over monthly AI quota — needs own API keys. |
 | `stacker-bot` (Stacker (stacked PRs)) | ✅ verified | free | stacked-prs, pr-toc, merge-order-guard | github | stacker-bot[bot], docs/STACKER_BOT_INSTALLATION.md | Free stacked-PR GitHub App (installation 150619571). Bot login stacker-bot[bot]. Pairs with the stacker CLI (brew tap stackedpr/stacker). See docs/STACKER_BOT_INSTALLATION.md and skills/stacker-bot/SKILL.md. Complementary to Graphite (docs/GRAPHITE_INTEGRATION.md); Stacker is the free, already-installed lane for splitting large agent diffs. |
 | `vercel` (Vercel) | ✅ verified | oauth | preview-deploys, production-deploys, hosting | github | vercel-bot | Deploys a preview on every PR (observed via vercel[bot]). |
 
-*Last generated: 2026-08-08 from `config/connections.yml`.*
+*Last generated: 2026-08-05 from `config/connections.yml`.*
