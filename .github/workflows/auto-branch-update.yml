@@ -41,13 +41,13 @@ jobs:
         with:
           # Full history required for clean merges; write-capable token to push.
           fetch-depth: 0
-          token: ${{ secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.AGENT_PR_TOKEN || github.token }}
 
       - name: Collect PR branches to update
         id: collect
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.AGENT_PR_TOKEN || github.token }}
           script: |
             const { owner, repo } = context.repo;
 
