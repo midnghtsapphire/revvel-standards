@@ -1,6 +1,4 @@
-name: Conflict Helper
-# name: Merge Conflict Helper  # <- duplicate `name:` key from a bad merge; second key
-#   made the whole file unparseable (Workflow Lint red repo-wide). Kept commented.
+name: Merge Conflict Helper
 
 # ── Four-lane conflict resolver: annotate → mechanical → Jules → human ─────
 # When a PR shows conflicts, the GitHub web UI offers "current / incoming /
@@ -57,102 +55,101 @@ permissions:
   issues: write
   actions: write
 
-# REVVEL-DISABLED | AGENT: claude-code | MODEL: claude-5 | WR: fleet-cleanup-2026-08-16 | DATE: 2026-08-16 | STATUS: REPLACED
-# REASON: a bad merge concatenated two versions of this workflow. This first
-# `jobs:` block (gate + resolve) is a TRUNCATED fragment — its `resolve` job
-# cuts off mid-step — and its duplicate keys made the whole file unparseable
-# YAML, turning Workflow Lint red on every PR in the repo. The complete
-# self-contained `analyze` job below (second document's body) is the live
-# implementation. Fragment preserved as comments per RVS-AGENT-001:
-# jobs:
-#   gate:
-#     name: Gate (slash-command or PR event)
-#     runs-on: ubuntu-latest
-#     outputs:
-#       should_run: ${{ steps.decide.outputs.should_run }}
-#       pr_number: ${{ steps.decide.outputs.pr_number }}
-#     steps:
-#       - name: Decide whether to run
-#         id: decide
-#         env:
-#           EVENT_NAME: ${{ github.event_name }}
-#           COMMENT_BODY: ${{ github.event.comment.body }}
-#           COMMENT_AUTHOR_ASSOC: ${{ github.event.comment.author_association }}
-#           IS_PR_COMMENT: ${{ github.event.issue.pull_request != null }}
-#           ISSUE_NUMBER: ${{ github.event.issue.number }}
-#           PR_NUMBER_EVENT: ${{ github.event.pull_request.number }}
-#           PR_NUMBER_INPUT: ${{ github.event.inputs.pr_number }}
-#         run: |
-#           set -euo pipefail
-#           case "$EVENT_NAME" in
-#             pull_request)
-#               echo "should_run=true" >> "$GITHUB_OUTPUT"
-#               echo "pr_number=$PR_NUMBER_EVENT" >> "$GITHUB_OUTPUT"
-#               ;;
-#             workflow_dispatch)
-#               echo "should_run=true" >> "$GITHUB_OUTPUT"
-#               echo "pr_number=$PR_NUMBER_INPUT" >> "$GITHUB_OUTPUT"
-#               ;;
-#             issue_comment)
-#               if [ "$IS_PR_COMMENT" != "true" ]; then
-#                 echo "should_run=false" >> "$GITHUB_OUTPUT"
-#                 exit 0
-#               fi
-#               # Match /resolve or /resolve-conflicts at start of a line
-#               if ! echo "$COMMENT_BODY" | grep -qE '^/resolve(-conflicts)?[[:space:]]*$'; then
-#                 echo "should_run=false" >> "$GITHUB_OUTPUT"
-#                 exit 0
-#               fi
-#               # Gate to trusted roles
-#               case "$COMMENT_AUTHOR_ASSOC" in
-#                 OWNER|MEMBER|COLLABORATOR)
-#                   echo "should_run=true" >> "$GITHUB_OUTPUT"
-#                   echo "pr_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
-#                   ;;
-#                 *)
-#                   echo "Rejecting slash-command from author_association=$COMMENT_AUTHOR_ASSOC"
-#                   echo "should_run=false" >> "$GITHUB_OUTPUT"
-#                   ;;
-#               esac
-#               ;;
-#             *)
-#               echo "should_run=false" >> "$GITHUB_OUTPUT"
-#               ;;
-#           esac
-#
-#   resolve:
-#     name: Attempt conflict resolution
-#     needs: gate
-#     if: needs.gate.outputs.should_run == 'true'
-#     runs-on: ubuntu-latest
-#     env:
-#       PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
-#       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#     steps:
-#       - name: Resolve PR context
-#         id: pr
-#         run: |
-#           set -euo pipefail
-#           data=$(gh api "repos/${{ github.repository }}/pulls/${PR_NUMBER}")
-#           head_ref=$(echo "$data" | jq -r .head.ref)
-#           head_sha=$(echo "$data" | jq -r .head.sha)
-#           head_repo=$(echo "$data" | jq -r .head.repo.full_name)
-#           base_ref=$(echo "$data" | jq -r .base.ref)
-#           mergeable=$(echo "$data" | jq -r .mergeable)
-#           echo "head_ref=$head_ref"     >> "$GITHUB_OUTPUT"
-#           echo "head_sha=$head_sha"     >> "$GITHUB_OUTPUT"
-#           echo "head_repo=$head_repo"   >> "$GITHUB_OUTPUT"
-#           echo "base_ref=$base_ref"     >> "$GITHUB_OUTPUT"
-#           echo "mergeable=$mergeable"   >> "$GITHUB_OUTPUT"
-#
-#       - name: Checkout PR head
-#         uses: actions/checkout@v4
-#         with:
-#           repository: ${{ steps.pr.outputs.head_repo }}
-#           ref: ${{ steps.pr.outputs.head_ref }}
-#   actions: write         # needed by "gh workflow run" to dispatch Jules
-#
-# REVVEL-DISABLED-END
+jobs:
+  gate:
+    name: Gate (slash-command or PR event)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      should_run: ${{ steps.decide.outputs.should_run }}
+      pr_number: ${{ steps.decide.outputs.pr_number }}
+    steps:
+      - name: Decide whether to run
+        id: decide
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_AUTHOR_ASSOC: ${{ github.event.comment.author_association }}
+          IS_PR_COMMENT: ${{ github.event.issue.pull_request != null }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          PR_NUMBER_EVENT: ${{ github.event.pull_request.number }}
+          PR_NUMBER_INPUT: ${{ github.event.inputs.pr_number }}
+        run: |
+          set -euo pipefail
+          case "$EVENT_NAME" in
+            pull_request)
+              echo "should_run=true" >> "$GITHUB_OUTPUT"
+              echo "pr_number=$PR_NUMBER_EVENT" >> "$GITHUB_OUTPUT"
+              ;;
+            workflow_dispatch)
+              echo "should_run=true" >> "$GITHUB_OUTPUT"
+              echo "pr_number=$PR_NUMBER_INPUT" >> "$GITHUB_OUTPUT"
+              ;;
+            issue_comment)
+              if [ "$IS_PR_COMMENT" != "true" ]; then
+                echo "should_run=false" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+              # Match /resolve or /resolve-conflicts at start of a line
+              if ! echo "$COMMENT_BODY" | grep -qE '^/resolve(-conflicts)?[[:space:]]*$'; then
+                echo "should_run=false" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+              # Gate to trusted roles
+              case "$COMMENT_AUTHOR_ASSOC" in
+                OWNER|MEMBER|COLLABORATOR)
+                  echo "should_run=true" >> "$GITHUB_OUTPUT"
+                  echo "pr_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+                  ;;
+                *)
+                  echo "Rejecting slash-command from author_association=$COMMENT_AUTHOR_ASSOC"
+                  echo "should_run=false" >> "$GITHUB_OUTPUT"
+                  ;;
+              esac
+              ;;
+            *)
+              echo "should_run=false" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
+  resolve:
+    name: Attempt conflict resolution
+    needs: gate
+    if: needs.gate.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Resolve PR context
+        id: pr
+        run: |
+          set -euo pipefail
+          data=$(gh api "repos/${{ github.repository }}/pulls/${PR_NUMBER}")
+          head_ref=$(echo "$data" | jq -r .head.ref)
+          head_sha=$(echo "$data" | jq -r .head.sha)
+          head_repo=$(echo "$data" | jq -r .head.repo.full_name)
+          base_ref=$(echo "$data" | jq -r .base.ref)
+          mergeable=$(echo "$data" | jq -r .mergeable)
+          echo "head_ref=$head_ref"     >> "$GITHUB_OUTPUT"
+          echo "head_sha=$head_sha"     >> "$GITHUB_OUTPUT"
+          echo "head_repo=$head_repo"   >> "$GITHUB_OUTPUT"
+          echo "base_ref=$base_ref"     >> "$GITHUB_OUTPUT"
+          echo "mergeable=$mergeable"   >> "$GITHUB_OUTPUT"
+
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.pr.outputs.head_repo }}
+          ref: ${{ steps.pr.outputs.head_ref }}
+  actions: write         # needed by "gh workflow run" to dispatch Jules
+
+  analyze:
+    name: Run conflict resolver (annotate → mechanical → Jules)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
 concurrency:
   # PR number lives on `pull_request` events; on `issue_comment` events it
   # is `github.event.issue.number` (PRs are addressable as issues). Fall
@@ -164,7 +161,6 @@ concurrency:
     }}
   cancel-in-progress: true
 
-jobs:
   analyze:
     name: Run conflict resolver (annotate → mechanical → Jules)
     runs-on: ubuntu-latest
@@ -383,28 +379,26 @@ jobs:
           marker="<!-- conflict-helper:sticky -->"
           p2="${PHASE2_OUTCOME:-not-attempted}"
           p3="${PHASE3_DISPATCHED:-not-attempted}"
-          # Body assembled with printf instead of a heredoc: the heredoc's
-          # column-1 content terminated the `run: |` block scalar and made the
-          # whole file unparseable YAML (Workflow Lint red repo-wide), and an
-          # indented terminator can't work without tabs (banned here).
-          body=$(printf '%s\n' \
-            "$marker" \
-            "### Conflict Helper — outcome" \
-            "" \
-            "$EMOJI $HEADLINE" \
-            "" \
-            "**Your job:** $JOB" \
-            "" \
-            "<details><summary>Phase details</summary>" \
-            "" \
-            "- Phase 2 (mechanical) outcome: \`$p2\`" \
-            "- Phase 3 (Jules) dispatched: \`$p3\`" \
-            "- Phase decision: \`$PHASE_DECISION\`" \
-            "- Run: [$GITHUB_RUN_ID](https://github.com/${{ github.repository }}/actions/runs/$GITHUB_RUN_ID)" \
-            "" \
-            "</details>" \
-            "" \
-            "<sub>Trigger a retry by commenting \`/resolve\` on this PR.</sub>")
+          body=$(cat <<EOF
+          $marker
+          ### Conflict Helper — outcome
+
+          $EMOJI $HEADLINE
+
+          **Your job:** $JOB
+
+          <details><summary>Phase details</summary>
+
+          - Phase 2 (mechanical) outcome: \`$p2\`
+          - Phase 3 (Jules) dispatched: \`$p3\`
+          - Phase decision: \`$PHASE_DECISION\`
+          - Run: [$GITHUB_RUN_ID](https://github.com/${{ github.repository }}/actions/runs/$GITHUB_RUN_ID)
+
+          </details>
+
+          <sub>Trigger a retry by commenting \`/resolve\` on this PR.</sub>
+          EOF
+          )
           existing=$(gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
             --jq ".[] | select(.body | contains(\"$marker\")) | .id" | head -n1 || true)
           if [ -n "$existing" ]; then

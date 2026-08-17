@@ -14,7 +14,6 @@ const sections: { id: string; title: string; paragraphs: string[] }[] = [
     paragraphs: [
       "Revvel / MIDNGHTSAPPHIRE operates this general-wellness dosage calculator. It is not a medical device and does not diagnose, treat, cure, or prevent any condition.",
       "We are not a HIPAA covered entity or business associate at launch. Consumer health privacy rules, including the FTC Health Breach Notification Rule, may still apply.",
-      "We do not claim HIPAA compliance: we do not claim that this Service is HIPAA-compliant, HIPAA-certified, or governed by HIPAA at launch. This is a direct-to-consumer wellness tool, and calculator inputs are processed in your browser.",
     ],
   },
   {

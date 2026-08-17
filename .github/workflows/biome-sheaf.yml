@@ -43,22 +43,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
         run: node scripts/biome/sheaf.js
 
-      # Additive BNAT companion (WR-16909): topological fingerprint beside the
-      # BIOME feed. Never mutates biome-status.json schema; credit-free pure JS.
-      # Exit code of fingerprint reflects consistency — do not fail the sheaf
-      # job on obstruction (fail-open monitor); the file still records the tear.
-      - name: Generate BNAT topological fingerprint
-        run: |
-          node scripts/bnatsheaf/cli.js fingerprint \
-            --status docs/biome/biome-status.json \
-            --out docs/biome/bnat-fingerprint.json \
-            || echo "::warning::BNAT fingerprint reports obstruction (recorded in companion file)"
-
       - name: Commit feed if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/biome/biome-status.json docs/biome/biome-status.html docs/biome/bnat-fingerprint.json
+          git add docs/biome/biome-status.json docs/biome/biome-status.html
           if git diff --cached --quiet; then
             echo "No status change."
           else
@@ -69,7 +58,7 @@ jobs:
             # we log a warning and exit 0 so the scheduler never wedges the fleet.
             git push && echo "feed committed to main" || {
               echo "::warning::Direct push blocked by branch protection — retrying via Contents API"
-              for f in docs/biome/biome-status.json docs/biome/biome-status.html docs/biome/bnat-fingerprint.json; do
+              for f in docs/biome/biome-status.json docs/biome/biome-status.html; do
                 [ -f "$f" ] || continue
                 existing_sha=$(gh api "repos/${GH_REPO}/contents/${f}" --jq '.sha' 2>/dev/null || true)
                 b64=$(base64 "$f" | tr -d '\n')

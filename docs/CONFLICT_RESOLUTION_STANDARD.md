@@ -63,11 +63,11 @@ Useful when:
 
 ## 9. Outcome labels
 
-| Label                        | Meaning                                          |
-| ---------------------------- | ------------------------------------------------ |
-| `conflicts:auto-resolved`    | Phase 2 succeeded (or no conflicts existed).     |
-| `conflicts:needs-jules`      | Handed off to Jules; wait for it.                |
-| `conflicts:needs-human`      | Neither mechanical nor Jules dispatch succeeded. |
+| Label                     | Meaning                                          |
+| ------------------------- | ------------------------------------------------ |
+| `conflicts:auto-resolved` | Phase 2 succeeded (or no conflicts existed).     |
+| `conflicts:needs-jules`   | Handed off to Jules; wait for it.                |
+| `conflicts:needs-human`   | Neither mechanical nor Jules dispatch succeeded. |
 
 Bookmark this URL for the "PRs I need to touch" view:
 
@@ -77,7 +77,7 @@ https://github.com/OWNER/REPO/pulls?q=is%3Apr+is%3Aopen+label%3Aconflicts%3Aneed
 
 ## 10. Sticky-comment anatomy
 
-```text
+```markdown
 ### Conflict Helper — outcome
 
 <emoji> <headline>
@@ -132,11 +132,11 @@ Useful when:
 After every run, the workflow applies exactly one of these labels so the PR
 list becomes filterable:
 
-| Label | Meaning | Your action |
-| --- | --- | --- |
-| `conflicts:auto-resolved` | Phase 2 fixed everything and pushed a commit | Wait for CI, then merge |
-| `conflicts:needs-jules` | Phase 2 handed leftovers to Jules and dispatch succeeded | Wait for Jules to push |
-| `conflicts:needs-human` | Everything else — script errored, or Jules dispatch failed, or Jules already tried and quit | You resolve manually |
+| Label                     | Meaning                                                                                     | Your action             |
+| ------------------------- | ------------------------------------------------------------------------------------------- | ----------------------- |
+| `conflicts:auto-resolved` | Phase 2 fixed everything and pushed a commit                                                | Wait for CI, then merge |
+| `conflicts:needs-jules`   | Phase 2 handed leftovers to Jules and dispatch succeeded                                    | Wait for Jules to push  |
+| `conflicts:needs-human`   | Everything else — script errored, or Jules dispatch failed, or Jules already tried and quit | You resolve manually    |
 
 Bookmark this URL for a one-click "PRs I need to touch" view:
 
@@ -165,7 +165,7 @@ The workflow surrenders. You have three choices:
    button, edit each hunk, mark resolved, commit. This is the "brute force"
    answer that always works.
 2. **Rebase-then-force-push** — if you have a git client handy, `git rebase
-   origin/main`, resolve the few hunks Jules couldn't, force-push. Cleaner
+origin/main`, resolve the few hunks Jules couldn't, force-push. Cleaner
    history, but requires CLI.
 3. **Retry Jules** — if the dispatch failed for a fixable reason (secret was
    missing, workflow file broke, rate limit), fix the root cause and comment

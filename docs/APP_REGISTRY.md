@@ -40,7 +40,6 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/music-video-creator` | video, subscription | Accessibility, Affiliate, Newsletter | ✅ |
 | `products/revvel-skill-runner` | skill/runtime, CLI | Accessibility, AffiliateMarketing, Newsletter | ✅ |
 | `products/graphify-evaluator` | evaluator/affiliate | Accessibility, Affiliate, Newsletter | ✅ |
-| `products/greenfield-ui-lab` | research lab / idea board | Board columns, day wallet, export | ✅ (WR #16931) |
 | `products/affiliate-hub` | affiliate, lead | — | needs review |
 | `products/ai-video-toolkit` | video, lead | — | needs review |
 | `products/cli-engine` | subscription, SaaS, CLI/MCP | — | needs review |
