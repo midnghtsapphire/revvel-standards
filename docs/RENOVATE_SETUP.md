@@ -131,3 +131,59 @@ were run before opening this PR:
    `matchCurrentVulnerability` packageRules selector — both were removed;
    Renovate prioritizes vulnerability-fix PRs automatically without needing
    either. Final run: `INFO: Config validated successfully`.
+
+### CI validation (automated)
+
+Manual `npx` is still the offline / pre-push check. CI now runs the same
+validator automatically via:
+
+- **Workflow:** [`.github/workflows/renovate-config-validator.yml`](../.github/workflows/renovate-config-validator.yml)
+- **Reusable template:** [`templates/cicd/renovate-config-validator.yml`](../templates/cicd/renovate-config-validator.yml)
+- **Action:** [`suzuki-shunsuke/github-action-renovate-config-validator@v2.1.0`](https://github.com/suzuki-shunsuke/github-action-renovate-config-validator)
+  (pinned to the full commit SHA for tag `v2.1.0`)
+
+| Trigger | When it runs |
+| --- | --- |
+| `pull_request` | Paths include any common Renovate config file or the workflow itself |
+| `push` to `main` | Same path filters |
+| `workflow_dispatch` | Manual re-run from the Actions tab |
+
+The job is named **Validate Renovate Configuration**. It:
+
+1. Checks that `.github/renovate.json5` exists (fail-fast with an
+   actionable `::error::` if the file was renamed without updating the
+   workflow).
+2. Runs the validator in **strict** mode with **npm cache** enabled
+   (the v2.1.0 default — reduces install time and npm rate-limit pressure).
+
+**Failure modes (by design — do not weaken these):**
+
+| Condition | Result |
+| --- | --- |
+| Unknown / invalid Renovate option | Job fails; log names the bad key |
+| Config file path missing | Presence-guard step fails before the action runs |
+| npm cannot install `renovate` | Action step fails (no silent pass) |
+| Valid config | Job green — `INFO: Config validated successfully` |
+
+### Prior art and alternatives
+
+| Approach | Notes | Chosen? |
+| --- | --- | --- |
+| `npx -p renovate renovate-config-validator` (local) | Already used when authoring `.github/renovate.json5`; remains the offline fallback | Complementary |
+| `suzuki-shunsuke/github-action-renovate-config-validator@v2.1.0` | Node 24 + `~/.npm` cache; thin wrapper around the same CLI | **Yes (this WR)** |
+| `tj-actions/renovate-config-validator` (WR #15812) | Alternate marketplace action; not the pin this WR requires | No |
+| Custom shell that greps keys | Brittle vs Renovate's real schema | No |
+
+### How to re-run or extend
+
+1. **Manual CI run:** GitHub → Actions → **Renovate Config Validator** →
+   **Run workflow**.
+2. **Validate another path:** set `config_file_path` (multi-line supported)
+   in the workflow `with:` block, and add the path to both `paths:` filters.
+3. **Consumer repos:** copy `templates/cicd/renovate-config-validator.yml`
+   into `.github/workflows/` and point `config_file_path` at that repo's
+   Renovate config.
+4. **Upgrade the action:** resolve the new tag's commit SHA, update the
+   `uses:` pin and the trailing `# vX.Y.Z` comment together, and keep the
+   entry in `ACCEPTED_SINGLE_AUTHOR_ACTIONS` inside
+   `scripts/audit-third-party-actions.sh`.
