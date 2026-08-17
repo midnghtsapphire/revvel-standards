@@ -73,7 +73,7 @@ Bookmark this URL for the "PRs I need to touch" view:
 
 ```text
 https://github.com/OWNER/REPO/pulls?q=is%3Apr+is%3Aopen+label%3Aconflicts%3Aneeds-human
-```text
+```
 
 ## 10. Sticky-comment anatomy
 
@@ -90,7 +90,7 @@ https://github.com/OWNER/REPO/pulls?q=is%3Apr+is%3Aopen+label%3Aconflicts%3Aneed
 - Phase decision: `no-conflicts` | `resolved` | `jules-dispatched` | `needs-human`
 - Run: link to the Actions run
 </details>
-```text
+```
 
 ## 11. When the workflow surrenders
 
@@ -142,7 +142,7 @@ Bookmark this URL for a one-click "PRs I need to touch" view:
 
 ```text
 https://github.com/midnghtsapphire/revvel-standards/pulls?q=is%3Apr+is%3Aopen+label%3Aconflicts%3Aneeds-human
-```text
+```
 
 ## 10. What the sticky comment tells you
 
