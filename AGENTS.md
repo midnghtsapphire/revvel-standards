@@ -160,6 +160,7 @@ collisions:
 | FDA Design Controls | `products/fda-design-controls` | 3010 | Next.js. Interactive 21 CFR 820.30 compliance checklist and DHF generator with Markdown/CSV export. |
 | MedDevice Compliance Navigator | `products/meddevice-compliance-navigator` | 3010 | Next.js. Medical device compliance tracker: FDA 510(k), ISO 13485, IEC 60601, ISO 10993, EU MDR pathways. |
 | DevOps Dashboard | `products/devops-dashboard` | 3011 | Next.js. Real-time DevOps monitoring: self-healing PRs, CI/CD pipeline health, agent status, workflow run history. |
+| WR Title Studio | `products/wr-title-studio` | 3012 | Next.js. Autocreate clean generic `[WR]` titles from messy drafts; keyless template engine. |
 | GOAP Swarm Console | `products/goap-swarm-console` | 3012 | Next.js. Symbolic GOAP planner + swarm allocator, research eval, Markdown/CSV export. |
 | GoSQLX SQL Linter | `products/gosqlx-sql-linter` | 3012 | Next.js. Multi-dialect SQL lint playground + API aligned with GoSQLX rules; CI twin of `.github/workflows/gosqlx-lint.yml`. |
 | Self-Optimizing Star Magnet | `products/self-optimizing-star-magnet` | 3012 | Next.js. TOS-compliant organic GitHub star growth dashboard + hourly prioritization engine. |
@@ -188,6 +189,7 @@ cd products/red-light-therapy-dosage-calculator && npm run dev -- -p 3010
 cd products/fda-design-controls  && npm run dev -- -p 3010
 cd products/meddevice-compliance-navigator && npm run dev -- -p 3010
 cd products/devops-dashboard     && npm run dev -- -p 3011
+cd products/wr-title-studio      && npm run dev -- -p 3012
 cd products/gosqlx-sql-linter    && npm run dev -- -p 3012
 cd products/self-optimizing-star-magnet && npm run dev -- -p 3012
 cd products/easy-env-vars        && npm run dev -- -p 3012
