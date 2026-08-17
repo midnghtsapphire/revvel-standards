@@ -1,45 +1,66 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-17T14:07:38.528Z",
+  "generated_at": "2026-08-17T16:05:47.258Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "summary": "7/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 7,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32037877823,
-            "name": "label-allowlist",
-            "path": ".github/workflows/label-allowlist.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037877823",
+            "id": 32043722368,
+            "name": "PR Lifecycle",
+            "path": ".github/workflows/pr-lifecycle.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32043722368",
             "conclusion": "failure"
           },
           {
-            "id": 32037877064,
-            "name": "PR & Issue Recovery Engine",
-            "path": ".github/workflows/recovery-engine.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037877064",
+            "id": 32043246890,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32043246890",
             "conclusion": "failure"
           },
           {
-            "id": 32037844404,
-            "name": "Intelligent Code Quality Scanner",
-            "path": ".github/workflows/ship-quality.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037844404",
+            "id": 32043246772,
+            "name": "Issue State Machine",
+            "path": ".github/workflows/issue-state-machine.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32043246772",
             "conclusion": "failure"
           },
           {
-            "id": 32037844400,
-            "name": "Neon Preview Branch",
-            "path": ".github/workflows/neon-branch.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037844400",
+            "id": 32043239067,
+            "name": "Duplicate WR and PR Detector",
+            "path": ".github/workflows/duplicate-detector.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32043239067",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32043239049,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32043239049",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32043219406,
+            "name": "Fleet Controller",
+            "path": ".github/workflows/fleet-controller.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32043219406",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32043194727,
+            "name": "OpenRouter Auto-Route",
+            "path": ".github/workflows/openrouter-auto-route.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32043194727",
             "conclusion": "failure"
           }
         ],

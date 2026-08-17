@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import os
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Sequence
 
@@ -31,8 +31,8 @@ from .config import (
     DEFAULT_JUDGE_COUNT,
     select_judges,
 )
-from .judges import JudgeClient, JudgeLane, parse_json_object
-from .ledger import FailureLedger, default_ledger_path
+from .judges import JudgeClient, parse_json_object
+from .ledger import FailureLedger
 
 
 SYSTEM_STRUCTURE = (

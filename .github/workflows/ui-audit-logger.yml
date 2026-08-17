@@ -13,10 +13,10 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.1.7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4.0.3
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "20"
 
@@ -29,19 +29,37 @@ jobs:
 
       - name: Validate Design Tokens
         run: |
-          # packages/style-dictionary/tokens/tokens.json is the canonical source.
-          # The root tokens.json is legacy; validate both so neither silently drifts.
+          set -euo pipefail
+          # A file-existence check is not validation: it passes on a token file
+          # that is empty, malformed, or missing every group the consumers read
+          # (CLAUDE.md gotcha 6 — assert, do not comment). Run the real
+          # validator and let its exit code gate the job.
+          #
+          # packages/style-dictionary/tokens/tokens.json is the canonical
+          # source; the root tokens.json is a legacy artifact. Validate both so
+          # neither silently drifts.
+          # Two token files in two different formats:
+          #   tokens.json                                  {$schema,name,version,tokens}
+          #   packages/style-dictionary/tokens/tokens.json {color,spacing,radii}
+          # scripts/validate-design-tokens.js is written for the first (see its
+          # header). Running it against the Style Dictionary source reports
+          # bogus "missing name/version/tokens" errors, so it is not applied
+          # there.
           pkg_tokens="packages/style-dictionary/tokens/tokens.json"
-          if [ -f "$pkg_tokens" ]; then
-            echo "✅ Canonical design tokens ($pkg_tokens) present and verified."
-          else
-            echo "❌ ERROR: canonical token source $pkg_tokens missing!" >&2
+          if [ ! -f "$pkg_tokens" ]; then
+            echo "::error::canonical token source $pkg_tokens is missing"
             exit 1
           fi
+          # Presence-only for the Style Dictionary source: no schema validator
+          # for that format exists in this repo yet. Stated plainly rather than
+          # dressed up as verification — see the gap noted in the PR.
+          echo "::notice::$pkg_tokens present (format not schema-validated — no validator for Style Dictionary format yet)"
+
           if [ -f "tokens.json" ]; then
-            echo "✅ Legacy root tokens.json present (legacy artifact — safe to remove once all consumers point to the package source)."
+            node scripts/validate-design-tokens.js tokens.json
           else
-            echo "⚠️ Note: legacy root tokens.json not present (it is no longer required by this workflow)."
+            echo "::error::tokens.json is missing — the design-token gate has nothing to validate"
+            exit 1
           fi
 
       - name: Report Token & UI Build Telemetry
