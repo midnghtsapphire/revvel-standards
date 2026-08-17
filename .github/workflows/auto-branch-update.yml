@@ -17,8 +17,14 @@ on:
         required: false
         default: ""
 
+# A run pushes to every open PR branch, so two overlapping runs race each
+# other on the same refs. Keying the group on `github.run_id` made it unique
+# per run, which meant the group never actually serialised anything: rapid
+# pushes to main spawned concurrent runs that each merged and pushed, and the
+# losers retried on top, producing long chains of "Merge remote-tracking
+# branch 'origin/main'" commits. A static group queues runs instead.
 concurrency:
-  group: auto-branch-update-${{ github.run_id }}
+  group: auto-branch-update
   cancel-in-progress: false
 
 permissions:
@@ -35,16 +41,27 @@ jobs:
         with:
           # Full history required for clean merges; write-capable token to push.
           fetch-depth: 0
-          token: ${{ secrets.AGENT_PR_TOKEN != '' && secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Collect PR branches to update
         id: collect
         uses: actions/github-script@v9.0.0
         with:
-          github-token: ${{ secrets.AGENT_PR_TOKEN != '' && secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            const inputPR = '${{ github.event.inputs.pr_number }}';
+            const inputPR = '${{ inputs.pr_number }}';
+
+            // Fetch every open PR, not just the ones based on main. We need the
+            // full set to identify stacks: any branch that another open PR uses
+            // as its base is a stack parent.
+            const allOpen = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: 'open', per_page: 100,
+            });
+
+            const stackParents = new Set(
+              allOpen.map(pr => pr.base.ref).filter(ref => ref !== 'main')
+            );
 
             let prs;
             if (inputPR) {
@@ -53,15 +70,27 @@ jobs:
               });
               prs = pr.state === 'open' ? [pr] : [];
             } else {
-              const { data } = await github.rest.pulls.list({
-                owner, repo, state: 'open', base: 'main', per_page: 100,
-              });
-              prs = data;
+              prs = allOpen.filter(pr => pr.base.ref === 'main');
             }
 
-            const targets = prs
-              .filter(pr => !pr.draft)
-              .map(pr => ({ number: pr.number, branch: pr.head.ref }));
+            // Stacked pull requests are updated by replaying their commits onto
+            // the latest base (rebase), never by taking a merge. Merging main
+            // into one level of a stack while leaving the other level untouched
+            // is what desynchronises the two and produces add/add conflicts on
+            // the same file — see #17653/#17657 and #17592/#17600.
+            const targets = [];
+            for (const pr of prs) {
+              if (pr.draft) continue;
+              if (pr.base.ref !== 'main') {
+                core.info(`skip #${pr.number}: stacked on ${pr.base.ref} — rebase, do not merge`);
+                continue;
+              }
+              if (stackParents.has(pr.head.ref)) {
+                core.info(`skip #${pr.number}: ${pr.head.ref} is the base of another open PR`);
+                continue;
+              }
+              targets.push({ number: pr.number, branch: pr.head.ref });
+            }
 
             core.setOutput('targets', JSON.stringify(targets));
             core.info(`Branches to update: ${targets.map(t => t.branch).join(', ') || '(none)'}`);
