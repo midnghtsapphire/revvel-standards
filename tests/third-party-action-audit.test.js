@@ -24,6 +24,13 @@ test('stale audited actions are removed or explicitly dispositioned', () => {
   const createIssueBranch = read('.github/workflows/create-issue-branch.yml');
   assert.match(createIssueBranch, /robvanderleek\/create-issue-branch@[0-9a-f]{40}/);
 
+  // WR #15811: renovate-config-validator is single-author; pin + allowlist required.
+  const renovateValidator = read('.github/workflows/renovate-config-validator.yml');
+  assert.match(
+    renovateValidator,
+    /suzuki-shunsuke\/github-action-renovate-config-validator@[0-9a-f]{40}/
+  );
+
   const auditScript = read('scripts/audit-third-party-actions.sh');
   assert.match(auditScript, /ACCEPTED_SINGLE_AUTHOR_ACTIONS=\(/);
   assert.match(auditScript, /robvanderleek\/create-issue-branch/);
@@ -34,4 +41,5 @@ test('stale audited actions are removed or explicitly dispositioned', () => {
   assert.match(easyEnv, /briantist\/ezenv@[0-9a-f]{40}/);
   // Issue #16876 — xAI Code Review marketplace action (SHA-pinned, soft-skip).
   assert.match(auditScript, /tarmojussila\/xai-code-review/);
+  assert.match(auditScript, /suzuki-shunsuke\/github-action-renovate-config-validator/);
 });
