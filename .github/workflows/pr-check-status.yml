@@ -138,11 +138,17 @@ jobs:
               const names = prLabels.map((l) => l.name);
               const approved = names.includes('approved');
 
+              // removeLabel is not idempotent (CLAUDE.md gotcha 1). A blanket
+              // catch also swallows 401/403, so a token that has lost label
+              // permission looks exactly like a label that was already gone
+              // and the PR silently keeps a stale state. Swallow 404 only.
+              const dropLabel = (name) =>
+                github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name })
+                  .catch((err) => { if (err.status !== 404) throw err; });
+
               if (desired === 'passing') {
                 if (names.includes('checks-failing')) {
-                  try {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'checks-failing' });
-                  } catch (e) { /* already gone */ }
+                  await dropLabel('checks-failing');
                 }
                 if (!names.includes('checks-passing')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['checks-passing'] });
@@ -153,17 +159,13 @@ jobs:
                 }
               } else {
                 if (names.includes('checks-passing')) {
-                  try {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'checks-passing' });
-                  } catch (e) { /* already gone */ }
+                  await dropLabel('checks-passing');
                 }
                 if (!names.includes('checks-failing')) {
                   await github.rest.issues.addLabels({ owner, repo, issue_number: prNumber, labels: ['checks-failing'] });
                 }
                 if (names.includes('ready-to-merge')) {
-                  try {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: 'ready-to-merge' });
-                  } catch (e) { /* already gone */ }
+                  await dropLabel('ready-to-merge');
                 }
               }
 

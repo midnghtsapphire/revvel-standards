@@ -76,6 +76,29 @@ test('pr-check-status still short-circuits on a failing suite', () => {
   assert.match(script, /desired = 'failing'/);
 });
 
+test('label removal swallows 404 only, never an auth failure', () => {
+  // CLAUDE.md gotcha 1: removeLabel is not idempotent. A blanket catch also
+  // swallows 401/403, so a token that has lost label permission is
+  // indistinguishable from a label that was already gone, and the PR keeps a
+  // stale state with nothing reported. config/error-ledger.json tracks this
+  // as LABEL-RACE-001.
+  const script = scriptOf('pr-check-status.yml', 'check-suite-status');
+
+  assert.doesNotMatch(
+    script,
+    /catch \(e\) \{ \/\* already gone \*\/ \}/,
+    'a blanket catch hides 401/403 as well as 404'
+  );
+  assert.match(
+    script,
+    /if \(err\.status !== 404\) throw err;/,
+    'non-404 errors must propagate'
+  );
+  // Every removal must go through the guarded helper.
+  const rawRemovals = script.match(/issues\.removeLabel\(/g) || [];
+  assert.equal(rawRemovals.length, 1, 'removeLabel should be called in exactly one guarded place');
+});
+
 test('pr-check-status embedded script is syntactically valid', () => {
   // github-script wraps the body in an async function, so top-level await is
   // legal here — but a syntax error would only surface at runtime in CI.

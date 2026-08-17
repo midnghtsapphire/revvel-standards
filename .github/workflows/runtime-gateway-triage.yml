@@ -66,9 +66,7 @@ jobs:
         id: payload
         env:
           DISPATCH_PAYLOAD: ${{ toJson(github.event.client_payload) }}
-          # `github.event.inputs` rather than `inputs`: same dispatch value,
-          # but the workflow linter rejects an `inputs` reference in `env:`.
-          INPUT_JSON: ${{ github.event.inputs.event_json }}
+          INPUT_JSON: ${{ inputs.event_json }}
         run: |
           mkdir -p /tmp/runtime-gateway
           if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
