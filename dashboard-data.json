@@ -1266,6 +1266,12 @@
       "source": "/products/self-optimizing-star-magnet/README.md"
     },
     {
+      "url": "https://revvel-standards.vercel.app/docs/groq-code-review/",
+      "project": "groq-code-review",
+      "type": "vercel",
+      "source": "/products/groq-code-review/README.md"
+    },
+    {
       "url": "https://revvel-standards.vercel.app/docs/affiliate-hub/",
       "project": "affiliate-hub",
       "type": "vercel",
@@ -1581,5 +1587,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-17T10:52:12.896Z"
+  "lastUpdated": "2026-08-17T10:54:21.019Z"
 }
