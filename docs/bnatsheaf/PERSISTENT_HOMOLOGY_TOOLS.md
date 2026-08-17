@@ -1,7 +1,7 @@
 # Persistent Homology Tools — Production Survey for revvel-standards
 
-**Status:** Active (WR-16909)
-**Core engine:** `scripts/bnatsheaf/persistence.js` (pure JS, credit-free)
+**Status:** Active (WR-16909)  
+**Core engine:** `scripts/bnatsheaf/persistence.js` (pure JS, credit-free)  
 **Optional adapters:** `scripts/bnatsheaf/tda_adapters.js`
 
 ## Decision (binding)

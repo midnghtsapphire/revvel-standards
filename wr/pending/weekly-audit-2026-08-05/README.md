@@ -1,7 +1,7 @@
 # Weekly audit 2026-07-29 → 2026-08-05 — live refresh 2026-08-08
 
-**WR:** #16947
-**PR:** this branch (closes #16947)
+**WR:** #16947  
+**PR:** this branch (closes #16947)  
 **Hard rule:** agents draft WR + PR + fixes; **human** undrafts/merges. No agent auto-merge of other PRs.
 
 This file is the durable audit deliverable. The original issue body was a
@@ -143,7 +143,7 @@ Root cause: after #16944 landed, fleet bots still apply bare `ready-to-merge` (a
 
 ## Provenance
 
-- Original audit: Grok (xAI) 2026-08-05, human_gate required
-- Live refresh + allowlist fix: Copilot coding agent 2026-08-08
-- Sources: GitHub PR/issue API, Actions job logs for #16929 allowlist failure
+- Original audit: Grok (xAI) 2026-08-05, human_gate required  
+- Live refresh + allowlist fix: Copilot coding agent 2026-08-08  
+- Sources: GitHub PR/issue API, Actions job logs for #16929 allowlist failure  
 - human_gate: **still required** for merges of other PRs

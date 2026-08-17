@@ -1,7 +1,7 @@
 # Sheaf Cohomology — Short Proofs (cellular, discrete)
 
-**Status:** Active (WR-16909)
-**Executable surface:** `scripts/bnatsheaf/cohomology.js`
+**Status:** Active (WR-16909)  
+**Executable surface:** `scripts/bnatsheaf/cohomology.js`  
 **Proof tests:** `tests/bnatsheaf-cohomology-proofs.test.js`
 
 This note records the short algebraic proofs that underwrite the BNAT
