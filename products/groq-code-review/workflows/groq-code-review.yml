@@ -1,0 +1,59 @@
+# Example consumer workflow — copy to .github/workflows/groq-code-review.yml
+# Requires repository secret: GROQ_API_KEY (optional; local heuristics used when absent)
+
+name: Groq Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "**/*.md"
+      - "LICENSE"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: groq-code-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: >-
+      github.event.pull_request.draft == false &&
+      !contains(github.event.pull_request.title, '[skip-review]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get pull request diff
+        id: diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git diff "${BASE_SHA}" "${HEAD_SHA}" -- . ":(exclude)*.png" ":(exclude)*.jpg" > /tmp/pr.diff
+          {
+            echo "pull_request_diff<<REVVELEOF"
+            cat /tmp/pr.diff
+            echo "REVVELEOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Groq Code Review
+        uses: ./products/groq-code-review/action
+        with:
+          apiKey: ${{ secrets.GROQ_API_KEY }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          githubRepository: ${{ github.repository }}
+          githubPullRequestNumber: ${{ github.event.pull_request.number }}
+          gitCommitHash: ${{ github.event.pull_request.head.sha }}
+          pullRequestDiff: ${{ steps.diff.outputs.pull_request_diff }}
+          pullRequestDiffChunkSize: "4000"
+          repoId: "llama-3.3-70b-versatile"
+          temperature: "0.2"
+          maxNewTokens: "512"
+          topP: "0.95"
+          logLevel: "INFO"
