@@ -10,6 +10,22 @@ This document provides guidance for AI agents (Cursor, Claude, GPT, etc.) workin
 > API caller…) Read [`VISITING_AGENTS.md`](./VISITING_AGENTS.md) **first** — it's the
 > short guest contract: where you may write, where setup/API info lives, and how not to
 > scaffold over the repo.
+>
+> **Every agent (fleet or visiting) — three mandatory standards, load these before any write:**
+>
+> 1. [`standards/VISITING_AGENT_SANDBOX_STANDARD.md`](./standards/VISITING_AGENT_SANDBOX_STANDARD.md)
+>    — save every thought / script / API call / decision to `.sandbox/<your-name>/` as
+>    you work so a credit blackout does not lose the session's data.
+> 2. [`standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md`](./standards/OUT_OF_SCOPE_AUTO_WR_STANDARD.md)
+>    — when you find a bug you did not introduce or feel is out of scope, immediately
+>    file a Triage-role WR before continuing. "Not my bug" without a filed WR is banned.
+> 3. [`standards/TRIAGE_ROLE_STANDARD.md`](./standards/TRIAGE_ROLE_STANDARD.md)
+>    — the override authority every agent has, at all times, to file the out-of-scope
+>    WR the above standard requires.
+>
+> Every error is a training module. Append lessons to [`learnings.md`](./learnings.md)
+> using the TM-NNNN format at the bottom of that file — future agents (and future
+> auto-fix scripts) read those modules as their curriculum.
 
 ## PRIME DIRECTIVE
 
@@ -21,6 +37,23 @@ Every change should be evaluated against this north star. Prefer work that:
 2. Reduces friction in the automated product pipeline
 3. Improves Polar.sh / GitHub funding integrations
 4. Strengthens OSINT tooling that we monetize
+
+## BNAT Knowledge Sheaf — imprint before work
+
+Every agent instantiation should call the imprint path and assert the geometric
+invariant before high-blast edits:
+
+```bash
+node scripts/bnatsheaf/cli.js imprint_agent --agent <name>
+node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
+```
+
+- Standard: `standards/BNAT_SHEAF_STANDARD.md`
+- Skill: `skills/bnatsheaf/SKILL.md`
+- Math + PH + cohomology: `scripts/bnatsheaf/`
+- Public Observatory (Method · Living Manifold): `docs/bnatsheaf/observatory.html`
+- Long-lived H¹ bars escalate — never silently glue
+  (`wr/pending/14-veins-grounding-gate.md`).
 
 ## Goal Structure
 
@@ -99,7 +132,8 @@ revenue-generating products:
     ├── revvel-skill-runner/
     ├── creator-payout-tracker/
     ├── hvac-calc-service/
-    └── fda-design-controls/
+    ├── fda-design-controls/
+    └── agent-manifest-validator/
 ```
 
 Root-level code is intentionally lightweight — it provides linting, validation,

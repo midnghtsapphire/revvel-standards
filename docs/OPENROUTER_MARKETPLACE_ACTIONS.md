@@ -37,6 +37,7 @@ of them.
 | 11 | PostHog Annotations | [marketplace](https://github.com/marketplace/actions/posthog-annotations) — [`PostHog/posthog-annotations-github-action`](https://github.com/PostHog/posthog-annotations-github-action) | [`posthog-annotations.yml`](../templates/cicd/posthog-annotations.yml) | — | Send deployment annotations to PostHog on PR merges / releases |
 | 12 | PostHog Upload Source Maps | [marketplace](https://github.com/marketplace/actions/posthog-upload-source-maps) — [`PostHog/upload-source-maps`](https://github.com/PostHog/upload-source-maps) | [`posthog-upload-sourcemaps.yml`](../templates/cicd/posthog-upload-sourcemaps.yml) | — | Upload JavaScript source maps to PostHog for readable error stack traces |
 | 13 | Send Event to PostHog | [marketplace](https://github.com/marketplace/actions/send-event-to-posthog) — [`daun/posthog-event-action`](https://github.com/daun/posthog-event-action) | [`posthog-send-event.yml`](../templates/cicd/posthog-send-event.yml) | — | Send custom events to PostHog from CI/CD pipelines |
+| 14 | XAI Review — oleg fork | [marketplace](https://github.com/marketplace/actions/xai-review-oleg-fork) — [`HomeBake/ai-review`](https://github.com/HomeBake/ai-review) | [`xai-review-oleg-fork.yml`](../templates/cicd/xai-review-oleg-fork.yml) | ✅ | Multi-mode AI review (inline / context / summary / reply) via OpenRouter |
 
 "Active here?" = ✅ means the workflow is also installed in
 [`.github/workflows/`](../.github/workflows/) of this repo. The others are
@@ -70,19 +71,21 @@ Some actions require additional secrets:
 | `openrouter-assignee.yml` | New issue / PR, hourly cron | Routes work **to** `@Copilot` (first line of sight) |
 | `ai-pr-review-openrouter.yml` | PR opened / sync | Summary-style PR comment review |
 | `ai-code-reviewer-pro.yml` | PR opened / sync | Inline line-level review comments |
+| `xai-review-oleg-fork.yml` | PR opened / sync + manual modes | Multi-mode AI review (summary default; inline/context/reply via dispatch) |
 | `ai-ci-failure-helper.yml` | Manual / chained after a failure | Root-cause comment on the PR that broke |
 | `ralph-loop.yml` | CI failure on a PR | Opens an auto-fix issue and pings the orchestrator |
 | `ai-weekly-changelog.yml` | Mondays 06:00 UTC | Commits weekly `CHANGELOG.md` update |
 
 The AI review actions (`ai-pr-review-openrouter`, `ai-code-reviewer-pro`,
-`iara-code-reviewer`, `bc-ai-code-reviewer`, `gass-scoring`) all trigger
-on the same `pull_request` event. They are complementary — each has a
-different lens (summary, inline, SAST, domain-specific, on-chain
-scoring) — but if you want only one for a given repo, delete the others.
+`xai-review-oleg-fork`, `iara-code-reviewer`, `bc-ai-code-reviewer`,
+`gass-scoring`) all trigger on the same `pull_request` event. They are
+complementary — each has a different lens (summary, inline, multi-mode
+VCS review, SAST, domain-specific, on-chain scoring) — but if you want
+only one for a given repo, delete the others.
 
 To bypass any AI review on a specific PR, add `[skip-review]` to the PR
-title (honored by `ai-pr-review-openrouter`, `ai-code-reviewer-pro`, and
-`iara-code-reviewer`).
+title (honored by `ai-pr-review-openrouter`, `ai-code-reviewer-pro`,
+`xai-review-oleg-fork`, and `iara-code-reviewer`).
 
 ---
 
@@ -135,6 +138,9 @@ and these ten actions. Budget and model-selection guidance lives in
   slug is now the default.)
 - **`ai-code-reviewer-pro.yml`** — default model
   `google/gemini-2.5-flash` (~$0.001/PR per the action's README).
+- **`xai-review-oleg-fork.yml`** — default model
+  `google/gemini-2.5-flash`, auto-PR mode is `run-summary` only (inline /
+  context / full / reply modes are `workflow_dispatch`).
 - **`ai-ci-failure-helper.yml`** — runs **only on failure**, `max_log_lines: 200`.
 - **`ai-readme-translator.yml`** / **`android-resource-translator.yml`** —
   `workflow_dispatch` / path-triggered only; not per-PR.

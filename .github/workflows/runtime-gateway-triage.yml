@@ -1,0 +1,126 @@
+# WR-4474 — Runtime Gateway 5xx Triage
+# Capture (Sentry / platform) → classify → route → FAILURE-LEDGER.
+#
+# Wiring:
+#   - repository_dispatch types: sentry, runtime-5xx
+#       client_payload = Sentry event JSON (or normalized runtime event)
+#   - workflow_dispatch for manual / dry-run verification
+#
+# 500-with-stack → opens issue + labels (auto-fix, openrouter) so
+# agent-dispatcher / Dragnet assigns a fix agent.
+# 502/503/504 → runbook-first; issue only on recurrence within 24h.
+# 402/429 → WR-4481 lane failover (keyless Perplexity) before any code change.
+# EVERY triage writes logs/failure-ledger/FAILURE-LEDGER.jsonl.
+#
+# Enforcement machinery (this workflow + scripts): human merge required
+# (4470-band — no auto-merge).
+
+name: Runtime Gateway Triage
+
+on:
+  repository_dispatch:
+    types: [sentry, runtime-5xx]
+  workflow_dispatch:
+    inputs:
+      event_json:
+        description: Sentry/runtime event JSON payload
+        required: true
+        type: string
+      dry_run:
+        description: Classify + ledger only (do not open GitHub issues)
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  issues: write
+  contents: write
+  actions: read
+
+concurrency:
+  group: runtime-gateway-triage-${{ github.event.client_payload.event_id || github.run_id }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  FAILURE_LEDGER_PATH: logs/failure-ledger/FAILURE-LEDGER.jsonl
+
+jobs:
+  triage:
+    name: Classify · route · ledger
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          # Need a token that can push ledger commits on main/default branch.
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+
+      - name: Materialize event payload
+        id: payload
+        env:
+          DISPATCH_PAYLOAD: ${{ toJson(github.event.client_payload) }}
+          INPUT_JSON: ${{ inputs.event_json }}
+        run: |
+          mkdir -p /tmp/runtime-gateway
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            printf '%s\n' "$DISPATCH_PAYLOAD" > /tmp/runtime-gateway/event.json
+          else
+            printf '%s\n' "$INPUT_JSON" > /tmp/runtime-gateway/event.json
+          fi
+          # Validate JSON early so we fail with a clear message.
+          node -e "JSON.parse(require('fs').readFileSync('/tmp/runtime-gateway/event.json','utf8')); console.log('event ok')"
+
+      - name: Run runtime gateway triage
+        id: triage
+        env:
+          # PAT-with-fallback so opened issues can cascade into agent-dispatcher
+          # (default GITHUB_TOKEN cannot trigger downstream workflows).
+          GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+          FAILURE_LEDGER_PATH: ${{ env.FAILURE_LEDGER_PATH }}
+        run: |
+          node scripts/runtime-gateway-triage.js --event-file /tmp/runtime-gateway/event.json
+
+      - name: Commit FAILURE-LEDGER entry
+        if: always()
+        run: |
+          if [ ! -f "$FAILURE_LEDGER_PATH" ]; then
+            echo "No ledger file written — skip commit"
+            exit 0
+          fi
+          git config user.name "runtime-gateway-triage[bot]"
+          git config user.email "runtime-gateway-triage[bot]@users.noreply.github.com"
+          git add "$FAILURE_LEDGER_PATH"
+          if git diff --cached --quiet; then
+            echo "Ledger unchanged"
+            exit 0
+          fi
+          # Ledger-only commits are chore noise for CI; skip heavy gates.
+          git commit -m "chore(ledger): runtime-gateway triage entry [skip ci]" || true
+          git push || echo "::warning::Could not push ledger commit (non-fast-forward or missing perms)"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## Runtime Gateway Triage"
+            echo ""
+            echo "- Event source: \`${{ github.event_name }}\`"
+            echo "- Ledger path: \`$FAILURE_LEDGER_PATH\`"
+            if [ -f "$FAILURE_LEDGER_PATH" ]; then
+              echo "- Last ledger line:"
+              echo ""
+              echo '```json'
+              tail -n 1 "$FAILURE_LEDGER_PATH"
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

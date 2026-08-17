@@ -153,6 +153,16 @@ connections:
     used_by: [vercel-bot]
     note: "Deploys a preview on every PR (observed via vercel[bot])."
 
+  - id: mergeme
+    name: MergeMe (mergeme.dev)
+    type: app
+    auth: oauth
+    status: verified
+    access: [pr-slack-cards, review-thread-mirroring, mention-routing]
+    connects_to: [github, slack]
+    used_by: [mergeme-status.yml, products/mergeme-status]
+    note: "Slack PR cards (one updating message per PR). Repo-side wiring audited by scripts/mergeme-wiring.js (WR #16824). GitHub App + Slack OAuth installed at https://mergeme.dev / marketplace — no MERGEME_API_KEY in this repo."
+
   - id: perplexity
     name: Perplexity
     type: api

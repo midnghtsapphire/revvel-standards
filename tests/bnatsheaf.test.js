@@ -28,6 +28,8 @@ const {
   phMonitor,
   main,
 } = require('../scripts/bnatsheaf/cli');
+const { topologicalFingerprint } = require('../scripts/bnatsheaf/fingerprint');
+const { computeCohomology } = require('../scripts/bnatsheaf/cohomology');
 
 // ── unit: linear algebra primitives ─────────────────────────────────────────
 
@@ -258,4 +260,40 @@ test('additive guarantee: BIOME sheaf exports are untouched and still glue', () 
   assert.equal(status.schema, 'biome-status/v1');
   // and the mathematical layer consumes the same feed shape
   assert.equal(consistencyCheck(status).consistent, true);
+});
+
+test('CLI fingerprint + cohomology commands exit on postcondition', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bnatsheaf-fp-'));
+  const good = path.join(dir, 'good.json');
+  const bad = path.join(dir, 'bad.json');
+  const out = path.join(dir, 'fp.json');
+  fs.writeFileSync(good, JSON.stringify(healthyStatus));
+  fs.writeFileSync(bad, JSON.stringify(degradedStatus));
+
+  const origLog = console.log;
+  const origErr = console.error;
+  console.log = () => {};
+  console.error = () => {};
+  try {
+    assert.equal(main(['fingerprint', '--status', good, '--out', out]), 0);
+    assert.equal(main(['fingerprint', '--status', bad, '--out', out]), 1);
+    assert.equal(main(['cohomology', '--status', good]), 0);
+    assert.equal(main(['cohomology', '--status', bad]), 1);
+    const written = JSON.parse(fs.readFileSync(out, 'utf8'));
+    assert.equal(written.schema, 'bnat-fingerprint/v1');
+    assert.ok('dim_H0' in written && 'dim_H1' in written);
+  } finally {
+    console.log = origLog;
+    console.error = origErr;
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('topologicalFingerprint agrees with computeCohomology on BIOME feeds', () => {
+  const sheaf = sheafFromBiomeStatus(healthyStatus);
+  const coh = computeCohomology(sheaf);
+  const fp = topologicalFingerprint(healthyStatus);
+  assert.equal(fp.dim_H0, coh.dimH0);
+  assert.equal(fp.dim_H1, coh.dimH1);
+  assert.equal(fp.rank_delta, coh.rankDelta);
 });

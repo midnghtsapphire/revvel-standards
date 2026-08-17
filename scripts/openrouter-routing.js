@@ -104,7 +104,7 @@ if (lookupData && lookupData.profiles && lookupData.models) {
  */
 async function callOpenRouter({ models, messages, temperature = 0.7, max_tokens = 4000, apiKey, timeout = 60000, httpReferer, appTitle }) {
   const key = (apiKey || process.env.OPENROUTER_API_KEY || "").trim();
-  
+
   if (!key) {
     throw new Error("OPENROUTER_API_KEY is required (set via environment or apiKey parameter)");
   }

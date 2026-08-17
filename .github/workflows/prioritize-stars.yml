@@ -1,9 +1,8 @@
 name: Prioritize Starred Repositories
 
 on:
-  schedule:
-    # Runs every 6 hours (4 times a day)
-    - cron: '0 */6 * * *'
+  # Hourly cadence moved to hourly-growth-prioritizer.yml (prioritize_and_optimize.py).
+  # Keep manual dispatch for the legacy checkpointed prioritize_stars.py path.
   workflow_dispatch:
 
 # Prevents concurrent execution runs from stomping state
@@ -13,6 +12,7 @@ concurrency:
 
 jobs:
   prioritize:
+    timeout-minutes: 45
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -40,6 +40,7 @@ jobs:
           # Prefer a fine-grained PAT (read:user stars) for the 5k/hr budget.
           # Falls back to the job token when GH_PAT is unset.
           GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
         run: |
           python scripts/prioritize_stars.py --limit 250
 
