@@ -201,6 +201,10 @@ jobs:
         with:
           review-command: ${{ steps.target.outputs.review_command }}
         env:
+          # Do not load PR-controlled configuration files into this secret-bearing step.
+          AI_REVIEW_CONFIG_FILE_YAML: ${{ runner.temp }}/xai-review-disabled.yaml
+          AI_REVIEW_CONFIG_FILE_JSON: ${{ runner.temp }}/xai-review-disabled.json
+          AI_REVIEW_CONFIG_FILE_ENV: ${{ runner.temp }}/xai-review-disabled.env
           # --- LLM via OpenRouter (shared secret) ---
           LLM__PROVIDER: OPENROUTER
           LLM__META__MODEL: google/gemini-2.5-flash
