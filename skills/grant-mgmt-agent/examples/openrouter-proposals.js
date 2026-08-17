@@ -91,20 +91,23 @@ function callOpenRouter(model, systemPrompt, userPrompt, options = {}) {
 }
 
 /**
- * Build the system and user prompts for generating a proposal section.
+ * Generate a proposal section using AI
  *
  * @param {Object} params - Generation parameters
- * @returns {Object} Prompts object containing { systemPrompt, userPrompt }
+ * @returns {Promise<Object>} Generated section with metadata
  */
-function buildProposalPrompts(params) {
+async function generateProposalSection(params) {
   const {
     section,
     rfpRequirements,
     evaluationCriteria,
     organizationData,
     projectDetails,
+    model = 'anthropic/claude-sonnet-4.5',
     wordLimit = null
   } = params;
+
+  console.log(`🤖 Generating ${section} section using ${model}...`);
 
   // Base system prompt for all sections
   const systemPrompt = `You are an expert grant proposal writer with 20+ years of experience 
@@ -247,30 +250,6 @@ ${wordLimit ? `WORD LIMIT: ${wordLimit} words maximum. Stay within this limit.` 
 Write in a professional, confident tone. Use specific data and examples. Address every requirement.
 Do not include placeholder text - write complete, ready-to-submit content.
 `;
-
-  return { systemPrompt, userPrompt };
-}
-
-/**
- * Generate a proposal section using AI
- *
- * @param {Object} params - Generation parameters
- * @returns {Promise<Object>} Generated section with metadata
- */
-async function generateProposalSection(params) {
-  const {
-    section,
-    rfpRequirements,
-    evaluationCriteria,
-    organizationData,
-    projectDetails,
-    model = 'anthropic/claude-sonnet-4.5',
-    wordLimit = null
-  } = params;
-
-  console.log(`🤖 Generating ${section} section using ${model}...`);
-
-  const { systemPrompt, userPrompt } = buildProposalPrompts(params);
 
   const startTime = Date.now();
   
