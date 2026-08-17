@@ -1,4 +1,0 @@
-✓ wr/issues/issue-17166-emergency-fix-for-circleci-and-create-a-script-goi.md
-✓ wr/issues/issue-17305-need-to-increast-time-outs-and-need-a-better-syste.md
-
-All clean.

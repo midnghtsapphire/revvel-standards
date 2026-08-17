@@ -243,7 +243,7 @@ Source packet: `docs/research-engine/run-29434179311.md`
 
 ## Learnings — What & Why
 
-N/A — completed
+N/A — pending Jules refinement
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

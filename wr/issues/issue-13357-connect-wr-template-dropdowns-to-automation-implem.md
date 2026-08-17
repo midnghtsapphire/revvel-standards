@@ -461,7 +461,7 @@
 
 ### Saved Locations
 
-- [ ] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
+- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
 - [ ] Pushed to revvel-standards repository
 - [ ] WR_TRACKER.md updated
 - [ ] Issue created in revvel-standards: #[number]

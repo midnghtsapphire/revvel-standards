@@ -22,7 +22,7 @@
 | Archived | No |
 
 ## Research Checklist
-<!-- Mark [ ] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter

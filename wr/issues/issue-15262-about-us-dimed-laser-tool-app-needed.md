@@ -38,13 +38,13 @@ specifications, and request a demo or quote.
 
 ## Research Checklist
 
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis (table includes actual prices)
-- [ ] Domain strategy
-- [ ] Monetization
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+- [x] Deep market research
+- [x] BOM
+- [x] Community chatter
+- [x] Competitor analysis (table includes actual prices)
+- [x] Domain strategy
+- [x] Monetization
+- [x] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Research Findings
 

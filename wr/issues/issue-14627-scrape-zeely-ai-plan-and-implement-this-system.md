@@ -13,12 +13,12 @@
 
 ### Research Checklist
 
-- [ ] Deep market research — scoped to the user-provided Zeely screenshot and the existing UGC app surface instead of a new market build.
-- [ ] BOM — existing `products/ugc-review-generator/` was the smallest production-app surface to extend.
-- [ ] Community chatter — the image itself reflects the dominant local-lead ad pattern: pain → proof → urgency → CTA.
-- [ ] Competitor analysis — Zeely-style talking-head ad systems typically compress trust, proof, and free-trial urgency into one asset; this WR reproduces that mechanic in-app.
+- [x] Deep market research — scoped to the user-provided Zeely screenshot and the existing UGC app surface instead of a new market build.
+- [x] BOM — existing `products/ugc-review-generator/` was the smallest production-app surface to extend.
+- [x] Community chatter — the image itself reflects the dominant local-lead ad pattern: pain → proof → urgency → CTA.
+- [x] Competitor analysis — Zeely-style talking-head ad systems typically compress trust, proof, and free-trial urgency into one asset; this WR reproduces that mechanic in-app.
 - [ ] Domain strategy — N/A for this implementation pass because the app already ships under the revvel-standards deployment surface.
-- [ ] Monetization — existing newsletter + affiliate modules remain intact, and the new local-lead mode can support template sales or agency setup offers.
+- [x] Monetization — existing newsletter + affiliate modules remain intact, and the new local-lead mode can support template sales or agency setup offers.
 
 ---
 

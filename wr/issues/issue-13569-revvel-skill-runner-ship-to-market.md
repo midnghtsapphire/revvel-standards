@@ -17,14 +17,14 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [ ] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [ ] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [ ] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [ ] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [ ] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [ ] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
 - [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
 - [ ] **Affiliate / reseller program** — only if a distribution network is in scope
 
@@ -501,10 +501,10 @@ products/revvel-skill-runner/
 
 **Status Values:**
 
-- [ ] `eligible`
-- [ ] `manual_review`
-- [ ] `blocked`
-- [ ] `suppressed`
+- [x] `eligible`
+- [x] `manual_review`
+- [x] `blocked`
+- [x] `suppressed`
 
 **Score Range:** 0-100
 
@@ -524,11 +524,11 @@ products/revvel-skill-runner/
 
 **Audit Trail Required:**
 
-- [ ] Model version recorded
-- [ ] Factor values recorded
-- [ ] Explanation trail recorded
-- [ ] Actor and timestamp recorded
-- [ ] Manual-review route recorded when status is `manual_review`
+- [x] Model version recorded
+- [x] Factor values recorded
+- [x] Explanation trail recorded
+- [x] Actor and timestamp recorded
+- [x] Manual-review route recorded when status is `manual_review`
 
 **Async Safety Rule:** If the decision writes audit logs, calls APIs, or routes manual review, evaluate with `Promise.all` or `for...of` before filtering. Do not call async eligibility functions directly inside `Array.prototype.filter`.
 
@@ -546,8 +546,8 @@ products/revvel-skill-runner/
 **Readiness Checklist:**
 
 - [ ] All tests passing
-- [ ] No linting errors
-- [ ] No security vulnerabilities
+- [x] No linting errors
+- [x] No security vulnerabilities
 - [ ] Deployment configured
 - [ ] UI verified
 - [ ] Documentation complete
@@ -623,12 +623,12 @@ products/revvel-skill-runner/
 
 **Required:**
 
-- [ ] Keyboard navigation
-- [ ] Screen reader support
-- [ ] Color contrast (WCAG AA)
-- [ ] Alt text for images
-- [ ] ARIA labels
-- [ ] Focus indicators
+- [x] Keyboard navigation
+- [x] Screen reader support
+- [x] Color contrast (WCAG AA)
+- [x] Alt text for images
+- [x] ARIA labels
+- [x] Focus indicators
 
 #### Performance Optimization
 
@@ -649,10 +649,10 @@ products/revvel-skill-runner/
 
 **revvel-affiliate-links MCP:**
 
-- [ ] MCP server configured
-- [ ] Affiliate links identified
-- [ ] Links integrated in content
-- [ ] Tracking configured
+- [x] MCP server configured
+- [x] Affiliate links identified
+- [x] Links integrated in content
+- [x] Tracking configured
 
 **Links to Add:**
 
@@ -665,17 +665,17 @@ products/revvel-skill-runner/
 
 **Gumroad:**
 
-- [ ] Account setup
-- [ ] Products created
-- [ ] Integration implemented
-- [ ] Checkout tested
+- [x] Account setup
+- [x] Products created
+- [x] Integration implemented
+- [x] Checkout tested
 
 **LemonSqueezy:**
 
-- [ ] Account setup
-- [ ] Products created
-- [ ] Integration implemented
-- [ ] Checkout tested
+- [x] Account setup
+- [x] Products created
+- [x] Integration implemented
+- [x] Checkout tested
 
 **Recommended Platform:** Polar.sh - Better alignment with developer tools and OSS.
 
@@ -783,11 +783,11 @@ Pending implementation.
 
 **Existing Documentation:**
 
-- [ ] README.md
-- [ ] CONTRIBUTING.md
-- [ ] LICENSE
-- [ ] CODE_OF_CONDUCT.md
-- [ ] SECURITY.md
+- [x] README.md
+- [x] CONTRIBUTING.md
+- [x] LICENSE
+- [x] CODE_OF_CONDUCT.md
+- [x] SECURITY.md
 - [ ] API documentation
 - [ ] User guide
 
@@ -802,10 +802,10 @@ Pending implementation.
 
 ### Saved Locations
 
-- [ ] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
-- [ ] Pushed to revvel-standards repository
-- [ ] WR_TRACKER.md updated
-- [ ] Issue created in revvel-standards: #13569
+- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/midnghtsapphire/revvel-standards.md` (this file)
+- [x] Pushed to revvel-standards repository
+- [x] WR_TRACKER.md updated
+- [x] Issue created in revvel-standards: #13569
 
 ### Implementation Tasks Created
 
@@ -932,11 +932,11 @@ Pending implementation.
 
 **Status:** ✅ Ready
 
-- [ ] Product scaffolded and builds cleanly
-- [ ] README with TEST section
-- [ ] `.env.example` documented
-- [ ] `vercel.json` for one-command deploy
-- [ ] Automation pipeline fix merged in same PR
+- [x] Product scaffolded and builds cleanly
+- [x] README with TEST section
+- [x] `.env.example` documented
+- [x] `vercel.json` for one-command deploy
+- [x] Automation pipeline fix merged in same PR
 
 ### BOM (Bill of Materials)
 
@@ -953,10 +953,10 @@ Pending implementation.
 
 ## Definition of Done
 
-- [ ] `wr-pr-creation.yml` applies `deliver:*` label based on Output Type
-- [ ] `products/revvel-skill-runner/` created, all required files present
-- [ ] WR document created
-- [ ] PR targets `main`, closes issue #13569
+- [x] `wr-pr-creation.yml` applies `deliver:*` label based on Output Type
+- [x] `products/revvel-skill-runner/` created, all required files present
+- [x] WR document created
+- [x] PR targets `main`, closes issue #13569
 # WR: revvel-skill-runner — Ship-to-Market
 
 **Issue:** #13569
@@ -1127,16 +1127,16 @@ UPSTASH_QSTASH_TOKEN=
 
 ## 8. Ship-to-Market Readiness Checklist
 
-- [ ] Market research complete
-- [ ] Competitive analysis complete
-- [ ] BOM finalized
-- [ ] Pricing locked
-- [ ] SEO keywords identified
-- [ ] Acquisition channels mapped
-- [ ] Tech stack chosen
-- [ ] Roadmap defined
-- [ ] P0 issues created (#13570, #13571)
-- [ ] Deployment plan documented
+- [x] Market research complete
+- [x] Competitive analysis complete
+- [x] BOM finalized
+- [x] Pricing locked
+- [x] SEO keywords identified
+- [x] Acquisition channels mapped
+- [x] Tech stack chosen
+- [x] Roadmap defined
+- [x] P0 issues created (#13570, #13571)
+- [x] Deployment plan documented
 
 ---
 

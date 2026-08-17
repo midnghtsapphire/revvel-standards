@@ -32,14 +32,14 @@ The `#tools #app` tag signals a request to build a consumer/clinical photobiomod
 
 ## Research Checklist
 
-<!-- Mark [ ] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
-- [ ] Domain strategy
-- [ ] Monetization
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+<!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
+- [x] Deep market research
+- [x] BOM
+- [x] Community chatter
+- [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
+- [x] Domain strategy
+- [x] Monetization
+- [x] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Research Findings
 

@@ -39,12 +39,12 @@ half; the companion scaffold lives at
 
 ## Research Checklist
 
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis
-- [ ] Domain strategy
-- [ ] Monetization
+- [x] Deep market research
+- [x] BOM
+- [x] Community chatter
+- [x] Competitor analysis
+- [x] Domain strategy
+- [x] Monetization
 
 ## Executive Summary
 

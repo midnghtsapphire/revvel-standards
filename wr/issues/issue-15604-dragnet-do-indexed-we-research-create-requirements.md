@@ -438,26 +438,26 @@ _No response_
 
 ## Summary
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Objective
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Required Bundle
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Definition of Done
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Validation
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Blockers
 
-N/A — completed
+N/A — pending Jules refinement
 
 <!-- Market research, BOM, SEO, monetization sections are intentionally absent: BASIC template is for bug/chore/docs/refactor WRs with no product/market surface. Use WR_TEMPLATE_FULL.md only for new products or sellable assets. -->

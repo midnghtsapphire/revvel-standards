@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-09T02:43:04.110Z",
+  "generated_at": "2026-08-17T01:30:38.743Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
@@ -15,10 +15,10 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 31545774487,
+            "id": 31983624721,
             "name": ".github/workflows/release-banner-social.yml",
             "path": ".github/workflows/release-banner-social.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31545774487",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31983624721",
             "conclusion": "failure"
           }
         ],
@@ -44,10 +44,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31984541022"
       }
     },
     "sheaf": {

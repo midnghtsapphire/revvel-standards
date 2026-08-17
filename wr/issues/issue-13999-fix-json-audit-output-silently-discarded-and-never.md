@@ -26,18 +26,18 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [ ] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [ ] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [ ] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [ ] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [ ] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [ ] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
-- [ ] **Product / output selections** — explicitly choose artifact shapes (API, CLI, MCP, skill, PDF, deck, video, UI, docs, agent automation)
-- [ ] **Platform defaults** — Website in Test on Vercel, DigitalOcean integration default, website auth/admin requirements when UI is in scope
-- [ ] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
-- [ ] **Agent self-healing journal** — institutionalize durable findings back into revvel-standards
+- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [x] **Product / output selections** — explicitly choose artifact shapes (API, CLI, MCP, skill, PDF, deck, video, UI, docs, agent automation)
+- [x] **Platform defaults** — Website in Test on Vercel, DigitalOcean integration default, website auth/admin requirements when UI is in scope
+- [x] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
+- [x] **Agent self-healing journal** — institutionalize durable findings back into revvel-standards
 - [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
 - [ ] **Affiliate / reseller program** — only if a distribution network is in scope
 
@@ -131,9 +131,9 @@ The JSON formatting branch in `scripts/audit-third-party-actions.sh` writes its 
 
 **Readiness Checklist:**
 
-- [ ] Fix JSON output handling
-- [ ] Ensure step fails on `jq` error
-- [ ] Update workflow yaml to handle the new output
+- [x] Fix JSON output handling
+- [x] Ensure step fails on `jq` error
+- [x] Update workflow yaml to handle the new output
 
 ---
 

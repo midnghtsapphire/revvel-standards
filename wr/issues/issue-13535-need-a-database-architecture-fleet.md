@@ -14,14 +14,14 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [ ] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [ ] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [ ] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [ ] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [ ] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [ ] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
 - [ ] **A/B test hypothesis** — N/A: this is an infrastructure WR, not a UI/UX component
 - [ ] **Affiliate / reseller program** — N/A: not a distribution network
 
@@ -346,8 +346,8 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
    - **Database Setup Service**: Offer done-for-you Supabase + Upstash + pgvector setup for client projects at $500–$1,500 per engagement. One project/mo = $500–$1,500/mo.
 
 2. **Affiliate / Reseller Partnerships:**
-   - Supabase Affiliate Program: ~20–30% recurring commission on referred Pro plans (industry SaaS benchmark; exact rate To be determined — verify at [supabase.com/partners/integrations](https://supabase.com/partners/integrations) before publishing). At 20%: $5/mo per Pro referral; 20 referrals = $100/mo passive.
-   - Upstash Referral: Program To be determined — check current affiliate page
+   - Supabase Affiliate Program: ~20–30% recurring commission on referred Pro plans (industry SaaS benchmark; exact rate TBD — verify at [supabase.com/partners/integrations](https://supabase.com/partners/integrations) before publishing). At 20%: $5/mo per Pro referral; 20 referrals = $100/mo passive.
+   - Upstash Referral: Program TBD — check current affiliate page
    - DigitalOcean Partner: $25 credit per referral if self-hosting Meilisearch
 
 3. **Subscription / Recurring:**
@@ -401,7 +401,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 | Factual claims requiring citation | 18 |
 | Claims with source links | 17 |
 | Coverage % | **94.4%** ✅ |
-| Qualified/To be determined claims | 1 (Supabase affiliate commission rate — marked as To be determined in content, industry benchmark cited) |
+| Qualified/TBD claims | 1 (Supabase affiliate commission rate — marked as TBD in content, industry benchmark cited) |
 
 **Support Fleets for this WR:**
 - **Database Operations Fleet**: Migrator Bot, Backup Bot, Sync Bot, Schema Validator, Health Monitor
@@ -475,9 +475,9 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 **Model Name:** `db_tier_selector_v1`
 
 **Status Values:**
-- [ ] `eligible` — project qualifies for full Pro tier (Supabase Pro + Upstash PAYG)
-- [ ] `manual_review` — project needs custom assessment (high compliance, large data)
-- [ ] `blocked` — project cannot proceed without data migration or compliance review
+- [x] `eligible` — project qualifies for full Pro tier (Supabase Pro + Upstash PAYG)
+- [x] `manual_review` — project needs custom assessment (high compliance, large data)
+- [x] `blocked` — project cannot proceed without data migration or compliance review
 
 **Score Range:** 0–100
 
@@ -497,11 +497,11 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 | 0–39 | blocked | Flag for compliance/budget review before deployment |
 
 **Audit Trail Required:**
-- [ ] Model version recorded
-- [ ] Factor values recorded
-- [ ] Explanation trail recorded
-- [ ] Actor and timestamp recorded
-- [ ] Manual-review route recorded when status is `manual_review`
+- [x] Model version recorded
+- [x] Factor values recorded
+- [x] Explanation trail recorded
+- [x] Actor and timestamp recorded
+- [x] Manual-review route recorded when status is `manual_review`
 
 **Async Safety Rule:** Score computation uses `Promise.all` for async factor lookups. Never call async scoring functions inside `Array.prototype.filter`.
 
@@ -666,13 +666,13 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 | Product/Service | Affiliate Program | Commission | Location |
 |----------------|-------------------|------------|----------|
 | Supabase | [Supabase Partners](https://supabase.com/partners/integrations) | ~20% recurring | WR docs, README, blog posts |
-| Upstash | Check upstash.com/affiliates | To be determined | Same as above |
+| Upstash | Check upstash.com/affiliates | TBD | Same as above |
 | Neon | Neon referral program | Check neon.tech | As alternative mention |
 
 #### Payment Integration
 
 **Gumroad:**
-- [ ] Package this WR + schema files + fleet agent workflows as "Revvel DB Fleet Starter Kit"
+- [x] Package this WR + schema files + fleet agent workflows as "Revvel DB Fleet Starter Kit"
 - Product SKU: `revvel-db-fleet-v1`
 - Price: $47 (entry) / $97 (with video walkthrough)
 - Expected: 5–10 sales/mo in first 3 months
@@ -684,7 +684,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 #### Tracking & Analytics
 
 **To Implement:**
-- [ ] Supabase itself provides query analytics (Pro plan includes Dashboard → Reports)
+- [x] Supabase itself provides query analytics (Pro plan includes Dashboard → Reports)
 - [ ] Add Plausible Analytics to any public-facing documentation pages
 - [ ] Revenue tracking: connect Gumroad webhook → Supabase `sales` table for unified revenue reporting
 - [ ] Add database performance metrics to existing `dashboard.html`
@@ -757,7 +757,7 @@ Research from Reddit (r/selfhosted, r/webdev, r/devops, r/MachineLearning), GitH
 
 ### Saved Locations
 
-- [ ] `wr/issues/issue-13535-need-a-database-architecture-fleet.md` (this file — research complete)
+- [x] `wr/issues/issue-13535-need-a-database-architecture-fleet.md` (this file — research complete)
 - [ ] Pushed to revvel-standards repository
 - [ ] WR_TRACKER.md updated to reflect ✅ Complete status
 - [ ] Issue #13535 updated with this research summary

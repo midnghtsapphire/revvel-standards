@@ -177,7 +177,7 @@ jobs:
    ### Conflict Analysis
    | Component | OpenRouter | Reno-Auto | Conflict? |
    |-----------|------------|-----------|-----------|
-   | Triggers  | Unknown    | To be determined       | Unknown   |
+   | Triggers  | Unknown    | TBD       | Unknown   |
    | Files     | Unknown    | /releasenotes/ | Unknown |
    EOF
    ```

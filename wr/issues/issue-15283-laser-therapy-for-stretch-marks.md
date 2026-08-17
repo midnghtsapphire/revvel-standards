@@ -30,11 +30,11 @@
 **Delivery Shape:** Shippable Next.js web app (desktop + mobile), optionally packaged as PWA for home-device users.
 
 **Acknowledgements:**
-- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [ ] Explicitly requested secondary items should not be silently deferred.
-- [ ] If the PR is partial, the blocker must be documented.
-- [ ] The PR should reflect the WR's required bundle and definition of done.
-- [ ] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
+- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [x] Explicitly requested secondary items should not be silently deferred.
+- [x] If the PR is partial, the blocker must be documented.
+- [x] The PR should reflect the WR's required bundle and definition of done.
+- [x] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
 
 ---
 
@@ -49,10 +49,10 @@
 
 ## Research Checklist
 
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
+- [x] Deep market research
+- [x] BOM
+- [x] Community chatter
+- [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
 - [ ] Every statistic/percentage cited with a source link or labeled as an estimate (several figures below still need citations or "estimate" labels)
 ## Research Findings
 

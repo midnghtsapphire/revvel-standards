@@ -17,18 +17,18 @@ Closes #14753
 
 ### Research Checklist (pre-checked = required by default)
 
-- [ ] **Deep market research** — keywords, search volumes, industry mechanics, pricing (see Step 2)
-- [ ] **BOM (Bill of Materials)** — ranked tool/runtime list to reproduce the scrape (see Step 4)
-- [ ] **Community chatter** — what buyers/users want from no-code AI-agent consoles
-- [ ] **Competitor analysis** — adjacent AI-agent consoles and where neyox.ai sits
+- [x] **Deep market research** — keywords, search volumes, industry mechanics, pricing (see Step 2)
+- [x] **BOM (Bill of Materials)** — ranked tool/runtime list to reproduce the scrape (see Step 4)
+- [x] **Community chatter** — what buyers/users want from no-code AI-agent consoles
+- [x] **Competitor analysis** — adjacent AI-agent consoles and where neyox.ai sits
 - [ ] **Domain name strategy** — N/A: we are mapping a third-party app, not naming a new product
-- [ ] **Marketing best practices** — login/onboarding patterns worth borrowing
-- [ ] **Factual citations** — every external claim is tagged with a confidence level; unverified items are flagged, not asserted
-- [ ] **Revenue / monetization model** — how this maps to our PRIME DIRECTIVE focus areas
-- [ ] **Product / output selections** — explicit artifact shapes chosen (see Step 1A)
-- [ ] **Platform defaults** — N/A justification recorded (no new UI shipped by this WR)
-- [ ] **Artifact engine map** — every selected shape mapped to a repo engine/standard or gap
-- [ ] **Agent self-healing journal** — durable findings institutionalized back into revvel-standards
+- [x] **Marketing best practices** — login/onboarding patterns worth borrowing
+- [x] **Factual citations** — every external claim is tagged with a confidence level; unverified items are flagged, not asserted
+- [x] **Revenue / monetization model** — how this maps to our PRIME DIRECTIVE focus areas
+- [x] **Product / output selections** — explicit artifact shapes chosen (see Step 1A)
+- [x] **Platform defaults** — N/A justification recorded (no new UI shipped by this WR)
+- [x] **Artifact engine map** — every selected shape mapped to a repo engine/standard or gap
+- [x] **Agent self-healing journal** — durable findings institutionalized back into revvel-standards
 - [ ] **A/B test hypothesis** — N/A: no UI shipped in this pass
 - [ ] **Affiliate / reseller program** — N/A: no distribution network in scope
 

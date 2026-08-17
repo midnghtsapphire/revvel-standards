@@ -286,7 +286,7 @@ git commit -m "docs: add VerdictCI integration documentation"
 
 ## Learnings — What & Why
 
-N/A — completed
+N/A — pending Jules refinement
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

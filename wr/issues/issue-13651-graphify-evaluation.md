@@ -14,16 +14,16 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [ ] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [ ] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [ ] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [ ] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [ ] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [ ] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
-- [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
-- [ ] **Affiliate / reseller program** — only if a distribution network is in scope
+- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [x] **A/B test hypothesis** — only if a UI/UX component is being shipped
+- [x] **Affiliate / reseller program** — only if a distribution network is in scope
 
 ---
 
@@ -150,6 +150,6 @@ Graphify contrasts with standard manual code documentation approaches (e.g. stat
 
 ## Step 7: Save This Prompt & Findings
 
-- [ ] WR saved to `wr/issues/issue-13651-graphify-evaluation.md`
-- [ ] Product scaffolded at `products/graphify-evaluator`
-- [ ] Product docs completed: `README.md`, `CHANGELOG.md`, `DEPLOYMENT_GUIDE.md`, `GO_TO_MARKET.md`
+- [x] WR saved to `wr/issues/issue-13651-graphify-evaluation.md`
+- [x] Product scaffolded at `products/graphify-evaluator`
+- [x] Product docs completed: `README.md`, `CHANGELOG.md`, `DEPLOYMENT_GUIDE.md`, `GO_TO_MARKET.md`

@@ -249,7 +249,7 @@ The high confidence stems from clear evidence that Konfigured is archived and un
 
 ## Learnings — What & Why
 
-N/A — completed
+N/A — pending Jules refinement
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

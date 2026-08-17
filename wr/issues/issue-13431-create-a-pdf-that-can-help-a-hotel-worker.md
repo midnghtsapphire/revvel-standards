@@ -458,7 +458,7 @@
 
 ### Saved Locations
 
-- [ ] `/home/runner/work/revvel-standards/revvel-standards/wr/issues/issue-13431-create-a-pdf-that-can-help-a-hotel-worker.md` (this file)
+- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/issues/issue-13431-create-a-pdf-that-can-help-a-hotel-worker.md` (this file)
 - [ ] Pushed to revvel-standards repository
 - [ ] WR_TRACKER.md updated
 - [ ] Issue created in revvel-standards: #[number]
@@ -709,10 +709,10 @@ A concise, actionable field guide for front-desk staff, night auditors, housekee
 
 ## 6. Readiness Checklist
 
-- [ ] WR scoped and frontmatter populated
-- [ ] Target audience validated
-- [ ] Pricing model set
-- [ ] Distribution platforms selected
+- [x] WR scoped and frontmatter populated
+- [x] Target audience validated
+- [x] Pricing model set
+- [x] Distribution platforms selected
 - [ ] Draft content (Parts I–IV)
 - [ ] Legal review
 - [ ] Cover + layout

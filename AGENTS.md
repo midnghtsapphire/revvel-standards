@@ -115,7 +115,8 @@ revenue-generating products:
     ├── revvel-skill-runner/
     ├── creator-payout-tracker/
     ├── hvac-calc-service/
-    └── fda-design-controls/
+    ├── fda-design-controls/
+    └── agent-manifest-validator/
 ```
 
 Root-level code is intentionally lightweight — it provides linting, validation,
@@ -142,7 +143,13 @@ collisions:
 | FDA Design Controls | `products/fda-design-controls` | 3010 | Next.js. Interactive 21 CFR 820.30 compliance checklist and DHF generator with Markdown/CSV export. |
 | MedDevice Compliance Navigator | `products/meddevice-compliance-navigator` | 3010 | Next.js. Medical device compliance tracker: FDA 510(k), ISO 13485, IEC 60601, ISO 10993, EU MDR pathways. |
 | DevOps Dashboard | `products/devops-dashboard` | 3011 | Next.js. Real-time DevOps monitoring: self-healing PRs, CI/CD pipeline health, agent status, workflow run history. |
+| GoSQLX SQL Linter | `products/gosqlx-sql-linter` | 3012 | Next.js. Multi-dialect SQL lint playground + API aligned with GoSQLX rules; CI twin of `.github/workflows/gosqlx-lint.yml`. |
+| Self-Optimizing Star Magnet | `products/self-optimizing-star-magnet` | 3012 | Next.js. TOS-compliant organic GitHub star growth dashboard + hourly prioritization engine. |
+| Easy Env Vars | `products/easy-env-vars` | 3012 | Next.js. Safe briantist/ezenv env-block composer with injection/cycle validation and workflow export. |
+| Awesome Grok Build | `products/awesome-grok-build` | 3012 | Next.js. Grok Build skill browser + stack install planner (vendored DominikTobureto/awesome-grok-build). |
+| Agent Manifest Validator | `products/agent-manifest-validator` | 3012 | Next.js. SaaS guardrail for `registry_rules.json` agent personas (skill budget, domains, n8n alert preview). |
 | Personal Assistant | `products/personal-assistant` | 3012 | Next.js. Multi-source personal data (Gmail/Outlook/Yahoo/Keep/Drive/SMS) → PII-safe GitHub directory + commit plans. |
+| Greenfield UI Lab | `products/greenfield-ui-lab` | 3012 | Next.js. Modernized idea board + day wallet from rgn/greenfield-ui research patterns. |
 
 Start a specific product on its assigned port:
 
@@ -159,7 +166,13 @@ cd products/red-light-therapy-dosage-calculator && npm run dev -- -p 3010
 cd products/fda-design-controls  && npm run dev -- -p 3010
 cd products/meddevice-compliance-navigator && npm run dev -- -p 3010
 cd products/devops-dashboard     && npm run dev -- -p 3011
+cd products/gosqlx-sql-linter    && npm run dev -- -p 3012
+cd products/self-optimizing-star-magnet && npm run dev -- -p 3012
+cd products/easy-env-vars        && npm run dev -- -p 3012
+cd products/awesome-grok-build   && npm run dev -- -p 3012
+cd products/agent-manifest-validator && npm run dev -- -p 3012
 cd products/personal-assistant   && npm run dev -- -p 3012
+cd products/greenfield-ui-lab     && npm run dev -- -p 3012
 ```
 
 ### Running and testing

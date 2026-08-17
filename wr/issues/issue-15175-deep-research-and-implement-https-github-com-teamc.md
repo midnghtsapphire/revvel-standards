@@ -10,7 +10,7 @@
 ---
 
 
-**Issue:** N/A — completed
+**Issue:** N/A — pending Jules refinement  
 **Repository:** midnghtsapphire/revvel-standards  
 **Created:** 2026-07-05  
 **Researcher:** Jules (Google) + OpenRouter  
@@ -111,11 +111,11 @@ Blocked only if `OPENROUTER_API_KEY` is unavailable for lane research. The compe
 
 ### Acknowledgements
 
-- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [ ] Explicitly requested secondary items should not be silently deferred.
-- [ ] If the PR is partial, the blocker must be documented.
-- [ ] The PR should reflect the WR's required bundle and definition of done.
-- [ ] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
+- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [x] Explicitly requested secondary items should not be silently deferred.
+- [x] If the PR is partial, the blocker must be documented.
+- [x] The PR should reflect the WR's required bundle and definition of done.
+- [x] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
 
 ## Repository Metadata
 
@@ -134,16 +134,16 @@ Blocked only if `OPENROUTER_API_KEY` is unavailable for lane research. The compe
 
 ## Research Checklist
 
-<!-- Mark [ ] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
-<!-- Mark [ ] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-<!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [ ] only once the matching section is genuinely complete. -->
-- [ ] Deep market research
+<!-- Mark [x] ONLY when the matching section elsewhere in this WR is actually filled (it may appear above or below this checklist). Otherwise [ ] or "N/A — reason". -->
+<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+<!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
+- [x] Deep market research
 - [ ] BOM (implementation spike not yet committed)
-- [ ] Community chatter
-- [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
+- [x] Community chatter
+- [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
 - [ ] Domain strategy
 - [ ] Monetization
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+- [x] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Research Findings
 
@@ -241,7 +241,7 @@ Add a 'Bill of Materials & Cost Analysis' section that includes:
 4. Comparison table: pxpipe adoption cost vs. alternatives (RxJS, fp-ts, custom implementation)
 5. ROI calculation (if measurable)
 
-Mark in Research Checklist as [ ] only after this section is complete.
+Mark in Research Checklist as [x] only after this section is complete.
 - "Performance-optimized browser graphics"
 
 **First Conversion Events:**

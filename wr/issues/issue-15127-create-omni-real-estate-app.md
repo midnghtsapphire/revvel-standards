@@ -448,11 +448,11 @@ _No response_
 
 ### Acknowledgements
 
-- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [ ] Explicitly requested secondary items should not be silently deferred.
-- [ ] If the PR is partial, the blocker must be documented.
-- [ ] The PR should reflect the WR's required bundle and definition of done.
-- [ ] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
+- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [x] Explicitly requested secondary items should not be silently deferred.
+- [x] If the PR is partial, the blocker must be documented.
+- [x] The PR should reflect the WR's required bundle and definition of done.
+- [x] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
 
 ## Repository Metadata
 
@@ -465,8 +465,8 @@ _No response_
 
 ## Research Checklist
 
-<!-- Mark [ ] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-<!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [ ] only once the matching section is genuinely complete. -->
+<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+<!-- Select-all / prefill rule: treat every item below as pre-selected work. If the requester leaves them blank, the agent should research and fill them all, then check [x] only once the matching section is genuinely complete. -->
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -477,11 +477,11 @@ _No response_
 
 ## Executive Summary
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Step 1A — Product/Output Selections
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Step 2 — Deep Web Research
 
@@ -492,15 +492,15 @@ N/A — completed
      - Never present a bare percentage (e.g. "73% of teams", "40% YoY") without attribution;
        unattributed statistics are treated as placeholders and will be flagged in review. -->
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Step 3 — Requirements
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Recommendations
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Dependencies
 
@@ -514,12 +514,12 @@ N/A — completed
 
 | Field | Value |
 | --- | --- |
-| `depends_on` (prerequisite WRs) | N/A — completed |
-| Blocked by | N/A — completed |
-| Blocks (downstream WRs) | N/A — completed |
+| `depends_on` (prerequisite WRs) | N/A — pending Jules refinement |
+| Blocked by | N/A — pending Jules refinement |
+| Blocks (downstream WRs) | N/A — pending Jules refinement |
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Risks
 
-N/A — completed
+N/A — pending Jules refinement

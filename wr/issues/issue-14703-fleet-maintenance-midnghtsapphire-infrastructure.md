@@ -16,14 +16,14 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [ ] **Deep market research** — infrastructure tooling, IaC landscape, DevOps standards
-- [ ] **BOM (Bill of Materials)** — ranked tool/standard list: which approach is best, what it costs, why one beats another
-- [ ] **Community chatter** — GitHub discussions, Reddit DevOps: what teams struggle with in infra repos
-- [ ] **Competitor analysis** — existing infra patterns (Terraform, Pulumi, CDK, Ansible) and gaps
-- [ ] **Skills Vault audit** — which skills from `skills/` apply; load them before executing
-- [ ] **Persona selection** — choose the right persona(s) for this WR
-- [ ] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
-- [ ] **Agent self-healing journal** — institutionalize durable findings back into revvel-standards
+- [x] **Deep market research** — infrastructure tooling, IaC landscape, DevOps standards
+- [x] **BOM (Bill of Materials)** — ranked tool/standard list: which approach is best, what it costs, why one beats another
+- [x] **Community chatter** — GitHub discussions, Reddit DevOps: what teams struggle with in infra repos
+- [x] **Competitor analysis** — existing infra patterns (Terraform, Pulumi, CDK, Ansible) and gaps
+- [x] **Skills Vault audit** — which skills from `skills/` apply; load them before executing
+- [x] **Persona selection** — choose the right persona(s) for this WR
+- [x] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
+- [x] **Agent self-healing journal** — institutionalize durable findings back into revvel-standards
 - [ ] **Domain name strategy** — N/A: this is an internal infrastructure repo, not a public product
 - [ ] **Revenue / monetization model** — N/A: infrastructure is cost-center, not revenue-generating directly
 - [ ] **A/B test hypothesis** — N/A: no UI/UX component

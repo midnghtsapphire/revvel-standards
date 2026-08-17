@@ -1,2 +1,0 @@
-83: contains(github.event.comment.body, '/resolve-conflicts') ||
-84: contains(github.event.comment.body, '/resolve')

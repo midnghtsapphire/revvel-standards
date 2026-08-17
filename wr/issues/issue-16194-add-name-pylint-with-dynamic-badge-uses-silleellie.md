@@ -267,7 +267,7 @@ uses: Silleellie/pylint-github-action@301534453d02a5c2225254b73f2b2c451618b01f
 
 ## Learnings — What & Why
 
-N/A — completed
+N/A — pending Jules refinement
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

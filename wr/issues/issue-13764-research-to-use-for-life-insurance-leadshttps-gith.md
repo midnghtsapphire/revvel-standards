@@ -16,18 +16,18 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [ ] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [ ] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [ ] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [ ] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [ ] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [ ] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
-- [ ] **Product / output selections** — explicitly choose artifact shapes (API, CLI, MCP, skill, PDF, deck, video, UI, docs, agent automation)
-- [ ] **Platform defaults** — Website in Test on Vercel, DigitalOcean integration default, website auth/admin requirements when UI is in scope
-- [ ] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
-- [ ] **Agent self-healing journal** — institutionalize durable findings back into revvel-standards
+- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [x] **Product / output selections** — explicitly choose artifact shapes (API, CLI, MCP, skill, PDF, deck, video, UI, docs, agent automation)
+- [x] **Platform defaults** — Website in Test on Vercel, DigitalOcean integration default, website auth/admin requirements when UI is in scope
+- [x] **Artifact engine map** — map every selected shape to the repo engine/standard or document the gap
+- [x] **Agent self-healing journal** — institutionalize durable findings back into revvel-standards
 - [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped
 - [ ] **Affiliate / reseller program** — only if a distribution network is in scope
 
@@ -288,9 +288,9 @@ Converted sparse WR prompt into a concrete production wedge focusing on complian
 **Status Values:**
 
 - [ ] `eligible`
-- [ ] `manual_review`
-- [ ] `blocked`
-- [ ] `suppressed`
+- [x] `manual_review`
+- [x] `blocked`
+- [x] `suppressed`
 - [ ] Other: N/A
 
 **Score Range:** 0-100
@@ -311,11 +311,11 @@ Converted sparse WR prompt into a concrete production wedge focusing on complian
 
 **Audit Trail Required:**
 
-- [ ] Model version recorded
-- [ ] Factor values recorded
-- [ ] Explanation trail recorded
-- [ ] Actor and timestamp recorded
-- [ ] Manual-review route recorded when status is `manual_review`
+- [x] Model version recorded
+- [x] Factor values recorded
+- [x] Explanation trail recorded
+- [x] Actor and timestamp recorded
+- [x] Manual-review route recorded when status is `manual_review`
 
 **Async Safety Rule:** If the decision writes audit logs, calls APIs, or routes manual review, evaluate with `Promise.all` or `for...of` before filtering. Do not call async eligibility functions directly inside `Array.prototype.filter`.
 
@@ -407,12 +407,12 @@ Converted sparse WR prompt into a concrete production wedge focusing on complian
 
 **Required:**
 
-- [ ] Keyboard navigation
-- [ ] Screen reader support
-- [ ] Color contrast (WCAG AA)
-- [ ] Alt text for images
-- [ ] ARIA labels
-- [ ] Focus indicators
+- [x] Keyboard navigation
+- [x] Screen reader support
+- [x] Color contrast (WCAG AA)
+- [x] Alt text for images
+- [x] ARIA labels
+- [x] Focus indicators
 
 #### Performance Optimization
 
@@ -429,7 +429,7 @@ Converted sparse WR prompt into a concrete production wedge focusing on complian
 **revvel-affiliate-links MCP:**
 
 - [ ] MCP server configured
-- [ ] Affiliate links identified
+- [x] Affiliate links identified
 - [ ] Links integrated in content
 - [ ] Tracking configured
 
@@ -443,7 +443,7 @@ Converted sparse WR prompt into a concrete production wedge focusing on complian
 
 **Gumroad:**
 
-- [ ] Account setup
+- [x] Account setup
 - [ ] Products created
 - [ ] Integration implemented
 - [ ] Checkout tested
@@ -464,7 +464,7 @@ Converted sparse WR prompt into a concrete production wedge focusing on complian
 **To Implement:**
 
 - [ ] Google Analytics 4
-- [ ] Plausible Analytics (privacy-friendly alternative)
+- [x] Plausible Analytics (privacy-friendly alternative)
 - [ ] Revenue tracking
 - [ ] Conversion tracking
 - [ ] User behavior tracking
@@ -563,9 +563,9 @@ README.md, User Guide, API Docs.
 
 ### Saved Locations
 
-- [ ] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/serumwriter/life-insurance-crm.md` (this file)
-- [ ] Pushed to revvel-standards repository
-- [ ] WR_TRACKER.md updated
+- [x] `/home/runner/work/revvel-standards/revvel-standards/wr/repos/serumwriter/life-insurance-crm.md` (this file)
+- [x] Pushed to revvel-standards repository
+- [x] WR_TRACKER.md updated
 
 ### Implementation Tasks Created
 

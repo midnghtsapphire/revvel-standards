@@ -253,7 +253,7 @@ The automated CI/CD integration for BadgeHub publishing addresses a real, urgent
 
 ## Learnings — What & Why
 
-N/A — completed
+N/A — pending Jules refinement
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

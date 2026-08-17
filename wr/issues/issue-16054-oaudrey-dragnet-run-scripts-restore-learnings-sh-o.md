@@ -289,7 +289,7 @@ git cat-file -e "$BLOB_HASH" || { echo "ERROR: Blob $BLOB_HASH not found"; exit 
 
 ## Learnings — What & Why
 
-N/A — completed
+N/A — pending Jules refinement
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

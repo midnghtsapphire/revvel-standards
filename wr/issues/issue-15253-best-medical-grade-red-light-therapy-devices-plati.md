@@ -22,14 +22,14 @@ https://platinumtherapylights.com/de/blogs/news/best-medical-grade-red-light-the
 
 ## Research Checklist
 
-<!-- Mark [ ] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
-- [ ] Deep market research
+<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+- [x] Deep market research
 - [ ] BOM
-- [ ] Community chatter
+- [x] Community chatter
 - [ ] Competitor analysis — table present; subscription pricing for Reprise, OutLast, and RedLightOS not publicly listed (requires in-app check)
-- [ ] Domain strategy
-- [ ] Monetization
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+- [x] Domain strategy
+- [x] Monetization
+- [x] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Research Findings
 

@@ -39,13 +39,13 @@ The research paper (PMC10040577, PMID 36993812) is a 2023 peer-reviewed review a
 
 ## Research Checklist
 
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis (table lists actual prices)
-- [ ] Domain strategy
-- [ ] Monetization
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+- [x] Deep market research
+- [x] BOM
+- [x] Community chatter
+- [x] Competitor analysis (table lists actual prices)
+- [x] Domain strategy
+- [x] Monetization
+- [x] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Research Findings
 

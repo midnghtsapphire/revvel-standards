@@ -26,12 +26,12 @@ Build a compliance tool/app that implements the 7 best practices for medical mob
 
 ## Research Checklist
 
-- [ ] Deep market research
-- [ ] Community chatter
-- [ ] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
-- [ ] Domain strategy
-- [ ] Monetization
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+- [x] Deep market research
+- [x] Community chatter
+- [x] Competitor analysis (table MUST list actual prices or `Pricing data pending — competitive benchmark research required.`)
+- [x] Domain strategy
+- [x] Monetization
+- [x] Every statistic/percentage cited with a source link or labeled as an estimate
 - [ ] BOM
 
 <!-- revvel-research-findings -->

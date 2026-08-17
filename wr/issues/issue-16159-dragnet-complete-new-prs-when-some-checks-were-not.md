@@ -341,7 +341,7 @@ The query mentions "/dragnet" but provides no repository link. Based on research
 
 ## Learnings — What & Why
 
-N/A — completed
+N/A — pending Jules refinement
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

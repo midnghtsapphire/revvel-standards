@@ -41,7 +41,7 @@ revvel-standards change.
 
 ## Research Checklist
 
-<!-- Mark [ ] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
+<!-- Mark [x] ONLY when the matching section below is actually filled. Otherwise [ ] or "N/A — reason". -->
 - [ ] Deep market research
 - [ ] BOM
 - [ ] Community chatter
@@ -51,24 +51,24 @@ revvel-standards change.
 
 ## Executive Summary
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Step 1A — Product/Output Selections
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Step 2 — Deep Web Research
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Step 3 — Requirements
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Recommendations
 
-N/A — completed
+N/A — pending Jules refinement
 
 ## Risks
 
-N/A — completed
+N/A — pending Jules refinement

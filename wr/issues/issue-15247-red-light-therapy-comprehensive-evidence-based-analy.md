@@ -320,11 +320,11 @@ Create a device-agnostic, evidence-first red light therapy tool that:
 
 ### Acknowledgements
 
-- [ ] This WR defines a bundled outcome, not just a minimum acceptable patch.
-- [ ] Explicitly requested secondary items should not be silently deferred.
-- [ ] If the PR is partial, the blocker must be documented.
-- [ ] The PR should reflect the WR's required bundle and definition of done.
-- [ ] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
+- [x] This WR defines a bundled outcome, not just a minimum acceptable patch.
+- [x] Explicitly requested secondary items should not be silently deferred.
+- [x] If the PR is partial, the blocker must be documented.
+- [x] The PR should reflect the WR's required bundle and definition of done.
+- [x] After implementation, open a PR and continue the loop (reset routing labels / trigger downstream workflows) instead of stopping at the issue.
 
 ## Repository Metadata
 
@@ -337,13 +337,13 @@ Create a device-agnostic, evidence-first red light therapy tool that:
 
 ## Research Checklist
 
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis
-- [ ] Domain strategy
-- [ ] Monetization
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+- [x] Deep market research
+- [x] BOM
+- [x] Community chatter
+- [x] Competitor analysis
+- [x] Domain strategy
+- [x] Monetization
+- [x] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Executive Summary
 

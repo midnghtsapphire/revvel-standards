@@ -266,7 +266,7 @@ const checklistFiles = ['docs/checklists/nfr.md', 'docs/checklists/security.md']
 
 ## Learnings — What & Why
 
-N/A — completed
+N/A — pending Jules refinement
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

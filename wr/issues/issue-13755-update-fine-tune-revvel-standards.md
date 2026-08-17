@@ -14,14 +14,14 @@
 
 ### Research Checklist (pre-checked = required by default)
 
-- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
-- [ ] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
-- [ ] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [ ] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
-- [ ] **Marketing best practices** — what's working now in this niche + how our product improves it
-- [ ] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
-- [ ] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
+- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which API is best, what it costs, why one beats another
+- [x] **Community chatter** — Reddit, TrustPilot, forums: what buyers/users hate about current solutions
+- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [x] **Domain name strategy** — high-value patterns, TLD recommendations, SEO rationale
+- [x] **Marketing best practices** — what's working now in this niche + how our product improves it
+- [x] **Revenue / monetization model** — specific pricing, channels, subscription vs. one-time, reseller tier
+- [x] **Compliance & legal surface** — TCPA, FCRA, CAN-SPAM, ToS of every data source, licensing
 - [ ] **A/B test hypothesis** — only if a UI/UX component is being shipped *(N/A: no dedicated A/B test hypothesis is documented in this WR.)*
 - [ ] **Affiliate / reseller program** — only if a distribution network is in scope *(N/A: no affiliate, reseller, or distribution network scope is documented in this WR.)*
 
@@ -128,7 +128,7 @@ A commercial product that frames intelligence gathering as a sleek, accessible t
 
 ### Next Steps
 
-1. [ ] Research target demographics and map Meta ad strategy to product features.
+1. [x] Research target demographics and map Meta ad strategy to product features.
 2. [ ] Scaffold `osint-tracker-platform` production app using standard EXRUP methodology.
 3. [ ] Generate AI image assets using the provided prompts for the Meta campaign.
 

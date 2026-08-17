@@ -16,18 +16,18 @@
 
 ### Research Checklist
 
-- [ ] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
-- [ ] **BOM (Bill of Materials)** — ranked API/tool list per category: which tool is best, what it costs, why one beats another
-- [ ] **Community chatter** — Reddit, forums: what users hate about current solutions
-- [ ] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
-- [ ] **Domain name strategy** — N/A (MCP server integration, not a consumer product)
-- [ ] **Marketing best practices** — developer tooling positioning; how agent-first browser access differentiates Revvel
-- [ ] **Revenue / monetization model** — time-to-value acceleration; reduces manual QA overhead
-- [ ] **Compliance & legal surface** — token/secret extraction has CFAA, GDPR, and SCA implications; scoped and documented below
-- [ ] **Product / output selections** — MCP server entry, companion UI for testing, docs, `.mcp.json` wiring
-- [ ] **Platform defaults** — Website in Test on Vercel (GrowlingEyes), DigitalOcean integration default
-- [ ] **Artifact engine map** — mapped in closing section
-- [ ] **Agent self-healing journal** — institutionalized learnings in closing section
+- [x] **Deep market research** — keywords, search volumes, CPCs, industry mechanics, pricing
+- [x] **BOM (Bill of Materials)** — ranked API/tool list per category: which tool is best, what it costs, why one beats another
+- [x] **Community chatter** — Reddit, forums: what users hate about current solutions
+- [x] **Competitor analysis** — existing products, pricing, gaps, our competitive advantage
+- [x] **Domain name strategy** — N/A (MCP server integration, not a consumer product)
+- [x] **Marketing best practices** — developer tooling positioning; how agent-first browser access differentiates Revvel
+- [x] **Revenue / monetization model** — time-to-value acceleration; reduces manual QA overhead
+- [x] **Compliance & legal surface** — token/secret extraction has CFAA, GDPR, and SCA implications; scoped and documented below
+- [x] **Product / output selections** — MCP server entry, companion UI for testing, docs, `.mcp.json` wiring
+- [x] **Platform defaults** — Website in Test on Vercel (GrowlingEyes), DigitalOcean integration default
+- [x] **Artifact engine map** — mapped in closing section
+- [x] **Agent self-healing journal** — institutionalized learnings in closing section
 - [ ] **A/B test hypothesis** — N/A (no new UI component shipped in this WR)
 - [ ] **Affiliate / reseller program** — N/A (internal tooling)
 

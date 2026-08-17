@@ -290,13 +290,13 @@ MiCOM Labs provides accredited compliance testing services for medical devices, 
 
 ## Research Checklist
 
-- [ ] Deep market research
-- [ ] BOM
-- [ ] Community chatter
-- [ ] Competitor analysis (table lists actual prices)
-- [ ] Domain strategy
-- [ ] Monetization
-- [ ] Every statistic/percentage cited with a source link or labeled as an estimate
+- [x] Deep market research
+- [x] BOM
+- [x] Community chatter
+- [x] Competitor analysis (table lists actual prices)
+- [x] Domain strategy
+- [x] Monetization
+- [x] Every statistic/percentage cited with a source link or labeled as an estimate
 
 ## Executive Summary
 

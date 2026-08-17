@@ -22,8 +22,8 @@
 - [ ] **Marketing best practices** — Not included in this WR revision; pending dedicated research pass.
 - [ ] **Revenue / monetization model** — Not included in this WR revision; pending dedicated research pass.
 - [ ] **Compliance & legal surface** — Not included in this WR revision; pending dedicated research pass.
-- [ ] **A/B test hypothesis** — N/A
-- [ ] **Affiliate / reseller program** — N/A
+- [x] **A/B test hypothesis** — N/A
+- [x] **Affiliate / reseller program** — N/A
 
 ---
 
@@ -98,7 +98,7 @@ We should map this prompt into the existing EXRUP pipeline by proposing a "Brand
 
 ### Next Steps
 
-1. [ ] Research Revvel Emblem generation requirements.
+1. [x] Research Revvel Emblem generation requirements.
 2. [ ] Update `templates/brand/REVVEL_EMBLEM_STANDARD.md` with the Master Prompt.
 3. [ ] Scaffold a "Brand Generation Tool" app using standard EXRUP methodology.
 

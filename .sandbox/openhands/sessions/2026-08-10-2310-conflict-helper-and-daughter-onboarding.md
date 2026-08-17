@@ -17,7 +17,7 @@
 5. Jules Render/MCP screenshot — offering Render MCP so Jules can fix preview
    deploys: "so we can use render through her"
 6. Lint failure paste — 14 errors on merged PRs 17147 & 17163 that landed on main
-7. "you dont follow your own sandbox specs hahahahahahahahahhahaha" —
+7. "you dont follow your own sandbox specs hahahahahahahahahhahaha" — 
    the correct call-out that I had NOT been writing this session to `.sandbox/`
    at all, in violation of the very standard I wrote earlier tonight
 
