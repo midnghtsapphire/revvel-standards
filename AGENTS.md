@@ -160,6 +160,15 @@ collisions:
 | FDA Design Controls | `products/fda-design-controls` | 3010 | Next.js. Interactive 21 CFR 820.30 compliance checklist and DHF generator with Markdown/CSV export. |
 | MedDevice Compliance Navigator | `products/meddevice-compliance-navigator` | 3010 | Next.js. Medical device compliance tracker: FDA 510(k), ISO 13485, IEC 60601, ISO 10993, EU MDR pathways. |
 | DevOps Dashboard | `products/devops-dashboard` | 3011 | Next.js. Real-time DevOps monitoring: self-healing PRs, CI/CD pipeline health, agent status, workflow run history. |
+| WR Title Studio | `products/wr-title-studio` | 3012 | Next.js. Autocreate clean generic `[WR]` titles from messy drafts; keyless template engine. |
+| GOAP Swarm Console | `products/goap-swarm-console` | 3012 | Next.js. Symbolic GOAP planner + swarm allocator, research eval, Markdown/CSV export. |
+| GoSQLX SQL Linter | `products/gosqlx-sql-linter` | 3012 | Next.js. Multi-dialect SQL lint playground + API aligned with GoSQLX rules; CI twin of `.github/workflows/gosqlx-lint.yml`. |
+| Easy Env Vars | `products/easy-env-vars` | 3012 | Next.js. Safe briantist/ezenv env-block composer with injection/cycle validation and workflow export. |
+| MergeMe Status | `products/mergeme-status` | 3012 | Next.js. mergeme.dev wiring status console + owner Slack/GitHub App setup checklist (WR #16824). |
+| pplx-api Skills Console | `products/pplx-api-skills` | 3012 | Next.js. Perplexity API integration with skills/tools framework, auth, rate limits, BOM lookup, monitoring. Needs `PERPLEXITY_API_KEY` for live mode (mock works without). |
+| Caspian Channel Console | `products/caspian-channel-console` | 3012 | Static SPA. Multi-channel agent planner/simulator from Caspian SDK research (WR-16898). |
+| Greenfield UI Lab | `products/greenfield-ui-lab` | 3012 | Next.js. Modernized idea board + day wallet from rgn/greenfield-ui research patterns. |
+| Groq Code Review | `products/groq-code-review` | 3012 | Next.js. Groq-powered PR review SaaS + composite Action with large-diff chunking and local fallback. |
 | Star Optimizer | `products/star-optimizer` | 3012 | Next.js. Rank starred GitHub repos by activity/recency; pairs with `scripts/prioritize_stars.py` automation. |
 
 Start a specific product on its assigned port:
@@ -177,6 +186,14 @@ cd products/red-light-therapy-dosage-calculator && npm run dev -- -p 3010
 cd products/fda-design-controls  && npm run dev -- -p 3010
 cd products/meddevice-compliance-navigator && npm run dev -- -p 3010
 cd products/devops-dashboard     && npm run dev -- -p 3011
+cd products/wr-title-studio      && npm run dev -- -p 3012
+cd products/gosqlx-sql-linter    && npm run dev -- -p 3012
+cd products/easy-env-vars        && npm run dev -- -p 3012
+cd products/mergeme-status       && npm run dev -- -p 3012
+cd products/pplx-api-skills      && npm run dev -- -p 3012
+# Static: python3 -m http.server 3012 -d products/caspian-channel-console/public
+cd products/greenfield-ui-lab     && npm run dev -- -p 3012
+cd products/groq-code-review      && npm run dev -- -p 3012
 cd products/star-optimizer       && npm run dev -- -p 3012
 ```
 
