@@ -85,6 +85,9 @@ ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # abandoned upstream cannot stick a required check. Accept the exact action
   # so the quarterly audit does not re-open a tracking WR every run.
   "ruthtxh/markdown-image-alt-text-checker"
+  # WR #15811: Renovate config CI gate (renovate-config-validator.yml). Active
+  # releases through v2.1.0; pinned to the full v2.1.0 commit SHA.
+  "suzuki-shunsuke/github-action-renovate-config-validator"
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────

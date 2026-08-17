@@ -1,0 +1,18 @@
+{
+  "name": "@revvel/browserslist-config",
+  "version": "1.0.0",
+  "description": "Shared Browserslist configuration for Revvel products",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "browserslist",
+    "browserslist-config",
+    "revvel"
+  ],
+  "license": "MIT"
+}
