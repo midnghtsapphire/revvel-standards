@@ -165,7 +165,6 @@ scripts/search_orchestrator.py::F401 3
 scripts/search_orchestrator.py::F841 2
 scripts/update-rotation-metadata.py::F541 2
 scripts/update-rotation-metadata.py::W293 11
-scripts/validate_jsonl.py::E999 1
 scripts/wr_rewrite.py::W503 1
 scripts/wr_rewrite.py::W504 1
 skills/project-router/detect.py::E241 12
