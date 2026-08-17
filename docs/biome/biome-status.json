@@ -1,19 +1,48 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-16T19:13:28.813Z",
+  "generated_at": "2026-08-16T23:03:45.280Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "0/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 0,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [],
+        "recent_failures": [
+          {
+            "id": 31978035366,
+            "name": "Daily WR & PR Summary",
+            "path": ".github/workflows/daily-wr-summary.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31978035366",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31976831404,
+            "name": "WR Field Filler — no blanks ever ship",
+            "path": ".github/workflows/wr-field-filler.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31976831404",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31976513410,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31976513410",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31976513004,
+            "name": ".github/workflows/conflict-helper.yml",
+            "path": ".github/workflows/conflict-helper.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31976513004",
+            "conclusion": "failure"
+          }
+        ],
         "stuck": []
       }
     },
