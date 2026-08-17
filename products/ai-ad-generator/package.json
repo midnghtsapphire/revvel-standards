@@ -14,7 +14,7 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "cheerio": "^1.0.0",
-    "undici": "^7.29.0",
+    "undici": "^8.10.0",
     "recharts": "^2.15.3",
     "@napi-rs/canvas": "^1.0.5"
   },
