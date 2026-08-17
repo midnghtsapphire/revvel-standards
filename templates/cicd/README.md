@@ -35,7 +35,6 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `gass-scoring.yml` | On-chain PR quality score via O2 Oracle ([`michael-bey/gass`](https://github.com/michael-bey/gass)) | `.github/workflows/gass-scoring.yml` |
 | `iara-code-reviewer.yml` | Iara AI reviewer — bugs / SAST / performance ([`felipefernandes/iara`](https://github.com/felipefernandes/iara)) | `.github/workflows/iara-code-reviewer.yml` |
 | `bc-ai-code-reviewer.yml` | Business Central AL-specific AI review ([`ACSG-BizApps/bc-ai-reviewer`](https://github.com/ACSG-BizApps/bc-ai-reviewer)) | `.github/workflows/bc-ai-code-reviewer.yml` |
-| `xai-review-oleg-fork.yml` | Multi-mode AI review via OpenRouter — summary / inline / context / reply ([`HomeBake/ai-review`](https://github.com/HomeBake/ai-review), Marketplace [xai-review-oleg-fork](https://github.com/marketplace/actions/xai-review-oleg-fork)) | `.github/workflows/xai-review-oleg-fork.yml` |
 | `google-cloud-identity-verify.yml` | Verify Google Cloud Identity / Workforce Identity Federation configuration (weekly + on-demand) | `.github/workflows/google-cloud-identity-verify.yml` |
 | `get-saml-identity.yml` | Resolve GitHub username to SAML/SSO corporate email in CI/CD workflows | `.github/workflows/get-saml-identity.yml` |
 | `hog-heaven-release-annotations.yml` | PostHog release annotations via Hog Heaven — marks releases on analytics charts ([`joggrdocs/hog-heaven`](https://github.com/joggrdocs/hog-heaven)) | `.github/workflows/hog-heaven-release-annotations.yml` |
