@@ -9,16 +9,18 @@ M2 (critic gate, sensitivity) and M3 (REST wrapper) are intentionally absent.
 
 from __future__ import annotations
 
+import json
 import os
 import sys
-from dataclasses import dataclass
 from pathlib import Path as _Path
-from typing import Any, Callable
 
 # Allow `python path/to/server.py` without an editable install.
 _ROOT = _Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
+
+from dataclasses import dataclass
+from typing import Any, Callable
 
 try:
     from fastmcp import FastMCP
@@ -77,13 +79,9 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
             )
 
 
-# These three must stay below the sys.path bootstrap above: they resolve
-# through _ROOT, which only exists on sys.path after that insert, so hoisting
-# them to the top would break `python path/to/server.py`. Suppression is
-# per-line and names the rule so it stays narrow and auditable.
-from ensemble_ahp.config import DEFAULT_JUDGES, DEFAULT_JUDGE_COUNT  # noqa: E402
-from ensemble_ahp.judges import force_mock  # noqa: E402
-from ensemble_ahp.pipeline import PipelineInput, run_pipeline  # noqa: E402
+from ensemble_ahp.config import DEFAULT_JUDGES, DEFAULT_JUDGE_COUNT
+from ensemble_ahp.judges import force_mock
+from ensemble_ahp.pipeline import PipelineInput, run_pipeline
 
 mcp = FastMCP(
     name="Ensemble AHP Engine",

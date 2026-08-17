@@ -206,7 +206,7 @@ class DopplerMCP:
                     await asyncio.sleep(2 ** attempt)
                     continue
                 raise
-            except Exception:
+            except Exception as e:
                 if attempt < 2:
                     await asyncio.sleep(2 ** attempt)
                     continue
@@ -227,9 +227,7 @@ class DopplerMCP:
         return {"project": project, "config": config, "secrets": [{"name": s["name"]} for s in secrets], "count": len(secrets)}
 
     async def _get_secret(self, name: str, project: str, config: str) -> dict:
-        # Call retained for its side effects (existence check / auth failure);
-        # the value is deliberately never returned to the caller.
-        await self._request("GET", f"/projects/{project}/configs/{config}/secrets/{name}")
+        data = await self._request("GET", f"/projects/{project}/configs/{config}/secrets/{name}")
         return {"name": name, "project": project, "config": config, "value": "***REDACTED***"}
 
     async def _set_secret(self, name: str, value: str, project: str, config: str) -> dict:

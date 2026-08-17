@@ -121,10 +121,10 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment on issue/PR when requested
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.issue_number != '' }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs['issue_number'] != '' }}
         uses: actions/github-script@v9.0.0
         env:
-          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          ISSUE_NUMBER: ${{ inputs['issue_number'] }}
         with:
           script: |
             const fs = require('fs');
@@ -145,7 +145,7 @@ jobs:
       - name: Fail when unwired (dispatch default / push)
         if: |
           (github.event_name == 'push') ||
-          (github.event_name == 'workflow_dispatch' && inputs.fail_if_unwired)
+          (github.event_name == 'workflow_dispatch' && inputs['fail_if_unwired'])
         run: |
           code="${{ steps.audit.outputs.exit_code }}"
           if [ "$code" != "0" ]; then

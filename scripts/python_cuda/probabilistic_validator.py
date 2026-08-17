@@ -296,7 +296,7 @@ def extract_json_payload(text: str) -> JSONType:
         end = raw.rfind(close_c)
         if start != -1 and end > start:
             try:
-                return json.loads(raw[start:end + 1])
+                return json.loads(raw[start : end + 1])
             except json.JSONDecodeError:
                 continue
 
@@ -996,10 +996,7 @@ def _self_test() -> int:
     )
     check("self_correct_recovers", result.ok is True, str(result.to_dict()))
     check("self_correct_two_attempts", result.attempts == 2, f"attempts={result.attempts}")
-    check(
-        "self_correct_prompt_mentions_error",
-        any("invalid response" in c.lower() or "Error" in c or "error" in c for c in calls[1:]),
-    )
+    check("self_correct_prompt_mentions_error", any("invalid response" in c.lower() or "Error" in c or "error" in c for c in calls[1:]))
 
     # Exhausted retries → fallback, never exception.
     def always_bad(_p: str, _m: Sequence[Mapping[str, str]]) -> str:

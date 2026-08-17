@@ -244,11 +244,11 @@ def gas_guard_check(gas_cost_usd: float, accumulated_yield_usd: float, max_ratio
     ratio = gas_cost_usd / accumulated_yield_usd
     if ratio > max_ratio:
         return False, (
-            f"Gas cost (${gas_cost_usd:.4f}) is {ratio * 100:.1f}% of yield "
-            f"(${accumulated_yield_usd:.4f}) — exceeds {max_ratio * 100:.0f}% threshold. "
+            f"Gas cost (${gas_cost_usd:.4f}) is {ratio*100:.1f}% of yield "
+            f"(${accumulated_yield_usd:.4f}) — exceeds {max_ratio*100:.0f}% threshold. "
             "Wait for more yield to accumulate."
         )
-    return True, f"Gas guard passed — ratio {ratio * 100:.2f}% < {max_ratio * 100:.0f}%"
+    return True, f"Gas guard passed — ratio {ratio*100:.2f}% < {max_ratio*100:.0f}%"
 
 
 def estimate_accumulated_yield(position_usd: float, apy: float, hours_since_last: float = 24.0) -> float:

@@ -66,7 +66,7 @@ jobs:
         id: payload
         env:
           DISPATCH_PAYLOAD: ${{ toJson(github.event.client_payload) }}
-          INPUT_JSON: ${{ inputs.event_json }}
+          INPUT_JSON: ${{ inputs['event_json'] }}
         run: |
           mkdir -p /tmp/runtime-gateway
           if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
@@ -85,7 +85,7 @@ jobs:
           GH_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs['dry_run'] && 'true' || 'false' }}
           FAILURE_LEDGER_PATH: ${{ env.FAILURE_LEDGER_PATH }}
         run: |
           node scripts/runtime-gateway-triage.js --event-file /tmp/runtime-gateway/event.json

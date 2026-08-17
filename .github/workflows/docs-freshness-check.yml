@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out PR
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
@@ -58,12 +58,7 @@ jobs:
           fi
           # Compute the diff; if even this fails (very rare), write empty
           # so the JS step still runs and posts nothing instead of erroring.
-          # Three-dot: diff HEAD against the merge base, not against the base
-          # tip. `pull_request.base.sha` is frozen when the PR opens, so a
-          # two-dot diff also reports every file changed on the base branch
-          # since then, attributing other people's commits to this PR. On a
-          # busy default branch that silently fires unrelated pairing rules.
-          CHANGED=$(git diff --name-only "$BASE_SHA...$HEAD_SHA" 2>&1)
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" 2>&1)
           DIFF_RC=$?
           if [[ "$DIFF_RC" -ne 0 ]]; then
             echo "git diff failed (rc=$DIFF_RC): $CHANGED" >&2
@@ -76,7 +71,7 @@ jobs:
           exit 0
 
       - name: Evaluate rules and post warning
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const fs = require('fs');

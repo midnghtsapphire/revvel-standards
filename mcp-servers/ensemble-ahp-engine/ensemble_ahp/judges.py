@@ -575,7 +575,7 @@ def parse_json_object(text: str) -> dict[str, Any]:
     start = text.find("{")
     end = text.rfind("}")
     if start >= 0 and end > start:
-        val = json.loads(text[start:end + 1])
+        val = json.loads(text[start : end + 1])
         if isinstance(val, dict):
             return val
     raise ValueError("no JSON object in model response")

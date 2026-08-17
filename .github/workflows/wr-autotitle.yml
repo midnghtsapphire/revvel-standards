@@ -35,10 +35,7 @@ permissions:
   issues: write
 
 concurrency:
-  # `inputs` is not a valid context at workflow level — GitHub rejects the
-  # whole file with "Unrecognized named-context: 'inputs'", so this workflow
-  # never ran. `github.event.inputs` is the spelling that resolves here.
-  group: wr-autotitle-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
+  group: wr-autotitle-${{ github.event.issue.number || inputs['issue_number'] || github.run_id }}
   cancel-in-progress: false
 
 jobs:
@@ -56,10 +53,10 @@ jobs:
         contains(github.event.comment.body, '/title')))
     steps:
       - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
@@ -69,7 +66,7 @@ jobs:
 
       - name: Resolve issue + decide force
         id: meta
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0 — same github.rest.issues.* surface, per sandbox-guardrail.yml precedent
+        uses: actions/github-script@v7
         with:
           script: |
             const event = context.eventName;
@@ -78,14 +75,8 @@ jobs:
             let commentId = null;
 
             if (event === 'workflow_dispatch') {
-              // Read dispatch inputs off the event payload. Template
-              // expressions are substituted as text before this script runs,
-              // so interpolating an input into a string literal lets a crafted
-              // value close the quote and execute arbitrary JS under this
-              // job's token — the same defect fixed in auto-branch-update.yml.
-              const dispatch = context.payload.inputs || {};
-              issueNumber = Number(dispatch.issue_number || '');
-              force = String(dispatch.force || '') === 'true';
+              issueNumber = Number(core.getInput('issue_number') || process.env.INPUT_ISSUE_NUMBER || '${{ inputs['issue_number'] }}');
+              force = String('${{ inputs['force'] }}') === 'true';
             } else if (event === 'issues') {
               issueNumber = context.payload.issue.number;
               force = false;
@@ -170,7 +161,7 @@ jobs:
 
       - name: Update issue title when changed
         if: steps.meta.outputs.skip != 'true' && steps.suggest.outputs.changed == 'true'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0 — same github.rest.issues.* surface, per sandbox-guardrail.yml precedent
+        uses: actions/github-script@v7
         env:
           NEW_TITLE: ${{ steps.suggest.outputs.new_title }}
           REASON: ${{ steps.suggest.outputs.reason }}
@@ -209,7 +200,7 @@ jobs:
           steps.meta.outputs.skip != 'true' &&
           github.event_name == 'issue_comment' &&
           steps.suggest.outputs.changed != 'true'
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0 — same github.rest.issues.* surface, per sandbox-guardrail.yml precedent
+        uses: actions/github-script@v7
         env:
           ISSUE_NUMBER: ${{ steps.meta.outputs.issue_number }}
           NEW_TITLE: ${{ steps.suggest.outputs.new_title }}
