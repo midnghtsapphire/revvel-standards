@@ -24,11 +24,16 @@ git checkout <feature-branch>
 git rebase origin/main
 
 # 3. Resolve conflicts per priority above
-# 4. Run tests
-npm test || pytest || true
+# 4. Run the test suite that covers the touched code. It must exit 0 —
+#    never chain `|| true` (or fall through to another runner), which masks
+#    real failures right before the push.
+npm test        # Node changes
+pytest          # Python changes
 
-# 5. Force-push with lease
-git push --force-with-lease
+# 5. Only after tests pass, update the remote feature branch. A rebase
+#    rewrites history, so a plain push is rejected; use --force-with-lease
+#    scoped to your feature branch (never main, never a bare force push).
+git push --force-with-lease origin <feature-branch>
 ```
 
 ## Automated Bot Review Checklist
