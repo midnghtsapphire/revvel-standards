@@ -81,32 +81,6 @@ def load_skills():
 def category_name(skill):
     return skill.get("category") or "Other"
 
-def group_skills_by_category(skills):
-    """Group skills by category, preserving discovery order."""
-    order, groups = [], {}
-    for s in skills:
-        cat = category_name(s)
-        if cat not in groups:
-            groups[cat] = []
-            order.append(cat)
-        groups[cat].append(s)
-    return order, groups
-
-def format_skill_title(skill):
-    """Extract the best display title for a skill."""
-    return skill.get("title", skill.get("name", ""))
-
-def format_skill_persona(skill):
-    """Format the persona string if one exists."""
-    if skill.get("persona"):
-        return f"Persona: {skill['persona']}"
-    return None
-
-def format_skill_triggers(skill):
-    """Format the trigger list, limited to the first few."""
-    if skill.get("triggers"):
-        return "Triggers: " + ", ".join(skill["triggers"][:6])
-    return None
 
 def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
                      skills, version_line="", price_line="", closing_title="What's inside",
@@ -127,7 +101,14 @@ def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
         PageTemplate(id="body", frames=[frame], onPage=footer),
     ])
 
-    order, groups = group_skills_by_category(skills)
+    order, groups = [], {}
+    for s in skills:
+        cat = category_name(s)
+        if cat not in groups:
+            groups[cat] = []
+            order.append(cat)
+        groups[cat].append(s)
+    n_cats = len(groups)
 
     story = []
 
@@ -149,7 +130,7 @@ def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
         "knows the rules, workflow and tools for that domain — no trial and error.", P_LEAD))
     story.append(Spacer(1, 8))
     story.append(Paragraph(
-        f"This pack contains <b>{len(skills)} skills</b> across <b>{len(groups)} categories</b>. "
+        f"This pack contains <b>{len(skills)} skills</b> across <b>{n_cats} categories</b>. "
         "Each entry below lists what it does and the trigger keywords that activate it.", P_LEAD))
     story.append(Spacer(1, 12))
 
@@ -176,13 +157,11 @@ def render_catalogue(out_path, *, doc_title, hero_kicker, hero_title, hero_sub,
             "catlabel", fontName="Helvetica-Bold", fontSize=9.5,
             textColor=ACCENT, spaceBefore=10, spaceAfter=2))]))
         for s in groups[cat]:
-            rows = [Paragraph(format_skill_title(s), H_SKILL)]
-            persona = format_skill_persona(s)
-            if persona:
-                rows.append(Paragraph(persona, P_TRIG))
-            triggers = format_skill_triggers(s)
-            if triggers:
-                rows.append(Paragraph(triggers, P_TRIG))
+            rows = [Paragraph(s.get("title", s.get("name", "")), H_SKILL)]
+            if s.get("persona"):
+                rows.append(Paragraph(f"Persona: {s['persona']}", P_TRIG))
+            if s.get("triggers"):
+                rows.append(Paragraph("Triggers: " + ", ".join(s["triggers"][:6]), P_TRIG))
             tbl = Table([[r] for r in rows], colWidths=[doc.width])
             tbl.setStyle(TableStyle([
                 ("LEFTPADDING", (0, 0), (-1, -1), 10), ("RIGHTPADDING", (0, 0), (-1, -1), 10),
