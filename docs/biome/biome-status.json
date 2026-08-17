@@ -1,31 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-17T09:14:57.720Z",
+  "generated_at": "2026-08-17T11:08:02.951Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32009770844,
-            "name": "Vine → Marketplace Automation",
-            "path": ".github/workflows/vine-to-marketplace.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32009770844",
+            "id": 32023418267,
+            "name": ".github/workflows/conflict-helper.yml",
+            "path": ".github/workflows/conflict-helper.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32023418267",
             "conclusion": "failure"
           },
           {
-            "id": 32009493598,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32009493598",
+            "id": 32023417659,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32023417659",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32023400889,
+            "name": ".github/workflows/conflict-helper.yml",
+            "path": ".github/workflows/conflict-helper.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32023400889",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32023400037,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32023400037",
             "conclusion": "failure"
           }
         ],
