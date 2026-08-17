@@ -89,6 +89,9 @@ labels:
   - name: bnat
   - name: deep-research
   - name: work-request
+  - name: ready-to-merge
+  - name: has-conflicts
+  - name: "review:stuck"
 
 aliases:
   "priority-p0": "priority:p0"

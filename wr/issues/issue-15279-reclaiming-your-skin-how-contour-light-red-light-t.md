@@ -5,6 +5,12 @@
 **Owner:** Product / Legal
 **Last Updated:** 2025
 
+**Privacy Impact Assessment:** [compliance/wr-15279/privacy-impact-assessment.md](../../compliance/wr-15279/privacy-impact-assessment.md)
+
+## Engineering Checklist
+
+- [x] Privacy Impact Assessment completed — see `compliance/wr-15279/privacy-impact-assessment.md`
+
 ---
 
 ## 1. Opportunity Summary
