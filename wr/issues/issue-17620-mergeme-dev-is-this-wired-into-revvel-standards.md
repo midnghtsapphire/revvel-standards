@@ -52,4 +52,3 @@ Pricing data pending — competitive benchmark research required.
 ## Learnings — What & Why
 
 Through the audit of the repository's `.github/` configurations and workflows, we confirmed that `mergeme.dev` is not actively used in `revvel-standards`. The fleet relies on existing GitHub branch protection rules and other native integrations for PR management. This underscores the importance of maintaining an accurate index of our active dependencies to avoid adding overlapping tools in our CI/CD pipeline.
-
