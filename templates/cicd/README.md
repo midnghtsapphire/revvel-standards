@@ -35,6 +35,7 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `gass-scoring.yml` | On-chain PR quality score via O2 Oracle ([`michael-bey/gass`](https://github.com/michael-bey/gass)) | `.github/workflows/gass-scoring.yml` |
 | `iara-code-reviewer.yml` | Iara AI reviewer — bugs / SAST / performance ([`felipefernandes/iara`](https://github.com/felipefernandes/iara)) | `.github/workflows/iara-code-reviewer.yml` |
 | `bc-ai-code-reviewer.yml` | Business Central AL-specific AI review ([`ACSG-BizApps/bc-ai-reviewer`](https://github.com/ACSG-BizApps/bc-ai-reviewer)) | `.github/workflows/bc-ai-code-reviewer.yml` |
+| `xai-review-oleg-fork.yml` | Multi-mode AI review via OpenRouter — summary / inline / context / reply ([`HomeBake/ai-review`](https://github.com/HomeBake/ai-review), Marketplace [xai-review-oleg-fork](https://github.com/marketplace/actions/xai-review-oleg-fork)) | `.github/workflows/xai-review-oleg-fork.yml` |
 | `google-cloud-identity-verify.yml` | Verify Google Cloud Identity / Workforce Identity Federation configuration (weekly + on-demand) | `.github/workflows/google-cloud-identity-verify.yml` |
 | `get-saml-identity.yml` | Resolve GitHub username to SAML/SSO corporate email in CI/CD workflows | `.github/workflows/get-saml-identity.yml` |
 | `hog-heaven-release-annotations.yml` | PostHog release annotations via Hog Heaven — marks releases on analytics charts ([`joggrdocs/hog-heaven`](https://github.com/joggrdocs/hog-heaven)) | `.github/workflows/hog-heaven-release-annotations.yml` |
@@ -47,6 +48,7 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 | `eco-infra-action.yml` | Uploads infra plan JSON to Eco Infra for emissions reporting ([`eco-infra/ecoinfra-action`](https://github.com/eco-infra/ecoinfra-action)) | `.github/workflows/eco-infra-action.yml` |
 | `naukri-resume-action.yml` | Refreshes Naukri resumes from a self-hosted runner ([`Prateek-Wayne/naukri-resume-action`](https://github.com/Prateek-Wayne/naukri-resume-action)) | `.github/workflows/naukri-resume-action.yml` |
 | `reno-auto.yml` | AI-generated reno release notes for new PRs via OpenAI ([`vblagoje/reno-auto`](https://github.com/vblagoje/reno-auto)) | `.github/workflows/reno-auto.yml` |
+| `xai-code-review.yml` | xAI Grok PR code review — advisory comments via Grok ([`tarmojussila/xai-code-review`](https://github.com/tarmojussila/xai-code-review)) | `.github/workflows/xai-code-review.yml` |
 
 > **OpenRouter-backed actions.** The templates from `ai-weekly-changelog.yml` through 
 > `bc-ai-code-reviewer.yml` all share the single `OPENROUTER_API_KEY` secret 
@@ -63,6 +65,10 @@ These are the **mandatory** CI/CD templates for every Revvel/MIDNGHTSAPPHIRE app
 > `naukri-resume-action.yml` are documented together in
 > [`docs/ECO_MARKETPLACE_ACTIONS.md`](../../docs/ECO_MARKETPLACE_ACTIONS.md),
 > including latest release pins, repo fit, and rollout caveats.
+> **xAI / Grok review.** `xai-code-review.yml` uses the existing `XAI_API_KEY`
+> secret (Vault path `revvel/shared/llm/xai`). Soft-skips when the key is
+> missing and is advisory-only (`continue-on-error`). See
+> [`docs/XAI_CODE_REVIEW.md`](../../docs/XAI_CODE_REVIEW.md).
 
 ---
 
