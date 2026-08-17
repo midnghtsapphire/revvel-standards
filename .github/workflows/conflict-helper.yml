@@ -220,6 +220,7 @@ concurrency:
           ref: ${{ steps.pr.outputs.head_sha }}
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
 
       - name: Configure git
       - name: Detect conflicts and analyze each hunk
