@@ -488,8 +488,10 @@ def _class_for_status(status: int) -> str:
     if status == 429:
         return "lane-429"
     if status in {500, 502, 503, 504}:
-        key = f"lane-{status}"
-        return key
+        # Ledger schema only allows the aggregate "lane-5xx" class (see
+        # ledger.ALLOWED_CLASSES); exact per-status classes like "lane-500"
+        # would raise ValueError and crash failover.
+        return "lane-5xx"
     return "other"
 
 

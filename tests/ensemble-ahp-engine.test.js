@@ -307,6 +307,36 @@ print(json.dumps({
   assert(data.has_429 === true, '429 ledgered');
 });
 
+test('5xx failover ledgers the schema-allowed lane-5xx class', () => {
+  const data = pyJson(`
+import json, tempfile, os
+from ensemble_ahp.ledger import FailureLedger
+from ensemble_ahp.judges import JudgeClient, _class_for_status
+from ensemble_ahp.config import DEFAULT_JUDGES
+def http_post(url, payload, headers, timeout=60.0):
+    return 503, {"error": "Service Unavailable"}
+fd, path = tempfile.mkstemp(suffix='.jsonl')
+os.close(fd)
+led = FailureLedger(path)
+client = JudgeClient(led, api_key='test-key', mock=False, sleeper=lambda s: None, http_post=http_post, backoff_seconds=30)
+res = client.complete(DEFAULT_JUDGES[0], step='STRUCTURE', system='s', user='GOAL: z')
+entries = led.read_entries()
+os.unlink(path)
+print(json.dumps({
+  "ok": res.ok,
+  "classes": [e['class'] for e in entries],
+  "status_classes": [_class_for_status(s) for s in (500, 502, 503, 504)],
+}))
+`);
+  assert(data.ok === true, 'should complete via failover on 5xx');
+  assert(data.classes.includes('lane-5xx'), '5xx must ledger as lane-5xx');
+  assertEq(
+    data.status_classes,
+    ['lane-5xx', 'lane-5xx', 'lane-5xx', 'lane-5xx'],
+    'all 5xx statuses map to the aggregate lane-5xx class'
+  );
+});
+
 // ── 6. Full pipeline sample goal ────────────────────────────────────────────
 
 test('mock pipeline completes steps 1-7 with CR, dispersion, cost, families', () => {
