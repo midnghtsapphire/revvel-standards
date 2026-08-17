@@ -37,7 +37,7 @@
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "channel-chip" + (state.selected.has(ch.id) ? " selected" : "");
-      btn.innerHTML = `<span class="name">${ch.icon} ${ch.name}</span><span class="meta">${ch.costTier}${ch.liveOnGateway ? " · live" : " · check"}</span>`;
+      btn.innerHTML = `<span class="name">${escapeHtml(ch.icon)} ${escapeHtml(ch.name)}</span><span class="meta">${escapeHtml(ch.costTier)}${ch.liveOnGateway ? " · live" : " · check"}</span>`;
       btn.addEventListener("click", () => {
         if (state.selected.has(ch.id)) state.selected.delete(ch.id);
         else state.selected.add(ch.id);
@@ -53,7 +53,7 @@
   function fillPlans() {
     const sel = $("plan");
     sel.innerHTML = E.listPricingTiers()
-      .map((p) => `<option value="${p.id}">${p.name} — $${p.priceUsd}/${p.period}</option>`)
+      .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} — $${p.priceUsd}/${escapeHtml(p.period)}</option>`)
       .join("");
     sel.value = "pro";
   }
@@ -131,7 +131,7 @@
     ]
       .map(
         ([k, v]) =>
-          `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div></div>`
+          `<div class="stat"><div class="k">${escapeHtml(k)}</div><div class="v">${escapeHtml(String(v))}</div></div>`
       )
       .join("");
 
@@ -148,7 +148,7 @@
           ${cost.perChannel
             .map(
               (r) =>
-                `<tr><td>${r.name}</td><td>$${r.baseUsd}</td><td>$${r.variableUsd}</td><td>$${r.totalUsd}</td></tr>`
+                `<tr><td>${escapeHtml(r.name)}</td><td>$${r.baseUsd}</td><td>$${r.variableUsd}</td><td>$${r.totalUsd}</td></tr>`
             )
             .join("")}
         </tbody>
@@ -319,8 +319,8 @@
   function renderResearch() {
     const r = E.getResearch();
     $("research-blurb").innerHTML = `${escapeHtml(r.description)} ·
-      <a href="${r.url}" target="_blank" rel="noopener noreferrer">${r.repo}</a>
-      · <strong>${r.stars}★</strong> / ${r.forks} forks (observed ${r.observedAt}, confidence: ${r.starsConfidence}).`;
+      <a href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.repo)}</a>
+      · <strong>${escapeHtml(String(r.stars))}★</strong> / ${escapeHtml(String(r.forks))} forks (observed ${escapeHtml(r.observedAt)}, confidence: ${escapeHtml(r.starsConfidence)}).`;
 
     const rows = [
       ["Repository", r.repo],
@@ -408,7 +408,15 @@
       product: "caspian-channel-console",
     };
     const key = "caspian-channel-console-waitlist";
-    const prev = JSON.parse(localStorage.getItem(key) || "[]");
+    // Guard against corrupted/legacy localStorage content — a bad value must
+    // not permanently break the waitlist form with an uncaught SyntaxError.
+    let prev;
+    try {
+      prev = JSON.parse(localStorage.getItem(key) || "[]");
+    } catch (_err) {
+      prev = [];
+    }
+    if (!Array.isArray(prev)) prev = [];
     prev.push(entry);
     localStorage.setItem(key, JSON.stringify(prev));
     $("waitlist-status").textContent = `Saved locally: ${email}. ${prev.length} entr${prev.length === 1 ? "y" : "ies"} on this device.`;
@@ -432,7 +440,8 @@
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;");
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   function linkify(s) {
