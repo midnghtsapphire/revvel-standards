@@ -744,7 +744,14 @@ class AIResponseValidator:
                 correction = build_correction_prompt(
                     prompt, "", [f"model call failed: {exc}"]
                 )
-                messages.append({"role": "user", "content": correction})
+                # A transport error means the model never replied, so there is
+                # no assistant turn to answer. Merge the retry content into the
+                # trailing user turn instead of appending a second consecutive
+                # user message, which strict chat APIs reject with a 400.
+                if messages and messages[-1]["role"] == "user":
+                    messages[-1] = {"role": "user", "content": correction}
+                else:
+                    messages.append({"role": "user", "content": correction})
                 continue
 
             validation = self.validate_structured(raw)
@@ -1018,6 +1025,29 @@ def _self_test() -> int:
         check("transport_error_degrades", crashed.ok is False and crashed.fallback is not None)
     except Exception as exc:  # noqa: BLE001
         check("transport_error_degrades", False, f"raised {exc!r}")
+
+    # Transport-error retries must never send consecutive user turns —
+    # strict chat APIs (Anthropic/OpenAI) reject those with a 400.
+    seen_messages: list[list[Mapping[str, str]]] = []
+
+    def flaky(_p: str, msgs: Sequence[Mapping[str, str]]) -> str:
+        seen_messages.append([dict(m) for m in msgs])
+        raise RuntimeError("upstream 503")
+
+    orch3b = AIResponseValidator(schema=schema, max_retries=2)
+    orch3b.run("x", flaky)
+    no_consecutive_users = all(
+        not any(
+            a["role"] == "user" and b["role"] == "user"
+            for a, b in zip(msgs, msgs[1:])
+        )
+        for msgs in seen_messages
+    )
+    check(
+        "transport_retry_no_consecutive_user_turns",
+        len(seen_messages) == 3 and no_consecutive_users,
+        f"calls={len(seen_messages)} roles={[[m['role'] for m in msgs] for msgs in seen_messages]}",
+    )
 
     # --- Layer 4: factuality -----------------------------------------------
     conf_ok = score_factuality(
