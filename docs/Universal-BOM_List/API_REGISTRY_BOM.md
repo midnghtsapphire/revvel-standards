@@ -40,7 +40,7 @@
 | **Together AI** | Together.ai | 🆓 Free $5 credits | $0.20+/M tokens | P1 | 🔵 Recommended | Skills, agent experiments | Run FOSS models (Llama 3, Mixtral, etc.) via API; good for non-OpenAI fallback |
 | **Fireworks AI** | Fireworks | 🆓 Free credits | $0.20+/M tokens | P2 | 🟡 Evaluate | Skills | Fast FOSS model hosting |
 | **Mistral API** | Mistral AI | ❌ No free tier | $0.20+/M tokens | P2 | 🟡 Evaluate | Agent Factory | European LLM; strong coding; good GDPR story |
-| **Perplexity API** | Perplexity AI | ❌ No free tier | $5/1000 searches | P2 | 🟡 Evaluate | Research agents | LLM with real-time web search built in |
+| **Perplexity API** | Perplexity AI | ❌ No free tier | Tokens + tool calls (e.g. web_search ~$2.50/1k; verify price sheet) | P1 | 🔵 Recommended | Research agents, `products/pplx-api-skills` | Sonar/Agent API with built-in tools (“skills”), MCP, custom functions + citations. Ship path: `products/pplx-api-skills` (port 3012). Keep no-key bridge for free best-effort research only. |
 
 ### 1.3. Local / Self-Hosted LLMs
 

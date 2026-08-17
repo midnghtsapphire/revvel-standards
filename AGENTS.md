@@ -38,6 +38,23 @@ Every change should be evaluated against this north star. Prefer work that:
 3. Improves Polar.sh / GitHub funding integrations
 4. Strengthens OSINT tooling that we monetize
 
+## BNAT Knowledge Sheaf — imprint before work
+
+Every agent instantiation should call the imprint path and assert the geometric
+invariant before high-blast edits:
+
+```bash
+node scripts/bnatsheaf/cli.js imprint_agent --agent <name>
+node scripts/bnatsheaf/cli.js consistency_check --epsilon 1e-9
+```
+
+- Standard: `standards/BNAT_SHEAF_STANDARD.md`
+- Skill: `skills/bnatsheaf/SKILL.md`
+- Math + PH + cohomology: `scripts/bnatsheaf/`
+- Public Observatory (Method · Living Manifold): `docs/bnatsheaf/observatory.html`
+- Long-lived H¹ bars escalate — never silently glue
+  (`wr/pending/14-veins-grounding-gate.md`).
+
 ## Goal Structure
 
 - **Phase 1:** $10k/month (Month 1–6)
@@ -149,6 +166,11 @@ collisions:
 | Awesome Grok Build | `products/awesome-grok-build` | 3012 | Next.js. Grok Build skill browser + stack install planner (vendored DominikTobureto/awesome-grok-build). |
 | Agent Manifest Validator | `products/agent-manifest-validator` | 3012 | Next.js. SaaS guardrail for `registry_rules.json` agent personas (skill budget, domains, n8n alert preview). |
 | Personal Assistant | `products/personal-assistant` | 3012 | Next.js. Multi-source personal data (Gmail/Outlook/Yahoo/Keep/Drive/SMS) → PII-safe GitHub directory + commit plans. |
+| MergeMe Status | `products/mergeme-status` | 3012 | Next.js. mergeme.dev wiring status console + owner Slack/GitHub App setup checklist (WR #16824). |
+| pplx-api Skills Console | `products/pplx-api-skills` | 3012 | Next.js. Perplexity API integration with skills/tools framework, auth, rate limits, BOM lookup, monitoring. Needs `PERPLEXITY_API_KEY` for live mode (mock works without). |
+| Caspian Channel Console | `products/caspian-channel-console` | 3012 | Static SPA. Multi-channel agent planner/simulator from Caspian SDK research (WR-16898). |
+| Greenfield UI Lab | `products/greenfield-ui-lab` | 3012 | Next.js. Modernized idea board + day wallet from rgn/greenfield-ui research patterns. |
+| Groq Code Review | `products/groq-code-review` | 3012 | Next.js. Groq-powered PR review SaaS + composite Action with large-diff chunking and local fallback. |
 
 Start a specific product on its assigned port:
 
@@ -171,6 +193,11 @@ cd products/easy-env-vars        && npm run dev -- -p 3012
 cd products/awesome-grok-build   && npm run dev -- -p 3012
 cd products/agent-manifest-validator && npm run dev -- -p 3012
 cd products/personal-assistant   && npm run dev -- -p 3012
+cd products/mergeme-status       && npm run dev -- -p 3012
+cd products/pplx-api-skills      && npm run dev -- -p 3012
+# Static: python3 -m http.server 3012 -d products/caspian-channel-console/public
+cd products/greenfield-ui-lab     && npm run dev -- -p 3012
+cd products/groq-code-review      && npm run dev -- -p 3012
 ```
 
 ### Running and testing
