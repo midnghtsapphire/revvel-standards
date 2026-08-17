@@ -15,11 +15,9 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-
-REQUIRED_DECISION_FIELDS = ("ts", "topic", "decision", "locked_by")
 from typing import Iterable
 
-DECISIONS_REQUIRED = {"ts", "topic", "decision", "locked_by"}
+REQUIRED_DECISION_FIELDS = ("ts", "topic", "decision", "locked_by")
 
 
 def iter_targets(argv: list[str]) -> Iterable[Path]:
@@ -83,4 +81,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-    raise SystemExit(main())
