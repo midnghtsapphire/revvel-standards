@@ -1,38 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-17T13:17:02.704Z",
+  "generated_at": "2026-08-17T14:07:38.528Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
     "sentinel": {
       "status": "degraded",
-      "summary": "3/100 recent runs failed; 0 stuck item(s)",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 3,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32034120677,
+            "id": 32037877823,
+            "name": "label-allowlist",
+            "path": ".github/workflows/label-allowlist.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037877823",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32037877064,
+            "name": "PR & Issue Recovery Engine",
+            "path": ".github/workflows/recovery-engine.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037877064",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32037844404,
             "name": "Intelligent Code Quality Scanner",
             "path": ".github/workflows/ship-quality.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32034120677",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037844404",
             "conclusion": "failure"
           },
           {
-            "id": 32034120671,
-            "name": "Actions Lint",
-            "path": ".github/workflows/actions-lint.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32034120671",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32034120602,
-            "name": "Lint Markdown (markdownlint-cli)",
-            "path": ".github/workflows/lint-md.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32034120602",
+            "id": 32037844400,
+            "name": "Neon Preview Branch",
+            "path": ".github/workflows/neon-branch.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32037844400",
             "conclusion": "failure"
           }
         ],
