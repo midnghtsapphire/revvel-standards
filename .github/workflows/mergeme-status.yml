@@ -124,7 +124,10 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.issue_number != '' }}
         uses: actions/github-script@v9.0.0
         env:
-          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          # `github.event.inputs` rather than `inputs`: both resolve to the
+          # same dispatch value, but the workflow linter rejects an `inputs`
+          # reference in `env:` as undeclared (it accepts one in `if:`).
+          ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
         with:
           script: |
             const fs = require('fs');

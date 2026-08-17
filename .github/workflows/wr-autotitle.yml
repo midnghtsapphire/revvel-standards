@@ -35,7 +35,10 @@ permissions:
   issues: write
 
 concurrency:
-  group: wr-autotitle-${{ github.event.issue.number || inputs.issue_number || github.run_id }}
+  # `inputs` is not a valid context at workflow level — GitHub rejects the
+  # whole file with "Unrecognized named-context: 'inputs'", so this workflow
+  # never ran. `github.event.inputs` is the spelling that resolves here.
+  group: wr-autotitle-${{ github.event.issue.number || github.event.inputs.issue_number || github.run_id }}
   cancel-in-progress: false
 
 jobs:

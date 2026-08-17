@@ -2,10 +2,37 @@ name: Agent Fallback Handler
 # quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
 # run manually via workflow_dispatch if needed.
 on:
-  workflow_dispatch: null
+  # Automatic triggers stay disabled per the quiet-mode note above. The inputs
+  # below were dropped when they were removed, but the jobs still reference
+  # all three — so the documented "run manually via workflow_dispatch" path
+  # could not pass an issue number and the workflow had nothing to act on.
+  # Declaring them restores the manual path without re-enabling any trigger.
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to hand to the agent
+        required: false
+        type: string
+      task_description:
+        description: Task text to send when no issue number is given
+        required: false
+        type: string
+      prefer_agent:
+        description: Which agent to try first
+        required: false
+        type: choice
+        default: auto
+        options:
+          - auto
+          - openrouter
+          - cursor
+          - OpenHands
 
 concurrency:
-  group: agent-fallback-${{ github.event.issue.number || github.event.pull_request.number || inputs.issue_number || github.run_id }}
+  # `inputs` is not a valid context at workflow level and this workflow
+  # declares no dispatch inputs at all, so the reference was doubly invalid —
+  # GitHub rejected the file outright and it never ran.
+  group: agent-fallback-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
   cancel-in-progress: false
 permissions:
   contents: write

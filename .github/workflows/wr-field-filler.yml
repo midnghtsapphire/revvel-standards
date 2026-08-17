@@ -39,7 +39,9 @@ on:
         type: number
 
 concurrency:
-  group: wr-fill-${{ github.event.issue.number || inputs.issue_number || github.event.workflow_run.id || github.run_id }}
+  # `inputs` is not a valid context at workflow level; GitHub rejected the
+  # whole file, so this workflow never ran.
+  group: wr-fill-${{ github.event.issue.number || github.event.inputs.issue_number || github.event.workflow_run.id || github.run_id }}
   cancel-in-progress: false
 
 permissions:
