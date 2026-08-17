@@ -1,0 +1,22 @@
+{
+  "name": "@revvel/typescript-config",
+  "version": "1.0.0",
+  "description": "Shared TypeScript configurations for Revvel products",
+  "exports": {
+    "./base.json": "./base.json",
+    "./next.json": "./next.json"
+  },
+  "files": [
+    "base.json",
+    "next.json"
+  ],
+  "keywords": [
+    "typescript",
+    "tsconfig",
+    "revvel"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "typescript": ">=5"
+  }
+}

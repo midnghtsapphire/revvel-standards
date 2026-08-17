@@ -1,11 +1,29 @@
 # Markdownlint ignores for this project
 # These files don't need to follow strict markdown formatting rules
+# Used by: nosborn/github-action-markdown-cli (ignore_path), markdownlint-cli2
+
+# Dependencies and VCS
+node_modules/**
+.git/**
+dist/**
+vendor/**
+coverage/**
+.venv/**
+**/.venv/**
+
+# Generated WR artifacts and pending research packets
+wr/issues/**
+wr/pending/**
 
 # Session audit prompts - documentation, not process docs
 docs/MASTER_AUDIT_PROMPTS/**
 
-# Transcript files - generated content
+# Transcript files - generated content (transcripts only; hand-written
+# agent docs under docs/agents/ stay linted)
 docs/agents/**/transcripts/**
+transcripts/**
+claude-transcripts/**
+research/raw/**
 
 # Research drafts incubator - raw research dumps, not process docs
 docs/research-drafts/**

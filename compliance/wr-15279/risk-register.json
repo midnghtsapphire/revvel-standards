@@ -1,0 +1,228 @@
+{
+  "document_id": "COMP-15279-RISK-001",
+  "product": "wr-15279-red-light-therapy-stretch-marks",
+  "version": "1.0.0",
+  "updated": "2026-08-08",
+  "status": "draft-for-counsel",
+  "scoring": {
+    "likelihood": ["low", "medium", "high"],
+    "impact": ["low", "medium", "high", "critical"],
+    "risk_score_note": "qualitative LxI; critical impact always requires mitigation before Phase 2 launch"
+  },
+  "risks": [
+    {
+      "id": "R-01",
+      "title": "Unauthorized disclosure of progress photos or symptom notes",
+      "category": "confidentiality",
+      "likelihood": "medium",
+      "impact": "critical",
+      "regimes": ["HBNR", "MHMDA", "CCPA", "GDPR"],
+      "mitigations": [
+        "Private object storage with no public ACLs",
+        "Encryption in transit (TLS 1.2+) and at rest",
+        "AuthZ checks on every read path",
+        "Prefer on-device photo mode for MVP",
+        "Short-lived signed URLs only if cloud preview required"
+      ],
+      "owner": "Engineering Lead",
+      "status": "open-blocking-phase2",
+      "residual_likelihood": "low",
+      "residual_impact": "high"
+    },
+    {
+      "id": "R-02",
+      "title": "Health payloads leaked to analytics or crash tools",
+      "category": "data_minimization",
+      "likelihood": "medium",
+      "impact": "high",
+      "regimes": ["HBNR", "MHMDA", "CCPA", "GDPR", "FTC"],
+      "mitigations": [
+        "SDK deny-list for health field keys",
+        "Crash payload scrubbing",
+        "CI test asserting no health keys in analytics schema",
+        "Code review checklist item"
+      ],
+      "owner": "Engineering Lead",
+      "status": "open-blocking-phase2",
+      "residual_likelihood": "low",
+      "residual_impact": "medium"
+    },
+    {
+      "id": "R-03",
+      "title": "Missing or invalid consent for consumer health data",
+      "category": "lawful_basis",
+      "likelihood": "medium",
+      "impact": "high",
+      "regimes": ["MHMDA", "GDPR", "CCPA"],
+      "mitigations": [
+        "Separate affirmative opt-in before CHD write",
+        "Store consent timestamp and policy version",
+        "Block API writes without consent flag",
+        "Privacy policy linked at point of collection"
+      ],
+      "owner": "Product + Legal",
+      "status": "open-blocking-phase2",
+      "residual_likelihood": "low",
+      "residual_impact": "medium"
+    },
+    {
+      "id": "R-04",
+      "title": "Incorrect HIPAA non-applicability determination",
+      "category": "regulatory_classification",
+      "likelihood": "low",
+      "impact": "critical",
+      "regimes": ["HIPAA"],
+      "mitigations": [
+        "Counsel sign-off on entity-classification.md",
+        "Change triggers documented (clinic/insurer integrations)",
+        "No B2B PHI intake until Path B program live"
+      ],
+      "owner": "Legal",
+      "status": "open-blocking-phase2",
+      "residual_likelihood": "low",
+      "residual_impact": "high"
+    },
+    {
+      "id": "R-05",
+      "title": "FDA SaMD reclassification via diagnostic or treatment claims",
+      "category": "product_claims",
+      "likelihood": "medium",
+      "impact": "high",
+      "regimes": ["FDA_SaMD", "FTC_advertising"],
+      "mitigations": [
+        "Wellness intended-use statement",
+        "In-app disclaimer on health-output screens",
+        "Language audit checklist (no treat/diagnose/cure)",
+        "Separate SaMD doc maintained"
+      ],
+      "owner": "Product + Regulatory",
+      "status": "mitigating",
+      "residual_likelihood": "low",
+      "residual_impact": "high"
+    },
+    {
+      "id": "R-06",
+      "title": "Processor without DPA receives personal or health data",
+      "category": "vendor_risk",
+      "likelihood": "medium",
+      "impact": "high",
+      "regimes": ["GDPR", "CCPA", "MHMDA", "HBNR"],
+      "mitigations": [
+        "vendor-register.json gate before integration",
+        "DPA checklist in third-party-processors.md",
+        "No production secrets for vendor until DPA filed"
+      ],
+      "owner": "Engineering Lead + Legal",
+      "status": "open-blocking-phase2",
+      "residual_likelihood": "low",
+      "residual_impact": "medium"
+    },
+    {
+      "id": "R-07",
+      "title": "Failure to honor access/delete requests within required timelines",
+      "category": "data_subject_rights",
+      "likelihood": "medium",
+      "impact": "high",
+      "regimes": ["GDPR", "CCPA", "MHMDA"],
+      "mitigations": [
+        "Export and delete APIs before Phase 2 launch",
+        "30-day hard-delete job with monitoring",
+        "Manual fallback runbook for edge cases",
+        "Audit log of DSAR handling"
+      ],
+      "owner": "Engineering Lead",
+      "status": "open-blocking-phase2",
+      "residual_likelihood": "low",
+      "residual_impact": "medium"
+    },
+    {
+      "id": "R-08",
+      "title": "Breach without workable notification process",
+      "category": "incident_response",
+      "likelihood": "low",
+      "impact": "critical",
+      "regimes": ["HBNR", "GDPR", "CCPA", "state_AG"],
+      "mitigations": [
+        "Incident response runbook with HBNR timelines",
+        "On-call ownership and counsel contact tree",
+        "Tabletop exercise before Phase 2 launch",
+        "Vendor breach-notice SLAs in DPAs"
+      ],
+      "owner": "Engineering Lead + Legal",
+      "status": "open-blocking-phase2",
+      "residual_likelihood": "low",
+      "residual_impact": "high"
+    },
+    {
+      "id": "R-09",
+      "title": "LLM or AI vision feature processes photos/notes without safeguards",
+      "category": "emerging_tech",
+      "likelihood": "medium",
+      "impact": "critical",
+      "regimes": ["GDPR", "MHMDA", "HBNR", "FDA_SaMD"],
+      "mitigations": [
+        "LLM processor status = not_in_mvp",
+        "Feature flag default off",
+        "Separate explicit AI consent",
+        "No-training contractual clause",
+        "Independent SaMD review before enable"
+      ],
+      "owner": "Product + Legal + Engineering",
+      "status": "mitigated-for-mvp",
+      "residual_likelihood": "low",
+      "residual_impact": "high"
+    },
+    {
+      "id": "R-10",
+      "title": "Over-collection beyond stated purposes (scope creep)",
+      "category": "data_minimization",
+      "likelihood": "medium",
+      "impact": "medium",
+      "regimes": ["GDPR", "CCPA", "MHMDA"],
+      "mitigations": [
+        "Inventory-driven schema; new fields require inventory PR",
+        "Optional fields default off",
+        "Quarterly inventory review"
+      ],
+      "owner": "Product + Engineering",
+      "status": "open",
+      "residual_likelihood": "low",
+      "residual_impact": "medium"
+    },
+    {
+      "id": "R-11",
+      "title": "Cross-border transfer without valid mechanism (EU users)",
+      "category": "international_transfer",
+      "likelihood": "medium",
+      "impact": "high",
+      "regimes": ["GDPR"],
+      "mitigations": [
+        "Decide EU launch scope pre-Phase 2",
+        "SCCs + TIA for US processors if EU in scope",
+        "Or geo-fence EU until ready"
+      ],
+      "owner": "Legal + Engineering",
+      "status": "open-blocking-if-eu",
+      "residual_likelihood": "low",
+      "residual_impact": "medium"
+    },
+    {
+      "id": "R-12",
+      "title": "Biometric law exposure from face-oriented photo processing",
+      "category": "biometric",
+      "likelihood": "low",
+      "impact": "high",
+      "regimes": ["BIPA", "state_biometric", "GDPR"],
+      "mitigations": [
+        "No face geometry extraction",
+        "No facial recognition features",
+        "UI copy discourages full-face identifying shots where possible",
+        "Delete photos on request"
+      ],
+      "owner": "Product + Legal",
+      "status": "mitigating",
+      "residual_likelihood": "low",
+      "residual_impact": "medium"
+    }
+  ]
+}
