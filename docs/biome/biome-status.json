@@ -1,6 +1,6 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-17T05:13:54.714Z",
+  "generated_at": "2026-08-17T06:11:05.799Z",
   "credit_free": true,
   "overall": "degraded",
   "workers": {
@@ -15,38 +15,38 @@
       "detail": {
         "recent_failures": [
           {
-            "id": 31995490429,
-            "name": "WR Lint",
-            "path": ".github/workflows/wr-lint.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31995490429",
+            "id": 32000413272,
+            "name": "AI Weekly Changelog",
+            "path": ".github/workflows/ai-weekly-changelog.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32000413272",
             "conclusion": "failure"
           },
           {
-            "id": 31995490427,
+            "id": 31999303035,
             "name": "CI Error Prevention Tests",
             "path": ".github/workflows/ci-error-prevention.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31995490427",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31999303035",
             "conclusion": "failure"
           },
           {
-            "id": 31995489762,
+            "id": 31999303031,
+            "name": "WR Lint",
+            "path": ".github/workflows/wr-lint.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31999303031",
+            "conclusion": "failure"
+          },
+          {
+            "id": 31999302258,
             "name": ".github/workflows/release-banner-social.yml",
             "path": ".github/workflows/release-banner-social.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31995489762",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31999302258",
             "conclusion": "failure"
           },
           {
-            "id": 31995489286,
+            "id": 31999301715,
             "name": ".github/workflows/conflict-helper.yml",
             "path": ".github/workflows/conflict-helper.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31995489286",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31995488776,
-            "name": ".github/workflows/apisec-scan.yml",
-            "path": ".github/workflows/apisec-scan.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31995488776",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31999301715",
             "conclusion": "failure"
           }
         ],
