@@ -223,7 +223,9 @@ def fetch_starred_repos(
                         state["has_next"] = has_next
                         state["repos"] = repos_dict
                         save_state(state_path, state)
-                        return list(repos_dict.values())
+                        raise RuntimeError(
+                            f"Rate limit persisted after {MAX_RETRIES} retries; checkpoint saved"
+                        )
                     wait_sec = _retry_wait_seconds(response, attempt)
                     print(
                         f"Rate limit HTTP {response.status_code}. "
