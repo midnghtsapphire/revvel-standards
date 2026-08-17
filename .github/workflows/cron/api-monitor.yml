@@ -7,10 +7,6 @@ on:
     - cron: '*/30 * * * *'  # Every 30 min
   workflow_dispatch:
 
-# Least privilege: external HTTP probes only; no repo contents or write APIs.
-permissions:
-  contents: read
-
 jobs:
   check-apis:
     runs-on: ubuntu-latest

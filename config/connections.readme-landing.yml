@@ -1,0 +1,12 @@
+# Pages deploy uses GITHUB_TOKEN OIDC — no extra secrets for static site.
+connections:
+  - name: github-pages-readme-landing
+    system: github-pages
+    trigger: readme-landing workflow on push main / dispatch
+    secret_name: GITHUB_TOKEN
+    owner: midnghtsapphire
+  - name: optional-peacock-action
+    system: github-actions-third-party
+    trigger: optional accelerator
+    note: "If using ZvanTors/readme-peacock, pin full commit SHA — action is uncertified"
+    owner: midnghtsapphire
