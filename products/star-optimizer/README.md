@@ -7,7 +7,7 @@
 Interactive SaaS for prioritizing starred GitHub repositories using the same
 weighted scoring model as the monorepo automation script.
 
-## Live deployment
+## Local preview
 
 Deploy this package on Vercel (project root = `products/star-optimizer`).
 

@@ -45,14 +45,19 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/ai-video-toolkit` | video, lead | — | needs review |
 | `products/cli-engine` | subscription, SaaS, CLI/MCP | — | needs review |
 | `products/creator-payout-tracker` | payout, subscription, video | — | needs review |
+| `products/bnat-sheaf-observatory` | math/observatory, SaaS | Sheaf cohomology visualizer, BIOME worker status lab | needs review |
 | `products/goap-swarm-console` | agent/planner, SaaS, swarm | GOAP engine, research eval, export API | ✅ WR-16500 |
+| `products/groq-code-review` | code-review, SaaS, GitHub Action | Diff chunking, local fallback reviewer, review API | needs review |
+| `products/mergeme-status` | integration/status, SaaS | MergeMe wiring checklist, status console, CI auditor pairing | needs review |
 | `products/openmythos` | (unclassified) | — | needs review |
+| `products/pplx-api-skills` | API console, SaaS, AI tooling | Perplexity skills chat, BOM lookup, monitoring | needs review |
 | `products/printbank` | digital-download, e-commerce, static | Vector print generator, photo print sizer (tested in `tests/printbank.test.js`) | needs review |
 | `products/caspian-channel-console` | SaaS, agent-comms, static | Channel planner, cost estimator, one-handler simulator, code export (tested in `tests/caspian-channel-console.test.js`) | ✅ |
 | `products/prompt-generation-app` | OSINT, prompt | — | needs review |
 | `products/screen-recorder-finder` | utility/finder | — | needs review |
 | `products/star-optimizer` | utility/SaaS, GitHub stars triage | scoring engine + Markdown export | needs review |
 | `products/ugc-review-generator` | review/content | — | (restored in #13915) |
+| `products/wr-title-studio` | workflow utility, SaaS | WR title cleanup, starter catalog, copy helpers | needs review |
 | `reesereviews/vine-marketplace` | review/marketplace (nested) | — | needs review |
 | `mcp-servers/github-issues` | MCP server | — | needs review |
 | `revvel-rosette-automation` | automation | — | needs review |

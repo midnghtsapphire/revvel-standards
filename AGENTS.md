@@ -160,6 +160,14 @@ collisions:
 | FDA Design Controls | `products/fda-design-controls` | 3010 | Next.js. Interactive 21 CFR 820.30 compliance checklist and DHF generator with Markdown/CSV export. |
 | MedDevice Compliance Navigator | `products/meddevice-compliance-navigator` | 3010 | Next.js. Medical device compliance tracker: FDA 510(k), ISO 13485, IEC 60601, ISO 10993, EU MDR pathways. |
 | DevOps Dashboard | `products/devops-dashboard` | 3011 | Next.js. Real-time DevOps monitoring: self-healing PRs, CI/CD pipeline health, agent status, workflow run history. |
+| GOAP Swarm Console | `products/goap-swarm-console` | 3012 | Next.js. Symbolic GOAP planner + swarm allocator, research eval, Markdown/CSV export. |
+| Greenfield UI Lab | `products/greenfield-ui-lab` | 3012 | Next.js. Idea board + day wallet research lab based on greenfield-ui concepts. |
+| Groq Code Review | `products/groq-code-review` | 3012 | Next.js. Groq-powered PR diff review SaaS + GitHub Action bundle. |
+| BNAT Sheaf Observatory | `products/bnat-sheaf-observatory` | 3012 | Next.js. BNAT knowledge sheaf observatory for H0/H1 and energy proofs. |
+| MergeMe Status | `products/mergeme-status` | 3012 | Next.js. MergeMe.dev wiring status console and owner setup checklist. |
+| pplx-api Skills | `products/pplx-api-skills` | 3012 | Next.js. Perplexity API skills console with mock/live modes and BOM lookup. |
+| WR Title Studio | `products/wr-title-studio` | 3012 | Next.js. Work Request title cleanup and copy UI for WR intake. |
+| Caspian Channel Console | `products/caspian-channel-console` | 3012 | Static app. Channel planner, cost estimator, one-handler simulator, and code export. |
 | Star Optimizer | `products/star-optimizer` | 3012 | Next.js. Rank starred GitHub repos by activity/recency; pairs with `scripts/prioritize_stars.py` automation. |
 
 Start a specific product on its assigned port:
@@ -177,6 +185,14 @@ cd products/red-light-therapy-dosage-calculator && npm run dev -- -p 3010
 cd products/fda-design-controls  && npm run dev -- -p 3010
 cd products/meddevice-compliance-navigator && npm run dev -- -p 3010
 cd products/devops-dashboard     && npm run dev -- -p 3011
+cd products/goap-swarm-console   && npm run dev -- -p 3012
+cd products/greenfield-ui-lab    && npm run dev -- -p 3012
+cd products/groq-code-review     && npm run dev -- -p 3012
+cd products/bnat-sheaf-observatory && npm run dev -- -p 3012
+cd products/mergeme-status       && npm run dev -- -p 3012
+cd products/pplx-api-skills      && npm run dev -- -p 3012
+cd products/wr-title-studio      && npm run dev -- -p 3012
+npx --yes serve products/caspian-channel-console/public -l 3012
 cd products/star-optimizer       && npm run dev -- -p 3012
 ```
 

@@ -75,23 +75,20 @@ export function topicList(repo: StarRepoInput): string[] {
 
 export function scoreBreakdown(repo: StarRepoInput, now: Date = new Date()): ScoreBreakdown {
   const daysSincePush = daysBetween(now, parseIso(repo.pushedAt));
-  const scorePush =
-    daysSincePush === null ? 0 : Math.exp(-(daysSincePush ?? 3650) / 60) * 40;
+  const scorePush = daysSincePush === null ? 0 : Math.exp(-daysSincePush / 60) * 40;
 
   const releases = repo.releases?.nodes ?? [];
   let scoreRelease = 0;
   if (releases.length > 0) {
     const daysSinceRelease = daysBetween(now, parseIso(releases[0]?.createdAt));
-    scoreRelease =
-      daysSinceRelease === null ? 0 : Math.exp(-(daysSinceRelease ?? 3650) / 90) * 30;
+    scoreRelease = daysSinceRelease === null ? 0 : Math.exp(-daysSinceRelease / 90) * 30;
   }
 
   const stars = Math.max(Number(repo.stargazerCount) || 0, 0);
   const scoreStars = Math.min(Math.log10(Math.max(stars, 1)) * 10, 20);
 
   const daysStarred = daysBetween(now, parseIso(repo.starredAt));
-  const scoreStarred =
-    daysStarred === null ? 0 : Math.exp(-(daysStarred ?? 3650) / 14) * 10;
+  const scoreStarred = daysStarred === null ? 0 : Math.exp(-daysStarred / 14) * 10;
 
   const total = round2(scorePush + scoreRelease + scoreStars + scoreStarred);
   return {
