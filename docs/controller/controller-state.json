@@ -1,14 +1,5 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-10T16:37:29.886Z",
-  "workflows": {
-    "dynamic/dependabot/dependabot-updates": {
-      "count": 2,
-      "tried": [
-        "anthropic/claude-opus-4.8",
-        "anthropic/claude-opus-4.7"
-      ],
-      "last_cut_at": "2026-08-10T14:41:48.838Z"
-    }
-  }
+  "updated_at": "2026-08-17T11:03:23.631Z",
+  "workflows": {}
 }

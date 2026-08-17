@@ -65,12 +65,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           languages: ${{ matrix.language }}
           build-mode: none
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # Analysis and SARIF upload are split so a *real* analysis failure blocks
       # the run (no more blanket continue-on-error hiding broken scans), while
@@ -83,6 +88,8 @@ jobs:
         # gate for successful SARIF generation.
         continue-on-error: true
         uses: github/codeql-action/analyze@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           category: /language:${{ matrix.language }}
           upload: never
@@ -107,6 +114,8 @@ jobs:
         # Code scanning first.
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           sarif_file: sarif-results
           category: /language:${{ matrix.language }}
@@ -124,6 +133,8 @@ jobs:
         if: always() && steps.upload_sarif.outcome == 'failure'
         continue-on-error: true
         uses: github/codeql-action/upload-sarif@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           sarif_file: sarif-results
           category: /language:${{ matrix.language }}
