@@ -1,10 +1,10 @@
 # HBNR Entity Classification — Red Light Therapy Product Line
 
-**Product:** Red Light Therapy Dosage Calculator / stretch-marks companion surfaces  
-**Issue:** [#16112](https://github.com/midnghtsapphire/revvel-standards/issues/16112)  
-**Related PIA:** [#16110](https://github.com/midnghtsapphire/revvel-standards/issues/16110)  
-**Regulation:** FTC Health Breach Notification Rule, 16 CFR Part 318  
-**Status:** Operational determination for engineering + ops — **counsel sign-off required before production collection of identifiable health data**  
+**Product:** Red Light Therapy Dosage Calculator / stretch-marks companion surfaces
+**Issue:** [#16112](https://github.com/midnghtsapphire/revvel-standards/issues/16112)
+**Related PIA:** [#16110](https://github.com/midnghtsapphire/revvel-standards/issues/16110)
+**Regulation:** FTC Health Breach Notification Rule, 16 CFR Part 318
+**Status:** Operational determination for engineering + ops — **counsel sign-off required before production collection of identifiable health data**
 **Last updated:** 2026-08-08
 
 > Nothing in this document is legal advice. Retain qualified healthcare privacy counsel to ratify this classification as part of the Privacy Impact Assessment (#16110).
@@ -47,15 +47,15 @@ hipaaCoveredForSameData: false
 
 ### Narrative determination
 
-1. **HIPAA exclusion does not apply** — we are not a covered entity or business associate for this data at launch.  
-2. **PHR-identifiable health information** will exist once session logs, symptom notes, or photos are linked to a user identity (email, account, or comparable identifier).  
-3. **Multiple sources** — user-entered assessments plus device/session telemetry (and photos) meet the multi-source PHR pattern described in the FTC’s 2024 HBNR update for apps and connected devices.  
+1. **HIPAA exclusion does not apply** — we are not a covered entity or business associate for this data at launch.
+2. **PHR-identifiable health information** will exist once session logs, symptom notes, or photos are linked to a user identity (email, account, or comparable identifier).
+3. **Multiple sources** — user-entered assessments plus device/session telemetry (and photos) meet the multi-source PHR pattern described in the FTC’s 2024 HBNR update for apps and connected devices.
 4. Therefore the product line is treated as a **vendor of personal health records** for HBNR readiness.
 
 ### Conservative rule for engineering
 
-- If the app collects **any** health data linked to an identity → **maintain full HBNR breach procedures** (this repo).  
-- If counsel later documents a de-identified, single-source, non-PHR design → update this memo and the baseline flags in `scripts/hbnr-procedures.js` in the same PR.  
+- If the app collects **any** health data linked to an identity → **maintain full HBNR breach procedures** (this repo).
+- If counsel later documents a de-identified, single-source, non-PHR design → update this memo and the baseline flags in `scripts/hbnr-procedures.js` in the same PR.
 - If the business model adds clinic/insurer PHI flows → switch to HIPAA Breach Notification Rule procedures; HBNR yields for that HIPAA-covered data.
 
 ---
@@ -86,8 +86,8 @@ hipaaCoveredForSameData: false
 
 ## 6. References
 
-- FTC HBNR: <https://www.ftc.gov/legal-library/browse/rules/health-breach-notification-rule>  
-- 16 CFR Part 318  
-- Compliance addendum: `wr/issues/issue-15279-hipaa-compliance-addendum.md` §3, §3.2, §4  
-- Implementation helpers: `scripts/hbnr-procedures.js`  
+- FTC HBNR: <https://www.ftc.gov/legal-library/browse/rules/health-breach-notification-rule>
+- 16 CFR Part 318
+- Compliance addendum: `wr/issues/issue-15279-hipaa-compliance-addendum.md` §3, §3.2, §4
+- Implementation helpers: `scripts/hbnr-procedures.js`
 - Tests: `tests/hbnr-procedures.test.js`

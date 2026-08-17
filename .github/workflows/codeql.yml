@@ -75,7 +75,6 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           build-mode: none
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       # Analysis and SARIF upload are split so a *real* analysis failure blocks
       # the run (no more blanket continue-on-error hiding broken scans), while

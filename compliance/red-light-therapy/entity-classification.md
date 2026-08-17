@@ -1,13 +1,13 @@
 # HIPAA Entity Classification — Red Light Therapy Products
 
-**Document ID:** `RLT-HIPAA-ENTITY-2026-08`  
-**Issue:** #16111 (parent WR #15279)  
-**Product surface:** `products/red-light-therapy-dosage-calculator` and related stretch-mark / Contour Light content properties under WR #15279  
-**Status:** `PROVISIONAL_INTERNAL` — **not** a counsel-signed legal opinion  
-**Effective date (provisional):** 2026-08-08  
-**Next review:** immediately on any re-evaluation trigger (see §6), otherwise no later than 2027-02-08  
-**Supersedes:** incorrect HIPAA framing previously embedded near line ~190 of  
-`wr/issues/issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md`  
+**Document ID:** `RLT-HIPAA-ENTITY-2026-08`
+**Issue:** #16111 (parent WR #15279)
+**Product surface:** `products/red-light-therapy-dosage-calculator` and related stretch-mark / Contour Light content properties under WR #15279
+**Status:** `PROVISIONAL_INTERNAL` — **not** a counsel-signed legal opinion
+**Effective date (provisional):** 2026-08-08
+**Next review:** immediately on any re-evaluation trigger (see §6), otherwise no later than 2027-02-08
+**Supersedes:** incorrect HIPAA framing previously embedded near line ~190 of
+`wr/issues/issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md`
 **Companion docs:**
 
 - `compliance/red-light-therapy/counsel-engagement-brief.md`
@@ -158,7 +158,7 @@ Path B is **not** a free pass. At minimum the product program must address:
 - State we **do not claim HIPAA compliance**
 - Link an honest privacy policy that matches actual collection
 - Keep FDA/wellness disclaimers, but never present them as a HIPAA control
-- If asked “are you HIPAA compliant?” answer:  
+- If asked “are you HIPAA compliant?” answer:
   **“We are a D2C wellness product and do not claim HIPAA compliance. Our provisional internal classification is that we are not a Covered Entity or Business Associate under the current business model; that determination is pending written confirmation from qualified healthcare counsel. We follow applicable consumer privacy and FTC health-breach rules instead.”**
 
 Canonical short posture (for WR / README):
@@ -181,7 +181,7 @@ Any of the following **immediately invalidates** this provisional classification
 8. Marketing the product as a clinical/medical record system or as “HIPAA-compliant”
 9. Change of operating entity, acquisition by a Covered Entity, or white-labeling inside a Covered Entity’s workflow
 
-Machine-readable mirror: `compliance/red-light-therapy/re-evaluation-triggers.json`  
+Machine-readable mirror: `compliance/red-light-therapy/re-evaluation-triggers.json`
 Operational checklist: `compliance/red-light-therapy/re-evaluation-triggers.md`
 
 ---
@@ -211,7 +211,7 @@ Engagement packet: `compliance/red-light-therapy/counsel-engagement-brief.md`
 
 ## 8. Counsel sign-off block (empty until real counsel signs)
 
-> Do not fill this block with an agent name, bot name, or “AI counsel.”  
+> Do not fill this block with an agent name, bot name, or “AI counsel.”
 > Only a qualified human healthcare regulatory attorney (or law firm) may sign.
 
 | Field | Value |
