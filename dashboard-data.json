@@ -1578,6 +1578,42 @@
       "status": "External",
       "purpose": "Grant Search",
       "notes": "Federal grants"
+    },
+    {
+      "name": "fieldwork.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
+    },
+    {
+      "name": "growlingeyes.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
+    },
+    {
+      "name": "penny.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
+    },
+    {
+      "name": "agents.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
+    },
+    {
+      "name": "market.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
+    },
+    {
+      "name": "coldtrace.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
     }
   ],
   "projectStatus": [
