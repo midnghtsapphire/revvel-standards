@@ -252,6 +252,12 @@ These are **independent** regulatory tracks and must be assessed separately.
 4. **Pre-launch (Week 3):** Implement user-facing data export + deletion (required before accounts/tracker).
 5. **Pre-launch (Week 4):** DPA (or BAA if applicable) signed with every processor; catalog in `/compliance/vendor-register.md`.
 6. **Ongoing:** Annual privacy impact assessment; re-run entity classification if business model changes (e.g., B2B clinic partnerships) — triggers codified in `compliance/red-light-therapy/re-evaluation-triggers.json`.
+1. **Immediate (Week 1):** Legal counsel review to formally classify entity status (CE / BA / neither). Draft determination: `compliance/wr-15279/entity-classification.md` (unsigned — counsel countersignature still required).
+2. **Immediate (Week 1):** Data inventory — enumerate every field collected, whether it is health data, identifiability status, retention period. **Done (draft):** `compliance/wr-15279/data-inventory.md` + `data-inventory.json`.
+3. **Pre-launch (Week 2-3):** Publish privacy policy compliant with WA MHMD + GDPR Art. 9 + CCPA sensitive-data disclosures.
+4. **Pre-launch (Week 3):** Implement user-facing data export + deletion.
+5. **Pre-launch (Week 4):** DPA (or BAA if applicable) signed with every processor; catalog draft in `compliance/wr-15279/third-party-processors.md` + `vendor-register.json`.
+6. **PIA (issue #16110):** Engineering Privacy Impact Assessment package complete at `compliance/wr-15279/privacy-impact-assessment.md`. Counsel sign-off still blocks Phase 2 health-data collection. Re-run if business model changes (e.g., B2B clinic partnerships).
 
 ---
 
