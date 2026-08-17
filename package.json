@@ -36,9 +36,7 @@
     "deploy:vercel": "node scripts/deploy-vercel.js",
     "bootstrap:web": "echo Use: npm run deploy:vercel -- --repo=owner/project",
     "ui-engine": "node scripts/ui-creation-engine.js",
-    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'",
-    "prompts:validate": "node scripts/prompt-knowledge-repo.js validate",
-    "prompts:export-notebooklm": "node scripts/prompt-knowledge-repo.js export-notebooklm"
+    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'"
   },
   "bin": {
     "dashboard": "./scripts/dashboard-cli.js"
