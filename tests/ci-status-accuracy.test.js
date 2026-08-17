@@ -147,6 +147,27 @@ test('no workflow references the inputs context at workflow level', () => {
   );
 });
 
+test('every workflow in the repo is structurally valid', () => {
+  // The permanent guard. scripts/check-workflow-yaml.js already knew how to
+  // find invalid workflows, and tests/check-workflow-yaml.test.js already
+  // exercised that helper — but nothing ever pointed it at the real
+  // .github/workflows directory and asserted the result was empty. So three
+  // workflows sat unparseable (duplicate `timeout-minutes` keys) and five more
+  // were rejected for an invalid context, and CI stayed quiet about all eight:
+  // an invalid workflow produces no run, and no run produces no failure.
+  //
+  // This is the assertion that makes a silently dead workflow impossible to
+  // reintroduce. Do not weaken it to a warning.
+  const { findInvalidWorkflows } = require('../scripts/check-workflow-yaml');
+  const invalid = findInvalidWorkflows();
+  assert.deepEqual(
+    invalid,
+    [],
+    'these workflows will never run until they parse:\n' +
+      invalid.map((i) => `  ${i.file || i.path}: ${i.error || i.reason}`).join('\n')
+  );
+});
+
 test('the two previously-invalid workflows parse and keep their dispatch inputs', () => {
   const autotitle = readYaml('wr-autotitle.yml');
   assert.match(autotitle.concurrency.group, /github\.event\.inputs\.issue_number/);
