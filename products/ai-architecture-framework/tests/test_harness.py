@@ -25,7 +25,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PARENT = os.path.dirname(HERE)
 sys.path.insert(0, PARENT)
 
-import cuda_mlops_wrapper as cw  # noqa: E402
+# cuda_mlops_wrapper is already imported as `cuda` at the top of this file;
+# the second alias `cw` went unused once the orphaned methods below were
+# removed, so it is gone rather than carried as a no-op import.
 import market_evaluator as me  # noqa: E402
 
 
@@ -67,22 +69,17 @@ class TestMarketEvaluator(unittest.TestCase):
             self.assertIn("prime_directive", data)
 
 
+# NOTE: three methods were deleted from directly below this point. They sat
+# indented under this `if` block, after unittest.main(), with no enclosing
+# class — the splice that built this file consumed the
+# `class TestCudaWrapper(unittest.TestCase):` header that owned them. They
+# could never run: nothing binds `self`, and the block only executes under
+# `python test_harness.py`, where unittest.main() calls sys.exit() first.
+# They tested a third cuda_mlops_wrapper API (`cw.provision()` returning an
+# object with .device/.fallback) and are recoverable from 2499f5741 once that
+# module is reconstructed. Deleting them is behaviour-preserving.
 if __name__ == "__main__":
     unittest.main()
-    def test_provision_returns_result(self):
-        r = cw.provision()
-        self.assertIn(r.device.kind, ("gpu", "cpu"))
-        self.assertIsInstance(r.fallback, bool)
-
-    def test_cpu_fallback_when_no_gpu(self):
-        # If no nvidia-smi, must fall back to CPU.
-        if not cw._nvidia_smi_available():
-            r = cw.provision(min_memory_mb=1)
-            self.assertTrue(r.fallback)
-            self.assertEqual(r.device.kind, "cpu")
-
-    def test_query_gpus_returns_list(self):
-        self.assertIsInstance(cw.query_gpus(), list)
 
 
 class TestMarketEvaluator(unittest.TestCase):
