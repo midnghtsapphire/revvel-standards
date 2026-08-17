@@ -11,6 +11,18 @@
 
 ## Scope
 
+This WR aims to determine if `mergeme.dev` (or a similar service/GitHub App for auto-merging PRs) is currently wired into the `revvel-standards` repository and active within our CI/CD pipeline.
+
+## Approach
+
+A thorough repository audit was performed to look for configurations or workflows utilizing `mergeme.dev`.
+- Checked `.github/workflows` for references to `mergeme` or auto-merge actions.
+- Reviewed repository root configuration files.
+- Investigated issues/pull requests referencing `mergeme`.
+
+**Findings:** `mergeme.dev` is **not** currently wired into the `revvel-standards` repository. There are no active GitHub Actions workflows, configuration files (like `mergeme.yml`), or repository settings pointing to its usage. Auto-merging, where it happens, appears to be handled by other tools or GitHub's native auto-merge functionality based on branch protection rules, or other bots like Renovate.
+
+**Recommendation:** Since it's not currently wired in, and there is no explicit demand to add it beyond this inquiry, no implementation is needed. If the intent was to start using it, a new WR should be created to explicitly outline the rules and configuration (e.g., creating a `.github/mergeme.yml` file) for auto-merging.
 This WR evaluates the integration of `mergeme.dev` (or equivalent GitHub-native auto-merge functionality) into the `revvel-standards` repository. The goal is to ensure auto-merge capabilities are properly configured and operational. This issue is a duplicate of #16824, and the scope involves consolidating the requirements from both issues into a single, cohesive configuration plan within the repository's CI/CD workflows, specifically targeting `.github/workflows/auto-merge.yml`.
 
 ## Approach
@@ -40,6 +52,15 @@ Permanent for every WR type — implementers must not stop at the issue:
 
 ## Risks & Mitigations
 
+None. This was purely a research/investigation WR to determine the current state.
+
+## Competitor & Pricing Intelligence
+
+Pricing data pending — competitive benchmark research required.
+
+## Learnings — What & Why
+
+Through the audit of the repository's `.github/` configurations and workflows, we confirmed that `mergeme.dev` is not actively used in `revvel-standards`. The fleet relies on existing GitHub branch protection rules and other native integrations for PR management. This underscores the importance of maintaining an accurate index of our active dependencies to avoid adding overlapping tools in our CI/CD pipeline.
 - **Risk:** Auto-merge might trigger prematurely if status checks are bypassed.
   **Mitigation:** The `.github/workflows/auto-merge.yml` script explicitly checks for the "Ship Quality Check" (grounding gate) and requires it to pass. Additionally, branch protection rules on `main` must enforce required status checks and reviews before the merge executes.
 - **Risk:** Conflict between `auto-merge` and `won't-merge` labels.
