@@ -1,36 +1,57 @@
 name: Copilot Setup Steps
 
+# Run automatically when this file or root dependency files change to validate setup steps,
+# and allow manual testing via the Actions tab.
 on:
   workflow_dispatch:
   push:
     paths:
       - .github/workflows/copilot-setup-steps.yml
+      - package.json
+      - package-lock.json
   pull_request:
     paths:
       - .github/workflows/copilot-setup-steps.yml
+      - package.json
+      - package-lock.json
+
+permissions:
+  contents: read
 
 jobs:
+  # Job MUST be named `copilot-setup-steps` to be picked up by Copilot cloud agent.
   copilot-setup-steps:
+    name: Install root tooling for revvel-standards
     runs-on: ubuntu-latest
     timeout-minutes: 40
 
     permissions:
       contents: read
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Ensure local main ref exists for diff-based tooling
+        # The Copilot cloud agent's engine runs `git diff ... main` to compute
+        # changed paths; its checkout is a single-ref clone with no local
+        # `main`, so that dies with "fatal: ambiguous argument 'main'" and
+        # cancels the run. Fetch straight into the local ref (a plain fetch
+        # only populates FETCH_HEAD in a single-ref clone). A real fetch
+        # failure fails this step loudly — without the ref the agent's diffs
+        # would die later anyway, so don't mask it.
+        run: |
+          if git rev-parse --verify --quiet main >/dev/null; then
+            echo "local main ref already present"
+          else
+            git fetch --depth=200 origin +refs/heads/main:refs/heads/main
+          fi
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "24"
+          cache: "npm"
 
-      - name: Install root tooling for revvel-standards
-        run: |
-          if [ -f package-lock.json ]; then
-            npm ci
-          elif [ -f package.json ]; then
-            npm install
-          else
-            echo "No package.json found; skipping npm install."
-          fi
+      - name: Install root dependencies
+        run: npm ci
