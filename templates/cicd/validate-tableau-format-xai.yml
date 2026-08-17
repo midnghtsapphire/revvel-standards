@@ -1,0 +1,216 @@
+# Validate Tableau Format XAI
+#
+# Marketplace: https://github.com/marketplace/actions/validate-tableau-format-xai
+# Action repo: https://github.com/dsmdavid/action-test-tableau-format
+# Upstream base: https://github.com/bcrant/tableau-style-validator
+#
+# Validates changed Tableau workbook (.twb) / datasource (.tds) files against a
+# JSON style guide. Emits outputs.txt for artifacts or PR comments.
+#
+# Template-only by default — enable in product repos that ship Tableau assets.
+# Secrets required: none
+# Copy this file to: .github/workflows/validate-tableau-format-xai.yml
+# Also copy: templates/cicd/tableau/example_style_guide.json → style_guide/tableau_style_guide.json
+#
+# Caveat: upstream latest release is v0.1.6 (2021-06-28) with 0 GitHub stars.
+# Prefer a maintained fork or in-house validator if you need long-term support.
+
+name: Validate Tableau Format XAI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "**/*.twb"
+      - "**/*.twbx"
+      - "**/*.tds"
+      - "**/*.tdsx"
+      - "style_guide/**"
+      - ".github/workflows/validate-tableau-format-xai.yml"
+  push:
+    branches: [main, master]
+    paths:
+      - "**/*.twb"
+      - "**/*.twbx"
+      - "**/*.tds"
+      - "**/*.tdsx"
+      - "style_guide/**"
+  workflow_dispatch:
+    inputs:
+      modified_files:
+        description: "Space-separated paths to .twb/.tds files (optional; auto-detect when empty)"
+        required: false
+        default: ""
+      path_to_json:
+        description: "Path to the Tableau style guide JSON inside the repo"
+        required: false
+        default: "style_guide/tableau_style_guide.json"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: validate-tableau-format-xai-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate Tableau workbooks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Resolve style guide path
+        id: guide
+        env:
+          INPUT_PATH: ${{ github.event.inputs.path_to_json }}
+        run: |
+          set -euo pipefail
+          candidate="${INPUT_PATH:-style_guide/tableau_style_guide.json}"
+          if [ -z "${candidate}" ]; then
+            candidate="style_guide/tableau_style_guide.json"
+          fi
+
+          if [ ! -f "${candidate}" ]; then
+            for alt in \
+              "style_guide/tableau_style_guide.json" \
+              "style_guide/example_style_guide.json" \
+              "style_guide/example.json" \
+              "templates/cicd/tableau/example_style_guide.json"
+            do
+              if [ -f "${alt}" ]; then
+                candidate="${alt}"
+                break
+              fi
+            done
+          fi
+
+          if [ ! -f "${candidate}" ]; then
+            echo "::warning::No Tableau style guide found. Copy templates/cicd/tableau/example_style_guide.json to style_guide/tableau_style_guide.json (or set path_to_json)."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "path=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          echo "path=${candidate}" >> "$GITHUB_OUTPUT"
+          echo "Using style guide: ${candidate}"
+
+      - name: Resolve Tableau files to validate
+        id: files
+        if: steps.guide.outputs.ready == 'true'
+        env:
+          INPUT_FILES: ${{ github.event.inputs.modified_files }}
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+
+          collect_from_diff() {
+            local base="$1"
+            local head="$2"
+            if [ -z "${base}" ] || [ "${base}" = "0000000000000000000000000000000000000000" ]; then
+              return 0
+            fi
+            git diff --name-only --diff-filter=ACMRT "${base}" "${head}" \
+              | grep -E '\.(twb|twbx|tds|tdsx)$' || true
+          }
+
+          files=""
+          if [ -n "${INPUT_FILES:-}" ]; then
+            files="${INPUT_FILES}"
+          elif [ "${EVENT_NAME}" = "pull_request" ]; then
+            files="$(collect_from_diff "${BASE_SHA}" "${HEAD_SHA}" | tr '\n' ' ' | xargs || true)"
+          elif [ "${EVENT_NAME}" = "push" ]; then
+            files="$(collect_from_diff "${BEFORE_SHA}" "${HEAD_SHA}" | tr '\n' ' ' | xargs || true)"
+          fi
+
+          # Manual runs (or empty diffs) fall back to every tracked Tableau asset.
+          if [ -z "${files}" ]; then
+            files="$(git ls-files '*.twb' '*.twbx' '*.tds' '*.tdsx' | tr '\n' ' ' | xargs || true)"
+          fi
+
+          if [ -z "${files}" ]; then
+            echo "::notice::No Tableau workbook/datasource files to validate."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "list=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Drop paths that disappeared between diff and checkout.
+          existing=""
+          for f in ${files}; do
+            if [ -f "${f}" ]; then
+              existing="${existing} ${f}"
+            else
+              echo "::warning::Skipping missing Tableau path: ${f}"
+            fi
+          done
+          existing="$(echo "${existing}" | xargs || true)"
+
+          if [ -z "${existing}" ]; then
+            echo "::notice::No existing Tableau files remained after path checks."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "list=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          echo "list=${existing}" >> "$GITHUB_OUTPUT"
+          echo "Validating: ${existing}"
+
+      - name: Validate Tableau format
+        if: steps.guide.outputs.ready == 'true' && steps.files.outputs.ready == 'true'
+        # Latest upstream release v0.1.6 (2021-06-28)
+        uses: dsmdavid/action-test-tableau-format@010ef76d6e9a68d0ebb19842b01f95d7879bd04f # v0.1.6
+        with:
+          modified_files: ${{ steps.files.outputs.list }}
+          path_to_json: ${{ steps.guide.outputs.path }}
+
+      - name: Upload validation outputs
+        if: always() && steps.guide.outputs.ready == 'true' && steps.files.outputs.ready == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: tableau-format-xai-outputs
+          path: |
+            outputs.txt
+            output.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Summarize validation results
+        if: always() && steps.guide.outputs.ready == 'true' && steps.files.outputs.ready == 'true'
+        # Pass step outputs through env instead of ${{ }} inside `run` — a PR
+        # adding a file named `$(cmd).twb` would otherwise execute on the
+        # runner (GHA template-expansion command injection).
+        env:
+          GUIDE_PATH: ${{ steps.guide.outputs.path }}
+          FILES_LIST: ${{ steps.files.outputs.list }}
+        run: |
+          set -euo pipefail
+          {
+            echo "## Validate Tableau Format XAI"
+            echo ""
+            echo "- Style guide: \`${GUIDE_PATH}\`"
+            echo "- Files: \`${FILES_LIST}\`"
+            echo ""
+            if [ -f outputs.txt ]; then
+              echo '```'
+              # Keep the summary bounded for the Actions UI.
+              head -n 200 outputs.txt
+              echo '```'
+            elif [ -f output.txt ]; then
+              echo '```'
+              head -n 200 output.txt
+              echo '```'
+            else
+              echo "_No outputs.txt produced by the validator._"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
