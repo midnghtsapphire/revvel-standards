@@ -9,30 +9,21 @@ Scenarios tested for each:
 - API connection failure
 - Empty response
 - Happy path (rendered table)
+
+Assertions are strict: each scenario pins the exact exit code AND the
+expected output, so a crash (unexpected traceback, wrong branch taken)
+fails the test instead of slipping through an `or`-chained condition.
 """
 from __future__ import annotations
 
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import patch, MagicMock
+from click.testing import CliRunner
 
-try:
-    from click.testing import CliRunner
-except ImportError:  # pragma: no cover
-    CliRunner = None  # type: ignore
+from gatekeeper_cli.commands.projects import list_configs, list_projects
 
-# Try to import the commands. If the module layout differs, tests are skipped
-# so this file remains importable in any environment.
-try:
-    from gatekeeper_cli.commands.projects import list_projects, list_configs
-except Exception:  # pragma: no cover
-    list_projects = None  # type: ignore
-    list_configs = None  # type: ignore
-
-
-pytestmark = pytest.mark.skipif(
-    list_projects is None or list_configs is None or CliRunner is None,
-    reason="gatekeeper_cli.commands.projects or click not available in this environment",
-)
+PROJECTS_MOD = "gatekeeper_cli.commands.projects"
 
 
 @pytest.fixture
@@ -40,40 +31,63 @@ def runner():
     return CliRunner()
 
 
+def _mock_api(**methods):
+    """Build a DopplerAPI class mock whose instance exposes the given methods."""
+    instance = MagicMock()
+    for name, value in methods.items():
+        if isinstance(value, Exception):
+            getattr(instance, name).side_effect = value
+        else:
+            getattr(instance, name).return_value = value
+    api_cls = MagicMock(return_value=instance)
+    return api_cls, instance
+
+
 # ---------------------------------------------------------------------------
 # list_projects
 # ---------------------------------------------------------------------------
 
 class TestListProjects:
-    def test_missing_token(self, runner):
-        with patch("gatekeeper_cli.commands.projects.get_token", return_value=None):
+    def test_missing_token_aborts_with_error(self, runner):
+        with patch(f"{PROJECTS_MOD}.config") as cfg:
+            cfg.get_doppler_token.return_value = None
             result = runner.invoke(list_projects, [])
-        assert result.exit_code != 0 or "token" in result.output.lower() or "login" in result.output.lower()
+        assert result.exit_code != 0
+        assert "DOPPLER_TOKEN not configured" in result.output
 
-    def test_api_connection_failure(self, runner):
-        with patch("gatekeeper_cli.commands.projects.get_token", return_value="tkn"), \
-             patch("gatekeeper_cli.commands.projects.api_get", side_effect=ConnectionError("boom")):
+    def test_api_connection_failure_aborts_with_error(self, runner):
+        api_cls, _ = _mock_api(list_projects=ConnectionError("boom"))
+        with patch(f"{PROJECTS_MOD}.config") as cfg, \
+             patch(f"{PROJECTS_MOD}.DopplerAPI", api_cls):
+            cfg.get_doppler_token.return_value = "tkn"
             result = runner.invoke(list_projects, [])
-        assert result.exit_code != 0 or "error" in result.output.lower() or "failed" in result.output.lower()
+        assert result.exit_code != 0
+        assert "Error: boom" in result.output
 
-    def test_empty_response(self, runner):
-        with patch("gatekeeper_cli.commands.projects.get_token", return_value="tkn"), \
-             patch("gatekeeper_cli.commands.projects.api_get", return_value=[]):
+    def test_empty_response_exits_cleanly_with_notice(self, runner):
+        api_cls, _ = _mock_api(list_projects=[])
+        with patch(f"{PROJECTS_MOD}.config") as cfg, \
+             patch(f"{PROJECTS_MOD}.DopplerAPI", api_cls):
+            cfg.get_doppler_token.return_value = "tkn"
             result = runner.invoke(list_projects, [])
-        # Empty response should exit cleanly with a friendly notice
-        assert "no projects" in result.output.lower() or result.exit_code == 0
+        assert result.exit_code == 0
+        assert "No projects found" in result.output
 
-    def test_happy_path(self, runner):
+    def test_happy_path_renders_projects_table(self, runner):
         projects = [
             {"id": "p1", "name": "alpha", "created_at": "2024-01-01"},
             {"id": "p2", "name": "beta", "created_at": "2024-02-01"},
         ]
-        with patch("gatekeeper_cli.commands.projects.get_token", return_value="tkn"), \
-             patch("gatekeeper_cli.commands.projects.api_get", return_value=projects):
+        api_cls, instance = _mock_api(list_projects=projects)
+        with patch(f"{PROJECTS_MOD}.config") as cfg, \
+             patch(f"{PROJECTS_MOD}.DopplerAPI", api_cls):
+            cfg.get_doppler_token.return_value = "tkn"
             result = runner.invoke(list_projects, [])
         assert result.exit_code == 0
         assert "alpha" in result.output
         assert "beta" in result.output
+        api_cls.assert_called_once_with("tkn")
+        instance.list_projects.assert_called_once_with()
 
 
 # ---------------------------------------------------------------------------
@@ -81,41 +95,54 @@ class TestListProjects:
 # ---------------------------------------------------------------------------
 
 class TestListConfigs:
-    def test_missing_token(self, runner):
-        with patch("gatekeeper_cli.commands.projects.get_token", return_value=None):
+    def test_missing_token_aborts_with_error(self, runner):
+        with patch(f"{PROJECTS_MOD}.config") as cfg:
+            cfg.get_doppler_token.return_value = None
             result = runner.invoke(list_configs, ["--project", "p1"])
-        assert result.exit_code != 0 or "token" in result.output.lower() or "login" in result.output.lower()
+        assert result.exit_code != 0
+        assert "DOPPLER_TOKEN not configured" in result.output
 
-    def test_api_connection_failure(self, runner):
-        with patch("gatekeeper_cli.commands.projects.get_token", return_value="tkn"), \
-             patch("gatekeeper_cli.commands.projects.api_get", side_effect=ConnectionError("boom")):
+    def test_api_connection_failure_aborts_with_error(self, runner):
+        api_cls, _ = _mock_api(list_configs=ConnectionError("boom"))
+        with patch(f"{PROJECTS_MOD}.config") as cfg, \
+             patch(f"{PROJECTS_MOD}.DopplerAPI", api_cls):
+            cfg.get_doppler_token.return_value = "tkn"
             result = runner.invoke(list_configs, ["--project", "p1"])
-        assert result.exit_code != 0 or "error" in result.output.lower() or "failed" in result.output.lower()
+        assert result.exit_code != 0
+        assert "Error: boom" in result.output
 
-    def test_empty_response(self, runner):
-        with patch("gatekeeper_cli.commands.projects.get_token", return_value="tkn"), \
-             patch("gatekeeper_cli.commands.projects.api_get", return_value=[]):
+    def test_empty_response_exits_cleanly_with_notice(self, runner):
+        api_cls, _ = _mock_api(list_configs=[])
+        with patch(f"{PROJECTS_MOD}.config") as cfg, \
+             patch(f"{PROJECTS_MOD}.DopplerAPI", api_cls):
+            cfg.get_doppler_token.return_value = "tkn"
             result = runner.invoke(list_configs, ["--project", "p1"])
-        assert "no configs" in result.output.lower() or result.exit_code == 0
+        assert result.exit_code == 0
+        assert "No configs found in project 'p1'" in result.output
 
     def test_happy_path_with_project_flag(self, runner):
         configs = [
-            {"id": "c1", "name": "prod", "project_id": "p1"},
-            {"id": "c2", "name": "staging", "project_id": "p1"},
+            {"id": "c1", "name": "prod", "environment": "prd", "created_at": "2024-01-01"},
+            {"id": "c2", "name": "staging", "environment": "stg", "created_at": "2024-01-02"},
         ]
-        with patch("gatekeeper_cli.commands.projects.get_token", return_value="tkn"), \
-             patch("gatekeeper_cli.commands.projects.api_get", return_value=configs):
+        api_cls, instance = _mock_api(list_configs=configs)
+        with patch(f"{PROJECTS_MOD}.config") as cfg, \
+             patch(f"{PROJECTS_MOD}.DopplerAPI", api_cls):
+            cfg.get_doppler_token.return_value = "tkn"
             result = runner.invoke(list_configs, ["--project", "p1"])
         assert result.exit_code == 0
         assert "prod" in result.output
         assert "staging" in result.output
+        instance.list_configs.assert_called_once_with("p1")
 
-    def test_happy_path_without_project_flag(self, runner):
-        configs = [{"id": "c1", "name": "prod", "project_id": "p1"}]
-        with patch("gatekeeper_cli.commands.projects.get_token", return_value="tkn"), \
-             patch("gatekeeper_cli.commands.projects.api_get", return_value=configs), \
-             patch("gatekeeper_cli.commands.projects.get_default_project", return_value="p1", create=True):
+    def test_happy_path_without_project_flag_uses_default_project(self, runner):
+        configs = [{"id": "c1", "name": "prod", "environment": "prd", "created_at": "2024-01-01"}]
+        api_cls, instance = _mock_api(list_configs=configs)
+        with patch(f"{PROJECTS_MOD}.config") as cfg, \
+             patch(f"{PROJECTS_MOD}.DopplerAPI", api_cls):
+            cfg.get_doppler_token.return_value = "tkn"
+            cfg.get_doppler_project.return_value = "default-proj"
             result = runner.invoke(list_configs, [])
-        # Without --project flag the command should still succeed if a default
-        # project resolver exists, or gracefully error otherwise.
-        assert result.exit_code in (0, 1, 2)
+        assert result.exit_code == 0
+        assert "prod" in result.output
+        instance.list_configs.assert_called_once_with("default-proj")
