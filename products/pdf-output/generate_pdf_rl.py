@@ -198,7 +198,7 @@ def build_pdf(source, title, subtitle, author, out_path):
                 story.append(Paragraph(clean(p.replace("\n", " ")), style_body))
 
     doc.build(story)
-    print(f"OK {out_path} ({os.path.getsize(out_path)//1024} KB) cover {cover}")
+    print(f"OK {out_path} ({os.path.getsize(out_path) // 1024} KB) cover {cover}")
 
 
 if __name__ == "__main__":

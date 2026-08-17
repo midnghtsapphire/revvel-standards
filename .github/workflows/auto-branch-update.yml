@@ -1,0 +1,163 @@
+name: Auto-Update PR Branch from Main
+
+# Purpose: Keep open PR branches current with main so that every fix is
+# applied to the latest code and merge conflicts are surfaced early.
+#
+# Triggers:
+#   - push to main  → update all open non-draft PRs whose base is main
+#   - workflow_dispatch → manually trigger for one specific PR (or all)
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to update (leave blank to update all open PRs targeting main)"
+        required: false
+        default: ""
+
+# A run pushes to every open PR branch, so two overlapping runs race each
+# other on the same refs. Keying the group on `github.run_id` made it unique
+# per run, which meant the group never actually serialised anything: rapid
+# pushes to main spawned concurrent runs that each merged and pushed, and the
+# losers retried on top, producing long chains of "Merge remote-tracking
+# branch 'origin/main'" commits. A static group queues runs instead.
+concurrency:
+  group: auto-branch-update
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-pr-branches:
+    name: Merge main into open PR branches
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository (full history)
+        uses: actions/checkout@v4.2.2
+        with:
+          # Full history required for clean merges; write-capable token to push.
+          fetch-depth: 0
+          token: ${{ secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Collect PR branches to update
+        id: collect
+        uses: actions/github-script@v9.0.0
+        with:
+          github-token: ${{ secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+
+            // Read the dispatch input off the event payload rather than
+            // interpolating it. Template expressions are substituted as text
+            // before this script runs — anywhere in the block, comments
+            // included — so interpolating the input into a string literal
+            // lets a crafted value close the quote and execute arbitrary JS
+            // under this job's contents:write token (zizmor alert 3380).
+            // context.payload.inputs is populated on workflow_dispatch and
+            // absent on push, which is exactly the old fallback behaviour.
+            const inputPR = (context.payload.inputs || {}).pr_number || '';
+
+            // Fetch every open PR, not just the ones based on main. We need the
+            // full set to identify stacks: any branch that another open PR uses
+            // as its base is a stack parent.
+            const allOpen = await github.paginate(github.rest.pulls.list, {
+              owner, repo, state: 'open', per_page: 100,
+            });
+
+            const stackParents = new Set(
+              allOpen.map(pr => pr.base.ref).filter(ref => ref !== 'main')
+            );
+
+            let prs;
+            if (inputPR) {
+              const { data: pr } = await github.rest.pulls.get({
+                owner, repo, pull_number: parseInt(inputPR, 10),
+              });
+              prs = pr.state === 'open' ? [pr] : [];
+            } else {
+              prs = allOpen.filter(pr => pr.base.ref === 'main');
+            }
+
+            // Stacked pull requests are updated by replaying their commits onto
+            // the latest base (rebase), never by taking a merge. Merging main
+            // into one level of a stack while leaving the other level untouched
+            // is what desynchronises the two and produces add/add conflicts on
+            // the same file — see #17653/#17657 and #17592/#17600.
+            const targets = [];
+            for (const pr of prs) {
+              if (pr.draft) continue;
+              if (pr.base.ref !== 'main') {
+                core.info(`skip #${pr.number}: stacked on ${pr.base.ref} — rebase, do not merge`);
+                continue;
+              }
+              if (stackParents.has(pr.head.ref)) {
+                core.info(`skip #${pr.number}: ${pr.head.ref} is the base of another open PR`);
+                continue;
+              }
+              targets.push({ number: pr.number, branch: pr.head.ref });
+            }
+
+            core.setOutput('targets', JSON.stringify(targets));
+            core.info(`Branches to update: ${targets.map(t => t.branch).join(', ') || '(none)'}`);
+
+      - name: Merge main into each PR branch
+        env:
+          TARGETS: ${{ steps.collect.outputs.targets }}
+        run: |
+          set -euo pipefail
+
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name  "github-actions[bot]"
+
+          # Parse target count without jq
+          COUNT=$(node -e "console.log(JSON.parse(process.env.TARGETS || '[]').length)")
+
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No open PR branches to update."
+            exit 0
+          fi
+
+          node - <<'EOF'
+          const targets = JSON.parse(process.env.TARGETS || '[]');
+          const { execSync } = require('child_process');
+
+          for (const t of targets) {
+            console.log(`\n── PR #${t.number}: ${t.branch}`);
+            try {
+              execSync(`git fetch origin ${t.branch}`, { stdio: 'inherit' });
+              execSync(`git checkout -B ${t.branch} origin/${t.branch}`, { stdio: 'inherit' });
+
+              const out = execSync('git merge --no-edit origin/main 2>&1 || true').toString();
+              if (out.includes('Already up to date')) {
+                console.log('  \u2705 Already up to date');
+                continue;
+              }
+
+              // If conflicts exist abort and skip — human resolves these
+              const status = execSync('git status --porcelain').toString();
+              const hasConflicts = status.split('\n').some(l =>
+                l.startsWith('UU') || l.startsWith('AA') || l.startsWith('DD')
+              );
+              if (hasConflicts) {
+                execSync('git merge --abort', { stdio: 'inherit' });
+                console.log('  \u26a0\ufe0f  Conflicts detected — skipping (manual resolution required)');
+                continue;
+              }
+
+              execSync(`git push origin HEAD:${t.branch}`, { stdio: 'inherit' });
+              console.log(`  \u2705 Merged main into ${t.branch} and pushed`);
+            } catch (err) {
+              console.error(`  \u274c Failed to update ${t.branch}: ${err.message}`);
+              try { execSync('git merge --abort'); } catch (_) {}
+            }
+          }
+          EOF
+
+    timeout-minutes: 15
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
