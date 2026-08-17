@@ -1,4 +1,5 @@
 # MIDNGHTSAPPHIRE — headless image SEO pack automation
+# Control plane: Actions (not Image Studio UI). Draft PRs only — humans merge.
 name: image-seo-pipeline
 
 on:
@@ -24,15 +25,20 @@ permissions:
   pull-requests: write
   issues: write
 
+concurrency:
+  group: image-seo-pipeline
+  cancel-in-progress: false
+
 jobs:
   build-pack:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
         with:
           persist-credentials: false
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: "22"
           cache: ""
@@ -51,28 +57,58 @@ jobs:
               primaryKeyword: process.env.KEYWORD,
               kind: process.env.KIND,
               brand: 'MIDNGHTSAPPHIRE',
-              pinnedLsi: []
+              secondaryKeywords: 'image seo, open graph, schema markup',
+              pinnedLsi: ['workflow automation', 'image seo', 'human in the loop']
             }, null, 2));
           "
 
       - name: Build image_creation/v1 pack (headless)
         run: node scripts/image-seo-build-pack.mjs --brief artifacts/image-automation/brief.json --out artifacts/image-automation/package.json
 
+      - name: Filename SEO QA on pack output
+        run: |
+          node -e "
+            const p=require('./artifacts/image-automation/package.json');
+            const {spawnSync}=require('child_process');
+            const r=spawnSync(process.execPath,['scripts/image-seo-filename-qa.mjs', p.seo.filename],{encoding:'utf8'});
+            process.stdout.write(r.stdout||'');
+            process.stderr.write(r.stderr||'');
+            process.exit(r.status===null?1:r.status);
+          "
+
       - name: Upload pack artifact
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: image-creation-pack
           path: artifacts/image-automation/
           retention-days: 1
 
       - name: Open draft PR with pack
-        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6
+        id: cpr
+        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.0.5
         with:
+          token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           commit-message: "chore(image-seo): automated image_creation/v1 pack"
           title: "[automation] Image SEO pack — human review"
           body: |
             Automated image creation SEO package (`midnghtsapphire.image_creation/v1`).
-            Headless builder only — no manual studio path.
-            **Do not merge without review.**
+
+            Headless builder only — **no manual studio path**.
+            **Do not merge without human review.** `auto_merge: false`.
+
+            Trigger: `${{ github.event_name }}` run `${{ github.run_id }}`
           branch: automation/image-seo-pack-${{ github.run_id }}
+          delete-branch: true
           draft: true
+          labels: needs-human,work-request
+
+      - name: Open WR on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "[WR] Image SEO pipeline failed — run ${{ github.run_id }}" \
+            --body "image-seo-pipeline failed (run ${{ github.run_id }}). Human review required. Production path is Actions + headless builder, not Image Studio." \
+            --label "work-request" --label "needs-human" --label "auto-error" || true
