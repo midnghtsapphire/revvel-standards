@@ -33,5 +33,5 @@ Prefer loading ids from `prompts/catalog.json` over freeform paste:
 
 ## Ladder
 
-Default: `combo.github-request-default`  
+Default: `combo.github-request-default`
 Research-heavy prompt work: `combo.prompt-engineering-research`

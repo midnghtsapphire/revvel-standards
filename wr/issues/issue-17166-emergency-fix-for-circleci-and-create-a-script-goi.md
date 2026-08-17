@@ -1,10 +1,10 @@
 # WR: [WR] emergency fix for circleci and create a script going forward that looks for and fixes this issue create a template for a circleci in WRs and a label or button to click the trigger for the triage role
 
-**Issue:** #17166  
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Created:** 2026-08-10  
-**Research Date:** 2026-08-10  
-**Researcher:** Jules (Google) + OpenRouter  
+**Issue:** #17166
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
+**Created:** 2026-08-10
+**Research Date:** 2026-08-10
+**Researcher:** Jules (Google) + OpenRouter
 **WR Status:** 🟡 In Progress
 
 ---

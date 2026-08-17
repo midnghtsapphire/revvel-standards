@@ -726,9 +726,8 @@ _This registry is maintained by Audrey Evans (MIDNGHTSAPPHIRE). Last updated: Ma
 
 ## awesome-grok-build
 
-**Path:** `skills/awesome-grok-build/`  
-**Product:** `products/awesome-grok-build/` (port 3012)  
+**Path:** `skills/awesome-grok-build/`
+**Product:** `products/awesome-grok-build/` (port 3012)
 **Upstream:** https://github.com/DominikTobureto/awesome-grok-build (MIT)
 
 Vendored Grok Build skills + templates. Use for Grok CLI setup, stack install plans, and AGENTS.md starters. Root mirror: `.grok/skills/`.
-

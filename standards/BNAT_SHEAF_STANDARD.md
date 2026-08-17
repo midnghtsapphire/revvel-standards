@@ -35,28 +35,11 @@ global section is a rubber stamp, not a sheaf.
 | Layer | File | Responsibility |
 | --- | --- | --- |
 | Core sheaf | `scripts/bnatsheaf/sheaf.js` | Cellular sheaf, restriction maps, E(x), H¹ obstruction + transition patches |
-| Cohomology | `scripts/bnatsheaf/cohomology.js` | Coboundary δ, rank-nullity, dim H⁰/H¹, energy characterization |
 | Persistence | `scripts/bnatsheaf/persistence.js` | Filtration, H⁰/H¹ barcodes (union-find, elder rule), long-lived-bar detection |
-| TDA adapters | `scripts/bnatsheaf/tda_adapters.js` | Optional Ripser/GUDHI probes; always falls back to native |
-| NSD (offline) | `scripts/bnatsheaf/nsd.js` | Discrete Neural Sheaf Diffusion; learnable diagonal restrictions |
-| Fingerprint | `scripts/bnatsheaf/fingerprint.js` | `{dim_H0, dim_H1, rank_delta, energy, long_lived_h1}` companion record |
-| Harness | `scripts/bnatsheaf/cli.js` | `consistency_check`, `imprint_agent`, `ph_monitor`, `fingerprint`, `cohomology` |
-| Tests | `tests/bnatsheaf.test.js`, `tests/bnatsheaf-cohomology-proofs.test.js` | Unit, integration, property, executable proofs |
+| Harness | `scripts/bnatsheaf/cli.js` | `consistency_check`, `imprint_agent`, `ph_monitor` |
+| Tests | `tests/bnatsheaf.test.js` | Unit, integration, property, topological-regression |
 | Skill | `skills/bnatsheaf/SKILL.md` | Imprints the invariant into every agent instantiation |
-| Observatory | `products/bnat-sheaf-observatory/` | Interactive proof table + live energy SaaS surface |
-| Docs | `docs/bnatsheaf/` | README, proofs, PH tools survey, MOTU prompt, NSD follow-on |
-
-## Topological fingerprint (additive companion)
-
-BNAT never mutates the BIOME writer. The fingerprint is a **companion file**:
-
-```bash
-node scripts/bnatsheaf/cli.js fingerprint --out docs/biome/bnat-fingerprint.json
-```
-
-Schema `bnat-fingerprint/v1` carries `dim_H0`, `dim_H1`, `rank_delta`,
-`energy`, `long_lived_h1`, and `consistent`. Monitors may also call
-`attachFingerprint(status)` in memory without touching disk.
+| Docs | `docs/bnatsheaf/` | README, MOTU master prompt, NSD follow-on |
 
 ## Language decision
 

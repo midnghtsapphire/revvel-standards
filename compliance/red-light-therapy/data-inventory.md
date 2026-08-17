@@ -1,9 +1,9 @@
 # Data Inventory — Red Light Therapy Dosage Calculator
 
-**Document ID:** `RLT-DATA-INV-2026-08`  
-**Issue:** #16111  
-**Product:** `products/red-light-therapy-dosage-calculator`  
-**Inventory date:** 2026-08-08  
+**Document ID:** `RLT-DATA-INV-2026-08`
+**Issue:** #16111
+**Product:** `products/red-light-therapy-dosage-calculator`
+**Inventory date:** 2026-08-08
 **Scope:** Shipped calculator code paths only (not future tracker features from WR #15279)
 
 ---
@@ -38,15 +38,15 @@ The shipped product is a **client-side numeric calculator**. It does **not** imp
 
 ### Not collected by shipped calculator
 
-- Name, email, phone, account ID  
-- Postpartum week / pregnancy status  
-- Stretch-mark severity scores  
-- Symptom notes  
-- Body / progress photographs  
-- Device serial numbers tied to a person  
-- Precise geolocation  
-- Payment / insurance identifiers  
-- Government IDs  
+- Name, email, phone, account ID
+- Postpartum week / pregnancy status
+- Stretch-mark severity scores
+- Symptom notes
+- Body / progress photographs
+- Device serial numbers tied to a person
+- Precise geolocation
+- Payment / insurance identifiers
+- Government IDs
 
 ---
 
@@ -54,8 +54,8 @@ The shipped product is a **client-side numeric calculator**. It does **not** imp
 
 The parent WR contemplates progress photos, severity ratings, and session logs. Those features are **out of inventory scope** and remain **blocked** until:
 
-1. Counsel determination is signed (`status.json` ≠ `UNSIGNED` / `REEVAL_REQUIRED`), and  
-2. If Path B: state-law privacy program + honest policy update for the new elements, or  
+1. Counsel determination is signed (`status.json` ≠ `UNSIGNED` / `REEVAL_REQUIRED`), and
+2. If Path B: state-law privacy program + honest policy update for the new elements, or
 3. If Path A: full HIPAA program before collection.
 
 Adding any blocked element is trigger **T7** (and possibly T1–T6).
@@ -75,6 +75,6 @@ Adding any blocked element is trigger **T7** (and possibly T1–T6).
 
 ## 5. Classification notes
 
-- Under a **Path B** (not CE/BA) posture, these ephemeral numerics are **not HIPAA PHI**, because PHI is a HIPAA construct that applies to CE/BA-held individually identifiable health information.  
-- They may still be **consumer health data** or sensitive personal information under state laws **if** linked to identity or used to infer health status in a covered way — the shipped calculator avoids that link.  
+- Under a **Path B** (not CE/BA) posture, these ephemeral numerics are **not HIPAA PHI**, because PHI is a HIPAA construct that applies to CE/BA-held individually identifiable health information.
+- They may still be **consumer health data** or sensitive personal information under state laws **if** linked to identity or used to infer health status in a covered way — the shipped calculator avoids that link.
 - Under a **Path A** posture, even similar fields can become PHI when tied to an identifiable individual in a CE/BA context. Architecture (client-side vs server) does not decide entity status.

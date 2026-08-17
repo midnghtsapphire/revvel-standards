@@ -4,7 +4,7 @@
 
 ▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/products/awesome-grok-build/)**
 
-> Deploy path: Vercel project for `products/awesome-grok-build` (Next.js).  
+> Deploy path: Vercel project for `products/awesome-grok-build` (Next.js).
 > Local preview: `npm run dev` → <http://localhost:3012>
 
 ## What It Is

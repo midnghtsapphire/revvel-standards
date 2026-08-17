@@ -508,7 +508,7 @@ if [ "$AUTO_RESEARCH" = true ]; then
     cat > "$RESEARCH_BRIEF" <<EOF
 # Research Brief: $PRODUCT_NAME
 
-**Status:** 🔴 Not Started
+**Status:** TODO - Run automated research
 **Created:** $NOW
 
 ## Pain Points
@@ -563,7 +563,7 @@ else
     cat > "$RESEARCH_BRIEF" <<EOF
 # Research Brief: $PRODUCT_NAME
 
-**Status:** 🔴 Not Started
+**Status:** TODO - Complete research
 **Created:** $NOW
 
 ## Pain Points

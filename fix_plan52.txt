@@ -1,0 +1,12 @@
+Ah wait... The CI was complaining about lint errors in `issue-17166` and `issue-17454`.
+These files were ONLY in the `main` branch when I checked them out from `origin/main` (which failed earlier).
+Actually, my branch is on `ae34ae61`. The lint failed on `6d4e72c8`!
+Wait! The CI failed on `6d4e72c8f014c80ff3fdc6079b94829b72b332d1`.
+I'm on `73131ca9` which DOES NOT HAVE those files!
+Let's see if those files are in my branch `ae34ae61`! No, they were not!
+So when I push `73131ca9`, they are STILL NOT IN MY BRANCH!
+Will the CI lint them?
+If they are NOT in my branch, the diff between `main` and my branch MIGHT show them as "deleted" or "modified" if the git merge fails.
+BUT my `scripts/validate-package-locks.sh` WILL pass now because I fixed `package-lock.json`!
+Wait... in `73131ca9` I have `package-lock.json`.
+Let me just push `73131ca9`.
