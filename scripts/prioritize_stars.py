@@ -196,6 +196,7 @@ def fetch_starred_repos(
     if not has_next:
         cursor = None
         has_next = True
+        repos_dict = {}
 
     fetched_count = 0
     owns_client = client is None
