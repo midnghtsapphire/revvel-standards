@@ -1176,18 +1176,6 @@
       "source": "/products/prompt-generation-app/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/products/awesome-grok-build/",
-      "project": "awesome-grok-build",
-      "type": "vercel",
-      "source": "/products/awesome-grok-build/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/personal-assistant/",
-      "project": "personal-assistant",
-      "type": "vercel",
-      "source": "/products/personal-assistant/README.md"
-    },
-    {
       "url": "https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app/products/printbank/public/>",
       "project": "printbank",
       "type": "vercel",
@@ -1200,10 +1188,10 @@
       "source": "/products/creator-payout-tracker/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/agent-manifest-validator/",
-      "project": "agent-manifest-validator",
+      "url": "https://revvel-standards.vercel.app/docs/pplx-api-skills/",
+      "project": "pplx-api-skills",
       "type": "vercel",
-      "source": "/products/agent-manifest-validator/README.md"
+      "source": "/products/pplx-api-skills/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/hvac-calc-service/",
@@ -1236,6 +1224,12 @@
       "source": "/products/cli-engine/README.md"
     },
     {
+      "url": "https://revvel-standards.vercel.app/docs/caspian-channel-console/",
+      "project": "caspian-channel-console",
+      "type": "vercel",
+      "source": "/products/caspian-channel-console/README.md"
+    },
+    {
       "url": "https://revvel-standards.vercel.app/docs/fda-design-controls/",
       "project": "fda-design-controls",
       "type": "vercel",
@@ -1254,10 +1248,10 @@
       "source": "/products/revvel-skill-runner/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/self-optimizing-star-magnet/",
-      "project": "self-optimizing-star-magnet",
+      "url": "https://revvel-standards.vercel.app/docs/groq-code-review/",
+      "project": "groq-code-review",
       "type": "vercel",
-      "source": "/products/self-optimizing-star-magnet/README.md"
+      "source": "/products/groq-code-review/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/affiliate-hub/",
@@ -1296,22 +1290,16 @@
       "source": "/products/music-video-creator/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/easy-env-vars/",
-      "project": "easy-env-vars",
-      "type": "vercel",
-      "source": "/products/easy-env-vars/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/gosqlx-sql-linter/",
-      "project": "gosqlx-sql-linter",
-      "type": "vercel",
-      "source": "/products/gosqlx-sql-linter/README.md"
-    },
-    {
       "url": "https://revvel-standards.vercel.app/docs/openmythos/",
       "project": "openmythos",
       "type": "vercel",
       "source": "/products/openmythos/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/mergeme-status/",
+      "project": "mergeme-status",
+      "type": "vercel",
+      "source": "/products/mergeme-status/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/coldtrace/",
@@ -1566,6 +1554,42 @@
       "status": "External",
       "purpose": "Grant Search",
       "notes": "Federal grants"
+    },
+    {
+      "name": "fieldwork.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
+    },
+    {
+      "name": "growlingeyes.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
+    },
+    {
+      "name": "penny.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
+    },
+    {
+      "name": "agents.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
+    },
+    {
+      "name": "market.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
+    },
+    {
+      "name": "coldtrace.oaudrey.com",
+      "status": "Active",
+      "purpose": "oAudrey Subdomain",
+      "notes": "Part of oAudrey hub"
     }
   ],
   "projectStatus": [
@@ -1575,5 +1599,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-17T04:15:13.654Z"
+  "lastUpdated": "2026-08-17T11:22:26.346Z"
 }

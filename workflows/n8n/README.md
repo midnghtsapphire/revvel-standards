@@ -36,35 +36,7 @@ curl -X POST <your-webhook-url> \
 
 ---
 
-### 2. Defensive Validation Guardrail Alerting Engine ✨ NEW
-
-**File**: `defensive-validation-guardrail-alerting.json`
-
-**Purpose**: Catch agent-manifest validation failures (skill budget ceiling,
-domain allow-list, SemVer / persona_id patterns from
-`schemas/registry_rules.json`) and fan CRITICAL markdown alerts to Slack,
-Discord, and email.
-
-**Import Instructions (click-by-click)**:
-1. Open n8n at <http://localhost:5678>
-2. Click **Workflows** → **Import from File…** (or paste JSON on a blank canvas with Ctrl/Cmd+V)
-3. Select `defensive-validation-guardrail-alerting.json`
-4. Attach Slack + SMTP credentials; set env vars:
-   - `SLACK_LOG_CHANNEL_ID`
-   - `DISCORD_INCIDENT_WEBHOOK_URL`
-   - `VALIDATION_ALERT_FROM_EMAIL`
-   - `VALIDATION_ALERT_TO_EMAIL`
-5. Activate the workflow
-6. Success: a forced `SchemaViolationException` produces one CRITICAL alert on all three channels within the 30s execution timeout
-
-**Companion tools**:
-- Schema: `schemas/registry_rules.json`
-- CLI: `node scripts/validate-agent-manifest.js`
-- SaaS UI: `products/agent-manifest-validator` (port 3012)
-
----
-
-### 3. Secret Management (Gatekeeper)
+### 2. Secret Management (Gatekeeper)
 
 The following workflows are documented in `/docs/SELF_HEALING_SECRET_ROTATION.md`:
 
