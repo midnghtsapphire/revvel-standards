@@ -87,6 +87,39 @@ test('drafts are still skipped', () => {
   assert.match(collect.with.script, /pr\.draft/, 'draft PRs must not be force-updated');
 });
 
+test('token selection keeps the AGENT_PR_TOKEN fallback and stays parseable', () => {
+  // `secrets.X != '' && secrets.X || secrets.Y` is valid GitHub expression
+  // syntax, but the runner-side expression parser used by the actions-lint
+  // check reports it as an undeclared secret named after the whole
+  // expression. `secrets.X || secrets.Y` is equivalent — an unset secret is
+  // the empty string, which is falsy — and parses cleanly.
+  assert.doesNotMatch(
+    raw,
+    /secrets\.\w+\s*!=\s*''/,
+    "avoid the `secrets.X != '' && ...` idiom; `secrets.X || secrets.Y` is equivalent"
+  );
+
+  // CLAUDE.md gotcha 3: the default GITHUB_TOKEN does not trigger downstream
+  // workflows, so the AGENT_PR_TOKEN preference must survive any rewrite.
+  const tokenRefs = raw.match(/\$\{\{\s*secrets\.AGENT_PR_TOKEN\s*\|\|\s*secrets\.GITHUB_TOKEN\s*\}\}/g);
+  assert.ok(
+    tokenRefs && tokenRefs.length === 2,
+    'expected both the checkout token and the github-script token to prefer AGENT_PR_TOKEN'
+  );
+});
+
+test('workflow_dispatch input is read through the inputs context', () => {
+  // `github.event.inputs` is the legacy spelling and is flagged as undeclared
+  // by the actions-lint check. `inputs.<name>` is the documented context for
+  // workflow_dispatch and is likewise empty on push events, so the collect
+  // step's "no PR number supplied" branch behaves identically.
+  assert.doesNotMatch(raw, /github\.event\.inputs\./, 'use the `inputs.` context');
+  assert.match(raw, /\$\{\{\s*inputs\.pr_number\s*\}\}/);
+
+  // The input must still be declared, or the dispatch path silently breaks.
+  assert.ok(wf.on.workflow_dispatch.inputs.pr_number, 'pr_number must stay declared');
+});
+
 test('conflicting merges abort instead of pushing', () => {
   // The merge step aborts and leaves conflicts for a human; it must never push
   // a half-resolved tree.
