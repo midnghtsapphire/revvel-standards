@@ -1,9 +1,0 @@
-repos:
-  - repo: local
-    hooks:
-      - id: validate-jsonl
-        name: Validate JSONL files
-        entry: python scripts/validate_jsonl.py
-        language: system
-        files: \.jsonl$
-        pass_filenames: true

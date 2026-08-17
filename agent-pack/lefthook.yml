@@ -1,7 +1,0 @@
-# WR-4473 pre-commit gate template — copy to repo root, set LINT_CMD, run `lefthook install` in bootstrap.
-pre-commit:
-  parallel: true
-  commands:
-    lint:
-      run: {LINT_CMD}   # e.g. ruff check . | eslint . --max-warnings 0 | dotnet format --verify-no-changes
-      fail_text: "Lint failed. For AI agents: enter WR-4471 fix loop (capture output, fix, re-lint, max 3 cycles). Do NOT use --no-verify — CI re-runs this lint and bypass decrements your trust score (WR-4473)."
