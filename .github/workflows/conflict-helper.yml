@@ -143,6 +143,7 @@ jobs:
         with:
           repository: ${{ steps.pr.outputs.head_repo }}
           ref: ${{ steps.pr.outputs.head_ref }}
+          persist-credentials: false
   actions: write         # needed by "gh workflow run" to dispatch Jules
 
   analyze:
