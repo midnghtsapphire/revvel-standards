@@ -34,6 +34,7 @@
     "agent-creator:data": "node scripts/build-agent-creator-data.js",
     "automation:doctor": "node scripts/automation-doctor.js",
     "workflows:validate": "node scripts/automation-doctor.js --validate",
+    "package:check": "node scripts/check-package-integrity.js",
     "labels:check": "node scripts/automation-doctor.js --labels",
     "deploy:vercel": "node scripts/deploy-vercel.js",
     "bootstrap:web": "echo Use: npm run deploy:vercel -- --repo=owner/project",
