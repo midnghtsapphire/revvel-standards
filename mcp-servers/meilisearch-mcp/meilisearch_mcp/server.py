@@ -71,7 +71,6 @@ SETTINGS_UPDATE_SCHEMA = {
 HEALTH_SCHEMA = {"type": "object", "properties": {}}
 
 
-
 class MeiliSearchMCP:
     """MCP server for MeiliSearch."""
     
