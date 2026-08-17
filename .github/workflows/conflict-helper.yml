@@ -143,6 +143,7 @@ jobs:
         with:
           repository: ${{ steps.pr.outputs.head_repo }}
           ref: ${{ steps.pr.outputs.head_ref }}
+          persist-credentials: false
 
 concurrency:
   # PR number lives on `pull_request` events; on `issue_comment` events it
@@ -373,6 +374,8 @@ concurrency:
           marker="<!-- conflict-helper:sticky -->"
           p2="${PHASE2_OUTCOME:-not-attempted}"
           p3="${PHASE3_DISPATCHED:-not-attempted}"
+
+          # Indent EOF contents to fix YAML parser issue
           body=$(cat <<EOF
           $marker
           ### Conflict Helper — outcome
@@ -393,8 +396,10 @@ concurrency:
           <sub>Trigger a retry by commenting \`/resolve\` on this PR.</sub>
           EOF
           )
+
+          # Strip leading indentation
           body=$(echo "$body" | sed 's/^[ \t]*//')
-          body=$(echo "$body" | envsubst)
+
           existing=$(gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
             --jq ".[] | select(.body | contains(\"$marker\")) | .id" | head -n1 || true)
           if [ -n "$existing" ]; then
