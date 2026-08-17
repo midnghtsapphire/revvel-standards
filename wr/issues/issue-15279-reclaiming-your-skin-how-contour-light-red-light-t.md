@@ -157,6 +157,14 @@ Encryption alone is not compliance. Storage location alone is not compliance.
 - [ ] **Separate FDA SaMD analysis:** confirm that content, features, and marketing claims stay within wellness/educational scope. Track any feature that could imply diagnosis, treatment, mitigation, prevention, or cure of disease and route to legal review. (Draft track: `wr/issues/issue-15279-fda-samd-intended-use-strategy.md`.)
 - [x] **Vendor review (shipped calculator):** no app-level processors of dosage inputs; host/CDN only for static delivery — see data inventory. Re-run before adding analytics, accounts, or cloud sync.
 - [ ] **Incident response runbook** documented and tested (FTC HBNR applicable even outside HIPAA).
+- [x] **Formal Privacy Impact Assessment (PIA)** — engineering package complete covering data inventory, data flows, regulatory mapping (HIPAA, FTC HBNR, MHMDA, GDPR, CCPA/CPRA), third-party processors, and risk register with mitigations. **Counsel countersignature still required before production health-data collection.** Package: [`compliance/wr-15279/privacy-impact-assessment.md`](../../compliance/wr-15279/privacy-impact-assessment.md) (issue #16110).
+- [x] **Data classification review:** per-field classification (PHI-if-CE/BA, consumer health data, CPRA sensitive PI, GDPR Art. 9) lives in [`compliance/wr-15279/data-inventory.md`](../../compliance/wr-15279/data-inventory.md) + `data-inventory.json`.
+- [ ] **Regulatory scoping memo** signed by counsel stating whether HIPAA applies and why/why not — draft at [`compliance/wr-15279/entity-classification.md`](../../compliance/wr-15279/entity-classification.md) (unsigned).
+- [ ] **If HIPAA applies:** complete the §8.4 program *before* the tracker collects any user input.
+- [x] **If HIPAA does not apply (draft posture):** reasoning documented in entity-classification + regulatory-mapping (D2C wellness; not CE/BA at MVP). Still must implement consumer health privacy program (notice, consent, DSAR, deletion, minimization, security) before Phase 2 launch — see PIA §8.
+- [x] **Separate FDA SaMD analysis:** see `wr/issues/issue-15279-fda-samd-intended-use-strategy.md` (independent track; disclaimers do not satisfy privacy regimes).
+- [x] **Vendor review (draft inventory):** every contemplated processor listed in [`compliance/wr-15279/third-party-processors.md`](../../compliance/wr-15279/third-party-processors.md) + `vendor-register.json`. DPAs must still be executed before each processor receives personal data.
+- [ ] **Incident response runbook** documented and tested (still blocking — PIA risk R-08).
 
 ### 8.6 Interim Posture
 
