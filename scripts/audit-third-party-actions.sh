@@ -72,6 +72,19 @@ ACCEPTED_SINGLE_AUTHOR_ACTIONS=(
   # WR #15672: Devin code-review lane (devin-code-review.yml); pinned to the
   # full v1 commit SHA per docs/THIRD_PARTY_ACTION_AUDIT.md disposition rules.
   "aaronsteers/devin-action"
+  # WR #15863: Easy Env Vars — briantist/ezenv@v1.0.0 pinned to full commit SHA
+  # in easy-env-vars.yml; pre-validated by products/easy-env-vars/lib before use.
+  "briantist/ezenv"
+  # Issue #16876: xAI Grok PR review (xai-code-review.yml); pinned to the
+  # full v0.1.0 commit SHA. Single-author but actively released (2026-05) and
+  # soft-skip / continue-on-error so abandonment cannot stick a PR check.
+  "tarmojussila/xai-code-review"
+  # WR #16270: markdown image empty-alt checker. Single-author, last release
+  # 2023-04-21 (node16). Pinned to the v1 commit SHA in
+  # markdown-image-alt-text-checker.yml; the local script is the PR gate so an
+  # abandoned upstream cannot stick a required check. Accept the exact action
+  # so the quarterly audit does not re-open a tracking WR every run.
+  "ruthtxh/markdown-image-alt-text-checker"
   # WR #15811: Renovate config CI gate (renovate-config-validator.yml). Active
   # releases through v2.1.0; pinned to the full v2.1.0 commit SHA.
   "suzuki-shunsuke/github-action-renovate-config-validator"
