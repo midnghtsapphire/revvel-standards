@@ -1,0 +1,158 @@
+name: MergeMe.dev wiring status
+
+# Audits whether MergeMe.dev is wired into revvel-standards (WR #16824).
+# Repo-side surfaces are checked by scripts/mergeme-wiring.js (exit 0 = wired).
+# Optional GitHub App installation probe runs best-effort when permissions allow.
+#
+# Quiet by default on schedule (notice-only). workflow_dispatch can comment on
+# a WR/PR. Does not merge, does not require MERGEME secrets (GitHub App install
+# is owner-side at https://mergeme.dev / marketplace).
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Optional issue/PR number to comment the markdown report on
+        required: false
+        type: string
+      fail_if_unwired:
+        description: Fail the job when repo-side wiring is incomplete
+        required: false
+        type: boolean
+        default: true
+  schedule:
+    # Weekly Monday 14:17 UTC — drift watch, not a hot path
+    - cron: '17 14 * * 1'
+  push:
+    paths:
+      - 'config/connections.yml'
+      - 'scripts/mergeme-wiring.js'
+      - 'docs/MERGEME_INTEGRATION.md'
+      - 'products/mergeme-status/**'
+      - '.github/workflows/mergeme-status.yml'
+      - 'tests/mergeme-wiring.test.js'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  checks: write
+
+concurrency:
+  group: mergeme-status-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Audit MergeMe wiring
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install root deps
+        run: npm ci --ignore-scripts
+
+      - name: Run MergeMe wiring auditor
+        id: audit
+        run: |
+          set +e
+          node scripts/mergeme-wiring.js --out /tmp/mergeme-report.json
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          if [ -f /tmp/mergeme-report.json ]; then
+            wired=$(node -e "const r=require('/tmp/mergeme-report.json'); process.stdout.write(String(r.wired))")
+            score=$(node -e "const r=require('/tmp/mergeme-report.json'); process.stdout.write(String(r.score))")
+            echo "wired=$wired" >> "$GITHUB_OUTPUT"
+            echo "score=$score" >> "$GITHUB_OUTPUT"
+            node scripts/mergeme-wiring.js --markdown > /tmp/mergeme-report.md
+            echo "Report score=$score wired=$wired exit=$code"
+            cat /tmp/mergeme-report.md
+          fi
+          # Always succeed this step; gate below decides failure.
+          exit 0
+
+      - name: Best-effort GitHub App installation probe
+        continue-on-error: true
+        uses: actions/github-script@v9.0.0
+        with:
+          script: |
+            const fs = require('fs');
+            const { isMergeMeInstallation } = require('./scripts/mergeme-wiring.js');
+            const { owner, repo } = context.repo;
+            let found = false;
+            let detail = 'installation list unavailable';
+            try {
+              // GET /repos/{owner}/{repo}/installation is for the *calling* app.
+              // List installations accessible to this token when possible.
+              const res = await github.request('GET /repos/{owner}/{repo}/installation', {
+                owner, repo,
+              }).catch((e) => ({ status: e.status, message: e.message }));
+              if (res && res.data && isMergeMeInstallation(res.data)) {
+                found = true;
+                detail = `repo installation slug=${res.data.app_slug || res.data.id}`;
+              } else if (res && res.status) {
+                detail = `probe status=${res.status} (${res.message || 'not MergeMe or no access'})`;
+              }
+            } catch (e) {
+              detail = `probe error: ${e.message}`;
+            }
+            core.notice(`MergeMe GitHub App install probe: found=${found} — ${detail}`);
+            core.summary
+              .addHeading('MergeMe GitHub App probe')
+              .addRaw(`found=${found}\n\n${detail}`)
+              .write();
+
+      - name: Publish job summary
+        if: always()
+        run: |
+          {
+            echo "## MergeMe.dev wiring"
+            echo ""
+            if [ -f /tmp/mergeme-report.md ]; then cat /tmp/mergeme-report.md; else echo "_no report_"; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment on issue/PR when requested
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.issue_number != '' }}
+        uses: actions/github-script@v9.0.0
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+        with:
+          script: |
+            const fs = require('fs');
+            const issue_number = Number(process.env.ISSUE_NUMBER);
+            if (!Number.isFinite(issue_number) || issue_number <= 0) {
+              core.setFailed(`invalid issue_number: ${process.env.ISSUE_NUMBER}`);
+              return;
+            }
+            const body = fs.existsSync('/tmp/mergeme-report.md')
+              ? fs.readFileSync('/tmp/mergeme-report.md', 'utf8')
+              : '_MergeMe wiring report missing._';
+            const { owner, repo } = context.repo;
+            await github.rest.issues.createComment({
+              owner, repo, issue_number,
+              body: body + `\n\n_Automated by \`mergeme-status.yml\` run ${context.runId}._`,
+            });
+
+      - name: Fail when unwired (dispatch default / push)
+        if: |
+          (github.event_name == 'push') ||
+          (github.event_name == 'workflow_dispatch' && inputs.fail_if_unwired)
+        run: |
+          code="${{ steps.audit.outputs.exit_code }}"
+          if [ "$code" != "0" ]; then
+            echo "MergeMe.dev is not fully wired (auditor exit $code)."
+            exit 1
+          fi
+          echo "MergeMe.dev wiring OK (score ${{ steps.audit.outputs.score }})."
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
