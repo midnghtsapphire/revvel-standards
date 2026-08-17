@@ -1,6 +1,56 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hardware Selection — oAudrey</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="border-b border-slate-800 p-6">
+    <h1 class="text-2xl font-bold">Hardware Selection Dashboard</h1>
+    <p class="text-slate-400 text-sm mt-1">Cost-optimized compute picks for the $10k → $10M journey.</p>
+  </header>
+
+  <main class="p-6 max-w-6xl mx-auto">
+    <section class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <article class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <h2 class="font-semibold text-lg">CPU (AVX2/512)</h2>
+        <p class="text-slate-400 text-sm mt-1">Best for models &lt;7B and batch &lt;32.</p>
+        <p class="mt-3 text-emerald-400 font-mono">$0.02 / 1k req</p>
+      </article>
+      <article class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <h2 class="font-semibold text-lg">RTX 4090</h2>
+        <p class="text-slate-400 text-sm mt-1">Dev + small prod inference.</p>
+        <p class="mt-3 text-emerald-400 font-mono">$0.11 / 1k req</p>
+      </article>
+      <article class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <h2 class="font-semibold text-lg">A100 80GB</h2>
+        <p class="text-slate-400 text-sm mt-1">Only when revenue justifies.</p>
+        <p class="mt-3 text-amber-400 font-mono">$1.20 / 1k req</p>
+      </article>
+      <article class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <h2 class="font-semibold text-lg">Serverless GPU</h2>
+        <p class="text-slate-400 text-sm mt-1">Bursty / spiky traffic.</p>
+        <p class="mt-3 text-emerald-400 font-mono">$0.30 / 1k req</p>
+      </article>
+    </section>
+
+    <section class="mt-8 bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <h2 class="font-semibold text-lg mb-3">Decision Rubric</h2>
+      <ol class="list-decimal list-inside space-y-1 text-slate-300 text-sm">
+        <li>Define SLA (p99, throughput, cost ceiling).</li>
+        <li>Prefer CPU unless SLA is impossible.</li>
+        <li>Smallest model that meets SLA (distill/quantize first).</li>
+        <li>JIT provision via <code class="text-emerald-400">cuda_mlops_wrapper</code>.</li>
+        <li>Always have a CPU fallback.</li>
+      </ol>
+    </section>
+
+    <footer class="mt-8 text-xs text-slate-500">
+      Prime directive: $10k/month → $10M in 3 years.
+    </footer>
+  </main>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>oAudrey · Hardware Selection</title>
