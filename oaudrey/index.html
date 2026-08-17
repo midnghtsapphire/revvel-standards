@@ -481,6 +481,15 @@
           </button>
           <button
             role="tab"
+            id="tab-hardware"
+            aria-controls="panel-hardware"
+            aria-selected="false"
+            class="px-4 py-2 border hairline font-mono text-[11px] uppercase tracking-widest hover:text-ice"
+          >
+            Hardware Selection
+          </button>
+          <button
+            role="tab"
             id="tab-more"
             aria-controls="panel-more"
             aria-selected="false"
@@ -1037,6 +1046,43 @@
               </div>
             </dl>
           </aside>
+        </div>
+
+        <!-- Hardware Selection panel -->
+        <div
+          role="tabpanel"
+          id="panel-hardware"
+          aria-labelledby="tab-hardware"
+          hidden
+          class="glass p-8 md:p-10"
+        >
+          <div
+            class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-mist"
+          >
+            <span
+              class="h-1.5 w-1.5 bg-cyan pulse-dot"
+              aria-hidden="true"
+            ></span>
+            hardware-dashboard
+          </div>
+          <h3
+            class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]"
+          >
+            Hardware Selection — cost-optimized compute picks.
+          </h3>
+          <p class="mt-6 text-mist leading-relaxed max-w-2xl">
+            Interactive dashboard comparing CPU, RTX 4090, A100, and JIT cloud
+            compute for AI workloads — pick the cheapest hardware that meets the
+            latency budget.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a
+              href="hardware-dashboard.html"
+              class="inline-flex items-center bg-gradient-to-r from-iris to-cyan px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-widest text-void hover:opacity-90"
+            >
+              Open Hardware Dashboard →
+            </a>
+          </div>
         </div>
 
         <!-- More panel -->
