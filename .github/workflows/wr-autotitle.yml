@@ -1,0 +1,223 @@
+name: WR Autotitle
+
+# Autocreate / normalize Work Request titles so humans do not retype long messy
+# titles. Deterministic (no LLM): scripts/wr-autotitle.js + config/wr-title-templates.yml.
+#
+# Triggers:
+#   1. issues opened/edited — if the issue looks like a WR (title starts with
+#      [WR] or has the work-request label), suggest a cleaned title. Skips when
+#      the title is already clean unless the edit still has double spaces/noise.
+#   2. issue_comment created — `/wr-title` or `/title` (optional `force`)
+#      regenerates the title on demand (the slash menu surface the user asked for).
+#   3. workflow_dispatch — manual run for a single issue number.
+#
+# See docs/WR_TITLE_AUTOCREATE.md for click-by-click human usage.
+
+on:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to retitle
+        required: true
+        type: number
+      force:
+        description: Force template rewrite even if title looks clean
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: wr-autotitle-${{ github.event.issue.number || inputs.issue_number || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  autotitle:
+    name: Autocreate / normalize WR title
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Skip bot comment loops. For comments, only run on /wr-title or /title.
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'issues' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.comment.user.type != 'Bot' &&
+       (contains(github.event.comment.body, '/wr-title') ||
+        contains(github.event.comment.body, '/title')))
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm ci --no-audit --no-fund
+
+      - name: Resolve issue + decide force
+        id: meta
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const event = context.eventName;
+            let issueNumber;
+            let force = false;
+            let commentId = null;
+
+            if (event === 'workflow_dispatch') {
+              issueNumber = Number(core.getInput('issue_number') || process.env.INPUT_ISSUE_NUMBER || '${{ inputs.issue_number }}');
+              force = String('${{ inputs.force }}') === 'true';
+            } else if (event === 'issues') {
+              issueNumber = context.payload.issue.number;
+              force = false;
+            } else if (event === 'issue_comment') {
+              issueNumber = context.payload.issue.number;
+              commentId = context.payload.comment.id;
+              const body = context.payload.comment.body || '';
+              // /wr-title force  OR  /title force
+              force = /\/(?:wr-title|title)\b[^\n]*\bforce\b/i.test(body);
+              if (!/\/(?:wr-title|title)\b/i.test(body)) {
+                core.setOutput('skip', 'true');
+                core.setOutput('skip_reason', 'comment-missing-command');
+                return;
+              }
+            } else {
+              core.setFailed(`unsupported event: ${event}`);
+              return;
+            }
+
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+            });
+
+            if (issue.pull_request) {
+              core.setOutput('skip', 'true');
+              core.setOutput('skip_reason', 'is-pull-request');
+              return;
+            }
+
+            const title = issue.title || '';
+            const labels = (issue.labels || []).map((l) => (typeof l === 'string' ? l : l.name));
+            const looksLikeWr =
+              /^\[WR\]/i.test(title) ||
+              labels.includes('work-request') ||
+              labels.includes('weekly-research');
+
+            // Comment command is an explicit ask — allow even without [WR] prefix.
+            if (!looksLikeWr && event !== 'issue_comment' && event !== 'workflow_dispatch') {
+              core.setOutput('skip', 'true');
+              core.setOutput('skip_reason', 'not-a-wr');
+              return;
+            }
+
+            core.setOutput('skip', 'false');
+            core.setOutput('issue_number', String(issueNumber));
+            core.setOutput('title', title);
+            // body can be large; write to file for the node step
+            const fs = require('fs');
+            fs.writeFileSync('wr-autotitle-body.md', issue.body || '', 'utf8');
+            core.setOutput('force', force ? 'true' : 'false');
+            if (commentId) core.setOutput('comment_id', String(commentId));
+
+      - name: Suggest title
+        id: suggest
+        if: steps.meta.outputs.skip != 'true'
+        env:
+          ISSUE_TITLE: ${{ steps.meta.outputs.title }}
+          FORCE: ${{ steps.meta.outputs.force }}
+        run: |
+          set -euo pipefail
+          # Pass title/body via env + files so special characters never break argv.
+          export WR_AUTOTITLE_TITLE="${ISSUE_TITLE}"
+          export WR_AUTOTITLE_BODY_FILE="wr-autotitle-body.md"
+          EXTRA=()
+          if [ "${FORCE}" = "true" ]; then
+            EXTRA+=(--force)
+          fi
+          node scripts/wr-autotitle.js --suggest --title-env WR_AUTOTITLE_TITLE --body-file "${WR_AUTOTITLE_BODY_FILE}" "${EXTRA[@]}" > suggest.json
+          NEW_TITLE="$(node scripts/wr-autotitle.js --apply --title-env WR_AUTOTITLE_TITLE --body-file "${WR_AUTOTITLE_BODY_FILE}" "${EXTRA[@]}")"
+          {
+            echo "new_title<<EOF"
+            echo "${NEW_TITLE}"
+            echo "EOF"
+            echo "changed=$(node -p 'String(require(\"./suggest.json\").changed)')"
+            echo "reason=$(node -p 'require(\"./suggest.json\").reason')"
+            echo "skipped=$(node -p 'String(!!require(\"./suggest.json\").skipped)')"
+            echo "template=$(node -p 'require(\"./suggest.json\").templateKey || \"\"')"
+          } >> "$GITHUB_OUTPUT"
+          cat suggest.json
+
+      - name: Update issue title when changed
+        if: steps.meta.outputs.skip != 'true' && steps.suggest.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        env:
+          NEW_TITLE: ${{ steps.suggest.outputs.new_title }}
+          REASON: ${{ steps.suggest.outputs.reason }}
+          TEMPLATE: ${{ steps.suggest.outputs.template }}
+          ISSUE_NUMBER: ${{ steps.meta.outputs.issue_number }}
+        with:
+          script: |
+            const issue_number = Number(process.env.ISSUE_NUMBER);
+            const title = process.env.NEW_TITLE;
+            const reason = process.env.REASON || '';
+            const template = process.env.TEMPLATE || '';
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              title,
+            });
+            const lines = [
+              '## WR title autocreated',
+              '',
+              `Normalized title to: **${title}**`,
+              '',
+              `- reason: \`${reason}\``,
+            ];
+            if (template) lines.push(`- template: \`${template}\``);
+            lines.push('', '_Source: `scripts/wr-autotitle.js` + `config/wr-title-templates.yml`. Comment `/wr-title force` to regenerate._');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              body: lines.join('\n'),
+            });
+
+      - name: Reply when comment command made no change
+        if: >
+          steps.meta.outputs.skip != 'true' &&
+          github.event_name == 'issue_comment' &&
+          steps.suggest.outputs.changed != 'true'
+        uses: actions/github-script@v7
+        env:
+          ISSUE_NUMBER: ${{ steps.meta.outputs.issue_number }}
+          NEW_TITLE: ${{ steps.suggest.outputs.new_title }}
+          REASON: ${{ steps.suggest.outputs.reason }}
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.ISSUE_NUMBER),
+              body: [
+                '## WR title autocreate',
+                '',
+                `No title change needed (reason: \`${process.env.REASON}\`).`,
+                '',
+                `Current title: **${process.env.NEW_TITLE}**`,
+                '',
+                'Add `force` to rewrite from templates: `/wr-title force`',
+              ].join('\n'),
+            });
