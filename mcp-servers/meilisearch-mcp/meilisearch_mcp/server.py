@@ -17,180 +17,59 @@ import meilisearch
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TOOLS = [
-    Tool(
-        name="meili_index_create",
-        description="Create a MeiliSearch index",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index unique identifier"},
-                "primary_key": {"type": "string", "description": "Primary key field"},
-            },
-            "required": ["index_uid"],
-        },
-    ),
-    Tool(
-        name="meili_index_list",
-        description="List all MeiliSearch indexes",
-        inputSchema={"type": "object", "properties": {}},
-    ),
-    Tool(
-        name="meili_index_delete",
-        description="Delete a MeiliSearch index",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index UID"},
-            },
-            "required": ["index_uid"],
-        },
-    ),
-    Tool(
-        name="meili_documents_add",
-        description="Add documents to an index",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index UID"},
-                "documents": {"type": "string", "description": "JSON array of documents"},
-            },
-            "required": ["index_uid", "documents"],
-        },
-    ),
-    Tool(
-        name="meili_documents_search",
-        description="Search documents",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index UID"},
-                "query": {"type": "string", "description": "Search query"},
-                "limit": {"type": "integer", "description": "Max results"},
-            },
-            "required": ["index_uid", "query"],
-        },
-    ),
-    Tool(
-        name="meili_documents_get",
-        description="Get a document by ID",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index UID"},
-                "document_id": {"type": "string", "description": "Document ID"},
-            },
-            "required": ["index_uid", "document_id"],
-        },
-    ),
-    Tool(
-        name="meili_settings_update",
-        description="Update index search settings",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index UID"},
-                "searchable_attributes": {"type": "string", "description": "JSON array"},
-                "filterable_attributes": {"type": "string", "description": "JSON array"},
-                "sortable_attributes": {"type": "string", "description": "JSON array"},
-            },
-            "required": ["index_uid"],
-        },
-    ),
-    Tool(
-        name="meili_health",
-        description="Check MeiliSearch health",
-        inputSchema={"type": "object", "properties": {}},
-    ),
-]
+INDEX_CREATE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "index_uid": {"type": "string", "description": "Index unique identifier"},
+        "primary_key": {"type": "string", "description": "Primary key field"},
+    },
+    "required": ["index_uid"],
+}
+INDEX_LIST_SCHEMA = {"type": "object", "properties": {}}
+INDEX_DELETE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "index_uid": {"type": "string", "description": "Index UID"},
+    },
+    "required": ["index_uid"],
+}
+DOCUMENTS_ADD_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "index_uid": {"type": "string", "description": "Index UID"},
+        "documents": {"type": "string", "description": "JSON array of documents"},
+    },
+    "required": ["index_uid", "documents"],
+}
+DOCUMENTS_SEARCH_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "index_uid": {"type": "string", "description": "Index UID"},
+        "query": {"type": "string", "description": "Search query"},
+        "limit": {"type": "integer", "description": "Max results"},
+    },
+    "required": ["index_uid", "query"],
+}
+DOCUMENTS_GET_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "index_uid": {"type": "string", "description": "Index UID"},
+        "document_id": {"type": "string", "description": "Document ID"},
+    },
+    "required": ["index_uid", "document_id"],
+}
+SETTINGS_UPDATE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "index_uid": {"type": "string", "description": "Index UID"},
+        "searchable_attributes": {"type": "string", "description": "JSON array"},
+        "filterable_attributes": {"type": "string", "description": "JSON array"},
+        "sortable_attributes": {"type": "string", "description": "JSON array"},
+    },
+    "required": ["index_uid"],
+}
+HEALTH_SCHEMA = {"type": "object", "properties": {}}
 
-
-MEILI_TOOLS = [
-    Tool(
-        name="meili_index_create",
-        description="Create a MeiliSearch index",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index unique identifier"},
-                "primary_key": {"type": "string", "description": "Primary key field"},
-            },
-            "required": ["index_uid"],
-        },
-    ),
-    Tool(
-        name="meili_index_list",
-        description="List all MeiliSearch indexes",
-        inputSchema={"type": "object", "properties": {}},
-    ),
-    Tool(
-        name="meili_index_delete",
-        description="Delete a MeiliSearch index",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index UID"},
-            },
-            "required": ["index_uid"],
-        },
-    ),
-    Tool(
-        name="meili_documents_add",
-        description="Add documents to an index",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index UID"},
-                "documents": {"type": "string", "description": "JSON array of documents"},
-            },
-            "required": ["index_uid", "documents"],
-        },
-    ),
-    Tool(
-        name="meili_documents_search",
-        description="Search documents",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index UID"},
-                "query": {"type": "string", "description": "Search query"},
-                "limit": {"type": "integer", "description": "Max results"},
-            },
-            "required": ["index_uid", "query"],
-        },
-    ),
-    Tool(
-        name="meili_documents_get",
-        description="Get a document by ID",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index UID"},
-                "document_id": {"type": "string", "description": "Document ID"},
-            },
-            "required": ["index_uid", "document_id"],
-        },
-    ),
-    Tool(
-        name="meili_settings_update",
-        description="Update index search settings",
-        inputSchema={
-            "type": "object",
-            "properties": {
-                "index_uid": {"type": "string", "description": "Index UID"},
-                "searchable_attributes": {"type": "string", "description": "JSON array"},
-                "filterable_attributes": {"type": "string", "description": "JSON array"},
-                "sortable_attributes": {"type": "string", "description": "JSON array"},
-            },
-            "required": ["index_uid"],
-        },
-    ),
-    Tool(
-        name="meili_health",
-        description="Check MeiliSearch health",
-        inputSchema={"type": "object", "properties": {}},
-    ),
-]
 
 
 class MeiliSearchMCP:
@@ -208,8 +87,48 @@ class MeiliSearchMCP:
         
         @self.server.list_tools()
         async def list_tools() -> list[Tool]:
-            return TOOLS
-            return MEILI_TOOLS
+            return [
+                Tool(
+                    name="meili_index_create",
+                    description="Create a MeiliSearch index",
+                    inputSchema=INDEX_CREATE_SCHEMA,
+                ),
+                Tool(
+                    name="meili_index_list",
+                    description="List all MeiliSearch indexes",
+                    inputSchema=INDEX_LIST_SCHEMA,
+                ),
+                Tool(
+                    name="meili_index_delete",
+                    description="Delete a MeiliSearch index",
+                    inputSchema=INDEX_DELETE_SCHEMA,
+                ),
+                Tool(
+                    name="meili_documents_add",
+                    description="Add documents to an index",
+                    inputSchema=DOCUMENTS_ADD_SCHEMA,
+                ),
+                Tool(
+                    name="meili_documents_search",
+                    description="Search documents",
+                    inputSchema=DOCUMENTS_SEARCH_SCHEMA,
+                ),
+                Tool(
+                    name="meili_documents_get",
+                    description="Get a document by ID",
+                    inputSchema=DOCUMENTS_GET_SCHEMA,
+                ),
+                Tool(
+                    name="meili_settings_update",
+                    description="Update index search settings",
+                    inputSchema=SETTINGS_UPDATE_SCHEMA,
+                ),
+                Tool(
+                    name="meili_health",
+                    description="Check MeiliSearch health",
+                    inputSchema=HEALTH_SCHEMA,
+                ),
+            ]
         
         @self.server.call_tool()
         async def call_tool(name: str, arguments: Any) -> list[TextContent]:

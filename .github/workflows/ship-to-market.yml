@@ -546,15 +546,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-    # Job-level override: workflow-level perms omit actions: write, but this job
-    # calls github.rest.actions.createWorkflowDispatch. Without actions: write
-    # the mobile hand-off 403s and only the catch path runs (silent no-dispatch).
-    # issues: write keeps the result comment working under the override.
-    permissions:
-      contents: read
-      issues: write
-      pull-requests: write
-      actions: write
     steps:
       - name: Dispatch auto-deploy-to-stores workflow
         id: dispatch
