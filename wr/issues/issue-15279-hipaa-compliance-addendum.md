@@ -5,6 +5,7 @@
 **Related Issues:** #16058, #16065, #16075, #15279, #16111
 **SSOT (entity scope):** `compliance/red-light-therapy/`
 **PR:** #15280
+# HIPAA Compliance Addendum — Issue #15279 (Red Light Therapy Stretch Marks App)
 
 **Status:** Corrective addendum to WR for issue #15279 (entity pack: #16111)
 **Supersedes:** Section on HIPAA compliance (line ~190) in `wr/issues/issue-15279-reclaiming-your-skin-how-contour-light-red-light-t.md`
@@ -134,7 +135,7 @@ The following statements in `issue-15279-reclaiming-your-skin-how-contour-light-
 
 ---
 
-## 6. Action Items (Owners To Be Determined)
+## 6. Action Items (Owners TBD)
 
 1. **Legal:** written data classification memo — is app a covered entity / BA? (blocking launch)
 2. **Product:** inventory every health data field collected, its purpose, retention, and sharing.
