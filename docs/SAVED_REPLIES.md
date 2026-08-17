@@ -11,11 +11,29 @@ the entries into their own GitHub settings once, following the steps below.
 | Key | Title | Body |
 | --- | --- | --- |
 | `copilot-resolve-merge-conflicts` | Copilot: resolve merge conflicts | `@copilot resolve the merge conflicts in this pull request` |
+| `wr-title-regenerate` | WR title: regenerate (/wr-title) | `/wr-title force` |
+| `wr-title-fleet` | WR title: Fleet maintenance | `[WR] Fleet maintenance — <org/repo>` |
+| `wr-title-wire-in` | WR title: Wire in | `[WR] Wire in <tool-or-service>` |
+| `wr-title-ship` | WR title: Ship to market | `[WR] Ship to market — <product>` |
+| `wr-title-research` | WR title: Deep research | `[WR] Deep research — <topic-or-url>` |
+| `wr-title-fix-ci` | WR title: Fix CI | `[WR] Fix CI — <failing check>` |
+| `wr-title-add` | WR title: Add feature | `[WR] Add <capability>` |
+| `wr-title-create` | WR title: Create product | `[WR] Create <product-or-engine>` |
+| `wr-title-implement` | WR title: Implement | `[WR] Implement <spec-or-feature>` |
 
 **When to use `copilot-resolve-merge-conflicts`:** a pull request shows
 "This branch has conflicts that must be resolved". Posting this comment on
 the PR hands it to the Copilot coding agent, which merges/rebases the base
 branch, resolves the conflicts, and pushes back to the same PR branch.
+
+**When to use the `wr-title-*` replies:** you are opening or fixing a Work
+Request title. GitHub saved replies inject into **comment bodies**, not the
+issue title field — so:
+
+1. Use `wr-title-regenerate` as a **comment** on an existing WR (`/wr-title force`).
+2. Use the other starters as copy-paste into the **title** box, or open
+   [WR Title Studio](../products/wr-title-studio/README.md) and click Copy.
+3. Full guide: [`docs/WR_TITLE_AUTOCREATE.md`](./WR_TITLE_AUTOCREATE.md).
 
 ## How to add these saved replies to your GitHub account (click-by-click)
 
