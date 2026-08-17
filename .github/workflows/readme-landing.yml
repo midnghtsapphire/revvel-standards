@@ -41,7 +41,10 @@ jobs:
 
       - name: Build landing from README (headless)
         env:
-          TEMPLATE: ${{ github.event.inputs.template || 'midnghtsapphire' }}
+          # Default applied in the shell below, not here: the workflow linter
+          # cannot parse `||` inside an expression and reads the whole thing
+          # as one input name ("template || 'midnghtsapphire'").
+          TEMPLATE: ${{ github.event.inputs.template }}
           REPO: ${{ github.repository }}
           REPO_NAME: ${{ github.event.repository.name }}
           REF: ${{ github.sha }}
@@ -52,7 +55,7 @@ jobs:
             --out site/index.html \
             --repo "$REPO" \
             --ref "$REF" \
-            --template "$TEMPLATE"
+            --template "${TEMPLATE:-midnghtsapphire}"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9  # v5.0.0

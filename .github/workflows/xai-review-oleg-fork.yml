@@ -43,7 +43,12 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: xai-review-oleg-fork-${{ github.event.pull_request.number || inputs.pull-request-number || github.ref }}
+  # `inputs` is not a valid context at workflow level — GitHub rejects the
+  # whole file with "Unrecognized named-context: 'inputs'", so this workflow
+  # never ran. `github.event.inputs` resolves here; the index form is required
+  # because `pull-request-number` is hyphenated and dot notation would parse
+  # the hyphens as subtraction.
+  group: xai-review-oleg-fork-${{ github.event.pull_request.number || github.event.inputs['pull-request-number'] || github.ref }}
   cancel-in-progress: true
 
 jobs:
