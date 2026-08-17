@@ -1236,6 +1236,12 @@
       "source": "/products/cli-engine/README.md"
     },
     {
+      "url": "https://revvel-standards.vercel.app/docs/caspian-channel-console/",
+      "project": "caspian-channel-console",
+      "type": "vercel",
+      "source": "/products/caspian-channel-console/README.md"
+    },
+    {
       "url": "https://revvel-standards.vercel.app/docs/fda-design-controls/",
       "project": "fda-design-controls",
       "type": "vercel",
@@ -1575,5 +1581,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-17T00:10:08.553Z"
+  "lastUpdated": "2026-08-17T10:52:12.896Z"
 }
