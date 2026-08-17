@@ -121,6 +121,7 @@ function main() {
       const s = raw.slice("status:".length).toLowerCase();
       let target = "in-review";
       if (s.includes("fail")) target = "checks-failing";
+      else if (s.includes("ready") && s.includes("merge")) target = "ready-to-merge";
       else if (s.includes("pass") || s.includes("success") || s.includes("green"))
         target = "checks-passing";
       else if (s.includes("block")) target = "blocked";

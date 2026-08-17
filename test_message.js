@@ -1,1 +1,0 @@
-console.log('The CI is failing due to GitHub API rate limiting in CodeQL. This is an intermittent failure unrelated to the codebase itself. The CodeQL action is hitting "API rate limit exceeded for installation."')

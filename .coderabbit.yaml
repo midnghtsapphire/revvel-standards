@@ -1,0 +1,70 @@
+# =============================================================================
+# CodeRabbit configuration — token-less AI review lane
+# =============================================================================
+#
+# WHY THIS LANE EXISTS (owner directive, 2026-08-16):
+#   The fleet needs a review lane that keeps working on "emergency" runs when
+#   no paid API tokens are available. CodeRabbit runs entirely on CodeRabbit's
+#   own infrastructure via its GitHub App:
+#     - ZERO repo-side secrets (no access keys, no PATs — nothing to leak or
+#       expire; CLAUDE.md gotchas #3 and #4 do not apply to this lane)
+#     - ZERO GitHub Actions minutes (no workflow file involved)
+#     - This repo is public, so the full Pro feature set is free (CodeRabbit's
+#       standing open-source policy).
+#
+# ACTIVATION (one-time owner action — config alone does nothing):
+#   Install the CodeRabbit GitHub App (https://github.com/apps/coderabbitai)
+#   and grant it this repository. Reviews start on the next opened/updated PR.
+#
+# RELATIONSHIP TO OTHER LANES:
+#   Bito (paid, primary — DECISIONS.md D019) and CodeRabbit run independently;
+#   CodeRabbit is the always-on / emergency lane. Trigger a manual review with
+#   `@coderabbitai review` on any PR.
+# =============================================================================
+
+language: "en-US"
+
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  auto_review:
+    enabled: true
+    drafts: false
+  path_filters:
+    # Generated / regenerated artifacts — reviewing these is pure noise.
+    - "!docs/notebooklm/**"
+    - "!prompts/catalog.json"
+    - "!AUTOMATION-DOCTOR-REPORT.md"
+    - "!**/package-lock.json"
+    - "!**/*.min.js"
+  path_instructions:
+    - path: ".github/workflows/**"
+      instructions: |
+        House standards for workflow changes (see CLAUDE.md "Recurring gotchas"):
+        - removeLabel is not idempotent — calls must swallow 404 or check with
+          listLabelsOnIssue first.
+        - Octokit calls in workflow scripts must route through the shared
+          withRetry({ allowError: [...] }) helper, never bare.
+        - Third-party actions must be pinned to a full commit SHA, not a
+          floating tag like @v3 or @main.
+        - Secrets must be passed on stdin (--token-stdin / --token-file
+          /dev/stdin), never in argv.
+        - Every job should declare timeout-minutes.
+        - Multi-line strings inside `run: |` or github-script `script: |`
+          blocks must stay indented — a column-0 line terminates the YAML
+          block scalar (heredoc terminators are a known footgun here).
+    - path: "**/*.sh"
+      instructions: |
+        Bash array expansions must be quoted ("${ARR[@]}"); unquoted $ARR
+        iterates only the first element (shellcheck SC2128). Exit codes must
+        reflect the true postcondition, not just process completion.
+    - path: "tests/**"
+      instructions: |
+        Every bugfix is expected to ship with a regression test that would
+        have caught the original symptom. Flag fixes that arrive without one.
+
+chat:
+  auto_reply: true
