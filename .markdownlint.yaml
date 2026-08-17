@@ -15,9 +15,9 @@ MD033: false
 # because some files have front matter or comments first
 MD041: false
 
-# MD024: Multiple headings with the same content - disabled because
-# docs intentionally use repeated section headers across entries
-MD024: false
+# MD022 (blanks around headings), MD024 (duplicate headings), and
+# MD032 (blanks around lists) stay enabled via `default: true` — the repo
+# mandates them and this gate must enforce them.
 
 # MD046: Code block style - consistent fenced style
 MD046:
@@ -28,11 +28,7 @@ MD046:
 MD060: false
 
 # Relaxed rules for audit prompts and checklists
-MD022:
-  lines_above: 0
-  lines_below: 0
 MD031: false
-MD032: false
 MD036: false
 MD040: true
 MD009: false
