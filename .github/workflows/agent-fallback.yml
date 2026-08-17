@@ -70,7 +70,7 @@ jobs:
       recommended_agent: ${{ steps.check.outputs.recommended_agent }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
         with:
           persist-credentials: false
       - name: Check agent availability
@@ -127,18 +127,18 @@ jobs:
       pr_url: ${{ steps.pr-url.outputs.pr_url }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
         with:
           fetch-depth: 0
           token: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           persist-credentials: false
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "24"
       - name: Resolve issue context
         id: issue
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           INPUT_TASK_DESCRIPTION: ${{ inputs.task_description }}
           INPUT_ISSUE_NUMBER: ${{ inputs.issue_number }}
@@ -327,7 +327,7 @@ jobs:
           echo "pr_url=${{ steps.cpr.outputs.pull-request-url }}" >> $GITHUB_OUTPUT
       - name: Comment on issue with success
         if: steps.result.outputs.success == 'true'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           AGENT: ${{ steps.result.outputs.agent }}
           PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
@@ -352,7 +352,7 @@ jobs:
             });
       - name: Create fallback event issue
         if: steps.result.outputs.agent != 'openrouter' && steps.result.outputs.agent != 'none'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           AGENT: ${{ steps.result.outputs.agent }}
           ORIGINAL_ISSUE: ${{ steps.issue.outputs.issue_number }}
@@ -379,7 +379,7 @@ jobs:
             });
       - name: Comment on issue with failure
         if: steps.result.outputs.success == 'false'
-        uses: actions/github-script@v9.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           ISSUE_NUM: ${{ steps.issue.outputs.issue_number }}
           OpenHands_OUTCOME: ${{ steps.OpenHands.outcome }}
