@@ -13,7 +13,13 @@ name: Sandbox Guardrail
 # skipped — they are not "visiting" agents.
 
 on:
-  pull_request_target:
+  # `pull_request`, not `pull_request_target`. The latter runs with repository
+  # write permissions and secrets, and this job checks out the PR head — the
+  # canonical privilege-escalation shape (zizmor: "fundamentally insecure
+  # workflow trigger"). The job already restricts itself to same-repo PRs via
+  # the `if` below, so fork PRs never ran anyway and `pull_request` is
+  # behaviourally identical here while carrying none of the risk.
+  pull_request:
     types: [opened, ready_for_review]
 
 permissions:
@@ -31,9 +37,10 @@ jobs:
     timeout-minutes: 5
     if: github.event.pull_request.head.repo.full_name == github.repository
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
           fetch-depth: 1
 
       - name: Determine agent identity from PR author
@@ -115,7 +122,10 @@ jobs:
 
       - name: Post onboarding comment if sandbox is missing or partial
         if: steps.skip.outputs.skip != 'true' && steps.sandbox.outputs.state != 'onboarded'
-        uses: actions/github-script@v7
+        # v9 SHA, matching the pin used across the rest of this repo. The
+        # script below only calls github.rest.issues.* and reads process.env,
+        # both unchanged between v7 and v9.
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           AGENT: ${{ steps.identity.outputs.agent }}
           AUTHOR: ${{ steps.identity.outputs.author }}

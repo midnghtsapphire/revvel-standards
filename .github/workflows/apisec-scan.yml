@@ -28,6 +28,10 @@ jobs:
     if: false
     runs-on: ubuntu-latest
     timeout-minutes: 45
+
+    # Single steps block only — duplicate `steps:` keys make YAML parsers
+    # (automation-doctor / `yaml` package) reject the file and fail npm test.
+    # Full original body remains in the REVVEL-DISABLED-BODY comment below.
     steps:
       - run: echo "archived per RVS-AGENT-001; see file header for restore steps"
 

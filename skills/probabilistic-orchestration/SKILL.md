@@ -47,6 +47,43 @@ Mastering this architecture—where you treat the AI not as a magic 8-ball, but 
 
 ---
 
+## Implementation (Python-CUDA layer)
+
+**Do not re-derive this stack ad hoc.** The production module lives at:
+
+- `scripts/python_cuda/probabilistic_validator.py` — five-layer validator + self-correction orchestrator
+- `scripts/python_cuda/README.md` — defensive prompting patterns and integration notes
+- `tests/probabilistic-ai-validator.test.js` — CI gate (`npm test` → `--self-test`)
+
+```bash
+python3 scripts/python_cuda/probabilistic_validator.py --self-test
+```
+
+```python
+from scripts.python_cuda.probabilistic_validator import (
+    AIResponseValidator,
+    build_defensive_prompt,
+)
+
+prompt = build_defensive_prompt(
+    "Extract price and stock.",
+    context=source_text,
+    output_schema=schema,
+)
+result = AIResponseValidator(schema=schema, max_retries=2).run(prompt, call_model)
+if not result.ok:
+    return result.fallback.message  # graceful degradation — never crash the UI
+return result.data
+```
+
+CUDA framing: the fleet controller is the grid scheduler; each AI call is a
+warp. This module is the **warp-level gate** — structured validate → correct →
+factuality score → fallback — before results propagate to the next block.
+
+Shipped for WR-16972 (DRAGNET / probabilistic orchestration).
+
+---
+
 ## Trigger Keywords
 
 This skill activates when dealing with AI pipelines or parsing LLM outputs, especially:

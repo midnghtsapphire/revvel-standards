@@ -14,6 +14,7 @@
 6. Headless builder: `scripts/image-seo-build-pack.mjs` (no UI)
 
 **Hard rules:**
+
 - Agents write WR + code + docs.
 - **Humans merge only.**
 - No API keys in blueprints.
@@ -21,17 +22,20 @@
 - Studio UI is **dev/debug only**, not the production control plane.
 
 ## Labels
-`wr`, `human-review-required`, `priority:p1`, `automation`, `area:automation`, `formal:auto-wr`
+
+`work-request`, `needs-human`, `priority:p1`, `automation`, `area:automation`
 
 ## Acceptance criteria
-- [ ] `workflow_dispatch` / schedule builds image SEO packs without human clicking a UI
-- [ ] Release event builds release_banner pack; Discord/X when secrets present
-- [ ] LSI expansion is scripted (seed + co-occurrence + pins), not a form exercise
-- [ ] QA gate fails check on blocker filename/alt patterns
-- [ ] Draft-only PRs; `auto_merge: false` everywhere
-- [ ] Connection registry lists secret **names** for Discord/X
+
+- [x] `workflow_dispatch` / schedule builds image SEO packs without human clicking a UI
+- [x] Release event builds release_banner pack; Discord/X when secrets present
+- [x] LSI expansion is scripted (seed + co-occurrence + pins), not a form exercise
+- [x] QA gate fails check on blocker filename/alt patterns
+- [x] Draft-only PRs; `auto_merge: false` everywhere
+- [x] Connection registry lists secret **names** for Discord/X
 
 ## Implementation map
+
 | Path | Role |
 | --- | --- |
 | `standards/IMAGE_CREATION_SEO_AUTOMATION.md` | SSOT process |
@@ -39,9 +43,12 @@
 | `.github/workflows/release-banner-social.yml` | Release → banner pack → social |
 | `.github/workflows/image-seo-qa.yml` | PR image QA gate |
 | `scripts/image-seo-build-pack.mjs` | Headless image_creation/v1 builder |
+| `scripts/image-seo-filename-qa.mjs` | Shared filename SEO gate |
 | `scripts/image-automation-auto-wr.mjs` | Re-emit this formal pack |
 | `workflows/blueprints/*` | Gumloop/n8n/Zapier stubs |
 | `config/connections.image-automation.yml` | Secret names |
+| `tests/image-seo-automation.test.js` | Regression coverage |
 
 ## Human gate
+
 Review this WR and the draft PR. Merge when checks green. **Do not require manual Image Studio use for production runs.**

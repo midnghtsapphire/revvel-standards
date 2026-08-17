@@ -3,7 +3,7 @@
 SQL under this directory is validated on every PR/push that touches it by the
 **GoSQLX Lint** workflow (`.github/workflows/gosqlx-lint.yml`).
 
-## Why a curated tree?
+## Why the tree is curated
 
 GoSQLX v1.14 is a high-performance multi-dialect parser, not a full PL/pgSQL
 compiler. Repository DDL that uses `CREATE FUNCTION`, triggers, or vendor
