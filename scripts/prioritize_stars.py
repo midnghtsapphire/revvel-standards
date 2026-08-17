@@ -245,12 +245,11 @@ def fetch_starred_repos(
             response.raise_for_status()
             payload = response.json()
             if payload.get("errors"):
-                print(f"GraphQL errors: {payload['errors']}", file=sys.stderr)
                 state["cursor"] = cursor
                 state["has_next"] = has_next
                 state["repos"] = repos_dict
                 save_state(state_path, state)
-                break
+                raise RuntimeError(f"GraphQL errors: {payload['errors']}")
 
             star_data = payload["data"]["viewer"]["starredRepositories"]
             for edge in star_data["edges"]:
