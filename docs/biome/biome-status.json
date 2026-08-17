@@ -1,45 +1,31 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-17T20:06:09.105Z",
+  "generated_at": "2026-08-17T21:06:48.309Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "2/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 2,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
+            "id": 32069291279,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32069291279",
+            "conclusion": "failure"
+          },
+          {
             "id": 32063867719,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
             "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32063867719",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32058925814,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32058925814",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32058421843,
-            "name": "label-allowlist",
-            "path": ".github/workflows/label-allowlist.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32058421843",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32058421731,
-            "name": "OpenRouter Auto-Route",
-            "path": ".github/workflows/openrouter-auto-route.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32058421731",
             "conclusion": "failure"
           }
         ],
@@ -65,10 +51,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32058392097"
+        "last_run": null
       }
     },
     "sheaf": {
