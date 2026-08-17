@@ -62,6 +62,13 @@ jobs:
           echo "diff_length=$(wc -c < "$RUNNER_TEMP/pr-diff.txt")" >> "$GITHUB_OUTPUT"
       - name: Analyze with AI
         if: env.OPENROUTER_API_KEY != '' && steps.diff.outputs.diff_length > 0
+        # Advisory only — this step's own prompt says "PASS is advisory only;
+        # the real test suite gates the final verdict". So its *outage* must
+        # not gate either. Without this, an OpenRouter error or an out-of-
+        # credits response aborted the job before the verdict step ran, the
+        # verdict output arrived empty, and the reviewer was told the grounding
+        # gate had failed while npm test was green.
+        continue-on-error: true
         id: ai
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -114,12 +121,18 @@ jobs:
       # tests fail => FAIL always; no suite result => at most WARN; the LLM can
       # never upgrade to PASS. Seeded-test coverage: tests/ship-quality-verdict.test.js
       - name: Grounded verdict
+        # Always compute a verdict once the suite has spoken. A skipped verdict
+        # step is indistinguishable downstream from a BLOCK verdict, because
+        # both leave steps.verdict.outputs.final empty — which is how an
+        # unrelated step failure came to be reported as a red grounding gate.
+        if: always()
         id: verdict
         env:
           TESTS_RESULT: ${{ steps.suite.outputs.tests }}
           AI_RESULT: ${{ steps.ai.outputs.result }}
         run: node scripts/ship-quality-verdict.js --tests "$TESTS_RESULT" --ai "$AI_RESULT"
       - name: Report
+        if: always()
         env:
           RESULT: ${{ steps.verdict.outputs.final }}
           TESTS_RESULT: ${{ steps.suite.outputs.tests }}
@@ -133,6 +146,12 @@ jobs:
             echo "✅ **PASS** - Test suite green and code is ship-ready" >> "$GITHUB_STEP_SUMMARY"
           elif [ "$RESULT" = "warn" ]; then
             echo "⚠️ **WARN** - Minor issues noted, merge allowed" >> "$GITHUB_STEP_SUMMARY"
+          elif [ -z "$RESULT" ]; then
+            # No verdict at all is a different fact from a BLOCK verdict, and
+            # saying "grounding gate red" here would assert something never
+            # established (CLAUDE.md gotcha 6). Fail, but name the real cause.
+            echo "❌ **ERROR** - No verdict was produced; a step before the verdict failed. The grounding gate reported: \`${TESTS_RESULT:-not run}\`." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
           else
             echo "❌ **BLOCK** - Grounding gate red or real scaffolding found" >> "$GITHUB_STEP_SUMMARY"
             exit 1
@@ -151,6 +170,8 @@ jobs:
             BODY="$BODY\n\n✅ **PASS** - Test suite green, ready to ship"
           elif [ "$RESULT" = "warn" ]; then
             BODY="$BODY\n\n⚠️ Warnings noted - merge allowed"
+          elif [ -z "$RESULT" ]; then
+            BODY="$BODY\n\n❌ No verdict produced — a step before the verdict failed (the AI analyzer is the usual cause and is advisory only). This is **not** a statement about the test suite; the grounding gate above reports its own result."
           else
             BODY="$BODY\n\n❌ Grounding gate failed - the real test suite (or a compile gate) is red. An LLM opinion cannot PASS over it."
           fi
