@@ -10,8 +10,8 @@ on:
 
 jobs:
   generate-and-attach:
-    runs-on: ubuntu-latest
     timeout-minutes: 45
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
