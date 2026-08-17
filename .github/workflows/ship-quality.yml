@@ -155,5 +155,24 @@ jobs:
             BODY="$BODY\n\n❌ Grounding gate failed - the real test suite (or a compile gate) is red. An LLM opinion cannot PASS over it."
           fi
 
-          gh pr review --body "$BODY" --comment "$PR_NUMBER"
+          # This step reports the verdict; it does not decide it. The step
+          # above already exits 1 on BLOCK, so a failure to *post* must never
+          # turn a green gate red — on 2026-08-17 this job reported failure on
+          # PR #17699 with RESULT=pass and TESTS_RESULT=pass, because a single
+          # unretried `gh pr review` hit HTTP 503 from the GraphQL API and
+          # `bash -e` killed the job. That is CLAUDE.md gotcha 6 inverted: the
+          # exit code tracked whether a comment posted rather than whether the
+          # gate held. It is also gotcha 2 — a bare API call with no retry.
+          for attempt in 1 2 3; do
+            if gh pr review --body "$BODY" --comment "$PR_NUMBER"; then
+              exit 0
+            fi
+            echo "::warning::gh pr review failed (attempt $attempt/3); retrying"
+            sleep $((attempt * 5))
+          done
+
+          # Still failing after retries: say so loudly, but leave the verdict
+          # to the step that computed it. The step summary already carries the
+          # full result, so the outcome is not lost.
+          echo "::warning::Could not post the Ship Quality verdict to PR #${PR_NUMBER} after 3 attempts. Verdict was: ${RESULT:-unknown} (tests: ${TESTS_RESULT:-not run}). See the step summary."
     timeout-minutes: 30

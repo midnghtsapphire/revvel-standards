@@ -285,8 +285,31 @@ The issue says "@why is this not autoprocessing please fix and do this WR" — l
 | `workflow-health-dashboard.yml` | Daily | Monitor workflows | ✅ Active |
 | `ai-weekly-changelog.yml` | Weekly | Generate changelog | ✅ Active |
 | `biome-inspector.yml` | Every 6h | Credit-free completion auditor — HTTP-checks each app's live link, files a worklist of unfinished projects | ✅ Active |
+| `api-monitor.yml` | Every 30 min | Probes `api.github.com` and `openrouter.ai/api/v1`; fails the run on any non-2xx/3xx or timeout | ✅ Active (2026-08-17) |
 
 **Assessment:** ✅ All critical cron jobs are configured and active.
+
+### Dormant: filed where GitHub Actions does not look
+
+Three files sit in `.github/workflows/cron/`. GitHub registers workflows at
+`.github/workflows/*.yml` only — nested directories are never searched — so
+these have **never run once**, despite carrying schedules. They are not
+"active but broken"; they do not exist as far as Actions is concerned.
+
+| File | Declared schedule | Runs to date |
+|------|-------------------|--------------|
+| `cron/health-check.yml` | Every 15 min | 0 |
+| `cron/link-checker.yml` | Daily 06:00 | 0 |
+| `cron/status-universal.yml` | Hourly | 0 |
+
+`api-monitor.yml` was the fourth; it was moved up a level on 2026-08-17 and
+repaired (it had also exited 0 on failure, so it could not have reported a
+dead endpoint even once registered).
+
+Activating the remaining three is an **operational decision, not a cleanup** —
+each starts a recurring schedule, and `status-universal` opens issues on
+failure. `tests/workflow-files-are-discoverable.test.js` tracks them in a
+shrink-only `DORMANT` list so the count stays visible until someone decides.
 
 ---
 
