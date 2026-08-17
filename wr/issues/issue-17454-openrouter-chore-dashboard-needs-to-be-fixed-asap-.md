@@ -1,10 +1,10 @@
 # WR: [WR] openrouter chore dashboard needs to be fixed asap it is generating so much spam and it was fixed
 
-**Issue:** #17454
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
-**Created:** 2026-08-12
-**Research Date:** 2026-08-12
-**Researcher:** Jules (Google) + OpenRouter
+**Issue:** #17454  
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
+**Created:** 2026-08-12  
+**Research Date:** 2026-08-12  
+**Researcher:** Jules (Google) + OpenRouter  
 **WR Status:** 🟡 In Progress
 
 ---
@@ -27,7 +27,7 @@ Permanent for every WR type — implementers must not stop at the issue:
 
 ## Learnings — What & Why
 
-N/A — Under refinement
+N/A — pending Jules refinement
 
 <!--
 Guidance: agents completing other WR types should fill this in themselves once

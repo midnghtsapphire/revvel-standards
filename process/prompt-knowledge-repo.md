@@ -1,10 +1,10 @@
 # Prompt Knowledge Repository — process
 
-**Status:** active
-**Issue:** [#16419](https://github.com/midnghtsapphire/revvel-standards/issues/16419)
-**Tree:** `prompts/`
-**CLI:** `scripts/prompt-knowledge-repo.js`
-**Schema:** `schemas/prompt-knowledge-catalog.schema.json`
+**Status:** active  
+**Issue:** [#16419](https://github.com/midnghtsapphire/revvel-standards/issues/16419)  
+**Tree:** `prompts/`  
+**CLI:** `scripts/prompt-knowledge-repo.js`  
+**Schema:** `schemas/prompt-knowledge-catalog.schema.json`  
 **NotebookLM pack:** `docs/notebooklm/`
 
 ## Purpose

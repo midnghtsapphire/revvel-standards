@@ -1,9 +1,9 @@
 # Breach Notification Runbook — FTC HBNR (Non-HIPAA)
 
-**Product:** Red Light Therapy Dosage Calculator
-**Regulation:** FTC Health Breach Notification Rule (16 CFR Part 318)
-**Issue:** [#16112](https://github.com/midnghtsapphire/revvel-standards/issues/16112)
-**Code helpers:** `scripts/hbnr-procedures.js`
+**Product:** Red Light Therapy Dosage Calculator  
+**Regulation:** FTC Health Breach Notification Rule (16 CFR Part 318)  
+**Issue:** [#16112](https://github.com/midnghtsapphire/revvel-standards/issues/16112)  
+**Code helpers:** `scripts/hbnr-procedures.js`  
 **Last updated:** 2026-08-08
 
 Use this runbook when unsecured **PHR-identifiable health information** may have been acquired without authorization. HIPAA Breach Notification procedures apply instead only if counsel classifies the incident as HIPAA-covered.
@@ -30,8 +30,8 @@ Full escalation path also lives in `docs/runbooks/red-light-therapy-dosage-calcu
 
 **Discovery** is the first day we know of the breach or would have known by exercising reasonable diligence.
 
-1. Anyone who suspects unauthorized access opens an incident ticket and posts in `#incident-response` within **15 minutes**.
-2. Security Lead starts containment (credential revoke, session kill, access lock, snapshot logs).
+1. Anyone who suspects unauthorized access opens an incident ticket and posts in `#incident-response` within **15 minutes**.  
+2. Security Lead starts containment (credential revoke, session kill, access lock, snapshot logs).  
 3. Privacy Lead records:
    - `discoveredOn` (YYYY-MM-DD, UTC date used in tooling)
    - systems and vendors involved
@@ -83,9 +83,9 @@ Work through this checklist within **24 hours** (same calendar day if large-brea
 
 ## 3. Containment and evidence (parallel to assessment)
 
-1. Revoke compromised credentials and keys; rotate secrets via secret manager (never commit secrets).
-2. Preserve logs, access records, and backups in write-once storage.
-3. Identify processors/subprocessors that touched the data; open vendor incident channels.
+1. Revoke compromised credentials and keys; rotate secrets via secret manager (never commit secrets).  
+2. Preserve logs, access records, and backups in write-once storage.  
+3. Identify processors/subprocessors that touched the data; open vendor incident channels.  
 4. Determine whether data is still exfiltrating; stop the bleed before broad notification if possible — **do not** burn the entire 60-day clock on forensics.
 
 ---
@@ -94,8 +94,8 @@ Work through this checklist within **24 hours** (same calendar day if large-brea
 
 ### Channel
 
-- Email to the account address on file (primary).
-- In-app banner when the user next authenticates, if email bounces.
+- Email to the account address on file (primary).  
+- In-app banner when the user next authenticates, if email bounces.  
 - First-class mail only if required for users without a working email and counsel directs it.
 
 ### Template
@@ -119,11 +119,11 @@ process.stdout.write(h.renderUserNotificationTemplate({
 
 ### Required content elements
 
-1. **What happened**
-2. **What information was involved**
-3. **What we are doing**
-4. **What you can do**
-5. **How to contact us**
+1. **What happened**  
+2. **What information was involved**  
+3. **What we are doing**  
+4. **What you can do**  
+5. **How to contact us**  
 6. Reference to the FTC Health Breach Notification Rule (16 CFR Part 318)
 
 ### Approval
@@ -142,11 +142,11 @@ Privacy Lead drafts → Legal reviews → Executive owner approves → Privacy L
    - residency counts by state/jurisdiction
    - types of PHR-identifiable information
    - steps taken and planned
-2. Submit via the FTC HBNR process linked from
-   <https://www.ftc.gov/legal-library/browse/rules/health-breach-notification-rule>
-3. **Deadline:**
-   - **10 business days** after discovery if any state/jurisdiction has **more than 500** affected residents
-   - otherwise **60 calendar days** after discovery
+2. Submit via the FTC HBNR process linked from  
+   <https://www.ftc.gov/legal-library/browse/rules/health-breach-notification-rule>  
+3. **Deadline:**  
+   - **10 business days** after discovery if any state/jurisdiction has **more than 500** affected residents  
+   - otherwise **60 calendar days** after discovery  
 4. File confirmation PDF + submission ID in the incident ticket.
 
 ---
@@ -155,40 +155,40 @@ Privacy Lead drafts → Legal reviews → Executive owner approves → Privacy L
 
 **Trigger:** ≥ **500 residents** of a single state or jurisdiction are affected.
 
-1. Privacy + Legal identify “prominent media” outlets in each triggered state/jurisdiction.
-2. Prepare a press-ready statement consistent with the individual notice (same facts, no speculation).
-3. Executive owner approves.
-4. Distribute without unreasonable delay and track placements.
+1. Privacy + Legal identify “prominent media” outlets in each triggered state/jurisdiction.  
+2. Prepare a press-ready statement consistent with the individual notice (same facts, no speculation).  
+3. Executive owner approves.  
+4. Distribute without unreasonable delay and track placements.  
 5. If residency data is incomplete but totals exceed 500, **obtain state breakdowns immediately** — the accelerated FTC window may apply once a state crosses 500.
 
 ---
 
 ## 7. Escalation path (ordered)
 
-1. Discoverer pages on-call channel and opens incident ticket within 15 minutes.
-2. Security Lead confirms containment and evidence preservation within 1 hour.
-3. Privacy Lead opens this HBNR checklist and starts the discovery clock documentation.
-4. Legal counsel reviews reportability within 1 business day (same day if `largeBreach`).
-5. Executive owner approves individual / FTC / media notice packages before send.
-6. Privacy Lead files FTC notice and sends user notices; records proof of send + content.
+1. Discoverer pages on-call channel and opens incident ticket within 15 minutes.  
+2. Security Lead confirms containment and evidence preservation within 1 hour.  
+3. Privacy Lead opens this HBNR checklist and starts the discovery clock documentation.  
+4. Legal counsel reviews reportability within 1 business day (same day if `largeBreach`).  
+5. Executive owner approves individual / FTC / media notice packages before send.  
+6. Privacy Lead files FTC notice and sends user notices; records proof of send + content.  
 7. Post-incident review within 10 business days; update this runbook and vendor controls.
 
 ---
 
 ## 8. Post-incident
 
-- [ ] Root-cause analysis filed
-- [ ] User questions / complaints queue drained or ticketed
-- [ ] Vendor DPA / security addenda updated if a processor failed
-- [ ] `scripts/hbnr-procedures.js` tests still green
-- [ ] Privacy policy still accurate (`PRIVACY.md`, `/privacy`)
-- [ ] Lessons linked from the incident ticket to PIA #16110 if scope assumptions changed
+- [ ] Root-cause analysis filed  
+- [ ] User questions / complaints queue drained or ticketed  
+- [ ] Vendor DPA / security addenda updated if a processor failed  
+- [ ] `scripts/hbnr-procedures.js` tests still green  
+- [ ] Privacy policy still accurate (`PRIVACY.md`, `/privacy`)  
+- [ ] Lessons linked from the incident ticket to PIA #16110 if scope assumptions changed  
 
 ---
 
 ## 9. Related artifacts
 
-- Entity classification: `compliance/hbnr-entity-classification.md`
-- Privacy policy: `PRIVACY.md` and in-app `/privacy`
-- Operational runbook: `docs/runbooks/red-light-therapy-dosage-calculator.md`
+- Entity classification: `compliance/hbnr-entity-classification.md`  
+- Privacy policy: `PRIVACY.md` and in-app `/privacy`  
+- Operational runbook: `docs/runbooks/red-light-therapy-dosage-calculator.md`  
 - HIPAA addendum (D2C posture): `wr/issues/issue-15279-hipaa-compliance-addendum.md`

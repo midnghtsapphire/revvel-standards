@@ -1,10 +1,10 @@
 # WR: usenixsecurity25-pape.pdf use for revvel-standards
 
-**Issue:** #16425
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
-**Created:** 2026-07-20
-**Research Date:** 2026-08-08
-**Researcher:** GitHub Copilot Coding Agent
+**Issue:** #16425  
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
+**Created:** 2026-07-20  
+**Research Date:** 2026-08-08  
+**Researcher:** GitHub Copilot Coding Agent  
 **WR Status:** Complete
 
 ---

@@ -1,8 +1,8 @@
 # HIPAA Scope Re-Evaluation Triggers — Red Light Therapy
 
-**Document ID:** `RLT-HIPAA-TRIGGERS-2026-08`
-**Issue:** #16111
-**Status source of truth (machine):** `compliance/red-light-therapy/re-evaluation-triggers.json`
+**Document ID:** `RLT-HIPAA-TRIGGERS-2026-08`  
+**Issue:** #16111  
+**Status source of truth (machine):** `compliance/red-light-therapy/re-evaluation-triggers.json`  
 **Parent determination:** `compliance/red-light-therapy/entity-classification.md`
 
 ---
@@ -48,9 +48,9 @@ If **any** trigger below becomes true (planned or shipped), then:
 
 ## Non-triggers (still may need privacy review, but do not alone flip HIPAA entity status)
 
-- Pure content/SEO articles with no health-data intake
-- Affiliate links to device merchants
-- Ephemeral client-side calculator numerics with no accounts (current shipped posture)
+- Pure content/SEO articles with no health-data intake  
+- Affiliate links to device merchants  
+- Ephemeral client-side calculator numerics with no accounts (current shipped posture)  
 - Standard web analytics that **do not** send dosage/health inputs (verify in data inventory)
 
 These still require honest privacy-policy coverage and must not be used to claim HIPAA compliance.

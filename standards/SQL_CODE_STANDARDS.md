@@ -1,8 +1,8 @@
 # SQL Code Standards
 
-**Status:** active
-**Enforced by:** `.github/workflows/gosqlx-lint.yml` (GoSQLX v1.14.0)
-**Config:** `.gosqlx.yml`
+**Status:** active  
+**Enforced by:** `.github/workflows/gosqlx-lint.yml` (GoSQLX v1.14.0)  
+**Config:** `.gosqlx.yml`  
 **Playground:** `products/gosqlx-sql-linter`
 
 ## Purpose

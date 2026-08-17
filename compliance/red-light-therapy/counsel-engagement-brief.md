@@ -1,9 +1,9 @@
 # Counsel Engagement Brief — HIPAA Scope Determination (WR #15279 / Issue #16111)
 
-**To:** Qualified U.S. healthcare regulatory counsel (HIPAA Privacy/Security + digital health)
-**From:** Product / Compliance (Red Light Therapy — WR #15279)
-**Date prepared:** 2026-08-08
-**Response needed by:** before any health-data tracker, clinic, telehealth, or insurance-adjacent feature ships
+**To:** Qualified U.S. healthcare regulatory counsel (HIPAA Privacy/Security + digital health)  
+**From:** Product / Compliance (Red Light Therapy — WR #15279)  
+**Date prepared:** 2026-08-08  
+**Response needed by:** before any health-data tracker, clinic, telehealth, or insurance-adjacent feature ships  
 **Internal memo to review:** `compliance/red-light-therapy/entity-classification.md`
 
 ---
@@ -62,29 +62,29 @@ Please provide a **written legal memorandum** that answers:
 
 ## 3. Questions we need answered in writing
 
-1. CE status — yes/no + basis
-2. BA status — yes/no + basis
-3. Does HIPAA directly apply to the shipped calculator?
-4. Does HIPAA directly apply to content-only pages with email capture (marketing list, no health inputs)?
-5. Which residual regimes apply to the shipped calculator even if HIPAA does not?
-6. Are our prohibited framings in entity-classification §5 sufficient?
-7. Are re-evaluation triggers complete? Add any we missed.
-8. May we state “not a HIPAA Covered Entity or Business Associate under current facts” publicly after your sign-off, provided we still never say “HIPAA-compliant”?
-9. If we later add on-device-only photo journals with no cloud sync and no CE relationship, does that change HIPAA entity status? (We understand state privacy law may still apply.)
+1. CE status — yes/no + basis  
+2. BA status — yes/no + basis  
+3. Does HIPAA directly apply to the shipped calculator?  
+4. Does HIPAA directly apply to content-only pages with email capture (marketing list, no health inputs)?  
+5. Which residual regimes apply to the shipped calculator even if HIPAA does not?  
+6. Are our prohibited framings in entity-classification §5 sufficient?  
+7. Are re-evaluation triggers complete? Add any we missed.  
+8. May we state “not a HIPAA Covered Entity or Business Associate under current facts” publicly after your sign-off, provided we still never say “HIPAA-compliant”?  
+9. If we later add on-device-only photo journals with no cloud sync and no CE relationship, does that change HIPAA entity status? (We understand state privacy law may still apply.)  
 10. Recommended retention / destruction language for any future health-adjacent features.
 
 ---
 
 ## 4. Deliverable format (please)
 
-- PDF or DOCX memo on firm letterhead, or secure portal letter
-- Date, counsel name, bar jurisdiction
-- Explicit Path A or Path B conclusion
-- List of assumed facts
-- List of triggers that void the opinion
-- Permissioned public language paragraph we can paste into the privacy policy / WR
-- Copy for repository: place a **redacted** PDF (no unrelated client confidences) at
-  `compliance/red-light-therapy/signed/YYYY-MM-DD-hipaa-scope-opinion.pdf`
+- PDF or DOCX memo on firm letterhead, or secure portal letter  
+- Date, counsel name, bar jurisdiction  
+- Explicit Path A or Path B conclusion  
+- List of assumed facts  
+- List of triggers that void the opinion  
+- Permissioned public language paragraph we can paste into the privacy policy / WR  
+- Copy for repository: place a **redacted** PDF (no unrelated client confidences) at  
+  `compliance/red-light-therapy/signed/YYYY-MM-DD-hipaa-scope-opinion.pdf`  
   and tell eng to set `status.json` accordingly
 
 ---
@@ -93,17 +93,17 @@ Please provide a **written legal memorandum** that answers:
 
 Someone on the team must do this outside the agent loop:
 
-1. Open this file and `entity-classification.md`.
-2. Pick a U.S. healthcare regulatory attorney (HIPAA + digital health experience).
-3. Send them this brief + the linked paths (or a zip of the `compliance/red-light-therapy/` folder and the product `/privacy` page).
-4. Do **not** ask an AI agent to “sign” as counsel.
+1. Open this file and `entity-classification.md`.  
+2. Pick a U.S. healthcare regulatory attorney (HIPAA + digital health experience).  
+3. Send them this brief + the linked paths (or a zip of the `compliance/red-light-therapy/` folder and the product `/privacy` page).  
+4. Do **not** ask an AI agent to “sign” as counsel.  
 5. When the memo returns:
-   - Save the PDF under `compliance/red-light-therapy/signed/`
-   - Fill §8 of `entity-classification.md`
+   - Save the PDF under `compliance/red-light-therapy/signed/`  
+   - Fill §8 of `entity-classification.md`  
    - Edit `compliance/red-light-therapy/status.json`:
-     - `"status": "COUNSEL_SIGNED_PATH_B"` or `"COUNSEL_SIGNED_PATH_A"`
-     - set `"signed_on"`, `"counsel_name"`, `"opinion_path"`
-6. If Path A: stop health-data features; open a HIPAA program project before collection.
+     - `"status": "COUNSEL_SIGNED_PATH_B"` or `"COUNSEL_SIGNED_PATH_A"`  
+     - set `"signed_on"`, `"counsel_name"`, `"opinion_path"`  
+6. If Path A: stop health-data features; open a HIPAA program project before collection.  
 7. If Path B: keep §5 prohibitions (still never claim “HIPAA-compliant”); continue residual privacy work.
 
 **Success looks like:** `status.json` is no longer `UNSIGNED`, §8 is filled with a real firm name/date, and a PDF exists under `signed/`.
@@ -112,6 +112,6 @@ Someone on the team must do this outside the agent loop:
 
 ## 6. What this brief is not
 
-- Not legal advice from the repository authors or any coding agent
-- Not authorization to skip counsel
+- Not legal advice from the repository authors or any coding agent  
+- Not authorization to skip counsel  
 - Not an FDA SaMD opinion (separate engagement if needed)

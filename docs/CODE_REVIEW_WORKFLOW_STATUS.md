@@ -1,6 +1,6 @@
 # Code Review Workflow Status
 
-**Last Updated:** August 8, 2026
+**Last Updated:** August 8, 2026  
 **Status:** Current
 
 ## Overview
@@ -53,14 +53,14 @@ This document clarifies the current state of code review automation in `revvel-s
 **Notes:** Operational strengths/weaknesses in `docs/agent-stack/DEVIN_OBSERVATIONS.md` — verify Devin's "✅ Resolved" claims before trusting them
 
 ### 6. xAI Code Review (Grok, Advisory)
-**Workflow:** `.github/workflows/xai-code-review.yml`
-**Template:** `templates/cicd/xai-code-review.yml`
-**Status:** ✅ **ACTIVE** — advisory only (issue #16876)
-**Trigger:** Automatic on non-draft PR open/sync + `workflow_dispatch`
-**Action:** `tarmojussila/xai-code-review` (SHA-pinned to `v0.1.0`; listed in `ACCEPTED_SINGLE_AUTHOR_ACTIONS`)
-**Config:** `XAI_API_KEY` repo secret (Vault `revvel/shared/llm/xai`); optional vars `XAI_MODEL`, `XAI_SYSTEM_PROMPT`, `XAI_REVIEWER_NAME`
-**Failure Mode:** ⚠️ **ADVISORY** — soft-skips when the secret is missing; `continue-on-error: true` so vendor blips never block merge
-**Bypass:** `[skip-review]` in PR title, or leave the PR in draft
+**Workflow:** `.github/workflows/xai-code-review.yml`  
+**Template:** `templates/cicd/xai-code-review.yml`  
+**Status:** ✅ **ACTIVE** — advisory only (issue #16876)  
+**Trigger:** Automatic on non-draft PR open/sync + `workflow_dispatch`  
+**Action:** `tarmojussila/xai-code-review` (SHA-pinned to `v0.1.0`; listed in `ACCEPTED_SINGLE_AUTHOR_ACTIONS`)  
+**Config:** `XAI_API_KEY` repo secret (Vault `revvel/shared/llm/xai`); optional vars `XAI_MODEL`, `XAI_SYSTEM_PROMPT`, `XAI_REVIEWER_NAME`  
+**Failure Mode:** ⚠️ **ADVISORY** — soft-skips when the secret is missing; `continue-on-error: true` so vendor blips never block merge  
+**Bypass:** `[skip-review]` in PR title, or leave the PR in draft  
 **Docs:** [`docs/XAI_CODE_REVIEW.md`](./XAI_CODE_REVIEW.md)
 
 ## Disabled Workflows (Manual Dispatch Only)

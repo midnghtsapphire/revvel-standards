@@ -57,9 +57,9 @@ This product is positioned as a direct-to-consumer wellness tool (not HIPAA-cove
 
 **Notification timelines (also stated in the privacy policy):**
 
-- Affected users: without unreasonable delay, within **60 calendar days** of discovery
-- FTC: within **60 calendar days**, or within **10 business days** if more than **500 residents** of any state/jurisdiction are affected
-- Media: prominent media in each state/jurisdiction where **≥500 residents** are affected
+- Affected users: without unreasonable delay, within **60 calendar days** of discovery  
+- FTC: within **60 calendar days**, or within **10 business days** if more than **500 residents** of any state/jurisdiction are affected  
+- Media: prominent media in each state/jurisdiction where **≥500 residents** are affected  
 
 **We do not claim HIPAA compliance.** The calculator is a direct-to-consumer wellness tool. Inputs are handled in the browser for the session; the app does not implement accounts or server-side storage of dosage inputs. Client-side calculation is an engineering choice, not a regulatory exemption. Any clinic, telehealth, HSA/FSA clinical, or insurance feature requires a new HIPAA scope determination before shipping (see re-evaluation triggers in the compliance pack).
 
