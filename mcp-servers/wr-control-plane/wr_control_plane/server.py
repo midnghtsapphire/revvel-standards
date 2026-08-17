@@ -82,19 +82,6 @@ except ImportError:  # pragma: no cover - compatibility path for local smoke tes
 
             return decorator
 
-        @dataclass
-        class MockTool:
-            name: str
-
-        @dataclass
-        class MockResource:
-            uri: str
-
-        async def list_tools(self):
-            return [self.MockTool(name) for name in self.tools]
-
-        async def list_resources(self):
-            return [self.MockResource(uri) for uri in self.resources]
         # FastMCP's introspection API, mirrored so the regression suite can
         # enumerate the registered surface without installing FastMCP. Both are
         # coroutines returning objects exposing `.name` / `.uri`, matching what
