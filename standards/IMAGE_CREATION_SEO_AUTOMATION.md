@@ -8,7 +8,7 @@
 
 Image creation is **not** a manual attach-file or click-through studio ritual in production.
 
-**Allowed human actions:** merge PRs, approve first-run social posts, rotate secrets.
+**Allowed human actions:** merge PRs, approve first-run social posts, rotate secrets.  
 **Forbidden as the primary path:** hand-building alt/OG/prompts in a UI for every asset.
 
 ## Preference order (AUTOMATION_FIRST_STACK)
