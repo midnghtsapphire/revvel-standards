@@ -13,11 +13,11 @@
 name: Actions Lint
 
 on:
+  # No `paths` filter on pull_request: the `actions-lint` gate job is meant to
+  # be a required status check, and a path-filtered trigger would never report
+  # on PRs that don't touch workflows — deadlocking their merges. The lint is
+  # cheap; run it on every PR so the required check always reports.
   pull_request:
-    paths:
-      - ".github/workflows/**"
-      - ".github/actions/**"
-      - ".github/actions-lint-exclude.txt"
   push:
     branches: [main]
     paths:

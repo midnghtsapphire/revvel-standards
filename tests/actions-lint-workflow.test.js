@@ -48,7 +48,8 @@ test('actions-lint workflow parses with name + on triggers', () => {
   // yaml may parse bare `on` as boolean key `true`
   const on = doc.on || doc.true;
   assert.ok(on, 'missing on: trigger');
-  assert.ok(on.pull_request, 'must run on pull_request');
+  // bare `pull_request:` (no filters) parses as null — that still counts
+  assert.ok('pull_request' in on, 'must run on pull_request');
   assert.ok(on.push, 'must run on push');
   const pushBranches = on.push.branches || [];
   assert.ok(
@@ -152,15 +153,25 @@ test('at least one non-excluded workflow remains to lint', () => {
   );
 });
 
-test('path filters cover workflow changes on PR and main push', () => {
+test('pull_request trigger has no paths filter (required-check deadlock)', () => {
   const { doc } = readWorkflow();
   const on = doc.on || doc.true;
-  const prPaths = on.pull_request.paths || [];
-  const pushPaths = on.push.paths || [];
-  for (const paths of [prPaths, pushPaths]) {
-    assert.ok(
-      paths.some((p) => p.includes('.github/workflows')),
-      'paths must include .github/workflows/**'
-    );
-  }
+  assert.ok('pull_request' in on, 'pull_request trigger required');
+  const pr = on.pull_request;
+  // A paths filter on a required-check trigger means the check never reports
+  // on PRs that don't touch workflows, blocking their merges forever.
+  assert.ok(
+    pr === null || pr === undefined || !('paths' in pr),
+    'pull_request must not be path-filtered — the gate is a required check'
+  );
+});
+
+test('push trigger path filter covers workflow changes on main', () => {
+  const { doc } = readWorkflow();
+  const on = doc.on || doc.true;
+  const pushPaths = (on.push && on.push.paths) || [];
+  assert.ok(
+    pushPaths.some((p) => p.includes('.github/workflows')),
+    'push paths must include .github/workflows/**'
+  );
 });
