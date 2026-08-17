@@ -9,9 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "next": "^15.5.18",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "next": "^15.5.23",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -19,18 +19,18 @@
     "@revvel/eslint-config": "file:../../packages/eslint-config",
     "@revvel/prettier-config": "file:../../packages/prettier-config",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "autoprefixer": "^10.4.19",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.5.4",
     "eslint": "^9",
-    "eslint-config-next": "16.2.6",
-    "postcss": "8.5.16",
+    "eslint-config-next": "16.3.0",
+    "postcss": "8.5.26",
     "tailwindcss": "^3.4.3",
     "typescript": "^5"
   },
   "prettier": "@revvel/prettier-config",
   "browserslist": ["extends @revvel/browserslist-config"],
   "overrides": {
-    "postcss": "8.5.16"
+    "postcss": "8.5.26"
   }
 }
