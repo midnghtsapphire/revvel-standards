@@ -175,17 +175,17 @@
 
     function renderIssues(issues) {
       const container = document.getElementById('issues-container');
-      
+
       if (issues.length === 0) {
         container.innerHTML = '<div class="text-center text-gray-500 py-8">No issues found</div>';
         return;
       }
 
       container.innerHTML = issues.map(issue => {
-        const labels = issue.labels.map(l => 
+        const labels = issue.labels.map(l =>
           `<span class="label-badge" style="background: #${l.color}; color: ${getBestTextColor(l.color)};">${l.name}</span>`
         ).join('');
-        
+
         const assignees = issue.assignees.map(a => a.login).join(', ') || 'Unassigned';
         const stateColor = issue.state === 'open' ? 'text-green-400' : 'text-purple-400';
         const stateIcon = issue.state === 'open' ? '🟢' : '🟣';
@@ -234,11 +234,11 @@
     }
 
     function exportIssues() {
-      const csv = 'Number,Title,State,Labels,Assignees,Comments,Created,Updated\n' + 
-        allIssues.map(i => 
+      const csv = 'Number,Title,State,Labels,Assignees,Comments,Created,Updated\n' +
+        allIssues.map(i =>
           `${i.number},"${i.title}",${i.state},"${i.labels.map(l => l.name).join(';')}","${i.assignees.map(a => a.login).join(';')}",${i.comments},${i.created_at},${i.updated_at}`
         ).join('\n');
-      
+
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');

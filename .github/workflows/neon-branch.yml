@@ -33,6 +33,7 @@ permissions:
 jobs:
   setup:
     name: Setup
+    timeout-minutes: 10
     # Trusted-source gate for the whole workflow: every other job needs this
     # one, so a skip here skips the rest instead of scheduling jobs that are
     # guaranteed to fail without secrets.
@@ -57,11 +58,12 @@ jobs:
             | tr '[:upper:]' '[:lower:]' \
             | tr -c 'a-z0-9' '-' \
             | sed -e 's/--*/-/g' -e 's/^-//' -e 's/-$//' \
-            | cut -c1-40)
+            | cut -c1-20)
           slug=${slug%-}
-          echo "name=preview/pr-${PR_NUMBER}-${slug}" >> "$GITHUB_OUTPUT"
+          echo "name=pr-${PR_NUMBER}-${slug}" >> "$GITHUB_OUTPUT"
 
   create_neon_branch:
+    timeout-minutes: 10
     name: Create Neon Branch
     needs: setup
     if: github.event.action != 'closed'
@@ -120,6 +122,7 @@ jobs:
 #          api_key: ${{ secrets.NEON_API_KEY }}
 
   delete_neon_branch:
+    timeout-minutes: 10
     name: Delete Neon Branch
     needs: setup
     if: github.event.action == 'closed'

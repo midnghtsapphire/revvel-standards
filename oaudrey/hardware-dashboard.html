@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hardware Selection — oAudrey</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <header class="border-b border-slate-800 p-6">
+    <h1 class="text-2xl font-bold">Hardware Selection Dashboard</h1>
+    <p class="text-slate-400 text-sm mt-1">Cost-optimized compute picks for the $10k → $10M journey.</p>
+  </header>
+
+  <main class="p-6 max-w-6xl mx-auto">
+    <section class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <article class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <h2 class="font-semibold text-lg">CPU (AVX2/512)</h2>
+        <p class="text-slate-400 text-sm mt-1">Best for models &lt;7B and batch &lt;32.</p>
+        <p class="mt-3 text-emerald-400 font-mono">$0.02 / 1k req</p>
+      </article>
+      <article class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <h2 class="font-semibold text-lg">RTX 4090</h2>
+        <p class="text-slate-400 text-sm mt-1">Dev + small prod inference.</p>
+        <p class="mt-3 text-emerald-400 font-mono">$0.11 / 1k req</p>
+      </article>
+      <article class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <h2 class="font-semibold text-lg">A100 80GB</h2>
+        <p class="text-slate-400 text-sm mt-1">Only when revenue justifies.</p>
+        <p class="mt-3 text-amber-400 font-mono">$1.20 / 1k req</p>
+      </article>
+      <article class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+        <h2 class="font-semibold text-lg">Serverless GPU</h2>
+        <p class="text-slate-400 text-sm mt-1">Bursty / spiky traffic.</p>
+        <p class="mt-3 text-emerald-400 font-mono">$0.30 / 1k req</p>
+      </article>
+    </section>
+
+    <section class="mt-8 bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <h2 class="font-semibold text-lg mb-3">Decision Rubric</h2>
+      <ol class="list-decimal list-inside space-y-1 text-slate-300 text-sm">
+        <li>Define SLA (p99, throughput, cost ceiling).</li>
+        <li>Prefer CPU unless SLA is impossible.</li>
+        <li>Smallest model that meets SLA (distill/quantize first).</li>
+        <li>JIT provision via <code class="text-emerald-400">cuda_mlops_wrapper</code>.</li>
+        <li>Always have a CPU fallback.</li>
+      </ol>
+    </section>
+
+    <footer class="mt-8 text-xs text-slate-500">
+      Prime directive: $10k/month → $10M in 3 years.
+    </footer>
+  </main>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>oAudrey · Hardware Selection</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<header class="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+  <h1 class="text-xl font-semibold">Hardware Selection</h1>
+  <a href="./index.html" class="text-sm text-sky-400 hover:underline">← Back to hub</a>
+</header>
+<main class="max-w-6xl mx-auto p-6 space-y-8">
+  <section>
+    <h2 class="text-lg font-semibold mb-2">Mission</h2>
+    <p class="text-slate-300">Route every workload to the cheapest viable hardware. Maximize revenue per FLOP on the path to $10M in 3 years.</p>
+  </section>
+
+  <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">LLM Inference &lt; 7B</h3>
+      <p class="text-sm text-slate-400 mt-1">RTX 4090 / A10</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: quantized CPU</p>
+    </div>
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">LLM Training</h3>
+      <p class="text-sm text-slate-400 mt-1">H100 / A100</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: cloud spot</p>
+    </div>
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">Embeddings</h3>
+      <p class="text-sm text-slate-400 mt-1">T4 / L4</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: CPU</p>
+    </div>
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">Batch OSINT</h3>
+      <p class="text-sm text-slate-400 mt-1">CPU cluster</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: single node</p>
+    </div>
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">Vision (small)</h3>
+      <p class="text-sm text-slate-400 mt-1">L4 / T4</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: CPU (ONNX)</p>
+    </div>
+    <div class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+      <h3 class="font-semibold">Realtime API</h3>
+      <p class="text-sm text-slate-400 mt-1">A10 / L40S</p>
+      <p class="text-xs text-slate-500 mt-2">Fallback: hosted API</p>
+    </div>
+  </section>
+
+  <section class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <h2 class="text-lg font-semibold mb-2">JIT Provisioning</h2>
+    <p class="text-slate-300 text-sm">The <code class="text-sky-300">cuda_mlops_wrapper</code> detects GPUs via <code>nvidia-smi</code> and gracefully falls back to CPU. Only pay for compute you use.</p>
+    <ul class="list-disc list-inside text-sm text-slate-400 mt-3 space-y-1">
+      <li>Detect → match → route → bill</li>
+      <li>Kill-switch: cost / request &gt; 0.05 USD</li>
+      <li>Every $ of compute must map to $ of revenue within 30 days</li>
+    </ul>
+  </section>
+
+  <section class="rounded-xl border border-slate-800 bg-slate-900 p-4">
+    <h2 class="text-lg font-semibold mb-2">Daily Market Evaluator</h2>
+    <p class="text-slate-300 text-sm">A scheduled workflow drafts 3 TEST VERSION products across Stripe/Gumroad each day, and uploads a JSON report as an artifact.</p>
+  </section>
+</main>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hardware Selection — oAudrey</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div class="max-w-6xl mx-auto p-6">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold">Hardware Selection Dashboard</h1>
+    <p class="text-slate-400 mt-1">JIT compute planner — pick the cheapest tier that fits the workload.</p>
+  </header>
+
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800">
+      <h2 class="text-xl font-semibold mb-4">Workload</h2>
+      <label class="block text-sm text-slate-400 mb-1">Memory required (GB)</label>
+      <input id="mem" type="number" value="12" min="0" step="1"
+        class="w-full bg-slate-800 rounded-lg px-3 py-2 mb-4 border border-slate-700" />
+      <label class="block text-sm text-slate-400 mb-1">Latency SLO (ms)</label>
+      <input id="lat" type="number" value="200" min="1" step="1"
+        class="w-full bg-slate-800 rounded-lg px-3 py-2 mb-4 border border-slate-700" />
+      <button id="go" class="w-full bg-indigo-600 hover:bg-indigo-500 rounded-lg py-2 font-semibold">
+        Recommend Hardware
+      </button>
+    </div>
+
+    <div class="bg-slate-900 rounded-2xl p-6 border border-slate-800">
+      <h2 class="text-xl font-semibold mb-4">Recommendation</h2>
+      <div id="out" class="space-y-2 text-sm">
+        <p class="text-slate-400">Enter workload and click recommend.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-8 bg-slate-900 rounded-2xl p-6 border border-slate-800">
+    <h2 class="text-xl font-semibold mb-4">Price Table (USD / hour, approx)</h2>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+      <div class="bg-slate-800 rounded-lg p-3"><div class="text-xs text-slate-400">CPU</div><div class="font-bold">$0.05</div></div>
+      <div class="bg-slate-800 rounded-lg p-3"><div class="text-xs text-slate-400">T4</div><div class="font-bold">$0.35</div></div>
+      <div class="bg-slate-800 rounded-lg p-3"><div class="text-xs text-slate-400">A10</div><div class="font-bold">$0.75</div></div>
+      <div class="bg-slate-800 rounded-lg p-3"><div class="text-xs text-slate-400">A100</div><div class="font-bold">$1.90</div></div>
+      <div class="bg-slate-800 rounded-lg p-3"><div class="text-xs text-slate-400">H100</div><div class="font-bold">$3.50</div></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const PRICES = { cpu: 0.05, t4: 0.35, a10: 0.75, a100: 1.90, h100: 3.50 };
+function selectHardware(gb, ms) {
+  if (gb <= 1 && ms >= 1000) return 'cpu';
+  if (gb <= 14) return 't4';
+  if (gb <= 22) return 'a10';
+  if (gb <= 78) return 'a100';
+  return 'h100';
+}
+document.getElementById('go').addEventListener('click', () => {
+  const gb = parseFloat(document.getElementById('mem').value) || 0;
+  const ms = parseInt(document.getElementById('lat').value) || 1;
+  const tier = selectHardware(gb, ms);
+  const price = PRICES[tier];
+  const out = document.getElementById('out');
+  out.innerHTML = `
+    <div class="flex justify-between"><span class="text-slate-400">Tier</span><span class="font-bold uppercase">${tier}</span></div>
+    <div class="flex justify-between"><span class="text-slate-400">Hourly</span><span>$${price.toFixed(2)}</span></div>
+    <div class="flex justify-between"><span class="text-slate-400">Daily (24h)</span><span>$${(price*24).toFixed(2)}</span></div>
+    <div class="flex justify-between"><span class="text-slate-400">Monthly (730h)</span><span>$${(price*730).toFixed(2)}</span></div>
+  `;
+});
+</script>
+</body>
+</html>
