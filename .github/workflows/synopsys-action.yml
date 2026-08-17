@@ -15,8 +15,10 @@ on:
 
 jobs:
   build:
+    timeout-minutes: 120
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     permissions:
       contents: read
     steps:
@@ -39,5 +41,4 @@ jobs:
           polaris_server_url: ${{ secrets.POLARIS_SERVER_URL }}
           polaris_access_token: ${{ secrets.POLARIS_ACCESS_TOKEN }}
           polaris_assessment_types: "SCA,SAST"
-
 

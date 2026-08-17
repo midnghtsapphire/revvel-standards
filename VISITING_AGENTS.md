@@ -33,6 +33,20 @@ PR body — don't fake it.
 - ❌ **Do not commit secrets.** Keys live in GitHub Actions secrets / Doppler,
   never in files. See §4.
 
+## 2b. Imprint-at-spawn (BNAT Knowledge Sheaf)
+
+Before starting specialty work, restrict from the global knowledge sheaf and
+verify **H¹ ≈ 0**:
+
+```bash
+node scripts/bnatsheaf/cli.js imprint_agent --agent <your-worker-name>
+```
+
+Non-zero exit means the fleet carries an unresolved obstruction — do **not**
+start high-blast work. See `skills/bnatsheaf/SKILL.md`,
+`standards/BNAT_SHEAF_STANDARD.md`, and the public lab at
+`docs/bnatsheaf/observatory.html`.
+
 ## 3. Durability — your sandbox is ephemeral, so pipe to git immediately
 
 Sandboxes get cleared. If your only copy of the work is in the sandbox, it's

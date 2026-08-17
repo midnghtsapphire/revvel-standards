@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -478,6 +478,15 @@
             class="px-4 py-2 border hairline font-mono text-[11px] uppercase tracking-widest hover:text-ice"
           >
             Reese Reviews
+          </button>
+          <button
+            role="tab"
+            id="tab-hardware"
+            aria-controls="panel-hardware"
+            aria-selected="false"
+            class="px-4 py-2 border hairline font-mono text-[11px] uppercase tracking-widest hover:text-ice"
+          >
+            Hardware Selection
           </button>
           <button
             role="tab"
@@ -1039,6 +1048,43 @@
           </aside>
         </div>
 
+        <!-- Hardware Selection panel -->
+        <div
+          role="tabpanel"
+          id="panel-hardware"
+          aria-labelledby="tab-hardware"
+          hidden
+          class="glass p-8 md:p-10"
+        >
+          <div
+            class="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-mist"
+          >
+            <span
+              class="h-1.5 w-1.5 bg-cyan pulse-dot"
+              aria-hidden="true"
+            ></span>
+            hardware-dashboard
+          </div>
+          <h3
+            class="mt-4 text-3xl md:text-5xl font-extrabold tracking-tightest leading-[1.05]"
+          >
+            Hardware Selection — cost-optimized compute picks.
+          </h3>
+          <p class="mt-6 text-mist leading-relaxed max-w-2xl">
+            Interactive dashboard comparing CPU, RTX 4090, A100, and JIT cloud
+            compute for AI workloads — pick the cheapest hardware that meets the
+            latency budget.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a
+              href="hardware-dashboard.html"
+              class="inline-flex items-center bg-gradient-to-r from-iris to-cyan px-5 py-3 font-mono text-[11px] font-bold uppercase tracking-widest text-void hover:opacity-90"
+            >
+              Open Hardware Dashboard →
+            </a>
+          </div>
+        </div>
+
         <!-- More panel -->
         <div
           role="tabpanel"
@@ -1353,4 +1399,44 @@
       })();
     </script>
   </body>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>oAudrey Hub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div class="max-w-5xl mx-auto p-6">
+  <header class="mb-8">
+    <h1 class="text-4xl font-bold">oAudrey Hub</h1>
+    <p class="text-slate-400 mt-1">Automated product pipeline — $10k/mo → $10M in 3 years.</p>
+  </header>
+
+  <nav class="flex flex-wrap gap-2 mb-8">
+    <a href="#overview" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Overview</a>
+    <a href="hardware-dashboard.html" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 font-semibold">Hardware Selection</a>
+    <a href="#products" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">Products</a>
+    <a href="#osint" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700">OSINT</a>
+  </nav>
+
+  <section id="overview" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6">
+    <h2 class="text-2xl font-semibold mb-2">Overview</h2>
+    <p class="text-slate-300">Phase 1 target: $10k/month via Polar.sh, Stripe, and Gumroad automated product creation.</p>
+  </section>
+
+  <section id="products" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6">
+    <h2 class="text-2xl font-semibold mb-2">Products</h2>
+    <ul class="list-disc pl-6 text-slate-300 space-y-1">
+      <li>AI Architecture Framework</li>
+      <li>OSINT Toolkit</li>
+      <li>JIT GPU Provisioning CLI</li>
+    </ul>
+  </section>
+
+  <section id="osint" class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+    <h2 class="text-2xl font-semibold mb-2">OSINT</h2>
+    <p class="text-slate-300">GitHub recon, funding signal detection, competitive analysis.</p>
+  </section>
+</div>
+</body>
 </html>
