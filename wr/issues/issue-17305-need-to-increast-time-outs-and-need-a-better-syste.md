@@ -1,10 +1,10 @@
 # WR: [WR] need to increast time outs and need a better system to detect freezing
 
-**Issue:** #17305  
-**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
-**Created:** 2026-08-11  
-**Research Date:** 2026-08-11  
-**Researcher:** Jules (Google) + OpenRouter  
+**Issue:** #17305
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)
+**Created:** 2026-08-11
+**Research Date:** 2026-08-11
+**Researcher:** Jules (Google) + OpenRouter
 **WR Status:** ✅ Complete
 
 ---

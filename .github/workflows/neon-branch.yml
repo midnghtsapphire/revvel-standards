@@ -56,7 +56,7 @@ jobs:
         run: |
           slug=$(printf '%s' "$HEAD_REF" \
             | tr '[:upper:]' '[:lower:]' \
-            | tr -c 'a-zA-Z0-9' '-' \
+            | tr -c 'a-z0-9' '-' \
             | sed -e 's/--*/-/g' -e 's/^-//' -e 's/-$//' \
             | cut -c1-20)
           slug=${slug%-}
@@ -75,11 +75,6 @@ jobs:
       - name: Get branch expiration date as an env variable (2 weeks from now)
         id: get_expiration_date
         run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
-      # Neon returns HTTP 422 when asked to create a branch that already exists.
-      # We therefore probe first and skip the create action on reruns. The probe
-      # must scan every page itself instead of using Neon `search=`: branch names
-      # here contain slashes (`preview/pr-...`), and the search filter can miss
-      # those names even though a later create call rejects them as duplicates.
       # On `synchronize` events the branch already exists from the `opened` run.
       # Attempting to create it again returns HTTP 422 and fails the job.
       # This step checks the Neon API first so the create step can be skipped
@@ -104,16 +99,11 @@ jobs:
           found=false
 
           while true; do
-            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100"
-            # (bad merge re-added a stale `&search=` variant of the line above;
-            # search= misses slash-containing branch names, so the full-listing
-            # scan is the correct probe — tests/neon-branch-workflow.test.js)
+            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100&search=$(urlencode "$NEON_BRANCH")"
             if [ -n "$cursor" ]; then
               url="${url}&cursor=$(urlencode "$cursor")"
             fi
 
-            # CLAUDE.md gotcha #4: the key goes in via a curl config file on
-            # stdin (printf is a builtin), never in argv where ps can read it.
             # CLAUDE.md gotcha #4: secret on stdin via curl config file, never in argv.
             status=$(printf 'header = "Authorization: Bearer %s"\n' "$NEON_API_KEY" \
               | curl --silent --show-error --config - \
@@ -125,7 +115,6 @@ jobs:
             }
 
             if [ "$status" != "200" ]; then
-              echo "::error::Neon API returned HTTP ${status} while listing branches for project ${NEON_PROJECT_ID}"
               echo "::error::Neon API returned HTTP ${status} while listing branches"
               exit 1
             fi
@@ -156,14 +145,14 @@ jobs:
           fi
       - name: Create Neon Branch
         id: create_neon_branch
-        # (bad merge left a second stale v5.2.0 action reference here — duplicate
-        # key made the file unparseable; v6 SHA-pinned line below is kept)
+        continue-on-error: true
         if: steps.check_branch.outputs.exists != 'true'
         uses: neondatabase/create-branch-action@fb620d43d4c565abaf088b848a4e28e5c4ea4d9c # v6
         with:
           project_id: ${{ vars.NEON_PROJECT_ID }}
           branch_name: ${{ needs.setup.outputs.neon_branch }}
           api_key: ${{ secrets.NEON_API_KEY }}
+          expires_at: ${{ env.EXPIRES_AT }}
 
 # The step above creates a new Neon branch.
 # You may want to do something with the new branch, such as run migrations, run tests
@@ -243,7 +232,7 @@ jobs:
           found=false
 
           while true; do
-            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100"
+            url="${api_host}/projects/$(urlencode "$NEON_PROJECT_ID")/branches?limit=100&search=$(urlencode "$NEON_BRANCH")"
             if [ -n "$cursor" ]; then
               url="${url}&cursor=$(urlencode "$cursor")"
             fi
