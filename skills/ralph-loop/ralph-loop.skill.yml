@@ -1,0 +1,113 @@
+skill: ralph-loop
+version: "1.0.0"
+title: "Ralph Loop — Self-Healing Error Recovery"
+description: |
+  Automated self-healing loop: when a CI check or PR fails, Ralph triggers
+  @copilot via a comment, blocks the merge with a label, and retries on every
+  subsequent commit push until all checks pass (auto-merge) or the retry limit
+  is reached (escalate to human). R-A-L-P-H: Retry → Analyze → Log → Patch → reCheck.
+category: "DevOps & Automation"
+lifecycle: ephemeral
+status: beta
+author: "Audrey Evans (MIDNGHTSAPPHIRE)"
+date: "2026-04-15"
+
+triggers:
+  - "ralph loop"
+  - "self-healing"
+  - "auto-fix"
+  - "won't merge"
+  - "merge blocked"
+  - "ci failed"
+  - "check failed"
+  - "error loop"
+  - "auto retry"
+  - "copilot fix"
+  - "fix and retry"
+  - "error recovery"
+  - "loop until fixed"
+
+models:
+  primary: claude-sonnet-4-5
+
+persona:
+  enabled: false
+  note: "Ralph Loop is automated — no persona, no intro message"
+
+loop_config:
+  max_retries: 5
+  escalate_to: "midnghtsapphire"
+  acronym: "Retry → Analyze → Log → Patch → reCheck"
+
+labels:
+  blocking: "won't-merge"
+  in_progress: "auto-fix"
+  escalated: "needs-human"
+  assignee: "copilot"
+
+lifecycle_steps:
+  - step: 1
+    name: DETECT
+    trigger: "CI check_suite or workflow_run completes with failure"
+  - step: 2
+    name: COMMENT
+    action: "Post @copilot comment with error details + add won't-merge label"
+  - step: 3
+    name: WAIT
+    action: "Wait for @copilot to push a fix commit"
+  - step: 4
+    name: RECHECK
+    action: "CI re-runs on new commit"
+  - step: 5
+    name: PASS_OR_LOOP
+    action: "PASS → remove won't-merge, enable merge | FAIL → increment retry, loop"
+  - step: 6
+    name: ESCALATE
+    action: "If retries >= max_retries: add needs-human label, notify owner"
+
+github_events:
+  - "check_suite.completed"
+  - "workflow_run.completed"
+  - "pull_request.opened"
+  - "pull_request.synchronize"
+
+commit_message_pattern: "fix: [error description] (ralph-loop attempt N)"
+
+integration:
+  error_reporting_skill: true
+  vault_agent_on_credential_error: true
+
+workflow_file: ".github/workflows/ralph-loop.yml"
+config_file: ".github/ralph-loop.yml"
+
+dependencies:
+  skills:
+    - "error-reporting"
+    - "vault-agent"
+    - "code-review"
+  tools:
+    - name: "GitHub Actions"
+      required: true
+    - name: "gh CLI"
+      required: false
+      purpose: "Local testing of loop triggers"
+
+tests:
+  path: "skills/ralph-loop/tests/promptfoo.yml"
+
+implementation:
+  type: github_actions_workflow
+  workflow_file: ".github/workflows/ralph-loop.yml"
+  skill_file: "skills/ralph-loop/SKILL.md"
+
+references:
+  - path: "skills/error-reporting/SKILL.md"
+    description: "Server-side three-tier error reporting"
+  - path: "skills/vault-agent/SKILL.md"
+    description: "Credential provisioning on auth failures"
+  - path: "skills/code-review/SKILL.md"
+    description: "Pre-merge quality gate"
+  - path: "templates/cicd/ralph-loop.yml"
+    description: "Reusable workflow template"
+
+schema_version: "1.0"

@@ -1,0 +1,186 @@
+Authorization and Authentication
+=================================
+
+The Revvel Rosette Automation system requires several credentials to interact
+with external services. This document describes how to obtain and configure them.
+
+Required Credentials
+--------------------
+
+1. DOPPLER_TOKEN
+   - Service: Doppler (https://doppler.com)
+   - Purpose: Fetch secrets for provisioning
+   - Scope: Read access to 'revvel-standards' project, 'prd' config
+   - How to get:
+     * Log in to Doppler dashboard
+     * Navigate to revvel-standards project
+     * Generate a Service Token
+     * Set environment variable: export DOPPLER_TOKEN="dp.st.xxx"
+
+2. GITHUB_TOKEN
+   - Service: GitHub
+   - Purpose: Create/update repository secrets, manage issues/PRs
+   - Scope: repo, workflow, admin:org (for org-level actions)
+   - How to get:
+     * Settings → Developer settings → Personal access tokens
+     * Generate new token (classic)
+     * Select scopes: repo, workflow, admin:org
+     * Set environment variable: export GITHUB_TOKEN="ghp_xxx"
+
+3. OPENROUTER_API_KEY
+   - Service: OpenRouter (https://openrouter.ai)
+   - Purpose: Multi-model AI agent coordination
+   - How to get:
+     * Sign up at https://openrouter.ai
+     * Dashboard → API Keys → Create new key
+     * Set environment variable: export OPENROUTER_API_KEY="sk-xxx"
+
+4. TRELLO_API_KEY and TRELLO_TOKEN
+   - Service: Trello
+   - Purpose: Project management automation
+   - How to get:
+     * Visit https://trello.com/power-ups/admin
+     * Generate API Key
+     * Get Token by visiting the authorization URL
+     * Set environment variables:
+       export TRELLO_API_KEY="xxx"
+       export TRELLO_TOKEN="xxx"
+
+5. VAULT_ADDR and VAULT_TOKEN (optional)
+   - Service: HashiCorp Vault
+   - Purpose: Enterprise secret management
+   - How to get:
+     * Set up Vault server or use cloud offering
+     * Get root token or create service token
+     * Set environment variables:
+       export VAULT_ADDR="http://vault.example.com:8200"
+       export VAULT_TOKEN="hvs.xxx"
+
+Storage Methods
+---------------
+
+1. Environment Variables (development)
+   export DOPPLER_TOKEN="..."
+   export GITHUB_TOKEN="..."
+   # etc.
+
+2. .env File (local development)
+   # Create .env file in project root
+   DOPPLER_TOKEN=dp.st.xxx
+   GITHUB_TOKEN=ghp_xxx
+   OPENROUTER_API_KEY=sk-xxx
+   TRELLO_API_KEY=xxx
+   TRELLO_TOKEN=xxx
+
+   # Load with:
+   source .env  # bash
+   # OR
+   from dotenv import load_dotenv; load_dotenv()  # Python
+
+3. GitHub Secrets (CI/CD)
+   # Using GitHub CLI
+   gh secret set DOPPLER_TOKEN --repo midnghtsapphire/revvel-standards
+   gh secret set GITHUB_TOKEN --repo midnghtsapphire/revvel-standards
+   gh secret set OPENROUTER_API_KEY --repo midnghtsapphire/revvel-standards
+
+4. Doppler (production)
+   # All secrets stored in Doppler
+   # Fetched via DOPPLER_TOKEN at runtime
+
+Authentication Hierarchy
+------------------------
+
+Priority (highest to lowest):
+
+1. Environment variables
+2. .env file
+3. Doppler (via DOPPLER_TOKEN)
+4. HashiCorp Vault (via VAULT_TOKEN)
+5. Fail (missing credential error)
+
+Bearer Token Format
+-------------------
+
+Most APIs use Bearer token authentication in the Authorization header:
+
+Authorization: Bearer {token}
+
+Examples:
+
+GitHub API:
+  Authorization: Bearer ghp_1234567890abcdef
+
+OpenRouter:
+  Authorization: Bearer sk-or-v1-1234567890abcdef
+
+Trello:
+  Uses URL parameters instead:
+  ?key={TRELLO_API_KEY}&token={TRELLO_TOKEN}
+
+Doppler:
+  Authorization: Bearer dp.st.1234567890abcdef
+
+Security Best Practices
+-----------------------
+
+1. Never commit credentials to git
+   - Use .env (in .gitignore)
+   - Use environment variables
+   - Use secret management services
+
+2. Rotate credentials regularly
+   - Set up automatic rotation in src/security.py
+   - Default rotation: 90 days
+   - Advance notice: 14 days
+
+3. Use least privilege
+   - Grant only required scopes
+   - Use service tokens, not personal tokens
+   - Scope tokens to specific repos when possible
+
+4. Monitor access
+   - Enable audit logging
+   - Review access logs monthly
+   - Alert on suspicious activity
+
+5. Use separate tokens per environment
+   - Development tokens (limited scope)
+   - Staging tokens (more scope)
+   - Production tokens (full scope)
+
+Troubleshooting
+---------------
+
+Error: "401 Unauthorized"
+Solution: Check token is valid and has required scopes
+
+Error: "403 Forbidden"
+Solution: Token valid but lacks permissions; check scopes
+
+Error: "Token expired"
+Solution: Regenerate token and update configuration
+
+Error: "Rate limit exceeded"
+Solution: Wait for rate limit reset or use higher-tier token
+
+Testing Credentials
+-------------------
+
+# Test Doppler
+curl -H "Authorization: Bearer $DOPPLER_TOKEN" \
+  https://api.doppler.com/v3/configs/config/secrets
+
+# Test GitHub
+curl -H "Authorization: Bearer $GITHUB_TOKEN" \
+  https://api.github.com/user
+
+# Test OpenRouter
+curl -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  https://openrouter.ai/api/v1/models
+
+# Test Trello
+curl "https://api.trello.com/1/members/me?key=$TRELLO_API_KEY&token=$TRELLO_TOKEN"
+
+# Test Vault
+curl -H "X-Vault-Token: $VAULT_TOKEN" \
+  $VAULT_ADDR/v1/sys/health

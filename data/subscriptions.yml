@@ -1,0 +1,274 @@
+# Subscriptions & Trials — Single Source of Truth
+#
+# This file is the canonical inventory of paid (or trial) third-party tools,
+# GitHub Apps, and SaaS services used across MIDNGHTSAPPHIRE / Revvel repos.
+#
+# It is read by:
+#   • scripts/subscription-tracker.js  — computes renewal / trial-expiry verdicts
+#   • .github/workflows/subscription-tracker.yml — daily sweep that upserts a
+#     tracking issue and warns before a trial expires or a subscription renews.
+#
+# WHY: tools like RecurseML start on a free trial and silently convert to a paid
+# plan. Without a tracker, a trial can lapse (losing coverage) or auto-charge
+# (paying for something we decided not to keep). This file + job make every
+# subscription's clock visible and actionable.
+#
+# ── Field reference ───────────────────────────────────────────────────────────
+#   name            Human-readable product name (required)
+#   vendor          Company / provider
+#   type            github_app | saas | api | hosting | ci | other
+#   status          trial | active | cancelled | evaluating
+#   trial_start     YYYY-MM-DD (trial begin) — null if not a trial
+#   trial_end       YYYY-MM-DD (trial expiry / first charge) — null if not a trial
+#   renewal_date    YYYY-MM-DD next renewal/charge for active subs — null if n/a
+#   billing_cycle   monthly | annual | usage | free
+#   cost            Numeric amount per billing_cycle — null if unknown/free
+#   currency        ISO 4217 code (e.g. USD)
+#   repositories    "all" OR a list of owner/repo this applies to
+#   dashboard_url   Where to manage / cancel the subscription
+#   decision_doc    Path to the trial decision / DARE log entry, if any
+#   notes           Free-form context
+#
+# Keep dates accurate. Use null (not a guess) for anything unknown — the tracker
+# treats null due-dates as "unknown" and surfaces them for a human to fill in.
+#
+# ── Known-stale entries as of 2026-08-09 (owner audit) ────────────────────────
+# Several `renewal_date` and `trial_end` values are in the past because the
+# tracker was never scheduled to run (fixed in the same PR as this note added).
+# When the first cron run posts its report, verify and update:
+#   • RecurseML trial_end 2026-06-27 → owner pays $10 every ~2 weeks, so status
+#     is really "recurring $10 short-term extensions"; ideal: switch to $250 annual
+#     once verified working (see the app-installation check in the accompanying PR).
+#   • DigitalOcean renewal_date 2026-07-15 → sites down per the note; verify
+#     which droplets are actually serving traffic before the next bill.
+#   • Devin renewal_date 2026-07-08 → confirm still active and update.
+# The tracker will keep surfacing these as "past due — please update" until the
+# dates are refreshed. That is the correct behaviour, not a bug.
+# ──────────────────────────────────────────────────────────────────────────────
+
+subscriptions:
+  - name: RecurseML
+    vendor: RecurseML
+    type: github_app
+    status: trial
+    trial_start: 2026-06-13
+    trial_end: 2026-06-27        # 14-day free trial that began 2026-06-13
+    renewal_date: null
+    billing_cycle: annual
+    cost: 250
+    currency: USD
+    repositories: all
+    dashboard_url: https://app.recurse.ml
+    decision_doc: docs/DARE_LOG.md
+    notes: >-
+      Autonomous PR code-review GitHub App. 14-day free trial → ~$250/year.
+      Decide renew/cancel before trial_end using the Decision Gate in
+      skills/recurse-ml/SKILL.md. Workflow: .github/workflows/recurse-ml.yml.
+
+  - name: Vercel
+    vendor: Vercel
+    type: hosting
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: usage
+    cost: null
+    currency: USD
+    repositories: all
+    dashboard_url: https://vercel.com/oaudrey-projects
+    decision_doc: null
+    notes: >-
+      Website-in-Test + production deploys for Revvel projects (required for DB
+      integrations). Usage-based; no fixed renewal date.
+
+  - name: OpenRouter
+    vendor: OpenRouter
+    type: api
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: usage
+    cost: null
+    currency: USD
+    repositories: all
+    dashboard_url: https://openrouter.ai/settings/credits
+    decision_doc: null
+    notes: >-
+      Primary automation LLM routing (OPENROUTER_API_KEY). Pay-as-you-go credits;
+      monitor balance rather than a renewal date.
+
+  - name: DigitalOcean
+    vendor: DigitalOcean, Inc.
+    type: hosting
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: 2026-07-15
+    billing_cycle: monthly
+    cost: 250.00
+    currency: USD
+    repositories: all
+    dashboard_url: https://cloud.digitalocean.com/account/billing
+    decision_doc: null
+    notes: >-
+      Cluster + droplets created during oAudrey/Vercel deploy phase. Sites
+      currently down — verify which droplets are actually serving traffic
+      vs idle. Cancel the idle ones before next renewal.
+
+  - name: Devin
+    vendor: Cognition Labs
+    type: saas
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: 2026-07-08
+    billing_cycle: monthly
+    cost: 80.00
+    currency: USD
+    repositories: all
+    dashboard_url: https://app.devin.ai/settings/billing
+    decision_doc: docs/agent-stack/DEVIN_OBSERVATIONS.md
+    notes: >-
+      Paid for current cycle. In-repo lane via scripts/call-devin-api.sh +
+      .github/workflows/devin.yml (PR #14375). GitHub App review surface is
+      always-on. Re-evaluate keep vs cancel at next renewal.
+
+  - name: Cursor
+    vendor: Anysphere
+    type: saas
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: 20.00
+    currency: USD
+    repositories: all
+    dashboard_url: https://www.cursor.com/settings
+    decision_doc: null
+    notes: >-
+      Cursor background agents hit "increase spend limit" message this session.
+      Verify if usage-based billing is enabled — that would surprise-bill.
+
+  - name: Octopus Review
+    vendor: Octopus Review Inc.
+    type: github_app
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: null
+    currency: USD
+    repositories: all
+    dashboard_url: https://octopus-review.ai
+    decision_doc: null
+    notes: >-
+      SaaS bot. Hit "organization has reached monthly AI usage limit" multiple
+      times this session — fill in plan tier + monthly limit once known.
+      Separate from OCTOPUS_TOKEN repo-secret CLI lane.
+
+  - name: cubic
+    vendor: cubic.dev
+    type: github_app
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: null
+    currency: USD
+    repositories: all
+    dashboard_url: https://www.cubic.dev
+    decision_doc: null
+    notes: >-
+      AI PR reviewer. Found real issues this session. Verify if paid plan or
+      free tier; fill in cost.
+
+  - name: CodeRabbit
+    vendor: CodeRabbit Inc.
+    type: github_app
+    status: evaluating
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: null
+    currency: USD
+    repositories: all
+    dashboard_url: https://www.coderabbit.ai/settings/billing
+    decision_doc: null
+    notes: >-
+      Per docs/TOOL_COST_INDEX.md — Free (limited); Pro ~$24/user/mo. Confirm
+      tier and verify the AI usage limits.
+
+  - name: Bito
+    vendor: Bito AI
+    type: github_app
+    status: evaluating
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: null
+    currency: USD
+    repositories: all
+    dashboard_url: https://bito.ai
+    decision_doc: null
+    notes: >-
+      Per docs/TOOL_COST_INDEX.md — Free (limited); Pro ~$15/user/mo. Confirm
+      tier.
+
+  - name: Doppler
+    vendor: Doppler
+    type: saas
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: 0.00
+    currency: USD
+    repositories: all
+    dashboard_url: https://dashboard.doppler.com/account/billing
+    decision_doc: docs/CREDENTIAL_BACKUP_HARNESS.md
+    notes: >-
+      Free Developer tier. NOTE: this session disabled the hourly secret-
+      persistence-guard cron because Doppler was overwriting fresh tokens with
+      stale values. Reconcile Doppler state before re-enabling that workflow.
+
+  - name: GitHub Copilot
+    vendor: GitHub
+    type: github_app
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: monthly
+    cost: 10.00
+    currency: USD
+    repositories: all
+    dashboard_url: https://github.com/settings/billing
+    decision_doc: null
+    notes: >-
+      Individual plan ~$10/mo. Confirm tier and exact renewal date from
+      GitHub billing.
+
+  - name: Jules
+    vendor: Google
+    type: api
+    status: active
+    trial_start: null
+    trial_end: null
+    renewal_date: null
+    billing_cycle: usage
+    cost: null
+    currency: USD
+    repositories: all
+    dashboard_url: https://jules.google.com
+    decision_doc: null
+    notes: >-
+      Usage-priced per Google plan. Per docs/TOOL_COST_INDEX.md — varies.
+      Fill in latest invoice total when known.

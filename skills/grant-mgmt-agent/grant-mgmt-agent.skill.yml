@@ -1,0 +1,531 @@
+skill: grant-mgmt-agent
+version: "1.0.0"
+title: "Grant Management Agent — Complete Automation Pipeline"
+description: |
+  End-to-end grant management automation: discovery (Instrumentl, Grants.gov),
+  AI-powered proposal writing (OpenRouter), document automation (DocSpring/Anvil),
+  workflow orchestration (n8n/Zapier/Make), tracking (Supabase/Airtable),
+  and compliance reporting. Reduces manual work by 80%+ while maintaining
+  high-quality applications and full audit compliance.
+category: "Automation & Finance"
+lifecycle: long-running
+status: stable
+author: "Audrey Evans (MIDNGHTSAPPHIRE)"
+date: "2026-04-30"
+
+triggers:
+  - "grant management"
+  - "grant automation"
+  - "grant discovery"
+  - "grant proposal"
+  - "instrumentl"
+  - "grants.gov"
+  - "sam.gov"
+  - "grant tracking"
+  - "proposal writing"
+  - "grant application"
+  - "grant pipeline"
+  - "grant workflow"
+  - "grant compliance"
+  - "grant reporting"
+  - "rfp automation"
+  - "proposal automation"
+  - "grant ai"
+
+models:
+  primary: claude-sonnet-4-5      # Proposal drafting
+  research: claude-opus-4         # Deep research, compliance
+  fast: claude-haiku-4-5          # Tracking, notifications, summaries
+
+persona: scout  # 🔍 Discovery & research focus
+
+# ── Complete Stack Components ────────────────────────────────────────────────
+
+stack:
+  discovery:
+    primary: instrumentl
+    description: "Automated grant opportunity discovery and matching"
+    api: "https://api.instrumentl.com/v1"
+    features:
+      - "Daily automated searches"
+      - "Match scoring"
+      - "Real-time notifications"
+      - "Advanced filtering"
+    
+  federal_grants:
+    service: grants_gov
+    description: "Federal grant opportunities and submission"
+    api: "https://www.grants.gov/rest"
+    endpoints:
+      search: "/opportunities/search"
+      details: "/opportunities/{id}"
+      submit: "/submission"
+    
+  entity_validation:
+    service: sam_gov
+    description: "Organization registration and compliance validation"
+    api: "https://api.sam.gov"
+    endpoints:
+      entity: "/entity-information/v2/entities"
+    
+  proposal_writing:
+    service: openrouter
+    description: "AI-powered proposal generation using multiple LLMs"
+    api: "https://openrouter.ai/api/v1"
+    models:
+      drafting: "anthropic/claude-sonnet-4.5"
+      complex: "anthropic/claude-opus-4"
+      quick: "anthropic/claude-haiku-4.5"
+      alternative: "openai/gpt-5.4"
+    cost_per_proposal: "$3-8"
+    
+  document_automation:
+    primary: docspring
+    description: "PDF form filling and document generation"
+    alternatives: ["anvil", "doqs.dev", "instafill.ai"]
+    features:
+      - "JSON-based field mapping"
+      - "Template visual editor"
+      - "Fast rendering (seconds)"
+      - "Webhook support"
+    
+  workflow_automation:
+    recommended: n8n
+    description: "Visual workflow builder for orchestration"
+    alternatives: ["zapier", "make"]
+    benefits:
+      - "Open source, self-hosted"
+      - "350+ integrations"
+      - "Custom code nodes"
+      - "Webhook triggers"
+    
+  database:
+    recommended: supabase
+    description: "PostgreSQL database with REST API and realtime"
+    alternative: airtable
+    features:
+      - "Row-level security"
+      - "Real-time subscriptions"
+      - "PostgREST API"
+      - "Built-in auth"
+
+# ── Grant Lifecycle Stages ───────────────────────────────────────────────────
+
+stages:
+  discovery:
+    description: "Automated daily search for matching opportunities"
+    tools: ["instrumentl", "grants.gov", "sam.gov"]
+    automation: "Daily cron job"
+    outputs: ["scored_opportunities", "team_notifications"]
+    
+  eligibility:
+    description: "Validate organization compliance and eligibility"
+    tools: ["sam.gov"]
+    checks:
+      - "SAM registration active"
+      - "No delinquent federal debt"
+      - "Entity type matches requirements"
+      - "Expiration date > 90 days"
+    
+  research:
+    description: "Deep analysis of RFP and competitive landscape"
+    tools: ["openrouter", "web_research"]
+    model: "anthropic/claude-opus-4"
+    outputs: ["rfp_analysis", "competitor_scan", "strategy_brief"]
+    
+  proposal_writing:
+    description: "AI-assisted proposal generation with human review"
+    tools: ["openrouter"]
+    workflow:
+      - "Parse RFP requirements"
+      - "Generate section drafts (AI)"
+      - "Human review and edits"
+      - "Iterative refinement"
+      - "Final approval"
+    sections:
+      - "executive_summary"
+      - "need_statement"
+      - "goals_objectives"
+      - "methodology"
+      - "evaluation_plan"
+      - "organizational_capacity"
+      - "budget_narrative"
+      - "sustainability"
+    quality_checks:
+      - "Requirement compliance"
+      - "Word count validation"
+      - "Citation verification"
+      - "Plagiarism check"
+      - "Tone consistency"
+    
+  document_automation:
+    description: "Auto-fill standardized forms and attachments"
+    tools: ["docspring", "anvil"]
+    process:
+      - "Map form fields to data"
+      - "Generate filled PDFs"
+      - "Validate completeness"
+      - "Attach to application"
+    
+  submission:
+    description: "Submit applications via API or generate packages"
+    tools: ["grants.gov", "platform_apis"]
+    methods: ["api", "manual_package"]
+    
+  tracking:
+    description: "Centralized tracking of all applications and deadlines"
+    tools: ["supabase", "airtable"]
+    tracked_fields:
+      - "Application status"
+      - "Deadlines and milestones"
+      - "Budget tracking"
+      - "Deliverables"
+      - "Team assignments"
+    
+  compliance:
+    description: "Track milestones, expenses, and generate reports"
+    tools: ["supabase", "automated_reports"]
+    requirements:
+      - "Milestone tracking"
+      - "Expense documentation"
+      - "Progress reports"
+      - "Final reports"
+      - "Audit trail"
+    
+  analytics:
+    description: "Success rate analysis and continuous improvement"
+    metrics:
+      - "Award rate"
+      - "Total funding secured"
+      - "Application efficiency"
+      - "Cost per award"
+      - "Proposal quality scores"
+
+# ── Environment Configuration ────────────────────────────────────────────────
+
+environment:
+  required_secrets:
+    - name: OPENROUTER_API_KEY
+      vault_path: "revvel/shared/llm/openrouter"
+      description: "OpenRouter API key for LLM access"
+      
+    - name: SAM_API_KEY
+      vault_path: "revvel/shared/grant-mgmt/sam"
+      description: "SAM.gov API key"
+      
+    - name: INSTRUMENTL_API_KEY
+      vault_path: "revvel/shared/grant-mgmt/instrumentl"
+      description: "Instrumentl API key (if available)"
+      
+    - name: DOCSPRING_API_TOKEN
+      vault_path: "revvel/shared/grant-mgmt/docspring"
+      description: "DocSpring API token for document automation"
+      
+    - name: DATABASE_URL
+      vault_path: "revvel/shared/grant-mgmt/database"
+      description: "Supabase or PostgreSQL connection string"
+      
+    - name: N8N_WEBHOOK_URL
+      vault_path: "revvel/shared/grant-mgmt/n8n"
+      description: "n8n webhook URL for workflow triggers"
+      
+    - name: SLACK_WEBHOOK_URL
+      vault_path: "revvel/shared/notifications/slack"
+      description: "Slack webhook for team notifications"
+  
+  organization_info:
+    - ORGANIZATION_NAME
+    - ORGANIZATION_UEI
+    - ORGANIZATION_EIN
+    - ORGANIZATION_SAM_EXPIRATION
+
+# ── Database Schema ──────────────────────────────────────────────────────────
+
+database_tables:
+  - organizations
+  - funding_sources
+  - grant_opportunities
+  - applications
+  - proposal_sections
+  - milestones
+  - expenses
+  - compliance_reports
+  - audit_log
+
+# ── Cost Analysis ────────────────────────────────────────────────────────────
+
+costs:
+  llm_per_proposal:
+    brief: "$0.10"
+    sections: "$2-5"
+    revisions: "$1-2"
+    total: "$3-8"
+    
+  workflow_automation:
+    n8n_selfhosted: "$10-20/month (hosting)"
+    zapier: "$20-50/month"
+    make: "$9-29/month"
+    
+  database:
+    supabase_free: "$0 (up to 500MB)"
+    supabase_pro: "$25/month"
+    airtable_free: "$0 (1,200 records)"
+    airtable_plus: "$10/user/month"
+    
+  document_automation:
+    docspring: "$49/month (500 docs)"
+    anvil: "$0.10-0.50 per doc"
+    doqs: "$0.02 per doc"
+    
+  total_monthly: "$50-150"
+  roi: "Saves 20-40 hours/month"
+
+# ── Success Metrics ──────────────────────────────────────────────────────────
+
+kpis:
+  discovery:
+    - "Opportunities discovered per week"
+    - "Match quality score distribution"
+    - "Time from discovery to decision"
+    
+  application:
+    - "Applications submitted per month"
+    - "Average time to complete"
+    - "Proposal quality scores"
+    - "Submission success rate"
+    
+  success:
+    - "Award rate (%)"
+    - "Total funding secured"
+    - "Average award size"
+    - "Cost per successful application"
+    
+  efficiency:
+    - "Hours saved vs manual"
+    - "AI-generated vs human content ratio"
+    - "Automation uptime (%)"
+    - "Error rate in submissions"
+    
+  compliance:
+    - "On-time deliverable rate"
+    - "Budget compliance (%)"
+    - "Report submission timeliness"
+    - "Audit findings (target: 0)"
+
+# ── Implementation Phases ────────────────────────────────────────────────────
+
+implementation:
+  phase_1:
+    name: "Foundation"
+    duration: "Week 1-2"
+    tasks:
+      - "Set up database"
+      - "Configure OpenRouter API"
+      - "Connect to Grants.gov API"
+      - "Set up basic workflow automation"
+      - "Create initial proposal templates"
+      
+  phase_2:
+    name: "Discovery & Tracking"
+    duration: "Week 3-4"
+    tasks:
+      - "Implement daily grant discovery"
+      - "Build opportunity scoring"
+      - "Create team notifications"
+      - "Develop tracking dashboard"
+      - "Test discovery pipeline"
+      
+  phase_3:
+    name: "Proposal Automation"
+    duration: "Week 5-6"
+    tasks:
+      - "Build AI proposal system"
+      - "Create section templates"
+      - "Implement review workflow"
+      - "Add plagiarism detection"
+      - "Test with sample RFPs"
+      
+  phase_4:
+    name: "Submission & Docs"
+    duration: "Week 7-8"
+    tasks:
+      - "Integrate document automation"
+      - "Build form mapping"
+      - "Create submission packages"
+      - "Test with applications"
+      - "Refine based on feedback"
+      
+  phase_5:
+    name: "Compliance & Reporting"
+    duration: "Week 9-10"
+    tasks:
+      - "Build milestone tracking"
+      - "Create expense tracking"
+      - "Automate compliance reports"
+      - "Set up reminders"
+      - "Test full lifecycle"
+      
+  phase_6:
+    name: "Optimization"
+    duration: "Week 11-12"
+    tasks:
+      - "Analyze success metrics"
+      - "Optimize AI prompts"
+      - "Refine scoring algorithms"
+      - "Add advanced features"
+      - "Document best practices"
+
+# ── Related Skills ───────────────────────────────────────────────────────────
+
+related_skills:
+  - openrouter-swarms  # Multi-agent coordination
+  - vault-agent        # Credential management
+  - model-router       # LLM cost optimization
+  - gbrain             # Store successful patterns
+  - wrap-up            # Session completion
+  - error-reporting    # Monitoring and alerts
+  - system-state       # Pipeline state tracking
+
+# ── Guardrails ───────────────────────────────────────────────────────────────
+
+guardrails:
+  security:
+    - "Never send PII/EIN to public LLM APIs"
+    - "Encrypt sensitive data at rest"
+    - "Use RLS for data isolation"
+    - "Rotate API keys quarterly"
+    - "Audit all sensitive data access"
+    
+  compliance:
+    - "Maintain active SAM.gov registration"
+    - "GDPR/CCPA compliance for applicant data"
+    - "Accurate financial tracking"
+    - "Complete audit trail"
+    
+  quality:
+    - "Human review required for all proposals"
+    - "Plagiarism check on AI content"
+    - "Requirement compliance validation"
+    - "Citation and fact verification"
+    
+  ethics:
+    - "Transparent about AI assistance"
+    - "Honest representation of capabilities"
+    - "No fabrication of data or credentials"
+    - "Respect funder guidelines and intent"
+
+# ── Output Schema ────────────────────────────────────────────────────────────
+
+output_schema:
+  type: object
+  required: [opportunity_id, application_id, proposal, status]
+  properties:
+    opportunity_id:
+      type: string
+      description: "Unique ID from discovery source"
+    application_id:
+      type: string
+      description: "Internal application tracking ID"
+    proposal:
+      type: object
+      required: [sections, metadata]
+      properties:
+        sections:
+          type: array
+          items:
+            type: object
+            properties:
+              name: { type: string }
+              content: { type: string }
+              word_count: { type: integer }
+              generated_by: { type: string, enum: [ai, human, hybrid] }
+              model_used: { type: string }
+              reviewed: { type: boolean }
+        metadata:
+          type: object
+          properties:
+            total_words: { type: integer }
+            ai_percentage: { type: number }
+            quality_score: { type: number }
+            compliance_checks: { type: array }
+    documents:
+      type: array
+      items:
+        type: object
+        properties:
+          type: { type: string }
+          url: { type: string }
+          generated_at: { type: string, format: date-time }
+    status:
+      type: string
+      enum: [discovered, researching, drafting, reviewing, submitting, submitted, under_review, awarded, declined]
+    timeline:
+      type: object
+      properties:
+        discovered: { type: string, format: date-time }
+        application_started: { type: string, format: date-time }
+        submitted: { type: string, format: date-time }
+        decision_expected: { type: string, format: date }
+
+# ── Termination Triggers ─────────────────────────────────────────────────────
+
+termination_triggers:
+  - "grant submitted"
+  - "application complete"
+  - "withdraw application"
+  - "opportunity expired"
+  - "cancel grant"
+
+system_prompt: |
+  You are the Revvel Grant Management Agent, an expert in automating the complete
+  grant lifecycle from discovery through compliance.
+  
+  Your core competencies:
+  1. **Discovery**: Identify relevant grant opportunities across federal, foundation,
+     and corporate sources. Score and prioritize based on fit.
+  
+  2. **Research**: Analyze RFPs, understand funder priorities, research competition,
+     and develop winning strategies.
+  
+  3. **Proposal Writing**: Generate high-quality, compliant proposal sections using
+     AI assistance while maintaining human oversight for quality and accuracy.
+  
+  4. **Automation**: Orchestrate workflows across multiple systems (discovery,
+     writing, submission, tracking) with minimal human intervention.
+  
+  5. **Compliance**: Ensure all requirements are met, track deliverables,
+     maintain audit trails, and generate reports.
+  
+  Operating Rules:
+  - Always verify SAM.gov registration status before applying
+  - Never fabricate data, credentials, or outcomes
+  - Require human review on all AI-generated content
+  - Run plagiarism checks on proposals
+  - Maintain complete audit trail
+  - Follow funder guidelines exactly
+  - Prioritize data security and privacy
+  - Use appropriate LLM models for cost optimization
+  - Track all metrics for continuous improvement
+  
+  When activated:
+  1. Identify the current stage in the grant lifecycle
+  2. Load relevant organizational data and context
+  3. Execute the appropriate workflow for that stage
+  4. Ensure quality checks pass before proceeding
+  5. Update tracking database with progress
+  6. Notify team of key milestones or issues
+  7. Maintain state for next session
+
+documentation:
+  skill_file: "skills/grant-mgmt-agent/SKILL.md"
+  registry_entry: "skills/REGISTRY.md"
+  index_entry: "skills/SKILLS_INDEX.yml"
+  templates:
+    - "skills/grant-mgmt-agent/templates/n8n-workflows/"
+    - "skills/grant-mgmt-agent/templates/database-schemas/"
+    - "skills/grant-mgmt-agent/templates/proposal-prompts/"
+  examples:
+    - "skills/grant-mgmt-agent/examples/grants-gov-integration.js"
+    - "skills/grant-mgmt-agent/examples/sam-gov-validation.js"
+    - "skills/grant-mgmt-agent/examples/openrouter-proposals.js"
+    - "skills/grant-mgmt-agent/examples/docspring-forms.js"

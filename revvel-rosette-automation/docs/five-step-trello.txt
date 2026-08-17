@@ -1,0 +1,162 @@
+Five-Step Trello Workflow
+=========================
+
+The Revvel Rosette Automation system uses a standardized five-step Trello workflow
+to track all projects from inception to completion.
+
+The Five Lists
+--------------
+
+1. TODO (Backlog)
+   - New ideas and planned work
+   - Issues waiting to be started
+   - Prioritized by labels
+
+2. IN PROGRESS (Active Work)
+   - Currently being worked on
+   - Assigned to specific agent or person
+   - Limited WIP (max 10 cards)
+
+3. REVIEW (Code Review)
+   - PR opened and awaiting review
+   - Automated checks running
+   - Blocked until approved
+
+4. TESTING (QA)
+   - Code merged, deployed to staging
+   - Manual and automated testing
+   - Validation against acceptance criteria
+
+5. DONE (Shipped)
+   - Deployed to production
+   - Verified working
+   - Archived after 30 days
+
+Card Structure
+--------------
+
+Each Trello card represents a GitHub issue and includes:
+
+Title: [GH-{issue_number}] {issue_title}
+Description: {issue_body}
+Labels: {mapped_from_github_labels}
+Due Date: {calculated_from_priority}
+Members: {assigned_to}
+Checklist: {acceptance_criteria}
+Attachments: {PR_links}
+
+Automation Rules
+----------------
+
+1. Auto-create cards
+   - New GitHub issue → TODO list
+   - With priority label → proper position
+   - With assignee → add member
+
+2. Auto-move cards
+   - Branch created → IN PROGRESS
+   - PR opened → REVIEW
+   - PR merged → TESTING
+   - Deployment successful → DONE
+
+3. Auto-update cards
+   - Issue closed → archive card
+   - Issue reopened → move back to TODO
+   - Comment added → add to card activity
+
+4. Auto-sync
+   - Every 30 minutes
+   - Bi-directional (GitHub ↔ Trello)
+   - Conflict resolution: GitHub wins
+
+Priority Mapping
+----------------
+
+GitHub Priority Label → Trello Position
+- P0 (critical) → Top of list, red label
+- P1 (high) → Upper third, orange label
+- P2 (normal) → Middle, yellow label
+- P3 (low) → Bottom, green label
+
+Label Mapping
+-------------
+
+GitHub Label → Trello Label
+- bug → Red "Bug"
+- feature → Blue "Feature"
+- documentation → Yellow "Docs"
+- enhancement → Green "Enhancement"
+- security → Purple "Security"
+- wr:code → Orange "WR Code"
+- wr:auto → Pink "WR Auto"
+
+Usage Examples
+--------------
+
+# Sync GitHub issues to Trello
+python3 src/trello.py --sync
+
+# Create Trello cards for all open issues
+python3 src/trello.py --create-from-issues
+
+# Move cards through workflow
+python3 src/trello.py --workflow
+
+# Update card when PR is opened
+python3 src/trello.py --update-card {card_id} --move-to REVIEW
+
+# Archive completed cards
+python3 src/trello.py --archive-done
+
+Metrics Tracked
+---------------
+
+- Cycle time: TODO → DONE (target: <7 days)
+- Lead time: Issue opened → DONE (target: <14 days)
+- WIP: Cards in IN PROGRESS (target: <10)
+- Throughput: Cards moved to DONE per week
+- Blocked time: Time spent in REVIEW or TESTING
+
+Notifications
+-------------
+
+Automated notifications sent when:
+- Card moved to REVIEW → tag reviewers
+- Card stuck in REVIEW >2 days → ping in Slack
+- Card moved to DONE → celebrate in team channel
+- Due date approaching → reminder 2 days before
+
+Board Configuration
+-------------------
+
+Board Name: Revvel Master
+Workspace: MIDNGHTSAPPHIRE
+Visibility: Organization visible
+Power-Ups:
+- GitHub integration
+- Calendar view
+- Custom fields (Priority, GitHub Issue #, PR #)
+- Butler automation
+
+Best Practices
+--------------
+
+1. Keep descriptions updated
+   - Reflect current issue body
+   - Add blockers and dependencies
+
+2. Use checklists
+   - Break down large tasks
+   - Track acceptance criteria
+
+3. Tag appropriately
+   - Use consistent labels
+   - Keep label set minimal
+
+4. Update regularly
+   - Comment on progress
+   - Move cards promptly
+
+5. Archive old cards
+   - After 30 days in DONE
+   - Keep board clean

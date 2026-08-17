@@ -1,0 +1,15 @@
+#!/bin/bash
+# Quick setup script for ReeseReviews API keys
+echo "🔧 ReeseReviews API Setup"
+echo "========================="
+echo ""
+echo "This script helps you set up API keys for ReeseReviews."
+echo ""
+echo "Mode 1: Mock Mode (recommended for development)"
+echo "  - No API keys needed"
+echo "  - Uses test data"
+echo "  - Ready immediately"
+echo ""
+echo "For detailed setup, see docs/API_KEY_AUTOMATION.md"
+echo ""
+echo "✨ Setup complete!"

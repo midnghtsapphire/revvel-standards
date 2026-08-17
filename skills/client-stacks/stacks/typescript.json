@@ -1,0 +1,24 @@
+{
+  "stack": "typescript",
+  "language": "TypeScript/JavaScript",
+  "default_framework": "node",
+  "package_manager": "npm-or-pnpm-or-yarn",
+  "test_runner": "npm test",
+  "verify": [
+    "if [ -f pnpm-lock.yaml ]; then pnpm install --frozen-lockfile && pnpm test; elif [ -f yarn.lock ]; then yarn install --frozen-lockfile && yarn test; else npm ci && npm test; fi"
+  ],
+  "format": "npm run lint --if-present",
+  "prompt_pack": {
+    "idioms": [
+      "Detect the package manager from the lockfile (pnpm-lock.yaml / yarn.lock / package-lock.json) and use only that one.",
+      "Match the client's module style (ESM vs CJS) from package.json \"type\" and existing imports.",
+      "Respect tsconfig strictness — if strict mode is on, no any-escapes.",
+      "Use the client's test runner (vitest/jest/node:test/mocha) — detect from devDependencies, never assume."
+    ],
+    "pr_style": "Match existing PR titles in the client repo. Default: Conventional Commits if their history uses them, otherwise imperative summary.",
+    "never": [
+      "Never commit a regenerated lockfile unless dependency changes ARE the task.",
+      "Never add new devDependencies without flagging it in the PR description."
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "revvel-standards",
+  "version": "2.0.0",
+  "private": true,
+  "description": "SSOT standards, templates, and automation for MIDNGHTSAPPHIRE projects",
+  "type": "commonjs",
+  "packageManager": "npm@10.9.7",
+  "engines": {
+    "node": ">=22 <25"
+  },
+  "scripts": {
+    "test": "node --test 'tests/**/*.test.js' && bash tests/social_post_formatter.test.sh",
+    "test:all": "node --test tests",
+    "verify": "npm run workflows:validate && npm run lint && npm test",
+    "verify:fast": "npm run workflows:validate && npm run lint",
+    "engine": "node engines/runner-orchestrator/orchestrate.js",
+    "test:cov": "c8 --reporter=text --reporter=lcov node --test tests",
+    "test:sh": "bash tests/social_post_formatter.test.sh",
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "npm run typecheck",
+    "lint": "npx markdownlint-cli2 \"**/*.md\" \"#node_modules\" \"#.git\" \"#wr/issues\" \"#wr/pending\" \"#transcripts\" \"#research/raw\" \"#claude-transcripts\"",
+    "lint:fix": "npx markdownlint-cli2 --fix \"**/*.md\" \"#node_modules\" \"#.git\" \"#wr/issues\" \"#wr/pending\" \"#transcripts\" \"#research/raw\" \"#claude-transcripts\"",
+    "markdown:backlog": "node scripts/fix-markdown-backlog.js --check",
+    "markdown:fix-backlog": "node scripts/fix-markdown-backlog.js --fix",
+    "markdown:heal": "node scripts/heal-markdown.js",
+    "scorecard": "node scripts/agent-scorecard/index.js",
+    "connections": "node scripts/connections-registry.js --markdown",
+    "connections:html": "node scripts/connections-registry.js --html",
+    "connections:drift": "node scripts/connections-registry.js --drift",
+    "dashboard": "node scripts/dashboard-cli.js",
+    "dashboard:generate": "node scripts/aggregate-project-dashboard.js",
+    "agent-creator:data": "node scripts/build-agent-creator-data.js",
+    "automation:doctor": "node scripts/automation-doctor.js",
+    "workflows:validate": "node scripts/automation-doctor.js --validate",
+    "labels:check": "node scripts/automation-doctor.js --labels",
+    "deploy:vercel": "node scripts/deploy-vercel.js",
+    "bootstrap:web": "echo Use: npm run deploy:vercel -- --repo=owner/project",
+    "ui-engine": "node scripts/ui-creation-engine.js",
+    "ui-engine:sample": "node scripts/ui-creation-engine.js --business='Sample Business' --industry='service industry' --location='USA'",
+    "prompts:validate": "node scripts/prompt-knowledge-repo.js validate",
+    "prompts:export-notebooklm": "node scripts/prompt-knowledge-repo.js export-notebooklm"
+  },
+  "bin": {
+    "dashboard": "./scripts/dashboard-cli.js"
+  },
+  "devDependencies": {
+    "@octokit/rest": "^21.0.0",
+    "@types/node": "^22",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "c8": "^12.0.0",
+    "googleapis": "^173.0.0",
+    "markdownlint-cli2": "^0.23.2",
+    "semver": "^7.8.5",
+    "sitemap-generator-cli": "^7.5.0",
+    "typescript": "^5.7.0",
+    "yaml": "^2.7.0"
+  }
+}

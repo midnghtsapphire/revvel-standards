@@ -1,0 +1,30 @@
+{
+  "title": "Image SEO pack → notify (task conserving)",
+  "human_gate": {
+    "auto_merge": false
+  },
+  "steps": [
+    { "app": "Webhooks by Zapier", "action": "Catch Hook" },
+    {
+      "app": "Filter by Zapier",
+      "action": "Only continue if…",
+      "config": { "only_if": "release OR weekly_brief" }
+    },
+    {
+      "app": "Webhooks by Zapier",
+      "action": "POST",
+      "config": {
+        "note": "headless pack builder scripts/image-seo-build-pack.mjs"
+      }
+    },
+    {
+      "app": "GitHub",
+      "action": "Create Issue",
+      "config": {
+        "labels": "work-request,needs-human,automation",
+        "note": "formal failure WR — never auto-merge"
+      }
+    }
+  ],
+  "secrets_by_name": ["OPENROUTER_API_KEY"]
+}

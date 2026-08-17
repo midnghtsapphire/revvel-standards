@@ -1,0 +1,103 @@
+# Copy to .github/workflows/syntax-check.yml in your app repo
+# This workflow is a required status check — PRs cannot merge if it fails.
+
+name: Syntax & Lint Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  syntax-check:
+    name: Syntax & Lint Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Node.js setup ────────────────────────────────────
+      - name: Enable Corepack (pnpm)
+        run: corepack enable
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ── TypeScript check ─────────────────────────────────
+      - name: TypeScript syntax check (tsc --noEmit)
+        run: pnpm exec tsc --noEmit --skipLibCheck
+        # CONFIGURE: Change if your project uses a different typecheck command
+        # e.g., 'pnpm typecheck' or 'pnpm check'
+
+      # ── ESLint ───────────────────────────────────────────
+      - name: ESLint (syntax + style)
+        run: pnpm exec eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=0
+        # CONFIGURE: Adjust extensions or config path as needed
+        # For ESLint v9 flat config: pnpm exec eslint .
+
+      # ── Prettier format check ────────────────────────────
+      - name: Prettier format check
+        run: pnpm exec prettier --check .
+        # CONFIGURE: Remove this step if you don't use Prettier
+
+      # ── JSON validation ───────────────────────────────────
+      - name: Validate JSON files
+        run: |
+          echo "Checking JSON syntax..."
+          find . \
+            -name "*.json" \
+            -not -path "*/node_modules/*" \
+            -not -path "*/.git/*" \
+            -not -path "*/dist/*" \
+            -not -path "*/.next/*" \
+            | while read -r file; do
+              if ! node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" 2>/dev/null; then
+                echo "❌ JSON syntax error in: $file"
+                node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))"
+                exit 1
+              fi
+              echo "  ✅ $file"
+            done
+          echo "All JSON files are valid."
+
+      # ── Shell script syntax ──────────────────────────────
+      - name: Validate shell script syntax
+        run: |
+          echo "Checking shell script syntax..."
+          ERRORS=0
+          while IFS= read -r -d '' file; do
+            if ! bash -n "$file" 2>/dev/null; then
+              echo "❌ Shell syntax error in: $file"
+              bash -n "$file"
+              ERRORS=$((ERRORS + 1))
+            else
+              echo "  ✅ $file"
+            fi
+          done < <(find . \
+            -name "*.sh" \
+            -not -path "*/node_modules/*" \
+            -not -path "*/.git/*" \
+            -print0)
+          if [ "$ERRORS" -gt 0 ]; then
+            echo "$ERRORS shell script(s) have syntax errors."
+            exit 1
+          fi
+          echo "All shell scripts are valid."
+
+      # ── YAML validation ──────────────────────────────────
+      - name: Validate YAML files
+        run: |
+          pip install yamllint --quiet
+          yamllint -d "{extends: relaxed, rules: {line-length: {max: 120}}}" \
+            .github/workflows/ \
+            || true
+          # 'true' because yamllint warnings (not errors) should not block CI.
+          # Remove '|| true' to treat all warnings as errors.

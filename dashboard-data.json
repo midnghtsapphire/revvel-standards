@@ -1,0 +1,1579 @@
+{
+  "projects": [
+    {
+      "name": "Vine review optimization",
+      "status": "Existing",
+      "revenue": "$5K/month",
+      "notes": "Expand",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Product rental",
+      "status": "New",
+      "revenue": "$2K/month",
+      "notes": "Launch",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Overflow sales",
+      "status": "Existing",
+      "revenue": "$3K/month",
+      "notes": "Scale",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Consulting",
+      "status": "New",
+      "revenue": "$5K/month",
+      "notes": "Offer",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Expense tracker",
+      "status": "Google Sheets",
+      "revenue": "2hr/week",
+      "notes": "Build",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Invoice automation",
+      "status": "CLI/API",
+      "revenue": "5hr/week",
+      "notes": "Build",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Compliance automations",
+      "status": "GitHub Actions",
+      "revenue": "3hr/week",
+      "notes": "Build",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Tax Navigator Agent",
+      "status": "MCP/Tool",
+      "revenue": "$500/mo",
+      "notes": "Build",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Compliance tracker",
+      "status": "App",
+      "revenue": "$200/mo",
+      "notes": "Build",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Business dashboard",
+      "status": "API",
+      "revenue": "$300/mo",
+      "notes": "Build",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Freedom Angel Corp",
+      "status": "Non-profit",
+      "revenue": "Legal structure",
+      "notes": "",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Anti-trafficking API",
+      "status": "MCP/Tool",
+      "revenue": "Research",
+      "notes": "",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Resource database",
+      "status": "App",
+      "revenue": "Research",
+      "notes": "",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Reese Reviews",
+      "status": "$K/mo",
+      "revenue": "Expand",
+      "notes": "",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Rental Co",
+      "status": "Setup",
+      "revenue": "Q2 launch",
+      "notes": "",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Overflow LLC",
+      "status": "Setup",
+      "revenue": "Q2 launch",
+      "notes": "",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": "Tax Navigator",
+      "status": "Planning",
+      "revenue": "Q3",
+      "notes": "",
+      "source": "PROJECTS_TO_SHIP.md"
+    },
+    {
+      "name": ":---",
+      "status": ":---",
+      "description": ":---",
+      "link": "",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "Soul2Bowl",
+      "status": "In Development",
+      "description": "Premium online ordering and catering platform for St. Louis fusion cuisine — BBQ, Asian-Hawaiian, Southern soul food. Features glassmorphic design, animated UI, booking calendar, Stripe payments (one-time + subscriptions), Clerk auth (Google/Apple/Email), admin CMS panel, and eco-friendly LIFEMADE compostable bowl showcase.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/Soul2Bowl",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "Pawsitting",
+      "status": "Deployed",
+      "description": "Pet sitting management app with a purple glassmorphism UI, 10-table database, Stripe billing, and AI chat features.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/Pawsitting",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "the-alt-text",
+      "status": "Deployed",
+      "description": "AI-powered SaaS for generating SEO-optimized alt text for images. Includes a 3-tier Stripe subscription model and a REST API.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/the-alt-text",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "steel-white",
+      "status": "Deployed",
+      "description": "(Reese Reviews) An application for Amazon Vine reviewers to track products, ETV (Estimated Tax Value), and inventory. Includes an affiliate engine.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/steel-white",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "revvel-forensic-studio",
+      "status": "Deployed",
+      "description": "An AI-powered image analysis and enhancement tool with a \"Glass Observatory\" theme, 12 distinct workspaces, and a FastAPI backend.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/revvel-forensic-studio",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "mindmappr",
+      "status": "Deployed",
+      "description": "The backend service for the MindMappr AI agent, which is integrated with Telegram and Slack.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/mindmappr",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "meetaudreyevans-dashboard",
+      "status": "Deployed",
+      "description": "The full React-based dashboard for the `meetaudreyevans.com` hub, running in a Docker container.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/meetaudreyevans-dashboard",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "revvel-standards",
+      "status": "Live",
+      "description": "The single source of truth for all documentation, including templates, deployment guides, and infrastructure maps.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/revvel-standards",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "revvel-app-template",
+      "status": "In Development",
+      "description": "A working boilerplate repository for all new applications, pre-configured with the required stack and features.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/revvel-app-template",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "rvvel",
+      "status": "Live",
+      "description": "The source code for the main portfolio and hub website, `meetaudreyevans.com`, deployed via GitHub Pages.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/rvvel",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "Claude-Skills-Governance-Risk-and-Compliance",
+      "status": "Active (Fork)",
+      "description": "Expert-level GRC compliance guidance for ISO 27001, SOC 2, FedRAMP, GDPR, HIPAA, NIST CSF 2.0, PCI DSS v4.0.1, TSA Cybersecurity, and ISO 42001 AI Management System — delivered as a Claude Code plugin marketplace. Fork of `Sushegaad/Claude-Skills-Governance-Risk-and-Compliance` v0.3.0. Benchmarked at 94% accuracy across 18 test cases.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/Claude-Skills-Governance-Risk-and-Compliance",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "ai-conversation-extractions",
+      "status": "Archived",
+      "description": "A massive archive of over 1,000 AI conversation logs from ChatGPT and Grok, containing prompts, code snippets, and project ideas.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/ai-conversation-extractions",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "SSRN_Whitepapers",
+      "status": "Archived",
+      "description": "A collection of academic and technical whitepapers, primarily for submission to SSRN (Social Science Research Network).",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/SSRN_Whitepapers",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "business-ideas-vault",
+      "status": "Archived",
+      "description": "A master collection of business concepts, plans, and validation research.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/business-ideas-vault",
+      "source": "PROJECT_CATALOG.md"
+    },
+    {
+      "name": "cyber-security-turn-business",
+      "status": "Archived",
+      "description": "Business plans, research, and documentation related to cybersecurity ventures.",
+      "link": "https://github.com/MIDNGHTSAPPHIRE/cyber-security-turn-business",
+      "source": "PROJECT_CATALOG.md"
+    }
+  ],
+  "inventory": {
+    "masterInventory": {
+      "services": [
+        {
+          "name": "Anthropic Claude API",
+          "description": "Primary reasoning LLM for all autonomous agents; handles coding, planning, research tasks",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Audrey Agent, Goap Agent, Agent Factory, all agents"
+        },
+        {
+          "name": "OpenAI API",
+          "description": "AI and LLM features for Neurooz; GPT-4o for reasoning, GPT-4o mini for cost-efficient tasks",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Neurooz"
+        },
+        {
+          "name": "Google Gemini API",
+          "description": "Multi-modal reasoning; free tier covers high-volume lower-priority tasks",
+          "status": "🟡 Research Topic",
+          "usedBy": "Agent Factory (evaluate)"
+        },
+        {
+          "name": "Groq API",
+          "description": "Ultra-fast LLM inference (Llama, Mixtral); low-latency tasks",
+          "status": "🟡 Research Topic",
+          "usedBy": "Neurooz real-time features (evaluate)"
+        },
+        {
+          "name": "OpenRouter",
+          "description": "Routes requests to cheapest available LLM per task; manages fallbacks",
+          "status": "🔵 Configured",
+          "usedBy": "All AI projects"
+        },
+        {
+          "name": "Venice.ai",
+          "description": "Privacy-focused LLM; uncensored model access",
+          "status": "🟡 Research Topic",
+          "usedBy": "Research / evaluation"
+        },
+        {
+          "name": "Brave Search API",
+          "description": "Web search for research agents; privacy-respecting",
+          "status": "🟡 Research Topic",
+          "usedBy": "Research agents (evaluate)"
+        },
+        {
+          "name": "Serper API",
+          "description": "Returns Google search results via API for AI agent research tasks",
+          "status": "🟡 Research Topic",
+          "usedBy": "Research agents (evaluate)"
+        },
+        {
+          "name": "Tavily API",
+          "description": "Search purpose-built for AI agents; returns AI-optimized result format",
+          "status": "🟡 Research Topic",
+          "usedBy": "Research agents, LangChain (evaluate)"
+        },
+        {
+          "name": "Perplexity API",
+          "description": "LLM with real-time web search built in; research agent use",
+          "status": "🟡 Research Topic",
+          "usedBy": "Research agents (evaluate)"
+        },
+        {
+          "name": "Google Maps Platform",
+          "description": "GPS, mapping, routing for SAR app; $200/mo free credit",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Universal SAR App"
+        },
+        {
+          "name": "Mapbox",
+          "description": "Custom map styles; alternative to Google Maps",
+          "status": "🟡 Research Topic",
+          "usedBy": "Universal SAR App (evaluate)"
+        },
+        {
+          "name": "OpenStreetMap / Nominatim",
+          "description": "Free and open-source geocoding; no API key required",
+          "status": "🔵 Configured",
+          "usedBy": "Universal SAR App"
+        },
+        {
+          "name": "Stripe",
+          "description": "Processes payments, subscriptions, and invoices; handles card transactions",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Premolt, Revvel Music Studio"
+        },
+        {
+          "name": "Paddle",
+          "description": "Merchant-of-record; handles international VAT and taxes automatically",
+          "status": "🟡 Research Topic",
+          "usedBy": "International SaaS (evaluate)"
+        },
+        {
+          "name": "LemonSqueezy",
+          "description": "Simple digital product sales and subscriptions",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for low-volume products"
+        },
+        {
+          "name": "Resend",
+          "description": "Transactional email delivery (account confirmations, alerts, receipts)",
+          "status": "✅ Active",
+          "usedBy": "All projects"
+        },
+        {
+          "name": "Loops",
+          "description": "Email marketing and drip campaigns for SaaS products",
+          "status": "🟡 Research Topic",
+          "usedBy": "The Alt Text, Neurooz (evaluate)"
+        },
+        {
+          "name": "Buttondown",
+          "description": "Newsletter platform for content distribution",
+          "status": "🟡 Research Topic",
+          "usedBy": "Any newsletter project (evaluate)"
+        },
+        {
+          "name": "Firebase Cloud Messaging (FCM)",
+          "description": "Push notifications for mobile apps",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Universal SAR App, GrowlingEyes"
+        },
+        {
+          "name": "TelAPI",
+          "description": "Twilio-compatible SMS / voice / telephony REST API; Python client ([telapi-python](https://github.com/TelAPI/telapi-python)) for sending SMS, placing calls, and handling IVR flows",
+          "status": "🟡 Research Topic",
+          "usedBy": "Integrate for later — candidate for SAR alerts, 2FA, and outbound notifications (evaluate vs Twilio)"
+        },
+        {
+          "name": "Clerk",
+          "description": "User authentication and identity management (sign-in, sign-up, session handling)",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for new projects"
+        },
+        {
+          "name": "Google OAuth",
+          "description": "Sign in with Google; identity verification",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Soul2Bowl"
+        },
+        {
+          "name": "Better Auth",
+          "description": "Open-source authentication framework (self-hosted)",
+          "status": "🟡 Research Topic",
+          "usedBy": "All new projects (evaluate)"
+        },
+        {
+          "name": "DigitalOcean Spaces",
+          "description": "Object storage for images, media, and user uploads; CDN included",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Soul2Bowl, Revvel Music Studio"
+        },
+        {
+          "name": "Cloudflare R2",
+          "description": "S3-compatible object storage; zero egress fees",
+          "status": "🟡 Research Topic",
+          "usedBy": "Revvel Music Studio, audio storage (evaluate)"
+        },
+        {
+          "name": "AWS S3",
+          "description": "Industry-standard object storage",
+          "status": "🟡 Research Topic",
+          "usedBy": "Media storage (evaluate)"
+        },
+        {
+          "name": "DigitalOcean Droplet (shared)",
+          "description": "Linux VPS hosting all deployed Revvel apps via PM2",
+          "status": "✅ Active",
+          "usedBy": "All deployed projects"
+        },
+        {
+          "name": "DigitalOcean Managed MySQL",
+          "description": "Shared production database for all Revvel apps",
+          "status": "✅ Active",
+          "usedBy": "All projects with databases"
+        },
+        {
+          "name": "GitHub Actions",
+          "description": "CI/CD pipelines: automated testing, builds, and deployments",
+          "status": "✅ Active",
+          "usedBy": "All projects"
+        },
+        {
+          "name": "Vercel",
+          "description": "Frontend deployment (alternative to DigitalOcean for Next.js)",
+          "status": "🟡 Research Topic",
+          "usedBy": "Next.js projects (evaluate)"
+        },
+        {
+          "name": "Railway",
+          "description": "One-click app deployment with managed databases",
+          "status": "🟡 Research Topic",
+          "usedBy": "Rapid prototypes (evaluate)"
+        },
+        {
+          "name": "InfinityFree",
+          "description": "Free web hosting with PHP and MySQL support for testing dynamic sites ([dash.infinityfree.com](https://dash.infinityfree.com)); unlimited bandwidth/storage with fair use policy; includes SSL, custom domains, and auto-installer for WordPress/Joomla",
+          "status": "🟡 Research Topic",
+          "usedBy": "Dynamic site testing, PHP/MySQL prototypes (evaluate)"
+        },
+        {
+          "name": "GlitchTip",
+          "description": "Self-hosted error tracking; captures application exceptions",
+          "status": "🟡 Research Topic",
+          "usedBy": "All deployed apps (evaluate)"
+        },
+        {
+          "name": "Sentry",
+          "description": "Error tracking and performance monitoring; captures exceptions and traces",
+          "status": "🟡 Research Topic",
+          "usedBy": "All deployed apps (evaluate)"
+        },
+        {
+          "name": "UptimeRobot",
+          "description": "Pings deployed URLs every 5 minutes; sends alerts on downtime",
+          "status": "🟡 Research Topic",
+          "usedBy": "All deployed URLs (evaluate)"
+        },
+        {
+          "name": "Plausible Analytics",
+          "description": "Privacy-first web analytics; GDPR-compliant; no cookies",
+          "status": "🟡 Research Topic",
+          "usedBy": "Soul2Bowl, The Alt Text (evaluate)"
+        },
+        {
+          "name": "PostHog",
+          "description": "Product analytics, session replays, feature flags",
+          "status": "🟡 Research Topic",
+          "usedBy": "All web apps (evaluate)"
+        },
+        {
+          "name": "HashiCorp Vault",
+          "description": "Stores all API credentials and secrets; apps retrieve secrets at runtime",
+          "status": "✅ Active",
+          "usedBy": "All projects"
+        },
+        {
+          "name": "GitGuardian",
+          "description": "Scans every commit for accidentally committed secrets (API keys, passwords)",
+          "status": "🟡 Research Topic",
+          "usedBy": "All repos (evaluate)"
+        },
+        {
+          "name": "Gitleaks",
+          "description": "Pre-commit hook that blocks commits containing secrets",
+          "status": "🟡 Research Topic",
+          "usedBy": "All repos (evaluate)"
+        },
+        {
+          "name": "Snyk",
+          "description": "Scans dependencies for known security vulnerabilities; auto-creates fix PRs",
+          "status": "🟡 Research Topic",
+          "usedBy": "All projects with npm/pip deps (evaluate)"
+        },
+        {
+          "name": "Infisical",
+          "description": "Open-source secrets manager; replaces manual `.env` file management — [evaluated here](STARRED_REPOS_EVAL_2026-04-20.md#1-infisical--application-secrets-and-configuration-management)",
+          "status": "🟡 Research Topic",
+          "usedBy": "All projects (evaluate; pilot recommended)"
+        },
+        {
+          "name": "RecurseML",
+          "description": "Autonomous PR code review; enforces Revvel coding standards and catches AI-generated bugs",
+          "status": "🧪 Trial Active",
+          "usedBy": "All repos"
+        },
+        {
+          "name": "GitHub Copilot",
+          "description": "AI code completion and chat inside IDE; context-aware suggestions",
+          "status": "⚠️ Expiring Soon",
+          "usedBy": "All developers"
+        },
+        {
+          "name": "Codacy",
+          "description": "Static analysis, test coverage tracking, code duplication detection — [evaluated here](CODE_QUALITY_APPS_EVAL_2026-04-23.md#51-duplicate-recurseml--openrouter-ai-reviewer) (defer)",
+          "status": "🟡 Research Topic",
+          "usedBy": "All repos (evaluate)"
+        },
+        {
+          "name": "SonarQube Cloud",
+          "description": "SAST security scanning and code smell detection — [evaluated here](CODE_QUALITY_APPS_EVAL_2026-04-23.md#41-sonarqube-cloud--sast--smells-public-repos)",
+          "status": "🟡 Research Topic",
+          "usedBy": "Security-sensitive projects (evaluate)"
+        },
+        {
+          "name": "vscode-copilot-chat-bedrock",
+          "description": "VS Code extension that exposes AWS Bedrock models (Claude, Llama, Titan, Mistral) inside Copilot Chat — [evaluated here](STARRED_REPOS_EVAL_2026-04-20.md#2-vscode-copilot-chat-bedrock--aws-bedrock-models-in-copilot-chat)",
+          "status": "🟡 Research Topic",
+          "usedBy": "None (OpenRouter already covers these models; defer)"
+        },
+        {
+          "name": "API CraftPro",
+          "description": "Auto-generates a full Go + Gin backend REST API (CRUD, JWT/PASETO auth, unit tests, GitHub Actions CI/CD, Dockerfile, Postman collection) from an uploaded SQL schema and pushes it to GitHub — [evaluated here](API_CRAFTPRO_EVAL_2026-04-20.md)",
+          "status": "🟡 Research Topic",
+          "usedBy": "None (prototype-only candidate; Revvel default stack is Node/TypeScript, not Go — defer)"
+        },
+        {
+          "name": "LieberLieber `setup-LemonTree.Automation@v6`",
+          "description": "GitHub Action that installs **LemonTree.Automation** — a paid, Windows-only CLI for diff/merge/consistency-check of Sparx Systems Enterprise Architect UML/SysML model files (`.eapx` / `.qea` / `.qeax`) — [evaluated here](LEMONTREE_AUTOMATION_EVAL_2026-04-28.md)",
+          "status": "🗑️ Removed",
+          "usedBy": "None — Revvel ships zero Enterprise Architect models; action is inert without `.eapx`/`.qea`/`.qeax` files (rejected — wrong stack)"
+        },
+        {
+          "name": "Gradle GitHub Actions / extensions (20-item sweep)",
+          "description": "Sweep of 19 Gradle-related GitHub Actions plus Buildless (build-cache SaaS) — [evaluated here](GRADLE_ACTIONS_EVAL_2026-04-28.md). Recommendation: adopt the **official** [`gradle/actions/setup-gradle@v4`](https://github.com/gradle/actions) (Cordova-Android cache + wrapper validation), defer [`gradle-update/update-gradle-wrapper-action`](https://github.com/gradle-update/update-gradle-wrapper-action) until a standalone JVM project ships, skip the other 18 (vendor reskins of the official action, niche helpers, one mis-listed Docker-Bake action, and the paid Buildless app).",
+          "status": "🟡 Research Topic",
+          "usedBy": "None today; will activate on Cordova-Android build job in [`../templates/cicd/deploy-cordova.yml`](../templates/cicd/deploy-cordova.yml) per [eval §3.2](GRADLE_ACTIONS_EVAL_2026-04-28.md)"
+        },
+        {
+          "name": "Apple Developer Program",
+          "description": "Required for iOS App Store publishing and TestFlight beta distribution",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "GrowlingEyes, Neurooz, Universal SAR App"
+        },
+        {
+          "name": "Google Play Developer",
+          "description": "Required for Android Play Store publishing",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "All mobile apps"
+        },
+        {
+          "name": "Expo EAS Build",
+          "description": "Cloud-based iOS and Android build service; no local Xcode required",
+          "status": "🟡 Research Topic",
+          "usedBy": "All Expo/React Native projects (evaluate)"
+        },
+        {
+          "name": "thealttext.com",
+          "description": "Domain for The Alt Text SaaS product",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "The Alt Text"
+        },
+        {
+          "name": "premolt.com (or similar)",
+          "description": "Domain for Premolt product",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Premolt"
+        },
+        {
+          "name": "revvelforensics.com (or similar)",
+          "description": "Domain for Revvel Forensic Studio",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Revvel Forensic Studio"
+        },
+        {
+          "name": "revvelmusic.com (or similar)",
+          "description": "Domain for Revvel Music Studio",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Revvel Music Studio"
+        },
+        {
+          "name": "pennyscout.io (or similar)",
+          "description": "Domain for Penny Sovereign Yield Scout",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Penny Sovereign Yield Scout"
+        },
+        {
+          "name": "universalsar.com (or similar)",
+          "description": "Domain for Universal SAR App",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Universal SAR App"
+        },
+        {
+          "name": "Cloudflare DNS",
+          "description": "DNS management, CDN, and DDoS protection for all deployed domains",
+          "status": "✅ Active",
+          "usedBy": "All domains"
+        },
+        {
+          "name": "Odoo Community Edition",
+          "description": "Multi-company ERP + CRM + accounting in one database; contacts, leads, sales, purchase, stock, projects, invoicing, journals, tax reports",
+          "status": "🟡 Research Topic",
+          "usedBy": "All entities: Vine House, Vine House Capital, Revvel Tech, reese-reviews"
+        },
+        {
+          "name": "OCA `account_financial_report`",
+          "description": "Free replacement for Enterprise-only advanced financial reports (P&L variants, partner ledger, aged balance)",
+          "status": "🟡 Research Topic",
+          "usedBy": "Odoo instance (all companies)"
+        },
+        {
+          "name": "OCA `mis_builder`",
+          "description": "KPI dashboards and consolidated multi-company reports inside Odoo",
+          "status": "🟡 Research Topic",
+          "usedBy": "Phase 3 rollout per Odoo standard"
+        },
+        {
+          "name": "`revvel_odoo_bridge` (custom addon)",
+          "description": "Thin Revvel-owned Odoo addon adding `x_external_system` / `x_external_id` fields and inbound webhook ingestion from Shopify, Stripe, Revvel apps, and reese-reviews",
+          "status": "🟡 Research Topic",
+          "usedBy": "Source of truth for all Odoo ↔ Revvel integration"
+        },
+        {
+          "name": "Shopify",
+          "description": "Online storefront for Vine House product sales; inventory management and order fulfillment",
+          "status": "🟡 Research Topic",
+          "usedBy": "Primary storefront option — evaluate plan tier"
+        },
+        {
+          "name": "WooCommerce",
+          "description": "Self-hosted e-commerce plugin for WordPress; no monthly fee",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate vs Shopify for cost control"
+        },
+        {
+          "name": "Etsy",
+          "description": "Marketplace listing for handmade or specialty Vine House products",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for handmade / specialty products"
+        },
+        {
+          "name": "Amazon Seller Central",
+          "description": "Marketplace selling on Amazon; fulfillment by Amazon (FBA) option",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for volume product sales"
+        },
+        {
+          "name": "Square",
+          "description": "In-person and online payments; POS for physical product sales",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for in-person sales events"
+        },
+        {
+          "name": "Airtable",
+          "description": "Flexible database / spreadsheet for tracking product inventory, SKUs, and stock levels",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate as inventory database"
+        },
+        {
+          "name": "Notion",
+          "description": "Product catalog, inventory notes, and operational documentation",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for product documentation"
+        },
+        {
+          "name": "inFlow Inventory",
+          "description": "Purpose-built small business inventory management with purchase orders",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for full inventory management"
+        },
+        {
+          "name": "Zoho Inventory",
+          "description": "Inventory + order management with multi-channel selling support",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for multi-channel inventory"
+        },
+        {
+          "name": "Shippo",
+          "description": "Multi-carrier shipping labels at discounted rates; order tracking",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for product shipping"
+        },
+        {
+          "name": "ShipStation",
+          "description": "Order management + multi-carrier shipping for high-volume sellers",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate at higher order volumes"
+        },
+        {
+          "name": "EasyPost",
+          "description": "Shipping API for building custom fulfillment integrations",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for custom shipping integration"
+        },
+        {
+          "name": "USPS / UPS / FedEx accounts",
+          "description": "Carrier accounts for negotiated shipping rates",
+          "status": "🟡 Research Topic",
+          "usedBy": "Establish carrier accounts when volume warrants"
+        },
+        {
+          "name": "Stessa",
+          "description": "Free rental property income and expense tracking; connects to bank accounts",
+          "status": "🟡 Research Topic",
+          "usedBy": "Best free option for landlords — evaluate first"
+        },
+        {
+          "name": "Rentec Direct",
+          "description": "Tenant screening, rent collection, lease management, maintenance requests",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for full property management"
+        },
+        {
+          "name": "TurboTenant",
+          "description": "Free landlord software: tenant screening, lease templates, rent collection",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate as free landlord tool"
+        },
+        {
+          "name": "Avail",
+          "description": "Tenant screening, lease agreements, rent collection, maintenance tracking",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate vs TurboTenant"
+        },
+        {
+          "name": "Cozy (now part of Apartments.com)",
+          "description": "Free rent collection, tenant screening, lease storage",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for free rent collection"
+        },
+        {
+          "name": "Wave Accounting",
+          "description": "Free invoicing, bookkeeping, and income/expense tracking for small businesses",
+          "status": "🟡 Research Topic",
+          "usedBy": "Superseded by Odoo CE for consolidated books — see [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md)"
+        },
+        {
+          "name": "Odoo Community Edition (self-hosted)",
+          "description": "Multi-company ERP + CRM + free accounting; authoritative back-office for Vine House Capital ledger",
+          "status": "🟡 Research Topic",
+          "usedBy": "Planned default — see [`ODOO_INTEGRATION_STANDARD.md`](Master_Inventory/ODOO_INTEGRATION_STANDARD.md)"
+        },
+        {
+          "name": "QuickBooks Online",
+          "description": "Full accounting, bank sync, tax reports; rental-specific features available",
+          "status": "🟡 Research Topic",
+          "usedBy": "Deferred in favor of Odoo CE"
+        },
+        {
+          "name": "FreshBooks",
+          "description": "Invoicing and expense tracking focused on service businesses",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate vs Wave"
+        },
+        {
+          "name": "Stripe (rent collection)",
+          "description": "Collect rent payments via credit/debit card with ACH option",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for digital rent collection"
+        },
+        {
+          "name": "Zelle / ACH direct",
+          "description": "Direct bank transfer for rent; no transaction fees",
+          "status": "🟡 Research Topic",
+          "usedBy": "Lowest cost option — evaluate first"
+        },
+        {
+          "name": "PayRent",
+          "description": "Rent-specific payment platform; ACH and credit card collection",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate as rent-only payment tool"
+        },
+        {
+          "name": "Shopify (Coffee Store)",
+          "description": "Dedicated storefront for coffee product sales; product pages, cart, checkout",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate as primary platform"
+        },
+        {
+          "name": "WooCommerce (Coffee Store)",
+          "description": "Self-hosted alternative; one-time setup cost, no monthly platform fee",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for cost control vs Shopify"
+        },
+        {
+          "name": "Coffee supplier / wholesale API",
+          "description": "Connects storefront to supplier catalog for dropshipping or fulfillment",
+          "status": "🟡 Research Topic",
+          "usedBy": "Identify supplier and integration method"
+        },
+        {
+          "name": "Square for Coffee",
+          "description": "POS for in-person coffee sales events; integrates with online store",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for in-person events"
+        },
+        {
+          "name": "Multi-store Shopify plan",
+          "description": "Manages multiple specialty product storefronts under one account",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate Shopify multi-store vs separate accounts"
+        },
+        {
+          "name": "Amazon Handmade / Specialty",
+          "description": "Marketplace for specialty products reaching Amazon's customer base",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for reach on specialty items"
+        },
+        {
+          "name": "eBay Seller Account",
+          "description": "Sell specialty items to eBay marketplace buyers",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for specialty/collectible items"
+        },
+        {
+          "name": "BigCommerce",
+          "description": "Scalable e-commerce platform; better for high-SKU stores than Shopify",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate at higher product volume"
+        },
+        {
+          "name": "Faire",
+          "description": "Wholesale marketplace connecting specialty brands with independent retailers",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for wholesale channel"
+        },
+        {
+          "name": "Stripe (e-commerce)",
+          "description": "Processes all e-commerce card payments and manages subscriptions",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate as primary payment processor"
+        },
+        {
+          "name": "Mailchimp",
+          "description": "Email marketing campaigns for store promotions and customer retention",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for store email marketing"
+        },
+        {
+          "name": "Klaviyo",
+          "description": "E-commerce email automation; abandoned cart recovery, order follow-ups",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate vs Mailchimp for e-commerce"
+        },
+        {
+          "name": "Yotpo / Okendo",
+          "description": "Product reviews and user-generated content for storefronts",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for store social proof"
+        },
+        {
+          "name": "OpenAI GPT-4o Vision",
+          "description": "Analyzes facial images; provides personalized skincare or beauty recommendations",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Core AI feature — provision before launch"
+        },
+        {
+          "name": "Replicate",
+          "description": "Runs open-source image ML models; skin tone analysis, feature detection",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for image analysis models"
+        },
+        {
+          "name": "AWS Rekognition",
+          "description": "Facial analysis API: age estimation, expression, landmark detection",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for facial feature detection"
+        },
+        {
+          "name": "Mediapipe (Google)",
+          "description": "Open-source face landmark detection; runs on device; no API cost",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for privacy-preserving on-device features"
+        },
+        {
+          "name": "Expo / React Native",
+          "description": "Cross-platform mobile app framework (iOS + Android from one codebase)",
+          "status": "🟡 Research Topic",
+          "usedBy": "Recommended stack for face app"
+        },
+        {
+          "name": "Expo EAS Build",
+          "description": "Cloud builds for iOS and Android without local Xcode",
+          "status": "🟡 Research Topic",
+          "usedBy": "Required for App Store submissions"
+        },
+        {
+          "name": "Firebase (Auth + Firestore)",
+          "description": "User authentication, real-time database, push notifications",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for backend + auth + notifications"
+        },
+        {
+          "name": "Apple Developer Program",
+          "description": "Required for iOS App Store submission and TestFlight",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Face app iOS distribution"
+        },
+        {
+          "name": "Google Play Developer",
+          "description": "Required for Android Play Store submission",
+          "status": "❌ Expired / Lapsed",
+          "usedBy": "Face app Android distribution"
+        },
+        {
+          "name": "Sanity CMS",
+          "description": "Headless CMS for managing skincare articles, tips, and beauty guides",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for content management"
+        },
+        {
+          "name": "Contentful",
+          "description": "Headless CMS alternative; structured content for app articles",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate vs Sanity"
+        },
+        {
+          "name": "Circle.so",
+          "description": "Community platform (private community for app users)",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate for user community feature"
+        },
+        {
+          "name": "GitHub (Free)",
+          "description": "Version control, issues, pull requests, Actions for public repos",
+          "status": "✅ Active",
+          "usedBy": "All projects"
+        },
+        {
+          "name": "GitHub Pro / Team",
+          "description": "Adds private repos, more Actions minutes, code review features",
+          "status": "🟡 Research Topic",
+          "usedBy": "Evaluate upgrade tier"
+        },
+        {
+          "name": "GitHub Copilot Individual",
+          "description": "AI code completion and chat in IDE",
+          "status": "⚠️ Expiring Soon",
+          "usedBy": "All developers"
+        },
+        {
+          "name": "Dependabot",
+          "description": "Automated dependency update PRs when vulnerabilities are found",
+          "status": "✅ Active",
+          "usedBy": "All repos"
+        },
+        {
+          "name": "GitHub Advanced Security",
+          "description": "Code scanning (CodeQL), secret scanning, dependency review",
+          "status": "🟡 Research Topic",
+          "usedBy": "Security-sensitive private repos"
+        },
+        {
+          "name": "Namecheap",
+          "description": "Domain registrar for all MIDNGHTSAPPHIRE domains",
+          "status": "✅ Active",
+          "usedBy": "All domains"
+        }
+      ]
+    }
+  },
+  "bom": {
+    "masterBOM": {
+      "items": [
+        {
+          "name": "Soul2bowl",
+          "details": "DigitalOcean Spaces | Image / media CDN | DigitalOcean | $5/mo | P0 | ❌ Not yet"
+        },
+        {
+          "name": "Soul2bowl",
+          "details": "Google Cloud Console project | Google OAuth | Google | $0 | P0 | ❌ Not set up"
+        },
+        {
+          "name": "Neurooz",
+          "details": "OpenAI API (production tier) | AI/LLM features | OpenAI | Variable (~$20–100/mo) | P0 | ❌ Not set up"
+        },
+        {
+          "name": "Penny Sovereign Yield Scout",
+          "details": "Twitter/X API (Basic tier) | Signal listener — real-time tweets | X/Twitter | $100/mo | P0 | ❌ Not set up"
+        },
+        {
+          "name": "Penny Sovereign Yield Scout",
+          "details": "CoinGecko Pro API | DeFi protocol data (APY, TVL, price) | CoinGecko | $129/mo | P0 | ❌ Not set up"
+        },
+        {
+          "name": "Penny Sovereign Yield Scout",
+          "details": "Telegram Bot API | Signal listening + alert notifications | Telegram | $0 (free) | P0 | ❌ Not configured"
+        },
+        {
+          "name": "Premolt",
+          "details": "Stripe payments | Subscription billing | Stripe | Transaction % | P0 | ❌ Not set up"
+        },
+        {
+          "name": "Revvel Forensic Studio",
+          "details": "OpenAI API (GPT-4o Vision) | AI image analysis, face feature description | OpenAI | ~$20–100/mo | P0 | ❌ Not set up"
+        },
+        {
+          "name": "Revvel Music Studio",
+          "details": "Audio CDN / storage | Hosting audio files (samples, uploads) | Cloudflare R2 or AWS S3 | ~$5–20/mo | P0 | ❌ Not set up"
+        },
+        {
+          "name": "Revvel Music Studio",
+          "details": "Stripe payments | Music marketplace transactions | Stripe | Transaction % | P0 | ❌ Not set up"
+        },
+        {
+          "name": "Revvel Standards",
+          "details": "RecurseML | Autonomous PR code review — enforce standards on all contributions | RecurseML | $250/yr | P0 | ❌ 14-day trial active — decision by 2026-04-28"
+        },
+        {
+          "name": "Revvel Standards",
+          "details": "GitHub Copilot (Individual or Business) | AI coding agent for all repos | GitHub | $10–19/mo per seat | P0 | ❌ Verify active subscription"
+        },
+        {
+          "name": "The Alt Text",
+          "details": "OpenAI API (GPT-4o Vision) | Core AI: generate alt text from images | OpenAI | ~$10–50/mo | P0 | ❌ Check usage — may need upgrade"
+        },
+        {
+          "name": "The Alt Text",
+          "details": "Domain renewal | Keep `thealttext.com` active | Namecheap | ~$15/yr | P0 | ❌ Verify renewal date"
+        },
+        {
+          "name": "Universal Sar App",
+          "details": "Mapping API | GPS/mapping for SAR operations | Google Maps Platform or Mapbox | ~$10–50/mo | P0 | ❌ Not set up"
+        },
+        {
+          "name": "Universal Sar App",
+          "details": "Push notifications | Real-time incident alerts | Firebase (free tier available) | $0–20/mo | P0 | ❌ Not set up"
+        },
+        {
+          "name": "Soul2bowl",
+          "details": "Resend paid tier (if needed) | Transactional email beyond 3k/mo | Resend | $20/mo | P1 | ❌ Not yet"
+        },
+        {
+          "name": "Soul2bowl",
+          "details": "Plausible Analytics | Privacy analytics | Plausible | $9/mo | P1 | ❌ Not yet"
+        },
+        {
+          "name": "Soul2bowl",
+          "details": "Apple Developer Program | Apple Sign-In in production | Apple | $99/yr | P1 | ❌ Not purchased"
+        },
+        {
+          "name": "Growlingeyes",
+          "details": "Apple Developer Program | iOS App Store submission + TestFlight | Apple | $99/year | P1 | ❌ Not purchased"
+        },
+        {
+          "name": "Growlingeyes",
+          "details": "Google Play Developer account | Android Play Store submission | Google | $25 one-time | P1 | ❌ Not purchased"
+        },
+        {
+          "name": "Penny Sovereign Yield Scout",
+          "details": "Reddit API (free tier) | Social signal monitoring | Reddit | $0 | P1 | ❌ Not configured"
+        },
+        {
+          "name": "Penny Sovereign Yield Scout",
+          "details": "Domain registration | `pennyscout.io` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased"
+        },
+        {
+          "name": "Penny Sovereign Yield Scout",
+          "details": "RecurseML | Autonomous PR code review + bug detection | RecurseML | $250/yr | P1 | ❌ 14-day trial active"
+        },
+        {
+          "name": "Penny Sovereign Yield Scout",
+          "details": "DigitalOcean Managed PostgreSQL | Storing yield history, signal log, compounding records | DigitalOcean | ~$15/mo | P1 | ❌ Currently using shared MySQL"
+        },
+        {
+          "name": "Penny Sovereign Yield Scout",
+          "details": "Sentry | Error monitoring for background jobs | Sentry | $0 (free tier) | P1 | ❌ Not configured"
+        },
+        {
+          "name": "Penny Sovereign Yield Scout",
+          "details": "Resend | Alert emails (impermanent loss warnings, compound reports) | Resend | $0 (free tier) | P1 | ❌ Not configured"
+        },
+        {
+          "name": "Premolt",
+          "details": "Domain registration | `premolt.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased"
+        },
+        {
+          "name": "Revvel Forensic Studio",
+          "details": "Domain registration | `revvelforensics.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased"
+        },
+        {
+          "name": "Revvel Forensic Studio",
+          "details": "RecurseML | Autonomous PR code review + bug detection | RecurseML | $250/yr | P1 | ❌ 14-day trial active"
+        },
+        {
+          "name": "Revvel Forensic Studio",
+          "details": "DeepAI / Replicate API | Image enhancement, face reconstruction models | Replicate or DeepAI | ~$10–50/mo | P1 | ❌ Not set up"
+        },
+        {
+          "name": "Revvel Forensic Studio",
+          "details": "Sentry Error Tracking | Production error monitoring | Sentry | $0 (free tier) | P1 | ❌ Not configured"
+        },
+        {
+          "name": "Revvel Music Studio",
+          "details": "Domain registration | `revvelmusic.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased"
+        },
+        {
+          "name": "Revvel Standards",
+          "details": "mabl | AI-powered automated testing (E2E, API, visual) triggered by CI/CD | mabl | Varies by plan | P1 | ❌ CLI + GitHub App setup needed — see setup below"
+        },
+        {
+          "name": "The Alt Text",
+          "details": "RecurseML | Autonomous PR code review + bug detection | RecurseML | $250/yr | P1 | ❌ 14-day trial active"
+        },
+        {
+          "name": "Universal Sar App",
+          "details": "Domain registration | `universalsar.com` or similar | Namecheap | ~$15/yr | P1 | ❌ Not purchased"
+        },
+        {
+          "name": "Universal Sar App",
+          "details": "Apple Developer Program | iOS App Store submission | Apple | $99/year | P1 | ❌ Not purchased"
+        },
+        {
+          "name": "Universal Sar App",
+          "details": "Google Play Developer account | Android Play Store submission | Google | $25 one-time | P1 | ❌ Not purchased"
+        },
+        {
+          "name": "Neurooz",
+          "details": "Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased"
+        },
+        {
+          "name": "Neurooz",
+          "details": "Google Play Developer account | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased"
+        },
+        {
+          "name": "Premolt",
+          "details": "Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased"
+        },
+        {
+          "name": "Premolt",
+          "details": "Google Play Developer account | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased"
+        },
+        {
+          "name": "Revvel Forensic Studio",
+          "details": "Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased"
+        },
+        {
+          "name": "Revvel Forensic Studio",
+          "details": "Google Play Developer | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased"
+        },
+        {
+          "name": "Revvel Music Studio",
+          "details": "Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased"
+        },
+        {
+          "name": "Revvel Music Studio",
+          "details": "Google Play Developer account | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased"
+        },
+        {
+          "name": "The Alt Text",
+          "details": "Apple Developer Program | iOS App Store submission | Apple | $99/year | P2 | ❌ Not purchased"
+        },
+        {
+          "name": "The Alt Text",
+          "details": "Google Play Developer | Android Play Store submission | Google | $25 one-time | P2 | ❌ Not purchased"
+        }
+      ]
+    }
+  },
+  "urls": [
+    {
+      "url": "https://revvel-standards.vercel.app/docs/osint-hub/",
+      "project": "osint-hub",
+      "type": "vercel",
+      "source": "/osint-hub/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/prompt-generation-app/",
+      "project": "prompt-generation-app",
+      "type": "vercel",
+      "source": "/products/prompt-generation-app/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/products/awesome-grok-build/",
+      "project": "awesome-grok-build",
+      "type": "vercel",
+      "source": "/products/awesome-grok-build/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/personal-assistant/",
+      "project": "personal-assistant",
+      "type": "vercel",
+      "source": "/products/personal-assistant/README.md"
+    },
+    {
+      "url": "https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app/products/printbank/public/>",
+      "project": "printbank",
+      "type": "vercel",
+      "source": "/products/printbank/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/creator-payout-tracker/",
+      "project": "creator-payout-tracker",
+      "type": "vercel",
+      "source": "/products/creator-payout-tracker/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/agent-manifest-validator/",
+      "project": "agent-manifest-validator",
+      "type": "vercel",
+      "source": "/products/agent-manifest-validator/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/hvac-calc-service/",
+      "project": "hvac-calc-service",
+      "type": "vercel",
+      "source": "/products/hvac-calc-service/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/life-insurance-lead-engine/",
+      "project": "life-insurance-lead-engine",
+      "type": "vercel",
+      "source": "/products/life-insurance-lead-engine/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/ugc-review-generator/",
+      "project": "ugc-review-generator",
+      "type": "vercel",
+      "source": "/products/ugc-review-generator/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/ai-video-toolkit/",
+      "project": "ai-video-toolkit",
+      "type": "vercel",
+      "source": "/products/ai-video-toolkit/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/cli-engine/",
+      "project": "cli-engine",
+      "type": "vercel",
+      "source": "/products/cli-engine/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/fda-design-controls/",
+      "project": "fda-design-controls",
+      "type": "vercel",
+      "source": "/products/fda-design-controls/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/screen-recorder-finder/",
+      "project": "screen-recorder-finder",
+      "type": "vercel",
+      "source": "/products/screen-recorder-finder/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/revvel-skill-runner/",
+      "project": "revvel-skill-runner",
+      "type": "vercel",
+      "source": "/products/revvel-skill-runner/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/self-optimizing-star-magnet/",
+      "project": "self-optimizing-star-magnet",
+      "type": "vercel",
+      "source": "/products/self-optimizing-star-magnet/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/affiliate-hub/",
+      "project": "affiliate-hub",
+      "type": "vercel",
+      "source": "/products/affiliate-hub/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/life-insurance-lead-saas/",
+      "project": "life-insurance-lead-saas",
+      "type": "vercel",
+      "source": "/products/life-insurance-lead-saas/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/graphify-evaluator/",
+      "project": "graphify-evaluator",
+      "type": "vercel",
+      "source": "/products/graphify-evaluator/README.md"
+    },
+    {
+      "url": "http://localhost:3007>",
+      "project": "graphify-evaluator",
+      "type": "test",
+      "source": "/products/graphify-evaluator/README.md"
+    },
+    {
+      "url": "http://localhost:3007/#analysis>",
+      "project": "graphify-evaluator",
+      "type": "test",
+      "source": "/products/graphify-evaluator/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/music-video-creator/",
+      "project": "music-video-creator",
+      "type": "vercel",
+      "source": "/products/music-video-creator/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/easy-env-vars/",
+      "project": "easy-env-vars",
+      "type": "vercel",
+      "source": "/products/easy-env-vars/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/gosqlx-sql-linter/",
+      "project": "gosqlx-sql-linter",
+      "type": "vercel",
+      "source": "/products/gosqlx-sql-linter/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/openmythos/",
+      "project": "openmythos",
+      "type": "vercel",
+      "source": "/products/openmythos/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/coldtrace/",
+      "project": "coldtrace",
+      "type": "vercel",
+      "source": "/coldtrace/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/reesereviews/",
+      "project": "reesereviews",
+      "type": "vercel",
+      "source": "/reesereviews/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/oaudrey/",
+      "project": "oaudrey",
+      "type": "vercel",
+      "source": "/oaudrey/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/fieldwork/",
+      "project": "fieldwork",
+      "type": "vercel",
+      "source": "/fieldwork/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/grok/uten/Colorado/dashboard.html",
+      "project": "revvel-standards",
+      "type": "vercel",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://vitest.dev>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://jestjs.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://mochajs.org>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://chaijs.com>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://avajs.dev>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://playwright.dev>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://cypress.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://pptr.dev>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://webdriver.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://testcafe.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://postman.com>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://insomnia.rest>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://httpie.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://hoppscotch.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://zaproxy.org>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://snyk.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://semgrep.dev>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://trivy.dev>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://sonarqube.org>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://webpagetest.org>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://k6.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://artillery.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://locust.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://eslint.org>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://biomejs.dev>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://prettier.io>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://codeclimate.com>",
+      "project": "revvel-standards",
+      "type": "test",
+      "source": "/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/vine-orders/>",
+      "project": "vine-orders",
+      "type": "vercel",
+      "source": "/docs/vine-orders/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/>",
+      "project": "vine-orders",
+      "type": "vercel",
+      "source": "/docs/vine-orders/README.md"
+    },
+    {
+      "url": "https://soul2bowl.vercel.app",
+      "project": "Soul2Bowl",
+      "type": "vercel",
+      "source": "/docs/Soul2Bowl/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/grok/uten/Colorado/dashboard.html>",
+      "project": "Colorado",
+      "type": "vercel",
+      "source": "/docs/grok/uten/Colorado/README.md"
+    }
+  ],
+  "domains": [
+    {
+      "name": "oaudrey.com",
+      "status": "Active",
+      "purpose": "Freedom Angel Hub",
+      "notes": "Main automation hub"
+    },
+    {
+      "name": "freedomangel.org",
+      "status": "Research",
+      "purpose": "Nonprofit",
+      "notes": "Anti-trafficking initiative"
+    },
+    {
+      "name": "revvel.co",
+      "status": "Active",
+      "purpose": "Portfolio",
+      "notes": "Main portfolio site"
+    },
+    {
+      "name": "soup2bowl.com",
+      "status": "In Development",
+      "purpose": "Catering",
+      "notes": "St. Louis fusion cuisine"
+    },
+    {
+      "name": "sam.gov",
+      "status": "External",
+      "purpose": "Gov Registration",
+      "notes": "Federal contracting"
+    },
+    {
+      "name": "grants.gov",
+      "status": "External",
+      "purpose": "Grant Search",
+      "notes": "Federal grants"
+    }
+  ],
+  "projectStatus": [
+    {
+      "project": "revvel-standards",
+      "file": "/SYSTEM_STATE.md",
+      "hasSystemState": true
+    }
+  ],
+  "lastUpdated": "2026-08-17T04:15:13.654Z"
+}

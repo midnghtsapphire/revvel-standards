@@ -1,0 +1,210 @@
+#!/bin/sh
+# =============================================================
+# REVVEL PRE-COMMIT HOOK
+# =============================================================
+# Copy to .git/hooks/pre-commit and make executable:
+#   cp templates/hooks/pre-commit .git/hooks/pre-commit
+#   chmod +x .git/hooks/pre-commit
+#
+# This hook checks for syntax errors in staged files before
+# allowing a commit. If any check fails the commit is aborted.
+# =============================================================
+
+set -e
+
+# Collect staged files only
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || true)
+
+if [ -z "$STAGED_FILES" ]; then
+  exit 0
+fi
+
+ERRORS=0
+
+echo "🔍 Revvel pre-commit syntax check..."
+
+# ─── Shell scripts ──────────────────────────────────────────
+for file in $STAGED_FILES; do
+  case "$file" in
+    *.sh|*.bash)
+      if ! bash -n "$file" 2>&1; then
+        echo "  ❌ Shell syntax error in: $file"
+        ERRORS=$((ERRORS + 1))
+      else
+        echo "  ✅ Shell OK: $file"
+      fi
+      ;;
+  esac
+done
+
+# ─── JavaScript / MJS ───────────────────────────────────────
+if command -v node >/dev/null 2>&1; then
+  for file in $STAGED_FILES; do
+    case "$file" in
+      *.js|*.mjs|*.cjs)
+        if ! node --check "$file" 2>&1; then
+          echo "  ❌ JS syntax error in: $file"
+          ERRORS=$((ERRORS + 1))
+        else
+          echo "  ✅ JS OK: $file"
+        fi
+        ;;
+    esac
+  done
+fi
+
+# ─── JSON ────────────────────────────────────────────────────
+if command -v node >/dev/null 2>&1; then
+  for file in $STAGED_FILES; do
+    case "$file" in
+      *.json)
+        if ! node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" 2>&1; then
+          echo "  ❌ JSON syntax error in: $file"
+          ERRORS=$((ERRORS + 1))
+        else
+          echo "  ✅ JSON OK: $file"
+        fi
+        ;;
+    esac
+  done
+fi
+
+# ─── TypeScript (full project check if tsconfig exists) ──────
+TS_FILES=""
+for file in $STAGED_FILES; do
+  case "$file" in
+    *.ts|*.tsx) TS_FILES="$TS_FILES $file" ;;
+  esac
+done
+
+if [ -n "$TS_FILES" ] && [ -f "tsconfig.json" ]; then
+  if command -v npx >/dev/null 2>&1; then
+    echo "  🔎 Running TypeScript check (tsc --noEmit)..."
+    if ! npx tsc --noEmit --skipLibCheck 2>&1; then
+      echo "  ❌ TypeScript errors detected — commit aborted"
+      ERRORS=$((ERRORS + 1))
+    else
+      echo "  ✅ TypeScript OK"
+    fi
+  fi
+fi
+
+# ─── Python ──────────────────────────────────────────────────
+if command -v python3 >/dev/null 2>&1; then
+  for file in $STAGED_FILES; do
+    case "$file" in
+      *.py)
+        if ! python3 -m py_compile "$file" 2>&1; then
+          echo "  ❌ Python syntax error in: $file"
+          ERRORS=$((ERRORS + 1))
+        else
+          echo "  ✅ Python OK: $file"
+        fi
+        ;;
+    esac
+  done
+fi
+
+# ─── YAML ────────────────────────────────────────────────────
+if command -v python3 >/dev/null 2>&1; then
+  for file in $STAGED_FILES; do
+    case "$file" in
+      *.yml|*.yaml)
+        if ! python3 -c "import yaml; yaml.safe_load(open('$file'))" 2>&1; then
+          echo "  ❌ YAML syntax error in: $file"
+          ERRORS=$((ERRORS + 1))
+        else
+          echo "  ✅ YAML OK: $file"
+        fi
+        ;;
+    esac
+  done
+elif command -v node >/dev/null 2>&1; then
+  # Only attempt js-yaml check if the module is actually installed
+  JS_YAML_AVAILABLE=false
+  if node -e "require('js-yaml')" 2>/dev/null; then
+    JS_YAML_AVAILABLE=true
+  fi
+  for file in $STAGED_FILES; do
+    case "$file" in
+      *.yml|*.yaml)
+        if [ "$JS_YAML_AVAILABLE" = "true" ]; then
+          if ! node -e "require('js-yaml').load(require('fs').readFileSync('$file','utf8'))" 2>&1; then
+            echo "  ❌ YAML syntax error in: $file"
+            ERRORS=$((ERRORS + 1))
+          else
+            echo "  ✅ YAML OK: $file"
+          fi
+        else
+          echo "  ⚠️  YAML check skipped (install python3 or js-yaml for YAML validation): $file"
+        fi
+        ;;
+    esac
+  done
+fi
+
+# ─── RVS-AGENT-001: Deletion detection ──────────────────────
+# Policy: Never delete code silently. Either keep it or comment it out with a
+# REVVEL-DISABLED header. See standards/COMMENT-DONT-DELETE.md.
+#
+# This block warns on:
+#   (a) any staged file deletion (D filter)
+#   (b) any staged diff that removes 5+ consecutive lines without a matching
+#       REVVEL-DISABLED block somewhere in the same file
+#
+# It exits non-zero so the committer must consciously override with
+# --no-verify (requires team lead approval).
+echo ""
+echo "🔍 RVS-AGENT-001 deletion policy check..."
+
+DELETED_FILES=$(git diff --cached --name-only --diff-filter=D 2>/dev/null || true)
+if [ -n "$DELETED_FILES" ]; then
+  echo "  ❌ The following files are staged for deletion:"
+  while IFS= read -r f; do
+    echo "     - $f"
+  done <<< "$DELETED_FILES"
+  echo ""
+  echo "  Per RVS-AGENT-001 (standards/COMMENT-DONT-DELETE.md):"
+  echo "  Files must not be deleted silently. Options:"
+  echo "    1. Comment out the file contents with a REVVEL-DISABLED header."
+  echo "    2. Open an issue, get human ratification, then use git commit --no-verify."
+  echo "  See standards/COMMENT-DONT-DELETE.md for the required header format."
+  ERRORS=$((ERRORS + 1))
+fi
+
+# Check each staged modified file for bare mass-deletions (5+ removed lines)
+# without any REVVEL-DISABLED header in the diff for that file.
+for file in $STAGED_FILES; do
+  DIFF_FOR_FILE=$(git diff --cached -U0 -- "$file" 2>/dev/null || true)
+  if [ -z "$DIFF_FOR_FILE" ]; then
+    continue
+  fi
+  # Count removed lines (lines starting with '-' but not '---')
+  REMOVED=$(printf '%s\n' "$DIFF_FOR_FILE" | grep -c '^-[^-]' || true)
+  if [ "$REMOVED" -lt 5 ]; then
+    continue
+  fi
+  # If there's a REVVEL-DISABLED header in the diff, the policy is followed
+  if printf '%s\n' "$DIFF_FOR_FILE" | grep -q 'REVVEL-DISABLED'; then
+    echo "  ✅ Deletion with REVVEL-DISABLED header in: $file ($REMOVED lines removed)"
+    continue
+  fi
+  echo "  ⚠️  $REMOVED line(s) removed from $file without a REVVEL-DISABLED header"
+  echo "     Per RVS-AGENT-001: comment out removed code with:"
+  echo "       // REVVEL-DISABLED | AGENT: <tool> | MODEL: <model> | WR: <ref> | DATE: $(date +%Y-%m-%d) | STATUS: <FAILED|BYPASSED|REPLACED|PENDING-REVIEW>"
+  echo "       // REASON: <one line>"
+  echo "       // REVVEL-DISABLED-END"
+  ERRORS=$((ERRORS + 1))
+done
+
+# ─── Result ──────────────────────────────────────────────────
+echo ""
+if [ "$ERRORS" -gt 0 ]; then
+  echo "  🚫 $ERRORS error(s) found. Commit aborted."
+  echo "  Fix the errors above and try again."
+  echo "  (Use 'git commit --no-verify' ONLY in emergencies with team lead approval)"
+  exit 1
+fi
+
+echo "  ✅ All checks passed."
+exit 0

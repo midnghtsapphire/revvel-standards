@@ -1,0 +1,75 @@
+skill: gbrain
+version: "1.0.0"
+title: "GBrain — Persistent Agent Memory"
+description: |
+  Connects an AI agent to a persistent, searchable knowledge base built from plain
+  markdown files. Before every response the agent reads from the brain; after every
+  conversation the agent writes back to it. Knowledge compounds with every session.
+  Derived from garrytan/gbrain (PGLite + pgvector, 30 MCP tools).
+category: "Agent Operations"
+lifecycle: persistent
+status: stable
+author: "Audrey Evans (MIDNGHTSAPPHIRE)"
+date: "2026-04-15"
+
+triggers:
+  - "gbrain"
+  - "agent memory"
+  - "persistent memory"
+  - "brain repo"
+  - "remember between sessions"
+  - "knowledge base"
+  - "memory compounding"
+  - "brain-agent loop"
+  - "pgvector"
+  - "pglite"
+
+models:
+  primary: claude-sonnet-4-5
+  fast: claude-haiku-4-5
+
+persona:
+  enabled: false
+
+dependencies:
+  tools:
+    - name: "bun"
+      required: true
+      install: "curl -fsSL https://bun.sh/install | bash"
+    - name: "gbrain"
+      required: true
+      install: "bun add -g github:garrytan/gbrain"
+  api_keys:
+    - name: "OPENAI_API_KEY"
+      required: false
+      purpose: "Vector embeddings for semantic search"
+    - name: "ANTHROPIC_API_KEY"
+      required: false
+      purpose: "Multi-query expansion for smarter search"
+
+brain_loop:
+  before_response: "gbrain search \"<key entities>\""
+  after_response: "gbrain sync && gbrain embed --stale"
+
+mcp:
+  command: "gbrain"
+  args: ["serve"]
+  tools_count: 30
+
+implementation:
+  type: markdown_prompt
+  skill_file: "skills/gbrain/SKILL.md"
+
+references:
+  - path: "AGENT_FACTORY_STANDARD.md"
+    description: "Use GBrain as the agent memory layer"
+  - path: "AUDREY_AUTONOMOUS_AGENT_STANDARD.md"
+    description: "Brain-agent loop is the core pattern"
+  - path: "MCP_STANDARD.md"
+    description: "Add gbrain to project .mcp.json"
+  - path: "skills/context-management/SKILL.md"
+    description: "GBrain preserves context between sessions"
+  - path: "skills/memory-pruning/SKILL.md"
+    description: "Use gbrain to archive pruned memories"
+
+schema_version: "1.0"

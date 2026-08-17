@@ -1,0 +1,34 @@
+name: repo-audit
+title: "Repo Prosecution Audit"
+version: "1.0.0"
+description: "7-gate prosecution-audit procedure for any repository: validity, wiring, run-own-gates, prove-fix, security, hygiene. Prosecution-first: assume broken, prove working. Produces template-compliant WRs (one per root cause), appends to learnings.md, and deposits method memory."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Audit & Quality"
+  tags: ["audit", "prosecution", "repo-health", "wiring", "security", "hygiene", "wr-filing", "learnings"]
+  created_at: "2026-07-14"
+  updated_at: "2026-07-14"
+
+persona: null
+triggers: ["/repo-audit", "prosecution audit", "full repo audit", "repo health check", "audit this repo", "find gaps broken wiring"]
+
+dependencies:
+  skills: []
+  tools: ["git", "npm", "node"]
+  pip_packages: []
+
+related_standards:
+  - "skills/repo-audit/SKILL.md"
+  - "standards/AUDIT_AND_SELF_HEALING_PLAYBOOK.md"
+  - "wr/memory/audit-2026-07-14-tools.md"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load skills/repo-audit/SKILL.md — the authoritative 7-gate prosecution-audit
+    procedure. Execute gates in order: Survey → Validity → Wiring →
+    Run-own-gates → Prove-fix → Security → Hygiene. One WR per root cause,
+    not per symptom. Append audit summary to learnings.md. Drift rule: re-verify
+    every finding against live HEAD before applying fixes.

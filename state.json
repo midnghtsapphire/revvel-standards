@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "source": "dashboard-data.json",
+  "lastUpdated": "2026-08-17T04:15:13.654Z",
+  "projects": {
+    "total": 33,
+    "byStatus": {
+      "existing": 2,
+      "new": 2,
+      "google sheets": 1,
+      "cli/api": 1,
+      "github actions": 1,
+      "mcp/tool": 2,
+      "app": 2,
+      "api": 1,
+      "non-profit": 1,
+      "$k/mo": 1,
+      "setup": 2,
+      "planning": 1,
+      ":---": 1,
+      "in development": 2,
+      "deployed": 6,
+      "live": 2,
+      "active (fork)": 1,
+      "archived": 4
+    },
+    "withRevenueSignal": [
+      "Vine review optimization",
+      "Product rental",
+      "Overflow sales",
+      "Consulting",
+      "Tax Navigator Agent",
+      "Compliance tracker",
+      "Business dashboard"
+    ]
+  },
+  "urls": 61,
+  "domains": 6,
+  "systemState": 1
+}

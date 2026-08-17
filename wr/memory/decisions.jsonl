@@ -1,0 +1,40 @@
+{"ts":"2026-06-28T03:00:00Z","topic":"prime_directive","decision":"scale from $10k/month to $10M total in 3 years","locked_by":"wr"}
+{"ts":"2026-06-28T03:10:00Z","topic":"phase_1","decision":"achieve $10k/month by month 6 via Polar.sh GitHub funding","locked_by":"wr"}
+{"ts":"2026-06-28T03:20:00Z","topic":"phase_2","decision":"scale to $30k/month by month 18 via OSINT tools productization","locked_by":"wr"}
+{"ts":"2026-06-28T03:30:00Z","topic":"phase_3","decision":"reach $100k/month by month 30 via automated product pipeline","locked_by":"wr"}
+{"ts":"2026-06-28T03:40:00Z","topic":"phase_4","decision":"hit $10M total by month 36 via compounding revenue streams","locked_by":"wr"}
+{"ts":"2026-06-28T03:45:00Z","topic":"focus_polar","decision":"prioritize Polar.sh integration as primary funding channel","locked_by":"wr"}
+{"ts":"2026-06-28T03:47:00Z","topic":"focus_osint","decision":"build OSINT tools as secondary revenue stream","locked_by":"wr"}
+{"ts":"2026-06-28T03:49:00Z","topic":"focus_pipeline","decision":"automate product pipeline for scale beyond $30k/month","locked_by":"wr"}
+{"ts":"2026-06-28T03:50:00Z","topic":"jsonl_schema","decision":"all decisions.jsonl entries must be valid JSON objects with fields ts, topic, decision, locked_by","locked_by":"wr"}
+{"ts":"2026-06-28T03:50:30Z","topic":"jsonl_validation","decision":"add pre-commit hook to validate decisions.jsonl parses as one JSON object per line","locked_by":"wr"}
+{"ts":"2026-06-28T03:50:55Z","topic":"agent_dispatch","decision":"complete agent dispatch logic and pass custom prompts through to downstream handlers","locked_by":"wr"}
+{"ts":"2026-06-28T03:51:00Z","topic":"malformed_jsonl_fix","decision":"reformat lines 11-12 to conform to established JSON schema and restore parser compatibility","locked_by":"wr"}
+{"ts":"2026-06-28T03:50:00Z","topic":"prime_directive","decision":"scale $10k/month to $10M in 3 years via Polar.sh, OSINT tools, automated product pipeline","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:10Z","topic":"phase_1","decision":"reach $10k/month by month 6","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:20Z","topic":"phase_2","decision":"reach $30k/month by month 18","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:30Z","topic":"phase_3","decision":"reach $100k/month by month 30","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:40Z","topic":"phase_4","decision":"reach $10M total by month 36","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:45Z","topic":"focus_polar","decision":"prioritize Polar.sh GitHub funding integration","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:50Z","topic":"focus_osint","decision":"build OSINT tools as revenue vertical","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:52Z","topic":"focus_pipeline","decision":"automated product pipeline for scale","locked_by":"founder"}
+{"ts":"2026-06-28T03:50:53Z","topic":"agent_dispatch","decision":"agents must accept custom prompts via dispatch","locked_by":"engineering"}
+{"ts":"2026-06-28T03:50:54Z","topic":"jsonl_schema","decision":"decisions.jsonl entries must match {ts,topic,decision,locked_by} schema","locked_by":"engineering"}
+{"ts":"2026-06-28T03:50:55Z","topic":"jsonl_validation","decision":"enforce JSONL validation via pre-commit hook to prevent malformed entries","locked_by":"engineering"}
+{"ts":"2026-06-28T03:50:56Z","topic":"jsonl_repair","decision":"repaired malformed lines 11-12 to conform to canonical schema","locked_by":"engineering"}
+{"ts":"2026-06-27T10:00:00Z","topic":"revenue_priority","decision":"Focus on Polar.sh GitHub funding integration as primary revenue channel for Phase 1 ($10k/month)","locked_by":"prime_directive"}
+{"ts":"2026-06-27T10:05:00Z","topic":"product_pipeline","decision":"Automate OSINT tools productization with tiered pricing on Polar.sh","locked_by":"prime_directive"}
+{"ts":"2026-06-27T10:10:00Z","topic":"fallback_chain","decision":"Standardize agent fallback: OpenRouter -> OpenHands -> manual (all free-tier)","locked_by":"ops"}
+{"ts":"2026-06-27T11:00:00Z","topic":"phase_targets","decision":"Phase1 $10k/mo (M1-6); Phase2 $30k/mo (M6-18); Phase3 $100k/mo (M18-30); Phase4 $10M total (M30-36)","locked_by":"prime_directive"}
+{"ts":"2026-06-27T12:00:00Z","topic":"osint_focus","decision":"Ship OSINT toolkit MVP with recon + enrichment modules before scaling marketing","locked_by":"product"}
+{"ts":"2026-06-27T13:00:00Z","topic":"funding_platform","decision":"Use Polar.sh exclusively for GitHub sponsors integration; defer Stripe direct until Phase 2","locked_by":"finance"}
+{"ts":"2026-06-27T14:00:00Z","topic":"issue_triage","decision":"All automated agent issues route through openrouter first with structured JSON responses","locked_by":"ops"}
+{"ts":"2026-06-27T15:00:00Z","topic":"memory_schema","decision":"decisions.jsonl entries MUST be one valid JSON object per line with fields: ts, topic, decision, locked_by","locked_by":"ops"}
+{"ts":"2026-06-27T16:00:00Z","topic":"validation","decision":"Add pre-commit hook validating JSONL files under wr/memory/ using scripts/validate_jsonl.py","locked_by":"ops"}
+{"ts":"2026-06-27T17:00:00Z","topic":"commit_hygiene","decision":"Reject commits touching wr/memory/*.jsonl that fail per-line JSON.parse","locked_by":"ops"}
+{"ts":"2026-06-28T03:50:55Z","topic":"jsonl_repair","decision":"Reformatted lines 11-12 from unquoted 'timestamp decision:' shorthand to schema-compliant JSON objects","locked_by":"ops"}
+{"ts":"2026-06-28T03:51:00Z","topic":"jsonl_repair","decision":"Restored parseability of decisions.jsonl; memory store deserialization no longer corrupted","locked_by":"ops"}
+{"ts":"2026-08-08T03:40:00Z","topic":"hipaa_scope_rlt_15279","decision":"Red light therapy D2C surface uses provisional Path B entity classification in compliance/red-light-therapy/; status UNSIGNED until counsel signs; never claim HIPAA-compliant; re-eval on clinic/telehealth/HSA-FSA/insurance/BAA","locked_by":"wr-16111"}
+{"ts":"2026-08-08T20:30:00Z","topic":"quiet_mode_exit","decision":"D017: exit quiet mode (supersedes 2026-07-25 PR #16805). trusted-bot-auto-approve triggers restored via PR #17091/#17097; exit-quiet-mode gate issue #17099 opened. Cron generators stripped by #16805 stay off pending selective restoration.","locked_by":"@midnghtsapphire (owner, via claude-code session)"}
+{"ts":"2026-08-09T21:15:00Z","topic":"quiet_mode_exit","decision":"D018: restore the 4 event-driven workflows (agent-fallback, auto-approve-clean-prs, auto-merge, wr-pr-creation) + eeat-trust-cron schedule. Superset of D017 event-driven clause; 15c5ac38 (Aug 8) never merged, so main was still dark. Preserves 2026-07-25 directive comments per RVS-PRESERVE-001.","locked_by":"@midnghtsapphire (owner, via openhands session)"}
+{"ts":"2026-08-16T00:00:00Z","topic":"bito_review_lane","decision":"D019: re-enable Bito auto-triggers on bito-ai.yml (supersedes D006). Owner purchased paid higher-tier Bito and designated it the review lane for the 2026-08-16 PR-fleet cleanup. D006 sample measured a silent no-op (BITO_ACCESS_KEY absent), not Bito. Requires BITO_ACCESS_KEY repo secret; verify step comments if missing."}

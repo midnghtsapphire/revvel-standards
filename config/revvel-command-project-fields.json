@@ -1,0 +1,786 @@
+{
+  "project_id": "PVT_kwHOAEa8uc4Bfgb3",
+  "project_number": 6,
+  "project_title": "Revvel Command",
+  "project_url": "https://github.com/users/midnghtsapphire/projects/6",
+  "owner": "midnghtsapphire",
+  "created": [
+    {
+      "name": "Work Kind",
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xE",
+      "options": [
+        {
+          "id": "933a4249",
+          "name": "WR"
+        },
+        {
+          "id": "c36fcce3",
+          "name": "Bug"
+        },
+        {
+          "id": "57948cad",
+          "name": "Feature"
+        },
+        {
+          "id": "acc309b3",
+          "name": "Research"
+        },
+        {
+          "id": "29d4cab8",
+          "name": "Automation"
+        },
+        {
+          "id": "dd36f7b4",
+          "name": "Security"
+        },
+        {
+          "id": "2811ce81",
+          "name": "Content"
+        },
+        {
+          "id": "839fda01",
+          "name": "Infra"
+        },
+        {
+          "id": "4f24217e",
+          "name": "Revenue"
+        }
+      ]
+    },
+    {
+      "name": "Pipeline Stage",
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xI",
+      "options": [
+        {
+          "id": "a41e80b1",
+          "name": "Triage"
+        },
+        {
+          "id": "0ff6b6bd",
+          "name": "Spec"
+        },
+        {
+          "id": "742e17f1",
+          "name": "Research"
+        },
+        {
+          "id": "d832d6a9",
+          "name": "Build"
+        },
+        {
+          "id": "2b67664a",
+          "name": "Formal Verify"
+        },
+        {
+          "id": "91407f44",
+          "name": "Human Review"
+        },
+        {
+          "id": "e94ecf64",
+          "name": "Ship"
+        },
+        {
+          "id": "16880b83",
+          "name": "Done"
+        },
+        {
+          "id": "7881ea3c",
+          "name": "Parked"
+        }
+      ]
+    },
+    {
+      "name": "Agent",
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xM",
+      "options": [
+        {
+          "id": "58f18b08",
+          "name": "OpenRouter"
+        },
+        {
+          "id": "3ab83ce4",
+          "name": "Copilot"
+        },
+        {
+          "id": "a8574e83",
+          "name": "Codex"
+        },
+        {
+          "id": "580c2fe9",
+          "name": "Devin"
+        },
+        {
+          "id": "0ac30db4",
+          "name": "Jules"
+        },
+        {
+          "id": "786b0199",
+          "name": "Human"
+        },
+        {
+          "id": "c8bda9ca",
+          "name": "Non-LLM Specialist"
+        }
+      ]
+    },
+    {
+      "name": "Privilege Tier",
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xQ",
+      "options": [
+        {
+          "id": "3b816be4",
+          "name": "Intern"
+        },
+        {
+          "id": "4d1e5eaa",
+          "name": "Associate"
+        },
+        {
+          "id": "d3b4cd63",
+          "name": "Senior"
+        },
+        {
+          "id": "1c93adb5",
+          "name": "Principal"
+        },
+        {
+          "id": "ead75e8f",
+          "name": "Emergency"
+        }
+      ]
+    },
+    {
+      "name": "Formal Verdict",
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xU",
+      "options": [
+        {
+          "id": "2f1d6ad6",
+          "name": "pass"
+        },
+        {
+          "id": "92f5e17c",
+          "name": "fail"
+        },
+        {
+          "id": "a7b6c6c4",
+          "name": "needs_reaudit"
+        },
+        {
+          "id": "d84fd4cd",
+          "name": "structural_conflict"
+        },
+        {
+          "id": "9829118a",
+          "name": "duplicate_risk"
+        },
+        {
+          "id": "7314b37e",
+          "name": "unscored"
+        }
+      ]
+    },
+    {
+      "name": "Breakthrough",
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xY",
+      "options": [
+        {
+          "id": "5827f78a",
+          "name": "none"
+        },
+        {
+          "id": "2af4998a",
+          "name": "minor"
+        },
+        {
+          "id": "ad4aa9cb",
+          "name": "major"
+        },
+        {
+          "id": "467de15b",
+          "name": "paradigm"
+        }
+      ]
+    },
+    {
+      "name": "Automation Surface",
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xc",
+      "options": [
+        {
+          "id": "f7c42fcf",
+          "name": "actions"
+        },
+        {
+          "id": "8fbed2c1",
+          "name": "n8n"
+        },
+        {
+          "id": "169767b1",
+          "name": "make"
+        },
+        {
+          "id": "dd726cc2",
+          "name": "zapier"
+        },
+        {
+          "id": "be314dab",
+          "name": "gumloop"
+        },
+        {
+          "id": "738a5ae4",
+          "name": "openrouter"
+        },
+        {
+          "id": "c2a8bf3a",
+          "name": "other"
+        },
+        {
+          "id": "1f62cc8b",
+          "name": "none"
+        }
+      ]
+    },
+    {
+      "name": "Human Gate",
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xg",
+      "options": [
+        {
+          "id": "8ed090b0",
+          "name": "required"
+        },
+        {
+          "id": "5b0681f3",
+          "name": "satisfied"
+        },
+        {
+          "id": "1ca153d7",
+          "name": "waived"
+        }
+      ]
+    },
+    {
+      "name": "Outside Work Eligible",
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xk",
+      "options": [
+        {
+          "id": "56cc7c61",
+          "name": "no"
+        },
+        {
+          "id": "3197b412",
+          "name": "candidate"
+        },
+        {
+          "id": "6cf021f7",
+          "name": "approved"
+        }
+      ]
+    },
+    {
+      "name": "Priority Scale",
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xo",
+      "options": [
+        {
+          "id": "c8c4bc78",
+          "name": "P0"
+        },
+        {
+          "id": "39de5a87",
+          "name": "P1"
+        },
+        {
+          "id": "48767b99",
+          "name": "P2"
+        },
+        {
+          "id": "e8aade1f",
+          "name": "P3"
+        }
+      ]
+    },
+    {
+      "name": "Agreement BPS",
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2xs",
+      "options": null
+    },
+    {
+      "name": "Risk Score",
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2xw",
+      "options": null
+    },
+    {
+      "name": "Loyalty Score",
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2x0",
+      "options": null
+    },
+    {
+      "name": "BNAT Score",
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2x4",
+      "options": null
+    },
+    {
+      "name": "Speed Score",
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2x8",
+      "options": null
+    },
+    {
+      "name": "Canonical Score",
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2yA",
+      "options": null
+    },
+    {
+      "name": "Feature Adoption",
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2yY",
+      "options": null
+    },
+    {
+      "name": "Revenue Link",
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2yc",
+      "options": null
+    },
+    {
+      "name": "WR ID",
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2yg",
+      "options": null
+    },
+    {
+      "name": "Due",
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2yk",
+      "options": null
+    }
+  ],
+  "skipped": [],
+  "failed": [],
+  "fields": [
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2wQ",
+      "name": "Title",
+      "dataType": "TITLE"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2wU",
+      "name": "Assignees",
+      "dataType": "ASSIGNEES"
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2wY",
+      "name": "Status",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "f75ad846",
+          "name": "Todo"
+        },
+        {
+          "id": "47fc9ee4",
+          "name": "In Progress"
+        },
+        {
+          "id": "98236657",
+          "name": "Done"
+        }
+      ]
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2wc",
+      "name": "Labels",
+      "dataType": "LABELS"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2wg",
+      "name": "Linked pull requests",
+      "dataType": "LINKED_PULL_REQUESTS"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2wk",
+      "name": "Milestone",
+      "dataType": "MILESTONE"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2wo",
+      "name": "Repository",
+      "dataType": "REPOSITORY"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2ws",
+      "name": "Reviewers",
+      "dataType": "REVIEWERS"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2ww",
+      "name": "Parent issue",
+      "dataType": "PARENT_ISSUE"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2w0",
+      "name": "Sub-issues progress",
+      "dataType": "SUB_ISSUES_PROGRESS"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2w4",
+      "name": "Created",
+      "dataType": "CREATED"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2w8",
+      "name": "Updated",
+      "dataType": "UPDATED"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2xA",
+      "name": "Closed",
+      "dataType": "CLOSED"
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xE",
+      "name": "Work Kind",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "933a4249",
+          "name": "WR"
+        },
+        {
+          "id": "c36fcce3",
+          "name": "Bug"
+        },
+        {
+          "id": "57948cad",
+          "name": "Feature"
+        },
+        {
+          "id": "acc309b3",
+          "name": "Research"
+        },
+        {
+          "id": "29d4cab8",
+          "name": "Automation"
+        },
+        {
+          "id": "dd36f7b4",
+          "name": "Security"
+        },
+        {
+          "id": "2811ce81",
+          "name": "Content"
+        },
+        {
+          "id": "839fda01",
+          "name": "Infra"
+        },
+        {
+          "id": "4f24217e",
+          "name": "Revenue"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xI",
+      "name": "Pipeline Stage",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "a41e80b1",
+          "name": "Triage"
+        },
+        {
+          "id": "0ff6b6bd",
+          "name": "Spec"
+        },
+        {
+          "id": "742e17f1",
+          "name": "Research"
+        },
+        {
+          "id": "d832d6a9",
+          "name": "Build"
+        },
+        {
+          "id": "2b67664a",
+          "name": "Formal Verify"
+        },
+        {
+          "id": "91407f44",
+          "name": "Human Review"
+        },
+        {
+          "id": "e94ecf64",
+          "name": "Ship"
+        },
+        {
+          "id": "16880b83",
+          "name": "Done"
+        },
+        {
+          "id": "7881ea3c",
+          "name": "Parked"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xM",
+      "name": "Agent",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "58f18b08",
+          "name": "OpenRouter"
+        },
+        {
+          "id": "3ab83ce4",
+          "name": "Copilot"
+        },
+        {
+          "id": "a8574e83",
+          "name": "Codex"
+        },
+        {
+          "id": "580c2fe9",
+          "name": "Devin"
+        },
+        {
+          "id": "0ac30db4",
+          "name": "Jules"
+        },
+        {
+          "id": "786b0199",
+          "name": "Human"
+        },
+        {
+          "id": "c8bda9ca",
+          "name": "Non-LLM Specialist"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xQ",
+      "name": "Privilege Tier",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "3b816be4",
+          "name": "Intern"
+        },
+        {
+          "id": "4d1e5eaa",
+          "name": "Associate"
+        },
+        {
+          "id": "d3b4cd63",
+          "name": "Senior"
+        },
+        {
+          "id": "1c93adb5",
+          "name": "Principal"
+        },
+        {
+          "id": "ead75e8f",
+          "name": "Emergency"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xU",
+      "name": "Formal Verdict",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "2f1d6ad6",
+          "name": "pass"
+        },
+        {
+          "id": "92f5e17c",
+          "name": "fail"
+        },
+        {
+          "id": "a7b6c6c4",
+          "name": "needs_reaudit"
+        },
+        {
+          "id": "d84fd4cd",
+          "name": "structural_conflict"
+        },
+        {
+          "id": "9829118a",
+          "name": "duplicate_risk"
+        },
+        {
+          "id": "7314b37e",
+          "name": "unscored"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xY",
+      "name": "Breakthrough",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "5827f78a",
+          "name": "none"
+        },
+        {
+          "id": "2af4998a",
+          "name": "minor"
+        },
+        {
+          "id": "ad4aa9cb",
+          "name": "major"
+        },
+        {
+          "id": "467de15b",
+          "name": "paradigm"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xc",
+      "name": "Automation Surface",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "f7c42fcf",
+          "name": "actions"
+        },
+        {
+          "id": "8fbed2c1",
+          "name": "n8n"
+        },
+        {
+          "id": "169767b1",
+          "name": "make"
+        },
+        {
+          "id": "dd726cc2",
+          "name": "zapier"
+        },
+        {
+          "id": "be314dab",
+          "name": "gumloop"
+        },
+        {
+          "id": "738a5ae4",
+          "name": "openrouter"
+        },
+        {
+          "id": "c2a8bf3a",
+          "name": "other"
+        },
+        {
+          "id": "1f62cc8b",
+          "name": "none"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xg",
+      "name": "Human Gate",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "8ed090b0",
+          "name": "required"
+        },
+        {
+          "id": "5b0681f3",
+          "name": "satisfied"
+        },
+        {
+          "id": "1ca153d7",
+          "name": "waived"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xk",
+      "name": "Outside Work Eligible",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "56cc7c61",
+          "name": "no"
+        },
+        {
+          "id": "3197b412",
+          "name": "candidate"
+        },
+        {
+          "id": "6cf021f7",
+          "name": "approved"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOAEa8uc4Bfgb3zhZy2xo",
+      "name": "Priority Scale",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "c8c4bc78",
+          "name": "P0"
+        },
+        {
+          "id": "39de5a87",
+          "name": "P1"
+        },
+        {
+          "id": "48767b99",
+          "name": "P2"
+        },
+        {
+          "id": "e8aade1f",
+          "name": "P3"
+        }
+      ]
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2xs",
+      "name": "Agreement BPS",
+      "dataType": "NUMBER"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2xw",
+      "name": "Risk Score",
+      "dataType": "NUMBER"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2x0",
+      "name": "Loyalty Score",
+      "dataType": "NUMBER"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2x4",
+      "name": "BNAT Score",
+      "dataType": "NUMBER"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2x8",
+      "name": "Speed Score",
+      "dataType": "NUMBER"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2yA",
+      "name": "Canonical Score",
+      "dataType": "NUMBER"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2yY",
+      "name": "Feature Adoption",
+      "dataType": "NUMBER"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2yc",
+      "name": "Revenue Link",
+      "dataType": "TEXT"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2yg",
+      "name": "WR ID",
+      "dataType": "TEXT"
+    },
+    {
+      "id": "PVTF_lAHOAEa8uc4Bfgb3zhZy2yk",
+      "name": "Due",
+      "dataType": "DATE"
+    }
+  ]
+}

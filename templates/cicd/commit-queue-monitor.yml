@@ -1,0 +1,184 @@
+# Copy to .github/workflows/commit-queue-monitor.yml in your app repo.
+# Monitors merge/commit queue depth and escalates when the backlog is too large.
+#
+# Configuration (optional repo variables):
+#   COMMIT_QUEUE_THRESHOLD     — integer, default: 200
+#   COMMIT_QUEUE_LABEL         — label applied to merge-queue PRs (default: merge-queue-pr)
+#   COMMIT_QUEUE_BRANCH_PREFIX — branch prefix used by queue PRs (default: mergify/merge-queue/)
+#
+# When the queue exceeds the threshold this workflow creates (or updates) a
+# single alert issue and routes it to the first responders (Copilot + OpenRouter).
+# When the queue drops below the threshold, the alert issue is auto-closed.
+
+name: Commit Queue Monitor
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: read
+  contents: read
+
+env:
+  QUEUE_THRESHOLD: ${{ vars.COMMIT_QUEUE_THRESHOLD || '200' }}
+  QUEUE_LABEL: ${{ vars.COMMIT_QUEUE_LABEL || 'merge-queue-pr' }}
+  QUEUE_BRANCH_PREFIX: ${{ vars.COMMIT_QUEUE_BRANCH_PREFIX || 'mergify/merge-queue/' }}
+  ALERT_TITLE: "Commit queue backlog alert"
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate commit queue backlog
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const alertTitle = process.env.ALERT_TITLE;
+            const thresholdRaw = Number.parseInt(process.env.QUEUE_THRESHOLD, 10);
+            const threshold = Number.isNaN(thresholdRaw) || thresholdRaw <= 0 ? 200 : thresholdRaw;
+            const queueLabel = process.env.QUEUE_LABEL || 'merge-queue-pr';
+            const queuePrefix = process.env.QUEUE_BRANCH_PREFIX || 'mergify/merge-queue/';
+            const timestamp = new Date().toISOString();
+
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner,
+              repo,
+              state: 'open',
+              per_page: 100,
+            });
+
+            const queuedPrs = prs.filter(pr => {
+              const labels = (pr.labels || []).map(label =>
+                typeof label === 'string' ? label : label.name
+              );
+              const hasLabel = queueLabel ? labels.includes(queueLabel) : false;
+              const hasPrefix = queuePrefix ? pr.head?.ref?.startsWith(queuePrefix) : false;
+              return hasLabel || hasPrefix;
+            });
+
+            const queueCount = queuedPrs.length;
+            const previewCount = Math.min(queueCount, 20);
+            const preview = queuedPrs.slice(0, previewCount).map(pr =>
+              `- #${pr.number} ${pr.title} (${pr.html_url})`
+            );
+
+            core.summary
+              .addHeading('Commit Queue Monitor')
+              .addTable([
+                [{ data: 'Metric', header: true }, { data: 'Value', header: true }],
+                ['Queue depth', String(queueCount)],
+                ['Threshold', String(threshold)],
+                ['Queue label', queueLabel || '(none)'],
+                ['Queue prefix', queuePrefix || '(none)'],
+                ['Checked at', timestamp],
+              ])
+              .write();
+
+            const search = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${owner}/${repo} is:issue is:open in:title "${alertTitle}"`,
+            });
+            let existingAlert = search.data.items.find(item => !item.pull_request);
+
+            if (queueCount < threshold) {
+              if (existingAlert) {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: existingAlert.number,
+                  body: [
+                    '✅ **Commit queue recovered**',
+                    '',
+                    `Queue depth is now ${queueCount} (threshold ${threshold}).`,
+                    `Timestamp: ${timestamp}`,
+                  ].join('\n'),
+                });
+                await github.rest.issues.update({
+                  owner,
+                  repo,
+                  issue_number: existingAlert.number,
+                  state: 'closed',
+                });
+              }
+              core.info(`Queue depth ${queueCount} is below threshold ${threshold}.`);
+              return;
+            }
+
+            const labelsToEnsure = [
+              { name: 'auto-fix', color: '0075ca', description: 'Created by auto-fix / Ralph Loop workflow' },
+              { name: 'copilot', color: '7057ff', description: 'Assigned to GitHub Copilot for fixing' },
+              { name: 'openrouter', color: '6f42c1', description: 'Routed to the OpenRouter orchestrator (first line of sight)' },
+              { name: 'needs-human', color: 'd93f0b', description: 'Escalated — requires human intervention' },
+            ];
+
+            for (const label of labelsToEnsure) {
+              try {
+                await github.rest.issues.getLabel({ owner, repo, name: label.name });
+              } catch (error) {
+                if (error.status === 404) {
+                  await github.rest.issues.createLabel({ owner, repo, ...label });
+                }
+              }
+            }
+
+            const body = [
+              '## Commit Queue Backlog Alert',
+              '',
+              `**Queue depth:** ${queueCount}`,
+              `**Threshold:** ${threshold}`,
+              `**Detected at:** ${timestamp}`,
+              `**Queue label:** \`${queueLabel}\``,
+              `**Queue branch prefix:** \`${queuePrefix}\``,
+              '',
+              '### Queue preview',
+              preview.length > 0 ? preview.join('\n') : '_No queued PRs detected._',
+              '',
+              '### First responder actions',
+              '- @copilot: investigate why the merge queue is stalled and attempt auto-correction.',
+              '- Re-run or fix failing checks on queued PRs.',
+              '- If queue remains above threshold, coordinate manual intervention.',
+              '',
+              '_This issue is maintained automatically by `commit-queue-monitor.yml`._',
+            ].join('\n');
+
+            if (!existingAlert) {
+              const created = await github.rest.issues.create({
+                owner,
+                repo,
+                title: alertTitle,
+                body,
+                labels: labelsToEnsure.map(label => label.name),
+              });
+              existingAlert = created.data;
+            } else {
+              await github.rest.issues.update({
+                owner,
+                repo,
+                issue_number: existingAlert.number,
+                body,
+              });
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: existingAlert.number,
+                labels: labelsToEnsure.map(label => label.name),
+              });
+            }
+
+            try {
+              await github.rest.issues.addAssignees({
+                owner,
+                repo,
+                issue_number: existingAlert.number,
+                assignees: ['copilot'],
+              });
+            } catch (error) {
+              core.info(`Could not assign Copilot: ${error.message}`);
+            }
+
+            core.notice(`Queue depth ${queueCount} exceeds threshold ${threshold}. Alert issue #${existingAlert.number} updated.`);

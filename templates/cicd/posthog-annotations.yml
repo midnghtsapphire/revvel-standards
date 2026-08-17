@@ -1,0 +1,121 @@
+name: PostHog Annotations
+
+# Send annotations to PostHog from GitHub Actions on PR merges, releases, or deployments.
+#
+# Why: PostHog annotations mark significant events (deployments, releases, feature
+# launches) on your analytics charts, making it easy to correlate product changes
+# with metric spikes or drops.
+#
+# Required secrets:
+#   POSTHOG_PERSONAL_API_KEY  — PostHog Personal API Key (Settings → Personal API Keys)
+#   POSTHOG_PROJECT_ID        — PostHog Project ID (Settings → Project Settings)
+#
+# Optional repo variables (Settings → Variables → Actions):
+#   POSTHOG_ENABLED  — "true" (default) or "false" to disable without removing
+#
+# See: skills/posthog/SKILL.md, templates/standards/posthog-events.md
+
+on:
+  pull_request:
+    types: [closed]  # Only when PR is merged
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      annotation_message:
+        description: "Custom annotation message"
+        type: string
+        required: false
+        default: "Manual annotation from GitHub Actions"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: posthog-annotations-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.release.id || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  send-annotation:
+    name: Send annotation to PostHog
+    runs-on: ubuntu-latest
+    # Only run if PR was merged (not just closed)
+    if: |
+      github.event_name == 'release' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
+    steps:
+      - name: Verify configuration
+        id: verify
+        env:
+          POSTHOG_PERSONAL_API_KEY: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+          POSTHOG_PROJECT_ID: ${{ secrets.POSTHOG_PROJECT_ID }}
+          POSTHOG_ENABLED: ${{ vars.POSTHOG_ENABLED }}
+        run: |
+          enabled="${POSTHOG_ENABLED:-true}"
+          if [ "${enabled}" != "true" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::POSTHOG_ENABLED=${enabled} — skipping annotation."
+            exit 0
+          fi
+          if [ -z "${POSTHOG_PERSONAL_API_KEY}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::POSTHOG_PERSONAL_API_KEY is not set. Skipping. See skills/posthog/SKILL.md."
+            exit 0
+          fi
+          if [ -z "${POSTHOG_PROJECT_ID}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::POSTHOG_PROJECT_ID is not set. Skipping. See skills/posthog/SKILL.md."
+            exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Build annotation message
+        if: steps.verify.outputs.skip != 'true'
+        id: message
+        uses: actions/github-script@v8
+        env:
+          CUSTOM_MESSAGE: ${{ github.event.inputs.annotation_message }}
+        with:
+          script: |
+            const e = context.eventName;
+            const p = context.payload || {};
+            const repo = `${context.repo.owner}/${context.repo.repo}`;
+            let message = '';
+
+            if (e === 'pull_request' && p.pull_request && p.pull_request.merged) {
+              const pr = p.pull_request;
+              message = `🚀 Merged PR #${pr.number}: ${pr.title}`;
+            } else if (e === 'release' && p.release) {
+              const release = p.release;
+              message = `📦 Released ${release.tag_name}: ${release.name || release.tag_name}`;
+            } else if (e === 'workflow_dispatch') {
+              message = process.env.CUSTOM_MESSAGE || 'Manual annotation from GitHub Actions';
+            } else {
+              message = `GitHub event: ${e}`;
+            }
+
+            core.setOutput('message', message);
+            core.setOutput('repo', repo);
+            core.setOutput('sha', context.sha);
+            core.setOutput('actor', context.actor);
+
+      - name: Send annotation to PostHog
+        if: steps.verify.outputs.skip != 'true'
+        uses: PostHog/posthog-annotations-github-action@v1
+        with:
+          posthog-token: ${{ secrets.POSTHOG_PERSONAL_API_KEY }}
+          posthog-project-id: ${{ secrets.POSTHOG_PROJECT_ID }}
+          annotation-message: ${{ steps.message.outputs.message }}
+          # Optional: specify the date/time of the annotation (defaults to now)
+          # annotation-date: ${{ github.event.pull_request.merged_at || github.event.release.published_at }}
+
+      - name: Summary
+        if: steps.verify.outputs.skip != 'true'
+        run: |
+          echo "✅ Sent annotation to PostHog:"
+          echo "   Message: ${{ steps.message.outputs.message }}"
+          echo "   Repo: ${{ steps.message.outputs.repo }}"
+          echo "   SHA: ${{ steps.message.outputs.sha }}"
+          echo "   Actor: ${{ steps.message.outputs.actor }}"

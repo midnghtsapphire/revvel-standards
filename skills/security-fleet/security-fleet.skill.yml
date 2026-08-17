@@ -1,0 +1,38 @@
+skill: security_fleet
+version: "0.1.0"
+title: "Security Fleet — Five Single-Job AI-Exploit Red-Team Experts"
+description: >
+  A fleet of five agents, each expert at exactly one security concern:
+  Prompt-Injection Detection, Untrusted-Expression Auditing, Secret-Exfil
+  Detection, Permission Minimization, and Adversarial Red Teaming. Built on
+  the same one-job-per-agent model as the agentic-workflow-fleet; it
+  coordinates skills/security/, skills/vault-agent/, secrets-sentinel, and
+  patch-agent rather than duplicating them.
+category: "Security & Compliance"
+lifecycle: proposed
+status: draft
+persona: dragnet
+models:
+  profile: review
+fleet_file: "skills/security-fleet/SECURITY_FLEET.yml"
+scanner: "scripts/security-fleet.js"
+workflow: ".github/workflows/security-fleet.yml"
+triggers:
+  - "security fleet"
+  - "red team"
+  - "prompt injection"
+  - "instruction smuggling"
+  - "log poisoning"
+  - "expression injection"
+  - "untrusted interpolation"
+  - "secret exfil"
+  - "leaked token"
+  - "permission audit"
+  - "least privilege"
+  - "adversarial tests"
+guardrails:
+  - one-concern-per-agent
+  - report-only-never-auto-mutate
+  - untrusted-text-through-env-only
+  - seeded-catch-required-per-detector
+  - deduped-findings

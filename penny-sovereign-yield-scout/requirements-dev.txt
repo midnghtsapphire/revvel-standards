@@ -1,0 +1,12 @@
+# penny-sovereign-yield-scout — development / test dependencies
+# Install: pip install -r requirements.txt -r requirements-dev.txt
+#
+# Runtime-only deps live in requirements.txt. Anything needed solely to
+# run the test suite, linters, or local tooling belongs here.
+
+# ─── Testing ─────────────────────────────────────────────────────────────────
+pytest>=8.0.0
+# pytest-mock provides the `mocker` fixture used across tests/*.py.
+# Plain unittest.mock would technically work, but the suite is already
+# written against the mocker fixture — keep pytest-mock as a dev dep.
+pytest-mock>=3.12.0

@@ -1,0 +1,18 @@
+{
+  "_instructions": "Template file. Before this project is production-ready, replace every REPLACE-* value: set provenance.decided_by (human or agent that chose the model), provenance.decided_at (ISO 8601 date), and confirm take_rate_percent + roi via decision/fee-worksheet.md.",
+  "model_chosen": "connect",
+  "take_rate_percent": 2.5,
+  "flat_fee_cents": 0,
+  "rationale": "Default marketplace/platform fee via Stripe Connect application_fee_amount. Adjust per product economics using decision/fee-worksheet.md.",
+  "provenance": {
+    "proposed_by": "WR-14931 research",
+    "decided_by": "REPLACE-WITH-HUMAN-OR-AGENT",
+    "model_or_route": "openrouter",
+    "decided_at": "REPLACE-WITH-ISO-DATE"
+  },
+  "roi": {
+    "assumed_monthly_gmv_usd": 50000,
+    "estimated_monthly_platform_revenue_usd": 1250,
+    "notes": "estimate = assumed_monthly_gmv_usd * take_rate_percent / 100"
+  }
+}

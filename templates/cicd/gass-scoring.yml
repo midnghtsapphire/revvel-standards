@@ -1,0 +1,60 @@
+# GASS — GitHub Activity Scoring System
+#
+# Marketplace: https://github.com/marketplace/actions/gass-github-activity-scoring-system
+# Action repo: https://github.com/michael-bey/gass
+#
+# Scores PR code quality with an OpenRouter model and records the score
+# on-chain via the O2 Oracle (for meritocratic, Sybil-resistant token
+# distribution — see the GASS architecture doc). Works standalone in any
+# repo that wants on-chain developer metrics.
+#
+# Secrets required:
+#   O2_EMAIL, O2_PASSWORD, O2_APP_ID, O2_PROP_LIST_ID, OPENROUTER_API_KEY
+#
+# Copy this file to: .github/workflows/gass-scoring.yml
+
+name: GASS Scoring
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: gass-scoring-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: GASS code quality score
+    runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      O2_APP_ID: ${{ secrets.O2_APP_ID }}
+    steps:
+      - name: Verify required secrets are configured
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ] || [ -z "${O2_APP_ID}" ]; then
+            echo "::warning::GASS secrets not fully configured — skipping scoring."
+          else
+            echo "GASS secrets are configured."
+          fi
+
+      - name: Checkout
+        if: env.OPENROUTER_API_KEY != '' && env.O2_APP_ID != ''
+        uses: actions/checkout@v4
+
+      - name: GASS Code Quality Score
+        if: env.OPENROUTER_API_KEY != '' && env.O2_APP_ID != ''
+        uses: michael-bey/gass@v1
+        with:
+          o2_email: ${{ secrets.O2_EMAIL }}
+          o2_password: ${{ secrets.O2_PASSWORD }}
+          o2_app_id: ${{ secrets.O2_APP_ID }}
+          o2_prop_list_id: ${{ secrets.O2_PROP_LIST_ID }}
+          openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,97 @@
+# Copy to .github/workflows/labels-as-parameters.yml in your app repo.
+# No extra secrets required — uses GITHUB_TOKEN (auto-provided).
+#
+# What this workflow does:
+#   Reads PR labels that follow the `key:value` pattern and exposes them
+#   as named step outputs so downstream steps can branch on them.
+#
+#   Example label → output mapping:
+#     environment:production  →  steps.parameters.outputs.environment == 'production'
+#     project:api             →  steps.parameters.outputs.project     == 'api'
+#     skip-tests:true         →  steps.parameters.outputs.skip-tests  == 'true'
+#
+# Revvel label conventions for this workflow:
+#   environment:staging        — target deployment environment
+#   environment:production
+#   project:<service-name>     — which microservice / sub-project to deploy
+#   skip-tests:true            — emergency bypass (requires a second reviewer)
+#
+# SETUP:
+#   1. Copy this file to .github/workflows/labels-as-parameters.yml
+#   2. Add labels to the repo that follow the key:value convention above.
+#      Run the standard label bootstrap in docs/GITHUB_PROJECTS_SETUP.md first,
+#      then add your app-specific labels.
+#   3. Customise the deploy steps below for your app.
+#
+# More information:
+#   Action source: https://github.com/matheusvellone/labels-as-parameters
+#   Revvel docs:   docs/LABELS_AS_PARAMETERS.md
+
+name: Labels as Parameters
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 1 — Extract labels and validate required parameters
+  # ────────────────────────────────────────────────────────────────────────────
+  extract-parameters:
+    name: Extract Label Parameters
+    runs-on: ubuntu-latest
+
+    # Expose outputs so dependent jobs can read them
+    outputs:
+      environment: ${{ steps.parameters.outputs.environment }}
+      project:     ${{ steps.parameters.outputs.project }}
+
+    steps:
+      - name: Extract labels as parameters
+        id: parameters
+        uses: matheusvellone/labels-as-parameters@1.0.0
+        with:
+          # Key-value separator used in label names (default is ":")
+          separator: ":"
+          # Comma-separated list of parameters that must be present.
+          # Remove or adjust to match your workflow's requirements.
+          # requiredParameters: environment, project
+
+      - name: Print resolved parameters
+        run: |
+          echo "environment : ${{ steps.parameters.outputs.environment }}"
+          echo "project     : ${{ steps.parameters.outputs.project }}"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 2 — Conditional deploy based on label parameters
+  # ────────────────────────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy (${{ needs.extract-parameters.outputs.environment || 'no-env' }})
+    runs-on: ubuntu-latest
+    needs: extract-parameters
+    # Only deploy when an environment label is present
+    if: needs.extract-parameters.outputs.environment != ''
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Staging deploy ──────────────────────────────────────────────────────
+      - name: Deploy to Staging
+        if: needs.extract-parameters.outputs.environment == 'staging'
+        run: |
+          echo "🚀 Deploying to STAGING"
+          # Replace with your actual staging deploy command, e.g.:
+          # ./deploy.sh staging ${{ needs.extract-parameters.outputs.project }}
+
+      # ── Production deploy ───────────────────────────────────────────────────
+      - name: Deploy to Production
+        if: needs.extract-parameters.outputs.environment == 'production'
+        run: |
+          echo "🚀 Deploying to PRODUCTION"
+          # Replace with your actual production deploy command, e.g.:
+          # ./deploy.sh production ${{ needs.extract-parameters.outputs.project }}

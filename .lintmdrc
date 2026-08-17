@@ -1,0 +1,19 @@
+{
+  "excludeFiles": [
+    "**/node_modules/**",
+    "**/.git/**",
+    "**/dist/**",
+    "wr/issues/**",
+    "docs/agents/claude/transcripts/**"
+  ],
+  "rules": {
+    "space-around-alphabet": 1,
+    "space-around-number": 1,
+    "no-empty-code-lang": 2,
+    "no-empty-code": 2,
+    "no-empty-inline-code": 2,
+    "no-empty-url": 2,
+    "no-empty-blockquote": 1,
+    "no-empty-list": 1
+  }
+}

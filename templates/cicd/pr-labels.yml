@@ -1,0 +1,237 @@
+# Copy to .github/workflows/pr-labels.yml in your app repo.
+# No configuration required — works out of the box with GITHUB_TOKEN.
+#
+# What this workflow does:
+#   Uses joerick/pr-labels-action@v1.0.9 to read the labels applied to the
+#   current PR and expose them to every subsequent step in two ways:
+#
+#   1. ENVIRONMENT VARIABLES — each label becomes GITHUB_PR_LABEL_<NAME>
+#      where <NAME> is the label uppercased with hyphens replaced by underscores.
+#      Example: label "skip-tests"  →  GITHUB_PR_LABEL_SKIP_TESTS=true
+#               label "security"    →  GITHUB_PR_LABEL_SECURITY=true
+#
+#   2. STEP OUTPUT — steps.pr-labels.outputs.labels is a space-padded string
+#      of all label names, safe for `contains()` expressions.
+#      Example: " bug enhancement security "
+#
+# Revvel Standard Labels supported out of the box:
+#   skip-tests    — bypass unit & E2E tests for hotfixes / docs-only changes
+#   security      — trigger an extra Trivy/OWASP dependency scan
+#   design        — post a reminder to attach screenshots / design assets
+#   bom-purchase  — post a BOM.md update reminder comment on the PR
+#   documentation — skip build & test jobs, run docs lint only
+#
+# Setup:
+#   cp templates/cicd/pr-labels.yml .github/workflows/pr-labels.yml
+#
+# No secrets or configuration changes are required.
+
+name: PR Labels
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 1 — Read PR labels and set outputs / env vars
+  # ────────────────────────────────────────────────────────────────────────────
+  read-labels:
+    name: Read PR Labels
+    runs-on: ubuntu-latest
+
+    outputs:
+      labels: ${{ steps.pr-labels.outputs.labels }}
+
+    steps:
+      - name: Get PR labels
+        id: pr-labels
+        uses: joerick/pr-labels-action@v1.0.9
+
+      - name: Log active labels
+        run: |
+          echo "Active PR labels: ${{ steps.pr-labels.outputs.labels }}"
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 2 — Skip-tests gate
+  #   Logs a notice when the `skip-tests` label is present so other workflows
+  #   (e.g. ci.yml) can condition on the same label output.
+  # ────────────────────────────────────────────────────────────────────────────
+  skip-tests-notice:
+    name: Skip Tests Notice
+    runs-on: ubuntu-latest
+    needs: read-labels
+    if: contains(needs.read-labels.outputs.labels, ' skip-tests ')
+
+    steps:
+      - name: Notice — tests are being skipped
+        run: |
+          echo "::notice title=skip-tests label detected::Unit and E2E tests will be skipped for this PR."
+          echo "Remove the 'skip-tests' label before merging to ensure full CI coverage."
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 3 — Security label gate
+  #   When the `security` label is applied, posts a reminder comment that a
+  #   security review checklist must be completed before merge.
+  # ────────────────────────────────────────────────────────────────────────────
+  security-review-reminder:
+    name: Security Review Reminder
+    runs-on: ubuntu-latest
+    needs: read-labels
+    if: contains(needs.read-labels.outputs.labels, ' security ')
+
+    steps:
+      - name: Post security review reminder comment
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- pr-labels-security-reminder -->';
+
+            // Skip if comment already posted to avoid duplicates on re-runs
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+            if (comments.some(c => c.body && c.body.includes(marker))) {
+              core.info('Security reminder already posted — skipping duplicate.');
+              return;
+            }
+
+            const body = [
+              marker,
+              '## 🔴 Security Label Detected',
+              '',
+              'This PR is marked **security**. The following security review steps must be',
+              'completed before this PR is approved and merged:',
+              '',
+              '- [ ] Run `pnpm audit` (or `npm audit`) and resolve all high/critical findings',
+              '- [ ] Verify no secrets or credentials are committed (use `git-secrets` or Trivy)',
+              '- [ ] All new API routes have auth / authorisation checks',
+              '- [ ] No raw SQL with user-supplied values (parameterised queries only)',
+              '- [ ] No `eval()`, `Function()`, or dynamic `require()` introduced',
+              '- [ ] OWASP Top 10 checklist reviewed for the changed surface area',
+              '- [ ] `SECURITY_STANDARD.md` has been consulted',
+              '',
+              '---',
+              '_This comment was posted automatically by the PR Labels workflow._',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 4 — Design label gate
+  #   When the `design` label is applied, posts a reminder to attach
+  #   screenshots or design assets before the PR can be approved.
+  # ────────────────────────────────────────────────────────────────────────────
+  design-asset-reminder:
+    name: Design Asset Reminder
+    runs-on: ubuntu-latest
+    needs: read-labels
+    if: contains(needs.read-labels.outputs.labels, ' design ')
+
+    steps:
+      - name: Post design asset reminder comment
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- pr-labels-design-reminder -->';
+
+            // Skip if comment already posted to avoid duplicates on re-runs
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+            if (comments.some(c => c.body && c.body.includes(marker))) {
+              core.info('Design reminder already posted — skipping duplicate.');
+              return;
+            }
+
+            const body = [
+              marker,
+              '## 🎨 Design Label Detected',
+              '',
+              'This PR is marked **design**. Please attach the following before requesting review:',
+              '',
+              '- [ ] Before/after screenshots or screen recordings',
+              '- [ ] Figma / design-tool link (if applicable)',
+              '- [ ] Revvel Emblem / brand guidelines consulted (`brand/` folder)',
+              '- [ ] Accessibility check completed (`ACCESSIBILITY_STANDARD.md`)',
+              '',
+              '---',
+              '_This comment was posted automatically by the PR Labels workflow._',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 5 — BOM purchase label gate
+  #   When the `bom-purchase` label is applied, posts a reminder to update
+  #   BOM.md with the new purchase line item.
+  # ────────────────────────────────────────────────────────────────────────────
+  bom-purchase-reminder:
+    name: BOM Purchase Reminder
+    runs-on: ubuntu-latest
+    needs: read-labels
+    if: contains(needs.read-labels.outputs.labels, ' bom-purchase ')
+
+    steps:
+      - name: Post BOM update reminder comment
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- pr-labels-bom-reminder -->';
+
+            // Skip if comment already posted to avoid duplicates on re-runs
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+            if (comments.some(c => c.body && c.body.includes(marker))) {
+              core.info('BOM reminder already posted — skipping duplicate.');
+              return;
+            }
+
+            const body = [
+              marker,
+              '## 💰 BOM Purchase Label Detected',
+              '',
+              'This PR requires a purchase or new paid dependency. Before merging:',
+              '',
+              '- [ ] `BOM.md` updated with the new line item (vendor, cost, renewal date)',
+              '- [ ] Budget approval obtained (if required)',
+              '- [ ] Free / open-source alternatives evaluated and documented',
+              '',
+              '---',
+              '_This comment was posted automatically by the PR Labels workflow._',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });

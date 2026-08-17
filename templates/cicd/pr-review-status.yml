@@ -1,0 +1,328 @@
+# PR Review Status Automation
+#
+# Automatically manages PR labels based on review status and provides
+# visual status badges for the review state of pull requests.
+#
+# What this workflow does:
+#   1. AUTO-LABEL ON REVIEW: When a review is submitted, automatically
+#      applies the appropriate label based on review state:
+#      - "awaiting-approval" when PR is opened and needs review
+#      - "review-started" when first review is submitted
+#      - "changes-requested" when reviewer requests changes
+#      - "approved" when reviewer approves
+#   2. REMOVE CONFLICTING LABELS: Ensures only the current status label
+#      is present (e.g., removes "awaiting-approval" when "approved" is added)
+#   3. STATUS COMMENT: Posts/updates a comment showing current review status
+#      with badges and reviewer information
+#   4. APPROVAL NOTIFICATIONS: Notifies PR author when reviews are submitted
+#
+# Triggers:
+#   • pull_request_review — when a review is submitted, edited, or dismissed
+#   • pull_request — when a PR is opened or reopened
+#   • pull_request_review_comment — when review comments are added
+
+name: PR Review Status Automation
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 1 — Apply initial "awaiting-approval" label when PR is opened
+  # ────────────────────────────────────────────────────────────────────────────
+  initial-review-label:
+    name: Apply Awaiting Approval Label
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.draft == false &&
+      (github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'ready_for_review')
+
+    steps:
+      - name: Ensure review status labels exist
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const labels = [
+              { name: 'awaiting-approval', color: 'fbca04', description: 'PR is awaiting review and approval' },
+              { name: 'changes-requested', color: 'd93f0b', description: 'PR has changes requested by reviewers' },
+              { name: 'approved', color: '0e8a16', description: 'PR has been approved by reviewers' },
+              { name: 'review-started', color: '0075ca', description: 'PR review has been initiated' },
+            ];
+
+            for (const label of labels) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                });
+              } catch (e) {
+                if (e.status === 404) {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label.name,
+                    color: label.color,
+                    description: label.description,
+                  });
+                  core.info(`Created label: ${label.name}`);
+                }
+              }
+            }
+
+      - name: Apply awaiting-approval label
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Check if PR already has review labels
+            const { data: prLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+
+            const reviewLabels = ['awaiting-approval', 'changes-requested', 'approved', 'review-started'];
+            const hasReviewLabel = prLabels.some(l => reviewLabels.includes(l.name));
+
+            if (!hasReviewLabel) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                labels: ['awaiting-approval'],
+              });
+              core.info('Applied awaiting-approval label to PR');
+            }
+
+      - name: Post initial status comment
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const marker = '<!-- pr-review-status-badge -->';
+            
+            // Check if status comment already exists
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              per_page: 100,
+            });
+
+            const existingComment = comments.find(c => c.body && c.body.includes(marker));
+            
+            if (!existingComment) {
+              const body = [
+                marker,
+                '## 📊 PR Review Status',
+                '',
+                '![Status](https://img.shields.io/badge/status-awaiting_approval-yellow?style=for-the-badge)',
+                '',
+                '**Current State:** Awaiting review and approval',
+                '',
+                '---',
+                '_This status is updated automatically by the PR Review Status Automation workflow._',
+              ].join('\n');
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body,
+              });
+            }
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Job 2 — Update labels and status based on review state
+  # ────────────────────────────────────────────────────────────────────────────
+  update-review-status:
+    name: Update Review Status Labels
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request_review' ||
+      github.event_name == 'pull_request_review_comment'
+
+    steps:
+      - name: Determine review state and update labels
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            
+            // Fetch all reviews for this PR
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+
+            // Determine the current state based on the latest review from each reviewer
+            const reviewerStates = new Map();
+            
+            for (const review of reviews) {
+              const reviewer = review.user.login;
+              const state = review.state;
+              
+              // Keep only the most recent review state from each reviewer
+              if (!reviewerStates.has(reviewer) || 
+                  new Date(review.submitted_at) > new Date(reviewerStates.get(reviewer).submitted_at)) {
+                reviewerStates.set(reviewer, { state, submitted_at: review.submitted_at });
+              }
+            }
+
+            // Determine overall status
+            let hasApproval = false;
+            let hasChangesRequested = false;
+            let hasReviewStarted = reviewerStates.size > 0;
+
+            for (const [reviewer, data] of reviewerStates) {
+              if (data.state === 'APPROVED') {
+                hasApproval = true;
+              } else if (data.state === 'CHANGES_REQUESTED') {
+                hasChangesRequested = true;
+              }
+            }
+
+            // Determine the label to apply
+            let targetLabel;
+            let statusBadge;
+            let statusText;
+
+            if (hasChangesRequested) {
+              targetLabel = 'changes-requested';
+              statusBadge = '![Status](https://img.shields.io/badge/status-changes_requested-red?style=for-the-badge)';
+              statusText = '**Current State:** Changes requested by reviewers';
+            } else if (hasApproval) {
+              targetLabel = 'approved';
+              statusBadge = '![Status](https://img.shields.io/badge/status-approved-green?style=for-the-badge)';
+              statusText = '**Current State:** PR has been approved ✅';
+            } else if (hasReviewStarted) {
+              targetLabel = 'review-started';
+              statusBadge = '![Status](https://img.shields.io/badge/status-review_started-blue?style=for-the-badge)';
+              statusText = '**Current State:** Review in progress';
+            } else {
+              targetLabel = 'awaiting-approval';
+              statusBadge = '![Status](https://img.shields.io/badge/status-awaiting_approval-yellow?style=for-the-badge)';
+              statusText = '**Current State:** Awaiting review and approval';
+            }
+
+            core.info(`Determined target label: ${targetLabel}`);
+
+            // Remove old review status labels
+            const reviewLabels = ['awaiting-approval', 'changes-requested', 'approved', 'review-started'];
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+
+            for (const label of currentLabels) {
+              if (reviewLabels.includes(label.name) && label.name !== targetLabel) {
+                try {
+                  await github.rest.issues.removeLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: prNumber,
+                    name: label.name,
+                  });
+                  core.info(`Removed label: ${label.name}`);
+                } catch (e) {
+                  core.warning(`Could not remove label ${label.name}: ${e.message}`);
+                }
+              }
+            }
+
+            // Add the target label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              labels: [targetLabel],
+            });
+            core.info(`Applied label: ${targetLabel}`);
+
+            // Build reviewer summary
+            const reviewerSummary = [];
+            for (const [reviewer, data] of reviewerStates) {
+              const icon = data.state === 'APPROVED' ? '✅' : 
+                          data.state === 'CHANGES_REQUESTED' ? '🔴' : 
+                          data.state === 'COMMENTED' ? '💬' : '👁️';
+              const stateText = data.state === 'APPROVED' ? 'Approved' :
+                               data.state === 'CHANGES_REQUESTED' ? 'Changes Requested' :
+                               data.state === 'COMMENTED' ? 'Commented' : 'Reviewed';
+              reviewerSummary.push(`${icon} **@${reviewer}** — ${stateText}`);
+            }
+
+            const reviewersText = reviewerSummary.length > 0 
+              ? `\n\n**Reviewers:**\n${reviewerSummary.join('\n')}`
+              : '';
+
+            // Update status comment
+            const marker = '<!-- pr-review-status-badge -->';
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+
+            const existingComment = comments.find(c => c.body && c.body.includes(marker));
+
+            const body = [
+              marker,
+              '## 📊 PR Review Status',
+              '',
+              statusBadge,
+              '',
+              statusText,
+              reviewersText,
+              '',
+              '---',
+              '_This status is updated automatically by the PR Review Status Automation workflow._',
+            ].join('\n');
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existingComment.id,
+                body,
+              });
+              core.info('Updated existing status comment');
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+              core.info('Created new status comment');
+            }
+
+            // Store the label for the next job
+            core.setOutput('review_status', targetLabel);
+
+      - name: Notify on approval
+        if: steps.determine-review-state.outputs.review_status == 'approved'
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            core.notice(
+              `✅ PR #${context.payload.pull_request.number} has been approved and is ready to merge!`
+            );

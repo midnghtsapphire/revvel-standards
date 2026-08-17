@@ -1,0 +1,27 @@
+{
+  "schema": "midnghtsapphire.automation_package/v2",
+  "template_id": "image-seo-pipeline",
+  "brand": "MIDNGHTSAPPHIRE",
+  "human_gate": {
+    "auto_merge": false
+  },
+  "note": "Import into Gumloop; secrets by name only (see config/connections.image-automation.yml).",
+  "trigger": {
+    "type": "webhook",
+    "name": "image.seo.request"
+  },
+  "nodes": [
+    { "id": "n1", "type": "input.brief", "name": "Intake" },
+    { "id": "n2", "type": "agent.lsi", "name": "LSI expand", "config": { "mode": "seed+cooccurrence" } },
+    { "id": "n3", "type": "agent.seo", "name": "SEO pack", "config": { "builder": "scripts/image-seo-build-pack.mjs" } },
+    { "id": "n4", "type": "image.generate", "name": "Generate" },
+    { "id": "n5", "type": "qa.image_seo", "name": "QA", "config": { "script": "scripts/image-seo-filename-qa.mjs" } },
+    {
+      "id": "n6",
+      "type": "github.pr",
+      "name": "Draft PR only",
+      "config": { "auto_merge": false, "draft": true }
+    }
+  ],
+  "secrets_by_name": ["OPENROUTER_API_KEY", "GUMLOOP_API_KEY"]
+}

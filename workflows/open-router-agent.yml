@@ -1,0 +1,106 @@
+name: OpenRouter Agent
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened]
+  pull_request_review_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  openrouter-agent:
+    name: Respond via OpenRouter
+    runs-on: ubuntu-latest
+
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@openrouter-agent')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@openrouter-agent')) ||
+      (github.event_name == 'issues' && github.event.action == 'opened')
+
+    steps:
+      - name: Build prompt context
+        id: context
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          ISSUE_TITLE: ${{ github.event.issue.title || github.event.pull_request.title }}
+          ISSUE_BODY: ${{ github.event.issue.body || github.event.pull_request.body }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          SENDER: ${{ github.event.sender.login }}
+        run: |
+          USER_PROMPT=$(echo "$COMMENT_BODY" | sed 's/@openrouter-agent//g' | xargs)
+
+          if [ "$EVENT_NAME" = "issues" ]; then
+            SYSTEM_MSG="You are a helpful GitHub assistant for the revvel-standards repository. A new issue was just opened. Provide a concise summary and suggest next steps or relevant standards."
+            PROMPT="Issue title: $ISSUE_TITLE\n\nIssue body:\n$ISSUE_BODY"
+          else
+            SYSTEM_MSG="You are a helpful GitHub assistant for the revvel-standards repository. Answer the user's question clearly and concisely. Reference relevant standards or patterns when applicable."
+            PROMPT="Context — Issue/PR: $ISSUE_TITLE\n\nUser ($SENDER) asked: $USER_PROMPT"
+          fi
+
+          SYSTEM_ESCAPED=$(echo "$SYSTEM_MSG" | jq -Rs .)
+          PROMPT_ESCAPED=$(echo "$PROMPT" | jq -Rs .)
+
+          echo "system=$SYSTEM_ESCAPED" >> $GITHUB_OUTPUT
+          echo "prompt=$PROMPT_ESCAPED" >> $GITHUB_OUTPUT
+
+      - name: Call OpenRouter API
+        id: ai
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          SYSTEM=${{ steps.context.outputs.system }}
+          PROMPT=${{ steps.context.outputs.prompt }}
+
+          PAYLOAD=$(jq -n \
+            --argjson system "$SYSTEM" \
+            --argjson prompt "$PROMPT" \
+            '{
+              model: "anthropic/claude-3.5-sonnet",
+              max_tokens: 1024,
+              messages: [
+                { role: "system", content: $system },
+                { role: "user", content: $prompt }
+              ]
+            }')
+
+          RESPONSE=$(curl -sf https://openrouter.ai/api/v1/chat/completions \
+            -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+            -H "Content-Type: application/json" \
+            -H "HTTP-Referer: https://github.com/midnghtsapphire/revvel-standards" \
+            -H "X-Title: revvel-standards OpenRouter Agent" \
+            -d "$PAYLOAD")
+
+          if [ $? -ne 0 ]; then
+            echo "reply=⚠️ OpenRouter API call failed. Check your \`OPENROUTER_API_KEY\` secret." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          REPLY=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // "⚠️ No response returned."')
+          echo "reply<<EOF" >> $GITHUB_OUTPUT
+          echo "$REPLY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Post reply as comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPLY: ${{ steps.ai.outputs.reply }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+        run: |
+          BODY=$(jq -n --arg body "> 🤖 **OpenRouter Agent**
+
+          $REPLY
+
+          ---
+          *Powered by [OpenRouter](https://openrouter.ai) · Model: \`anthropic/claude-3.5-sonnet\`*" \
+            '{ body: $body }')
+
+          gh api "repos/$REPO/issues/$ISSUE_NUMBER/comments" \
+            --method POST \
+            --input - <<< "$BODY"

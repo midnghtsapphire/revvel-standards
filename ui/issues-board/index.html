@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Issues Board</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; margin: 0; padding: 20px; }
+  h1 { color: #58a6ff; }
+  .issue { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 16px; margin-bottom: 12px; }
+  .issue-title { color: #58a6ff; text-decoration: none; font-weight: 600; font-size: 16px; }
+  .issue-title:hover { text-decoration: underline; }
+  .issue-meta { color: #8b949e; font-size: 12px; margin-top: 6px; }
+  .label { display: inline-block; background: #1f6feb; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-right: 4px; }
+  .assignee { display: inline-block; background: #238636; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-right: 4px; }
+  #controls { margin-bottom: 20px; }
+  input, button { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 8px 12px; border-radius: 6px; }
+  button { cursor: pointer; }
+  button:hover { background: #30363d; }
+</style>
+</head>
+<body>
+  <h1>📋 Issues Board</h1>
+  <div id="controls">
+    <input id="repo" placeholder="owner/repo" value="" />
+    <button id="load">Load Issues</button>
+  </div>
+  <div id="issues">Loading...</div>
+
+<script>
+/**
+ * Escape HTML-sensitive characters to prevent XSS injection.
+ * All user-controlled strings (issue titles, labels, logins, URLs) MUST
+ * be passed through this before being interpolated into innerHTML.
+ */
+function escapeHTML(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+async function loadIssues(repo) {
+  const container = document.getElementById('issues');
+  container.textContent = 'Loading...';
+  try {
+    const res = await fetch(`https://api.github.com/repos/${encodeURIComponent(repo.split('/')[0])}/${encodeURIComponent(repo.split('/')[1])}/issues?state=open&per_page=30`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const issues = await res.json();
+    if (!Array.isArray(issues) || issues.length === 0) {
+      container.textContent = 'No open issues.';
+      return;
+    }
+    container.innerHTML = issues.map(issue => {
+      const title = escapeHTML(issue.title);
+      const url = escapeHTML(issue.html_url);
+      const number = escapeHTML(issue.number);
+      const user = escapeHTML(issue.user && issue.user.login);
+      const labels = (issue.labels || [])
+        .map(l => `<span class="label">${escapeHTML(l.name)}</span>`)
+        .join('');
+      const assignees = (issue.assignees || [])
+        .map(a => `<span class="assignee">@${escapeHTML(a.login)}</span>`)
+        .join('');
+      return `
+        <div class="issue">
+          <a class="issue-title" href="${url}" target="_blank" rel="noopener noreferrer">#${number} ${title}</a>
+          <div class="issue-meta">by @${user} ${labels} ${assignees}</div>
+        </div>`;
+    }).join('');
+  } catch (err) {
+    container.textContent = 'Error loading issues: ' + escapeHTML(err.message);
+  }
+}
+
+document.getElementById('load').addEventListener('click', () => {
+  const repo = document.getElementById('repo').value.trim();
+  if (repo.includes('/')) loadIssues(repo);
+});
+</script>
+</body>
+</html>

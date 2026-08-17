@@ -1,0 +1,63 @@
+# AI CI Failure Helper
+#
+# Marketplace: https://github.com/marketplace/actions/ai-ci-failure-helper
+# Action repo: https://github.com/maxlim0/actions-progci-fail
+#
+# Inspects the current workflow run after failure, tails the failed job/step
+# log, and asks OpenRouter for a likely root cause + concrete fixes. If the
+# run is tied to a PR, a tagged PR comment is created/updated.
+#
+# This complements `ralph-loop.yml` — `ralph-loop` opens an issue and routes
+# to the orchestrator, while this action posts an immediate diagnostic
+# comment from within the failing workflow.
+#
+# Secrets required: OPENROUTER_API_KEY
+# Copy this file to: .github/workflows/ai-ci-failure-helper.yml
+#
+# Usage: copy this workflow into `.github/workflows/` and run it manually
+# with `workflow_dispatch` when you want AI assistance on the current run.
+
+name: AI CI Failure Helper
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+jobs:
+  ai-helper:
+    name: AI failure helper
+    runs-on: ubuntu-latest
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+    steps:
+      - name: Verify OPENROUTER_API_KEY is configured
+        run: |
+          if [ -z "${OPENROUTER_API_KEY}" ]; then
+            echo "::warning::OPENROUTER_API_KEY is not set — skipping AI CI Failure Helper."
+          else
+            echo "OPENROUTER_API_KEY is configured."
+          fi
+
+      - name: AI failure helper
+        if: env.OPENROUTER_API_KEY != ''
+        uses: maxlim0/actions-progci-fail@v0.13
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        with:
+          openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
+          # NOTE: The `:free` variant was retired by OpenRouter in April 2026
+          # ("The free Grok 4.1 Fast period has ended"). Use the paid slug.
+          model: x-ai/grok-4.1-fast
+          max_log_lines: 200
+          prompt_template: |
+            Workflow {{WORKFLOW_NAME}} failed at job {{JOB_NAME}},
+            step {{STEP_NAME}}.
+            Last log lines:
+            {{LOG}}
+            Explain the likely root cause and suggest concrete fixes.
+            Keep the explanation under 200 words.

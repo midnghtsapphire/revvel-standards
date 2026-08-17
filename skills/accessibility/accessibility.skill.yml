@@ -1,0 +1,113 @@
+name: accessibility
+title: "Accessibility Standard"
+version: "1.0.0"
+description: "Implement WCAG 2.2 AA/AAA accessibility requirements including TTY/TDD support, 7 UI modes, and screen reader testing."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Accessibility & Compliance"
+  tags: ["accessibility", "wcag", "ada", "screen-reader", "tty"]
+  created_at: "2026-04-12"
+  updated_at: "2026-04-12"
+
+dependencies:
+  skills: []
+  tools: []
+  pip_packages: []
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    # Accessibility Skill
+    
+    Implement WCAG 2.2 AA/AAA accessibility requirements including TTY/TDD support, 7 UI modes, and screen reader testing.
+    
+    ## Compliance Targets
+    
+    | Standard | Level |
+    |---|---|
+    | WCAG 2.2 | AA minimum, AAA where feasible |
+    | Section 508 | Full compliance |
+    | ADA Title III | Full compliance |
+    | Lighthouse | Accessibility ≥ 90 (CI gate) |
+    
+    ## TTY / TDD — First-Class Requirement
+    
+    Every Revvel app footer must display:
+    ```html
+    <p>TTY: <a href="tel:[TTY_PHONE]">[TTY_PHONE]</a> (Hearing Impaired)
+      <small>TTY users may also dial 711 to reach us through the relay service.</small></p>
+    ```
+    - TTY number in footer, Contact page, and Organization JSON-LD (`contactOption: "TDDService"`)
+    - TTY checkbox on all lead/contact forms: "I am deaf or hard of hearing and need TTY relay"
+    - CRM: `leads.requires_tty = true` triggers TTY workflow
+    
+    ## The 7 Accessibility UI Modes
+    
+    Every app must implement a user-controlled mode selector (persistent header button + Alt+A shortcut):
+    
+    | Mode | Code | Key Changes |
+    |---|---|---|
+    | Standard | `standard` | Default |
+    | High Contrast (WCAG AAA) | `wcag_aaa` | 4.5:1+ contrast, 18px+ body, reduced motion |
+    | Dyslexia-Friendly | `dyslexia` | OpenDyslexic font, wider letter spacing |
+    | ADHD Focus Mode | `adhd` | Minimal UI, Pomodoro integration, dims non-active |
+    | Sensory Safe | `sensory` | No animations, no auto-play, muted colors |
+    | Large Print | `large_print` | 20px+ body, 44×44px min targets |
+    | ECO / Low Power | `eco` | No shadows/filters/gradients, minimal images |
+    
+    Store preference in `localStorage` and `users.accessibility_mode` (DB).
+    
+    ## WCAG 2.2 AA Non-Negotiables
+    
+    - All `<img>` have `alt` (meaningful description or `""` for decorative)
+    - Text contrast: 4.5:1 (body), 3:1 (large text ≥18px)
+    - All interactive elements keyboard-accessible (Tab + Enter + Space)
+    - No keyboard traps; focus always visible (never `outline: none` without replacement)
+    - Skip navigation link: `<a href="#main-content" class="sr-only">Skip to main content</a>`
+    - Minimum click/touch target: 44×44px
+    - `<html lang="en">` on every page
+    - `role="alert"` or `aria-live="polite"` on all toast/error notifications
+    - Every `<input>` has associated `<label>` via `for`/`id` — placeholder is NOT a substitute
+    
+    ## Form Accessibility (Critical for Insurance/Lead Forms)
+    
+    ```tsx
+    <label htmlFor="date-of-birth">Date of Birth <span aria-label="required">*</span></label>
+    <input id="date-of-birth" aria-required="true" aria-describedby="dob-hint dob-error"
+      aria-invalid={errors.dateOfBirth ? 'true' : 'false'} />
+    {errors.dateOfBirth && <p id="dob-error" role="alert">{errors.dateOfBirth.message}</p>}
+    ```
+    
+    ## CI/CD Automated Checks
+    
+    - **axe-core**: WCAG 2.2 AA violations
+    - **Lighthouse**: Accessibility score ≥ 90 (hard CI gate)
+    - **Pa11y**: CI check, 0 critical errors before merge
+    - **eslint-plugin-jsx-a11y**: JSX accessibility on every PR
+    
+    ## Screen Reader Testing (Before Launch)
+    
+    Test with NVDA (Windows/free), VoiceOver (Mac/built-in), TalkBack (Android/built-in):
+    - Navigate full page with Tab only
+    - Fill out lead form without mouse
+    - Error messages announced on invalid fields
+    - Modal dialogs trap focus correctly
+    
+    ## Launch Checklist
+    
+    - [ ] All images have descriptive alt text
+    - [ ] All form fields have `<label>` elements
+    - [ ] Color contrast 4.5:1 body / 3:1 large text
+    - [ ] TTY phone in footer, contact page, Organization JSON-LD
+    - [ ] TTY checkbox on all lead/contact forms
+    - [ ] All 7 accessibility modes functional
+    - [ ] Lighthouse accessibility ≥ 90
+    - [ ] Tested with NVDA or VoiceOver
+    - [ ] `/about/accessibility` page published
+    
+
+examples: []
+
+schema_version: "1.0"

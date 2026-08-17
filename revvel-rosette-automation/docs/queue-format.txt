@@ -1,0 +1,65 @@
+Queue File Format Documentation
+================================
+
+The queue.txt file manages asynchronous task processing for the Revvel Rosette Automation system.
+
+Format
+------
+Each line represents a single task:
+
+PRIORITY|TASK_TYPE|TASK_DATA|TIMESTAMP|RETRY_COUNT
+
+Fields:
+- PRIORITY: P0 (critical), P1 (high), P2 (normal), P3 (low)
+- TASK_TYPE: Type of task (gatekeeper, trello_sync, security_audit, etc.)
+- TASK_DATA: JSON-encoded task parameters
+- TIMESTAMP: ISO 8601 timestamp when task was queued
+- RETRY_COUNT: Number of retry attempts (starts at 0)
+
+Examples
+--------
+
+P0|gatekeeper|{"repo":"midnghtsapphire/revvel-standards","secrets":["OPENROUTER_API_KEY"]}|2026-05-02T03:00:00Z|0
+P1|trello_sync|{"issue_number":123}|2026-05-02T03:05:00Z|0
+P2|security_audit|{"type":"weekly"}|2026-05-02T00:00:00Z|1
+
+Processing Rules
+----------------
+
+1. Tasks are processed in priority order (P0 first, P3 last)
+2. Within same priority, FIFO (first in, first out)
+3. Failed tasks are re-queued with incremented RETRY_COUNT
+4. After 3 retries, tasks move to dead letter queue (dlq.txt)
+5. Queue is processed every 60 seconds by default
+6. Maximum queue size is 1000 items (configurable)
+
+Task Types
+----------
+
+- gatekeeper: Provision secrets for a repository
+- trello_sync: Sync GitHub issue to Trello card
+- security_audit: Run security audit
+- credential_rotation: Rotate expiring credentials
+- metrics_report: Generate metrics report
+- self_heal: Run self-healing checks
+- github_action: Trigger a GitHub Action workflow
+- email_notification: Send email alert
+
+Management
+----------
+
+# View queue
+cat queue.txt
+
+# Add task manually
+echo "P0|gatekeeper|{\"repo\":\"owner/repo\"}|$(date -Iseconds)|0" >> queue.txt
+
+# Clear queue
+> queue.txt
+
+# View dead letter queue
+cat dlq.txt
+
+# Count tasks by priority
+grep -c "^P0" queue.txt
+grep -c "^P1" queue.txt

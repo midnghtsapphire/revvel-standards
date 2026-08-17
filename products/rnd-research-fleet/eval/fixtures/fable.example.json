@@ -1,0 +1,75 @@
+{
+  "label": "fable",
+  "strategy": "fable",
+  "search_prompt_version": "fable-v1",
+  "router_profile": "fable_single_pass",
+  "notes": "Illustrative offline Fable run (single-model search baseline to beat). No live API was called; answers are stand-ins capturing the qualities a good Fable run would surface. Slightly thinner than twin on a couple of queries.",
+  "results": [
+    {
+      "query_id": "repo-automation-gh-repo",
+      "answer": "The gh CLI infers the repo from git remotes. With no actions/checkout step, set GH_REPO to github.repository at the job env so gh knows the target.",
+      "citations": ["https://docs.github.com/en/actions", "https://cli.github.com/manual/"],
+      "error": false,
+      "latency_ms": 1400,
+      "tokens": { "input": 700, "output": 900 },
+      "cost_usd": 0.0020,
+      "usefulness_note": "Actionable, but omits the per-call --repo alternative."
+    },
+    {
+      "query_id": "insurance-lead-api-research",
+      "answer": "Several providers expose lead-sourcing APIs with usage-based pricing. Compliance requires data-handling agreements before purchasing leads.",
+      "citations": [
+        "https://www.zillow.com/",
+        "https://www.experian.com/",
+        "https://www.leadspedia.com/",
+        "https://www.ftc.gov/"
+      ],
+      "error": false,
+      "latency_ms": 4200,
+      "tokens": { "input": 900, "output": 2100 },
+      "cost_usd": 0.0060,
+      "freshness_year": 2026,
+      "usefulness_note": "Multiple providers, but does not call out consent capture explicitly."
+    },
+    {
+      "query_id": "workflow-syntax-issue",
+      "answer": "Run actionlint or python yaml.safe_load to validate the workflow; YAML errors are usually indentation. The validator reports the offending line.",
+      "citations": ["https://github.com/rhysd/actionlint"],
+      "error": false,
+      "latency_ms": 1100,
+      "cost_usd": 0.0010
+    },
+    {
+      "query_id": "code-review-routing-task",
+      "answer": "Route workflow PRs to a code-review profile that prioritizes least-privilege permissions and command-injection risk in run: blocks.",
+      "citations": ["https://docs.github.com/en/actions/security-guides"],
+      "error": false,
+      "latency_ms": 1300,
+      "cost_usd": 0.0012
+    },
+    {
+      "query_id": "product-market-research",
+      "answer": "TAM for HVAC BOM SaaS spans contractors and distributors. Competitors offer tiered pricing and recent reports size the market.",
+      "citations": [
+        "https://www.grandviewresearch.com/",
+        "https://www.statista.com/",
+        "https://www.ahrinet.org/",
+        "https://www.ibisworld.com/"
+      ],
+      "error": false,
+      "latency_ms": 5200,
+      "tokens": { "input": 1000, "output": 2400 },
+      "cost_usd": 0.0070,
+      "freshness_year": 2025,
+      "usefulness_note": "TAM and competitors, but drops explicit market-segment breakdown."
+    },
+    {
+      "query_id": "docs-bom-discovery",
+      "answer": "Authoritative BOM standards and component specifications come from standards bodies; documentation lists required components and specification fields.",
+      "citations": ["https://www.ashrae.org/", "https://www.iso.org/"],
+      "error": false,
+      "latency_ms": 2100,
+      "cost_usd": 0.0022
+    }
+  ]
+}

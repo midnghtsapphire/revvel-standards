@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json.schemastore.org/mcp-config",
+  "_comment": "Revvel MCP configuration — see docs/Master_Inventory/MCP_STANDARD.md and docs/MCP_REVVEL_CATALOG.md for full details.",
+  "mcpServers": {
+    "rvvel-affiliate-links": {
+      "_comment": "8 tools for the Revvel affiliate link ecosystem. See AGENTS.md for tool list.",
+      "command": "node",
+      "args": ["${MCP_AFFILIATE_LINKS_PATH:-./mcp-servers/affiliate-links/index.js}"],
+      "env": {
+        "DATABASE_URL": "${AFFILIATE_DB_URL}",
+        "NODE_ENV": "production"
+      },
+      "disabled": true,
+      "disabledReason": "Server not yet deployed. Enable once mcp-servers/affiliate-links/ is built and DATABASE_URL is configured."
+    },
+    "code-review": {
+      "_comment": "10 tools for automated code quality enforcement. See AGENTS.md for tool list.",
+      "command": "node",
+      "args": ["${MCP_CODE_REVIEW_PATH:-./mcp-servers/code-review/index.js}"],
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "disabled": true,
+      "disabledReason": "Server not yet deployed. Enable once mcp-servers/code-review/ is built."
+    },
+    "axion-planetary": {
+      "_comment": "Axion Planetary MCP — SAR-to-optical foundation model for cloud-free Earth observation. See docs/AXION_PLANETARY_MCP.md. Tools: axion_sar2optical, axion_describe_sar, axion_batch_convert, axion_status.",
+      "command": "python",
+      "args": ["-m", "growlingeyes.axion_mcp.server"],
+      "env": {
+        "AXION_SAR2OPTICAL_WEIGHTS": "${AXION_SAR2OPTICAL_WEIGHTS}",
+        "AXION_OUTPUT_FORMAT": "${AXION_OUTPUT_FORMAT:-png}"
+      },
+      "disabled": true,
+      "disabledReason": "Enable once growlingeyes/ deps are installed: pip install -r growlingeyes/requirements.txt"
+    },
+    "doppler": {
+      "_comment": "DoppleMCP — 11 tools for Doppler secrets management: secrets CRUD, projects, tokens, health. See growlingeyes/doppemcp/README.md. OPTIONAL: Doppler integration is not required for core functionality. Enable only when you have acquired Doppler credentials independently.",
+      "command": "python",
+      "args": ["-m", "doppemcp.server"],
+      "env": {
+        "DOPPLER_TOKEN": "${DOPPLER_TOKEN}",
+        "DOPPLER_PROJECT": "${DOPPLER_PROJECT:-revvel-standards}",
+        "DOPPLER_CONFIG": "${DOPPLER_CONFIG:-prd}"
+      },
+      "disabled": true,
+      "disabledReason": "Disabled until credentials are acquired. To enable: (1) Sign up at doppler.com, (2) Create project 'revvel-standards', (3) Generate service token, (4) Set DOPPLER_TOKEN env var, (5) Install: cd growlingeyes/doppemcp && pip install -e ."
+    },
+    "meilisearch": {
+      "_comment": "MeiliSearch MCP — 8 tools for product/user-facing search: index management, document CRUD, search, settings. See mcp-servers/meilisearch-mcp/README.md. HIGH PRIORITY — Revenue blocker (search affects conversions).",
+      "command": "python",
+      "args": ["-m", "meilisearch_mcp.server"],
+      "env": {
+        "MEILI_HOST": "${MEILI_HOST:-http://localhost:7700}",
+        "MEILI_KEY": "${MEILI_KEY:-masterKey}"
+      },
+      "disabled": true,
+      "disabledReason": "Enable once MeiliSearch is installed and configured. To enable: (1) Run `docker compose up -d` in poc/meilisearch/ OR provision MeiliSearch Cloud, (2) Set MEILI_HOST and MEILI_KEY in your .env (see .env.example) — WARNING: the 'masterKey' fallback is a local-dev default ONLY; always set a strong MEILI_KEY before enabling in production, (3) Install: cd mcp-servers/meilisearch-mcp && pip install -e ., (4) Remove this disabled entry."
+    },
+    "github-issues-enhanced": {
+      "_comment": "Enhanced GitHub Issues MCP — 6 tools for issue automation: create_issue_with_automation, bulk_label_issues, smart_issue_search, issue_timeline_summary, auto_triage_issue, issue_metrics. See mcp-servers/github-issues/README.md and docs/GITHUB_ISSUES_UI_ENHANCEMENTS.md.",
+      "command": "node",
+      "args": ["./mcp-servers/github-issues/index.js"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "NODE_ENV": "production"
+      },
+      "disabled": true,
+      "disabledReason": "Enable once dependencies are installed: cd mcp-servers/github-issues && npm install — then set GITHUB_TOKEN."
+    },
+    "wr-pr-control-plane": {
+      "_comment": "WR / PR Control Plane MCP — GitHub-native intake packet, credential readiness, and 2026 blueprint orchestration contract for Composio + Firecrawl + Obot + FastMCP. See mcp-servers/wr-control-plane/README.md.",
+      "command": "uv",
+      "args": [
+        "run",
+        "python",
+        "./mcp-servers/wr-control-plane/wr_control_plane/server.py"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+        "ANTHROPIC_API_KEY": "${ANTHROPIC_API_KEY}",
+        "JULES_API_KEY": "${JULES_API_KEY}",
+        "COMPOSIO_API_KEY": "${COMPOSIO_API_KEY}",
+        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}",
+        "TAVILY_API_KEY": "${TAVILY_API_KEY}",
+        "OBOT_BASE_URL": "${OBOT_BASE_URL}",
+        "OBOT_IDP_CONFIG": "${OBOT_IDP_CONFIG}",
+        "OBOT_ALLOWED_HOSTS": "${OBOT_ALLOWED_HOSTS:-api.github.com,github.com,openrouter.ai,api.anthropic.com,api.firecrawl.dev,api.tavily.com}",
+        "WR_DEFAULT_REPO": "${WR_DEFAULT_REPO:-midnghtsapphire/revvel-standards}"
+      },
+      "disabled": true,
+      "disabledReason": "Enable after installing the local server (cd mcp-servers/wr-control-plane && uv pip install -e .) and provisioning credentials in your secrets manager: GITHUB_TOKEN, COMPOSIO_API_KEY, OBOT_BASE_URL, and OBOT_IDP_CONFIG. FIRECRAWL_API_KEY and TAVILY_API_KEY are strongly recommended when WRs include docs, PDFs, or external research targets."
+    },
+    "chrome-devtools-mcp": {
+      "_comment": "Chrome DevTools Protocol (CDP) as MCP tools. Fork: midnghtsapphire/chrome-devtools-mcp. Docs: docs/MCP_REVVEL_CATALOG.md. SECURITY: token/cookie tools scoped to localhost and authorized test origins ONLY.",
+      "command": "node",
+      "args": ["${CHROME_DEVTOOLS_MCP_PATH:-./node_modules/.bin/chrome-devtools-mcp}"],
+      "env": {
+        "CHROME_DEBUG_PORT": "${CHROME_DEBUG_PORT:-9222}",
+        "CHROME_DEBUG_HOST": "${CHROME_DEBUG_HOST:-localhost}"
+      },
+      "disabled": true,
+      "disabledReason": "Enable only for local dev or CI E2E testing. Prerequisites: (1) Start Chrome with --remote-debugging-port=9222 --user-data-dir=/tmp/cdp-test-profile, (2) Clone the fork: git clone https://github.com/midnghtsapphire/chrome-devtools-mcp, (3) npm install in the fork dir, (4) Set CHROME_DEVTOOLS_MCP_PATH to the fork's entry point (e.g. /path/to/chrome-devtools-mcp/dist/index.js), (5) Set CHROME_DEBUG_PORT=9222 in .env. SECURITY REQUIREMENT: Only call cdp_get_cookies, cdp_get_local_storage, cdp_get_session_storage, and cdp_network_intercept against localhost or test origins you own. Never use against production user sessions."
+    }
+  }
+}

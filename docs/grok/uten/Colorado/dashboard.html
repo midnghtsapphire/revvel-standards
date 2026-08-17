@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNAT-UTEN Dashboard | Data Center Heat Reuse for Colorado & US States</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        :root {
+            --primary: #0ea5e9;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        .font-display {
+            font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+        }
+
+        .section-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .data-table {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+        }
+
+        .metric-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .state-row {
+            transition: all 0.2s ease;
+        }
+
+        .state-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .nav-active {
+            color: #0ea5e9;
+            font-weight: 600;
+        }
+
+        .heat-bar {
+            height: 6px;
+            background: linear-gradient(to right, #0ea5e9, #22c55e);
+            border-radius: 9999px;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-x-3">
+                <div class="w-10 h-10 bg-sky-600 rounded-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-server text-white text-2xl"></i>
+                </div>
+                <div>
+                    <span class="font-display text-2xl font-semibold tracking-tighter">BNAT-UTEN</span>
+                    <span class="text-xs px-2 py-0.5 bg-sky-100 text-sky-700 rounded-full font-medium ml-1">v1.0</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-x-8 text-sm font-medium">
+                <a href="#overview" class="hover:text-sky-600 transition-colors">Overview</a>
+                <a href="#states" class="hover:text-sky-600 transition-colors">State Profiles</a>
+                <a href="#colorado" class="hover:text-sky-600 transition-colors">Colorado Focus</a>
+                <a href="#dashboard" class="hover:text-sky-600 transition-colors">Interactive Dashboard</a>
+                <a href="#roadmap" class="hover:text-sky-600 transition-colors">Roadmap</a>
+            </div>
+            
+            <div class="flex items-center gap-x-3">
+                <div class="px-4 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-3xl flex items-center gap-x-1.5">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                    <span>LIVE DATA 2026</span>
+                </div>
+                <button onclick="window.location.reload()" 
+                        class="px-5 py-2 text-sm font-semibold bg-white border border-slate-300 hover:bg-slate-50 transition-colors rounded-3xl flex items-center gap-x-2">
+                    <i class="fa-solid fa-sync-alt text-xs"></i>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero / Overview -->
+    <div id="overview" class="max-w-7xl mx-auto px-8 pt-12 pb-8">
+        <div class="max-w-3xl">
+            <div class="inline-flex items-center gap-x-2 px-4 py-1.5 bg-sky-100 text-sky-700 rounded-3xl text-sm font-semibold mb-6">
+                <i class="fa-solid fa-leaf"></i>
+                <span>Revvel-Standards • Grok Initiative</span>
+            </div>
+            
+            <h1 class="font-display text-6xl tracking-tighter font-semibold leading-none mb-4">
+                BNAT-UTEN<br>
+                <span class="text-sky-600">Data Center Heat Reuse</span><br>
+                for American Cities
+            </h1>
+            
+            <p class="text-xl text-slate-600 max-w-md">
+                Turning waste heat from data centers into clean, reliable heating power for buildings — starting with Colorado and scaling nationally.
+            </p>
+            
+            <div class="flex items-center gap-x-4 mt-8">
+                <button onclick="document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth' })" 
+                        class="px-8 py-4 bg-sky-600 hover:bg-sky-700 transition-all text-white font-semibold rounded-3xl flex items-center gap-x-3 shadow-lg shadow-sky-200">
+                    <span>Explore Live Dashboard</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                
+                <button onclick="window.open('https://github.com/midnghtsapphire/revvel-standards', '_blank')" 
+                        class="px-6 py-4 border border-slate-300 hover:bg-white transition-colors font-semibold rounded-3xl flex items-center gap-x-2">
+                    <i class="fa-brands fa-github"></i>
+                    <span>View Repo</span>
+                </button>
+            </div>
+            
+            <div class="mt-8 flex items-center gap-x-8 text-sm">
+                <div class="flex items-center gap-x-2">
+                    <div class="flex -space-x-1">
+                        <div class="w-6 h-6 bg-emerald-500 rounded-full border-2 border-white"></div>
+                        <div class="w-6 h-6 bg-sky-500 rounded-full border-2 border-white"></div>
+                    </div>
+                    <span class="text-slate-500 text-sm">88% target efficiency</span>
+                </div>
+                <div class="text-emerald-600 font-semibold flex items-center gap-x-1.5">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <span>Water-positive design</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="max-w-7xl mx-auto px-8 pb-12">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="metric-card bg-white border border-slate-200 rounded-3xl p-6">
+                <div class="text-emerald-600 text-sm font-semibold">NATIONAL IMPACT</div>
+                <div class="text-4xl font-semibold tracking-tighter mt-1">176 TWh</div>
+                <div class="text-slate-500 text-sm mt-1">Current US data center electricity use (2026)</div>
+                <div class="mt-4 text-xs text-emerald-600 font-medium">+ Growing to 325-580 TWh by 2028</div>
+            </div>
+            
+            <div class="metric-card bg-white border border-slate-200 rounded-3xl p-6">
+                <div class="text-sky-600 text-sm font-semibold">WASTE HEAT POTENTIAL</div>
+                <div class="text-4xl font-semibold tracking-tighter mt-1">~70-90 TWh</div>
+                <div class="text-slate-500 text-sm mt-1">Recoverable thermal energy annually</div>
+                <div class="mt-4 text-xs text-sky-600 font-medium">Enough to heat millions of homes</div>
+            </div>
+            
+            <div class="metric-card bg-white border border-slate-200 rounded-3xl p-6">
+                <div class="text-amber-600 text-sm font-semibold">WATER SAVINGS POTENTIAL</div>
+                <div class="text-4xl font-semibold tracking-tighter mt-1">8-12B gal</div>
+                <div class="text-slate-500 text-sm mt-1">Annual reduction via heat reuse</div>
+                <div class="mt-4 text-xs text-amber-600 font-medium">Critical for water-stressed states</div>
+            </div>
+            
+            <div class="metric-card bg-white border border-slate-200 rounded-3xl p-6">
+                <div class="text-purple-600 text-sm font-semibold">COLORADO FOCUS</div>
+                <div class="text-4xl font-semibold tracking-tighter mt-1">57+</div>
+                <div class="text-slate-500 text-sm mt-1">Data centers in state</div>
+                <div class="mt-4 text-xs text-purple-600 font-medium">Denver / Aurora / Colorado Springs hubs</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- State Profiles Section -->
+    <div id="states" class="max-w-7xl mx-auto px-8 py-8">
+        <div class="flex items-end justify-between mb-6">
+            <div>
+                <h2 class="section-header">State-by-State Data Center Profiles</h2>
+                <p class="text-slate-600">Electricity use, water consumption, and heat reuse potential for building heating</p>
+            </div>
+            <div class="text-xs px-3 py-1 bg-slate-100 rounded-2xl text-slate-500 font-medium">Data: 2026 estimates • LBNL, EPRI, industry reports</div>
+        </div>
+
+        <div class="data-table bg-white border border-slate-200 rounded-3xl overflow-hidden">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-slate-100 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                        <th class="px-6 py-4">State</th>
+                        <th class="px-6 py-4">Hub Locations</th>
+                        <th class="px-6 py-4 text-right">Facilities</th>
+                        <th class="px-6 py-4 text-right">Electricity (TWh/yr)</th>
+                        <th class="px-6 py-4 text-right">Water Use (B gal/yr est.)</th>
+                        <th class="px-6 py-4 text-right">Recoverable Heat (TWh thermal)</th>
+                        <th class="px-6 py-4 text-right">Buildings Heated Potential</th>
+                        <th class="px-6 py-4 text-right">Net Benefit (Left Over)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-sm">
+                    <!-- Virginia -->
+                    <tr class="state-row">
+                        <td class="px-6 py-4 font-semibold">Virginia</td>
+                        <td class="px-6 py-4 text-slate-600">Ashburn (Data Center Alley), Loudoun County, Prince William</td>
+                        <td class="px-6 py-4 text-right font-mono">665</td>
+                        <td class="px-6 py-4 text-right font-mono font-semibold">24.0</td>
+                        <td class="px-6 py-4 text-right font-mono text-amber-600">~4.2</td>
+                        <td class="px-6 py-4 text-right font-mono">10.5 – 12.0</td>
+                        <td class="px-6 py-4 text-right">85,000 – 110,000 homes equiv.</td>
+                        <td class="px-6 py-4 text-right text-emerald-600 font-semibold">High (25%+ state power offset potential)</td>
+                    </tr>
+                    
+                    <!-- Texas -->
+                    <tr class="state-row">
+                        <td class="px-6 py-4 font-semibold">Texas</td>
+                        <td class="px-6 py-4 text-slate-600">Dallas-Fort Worth, Austin, San Antonio, West Texas</td>
+                        <td class="px-6 py-4 text-right font-mono">413</td>
+                        <td class="px-6 py-4 text-right font-mono font-semibold">17.0</td>
+                        <td class="px-6 py-4 text-right font-mono text-amber-600">~3.1</td>
+                        <td class="px-6 py-4 text-right font-mono">7.5 – 9.0</td>
+                        <td class="px-6 py-4 text-right">60,000 – 80,000 homes equiv.</td>
+                        <td class="px-6 py-4 text-right text-emerald-600 font-semibold">Very High (ERCOT grid pressure)</td>
+                    </tr>
+                    
+                    <!-- Arizona -->
+                    <tr class="state-row">
+                        <td class="px-6 py-4 font-semibold">Arizona</td>
+                        <td class="px-6 py-4 text-slate-600">Phoenix (Mesa, Goodyear, Chandler)</td>
+                        <td class="px-6 py-4 text-right font-mono">190</td>
+                        <td class="px-6 py-4 text-right font-mono font-semibold">10.5</td>
+                        <td class="px-6 py-4 text-right font-mono text-red-600">~2.8 (high stress)</td>
+                        <td class="px-6 py-4 text-right font-mono">4.2 – 5.5</td>
+                        <td class="px-6 py-4 text-right">35,000 – 45,000 homes equiv.</td>
+                        <td class="px-6 py-4 text-right text-emerald-600 font-semibold">Critical (water + power relief)</td>
+                    </tr>
+                    
+                    <!-- Georgia -->
+                    <tr class="state-row">
+                        <td class="px-6 py-4 font-semibold">Georgia</td>
+                        <td class="px-6 py-4 text-slate-600">Atlanta metro (Douglasville, Palmetto)</td>
+                        <td class="px-6 py-4 text-right font-mono">162</td>
+                        <td class="px-6 py-4 text-right font-mono font-semibold">9.0</td>
+                        <td class="px-6 py-4 text-right font-mono">~1.6</td>
+                        <td class="px-6 py-4 text-right font-mono">3.8 – 4.8</td>
+                        <td class="px-6 py-4 text-right">30,000 – 40,000 homes equiv.</td>
+                        <td class="px-6 py-4 text-right text-emerald-600 font-semibold">Strong (growing fast)</td>
+                    </tr>
+                    
+                    <!-- California -->
+                    <tr class="state-row">
+                        <td class="px-6 py-4 font-semibold">California</td>
+                        <td class="px-6 py-4 text-slate-600">Silicon Valley, Los Angeles, Sacramento</td>
+                        <td class="px-6 py-4 text-right font-mono">~320</td>
+                        <td class="px-6 py-4 text-right font-mono font-semibold">11.0</td>
+                        <td class="px-6 py-4 text-right font-mono">~2.0</td>
+                        <td class="px-6 py-4 text-right font-mono">4.5 – 5.8</td>
+                        <td class="px-6 py-4 text-right">38,000 – 48,000 homes equiv.</td>
+                        <td class="px-6 py-4 text-right text-emerald-600 font-semibold">High (policy support)</td>
+                    </tr>
+                    
+                    <!-- Colorado -->
+                    <tr class="state-row bg-sky-50">
+                        <td class="px-6 py-4 font-semibold text-sky-700">Colorado ★</td>
+                        <td class="px-6 py-4 text-slate-600">Denver Metro, Aurora, Colorado Springs, Fort Collins area</td>
+                        <td class="px-6 py-4 text-right font-mono">57+</td>
+                        <td class="px-6 py-4 text-right font-mono font-semibold">~3.5 (est.)</td>
+                        <td class="px-6 py-4 text-right font-mono">~0.6</td>
+                        <td class="px-6 py-4 text-right font-mono">1.4 – 1.9</td>
+                        <td class="px-6 py-4 text-right">12,000 – 16,000 homes equiv.</td>
+                        <td class="px-6 py-4 text-right text-emerald-600 font-semibold">High opportunity (water stressed + cold climate)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-4 text-xs text-slate-500 px-2">
+            * Recoverable heat estimates assume 45-55% of total electricity can be recovered as useful low-to-medium grade heat with liquid cooling + HTHPs. 
+            Building heating potential based on average US home heating load (~10-15 MWh thermal/year). "Left over" reflects net community energy benefit after heat reuse displaces building heating loads.
+        </div>
+    </div>
+
+    <!-- Colorado Deep Dive -->
+    <div id="colorado" class="max-w-7xl mx-auto px-8 py-8 bg-white border-y border-slate-100">
+        <div class="max-w-3xl mb-8">
+            <div class="uppercase tracking-[2px] text-xs font-semibold text-sky-600 mb-2">COLORADO FOCUS</div>
+            <h2 class="section-header">BNAT-UTEN for Colorado</h2>
+            <p class="text-lg text-slate-600 mt-2">Leveraging 57+ data centers to create a resilient, water-positive thermal energy network for Front Range cities.</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6">
+                <div class="font-semibold mb-3 flex items-center gap-x-2"><i class="fa-solid fa-map-marker-alt text-sky-600"></i> Key Hubs</div>
+                <ul class="text-sm space-y-2 text-slate-600">
+                    <li>• Aurora / Denver Tech Center</li>
+                    <li>• Colorado Springs</li>
+                    <li>• Fort Collins / Windsor area (emerging large campus)</li>
+                    <li>• Major operators: QTS (Aurora), others in planning</li>
+                </ul>
+            </div>
+            
+            <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6">
+                <div class="font-semibold mb-3 flex items-center gap-x-2"><i class="fa-solid fa-tint text-sky-600"></i> Current Impact</div>
+                <div class="space-y-3 text-sm">
+                    <div>Electricity: <span class="font-mono font-semibold">~3.5 TWh/yr</span></div>
+                    <div>Water: <span class="font-mono font-semibold">~600M gallons/yr</span> (est.)</div>
+                    <div class="text-emerald-600">Potential water savings with BNAT-UTEN: <span class="font-semibold">150-250M gallons/yr</span></div>
+                </div>
+            </div>
+            
+            <div class="bg-emerald-50 border border-emerald-200 rounded-3xl p-6">
+                <div class="font-semibold mb-3 flex items-center gap-x-2 text-emerald-700"><i class="fa-solid fa-leaf"></i> BNAT-UTEN Opportunity</div>
+                <div class="text-sm space-y-2">
+                    <div>Recoverable heat: <span class="font-mono font-semibold">1.4–1.9 TWh thermal</span></div>
+                    <div>Can heat: <span class="font-semibold">12,000–16,000+ homes</span> equivalent</div>
+                    <div class="pt-2 text-emerald-600 font-medium">88% system efficiency target • Water-positive design</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Dashboard Section -->
+    <div id="dashboard" class="max-w-7xl mx-auto px-8 py-12">
+        <h2 class="section-header mb-2">Interactive Public Dashboard</h2>
+        <p class="text-slate-600 mb-8">Filter states, compare metrics, and explore heat reuse potential. Data updates with new reports.</p>
+        
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 mb-8">
+            <div class="flex flex-wrap gap-4 mb-6">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">Filter by State</label>
+                    <select id="stateFilter" onchange="filterTable()" class="border border-slate-300 rounded-2xl px-4 py-2 text-sm w-64">
+                        <option value="">All States</option>
+                        <option value="Virginia">Virginia</option>
+                        <option value="Texas">Texas</option>
+                        <option value="Arizona">Arizona</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="California">California</option>
+                        <option value="Colorado">Colorado</option>
+                    </select>
+                </div>
+                
+                <div class="flex-1"></div>
+                
+                <button onclick="resetFilters()" 
+                        class="px-5 py-2 text-sm border border-slate-300 hover:bg-slate-50 transition-colors rounded-2xl flex items-center gap-x-2 self-end">
+                    <i class="fa-solid fa-undo text-xs"></i>
+                    <span>Reset</span>
+                </button>
+            </div>
+            
+            <!-- Mini interactive table for dashboard -->
+            <div class="overflow-x-auto">
+                <table id="miniTable" class="w-full text-sm">
+                    <thead class="bg-slate-100">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold">State</th>
+                            <th class="px-4 py-3 text-right font-semibold">Electricity (TWh)</th>
+                            <th class="px-4 py-3 text-right font-semibold">Recoverable Heat</th>
+                            <th class="px-4 py-3 text-right font-semibold">Potential Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody id="miniTableBody" class="divide-y">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Charts Row -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-white border border-slate-200 rounded-3xl p-6">
+                <div class="font-semibold mb-4">Electricity Consumption by State (TWh)</div>
+                <canvas id="powerChart" height="180"></canvas>
+            </div>
+            
+            <div class="bg-white border border-slate-200 rounded-3xl p-6">
+                <div class="font-semibold mb-4">Recoverable Heat Potential vs Current Use</div>
+                <canvas id="heatChart" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roadmap -->
+    <div id="roadmap" class="max-w-7xl mx-auto px-8 py-8 border-t border-slate-100">
+        <h2 class="section-header mb-6">BNAT-UTEN Implementation Roadmap</h2>
+        
+        <div class="space-y-6">
+            <div class="flex gap-6">
+                <div class="w-16 flex-shrink-0">
+                    <div class="w-12 h-12 bg-sky-600 text-white rounded-2xl flex items-center justify-center font-bold">1</div>
+                </div>
+                <div class="flex-1">
+                    <div class="font-semibold">Phase 1: Colorado Pilots (2026-2028)</div>
+                    <div class="text-sm text-slate-600 mt-1">Deploy HTHPs + buffer storage at 2-3 data centers in Aurora/Denver. Connect to nearby buildings or small district network. Target 80%+ efficiency.</div>
+                </div>
+            </div>
+            
+            <div class="flex gap-6">
+                <div class="w-16 flex-shrink-0">
+                    <div class="w-12 h-12 bg-sky-600 text-white rounded-2xl flex items-center justify-center font-bold">2</div>
+                </div>
+                <div class="flex-1">
+                    <div class="font-semibold">Phase 2: Scale &amp; Network Build (2028-2032)</div>
+                    <div class="text-sm text-slate-600 mt-1">Add TCES seasonal storage. Expand to 8-12 facilities. Build Front Range thermal backbone. State heat planning policy modeled on Germany.</div>
+                </div>
+            </div>
+            
+            <div class="flex gap-6">
+                <div class="w-16 flex-shrink-0">
+                    <div class="w-12 h-12 bg-sky-600 text-white rounded-2xl flex items-center justify-center font-bold">3</div>
+                </div>
+                <div class="flex-1">
+                    <div class="font-semibold">Phase 3: National Scaling (2032+)</div>
+                    <div class="text-sm text-slate-600 mt-1">Replicate model in Virginia, Texas, Arizona, Georgia. Federal incentives + state mandates for heat reuse. Full public dashboard integration.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="border-t border-slate-200 bg-white py-8">
+        <div class="max-w-7xl mx-auto px-8 text-xs text-slate-500 flex flex-col md:flex-row justify-between gap-y-3">
+            <div>BNAT-UTEN • Revvel-Standards Initiative • Grok x Audrey Walter-Evans • 2026</div>
+            <div class="flex gap-x-5">
+                <a href="#" class="hover:text-slate-700">Full Documentation (MD)</a>
+                <a href="#" class="hover:text-slate-700">GitHub Repo</a>
+                <a href="#" class="hover:text-slate-700">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+                function escapeHtml(unsafe) {
+            if (unsafe == null) return '';
+            return String(unsafe)
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        // Tailwind script
+        function initializeTailwind() {
+            document.documentElement.style.setProperty('--accent', '#0ea5e9');
+        }
+        
+        // Sample data for mini table and charts
+        const stateData = [
+            { state: "Virginia", electricity: 24.0, heat: 11.2, impact: "Very High" },
+            { state: "Texas", electricity: 17.0, heat: 8.2, impact: "Very High" },
+            { state: "Arizona", electricity: 10.5, heat: 4.8, impact: "Critical" },
+            { state: "Georgia", electricity: 9.0, heat: 4.3, impact: "High" },
+            { state: "California", electricity: 11.0, heat: 5.1, impact: "High" },
+            { state: "Colorado", electricity: 3.5, heat: 1.65, impact: "High Opportunity" }
+        ];
+        
+        function populateMiniTable(filteredData = stateData) {
+            const tbody = document.getElementById('miniTableBody');
+            tbody.innerHTML = '';
+            
+            filteredData.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-slate-50';
+                row.innerHTML = `
+                    <td class="px-4 py-3 font-semibold">${escapeHtml(item.state)}</td>
+                    <td class="px-4 py-3 text-right font-mono">${escapeHtml(item.electricity)}</td>
+                    <td class="px-4 py-3 text-right font-mono text-emerald-600">${escapeHtml(item.heat)}</td>
+                    <td class="px-4 py-3 text-right"><span class="px-3 py-1 text-xs rounded-2xl bg-emerald-100 text-emerald-700 font-medium">${escapeHtml(item.impact)}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function filterTable() {
+            const filter = document.getElementById('stateFilter').value;
+            const filtered = filter ? stateData.filter(d => d.state === filter) : stateData;
+            populateMiniTable(filtered);
+        }
+        
+        function resetFilters() {
+            document.getElementById('stateFilter').value = '';
+            populateMiniTable(stateData);
+        }
+        
+        // Charts
+        let powerChartInstance = null;
+        let heatChartInstance = null;
+        
+        function createCharts() {
+            // Power Chart
+            const powerCtx = document.getElementById('powerChart');
+            if (powerChartInstance) powerChartInstance.destroy();
+            
+            powerChartInstance = new Chart(powerCtx, {
+                type: 'bar',
+                data: {
+                    labels: stateData.map(d => d.state),
+                    datasets: [{
+                        label: 'Electricity Use (TWh/yr)',
+                        data: stateData.map(d => d.electricity),
+                        backgroundColor: '#0ea5e9',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { color: '#f1e7ff' } } }
+                }
+            });
+            
+            // Heat Chart
+            const heatCtx = document.getElementById('heatChart');
+            if (heatChartInstance) heatChartInstance.destroy();
+            
+            heatChartInstance = new Chart(heatCtx, {
+                type: 'bar',
+                data: {
+                    labels: stateData.map(d => d.state),
+                    datasets: [{
+                        label: 'Recoverable Heat (TWh thermal)',
+                        data: stateData.map(d => d.heat),
+                        backgroundColor: '#22c55e',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { color: '#f1e7ff' } } }
+                }
+            });
+        }
+        
+        // Initialize everything
+        function initDashboard() {
+            initializeTailwind();
+            populateMiniTable();
+            createCharts();
+            
+            // Keyboard support for filter
+            document.getElementById('stateFilter').addEventListener('keyup', function(e) {
+                if (e.key === 'Escape') resetFilters();
+            });
+            
+            // Initial filter hint
+            console.log('%c[BNAT-UTEN] Live public dashboard initialized successfully.', 'color:#64748b');
+        }
+        
+        window.onload = initDashboard;
+    </script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+Daily Routine - Automated Tasks
+================================
+
+The Revvel Rosette Automation system runs a comprehensive daily routine
+at 3:00 AM Eastern Time. This document outlines all automated tasks.
+
+Schedule
+--------
+
+Daily: 3:00 AM ET (cron: 0 3 * * *)
+Trigger: ./scripts/cronjob.sh
+Logs: logs/cronjob-YYYYMMDD.log
+
+Task Sequence
+-------------
+
+1. STARTUP (3:00:00 AM)
+   ├─ Load configuration (config/59-config.yaml)
+   ├─ Load project registry (config/300Projects.yaml)
+   ├─ Initialize orchestrator
+   └─ Start logging
+
+2. GITHUB → TRELLO SYNC (3:00:30 AM)
+   ├─ Fetch all open issues from GitHub
+   ├─ Create/update Trello cards
+   ├─ Update card positions based on priority
+   ├─ Sync labels and assignees
+   ├─ Archive closed issues
+   └─ Report: {synced} cards, {created} new, {archived} done
+
+3. GATEKEEPER HEALTH CHECK (3:05:00 AM)
+   ├─ Verify Gatekeeper script exists
+   ├─ Check DOPPLER_TOKEN is valid
+   ├─ Check GITHUB_TOKEN is valid
+   ├─ Test Doppler API connection
+   ├─ Test GitHub API connection
+   └─ Report: {healthy} / {total} checks passed
+
+4. CREDENTIAL EXPIRY CHECK (3:10:00 AM)
+   ├─ Query Doppler for all secrets
+   ├─ Check last rotation date
+   ├─ Flag secrets expiring within 14 days
+   ├─ Trigger auto-rotation for expired secrets
+   ├─ Create GitHub issues for manual review
+   └─ Report: {expiring} secrets, {rotated} automatically
+
+5. GENERATE METRICS REPORT (3:15:00 AM)
+   ├─ Collect task completion stats
+   ├─ Calculate cycle times
+   ├─ Measure API response times
+   ├─ Count error rates by component
+   ├─ Generate dashboard data
+   └─ Report: metrics saved to data/metrics-YYYYMMDD.json
+
+6. SELF-HEALING SCAN (3:20:00 AM)
+   ├─ Check queue size (warn if >100)
+   ├─ Check disk space (warn if >90%)
+   ├─ Check for stuck processes
+   ├─ Check for failed API calls
+   ├─ Attempt auto-remediation
+   └─ Report: {issues_found}, {remediated}, {success_rate}%
+
+7. QUEUE PROCESSING (3:25:00 AM)
+   ├─ Load queue.txt
+   ├─ Sort by priority (P0 → P3)
+   ├─ Process each task
+   ├─ Retry failed tasks (max 3 attempts)
+   ├─ Move failed tasks to dlq.txt
+   └─ Report: {processed}, {succeeded}, {failed}, {queued}
+
+8. BACKUP (3:30:00 AM)
+   ├─ Backup configuration files
+   ├─ Backup queue files
+   ├─ Backup logs (last 30 days)
+   ├─ Backup data directory
+   ├─ Upload to DigitalOcean Spaces (optional)
+   └─ Report: backup saved to backups/YYYYMMDD/
+
+9. CLEANUP (3:35:00 AM)
+   ├─ Delete logs older than 30 days
+   ├─ Delete backups older than 30 days
+   ├─ Clear temporary files
+   ├─ Vacuum databases
+   └─ Report: {deleted} MB freed
+
+10. FINAL REPORT (3:40:00 AM)
+    ├─ Aggregate all task results
+    ├─ Calculate overall success rate
+    ├─ Generate summary report
+    ├─ Save to logs/last-run.txt
+    ├─ Create GitHub issue if errors occurred
+    └─ Email report to admin (optional)
+
+Hourly Tasks
+------------
+
+Health Check (every hour at :00)
+├─ Quick system status check
+├─ Verify all services are responsive
+└─ Log to logs/health-check.log
+
+Weekly Tasks
+------------
+
+Security Audit (Sunday 12:00 AM)
+├─ Scan all repositories for secrets in code
+├─ Check for outdated dependencies
+├─ Verify access control policies
+├─ Generate security report
+└─ Create GitHub issue with findings
+
+Monthly Tasks
+-------------
+
+Metrics Report (1st of month, 12:00 AM)
+├─ Generate monthly summary
+├─ Calculate trends (MoM growth)
+├─ Forecast next month
+├─ Email report to stakeholders
+└─ Update dashboards
+
+Manual Triggers
+---------------
+
+Force daily run:
+  ./scripts/cronjob.sh
+
+Run specific task:
+  python3 src/orchestrator.py --run-task {task_name}
+
+Dry run (no changes):
+  DRY_RUN=1 ./scripts/cronjob.sh
+
+Task Status Codes
+-----------------
+
+0   - Success
+1   - Partial success (some items failed)
+2   - Complete failure
+255 - Timeout
+
+Notifications
+-------------
+
+Success: No notification (log only)
+Warning: GitHub issue created with 'auto-warning' label
+Error: GitHub issue created with 'auto-error' label + email alert
+Critical: GitHub issue + email + Slack (if configured)
+
+Monitoring
+----------
+
+View today's log:
+  tail -f logs/cronjob-$(date +%Y%m%d).log
+
+Check last run status:
+  cat logs/last-run.txt
+
+View all tasks:
+  grep "Task:" logs/cronjob-*.log
+
+Count errors:
+  grep "ERROR" logs/cronjob-*.log | wc -l
+
+Performance Targets
+-------------------
+
+Total runtime: <15 minutes
+Individual task: <5 minutes
+API calls: <100 per run
+Success rate: >95%
+
+Troubleshooting
+---------------
+
+If daily run fails:
+1. Check logs/cronjob-YYYYMMDD.log for errors
+2. Run ./scripts/monitoring.sh for system status
+3. Test credentials: ./scripts/manual-test.sh
+4. Re-run manually: ./scripts/cronjob.sh
+5. Open issue if problem persists
+
+If task times out:
+1. Increase timeout in config/59-config.yaml
+2. Check for API rate limiting
+3. Verify network connectivity
+4. Consider breaking task into smaller pieces
+
+If queue grows too large:
+1. Check for stuck tasks: cat queue.txt | grep "retry_count"
+2. Clear stuck tasks: > queue.txt (after saving backup)
+3. Investigate root cause of failures
+4. Increase queue processing frequency

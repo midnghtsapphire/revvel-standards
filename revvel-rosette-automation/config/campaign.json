@@ -1,0 +1,72 @@
+{
+  "campaign": {
+    "name": "Revvel 2030 Revenue Campaign",
+    "goal": "Achieve $10M revenue by 2030",
+    "monthly_target": 2000,
+    "start_date": "2026-05-01",
+    "end_date": "2030-12-31",
+    "strategy": {
+      "channels": [
+        "content_marketing",
+        "social_media",
+        "email_campaigns",
+        "partnerships",
+        "product_launches"
+      ],
+      "tactics": [
+        {
+          "name": "automated_content",
+          "frequency": "daily",
+          "platforms": ["twitter", "linkedin", "github"],
+          "enabled": true
+        },
+        {
+          "name": "email_nurture",
+          "frequency": "weekly",
+          "segments": ["prospects", "customers", "partners"],
+          "enabled": true
+        },
+        {
+          "name": "product_updates",
+          "frequency": "monthly",
+          "channels": ["blog", "email", "social"],
+          "enabled": true
+        }
+      ]
+    },
+    "metrics": {
+      "track": [
+        "monthly_revenue",
+        "new_customers",
+        "customer_retention",
+        "conversion_rate",
+        "engagement_rate"
+      ],
+      "targets": {
+        "monthly_revenue": 2000,
+        "new_customers": 50,
+        "customer_retention": 0.85,
+        "conversion_rate": 0.05,
+        "engagement_rate": 0.15
+      }
+    },
+    "automation": {
+      "social_media": {
+        "enabled": true,
+        "auto_post": true,
+        "auto_engage": true,
+        "daily_posts": 3
+      },
+      "email": {
+        "enabled": true,
+        "auto_send": true,
+        "drip_campaigns": true
+      },
+      "content_generation": {
+        "enabled": true,
+        "ai_assisted": true,
+        "models": ["gpt-5.5", "claude-sonnet-4.5"]
+      }
+    }
+  }
+}

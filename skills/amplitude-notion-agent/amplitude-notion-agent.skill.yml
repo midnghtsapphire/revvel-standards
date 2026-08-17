@@ -1,0 +1,103 @@
+name: amplitude_notion_agent
+title: "Amplitude → Notion Agent"
+version: "1.0.0"
+description: "Scheduled GitHub Actions agent that pulls daily snapshots from the Amplitude Dashboard REST API and appends rows to a Notion database, closing the GitHub → Amplitude → Notion governance loop."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "Product Analytics"
+  tags:
+    - amplitude
+    - notion
+    - analytics
+    - governance
+    - scheduled-agent
+    - dashboard-rest
+    - notion-database
+    - cross-tool-sync
+  created_at: "2026-04-28"
+  updated_at: "2026-04-28"
+
+dependencies:
+  skills:
+    - vault_agent       # for the four secrets
+    - security          # PII / data-exposure rules
+  tools:
+    - nodejs            # >= 20, no npm deps (uses Node built-in https)
+  pip_packages: []
+  npm_packages: []
+
+template_files:
+  - path: "scripts/amplitude-to-notion.js"
+    description: "Node-only agent: fetches Amplitude chart, summarizes, posts to Notion"
+  - path: ".github/workflows/amplitude-to-notion.yml"
+    description: "Daily cron + workflow_dispatch wiring (with dry_run input)"
+  - path: "standards/AMPLITUDE_NOTION_AGENT_STANDARD.md"
+    description: "Governance doc — secrets, Notion schema, verification, failure modes"
+
+triggers:
+  - "amplitude to notion"
+  - "amplitude into notion"
+  - "amplitude notion"
+  - "notion analytics dashboard"
+  - "amplitude chart export to notion"
+  - "governance metrics in notion"
+  - "amplitude dashboard sync"
+  - "create agent using amplitude data in notion"
+  - "amplitude notion agent"
+
+implementation:
+  type: "markdown_prompt"
+  language: "markdown"
+  content_ref: "skills/amplitude-notion-agent/SKILL.md"
+
+setup:
+  steps:
+    - step: 1
+      action: "Create / locate the Amplitude project and saved chart"
+      url: "https://amplitude.com"
+      details: "Copy the chart ID from the URL: /chart/<id>."
+    - step: 2
+      action: "Create a Notion internal integration"
+      url: "https://www.notion.so/my-integrations"
+      details: "Copy the secret_... token."
+    - step: 3
+      action: "Create the Notion database with the required schema"
+      details: "Title, Date, Total Events (Number), Series Count (Number), Series Labels (Text), Source (Text), Chart ID (Text)."
+    - step: 4
+      action: "Share the Notion integration with the database"
+      details: "Database header → ▼ → Add connections → select the integration. Most common failure mode if skipped."
+    - step: 5
+      action: "Provision GitHub secrets"
+      command: |
+        gh secret set AMPLITUDE_API_KEY --repo <owner>/<repo>
+        gh secret set AMPLITUDE_SECRET_KEY --repo <owner>/<repo>
+        gh secret set NOTION_API_KEY --repo <owner>/<repo>
+        gh secret set NOTION_AMPLITUDE_DATABASE_ID --repo <owner>/<repo>
+    - step: 6
+      action: "Set the chart variable"
+      command: "gh variable set AMPLITUDE_CHART_ID --body '<chart_id>' --repo <owner>/<repo>"
+    - step: 7
+      action: "Verify via Actions → Amplitude → Notion Agent → Run workflow"
+      details: "First with dry_run=true, then dry_run=false. Confirm a row appears in Notion."
+
+examples:
+  - description: "Local dry run against staging credentials"
+    usage: |
+      AMPLITUDE_API_KEY=... AMPLITUDE_SECRET_KEY=... AMPLITUDE_CHART_ID=abc123 \
+      NOTION_API_KEY=secret_... NOTION_AMPLITUDE_DATABASE_ID=... \
+      DRY_RUN=true node scripts/amplitude-to-notion.js
+  - description: "Adopt in a sibling repo"
+    usage: |
+      cp .github/workflows/amplitude-to-notion.yml ../sibling-repo/.github/workflows/
+      cp scripts/amplitude-to-notion.js            ../sibling-repo/scripts/
+      # then provision the four secrets + AMPLITUDE_CHART_ID variable in that repo
+
+hard_rules:
+  - "Agent NEVER reads from Notion — append-only."
+  - "Forward only aggregate counts from Amplitude — never event-level data, never PII."
+  - "Missing secrets/vars must NOT fail the run — log ::warning:: and exit 0."
+  - "Notion text properties truncated to 1900 chars to stay under the 2000-char limit."
+  - "Do not extend to additional sinks without updating standards/AMPLITUDE_NOTION_AGENT_STANDARD.md."
+
+schema_version: "1.0"

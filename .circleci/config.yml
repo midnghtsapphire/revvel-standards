@@ -1,0 +1,122 @@
+# CircleCI Configuration for Revvel Standards
+#
+# Single purpose: a REAL lint + test gate (markdownlint + node --test).
+# GitHub Actions owns everything else (AI PR review, CI-failure diagnosis,
+# ready-for-review automation), so the old OpenRouter `pr-review` job was
+# removed — it duplicated the GitHub Actions OpenRouter review and only ever
+# ran when OPENROUTER_API_KEY was set in CircleCI.
+#
+# Cursor agent tier retired 2026-06-13; this file is unrelated to that.
+#
+# Pipeline ownership: ORBIT 🪐 (skills/circleci-expert/SKILL.md) — the fleet's
+# CircleCI persona. Governance: standards/CIRCLECI_INTEGRATION_STANDARD.md.
+# Validate locally before pushing: `circleci config validate` then eyeball
+# `circleci config process .circleci/config.yml` (expands the node orb).
+
+version: 2.1
+
+orbs:
+  node: circleci/node@5.1.0
+
+executors:
+  node-executor:
+    docker:
+      - image: cimg/node:22.11
+
+jobs:
+  lint-and-test:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: npm
+      # Real gate, scoped to changed Markdown so it enforces standards on new
+      # work without drowning in the repo's large pre-existing lint backlog.
+      - run:
+          name: Lint changed Markdown (markdownlint)
+          command: bash .circleci/scripts/lint-changed-markdown.sh
+      # Tests run for real — a failure fails the job (no "|| echo" swallowing).
+      - run:
+          name: Run tests (node --test + shell)
+          command: bash .circleci/scripts/run-tests.sh
+
+  # Smoke-validate the agent-fleet registries: the persona registry must parse
+  # and resolve, and the machine-readable skills index must be valid YAML.
+  # Added by ORBIT — these files drive the persona comment trigger, so a broken
+  # edit here silently kills every /persona summon. No npm ci needed: uses only
+  # node built-ins plus a one-shot npx fetch.
+  validate-registries:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Persona registry parses and resolves ORBIT
+          command: |
+            node --check scripts/openrouter-personas.js
+            node -e "
+              const { getPersona } = require('./scripts/openrouter-personas');
+              const p = getPersona('orbit');
+              if (p.handle !== 'orbit') throw new Error('orbit persona missing');
+              console.log('persona ok:', p.emoji, p.name, '—', p.role);
+            "
+      - run:
+          name: Skills index is valid YAML
+          # js-yaml pinned so this gate is reproducible (no floating npx fetch).
+          command: npx --yes js-yaml@4.1.0 skills/SKILLS_INDEX.yml > /dev/null && echo "SKILLS_INDEX.yml ok"
+
+  # RVS-AGENT-001 gate: validates that no tracked files are silently deleted
+  # and that every REVVEL-DISABLED block in changed files has all required
+  # metadata fields (AGENT, MODEL, WR, DATE, STATUS).
+  # See standards/COMMENT-DONT-DELETE.md and .circleci/scripts/check-archival-policy.sh.
+  policy-check:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          # Fetch enough history for an accurate merge-base diff.
+          # 200 commits covers virtually all branches in this repo.
+          name: Fetch origin/main for merge-base diff
+          command: git fetch origin main --depth=200
+      - run:
+          name: RVS-AGENT-001 archival policy check
+          command: bash .circleci/scripts/check-archival-policy.sh
+          environment:
+            # allow-destroy label is not available in CircleCI context; default to
+            # strict mode. PRs with the label bypass this in GitHub Actions via
+            # no-destroy-guard.yml — they still run the archival comment validation.
+            ALLOW_DESTROY: "false"
+
+workflows:
+  version: 2
+
+  # Run on every PR (non-main branches).
+  pr-workflow:
+    jobs:
+      - lint-and-test:
+          filters:
+            branches:
+              ignore: main
+      - validate-registries:
+          filters:
+            branches:
+              ignore: main
+      - policy-check:
+          filters:
+            branches:
+              ignore: main
+
+  # Run on main.
+  main-workflow:
+    jobs:
+      - lint-and-test:
+          filters:
+            branches:
+              only: main
+      - validate-registries:
+          filters:
+            branches:
+              only: main
+      - policy-check:
+          filters:
+            branches:
+              only: main

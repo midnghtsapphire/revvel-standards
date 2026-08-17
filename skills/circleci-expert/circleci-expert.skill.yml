@@ -1,0 +1,32 @@
+name: circleci-expert
+title: "ORBIT — CircleCI Expert"
+version: "1.0.0"
+description: "CircleCI pipeline commander: wires repos into CircleCI with pinned minimal configs, validates locally before push (config validate/process), reproduces failing jobs (local execute), tunes pipelines (caching, workspaces, DLC, timing-based test splitting, resource rightsizing), authors orbs, enforces Rego config policies, and operates the v1.x preview CLI (run/watch, envvar, dlc purge, built-in MCP server)."
+
+metadata:
+  author: "Revvel AI Engine"
+  category: "DevOps & Deployment"
+  tags: ["circleci", "orbit", "ci-cd", "pipelines", "orbs", "config-validation", "local-execute", "test-splitting", "docker-layer-caching", "config-policies", "opa-rego", "mcp", "insights"]
+  created_at: "2026-07-07"
+  updated_at: "2026-07-07"
+
+persona: orbit
+triggers: ["/orbit", "/circleci", "/circle-ci", "circleci config", ".circleci/config.yml", "wire in circleci", "orb authoring", "pipeline tuning", "test splitting", "config policy"]
+
+dependencies:
+  skills: []
+  tools: ["circleci", "git"]
+  pip_packages: []
+
+related_standards:
+  - "standards/CIRCLECI_INTEGRATION_STANDARD.md"
+  - ".circleci/config.yml"
+
+implementation:
+  type: markdown_prompt
+  language: markdown
+  content: |
+    Load skills/circleci-expert/SKILL.md — the authoritative ORBIT playbook
+    (both CLI generations, feature catalog, 7 operational playbooks,
+    lesser-known-features bench, guardrails, cited sources). Apply its rules
+    verbatim; this YAML exists for machine discovery and metadata only.

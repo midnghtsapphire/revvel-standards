@@ -1,0 +1,111 @@
+# Agent Factory Configuration
+# Settings for the multi-agent orchestration system
+
+factory:
+  name: "Revvel Rosette Agent Factory"
+  version: "1.0.0"
+  
+  # Orchestrator settings
+  orchestrator:
+    enabled: true
+    max_concurrent_agents: 10
+    task_timeout_minutes: 30
+    retry_attempts: 3
+    retry_delay_seconds: 60
+    
+  # Agent types and their configurations
+  agents:
+    - name: orchestrator
+      type: ceo
+      model: claude-sonnet-4.5
+      enabled: true
+      priority: P0
+      capabilities:
+        - project_management
+        - task_dispatch
+        - resource_allocation
+        - reporting
+        
+    - name: scheduler
+      type: automation
+      model: gpt-4.1
+      enabled: true
+      priority: P0
+      capabilities:
+        - cron_management
+        - task_scheduling
+        - queue_management
+        
+    - name: gatekeeper
+      type: security
+      model: claude-sonnet-4
+      enabled: true
+      priority: P0
+      capabilities:
+        - secret_management
+        - access_control
+        - credential_rotation
+        
+    - name: self-healer
+      type: monitoring
+      model: gpt-4.1
+      enabled: true
+      priority: P0
+      capabilities:
+        - error_detection
+        - auto_remediation
+        - health_checks
+        
+    - name: researcher
+      type: research
+      model: claude-opus-4.5
+      enabled: true
+      priority: P1
+      capabilities:
+        - market_research
+        - technology_evaluation
+        - competitive_analysis
+        
+    - name: blueprint-generator
+      type: design
+      model: claude-sonnet-4.5
+      enabled: true
+      priority: P1
+      capabilities:
+        - architecture_design
+        - documentation_generation
+        - diagram_creation
+        
+    - name: marketing
+      type: marketing
+      model: gpt-5.5
+      enabled: true
+      priority: P2
+      capabilities:
+        - campaign_management
+        - content_creation
+        - social_media_automation
+
+  # API routing via OpenRouter
+  openrouter:
+    enabled: true
+    api_key: "${OPENROUTER_API_KEY}"
+    base_url: "https://openrouter.ai/api/v1"
+    fallback_models:
+      - "anthropic/claude-sonnet-4.5"
+      - "openai/gpt-4.1"
+      - "google/gemini-2.5-pro"
+    
+  # Resource limits
+  resources:
+    max_tokens_per_request: 8000
+    max_requests_per_minute: 60
+    max_cost_per_day_usd: 50.00
+    
+  # Logging and monitoring
+  logging:
+    level: INFO
+    format: json
+    output: "./logs/factory.log"
+    rotate: daily
+    retain_days: 30

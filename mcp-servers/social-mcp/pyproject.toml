@@ -1,0 +1,17 @@
+[project]
+name = "social-mcp"
+version = "1.0.0"
+description = "MCP server for comprehensive social media management"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp>=1.0.0",
+    "httpx>=0.25.0",
+]
+
+[project.scripts]
+social-mcp = "social_mcp.server:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

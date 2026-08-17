@@ -1,0 +1,66 @@
+# oAudrey — Declarative DNS Records
+#
+# This file is the single source of truth for the DNS records that need to
+# exist for oaudrey.com and all product subdomains. It is consumed by:
+#   scripts/sync-dns-records.js
+#   .github/workflows/sync-oaudrey-dns.yml
+#
+# The sync script is registrar-agnostic and supports Namecheap, GoDaddy, and
+# Porkbun. The active registrar is selected automatically based on which
+# credential set is present (provisioned via the Credential Gatekeeper).
+#
+# Record fields:
+#   host    Subdomain ("@" for the apex record)
+#   type    DNS record type (A, AAAA, CNAME, ALIAS, MX, TXT)
+#   value   Target value. For oAudrey product subdomains this is the
+#           DigitalOcean App Platform default ingress hostname, supplied
+#           at sync time via the APP_TARGET environment variable so this
+#           file does not need to change every time DO rotates the ingress.
+#   ttl     TTL in seconds (default 300)
+#
+# {{APP_TARGET}} is replaced at sync time with the resolved DigitalOcean App
+# Platform hostname (e.g. oaudrey-hub-abcde.ondigitalocean.app).
+
+domain: oaudrey.com
+
+records:
+  # Apex — most registrars do not allow CNAME at the apex, so we use ALIAS
+  # where the current sync path supports it (for example, Porkbun) or fall
+  # back to A records when only A is supported (for example, GoDaddy).
+  - host: "@"
+    type: ALIAS
+    value: "{{APP_TARGET}}"
+    ttl: 300
+
+  - host: www
+    type: CNAME
+    value: "{{APP_TARGET}}"
+    ttl: 300
+
+  # Product subdomains — every Freedom Angel Corp product gets one tab on
+  # oaudrey.com and one <product>.oaudrey.com subdomain. Keep this list in
+  # sync with oaudrey/README.md and standards/OAUDREY_DEPLOYMENT_STANDARD.md.
+  - host: fieldwork
+    type: CNAME
+    value: "{{APP_TARGET}}"
+    ttl: 300
+
+  - host: growlingeyes
+    type: CNAME
+    value: "{{APP_TARGET}}"
+    ttl: 300
+
+  - host: penny
+    type: CNAME
+    value: "{{APP_TARGET}}"
+    ttl: 300
+
+  - host: agents
+    type: CNAME
+    value: "{{APP_TARGET}}"
+    ttl: 300
+
+  - host: market
+    type: CNAME
+    value: "{{APP_TARGET}}"
+    ttl: 300

@@ -1,0 +1,65 @@
+# Eco Infra Action
+#
+# Marketplace: https://github.com/marketplace/actions/eco-infra-action
+# Action repo: https://github.com/eco-infra/ecoinfra-action
+#
+# Uploads a plan JSON file to Eco Infra so the service can estimate emissions
+# for infrastructure resources. Generate the JSON file earlier in the workflow
+# (for example via `terraform show -json`) and pass its path as `plan_file`.
+#
+# Secrets required: ECOINFRA_TOKEN
+# Copy this file to: .github/workflows/eco-infra-action.yml
+
+name: Eco Infra Emissions Report
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_name:
+        description: "Project identifier in Eco Infra"
+        required: false
+      plan_file:
+        description: "Path to the plan JSON file"
+        required: false
+        default: "terraform-plan.json"
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    name: Report infrastructure emissions
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ECOINFRA_TOKEN: ${{ secrets.ECOINFRA_TOKEN }}
+      PROJECT_NAME: ${{ github.event.inputs.project_name || github.event.repository.name }}
+      PLAN_FILE: ${{ github.event.inputs.plan_file || 'terraform-plan.json' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify Eco Infra configuration
+        id: verify
+        run: |
+          ready=true
+
+          if [ -z "${ECOINFRA_TOKEN}" ]; then
+            echo "::warning::ECOINFRA_TOKEN is not set — skipping Eco Infra report."
+            ready=false
+          fi
+
+          if [ ! -f "${PLAN_FILE}" ]; then
+            echo "::warning::Plan file '${PLAN_FILE}' does not exist. Generate it earlier in the workflow before running Eco Infra."
+            ready=false
+          fi
+
+          echo "ready=${ready}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload plan to Eco Infra
+        if: steps.verify.outputs.ready == 'true'
+        uses: eco-infra/ecoinfra-action@v1.1.2
+        with:
+          token: ${{ secrets.ECOINFRA_TOKEN }}
+          project-name: ${{ env.PROJECT_NAME }}
+          plan-file: ${{ env.PLAN_FILE }}

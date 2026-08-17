@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How Revvel-Standards Works (Explained Simply)</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+           max-width: 820px; margin: 0 auto; padding: 24px; line-height: 1.55;
+           color: #0b0f1a; background: #fff; }
+    h1 { font-size: 1.7rem; }
+    h2 { margin-top: 1.6em; border-bottom: 2px solid #eee; padding-bottom: 4px; }
+    .step { background: #f0f6ff; border-left: 5px solid #3b82f6; border-radius: 8px;
+            padding: 12px 16px; margin: 14px 0; }
+    .step .n { font-weight: 700; color: #1d4ed8; }
+    .flow { font-size: 1.05rem; }
+    .flow code { background: #eef2ff; padding: 2px 6px; border-radius: 5px; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    th, td { border: 1px solid #d0d7de; padding: 8px 10px; text-align: left; }
+    th { background: #f6f8fa; }
+    .note { background: #fff7ed; border-left: 5px solid #f59e0b; padding: 12px 16px;
+            border-radius: 8px; margin: 14px 0; }
+  </style>
+</head>
+<body>
+  <h1>How Revvel-Standards Works</h1>
+  <p>Imagine a robot factory that takes an <strong>idea</strong> and turns it into a
+     <strong>finished thing you can sell</strong> — almost by itself. Here is the
+     whole journey, step by step.</p>
+
+  <h2>The journey of one idea</h2>
+
+  <div class="step"><span class="n">1. You write down the idea.</span>
+     You open a "Work Request" (a note on GitHub) and say what you want and how
+     much money it should make. (No money goal? The robot politely refuses — every
+     job must aim to earn.)</div>
+
+  <div class="step"><span class="n">2. The robots do homework.</span>
+     Several smart helpers research the idea at the same time — the market, the
+     competitors, the keywords — and write it all up. One helper, "The Professor,"
+     searches the web for <em>free</em>.</div>
+
+  <div class="step"><span class="n">3. The robot writes the plan as a sticker.</span>
+     When the homework is done, it sticks a label that says
+     <code>research-complete</code> on the note.</div>
+
+  <div class="step"><span class="n">4. The coder robot builds it.</span>
+     That sticker wakes up the coder, which writes the actual code and proposes it
+     as a "pull request" (a box of changes waiting for approval).</div>
+
+  <div class="step"><span class="n">5. The judges check the work.</span>
+     A panel of checkers looks for bugs, security holes, leaked passwords, and
+     whether it's tested. If something's wrong, it goes back to step 4.</div>
+
+  <div class="step"><span class="n">6. The robot ships it.</span>
+     A "deliver" sticker tells the shipping robot <em>where</em> to send it — a PDF,
+     a website, a command-line tool, an app, and so on.</div>
+
+  <div class="step"><span class="n">7. The robot watches and heals.</span>
+     If anything gets stuck or breaks later, watchdog robots notice and start a
+     repair — so it keeps running day and night.</div>
+
+  <h2>How the robot decides what each project needs</h2>
+  <p>You pick an "Output Type" and the robot knows where it should go:</p>
+  <table>
+    <thead><tr><th>If your project is…</th><th>It ships as…</th></tr></thead>
+    <tbody>
+      <tr><td>A document to sell</td><td>a PDF</td></tr>
+      <tr><td>A web page or app</td><td>a website / app</td></tr>
+      <tr><td>A typing-tool for power users</td><td>a CLI (command-line tool)</td></tr>
+      <tr><td>A way for computers to talk</td><td>an API</td></tr>
+      <tr><td>A helper for AI assistants</td><td>an MCP server</td></tr>
+      <tr><td>Instructions or guides</td><td>documentation</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What "needs enhancement" means</h2>
+  <p>Before anything ships, the judges check: Does it have tests? Is it secure? Are
+     there leaked passwords? Is it usable by everyone (accessibility)? If any answer
+     is "no," the robot says it <strong>needs enhancement</strong> and fixes it or
+     asks a human.</p>
+
+  <div class="note"><strong>The big goal:</strong> a system that researches, builds,
+     ships, sells, and repairs itself 24/7 — so ideas turn into income with as
+     little manual work as possible.</div>
+
+  <p>Want the detailed, grown-up version for code review and audits? See
+     <a href="./SYSTEM_MAP.md">SYSTEM_MAP.md</a>.</p>
+</body>
+</html>

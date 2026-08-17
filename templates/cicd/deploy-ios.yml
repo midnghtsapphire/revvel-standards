@@ -1,0 +1,57 @@
+# Copy to .github/workflows/deploy-ios.yml
+# See templates/mobile/MOBILE_DEPLOYMENT.md for full activation instructions
+# This workflow is inactive until Apple Developer account is set up
+
+name: Deploy iOS (App Store)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "App Store Connect environment"
+        required: true
+        default: "testflight"
+        type: choice
+        options:
+          - testflight
+          - app-store
+
+jobs:
+  deploy-ios:
+    name: Build and Deploy iOS App
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # TODO: Activate when Apple Developer account is ready ($99/year)
+      # See templates/mobile/MOBILE_DEPLOYMENT.md — "iOS App Store Path"
+      - name: Placeholder — App Store setup not yet active
+        run: |
+          echo "⚠️  iOS deployment not yet configured."
+          echo "To activate this workflow:"
+          echo "  1. Purchase Apple Developer Program ($99/year)"
+          echo "  2. Install Capacitor CLI: npm install @capacitor/core @capacitor/ios"
+          echo "  3. Run: npx cap add ios && npx cap sync"
+          echo "  4. Open Xcode: npx cap open ios"
+          echo "  5. Configure signing + provisioning profiles"
+          echo "  6. Add APP_STORE_CONNECT_API_KEY_* secrets"
+          echo "  7. Replace this step with Fastlane match + gym + deliver lanes"
+          echo "See templates/mobile/MOBILE_DEPLOYMENT.md for full instructions"
+        # TODO: Replace with actual Capacitor + Fastlane steps:
+        # - name: Install Capacitor dependencies
+        #   run: pnpm install
+        #
+        # - name: Build web app
+        #   run: pnpm build
+        #
+        # - name: Sync Capacitor
+        #   run: npx cap sync ios
+        #
+        # - name: Deploy to App Store via Fastlane
+        #   run: bundle exec fastlane ios ${{ github.event.inputs.environment }}
+        #   env:
+        #     APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        #     APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        #     APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}

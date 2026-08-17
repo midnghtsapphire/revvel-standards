@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0b0f17;
+  --fg: #e6edf3;
+  --accent: #6ee7b7;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+a {
+  color: var(--accent);
+}
+
+button,
+select,
+textarea {
+  color: inherit;
+}
+
+textarea::placeholder {
+  color: rgba(230, 237, 243, 0.7);
+}
+
+.mode-aaa {
+  --bg: #000;
+  --fg: #fff;
+  --accent: #ffff00;
+}
+
+.mode-dyslexia {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.mode-focus > *:not(.focus-keep) {
+  opacity: 0.3;
+}
+
+.mode-contrast {
+  --bg: #000;
+  --fg: #fff;
+  --accent: #00ffff;
+}
+
+.mode-large {
+  font-size: 1.125rem;
+}
+
+.mode-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}

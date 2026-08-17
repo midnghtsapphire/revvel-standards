@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revvel Operations Board</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+    body { font-family: 'Space Mono', monospace; background: #0a0a0f; color: #e0e0e0; }
+    .glow { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+    .card { background: linear-gradient(145deg, #12121a, #0f0f14); border: 1px solid #1f1f2e; }
+    .status-ok { color: #22c55e; }
+    .status-fail { color: #ef4444; }
+    .status-warn { color: #f59e0b; }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  </style>
+</head>
+<body class="min-h-screen p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-purple-400 mb-2">🎛️ REVVEL OPERATIONS BOARD</h1>
+      <p class="text-gray-500">All systems status, cron jobs, and quick actions</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-4 gap-4 mb-8">
+      <div class="card rounded-xl p-6 text-center">
+        <div class="text-3xl font-bold text-cyan-400" id="websites">—</div>
+        <div class="text-sm text-gray-500">Websites</div>
+      </div>
+      <div class="card rounded-xl p-6 text-center">
+        <div class="text-3xl font-bold text-green-400" id="apis">—</div>
+        <div class="text-sm text-gray-500">APIs</div>
+      </div>
+      <div class="card rounded-xl p-6 text-center">
+        <div class="text-3xl font-bold text-yellow-400" id="cronjobs">4</div>
+        <div class="text-sm text-gray-500">Cron Jobs</div>
+      </div>
+      <div class="card rounded-xl p-6 text-center">
+        <div class="text-3xl font-bold text-purple-400" id="issues">—</div>
+        <div class="text-sm text-gray-500">Open Issues</div>
+      </div>
+    </div>
+
+    <!-- Cron Jobs Status -->
+    <div class="card rounded-xl p-6 mb-8">
+      <h2 class="text-xl font-bold text-purple-400 mb-4">⏰ Cron Jobs</h2>
+      <table class="w-full">
+        <thead>
+          <tr class="text-gray-500 text-left border-b border-gray-800">
+            <th class="pb-3">Job</th>
+            <th class="pb-3">Frequency</th>
+            <th class="pb-3">Purpose</th>
+            <th class="pb-3">Status</th>
+            <th class="pb-3">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-800">
+            <td class="py-3">Status Monitor</td>
+            <td class="text-gray-400">Hourly</td>
+            <td class="text-gray-400">Check all sites</td>
+            <td><span class="status-ok">✅ Active</span></td>
+            <td><a href="https://github.com/midnghtsapphire/revvel-standards/actions/workflows/status-universal.yml" target="_blank" class="text-cyan-400 hover:underline">Run →</a></td>
+          </tr>
+          <tr class="border-b border-gray-800">
+            <td class="py-3">Health Check</td>
+            <td class="text-gray-400">Every 15 min</td>
+            <td class="text-gray-400">Backend health</td>
+            <td><span class="status-ok">✅ Active</span></td>
+            <td><a href="https://github.com/midnghtsapphire/revvel-standards/actions/workflows/health-check.yml" target="_blank" class="text-cyan-400 hover:underline">Run →</a></td>
+          </tr>
+          <tr class="border-b border-gray-800">
+            <td class="py-3">Link Checker</td>
+            <td class="text-gray-400">Daily 6am</td>
+            <td class="text-gray-400">External links</td>
+            <td><span class="status-ok">✅ Active</span></td>
+            <td><a href="https://github.com/midnghtsapphire/revvel-standards/actions/workflows/link-checker.yml" target="_blank" class="text-cyan-400 hover:underline">Run →</a></td>
+          </tr>
+          <tr class="border-b border-gray-800">
+            <td class="py-3">API Monitor</td>
+            <td class="text-gray-400">Every 30 min</td>
+            <td class="text-gray-400">API endpoints</td>
+            <td><span class="status-ok">✅ Active</span></td>
+            <td><a href="https://github.com/midnghtsapphire/revvel-standards/actions/workflows/api-monitor.yml" target="_blank" class="text-cyan-400 hover:underline">Run →</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- App Status -->
+    <div class="card rounded-xl p-6 mb-8">
+      <h2 class="text-xl font-bold text-cyan-400 mb-4">🌐 App Status</h2>
+      <div class="grid grid-cols-3 gap-4">
+        <div class="bg-gray-900 rounded-lg p-4">
+          <div class="font-bold text-white">Voice Studio</div>
+          <div class="text-sm text-gray-400">revvel-music-studio</div>
+          <a href="https://midnghtsapphire.github.io/revvel-music-studio/" target="_blank" class="text-green-400 text-sm">🌐 Visit</a>
+        </div>
+        <div class="bg-gray-900 rounded-lg p-4">
+          <div class="font-bold text-white">Voice Editor</div>
+          <div class="text-sm text-gray-400">revvel-music-studio</div>
+          <a href="https://midnghtsapphire.github.io/revvel-music-studio/voice-editor.html" target="_blank" class="text-green-400 text-sm">🌐 Visit</a>
+        </div>
+        <div class="bg-gray-900 rounded-lg p-4">
+          <div class="font-bold text-white">Status Checker</div>
+          <div class="text-sm text-gray-400">revvel-music-studio</div>
+          <a href="https://midnghtsapphire.github.io/revvel-music-studio/status-checker.html" target="_blank" class="text-green-400 text-sm">🌐 Visit</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card rounded-xl p-6 mb-8">
+      <h2 class="text-xl font-bold text-green-400 mb-4">⚡ Quick Actions</h2>
+      <div class="grid grid-cols-4 gap-4">
+        <a href="https://github.com/midnghtsapphire/revvel-standards/actions" target="_blank" class="bg-purple-900 hover:bg-purple-800 rounded-lg p-4 text-center transition">
+          <div class="text-white font-bold">View All Runs</div>
+          <div class="text-gray-400 text-sm">GitHub Actions</div>
+        </a>
+        <a href="https://github.com/midnghtsapphire/revvel-standards/issues" target="_blank" class="bg-red-900 hover:bg-red-800 rounded-lg p-4 text-center transition">
+          <div class="text-white font-bold">Open Issues</div>
+          <div class="text-gray-400 text-sm">Alerts & Bugs</div>
+        </a>
+        <a href="https://github.com/midnghtsapphire/revvel-standards/tree/main/.github/workflows/cron" target="_blank" class="bg-cyan-900 hover:bg-cyan-800 rounded-lg p-4 text-center transition">
+          <div class="text-white font-bold">Edit Cron Jobs</div>
+          <div class="text-gray-400 text-sm">Configuration</div>
+        </a>
+        <a href="https://github.com/midnghtsapphire/revvel-standards/fork" target="_blank" class="bg-yellow-900 hover:bg-yellow-800 rounded-lg p-4 text-center transition">
+          <div class="text-white font-bold">Fork Repo</div>
+          <div class="text-gray-400 text-sm">Make Changes</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Links -->
+    <div class="card rounded-xl p-6">
+      <h2 class="text-xl font-bold text-yellow-400 mb-4">🔗 Quick Links</h2>
+      <div class="grid grid-cols-4 gap-4">
+        <a href="https://meetaudreyevans.com" target="_blank" class="text-cyan-400 hover:underline">meetaudreyevans.com</a>
+        <a href="https://midnghtsapphire.github.io/Meetaudreyevans/" target="_blank" class="text-cyan-400 hover:underline">GitHub Hub</a>
+        <a href="https://github.com/midnghtsapphire/revvel-standards" target="_blank" class="text-cyan-400 hover:underline">revvel-standards</a>
+        <a href="https://github.com/midnghtsapphire/revvel-music-studio" target="_blank" class="text-cyan-400 hover:underline">revvel-music-studio</a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-12 text-gray-600">
+      <p>Last updated: <span id="last-updated"></span></p>
+      <p class="text-sm">Generated by Revvel Operations Board</p>
+    </div>
+  </div>
+
+  <script>
+    function updateTimestamp() {
+      document.getElementById('last-updated').textContent = new Date().toLocaleString();
+    }
+    updateTimestamp();
+    setInterval(updateTimestamp, 30000);
+
+    fetch('https://api.github.com/repos/midnghtsapphire/revvel-standards/open_issues_count')
+      .then(r => r.json())
+      .then(d => document.getElementById('issues').textContent = d || '0')
+      .catch(() => document.getElementById('issues').textContent = '?');
+  </script>
+</body>
+</html>

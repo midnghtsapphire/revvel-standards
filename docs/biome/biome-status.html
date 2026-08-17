@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIOME Crew Status</title>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 2rem; color: #0f172a; background: #f8fafc; }
+    h1 { font-size: 1.4rem; }
+    .overall { font-size: 1.1rem; padding: .5rem .9rem; border-radius: 10px; display: inline-block; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    table { border-collapse: collapse; margin-top: 1rem; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); width: 100%; }
+    th, td { text-align: left; padding: .6rem .8rem; border-bottom: 1px solid #e2e8f0; font-size: .9rem; }
+    th { background: #0ea5e9; color: #fff; }
+    .meta { color: #64748b; font-size: .8rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>🧬 BIOME Crew Status</h1>
+  <p class="overall">Overall: 🟢 <strong>healthy</strong> · credit-free: yes</p>
+  <table>
+    <thead>
+      <tr><th>Worker</th><th>Status</th><th>Summary</th><th>Counts</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>🟢 <strong>sentinel</strong></td>
+        <td>healthy</td>
+        <td>2/100 recent runs failed; 0 stuck item(s)</td>
+        <td>failed_runs: 2, total_runs: 100, stuck_issues: 0</td>
+      </tr>
+      <tr>
+        <td>🟢 <strong>homeostat</strong></td>
+        <td>healthy</td>
+        <td>AI lanes offline (OPENROUTER_API_KEY, ANTHROPIC_API_KEY, PERPLEXITY_API_KEY unset) — credit-free rule-based lanes active</td>
+        <td>ai_keys_present: 0, ai_keys_missing: 3</td>
+      </tr>
+      <tr>
+        <td>🟢 <strong>medic</strong></td>
+        <td>healthy</td>
+        <td>no recent run yet</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>🟢 <strong>sheaf</strong></td>
+        <td>healthy</td>
+        <td>feed generated</td>
+        <td>workers: 3</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="meta">Generated 2026-08-17T03:20:08.005Z · schema biome-status/v1 · machine feed: <code>biome-status.json</code></p>
+</body>
+</html>

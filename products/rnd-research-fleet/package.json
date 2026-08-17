@@ -1,0 +1,35 @@
+{
+  "name": "rnd-research-fleet",
+  "version": "1.0.0",
+  "description": "R&D Research Fleet - Autonomous Deep Research Engine with DOE Screening, TRIZ, MEErP, LCA, BNAT frameworks",
+  "main": "deep-search-router.js",
+  "scripts": {
+    "start": "node perplexity-research.js",
+    "deep-search": "node deep-search-router.js",
+    "twin:search": "node twin-search.js",
+    "triplet:search": "node triplet-search.js",
+    "orchestrate": "node orchestrator.js",
+    "persona": "node persona-loader.js",
+    "install-all": "./install.sh",
+    "setup": "node auto-github-join.js",
+    "eval:search": "node eval/search-eval.js --fixtures eval/fixtures/queries.json --baseline eval/fixtures/baseline.example.json --candidate eval/fixtures/candidate.example.json",
+    "eval:strategies": "node eval/search-eval.js --fixtures eval/fixtures/queries.json --baseline eval/fixtures/baseline.example.json --fable eval/fixtures/fable.example.json --twin eval/fixtures/twin-llm.example.json --twin-adjudicated eval/fixtures/twin-llm-adjudicated.example.json",
+    "eval:triplet": "node eval/search-eval.js --fixtures eval/fixtures/queries.json --baseline eval/fixtures/baseline.example.json --fable eval/fixtures/fable.example.json --twin-adjudicated eval/fixtures/twin-llm-adjudicated.example.json --triplet eval/fixtures/triplet-llm.example.json"
+  },
+  "keywords": [
+    "research",
+    "doe",
+    "triz",
+    "meerp",
+    "lca",
+    "bnat",
+    "deep-research",
+    "openrouter",
+    "claude",
+    "perplexity",
+    "r-and-d"
+  ],
+  "author": "Audrey Evans / MIDNGHTSAPPHIRE",
+  "license": "MIT",
+  "dependencies": {}
+}

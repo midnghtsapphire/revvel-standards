@@ -1,0 +1,90 @@
+# =============================================================
+# REVVEL PRE-COMMIT FRAMEWORK CONFIG
+# =============================================================
+# Copy to your repo root: cp templates/hooks/.pre-commit-config.yaml .pre-commit-config.yaml
+#
+# Requirements:
+#   pip install pre-commit
+#   pre-commit install
+#
+# Run all checks manually:
+#   pre-commit run --all-files
+#
+# Update hooks to latest versions:
+#   pre-commit autoupdate
+# =============================================================
+
+repos:
+  # ── General file hygiene ──────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+        name: Validate YAML syntax
+        args: [--allow-multiple-documents]
+      - id: check-json
+        name: Validate JSON syntax
+      - id: check-merge-conflict
+        name: Check for merge conflict markers
+      - id: check-added-large-files
+        name: Block large file commits
+        args: [--maxkb=500]
+      - id: end-of-file-fixer
+        name: Ensure files end with newline
+      - id: trailing-whitespace
+        name: Remove trailing whitespace
+      - id: mixed-line-ending
+        name: Normalize line endings
+        args: [--fix=lf]
+      - id: detect-private-key
+        name: Detect accidentally committed private keys
+      - id: check-executables-have-shebangs
+        name: Ensure executable scripts have shebangs
+      - id: check-shebang-scripts-are-executable
+        name: Ensure scripts with shebangs are executable
+
+  # ── Shell script syntax ───────────────────────────────────
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        name: Shell script syntax and style check
+        args: [--severity=warning]
+
+  # ── YAML lint (stricter than check-yaml) ─────────────────
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        name: YAML style and syntax lint
+        args:
+          - --config-data
+          - |
+            extends: default
+            rules:
+              line-length:
+                max: 120
+              truthy:
+                allowed-values: ['true', 'false', 'on', 'off']
+
+  # ── Secrets detection ─────────────────────────────────────
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        name: Detect hardcoded secrets
+        args: [--baseline, .secrets.baseline]
+        exclude: .*\.example$|\.env\.example
+
+# =============================================================
+# NOTE: ESLint and TypeScript checks are handled by Husky +
+# lint-staged (see package.json "lint-staged" config and
+# .husky/pre-commit). Adding them here would cause double-runs
+# in Node.js projects. For non-Node projects, add:
+#
+#   - repo: https://github.com/pre-commit/mirrors-eslint
+#     rev: v9.x.x
+#     hooks:
+#       - id: eslint
+#         additional_dependencies: [...]
+# =============================================================
