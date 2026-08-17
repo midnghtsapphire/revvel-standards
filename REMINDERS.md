@@ -93,6 +93,19 @@ Older templates are archived under `templates/issue-template-archive/`.
 
 ---
 
+## Using stacked pull requests (stacker-bot / Graphite)
+
+**Read before you split a large change into stacked PRs:**
+
+- [`docs/STACKER_BOT_INSTALLATION.md`](./docs/STACKER_BOT_INSTALLATION.md) — confirm the free **stacker-bot** install (ID `150619571`) and smoke-test the bot
+- [`docs/STACKER_BOT_INTEGRATION.md`](./docs/STACKER_BOT_INTEGRATION.md) — CLI vs manual stacks, merge top-down only, labels `stacker` / `stacker:stacked`
+- [`docs/GRAPHITE_INTEGRATION.md`](./docs/GRAPHITE_INTEGRATION.md) — modern Graphite path when that App is configured
+- [`skills/stacker-bot/SKILL.md`](./skills/stacker-bot/SKILL.md) — agent rules (no invented secrets; never "fix" a failing non-top Stacker check)
+
+**Why before:** Merging a mid-stack PR first breaks the branch chain. Stacker's failing check on non-top PRs is intentional. Graphite is preferred long-term; stacker-bot is the free lane already installed (#16874).
+
+---
+
 ## Adding a new MCP server to the WR/PR control plane
 
 **Read before you start:**

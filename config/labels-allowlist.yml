@@ -47,6 +47,8 @@ labels:
   - name: approved
   - name: changes-requested
   - name: auto-merge
+  - name: stacker
+  - name: "stacker:stacked"
   - name: "won't-merge"
   - name: checks-passing
   - name: checks-failing
