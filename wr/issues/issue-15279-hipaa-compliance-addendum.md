@@ -171,7 +171,7 @@ HIPAA applies only if we are a **Covered Entity** (healthcare provider, plan, cl
 
 ### Decision Tree
 
-```
+```text
 Does the app receive data from, or transmit data to, a Covered Entity
 (hospital, clinic, insurer, telehealth provider) on their behalf?
  │
