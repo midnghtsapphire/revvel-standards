@@ -220,7 +220,7 @@ jobs:
           VCS__PIPELINE__PULL_NUMBER: ${{ steps.target.outputs.pr_number }}
           # Prefer ADMIN_GITHUB_TOKEN (own rate-limit bucket) when present.
           VCS__HTTP_CLIENT__API_URL: https://api.github.com
-          VCS__HTTP_CLIENT__API_TOKEN: ${{ secrets.ADMIN_GITHUB_TOKEN != '' && secrets.ADMIN_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          VCS__HTTP_CLIENT__API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
