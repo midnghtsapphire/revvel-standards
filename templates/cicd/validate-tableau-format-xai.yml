@@ -187,13 +187,19 @@ jobs:
 
       - name: Summarize validation results
         if: always() && steps.guide.outputs.ready == 'true' && steps.files.outputs.ready == 'true'
+        # Pass step outputs through env instead of ${{ }} inside `run` — a PR
+        # adding a file named `$(cmd).twb` would otherwise execute on the
+        # runner (GHA template-expansion command injection).
+        env:
+          GUIDE_PATH: ${{ steps.guide.outputs.path }}
+          FILES_LIST: ${{ steps.files.outputs.list }}
         run: |
           set -euo pipefail
           {
             echo "## Validate Tableau Format XAI"
             echo ""
-            echo "- Style guide: \`${{ steps.guide.outputs.path }}\`"
-            echo "- Files: \`${{ steps.files.outputs.list }}\`"
+            echo "- Style guide: \`${GUIDE_PATH}\`"
+            echo "- Files: \`${FILES_LIST}\`"
             echo ""
             if [ -f outputs.txt ]; then
               echo '```'

@@ -149,3 +149,20 @@ test('template is not auto-enabled in this repo live workflows', () => {
     'must remain template-only in revvel-standards'
   );
 });
+
+test('no ${{ }} template expansion inside run blocks (command injection)', () => {
+  // Step outputs interpolated with ${{ }} directly inside `run` execute on the
+  // runner — a PR adding a file named `$(cmd).twb` becomes code execution.
+  // Outputs must flow through `env:` instead.
+  const doc = YAML.parse(read(templateRel));
+  for (const [jobName, job] of Object.entries(doc.jobs)) {
+    for (const step of job.steps || []) {
+      if (typeof step.run === 'string') {
+        assert.ok(
+          !step.run.includes('${{'),
+          `job ${jobName} step "${step.name}" interpolates \${{ }} inside run`
+        );
+      }
+    }
+  }
+});
