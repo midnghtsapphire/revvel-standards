@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VEINS Topology Lab — BNAT Knowledge Sheaf Observatory</title>
+  <meta name="description" content="Interactive sheaf cohomology + persistence diagram lab. Self-healing governance as geometry for the Revvel BIOME / MOTU fleet." />
+  <meta name="theme-color" content="#05060f" />
+  <style>
+    :root {
+      --void: #05060f;
+      --ink: #0b1020;
+      --panel: rgba(18, 24, 48, 0.72);
+      --line: rgba(120, 160, 255, 0.18);
+      --ice: #e8eefc;
+      --mist: #93a0c0;
+      --cyan: #3ddcff;
+      --mag: #ff4fd8;
+      --iris: #7c5cff;
+      --gold: #f7c948;
+      --ok: #3dffb5;
+      --bad: #ff6b8a;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ice);
+      background: var(--void);
+      overflow-x: hidden;
+    }
+    canvas#field {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+    }
+    .shell {
+      position: relative; z-index: 1;
+      max-width: 1180px; margin: 0 auto; padding: 28px 18px 64px;
+    }
+    .topline {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+      justify-content: space-between; margin-bottom: 22px;
+    }
+    .brand {
+      display: flex; gap: 12px; align-items: center;
+    }
+    .orb {
+      width: 36px; height: 36px; border-radius: 999px;
+      background:
+        radial-gradient(circle at 35% 30%, #fff, transparent 28%),
+        conic-gradient(from 200deg, var(--cyan), var(--iris), var(--mag), var(--cyan));
+      box-shadow: 0 0 28px rgba(61, 220, 255, 0.45);
+    }
+    h1 {
+      margin: 0; font-size: clamp(1.35rem, 3vw, 2rem); letter-spacing: -0.03em;
+    }
+    .pill {
+      font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: 0.16em; text-transform: uppercase; color: var(--mist);
+    }
+    .nav a {
+      color: var(--cyan); text-decoration: none; font-size: 13px; margin-left: 14px;
+    }
+    .nav a:hover { color: #fff; }
+    .hero {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, rgba(124,92,255,0.14), rgba(61,220,255,0.05) 45%, rgba(255,79,216,0.08));
+      border-radius: 22px; padding: 22px 22px 18px; margin-bottom: 18px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .hero p { color: var(--mist); max-width: 70ch; line-height: 1.55; margin: 10px 0 0; }
+    .hero strong { color: var(--ice); }
+    .grid {
+      display: grid; gap: 16px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .card {
+      grid-column: span 12;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 18px; padding: 16px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.28);
+    }
+    @media (min-width: 900px) {
+      .card.span-7 { grid-column: span 7; }
+      .card.span-5 { grid-column: span 5; }
+      .card.span-6 { grid-column: span 6; }
+      .card.span-4 { grid-column: span 4; }
+    }
+    .card h2 {
+      margin: 0 0 10px; font-size: 0.95rem; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--cyan);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    button {
+      appearance: none; border: 1px solid rgba(61,220,255,0.35);
+      background: rgba(61,220,255,0.08); color: var(--ice);
+      border-radius: 999px; padding: 8px 14px; cursor: pointer;
+      font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      transition: background .15s, border-color .15s, transform .15s;
+    }
+    button:hover { background: rgba(61,220,255,0.16); border-color: var(--cyan); }
+    button.active {
+      background: linear-gradient(90deg, rgba(124,92,255,0.35), rgba(255,79,216,0.25));
+      border-color: var(--mag);
+    }
+    button.heal {
+      border-color: rgba(61,255,181,0.45);
+      background: rgba(61,255,181,0.1);
+    }
+    .metrics {
+      display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px;
+    }
+    .metric {
+      border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+      background: rgba(5,6,15,0.35);
+    }
+    .metric .k { font-size: 11px; color: var(--mist); letter-spacing: 0.08em; text-transform: uppercase; }
+    .metric .v { font-size: 1.35rem; font-weight: 750; margin-top: 4px; font-variant-numeric: tabular-nums; }
+    .metric .v.ok { color: var(--ok); }
+    .metric .v.bad { color: var(--bad); }
+    .metric .v.cyan { color: var(--cyan); }
+    .metric .v.mag { color: var(--mag); }
+    svg.diagram, svg.fleet {
+      width: 100%; height: auto; display: block;
+      background: radial-gradient(circle at 30% 20%, rgba(124,92,255,0.12), transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(255,79,216,0.08), transparent 45%),
+                  rgba(5,6,15,0.55);
+      border-radius: 14px; border: 1px solid var(--line);
+    }
+    .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; color: var(--mist); font-size: 12px; }
+    .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+    .dot.h0 { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+    .dot.h1 { background: var(--mag); box-shadow: 0 0 8px var(--mag); }
+    .fleet-list { display: grid; gap: 8px; margin-top: 8px; }
+    .fleet-item {
+      display: flex; justify-content: space-between; gap: 10px; align-items: center;
+      border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+      background: rgba(5,6,15,0.3);
+    }
+    .fleet-item code { color: var(--gold); font-size: 12px; }
+    .status {
+      font: 700 10px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 5px 8px; border-radius: 999px;
+    }
+    .status.live { color: var(--ok); background: rgba(61,255,181,0.12); border: 1px solid rgba(61,255,181,0.3); }
+    .status.ctrl { color: var(--iris); background: rgba(124,92,255,0.14); border: 1px solid rgba(124,92,255,0.35); }
+    .proof {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px; line-height: 1.55; color: var(--mist);
+      white-space: pre-wrap; margin: 0;
+    }
+    .proof b { color: var(--ice); font-weight: 700; }
+    .investor {
+      border-color: rgba(247,201,72,0.28);
+      background:
+        linear-gradient(160deg, rgba(247,201,72,0.08), transparent 40%),
+        var(--panel);
+    }
+    .pillars { display: grid; gap: 8px; grid-template-columns: 1fr; margin-top: 10px; }
+    @media (min-width: 700px) { .pillars { grid-template-columns: 1fr 1fr; } }
+    .pillar {
+      border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+      color: var(--mist); font-size: 13px; line-height: 1.45;
+    }
+    .pillar b { color: var(--gold); display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+    footer {
+      margin-top: 18px; color: var(--mist); font-size: 12px;
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between;
+    }
+    footer a { color: var(--cyan); text-decoration: none; }
+    @media (prefers-reduced-motion: reduce) {
+      canvas#field { display: none; }
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="field" aria-hidden="true"></canvas>
+  <div class="shell">
+    <div class="topline">
+      <div class="brand">
+        <div class="orb" aria-hidden="true"></div>
+        <div>
+          <div class="pill">Method · Living Manifold</div>
+          <h1>VEINS Topology Lab</h1>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Secondary">
+        <a href="../../index.html">← Public Hub</a>
+        <a href="./README.md">Docs</a>
+        <a href="https://github.com/midnghtsapphire/revvel-standards" rel="noopener">GitHub ↗</a>
+      </nav>
+    </div>
+
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="pill" id="hero-title">Self-healing governance as geometry</div>
+      <p>
+        <strong>revvel-standards is not a documentation repo.</strong>
+        It is a living mathematical organism. Every agent is imprinted through the
+        <strong>BNAT Knowledge Sheaf</strong>; consistency is measured by
+        sheaf cohomology and healed by diffusion. Long-lived topological tears
+        (persistent H¹ bars) escalate — they are never silently glued.
+        BIOME keeps the fleet alive when API keys vanish. MOTU is the visiting controller.
+      </p>
+    </section>
+
+    <div class="grid">
+      <section class="card span-7" aria-labelledby="coh-h">
+        <h2 id="coh-h">Sheaf Cohomology Explorer</h2>
+        <div class="row" role="group" aria-label="Synthetic complexes">
+          <button type="button" data-kind="path" class="active">Path</button>
+          <button type="button" data-kind="cycle">Cycle</button>
+          <button type="button" data-kind="conflict">Conflict</button>
+          <button type="button" class="heal" id="heal-btn">Heal · NSD step</button>
+        </div>
+        <div class="metrics" id="metrics"></div>
+        <pre class="proof" id="proof" style="margin-top:12px"></pre>
+      </section>
+
+      <section class="card span-5" aria-labelledby="pd-h">
+        <h2 id="pd-h">Persistence Diagram Studio</h2>
+        <svg class="diagram" id="pd" viewBox="0 0 360 300" role="img" aria-label="Persistence diagram"></svg>
+        <div class="legend">
+          <span><i class="dot h0"></i>H⁰ components</span>
+          <span><i class="dot h1"></i>H¹ cycles / tears</span>
+          <span>∞ = essential class</span>
+        </div>
+      </section>
+
+      <section class="card span-6" aria-labelledby="fleet-h">
+        <h2 id="fleet-h">Fleet Constellation</h2>
+        <svg class="fleet" id="fleet-svg" viewBox="0 0 420 220" role="img" aria-label="BIOME fleet constellation"></svg>
+        <div class="fleet-list" id="fleet-list"></div>
+      </section>
+
+      <section class="card span-6 investor" aria-labelledby="inv-h">
+        <h2 id="inv-h" style="color:var(--gold)">Investor / Employer Surface</h2>
+        <p style="color:var(--mist); margin:0 0 8px; line-height:1.55; font-size:14px;">
+          This is the public face of a production self-healing control plane:
+          credit-free BIOME workers, MOTU visiting controllers, and a geometric
+          invariant (H¹ ≈ 0) that blocks high-blast work while the fleet is torn.
+        </p>
+        <div class="pillars">
+          <div class="pillar"><b>Mathematical self-healing</b>Sheaf Laplacian energy + cohomology + barcodes. Obstructions are localized, patched, or escalated.</div>
+          <div class="pillar"><b>Credit-free resilience</b>BIOME (sentinel · medic · homeostat · sheaf · inspector) keeps running when paid AI lanes go dark.</div>
+          <div class="pillar"><b>WR → multi-PR discipline</b>Ordered deep-control PRs. No silent glue of inconsistent agent states across the series.</div>
+          <div class="pillar"><b>Imprint-at-spawn</b>Every new agent restricts from the knowledge sheaf and asserts energy / H¹ before work begins.</div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <div>BNAT Knowledge Sheaf · WR-16901 · additive over BIOME</div>
+      <div>
+        <a href="../biome/biome-status.html">BIOME status</a> ·
+        <a href="./BNAT_SHEAF_STANDARD.md">Standard</a> ·
+        <a href="./NSD_EXPLORATION.md">NSD</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // ── minimal sheaf + PH (mirrors scripts/bnatsheaf; browser-native) ──────
+    function identity(n) {
+      return Array.from({ length: n }, (_, i) =>
+        Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))
+      );
+    }
+    function matVec(M, v) {
+      return M.map((row) => row.reduce((a, x, j) => a + x * v[j], 0));
+    }
+    function CellularSheaf(spec) {
+      this.stalks = spec.stalks;
+      this.edges = (spec.edges || []).map((e) => ({
+        u: e.u, v: e.v,
+        ru: e.ru || identity(spec.stalks[e.u].length),
+        rv: e.rv || identity(spec.stalks[e.v].length),
+      }));
+    }
+    CellularSheaf.prototype.edgeResiduals = function () {
+      return this.edges.map((e) => {
+        const pu = matVec(e.ru, this.stalks[e.u]);
+        const pv = matVec(e.rv, this.stalks[e.v]);
+        return { u: e.u, v: e.v, residual: pu.map((x, i) => x - pv[i]) };
+      });
+    };
+    CellularSheaf.prototype.laplacianEnergy = function () {
+      return this.edgeResiduals().reduce(
+        (a, r) => a + r.residual.reduce((s, x) => s + x * x, 0), 0
+      );
+    };
+
+    function matrixRank(matrix, tol) {
+      tol = tol || 1e-9;
+      if (!matrix.length) return 0;
+      const m = matrix.length, n = matrix[0].length;
+      const a = matrix.map((r) => r.slice());
+      let rank = 0, row = 0;
+      for (let col = 0; col < n && row < m; col++) {
+        let pivot = row;
+        for (let i = row + 1; i < m; i++) {
+          if (Math.abs(a[i][col]) > Math.abs(a[pivot][col])) pivot = i;
+        }
+        if (Math.abs(a[pivot][col]) < tol) continue;
+        if (pivot !== row) { const t = a[row]; a[row] = a[pivot]; a[pivot] = t; }
+        const piv = a[row][col];
+        for (let j = col; j < n; j++) a[row][j] /= piv;
+        for (let i = 0; i < m; i++) {
+          if (i === row) continue;
+          const f = a[i][col];
+          if (Math.abs(f) < tol) continue;
+          for (let j = col; j < n; j++) a[i][j] -= f * a[row][j];
+        }
+        rank++; row++;
+      }
+      return rank;
+    }
+
+    function cohomology(sheaf) {
+      const names = Object.keys(sheaf.stalks);
+      let nCols = 0;
+      const colStarts = {};
+      names.forEach((n) => { colStarts[n] = nCols; nCols += sheaf.stalks[n].length; });
+      const rows = [];
+      sheaf.edges.forEach((e) => {
+        for (let r = 0; r < e.ru.length; r++) {
+          const row = Array(nCols).fill(0);
+          for (let c = 0; c < e.ru[r].length; c++) row[colStarts[e.u] + c] += e.ru[r][c];
+          for (let c = 0; c < e.rv[r].length; c++) row[colStarts[e.v] + c] -= e.rv[r][c];
+          rows.push(row);
+        }
+      });
+      const rankDelta = matrixRank(rows);
+      const dimC0 = nCols, dimC1 = rows.length;
+      return {
+        dimH0: Math.max(0, dimC0 - rankDelta),
+        dimH1: Math.max(0, dimC1 - rankDelta),
+        rankDelta, dimC0, dimC1,
+        energy: sheaf.laplacianEnergy(),
+      };
+    }
+
+    function computeBarcodes(vertices, edges) {
+      const parent = new Map(), birth = new Map();
+      const h0 = new Map();
+      function add(x) {
+        if (!parent.has(x)) { parent.set(x, x); birth.set(x, 0); h0.set(x, { birth: 0, death: null }); }
+      }
+      function find(x) {
+        let r = x; while (parent.get(r) !== r) r = parent.get(r);
+        while (parent.get(x) !== r) { const n = parent.get(x); parent.set(x, r); x = n; }
+        return r;
+      }
+      vertices.forEach(add);
+      const h1 = [];
+      edges.slice().sort((a, b) => a.weight - b.weight).forEach((e) => {
+        add(e.u); add(e.v);
+        const ra = find(e.u), rb = find(e.v);
+        if (ra === rb) {
+          h1.push({ birth: e.weight, death: null, edge: [e.u, e.v] });
+        } else {
+          const elder = birth.get(ra) <= birth.get(rb) ? ra : rb;
+          const younger = elder === ra ? rb : ra;
+          parent.set(younger, elder);
+          h0.get(younger).death = e.weight;
+        }
+      });
+      return { h0: [...h0.values()], h1 };
+    }
+
+    function synthetic(kind) {
+      if (kind === 'path') {
+        return new CellularSheaf({
+          stalks: { a: [1], b: [1], c: [1] },
+          edges: [{ u: 'a', v: 'b' }, { u: 'b', v: 'c' }],
+        });
+      }
+      if (kind === 'cycle') {
+        return new CellularSheaf({
+          stalks: { a: [0], b: [0], c: [0] },
+          edges: [{ u: 'a', v: 'b' }, { u: 'b', v: 'c' }, { u: 'c', v: 'a' }],
+        });
+      }
+      // Match scripts/bnatsheaf/cohomology.js syntheticComplex('conflict')
+      return new CellularSheaf({
+        stalks: { a: [0], b: [1], c: [0] },
+        edges: [{ u: 'a', v: 'b' }, { u: 'b', v: 'c' }, { u: 'c', v: 'a' }],
+      });
+    }
+
+    function diffuseStep(sheaf, eta) {
+      eta = eta || 0.25;
+      const delta = {};
+      Object.keys(sheaf.stalks).forEach((n) => { delta[n] = sheaf.stalks[n].map(() => 0); });
+      sheaf.edges.forEach((e) => {
+        const xu = sheaf.stalks[e.u], xv = sheaf.stalks[e.v];
+        const r = matVec(e.ru, xu).map((v, i) => v - matVec(e.rv, xv)[i]);
+        for (let j = 0; j < xu.length; j++) {
+          let s = 0; for (let i = 0; i < r.length; i++) s += e.ru[i][j] * r[i];
+          delta[e.u][j] += s;
+        }
+        for (let j = 0; j < xv.length; j++) {
+          let s = 0; for (let i = 0; i < r.length; i++) s += e.rv[i][j] * r[i];
+          delta[e.v][j] -= s;
+        }
+      });
+      const next = {};
+      Object.keys(sheaf.stalks).forEach((n) => {
+        next[n] = sheaf.stalks[n].map((v, i) => v - eta * delta[n][i]);
+      });
+      return new CellularSheaf({
+        stalks: next,
+        edges: sheaf.edges.map((e) => ({ u: e.u, v: e.v, ru: e.ru, rv: e.rv })),
+      });
+    }
+
+    // ── UI state ──────────────────────────────────────────────────────────
+    let kind = 'path';
+    let sheaf = synthetic(kind);
+
+    const metricsEl = document.getElementById('metrics');
+    const proofEl = document.getElementById('proof');
+    const pdEl = document.getElementById('pd');
+
+    function renderMetrics(c) {
+      const energyBad = c.energy > 1e-9;
+      // Obstructed when energy is positive OR the complex carries essential H¹
+      // with a disagreeing assignment (conflict). Drives metric panel border.
+      const obstructed = energyBad || (c.dimH1 > 0 && kind === 'conflict');
+      metricsEl.style.outline = obstructed ? '1px solid rgba(255,107,138,0.45)' : '1px solid transparent';
+      metricsEl.style.borderRadius = '14px';
+      metricsEl.innerHTML = [
+        ['dim H⁰', c.dimH0, 'cyan'],
+        ['dim H¹', c.dimH1, c.dimH1 ? 'mag' : 'ok'],
+        ['rank δ', c.rankDelta, ''],
+        ['E(x)', c.energy.toFixed(4), energyBad ? 'bad' : 'ok'],
+      ].map(([k, v, cls]) =>
+        '<div class="metric"><div class="k">' + k + '</div><div class="v ' + cls + '">' + v + '</div></div>'
+      ).join('');
+      proofEl.innerHTML =
+        '<b>Proof sketch (rank-nullity)</b>\n' +
+        'δ : C⁰ → C¹  coboundary (edge residuals)\n' +
+        'H⁰ ≅ ker δ    ⇒  dim H⁰ = dim C⁰ − rank δ = ' + c.dimC0 + ' − ' + c.rankDelta + ' = ' + c.dimH0 + '\n' +
+        'H¹ ≅ coker δ  ⇒  dim H¹ = dim C¹ − rank δ = ' + c.dimC1 + ' − ' + c.rankDelta + ' = ' + c.dimH1 + '\n' +
+        'E(x) = Σₑ ‖Rᵤxᵤ − Rᵥxᵥ‖² = ' + c.energy.toFixed(6) + '\n' +
+        (obstructed
+          ? '⇒ <b>obstruction</b> present — escalate / heal, never silently glue.'
+          : '⇒ current assignment is a <b>global section</b> (in ker δ).');
+    }
+
+    function renderPD(sheaf) {
+      const names = Object.keys(sheaf.stalks);
+      const edges = sheaf.edgeResiduals().map((r) => ({
+        u: r.u, v: r.v,
+        weight: r.residual.reduce((a, x) => a + x * x, 0),
+      }));
+      // structural filtration for topology when energy is uniform
+      const struct = sheaf.edges.map((e, i) => ({ u: e.u, v: e.v, weight: i + 1 }));
+      const barcodes = computeBarcodes(names, kind === 'conflict' ? edges.map((e, i) => ({
+        u: e.u, v: e.v, weight: Math.max(e.weight, 0.01) * (i + 1),
+      })) : struct);
+      const maxW = Math.max(1, ...struct.map((e) => e.weight));
+      const pts = [];
+      barcodes.h0.forEach((b) => pts.push({ dim: 0, birth: b.birth, death: b.death }));
+      barcodes.h1.forEach((b) => pts.push({ dim: 1, birth: b.birth, death: b.death }));
+
+      const W = 360, H = 300, pad = 36;
+      const scale = (t) => pad + (t / (maxW * 1.15)) * (W - 2 * pad);
+      const yOf = (d) => H - scale(d === null ? maxW * 1.1 : d);
+      let svg = '';
+      // axes + diagonal
+      svg += '<line x1="' + pad + '" y1="' + (H - pad) + '" x2="' + (W - 16) + '" y2="' + (H - pad) + '" stroke="rgba(147,160,192,0.5)" />';
+      svg += '<line x1="' + pad + '" y1="' + (H - pad) + '" x2="' + pad + '" y2="16" stroke="rgba(147,160,192,0.5)" />';
+      svg += '<line x1="' + pad + '" y1="' + (H - pad) + '" x2="' + scale(maxW * 1.1) + '" y2="' + yOf(maxW * 1.1) + '" stroke="rgba(124,92,255,0.35)" stroke-dasharray="4 4" />';
+      svg += '<text x="' + (W / 2) + '" y="' + (H - 10) + '" fill="#93a0c0" font-size="11" text-anchor="middle">birth</text>';
+      svg += '<text x="14" y="' + (H / 2) + '" fill="#93a0c0" font-size="11" transform="rotate(-90 14 ' + (H / 2) + ')">death</text>';
+      pts.forEach((p) => {
+        const x = scale(p.birth);
+        const y = yOf(p.death);
+        const color = p.dim === 0 ? '#3ddcff' : '#ff4fd8';
+        if (p.death === null) {
+          svg += '<line x1="' + x + '" y1="' + (H - pad) + '" x2="' + x + '" y2="' + y + '" stroke="' + color + '" stroke-opacity="0.35" />';
+          svg += '<text x="' + x + '" y="' + (y - 8) + '" fill="' + color + '" font-size="10" text-anchor="middle">∞</text>';
+        }
+        svg += '<circle cx="' + x + '" cy="' + y + '" r="5.5" fill="' + color + '" opacity="0.95"><title>H' + p.dim + ' birth=' + p.birth + ' death=' + (p.death === null ? '∞' : p.death) + '</title></circle>';
+      });
+      pdEl.innerHTML = svg;
+    }
+
+    function renderAll() {
+      const c = cohomology(sheaf);
+      renderMetrics(c);
+      renderPD(sheaf);
+    }
+
+    const kindButtons = document.querySelectorAll('button[data-kind]');
+    kindButtons.forEach((btn) => {
+      btn.setAttribute('aria-pressed', String(btn.classList.contains('active')));
+      btn.addEventListener('click', () => {
+        kindButtons.forEach((b) => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+        kind = btn.getAttribute('data-kind');
+        sheaf = synthetic(kind);
+        renderAll();
+      });
+    });
+    document.getElementById('heal-btn').addEventListener('click', () => {
+      sheaf = diffuseStep(sheaf, 0.35);
+      sheaf = diffuseStep(sheaf, 0.35);
+      renderAll();
+    });
+
+    // Fleet constellation
+    const fleet = [
+      { name: 'sentinel', role: 'nociceptor', status: 'live' },
+      { name: 'medic', role: 'macrophage', status: 'live' },
+      { name: 'homeostat', role: 'regulator', status: 'live' },
+      { name: 'sheaf', role: 'glue / status', status: 'live' },
+      { name: 'inspector', role: 'verifier', status: 'live' },
+      { name: 'MOTU', role: 'visiting controller', status: 'ctrl' },
+    ];
+    const fsvg = document.getElementById('fleet-svg');
+    const flist = document.getElementById('fleet-list');
+    (function drawFleet() {
+      const cx = 210, cy = 110, R = 78;
+      let s = '<circle cx="' + cx + '" cy="' + cy + '" r="34" fill="none" stroke="rgba(124,92,255,0.45)" stroke-width="1.5" />';
+      s += '<circle cx="' + cx + '" cy="' + cy + '" r="8" fill="#7c5cff" />';
+      s += '<text x="' + cx + '" y="' + (cy + 28) + '" fill="#e8eefc" font-size="11" text-anchor="middle">Knowledge Sheaf</text>';
+      fleet.forEach((f, i) => {
+        const a = (-Math.PI / 2) + (i / fleet.length) * Math.PI * 2;
+        const x = cx + Math.cos(a) * R;
+        const y = cy + Math.sin(a) * R;
+        const col = f.status === 'ctrl' ? '#7c5cff' : '#3ddcff';
+        s += '<line x1="' + cx + '" y1="' + cy + '" x2="' + x + '" y2="' + y + '" stroke="' + col + '" stroke-opacity="0.35" />';
+        s += '<circle cx="' + x + '" cy="' + y + '" r="11" fill="' + col + '" opacity="0.9" />';
+        s += '<text x="' + x + '" y="' + (y + 28) + '" fill="#93a0c0" font-size="10" text-anchor="middle">' + f.name + '</text>';
+      });
+      fsvg.innerHTML = s;
+      flist.innerHTML = fleet.map((f) =>
+        '<div class="fleet-item"><div><strong>' + f.name + '</strong> · <code>' + f.role + '</code></div>' +
+        '<span class="status ' + f.status + '">' + (f.status === 'ctrl' ? 'control plane' : 'credit-free') + '</span></div>'
+      ).join('');
+    })();
+
+    renderAll();
+
+    // Particle / filament background
+    const canvas = document.getElementById('field');
+    const ctx = canvas.getContext('2d');
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let w, h, particles, raf;
+    function resize() {
+      w = canvas.width = window.innerWidth * devicePixelRatio;
+      h = canvas.height = window.innerHeight * devicePixelRatio;
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      particles = Array.from({ length: 48 }, () => ({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.25 * devicePixelRatio,
+        vy: (Math.random() - 0.5) * 0.25 * devicePixelRatio,
+        r: (1 + Math.random() * 2) * devicePixelRatio,
+        c: Math.random() > 0.5 ? 'rgba(61,220,255,0.55)' : 'rgba(255,79,216,0.45)',
+      }));
+    }
+    function tick() {
+      ctx.clearRect(0, 0, w, h);
+      // soft vignette
+      const g = ctx.createRadialGradient(w * 0.5, h * 0.3, 0, w * 0.5, h * 0.5, w * 0.7);
+      g.addColorStop(0, 'rgba(124,92,255,0.08)');
+      g.addColorStop(1, 'rgba(5,6,15,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+        ctx.beginPath();
+        ctx.fillStyle = p.c;
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        for (let j = i + 1; j < particles.length; j++) {
+          const q = particles[j];
+          const dx = p.x - q.x, dy = p.y - q.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < (120 * devicePixelRatio) ** 2) {
+            ctx.strokeStyle = 'rgba(124,92,255,' + (0.12 * (1 - Math.sqrt(d2) / (120 * devicePixelRatio))) + ')';
+            ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+          }
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+    if (!reduced) tick();
+  })();
+  </script>
+</body>
+</html>
