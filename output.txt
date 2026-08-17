@@ -1,0 +1,18 @@
+# REVVEL-DISABLED | AGENT: openhands | MODEL: claude-sonnet-4-5 | WR: PR-16990 | DATE: 2026-08-06 | STATUS: BYPASSED
+# REASON: APISEC_USERNAME / APISEC_PASSWORD not provisioned; every run failed with 'Invalid runid'. Coverage already provided by CodeQL + Trivy + Semgrep in this repo.
+# OWNER: @midnghtsapphire | TICKET: PR #16990
+#
+# The secrets required to authenticate are not provisioned in this org, so
+# every run failed at the API-call step. Rather than accumulate red check-runs
+# on every PR, the workflow body is archived below per RVS-AGENT-001
+# (`standards/COMMENT-DONT-DELETE.md`).
+#
+# To re-enable:
+#   1. Provision the required secrets in repo/org settings.
+#   2. Un-comment the archived block below AND remove this REVVEL-DISABLED header.
+#   3. Delete the placeholder `on:`/`jobs:` scaffolding under this header.
+#
+# The scaffolding below keeps the file parse-clean for the Actions runner and
+# for zizmor, but never actually fires (workflow_dispatch only + `if: false`).
+
+name: AP
