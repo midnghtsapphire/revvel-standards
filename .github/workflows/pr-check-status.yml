@@ -173,7 +173,12 @@ jobs:
               // create it only the first time; write nothing when unchanged.
               const body = desired === 'passing'
                 ? `${MARKER}\n✅ **CI Checks Passing** — All checks have passed.${approved ? ' This PR is now ready to merge!' : ''}`
-                : `${MARKER}\n❌ **CI Checks Failed** — One or more checks failed. Please review the [check results](${suite.html_url}) and push a fix.`;
+                // The check_suite webhook payload has no `html_url`, so the
+                // old link rendered literally as "[check results](undefined)".
+                // The PR's own checks tab is always valid and is what a
+                // reader actually wants — it shows every suite, not just the
+                // one that happened to trigger this run.
+                : `${MARKER}\n❌ **CI Checks Failed** — One or more checks failed. Please review the [check results](https://github.com/${owner}/${repo}/pull/${prNumber}/checks) and push a fix.`;
 
               const comments = await github.paginate(github.rest.issues.listComments, {
                 owner, repo, issue_number: prNumber, per_page: 100,

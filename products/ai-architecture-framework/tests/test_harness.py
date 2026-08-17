@@ -2,6 +2,7 @@
 
 Run with: python -m unittest products/ai-architecture-framework/tests/test_harness.py
 """
+from __future__ import annotations
 import json
 import sys
 import tempfile
@@ -17,13 +18,8 @@ import cuda_mlops_wrapper as cuda  # noqa: E402
 Run: python -m products.ai-architecture-framework.tests.test_harness
 Or:  python products/ai-architecture-framework/tests/test_harness.py
 """
-from __future__ import annotations
 
-import json
 import os
-import sys
-import tempfile
-import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PARENT = os.path.dirname(HERE)
@@ -114,9 +110,6 @@ class TestMarketEvaluator(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main(verbosity=2)
 """Test harness for AI Architecture framework."""
-import json
-import sys
-from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))

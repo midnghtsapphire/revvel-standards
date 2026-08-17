@@ -99,6 +99,14 @@ test('label removal swallows 404 only, never an auth failure', () => {
   assert.equal(rawRemovals.length, 1, 'removeLabel should be called in exactly one guarded place');
 });
 
+test('the failure comment links somewhere real', () => {
+  // `check_suite` webhook payloads carry no `html_url`, so linking to it
+  // rendered literally as "[check results](undefined)" on every failing PR.
+  const script = scriptOf('pr-check-status.yml', 'check-suite-status');
+  assert.doesNotMatch(script, /suite\.html_url/, 'check_suite has no html_url');
+  assert.match(script, /pull\/\$\{prNumber\}\/checks/, 'link to the PR checks tab');
+});
+
 test('pr-check-status embedded script is syntactically valid', () => {
   // github-script wraps the body in an async function, so top-level await is
   // legal here — but a syntax error would only surface at runtime in CI.

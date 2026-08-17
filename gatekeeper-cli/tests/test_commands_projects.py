@@ -26,9 +26,6 @@ from gatekeeper_cli.commands.projects import list_configs, list_projects
 PROJECTS_MOD = "gatekeeper_cli.commands.projects"
 
 """Tests for gatekeeper-cli projects and configs commands."""
-import pytest
-from unittest.mock import patch, MagicMock
-from click.testing import CliRunner
 
 
 @pytest.fixture
@@ -151,6 +148,8 @@ class TestListConfigs:
         assert result.exit_code == 0
         assert "prod" in result.output
         instance.list_configs.assert_called_once_with("default-proj")
+
+
 @pytest.fixture
 def mock_projects_response():
     return [
