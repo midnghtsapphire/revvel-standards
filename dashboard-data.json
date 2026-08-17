@@ -1302,10 +1302,22 @@
       "source": "/products/mergeme-status/README.md"
     },
     {
+      "url": "https://revvel-standards.vercel.app/docs/goap-swarm-console/",
+      "project": "goap-swarm-console",
+      "type": "vercel",
+      "source": "/products/goap-swarm-console/README.md"
+    },
+    {
       "url": "https://revvel-standards.vercel.app/docs/coldtrace/",
       "project": "coldtrace",
       "type": "vercel",
       "source": "/coldtrace/README.md"
+    },
+    {
+      "url": "https://revvel-standards.vercel.app/docs/music-video-creator/](https://revvel-standards.vercel.app/docs/music-video-creator/",
+      "project": "music-projects",
+      "type": "vercel",
+      "source": "/wr/fleet-maintenance/music-projects/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/reesereviews/",
@@ -1599,5 +1611,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-17T11:35:13.685Z"
+  "lastUpdated": "2026-08-17T12:23:13.954Z"
 }
