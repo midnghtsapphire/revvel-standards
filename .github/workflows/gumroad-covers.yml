@@ -19,6 +19,7 @@ permissions:
 jobs:
   generate-and-attach:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     # `contents: write` + `pull-requests: write` are needed only by the
     # create-pull-request step below. The main branch is protected by a
     # ruleset that rejects direct pushes ("Changes must be made through a
