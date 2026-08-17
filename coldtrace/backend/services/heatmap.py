@@ -107,17 +107,17 @@ def _demo_heatmap(lkl: tuple[float, float]) -> dict[str, Any]:
         (cx + 0.022, cy - 0.008, 0.65),
         (cx + 0.031, cy + 0.015, 0.48),
     ]
+    features = []
     rng = random.Random(1337)
-    rnd = rng.random
-    features = [
-        _point_feature(
-            hx + (rnd() - 0.5) * 0.008,
-            hy + (rnd() - 0.5) * 0.008,
-            base_score * (0.7 + rnd() * 0.3),
-        )
-        for hx, hy, base_score in hotspots
-        for _ in range(20)
-    ]
+    for hx, hy, base_score in hotspots:
+        for _ in range(20):
+            features.append(
+                _point_feature(
+                    hx + (rng.random() - 0.5) * 0.008,
+                    hy + (rng.random() - 0.5) * 0.008,
+                    base_score * (0.7 + rng.random() * 0.3),
+                )
+            )
     return {"type": "FeatureCollection", "features": features}
 
 
