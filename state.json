@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "source": "dashboard-data.json",
-  "lastUpdated": "2026-08-17T10:54:21.019Z",
+  "lastUpdated": "2026-08-17T11:12:23.276Z",
   "projects": {
     "total": 33,
     "byStatus": {
@@ -35,6 +35,6 @@
     ]
   },
   "urls": 63,
-  "domains": 6,
+  "domains": 12,
   "systemState": 1
 }
