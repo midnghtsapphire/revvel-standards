@@ -1,0 +1,65 @@
+# Copy to .github/workflows/renovate-config-validator.yml in a consumer repo.
+# Validates Renovate configuration on PRs/pushes that touch config files.
+#
+# Action: suzuki-shunsuke/github-action-renovate-config-validator@v2.1.0
+# Docs:   https://github.com/suzuki-shunsuke/github-action-renovate-config-validator
+# Local:  npx --yes -p renovate renovate-config-validator <path-to-config>
+#
+# CONFIGURE:
+#   - Set config_file_path to your Renovate config (json / json5 / .renovaterc).
+#   - Keep the full commit SHA pin; bump SHA + comment together when upgrading.
+#   - Adjust paths: filters if your config lives at a non-default location.
+
+name: Renovate Config Validator
+
+on:
+  pull_request:
+    paths:
+      - "renovate.json"
+      - "renovate.json5"
+      - ".renovaterc"
+      - ".renovaterc.json"
+      - ".renovaterc.json5"
+      - ".github/renovate.json"
+      - ".github/renovate.json5"
+      - ".github/workflows/renovate-config-validator.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "renovate.json"
+      - "renovate.json5"
+      - ".renovaterc"
+      - ".renovaterc.json"
+      - ".renovaterc.json5"
+      - ".github/renovate.json"
+      - ".github/renovate.json5"
+      - ".github/workflows/renovate-config-validator.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: renovate-config-validator-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate Renovate Configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Validate Renovate Configuration
+        # v2.1.0 — pin SHA; retagging upstream must not silently change CI.
+        uses: suzuki-shunsuke/github-action-renovate-config-validator@ee9f69e1f683ed0d08225086482b34fc9abe9300 # v2.1.0
+        with:
+          # CONFIGURE: point at your Renovate config file (one path, or multi-line).
+          config_file_path: .github/renovate.json5
+          strict: "true"
+          npm_cache: "true"
