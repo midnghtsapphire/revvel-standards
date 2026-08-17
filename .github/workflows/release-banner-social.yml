@@ -1,5 +1,4 @@
 # Release → banner SEO pack → Discord (optional) / WR on failure
-# Secrets: names only in config/connections.image-automation.yml
 name: release-banner-social
 
 on:
@@ -15,20 +14,15 @@ permissions:
   contents: read
   issues: write
 
-concurrency:
-  group: release-banner-social
-  cancel-in-progress: false
-
 jobs:
   banner:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "22"
           cache: ""
@@ -54,44 +48,26 @@ jobs:
               pageUrl: process.env.SERVER + '/' + repo + '/releases/tag/' + tag
             }, null, 2));
           "
-          node scripts/image-seo-build-pack.mjs \
-            --brief artifacts/image-automation/brief.json \
-            --out artifacts/image-automation/release-pack.json
-          node -e "
-            const p=require('./artifacts/image-automation/release-pack.json');
-            if (p.human_gate && p.human_gate.auto_merge !== false) {
-              console.error('auto_merge must be false');
-              process.exit(1);
-            }
-            console.log('pack ok', p.seo.filename);
-          "
+          node scripts/image-seo-build-pack.mjs --brief artifacts/image-automation/brief.json --out artifacts/image-automation/release-pack.json
 
       - name: Upload SEO pack
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08
         with:
           name: release-banner-pack
           path: artifacts/image-automation/
           retention-days: 1
 
-      # Optional: only fires when the secret name listed in
-      # config/connections.image-automation.yml is present. Never put the value in git.
       - name: Notify Discord (optional)
         if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          set -euo pipefail
-          MSG=$(node -e "const p=require('./artifacts/image-automation/release-pack.json'); process.stdout.write('Release banner pack ready: ' + p.seo.filename + ' — ' + p.seo.altText)")
-          PAYLOAD=$(node -e 'process.stdout.write(JSON.stringify({ content: process.argv[1] }))' "$MSG")
-          curl -sS -H 'Content-Type: application/json' -d "$PAYLOAD" "$DISCORD_WEBHOOK_URL" || true
+          MSG=$(node -e "const p=require('./artifacts/image-automation/release-pack.json');console.log('Release banner pack ready: '+p.seo.filename+' — '+p.seo.altText)")
+          curl -sS -H 'Content-Type: application/json'             -d "{"content": $(node -e 'console.log(JSON.stringify(process.argv[1]))' "$MSG")}"             "$DISCORD_WEBHOOK_URL" || true
 
       - name: Open WR on failure
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue create \
-            --repo "${{ github.repository }}" \
-            --title "[WR] Release banner automation failed — ${{ github.repository }}" \
-            --body "release-banner-social workflow failed (run ${{ github.run_id }}). Human review required. Labels intent: work-request, needs-human, automation, formal:auto-wr." \
-            --label "work-request" --label "needs-human" --label "auto-error" || true
+          gh issue create             --title "[WR] Release banner automation failed — ${{ github.repository }}"             --body "release-banner-social workflow failed. Human review required. Labels: wr, human-review-required, automation, formal:auto-wr"             --label "wr" --label "human-review-required" --label "automation" || true

@@ -1,24 +1,10 @@
-# Image SEO / release-banner automation — secret NAMES only.
-# Never commit values. Patch conceptually into config/connections.yml when
-# promoting a connection to the fleet SSOT (npm run connections).
-#
-# Used by:
-#   - .github/workflows/release-banner-social.yml (Discord optional notify)
-#   - .github/workflows/image-seo-pipeline.yml (OpenRouter LSI lane — optional)
-#   - workflows/blueprints/* (import-time secret name references)
-
-version: 1
-brand: MIDNGHTSAPPHIRE
-auto_merge: false
-human_review_required: true
-
+# Patch into config/connections.yml — secret NAMES only
 connections:
   - name: discord-release-banner
     system: discord
     trigger: release-banner-social workflow
     secret_name: DISCORD_WEBHOOK_URL
     owner: midnghtsapphire
-    required: false
   - name: x-twitter-release-banner
     system: x-twitter
     trigger: release-banner-social workflow
@@ -28,17 +14,13 @@ connections:
       - TWITTER_ACCESS_TOKEN
       - TWITTER_ACCESS_TOKEN_SECRET
     owner: midnghtsapphire
-    required: false
   - name: openrouter-image-lsi
     system: openrouter
     trigger: image-seo-pipeline
     secret_name: OPENROUTER_API_KEY
     owner: midnghtsapphire
-    required: false
-    note: Optional live LSI; headless builder uses seed+cooccurrence without a key.
   - name: gumloop-image-gen
     system: gumloop
     trigger: heavy image generation
     secret_name: GUMLOOP_API_KEY
     owner: midnghtsapphire
-    required: false

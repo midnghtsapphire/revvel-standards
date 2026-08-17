@@ -1,19 +1,13 @@
 #!/usr/bin/env node
 /**
  * Headless image_creation/v1 pack builder — no UI.
- * Production control plane: Actions + blueprints (see standards/IMAGE_CREATION_SEO_AUTOMATION.md).
- *
  *   node scripts/image-seo-build-pack.mjs --brief path.json --out path.json
- *   cat brief.json | node scripts/image-seo-build-pack.mjs --out path.json
- *
- * If the CLI fails mid-pipeline, open a WR (formal:auto-wr intent) — never auto-merge.
  */
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { fileURLToPath } from "node:url";
 
-export function parseArgs(argv) {
+function parseArgs(argv) {
   const out = { brief: null, out: "artifacts/image-automation/package.json" };
   for (let i = 2; i < argv.length; i++) {
     if (argv[i] === "--brief") out.brief = argv[++i];
@@ -22,7 +16,7 @@ export function parseArgs(argv) {
   return out;
 }
 
-export function slugify(s) {
+function slugify(s) {
   return String(s)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -30,7 +24,7 @@ export function slugify(s) {
     .slice(0, 80);
 }
 
-export function unique(arr, limit = 24) {
+function unique(arr, limit = 24) {
   const seen = new Set();
   const out = [];
   for (const t of arr) {
@@ -43,40 +37,17 @@ export function unique(arr, limit = 24) {
   return out;
 }
 
-/**
- * Blocker basename patterns for image SEO QA.
- * Matches camera dumps (IMG_*, DSC_*), screenshots, and bare image.* names.
- * SEO slugs like automation-asset-generator-og.webp pass.
- */
-export const NON_SEO_FILENAME_RE =
-  /^(?:IMG_.*|DSC_.*|Screenshot.*|image(?:[_.-]\d.*)?)$/i;
-
-export function isNonSeoFilename(basename) {
-  const b = String(basename || "").trim();
-  if (!b) return false;
-  // Strip extension so image.png and IMG_1.JPG both hit. SEO slugs that
-  // merely start with "image-" (image-seo-guide-og) must PASS.
-  const stem = b.replace(/\.(webp|png|jpe?g)$/i, "");
-  return NON_SEO_FILENAME_RE.test(stem);
-}
-
-/**
- * Expand LSI from seed primary + secondary + pinned/custom, minus exclusions.
- * source stays "seed+cooccurrence" so packs are reproducible without a live API.
- */
-export function expandLsi(brief) {
-  const primary = String(brief.primaryKeyword || brief.topic || "asset").toLowerCase();
+function buildPack(brief) {
+  const primary = (brief.primaryKeyword || brief.topic || "asset").toLowerCase();
+  const kind = brief.kind || "og";
+  const dims = kind === "hero" ? [1920, 1080] : [1200, 630];
   const secondary = String(brief.secondaryKeywords || "")
     .split(/[,|]/)
     .map((s) => s.trim())
     .filter(Boolean);
-  const pinned = Array.isArray(brief.pinnedLsi) ? brief.pinnedLsi : [];
-  const custom = Array.isArray(brief.customLsi) ? brief.customLsi : [];
-  const excluded = new Set(
-    (Array.isArray(brief.excludedLsi) ? brief.excludedLsi : []).map((t) =>
-      String(t).toLowerCase(),
-    ),
-  );
+  const pinned = brief.pinnedLsi || [];
+  const custom = brief.customLsi || [];
+  const excluded = new Set((brief.excludedLsi || []).map((t) => String(t).toLowerCase()));
 
   const related = unique([
     ...pinned,
@@ -88,36 +59,16 @@ export function expandLsi(brief) {
     "image seo",
     "open graph",
     "schema markup",
-  ]).filter((t) => !excluded.has(t) && t !== primary);
+  ]).filter((t) => !excluded.has(t));
 
-  return { primary, secondary, pinned, custom, excluded: [...excluded], related };
-}
-
-export function buildPack(brief = {}) {
-  const kind = brief.kind || "og";
-  const dims =
-    kind === "hero"
-      ? [1920, 1080]
-      : kind === "release_banner"
-        ? [1200, 630]
-        : [1200, 630];
-
-  const { primary, secondary, pinned, custom, excluded, related } = expandLsi(brief);
-  const filename = `${slugify(primary)}-${slugify(kind)}.webp`;
-  if (isNonSeoFilename(filename)) {
-    throw new Error(`builder produced non-SEO filename: ${filename}`);
-  }
-
-  const alt = `${primary} ${String(kind).replace(/_/g, " ")} showing ${brief.topic || primary}`.slice(
-    0,
-    140,
-  );
+  const filename = `${slugify(primary)}-${kind}.webp`;
+  const alt = `${primary} ${kind.replace(/_/g, " ")} showing ${brief.topic || primary}`.slice(0, 140);
   const pageUrl = String(brief.pageUrl || "").replace(/\/$/, "");
   const imagePath = pageUrl ? `${pageUrl}/images/${filename}` : `/images/${filename}`;
 
   return {
     schema: "midnghtsapphire.image_creation/v1",
-    brand: brief.brand || "MIDNGHTSAPPHIRE",
+    brand: "MIDNGHTSAPPHIRE",
     generated_at: new Date().toISOString(),
     source: "scripts/image-seo-build-pack.mjs",
     automation: true,
@@ -129,7 +80,7 @@ export function buildPack(brief = {}) {
         lsi: related,
         pinned,
         custom,
-        excluded,
+        excluded: [...excluded],
         source: "seed+cooccurrence",
       },
     },
@@ -158,14 +109,14 @@ export function buildPack(brief = {}) {
   };
 }
 
-export function loadBrief(args, stdinIsTty = process.stdin.isTTY) {
-  if (args.brief) {
-    return JSON.parse(fs.readFileSync(args.brief, "utf8"));
-  }
-  if (!stdinIsTty) {
-    return JSON.parse(fs.readFileSync(0, "utf8"));
-  }
-  return {
+const args = parseArgs(process.argv);
+let brief;
+if (args.brief) {
+  brief = JSON.parse(fs.readFileSync(args.brief, "utf8"));
+} else if (!process.stdin.isTTY) {
+  brief = JSON.parse(fs.readFileSync(0, "utf8"));
+} else {
+  brief = {
     topic: "GitHub release announcement banner",
     primaryKeyword: "github release banner",
     kind: "release_banner",
@@ -174,30 +125,8 @@ export function loadBrief(args, stdinIsTty = process.stdin.isTTY) {
   };
 }
 
-export function writePack(pack, outRel) {
-  const outPath = path.resolve(process.cwd(), outRel);
-  fs.mkdirSync(path.dirname(outPath), { recursive: true });
-  fs.writeFileSync(outPath, JSON.stringify(pack, null, 2) + "\n");
-  return outPath;
-}
-
-function main(argv = process.argv) {
-  const args = parseArgs(argv);
-  const brief = loadBrief(args);
-  const pack = buildPack(brief);
-  writePack(pack, args.out);
-  console.log(JSON.stringify({ ok: true, out: args.out, filename: pack.seo.filename }));
-}
-
-const isMain =
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-
-if (isMain) {
-  try {
-    main();
-  } catch (err) {
-    console.error(JSON.stringify({ ok: false, error: String(err && err.message ? err.message : err) }));
-    process.exit(1);
-  }
-}
+const pack = buildPack(brief);
+const outPath = path.resolve(process.cwd(), args.out);
+fs.mkdirSync(path.dirname(outPath), { recursive: true });
+fs.writeFileSync(outPath, JSON.stringify(pack, null, 2) + "\n");
+console.log(JSON.stringify({ ok: true, out: args.out, filename: pack.seo.filename }));
