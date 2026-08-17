@@ -20,26 +20,8 @@ name: Auto-Approve Clean PRs
 
 # quiet-mode 2026-07-25 (owner request): automatic triggers disabled;
 # run manually via workflow_dispatch if needed.
-#   ^ ARCHIVED 2026-08-08 by @midnghtsapphire (owner decision: "no more quiet
-#   mode" / "i want the agents out of silent mode" — exit-quiet-mode issue
-#   #17099, DECISIONS.md D017). Pre-quiet-mode triggers restored below,
-#   verbatim from the commit before #16805 (cd2b736b^). The 2026-07-25
-#   directive comment is preserved per RVS-PRESERVE-001 — never delete an
-#   owner policy directive.
 on:
-  # Trigger when CI checks complete on a PR
-  check_suite:
-    types: [completed]
-  # Also trigger when labels change (backward compat with Bito workflow)
-  pull_request:
-    types: [labeled]
-  # Allow manual trigger for stuck PRs
-  workflow_dispatch:
-    inputs:
-      pr_number:
-        description: 'PR number to auto-approve'
-        required: true
-
+  workflow_dispatch: null
 
 permissions:
   pull-requests: write
@@ -230,8 +212,9 @@ jobs:
                 const labelNames = labels.map(l => l.name);
                 for (const label of CLEANUP_LABELS) {
                   if (labelNames.includes(label)) {
-                    await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label })
-                      .catch(err => { if (err.status !== 404) throw err; });
+                    try {
+                      await github.rest.issues.removeLabel({ owner, repo, issue_number: prNumber, name: label }).catch(err => { if (err.status !== 404) throw err; });
+                    } catch (e) { /* label may already be removed */ }
                   }
                 }
 

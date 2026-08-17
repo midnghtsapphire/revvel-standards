@@ -508,7 +508,7 @@ if [ "$AUTO_RESEARCH" = true ]; then
     cat > "$RESEARCH_BRIEF" <<EOF
 # Research Brief: $PRODUCT_NAME
 
-**Status:** 🔴 Not Started
+**Status:** TODO - Run automated research
 **Created:** $NOW
 
 ## Pain Points
@@ -534,7 +534,7 @@ TODO: Define primary audience segments:
 
 ## MVP Definition
 
-Based on research, define:
+TODO: Based on research, define:
 - Core problem solved
 - Minimum feature set
 - Differentiation from competitors
@@ -563,7 +563,7 @@ else
     cat > "$RESEARCH_BRIEF" <<EOF
 # Research Brief: $PRODUCT_NAME
 
-**Status:** 🔴 Not Started
+**Status:** TODO - Complete research
 **Created:** $NOW
 
 ## Pain Points
