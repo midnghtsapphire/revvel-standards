@@ -1101,3 +1101,9 @@ From GOAL.md, follow these phases:
 5. Ship anyway — imperfect beats perfect
 
 **No stopping. No questions. Execute.**
+
+## GOAP Swarm Console
+
+| GOAP Swarm Console | `products/goap-swarm-console` | 3012 | Next.js. Symbolic GOAP planner + swarm allocator, research eval, Markdown/CSV export. |
+
+cd products/goap-swarm-console && npm run dev -- -p 3012
