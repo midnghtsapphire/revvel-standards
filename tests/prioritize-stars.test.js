@@ -30,7 +30,20 @@ test('workflow points at scripts/prioritize_stars.py and uses concurrency lock',
   assert.match(yml, /group:\s*prioritize-stars-job/);
   assert.match(yml, /\[skip ci\]/);
   assert.match(yml, /secrets\.GH_PAT/);
-  assert.match(yml, /cron:\s*'0 \*\/6 \* \* \*'/);
+  // This workflow is dispatch-only by design: the recurring cadence lives in
+  // hourly-growth-prioritizer.yml (prioritize_and_optimize.py), and only the
+  // legacy checkpointed prioritize_stars.py path is kept behind manual
+  // dispatch. #17044 shipped an assertion for `cron: '0 */6 * * *'`, which
+  // `git log -S` shows was never present in this file at any commit. Assert
+  // the arrangement that actually holds, in both directions, so the split
+  // cannot silently collapse back into two competing schedules.
+  assert.match(yml, /workflow_dispatch:/);
+  assert.doesNotMatch(yml, /schedule:/, 'cadence belongs to hourly-growth-prioritizer.yml');
+  const hourly = fs.readFileSync(
+    path.join(__dirname, '..', '.github/workflows/hourly-growth-prioritizer.yml'),
+    'utf8'
+  );
+  assert.match(hourly, /schedule:/, 'the moved cadence must exist where it moved to');
   // Third-party actions must be SHA-pinned (CLAUDE.md gotcha #8).
   const uses = [...yml.matchAll(/uses:\s*(\S+)/g)].map((m) => m[1]);
   assert.ok(uses.length >= 3, 'expected checkout, setup-python, auto-commit');

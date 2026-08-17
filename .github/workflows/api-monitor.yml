@@ -1,0 +1,69 @@
+# API Monitor - Checks API endpoints
+#
+# This file lived at .github/workflows/cron/api-monitor.yml until 2026-08-17.
+# GitHub Actions only registers workflows at .github/workflows/*.yml — nested
+# directories are ignored outright — so it had never run once. The API for its
+# own path returned 404 Not Found, and it was absent from all 242 registered
+# workflows. tests/workflow-files-are-discoverable.test.js now fails the build
+# if any workflow is filed somewhere GitHub will not read.
+
+name: API Monitor
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 min
+  workflow_dispatch:
+
+# Least privilege: external HTTP probes only; no repo contents or write APIs.
+# (Dropped by #17144 along with this comment; restored here.)
+permissions:
+  contents: read
+
+jobs:
+  check-apis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check APIs
+        run: |
+          set -uo pipefail
+
+          # One endpoint per element. Quoted expansion per CLAUDE.md gotcha 5 —
+          # the previous `for url in $APIs` over a heredoc-ish string relied on
+          # word splitting and would silently mangle any URL containing spaces.
+          APIS=(
+            "https://api.github.com"
+            "https://openrouter.ai/api/v1"
+          )
+
+          failed=0
+          for url in "${APIS[@]}"; do
+            status="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$url" 2>/dev/null || echo 000)"
+            case "$status" in
+              000)
+                echo "::error::$url TIMEOUT (no response within 20s)"
+                failed=1
+                ;;
+              2??|3??)
+                echo "ok: $url -> $status"
+                ;;
+              *)
+                # The old check only treated 000 as a failure, so a 500 or a
+                # 404 reported healthy. Any non-2xx/3xx is now a failure.
+                echo "::error::$url returned HTTP $status"
+                failed=1
+                ;;
+            esac
+          done
+
+          # Exit code reflects endpoint health, not whether curl finished
+          # running (CLAUDE.md gotcha 6). The previous version wrote its
+          # findings to $GITHUB_OUTPUT — as a multi-line value, which that
+          # format rejects without a heredoc delimiter, from a step with no
+          # `id` for anything to read — and then exited 0 regardless. A dead
+          # API produced a green run.
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::One or more monitored APIs are unhealthy."
+            exit 1
+          fi
+          echo "All monitored APIs healthy."
