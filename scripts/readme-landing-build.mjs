@@ -168,10 +168,13 @@ function mdToHtml(md) {
 
 function safeHref(raw) {
   // Allow only safe URL schemes; reject javascript:, data:, vbscript:, etc.
+  // Returns the raw (unescaped) URL — callers apply esc() exactly once when
+  // embedding it in an attribute. Escaping here too would double-escape
+  // query-param URLs (& -> &amp;amp;) and break the generated links.
   const url = raw.trim();
-  if (/^(https?:|mailto:|#|\/)/i.test(url)) return esc(url);
+  if (/^(https?:|mailto:|#|\/)/i.test(url)) return url;
   // Relative paths without a scheme are safe (links to same origin).
-  if (!/^[a-z][a-z0-9+\-.]*:/i.test(url)) return esc(url);
+  if (!/^[a-z][a-z0-9+\-.]*:/i.test(url)) return url;
   return "#";
 }
 

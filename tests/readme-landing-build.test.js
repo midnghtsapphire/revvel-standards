@@ -235,6 +235,27 @@ describe("CLI", () => {
     fs.rmSync(dir, { recursive: true });
   });
 
+  it("does not double-escape query-param URLs in rendered links", () => {
+    const dir = tmpDir();
+    const readmePath = path.join(dir, "README.md");
+    const outPath = path.join(dir, "site", "index.html");
+    fs.writeFileSync(
+      readmePath,
+      "# Query\n\n[search](https://example.com/?a=1&b=2)\n",
+    );
+
+    runBuilder(["--readme", readmePath, "--out", outPath]);
+
+    const html = fs.readFileSync(outPath, "utf8");
+    assert.ok(
+      html.includes('href="https://example.com/?a=1&amp;b=2"'),
+      `query URL escaped exactly once: ${html.match(/href="[^"]*example[^"]*"/)}`,
+    );
+    assert.ok(!html.includes("&amp;amp;"), "no double-escaped ampersands");
+
+    fs.rmSync(dir, { recursive: true });
+  });
+
   it("title-badge extraction: badge-only lines not duplicated in body", () => {
     const dir = tmpDir();
     const readmePath = path.join(dir, "README.md");
