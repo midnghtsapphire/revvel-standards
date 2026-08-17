@@ -1,31 +1,24 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-14T02:54:04.362Z",
+  "generated_at": "2026-08-17T01:30:38.743Z",
   "credit_free": true,
   "overall": "healthy",
   "workers": {
     "sentinel": {
       "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "summary": "1/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 1,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 31760997021,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31760997021",
-            "conclusion": "failure"
-          },
-          {
-            "id": 31757332423,
-            "name": "Hourly Star Growth & Prioritization Engine",
-            "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31757332423",
+            "id": 31983624721,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31983624721",
             "conclusion": "failure"
           }
         ],
@@ -54,7 +47,7 @@
       "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31760242956"
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31984541022"
       }
     },
     "sheaf": {
