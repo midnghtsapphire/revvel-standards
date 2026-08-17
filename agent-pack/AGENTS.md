@@ -21,11 +21,16 @@ Load this verbatim into any fleet agent context (Hermes, OpenClaw, Dragnet sub-f
 - 5xx/timeout in prod/staging: classify 502/504 upstream | 503 capacity | 429 model-lane | 500 app.
 - 500 w/ stack → issue with trace, assigned fix. Infra → runbook first, issue on recurrence <24h.
 - EVERY triage and EVERY restart → FAILURE-LEDGER. Alert ≠ done.
+- Wired: `scripts/runtime-gateway-triage.js` + `.github/workflows/runtime-gateway-triage.yml`
+  (`repository_dispatch` types `sentry` / `runtime-5xx`). Ledger:
+  `logs/failure-ledger/FAILURE-LEDGER.jsonl` via `scripts/failure-ledger.js`.
 
 ## MODEL LANES (WR-4481)
 - 402 from provider → immediate failover to keyless tier-2 (Perplexity / :free). Do not retry primary. Do not stall.
 - 429 → one backoff ≤30s, then failover. 2× consecutive timeout/5xx → failover.
 - Every failover → ledger entry (lane, code, task). Never edit your own routing config in response to 402/429.
+- Wired: `config/routing-failover.yml` (explicit `triggers` + keyless `fallback`) +
+  `scripts/lane-failover.js`. `openrouter-triage.js` jumps to keyless on 402/429.
 
 ## MERGE POLICY (4470 band)
 - Auto-merge only for changes that cannot alter enforcement machinery or operating directives.
