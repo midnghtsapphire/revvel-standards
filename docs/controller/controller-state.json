@@ -1,5 +1,20 @@
 {
   "schema": "fleet-controller-state/v1",
-  "updated_at": "2026-08-17T12:08:39.503Z",
-  "workflows": {}
+  "updated_at": "2026-08-17T12:58:49.827Z",
+  "workflows": {
+    "dynamic/dependabot/dependabot-updates": {
+      "count": 1,
+      "tried": [
+        "anthropic/claude-opus-4.8"
+      ],
+      "last_cut_at": "2026-08-17T12:29:14.815Z"
+    },
+    ".github/workflows/actions-lint.yml": {
+      "count": 1,
+      "tried": [
+        "anthropic/claude-opus-4.8"
+      ],
+      "last_cut_at": "2026-08-17T12:58:49.827Z"
+    }
+  }
 }
