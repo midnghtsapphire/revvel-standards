@@ -1,9 +1,10 @@
 # WR: Reclaiming Your Skin — How Contour Light / Red Light Therapy Can Help With Stretch Marks
 
 **Issue:** #15279
-**Status:** Draft — Compliance Review Required
+**Status:** Draft — Compliance Review Required (HIPAA scope pack: issue #16111)
 **Owner:** Product / Legal
-**Last Updated:** 2025
+**Last Updated:** 2026-08-08
+**HIPAA entity scope SSOT:** `compliance/red-light-therapy/` (status in `status.json`)
 
 ---
 
@@ -84,7 +85,9 @@ A lightweight tool where users can log sessions and upload photos to visualize c
 
 ## 8. Regulatory & Compliance Framework
 
-> **Status: BLOCKING.** Tracker feature and any collection of user health inputs are on hold pending completion of the actions in §8.5. Content-only publishing (no user data collection) may proceed.
+> **Status: BLOCKING for tracker / health-data features.** Content-only publishing (no user health-data collection) and the shipped dosage calculator (ephemeral client-side numerics + honest `/privacy` policy) may proceed under the interim posture below. Progress tracker, photo upload, symptom logging, and any identifiable health-data intake remain on hold until §8.5 counsel items are complete.
+
+> **Regulatory posture (canonical):** This property is a direct-to-consumer wellness / educational surface and is **not**, under current documented facts, operated as a HIPAA Covered Entity or Business Associate. We **do not claim HIPAA compliance**. Client-side calculation and encryption are engineering choices that reduce blast radius — **not** regulatory exemptions. FDA SaMD risk is a **separate** track. Source of truth: `compliance/red-light-therapy/entity-classification.md` and `compliance/red-light-therapy/status.json` (issue #16111). Any clinic partnership, HSA/FSA clinical workflow, insurance billing, telehealth, or receipt of PHI from a Covered Entity **voids** the provisional classification until counsel re-determines scope.
 
 Earlier drafts of this WR conflated three separate regulatory concerns and attempted to use disclaimers and client-side storage as a substitute for compliance. That approach is legally insufficient and has been removed. The correct framing separates each regime and treats them as **independent** obligations.
 
@@ -144,6 +147,16 @@ Encryption alone is not compliance. Storage location alone is not compliance.
 
 ### 8.5 Required Actions Before Tracker Launch
 
+- [ ] **Formal Privacy Impact Assessment (PIA)** with legal/compliance covering HIPAA, FDA SaMD, CCPA/CPRA, WA MHMDA, GDPR (if EU traffic), and applicable state laws.
+- [x] **Data classification review (shipped calculator):** `compliance/red-light-therapy/data-inventory.md` — ephemeral client-side numerics only; no accounts/photos/journals in shipped code.
+- [x] **Internal regulatory scoping memo (provisional):** `compliance/red-light-therapy/entity-classification.md` + counsel packet `counsel-engagement-brief.md` (issue #16111). **Still requires human counsel countersignature** — `status.json` remains `UNSIGNED` until then.
+- [ ] **Regulatory scoping memo signed by counsel** stating whether HIPAA applies and why/why not (fill §8 sign-off block; set `status.json` to `COUNSEL_SIGNED_PATH_B` or `COUNSEL_SIGNED_PATH_A`).
+- [ ] **If HIPAA applies (Path A):** complete the §8.4 program *before* the tracker collects any user input.
+- [x] **If HIPAA does not apply (Path B provisional):** reasoning documented in entity-classification memo; honest privacy policy published at product `/privacy` with **no** HIPAA-compliance claim; re-evaluation triggers in `compliance/red-light-therapy/re-evaluation-triggers.*`.
+- [ ] **State-law consumer health privacy program** for any future identifiable health-data features (notice, consent, DSAR, deletion, minimization) — required before tracker launch even on Path B.
+- [ ] **Separate FDA SaMD analysis:** confirm that content, features, and marketing claims stay within wellness/educational scope. Track any feature that could imply diagnosis, treatment, mitigation, prevention, or cure of disease and route to legal review. (Draft track: `wr/issues/issue-15279-fda-samd-intended-use-strategy.md`.)
+- [x] **Vendor review (shipped calculator):** no app-level processors of dosage inputs; host/CDN only for static delivery — see data inventory. Re-run before adding analytics, accounts, or cloud sync.
+- [ ] **Incident response runbook** documented and tested (FTC HBNR applicable even outside HIPAA).
 - [x] **Formal Privacy Impact Assessment (PIA)** — engineering package complete covering data inventory, data flows, regulatory mapping (HIPAA, FTC HBNR, MHMDA, GDPR, CCPA/CPRA), third-party processors, and risk register with mitigations. **Counsel countersignature still required before production health-data collection.** Package: [`compliance/wr-15279/privacy-impact-assessment.md`](../../compliance/wr-15279/privacy-impact-assessment.md) (issue #16110).
 - [x] **Data classification review:** per-field classification (PHI-if-CE/BA, consumer health data, CPRA sensitive PI, GDPR Art. 9) lives in [`compliance/wr-15279/data-inventory.md`](../../compliance/wr-15279/data-inventory.md) + `data-inventory.json`.
 - [ ] **Regulatory scoping memo** signed by counsel stating whether HIPAA applies and why/why not — draft at [`compliance/wr-15279/entity-classification.md`](../../compliance/wr-15279/entity-classification.md) (unsigned).
