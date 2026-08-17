@@ -44,3 +44,24 @@ agreeing on overlaps, not erasing stalks.
 PR 1 does not modify BIOME scripts or behavior. BNAT remains read-only over
 the BIOME feed. Subsequent series PRs may extend harness wiring; they must
 not silently drop the invariant.
+This is a foundational structural limit to prevent hallucinated successes and infinite self-healing oscillations.
+
+---
+
+## 2026-08-08 — WR-16901 Observatory + cohomology groups
+
+**Context:** Issue #16901 requested sheaf cohomology proofs, persistence
+diagrams, a simplified HTML shell on the main repository page, and an
+investor/employer surface for fleets + workflows.
+
+**Landed (additive only):**
+
+- `scripts/bnatsheaf/cohomology.js` — $H^0\cong\ker\delta$, $H^1\cong\operatorname{coker}\delta$, rank-nullity certificates, synthetic Path/Cycle/Conflict.
+- `scripts/bnatsheaf/persistence.js` — `PersistenceDiagram` + topological fingerprint for BIOME-style feeds.
+- `scripts/bnatsheaf/nsd.js` — Neural Sheaf Diffusion discrete healing stub (optional).
+- `docs/bnatsheaf/observatory.html` — VEINS Topology Lab public shell.
+- `docs/bnatsheaf/COHOMOLOGY_PROOFS.md` — formal proof note.
+- Hub card + `data/hub/entries/veins-topology-lab.json` (Method · Living Manifold).
+- Imprint guidance in `AGENTS.md` + `VISITING_AGENTS.md`.
+
+**Invariant unchanged:** long-lived H¹ bars escalate; BIOME JS untouched.
