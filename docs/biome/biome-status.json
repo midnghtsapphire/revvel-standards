@@ -1,48 +1,19 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-17T07:21:48.031Z",
+  "generated_at": "2026-08-17T08:14:05.283Z",
   "credit_free": true,
-  "overall": "degraded",
+  "overall": "healthy",
   "workers": {
     "sentinel": {
-      "status": "degraded",
-      "summary": "4/100 recent runs failed; 0 stuck item(s)",
+      "status": "healthy",
+      "summary": "0/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 4,
+        "failed_runs": 0,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
-        "recent_failures": [
-          {
-            "id": 32002662294,
-            "name": "CI Error Prevention Tests",
-            "path": ".github/workflows/ci-error-prevention.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32002662294",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32002661646,
-            "name": ".github/workflows/conflict-helper.yml",
-            "path": ".github/workflows/conflict-helper.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32002661646",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32002661225,
-            "name": ".github/workflows/release-banner-social.yml",
-            "path": ".github/workflows/release-banner-social.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32002661225",
-            "conclusion": "failure"
-          },
-          {
-            "id": 32002660815,
-            "name": ".github/workflows/apisec-scan.yml",
-            "path": ".github/workflows/apisec-scan.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32002660815",
-            "conclusion": "failure"
-          }
-        ],
+        "recent_failures": [],
         "stuck": []
       }
     },
@@ -65,10 +36,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "last run: success",
+      "summary": "no recent run yet",
       "counts": {},
       "detail": {
-        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32004816544"
+        "last_run": null
       }
     },
     "sheaf": {
