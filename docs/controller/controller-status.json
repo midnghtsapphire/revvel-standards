@@ -1,37 +1,181 @@
 {
   "schema": "fleet-controller/v1",
-  "generated_at": "2026-08-17T17:32:18.633Z",
+  "generated_at": "2026-08-17T18:14:52.883Z",
   "preempt_enabled": true,
   "occupancy": {
-    "running": 9,
+    "running": 21,
     "cap": 20,
-    "over_capacity": false
+    "over_capacity": true
   },
   "counts": {
-    "total": 17,
-    "running": 9,
-    "queued": 8,
+    "total": 30,
+    "running": 21,
+    "queued": 9,
     "done": 0,
-    "healthy": 1,
+    "healthy": 13,
     "stalled": 0,
     "runaway": 8,
     "protected": 1,
-    "occupancy": 9,
+    "occupancy": 21,
     "occupancyCap": 20,
-    "overCapacity": false
+    "overCapacity": true
   },
   "orchestrators": [
     {
-      "id": 32050760647,
-      "name": "Fleet Controller",
-      "path": ".github/workflows/fleet-controller.yml",
-      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32050760647",
+      "id": 32053980214,
+      "name": "PR Check Status Automation",
+      "path": ".github/workflows/pr-check-status.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053980214",
       "status": "in_progress",
       "health": "healthy",
-      "age_ms": 10633,
-      "since_update_ms": 6633,
+      "age_ms": 7883,
+      "since_update_ms": 5883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053981250,
+      "name": "🎛️ PR State Orchestrator",
+      "path": ".github/workflows/pr-state-orchestrator.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053981250",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 7883,
+      "since_update_ms": 3883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053979590,
+      "name": "npm_and_yarn in /products/revvel-skill-runner for postcss, postcss, postcss - Update #1529366673",
+      "path": "dynamic/dependabot/dependabot-updates",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053979590",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 8883,
+      "since_update_ms": 3883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053980206,
+      "name": "🎛️ PR State Orchestrator",
+      "path": ".github/workflows/pr-state-orchestrator.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053980206",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 8883,
+      "since_update_ms": 3883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053977930,
+      "name": "Fleet Controller",
+      "path": ".github/workflows/fleet-controller.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053977930",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 9883,
+      "since_update_ms": 6883,
       "reason": "running within budget",
       "protected": true
+    },
+    {
+      "id": 32053928722,
+      "name": "npm_and_yarn in /. for async, lodash, lodash, lodash, lodash, lodash, lodash, url-parse, url-parse, url-parse, url-parse, url-parse, url-parse, url-parse - Update #1529366637",
+      "path": "dynamic/dependabot/dependabot-updates",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053928722",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 46883,
+      "since_update_ms": 41883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053864464,
+      "name": "PR #17048",
+      "path": "dynamic/github-code-scanning/codeql",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053864464",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 92883,
+      "since_update_ms": 85883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053836782,
+      "name": "PR #17048",
+      "path": "dynamic/github-code-scanning/codeql",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053836782",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 114883,
+      "since_update_ms": 109883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053791174,
+      "name": "PR Lifecycle",
+      "path": ".github/workflows/pr-lifecycle.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053791174",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 149883,
+      "since_update_ms": 132883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053689251,
+      "name": "🎛️ PR State Orchestrator",
+      "path": ".github/workflows/pr-state-orchestrator.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053689251",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 225883,
+      "since_update_ms": 179883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053575479,
+      "name": "OSSAR",
+      "path": ".github/workflows/ossar.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053575479",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 309883,
+      "since_update_ms": 5883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053500575,
+      "name": "Addressing comment on PR #17044",
+      "path": "dynamic/copilot-swe-agent/copilot",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053500575",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 367883,
+      "since_update_ms": 362883,
+      "reason": "running within budget",
+      "protected": false
+    },
+    {
+      "id": 32053410492,
+      "name": "CodeQL",
+      "path": ".github/workflows/codeql.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053410492",
+      "status": "in_progress",
+      "health": "healthy",
+      "age_ms": 438883,
+      "since_update_ms": 152883,
+      "reason": "running within budget",
+      "protected": false
     },
     {
       "id": 31608261441,
@@ -40,9 +184,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31608261441",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 442186633,
-      "since_update_ms": 442185633,
-      "reason": "running 7370m ≥ 60m budget",
+      "age_ms": 444740883,
+      "since_update_ms": 444739883,
+      "reason": "running 7412m ≥ 60m budget",
       "protected": false
     },
     {
@@ -52,9 +196,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607544739",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 442657633,
-      "since_update_ms": 442198633,
-      "reason": "running 7378m ≥ 60m budget",
+      "age_ms": 445211883,
+      "since_update_ms": 444752883,
+      "reason": "running 7420m ≥ 60m budget",
       "protected": false
     },
     {
@@ -64,9 +208,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607480387",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 442699633,
-      "since_update_ms": 442194633,
-      "reason": "running 7378m ≥ 60m budget",
+      "age_ms": 445253883,
+      "since_update_ms": 444748883,
+      "reason": "running 7421m ≥ 60m budget",
       "protected": false
     },
     {
@@ -76,9 +220,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607475332",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 442702633,
-      "since_update_ms": 442200633,
-      "reason": "running 7378m ≥ 60m budget",
+      "age_ms": 445256883,
+      "since_update_ms": 444754883,
+      "reason": "running 7421m ≥ 60m budget",
       "protected": false
     },
     {
@@ -88,9 +232,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31607177890",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 442893633,
-      "since_update_ms": 442196633,
-      "reason": "running 7382m ≥ 60m budget",
+      "age_ms": 445447883,
+      "since_update_ms": 444750883,
+      "reason": "running 7424m ≥ 60m budget",
       "protected": false
     },
     {
@@ -100,9 +244,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29262820826",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 3031050633,
-      "since_update_ms": 3030781633,
-      "reason": "running 50518m ≥ 60m budget",
+      "age_ms": 3033604883,
+      "since_update_ms": 3033335883,
+      "reason": "running 50560m ≥ 60m budget",
       "protected": false
     },
     {
@@ -112,9 +256,9 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29257786646",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 3035288633,
-      "since_update_ms": 3035200633,
-      "reason": "running 50588m ≥ 60m budget",
+      "age_ms": 3037842883,
+      "since_update_ms": 3037754883,
+      "reason": "running 50631m ≥ 60m budget",
       "protected": false
     },
     {
@@ -124,9 +268,21 @@
       "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/29252937753",
       "status": "in_progress",
       "health": "runaway",
-      "age_ms": 3039527633,
-      "since_update_ms": 3038273633,
-      "reason": "running 50659m ≥ 60m budget",
+      "age_ms": 3042081883,
+      "since_update_ms": 3040827883,
+      "reason": "running 50701m ≥ 60m budget",
+      "protected": false
+    },
+    {
+      "id": 32053682953,
+      "name": "CodeQL",
+      "path": ".github/workflows/codeql.yml",
+      "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32053682953",
+      "status": "queued",
+      "health": "queued",
+      "age_ms": null,
+      "since_update_ms": null,
+      "reason": "awaiting a runner (trigger)",
       "protected": false
     },
     {
@@ -232,7 +388,7 @@
       "name": "Devin Code Review",
       "path": ".github/workflows/devin-code-review.yml",
       "health": "runaway",
-      "reason": "running 7370m ≥ 60m budget",
+      "reason": "running 7412m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -241,14 +397,14 @@
       ],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
-      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31608261441/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
+      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31608261441/cancel -> 503 {\"message\": \"No server is currently available to service your request. Sorry about that. Please try resubmitting your request and contact us if the problem persists.\"}\r\n"
     },
     {
       "id": 31607544739,
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
-      "reason": "running 7378m ≥ 60m budget",
+      "reason": "running 7420m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -257,14 +413,14 @@
       ],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
-      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607544739/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
+      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607544739/cancel -> 503 {\"message\": \"No server is currently available to service your request. Sorry about that. Please try resubmitting your request and contact us if the problem persists.\"}\r\n"
     },
     {
       "id": 31607480387,
       "name": "AI PR Review (OpenRouter)",
       "path": ".github/workflows/ai-pr-review-openrouter.yml",
       "health": "runaway",
-      "reason": "running 7378m ≥ 60m budget",
+      "reason": "running 7421m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -273,14 +429,14 @@
       ],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
-      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607480387/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
+      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607480387/cancel -> 503 {\"message\": \"No server is currently available to service your request. Sorry about that. Please try resubmitting your request and contact us if the problem persists.\"}\r\n"
     },
     {
       "id": 31607475332,
       "name": "Agent Fingerprint Gate",
       "path": ".github/workflows/agent-fingerprint-gate.yml",
       "health": "runaway",
-      "reason": "running 7378m ≥ 60m budget",
+      "reason": "running 7421m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -289,14 +445,14 @@
       ],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
-      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607475332/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
+      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607475332/cancel -> 503 {\"message\": \"No server is currently available to service your request. Sorry about that. Please try resubmitting your request and contact us if the problem persists.\"}\r\n"
     },
     {
       "id": 31607177890,
       "name": "GOAP Assignment Router",
       "path": ".github/workflows/goap-assignment-router.yml",
       "health": "runaway",
-      "reason": "running 7382m ≥ 60m budget",
+      "reason": "running 7424m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -305,14 +461,14 @@
       ],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
-      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607177890/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
+      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/31607177890/cancel -> 503 {\"message\": \"No server is currently available to service your request. Sorry about that. Please try resubmitting your request and contact us if the problem persists.\"}\r\n"
     },
     {
       "id": 29262820826,
       "name": "PR Lifecycle",
       "path": ".github/workflows/pr-lifecycle.yml",
       "health": "runaway",
-      "reason": "running 50518m ≥ 60m budget",
+      "reason": "running 50560m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -321,14 +477,14 @@
       ],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
-      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29262820826/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
+      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29262820826/cancel -> 503 {\"message\": \"No server is currently available to service your request. Sorry about that. Please try resubmitting your request and contact us if the problem persists.\"}\r\n"
     },
     {
       "id": 29257786646,
       "name": "No-Destroy Guard",
       "path": ".github/workflows/no-destroy-guard.yml",
       "health": "runaway",
-      "reason": "running 50588m ≥ 60m budget",
+      "reason": "running 50631m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -337,14 +493,14 @@
       ],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
-      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29257786646/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
+      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29257786646/cancel -> 503 {\"message\": \"No server is currently available to service your request. Sorry about that. Please try resubmitting your request and contact us if the problem persists.\"}\r\n"
     },
     {
       "id": 29252937753,
       "name": "Project Board Sync",
       "path": ".github/workflows/project-board-sync.yml",
       "health": "runaway",
-      "reason": "running 50659m ≥ 60m budget",
+      "reason": "running 50701m ≥ 60m budget",
       "planned": "reassign",
       "next_model": "anthropic/claude-opus-4.8",
       "reassign_count": 1,
@@ -353,7 +509,7 @@
       ],
       "cut": "cancel-failed",
       "reassign_outcome": "pending",
-      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29252937753/cancel -> 500 {\"message\":\"Failed to cancel workflow run\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#cancel-a-workflow-run\",\"status\":\"500\"}"
+      "error": "GitHub API POST /repos/midnghtsapphire/revvel-standards/actions/runs/29252937753/cancel -> 503 {\"message\": \"No server is currently available to service your request. Sorry about that. Please try resubmitting your request and contact us if the problem persists.\"}\r\n"
     }
   ]
 }
