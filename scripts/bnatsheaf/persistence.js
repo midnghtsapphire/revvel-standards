@@ -133,9 +133,100 @@ function barcodesFromBiomeStatus(status) {
   return computeBarcodes(vertices, edges);
 }
 
+/**
+ * Persistence diagram — points (birth, death) in the birth–death plane.
+ * death === null is rendered as an ∞ marker (essential class).
+ * dim 0 = H⁰ (cyan in the Observatory), dim 1 = H¹ (magenta).
+ */
+class PersistenceDiagram {
+  /**
+   * @param {{h0?: Array, h1?: Array}} barcodes
+   * @param {number} [maxWeight=1]  scale used to place ∞ markers
+   */
+  constructor(barcodes = {}, maxWeight = 1) {
+    this.maxWeight = maxWeight;
+    this.points = [];
+    for (const bar of barcodes.h0 || []) {
+      this.points.push({
+        dim: 0,
+        birth: bar.birth,
+        death: bar.death,
+        lifetime: bar.death === null ? Infinity : bar.death - bar.birth,
+        meta: { component: bar.component },
+      });
+    }
+    for (const bar of barcodes.h1 || []) {
+      this.points.push({
+        dim: 1,
+        birth: bar.birth,
+        death: bar.death,
+        lifetime: bar.death === null ? Infinity : bar.death - bar.birth,
+        meta: { edge: bar.edge },
+      });
+    }
+  }
+
+  /** Points with lifetime ≥ minLifetime (∞ counts as long-lived). */
+  longLived(minLifetime = 0) {
+    return this.points.filter((p) => p.lifetime >= minLifetime);
+  }
+
+  /** Compact topological fingerprint for biome-status style feeds. */
+  fingerprint(minLifetime = 0) {
+    const h0 = this.points.filter((p) => p.dim === 0);
+    const h1 = this.points.filter((p) => p.dim === 1);
+    const longH1 = h1.filter(
+      (p) => p.lifetime >= minLifetime && (p.death === null ? p.birth > 0 : true)
+    );
+    return {
+      schema: 'bnatsheaf-topological-fingerprint/v1',
+      h0Count: h0.length,
+      h1Count: h1.length,
+      immortalH0: h0.filter((p) => p.death === null).length,
+      immortalH1: h1.filter((p) => p.death === null).length,
+      longLivedH1: longH1.length,
+      // Systemic tears: positive-birth immortal H¹ bars.
+      systemicTears: h1
+        .filter((p) => p.death === null && p.birth > 0)
+        .map((p) => ({ birth: p.birth, edge: p.meta && p.meta.edge })),
+      maxWeight: this.maxWeight,
+    };
+  }
+
+  /** SVG-ready scatter: finite deaths as (birth, death); ∞ as (birth, maxWeight*1.1). */
+  plotPoints() {
+    const infY = this.maxWeight * 1.1 || 1;
+    return this.points.map((p) => ({
+      dim: p.dim,
+      x: p.birth,
+      y: p.death === null ? infY : p.death,
+      infinite: p.death === null,
+      lifetime: p.lifetime,
+    }));
+  }
+}
+
+/** Build a PersistenceDiagram from a BIOME status feed. */
+function diagramFromBiomeStatus(status) {
+  const barcodes = barcodesFromBiomeStatus(status);
+  const weights = [];
+  for (const b of barcodes.h0 || []) {
+    if (b.death !== null) weights.push(b.death);
+    weights.push(b.birth);
+  }
+  for (const b of barcodes.h1 || []) {
+    weights.push(b.birth);
+    if (b.death !== null) weights.push(b.death);
+  }
+  const maxWeight = weights.length ? Math.max(...weights, 1) : 1;
+  return new PersistenceDiagram(barcodes, maxWeight);
+}
+
 module.exports = {
   UnionFind,
   computeBarcodes,
   longLivedH1,
   barcodesFromBiomeStatus,
+  PersistenceDiagram,
+  diagramFromBiomeStatus,
 };

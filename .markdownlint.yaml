@@ -1,0 +1,37 @@
+# Revvel Standards Markdown Linter Configuration (YAML)
+# Mirrors .markdownlint.jsonc for nosborn/github-action-markdown-cli
+# (markdownlint-cli). Keep both files in sync when changing rules.
+# See https://github.com/DavidAnson/markdownlint for rule details.
+
+default: true
+
+# MD013: Line length - disabled for docs with long URLs and tables
+MD013: false
+
+# MD033: Inline HTML - allowed for badges, custom formatting
+MD033: false
+
+# MD041: First line in file should be a top level heading - disabled
+# because some files have front matter or comments first
+MD041: false
+
+# MD022 (blanks around headings), MD024 (duplicate headings), and
+# MD032 (blanks around lists) stay enabled via `default: true` — the repo
+# mandates them and this gate must enforce them.
+
+# MD046: Code block style - consistent fenced style
+MD046:
+  style: fenced
+
+# MD060: Table column style - disabled because separator rows and
+# content rows use different spacing by convention in our docs
+MD060: false
+
+# Relaxed rules for audit prompts and checklists
+MD031: false
+MD036: false
+MD040: true
+MD009: false
+MD026:
+  punctuation: '.,:!?"'
+MD058: false
