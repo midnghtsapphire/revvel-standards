@@ -1,0 +1,333 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: flows
+    description: Troubleshooting decision-tree flows
+  - name: nodes
+    description: Decision-tree nodes within a flow
+paths:
+  /flows:
+    get:
+      operationId: listFlows
+      tags: [flows]
+      summary: List all flows
+      responses:
+        "200":
+          description: List of flows
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FlowSummary"
+    post:
+      operationId: createFlow
+      tags: [flows]
+      summary: Create a flow
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlowInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Flow"
+  /flows/{id}:
+    get:
+      operationId: getFlow
+      tags: [flows]
+      summary: Get a flow with all of its nodes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Flow with nodes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlowWithNodes"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateFlow
+      tags: [flows]
+      summary: Update a flow
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlowUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Flow"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteFlow
+      tags: [flows]
+      summary: Delete a flow
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+  /flows/{id}/summary:
+    get:
+      operationId: getFlowSummary
+      tags: [flows]
+      summary: Governance summary for a flow (node counts by type)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlowSummaryStats"
+        "404":
+          description: Not found
+  /flows/{flowId}/nodes:
+    post:
+      operationId: createNode
+      tags: [nodes]
+      summary: Create a node within a flow
+      parameters:
+        - name: flowId
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NodeInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Node"
+        "404":
+          description: Flow not found
+  /nodes/{id}:
+    patch:
+      operationId: updateNode
+      tags: [nodes]
+      summary: Update a node
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NodeUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Node"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteNode
+      tags: [nodes]
+      summary: Delete a node (and its descendants)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    NodeType:
+      type: string
+      enum: [start, check, success, failure, warning]
+    Node:
+      type: object
+      properties:
+        id: { type: integer }
+        flowId: { type: integer }
+        parentId: { type: ["integer", "null"] }
+        branchLabel: { type: ["string", "null"] }
+        type:
+          $ref: "#/components/schemas/NodeType"
+        title: { type: string }
+        tidbit: { type: string }
+        sortOrder: { type: integer }
+        createdAt: { type: string, format: date-time }
+      required:
+        - id
+        - flowId
+        - parentId
+        - branchLabel
+        - type
+        - title
+        - tidbit
+        - sortOrder
+        - createdAt
+    NodeInput:
+      type: object
+      properties:
+        parentId: { type: ["integer", "null"] }
+        branchLabel: { type: ["string", "null"] }
+        type:
+          $ref: "#/components/schemas/NodeType"
+        title: { type: string, minLength: 1 }
+        tidbit: { type: string }
+        sortOrder: { type: integer }
+      required:
+        - type
+        - title
+        - tidbit
+    NodeUpdate:
+      type: object
+      properties:
+        parentId: { type: ["integer", "null"] }
+        branchLabel: { type: ["string", "null"] }
+        type:
+          $ref: "#/components/schemas/NodeType"
+        title: { type: string, minLength: 1 }
+        tidbit: { type: string }
+        sortOrder: { type: integer }
+    FlowSummary:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        nodeCount: { type: integer }
+        createdAt: { type: string, format: date-time }
+      required:
+        - id
+        - name
+        - description
+        - nodeCount
+        - createdAt
+    Flow:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        createdAt: { type: string, format: date-time }
+      required:
+        - id
+        - name
+        - description
+        - createdAt
+    FlowWithNodes:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        createdAt: { type: string, format: date-time }
+        nodes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Node"
+      required:
+        - id
+        - name
+        - description
+        - createdAt
+        - nodes
+    FlowInput:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        description: { type: string }
+      required:
+        - name
+        - description
+    FlowUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        description: { type: string }
+    FlowSummaryStats:
+      type: object
+      properties:
+        flowId: { type: integer }
+        totalNodes: { type: integer }
+        successCount: { type: integer }
+        failureCount: { type: integer }
+        warningCount: { type: integer }
+        checkCount: { type: integer }
+      required:
+        - flowId
+        - totalNodes
+        - successCount
+        - failureCount
+        - warningCount
+        - checkCount
+

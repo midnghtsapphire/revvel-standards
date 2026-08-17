@@ -1176,18 +1176,6 @@
       "source": "/products/prompt-generation-app/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/products/awesome-grok-build/",
-      "project": "awesome-grok-build",
-      "type": "vercel",
-      "source": "/products/awesome-grok-build/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/personal-assistant/",
-      "project": "personal-assistant",
-      "type": "vercel",
-      "source": "/products/personal-assistant/README.md"
-    },
-    {
       "url": "https://revvel-standards-git-claude-printable-p-88dfed-oaudrey-projects.vercel.app/products/printbank/public/>",
       "project": "printbank",
       "type": "vercel",
@@ -1198,12 +1186,6 @@
       "project": "creator-payout-tracker",
       "type": "vercel",
       "source": "/products/creator-payout-tracker/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/agent-manifest-validator/",
-      "project": "agent-manifest-validator",
-      "type": "vercel",
-      "source": "/products/agent-manifest-validator/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/hvac-calc-service/",
@@ -1260,12 +1242,6 @@
       "source": "/products/revvel-skill-runner/README.md"
     },
     {
-      "url": "https://revvel-standards.vercel.app/docs/self-optimizing-star-magnet/",
-      "project": "self-optimizing-star-magnet",
-      "type": "vercel",
-      "source": "/products/self-optimizing-star-magnet/README.md"
-    },
-    {
       "url": "https://revvel-standards.vercel.app/docs/groq-code-review/",
       "project": "groq-code-review",
       "type": "vercel",
@@ -1306,18 +1282,6 @@
       "project": "music-video-creator",
       "type": "vercel",
       "source": "/products/music-video-creator/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/easy-env-vars/",
-      "project": "easy-env-vars",
-      "type": "vercel",
-      "source": "/products/easy-env-vars/README.md"
-    },
-    {
-      "url": "https://revvel-standards.vercel.app/docs/gosqlx-sql-linter/",
-      "project": "gosqlx-sql-linter",
-      "type": "vercel",
-      "source": "/products/gosqlx-sql-linter/README.md"
     },
     {
       "url": "https://revvel-standards.vercel.app/docs/openmythos/",
@@ -1623,5 +1587,5 @@
       "hasSystemState": true
     }
   ],
-  "lastUpdated": "2026-08-17T11:12:23.276Z"
+  "lastUpdated": "2026-08-17T11:18:21.227Z"
 }
