@@ -1,0 +1,93 @@
+# README → static landing → GitHub Pages (automation-first)
+# Pattern: readme-peacock; default builder is first-party script (no pip).
+name: readme-landing
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "README.md"
+      - "docs/**.md"
+      - "scripts/readme-landing-build.mjs"
+      - ".github/workflows/readme-landing.yml"
+  workflow_dispatch:
+    inputs:
+      template:
+        description: Theme (midnghtsapphire | glass | dark)
+        required: false
+        default: midnghtsapphire
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-readme-landing
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
+        with:
+          node-version: "22"
+
+      - name: Build landing from README (headless)
+        env:
+          TEMPLATE: ${{ github.event.inputs.template || 'midnghtsapphire' }}
+          REPO: ${{ github.repository }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          REF: ${{ github.sha }}
+        run: |
+          test -f README.md || printf '# %s\n' "$REPO_NAME" > README.md
+          node scripts/readme-landing-build.mjs \
+            --readme README.md \
+            --out site/index.html \
+            --repo "$REPO" \
+            --ref "$REF" \
+            --template "$TEMPLATE"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9  # v5.0.0
+        with:
+          path: site
+
+      - name: Open WR on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          TITLE: "[WR] readme-landing automation failed — ${{ github.repository }}"
+        run: |
+          existing=$(gh issue list --repo "$REPO" --state open \
+            --search "$TITLE" --json title \
+            --jq '[.[] | select(.title == env.TITLE)] | length')
+          if [ "${existing:-0}" -eq 0 ]; then
+            gh issue create \
+              --repo "$REPO" \
+              --title "$TITLE" \
+              --body "readme-landing workflow failed. Human review. formal:auto-wr path." \
+              --label "wr" --label "human-review-required" --label "automation" || true
+          fi
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128  # v5.0.0

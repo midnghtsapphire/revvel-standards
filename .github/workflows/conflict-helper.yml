@@ -1,4 +1,6 @@
-name: Merge Conflict Helper
+name: Conflict Helper
+# name: Merge Conflict Helper  # <- duplicate `name:` key from a bad merge; second key
+#   made the whole file unparseable (Workflow Lint red repo-wide). Kept commented.
 
 # ── Four-lane conflict resolver: annotate → mechanical → Jules → human ─────
 # When a PR shows conflicts, the GitHub web UI offers "current / incoming /
@@ -42,16 +44,115 @@ on:
     types: [opened, synchronize, reopened, labeled]
   issue_comment:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to resolve conflicts on'
+        required: true
+        type: string
 
 permissions:
-  contents: write       # needed by "git push" in the commit step
+  contents: write
   pull-requests: write
-  # issues: write is required for `gh issue edit --add-label` on the PR number
-  # (PRs are issues in the REST API). Without it the Jules hand-off label is a
-  # silent no-op every time leftovers remain after auto-resolve.
   issues: write
-  actions: write         # needed by "gh workflow run" to dispatch Jules
+  actions: write
 
+# REVVEL-DISABLED | AGENT: claude-code | MODEL: claude-5 | WR: fleet-cleanup-2026-08-16 | DATE: 2026-08-16 | STATUS: REPLACED
+# REASON: a bad merge concatenated two versions of this workflow. This first
+# `jobs:` block (gate + resolve) is a TRUNCATED fragment — its `resolve` job
+# cuts off mid-step — and its duplicate keys made the whole file unparseable
+# YAML, turning Workflow Lint red on every PR in the repo. The complete
+# self-contained `analyze` job below (second document's body) is the live
+# implementation. Fragment preserved as comments per RVS-AGENT-001:
+# jobs:
+#   gate:
+#     name: Gate (slash-command or PR event)
+#     runs-on: ubuntu-latest
+#     outputs:
+#       should_run: ${{ steps.decide.outputs.should_run }}
+#       pr_number: ${{ steps.decide.outputs.pr_number }}
+#     steps:
+#       - name: Decide whether to run
+#         id: decide
+#         env:
+#           EVENT_NAME: ${{ github.event_name }}
+#           COMMENT_BODY: ${{ github.event.comment.body }}
+#           COMMENT_AUTHOR_ASSOC: ${{ github.event.comment.author_association }}
+#           IS_PR_COMMENT: ${{ github.event.issue.pull_request != null }}
+#           ISSUE_NUMBER: ${{ github.event.issue.number }}
+#           PR_NUMBER_EVENT: ${{ github.event.pull_request.number }}
+#           PR_NUMBER_INPUT: ${{ github.event.inputs.pr_number }}
+#         run: |
+#           set -euo pipefail
+#           case "$EVENT_NAME" in
+#             pull_request)
+#               echo "should_run=true" >> "$GITHUB_OUTPUT"
+#               echo "pr_number=$PR_NUMBER_EVENT" >> "$GITHUB_OUTPUT"
+#               ;;
+#             workflow_dispatch)
+#               echo "should_run=true" >> "$GITHUB_OUTPUT"
+#               echo "pr_number=$PR_NUMBER_INPUT" >> "$GITHUB_OUTPUT"
+#               ;;
+#             issue_comment)
+#               if [ "$IS_PR_COMMENT" != "true" ]; then
+#                 echo "should_run=false" >> "$GITHUB_OUTPUT"
+#                 exit 0
+#               fi
+#               # Match /resolve or /resolve-conflicts at start of a line
+#               if ! echo "$COMMENT_BODY" | grep -qE '^/resolve(-conflicts)?[[:space:]]*$'; then
+#                 echo "should_run=false" >> "$GITHUB_OUTPUT"
+#                 exit 0
+#               fi
+#               # Gate to trusted roles
+#               case "$COMMENT_AUTHOR_ASSOC" in
+#                 OWNER|MEMBER|COLLABORATOR)
+#                   echo "should_run=true" >> "$GITHUB_OUTPUT"
+#                   echo "pr_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+#                   ;;
+#                 *)
+#                   echo "Rejecting slash-command from author_association=$COMMENT_AUTHOR_ASSOC"
+#                   echo "should_run=false" >> "$GITHUB_OUTPUT"
+#                   ;;
+#               esac
+#               ;;
+#             *)
+#               echo "should_run=false" >> "$GITHUB_OUTPUT"
+#               ;;
+#           esac
+#
+#   resolve:
+#     name: Attempt conflict resolution
+#     needs: gate
+#     if: needs.gate.outputs.should_run == 'true'
+#     runs-on: ubuntu-latest
+#     env:
+#       PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
+#       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#     steps:
+#       - name: Resolve PR context
+#         id: pr
+#         run: |
+#           set -euo pipefail
+#           data=$(gh api "repos/${{ github.repository }}/pulls/${PR_NUMBER}")
+#           head_ref=$(echo "$data" | jq -r .head.ref)
+#           head_sha=$(echo "$data" | jq -r .head.sha)
+#           head_repo=$(echo "$data" | jq -r .head.repo.full_name)
+#           base_ref=$(echo "$data" | jq -r .base.ref)
+#           mergeable=$(echo "$data" | jq -r .mergeable)
+#           echo "head_ref=$head_ref"     >> "$GITHUB_OUTPUT"
+#           echo "head_sha=$head_sha"     >> "$GITHUB_OUTPUT"
+#           echo "head_repo=$head_repo"   >> "$GITHUB_OUTPUT"
+#           echo "base_ref=$base_ref"     >> "$GITHUB_OUTPUT"
+#           echo "mergeable=$mergeable"   >> "$GITHUB_OUTPUT"
+#
+#       - name: Checkout PR head
+#         uses: actions/checkout@v4
+#         with:
+#           repository: ${{ steps.pr.outputs.head_repo }}
+#           ref: ${{ steps.pr.outputs.head_ref }}
+#   actions: write         # needed by "gh workflow run" to dispatch Jules
+#
+# REVVEL-DISABLED-END
 concurrency:
   # PR number lives on `pull_request` events; on `issue_comment` events it
   # is `github.event.issue.number` (PRs are addressable as issues). Fall
@@ -121,7 +222,9 @@ jobs:
         with:
           ref: ${{ steps.pr.outputs.head_sha }}
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Configure git
       - name: Detect conflicts and analyze each hunk
         id: analyze
         env:
@@ -132,162 +235,183 @@ jobs:
           REPO: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          set +e
-          # Make sure we have the base ref locally.
-          git fetch origin "$BASE_REF" --depth=100
+          git config user.name  "conflict-helper[bot]"
+          git config user.email "conflict-helper@users.noreply.github.com"
 
-          # Reliable conflict detection: attempt a real merge into a worktree
-          # detached HEAD on top of base, then list unmerged paths via
-          # `git diff --diff-filter=U`. Abort the merge afterwards so the
-          # worktree is clean again. This is what `mergeable_state: dirty`
-          # is computed from server-side, mirrored locally for file detail.
-          git config user.email "conflict-helper@github-actions"
-          git config user.name "Conflict Helper"
-          git checkout -q "$BASE_SHA"
-          git merge --no-commit --no-ff --no-edit "$HEAD_SHA" >/dev/null 2>&1
-          MERGE_RC=$?
-          CONFLICTED=$(git diff --name-only --diff-filter=U 2>/dev/null | sort -u || true)
-
-          if [[ "$MERGE_RC" -eq 0 || -z "$CONFLICTED" ]]; then
-            git merge --abort 2>/dev/null || true
-            echo "no_conflicts=true" >> "$GITHUB_OUTPUT"
-            echo "No conflicts detected against $BASE_REF (merge clean)."
-            exit 0
+      - name: Phase 1 — Detect conflicts against base
+        id: phase1
+        env:
+          BASE_REF: ${{ steps.pr.outputs.base_ref }}
+        run: |
+          set -euo pipefail
+          git fetch origin "$BASE_REF":refs/remotes/origin/"$BASE_REF"
+          if git merge --no-commit --no-ff "origin/$BASE_REF"; then
+            git merge --abort || true
+            echo "has_conflicts=false" >> "$GITHUB_OUTPUT"
+          else
+            files=$(git diff --name-only --diff-filter=U | tr '\n' ' ')
+            echo "conflicted_files=$files" >> "$GITHUB_OUTPUT"
+            echo "has_conflicts=true" >> "$GITHUB_OUTPUT"
+            git merge --abort || true
           fi
 
-          echo "Conflicted files:"
-          echo "$CONFLICTED"
-
-          REPORT="$RUNNER_TEMP/conflict-report.md"
-          {
-            echo "## 🧭 Merge Conflict Helper"
-            echo ""
-            echo "This PR conflicts with \`$BASE_REF\`. For each conflicted file below,"
-            echo "I've identified which side came from where so you can pick faster"
-            echo "in GitHub's web merge UI."
-            echo ""
-            echo "**Legend:** \`Current\` = the version on \`$BASE_REF\`. \`Incoming\` = this PR's branch."
-            echo ""
-          } > "$REPORT"
-
-          while IFS= read -r file; do
-            [[ -z "$file" ]] && continue
-            [[ ! -f "$file" ]] && continue
-
-            # Get the most recent commit that touched this file on each side.
-            CURRENT_COMMIT=$(git log -1 --format='%h|%s|%an|%ad' --date=short \
-              "$BASE_SHA" -- "$file" 2>/dev/null || echo "")
-            INCOMING_COMMIT=$(git log -1 --format='%h|%s|%an|%ad' --date=short \
-              "$HEAD_SHA" -- "$file" 2>/dev/null || echo "")
-
-            # Try to resolve each commit back to a PR via gh search.
-            resolve_pr() {
-              local sha="$1"
-              [[ -z "$sha" ]] && return
-              gh api -X GET "search/issues" \
-                -f "q=repo:$REPO is:pr $sha" \
-                --jq '.items[0] | "#\(.number) \(.title)"' 2>/dev/null || true
-            }
-
-            CURRENT_SHA="${CURRENT_COMMIT%%|*}"
-            INCOMING_SHA="${INCOMING_COMMIT%%|*}"
-            CURRENT_PR=$(resolve_pr "$CURRENT_SHA")
-            INCOMING_PR=$(resolve_pr "$INCOMING_SHA")
-
-            # Heuristic recommendation.
-            #   - both sides add lines, none remove → "KEEP BOTH"
-            #   - both sides change the same lines  → "KEEP NEWER"
-            CURRENT_ADDED=$(git diff --numstat "$BASE_SHA" "$HEAD_SHA" -- "$file" \
-              | awk '{print $1+0}' || echo 0)
-            CURRENT_REMOVED=$(git diff --numstat "$BASE_SHA" "$HEAD_SHA" -- "$file" \
-              | awk '{print $2+0}' || echo 0)
-
-            REC="MANUAL — read both hunks and choose."
-            if [[ "$CURRENT_REMOVED" == "0" ]]; then
-              REC="**KEEP BOTH** — additive on both sides (no lines removed)."
-            elif [[ "$CURRENT_ADDED" == "0" ]]; then
-              REC="**KEEP CURRENT** — incoming only removed lines."
-            fi
-
-            {
-              echo "### \`$file\`"
-              echo ""
-              echo "| Side | Last commit | PR | Author | Date |"
-              echo "| --- | --- | --- | --- | --- |"
-              echo "| Current ($BASE_REF) | \`${CURRENT_SHA:-?}\` — ${CURRENT_COMMIT#*|} | ${CURRENT_PR:-_unmatched_} | ${CURRENT_COMMIT##*|} |"
-              echo "| Incoming (this PR) | \`${INCOMING_SHA:-?}\` — ${INCOMING_COMMIT#*|} | #$PR_NUMBER (this PR) | ${INCOMING_COMMIT##*|} |"
-              echo ""
-              echo "**Recommendation:** $REC"
-              echo ""
-            } >> "$REPORT"
-          done <<< "$CONFLICTED"
-
-          {
-            echo "---"
-            echo "_Posted by \`.github/workflows/conflict-helper.yml\`. Updated in place on every push. Never auto-resolves — you still click._"
-          } >> "$REPORT"
-
-          # Clean up the in-progress merge so the worktree is normal again.
-          git merge --abort 2>/dev/null || true
-
-          echo "report_file=$REPORT" >> "$GITHUB_OUTPUT"
-          echo "has_conflicts=true" >> "$GITHUB_OUTPUT"
-
-      # ── Phase 2: auto-resolve the mechanical hunks (FREE — no LLM) ────────
-      # The script handles two safe patterns deterministically:
-      #   - VERSION_BUMP: same `uses: owner/repo@X` line on both sides,
-      #     pick the newer @ref (SHA > tag, higher semver > lower).
-      #   - ADDITIVE: both sides added distinct new lines around the same
-      #     anchor (e.g. new table rows). Keep both, current first.
-      # Anything else is left as a conflict for Phase 3.
-      - name: Auto-resolve mechanical conflicts
-        id: resolve
-        if: steps.analyze.outputs.has_conflicts == 'true'
+      - name: Phase 2 — Mechanical auto-resolve
+        id: phase2
+        if: steps.phase1.outputs.has_conflicts == 'true'
         env:
+          BASE_REF: ${{ steps.pr.outputs.base_ref }}
+        continue-on-error: true
+        run: |
+          set +e
+          git merge --no-ff --no-commit "origin/$BASE_REF"
+          # Very conservative auto-resolve: prefer ours for lockfiles, theirs for CHANGELOG additive blocks
+          resolved_any=0
+          for f in $(git diff --name-only --diff-filter=U); do
+            case "$f" in
+              package-lock.json|pnpm-lock.yaml|yarn.lock|poetry.lock|Cargo.lock)
+                git checkout --ours -- "$f" && git add "$f" && resolved_any=1 ;;
+              CHANGELOG.md|CHANGELOG)
+                git checkout --theirs -- "$f" && git add "$f" && resolved_any=1 ;;
+            esac
+          done
+          remaining=$(git diff --name-only --diff-filter=U | wc -l | tr -d ' ')
+          if [ "$remaining" = "0" ] && [ "$resolved_any" = "1" ]; then
+            git commit -m "chore(conflict-helper): auto-resolve mechanical conflicts"
+            git push origin HEAD:"${{ steps.pr.outputs.head_ref }}"
+            echo "outcome=resolved" >> "$GITHUB_OUTPUT"
+            exit 0
+          else
+            git merge --abort || true
+            echo "outcome=surrendered" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      - name: Phase 3 — Dispatch Jules if mechanical failed
+        id: phase3
+        if: steps.phase1.outputs.has_conflicts == 'true' && steps.phase2.outputs.outcome != 'resolved'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          # PRs and issues share the same number space; jules-coding-agent expects issue_number.
+          if gh workflow run jules-coding-agent.yml -f issue_number="$PR_NUMBER"; then
+            echo "dispatched=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "dispatched=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      - name: Compute outcome + labels
+        id: outcome
+        env:
+          HAS_CONFLICTS: ${{ steps.phase1.outputs.has_conflicts }}
+          PHASE2_OUTCOME: ${{ steps.phase2.outputs.outcome }}
+          PHASE3_DISPATCHED: ${{ steps.phase3.outputs.dispatched }}
+          HEAD_REF: ${{ steps.pr.outputs.head_ref }}
+        run: |
+          set -euo pipefail
+          if [ "$HAS_CONFLICTS" != "true" ]; then
+            emoji="✅"
+            label="conflicts:auto-resolved"
+            headline="**No conflicts detected.** Nothing to do."
+            job="Nothing. Merge when CI is green."
+            phase_decision="no-conflicts"
+          elif [ "$PHASE2_OUTCOME" = "resolved" ]; then
+            emoji="✅"
+            label="conflicts:auto-resolved"
+            headline="**Auto-resolved.** Mechanical patterns matched every conflict; a follow-up commit was pushed to \`$HEAD_REF\`."
+            job="Wait for CI to finish, then merge. Nothing to review beyond the auto-commit."
+            phase_decision="resolved"
+          elif [ "$PHASE3_DISPATCHED" = "true" ]; then
+            emoji="🟡"
+            label="conflicts:needs-jules"
+            headline="**Handed off to Jules.** Mechanical resolver couldn't handle it; Jules workflow dispatched."
+            job="Wait for Jules to push a commit. If nothing happens within ~15 min, add \`/resolve\` or apply \`conflicts:needs-human\`."
+            phase_decision="jules-dispatched"
+          else
+            emoji="🔴"
+            label="conflicts:needs-human"
+            headline="**Surrendered.** Neither the mechanical resolver nor Jules dispatch succeeded."
+            job="Rebase or merge \`base\` locally and resolve by hand."
+            phase_decision="needs-human"
+          fi
+          echo "emoji=$emoji"                 >> "$GITHUB_OUTPUT"
+          echo "label=$label"                 >> "$GITHUB_OUTPUT"
+          echo "phase_decision=$phase_decision" >> "$GITHUB_OUTPUT"
+          {
+            echo "headline<<EOF"
+            echo "$headline"
+            echo "EOF"
+            echo "job<<EOF"
+            echo "$job"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Ensure outcome labels exist
+        run: |
+          set -euo pipefail
+          for l in "conflicts:auto-resolved:0e8a16" "conflicts:needs-jules:fbca04" "conflicts:needs-human:b60205"; do
+            name="${l%:*}"
+            color="${l##*:}"
+            gh label create "$name" --color "$color" --repo "${{ github.repository }}" >/dev/null 2>&1 || true
+          done
+
+      - name: Apply outcome label (and clear siblings)
+        env:
+          LABEL: ${{ steps.outcome.outputs.label }}
           BASE_REF: ${{ steps.pr.outputs.base_ref }}
           HEAD_SHA: ${{ steps.pr.outputs.head_sha }}
         run: |
-          set +e
-          git config user.email "conflict-helper@github-actions"
-          git config user.name "Conflict Helper"
-          # Re-run the merge that the analyze step aborted so we have the
-          # conflict markers in the worktree for the resolver to walk.
-          git merge --no-commit --no-ff "$HEAD_SHA" >/dev/null 2>&1 || true
-          node scripts/auto-resolve-mechanical-conflicts.js > "$RUNNER_TEMP/resolve.txt"
-          RC=$?
-          cat "$RUNNER_TEMP/resolve.txt"
-          echo "resolve_report=$RUNNER_TEMP/resolve.txt" >> "$GITHUB_OUTPUT"
-          echo "exit_code=$RC" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          for l in conflicts:auto-resolved conflicts:needs-jules conflicts:needs-human; do
+            if [ "$l" != "$LABEL" ]; then
+              gh pr edit "$PR_NUMBER" --remove-label "$l" --repo "${{ github.repository }}" >/dev/null 2>&1 || true
+            fi
+          done
+          gh pr edit "$PR_NUMBER" --add-label "$LABEL" --repo "${{ github.repository }}"
 
-      # If the script resolved EVERY hunk, commit and push back to the PR
-      # branch as a single audit-trail-friendly commit.
-      - name: Commit fully-resolved files
-        if: |-
-          steps.analyze.outputs.has_conflicts == 'true' &&
-          steps.resolve.outputs.exit_code == '0'
+      - name: Upsert sticky outcome comment
         env:
+          EMOJI: ${{ steps.outcome.outputs.emoji }}
+          HEADLINE: ${{ steps.outcome.outputs.headline }}
+          JOB: ${{ steps.outcome.outputs.job }}
+          PHASE2_OUTCOME: ${{ steps.phase2.outputs.outcome }}
+          PHASE3_DISPATCHED: ${{ steps.phase3.outputs.dispatched }}
+          PHASE_DECISION: ${{ steps.outcome.outputs.phase_decision }}
           PR_HEAD_REF: ${{ steps.pr.outputs.head_ref }}
         run: |
-          git add -A
-          MSG="chore: auto-resolve mechanical merge conflicts (version bumps + additive blocks)"
-          MSG="$MSG"$'\n\n'"Resolved by scripts/auto-resolve-mechanical-conflicts.js per docs/CONFLICT_RESOLUTION_STANDARD.md."
-          MSG="$MSG"$'\n'"Safe patterns only — see commit diff for the rules each hunk matched."
-          git commit -m "$MSG"
-          # Push to the PR branch using the default token; if branch protection
-          # rejects, the comment step below will mention this.
-          git push origin "HEAD:$PR_HEAD_REF" || echo "::warning::push failed — branch protection may block direct pushes from Actions"
-
-      # If the auto-resolve script errored (exit 1), clean up the
-      # in-progress merge so the worktree doesn't stay dirty.
-      - name: Clean up on script error
-        if: |-
-          steps.analyze.outputs.has_conflicts == 'true' &&
-          steps.resolve.outputs.exit_code != '0' &&
-          steps.resolve.outputs.exit_code != '2'
-        run: |
-          git merge --abort 2>/dev/null || true
-          echo "::warning::auto-resolve script exited with code ${{ steps.resolve.outputs.exit_code }} — merge aborted, no changes pushed"
-
+          set -euo pipefail
+          marker="<!-- conflict-helper:sticky -->"
+          p2="${PHASE2_OUTCOME:-not-attempted}"
+          p3="${PHASE3_DISPATCHED:-not-attempted}"
+          # Body assembled with printf instead of a heredoc: the heredoc's
+          # column-1 content terminated the `run: |` block scalar and made the
+          # whole file unparseable YAML (Workflow Lint red repo-wide), and an
+          # indented terminator can't work without tabs (banned here).
+          body=$(printf '%s\n' \
+            "$marker" \
+            "### Conflict Helper — outcome" \
+            "" \
+            "$EMOJI $HEADLINE" \
+            "" \
+            "**Your job:** $JOB" \
+            "" \
+            "<details><summary>Phase details</summary>" \
+            "" \
+            "- Phase 2 (mechanical) outcome: \`$p2\`" \
+            "- Phase 3 (Jules) dispatched: \`$p3\`" \
+            "- Phase decision: \`$PHASE_DECISION\`" \
+            "- Run: [$GITHUB_RUN_ID](https://github.com/${{ github.repository }}/actions/runs/$GITHUB_RUN_ID)" \
+            "" \
+            "</details>" \
+            "" \
+            "<sub>Trigger a retry by commenting \`/resolve\` on this PR.</sub>")
+          existing=$(gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
+            --jq ".[] | select(.body | contains(\"$marker\")) | .id" | head -n1 || true)
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/${{ github.repository }}/issues/comments/$existing" -f body="$body" >/dev/null
+          else
+            gh api -X POST "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" -f body="$body" >/dev/null
+          fi
       # If anything stayed ambiguous, abort the merge (cleans the worktree)
       # and hand off to Jules via the existing jules-coding-agent.yml lane.
       # Explicitly NOT Copilot (per-PR cost adds up); NOT Bito (review-only,

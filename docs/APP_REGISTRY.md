@@ -40,16 +40,20 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/music-video-creator` | video, subscription | Accessibility, Affiliate, Newsletter | ✅ |
 | `products/revvel-skill-runner` | skill/runtime, CLI | Accessibility, AffiliateMarketing, Newsletter | ✅ |
 | `products/graphify-evaluator` | evaluator/affiliate | Accessibility, Affiliate, Newsletter | ✅ |
+| `products/greenfield-ui-lab` | research lab / idea board | Board columns, day wallet, export | ✅ (WR #16931) |
 | `products/affiliate-hub` | affiliate, lead | — | needs review |
 | `products/ai-video-toolkit` | video, lead | — | needs review |
 | `products/cli-engine` | subscription, SaaS, CLI/MCP | — | needs review |
 | `products/creator-payout-tracker` | payout, subscription, video | — | needs review |
 | `products/personal-assistant` | personal-os, SaaS, multi-agent, GitHub | Multi-source ingest, PII redaction, structure plan API (tested in `tests/personal-assistant-pipeline.test.js`) | needs review |
 | `products/openmythos` | (unclassified) | — | needs review |
+| `products/awesome-grok-build` | SaaS, skills, Grok Build, developer-tools | Skill catalog, install planner, REST APIs (tested in `tests/awesome-grok-build.test.js`) | ✅ wired from DominikTobureto/awesome-grok-build |
 | `products/printbank` | digital-download, e-commerce, static | Vector print generator, photo print sizer (tested in `tests/printbank.test.js`) | needs review |
+| `products/caspian-channel-console` | SaaS, agent-comms, static | Channel planner, cost estimator, one-handler simulator, code export (tested in `tests/caspian-channel-console.test.js`) | ✅ |
 | `products/prompt-generation-app` | OSINT, prompt | — | needs review |
 | `products/screen-recorder-finder` | utility/finder | — | needs review |
 | `products/ugc-review-generator` | review/content | — | (restored in #13915) |
+| `products/gosqlx-sql-linter` | developer-tools, SaaS, SQL lint | Multi-dialect linter + `/api/lint` (GoSQLX-aligned L001–L010) | ✅ (WR #15862) |
 | `reesereviews/vine-marketplace` | review/marketplace (nested) | — | needs review |
 | `mcp-servers/github-issues` | MCP server | — | needs review |
 | `revvel-rosette-automation` | automation | — | needs review |
