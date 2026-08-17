@@ -1,0 +1,23 @@
+{
+  "name": "@revvel/eslint-config",
+  "version": "1.0.0",
+  "description": "Shared ESLint flat config for Revvel Next.js/TypeScript products",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "eslint",
+    "eslintconfig",
+    "revvel"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@eslint/eslintrc": ">=3",
+    "eslint": ">=9",
+    "eslint-config-next": ">=15"
+  }
+}
