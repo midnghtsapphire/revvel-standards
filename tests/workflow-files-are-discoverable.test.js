@@ -44,14 +44,27 @@ const DORMANT = new Set([
   'cron/status-universal.yml',
 ]);
 
-/** @returns {string[]} workflow files nested below `.github/workflows`, repo-relative to it */
+/**
+ * A REVVEL-DISABLED tombstone is an archive, not a workflow. RVS-AGENT-001
+ * (`standards/COMMENT-DONT-DELETE.md`) requires a moved or removed file to
+ * leave one behind at its old path, so the archival policy check and this
+ * guard would otherwise contradict each other: one demands the path exist,
+ * the other demands it not. Nobody expects a tombstone to run, so "GitHub
+ * will not read this" is the intended state for it.
+ */
+function isTombstone(absPath) {
+  return /^[^\n]*REVVEL-DISABLED \|/m.test(fs.readFileSync(absPath, 'utf8').slice(0, 4096));
+}
+
+/** @returns {string[]} live workflow files nested below `.github/workflows`, relative to it */
 function nestedWorkflowFiles(dir = workflowsDir, prefix = '') {
   const out = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    const abs = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      out.push(...nestedWorkflowFiles(path.join(dir, entry.name), rel));
-    } else if (prefix && /\.ya?ml$/.test(entry.name)) {
+      out.push(...nestedWorkflowFiles(abs, rel));
+    } else if (prefix && /\.ya?ml$/.test(entry.name) && !isTombstone(abs)) {
       // `prefix` is non-empty only below the top level, which is exactly the
       // set GitHub will not read.
       out.push(rel);
