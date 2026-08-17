@@ -166,6 +166,7 @@ collisions:
 | Awesome Grok Build | `products/awesome-grok-build` | 3012 | Next.js. Grok Build skill browser + stack install planner (vendored DominikTobureto/awesome-grok-build). |
 | Agent Manifest Validator | `products/agent-manifest-validator` | 3012 | Next.js. SaaS guardrail for `registry_rules.json` agent personas (skill budget, domains, n8n alert preview). |
 | Personal Assistant | `products/personal-assistant` | 3012 | Next.js. Multi-source personal data (Gmail/Outlook/Yahoo/Keep/Drive/SMS) → PII-safe GitHub directory + commit plans. |
+| MergeMe Status | `products/mergeme-status` | 3012 | Next.js. mergeme.dev wiring status console + owner Slack/GitHub App setup checklist (WR #16824). |
 | pplx-api Skills Console | `products/pplx-api-skills` | 3012 | Next.js. Perplexity API integration with skills/tools framework, auth, rate limits, BOM lookup, monitoring. Needs `PERPLEXITY_API_KEY` for live mode (mock works without). |
 | Caspian Channel Console | `products/caspian-channel-console` | 3012 | Static SPA. Multi-channel agent planner/simulator from Caspian SDK research (WR-16898). |
 | Greenfield UI Lab | `products/greenfield-ui-lab` | 3012 | Next.js. Modernized idea board + day wallet from rgn/greenfield-ui research patterns. |
@@ -192,6 +193,7 @@ cd products/easy-env-vars        && npm run dev -- -p 3012
 cd products/awesome-grok-build   && npm run dev -- -p 3012
 cd products/agent-manifest-validator && npm run dev -- -p 3012
 cd products/personal-assistant   && npm run dev -- -p 3012
+cd products/mergeme-status       && npm run dev -- -p 3012
 cd products/pplx-api-skills      && npm run dev -- -p 3012
 # Static: python3 -m http.server 3012 -d products/caspian-channel-console/public
 cd products/greenfield-ui-lab     && npm run dev -- -p 3012
