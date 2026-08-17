@@ -75,6 +75,11 @@ export default function Page() {
         const rows = parseCsv(text);
         const prods = rowsToProducts(rows);
         setProducts(prods);
+        // Reset pack/batch state so a second CSV upload starts clean instead
+        // of leaking results and progress from the previous file.
+        setPacks({});
+        setBatchCursor(0);
+        setBatchTotal(0);
         setLogLine(`Found ${prods.length} products. Ready to batch.`);
       } catch (err) {
         setLogLine(`Error parsing CSV: ${err.message}`);
@@ -90,10 +95,16 @@ export default function Page() {
     }));
 
     try {
-      const res = await fetch('/api/process', {
+      // Keep the existing backend contract: POST /api/generate with
+      // { title, asin, count } — there is no /api/process route.
+      const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product: prod }),
+        body: JSON.stringify({
+          title: prod.title,
+          asin: prod.asin,
+          count: 3,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -103,13 +114,14 @@ export default function Page() {
       setPacks((prev) => ({
         ...prev,
         [prod.id]: {
-          status: 'done',
+          // A response without images is a failed pack, not a success.
+          status: data.images?.length ? 'done' : 'error',
           images: data.images || [],
-          listing: data.listing,
-          error: null,
+          listing: data.listing || '',
+          error: data.errors?.map((x) => x.message).join('; ') || null,
         },
       }));
-      return true;
+      return Boolean(data.images?.length);
     } catch (err) {
       setPacks((prev) => ({
         ...prev,
