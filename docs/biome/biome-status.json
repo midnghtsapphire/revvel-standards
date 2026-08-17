@@ -1,31 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-17T03:20:08.005Z",
+  "generated_at": "2026-08-17T07:21:48.031Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 31990457426,
-            "name": ".github/workflows/release-banner-social.yml",
-            "path": ".github/workflows/release-banner-social.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31990457426",
+            "id": 32002662294,
+            "name": "CI Error Prevention Tests",
+            "path": ".github/workflows/ci-error-prevention.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32002662294",
             "conclusion": "failure"
           },
           {
-            "id": 31990456546,
+            "id": 32002661646,
             "name": ".github/workflows/conflict-helper.yml",
             "path": ".github/workflows/conflict-helper.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/31990456546",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32002661646",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32002661225,
+            "name": ".github/workflows/release-banner-social.yml",
+            "path": ".github/workflows/release-banner-social.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32002661225",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32002660815,
+            "name": ".github/workflows/apisec-scan.yml",
+            "path": ".github/workflows/apisec-scan.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32002660815",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +65,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32004816544"
       }
     },
     "sheaf": {
