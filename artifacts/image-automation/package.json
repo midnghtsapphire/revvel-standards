@@ -1,16 +1,15 @@
 {
   "schema": "midnghtsapphire.image_creation/v1",
   "brand": "MIDNGHTSAPPHIRE",
-  "generated_at": "2026-08-08T03:36:27.769Z",
+  "generated_at": "2026-08-17T07:24:49.879Z",
   "source": "scripts/image-seo-build-pack.mjs",
   "automation": true,
   "input": {
-    "topic": "GitHub automation asset kits for multi-tool teams",
+    "topic": "multi-surface automation kits",
     "primaryKeyword": "automation asset generator",
     "kind": "og",
-    "funnel": "consideration",
     "brand": "MIDNGHTSAPPHIRE",
-    "secondaryKeywords": "gumloop, n8n, make, zapier, image seo",
+    "secondaryKeywords": "image seo, open graph, schema markup",
     "pinnedLsi": [
       "workflow automation",
       "image seo",
@@ -21,11 +20,9 @@
     "keywordStrategy": {
       "primary": "automation asset generator",
       "secondary": [
-        "gumloop",
-        "n8n",
-        "make",
-        "zapier",
-        "image seo"
+        "image seo",
+        "open graph",
+        "schema markup"
       ],
       "lsi": [
         "workflow automation",
@@ -34,10 +31,6 @@
         "automation asset generator best practices",
         "how to automation asset generator",
         "automation asset generator examples",
-        "gumloop",
-        "n8n",
-        "make",
-        "zapier",
         "open graph",
         "schema markup"
       ],
@@ -53,23 +46,23 @@
   },
   "seo": {
     "filename": "automation-asset-generator-og.webp",
-    "altText": "automation asset generator og showing GitHub automation asset kits for multi-tool teams",
+    "altText": "automation asset generator og showing multi-surface automation kits",
     "openGraph": {
       "og:image": "/images/automation-asset-generator-og.webp",
       "og:image:width": "1200",
       "og:image:height": "630",
-      "og:image:alt": "automation asset generator og showing GitHub automation asset kits for multi-tool teams"
+      "og:image:alt": "automation asset generator og showing multi-surface automation kits"
     },
     "jsonLd": {
       "@type": "ImageObject",
       "contentUrl": "/images/automation-asset-generator-og.webp",
       "width": 1200,
       "height": 630,
-      "keywords": "automation asset generator, gumloop, n8n, make, zapier, image seo, workflow automation, image seo, human in the loop, automation asset generator best practices, how to automation asset generator, automation asset generator examples, gumloop, n8n"
+      "keywords": "automation asset generator, image seo, open graph, schema markup, workflow automation, image seo, human in the loop, automation asset generator best practices, how to automation asset generator, automation asset generator examples, open graph, schema markup"
     }
   },
   "prompts": {
-    "master": "Release-grade og 1200x630: GitHub automation asset kits for multi-tool teams. MIDNGHTSAPPHIRE dark UI, sapphire accent. LSI vocabulary: workflow automation, image seo, human in the loop, automation asset generator best practices, how to automation asset generator, automation asset generator examples. No watermark, no illegible micro-text.",
+    "master": "Release-grade og 1200x630: multi-surface automation kits. MIDNGHTSAPPHIRE dark UI, sapphire accent. LSI vocabulary: workflow automation, image seo, human in the loop, automation asset generator best practices, how to automation asset generator, automation asset generator examples. No watermark, no illegible micro-text.",
     "negative": "blurry, watermark, purple neon, emoji, cluttered UI"
   },
   "human_gate": {

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mergeme-status — Revvel app</title>
+<meta name="description" content="Is mergeme.dev wired into revvel-standards? Live wiring status, setup checklist, and MergeMe Slack PR card integration.">
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 16px/1.5 system-ui, sans-serif; max-width: 760px; margin: 3rem auto; padding: 0 1.2rem; }
+  h1 { margin-bottom: .2rem; }
+  .meta { color: #888; margin-bottom: 1.5rem; }
+  .score { font-weight: 700; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid #8883; }
+  td:first-child { width: 2rem; text-align: center; }
+  .btn { display: inline-block; padding: .55rem 1rem; margin: .2rem .4rem .2rem 0;
+          border: 1px solid #8886; border-radius: 8px; text-decoration: none; }
+  .answer { padding: .75rem 1rem; border-radius: 8px; border: 1px solid #3fb95066; background: #3fb95014; margin: 1rem 0; font-weight: 700; }
+  code { font-size: .9em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>mergeme-status</h1>
+  <p class="meta">Revvel app · <span class="score">MergeMe.dev wiring console</span> · WR #16824</p>
+
+  <div class="answer" role="status">YES — MergeMe.dev is wired into revvel-standards (repo-side surfaces).</div>
+
+  <nav aria-label="App actions">
+    <a class="btn" href="https://github.com/midnghtsapphire/revvel-standards/tree/main/products/mergeme-status">View source</a>
+    <a class="btn" href="https://github.com/midnghtsapphire/revvel-standards/blob/main/docs/MERGEME_INTEGRATION.md">Integration docs</a>
+    <a class="btn" href="https://mergeme.dev">mergeme.dev</a>
+    <a class="btn" href="https://github.com/marketplace/mergeme-app">GitHub Marketplace</a>
+    <a class="btn" href="./ARTIFACTS.md">Delivery artifacts</a>
+  </nav>
+
+  <h2>What this answers</h2>
+  <p>
+    <strong>Is <a href="https://mergeme.dev">mergeme.dev</a> wired into
+    <code>midnghtsapphire/revvel-standards</code>?</strong>
+    Repo-side: yes (connections registry, docs, workflow, product app, tests, ports).
+    Owner still installs the GitHub App and maps Slack once — see the integration doc.
+  </p>
+
+  <h2>Definition of Done</h2>
+  <table>
+    <thead><tr><th></th><th>Requirement</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>✅</td><td>Live deployment URL</td><td>https://revvel-standards.vercel.app/docs/mergeme-status/</td></tr>
+      <tr><td>✅</td><td>README <code>## Live Deployment</code></td><td>present</td></tr>
+      <tr><td>✅</td><td>Live web test interface</td><td>this page + Next app on :3012</td></tr>
+      <tr><td>✅</td><td>Tests</td><td>root tests/mergeme-wiring.test.js + product tests</td></tr>
+      <tr><td>✅</td><td>Listed in APP_REGISTRY.md</td><td>listed</td></tr>
+      <tr><td>✅</td><td>Workflow wiring</td><td>mergeme-status.yml</td></tr>
+      <tr><td>✅</td><td>Connections registry</td><td>id: mergeme</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Quick verify</h2>
+  <pre><code>node scripts/mergeme-wiring.js
+cd products/mergeme-status &amp;&amp; npm test &amp;&amp; npm run dev</code></pre>
+
+  <p class="meta">Served from the docs site via <code>scripts/build-static.sh</code>.</p>
+</main>
+</body>
+</html>

@@ -48,3 +48,38 @@ The Perplexity Agent API offers a unified interface to access multiple LLMs (lik
 - **Why:** This architecture is extremely powerful for a `production-app`. It allows seamless integration of live web intelligence (via built-in tools) without building custom scrapers, while also supporting enterprise workflows via MCP and custom functions.
 - **What:** The Agent API natively supports MCP without requiring developers to build custom adapters for each tool.
 - **Why:** This makes Perplexity highly interoperable with existing MCP servers, reducing integration friction for production environments.
+
+## Implementation (WR-16930)
+
+Shipped product: `products/pplx-api-skills` (port **3012**).
+
+Bundle delivered:
+
+- Perplexity client (mock + live `/chat/completions`)
+- Auth middleware (`PPLX_APP_TOKEN`) + API key server-side only
+- Rate limiting with standard headers
+- Skills registry/executor/classifier (builtin / mcp / custom / revvel)
+- Response parser (chat + Agent function_call + skill narration)
+- BOM lookup API aligned with Universal BOM
+- Monitoring snapshot + structured JSON logs
+- Docs: README, RESEARCH, DEPLOYMENT_GUIDE, BOM
+- Tests: parse, skills, auth/rate-limit, client/BOM/monitor
+
+### Good vs bad (summary)
+
+- **Good:** citation research, competitor scans, agent tool loops, BOM-assisted selection, MCP enterprise bridges.
+- **Bad:** private data without tools, bulk scrape economics, deterministic CI without mock, free-tier assumptions on official API.
+
+### SEO keywords
+
+perplexity api, pplx-api, perplexity skills, agent tools, sonar pro, web_search, mcp perplexity, citation research api
+
+### GitHub stars / alternatives (spot-check; re-verify)
+
+- Perplexity docs / API platform — official vendor surface
+- `helallao/perplexity-ai` — no-key community client used internally
+- Brave Search / Tavily / Serper — search BOM alternatives when LLM markup is unnecessary
+
+### Monetization
+
+Productized skills console → metered live keys → agency MCP hosting; internal leverage on research pipeline cost/quality.
