@@ -1,0 +1,29 @@
+{
+  "name": "pplx-api-skills",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Perplexity API (pplx-api) integration with skills/tools framework, auth, rate limiting, and BOM utilities",
+  "scripts": {
+    "dev": "next dev -p 3012",
+    "build": "next build",
+    "start": "next start -p 3012",
+    "lint": "tsc --noEmit",
+    "test": "tsx --test tests/**/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "^15.5.21",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.5.16",
+    "tailwindcss": "^3.4.3",
+    "tsx": "^4.22.3",
+    "typescript": "^5"
+  }
+}

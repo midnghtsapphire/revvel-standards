@@ -461,3 +461,81 @@ unchanged. Note: **Mabl itself remains PAUSED** (2026-05-27 evaluation preserved
 documents the credit-free lanes (local/CI CLI runs consume no cloud credits; mabl
 cloud MCP). Playbook: `skills/mabl-expert/SKILL.md`. Additive; the paused `mabl.yml`
 workflow was NOT re-enabled.
+
+---
+
+## Update — August 17, 2026: `auto-branch-update.yml` no longer corrupts stacked PRs
+
+**`.github/workflows/auto-branch-update.yml`** merges `main` into every open PR
+branch on each push to `main`. Two defects in it were actively manufacturing the
+merge conflicts it exists to surface early, and both are now fixed.
+
+**1. The concurrency group never serialised anything.** `concurrency.group` was
+keyed on `github.run_id`, which is unique per run — so every run got its own
+group and no run ever queued behind another. Rapid pushes to `main` spawned
+concurrent runs that each merged and pushed the same branches, with the losers
+retrying on top. That is the origin of the long chains of `Merge remote-tracking
+branch 'origin/main'` commits observed on the WR branches — 11 on PR #17653 and
+31 on PR #17592. The group is now a static string, so runs queue.
+
+**2. Stacked PRs were updated at one level only.** Targets came from
+`pulls.list({ base: 'main' })`, which only ever returns the bottom of a stack. A
+stack parent had `main` merged into it while its child — based on the parent
+branch, not on `main` — was never touched. The two levels drifted apart and
+collided as an add/add conflict on the same file, which is what left PR #17653
+and PR #17600 unmergeable. The collect step now paginates all open PRs, derives the set
+of branches that other open PRs are based on, and skips both stack parents and
+stacked children.
+
+Stacked pull requests are updated by replaying their commits onto the latest
+base — a rebase — never by taking a merge. A workflow that merges into one level
+of a stack will always desynchronise it.
+
+Regression coverage: `tests/auto-branch-update-workflow.test.js`, which fails on
+both counts against the previous workflow.
+
+**Known gap, not addressed here:** the third-party actions in this workflow are
+pinned to version tags (`actions/checkout@v4.2.2`, `actions/github-script@v9.0.0`)
+rather than full commit SHAs, contrary to `CLAUDE.md` gotcha 8. Left for a
+separate sweep across all workflows rather than a drive-by in a bugfix PR.
+
+---
+
+## Update — August 17, 2026: template-injection hole closed in `auto-branch-update.yml`
+
+zizmor alert 3380 flagged the `github-script` step in
+**`.github/workflows/auto-branch-update.yml`** for code injection via template
+expansion. The step read its dispatch input as:
+
+```js
+const inputPR = '${{ inputs.pr_number }}';
+```
+
+`${{ }}` expansion is text substitution performed *before* the script runs, so a
+`workflow_dispatch` value containing a quote character closes the string literal
+and everything after it is executed as JavaScript. This step runs under a token
+with `contents: write` that pushes to every open PR branch, so the blast radius
+is every open branch in the repository.
+
+The value now arrives through the step's `env:` block and is read with
+`process.env.INPUT_PR_NUMBER`, so it is never parsed as code. Behaviour is
+unchanged — an absent input still yields the empty string and the "update all
+open PRs" path.
+
+A review bot argued the finding was a false positive because the interpolation
+sits inside a string literal. That reasoning is inverted: the surrounding quotes
+are part of the template output, not a boundary the expansion respects. Being
+inside a string literal is what makes the pattern exploitable, not what prevents
+it. Treat "it's quoted" as a reason to look harder, never as an all-clear.
+
+Regression coverage asserts that no `${{ }}` appears anywhere in the script body
+— a stronger invariant than special-casing this one input, so the pattern cannot
+reappear elsewhere in the step.
+
+**Known gap, not addressed here:** the `actions-lint` check cannot parse any
+`||` fallback in a secrets expression — it reports the whole expression as an
+undeclared secret name, both for `secrets.X != '' && secrets.X || secrets.Y` and
+for the simplified `secrets.X || secrets.Y`. Satisfying it would mean dropping
+the `AGENT_PR_TOKEN` fallback, which `CLAUDE.md` gotcha 3 makes load-bearing.
+Five other workflows fail that check for the same reason; it is a linter
+limitation, not a defect to fix by regressing the workflows.

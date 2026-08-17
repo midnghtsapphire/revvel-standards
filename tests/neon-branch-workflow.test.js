@@ -69,7 +69,7 @@ test('Neon workflow is wired correctly', () => {
 // tests extract that exact `run:` block and execute it against a stub Neon API.
 // Anything asserted here is therefore true of the code GitHub actually runs.
 
-const BRANCH = 'preview/pr-1-feat';
+const BRANCH = 'pr-1-feat';
 
 function checkBranchScript() {
   const doc = yaml.parse(fs.readFileSync(workflowPath, 'utf8'));
@@ -136,7 +136,7 @@ test('cleanup lookup follows every page of the paginated listing', async () => {
   // page 1, so cleanup skipped a delete it should have done and the preview
   // branch (and its cost) survived until expiry.
   const neon = await stubNeon([
-    { cursor: null, body: { branches: [{ name: 'preview/pr-2-other' }], pagination: { next: 'cur2' } } },
+    { cursor: null, body: { branches: [{ name: 'pr-2-other' }], pagination: { next: 'cur2' } } },
     { cursor: 'cur2', body: { branches: [{ name: BRANCH }] } },
   ]);
   try {
@@ -144,7 +144,7 @@ test('cleanup lookup follows every page of the paginated listing', async () => {
     assert.equal(result.code, 0, result.stderr);
     assert.equal(result.output, 'exists=true');
     assert.equal(neon.requests.length, 2);
-    assert.match(neon.requests[0], /search=preview%2Fpr-1-feat/);
+    assert.match(neon.requests[0], /search=pr-1-feat/);
     assert.match(neon.requests[1], /cursor=cur2/);
   } finally {
     await neon.close();

@@ -88,13 +88,33 @@ automated fix, and what to do when the gate still goes red.
   sweeps so the whole-repo `npm run lint` backlog trends toward zero and the
   changed-file scoping becomes unnecessary.
 
+## CI gate (GitHub Actions)
+
+`.github/workflows/lint-md.yml` runs
+`nosborn/github-action-markdown-cli` (tag `v3.5.0`, full commit SHA pin) with:
+
+- `files: .`
+- `config_file: .markdownlint.yaml` (YAML mirror of `.markdownlint.jsonc`)
+- `dot: true`
+- `ignore_path: .markdownlintignore`
+
+Local agents should keep using `npm run lint` / `npm run lint:fix`
+(markdownlint-cli2 + `.markdownlint.jsonc`). When changing rules, update
+**both** `.markdownlint.yaml` and `.markdownlint.jsonc`. Regression coverage:
+`tests/lint-md-workflow.test.js` (WR #16267).
+
 ## References
 
 - Sanitizer: `wr/scripts/sanitize-wr-markdown.mjs` (tests:
   `tests/sanitize-wr-markdown.test.js`)
 - WR structural lint: `wr/scripts/wr-lint.mjs`
 - Whole-repo backlog sweeper: `scripts/fix-markdown-backlog.js`
-- Lint rules: `.markdownlint.jsonc`, ignores: `.markdownlintignore`
+- Lint rules: `.markdownlint.yaml` + `.markdownlint.jsonc`, ignores:
+  `.markdownlintignore`
+- CI workflow: `.github/workflows/lint-md.yml`
+  (`nosborn/github-action-markdown-cli@v3.5.0`)
 - Green-main rule: `standards/GREEN_MAIN_STANDARD.md`
 - Originating failure: issue #15604 (MD012/MD025/MD049 on
   `wr/issues/issue-15600-...md`)
+- Action integration WR: #16267 /
+  `wr/issues/issue-16267-add-markdownlint-cli-github-action.md`
