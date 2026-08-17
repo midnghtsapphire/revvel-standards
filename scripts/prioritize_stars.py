@@ -212,7 +212,13 @@ def fetch_starred_repos(
                     json={"query": STARRED_REPOS_QUERY, "variables": {"cursor": cursor}},
                     headers=headers,
                 )
-                if response.status_code in (403, 429):
+                if response.status_code == 429 or (
+                    response.status_code == 403
+                    and (
+                        response.headers.get("Retry-After")
+                        or response.headers.get("X-RateLimit-Remaining") == "0"
+                    )
+                ):
                     if attempt >= MAX_RETRIES:
                         print(
                             f"Rate limit persisted after {MAX_RETRIES} retries; "
