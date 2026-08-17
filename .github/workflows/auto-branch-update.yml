@@ -46,18 +46,20 @@ jobs:
       - name: Collect PR branches to update
         id: collect
         uses: actions/github-script@v9.0.0
-        env:
-          # Passed through the environment, never interpolated into the script
-          # body. `${{ }}` expansion is text substitution performed before the
-          # script runs, so a crafted dispatch input could otherwise close the
-          # string literal and execute arbitrary JS under this job's token
-          # (zizmor template-injection, alert 3380).
-          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
         with:
           github-token: ${{ secrets.AGENT_PR_TOKEN || secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            const inputPR = process.env.INPUT_PR_NUMBER || '';
+
+            // Read the dispatch input off the event payload rather than
+            // interpolating it. Template expressions are substituted as text
+            // before this script runs — anywhere in the block, comments
+            // included — so interpolating the input into a string literal
+            // lets a crafted value close the quote and execute arbitrary JS
+            // under this job's contents:write token (zizmor alert 3380).
+            // context.payload.inputs is populated on workflow_dispatch and
+            // absent on push, which is exactly the old fallback behaviour.
+            const inputPR = (context.payload.inputs || {}).pr_number || '';
 
             // Fetch every open PR, not just the ones based on main. We need the
             // full set to identify stacks: any branch that another open PR uses

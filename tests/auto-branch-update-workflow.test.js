@@ -117,19 +117,26 @@ test('no template expansion inside the github-script body', () => {
   assert.doesNotMatch(
     collect.with.script,
     /\$\{\{/,
-    'pass values through `env:` and read them with process.env, never `${{ }}` in the script body'
+    'read values off context.payload, never interpolate `${{ }}` into the script body'
   );
-  assert.match(collect.env.INPUT_PR_NUMBER, /inputs\.pr_number/);
-  assert.match(collect.with.script, /process\.env\.INPUT_PR_NUMBER/);
 });
 
-test('workflow_dispatch input is read through the inputs context', () => {
-  // `github.event.inputs` is the legacy spelling and is flagged as undeclared
-  // by the actions-lint check. `inputs.<name>` is the documented context for
-  // workflow_dispatch and is likewise empty on push events, so the collect
-  // step's "no PR number supplied" branch behaves identically.
-  assert.doesNotMatch(raw, /github\.event\.inputs\./, 'use the `inputs.` context');
-  assert.match(raw, /\$\{\{\s*inputs\.pr_number\s*\}\}/);
+test('the dispatch input is read off the event payload, not a template', () => {
+  // Neither spelling of the input may appear as a template expression
+  // anywhere in the step. `github.event.inputs.x` and `inputs.x` are both
+  // reported as undeclared by the actions-lint check, and interpolating
+  // either into the script body is the injection vector above. github-script
+  // exposes the dispatch inputs on context.payload, which needs no expansion
+  // at all — so this satisfies both constraints instead of trading one for
+  // the other.
+  const collect = wf.jobs['update-pr-branches'].steps.find((s) => s.id === 'collect');
+  assert.doesNotMatch(raw, /github\.event\.inputs\./);
+  assert.doesNotMatch(raw, /\$\{\{\s*inputs\./);
+  assert.match(collect.with.script, /context\.payload\.inputs/);
+
+  // Absent payload must fall back to "update all open PRs", not throw:
+  // context.payload.inputs is undefined on push events.
+  assert.match(collect.with.script, /\(context\.payload\.inputs\s*\|\|\s*\{\}\)/);
 
   // The input must still be declared, or the dispatch path silently breaks.
   assert.ok(wf.on.workflow_dispatch.inputs.pr_number, 'pr_number must stay declared');
