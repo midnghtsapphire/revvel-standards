@@ -1,0 +1,94 @@
+# Renovate Config Validator (WR #15811)
+#
+# Runs suzuki-shunsuke/github-action-renovate-config-validator@v2.1.0 against
+# this repo's Renovate config so syntax/schema mistakes fail the PR before
+# Renovate itself tries to consume a bad config.
+#
+# Why this action (prior art):
+#   - Official Renovate docs recommend renovate-config-validator (ships inside
+#     the `renovate` npm package). This composite action wraps that CLI with
+#     Node 24 install + ~/.npm cache (v2.1.0) so CI doesn't hit rate limits.
+#   - Local one-shot alternative already documented in docs/RENOVATE_SETUP.md:
+#       npx --yes -p renovate renovate-config-validator .github/renovate.json5
+#     This workflow automates the same check on every path-filtered PR/push.
+#   - Alternative action tj-actions/renovate-config-validator exists (WR #15812)
+#     but this WR pins the suzuki-shunsuke action at v2.1.0 explicitly.
+#
+# Failure modes:
+#   - Invalid Renovate options / schema → step fails (strict: true)
+#   - Missing config file path → step fails with clear validator error
+#   - Network/npm install failure for `renovate` package → step fails (no silent pass)
+#
+# Pin policy: full commit SHA + trailing "# vX.Y.Z" comment (CLAUDE.md gotcha #8
+# and docs/THIRD_PARTY_ACTION_AUDIT.md). SHA resolves tag v2.1.0.
+name: Renovate Config Validator
+
+on:
+  pull_request:
+    paths:
+      - "renovate.json"
+      - "renovate.json5"
+      - ".renovaterc"
+      - ".renovaterc.json"
+      - ".renovaterc.json5"
+      - ".github/renovate.json"
+      - ".github/renovate.json5"
+      - ".github/workflows/renovate-config-validator.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "renovate.json"
+      - "renovate.json5"
+      - ".renovaterc"
+      - ".renovaterc.json"
+      - ".renovaterc.json5"
+      - ".github/renovate.json"
+      - ".github/renovate.json5"
+      - ".github/workflows/renovate-config-validator.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: renovate-config-validator-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate Renovate Configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      # Guard: fail fast with an actionable message if the expected config is
+      # gone (e.g. renamed without updating this workflow). The validator would
+      # also fail, but its default path scan is quieter about "nothing found".
+      - name: Ensure Renovate config is present
+        run: |
+          set -euo pipefail
+          if [ ! -f .github/renovate.json5 ]; then
+            echo "::error::Expected .github/renovate.json5 was not found."
+            echo "If the config moved, update config_file_path in"
+            echo ".github/workflows/renovate-config-validator.yml and the paths: filters."
+            exit 1
+          fi
+          echo "Found .github/renovate.json5"
+
+      - name: Validate Renovate Configuration
+        # v2.1.0 — https://github.com/suzuki-shunsuke/github-action-renovate-config-validator/releases/tag/v2.1.0
+        uses: suzuki-shunsuke/github-action-renovate-config-validator@ee9f69e1f683ed0d08225086482b34fc9abe9300 # v2.1.0
+        with:
+          # Explicit path: this repo's SSOT is .github/renovate.json5 (JSON5).
+          # Passing it avoids relying on the action's multi-path default scan.
+          config_file_path: .github/renovate.json5
+          # strict=true surfaces unknown options as errors (default of the action).
+          strict: "true"
+          # npm_cache=true caches ~/.npm (default since v2.1.0) to cut install time
+          # and reduce npm registry rate-limit pressure on busy CI.
+          npm_cache: "true"

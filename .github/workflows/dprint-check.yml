@@ -1,0 +1,32 @@
+# dprint style gate — https://dprint.dev / dprint/check@v2.3
+# Runs on Linux only (avoids Windows CRLF false positives from git autocrlf).
+# Config: dprint.json (auto-discovered; config-path set explicitly for clarity).
+name: dprint check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  style:
+    name: dprint-check-action
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Matrix-safe: only Linux (issue guidance for dprint/check).
+    if: runner.os == 'Linux'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: dprint-check-action
+        # Pin third-party action to full SHA (CLAUDE.md gotcha #8). Tag: v2.3
+        uses: dprint/check@9cb3a2b17a8e606d37aae341e49df3654933fc23 # v2.3
+        with:
+          config-path: dprint.json
