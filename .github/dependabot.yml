@@ -5,9 +5,26 @@
 # automatically instead of drifting. Also covers root-level npm tooling
 # (markdownlint-cli2, yaml, tests) so those pins don't rot either.
 #
-# Not enabling: pip (product-scoped, not root), docker (none used at root),
-# and per-product npm entries (each product/*/ has its own package-lock; add
-# a per-directory block only when a product actually needs auto-updates).
+# ---------------------------------------------------------------------------
+# FORMAL PATH A — split-deps-per-directory (WR #16950 / PR #16791)
+# ---------------------------------------------------------------------------
+# Formal dual-path verification chose path A over path B (dependabot-group-bump)
+# with structural_conflict when a single npm_and_yarn group spanned 10 dirs.
+#
+# HARD RULES (enforced by scripts/check-dependabot-split-deps.js + tests):
+#   1. Every updates[] entry uses exactly one `directory:` key.
+#      NEVER use `directories:` (plural) — that opens cross-directory PRs.
+#   2. Group names are unique and directory-scoped
+#      (e.g. root-tooling-patch-minor, affiliate-hub-patch-minor).
+#      NEVER reuse a group name across directories.
+#   3. NEVER name a group npm_and_yarn / npm-and-yarn (Dependabot multi-dir
+#      default pattern that produced PR #16791).
+#   4. Within a single directory, grouping patch+minor is fine and preferred
+#      to cut noise. Majors stay ungrouped + ignored for human review.
+#
+# Per-product npm blocks below match the directories that appeared in the
+# rejected #16791 group bump so future updates open as one PR per directory.
+# ---------------------------------------------------------------------------
 
 version: 2
 
@@ -58,6 +75,234 @@ updates:
           - "minor"
           - "patch"
     # Major bumps to root tooling always go through a human review.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # ---- Product / docs directories (one entry each; unique group names) ----
+  # Shared schedule + cooldown; low open-PR limit so product noise stays small.
+
+  - package-ecosystem: "npm"
+    directory: "/docs/marketplace-relister"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      marketplace-relister-patch-minor:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "npm"
+    directory: "/products/affiliate-hub"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      affiliate-hub-patch-minor:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "npm"
+    directory: "/products/ai-ad-generator"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      ai-ad-generator-patch-minor:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "npm"
+    directory: "/products/cli-engine"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      cli-engine-patch-minor:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "npm"
+    directory: "/products/fda-design-controls"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      fda-design-controls-patch-minor:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "npm"
+    directory: "/products/life-insurance-lead-engine/build"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      life-insurance-lead-engine-build-patch-minor:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "npm"
+    directory: "/products/music-video-creator"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      music-video-creator-patch-minor:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "npm"
+    directory: "/products/prompt-generation-app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      prompt-generation-app-patch-minor:
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "npm"
+    directory: "/products/revvel-skill-runner"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "npm"
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    groups:
+      revvel-skill-runner-patch-minor:
+        update-types:
+          - "minor"
+          - "patch"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]

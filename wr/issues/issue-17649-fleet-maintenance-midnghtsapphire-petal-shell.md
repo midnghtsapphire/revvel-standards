@@ -6,6 +6,11 @@
 **Research Date:** 2026-08-17  
 **Researcher:** Jules (Google) + OpenRouter  
 **WR Status:** ✅ Complete
+**Repository:** [midnghtsapphire/revvel-standards](https://github.com/midnghtsapphire/revvel-standards)  
+**Created:** 2026-08-17  
+**Research Date:** 2026-08-17  
+**Researcher:** Jules (Google) + OpenRouter  
+**WR Status:** 🟡 In Progress
 
 ---
 
@@ -32,6 +37,18 @@
 - [x] Tests updated / added where applicable
 - [x] Docs updated where applicable
 - [x] No regressions in related workflows
+<!-- Detailed scope: what's in, what's out, boundaries with other WRs. -->
+
+## Approach
+
+<!-- Proposed approach / design sketch. Alternatives considered. -->
+
+## Acceptance Criteria
+
+- [ ] Change delivers the described behavior end-to-end
+- [ ] Tests updated / added where applicable
+- [ ] Docs updated where applicable
+- [ ] No regressions in related workflows
 
 ## Acknowledgements
 
@@ -56,3 +73,27 @@ N/A — Internal fleet maintenance WR. Pricing data not applicable.
 
 - **What:** Standardizing repository workflows requires a baseline of shared GitHub Actions. Missing standard checks (like OpenRouter or CodeQL) can lead to unverified AI or human PRs.
 - **Why:** Centralizing standards via `revvel-standards` ensures all `midnghtsapphire` projects have identical security and AI-review footing, speeding up cross-repo maintenance and satisfying the Prime Directive's mandate for 24/7 autonomous reliability.
+<!-- Known risks, fragile files touched, rollback plan. -->
+
+## Competitor & Pricing Intelligence
+
+<!--
+For Competitor and GitHub Star Intelligence WRs, the competitor/pricing table
+must list actual prices (e.g. "$99-299/month"), not vague labels like "Paid tiers".
+If a competitor's price is unknown, write:
+"Pricing data pending — competitive benchmark research required."
+Do not ship incomplete competitive intelligence. This rule is kept in sync with
+scripts/research-engine.js by tests/research-engine.test.js.
+-->
+
+## Learnings — What & Why
+
+N/A — pending Jules refinement
+
+<!--
+Guidance: agents completing other WR types should fill this in themselves once
+done — capture what was learned and _why_ it matters, not just what changed.
+For follow-up-generated WRs this section is populated automatically by the
+Follow-up Checkbox Router with the original follow-up text, a link to the
+source PR/issue, and (if applicable) a note that this is a chained follow-up.
+-->

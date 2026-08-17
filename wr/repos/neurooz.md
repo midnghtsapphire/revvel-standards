@@ -1,5 +1,7 @@
 # WR: neurooz
 
+> **2026-08-08 update:** Fleet maintenance WR #16830 shipped on target via https://github.com/midnghtsapphire/neurooz/pull/25 (review jury + docs + audit-clean deps + impulse tests).
+
 **Repository:** [neurooz](https://github.com/midnghtsapphire/neurooz)  
 **Created:** 2026-01-08  
 **Last Updated:** 2026-05-02  
