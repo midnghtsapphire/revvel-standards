@@ -12,14 +12,14 @@ Closes the production path for WR **#16903**.
    logarithmic star popularity, and how recently you starred it).
 3. Checkpoints progress in `stars_state.json` so partial runs resume cleanly.
 4. Writes `PRIORITIZED_STARS.md` and `prioritized_stars.json`.
-5. Commits the artifacts from a scheduled GitHub Action every 6 hours.
+5. Commits refreshed artifacts from a manual GitHub Action run after resuming from its saved checkpoint.
 
 ## Components
 
 | Path | Role |
 | --- | --- |
 | `scripts/prioritize_stars.py` | Production prioritization script |
-| `.github/workflows/prioritize-stars.yml` | Cron + workflow_dispatch runner |
+| `.github/workflows/prioritize-stars.yml` | Manual workflow runner for the checkpointed script |
 | `products/star-optimizer/` | Next.js SaaS app (interactive scoring) |
 | `standards/AGENTS_STAR_OPTIMIZER.md` | Agent execution rules |
 
@@ -32,7 +32,7 @@ python scripts/prioritize_stars.py --self-test
 # Score built-in fixtures and write reports in the cwd
 python scripts/prioritize_stars.py --fixture
 
-# Live run (needs GH_PAT or GITHUB_TOKEN)
+# Live run (needs GH_PAT or your own personal token in GITHUB_TOKEN)
 export GH_PAT=ghp_your_token_here
 pip install httpx==0.28.1
 python scripts/prioritize_stars.py --limit 250
@@ -55,8 +55,8 @@ Deploy path: Vercel project pointed at `products/star-optimizer`
 
 | Name | Required | Purpose |
 | --- | --- | --- |
-| `GH_PAT` | Recommended | Fine-grained PAT for starring user (5k GraphQL points/hr) |
-| `GITHUB_TOKEN` | Automatic in Actions | Fallback when `GH_PAT` is unset |
+| `GH_PAT` | Required in `.github/workflows/prioritize-stars.yml`; recommended locally | Fine-grained PAT for the account whose stars you want to rank |
+| `GITHUB_TOKEN` | Optional for local runs only | Personal token env var name accepted by the script outside GitHub Actions |
 
 Names only — see [`docs/SECRETS_MAP.md`](./SECRETS_MAP.md).
 

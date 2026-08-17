@@ -102,7 +102,7 @@ def score_breakdown(
     if releases:
         days_since_release = days_between(clock, parse_iso(releases[0].get("createdAt")))
         score_release = (
-            math.exp(-(days_since_release or 3650) / 90) * 30
+            math.exp(-days_since_release / 90) * 30
             if days_since_release is not None
             else 0.0
         )
@@ -112,7 +112,7 @@ def score_breakdown(
     score_stars = min(math.log10(max(stars, 1)) * 10, 20)
     days_starred = days_between(clock, parse_iso(repo.get("starredAt")))
     score_starred = (
-        math.exp(-(days_starred or 3650) / 14) * 10 if days_starred is not None else 0.0
+        math.exp(-days_starred / 14) * 10 if days_starred is not None else 0.0
     )
     total = round(score_push + score_release + score_stars + score_starred, 2)
     return {
@@ -134,9 +134,9 @@ def calculate_priority_score(
 
 
 STARRED_REPOS_QUERY = """
-query($cursor: String) {
+query($cursor: String, $pageSize: Int!) {
   viewer {
-    starredRepositories(first: 50, after: $cursor, orderBy: {field: STARRED_AT, direction: DESC}) {
+    starredRepositories(first: $pageSize, after: $cursor, orderBy: {field: STARRED_AT, direction: DESC}) {
       pageInfo { hasNextPage endCursor }
       edges {
         starredAt
@@ -196,6 +196,7 @@ def fetch_starred_repos(
     if not has_next:
         cursor = None
         has_next = True
+        repos_dict = {}
 
     fetched_count = 0
     owns_client = client is None
@@ -207,9 +208,13 @@ def fetch_starred_repos(
             attempt = 0
             while True:
                 attempt += 1
+                page_size = min(PAGE_SIZE, max(limit - fetched_count, 1))
                 response = session.post(
                     GRAPHQL_URL,
-                    json={"query": STARRED_REPOS_QUERY, "variables": {"cursor": cursor}},
+                    json={
+                        "query": STARRED_REPOS_QUERY,
+                        "variables": {"cursor": cursor, "pageSize": page_size},
+                    },
                     headers=headers,
                 )
                 if response.status_code == 429 or (
@@ -249,7 +254,7 @@ def fetch_starred_repos(
                 state["has_next"] = has_next
                 state["repos"] = repos_dict
                 save_state(state_path, state)
-                break
+                raise RuntimeError("GraphQL request failed; checkpoint saved")
 
             star_data = payload["data"]["viewer"]["starredRepositories"]
             for edge in star_data["edges"]:
@@ -408,6 +413,18 @@ def run_self_test() -> int:
     mega = next(r for r in repos if r["nameWithOwner"] == "stale/archive")
     parts = score_breakdown(mega, now=fixed_now)
     assert parts["stars"] <= 20
+    same_day = {
+        "nameWithOwner": "same/day",
+        "url": "https://github.com/same/day",
+        "stargazerCount": 10,
+        "pushedAt": "2026-08-08T12:00:00Z",
+        "starredAt": "2026-08-08T12:00:00Z",
+        "releases": {"nodes": [{"createdAt": "2026-08-08T12:00:00Z"}]},
+    }
+    same_day_parts = score_breakdown(same_day, now=fixed_now)
+    assert same_day_parts["push"] == 40.0
+    assert same_day_parts["release"] == 30.0
+    assert same_day_parts["starred_at"] == 10.0
     print("self-test ok")
     return 0
 

@@ -7,52 +7,8 @@ import {
   prioritizeRepos,
   sampleFixtureRepos,
   type RankedRepo,
-  type StarRepoInput,
 } from "../lib/scoring";
-
-function normalizeImported(raw: unknown): StarRepoInput[] {
-  const list = Array.isArray(raw)
-    ? raw
-    : raw && typeof raw === "object" && Array.isArray((raw as { repos?: unknown }).repos)
-      ? (raw as { repos: unknown[] }).repos
-      : null;
-
-  if (!list) {
-    throw new Error('JSON must be an array of repos or an object with a "repos" array.');
-  }
-
-  return list.map((item, index) => {
-    if (!item || typeof item !== "object") {
-      throw new Error(`Item ${index} is not an object.`);
-    }
-    const repo = item as Record<string, unknown>;
-    const name =
-      (typeof repo.nameWithOwner === "string" && repo.nameWithOwner) ||
-      (typeof repo.full_name === "string" && repo.full_name) ||
-      "";
-    if (!name) {
-      throw new Error(`Item ${index} is missing nameWithOwner/full_name.`);
-    }
-    const url =
-      (typeof repo.url === "string" && repo.url) ||
-      (typeof repo.html_url === "string" && repo.html_url) ||
-      `https://github.com/${name}`;
-
-    return {
-      nameWithOwner: name,
-      url,
-      description: typeof repo.description === "string" ? repo.description : "",
-      stargazerCount: Number(repo.stargazerCount ?? repo.stargazers_count ?? 0) || 0,
-      pushedAt: typeof repo.pushedAt === "string" ? repo.pushedAt : typeof repo.pushed_at === "string" ? repo.pushed_at : null,
-      starredAt: typeof repo.starredAt === "string" ? repo.starredAt : typeof repo.starred_at === "string" ? repo.starred_at : null,
-      primaryLanguage: (repo.primaryLanguage as StarRepoInput["primaryLanguage"]) ??
-        (typeof repo.language === "string" ? repo.language : null),
-      releases: (repo.releases as StarRepoInput["releases"]) ?? { nodes: [] },
-      topics: Array.isArray(repo.topics) ? (repo.topics as string[]) : null,
-      repositoryTopics: repo.repositoryTopics as StarRepoInput["repositoryTopics"],
-    };
-  });
-}
+import { normalizeImported } from "../lib/import";
 
 export default function HomePage() {
   const [jsonText, setJsonText] = useState(() => JSON.stringify(sampleFixtureRepos(), null, 2));
@@ -94,7 +50,9 @@ export default function HomePage() {
       <div className="grid">
         <section className="panel">
           <h2>Input JSON</h2>
-          <label htmlFor="repos-json">Array of repos or {"{ repos: [...] }"}</label>
+          <label htmlFor="repos-json">
+            Array of repos, {"{ repos: [...] }"}, or a GitHub GraphQL starredRepositories payload
+          </label>
           <textarea
             id="repos-json"
             value={jsonText}

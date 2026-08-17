@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { normalizeImported } from "../lib/import";
 import {
   FIXTURE_NOW,
   calculatePriorityScore,
@@ -33,5 +34,33 @@ const noRelease = {
 };
 assert.equal(scoreBreakdown(noRelease, FIXTURE_NOW).release, 0);
 assert.ok(calculatePriorityScore(noRelease, FIXTURE_NOW) > 0);
+
+const graphQlPayload = {
+  data: {
+    viewer: {
+      starredRepositories: {
+        edges: [
+          {
+            starredAt: "2026-08-08T00:00:00Z",
+            node: {
+              nameWithOwner: "octo/example",
+              url: "https://github.com/octo/example",
+              description: "GraphQL import",
+              stargazerCount: 42,
+              pushedAt: "2026-08-07T00:00:00Z",
+              primaryLanguage: { name: "TypeScript" },
+              releases: { nodes: [] },
+              repositoryTopics: { nodes: [{ topic: { name: "cli" } }] },
+            },
+          },
+        ],
+      },
+    },
+  },
+};
+const imported = normalizeImported(graphQlPayload);
+assert.equal(imported.length, 1);
+assert.equal(imported[0].nameWithOwner, "octo/example");
+assert.equal(imported[0].starredAt, "2026-08-08T00:00:00Z");
 
 console.log("star-optimizer scoring tests passed");

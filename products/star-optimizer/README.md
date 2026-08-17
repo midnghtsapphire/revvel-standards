@@ -1,5 +1,9 @@
 # Star Optimizer
 
+## Live Deployment
+
+▶️ **[Open the live app & test it](https://revvel-standards.vercel.app/docs/star-optimizer/)**
+
 Interactive SaaS for prioritizing starred GitHub repositories using the same
 weighted scoring model as the monorepo automation script.
 
@@ -38,7 +42,7 @@ npm run build
 - Workflow: `.github/workflows/prioritize-stars.yml`
 - Agent rules: `standards/AGENTS_STAR_OPTIMIZER.md`
 - Docs: `docs/STAR_OPTIMIZER.md`
-- Secret name (optional live automation): `GH_PAT` — see `docs/SECRETS_MAP.md`
+- Secret name (required for `.github/workflows/prioritize-stars.yml`; optional for demo mode): `GH_PAT` — see `docs/SECRETS_MAP.md`
 
 ## Monetization path
 

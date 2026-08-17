@@ -9,8 +9,8 @@ secret; rotate values only in GitHub Settings → Secrets and variables → Acti
 
 | Secret name | Used by | Purpose | Required |
 | --- | --- | --- | --- |
-| `GH_PAT` | `.github/workflows/prioritize-stars.yml`, `scripts/prioritize_stars.py` | Fine-grained Personal Access Token for reading the starring user's starred repositories (5,000 req/hr budget). Fallback is the job `GITHUB_TOKEN`. | Recommended for Star Optimizer |
-| `GITHUB_TOKEN` | Provided automatically by GitHub Actions | Default job token; used as fallback when `GH_PAT` is unset | Automatic |
+| `GH_PAT` | `.github/workflows/prioritize-stars.yml`, `scripts/prioritize_stars.py` | Fine-grained Personal Access Token for reading the target user's starred repositories (5,000 req/hr budget). The prioritize-stars workflow now fails fast when this secret is missing instead of falling back to the workflow bot token. | Required for prioritize-stars workflow |
+| `GITHUB_TOKEN` | Provided automatically by GitHub Actions | Default job token for repository operations; not suitable for reading the repository owner's starred repositories in prioritize-stars | Automatic |
 | `OPENROUTER_API_KEY` | OpenRouter triage / research workflows | Model routing via OpenRouter | When AI lanes are enabled |
 | `AGENT_PR_TOKEN` | Agent-authored PR workflows | App/PAT token that can trigger downstream checks (default `GITHUB_TOKEN` does not) | When agent PR automation is enabled |
 

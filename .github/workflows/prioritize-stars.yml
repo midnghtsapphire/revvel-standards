@@ -37,11 +37,14 @@ jobs:
 
       - name: Run Prioritization Script
         env:
-          # Prefer a fine-grained PAT (read:user stars) for the 5k/hr budget.
-          # Falls back to the job token when GH_PAT is unset.
-          GH_PAT: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          # Requires the starring user's fine-grained PAT; the workflow job token
+          # can only read the bot account's stars.
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
+          if [ -z "${GH_PAT}" ]; then
+            echo "::error::Missing GH_PAT. Add a fine-grained PAT with read access to the target account's starred repositories."
+            exit 1
+          fi
           python scripts/prioritize_stars.py --limit 250
 
       - name: Commit & Push Updated Priority List
