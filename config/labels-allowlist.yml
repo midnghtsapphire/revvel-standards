@@ -3,12 +3,11 @@
 # Enforcement: scripts/label-allowlist-check.mjs + .github/workflows/label-allowlist.yml
 
 version: 1
-updated: 2026-08-05
+updated: 2026-08-08
 owner: midnghtsapphire
 max_labels_total: 80
 policy:
   prefer_over_labels:
-  - name: recovery:gave-up
     - GitHub Projects custom fields
     - GitHub Actions workflows + check runs
     - n8n / Make / Zapier / Gumloop automations
@@ -89,6 +88,7 @@ labels:
   - name: noimosai
   - name: bnat
   - name: deep-research
+  - name: work-request
 
 aliases:
   "priority-p0": "priority:p0"
@@ -105,6 +105,7 @@ aliases:
   "wontfix": "wontfix"
   "won't-merge": "won't-merge"
   "awaiting-review": "in-review"
+  "waiting-for-review": "awaiting-approval"
   "review-started": "in-review"
   "review-fix:in-progress": "wr:code"
   "review-fix:complete": "checks-passing"
@@ -119,10 +120,18 @@ aliases:
   "sla:breached": "priority:p0"
   "sla:warning": "priority:p1"
   "triage:new": "triage"
+  "weekly-research": "research"
+  "dependabot": "dependencies"
+  "conflicts:needs-human": "has-conflicts"
+  "recovery:stale-wr": "wr:reset"
+  "recovery:gave-up": "needs-human"
+  "bito-ai": "automation"
+  "mindmappr": "automation"
 
   "status:checks-failing": "checks-failing"
   "status:checks-passing": "checks-passing"
   "status:checks-pending": "in-review"
+  "status:ready-to-merge": "ready-to-merge"
   "formal:structural_conflict": "formal:fail"
   "formal:duplicate_risk": "formal:fail"
   "formal:needs_reaudit": "formal:reaudit"

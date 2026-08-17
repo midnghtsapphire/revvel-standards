@@ -40,14 +40,18 @@ reuse. Others are candidates to either finish or refactor toward the shared modu
 | `products/music-video-creator` | video, subscription | Accessibility, Affiliate, Newsletter | ✅ |
 | `products/revvel-skill-runner` | skill/runtime, CLI | Accessibility, AffiliateMarketing, Newsletter | ✅ |
 | `products/graphify-evaluator` | evaluator/affiliate | Accessibility, Affiliate, Newsletter | ✅ |
+| `products/greenfield-ui-lab` | research lab / idea board | Board columns, day wallet, export | ✅ (WR #16931) |
 | `products/affiliate-hub` | affiliate, lead | — | needs review |
 | `products/ai-video-toolkit` | video, lead | — | needs review |
 | `products/cli-engine` | subscription, SaaS, CLI/MCP | — | needs review |
 | `products/creator-payout-tracker` | payout, subscription, video | — | needs review |
+| `products/goap-swarm-console` | agent/planner, SaaS, swarm | GOAP engine, research eval, export API | ✅ WR-16500 |
 | `products/openmythos` | (unclassified) | — | needs review |
 | `products/printbank` | digital-download, e-commerce, static | Vector print generator, photo print sizer (tested in `tests/printbank.test.js`) | needs review |
+| `products/caspian-channel-console` | SaaS, agent-comms, static | Channel planner, cost estimator, one-handler simulator, code export (tested in `tests/caspian-channel-console.test.js`) | ✅ |
 | `products/prompt-generation-app` | OSINT, prompt | — | needs review |
 | `products/screen-recorder-finder` | utility/finder | — | needs review |
+| `products/mergeme-status` | devops/status, Slack PR integration | Wiring checklist, owner setup console | ✅ (WR #16824) |
 | `products/ugc-review-generator` | review/content | — | (restored in #13915) |
 | `reesereviews/vine-marketplace` | review/marketplace (nested) | — | needs review |
 | `mcp-servers/github-issues` | MCP server | — | needs review |
