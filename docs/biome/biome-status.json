@@ -1,31 +1,45 @@
 {
   "schema": "biome-status/v1",
-  "generated_at": "2026-08-18T11:06:54.612Z",
+  "generated_at": "2026-08-18T15:08:56.808Z",
   "credit_free": true,
-  "overall": "healthy",
+  "overall": "degraded",
   "workers": {
     "sentinel": {
-      "status": "healthy",
-      "summary": "2/100 recent runs failed; 0 stuck item(s)",
+      "status": "degraded",
+      "summary": "4/100 recent runs failed; 0 stuck item(s)",
       "counts": {
-        "failed_runs": 2,
+        "failed_runs": 4,
         "total_runs": 100,
         "stuck_issues": 0
       },
       "detail": {
         "recent_failures": [
           {
-            "id": 32130068153,
+            "id": 32152599543,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32130068153",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32152599543",
             "conclusion": "failure"
           },
           {
-            "id": 32125041715,
+            "id": 32146757569,
             "name": "Hourly Star Growth & Prioritization Engine",
             "path": ".github/workflows/hourly-growth-prioritizer.yml",
-            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32125041715",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32146757569",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32141791016,
+            "name": "scheduled-market-evaluator",
+            "path": ".github/workflows/automate-gumroad-artifacts.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32141791016",
+            "conclusion": "failure"
+          },
+          {
+            "id": 32141491018,
+            "name": "Hourly Star Growth & Prioritization Engine",
+            "path": ".github/workflows/hourly-growth-prioritizer.yml",
+            "url": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32141491018",
             "conclusion": "failure"
           }
         ],
@@ -51,10 +65,10 @@
     },
     "medic": {
       "status": "healthy",
-      "summary": "no recent run yet",
+      "summary": "last run: success",
       "counts": {},
       "detail": {
-        "last_run": null
+        "last_run": "https://github.com/midnghtsapphire/revvel-standards/actions/runs/32140759519"
       }
     },
     "sheaf": {
