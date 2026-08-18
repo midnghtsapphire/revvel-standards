@@ -60,6 +60,29 @@ function list(arr) {
   return Array.isArray(arr) && arr.length ? arr.join(', ') : '—';
 }
 /** Build a markdown table row with single-spaced, trimmed cells (MD060-safe). */
+/**
+ * Render a note field for the Markdown table.
+ *
+ * Two escapes, both required by the table this feeds:
+ *
+ *   1. `|` would end the table cell early.
+ *   2. A bare URL trips MD034/no-bare-urls. That matters more than it looks:
+ *      this table is generated, and CircleCI's lint-and-test gate lints
+ *      *changed* Markdown — so a single bare URL typed into a note in
+ *      config/connections.yml turns docs/CONNECTIONS_REGISTRY.md red for
+ *      every PR that regenerates it, with the error pointing at the generated
+ *      file rather than at the note that caused it.
+ *
+ * Angle brackets are the autolink form MD034 asks for. URLs already wrapped
+ * in <> or already inside a [text](url) link are left alone, and trailing
+ * sentence punctuation is kept outside the link.
+ */
+function mdNote(note) {
+  return String(note || '—')
+    .replace(/\|/g, '\\|')
+    .replace(/(^|[^<(\[])(https?:\/\/[^\s<>()]*[^\s<>().,;:!?])/g, (m, pre, url) => `${pre}<${url}>`);
+}
+
 function row(cells) {
   return `| ${cells.map((c) => String(c).trim()).join(' | ')} |`;
 }
@@ -102,7 +125,7 @@ function renderMarkdown(doc) {
           list(c.access),
           list(c.connects_to),
           list(c.used_by),
-          (c.note || '—').replace(/\|/g, '\\|'),
+          mdNote(c.note),
         ])
       );
     }
