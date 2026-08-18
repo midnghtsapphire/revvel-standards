@@ -289,6 +289,32 @@ The issue says "@why is this not autoprocessing please fix and do this WR" — l
 
 **Assessment:** ✅ All critical cron jobs are configured and active.
 
+### The gate on `main` must be able to fail
+
+`ci-error-prevention.yml` is the only workflow that runs the full `npm test`
+on a push to `main`, and it ran it as `npm test || true` — discarding the
+result. `main` could be red with no check anywhere saying so.
+
+Three regressions landed that way in one day, each green on its own PR
+because what it broke lived outside its diff:
+
+| PR | Damage | Found by |
+|----|--------|----------|
+| #17044 | `prioritize-stars.yml` unparseable; 13 `AGENTS.md` rows and a registry entry deleted | human, hours later |
+| #17687 | `AGENT_PR_TOKEN` fallback deleted | a guard from #17691 |
+| #17000 | 204 action pins dropped, 7 full-SHA | human, hours later |
+
+`|| true` is removed. `tests/main-gate-cannot-be-silenced.test.js` holds four
+properties: some workflow runs the suite; none discards its exit code; none
+marks it `continue-on-error` without consuming the result; and it runs on
+**push to main**, not only on pull requests — a PR-only gate cannot catch a
+regression whose cause lies outside the diff that introduced it.
+
+The `continue-on-error` rule is about whether the result is *consumed*, not
+about the keyword. `self-heal-pr.yml` uses it deliberately so a failure
+becomes a PR comment rather than hard-blocking that workflow, and the next
+step reads `steps.tests.outcome`. That is reporting, and it is allowed.
+
 ### Merge-gate automation must aggregate, not sample
 
 `ralph-loop.yml`'s `ralph-unblock` job is triggered by a single `check_suite`
