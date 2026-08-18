@@ -181,7 +181,7 @@ jobs:
           [[ "$STATUS" =~ ^[23] ]] || exit 1
       - name: Comment result on PR
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         with:
@@ -240,7 +240,7 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           VERCEL_URL: ${{ steps.vercel.outputs.url }}
           NETLIFY_URL: ${{ steps.netlify.outputs.url }}
@@ -289,7 +289,7 @@ jobs:
           retention-days: 30
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const count = '${{ steps.build_pdf.outputs.count }}';
@@ -332,7 +332,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const result = '${{ steps.publish.outputs.result }}';
@@ -368,7 +368,7 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ github.sha }}
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             github.rest.issues.createComment({
@@ -427,7 +427,7 @@ jobs:
           fi
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           MCP_URL: ${{ steps.deploy_mcp.outputs.url }}
         with:
@@ -477,7 +477,7 @@ jobs:
           publish_dir: ./${{ steps.build_docs.outputs.dir }}
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const repo = '${{ github.repository }}'.split('/');
@@ -521,7 +521,7 @@ jobs:
           retention-days: 14
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const recorded = '${{ steps.record.outputs.recorded }}';
@@ -549,7 +549,7 @@ jobs:
     steps:
       - name: Dispatch auto-deploy-to-stores workflow
         id: dispatch
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             // Resolve which platforms are requested
@@ -581,7 +581,7 @@ jobs:
             }
       - name: Comment dispatch result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const dispatched = '${{ steps.dispatch.outputs.dispatched }}';
@@ -647,7 +647,7 @@ jobs:
           TWINE_USERNAME: __token__
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const result = '${{ steps.publish.outputs.result }}';
@@ -712,7 +712,7 @@ jobs:
           VSCE_TOKEN: ${{ secrets.VSCE_TOKEN }}
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           CHROME: ${{ steps.chrome.outputs.result }}
           VSCODE: ${{ steps.vscode.outputs.result }}
@@ -751,7 +751,7 @@ jobs:
           echo "result=action.yml present — tag a release to publish to GitHub Marketplace" >> $GITHUB_OUTPUT
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const result = '${{ steps.validate.outputs.result }}';
@@ -804,7 +804,7 @@ jobs:
           retention-days: 30
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const result = '${{ steps.openapi.outputs.result }}';
@@ -853,7 +853,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const result = '${{ steps.migrate.outputs.result }}';
@@ -905,7 +905,7 @@ jobs:
           retention-days: 30
       - name: Comment result
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const run = '${{ github.run_id }}';
@@ -950,7 +950,7 @@ jobs:
           fi
       - name: Label needs-human on failure
         if: steps.check.outputs.status == 'failed' && needs.gate.outputs.issue_num != ''
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const issue = parseInt('${{ needs.gate.outputs.issue_num }}');
@@ -972,7 +972,7 @@ jobs:
             });
       - name: Post success summary
         if: steps.check.outputs.status == 'ok'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: >
             const pr = context.payload.pull_request?.number;

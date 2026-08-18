@@ -47,7 +47,7 @@ jobs:
         run: npm ci
 
       - name: Compute report and upsert tracking issue
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           WARN_WITHIN_DAYS: ${{ inputs.warn_within_days || 7 }}
         with:

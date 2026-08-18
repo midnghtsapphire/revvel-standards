@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Apply triage labels (best effort)
         id: labels
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issue_number = context.payload.issue?.number || context.payload.pull_request?.number;
@@ -121,7 +121,7 @@ jobs:
     steps:
       - name: Collect triage:new items + previously-failed triage for recovery
         id: collect
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const owner = context.repo.owner;

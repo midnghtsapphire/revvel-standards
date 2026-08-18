@@ -61,7 +61,7 @@ jobs:
     steps:
       - name: Decide route
         id: decide
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const dispatch = context.eventName === 'workflow_dispatch';
@@ -136,7 +136,7 @@ jobs:
         run: node scripts/research-engine.js
       - name: Dispatch WR PR creation workflow
         if: needs.route.outputs.issue_number != ''
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = '${{ needs.route.outputs.issue_number }}'.trim();

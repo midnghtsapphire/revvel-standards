@@ -87,7 +87,7 @@ jobs:
 
       - name: Reset failure labels on stalled issues/PRs
         if: steps.probe.outputs.key_valid == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
           MAX_ITEMS: ${{ github.event.inputs.max_items || '0' }}
@@ -234,7 +234,7 @@ jobs:
 
       - name: Report key-missing (no reset performed)
         if: steps.probe.outputs.key_valid != 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         env:
           KEY_PRESENT: ${{ steps.probe.outputs.key_present }}
           PROBE_DETAIL: ${{ steps.probe.outputs.detail }}

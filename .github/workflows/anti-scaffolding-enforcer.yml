@@ -126,7 +126,7 @@ jobs:
       - name: Check PR title and description
         id: check_pr
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const title = context.payload.pull_request.title;
@@ -176,7 +176,7 @@ jobs:
 
       - name: Post review comment if violations found
         if: steps.scan.outputs.violations == 'true' || steps.check_pr.outputs.pr_violations == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const violations = process.env.VIOLATIONS || '';
@@ -264,7 +264,7 @@ jobs:
 
       - name: Request changes if violations found
         if: steps.scan.outputs.violations == 'true' || steps.check_pr.outputs.pr_violations == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             // Add label to PR
@@ -280,7 +280,7 @@ jobs:
 
       - name: Remove label if no violations
         if: steps.scan.outputs.violations == 'false' && steps.check_pr.outputs.pr_violations == 'false'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         continue-on-error: true
         with:
           script: |

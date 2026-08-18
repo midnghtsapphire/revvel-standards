@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Validate issue exists
         id: validate
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt('${{ inputs.issue_number }}');
@@ -46,7 +46,7 @@ jobs:
       - name: Get current labels
         if: steps.validate.outputs.exists == 'true'
         id: get-labels
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt('${{ inputs.issue_number }}');
@@ -61,7 +61,7 @@ jobs:
 
       - name: Remove self-heal labels
         if: steps.validate.outputs.exists == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt('${{ inputs.issue_number }}');
@@ -85,7 +85,7 @@ jobs:
 
       - name: Add self-heal labels back
         if: steps.validate.outputs.exists == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt('${{ inputs.issue_number }}');
@@ -106,7 +106,7 @@ jobs:
 
       - name: Post reset comment
         if: steps.validate.outputs.exists == 'true'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = parseInt('${{ inputs.issue_number }}');

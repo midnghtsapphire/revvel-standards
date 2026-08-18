@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Find stuck self-heal issues
         id: find-stuck
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const OWNER = context.repo.owner;
@@ -52,7 +52,7 @@ jobs:
 
       - name: Reset stuck issues
         if: steps.find-stuck.outputs.count != '0'
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const OWNER = context.repo.owner;

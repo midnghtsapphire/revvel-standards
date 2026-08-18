@@ -64,7 +64,7 @@ jobs:
       issues: write
     steps:
       - name: Create daily cleanup report
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const closed = '${{ needs.self-heal.outputs.closed }}';

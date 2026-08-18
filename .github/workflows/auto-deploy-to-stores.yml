@@ -89,7 +89,7 @@ jobs:
     steps:
       - name: Resolve trigger and parameters
         id: decide
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const dispatch = context.eventName === 'workflow_dispatch';
@@ -175,7 +175,7 @@ jobs:
           sparse-checkout-cone-mode: false
       - name: Verify deep research completion
         id: check
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = '${{ needs.gate.outputs.issue_number }}';
@@ -403,7 +403,7 @@ jobs:
           retention-days: 30
       - name: Comment on PR
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const result = '${{ steps.deploy.outputs.result }}';
@@ -532,7 +532,7 @@ jobs:
           retention-days: 30
       - name: Comment on PR
         if: always()
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const result = '${{ steps.deploy.outputs.result }}';
@@ -564,7 +564,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Post deployment summary to WR issue
-        uses: actions/github-script@v9
+        uses: actions/github-script@v9.0.0
         with:
           script: |
             const issueNumber = '${{ needs.gate.outputs.issue_number }}';
